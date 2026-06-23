@@ -57,6 +57,9 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  assets:
+    - assets/images/
+
   fonts:
     - family: Pretendard
       fonts:

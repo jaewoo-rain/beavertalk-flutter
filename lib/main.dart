@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_typography.dart';
-import 'preview/gallery_screen.dart';
+import 'app/routes.dart';
 
 void main() => runApp(const BeaverTalkApp());
 
-/// App root. Mounts the component gallery.
+/// App root. Starts at onboarding; the component gallery stays at `/gallery`.
 class BeaverTalkApp extends StatelessWidget {
   const BeaverTalkApp({super.key});
 
@@ -23,7 +23,8 @@ class BeaverTalkApp extends StatelessWidget {
           surface: AppColors.surface,
         ),
       ),
-      home: const GalleryScreen(),
+      initialRoute: Routes.onboarding,
+      onGenerateRoute: onGenerateRoute,
     );
   }
 }
