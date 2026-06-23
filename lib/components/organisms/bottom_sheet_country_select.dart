@@ -1,0 +1,250 @@
+import 'package:flutter/material.dart';
+
+import '../../theme/app_colors.dart';
+import '../../theme/app_radius.dart';
+import '../../theme/app_typography.dart';
+import '../atoms/button.dart';
+import '../atoms/dim.dart';
+import '../chrome/home_indicator.dart';
+import '../molecules/country_select.dart';
+
+/// A single selectable country entry for [BottomSheetCountrySelect].
+///
+/// [code] is an opaque value used to identify the row (it is what flows
+/// through [BottomSheetCountrySelect.value] / `onChanged`); [name] and [flag]
+/// are forwarded to the reused [CountrySelect] molecule.
+class CountryItem {
+  /// Creates a country list item.
+  const CountryItem({
+    required this.code,
+    required this.name,
+    required this.flag,
+  });
+
+  /// Opaque identity of the row (e.g. ISO code "KR"); compared by `==`.
+  final String code;
+
+  /// Display name shown next to the flag.
+  final String name;
+
+  /// Flag glyph, rendered as an emoji `Text` by [CountrySelect].
+  final String flag;
+}
+
+/// BottomSheet-CountrySelect — country picker sheet.
+///
+/// Figma `03_Organisms / BottomSheet-CountrySelect` (`176:12212`), measured
+/// 1:1 via MCP.
+///
+/// Layout (top → bottom):
+/// - GNB header (`type=sub-2`): `14px 20px` padding, centered [title] in
+///   `MO/Body 1 - Bold` (≈ [AppType.body1] SemiBold, white), with an invisible
+///   28px spacer on the left and a 28px close glyph on the right (tap →
+///   [onClose] / dismiss).
+/// - Body frame: `16/20/24` padding, holds a vertical list (335 wide) of
+///   reused [CountrySelect] rows. The selected row gets `primary10` fill + 1px
+///   `primary` border + check (handled by [CountrySelect.selected]).
+/// - Footer [BottomSheet] `single-button`: a 335-wide primary-fill [Button]
+///   ("확인" → [onConfirm]) above a reused [HomeIndicator].
+///
+/// Sheet shell: 375 wide, top corners `AppRadius.lg` (24), fill
+/// [AppColors.surfaceElevated]. Controlled component: pass [value] (the
+/// selected [CountryItem.code]) and react to [onChanged]; the widget never
+/// mutates its own selection.
+class BottomSheetCountrySelect extends StatelessWidget {
+  /// Creates a country-select bottom sheet.
+  const BottomSheetCountrySelect({
+    super.key,
+    this.title = '국가를 선택하세요',
+    required this.items,
+    required this.value,
+    this.onChanged,
+    this.onConfirm,
+    this.confirmText = '확인',
+    this.onClose,
+  });
+
+  /// Header title (Figma default: "국가를 선택하세요").
+  final String title;
+
+  /// The countries to list, rendered top-to-bottom as [CountrySelect] rows.
+  final List<CountryItem> items;
+
+  /// Currently-selected [CountryItem.code], or `null` for no selection.
+  final String? value;
+
+  /// Called with the tapped row's [CountryItem.code].
+  final ValueChanged<String>? onChanged;
+
+  /// Called when the confirm button is pressed.
+  final VoidCallback? onConfirm;
+
+  /// Confirm button label (Figma footer button).
+  final String confirmText;
+
+  /// Called when the header close glyph is tapped.
+  final VoidCallback? onClose;
+
+  static const double _sheetWidth = 375;
+  static const double _contentWidth = 335;
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: AppColors.surfaceElevated,
+      borderRadius: const BorderRadius.vertical(
+        top: Radius.circular(AppRadius.lg),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: SizedBox(
+        width: _sheetWidth,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _header(),
+            // Body — country list.
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: Center(
+                child: SizedBox(
+                  width: _contentWidth,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      for (final item in items)
+                        CountrySelect(
+                          name: item.name,
+                          flag: Text(
+                            item.flag,
+                            style: const TextStyle(fontSize: 24),
+                          ),
+                          selected: item.code == value,
+                          onSelect: onChanged == null
+                              ? null
+                              : () => onChanged!(item.code),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            _footer(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// GNB `sub-2` header: centered title, close glyph on the right.
+  Widget _header() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      child: Row(
+        children: [
+          // Invisible 28px spacer balancing the close glyph (centers title).
+          const SizedBox(width: 28, height: 28),
+          Expanded(
+            child: Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppType.body1.sb.copyWith(color: AppColors.text),
+            ),
+          ),
+          SizedBox(
+            width: 28,
+            height: 28,
+            child: IconButton(
+              padding: EdgeInsets.zero,
+              iconSize: 24,
+              splashRadius: 20,
+              onPressed: onClose,
+              icon: const Icon(Icons.close, color: AppColors.text),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// Footer: primary confirm button (335 wide) + home indicator.
+  Widget _footer() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          child: Center(
+            child: SizedBox(
+              width: _contentWidth,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: confirmText,
+                onPressed: onConfirm,
+              ),
+            ),
+          ),
+        ),
+        const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+      ],
+    );
+  }
+}
+
+/// Gallery demo: [BottomSheetCountrySelect] over a [Dim], bottom-aligned.
+class BottomSheetCountrySelectDemo extends StatefulWidget {
+  /// Creates the demo.
+  const BottomSheetCountrySelectDemo({super.key});
+
+  @override
+  State<BottomSheetCountrySelectDemo> createState() =>
+      _BottomSheetCountrySelectDemoState();
+}
+
+class _BottomSheetCountrySelectDemoState
+    extends State<BottomSheetCountrySelectDemo> {
+  static const List<CountryItem> _items = [
+    CountryItem(code: 'KR', name: '대한민국', flag: '🇰🇷'),
+    CountryItem(code: 'US', name: '미국', flag: '🇺🇸'),
+    CountryItem(code: 'JP', name: '일본', flag: '🇯🇵'),
+    CountryItem(code: 'CN', name: '중국', flag: '🇨🇳'),
+    CountryItem(code: 'GB', name: '영국', flag: '🇬🇧'),
+  ];
+
+  String _value = 'US';
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.bg,
+      child: Stack(
+        children: [
+          // Faux content behind the dim.
+          const Positioned.fill(
+            child: Center(
+              child: Text(
+                'Background',
+                style: TextStyle(color: AppColors.textTertiary),
+              ),
+            ),
+          ),
+          Dim(onTap: () {}),
+          // Bottom-aligned sheet.
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: BottomSheetCountrySelect(
+              items: _items,
+              value: _value,
+              onChanged: (code) => setState(() => _value = code),
+              onConfirm: () {},
+              onClose: () {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

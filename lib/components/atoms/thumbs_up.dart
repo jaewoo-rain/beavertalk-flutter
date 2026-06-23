@@ -1,0 +1,143 @@
+import 'package:flutter/material.dart';
+
+import '../../theme/app_colors.dart';
+
+/// ThumbsUp — a large selectable "like" atom.
+///
+/// Figma component set `170:9592` (ThumbsUp), states `active` / `inactive`.
+///
+/// Measured from Figma:
+/// - Outer box 101×112, `borderRadius` 20, padding `28px 24px`, 1px stroke.
+/// - Inner circle 56×56 (padding 14, `borderRadius` 9999 / pill), holds a 24×24
+///   thumbs-up icon (Figma `thumbs-up` icon → [Icons.thumb_up_outlined]).
+/// - `active`   → outer stroke + icon [AppColors.primary], inner fill
+///   `Primary/Primary-10` ([AppColors.primary10]).
+/// - `inactive` → outer stroke + inner fill `Line/Normal/Alternative`
+///   ([AppColors.borderSubtle]), icon [AppColors.textSecondary].
+///
+/// Controlled atom: pass [active] and handle [onChanged]; [disabled] dims it.
+class ThumbsUp extends StatelessWidget {
+  const ThumbsUp({
+    super.key,
+    required this.active,
+    this.onChanged,
+    this.disabled = false,
+  });
+
+  /// Whether the thumbs-up is currently active (selected).
+  final bool active;
+
+  /// Called with the *toggled* value when tapped. No-op while [disabled].
+  final ValueChanged<bool>? onChanged;
+
+  /// When `true` the button is non-interactive and rendered dimmed.
+  final bool disabled;
+
+  static const double _width = 101;
+  static const double _height = 112;
+  static const double _innerSize = 56;
+  static const double _iconSize = 24;
+  static const double _outerRadius = 20;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color outerStroke =
+        active ? AppColors.primary : AppColors.borderSubtle;
+    final Color innerFill =
+        active ? AppColors.primary10 : AppColors.borderSubtle;
+    final Color iconColor =
+        active ? AppColors.primary : AppColors.textSecondary;
+
+    final Widget content = Container(
+      width: _width,
+      height: _height,
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        border: Border.all(color: outerStroke),
+        borderRadius: BorderRadius.circular(_outerRadius),
+      ),
+      child: Container(
+        width: _innerSize,
+        height: _innerSize,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: innerFill,
+          shape: BoxShape.circle,
+        ),
+        child: Icon(
+          Icons.thumb_up_outlined,
+          size: _iconSize,
+          color: iconColor,
+        ),
+      ),
+    );
+
+    return Semantics(
+      button: true,
+      toggled: active,
+      enabled: !disabled,
+      label: 'Thumbs up',
+      child: Opacity(
+        opacity: disabled ? 0.4 : 1,
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(_outerRadius),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(_outerRadius),
+            onTap: (disabled || onChanged == null)
+                ? null
+                : () => onChanged!(!active),
+            child: content,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Gallery demo exposing every [ThumbsUp] state.
+class ThumbsUpDemo extends StatefulWidget {
+  const ThumbsUpDemo({super.key});
+
+  @override
+  State<ThumbsUpDemo> createState() => _ThumbsUpDemoState();
+}
+
+class _ThumbsUpDemoState extends State<ThumbsUpDemo> {
+  bool _active = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Text('Interactive (tap to toggle)',
+              style: TextStyle(color: AppColors.textSecondary)),
+          const SizedBox(height: 12),
+          ThumbsUp(
+            active: _active,
+            onChanged: (v) => setState(() => _active = v),
+          ),
+          const SizedBox(height: 24),
+          const Text('States',
+              style: TextStyle(color: AppColors.textSecondary)),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              ThumbsUp(active: true),
+              SizedBox(width: 16),
+              ThumbsUp(active: false),
+              SizedBox(width: 16),
+              ThumbsUp(active: true, disabled: true),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}

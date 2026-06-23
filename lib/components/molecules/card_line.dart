@@ -1,0 +1,312 @@
+import 'package:flutter/material.dart';
+
+import '../../theme/app_colors.dart';
+import '../../theme/app_typography.dart';
+import '../atoms/toggle.dart';
+
+/// The three line-row layouts of [CardLine].
+enum CardLineType {
+  /// A two-column payment receipt row: label + meta on the left, value + status
+  /// on the right.
+  payment,
+
+  /// A label/value row with a trailing chevron (e.g. a settings entry).
+  ///
+  /// Defaults to a fixed 56px height.
+  defaultRow,
+
+  /// A label row with a trailing [AppToggle].
+  ///
+  /// Defaults to a fixed 56px height.
+  defaultToggle,
+}
+
+/// CardLine — a single list line measured 1:1 from Figma (`Card-Line`
+/// set `176:15525`).
+///
+/// Measured spec (shared): a bottom-only divider of `borderSubtle`
+/// (Line/Normal/Alternative, white @ 6%) at 0.5px and `8px 12px` padding.
+///
+/// * [CardLineType.payment] — a column laying out one space-between row.
+///   The left side stacks [label] (Label 1 Regular, white) over a [meta] row
+///   (Label 1 Regular, `textSecondary`) separated by a 2×2 `textTertiary` dot;
+///   `meta` is split on `·` into segments. The right side stacks [value]
+///   (Label 1 SemiBold, white) over [status] (Label 1 Regular, `success`).
+/// * [CardLineType.defaultRow] — a 56px row: [label]/[value] (Body 1 Regular,
+///   white) space-between, with a trailing 24px chevron.
+/// * [CardLineType.defaultToggle] — a 56px row: [label] (Body 1 Regular, white)
+///   with a trailing [AppToggle] driven by [checked]/[onChanged].
+class CardLine extends StatelessWidget {
+  /// Creates a card line of the given [type].
+  const CardLine({
+    super.key,
+    required this.type,
+    required this.label,
+    this.value,
+    this.meta,
+    this.status,
+    this.checked = false,
+    this.onChanged,
+  });
+
+  /// Which line layout to render.
+  final CardLineType type;
+
+  /// The primary label text (left side of every variant).
+  final String label;
+
+  /// The value text.
+  ///
+  /// Used as the bold amount in [CardLineType.payment] and as the right-hand
+  /// value in [CardLineType.defaultRow].
+  final String? value;
+
+  /// Secondary meta line for [CardLineType.payment], split on `·` into
+  /// dot-separated segments (e.g. `"6월 3일·신한카드 1234"`).
+  final String? meta;
+
+  /// Status text shown under [value] in [CardLineType.payment]
+  /// (e.g. `"완료"`), rendered in [AppColors.success].
+  final String? status;
+
+  /// Current toggle value for [CardLineType.defaultToggle].
+  final bool checked;
+
+  /// Toggle callback for [CardLineType.defaultToggle]. When null the toggle is
+  /// non-interactive.
+  final ValueChanged<bool>? onChanged;
+
+  static const double _rowHeight = 56;
+
+  static const BoxDecoration _divider = BoxDecoration(
+    border: Border(
+      bottom: BorderSide(color: AppColors.borderSubtle, width: 0.5),
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    switch (type) {
+      case CardLineType.payment:
+        return _buildPayment();
+      case CardLineType.defaultRow:
+        return _buildDefaultRow();
+      case CardLineType.defaultToggle:
+        return _buildDefaultToggle();
+    }
+  }
+
+  Widget _buildPayment() {
+    return DecoratedBox(
+      decoration: _divider,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    label,
+                    style: AppType.label1.r.copyWith(color: AppColors.text),
+                  ),
+                  if (meta != null) ...[
+                    const SizedBox(height: 7),
+                    _MetaRow(meta: meta!),
+                  ],
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (value != null)
+                  Text(
+                    value!,
+                    style: AppType.label1.sb.copyWith(color: AppColors.text),
+                  ),
+                if (status != null) ...[
+                  const SizedBox(height: 7),
+                  Text(
+                    status!,
+                    style:
+                        AppType.label1.r.copyWith(color: AppColors.success),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDefaultRow() {
+    return DecoratedBox(
+      decoration: _divider,
+      child: SizedBox(
+        height: _rowHeight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      label,
+                      style:
+                          AppType.body1.r.copyWith(color: AppColors.text),
+                    ),
+                    if (value != null)
+                      Text(
+                        value!,
+                        style:
+                            AppType.body1.r.copyWith(color: AppColors.text),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              const Icon(
+                Icons.chevron_right,
+                size: 24,
+                color: AppColors.text,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDefaultToggle() {
+    return DecoratedBox(
+      decoration: _divider,
+      child: SizedBox(
+        height: _rowHeight,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: AppType.body1.r.copyWith(color: AppColors.text),
+                ),
+              ),
+              const SizedBox(width: 10),
+              AppToggle(value: checked, onChanged: onChanged),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Dot-separated meta row for [CardLineType.payment].
+///
+/// Segments are split on `·`; a 2×2 [AppColors.textTertiary] dot separates them.
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({required this.meta});
+
+  final String meta;
+
+  @override
+  Widget build(BuildContext context) {
+    final segments = meta
+        .split('·')
+        .map((s) => s.trim())
+        .where((s) => s.isNotEmpty)
+        .toList();
+    final children = <Widget>[];
+    for (var i = 0; i < segments.length; i++) {
+      if (i > 0) {
+        children.add(const SizedBox(width: 4));
+        children.add(
+          Container(
+            width: 2,
+            height: 2,
+            decoration: const BoxDecoration(
+              color: AppColors.textTertiary,
+              shape: BoxShape.circle,
+            ),
+          ),
+        );
+        children.add(const SizedBox(width: 4));
+      }
+      children.add(
+        Text(
+          segments[i],
+          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+        ),
+      );
+    }
+    return Row(mainAxisSize: MainAxisSize.min, children: children);
+  }
+}
+
+/// Gallery demo exposing every [CardLine] variant.
+class CardLineDemo extends StatefulWidget {
+  /// Creates the CardLine gallery demo.
+  const CardLineDemo({super.key});
+
+  @override
+  State<CardLineDemo> createState() => _CardLineDemoState();
+}
+
+class _CardLineDemoState extends State<CardLineDemo> {
+  bool _toggleA = true;
+  bool _toggleB = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
+      color: AppColors.bg,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const CardLine(
+              type: CardLineType.payment,
+              label: '프리미엄 구독(월간)',
+              meta: '6월 3일·신한카드 1234',
+              value: '12.9\$',
+              status: '완료',
+            ),
+            const SizedBox(height: 16),
+            const CardLine(
+              type: CardLineType.defaultRow,
+              label: 'User Language',
+              value: 'English(US)',
+            ),
+            const SizedBox(height: 16),
+            CardLine(
+              type: CardLineType.defaultToggle,
+              label: 'User Language',
+              checked: _toggleA,
+              onChanged: (v) => setState(() => _toggleA = v),
+            ),
+            CardLine(
+              type: CardLineType.defaultToggle,
+              label: '텍스트 내용 텍스트 내용',
+              checked: _toggleB,
+              onChanged: (v) => setState(() => _toggleB = v),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
