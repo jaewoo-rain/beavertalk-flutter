@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
 /// A single tab in a [BottomNavBar].
@@ -147,14 +146,15 @@ class _NavTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final Widget child;
     if (active) {
-      // Center pill: primary fill, full radius, mint glow, 32×32 icon.
+      // Center action: a perfect 68×68 primary circle with a mint glow and a
+      // 32×32 icon (Figma 162:46508 — 68 wide, 18px vertical padding → 68 tall).
       child = Container(
         width: 68,
-        padding: const EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(
+        height: 68,
+        decoration: const BoxDecoration(
           color: AppColors.primary,
-          borderRadius: BorderRadius.circular(AppRadius.pill),
-          boxShadow: const [
+          shape: BoxShape.circle,
+          boxShadow: [
             BoxShadow(
               color: Color(0x3D00FFB2), // Primary Blur: rgba(0,255,178,0.24)
               blurRadius: 32,

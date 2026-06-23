@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../components/chrome/status_bar.dart';
@@ -26,23 +27,48 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0C0C10),
-      body: Center(
-        child: SizedBox(
-          width: 375,
-          height: 812,
-          child: ClipRect(
-            child: Container(
-              color: background,
-              child: Column(
-                children: [
-                  StatusBar(variant: statusVariant),
-                  Expanded(child: body),
-                  HomeIndicator(variant: homeVariant),
-                ],
+      body: Stack(
+        children: [
+          Center(
+            child: SizedBox(
+              width: 375,
+              height: 812,
+              child: ClipRect(
+                child: Container(
+                  color: background,
+                  child: Column(
+                    children: [
+                      StatusBar(variant: statusVariant),
+                      Expanded(child: body),
+                      HomeIndicator(variant: homeVariant),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+          // Debug-only shortcut to the component gallery (in the dark margin).
+          if (kDebugMode)
+            Positioned(
+              top: 12,
+              left: 12,
+              child: SafeArea(
+                child: Material(
+                  color: AppColors.surface2,
+                  shape: const StadiumBorder(),
+                  child: InkWell(
+                    customBorder: const StadiumBorder(),
+                    onTap: () => Navigator.of(context).pushNamed('/gallery'),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      child: Text('🎨 Gallery',
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

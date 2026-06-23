@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
@@ -124,27 +125,44 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                     ),
                   ),
                 ),
-                // Retry / next control row.
+                // Retry (white circle) + next (arrow). A 56px invisible mirror
+                // on the left keeps the retry circle screen-centered (Figma row
+                // [56 mirror][96 retry][56 arrow], gap 24).
                 Align(
                   alignment: const Alignment(0, 0.72),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _CircleControl(
+                      const SizedBox(width: 56),
+                      const SizedBox(width: 24),
+                      RecordCircleButton(
                         icon: Icons.refresh,
-                        filled: false,
                         semanticLabel: '다시하기',
                         onTap: () => Navigator.pop(context),
                       ),
                       const SizedBox(width: 24),
-                      _CircleControl(
-                        icon: Icons.arrow_forward,
-                        filled: true,
-                        semanticLabel: '다음',
-                        onTap: () => Navigator.pushNamed(
-                          context,
-                          Routes.learningMain,
-                          arguments: args,
+                      SizedBox(
+                        width: 56,
+                        height: 56,
+                        child: IconButton(
+                          // More sentences left → record the next one directly;
+                          // the score screen (learning_main) shows only once,
+                          // after the whole review sequence is done.
+                          onPressed: () => args.hasNext
+                              ? Navigator.pushNamed(
+                                  context,
+                                  Routes.learningIntro,
+                                  arguments: args.next(),
+                                )
+                              : Navigator.pushNamed(
+                                  context,
+                                  Routes.learningMain,
+                                  arguments: args,
+                                ),
+                          icon: const Icon(Icons.arrow_forward),
+                          iconSize: 32,
+                          color: AppColors.green700,
+                          tooltip: '다음',
                         ),
                       ),
                     ],
@@ -185,47 +203,3 @@ class _ScoredSentence extends StatelessWidget {
   }
 }
 
-/// A circular icon control (96px filled green, or 96px ringed outline).
-class _CircleControl extends StatelessWidget {
-  const _CircleControl({
-    required this.icon,
-    required this.filled,
-    required this.semanticLabel,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final bool filled;
-  final String semanticLabel;
-  final VoidCallback onTap;
-
-  static const double _size = 96;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: semanticLabel,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: _size,
-          height: _size,
-          decoration: BoxDecoration(
-            color: filled ? AppColors.primary : Colors.transparent,
-            shape: BoxShape.circle,
-            border: filled
-                ? null
-                : Border.all(color: AppColors.primary, width: 4),
-          ),
-          alignment: Alignment.center,
-          child: Icon(
-            icon,
-            size: 40,
-            color: filled ? AppColors.onPrimary : AppColors.primary,
-          ),
-        ),
-      ),
-    );
-  }
-}

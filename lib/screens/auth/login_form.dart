@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
 import '../../theme/app_colors.dart';
@@ -64,7 +65,8 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                     onChanged: (v) => setState(() => _email = v),
                     hintText: '이메일을 입력해주세요',
                     keyboardType: TextInputType.emailAddress,
-                    leftIcon: const Icon(Icons.mail_outline),
+                    leftIcon:
+                        const MailIcon(size: 20, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 20),
                   // ── Password field ──────────────────────────────────────
@@ -173,22 +175,22 @@ class _SocialButtonRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget social(IconData icon) => Expanded(
+    Widget social(Widget icon) => Expanded(
           child: Button(
             type: BtnType.secondaryOutline,
             size: BtnSize.s60,
             text: '',
-            leftIcon: Icon(icon),
+            leftIcon: icon,
             onPressed: onPressed,
           ),
         );
     return Row(
       children: [
-        social(Icons.chat_bubble),
+        social(const KakaoIcon(size: 24)),
         const SizedBox(width: 12),
-        social(Icons.g_mobiledata),
+        social(const GoogleIcon(size: 24)),
         const SizedBox(width: 12),
-        social(Icons.apple),
+        social(const AppleIcon(size: 24, color: AppColors.textSecondary)),
       ],
     );
   }

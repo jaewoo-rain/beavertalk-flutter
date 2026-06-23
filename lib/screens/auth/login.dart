@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/brand_icons.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
               text: '카카오 로그인',
-              leftIcon: const Icon(Icons.chat_bubble),
+              leftIcon: const KakaoIcon(size: 24),
               onPressed: _socialLogin,
             ),
             const SizedBox(height: 16),
@@ -59,7 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
               text: '구글로 로그인',
-              leftIcon: const Icon(Icons.g_mobiledata),
+              leftIcon: const GoogleIcon(size: 24),
               onPressed: _socialLogin,
             ),
             const SizedBox(height: 16),
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
               text: '애플로 로그인',
-              leftIcon: const Icon(Icons.apple),
+              leftIcon: const AppleIcon(size: 24),
               onPressed: _socialLogin,
             ),
             const SizedBox(height: 16),
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
               type: BtnType.primaryFill,
               size: BtnSize.s60,
               text: '이메일 로그인',
-              leftIcon: const Icon(Icons.mail_outline),
+              leftIcon: const MailIcon(size: 24, color: AppColors.onPrimary),
               onPressed: _emailLogin,
             ),
             const SizedBox(height: 40),
@@ -110,10 +111,7 @@ class _LogoBlock extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        Text(
-          'BeaverTalk',
-          style: AppType.title2.b.copyWith(color: AppColors.text),
-        ),
+        const BeaverTalkLogo(width: 160, color: AppColors.text),
       ],
     );
   }

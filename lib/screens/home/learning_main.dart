@@ -26,22 +26,18 @@ class LearningMainScreen extends StatefulWidget {
 }
 
 class _LearningMainScreenState extends State<LearningMainScreen> {
-  /// Ends the session: unwind back to the analysis screen.
+  /// Ends the session: unwind back to whatever launched the learning flow —
+  /// the call analysis (대화 기록) or the 보관 archive. Pops every learning
+  /// screen (intro/next/main) and stops at the first non-learning route, so it
+  /// works regardless of entry point (popping to a hardcoded route that isn't
+  /// on the stack would unwind everything → blank screen).
   void _finish() {
-    Navigator.popUntil(context, ModalRoute.withName(Routes.analysis));
-  }
-
-  /// Advances to the next sentence's intro, or home when the sequence is done.
-  void _next(LearningArgs args) {
-    if (args.hasNext) {
-      Navigator.pushNamed(
-        context,
-        Routes.learningIntro,
-        arguments: args.next(),
-      );
-    } else {
-      Navigator.popUntil(context, ModalRoute.withName(Routes.home));
-    }
+    Navigator.popUntil(context, (route) {
+      final name = route.settings.name;
+      return name != Routes.learningIntro &&
+          name != Routes.learningNext &&
+          name != Routes.learningMain;
+    });
   }
 
   @override
@@ -80,26 +76,14 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Button(
-                    type: BtnType.secondaryFill,
-                    size: BtnSize.s60,
-                    text: '학습 종료',
-                    onPressed: _finish,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: args.hasNext ? '다음' : '완료',
-                    onPressed: () => _next(args),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: '학습 종료',
+                onPressed: _finish,
+              ),
             ),
           ),
         ],

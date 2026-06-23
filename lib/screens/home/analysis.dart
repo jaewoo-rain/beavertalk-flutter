@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/chat_bubble.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
@@ -102,14 +102,27 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                     style: AppType.headline1.sb.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: 16),
-                  for (int i = 0; i < result.sentences.length; i++) ...[
-                    if (i > 0) const SizedBox(height: 20),
-                    _LearnedExpressionCard(
-                      sentence: result.sentences[i],
-                      onPractice: () =>
-                          _startLearning([result.sentences[i]]),
+                  ValueListenableBuilder<Set<int>>(
+                    valueListenable: bookmarkedSentenceIds,
+                    builder: (context, ids, _) => Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (int i = 0; i < result.sentences.length; i++) ...[
+                          if (i > 0) const SizedBox(height: 20),
+                          CardBookmark(
+                            korean: result.sentences[i].korean,
+                            native: result.sentences[i].native,
+                            bookmarked: ids.contains(result.sentences[i].id),
+                            onBookmarkTap: () =>
+                                toggleBookmark(result.sentences[i].id),
+                            actionText: '연습하기',
+                            onAction: () =>
+                                _startLearning([result.sentences[i]]),
+                          ),
+                        ],
+                      ],
                     ),
-                  ],
+                  ),
 
                   // ── section 3: 대화 상세 ────────────────────────────
                   const SizedBox(height: 40),
@@ -173,81 +186,5 @@ class _MetaRow extends StatelessWidget {
       children.add(Text(segments[i], style: style));
     }
     return Row(mainAxisSize: MainAxisSize.min, children: children);
-  }
-}
-
-/// A "새로 배운 표현" card — Figma `Card-Bookmark` (`2224:21261`).
-///
-/// An [AppColors.surfaceElevated] box (radius 12, padding `16/20`) holding the
-/// learned sentence (KO highlighted white + EN translation in
-/// [AppColors.textSecondary]), a footer row with speaker/bookmark glyphs, and a
-/// "연습하기" [BtnType.secondaryFill] button wired to [onPractice].
-class _LearnedExpressionCard extends StatelessWidget {
-  const _LearnedExpressionCard({
-    required this.sentence,
-    required this.onPractice,
-  });
-
-  /// The learned sentence shown by this card.
-  final MockSentence sentence;
-
-  /// Tapped when "연습하기" is pressed (practice this one sentence).
-  final VoidCallback onPractice;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            sentence.korean,
-            style: AppType.body1.sb.copyWith(color: AppColors.text),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            sentence.native,
-            style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: 8),
-          const Divider(
-            height: 1,
-            thickness: 1,
-            color: AppColors.borderSubtle,
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              const Icon(
-                Icons.volume_up_outlined,
-                size: 24,
-                color: AppColors.text,
-              ),
-              const SizedBox(width: 8),
-              Icon(
-                sentence.bookmarked
-                    ? Icons.bookmark
-                    : Icons.bookmark_border,
-                size: 24,
-                color: AppColors.text,
-              ),
-              const Spacer(),
-              Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s36,
-                text: '연습하기',
-                onPressed: onPractice,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }

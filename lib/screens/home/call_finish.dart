@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
+import '../../components/molecules/rating_button.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -74,14 +75,14 @@ class _CallFinishScreenState extends State<CallFinishScreen> {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      _RatingButton(
+                      RatingButton(
                         icon: Icons.thumb_up_alt_outlined,
                         selected: _rating == _Rating.up,
                         onTap: () => _rate(_Rating.up),
                         label: '좋아요',
                       ),
                       const SizedBox(width: 16),
-                      _RatingButton(
+                      RatingButton(
                         icon: Icons.thumb_down_alt_outlined,
                         selected: _rating == _Rating.down,
                         onTap: () => _rate(_Rating.down),
@@ -121,55 +122,6 @@ class _CallFinishScreenState extends State<CallFinishScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// A circular thumbs-up / thumbs-down rating toggle.
-class _RatingButton extends StatelessWidget {
-  const _RatingButton({
-    required this.icon,
-    required this.selected,
-    required this.onTap,
-    required this.label,
-  });
-
-  /// Glyph shown inside the circle.
-  final IconData icon;
-
-  /// Whether this rating is currently chosen.
-  final bool selected;
-
-  /// Tap callback.
-  final VoidCallback onTap;
-
-  /// Accessible label.
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: label,
-      child: Material(
-        color: selected ? AppColors.primary : AppColors.surface2,
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: SizedBox(
-            width: 64,
-            height: 64,
-            child: Icon(
-              icon,
-              size: 28,
-              color: selected ? AppColors.onPrimary : AppColors.textSecondary,
-            ),
-          ),
-        ),
       ),
     );
   }

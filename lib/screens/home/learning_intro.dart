@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/mic_button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -38,13 +39,15 @@ enum _MicState {
 class _LearningIntroScreenState extends State<LearningIntroScreen> {
   _MicState _mic = _MicState.idle;
 
-  void _onMicTap(LearningArgs args) {
+  Future<void> _onMicTap(LearningArgs args) async {
     if (_mic == _MicState.idle) {
       setState(() => _mic = _MicState.recording);
       return;
     }
-    // Recording → stop → advance to the comparison screen.
-    Navigator.pushNamed(context, Routes.learningNext, arguments: args);
+    // Recording → stop → advance to the comparison screen. When we return here
+    // (e.g. "다시하기" pops back), reset to idle so the user re-records.
+    await Navigator.pushNamed(context, Routes.learningNext, arguments: args);
+    if (mounted) setState(() => _mic = _MicState.idle);
   }
 
   @override
@@ -107,8 +110,8 @@ class _LearningIntroScreenState extends State<LearningIntroScreen> {
                 // Mic button.
                 Align(
                   alignment: const Alignment(0, 0.7),
-                  child: _MicButton(
-                    state: _mic,
+                  child: MicButton(
+                    recording: _mic == _MicState.recording,
                     onTap: () => _onMicTap(args),
                   ),
                 ),
@@ -116,85 +119,6 @@ class _LearningIntroScreenState extends State<LearningIntroScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-/// The 96px mic button — Figma component `Property 1=mic_on` (`37:41776`).
-///
-/// [_MicState.idle] paints a green ring around a lighter disc with a filled
-/// mic glyph; [_MicState.recording] paints a solid green disc with a white
-/// rounded stop square (the "정지" affordance).
-class _MicButton extends StatelessWidget {
-  const _MicButton({required this.state, required this.onTap});
-
-  final _MicState state;
-  final VoidCallback onTap;
-
-  static const double _size = 96;
-
-  @override
-  Widget build(BuildContext context) {
-    final bool recording = state == _MicState.recording;
-    return Semantics(
-      button: true,
-      label: recording ? '녹음 정지' : '녹음 시작',
-      child: GestureDetector(
-        onTap: onTap,
-        child: SizedBox(
-          width: _size,
-          height: _size,
-          child: recording
-              ? _RecordingFace()
-              : _IdleFace(),
-        ),
-      ),
-    );
-  }
-}
-
-/// Idle face: green ring (12px) around a pale inner disc with a mic glyph.
-class _IdleFace extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-      ),
-      alignment: Alignment.center,
-      child: Container(
-        width: 72,
-        height: 72,
-        decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.16),
-          shape: BoxShape.circle,
-        ),
-        alignment: Alignment.center,
-        child: const Icon(Icons.mic, size: 40, color: AppColors.primary),
-      ),
-    );
-  }
-}
-
-/// Recording face: solid green disc with a white rounded stop square.
-class _RecordingFace extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-      ),
-      alignment: Alignment.center,
-      child: Container(
-        width: 28,
-        height: 28,
-        decoration: BoxDecoration(
-          color: AppColors.onPrimary,
-          borderRadius: BorderRadius.circular(4),
-        ),
       ),
     );
   }

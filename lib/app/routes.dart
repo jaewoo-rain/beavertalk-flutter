@@ -20,6 +20,22 @@ import '../screens/home/analysis.dart';
 import '../screens/home/learning_intro.dart';
 import '../screens/home/learning_next.dart';
 import '../screens/home/learning_main.dart';
+import '../screens/payment/payment.dart';
+import '../screens/payment/payment_complete.dart';
+import '../screens/payment/payment_failed.dart';
+import '../screens/system/permission.dart';
+import '../screens/system/mic_denied.dart';
+import '../screens/system/network_error.dart';
+import '../screens/mypage/mypage.dart';
+import '../screens/mypage/subscription_info.dart';
+import '../screens/mypage/avatar.dart';
+import '../screens/mypage/share.dart';
+import '../screens/alarm/alarm_list.dart';
+import '../screens/alarm/alarm_add.dart';
+import '../screens/alarm/alarm_empty.dart';
+import '../screens/record/record_list.dart';
+import '../screens/record/record_archive.dart';
+import '../screens/record/record_empty.dart';
 
 /// Route names for the design_app flows.
 abstract final class Routes {
@@ -45,9 +61,29 @@ abstract final class Routes {
   static const learningNext = '/learning/next';
   static const learningMain = '/learning/main';
 
+  // ── My page / subscription / avatar / share ──
   static const mypage = '/mypage';
+  static const subscription = '/mypage/subscription';
+  static const avatar = '/mypage/avatar';
+  static const share = '/mypage/share';
+
+  // ── Alarms ──
   static const alarms = '/alarms';
+  static const alarmAdd = '/alarms/add';
+  static const alarmEmpty = '/alarms/empty';
+
+  // ── Records ──
+  static const records = '/records';
+  static const recordsArchive = '/records/archive';
+  static const recordsEmpty = '/records/empty';
+
+  // ── Payment / permission / error ──
   static const payment = '/payment';
+  static const paymentComplete = '/payment/complete';
+  static const paymentFailed = '/payment/failed';
+  static const permission = '/permission';
+  static const permissionMicDenied = '/permission/mic-denied';
+  static const errorNetwork = '/error/network';
 
   static const gallery = '/gallery';
 }
@@ -76,6 +112,22 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.learningIntro: (_) => const LearningIntroScreen(),
     Routes.learningNext: (_) => const LearningNextScreen(),
     Routes.learningMain: (_) => const LearningMainScreen(),
+    Routes.payment: (_) => const PaymentScreen(),
+    Routes.paymentComplete: (_) => const PaymentCompleteScreen(),
+    Routes.paymentFailed: (_) => const PaymentFailedScreen(),
+    Routes.permission: (_) => const PermissionScreen(),
+    Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
+    Routes.errorNetwork: (_) => const NetworkErrorScreen(),
+    Routes.mypage: (_) => const MyPageScreen(),
+    Routes.subscription: (_) => const SubscriptionInfoScreen(),
+    Routes.avatar: (_) => const AvatarScreen(),
+    Routes.share: (_) => const ShareScreen(),
+    Routes.alarms: (_) => const AlarmListScreen(),
+    Routes.alarmAdd: (_) => const AlarmAddScreen(),
+    Routes.alarmEmpty: (_) => const AlarmEmptyScreen(),
+    Routes.records: (_) => const RecordListScreen(),
+    Routes.recordsArchive: (_) => const RecordArchiveScreen(),
+    Routes.recordsEmpty: (_) => const RecordEmptyScreen(),
   };
 
   final names = <String, String>{

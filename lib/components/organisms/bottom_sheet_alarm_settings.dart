@@ -70,6 +70,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     super.key,
     this.title = '새 일정 추가',
     required this.time,
+    this.onTimeTap,
     required this.meridiem,
     this.onMeridiemChanged,
     required this.days,
@@ -88,6 +89,10 @@ class BottomSheetAlarmSettings extends StatelessWidget {
 
   /// The large time string shown at the top (e.g. "8:00").
   final String time;
+
+  /// Called when the large time text is tapped (open a time picker). When null
+  /// the time is static.
+  final VoidCallback? onTimeTap;
 
   /// Currently-selected AM/PM value.
   final Meridiem meridiem;
@@ -197,16 +202,20 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          time,
-          textAlign: TextAlign.center,
-          style: const TextStyle(
-            fontFamily: kFontFamily,
-            fontWeight: FontWeight.w600, // SemiBold
-            fontSize: 40,
-            height: 1.5, // 1.5em
-            letterSpacing: -1.0, // ≈ -0.025em × 40
-            color: AppColors.text,
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onTimeTap,
+          child: Text(
+            time,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontFamily: kFontFamily,
+              fontWeight: FontWeight.w600, // SemiBold
+              fontSize: 40,
+              height: 1.5, // 1.5em
+              letterSpacing: -1.0, // ≈ -0.025em × 40
+              color: AppColors.text,
+            ),
           ),
         ),
         const SizedBox(height: 8),

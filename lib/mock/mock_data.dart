@@ -76,6 +76,20 @@ class MockSentence {
   final bool bookmarked;
 }
 
+/// IDs of sentences the user has bookmarked (즐겨찾기). Mutable in-memory store
+/// shared across screens: the analysis/대화기록 detail toggles entries here, and
+/// the 보관 (archive) tab lists the matching sentences. A [ValueNotifier] so
+/// screens can rebuild reactively via [ValueListenableBuilder].
+final ValueNotifier<Set<int>> bookmarkedSentenceIds =
+    ValueNotifier<Set<int>>({1});
+
+/// Toggles [id] in [bookmarkedSentenceIds], notifying listeners.
+void toggleBookmark(int id) {
+  final next = {...bookmarkedSentenceIds.value};
+  if (!next.remove(id)) next.add(id);
+  bookmarkedSentenceIds.value = next;
+}
+
 /// The conversation partner / avatar.
 const mockPartnerName = 'Annoying Beaver';
 

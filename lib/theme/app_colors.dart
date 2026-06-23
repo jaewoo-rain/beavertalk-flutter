@@ -26,6 +26,8 @@ abstract final class AppColors {
   static const textDisabled = Color(0xFF5A5C63);
 
   static const accentLime = Color(0xFF429E00); // Accent/Foreground/Lime — toggle on
+  static const green700 = Color(0xFF00B57E); // Foundation/Green/green-700 — mic/record
+  static const green50 = Color(0xFFE6FFF7); // Foundation/Green/green-50 — mic inner
   static const success = Color(0xFF1ED45A); // Status/Positive
   static const error = Color(0xFFFF7070); // Status/Negative
   static const warning = Color(0xFFFFA938); // Status/Warning

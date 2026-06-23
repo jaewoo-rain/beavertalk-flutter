@@ -44,6 +44,7 @@ class CardAlarm extends StatelessWidget {
     this.dayLabels = defaultDayLabels,
     this.onChanged,
     this.onDayChange,
+    this.onTap,
   }) : assert(days.length == 7, 'days must contain exactly 7 entries'),
        assert(
          dayLabels.length == 7,
@@ -84,13 +85,17 @@ class CardAlarm extends StatelessWidget {
   /// chips are non-interactive.
   final void Function(int index, bool value)? onDayChange;
 
+  /// Called when the card body is tapped (e.g. open edit). When null the card
+  /// is non-interactive at the body level (chips/toggle still work).
+  final VoidCallback? onTap;
+
   bool get _active => state == CardAlarmState.active;
 
   @override
   Widget build(BuildContext context) {
     final Color fg = _active ? AppColors.text : AppColors.textTertiary;
 
-    return DecoratedBox(
+    final card = DecoratedBox(
       decoration: BoxDecoration(
         color: AppColors.surface,
         border: Border.all(color: AppColors.lineStrong),
@@ -146,6 +151,14 @@ class CardAlarm extends StatelessWidget {
           ],
         ),
       ),
+    );
+
+    if (onTap == null) return card;
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(AppRadius.xs),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(onTap: onTap, child: card),
     );
   }
 }

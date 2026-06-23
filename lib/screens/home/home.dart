@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
@@ -54,7 +55,15 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  _BeaverAvatar(size: _avatarSize),
+                  GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, Routes.avatar),
+                    child: HeroAvatar(
+                      imageProvider: beaverImage,
+                      size: _avatarSize,
+                      onEditTap: () =>
+                          Navigator.pushNamed(context, Routes.avatar),
+                    ),
+                  ),
                   const SizedBox(height: 24),
                   Text(
                     mockPartnerName,
@@ -85,69 +94,15 @@ class HomeScreen extends StatelessWidget {
             ],
             activeKey: 'call',
             onTap: (key) {
-              if (key == 'call') {
-                Navigator.pushNamed(context, Routes.callLoading);
+              switch (key) {
+                case 'call': // center → start a call
+                  Navigator.pushNamed(context, Routes.callLoading);
+                case 'calendar': // left → alarm settings (etc_alarm)
+                  Navigator.pushNamed(context, Routes.alarms);
+                case 'history': // right → conversation records (record_list)
+                  Navigator.pushNamed(context, Routes.records);
               }
             },
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// The circular beaver avatar with a small "change" badge at its bottom-right.
-class _BeaverAvatar extends StatelessWidget {
-  const _BeaverAvatar({required this.size});
-
-  /// Avatar diameter.
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          // The avatar — large circle filled with the beaver image.
-          Container(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColors.surface2,
-              image: const DecorationImage(
-                image: beaverImage,
-                fit: BoxFit.cover,
-              ),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.primary24,
-                  blurRadius: 40,
-                ),
-              ],
-            ),
-          ),
-          // Change badge — primary pill with an edit glyph, pinned bottom-right.
-          Positioned(
-            right: 4,
-            bottom: 4,
-            child: Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
-                border: Border.all(color: AppColors.surface, width: 3),
-              ),
-              child: const Icon(
-                Icons.autorenew,
-                size: 22,
-                color: AppColors.onPrimary,
-              ),
-            ),
           ),
         ],
       ),
