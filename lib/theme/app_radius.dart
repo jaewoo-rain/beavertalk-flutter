@@ -1,9 +1,13 @@
-/// BeaverTalk radius tokens (px). Matches the Figma de-facto scale.
+/// Corner-radius tokens from the BeaverTalk Figma design system.
+///
+/// Values are `const double` in logical pixels. [full] is an arbitrarily large
+/// value used for pill / circular shapes (Figma `radius-full` = 9999).
 abstract final class AppRadius {
-  static const pill = 999.0;
-  static const xs = 8.0;
-  static const sm = 12.0;
-  static const md = 16.0;
-  static const lg = 24.0;
-  static const xl = 32.0;
+  AppRadius._();
+
+  static const double sm = 8; // radius-sm
+  static const double md = 12; // radius-md
+  static const double ml = 20; // radius-ml
+  static const double lg = 16; // radius-lg
+  static const double full = 9999; // radius-full (pill)
 }
