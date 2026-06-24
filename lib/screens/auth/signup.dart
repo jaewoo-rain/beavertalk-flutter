@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -6,6 +7,8 @@ import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
@@ -15,21 +18,23 @@ import '../../theme/app_typography.dart';
 /// password-confirm [InputField]s (with inline mock validation copy), the
 /// primary "회원가입" button, the social sign-up button row, and a 로그인 prompt.
 ///
-/// No backend: both the "회원가입" button and any social sign-up assume success
-/// and continue to onboarding ([Routes.onboardingName]); the "로그인" prompt
-/// pops back to the login flow.
-class SignupScreen extends StatefulWidget {
+/// Real backend: "회원가입" calls [AuthController.signup]; on success it
+/// continues to onboarding ([Routes.onboardingName]). Validation/conflict
+/// errors are shown inline. The "로그인" prompt pops back to the login flow.
+class SignupScreen extends ConsumerStatefulWidget {
   /// Creates the signup screen.
   const SignupScreen({super.key});
 
   @override
-  State<SignupScreen> createState() => _SignupScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends State<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
   String _email = '';
   String _password = '';
   String _passwordConfirm = '';
+  bool _submitting = false;
+  String? _error;
 
   /// Password length rule shown beneath the password field (8–16 chars).
   String? get _passwordError {
@@ -47,10 +52,45 @@ class _SignupScreenState extends State<SignupScreen> {
     return null;
   }
 
-  /// Mocked signup — continues to onboarding regardless of input.
-  void _signup() => Navigator.pushNamed(context, Routes.onboardingName);
+  /// Whether the form passes local validation (non-empty + matching rules).
+  bool get _canSubmit =>
+      _email.isNotEmpty &&
+      _password.isNotEmpty &&
+      _passwordConfirm.isNotEmpty &&
+      _passwordError == null &&
+      _confirmError == null;
 
-  /// Social signup is mocked as success → onboarding.
+  /// Calls the real signup endpoint (which auto-logs in) on success.
+  /// On success the AuthGate is authenticated and shows home, so we pop the
+  /// auth stack back to it. Server errors are shown inline.
+  Future<void> _signup() async {
+    if (_submitting) return;
+    if (!_canSubmit) {
+      setState(() => _error = '입력값을 확인해주세요');
+      return;
+    }
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      await ref.read(authControllerProvider.notifier).signup(
+            email: _email.trim(),
+            password: _password,
+            loginMethod: 'email',
+          );
+      if (!mounted) return;
+      // Auto-login flipped AuthGate to authenticated; leave the auth flow.
+      Navigator.of(context).popUntil((r) => r.isFirst);
+    } on AppException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
+
+  /// Social signup is not wired yet → continues to onboarding.
   void _socialSignup() => Navigator.pushNamed(context, Routes.onboardingName);
 
   /// Returns to the login flow.
@@ -104,12 +144,15 @@ class _SignupScreenState extends State<SignupScreen> {
                     leftIcon: const Icon(Icons.lock_outline),
                   ),
                   _ErrorText(_confirmError),
+                  // ── Server error (signup failure) ───────────────────────
+                  _ErrorText(_error),
                   const SizedBox(height: 32),
                   // ── Signup (primary) ────────────────────────────────────
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '회원가입',
+                    text: _submitting ? '가입 중...' : '회원가입',
+                    disabled: _submitting,
                     onPressed: _signup,
                   ),
                   const SizedBox(height: 48),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -6,6 +7,9 @@ import '../../components/molecules/card_line.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/auth/domain/entities/member.dart';
+import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -13,19 +17,20 @@ import '../../theme/app_typography.dart';
 /// My page — Figma `screen/main_mypage` (`2235:4456`). Profile header (avatar +
 /// name + accent breakdown), then Settings / Payment / Support sections built
 /// from [CardLine]s, then log-out / delete / version.
-class MyPageScreen extends StatefulWidget {
+class MyPageScreen extends ConsumerStatefulWidget {
   /// Creates the my-page screen.
   const MyPageScreen({super.key});
 
   @override
-  State<MyPageScreen> createState() => _MyPageScreenState();
+  ConsumerState<MyPageScreen> createState() => _MyPageScreenState();
 }
 
-class _MyPageScreenState extends State<MyPageScreen> {
+class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   bool _notification = true;
 
   @override
   Widget build(BuildContext context) {
+    final profile = ref.watch(myProfileProvider);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -67,8 +72,8 @@ class _MyPageScreenState extends State<MyPageScreen> {
                 const SizedBox(height: 28),
 
                 _section('Settings'),
-                _navRow('User Language', 'English (US)'),
-                _navRow('Learning Language', '한국어'),
+                // Account rows driven by the real member (GET /members/me).
+                _profileRows(profile),
                 CardLine(
                   type: CardLineType.defaultToggle,
                   label: 'Notification',
@@ -89,9 +94,14 @@ class _MyPageScreenState extends State<MyPageScreen> {
                 const SizedBox(height: 28),
 
                 Center(
-                  child: Text('log out',
-                      style: AppType.label1.r
-                          .copyWith(color: AppColors.textSecondary)),
+                  child: InkWell(
+                    onTap: () => ref
+                        .read(authControllerProvider.notifier)
+                        .logout(),
+                    child: Text('log out',
+                        style: AppType.label1.r
+                            .copyWith(color: AppColors.textSecondary)),
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Center(
@@ -112,6 +122,39 @@ class _MyPageScreenState extends State<MyPageScreen> {
       ),
     );
   }
+
+  /// Account rows (Email + User Language) sourced from `GET /members/me`.
+  /// Renders loading / error / data states via [AsyncValue.when].
+  Widget _profileRows(AsyncValue<Member> profile) => profile.when(
+        loading: () => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 16),
+          child: Center(
+            child: SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+        ),
+        error: (e, _) => InkWell(
+          onTap: () => ref.invalidate(myProfileProvider),
+          child: CardLine(
+            type: CardLineType.defaultRow,
+            label: '내 정보를 불러오지 못했어요',
+            value: '다시 시도',
+          ),
+        ),
+        data: (member) => Column(
+          children: [
+            _navRow('Email', member.email ?? '-'),
+            _navRow('User Language', member.language ?? 'English (US)'),
+            _navRow('Learning Language', '한국어'),
+          ],
+        ),
+      );
 
   Widget _section(String title) => Padding(
         padding: const EdgeInsets.only(bottom: 4),

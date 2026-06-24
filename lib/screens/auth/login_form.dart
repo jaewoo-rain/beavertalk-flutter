@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -6,6 +7,8 @@ import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
@@ -17,26 +20,50 @@ import '../../theme/app_typography.dart';
 /// the primary "로그인" button, the social sign-in button row, and a 회원가입
 /// prompt.
 ///
-/// No backend: "로그인" assumes success → [Routes.home]; the find-password link
-/// routes to [Routes.passwordMethod]; "회원가입" routes to [Routes.signup].
-class LoginFormScreen extends StatefulWidget {
+/// Real backend: "로그인" calls [AuthController.login]; on success the
+/// [AuthGate] swaps to home, so we just pop the form. Failures show the inline
+/// error. The find-password link routes to [Routes.passwordMethod]; "회원가입"
+/// routes to [Routes.signup].
+class LoginFormScreen extends ConsumerStatefulWidget {
   /// Creates the email login form screen.
   const LoginFormScreen({super.key});
 
   @override
-  State<LoginFormScreen> createState() => _LoginFormScreenState();
+  ConsumerState<LoginFormScreen> createState() => _LoginFormScreenState();
 }
 
-class _LoginFormScreenState extends State<LoginFormScreen> {
+class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
   String _email = '';
   String _password = '';
   bool _saveId = false;
+  bool _submitting = false;
+  String? _error;
 
-  /// Mocked login — always succeeds, lands on home.
-  void _login() => Navigator.pushNamed(context, Routes.home);
+  /// Calls the real login endpoint. On success the AuthGate shows home; we pop
+  /// the form. On failure the message is shown inline.
+  Future<void> _login() async {
+    if (_submitting) return;
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .login(email: _email.trim(), password: _password);
+      if (!mounted) return;
+      // AuthGate is now authenticated; leave this pushed form behind.
+      Navigator.of(context).popUntil((r) => r.isFirst);
+    } on AppException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
-  /// Social login is mocked as always-successful → home.
-  void _socialLogin() => Navigator.pushNamed(context, Routes.home);
+  /// Social login is not wired yet → opens the signup flow placeholder.
+  void _socialLogin() => Navigator.pushNamed(context, Routes.signup);
 
   /// Opens the find-password flow.
   void _findPassword() => Navigator.pushNamed(context, Routes.passwordMethod);
@@ -121,12 +148,25 @@ class _LoginFormScreenState extends State<LoginFormScreen> {
                       ],
                     ),
                   ),
+                  // ── Inline error (login failure) ────────────────────────
+                  if (_error != null) ...[
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(
+                        _error!,
+                        style: AppType.label2.r
+                            .copyWith(color: AppColors.error),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 60),
                   // ── Login (primary) ─────────────────────────────────────
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '로그인',
+                    text: _submitting ? '로그인 중...' : '로그인',
+                    disabled: _submitting,
                     onPressed: _login,
                   ),
                   const SizedBox(height: 48),

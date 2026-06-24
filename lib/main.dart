@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'app/auth_gate.dart';
+import 'app/navigation.dart';
+import 'app/routes.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_typography.dart';
-import 'app/routes.dart';
 
-void main() => runApp(const BeaverTalkApp());
+void main() => runApp(const ProviderScope(child: BeaverTalkApp()));
 
-/// App root. Starts at onboarding; the component gallery stays at `/gallery`.
+/// App root. Enters through [AuthGate] (token → home/onboarding); the component
+/// gallery stays at `/gallery`. Deep navigation uses [onGenerateRoute].
 class BeaverTalkApp extends StatelessWidget {
   const BeaverTalkApp({super.key});
 
@@ -14,6 +19,8 @@ class BeaverTalkApp extends StatelessWidget {
     return MaterialApp(
       title: 'BeaverTalk',
       debugShowCheckedModeBanner: false,
+      // Lets the 401 interceptor navigate without a BuildContext.
+      navigatorKey: appNavigatorKey,
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: AppColors.bg,
@@ -23,7 +30,7 @@ class BeaverTalkApp extends StatelessWidget {
           surface: AppColors.surface,
         ),
       ),
-      initialRoute: Routes.onboarding,
+      home: const AuthGate(),
       onGenerateRoute: onGenerateRoute,
     );
   }

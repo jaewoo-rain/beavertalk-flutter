@@ -47,3 +47,7 @@ app.*.map.json
 .packages
 build/
 .flutter-plugins
+
+.claude
+.mcp.json
+.docs

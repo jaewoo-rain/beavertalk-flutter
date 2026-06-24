@@ -38,9 +38,21 @@ dependencies:
   # Renders the brand/SVG icons in assets/icons/ (Kakao/Google/Apple/Mail/logo).
   flutter_svg: ^2.0.17
 
+  # State management + dependency injection (clean architecture wiring).
+  flutter_riverpod: ^2.6.1
+  # HTTP client for the FastAPI backend (interceptors, form/json bodies).
+  dio: ^5.7.0
+  # Secure JWT storage (Keychain / EncryptedSharedPreferences).
+  flutter_secure_storage: ^9.2.4
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  # Catches common Riverpod mistakes at analyze time (beginner-friendly).
+  riverpod_lint: ^2.6.1
+  # Required peer for riverpod_lint's custom_lint plugin.
+  custom_lint: ^0.7.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
