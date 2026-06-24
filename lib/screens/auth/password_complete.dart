@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
-import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
@@ -11,17 +10,18 @@ import '../../theme/app_typography.dart';
 ///
 /// Figma `screen/auth_findpw_complete` (`2117:19851`). A title + guidance text,
 /// a celebratory key illustration (🔑 stand-in for the Figma 3D asset), and a
-/// primary "로그인" button that routes to [Routes.login], clearing the recovery
-/// flow from the back stack.
+/// primary "로그인" button that returns to the AuthGate root (which shows the
+/// login flow while unauthenticated), so a successful re-login can redirect to
+/// Home.
 class PasswordCompleteScreen extends StatelessWidget {
   /// Creates the password-complete screen.
   const PasswordCompleteScreen({super.key});
 
   void _goLogin(BuildContext context) {
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      Routes.login,
-      (route) => false,
-    );
+    // Return to the AuthGate root (shows the login flow while unauthenticated)
+    // instead of removing it. Removing the root would leave a re-login unable to
+    // redirect to Home, since AuthGate is what swaps to Home on authentication.
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override
