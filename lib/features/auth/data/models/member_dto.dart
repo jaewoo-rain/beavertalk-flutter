@@ -5,30 +5,42 @@ class MemberDto {
   const MemberDto({
     required this.memberId,
     this.email,
+    this.name,
     this.language,
     this.loginMethod,
     this.isAutoPayment,
     this.speakCountryId,
     this.characterId,
+    this.onboardingCompleted = false,
+    this.reasons,
   });
 
   final int memberId;
   final String? email;
+  final String? name;
   final String? language;
   final String? loginMethod;
   final bool? isAutoPayment;
   final int? speakCountryId;
   final int? characterId;
+  final bool onboardingCompleted;
+  final List<String>? reasons;
 
   factory MemberDto.fromJson(Map<String, dynamic> json) {
+    final rawReasons = json['reasons'];
     return MemberDto(
       memberId: json['member_id'] as int,
       email: json['email'] as String?,
+      name: json['name'] as String?,
       language: json['language'] as String?,
       loginMethod: json['login_method'] as String?,
       isAutoPayment: json['is_auto_payment'] as bool?,
       speakCountryId: json['speak_country_id'] as int?,
       characterId: json['character_id'] as int?,
+      onboardingCompleted: json['onboarding_completed'] as bool? ?? false,
+      reasons: rawReasons is List
+          ? rawReasons.map((e) => e.toString()).toList()
+          : null,
     );
   }
 
@@ -36,10 +48,13 @@ class MemberDto {
   Member toEntity() => Member(
         memberId: memberId,
         email: email,
+        name: name,
         language: language,
         loginMethod: loginMethod,
         isAutoPayment: isAutoPayment,
         speakCountryId: speakCountryId,
         characterId: characterId,
+        onboardingCompleted: onboardingCompleted,
+        reasons: reasons,
       );
 }

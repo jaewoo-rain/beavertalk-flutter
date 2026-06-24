@@ -34,24 +34,59 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<bool> checkEmailAvailable(String email) async {
+    try {
+      return await _remote.checkEmailAvailable(email);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<void> sendEmailCode(String email) async {
+    try {
+      await _remote.sendEmailCode(email);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<void> verifyEmailCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      await _remote.verifyEmailCode(email, code);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<Member> signup({
     required String email,
     required String password,
-    String? language,
-    String? loginMethod,
-    String? uniqueValue,
-    int? speakCountryId,
-    int? characterId,
   }) async {
     try {
-      final dto = await _remote.signup(
-        email: email,
-        password: password,
+      final dto = await _remote.signup(email: email, password: password);
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<Member> submitOnboarding({
+    String? name,
+    String? language,
+    List<String>? reasons,
+  }) async {
+    try {
+      final dto = await _remote.submitOnboarding(
+        name: name,
         language: language,
-        loginMethod: loginMethod,
-        uniqueValue: uniqueValue,
-        speakCountryId: speakCountryId,
-        characterId: characterId,
+        reasons: reasons,
       );
       return dto.toEntity();
     } on DioException catch (e) {
@@ -87,12 +122,14 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<String> confirmPasswordReset({
-    required String token,
+    required String email,
+    required String code,
     required String newPassword,
   }) async {
     try {
       return await _remote.confirmPasswordReset(
-        token: token,
+        email: email,
+        code: code,
         newPassword: newPassword,
       );
     } on DioException catch (e) {

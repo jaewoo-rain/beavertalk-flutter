@@ -1,33 +1,105 @@
+import 'dart:async';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
+// Conditional: the real GIS button on web, a no-op stub elsewhere. Keeps
+// dart:js_interop (web-only) out of VM/mobile builds and tests.
+import 'google_button_stub.dart'
+    if (dart.library.js_interop) 'google_button_web.dart';
+
+/// Web client id (public value) — must match the server's `GOOGLE_CLIENT_ID`.
+const _googleClientId =
+    '117133754675-ovpf9bvvm96e18d0089692k51bq75esk.apps.googleusercontent.com';
 
 /// Auth — landing login screen. Figma `screen/auth_login` (`2117:19693`).
 ///
-/// Shows the BeaverTalk brand block (circular beaver avatar + wordmark), three
-/// social sign-in buttons (Kakao / Google / Apple, [BtnType.secondaryFill]), an
-/// "또는" divider, the primary "이메일 로그인" button, and a 회원가입 prompt.
+/// Brand block + social sign-in buttons + "또는" divider + 이메일 로그인 +
+/// 회원가입 prompt.
 ///
-/// No backend: every social tap and the 이메일 로그인 → 폼 flow assume success.
-/// Social/이메일 success lands on [Routes.home]; "이메일 로그인" routes to the
-/// email form ([Routes.loginForm]); "회원가입" routes to [Routes.signup].
-class LoginScreen extends StatefulWidget {
+/// **Google is real on web**: the GIS [gis_web.renderButton] yields an idToken
+/// via [GoogleSignIn.onCurrentUserChanged], which we hand to
+/// `authController.socialLogin('google', idToken)`; the AuthGate then shows
+/// home. Kakao/Apple remain mocked for now.
+class LoginScreen extends ConsumerStatefulWidget {
   /// Creates the login landing screen.
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  /// Social login is mocked as always-successful → straight to home.
-  void _socialLogin() => Navigator.pushNamed(context, Routes.home);
+class _LoginScreenState extends ConsumerState<LoginScreen> {
+  /// Web Google Sign-In. `clientId` matches index.html + the server.
+  late final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: _googleClientId,
+    scopes: const ['email', 'profile'],
+  );
+
+  StreamSubscription<GoogleSignInAccount?>? _googleSub;
+  bool _googleBusy = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (kIsWeb) {
+      // A signed-in user (idToken populated) arrives on this stream after the
+      // GIS button is pressed and consent is granted.
+      _googleSub = _googleSignIn.onCurrentUserChanged.listen(_onGoogleUser);
+      // Tries to restore a prior session without UI (no-op if none).
+      unawaited(_googleSignIn.signInSilently());
+    }
+  }
+
+  @override
+  void dispose() {
+    _googleSub?.cancel();
+    super.dispose();
+  }
+
+  /// Exchanges the Google idToken for our JWT via `POST /auth/social`.
+  Future<void> _onGoogleUser(GoogleSignInAccount? account) async {
+    if (account == null || _googleBusy) return;
+    setState(() => _googleBusy = true);
+    try {
+      final auth = await account.authentication;
+      final idToken = auth.idToken;
+      if (idToken == null || idToken.isEmpty) {
+        throw const UnknownFailure('구글 로그인 토큰을 받지 못했어요');
+      }
+      await ref
+          .read(authControllerProvider.notifier)
+          .socialLogin(loginMethod: 'google', token: idToken);
+      // Success → AuthGate is authenticated and shows home; pop the auth flow.
+      if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError('구글 로그인에 실패했어요');
+    } finally {
+      if (mounted) setState(() => _googleBusy = false);
+    }
+  }
+
+  void _showError(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// Kakao/Apple stay mocked for now → straight to home.
+  void _socialLoginMock() => Navigator.pushNamed(context, Routes.home);
 
   /// Email login opens the dedicated email/password form.
   void _emailLogin() => Navigator.pushNamed(context, Routes.loginForm);
@@ -53,23 +125,18 @@ class _LoginScreenState extends State<LoginScreen> {
               size: BtnSize.s60,
               text: '카카오 로그인',
               leftIcon: const KakaoIcon(size: 24),
-              onPressed: _socialLogin,
+              onPressed: _socialLoginMock,
             ),
             const SizedBox(height: 16),
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s60,
-              text: '구글로 로그인',
-              leftIcon: const GoogleIcon(size: 24),
-              onPressed: _socialLogin,
-            ),
+            // Google: real GIS button on web, mocked button elsewhere.
+            _googleSlot(),
             const SizedBox(height: 16),
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
               text: '애플로 로그인',
               leftIcon: const AppleIcon(size: 24),
-              onPressed: _socialLogin,
+              onPressed: _socialLoginMock,
             ),
             const SizedBox(height: 16),
             // ── "또는" divider ──────────────────────────────────────────
@@ -89,6 +156,40 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  /// On web, renders the standard GIS sign-in button (the reliable idToken
+  /// path). Off web, falls back to the styled mock button.
+  Widget _googleSlot() {
+    if (!kIsWeb) {
+      return Button(
+        type: BtnType.secondaryFill,
+        size: BtnSize.s60,
+        text: '구글로 로그인',
+        leftIcon: const GoogleIcon(size: 24),
+        onPressed: _socialLoginMock,
+      );
+    }
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        // GIS button has its own look (Google standard) — centered.
+        Center(child: renderGoogleButton()),
+        // Light overlay spinner while the token is being exchanged.
+        if (_googleBusy)
+          const Padding(
+            padding: EdgeInsets.only(left: 8),
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: AppColors.primary,
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

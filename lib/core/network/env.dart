@@ -1,26 +1,26 @@
 import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 /// Runtime environment for the backend connection.
 ///
-/// The base URL resolves in this order:
-/// 1. `--dart-define=API_BASE_URL=...` if provided (no `/api/v1` suffix).
-/// 2. Otherwise a platform fallback (Android emulator vs everything else).
+/// The base host resolves in priority order:
+/// 1. `.env`'s `API_BASE_URL` (loaded in `main`) if present and non-empty,
+/// 2. `--dart-define=API_BASE_URL=...` build-time override,
+/// 3. a platform fallback (Android emulator `10.0.2.2`, else `localhost`).
 ///
-/// The `/api/v1` prefix is always appended here, so callers use clean paths
+/// The host is scheme-normalized (an `http://` prefix is added when missing)
+/// and the `/api/v1` prefix is always appended, so callers use clean paths
 /// like `/auth/login`.
 abstract final class Env {
-  /// Optional host override injected at build time, e.g.
-  /// `--dart-define=API_BASE_URL=http://localhost:8000`.
+  /// Build-time override injected via `--dart-define`.
   static const String _override =
       String.fromEnvironment('API_BASE_URL', defaultValue: '');
 
   /// API version prefix shared by every endpoint.
   static const String apiPrefix = '/api/v1';
 
-  /// Host the app talks to when no override is given.
-  ///
   /// Android emulators reach the host machine via `10.0.2.2`; web/iOS use
   /// `localhost`.
   static String get _fallbackHost {
@@ -29,13 +29,29 @@ abstract final class Env {
     return 'http://localhost:8000';
   }
 
+  /// `.env` value, or null when dotenv isn't loaded / the key is absent.
+  static String? get _dotenvHost {
+    // dotenv.maybeGet is safe even if load() never ran.
+    final value = dotenv.maybeGet('API_BASE_URL');
+    if (value == null) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
+
   /// Final base URL including the `/api/v1` prefix.
   static String get apiBaseUrl {
-    final host = _override.isNotEmpty ? _override : _fallbackHost;
-    // Trim a trailing slash so we don't produce `//api/v1`.
-    final normalized = host.endsWith('/')
-        ? host.substring(0, host.length - 1)
-        : host;
-    return '$normalized$apiPrefix';
+    final host = _dotenvHost ??
+        (_override.isNotEmpty ? _override : _fallbackHost);
+    return '${_withScheme(_trimTrailingSlash(host))}$apiPrefix';
   }
+
+  /// Adds an `http://` scheme when the value has none (e.g. a bare
+  /// `175.123.55.182:8000`).
+  static String _withScheme(String host) {
+    if (host.startsWith('http://') || host.startsWith('https://')) return host;
+    return 'http://$host';
+  }
+
+  static String _trimTrailingSlash(String host) =>
+      host.endsWith('/') ? host.substring(0, host.length - 1) : host;
 }

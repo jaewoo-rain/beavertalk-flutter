@@ -1,39 +1,71 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
-import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/select_card.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
-/// Onboarding step 3/5 — why are you learning a language.
+/// Onboarding step 3/5 — why are you learning a language. Final onboarding step.
 ///
-/// Figma `screen/auth_login` (`2291:21295`). An [AppScaffold] with a
-/// [GnbType.main2] progress bar (3/5), the title "언어 학습을 하는 이유가
-/// 뭔가요?" with the subtitle "당신에게 필요한 학습을 진행할게요", a
-/// single-select [SelectCard] list over [mockReasons], and a pinned primary
-/// [Button] ("다음으로") that is disabled until a reason is chosen. Tapping it
-/// navigates to [Routes.home].
-class OnboardingReasonScreen extends StatefulWidget {
+/// Figma `screen/auth_login` (`2291:21295`). A **multi-select** [SelectCard]
+/// list over [mockReasons] and a pinned "다음으로" button (enabled once at least
+/// one reason is chosen).
+///
+/// "다음으로" submits the whole onboarding draft (name/language/reasons) via
+/// `submitOnboarding`, then invalidates `myProfileProvider` so the AuthGate —
+/// seeing `onboardingCompleted == true` — shows home.
+class OnboardingReasonScreen extends ConsumerStatefulWidget {
   /// Creates the learning-reason onboarding screen.
   const OnboardingReasonScreen({super.key});
 
   @override
-  State<OnboardingReasonScreen> createState() => _OnboardingReasonScreenState();
+  ConsumerState<OnboardingReasonScreen> createState() =>
+      _OnboardingReasonScreenState();
 }
 
-class _OnboardingReasonScreenState extends State<OnboardingReasonScreen> {
-  /// Id of the currently selected reason, or `null` when none is chosen.
-  String? _selectedId;
+class _OnboardingReasonScreenState
+    extends ConsumerState<OnboardingReasonScreen> {
+  bool _submitting = false;
+  String? _error;
 
-  void _next() => Navigator.pushNamed(context, Routes.home);
+  Future<void> _next() async {
+    final draft = ref.read(signupDraftProvider);
+    if (draft.selectedReasonIds.isEmpty || _submitting) return;
+
+    setState(() {
+      _submitting = true;
+      _error = null;
+    });
+    try {
+      await ref.read(authControllerProvider.notifier).submitOnboarding(
+            name: draft.name,
+            language: draft.language,
+            reasons: draft.reasons,
+          );
+      if (!mounted) return;
+      // Refresh members/me → AuthGate now sees onboardingCompleted == true and
+      // shows home; drop the onboarding stack.
+      ref.invalidate(myProfileProvider);
+      Navigator.of(context).popUntil((r) => r.isFirst);
+    } on AppException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _submitting = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final bool canContinue = _selectedId != null;
+    final selected = ref.watch(signupDraftProvider).selectedReasonIds;
+    final bool canContinue = selected.isNotEmpty;
 
     return AppScaffold(
       background: AppColors.surface,
@@ -67,10 +99,17 @@ class _OnboardingReasonScreenState extends State<OnboardingReasonScreen> {
                       mockReasons[i].icon,
                       style: const TextStyle(fontSize: 22),
                     ),
-                    checked: _selectedId == mockReasons[i].id,
-                    onChanged: (_) =>
-                        setState(() => _selectedId = mockReasons[i].id),
+                    checked: selected.contains(mockReasons[i].id),
+                    onChanged: (_) => ref
+                        .read(signupDraftProvider.notifier)
+                        .toggleReason(mockReasons[i].id),
                   ),
+                ],
+                if (_error != null) ...[
+                  const SizedBox(height: 16),
+                  Text(_error!,
+                      style:
+                          AppType.label2.r.copyWith(color: AppColors.error)),
                 ],
               ],
             ),
@@ -82,8 +121,8 @@ class _OnboardingReasonScreenState extends State<OnboardingReasonScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '다음으로',
-                disabled: !canContinue,
+                text: _submitting ? '저장 중...' : '다음으로',
+                disabled: !canContinue || _submitting,
                 onPressed: _next,
               ),
             ),

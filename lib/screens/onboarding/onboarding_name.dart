@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
@@ -15,19 +17,24 @@ import '../../theme/app_typography.dart';
 /// subtitle, a labelled [InputField] for the name plus a helper line, and a
 /// pinned primary [Button] ("다음으로") that is disabled until a name is entered.
 /// Tapping it navigates to [Routes.onboardingReason].
-class OnboardingNameScreen extends StatefulWidget {
+class OnboardingNameScreen extends ConsumerStatefulWidget {
   /// Creates the name onboarding screen.
   const OnboardingNameScreen({super.key});
 
   @override
-  State<OnboardingNameScreen> createState() => _OnboardingNameScreenState();
+  ConsumerState<OnboardingNameScreen> createState() =>
+      _OnboardingNameScreenState();
 }
 
-class _OnboardingNameScreenState extends State<OnboardingNameScreen> {
+class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
   /// The current name text (controlled value for the [InputField]).
   String _name = '';
 
-  void _next() => Navigator.pushNamed(context, Routes.onboardingReason);
+  void _next() {
+    // Stash the nickname for the onboarding submit (sent later).
+    ref.read(signupDraftProvider.notifier).setName(_name.trim());
+    Navigator.pushNamed(context, Routes.onboardingReason);
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,37 +1,47 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
-import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/country_select.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
-/// Onboarding step 1/5 — native language picker.
+/// Onboarding step 1/5 — native language picker. Shown first, before login.
 ///
 /// Figma `screen/auth_login` (`2291:21265`). Renders an [AppScaffold] with a
 /// [GnbType.main2] progress bar (1/5), the prompt "What is your native
 /// language?", a single-select [CountrySelect] list over [mockLanguages], and a
 /// pinned primary [Button] ("다음으로") that is disabled until a language is
-/// chosen. Tapping it navigates to [Routes.login].
-class OnboardingLanguageScreen extends StatefulWidget {
+/// chosen. Tapping it stores the language in the signup draft; the [AuthGate]
+/// then rebuilds into the login screen (no manual navigation).
+class OnboardingLanguageScreen extends ConsumerStatefulWidget {
   /// Creates the language-selection onboarding screen.
   const OnboardingLanguageScreen({super.key});
 
   @override
-  State<OnboardingLanguageScreen> createState() =>
+  ConsumerState<OnboardingLanguageScreen> createState() =>
       _OnboardingLanguageScreenState();
 }
 
-class _OnboardingLanguageScreenState extends State<OnboardingLanguageScreen> {
+class _OnboardingLanguageScreenState
+    extends ConsumerState<OnboardingLanguageScreen> {
   /// Id of the currently selected language, or `null` when none is chosen.
   String? _selectedId;
 
   void _select(String id) => setState(() => _selectedId = id);
 
-  void _next() => Navigator.pushNamed(context, Routes.login);
+  void _next() {
+    // Stash the chosen language for the onboarding submit (sent later). The
+    // AuthGate watches the draft and rebuilds into the login screen — no manual
+    // navigation needed here.
+    if (_selectedId != null) {
+      ref.read(signupDraftProvider.notifier).setLanguage(_selectedId!);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

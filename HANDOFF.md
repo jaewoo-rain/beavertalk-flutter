@@ -4,6 +4,58 @@
 
 ---
 
+## 📌 현재 상태 요약 (2026-06-24 기준)
+
+**아키텍처**: feature-first 클린아키텍처 + Riverpod + dio + flutter_secure_storage. `core/{network,error,storage,di}` + `features/{auth,alarm,character}/{domain,data,presentation}`. usecase 생략, DTO 수기. domain 순수성 유지(검증됨). `flutter analyze` 항상 No issues, `flutter test` 현재 **34 passed**.
+
+**서버 연동 상태**
+| 도메인 | 표시 | 변이 | 비고 |
+|---|---|---|---|
+| auth(로그인/내정보) | ✅ | ✅ | 이메일 로그인(form), members/me, 로그아웃 |
+| **회원가입(이메일 인증)** | — | ✅ | available→send-code→verify-code→signup `{email,password}` |
+| **온보딩** | — | ✅ | `POST /members/me/onboarding {name,language,reasons[]}` |
+| alarm | ✅ | ✅ CRUD/토글 | |
+| character(아바타) | ✅ 표시 | ⬜ 구매 제외 | GET /characters, /members/me/characters |
+| 구글 로그인 | 🟡 web GIS 구현 | — | 동의창 수동 e2e 보류 |
+| calls·sentences·payment·subscription | ⬜ | ⬜ | 미착수 |
+
+**baseUrl**: `flutter_dotenv`로 `.env`의 `API_BASE_URL` 우선 → dart-define → localhost 폴백. 현재 `.env`=`175.123.55.182:8000`(원격, 도달·CORS OK). 스킴 없으면 `http://` 보정.
+
+**실행**: `flutter run -d chrome --web-port=5000` (dart-define 없이 → .env가 baseUrl 결정). 구글 로그인은 승인 JS 원본 `http://localhost:5000` 필요.
+
+### ⚠ 미해결 / 외부 의존 (서버·환경, R1)
+- **이메일 인증코드 미수신(Resend 403)**: 서버 `.env`에 `RESEND_API_KEY`+`MAIL_FROM` 설정돼 Resend 발송 시도 → 403 Forbidden(도메인 미verify 추정) → 코드 안 옴 + 콘솔 stub 폴백도 안 함. **해결**: dev는 `RESEND_API_KEY`/`MAIL_FROM` 한 줄 주석→재시작(콘솔 `[EMAIL stub]`에 코드 출력) / 실발송은 Resend 도메인 verify. (사용자 적용)
+- **캐릭터 이름 깨짐**: 시드된 name이 손상 UTF-8 → 앱에서도 깨져 보임. UTF-8 재시드 필요(사용자). 가격/소유 등은 정상.
+- **구글 로그인 수동 e2e 미완**: 인터랙티브 동의 필요. SNS는 사용자가 보류.
+- **i18n 미구현**: 언어 선택은 흐름·캡처만. 언어별 문구 변경은 추후.
+- **JWT refresh 없음**: 7일 만료 후 강제 재로그인(401 인터셉터 안전망).
+
+---
+
+## 2026-06-24 — 인증/온보딩 흐름 재정비 (3차, 서버 API 변경 대응)
+
+서버가 회원가입/온보딩 API를 분리 + 이메일 인증 추가 → 클라 맞춤. UI 디자인 불변, 배선/순서만. SNS 보류.
+
+### ✅ 완료 (검증됨, analyze 0 / test 34)
+- [x] **캐릭터 표시 연동** ([plan](docs/2026-06-24_1214_character-display-plan.md)): `features/character/` 슬라이스(Character/OwnedCharacter, DTO 가격파싱, datasource, providers) + `avatar.dart` 개조(보유/한정할인/구매가능 섹션 서버화, ₩가격/무료, 구매 POST 제외). 구조검토 통과.
+- [x] **구글 로그인(web)** ([plan](docs/2026-06-24_1147_google-social-login-plan.md)): `google_sign_in` + GIS `renderButton`(web만, idToken 안정 수급) → `socialLogin('google', idToken)`. `web/index.html` meta에 클라이언트 ID. 서버 `GOOGLE_CLIENT_ID` 설정됨(garbage→401 확인). conditional import로 VM/test 분리.
+- [x] **이메일 인증 회원가입** ([plan](docs/2026-06-24_1426_email-verification-signup-plan.md)): `checkEmailAvailable`/`sendEmailCode`/`verifyEmailCode` + signup 다단계(이메일 인증→비번). 비번재설정 코드방식 `{email,code,new_password}` + password_code에 새 비번 입력 추가.
+- [x] **signup/온보딩 분리** ([plan](docs/2026-06-24_1515_signup-onboarding-split-plan.md)): `POST /auth/signup`={email,password}만. 신규 `submitOnboarding({name,language,reasons})`→`POST /members/me/onboarding`. MemberDto에 `name`,`onboardingCompleted`,`reasons`.
+- [x] **AuthGate onboarding_completed 게이팅**: unauthenticated→(draft.language null이면 언어선택, 아니면)LoginScreen / authenticated→members/me의 `onboarding_completed` true=Home, false=온보딩(이름→이유).
+- [x] **언어/나라 선택을 로그인 전 맨 처음으로** + 캡처(draft). i18n 미구현(흐름만).
+- [x] **학습 이유 다중 선택**: `selectedReasonIds:Set<String>`+`toggleReason`, 1개 이상 활성, `reasons[]` 전송.
+- [x] **.env API_BASE_URL 우선**(flutter_dotenv): main에서 `dotenv.load` + Env 우선순위(.env→dart-define→폴백) + 스킴 보정. `.env`는 .gitignore 등록.
+- [x] **로그아웃 즉시 전환 버그 수정**: `logout()`/`onSessionExpired()`에서 `appNavigatorKey.popUntil(isFirst)`로 스택 정리 → 로그아웃 즉시 로그인 화면(뒤로가기 불필요). 401도 동일.
+
+### 흐름 (현재)
+앱 시작 → **언어/나라 선택**(draft) → 로그인/가입 → 가입 시 이메일 인증→비번→`signup{email,password}`→자동로그인 → AuthGate가 members/me 확인 → 미완료면 **이름→이유(다중)**→`POST onboarding`→홈 / 완료면 홈. 로그아웃→즉시 로그인 화면.
+
+### ⏭ 다음 (미착수)
+- [ ] calls(통화 목록/결과) → record_list/analysis 화면 연동, sentences(북마크/복습), payment/subscription.
+- [ ] 캐릭터 구매(POST) 연동(필요 시), i18n(언어별 문구), 구글 로그인 수동 e2e.
+
+---
+
 ## 2026-06-24 — alarm 도메인 서버 실연동 (2차)
 
 플랜: [docs/2026-06-24_1105_alarm-slice-plan.md](docs/2026-06-24_1105_alarm-slice-plan.md). auth 슬라이스 패턴 복제.

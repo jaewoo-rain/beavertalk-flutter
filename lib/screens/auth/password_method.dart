@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
-/// Password-recovery step 1 — choose where the reset code is sent.
+/// Password-recovery step 1 — enter the email to receive a reset code.
 ///
-/// Figma `screen/auth_findpw_method` (`2117:19818`). A [GnbType.main] header
-/// ("비밀번호 찾기"), a guidance line, an email entry field, and a primary
-/// "이메일 전송" button that advances to [Routes.passwordCode].
-///
-/// Mock only: no real mail is sent — the button just navigates.
-class PasswordMethodScreen extends StatefulWidget {
+/// Figma `screen/auth_findpw_method` (`2117:19818`). Real backend: "이메일 전송"
+/// calls `requestPasswordReset(email)`; on success it advances to
+/// [Routes.passwordCode] passing the email as the route argument.
+class PasswordMethodScreen extends ConsumerStatefulWidget {
   /// Creates the password-method screen.
   const PasswordMethodScreen({super.key});
 
   @override
-  State<PasswordMethodScreen> createState() => _PasswordMethodScreenState();
+  ConsumerState<PasswordMethodScreen> createState() =>
+      _PasswordMethodScreenState();
 }
 
-class _PasswordMethodScreenState extends State<PasswordMethodScreen> {
+class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
   final TextEditingController _email = TextEditingController();
+  bool _sending = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -33,7 +37,29 @@ class _PasswordMethodScreenState extends State<PasswordMethodScreen> {
     super.dispose();
   }
 
-  void _send() => Navigator.of(context).pushNamed(Routes.passwordCode);
+  Future<void> _send() async {
+    if (_sending) return;
+    final email = _email.text.trim();
+    if (email.isEmpty) {
+      setState(() => _error = '이메일을 입력해주세요');
+      return;
+    }
+    setState(() {
+      _sending = true;
+      _error = null;
+    });
+    try {
+      await ref
+          .read(authControllerProvider.notifier)
+          .requestPasswordReset(email);
+      if (!mounted) return;
+      Navigator.of(context).pushNamed(Routes.passwordCode, arguments: email);
+    } on AppException catch (e) {
+      if (mounted) setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _sending = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +92,15 @@ class _PasswordMethodScreenState extends State<PasswordMethodScreen> {
                     leftIcon: const Icon(Icons.mail_outline),
                     onSubmitted: (_) => _send(),
                   ),
+                  if (_error != null) ...[
+                    const SizedBox(height: 12),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4),
+                      child: Text(_error!,
+                          style: AppType.label2.r
+                              .copyWith(color: AppColors.error)),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -80,7 +115,8 @@ class _PasswordMethodScreenState extends State<PasswordMethodScreen> {
                     child: Button(
                       type: BtnType.primaryFill,
                       size: BtnSize.s60,
-                      text: '이메일 전송',
+                      text: _sending ? '전송 중...' : '이메일 전송',
+                      disabled: _sending,
                       onPressed: _send,
                     ),
                   ),

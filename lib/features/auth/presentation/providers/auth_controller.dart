@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../app/navigation.dart';
 import '../../../../core/storage/token_store.dart';
 import '../../../../core/di/providers.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -49,29 +50,62 @@ class AuthController extends Notifier<AuthStatus> {
     state = AuthStatus.authenticated;
   }
 
-  /// Creates an account, then auto-logs in with the same credentials so the
-  /// user doesn't have to re-enter them. Throws on failure.
+  /// Whether [email] can be registered. Throws [AppException] on failure.
+  Future<bool> checkEmail(String email) => _repo.checkEmailAvailable(email);
+
+  /// Sends a verification code to [email]. Throws on failure.
+  Future<void> sendCode(String email) => _repo.sendEmailCode(email);
+
+  /// Verifies the emailed [code]. Throws on a wrong code.
+  Future<void> verifyCode({required String email, required String code}) =>
+      _repo.verifyEmailCode(email: email, code: code);
+
+  /// Creates an account (`{email, password}`), then auto-logs in. Throws on
+  /// failure.
   ///
   /// The signup endpoint returns the member only (no token), so we follow with
-  /// [AuthRepository.login] which persists the JWT. If that follow-up login
-  /// throws, the account is already created and the user can still log in
-  /// manually — we re-throw so the screen surfaces the error.
+  /// [AuthRepository.login] which persists the JWT. The AuthGate then routes to
+  /// onboarding or home based on `members/me.onboardingCompleted`.
   Future<void> signup({
     required String email,
     required String password,
-    String? language,
-    String? loginMethod,
   }) async {
-    await _repo.signup(
-      email: email,
-      password: password,
-      language: language,
-      loginMethod: loginMethod,
-    );
+    await _repo.signup(email: email, password: password);
     // Account is created; chain a login to obtain and store the JWT.
     await _repo.login(email: email, password: password);
     state = AuthStatus.authenticated;
   }
+
+  /// Saves onboarding data (`POST /members/me/onboarding`). Throws on failure.
+  /// The caller invalidates [myProfileProvider] so the AuthGate re-routes.
+  Future<void> submitOnboarding({
+    String? name,
+    String? language,
+    List<String>? reasons,
+  }) async {
+    await _repo.submitOnboarding(
+      name: name,
+      language: language,
+      reasons: reasons,
+    );
+  }
+
+  /// Requests a password-reset code email. Returns the server message.
+  Future<String> requestPasswordReset(String email) =>
+      _repo.requestPasswordReset(email: email);
+
+  /// Confirms a password reset with the emailed code + new password. Returns
+  /// the server message. Throws on a wrong code.
+  Future<String> confirmPasswordReset({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) =>
+      _repo.confirmPasswordReset(
+        email: email,
+        code: code,
+        newPassword: newPassword,
+      );
 
   /// Social login. Flips state to authenticated on success. Throws on failure.
   Future<void> socialLogin({
@@ -87,6 +121,7 @@ class AuthController extends Notifier<AuthStatus> {
     await _tokenStore.clear();
     ref.invalidate(myProfileProvider);
     state = AuthStatus.unauthenticated;
+    _popToRoot();
   }
 
   /// Called by the auth interceptor on a 401 (token already cleared there).
@@ -97,5 +132,12 @@ class AuthController extends Notifier<AuthStatus> {
     if (state != AuthStatus.unauthenticated) {
       state = AuthStatus.unauthenticated;
     }
+    _popToRoot();
+  }
+
+  /// Clears any pushed routes so the (now unauthenticated) AuthGate root —
+  /// which sits at the bottom of the stack — becomes visible immediately.
+  void _popToRoot() {
+    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
   }
 }

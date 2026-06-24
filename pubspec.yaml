@@ -44,6 +44,15 @@ dependencies:
   dio: ^5.7.0
   # Secure JWT storage (Keychain / EncryptedSharedPreferences).
   flutter_secure_storage: ^9.2.4
+  # Google Sign-In. On web (6.2.x) renderButton() yields a reliable idToken
+  # via onCurrentUserChanged; we send that to POST /auth/social.
+  google_sign_in: ^6.2.2
+  # web_only.dart (renderButton) is imported directly in login.dart, so the
+  # web implementation package is declared explicitly.
+  google_sign_in_web: ^0.12.4
+  # Loads API_BASE_URL from a project-root .env (overrides the platform
+  # fallback). Bundled as an asset so web builds can read it.
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_test:
@@ -75,6 +84,8 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    # API_BASE_URL override (bundled so web builds can read it; optional).
+    - .env
 
   fonts:
     - family: Pretendard

@@ -7,6 +7,12 @@ abstract final class ApiEndpoints {
   static const passwordResetRequest = '/auth/password-reset/request';
   static const passwordResetConfirm = '/auth/password-reset/confirm';
 
+  // ── Email verification ──
+  static const emailAvailable = '/auth/email/available';
+  static const emailSendCode = '/auth/email/send-code';
+  static const emailVerifyCode = '/auth/email/verify-code';
+
   // ── Members ──
   static const membersMe = '/members/me';
+  static const onboarding = '/members/me/onboarding';
 }

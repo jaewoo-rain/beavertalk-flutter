@@ -12,15 +12,28 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  /// Creates an account and returns the new member.
+  /// Whether [email] is free to register (`GET /auth/email/available`).
+  Future<bool> checkEmailAvailable(String email);
+
+  /// Sends a verification code to [email] (`POST /auth/email/send-code`).
+  Future<void> sendEmailCode(String email);
+
+  /// Verifies the emailed [code] (`POST /auth/email/verify-code`). Throws on
+  /// a wrong code.
+  Future<void> verifyEmailCode({required String email, required String code});
+
+  /// Creates an account (`{email, password}`) and returns the new member.
   Future<Member> signup({
     required String email,
     required String password,
+  });
+
+  /// Saves onboarding data (`POST /members/me/onboarding`) and returns the
+  /// updated member (with `onboardingCompleted == true`).
+  Future<Member> submitOnboarding({
+    String? name,
     String? language,
-    String? loginMethod,
-    String? uniqueValue,
-    int? speakCountryId,
-    int? characterId,
+    List<String>? reasons,
   });
 
   /// Social login (Kakao/Google/Apple). Persists the token on success.
@@ -29,12 +42,14 @@ abstract interface class AuthRepository {
     required String token,
   });
 
-  /// Requests a password-reset email. Returns the server message.
+  /// Requests a password-reset code email. Returns the server message.
   Future<String> requestPasswordReset({required String email});
 
-  /// Confirms a password reset with the emailed token. Returns the message.
+  /// Confirms a password reset with the emailed code + new password
+  /// (`POST /auth/password-reset/confirm`). Returns the message.
   Future<String> confirmPasswordReset({
-    required String token,
+    required String email,
+    required String code,
     required String newPassword,
   });
 
