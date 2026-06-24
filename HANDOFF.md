@@ -4,6 +4,31 @@
 
 ---
 
+## 2026-06-24 — alarm 도메인 서버 실연동 (2차)
+
+플랜: [docs/2026-06-24_1105_alarm-slice-plan.md](docs/2026-06-24_1105_alarm-slice-plan.md). auth 슬라이스 패턴 복제.
+
+### ✅ 완료 (검증됨)
+- [x] `lib/features/alarm/{domain,data,presentation}`: Alarm 엔티티(순수 Dart), AlarmDto(time/days 직렬화 전담), datasource(7개 호출 + GET /characters), repository_impl(DTO↔entity, DioException→AppException), `alarmListControllerProvider`(AsyncNotifier) + `availableCharactersProvider`.
+- [x] 화면 개조(UI 무변경): `alarm_list.dart`(ConsumerStatefulWidget, CRUD/토글/요일/삭제 실연동, 빈목록 AlarmEmptyBody, 실패 스낵바), `alarm_add.dart`(파트너 소스→서버 캐릭터), `alarm_models.dart`(AlarmData에 id/characterId 추가, fromEntity/toEntity, partnersFromCharacters).
+- [x] **time 매핑**: 벽시계 취급 — 전송 `2000-01-01THH:MM:00`(naive) → 서버 echo `...Z` → `.toUtc()` 시/분 그대로(타임존 밀림 없음). days `['SUN'..'SAT']` 양방향.
+
+### ✅ 검증 결과
+- `flutter analyze`: **No issues**(CEO 재확인). domain 순수성 0건. `flutter test`: **6 passed**(alarm_dto 라운드트립 포함).
+- 라이브 e2e: characters→create(201)→list→deactivate(200)→PUT(200)→delete(204) 라운드트립 성공.
+- 구조 검토(clean-architecture): 경계 6항목 **전부 통과**(위반 0).
+
+### 🔻 후속 폴리시 (낮음, 비차단)
+- P1: `AlarmCharacter`를 `domain/entities/alarm_character.dart`로 분리(추후 characters 슬라이스 승격 대비).
+- P2: `partnersFromCharacters` picker 어댑터를 화면 옆 별도 파일로(파일 비대 시).
+- alarm_dto time 파싱: 서버가 `Z` 없이 echo할 경우 로컬 해석으로 시각 밀림 가능 → 견고성 위해 파싱 시 강제 UTC 처리 점검(현재 서버는 항상 `Z` echo라 실동작 정상).
+
+### 🖥 서버 변경 반영 (사용자 적용, R1)
+- **CORS 미들웨어 적용됨**(allow_origins=["*"]) → 크롬 web 정상. run-web-chrome 스킬에서 dev 보안우회 제거.
+- **캐릭터 4개 시드**(비비/주디/레오/미나) → alarm picker 자동 반영.
+
+---
+
 ## 2026-06-23/24 — 클린 아키텍처 골격 + auth/members me 서버 실연동 (1차)
 
 플랜: [docs/2026-06-23_2146_flutter-clean-architecture-plan.md](docs/2026-06-23_2146_flutter-clean-architecture-plan.md)

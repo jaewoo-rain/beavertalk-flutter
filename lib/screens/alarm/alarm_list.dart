@@ -1,68 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_alarm.dart';
-import '../../components/organisms/bottom_sheet_alarm_settings.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/alarm/domain/entities/alarm.dart';
+import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
+import 'alarm_empty.dart';
 import 'alarm_models.dart';
 
 /// Alarm list — Figma `screen/etc_alarm` (`2117:20250`). A scrollable list of
-/// [CardAlarm]s. Each card can be:
-/// - **swiped** away to delete ([Dismissible]),
-/// - **tapped** to open the edit sheet ([Routes.alarmAdd] with the [AlarmData]),
-///   committing the returned edit back into the list,
-/// and a trailing "+" / footer button opens the same sheet in add mode.
-class AlarmListScreen extends StatefulWidget {
+/// [CardAlarm]s backed by the server (`alarmListControllerProvider`). Each card
+/// can be **swiped** to delete (DELETE), **tapped** to edit (PUT), and toggled
+/// active (activate/deactivate) or per-day (PUT). The footer "+" adds (POST).
+class AlarmListScreen extends ConsumerStatefulWidget {
   /// Creates the alarm list screen.
   const AlarmListScreen({super.key});
 
   @override
-  State<AlarmListScreen> createState() => _AlarmListScreenState();
+  ConsumerState<AlarmListScreen> createState() => _AlarmListScreenState();
 }
 
-class _AlarmListScreenState extends State<AlarmListScreen> {
-  final List<AlarmData> _alarms = [
-    AlarmData(
-      hour: 8,
-      minute: 0,
-      meridiem: Meridiem.am,
-      days: [true, true, true, true, true, false, false],
-      partnerId: 'beaver',
-    ),
-    AlarmData(
-      hour: 6,
-      minute: 0,
-      meridiem: Meridiem.pm,
-      days: [false, true, false, true, false, true, false],
-      partnerId: 'judi',
-      active: false,
-    ),
-  ];
+class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
+  /// Surfaces a repository [AppException] as a snackbar.
+  void _showError(Object error) {
+    if (!mounted) return;
+    final message =
+        error is AppException ? error.message : '문제가 발생했어요';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
-  /// Opens the add sheet; appends the result if the user saved.
+  /// Runs a controller mutation, showing any failure as a snackbar.
+  Future<void> _run(Future<void> Function() action) async {
+    try {
+      await action();
+    } catch (e) {
+      _showError(e);
+    }
+  }
+
+  /// Opens the add sheet; creates the result (POST) if the user saved.
   Future<void> _add() async {
     final result =
         await Navigator.pushNamed(context, Routes.alarmAdd) as AlarmData?;
-    if (result != null) setState(() => _alarms.add(result));
+    if (result == null) return;
+    await _run(() =>
+        ref.read(alarmListControllerProvider.notifier).add(result.toEntity()));
   }
 
-  /// Opens the edit sheet seeded with [i]'s data; replaces it on save.
-  Future<void> _edit(int i) async {
+  /// Opens the edit sheet seeded with [alarm]; updates it (PUT) on save.
+  Future<void> _edit(Alarm alarm) async {
     final result = await Navigator.pushNamed(
       context,
       Routes.alarmAdd,
-      arguments: _alarms[i],
+      arguments: AlarmData.fromEntity(alarm),
     ) as AlarmData?;
-    if (result != null) setState(() => _alarms[i] = result);
+    if (result == null) return;
+    await _run(() =>
+        ref.read(alarmListControllerProvider.notifier).edit(result.toEntity()));
   }
 
   @override
   Widget build(BuildContext context) {
+    final alarmsAsync = ref.watch(alarmListControllerProvider);
+
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -85,31 +94,17 @@ class _AlarmListScreenState extends State<AlarmListScreen> {
             ),
           ),
           Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              itemCount: _alarms.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 16),
-              itemBuilder: (context, i) {
-                final a = _alarms[i];
-                return Dismissible(
-                  key: ObjectKey(a),
-                  direction: DismissDirection.endToStart,
-                  background: _deleteBackground(),
-                  onDismissed: (_) => setState(() => _alarms.removeAt(i)),
-                  child: CardAlarm(
-                    state: a.active
-                        ? CardAlarmState.active
-                        : CardAlarmState.inactive,
-                    time: a.listLabel,
-                    days: a.days,
-                    userName: a.partnerName,
-                    onTap: () => _edit(i),
-                    onChanged: (v) => setState(() => a.active = v),
-                    onDayChange: (idx, v) =>
-                        setState(() => a.days = [...a.days]..[idx] = v),
-                  ),
-                );
-              },
+            child: alarmsAsync.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
+              ),
+              error: (e, _) => _ErrorState(
+                message: e is AppException ? e.message : '알람을 불러오지 못했어요',
+                onRetry: () => ref.invalidate(alarmListControllerProvider),
+              ),
+              data: (alarms) => alarms.isEmpty
+                  ? const _EmptyState()
+                  : _list(alarms),
             ),
           ),
           Padding(
@@ -129,6 +124,48 @@ class _AlarmListScreenState extends State<AlarmListScreen> {
     );
   }
 
+  /// The scrollable alarm cards.
+  Widget _list(List<Alarm> alarms) {
+    return ListView.separated(
+      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+      itemCount: alarms.length,
+      separatorBuilder: (_, _) => const SizedBox(height: 16),
+      itemBuilder: (context, i) {
+        final a = alarms[i];
+        final view = AlarmData.fromEntity(a);
+        final id = a.id;
+        return Dismissible(
+          key: ValueKey(id ?? i),
+          direction: DismissDirection.endToStart,
+          background: _deleteBackground(),
+          confirmDismiss: (_) async {
+            if (id == null) return false;
+            await _run(() =>
+                ref.read(alarmListControllerProvider.notifier).remove(id));
+            return true;
+          },
+          child: CardAlarm(
+            state: a.active ? CardAlarmState.active : CardAlarmState.inactive,
+            time: view.listLabel,
+            days: a.days,
+            userName: view.partnerName,
+            onTap: () => _edit(a),
+            onChanged: id == null
+                ? null
+                : (v) => _run(() => ref
+                    .read(alarmListControllerProvider.notifier)
+                    .toggleActive(id, v)),
+            onDayChange: id == null
+                ? null
+                : (idx, v) => _run(() => ref
+                    .read(alarmListControllerProvider.notifier)
+                    .toggleDay(id, idx, v)),
+          ),
+        );
+      },
+    );
+  }
+
   /// The red "delete" panel revealed when swiping a card left.
   Widget _deleteBackground() {
     return Container(
@@ -139,6 +176,41 @@ class _AlarmListScreenState extends State<AlarmListScreen> {
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: const Icon(Icons.delete_outline, color: AppColors.text, size: 28),
+    );
+  }
+}
+
+/// Empty list — reuses the [AlarmEmptyScreen] body styling inline.
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    // Reuse the existing empty screen's centered message block.
+    return const AlarmEmptyBody();
+  }
+}
+
+/// Inline error with a retry action.
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(message,
+              style: AppType.body2.r
+                  .copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: 12),
+          TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+        ],
+      ),
     );
   }
 }
