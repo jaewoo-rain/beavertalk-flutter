@@ -1,17 +1,8 @@
 /// Backend path constants (relative to [Env.apiBaseUrl], no host or prefix).
+///
+/// Authentication is handled by Supabase Auth (the `/auth/*` backend endpoints
+/// were removed); only the Bearer-protected member endpoints remain here.
 abstract final class ApiEndpoints {
-  // ── Auth ──
-  static const login = '/auth/login';
-  static const signup = '/auth/signup';
-  static const social = '/auth/social';
-  static const passwordResetRequest = '/auth/password-reset/request';
-  static const passwordResetConfirm = '/auth/password-reset/confirm';
-
-  // ── Email verification ──
-  static const emailAvailable = '/auth/email/available';
-  static const emailSendCode = '/auth/email/send-code';
-  static const emailVerifyCode = '/auth/email/verify-code';
-
   // ── Members ──
   static const membersMe = '/members/me';
   static const onboarding = '/members/me/onboarding';

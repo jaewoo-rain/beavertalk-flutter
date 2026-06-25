@@ -1,5 +1,7 @@
-// Verifies the request shapes the AuthRemoteDataSource sends for the new
-// email-verification + reasons + password-reset contract. A fake adapter
+// Verifies the request shapes the AuthRemoteDataSource sends for the member
+// endpoints that survived the Supabase Auth migration (onboarding + getMe).
+// Auth itself (login/signup/social/password-reset) now goes through the
+// Supabase SDK and is no longer part of this data source. A fake adapter
 // captures each outgoing request and returns a canned response.
 
 import 'dart:convert';
@@ -54,42 +56,15 @@ void main() {
     ds = AuthRemoteDataSource(dio);
   }
 
-  group('email verification request shapes', () {
-    test('checkEmailAvailable sends GET with email query', () async {
-      setup({'available': true});
-      final available = await ds.checkEmailAvailable('a@b.com');
+  group('getMe', () {
+    test('sends GET /members/me', () async {
+      setup({'member_id': 7, 'onboarding_completed': true});
+      final member = await ds.getMe();
 
-      expect(available, isTrue);
       expect(adapter.lastRequest!.method, 'GET');
-      expect(adapter.lastRequest!.path, '/auth/email/available');
-      expect(adapter.lastRequest!.queryParameters['email'], 'a@b.com');
-    });
-
-    test('sendEmailCode posts {email}', () async {
-      setup({'message': 'sent'});
-      await ds.sendEmailCode('a@b.com');
-
-      expect(adapter.lastRequest!.method, 'POST');
-      expect(adapter.lastRequest!.path, '/auth/email/send-code');
-      expect(jsonDecode(adapter.lastBody!), {'email': 'a@b.com'});
-    });
-
-    test('verifyEmailCode posts {email, code}', () async {
-      setup({'message': 'ok'});
-      await ds.verifyEmailCode('a@b.com', '1234');
-
-      expect(adapter.lastRequest!.path, '/auth/email/verify-code');
-      expect(jsonDecode(adapter.lastBody!), {'email': 'a@b.com', 'code': '1234'});
-    });
-  });
-
-  group('signup body is {email, password} only', () {
-    test('no onboarding fields are sent', () async {
-      setup({'member_id': 1});
-      await ds.signup(email: 'a@b.com', password: 'pw');
-
-      final body = jsonDecode(adapter.lastBody!) as Map<String, dynamic>;
-      expect(body, {'email': 'a@b.com', 'password': 'pw'});
+      expect(adapter.lastRequest!.path, '/members/me');
+      expect(member.memberId, 7);
+      expect(member.onboardingCompleted, isTrue);
     });
   });
 
@@ -128,25 +103,6 @@ void main() {
     });
   });
 
-  group('password reset confirm uses {email, code, new_password}', () {
-    test('confirm body shape', () async {
-      setup({'message': 'reset'});
-      final msg = await ds.confirmPasswordReset(
-        email: 'a@b.com',
-        code: '4321',
-        newPassword: 'newpass123',
-      );
-
-      expect(msg, 'reset');
-      expect(adapter.lastRequest!.path, '/auth/password-reset/confirm');
-      expect(jsonDecode(adapter.lastBody!), {
-        'email': 'a@b.com',
-        'code': '4321',
-        'new_password': 'newpass123',
-      });
-    });
-  });
-
   group('MemberDto parses name / onboarding_completed / reasons', () {
     test('new fields reach the entity', () async {
       setup({
@@ -164,8 +120,7 @@ void main() {
 
     test('onboarding_completed defaults to false when absent', () async {
       setup({'member_id': 1});
-      final member =
-          (await ds.signup(email: 'a@b.com', password: 'pw')).toEntity();
+      final member = (await ds.getMe()).toEntity();
 
       expect(member.onboardingCompleted, isFalse);
       expect(member.name, isNull);
