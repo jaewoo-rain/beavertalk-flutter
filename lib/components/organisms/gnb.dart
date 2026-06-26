@@ -17,8 +17,8 @@ enum GnbType {
   /// Back arrow (left) + progress bar (fill) + `current/total` label (right).
   /// Background: surface2. Height fixed at `56`.
   ///
-  /// Per spec the progress bar fill is white ([AppColors.text]) and the track is
-  /// [AppColors.borderSubtle].
+  /// Per Figma the progress fill is the mint [AppColors.primary] (#00FFB2) and
+  /// the track is [AppColors.primary10] (the primary at ~10%).
   main2,
 
   /// A centered column: a status row (colored dot + caption), a title, and a
@@ -411,8 +411,8 @@ class _CloseButton extends StatelessWidget {
 
 /// Slim progress track for [GnbType.main2].
 ///
-/// Per spec (measured): track height `4`, radius `8`; fill is white
-/// ([AppColors.text]); track background is [AppColors.borderSubtle].
+/// Per Figma (measured): track height `4`, radius `8`; fill is the mint
+/// [AppColors.primary]; track background is [AppColors.primary10].
 class _GnbProgressTrack extends StatelessWidget {
   const _GnbProgressTrack({required this.fraction});
 
@@ -432,12 +432,12 @@ class _GnbProgressTrack extends StatelessWidget {
               return Stack(
                 children: [
                   const Positioned.fill(
-                    child: ColoredBox(color: AppColors.borderSubtle),
+                    child: ColoredBox(color: AppColors.primary10),
                   ),
-                  FractionallySizedBox(
-                    alignment: Alignment.centerLeft,
-                    widthFactor: value,
-                    child: const ColoredBox(color: AppColors.text),
+                  Container(
+                    width: constraints.maxWidth * value,
+                    height: 4,
+                    color: AppColors.primary,
                   ),
                 ],
               );

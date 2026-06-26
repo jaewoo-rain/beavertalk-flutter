@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -10,7 +11,8 @@ import '../../theme/app_typography.dart';
 /// Password-recovery step 3 — reset complete.
 ///
 /// Figma `screen/auth_findpw_complete` (`2117:19851`). A title + guidance text,
-/// a celebratory key illustration (🔑 stand-in for the Figma 3D asset), and a
+/// the celebratory 3D key illustration (`assets/icons/3d/key.svg`, the Figma
+/// `3D/location` asset at node `2117:19858`), and a
 /// primary "Log in" button that returns to the AuthGate root (which shows the
 /// login flow while unauthenticated), so a successful re-login can redirect to
 /// Home.
@@ -54,17 +56,12 @@ class PasswordCompleteScreen extends StatelessWidget {
                         .copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.spacing48),
-                  // Celebratory illustration — emoji stand-in for the Figma
-                  // 3D "location/key" asset (mock; no asset bundled).
-                  Container(
+                  // Figma `3D/location` key illustration (180×180), shown
+                  // directly on the surface — no card, per node 2117:19858.
+                  Image.asset(
+                    AppIcons.key3d,
                     width: 180,
                     height: 180,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface2,
-                      borderRadius: BorderRadius.circular(AppRadius.xl),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text('🔑', style: TextStyle(fontSize: 88)),
                   ),
                 ],
               ),

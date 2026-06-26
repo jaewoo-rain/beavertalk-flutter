@@ -40,7 +40,7 @@ const mockReasons = <MockReason>[
   MockReason('career', '💼', '업무·커리어', '비즈니스 회화'),
   MockReason('exam', '📝', '시험 대비', '스피킹 시험 준비'),
   MockReason('daily', '💬', '일상 회화 자신감', '매일 쓰는 표현'),
-  MockReason('friends', '🌐', '외국인 친구 사귀기', '자연스러운 대화'),
+  MockReason('friends', '🌏', '외국인 친구 사귀기', '자연스러운 대화'),
   MockReason('brain', '🧠', '두뇌 자극', '기억력·집중력 향상'),
 ];
 

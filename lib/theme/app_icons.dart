@@ -48,6 +48,12 @@ abstract final class AppIcons {
   static const String user = '$_base/user.svg';
   static const String volume = '$_base/volume.svg';
 
+  // ── 3D illustration icons (assets/icons/3d/) ──
+  // Raster 3D renders from Figma `03_3D Free Icons` (281:20255), exported as
+  // 256px PNGs — render with `Image.asset(...)`, NOT flutter_svg. Only the
+  // ones referenced in code get a constant; the rest live as files in 3d/.
+  static const String key3d = '$_base/3d/key.png';
+
   /// All icon asset paths, useful for previews and galleries.
   static const List<String> all = [
     alarmClock,

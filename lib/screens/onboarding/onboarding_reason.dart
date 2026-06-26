@@ -77,7 +77,7 @@ class _OnboardingReasonScreenState
       body: Column(
         children: [
           Gnb.main2(
-            progress: const GnbProgress(current: 3, total: 5),
+            progress: const GnbProgress(current: 3, total: 3),
             onBack: () => Navigator.pop(context),
           ),
           Expanded(

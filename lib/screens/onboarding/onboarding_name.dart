@@ -47,7 +47,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
       body: Column(
         children: [
           Gnb.main2(
-            progress: const GnbProgress(current: 2, total: 5),
+            progress: const GnbProgress(current: 2, total: 3),
             onBack: () => Navigator.pop(context),
           ),
           Expanded(

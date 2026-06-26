@@ -53,7 +53,7 @@ class _OnboardingLanguageScreenState
       body: Column(
         children: [
           Gnb.main2(
-            progress: const GnbProgress(current: 1, total: 5),
+            progress: const GnbProgress(current: 1, total: 3),
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
