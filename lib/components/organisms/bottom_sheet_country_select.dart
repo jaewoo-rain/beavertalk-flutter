@@ -45,7 +45,7 @@ class CountryItem {
 ///   reused [CountrySelect] rows. The selected row gets `primary10` fill + 1px
 ///   `primary` border + check (handled by [CountrySelect.selected]).
 /// - Footer [BottomSheet] `single-button`: a 335-wide primary-fill [Button]
-///   ("확인" → [onConfirm]) above a reused [HomeIndicator].
+///   ("Confirm" → [onConfirm]) above a reused [HomeIndicator].
 ///
 /// Sheet shell: 375 wide, top corners `AppRadius.lg` (24), fill
 /// [AppColors.surfaceElevated]. Controlled component: pass [value] (the
@@ -55,16 +55,18 @@ class BottomSheetCountrySelect extends StatelessWidget {
   /// Creates a country-select bottom sheet.
   const BottomSheetCountrySelect({
     super.key,
-    this.title = '국가를 선택하세요',
+    // TODO(i18n): localize
+    this.title = 'Select a country',
     required this.items,
     required this.value,
     this.onChanged,
     this.onConfirm,
-    this.confirmText = '확인',
+    // TODO(i18n): localize
+    this.confirmText = 'Confirm',
     this.onClose,
   });
 
-  /// Header title (Figma default: "국가를 선택하세요").
+  /// Header title (Figma default: "Select a country").
   final String title;
 
   /// The countries to list, rendered top-to-bottom as [CountrySelect] rows.

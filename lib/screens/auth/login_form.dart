@@ -10,19 +10,20 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Auth — email/password login form. Figma `screen/auth_login_form`
 /// (`2117:19780`).
 ///
-/// A [Gnb.main] titled "로그인" (back arrow pops), labelled email and password
-/// [InputField]s, an "아이디 저장" checkbox row with a "아이디/비밀번호 찾기" link,
-/// the primary "로그인" button, the social sign-in button row, and a 회원가입
+/// A [Gnb.main] titled "Log in" (back arrow pops), labelled email and password
+/// [InputField]s, a "Remember me" checkbox row with a "Forgot password?" link,
+/// the primary "Log in" button, the social sign-in button row, and a sign-up
 /// prompt.
 ///
-/// Real backend: "로그인" calls [AuthController.login]; on success the
+/// Real backend: "Log in" calls [AuthController.login]; on success the
 /// [AuthGate] swaps to home, so we just pop the form. Failures show the inline
-/// error. The find-password link routes to [Routes.passwordMethod]; "회원가입"
+/// error. The find-password link routes to [Routes.passwordMethod]; "Sign up"
 /// routes to [Routes.signup].
 class LoginFormScreen extends ConsumerStatefulWidget {
   /// Creates the email login form screen.
@@ -77,39 +78,46 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '로그인', onBack: () => Navigator.pop(context)),
+          // TODO(i18n): localize
+          Gnb.main(title: 'Log in', onBack: () => Navigator.pop(context)),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.spacing20,
+                  AppSpacing.spacing24, AppSpacing.spacing20, AppSpacing.spacing24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Email field ─────────────────────────────────────────
-                  const _FieldLabel('이메일'),
-                  const SizedBox(height: 8),
+                  // TODO(i18n): localize
+                  const _FieldLabel('Email'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _email,
                     onChanged: (v) => setState(() => _email = v),
-                    hintText: '이메일을 입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Enter your email',
                     keyboardType: TextInputType.emailAddress,
                     leftIcon:
                         const MailIcon(size: 20, color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.spacing20),
                   // ── Password field ──────────────────────────────────────
-                  const _FieldLabel('비밀번호'),
-                  const SizedBox(height: 8),
+                  // TODO(i18n): localize
+                  const _FieldLabel('Password'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
-                    hintText: '비밀번호를 입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Enter your password',
                     obscureText: true,
                     leftIcon: const Icon(Icons.lock_outline),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.spacing20),
                   // ── Save-id checkbox + find-password link ───────────────
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.spacing8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -128,21 +136,26 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                                     ? AppColors.primary
                                     : AppColors.textSecondary,
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: AppSpacing.spacing8),
                               Text(
-                                '아이디 저장',
+                                // TODO(i18n): localize
+                                'Remember me',
                                 style: AppType.label1.r
                                     .copyWith(color: AppColors.textSecondary),
                               ),
                             ],
                           ),
                         ),
-                        GestureDetector(
-                          onTap: _findPassword,
-                          child: Text(
-                            '아이디/비밀번호 찾기',
-                            style: AppType.label1.r
-                                .copyWith(color: AppColors.textSecondary),
+                        Flexible(
+                          child: GestureDetector(
+                            onTap: _findPassword,
+                            child: Text(
+                              // TODO(i18n): localize
+                              'Forgot password?',
+                              textAlign: TextAlign.right,
+                              style: AppType.label1.r
+                                  .copyWith(color: AppColors.textSecondary),
+                            ),
                           ),
                         ),
                       ],
@@ -150,9 +163,9 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                   ),
                   // ── Inline error (login failure) ────────────────────────
                   if (_error != null) ...[
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.spacing20),
                     Padding(
-                      padding: const EdgeInsets.only(left: 4),
+                      padding: const EdgeInsets.only(left: AppSpacing.spacing4),
                       child: Text(
                         _error!,
                         style: AppType.label2.r
@@ -160,19 +173,20 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: 60),
+                  const SizedBox(height: AppSpacing.spacing60),
                   // ── Login (primary) ─────────────────────────────────────
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: _submitting ? '로그인 중...' : '로그인',
+                    // TODO(i18n): localize
+                    text: _submitting ? 'Logging in...' : 'Log in',
                     disabled: _submitting,
                     onPressed: _login,
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: AppSpacing.spacing48),
                   // ── Social sign-in row ──────────────────────────────────
                   _SocialButtonRow(onPressed: _socialLogin),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.spacing24),
                   // ── Signup prompt ───────────────────────────────────────
                   Center(child: _SignupPrompt(onSignup: _goSignup)),
                 ],
@@ -194,7 +208,7 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsets.only(left: AppSpacing.spacing8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -227,36 +241,40 @@ class _SocialButtonRow extends StatelessWidget {
     return Row(
       children: [
         social(const KakaoIcon(size: 24)),
-        const SizedBox(width: 12),
+        const SizedBox(width: AppSpacing.spacing12),
         social(const GoogleIcon(size: 24)),
-        const SizedBox(width: 12),
-        social(const AppleIcon(size: 24, color: AppColors.textSecondary)),
+        const SizedBox(width: AppSpacing.spacing12),
+        social(const AppleIcon(size: 24, color: AppColors.text)),
       ],
     );
   }
 }
 
-/// "아직 회원이 아니신가요? 회원가입" inline prompt.
+/// "Don't have an account? Sign up" inline prompt.
 class _SignupPrompt extends StatelessWidget {
   const _SignupPrompt({required this.onSignup});
 
-  /// Tapped when "회원가입" is pressed.
+  /// Tapped when "Sign up" is pressed.
   final VoidCallback onSignup;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // Wrap so the prompt + action can flow onto a second line if localized
+    // text grows.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 6, // Figma 6px gap (no AppSpacing token)
       children: [
         Text(
-          '아직 회원이 아니신가요?',
+          // TODO(i18n): localize
+          "Don't have an account?",
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(width: 6),
         GestureDetector(
           onTap: onSignup,
           child: Text(
-            '회원가입',
+            // TODO(i18n): localize
+            'Sign up',
             style: AppType.label1.sb.copyWith(color: AppColors.primary),
           ),
         ),

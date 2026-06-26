@@ -13,11 +13,8 @@ import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
-// Conditional: the real GIS button on web, a no-op stub elsewhere. Keeps
-// dart:js_interop (web-only) out of VM/mobile builds and tests.
-import 'google_button_stub.dart'
-    if (dart.library.js_interop) 'google_button_web.dart';
 
 /// Web client id (public value) — must match the server's `GOOGLE_CLIENT_ID`.
 const _googleClientId =
@@ -25,8 +22,8 @@ const _googleClientId =
 
 /// Auth — landing login screen. Figma `screen/auth_login` (`2117:19693`).
 ///
-/// Brand block + social sign-in buttons + "또는" divider + 이메일 로그인 +
-/// 회원가입 prompt.
+/// Brand block + social sign-in buttons + "or" divider + email login +
+/// sign-up prompt.
 ///
 /// **Google is real on web**: the GIS [gis_web.renderButton] yields an idToken
 /// via [GoogleSignIn.onCurrentUserChanged], which we hand to
@@ -76,7 +73,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       final auth = await account.authentication;
       final idToken = auth.idToken;
       if (idToken == null || idToken.isEmpty) {
-        throw const UnknownFailure('구글 로그인 토큰을 받지 못했어요');
+        // TODO(i18n): localize
+        throw const UnknownFailure("Couldn't get a Google sign-in token.");
       }
       await ref
           .read(authControllerProvider.notifier)
@@ -86,7 +84,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on AppException catch (e) {
       _showError(e.message);
     } catch (_) {
-      _showError('구글 로그인에 실패했어요');
+      // TODO(i18n): localize
+      _showError('Google sign-in failed.');
     } finally {
       if (mounted) setState(() => _googleBusy = false);
     }
@@ -111,46 +110,68 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     return AppScaffold(
       background: AppColors.surface,
+      // Figma horizontal screen padding is 40px (buttons are 295 wide,
+      // centered in the 375 frame). The 76px top matches the design's
+      // vertical position: the (empty/hidden) 56px GNB + 20px body inset,
+      // so the avatar lands at screen y≈120 as in node 2117:19693.
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(40, 40, 40, 24),
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.spacing40,
+            76, // Figma top offset (no AppSpacing token)
+            AppSpacing.spacing40,
+            AppSpacing.spacing24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── Brand block: circular beaver avatar + wordmark ──────────
             const _LogoBlock(),
-            const SizedBox(height: 60),
+            // Figma: wordmark bottom → first social button ≈ 46px.
+            const SizedBox(height: 46), // Figma 46px gap (no AppSpacing token)
             // ── Social sign-in buttons ──────────────────────────────────
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
-              text: '카카오 로그인',
+              // TODO(i18n): localize
+              text: 'Continue with Kakao',
               leftIcon: const KakaoIcon(size: 24),
               onPressed: _socialLoginMock,
             ),
-            const SizedBox(height: 16),
-            // Google: real GIS button on web, mocked button elsewhere.
-            _googleSlot(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.spacing16),
+            // Google: custom button (matches Kakao/Apple) wired to the real
+            // Google sign-in flow.
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
-              text: '애플로 로그인',
+              // TODO(i18n): localize
+              text: 'Continue with Google',
+              leftIcon: const GoogleIcon(size: 24),
+              disabled: _googleBusy,
+              onPressed: _googleLogin,
+            ),
+            const SizedBox(height: AppSpacing.spacing16),
+            Button(
+              type: BtnType.secondaryFill,
+              size: BtnSize.s60,
+              // TODO(i18n): localize
+              text: 'Continue with Apple',
               leftIcon: const AppleIcon(size: 24),
               onPressed: _socialLoginMock,
             ),
-            const SizedBox(height: 16),
-            // ── "또는" divider ──────────────────────────────────────────
+            const SizedBox(height: AppSpacing.spacing16),
+            // ── "or" divider ────────────────────────────────────────────
             const _OrDivider(),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.spacing16),
             // ── Email login (primary) ───────────────────────────────────
             Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
-              text: '이메일 로그인',
+              // TODO(i18n): localize
+              text: 'Continue with email',
               leftIcon: const MailIcon(size: 24, color: AppColors.onPrimary),
               onPressed: _emailLogin,
             ),
-            const SizedBox(height: 40),
+            // Figma: email button → signup prompt = 16px.
+            const SizedBox(height: AppSpacing.spacing16),
             // ── Signup prompt + terms notice ────────────────────────────
             _SignupPrompt(onSignup: _goSignup),
           ],
@@ -159,38 +180,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// On web, renders the standard GIS sign-in button (the reliable idToken
-  /// path). Off web, falls back to the styled mock button.
-  Widget _googleSlot() {
-    if (!kIsWeb) {
-      return Button(
-        type: BtnType.secondaryFill,
-        size: BtnSize.s60,
-        text: '구글로 로그인',
-        leftIcon: const GoogleIcon(size: 24),
-        onPressed: _socialLoginMock,
-      );
+  /// Starts the Google sign-in flow from the custom button. On success the
+  /// [GoogleSignIn.onCurrentUserChanged] stream fires [_onGoogleUser], which
+  /// exchanges the idToken for our JWT — the existing logic, unchanged.
+  ///
+  /// Note: on web, the idToken is delivered via the One Tap / button flow;
+  /// `signIn()` triggers it but token availability depends on the GIS session.
+  Future<void> _googleLogin() async {
+    if (_googleBusy) return;
+    try {
+      await _googleSignIn.signIn();
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      // TODO(i18n): localize
+      _showError('Google sign-in failed.');
     }
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        // GIS button has its own look (Google standard) — centered.
-        Center(child: renderGoogleButton()),
-        // Light overlay spinner while the token is being exchanged.
-        if (_googleBusy)
-          const Padding(
-            padding: EdgeInsets.only(left: 8),
-            child: SizedBox(
-              width: 18,
-              height: 18,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-      ],
-    );
   }
 }
 
@@ -211,14 +216,15 @@ class _LogoBlock extends StatelessWidget {
             image: DecorationImage(image: beaverImage, fit: BoxFit.cover),
           ),
         ),
-        const SizedBox(height: 8),
-        const BeaverTalkLogo(width: 160, color: AppColors.text),
+        const SizedBox(height: AppSpacing.spacing8),
+        // Figma wordmark is 179.663px wide → 180.
+        const BeaverTalkLogo(width: 180, color: AppColors.text),
       ],
     );
   }
 }
 
-/// Horizontal "또는" divider — a centered label between two hairlines.
+/// Horizontal "or" divider — a centered label between two hairlines.
 class _OrDivider extends StatelessWidget {
   const _OrDivider();
 
@@ -231,9 +237,10 @@ class _OrDivider extends StatelessWidget {
       children: [
         line,
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spacing8),
           child: Text(
-            '또는',
+            // TODO(i18n): localize
+            'or',
             style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
           ),
         ),
@@ -243,11 +250,11 @@ class _OrDivider extends StatelessWidget {
   }
 }
 
-/// "아직 회원이 아니신가요? 회원가입" row plus the terms/privacy notice.
+/// "Don't have an account? Sign up" row plus the terms/privacy notice.
 class _SignupPrompt extends StatelessWidget {
   const _SignupPrompt({required this.onSignup});
 
-  /// Tapped when "회원가입" is pressed.
+  /// Tapped when "Sign up" is pressed.
   final VoidCallback onSignup;
 
   @override
@@ -255,30 +262,43 @@ class _SignupPrompt extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Row(
-          mainAxisSize: MainAxisSize.min,
+        // Wrap keeps the prompt + action on one line normally, but lets them
+        // flow onto a second line if the localized text grows.
+        Wrap(
+          alignment: WrapAlignment.center,
+          spacing: 6, // Figma 6px gap (no AppSpacing token)
           children: [
             Text(
-              '아직 회원이 아니신가요?',
+              // TODO(i18n): localize
+              "Don't have an account?",
               style:
                   AppType.label1.r.copyWith(color: AppColors.textSecondary),
             ),
-            const SizedBox(width: 6),
             GestureDetector(
               onTap: onSignup,
               child: Text(
-                '회원가입',
+                // TODO(i18n): localize
+                'Sign up',
                 style: AppType.label1.sb.copyWith(color: AppColors.primary),
               ),
             ),
           ],
         ),
-        const SizedBox(height: 24),
-        Text(
-          '계속하면 Beavertalk의 서비스 약관에 동의하고 '
-          '개인정보 보호정책을 읽었음을 인정한 것으로 간주합니다',
-          textAlign: TextAlign.center,
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+        // Figma: signup link row → terms notice = 16px.
+        const SizedBox(height: AppSpacing.spacing16),
+        // Figma left-aligns the terms notice across the full 295px width.
+        SizedBox(
+          width: double.infinity,
+          child: Text(
+            // TODO(i18n): localize
+            'By continuing, you agree to our Terms of Service and Privacy '
+            'Policy.',
+            textAlign: TextAlign.left,
+            // 12pt caption keeps the notice compact so it fits without
+            // scrolling; the body stays in a SingleChildScrollView for longer
+            // localized text.
+            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
+          ),
         ),
       ],
     );

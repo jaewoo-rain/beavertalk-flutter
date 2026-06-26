@@ -10,11 +10,12 @@ import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Password-recovery step 1 — enter the email to receive a reset code.
 ///
-/// Figma `screen/auth_findpw_method` (`2117:19818`). Real backend: "이메일 전송"
+/// Figma `screen/auth_findpw_method` (`2117:19818`). Real backend: "Send email"
 /// calls `requestPasswordReset(email)`; on success it advances to
 /// [Routes.passwordCode] passing the email as the route argument.
 class PasswordMethodScreen extends ConsumerStatefulWidget {
@@ -41,7 +42,8 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
     if (_sending) return;
     final email = _email.text.trim();
     if (email.isEmpty) {
-      setState(() => _error = '이메일을 입력해주세요');
+      // TODO(i18n): localize
+      setState(() => _error = 'Enter your email');
       return;
     }
     setState(() {
@@ -69,33 +71,40 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            title: '비밀번호 찾기',
+            // TODO(i18n): localize
+            title: 'Reset password',
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24,
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '암호를 재설정하는 데 필요한 코드번호를\n'
-                    '받으실 이메일 주소를 입력해 주세요',
+                    // TODO(i18n): localize
+                    "Enter the email address where you'd like to receive "
+                    'the password reset code.',
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.spacing32),
                   InputField(
                     controller: _email,
-                    hintText: '이메일 주소',
+                    // TODO(i18n): localize
+                    hintText: 'Email address',
                     keyboardType: TextInputType.emailAddress,
                     leftIcon: const Icon(Icons.mail_outline),
                     onSubmitted: (_) => _send(),
                   ),
                   if (_error != null) ...[
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.spacing12),
                     Padding(
-                      padding: const EdgeInsets.only(left: 4),
+                      padding: const EdgeInsets.only(left: AppSpacing.spacing4),
                       child: Text(_error!,
                           style: AppType.label2.r
                               .copyWith(color: AppColors.error)),
@@ -106,7 +115,8 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spacing20, 0, AppSpacing.spacing20, AppSpacing.spacing24),
             child: Row(
               children: [
                 Expanded(
@@ -115,7 +125,8 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                     child: Button(
                       type: BtnType.primaryFill,
                       size: BtnSize.s60,
-                      text: _sending ? '전송 중...' : '이메일 전송',
+                      // TODO(i18n): localize
+                      text: _sending ? 'Sending...' : 'Send email',
                       disabled: _sending,
                       onPressed: _send,
                     ),

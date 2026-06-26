@@ -13,15 +13,16 @@ import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Password-recovery step 2 — enter the emailed code + a new password.
 ///
 /// Figma `screen/auth_findpw_code` (`2117:19861`). Real backend: the email is
-/// passed as the route argument; "입력 완료" calls
+/// passed as the route argument; "Submit" calls
 /// `confirmPasswordReset(email, code, newPassword)` (the server validates the
 /// code and sets the password together) → on success goes to
-/// [Routes.passwordComplete]. "코드 재전송" re-requests a code.
+/// [Routes.passwordComplete]. "Resend code" re-requests a code.
 class PasswordCodeScreen extends ConsumerStatefulWidget {
   /// Creates the password-code screen.
   const PasswordCodeScreen({super.key});
@@ -32,7 +33,7 @@ class PasswordCodeScreen extends ConsumerStatefulWidget {
 }
 
 class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
-  /// Total seconds in the entry window — Figma copy says "2분".
+  /// Total seconds in the entry window — Figma copy says "2 min".
   static const int _windowSeconds = 120;
 
   String _email = '';
@@ -86,14 +87,16 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
   String? get _passwordError {
     if (_password.isEmpty) return null;
     if (_password.length < 8 || _password.length > 16) {
-      return '비밀번호는 8~16자를 입력해주세요';
+      // TODO(i18n): localize
+      return 'Password must be 8–16 characters.';
     }
     return null;
   }
 
   String? get _confirmError {
     if (_passwordConfirm.isEmpty) return null;
-    if (_passwordConfirm != _password) return '비밀번호가 일치하지 않아요';
+    // TODO(i18n): localize
+    if (_passwordConfirm != _password) return "Passwords don't match.";
     return null;
   }
 
@@ -146,44 +149,60 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            title: '코드입력',
+            // TODO(i18n): localize
+            title: 'Enter code',
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24,
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '복구 코드가 전송되었습니다. 전달 받은 코드를 입력하고\n'
-                    '새 비밀번호를 설정해주세요.',
+                    // TODO(i18n): localize
+                    "We've sent a recovery code. Enter it and set a new "
+                    'password.',
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.spacing32),
                   OtpInput(
                     length: 4,
                     onChanged: (v) => setState(() => _code = v),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.spacing32),
                   Row(
                     children: [
-                      Text(
-                        '코드를 못 받으셨나요?',
-                        style: AppType.label1.r
-                            .copyWith(color: AppColors.textSecondary),
-                      ),
-                      const SizedBox(width: 6),
-                      GestureDetector(
-                        onTap: _resend,
-                        child: Text(
-                          '코드 재전송',
-                          style: AppType.label1.sb
-                              .copyWith(color: AppColors.primary),
+                      // Wrap lets the prompt + resend flow to a second line if
+                      // the localized text grows; the timer stays at the end.
+                      Expanded(
+                        child: Wrap(
+                          spacing: 6, // Figma 6px gap (no AppSpacing token)
+                          children: [
+                            Text(
+                              // TODO(i18n): localize
+                              "Didn't get the code?",
+                              style: AppType.label1.r
+                                  .copyWith(color: AppColors.textSecondary),
+                            ),
+                            GestureDetector(
+                              onTap: _resend,
+                              child: Text(
+                                // TODO(i18n): localize
+                                'Resend code',
+                                style: AppType.label1.sb
+                                    .copyWith(color: AppColors.primary),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      const Spacer(),
+                      const SizedBox(width: AppSpacing.spacing8),
                       Text(
                         _clock,
                         style: AppType.label1.r
@@ -191,25 +210,29 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: AppSpacing.spacing28),
                   // ── New password ────────────────────────────────────────
-                  const _Label('새 비밀번호'),
-                  const SizedBox(height: 8),
+                  // TODO(i18n): localize
+                  const _Label('New password'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
-                    hintText: '새 비밀번호를 입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Enter your new password',
                     obscureText: true,
                     leftIcon: const Icon(Icons.lock_outline),
                   ),
                   _ErrorText(_passwordError),
-                  const SizedBox(height: 20),
-                  const _Label('새 비밀번호 확인'),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.spacing20),
+                  // TODO(i18n): localize
+                  const _Label('Confirm new password'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _passwordConfirm,
                     onChanged: (v) => setState(() => _passwordConfirm = v),
-                    hintText: '새 비밀번호를 재입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Re-enter your new password',
                     obscureText: true,
                     leftIcon: const Icon(Icons.lock_outline),
                   ),
@@ -220,7 +243,8 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spacing20, 0, AppSpacing.spacing20, AppSpacing.spacing24),
             child: Row(
               children: [
                 Expanded(
@@ -229,7 +253,8 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                     child: Button(
                       type: BtnType.primaryFill,
                       size: BtnSize.s60,
-                      text: _submitting ? '처리 중...' : '입력 완료',
+                      // TODO(i18n): localize
+                      text: _submitting ? 'Submitting...' : 'Submit',
                       disabled: _submitting || !_canSubmit,
                       onPressed: _submit,
                     ),
@@ -253,7 +278,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsets.only(left: AppSpacing.spacing8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -275,7 +300,7 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: 8, left: 4),
+      padding: const EdgeInsets.only(top: AppSpacing.spacing8, left: AppSpacing.spacing4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),

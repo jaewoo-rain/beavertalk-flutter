@@ -4,6 +4,7 @@ import 'placeholder_screen.dart';
 import '../screens/onboarding/onboarding_language.dart';
 import '../screens/onboarding/onboarding_name.dart';
 import '../screens/onboarding/onboarding_reason.dart';
+import '../screens/onboarding/onboarding_done.dart';
 import '../screens/auth/login.dart';
 import '../screens/auth/login_form.dart';
 import '../screens/auth/signup.dart';
@@ -25,7 +26,6 @@ import '../screens/payment/payment_complete.dart';
 import '../screens/payment/payment_failed.dart';
 import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
-import '../screens/system/network_error.dart';
 import '../screens/mypage/mypage.dart';
 import '../screens/mypage/subscription_info.dart';
 import '../screens/mypage/avatar.dart';
@@ -42,6 +42,7 @@ abstract final class Routes {
   static const onboarding = '/onboarding';
   static const onboardingName = '/onboarding/name';
   static const onboardingReason = '/onboarding/reason';
+  static const onboardingDone = '/onboarding/done';
 
   static const login = '/login';
   static const loginForm = '/login/form';
@@ -83,7 +84,6 @@ abstract final class Routes {
   static const paymentFailed = '/payment/failed';
   static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
-  static const errorNetwork = '/error/network';
 
   static const gallery = '/gallery';
 }
@@ -96,6 +96,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
     Routes.onboardingName: (_) => const OnboardingNameScreen(),
     Routes.onboardingReason: (_) => const OnboardingReasonScreen(),
+    Routes.onboardingDone: (_) => const OnboardingDoneScreen(),
     Routes.login: (_) => const LoginScreen(),
     Routes.loginForm: (_) => const LoginFormScreen(),
     Routes.signup: (_) => const SignupScreen(),
@@ -117,7 +118,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.paymentFailed: (_) => const PaymentFailedScreen(),
     Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
-    Routes.errorNetwork: (_) => const NetworkErrorScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
     Routes.subscription: (_) => const SubscriptionInfoScreen(),
     Routes.avatar: (_) => const AvatarScreen(),
@@ -134,6 +134,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.onboarding: '온보딩 · 언어 선택',
     Routes.onboardingName: '온보딩 · 이름',
     Routes.onboardingReason: '온보딩 · 이유',
+    Routes.onboardingDone: '온보딩 · 완료',
     Routes.login: '로그인',
     Routes.loginForm: '로그인 폼',
     Routes.signup: '회원가입',

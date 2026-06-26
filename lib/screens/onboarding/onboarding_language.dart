@@ -8,6 +8,7 @@ import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Onboarding step 1/5 — native language picker. Shown first, before login.
@@ -15,7 +16,7 @@ import '../../theme/app_typography.dart';
 /// Figma `screen/auth_login` (`2291:21265`). Renders an [AppScaffold] with a
 /// [GnbType.main2] progress bar (1/5), the prompt "What is your native
 /// language?", a single-select [CountrySelect] list over [mockLanguages], and a
-/// pinned primary [Button] ("다음으로") that is disabled until a language is
+/// pinned primary [Button] ("Continue") that is disabled until a language is
 /// chosen. Tapping it stores the language in the signup draft; the [AuthGate]
 /// then rebuilds into the login screen (no manual navigation).
 class OnboardingLanguageScreen extends ConsumerStatefulWidget {
@@ -57,13 +58,19 @@ class _OnboardingLanguageScreenState
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24,
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24),
               children: [
                 Text(
+                  // TODO(i18n): localize
                   'What is your native language?',
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
-                const SizedBox(height: 28),
+                const SizedBox(height: AppSpacing.spacing20),
+                // Content data (language names) is kept as-is, not localized.
                 for (final lang in mockLanguages)
                   CountrySelect(
                     name: lang.name,
@@ -75,13 +82,18 @@ class _OnboardingLanguageScreenState
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spacing20,
+                AppSpacing.spacing12,
+                AppSpacing.spacing20,
+                AppSpacing.spacing12),
             child: SizedBox(
               width: double.infinity,
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '다음으로',
+                // TODO(i18n): localize
+                text: 'Continue',
                 disabled: !canContinue,
                 onPressed: _next,
               ),

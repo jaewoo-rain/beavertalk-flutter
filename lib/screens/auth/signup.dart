@@ -9,15 +9,16 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Auth — signup. Figma `screen/auth_signup` (`2117:19739`).
 ///
-/// A simple form (email + password + confirm). "회원가입" calls
+/// A simple form (email + password + confirm). "Sign up" calls
 /// `signup(email, password)` which auto-logs in; the AuthGate then routes to
 /// onboarding (language → name → reason) since `onboardingCompleted` is false.
 ///
-/// The "로그인" prompt pops back to the login flow.
+/// The "Log in" prompt pops back to the login flow.
 class SignupScreen extends ConsumerStatefulWidget {
   /// Creates the signup screen.
   const SignupScreen({super.key});
@@ -31,14 +32,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   String _password = '';
   String _passwordConfirm = '';
 
-  bool _submitting = false; // signup 진행 중
+  bool _submitting = false; // signup in progress
   String? _error;
 
   /// Password length rule shown beneath the password field (8–16 chars).
   String? get _passwordError {
     if (_password.isEmpty) return null;
     if (_password.length < 8 || _password.length > 16) {
-      return '비밀번호는 8~16자를 입력해주세요';
+      // TODO(i18n): localize
+      return 'Password must be 8–16 characters.';
     }
     return null;
   }
@@ -46,7 +48,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   /// Confirm-match rule shown beneath the confirm field.
   String? get _confirmError {
     if (_passwordConfirm.isEmpty) return null;
-    if (_passwordConfirm != _password) return '비밀번호가 일치하지 않아요';
+    // TODO(i18n): localize
+    if (_passwordConfirm != _password) return "Passwords don't match.";
     return null;
   }
 
@@ -63,7 +66,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Future<void> _signup() async {
     if (_submitting) return;
     if (!_canSubmit) {
-      setState(() => _error = '입력값을 확인해주세요');
+      // TODO(i18n): localize
+      setState(() => _error = 'Please check your input.');
       return;
     }
     setState(() {
@@ -88,66 +92,83 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   /// Returns to the login flow.
   void _goLogin() => Navigator.pop(context);
 
+  /// Social sign-up is not wired yet (mock placeholder).
+  void _socialSignup() {
+    // TODO: wire social sign-up (Kakao / Google / Apple).
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '가입하기', onBack: () => Navigator.pop(context)),
+          // TODO(i18n): localize
+          Gnb.main(title: 'Sign up', onBack: () => Navigator.pop(context)),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.spacing20,
+                  AppSpacing.spacing24, AppSpacing.spacing20, AppSpacing.spacing24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Email ───────────────────────────────────────────────
-                  const _FieldLabel('이메일'),
-                  const SizedBox(height: 8),
+                  // TODO(i18n): localize
+                  const _FieldLabel('Email'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _email,
                     onChanged: (v) => setState(() => _email = v),
-                    hintText: '이메일을 입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Enter your email',
                     keyboardType: TextInputType.emailAddress,
                     leftIcon: const MailIcon(
                         size: 20, color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.spacing20),
                   // ── Password ────────────────────────────────────────────
-                  const _FieldLabel('비밀번호'),
-                  const SizedBox(height: 8),
+                  // TODO(i18n): localize
+                  const _FieldLabel('Password'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
-                    hintText: '비밀번호를 입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Enter your password',
                     obscureText: true,
                     leftIcon: const Icon(Icons.lock_outline),
                   ),
                   _ErrorText(_passwordError),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.spacing20),
                   // ── Password confirm ────────────────────────────────────
-                  const _FieldLabel('비밀번호 재확인'),
-                  const SizedBox(height: 8),
+                  // TODO(i18n): localize
+                  const _FieldLabel('Confirm password'),
+                  const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _passwordConfirm,
                     onChanged: (v) => setState(() => _passwordConfirm = v),
-                    hintText: '비밀번호를 재입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Re-enter your password',
                     obscureText: true,
                     leftIcon: const Icon(Icons.lock_outline),
                   ),
                   _ErrorText(_confirmError),
                   // ── Server / validation error ───────────────────────────
                   _ErrorText(_error),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: AppSpacing.spacing32),
                   // ── Signup (auto-logs in; AuthGate routes to onboarding) ─
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: _submitting ? '가입 중...' : '회원가입',
+                    // TODO(i18n): localize
+                    text: _submitting ? 'Signing up...' : 'Sign up',
                     disabled: _submitting || !_canSubmit,
                     onPressed: _signup,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.spacing48),
+                  // ── Social sign-up row (Kakao / Google / Apple) ─────────
+                  _SocialButtonRow(onPressed: _socialSignup),
+                  const SizedBox(height: AppSpacing.spacing24),
                   // ── Login prompt ────────────────────────────────────────
                   Center(child: _LoginPrompt(onLogin: _goLogin)),
                 ],
@@ -169,7 +190,7 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8),
+      padding: const EdgeInsets.only(left: AppSpacing.spacing8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -192,7 +213,7 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: 8, left: 4),
+      padding: const EdgeInsets.only(top: AppSpacing.spacing8, left: AppSpacing.spacing4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),
@@ -201,27 +222,62 @@ class _ErrorText extends StatelessWidget {
   }
 }
 
-/// "이미 계정이 있으신가요? 로그인" inline prompt.
+/// Three equal-width social sign-up buttons (Kakao / Google / Apple),
+/// matching the Figma `screen/auth_signup` footer row.
+class _SocialButtonRow extends StatelessWidget {
+  const _SocialButtonRow({required this.onPressed});
+
+  /// Tapped on any social button (all mocked for now).
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget social(Widget icon) => Expanded(
+          child: Button(
+            type: BtnType.secondaryOutline,
+            size: BtnSize.s60,
+            text: '',
+            leftIcon: icon,
+            onPressed: onPressed,
+          ),
+        );
+    return Row(
+      children: [
+        social(const KakaoIcon(size: 24)),
+        const SizedBox(width: AppSpacing.spacing12),
+        social(const GoogleIcon(size: 24)),
+        const SizedBox(width: AppSpacing.spacing12),
+        social(const AppleIcon(size: 24, color: AppColors.text)),
+      ],
+    );
+  }
+}
+
+/// "Already have an account? Log in" inline prompt.
 class _LoginPrompt extends StatelessWidget {
   const _LoginPrompt({required this.onLogin});
 
-  /// Tapped when "로그인" is pressed.
+  /// Tapped when "Log in" is pressed.
   final VoidCallback onLogin;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    // Wrap so the prompt + action can flow onto a second line if localized
+    // text grows.
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 6, // Figma 6px gap (no AppSpacing token)
       children: [
         Text(
-          '이미 계정이 있으신가요?',
+          // TODO(i18n): localize
+          'Already have an account?',
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
         ),
-        const SizedBox(width: 6),
         GestureDetector(
           onTap: onLogin,
           child: Text(
-            '로그인',
+            // TODO(i18n): localize
+            'Log in',
             style: AppType.label1.sb.copyWith(color: AppColors.primary),
           ),
         ),

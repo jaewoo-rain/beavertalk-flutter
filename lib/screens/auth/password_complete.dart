@@ -4,13 +4,14 @@ import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Password-recovery step 3 — reset complete.
 ///
 /// Figma `screen/auth_findpw_complete` (`2117:19851`). A title + guidance text,
 /// a celebratory key illustration (🔑 stand-in for the Figma 3D asset), and a
-/// primary "로그인" button that returns to the AuthGate root (which shows the
+/// primary "Log in" button that returns to the AuthGate root (which shows the
 /// login flow while unauthenticated), so a successful re-login can redirect to
 /// Home.
 class PasswordCompleteScreen extends StatelessWidget {
@@ -33,24 +34,26 @@ class PasswordCompleteScreen extends StatelessWidget {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spacing20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    '비밀번호 재설정 완료',
+                    // TODO(i18n): localize
+                    'Password reset complete',
                     textAlign: TextAlign.center,
                     style: AppType.title2.b,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.spacing16),
                   Text(
-                    '새로운 비밀번호로 재설정 되었습니다.\n'
-                    '신규 비밀번호를 입력하셔서 로그인을 진행하세요',
+                    // TODO(i18n): localize
+                    'Your password has been reset. '
+                    'Log in with your new password to continue.',
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSpacing.spacing48),
                   // Celebratory illustration — emoji stand-in for the Figma
                   // 3D "location/key" asset (mock; no asset bundled).
                   Container(
@@ -68,7 +71,8 @@ class PasswordCompleteScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spacing20, 0, AppSpacing.spacing20, AppSpacing.spacing24),
             child: Row(
               children: [
                 Expanded(
@@ -77,7 +81,8 @@ class PasswordCompleteScreen extends StatelessWidget {
                     child: Button(
                       type: BtnType.primaryFill,
                       size: BtnSize.s60,
-                      text: '로그인',
+                      // TODO(i18n): localize
+                      text: 'Log in',
                       onPressed: () => _goLogin(context),
                     ),
                   ),

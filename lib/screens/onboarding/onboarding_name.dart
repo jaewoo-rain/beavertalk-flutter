@@ -8,14 +8,16 @@ import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Onboarding step 2/5 — what should we call you.
 ///
 /// Figma `screen/auth_login` (`2291:21281`). An [AppScaffold] with a
-/// [GnbType.main2] progress bar (2/5), the title "당신을 어떻게 부를까요?" with a
-/// subtitle, a labelled [InputField] for the name plus a helper line, and a
-/// pinned primary [Button] ("다음으로") that is disabled until a name is entered.
+/// [GnbType.main2] progress bar (2/5), the title "What should we call you?"
+/// with a subtitle, a labelled [InputField] for the name plus a helper line, and
+/// a pinned primary [Button] ("Continue") that is disabled until a name is
+/// entered.
 /// Tapping it navigates to [Routes.onboardingReason].
 class OnboardingNameScreen extends ConsumerStatefulWidget {
   /// Creates the name onboarding screen.
@@ -50,37 +52,46 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24,
+                  AppSpacing.spacing20,
+                  AppSpacing.spacing24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '당신을 어떻게 부를까요?',
+                    // TODO(i18n): localize
+                    'What should we call you?',
                     style: AppType.title3.b.copyWith(color: AppColors.text),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.spacing8),
                   Text(
-                    'AI Tutor가 당신의 이름을 기억해요',
+                    // TODO(i18n): localize
+                    'Your AI tutor will remember your name.',
                     style: AppType.body1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.spacing24),
                   Text(
-                    '사용자의 이름',
+                    // TODO(i18n): localize
+                    'Your name',
                     style: AppType.body1.r.copyWith(color: AppColors.text),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.spacing12),
                   InputField(
                     value: _name,
                     onChanged: (v) => setState(() => _name = v),
-                    hintText: '이름을 입력해주세요',
+                    // TODO(i18n): localize
+                    hintText: 'Enter your name',
                     onSubmitted: (_) {
                       if (_name.trim().isNotEmpty) _next();
                     },
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.spacing8),
                   Text(
-                    '실명이 아니어도 괜찮아요. 닉네임도 좋아요.',
+                    // TODO(i18n): localize
+                    "It doesn't have to be your real name — a nickname works too.",
                     style: AppType.body1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
@@ -89,13 +100,18 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.spacing20,
+                AppSpacing.spacing12,
+                AppSpacing.spacing20,
+                AppSpacing.spacing12),
             child: SizedBox(
               width: double.infinity,
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '다음으로',
+                // TODO(i18n): localize
+                text: 'Continue',
                 disabled: !canContinue,
                 onPressed: _next,
               ),

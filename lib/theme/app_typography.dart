@@ -7,9 +7,9 @@ import 'app_colors.dart';
 /// for Regular(400)/Medium(500)/SemiBold(600)/Bold(700) weights. Color defaults
 /// to white; override with `.copyWith(color: ...)` at the call site.
 ///
-/// NOTE: the Pretendard font is referenced by family name only. Bundle the
-/// Pretendard ttf via pubspec `fonts:` (assets/fonts/) for exact rendering;
-/// until then Flutter falls back to the platform default (no build error).
+/// The Pretendard font is bundled: `pubspec.yaml` declares the `Pretendard`
+/// family with the 400/500/600/700 weights in `assets/fonts/`, so these styles
+/// render with the real typeface (no platform fallback).
 const String kFontFamily = 'Pretendard';
 
 class AppType {
