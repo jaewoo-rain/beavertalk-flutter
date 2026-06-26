@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -19,15 +22,35 @@ import '../../theme/app_typography.dart';
 /// - a pinned [BottomNavBar] with three tabs (calendar / call (center) /
 ///   history). The center call tab starts active and navigates to
 ///   [Routes.callLoading].
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   /// Creates the home screen.
   const HomeScreen({super.key});
 
   /// Diameter of the hero beaver avatar (large circle).
   static const double _avatarSize = 200;
 
+  /// Requests the mic permission, then enters the call flow with the member's
+  /// representative character id (falling back to `1` / 비비). When permission is
+  /// denied the call is blocked and the user is guided to settings/mic_denied.
+  Future<void> _startCall(BuildContext context, WidgetRef ref) async {
+    final status = await Permission.microphone.request();
+    if (!context.mounted) return;
+    if (!status.isGranted) {
+      Navigator.pushNamed(context, Routes.permissionMicDenied);
+      return;
+    }
+    final characterId =
+        ref.read(myProfileProvider).valueOrNull?.characterId ?? 1;
+    if (!context.mounted) return;
+    Navigator.pushNamed(
+      context,
+      Routes.callLoading,
+      arguments: characterId,
+    );
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -95,8 +118,8 @@ class HomeScreen extends StatelessWidget {
             activeKey: 'call',
             onTap: (key) {
               switch (key) {
-                case 'call': // center → start a call
-                  Navigator.pushNamed(context, Routes.callLoading);
+                case 'call': // center → start a call (mic permission first)
+                  _startCall(context, ref);
                 case 'calendar': // left → alarm settings (etc_alarm)
                   Navigator.pushNamed(context, Routes.alarms);
                 case 'history': // right → conversation records (record_list)

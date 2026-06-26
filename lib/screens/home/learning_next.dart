@@ -5,21 +5,25 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
-import '../../mock/mock_data.dart';
+import '../../features/review/data/audio_player.dart';
+import '../../features/review/domain/entities/review_feedback.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
 /// Learning step 2 — Figma `screen/learning_next` (`2117:20110`).
 ///
-/// Replays the just-recorded attempt: the sentence is rendered **per character**
-/// with [_scoreColor] (상 ≥85 → [AppColors.success], 중 ≥70 →
-/// [AppColors.warning], else → [AppColors.error]) over the EN translation, then
-/// Native / Me playback buttons (mock — they only SnackBar "재생"), and a control
-/// row of:
-/// - a retry circle (다시하기) → [Navigator.pop] back to re-record in
-///   [Routes.learningIntro],
-/// - a next circle (→) → [Routes.learningMain] (forwarding [LearningArgs]).
+/// Shows the just-scored attempt from the real [ReviewFeedback] in
+/// [LearningArgs.feedback]: the sentence rendered **per character** colored by
+/// its 상/중/하 grade (상 → [AppColors.success], 중 → [AppColors.warning], 하 →
+/// [AppColors.error]; falls back to score thresholds when the grade is unknown),
+/// the native translation, Native / Me playback, then a retry/next control row.
+///
+/// - "Me" plays the user's recorded WAV ([LearningArgs.recordedWav]).
+/// - "Native" plays [ReviewFeedback.voiceUrl] when present (best-effort; a
+///   storage key that isn't directly playable just shows a message).
+/// - 다시하기 → pop back to re-record the same sentence.
+/// - → next → next sentence's intro, or [Routes.learningMain] when last.
 ///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
 class LearningNextScreen extends StatefulWidget {
@@ -31,24 +35,70 @@ class LearningNextScreen extends StatefulWidget {
 }
 
 class _LearningNextScreenState extends State<LearningNextScreen> {
-  /// Color for a per-character score: 상/중/하 thresholds.
-  static Color _scoreColor(int score) {
-    if (score >= 85) return AppColors.success;
-    if (score >= 70) return AppColors.warning;
-    return AppColors.error;
+  final ReviewAudioPlayer _player = ReviewAudioPlayer();
+
+  /// Color for a character by grade, falling back to score thresholds when the
+  /// grade is unknown/missing.
+  static Color _gradeColor(CharScore cs) {
+    switch (cs.grade) {
+      case CharGrade.high:
+        return AppColors.success;
+      case CharGrade.medium:
+        return AppColors.warning;
+      case CharGrade.low:
+        return AppColors.error;
+      case CharGrade.unknown:
+        if (cs.score >= 85) return AppColors.success;
+        if (cs.score >= 70) return AppColors.warning;
+        return AppColors.error;
+    }
   }
 
-  void _play(String who) {
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _playMe(LearningArgs args) async {
+    final wav = args.recordedWav;
+    if (wav == null || wav.isEmpty) {
+      _snack('재생할 녹음이 없어요.');
+      return;
+    }
+    try {
+      await _player.playBytes(wav);
+    } catch (_) {
+      _snack('내 녹음을 재생할 수 없어요.');
+    }
+  }
+
+  Future<void> _playNative(ReviewFeedback? feedback) async {
+    final url = feedback?.voiceUrl;
+    if (url == null || url.isEmpty || !url.startsWith('http')) {
+      // voiceUrl may be a storage key, not a directly playable URL.
+      _snack('표준 발음 오디오를 재생할 수 없어요.');
+      return;
+    }
+    try {
+      await _player.playUrl(url);
+    } catch (_) {
+      _snack('표준 발음 오디오를 재생할 수 없어요.');
+    }
+  }
+
+  void _snack(String message) {
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
-      ..showSnackBar(SnackBar(content: Text('$who 재생')));
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final feedback = args.feedback;
     final sentence = args.current;
+    final native = feedback?.native ?? sentence.native;
 
     return AppScaffold(
       background: AppColors.surface2,
@@ -83,10 +133,13 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        _ScoredSentence(charScores: sentence.charScores),
+                        _ScoredSentence(
+                          charScores: feedback?.charScores ?? const [],
+                          fallbackText: sentence.korean,
+                        ),
                         const SizedBox(height: 8),
                         Text(
-                          sentence.native,
+                          native,
                           textAlign: TextAlign.center,
                           style: AppType.body1.sb
                               .copyWith(color: AppColors.textSecondary),
@@ -108,7 +161,7 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                             size: BtnSize.s44,
                             text: 'Native',
                             leftIcon: const Icon(Icons.volume_up_outlined),
-                            onPressed: () => _play('Native'),
+                            onPressed: () => _playNative(feedback),
                           ),
                         ),
                         const SizedBox(width: 13),
@@ -118,16 +171,14 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                             size: BtnSize.s44,
                             text: 'Me',
                             leftIcon: const Icon(Icons.volume_up_outlined),
-                            onPressed: () => _play('Me'),
+                            onPressed: () => _playMe(args),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-                // Retry (white circle) + next (arrow). A 56px invisible mirror
-                // on the left keeps the retry circle screen-centered (Figma row
-                // [56 mirror][96 retry][56 arrow], gap 24).
+                // Retry (white circle) + next (arrow).
                 Align(
                   alignment: const Alignment(0, 0.72),
                   child: Row(
@@ -177,15 +228,27 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
   }
 }
 
-/// Renders the sentence character-by-character, each tinted by its score.
+/// Renders the sentence character-by-character, each tinted by its grade.
+/// Falls back to a plain (un-tinted) sentence when no char scores exist.
 class _ScoredSentence extends StatelessWidget {
-  const _ScoredSentence({required this.charScores});
+  const _ScoredSentence({
+    required this.charScores,
+    required this.fallbackText,
+  });
 
-  final List<MockCharScore> charScores;
+  final List<CharScore> charScores;
+  final String fallbackText;
 
   @override
   Widget build(BuildContext context) {
     final base = AppType.heading2.sb;
+    if (charScores.isEmpty) {
+      return Text(
+        fallbackText,
+        textAlign: TextAlign.center,
+        style: base.copyWith(color: AppColors.text),
+      );
+    }
     return RichText(
       textAlign: TextAlign.center,
       text: TextSpan(
@@ -194,7 +257,7 @@ class _ScoredSentence extends StatelessWidget {
             TextSpan(
               text: cs.char,
               style: base.copyWith(
-                color: _LearningNextScreenState._scoreColor(cs.score),
+                color: _LearningNextScreenState._gradeColor(cs),
               ),
             ),
         ],
@@ -202,4 +265,3 @@ class _ScoredSentence extends StatelessWidget {
     );
   }
 }
-

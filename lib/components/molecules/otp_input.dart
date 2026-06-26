@@ -95,10 +95,14 @@ class _OtpInputState extends State<OtpInput> {
 
   @override
   Widget build(BuildContext context) {
+    // Equal-width boxes that flex to fit any width (6-digit codes would
+    // overflow a fixed 68px box on narrow screens), capped at 68px tall.
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        for (var i = 0; i < widget.length; i++) _box(i),
+        for (var i = 0; i < widget.length; i++) ...[
+          if (i > 0) const SizedBox(width: 8),
+          Expanded(child: _box(i)),
+        ],
       ],
     );
   }
@@ -106,9 +110,8 @@ class _OtpInputState extends State<OtpInput> {
   Widget _box(int i) {
     final focused = _nodes[i].hasFocus;
     final filled = _controllers[i].text.isNotEmpty;
-    return SizedBox(
-      width: 68,
-      height: 68,
+    return AspectRatio(
+      aspectRatio: 1,
       child: Focus(
         onKeyEvent: (node, event) => _onKey(i, node, event),
         child: AnimatedContainer(
@@ -158,7 +161,7 @@ class OtpInputDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.all(24),
-      child: OtpInput(length: 4),
+      child: OtpInput(length: 6),
     );
   }
 }

@@ -101,7 +101,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
   }
 
   bool get _canSubmit =>
-      _code.length == 4 &&
+      _code.length == 6 &&
       _password.isNotEmpty &&
       _passwordConfirm.isNotEmpty &&
       _passwordError == null &&
@@ -172,7 +172,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                   ),
                   const SizedBox(height: AppSpacing.spacing32),
                   OtpInput(
-                    length: 4,
+                    length: 6,
                     onChanged: (v) => setState(() => _code = v),
                   ),
                   const SizedBox(height: AppSpacing.spacing32),

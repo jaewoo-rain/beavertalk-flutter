@@ -1,65 +1,77 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
+import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
 /// Call connecting — Figma `screen/call_loading` (`2117:19923`).
 ///
-/// A dark full-screen "연결 중..." state shown while the call is dialing. It
-/// renders the [beaverImage] avatar, a [CircularProgressIndicator] spinner, and
-/// a status line, with a top-left close button returning to [Routes.home].
+/// A dark full-screen "연결 중..." state shown while the WebSocket connects and
+/// the server prepares its automatic opening line. It renders the [beaverImage]
+/// avatar, a spinner, and a status line, with a top-left close button.
 ///
-/// After [_dialDuration] (2.5s) it auto-advances to the live call via
-/// `Navigator.pushReplacementNamed(Routes.call)`. The timer is created in
-/// [initState] and cancelled in [dispose] so it never fires after teardown.
-class CallLoadingScreen extends StatefulWidget {
+/// On [initState] it calls `NormalCallController.start(characterId)` (no button —
+/// the opening line is server-triggered, plan §8-3). The `characterId` arrives
+/// as the route's `arguments` (set by home), defaulting to `1`. It then listens
+/// to the controller: `inCall` → `pushReplacement(Routes.call)`; `error` →
+/// guidance + back home. The close (X) hangs up and returns home (§8-2).
+class CallLoadingScreen extends ConsumerStatefulWidget {
   /// Creates the call-connecting screen.
   const CallLoadingScreen({super.key});
 
   @override
-  State<CallLoadingScreen> createState() => _CallLoadingScreenState();
+  ConsumerState<CallLoadingScreen> createState() => _CallLoadingScreenState();
 }
 
-class _CallLoadingScreenState extends State<CallLoadingScreen> {
-  /// How long the faux "dialing" state lasts before the call connects.
-  static const Duration _dialDuration = Duration(milliseconds: 2500);
-
-  /// Pending auto-advance timer; cancelled in [dispose].
-  Timer? _timer;
+class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
-    _timer = Timer(_dialDuration, _connect);
+    // Start after the first frame so route arguments are available and we can
+    // safely read providers.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _begin());
   }
 
-  @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
+  /// Reads the character id from route arguments and starts the call.
+  void _begin() {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final characterId = args is int ? args : 1;
+    ref.read(normalCallControllerProvider.notifier).start(characterId);
   }
 
-  /// Replaces this screen with the live [Routes.call] screen.
-  void _connect() {
+  /// Cancels connecting and returns home.
+  Future<void> _cancel() async {
+    await ref.read(normalCallControllerProvider.notifier).hangUp();
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, Routes.call);
-  }
-
-  /// Cancels dialing and returns home.
-  void _cancel() {
-    _timer?.cancel();
-    Navigator.pushReplacementNamed(context, Routes.home);
+    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
   }
 
   @override
   Widget build(BuildContext context) {
+    // React to phase transitions.
+    ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
+      if (_navigated) return;
+      if (next.phase == CallPhase.inCall) {
+        _navigated = true;
+        Navigator.pushReplacementNamed(context, Routes.call);
+      } else if (next.phase == CallPhase.error) {
+        _navigated = true;
+        final msg = next.errorMsg ?? '통화 연결에 실패했습니다.';
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(msg)));
+        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
+      }
+    });
+
     return AppScaffold(
       background: AppColors.bg,
       statusVariant: StatusBarVariant.whiteTransparent,
@@ -107,7 +119,7 @@ class _CallLoadingScreenState extends State<CallLoadingScreen> {
               ],
             ),
           ),
-          // Top-left close button → home.
+          // Top-left close button → hang up + home.
           Positioned(
             left: 8,
             top: 8,

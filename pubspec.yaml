@@ -42,6 +42,9 @@ dependencies:
   flutter_riverpod: ^2.6.1
   # HTTP client for the FastAPI backend (interceptors, form/json bodies).
   dio: ^5.7.0
+  # MediaType for multipart uploads (review audio); transitive via dio, but
+  # declared directly since we import it in the review data source.
+  http_parser: ^4.1.0
   # Secure JWT storage (Keychain / EncryptedSharedPreferences).
   flutter_secure_storage: ^9.2.4
   # Google Sign-In. On web (6.2.x) renderButton() yields a reliable idToken
@@ -53,6 +56,17 @@ dependencies:
   # Loads API_BASE_URL from a project-root .env (overrides the platform
   # fallback). Bundled as an asset so web builds can read it.
   flutter_dotenv: ^5.1.0
+
+  # Supabase Auth — the app's identity provider. Persists + auto-refreshes the
+  # session; the backend verifies the Supabase access token (ES256 JWT).
+  supabase_flutter: ^2.15.0
+
+  # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
+  web_socket_channel: ^3.0.1
+  # normalcall — 마이크 PCM16k 스트림 녹음 + 서버 PCM24k 스트림 재생(한 플러그인).
+  flutter_sound: ^9.2.13
+  # normalcall — 마이크 권한 요청.
+  permission_handler: ^11.3.1
 
 dev_dependencies:
   flutter_test:

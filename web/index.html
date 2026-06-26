@@ -38,6 +38,18 @@
 </head>
 <body>
   <!--
+    Passkeys Web SDK (corbado bundle.js, v2.4.0). Pulled in transitively by
+    supabase_flutter → passkeys → passkeys_web. The web plugin's registerWith()
+    checks for the global `window.PasskeyAuthenticator` at startup and calls
+    window.close() (killing the app) if it's absent. We do NOT use passkeys —
+    only email/password + recovery OTP — but this script must load
+    SYNCHRONOUSLY before flutter_bootstrap.js so that global exists when the
+    Flutter web loader registers plugins. Vendored locally (web/) instead of
+    hot-linking the GitHub release for reliability/offline boots.
+  -->
+  <script src="passkeys_bundle.js"></script>
+
+  <!--
     You can customize the "flutter_bootstrap.js" script.
     This is useful to provide a custom configuration to the Flutter loader
     or to give the user feedback during the initialization process.

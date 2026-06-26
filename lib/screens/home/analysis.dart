@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
-import '../../components/molecules/chat_bubble.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/review/domain/entities/review_feedback.dart';
+import '../../features/review/presentation/review_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
@@ -14,27 +17,92 @@ import 'learning_args.dart';
 
 /// Call analysis screen — Figma `screen/analysis` (`2224:21244`).
 ///
-/// A long-scrolling [AppScaffold] under a [GnbType.main] header ("대화 기록"):
-/// - the conversation title + a dotted date/duration meta row,
-/// - a [PronunciationResult] gauge driven by [mockCallResult],
-/// - a full-width "복습하기" button that reviews **every** learned sentence,
-/// - a "새로 배운 표현" list (one card per [mockSentences] entry) where each
-///   card carries a "연습하기" button that practices **that one** sentence,
-/// - a "대화 상세" section of a few [ChatBubble]s.
+/// Binds the real [CallResult] passed as route arguments (fetched by
+/// [Routes.analysisLoading] after the analysis finished):
+/// - the conversation title ← `result.summary` (fallback when null),
+/// - a [PronunciationResult] gauge whose average is **recomputed on the
+///   frontend** from [reviewScoresProvider] — the mean over sentences the user
+///   has practiced this session. Before any practice the map is empty → the
+///   gauge is inactive ("-%"); it updates live as the user records sentences
+///   and returns here. (We do not use `result.average`.)
+/// - a "복습하기" button that reviews **every** learned sentence,
+/// - a "새로 배운 표현" list (one card per `result.sentences` entry) where each
+///   card carries a "연습하기" button that practices **that one** sentence and
+///   shows the sentence's latest practiced score when available.
 ///
-/// Both review paths push [Routes.learningIntro] with a [LearningArgs]:
-/// "복습하기" → all sentences from index 0; "연습하기" → a single-sentence list.
-class AnalysisScreen extends StatefulWidget {
+/// The "대화 상세" chat-bubble section has no backing field in [CallResult], so
+/// it is hidden.
+///
+/// Both review paths push [Routes.learningIntro] with a [LearningArgs]. The
+/// learning flow operates on [MockSentence] for layout, but the real scoring
+/// comes from the review API; learned sentences are adapted to [MockSentence]
+/// (text only — review scores come from the API, not these placeholders).
+class AnalysisScreen extends ConsumerStatefulWidget {
   /// Creates the call analysis screen.
   const AnalysisScreen({super.key});
 
   @override
-  State<AnalysisScreen> createState() => _AnalysisScreenState();
+  ConsumerState<AnalysisScreen> createState() => _AnalysisScreenState();
 }
 
-class _AnalysisScreenState extends State<AnalysisScreen> {
+class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
+  CallResult? _result;
+
+  /// Learned sentences adapted to the learning flow's [MockSentence] shape
+  /// (text only). Built once from [_result].
+  List<MockSentence> _learningSentences = const [];
+
+  /// True once the deferred per-call reset of [reviewScoresProvider] has run.
+  /// Until then the gauge ignores any (possibly stale) scores so a fresh call
+  /// starts empty even on the first frame, before the post-frame reset lands.
+  bool _scoresReset = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_result != null) return; // capture once
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is CallResult) {
+      _result = args;
+      _learningSentences =
+          args.sentences.map(_toMockSentence).toList(growable: false);
+      // Defer provider/notifier mutations out of the lifecycle phase: Riverpod
+      // forbids modifying a provider during build/initState/didChangeDependencies.
+      // Runs exactly once (guarded by the `_result == null` capture above).
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        // New analysis session → reset the running per-sentence scores so they
+        // don't leak across different calls (keyed by call id; re-opening the
+        // same call keeps scores the user already earned).
+        ref.read(reviewScoresProvider.notifier).resetForCall(args.callId);
+        // Seed the in-memory bookmark store from the server's flags.
+        final saved = {...bookmarkedSentenceIds.value};
+        for (final s in args.sentences) {
+          if (s.isBookmarked) saved.add(s.sentenceId);
+        }
+        bookmarkedSentenceIds.value = saved;
+        setState(() => _scoresReset = true);
+      });
+    }
+  }
+
+  /// Adapts a domain [LearnedSentence] to the learning flow's [MockSentence]
+  /// (text + id only; review scores come from the API at practice time).
+  MockSentence _toMockSentence(LearnedSentence s) => MockSentence(
+        id: s.sentenceId,
+        korean: s.korean ?? '',
+        native: s.native ?? '',
+        charScores: const [],
+        overall: 0,
+        pronunciation: 0,
+        fluency: 0,
+        rhythm: 0,
+        bookmarked: s.isBookmarked,
+      );
+
   /// Pushes the learning flow for [sentences], starting at [index].
   void _startLearning(List<MockSentence> sentences, {int index = 0}) {
+    if (sentences.isEmpty) return;
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
@@ -42,9 +110,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
     );
   }
 
+  /// Formats a nullable 0–100 score as a rounded percent, or `-%` when null.
+  String _pct(double? value) => value == null ? '-%' : '${value.round()}%';
+
   @override
   Widget build(BuildContext context) {
-    final result = mockCallResult;
+    final result = _result;
 
     return AppScaffold(
       background: AppColors.surface,
@@ -55,136 +126,165 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
-              child: Column(
+            child: result == null ? const _EmptyState() : _content(result),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _content(CallResult result) {
+    // Recompute the gauge average from the per-sentence review scores. Until the
+    // deferred per-call reset has run, treat scores as empty so a fresh call
+    // never shows a previous call's leftover scores on the first frame.
+    final scores =
+        _scoresReset ? ref.watch(reviewScoresProvider) : const <int, PronScore>{};
+    final total = averageOf(scores, (s) => s.totalScore);
+    final pronunciation = averageOf(scores, (s) => s.pronunciation);
+    final fluency = averageOf(scores, (s) => s.fluency);
+    final rhythm = averageOf(scores, (s) => s.rhythm);
+
+    final title = (result.summary != null && result.summary!.trim().isNotEmpty)
+        ? result.summary!
+        : '대화 분석 결과';
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── section 1: summary + gauge + 복습하기 ───────────────────
+          Text(
+            title,
+            style: AppType.headline1.sb.copyWith(color: AppColors.text),
+          ),
+          const SizedBox(height: 32),
+          Center(
+            child: PronunciationResult(
+              // Empty (no practice yet) → inactive gauge ("-%").
+              state: total == null
+                  ? PronunciationState.inactive
+                  : PronunciationState.active,
+              score: total ?? 0,
+              metrics: [
+                PronunciationMetric(
+                  label: 'Pronunciation',
+                  value: _pct(pronunciation),
+                ),
+                PronunciationMetric(label: 'Fluency', value: _pct(fluency)),
+                PronunciationMetric(label: 'Rhythm', value: _pct(rhythm)),
+              ],
+            ),
+          ),
+          const SizedBox(height: 32),
+          Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: '복습하기',
+            disabled: _learningSentences.isEmpty,
+            onPressed: () => _startLearning(_learningSentences),
+          ),
+
+          // ── section 2: 새로 배운 표현 ───────────────────────────────
+          const SizedBox(height: 40),
+          Text(
+            '새로 배운 표현',
+            style: AppType.headline1.sb.copyWith(color: AppColors.text),
+          ),
+          const SizedBox(height: 16),
+          if (result.sentences.isEmpty)
+            Text(
+              '이번 대화에서 새로 배운 표현이 없어요.',
+              style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+            )
+          else
+            ValueListenableBuilder<Set<int>>(
+              valueListenable: bookmarkedSentenceIds,
+              builder: (context, ids, _) => Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── section 1: summary + 복습하기 ───────────────────
-                  Text(
-                    '강아지 산책과 음악 취향',
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
-                  ),
-                  const SizedBox(height: 8),
-                  _MetaRow(segments: const ['1월 2일', '10분 37초']),
-                  const SizedBox(height: 32),
-                  Center(
-                    child: PronunciationResult(
-                      score: result.overall.toDouble(),
-                      metrics: [
-                        PronunciationMetric(
-                          label: 'Pronunciation',
-                          value: '${result.pronunciation}%',
-                        ),
-                        PronunciationMetric(
-                          label: 'Fluency',
-                          value: '${result.fluency}%',
-                        ),
-                        PronunciationMetric(
-                          label: 'Rhythm',
-                          value: '${result.rhythm}%',
-                        ),
-                      ],
+                  for (int i = 0; i < result.sentences.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 20),
+                    _SentenceCard(
+                      sentence: result.sentences[i],
+                      bookmarked:
+                          ids.contains(result.sentences[i].sentenceId),
+                      score: scores[result.sentences[i].sentenceId],
+                      onBookmarkTap: () =>
+                          toggleBookmark(result.sentences[i].sentenceId),
+                      onPractice: () =>
+                          _startLearning([_learningSentences[i]]),
                     ),
-                  ),
-                  const SizedBox(height: 32),
-                  Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: '복습하기',
-                    onPressed: () => _startLearning(result.sentences),
-                  ),
-
-                  // ── section 2: 새로 배운 표현 ───────────────────────
-                  const SizedBox(height: 40),
-                  Text(
-                    '새로 배운 표현',
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
-                  ),
-                  const SizedBox(height: 16),
-                  ValueListenableBuilder<Set<int>>(
-                    valueListenable: bookmarkedSentenceIds,
-                    builder: (context, ids, _) => Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (int i = 0; i < result.sentences.length; i++) ...[
-                          if (i > 0) const SizedBox(height: 20),
-                          CardBookmark(
-                            korean: result.sentences[i].korean,
-                            native: result.sentences[i].native,
-                            bookmarked: ids.contains(result.sentences[i].id),
-                            onBookmarkTap: () =>
-                                toggleBookmark(result.sentences[i].id),
-                            actionText: '연습하기',
-                            onAction: () =>
-                                _startLearning([result.sentences[i]]),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-
-                  // ── section 3: 대화 상세 ────────────────────────────
-                  const SizedBox(height: 40),
-                  Text(
-                    '대화 상세',
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
-                  ),
-                  const SizedBox(height: 16),
-                  const ChatBubble(
-                    sender: ChatSender.ai,
-                    text: '오, 정말 괜찮아!',
-                  ),
-                  const SizedBox(height: 20),
-                  const ChatBubble(
-                    sender: ChatSender.user,
-                    text: '오늘 진짜 추워. 강아지랑 같이 얼음 됐어.',
-                  ),
-                  const SizedBox(height: 20),
-                  const ChatBubble(
-                    sender: ChatSender.ai,
-                    text: '오, 정말 괜찮아!',
-                  ),
+                  ],
                 ],
               ),
             ),
-          ),
+
+          // ── section 3: 대화 상세 ────────────────────────────────────
+          // Hidden: CallResult has no conversation transcript field.
         ],
       ),
     );
   }
 }
 
-/// A dotted "date · duration" meta row (Figma `2224:21252`): Label 1 SemiBold
-/// in [AppColors.textSecondary] with 4×4 dot separators.
-class _MetaRow extends StatelessWidget {
-  const _MetaRow({required this.segments});
+/// One "새로 배운 표현" card: the bookmark card plus an optional latest-score
+/// line shown once the sentence has been practiced.
+class _SentenceCard extends StatelessWidget {
+  const _SentenceCard({
+    required this.sentence,
+    required this.bookmarked,
+    required this.score,
+    required this.onBookmarkTap,
+    required this.onPractice,
+  });
 
-  final List<String> segments;
+  final LearnedSentence sentence;
+  final bool bookmarked;
+  final PronScore? score;
+  final VoidCallback onBookmarkTap;
+  final VoidCallback onPractice;
 
   @override
   Widget build(BuildContext context) {
-    final style = AppType.label1.sb.copyWith(color: AppColors.textSecondary);
-    final children = <Widget>[];
-    for (int i = 0; i < segments.length; i++) {
-      if (i > 0) {
-        children.add(const SizedBox(width: 4));
-        children.add(
-          const SizedBox(
-            width: 4,
-            height: 4,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.textSecondary,
-                shape: BoxShape.circle,
-              ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CardBookmark(
+          korean: sentence.korean ?? '',
+          native: sentence.native ?? '',
+          bookmarked: bookmarked,
+          onBookmarkTap: onBookmarkTap,
+          actionText: '연습하기',
+          onAction: onPractice,
+        ),
+        if (score != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 4),
+            child: Text(
+              '최근 점수 ${score!.totalScore}%',
+              style: AppType.label2.sb.copyWith(color: AppColors.primary),
             ),
           ),
-        );
-        children.add(const SizedBox(width: 4));
-      }
-      children.add(Text(segments[i], style: style));
-    }
-    return Row(mainAxisSize: MainAxisSize.min, children: children);
+      ],
+    );
+  }
+}
+
+/// Shown when the screen is opened without a [CallResult] argument.
+class _EmptyState extends StatelessWidget {
+  const _EmptyState();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Text(
+          '분석 결과를 불러올 수 없어요.',
+          style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+        ),
+      ),
+    );
   }
 }

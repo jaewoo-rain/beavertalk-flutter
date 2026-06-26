@@ -44,7 +44,9 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as LearningArgs;
-    final sentence = args.current;
+    // Bind the gauge to the real scored attempt. If somehow opened without
+    // feedback, fall back to the inactive ("-%") gauge.
+    final eval = args.feedback?.evaluation;
 
     return AppScaffold(
       background: AppColors.surface2,
@@ -55,19 +57,22 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: PronunciationResult(
-                  score: sentence.overall.toDouble(),
+                  state: eval == null
+                      ? PronunciationState.inactive
+                      : PronunciationState.active,
+                  score: (eval?.totalScore ?? 0).toDouble(),
                   metrics: [
                     PronunciationMetric(
                       label: 'Pronunciation',
-                      value: '${sentence.pronunciation}%',
+                      value: eval == null ? '-%' : '${eval.pronunciation}%',
                     ),
                     PronunciationMetric(
                       label: 'Fluency',
-                      value: '${sentence.fluency}%',
+                      value: eval == null ? '-%' : '${eval.fluency}%',
                     ),
                     PronunciationMetric(
                       label: 'Rhythm',
-                      value: '${sentence.rhythm}%',
+                      value: eval == null ? '-%' : '${eval.rhythm}%',
                     ),
                   ],
                 ),

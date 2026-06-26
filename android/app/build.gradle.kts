@@ -24,7 +24,9 @@ android {
         applicationId = "im.beavertalk.beavertalk"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
+        // flutter_sound's startPlayerFromStream (PCM stream playback) requires
+        // Android API 29+ ("Need SDK 29"); pin the floor explicitly.
+        minSdk = 29
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

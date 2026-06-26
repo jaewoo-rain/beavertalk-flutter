@@ -10,12 +10,11 @@ final authRemoteDataSourceProvider = Provider<AuthRemoteDataSource>((ref) {
   return AuthRemoteDataSource(ref.watch(dioProvider));
 });
 
-/// Auth repository (domain interface) backed by the remote data source.
+/// Member repository (domain interface) backed by the remote data source.
 ///
 /// To swap in a fake for tests, override this provider.
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepositoryImpl(
     remote: ref.watch(authRemoteDataSourceProvider),
-    tokenStore: ref.watch(tokenStoreProvider),
   );
 });

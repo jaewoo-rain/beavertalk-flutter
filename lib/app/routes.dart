@@ -17,6 +17,7 @@ import '../screens/home/home.dart';
 import '../screens/home/call_loading.dart';
 import '../screens/home/call.dart';
 import '../screens/home/call_finish.dart';
+import '../screens/home/analysis_loading.dart';
 import '../screens/home/analysis.dart';
 import '../screens/home/learning_intro.dart';
 import '../screens/home/learning_next.dart';
@@ -57,6 +58,7 @@ abstract final class Routes {
   static const callLoading = '/call/loading';
   static const call = '/call';
   static const callFinish = '/call/finish';
+  static const analysisLoading = '/analysis/loading';
   static const analysis = '/analysis';
   static const learningIntro = '/learning/intro';
   static const learningNext = '/learning/next';
@@ -109,6 +111,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.callLoading: (_) => const CallLoadingScreen(),
     Routes.call: (_) => const CallScreen(),
     Routes.callFinish: (_) => const CallFinishScreen(),
+    Routes.analysisLoading: (_) => const AnalysisLoadingScreen(),
     Routes.analysis: (_) => const AnalysisScreen(),
     Routes.learningIntro: (_) => const LearningIntroScreen(),
     Routes.learningNext: (_) => const LearningNextScreen(),
@@ -147,6 +150,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.callLoading: '통화 연결',
     Routes.call: '통화',
     Routes.callFinish: '통화 종료',
+    Routes.analysisLoading: '분석 중',
     Routes.analysis: '통화 분석',
     Routes.learningIntro: '학습 인트로',
     Routes.learningNext: '학습 비교',
