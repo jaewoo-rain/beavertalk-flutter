@@ -18,33 +18,37 @@ class RecordEmptyScreen extends StatelessWidget {
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '대화 기록', onBack: () => Navigator.pop(context)),
+          Gnb.main(title: '', onBack: () => Navigator.pop(context)),
+          // Centered empty-state copy + CTA (Figma `2296:26201`).
           Expanded(
-            child: Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  const Text('💬', style: TextStyle(fontSize: 56)),
-                  const SizedBox(height: 16),
-                  Text('아직 대화 기록이 없어요',
-                      style: AppType.heading2.sb.copyWith(color: AppColors.text)),
+                  Text(
+                    '아직 통화 기록이 없어요',
+                    textAlign: TextAlign.center,
+                    style:
+                        AppType.headline1.sb.copyWith(color: AppColors.text),
+                  ),
                   const SizedBox(height: 8),
-                  Text('비버와 통화하면 여기에 기록돼요',
-                      style: AppType.body2.r
-                          .copyWith(color: AppColors.textSecondary)),
+                  Text(
+                    'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
+                    textAlign: TextAlign.center,
+                    style: AppType.label1.r
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: 20),
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: '통화하러 가기',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.callLoading),
+                  ),
                 ],
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: '통화 시작하기',
-                onPressed: () => Navigator.pushNamed(context, Routes.callLoading),
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/toggle.dart';
 
@@ -47,7 +48,12 @@ class CardLine extends StatelessWidget {
     this.status,
     this.checked = false,
     this.onChanged,
+    this.showDivider = true,
   });
+
+  /// Whether to draw the bottom hairline divider. Set `false` for the last row
+  /// in a grouped card (Figma groups rows in a card; only inner rows divide).
+  final bool showDivider;
 
   /// Which line layout to render.
   final CardLineType type;
@@ -148,7 +154,7 @@ class CardLine extends StatelessWidget {
 
   Widget _buildDefaultRow() {
     return DecoratedBox(
-      decoration: _divider,
+      decoration: showDivider ? _divider : const BoxDecoration(),
       child: SizedBox(
         height: _rowHeight,
         child: Padding(
@@ -175,8 +181,7 @@ class CardLine extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 10),
-              const Icon(
-                Icons.chevron_right,
+              AppIcons.chevronRight(
                 size: 24,
                 color: AppColors.text,
               ),
@@ -189,7 +194,7 @@ class CardLine extends StatelessWidget {
 
   Widget _buildDefaultToggle() {
     return DecoratedBox(
-      decoration: _divider,
+      decoration: showDivider ? _divider : const BoxDecoration(),
       child: SizedBox(
         height: _rowHeight,
         child: Padding(

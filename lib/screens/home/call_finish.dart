@@ -6,7 +6,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
-import '../../components/molecules/rating_button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../mock/mock_data.dart';
@@ -34,20 +34,22 @@ class CallFinishScreen extends ConsumerStatefulWidget {
 /// The user's quick rating of the call, carrying the backend int value
 /// (ascending): 아쉬워요=1, 괜찮아요=2, 좋아요=3.
 enum _Rating {
-  bad(1, '아쉬워요', Icons.sentiment_dissatisfied_outlined),
-  ok(2, '괜찮아요', Icons.sentiment_neutral_outlined),
-  good(3, '좋아요', Icons.sentiment_satisfied_alt_outlined);
+  // Figma `2296:26278` shows 👎 / 👍 / 👍 (card 2·3 both thumbs-up — appears to
+  // be a design placeholder; replicated 1:1 for now).
+  bad(1, '아쉬워요', AppIcons.thumbsDown),
+  ok(2, '괜찮아요', AppIcons.thumbsUp),
+  good(3, '좋아요', AppIcons.thumbsUp);
 
   const _Rating(this.value, this.label, this.icon);
 
   /// Backend rating value sent in `PATCH /calls/{id}` `{"rating": value}`.
   final int value;
 
-  /// Accessible / on-screen label.
+  /// Accessible label.
   final String label;
 
-  /// Glyph shown in the [RatingButton].
-  final IconData icon;
+  /// Glyph builder shown in the rating card.
+  final AppIconBuilder icon;
 }
 
 class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
@@ -115,72 +117,84 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      background: AppColors.bg,
+      background: AppColors.surface,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
-      body: Column(
+      // Figma `2296:26290` exact layout: 3 groups pinned at body-relative
+      // y = 50 / 339 / 598 (left/right inset 20), not space-between, so the
+      // gaps stay pixel-exact regardless of text metrics.
+      body: Stack(
         children: [
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '통화 종료',
-                    style: AppType.title3.b.copyWith(color: AppColors.text),
-                  ),
-                  const SizedBox(height: 32),
-                  Container(
-                    width: 160,
-                    height: 160,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: AppColors.surface2,
-                      image: DecorationImage(
-                        image: beaverImage,
-                        fit: BoxFit.cover,
-                      ),
+          Positioned(
+            top: 50,
+            left: 20,
+            right: 20,
+            // Avatar + name + call duration.
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 120,
+                  height: 120,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.surface2,
+                    image: DecorationImage(
+                      image: beaverImage,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  const SizedBox(height: 32),
-                  Text(
-                    '이번 대화는 어땠나요?',
-                    style: AppType.body1.r
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (final r in _Rating.values) ...[
-                        if (r != _Rating.values.first)
-                          const SizedBox(width: 16),
-                        RatingButton(
-                          icon: r.icon,
-                          selected: _rating == r,
-                          onTap: () => _rate(r),
-                          label: r.label,
-                        ),
-                      ],
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  mockPartnerName,
+                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  // TODO(server): call duration not passed to this screen yet —
+                  // placeholder. Wire when the API provides the call length.
+                  '통화 종료 05:00',
+                  style:
+                      AppType.body1.r.copyWith(color: AppColors.textSecondary),
+                ),
+              ],
             ),
           ),
-          // Pinned actions — 대화 분석 (primary) / 홈으로 (secondary).
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          Positioned(
+            top: 339,
+            left: 20,
+            right: 20,
+            // Rating prompt + 3 rating cards.
             child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '통화는 어떠셨나요?',
+                  style: AppType.body1.r.copyWith(color: AppColors.text),
+                ),
+                const SizedBox(height: 32),
+                Row(
+                  children: [
+                    _ratingCard(_Rating.bad),
+                    const SizedBox(width: 16),
+                    _ratingCard(_Rating.ok),
+                    const SizedBox(width: 16),
+                    _ratingCard(_Rating.good),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            top: 598,
+            left: 20,
+            right: 20,
+            // Actions — 홈으로 (secondary) / 대화 분석 바로가기 (primary).
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: '대화 분석',
-                  onPressed: _analyze,
-                ),
-                const SizedBox(height: 12),
                 Button(
                   type: BtnType.secondaryFill,
                   size: BtnSize.s60,
@@ -191,10 +205,59 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                     (route) => false,
                   ),
                 ),
+                const SizedBox(height: 16),
+                Button(
+                  type: BtnType.primaryFill,
+                  size: BtnSize.s60,
+                  text: '대화 분석 바로가기',
+                  onPressed: _analyze,
+                ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  /// One rating choice rendered as a Figma card (`2296:26302`): a 112-tall
+  /// rounded box with a 56px circular icon chip; selected → primary border +
+  /// primary-10 chip + primary glyph, otherwise neutral.
+  Widget _ratingCard(_Rating r) {
+    final selected = _rating == r;
+    return Expanded(
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: r.label,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => _rate(r),
+          child: Container(
+            height: 112,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20), // radius/ml
+              border: Border.all(
+                color: selected ? AppColors.primary : AppColors.border,
+              ),
+            ),
+            alignment: Alignment.center,
+            child: Container(
+              width: 56,
+              height: 56,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color:
+                    selected ? AppColors.primary10 : AppColors.surfaceElevated,
+              ),
+              alignment: Alignment.center,
+              child: r.icon(
+                size: 24,
+                color: selected ? AppColors.primary : AppColors.textSecondary,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 
 /// ThumbsUp — a large selectable "like" atom.
 ///
@@ -64,8 +65,7 @@ class ThumbsUp extends StatelessWidget {
           color: innerFill,
           shape: BoxShape.circle,
         ),
-        child: Icon(
-          Icons.thumb_up_outlined,
+        child: AppIcons.thumbsUp(
           size: _iconSize,
           color: iconColor,
         ),

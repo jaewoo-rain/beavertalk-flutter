@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BottomSheet;
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/dim.dart';
@@ -218,7 +219,7 @@ class _Sub2Header extends StatelessWidget {
               padding: EdgeInsets.zero,
               iconSize: _iconBox,
               onPressed: onClose,
-              icon: const Icon(Icons.close, color: AppColors.text),
+              icon: AppIcons.close(color: AppColors.text),
             ),
           ),
         ],

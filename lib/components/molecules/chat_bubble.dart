@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
+import '../icons/app_icons.dart';
 
 /// Which side of the conversation a [ChatBubble] belongs to.
 ///
@@ -142,8 +143,7 @@ class ChatBubbleDemo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Widget toolIcon(IconData icon, {bool active = false}) => Icon(
-          icon,
+    Widget toolIcon(AppIconBuilder icon, {bool active = false}) => icon(
           size: 24,
           color: active ? AppColors.primary : AppColors.textSecondary,
         );
@@ -164,10 +164,10 @@ class ChatBubbleDemo extends StatelessWidget {
             text: '오, 정말 괜찮아!',
             translation: 'Oh, no worries at all!',
             actions: [
-              toolIcon(Icons.volume_up_outlined),
-              toolIcon(Icons.translate, active: true),
-              toolIcon(Icons.bookmark_border),
-              toolIcon(Icons.outlined_flag),
+              toolIcon(AppIcons.volume),
+              toolIcon(AppIcons.translate, active: true),
+              toolIcon(AppIcons.bookmarkLine),
+              toolIcon(AppIcons.flag),
             ],
           ),
           const SizedBox(height: 12),

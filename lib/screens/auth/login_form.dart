@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
@@ -104,7 +105,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     onChanged: (v) => setState(() => _password = v),
                     hintText: '비밀번호를 입력해주세요',
                     obscureText: true,
-                    leftIcon: const Icon(Icons.lock_outline),
+                    leftIcon: AppIcons.lock(),
                   ),
                   const SizedBox(height: 20),
                   // ── Save-id checkbox + find-password link ───────────────

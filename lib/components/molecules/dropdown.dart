@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -477,7 +478,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
             items: _items,
             value: _values[label],
             hintText: '클릭 했을 경우',
-            leftIcon: const Icon(Icons.calendar_today_outlined),
+            leftIcon: AppIcons.calendar(),
             onChanged: (v) => setState(() => _values[label] = v),
           ),
           // Pre-filled (no icon).
@@ -494,7 +495,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
             items: _items,
             value: 'd',
             enabled: false,
-            leftIcon: const Icon(Icons.calendar_today_outlined),
+            leftIcon: AppIcons.calendar(),
             onChanged: (_) {},
           ),
         ]);

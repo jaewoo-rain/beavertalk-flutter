@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/dim.dart';
@@ -143,7 +144,7 @@ class BottomSheetFeedback extends StatelessWidget {
               iconSize: 24,
               splashRadius: 18,
               onPressed: onClose,
-              icon: const Icon(Icons.close, color: AppColors.text),
+              icon: AppIcons.close(color: AppColors.text),
             ),
           ),
         ],

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/mic_button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/review/data/audio_recorder.dart';
@@ -125,64 +126,58 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
             children: [
               Gnb.main2(
                 progress: GnbProgress(current: args.step, total: args.total),
-                onBack: () => Navigator.pop(context),
+                onClose: () => Navigator.pop(context),
               ),
               Expanded(
                 child: Stack(
                   children: [
-                    // Speaker / bookmark utility row.
-                    const Positioned(
+                    // Speaker / bookmark utility row (Figma body top 16).
+                    Positioned(
                       top: 16,
                       left: 20,
                       right: 20,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(Icons.volume_up_outlined,
-                              size: 32, color: AppColors.text),
-                          Icon(Icons.bookmark_border,
-                              size: 32, color: AppColors.text),
+                          AppIcons.volume(size: 32, color: AppColors.text),
+                          AppIcons.bookmarkLine(size: 32, color: AppColors.text),
                         ],
                       ),
                     ),
-                    // Centered sentence (KO + EN).
-                    Align(
-                      alignment: const Alignment(0, -0.15),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              sentence.korean,
-                              textAlign: TextAlign.center,
-                              style: AppType.heading2.sb
-                                  .copyWith(color: AppColors.text),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              sentence.native,
-                              textAlign: TextAlign.center,
-                              style: AppType.body1.sb
-                                  .copyWith(color: AppColors.textSecondary),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              _recording ? '녹음 중… 다시 누르면 채점해요' : '마이크를 눌러 따라 말해보세요',
-                              textAlign: TextAlign.center,
-                              style: AppType.label1.r
-                                  .copyWith(color: AppColors.textTertiary),
-                            ),
-                          ],
-                        ),
+                    // Sentence (KO + EN) — Figma body top 246.
+                    Positioned(
+                      top: 246,
+                      left: 20,
+                      right: 20,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            sentence.korean,
+                            textAlign: TextAlign.center,
+                            style: AppType.heading2.sb
+                                .copyWith(color: AppColors.text),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            sentence.native,
+                            textAlign: TextAlign.center,
+                            style: AppType.body1.sb
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
                       ),
                     ),
-                    // Mic button.
-                    Align(
-                      alignment: const Alignment(0, 0.7),
-                      child: MicButton(
-                        recording: _recording,
-                        onTap: () => _onMicTap(args),
+                    // Mic button — Figma body top 558.
+                    Positioned(
+                      top: 558,
+                      left: 0,
+                      right: 0,
+                      child: Center(
+                        child: MicButton(
+                          recording: _recording,
+                          onTap: () => _onMicTap(args),
+                        ),
                       ),
                     ),
                   ],

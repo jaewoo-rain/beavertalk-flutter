@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
-import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
@@ -30,6 +30,10 @@ class CallLoadingScreen extends ConsumerStatefulWidget {
 }
 
 class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
+  /// Screen background — Figma `screen/call_loading` uses pure `#111` (darker
+  /// than the app's default `bg`), so it's pinned locally.
+  static const Color _bg = Color(0xFF111111);
+
   bool _navigated = false;
 
   @override
@@ -73,62 +77,64 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     });
 
     return AppScaffold(
-      background: AppColors.bg,
+      background: _bg,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
       body: Stack(
         children: [
-          // Centered avatar + spinner + status line.
+          // Centered spinner + status line + subtitle (Figma `2296:26221`).
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(
-                  width: 160,
-                  height: 160,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.surface2,
-                    image: DecorationImage(
-                      image: beaverImage,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                Text(
-                  mockPartnerName,
-                  style: AppType.heading2.sb.copyWith(color: AppColors.text),
-                ),
-                const SizedBox(height: 24),
                 const SizedBox(
-                  width: 28,
-                  height: 28,
+                  width: 32,
+                  height: 32,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.text),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 Text(
                   '연결 중...',
-                  style: AppType.body1.r
+                  style: AppType.body1.r.copyWith(color: AppColors.text),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '보통 5초 이내에 연결돼요',
+                  style: AppType.label2.r
                       .copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
           ),
-          // Top-left close button → hang up + home.
+          // Top-right close button → hang up + home (Figma GNB, 56 tall).
           Positioned(
-            left: 8,
-            top: 8,
-            child: IconButton(
-              onPressed: _cancel,
-              icon: const Icon(Icons.close),
-              color: AppColors.text,
-              iconSize: 28,
-              tooltip: '닫기',
+            top: 0,
+            left: 0,
+            right: 0,
+            child: SizedBox(
+              height: 56,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Semantics(
+                      button: true,
+                      label: '닫기',
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: _cancel,
+                        child:
+                            AppIcons.close(size: 28, color: AppColors.text),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -379,7 +380,7 @@ class ButtonDemo extends StatelessWidget {
                   type: BtnType.primaryOutline,
                   size: BtnSize.s48,
                   text: '오른쪽 아이콘',
-                  rightIcon: const Icon(Icons.arrow_forward),
+                  rightIcon: AppIcons.arrowRight(),
                   onPressed: () {},
                 ),
                 Button(
@@ -387,7 +388,7 @@ class ButtonDemo extends StatelessWidget {
                   size: BtnSize.s36,
                   text: '양쪽',
                   leftIcon: const Icon(Icons.star),
-                  rightIcon: const Icon(Icons.chevron_right),
+                  rightIcon: AppIcons.chevronRight(),
                   onPressed: () {},
                 ),
               ],

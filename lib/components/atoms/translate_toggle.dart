@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 
 /// TranslateToggle — a 48×48 square outlined button for toggling translation.
@@ -52,8 +53,7 @@ class TranslateToggle extends StatelessWidget {
         border: Border.all(color: stroke),
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: Icon(
-        Icons.translate,
+      child: AppIcons.translate(
         size: _iconSize,
         color: iconColor,
       ),

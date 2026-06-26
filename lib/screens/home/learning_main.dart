@@ -80,7 +80,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
             child: SizedBox(
               width: double.infinity,
               child: Button(

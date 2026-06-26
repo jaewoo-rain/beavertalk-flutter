@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -332,12 +333,12 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
             size: size,
             controller: _ctrl('$label-default'),
             hintText: '디폴트',
-            leftIcon: const Icon(Icons.search),
+            leftIcon: AppIcons.search(),
           ),
           InputField(
             size: size,
             controller: _ctrl('$label-filled', '입력 완료 했을 경우'),
-            leftIcon: const Icon(Icons.search),
+            leftIcon: AppIcons.search(),
           ),
           InputField(
             size: size,
@@ -348,7 +349,7 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
             size: size,
             enabled: false,
             controller: _ctrl('$label-disabled', '비활성화 처리 상태'),
-            leftIcon: const Icon(Icons.search),
+            leftIcon: AppIcons.search(),
           ),
         ]);
 

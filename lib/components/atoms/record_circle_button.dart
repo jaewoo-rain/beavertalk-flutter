@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 
 /// RecordCircleButton — a 96px white circle with a green-700 ring and a centered
 /// green-700 glyph. The shared record-control affordance used by the learning
@@ -16,8 +17,8 @@ class RecordCircleButton extends StatelessWidget {
     this.size = 96,
   });
 
-  /// Centered glyph (e.g. [Icons.mic], [Icons.refresh]).
-  final IconData icon;
+  /// Centered glyph builder (e.g. [AppIcons.mic], [AppIcons.redo]).
+  final AppIconBuilder icon;
 
   /// Tap handler. When null the button is inert.
   final VoidCallback? onTap;
@@ -44,7 +45,7 @@ class RecordCircleButton extends StatelessWidget {
             border: Border.all(color: AppColors.green700, width: 4),
           ),
           alignment: Alignment.center,
-          child: Icon(icon, size: 40, color: AppColors.green700),
+          child: icon(size: 40, color: AppColors.green700),
         ),
       ),
     );
@@ -63,10 +64,10 @@ class RecordCircleButtonDemo extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          RecordCircleButton(icon: Icons.mic, onTap: _noop, semanticLabel: 'mic'),
+          RecordCircleButton(icon: AppIcons.mic, onTap: _noop, semanticLabel: 'mic'),
           SizedBox(width: 24),
           RecordCircleButton(
-              icon: Icons.refresh, onTap: _noop, semanticLabel: 'retry'),
+              icon: AppIcons.redo, onTap: _noop, semanticLabel: 'retry'),
         ],
       ),
     );

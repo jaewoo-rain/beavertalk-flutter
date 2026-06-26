@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -115,7 +116,7 @@ class _SampleField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const Icon(Icons.lock_outline, size: 24, color: AppColors.textSecondary),
+        AppIcons.lock(size: 24, color: AppColors.textSecondary),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
@@ -124,8 +125,7 @@ class _SampleField extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 6),
-        const Icon(
-          Icons.visibility_outlined,
+        AppIcons.eye(
           size: 20,
           color: AppColors.textTertiary,
         ),

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/organisms/dialog_basic.dart';
@@ -32,13 +32,18 @@ class CallScreen extends ConsumerStatefulWidget {
 }
 
 class _CallScreenState extends ConsumerState<CallScreen> {
+  /// Hang-up button fill — Figma `Accent/Foreground/Red` (`#E52222`), which has
+  /// no [AppColors] token (app red is the softer `error #FF7070`).
+  static const Color _endRed = Color(0xFFE52222);
+
   bool _navigated = false;
 
-  /// Formats whole [seconds] as `mm:ss`.
+  /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
   String _formatted(int seconds) {
-    final m = (seconds ~/ 60).toString().padLeft(2, '0');
+    final h = (seconds ~/ 3600).toString().padLeft(2, '0');
+    final m = ((seconds % 3600) ~/ 60).toString().padLeft(2, '0');
     final s = (seconds % 60).toString().padLeft(2, '0');
-    return '$m:$s';
+    return '$h:$m:$s';
   }
 
   /// Opens the "free call ending" dialog with subscribe / end actions.
@@ -81,6 +86,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final elapsed = ref.watch(
       normalCallControllerProvider.select((s) => s.elapsedSec),
     );
+    // Beaver's live line (real field). The translation line below has no server
+    // field yet — see the AI-line block (stub).
+    final beaverSubtitle = ref.watch(
+      normalCallControllerProvider.select((s) => s.beaverSubtitle),
+    );
 
     // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
@@ -105,62 +115,130 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         ref.read(normalCallControllerProvider.notifier).hangUp();
       },
       child: AppScaffold(
-        background: AppColors.bg,
+        background: AppColors.surface,
         statusVariant: StatusBarVariant.whiteTransparent,
         homeVariant: HomeIndicatorVariant.whiteTransparent,
         body: Column(
           children: [
-            // Avatar + name + timer, centered in the available space.
+            // Status header — connected dot + name + live timer (Figma top).
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Text(
+                        'Connected',
+                        style: AppType.label1.r
+                            .copyWith(color: AppColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    mockPartnerName,
+                    style: AppType.body1.sb.copyWith(color: AppColors.text),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatted(elapsed),
+                    style: AppType.label1.r
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            // Avatar (120) inside a teal ring (140), centered.
             Expanded(
               child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 180,
-                      height: 180,
-                      decoration: const BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: AppColors.surface2,
-                        image: DecorationImage(
-                          image: beaverImage,
-                          fit: BoxFit.cover,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppColors.primary24,
-                            blurRadius: 48,
-                          ),
-                        ],
+                child: Container(
+                  width: 140,
+                  height: 140,
+                  decoration: const BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: AppColors.green700, // ring
+                  ),
+                  alignment: Alignment.center,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: const BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.surface2,
+                      image: DecorationImage(
+                        image: beaverImage,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                    const SizedBox(height: 28),
-                    Text(
-                      mockPartnerName,
-                      style:
-                          AppType.heading2.sb.copyWith(color: AppColors.text),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      _formatted(elapsed),
-                      style: AppType.title3.m
-                          .copyWith(color: AppColors.textSecondary),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-            // End-call button.
+            // AI utterance + translation (Figma bottom block).
+            // NOTE(shell): the original line is wired to `beaverSubtitle` (real),
+            // but there is NO server field for the translation yet — it is left
+            // as a placeholder stub. TODO(server): add a translation field and
+            // wire the second line below when the API provides it.
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
-              child: SizedBox(
-                width: double.infinity,
-                child: Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: '통화 종료',
-                  leftIcon: const Icon(Icons.call_end),
-                  onPressed: _confirmEnd,
+              padding: const EdgeInsets.fromLTRB(32, 16, 32, 24),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    beaverSubtitle.isNotEmpty
+                        ? beaverSubtitle
+                        : '안녕하세요. 어디 가세요?', // placeholder until a turn arrives
+                    textAlign: TextAlign.center,
+                    style: AppType.body1.sb.copyWith(color: AppColors.text),
+                  ),
+                  const SizedBox(height: 5),
+                  Text(
+                    // TODO(server): no translation field — placeholder stub.
+                    '“Hello, Where are you going?”',
+                    textAlign: TextAlign.center,
+                    style: AppType.label1.r
+                        .copyWith(color: AppColors.textSecondary),
+                  ),
+                ],
+              ),
+            ),
+            // End-call button — red 60px circular hang-up (Figma `2296:26249`).
+            SizedBox(
+              height: 96,
+              child: Center(
+                child: Semantics(
+                  button: true,
+                  label: '통화 종료',
+                  child: Material(
+                    color: _endRed,
+                    shape: const CircleBorder(),
+                    clipBehavior: Clip.antiAlias,
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: _confirmEnd,
+                      child: SizedBox(
+                        width: 60,
+                        height: 60,
+                        child: Center(
+                          child: AppIcons.callEnd(
+                            size: 32,
+                            color: AppColors.text,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
             ),

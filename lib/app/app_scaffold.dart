@@ -30,18 +30,24 @@ class AppScaffold extends StatelessWidget {
       body: Stack(
         children: [
           Center(
-            child: SizedBox(
-              width: 375,
-              height: 812,
-              child: ClipRect(
-                child: Container(
-                  color: background,
-                  child: Column(
-                    children: [
-                      StatusBar(variant: statusVariant),
-                      Expanded(child: body),
-                      HomeIndicator(variant: homeVariant),
-                    ],
+            // Scale the fixed 375×812 phone frame to fit the viewport so the
+            // whole screen is always visible (no clipping) on windows shorter
+            // than 812 — e.g. the web/desktop preview.
+            child: FittedBox(
+              fit: BoxFit.contain,
+              child: SizedBox(
+                width: 375,
+                height: 812,
+                child: ClipRect(
+                  child: Container(
+                    color: background,
+                    child: Column(
+                      children: [
+                        StatusBar(variant: statusVariant),
+                        Expanded(child: body),
+                        HomeIndicator(variant: homeVariant),
+                      ],
+                    ),
                   ),
                 ),
               ),

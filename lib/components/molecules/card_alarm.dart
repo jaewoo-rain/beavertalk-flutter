@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/select_box.dart';
@@ -140,7 +141,7 @@ class CardAlarm extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Icon(Icons.person_outline, size: 24, color: fg),
+                AppIcons.user(size: 24, color: fg),
                 const SizedBox(width: 10),
                 Text(
                   userName,

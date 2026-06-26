@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/chrome/home_indicator.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
 /// Network error — Figma `screen/network_error` (`2117:20406`).
@@ -21,6 +21,7 @@ class NetworkErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       background: AppColors.surface,
+      homeVariant: HomeIndicatorVariant.subTransparent,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -30,17 +31,11 @@ class NetworkErrorScreen extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Error illustration — emoji stand-in for the Figma 3D asset
-                  // (mock; no asset bundled).
-                  Container(
+                  // Error illustration — Figma 3D asset (`281:20345`).
+                  Image.asset(
+                    'assets/images/error_3d.png',
                     width: 100,
                     height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface2,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
-                    ),
-                    alignment: Alignment.center,
-                    child: const Text('📡', style: TextStyle(fontSize: 56)),
                   ),
                   const SizedBox(height: 20),
                   Text(
@@ -77,7 +72,7 @@ class NetworkErrorScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '다시 시도',
+                    text: '다시시도',
                     onPressed: () => Navigator.maybePop(context),
                   ),
                 ),

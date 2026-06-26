@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
@@ -221,10 +222,10 @@ class BottomSheetSubscription extends StatelessWidget {
             child: GestureDetector(
               onTap: onClose,
               behavior: HitTestBehavior.opaque,
-              child: const SizedBox(
+              child: SizedBox(
                 width: 28,
                 height: 28,
-                child: Icon(Icons.close, size: 24, color: AppColors.text),
+                child: AppIcons.close(size: 24, color: AppColors.text),
               ),
             ),
           ),
@@ -454,7 +455,7 @@ class BottomSheetSubscription extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.check, size: 16, color: bulletColor),
+          AppIcons.check(size: 16, color: bulletColor),
           const SizedBox(width: 4),
           Expanded(
             child: Text(

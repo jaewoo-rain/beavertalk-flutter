@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
@@ -179,10 +180,10 @@ class BottomSheetAvatar extends StatelessWidget {
             child: GestureDetector(
               onTap: onClose,
               behavior: HitTestBehavior.opaque,
-              child: const SizedBox(
+              child: SizedBox(
                 width: 28,
                 height: 28,
-                child: Icon(Icons.close, size: 24, color: AppColors.text),
+                child: AppIcons.close(size: 24, color: AppColors.text),
               ),
             ),
           ),
@@ -233,9 +234,9 @@ class BottomSheetAvatar extends StatelessWidget {
     if (imageProvider != null) {
       return Image(image: imageProvider!, fit: BoxFit.cover);
     }
-    return const ColoredBox(
+    return ColoredBox(
       color: AppColors.surface2,
-      child: Icon(Icons.person, color: AppColors.textTertiary, size: 36),
+      child: AppIcons.profile(color: AppColors.textTertiary, size: 36),
     );
   }
 
@@ -325,7 +326,7 @@ class BottomSheetAvatar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.volume_up, size: 24, color: AppColors.text),
+              AppIcons.volume(size: 24, color: AppColors.text),
               const SizedBox(width: 8),
               Text(
                 '샘플 목소리 듣기',

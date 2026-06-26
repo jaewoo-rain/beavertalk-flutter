@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/chrome/home_indicator.dart';
+import '../../components/icons/app_icons.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -21,6 +23,7 @@ class PermissionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return AppScaffold(
       background: AppColors.surface,
+      homeVariant: HomeIndicatorVariant.subTransparent,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -48,13 +51,13 @@ class PermissionScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: const [
                   _PermRow(
-                    icon: Icons.mic_none,
+                    icon: AppIcons.mic,
                     title: '마이크 (필수)',
                     description: 'AI와 영어로 통화하려면 필요해요.',
                   ),
                   SizedBox(height: 12),
                   _PermRow(
-                    icon: Icons.notifications_none,
+                    icon: AppIcons.volume,
                     title: '알림 (선택)',
                     description: '학습 리마인더와 통화 일정을 알려드려요.',
                   ),
@@ -67,7 +70,7 @@ class PermissionScreen extends StatelessWidget {
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
-              text: '권한 허용',
+              text: '시작하기',
               onPressed: () => Navigator.of(context)
                   .pushNamedAndRemoveUntil(Routes.home, (r) => false),
             ),
@@ -88,7 +91,7 @@ class _PermRow extends StatelessWidget {
     required this.description,
   });
 
-  final IconData icon;
+  final AppIconBuilder icon;
   final String title;
   final String description;
 
@@ -111,7 +114,7 @@ class _PermRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(28),
             ),
             alignment: Alignment.center,
-            child: Icon(icon, size: 28, color: AppColors.primary),
+            child: icon(size: 28, color: AppColors.primary),
           ),
           const SizedBox(width: 14),
           Expanded(

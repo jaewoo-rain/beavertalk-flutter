@@ -26,6 +26,7 @@ class ProgressBar extends StatelessWidget {
     super.key,
     required this.label,
     required this.value,
+    this.active = true,
   });
 
   /// Text shown at the start (left) of the header row.
@@ -33,6 +34,10 @@ class ProgressBar extends StatelessWidget {
 
   /// Progress in the range `0–100`. Values outside the range are clamped.
   final double value;
+
+  /// When true the bar uses the primary (mint) palette; when false a muted grey
+  /// palette (Figma shows only the top accent bar active, the rest grey).
+  final bool active;
 
   /// Track height in logical pixels (also the knob diameter), per Figma.
   static const double _trackHeight = 8;
@@ -70,52 +75,36 @@ class ProgressBar extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 8),
-          // Track + fill + knob.
+          // Track + fill (filled faint track; only the active bar is mint).
           LayoutBuilder(
             builder: (context, constraints) {
               final trackWidth = constraints.maxWidth;
               final fillWidth = trackWidth * (clamped / 100.0);
+              final fillColor =
+                  active ? AppColors.primary : AppColors.lineStrong;
+              final trackColor =
+                  active ? AppColors.primary10 : AppColors.border;
               return SizedBox(
                 height: _trackHeight,
                 width: trackWidth,
                 child: Stack(
-                  clipBehavior: Clip.none,
                   children: [
-                    // Empty track: 1px primary outline.
                     Positioned.fill(
                       child: DecoratedBox(
                         decoration: BoxDecoration(
+                          color: trackColor,
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                          border: Border.all(
-                            color: AppColors.primary,
-                            width: 1,
-                          ),
                         ),
                       ),
                     ),
-                    // Fill: solid primary.
                     Align(
                       alignment: Alignment.centerLeft,
                       child: Container(
                         width: fillWidth,
                         height: _trackHeight,
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: fillColor,
                           borderRadius: BorderRadius.circular(AppRadius.md),
-                        ),
-                      ),
-                    ),
-                    // Knob: white circle centered on the fill's trailing edge.
-                    Positioned(
-                      left: (fillWidth - _trackHeight / 2)
-                          .clamp(0.0, trackWidth - _trackHeight),
-                      top: 0,
-                      child: Container(
-                        width: _trackHeight,
-                        height: _trackHeight,
-                        decoration: const BoxDecoration(
-                          color: AppColors.text,
-                          shape: BoxShape.circle,
                         ),
                       ),
                     ),
