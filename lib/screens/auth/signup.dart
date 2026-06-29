@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
@@ -9,6 +10,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_icons.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -32,6 +34,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   String _password = '';
   String _passwordConfirm = '';
 
+  bool _obscurePassword = true; // password field hidden by default
+  bool _obscureConfirm = true; // confirm field hidden by default
   bool _submitting = false; // signup in progress
   String? _error;
 
@@ -135,8 +139,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     onChanged: (v) => setState(() => _password = v),
                     // TODO(i18n): localize
                     hintText: 'Enter your password',
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     leftIcon: const Icon(Icons.lock_outline),
+                    rightIcon: _VisibilityToggle(
+                      obscured: _obscurePassword,
+                      onTap: () => setState(
+                          () => _obscurePassword = !_obscurePassword),
+                    ),
                   ),
                   _ErrorText(_passwordError),
                   const SizedBox(height: AppSpacing.spacing20),
@@ -149,8 +158,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     onChanged: (v) => setState(() => _passwordConfirm = v),
                     // TODO(i18n): localize
                     hintText: 'Re-enter your password',
-                    obscureText: true,
+                    obscureText: _obscureConfirm,
                     leftIcon: const Icon(Icons.lock_outline),
+                    rightIcon: _VisibilityToggle(
+                      obscured: _obscureConfirm,
+                      onTap: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
+                    ),
                   ),
                   _ErrorText(_confirmError),
                   // ── Server / validation error ───────────────────────────
@@ -217,6 +231,41 @@ class _ErrorText extends StatelessWidget {
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),
+      ),
+    );
+  }
+}
+
+/// Password-field visibility toggle for an [InputField]'s trailing slot.
+///
+/// Shows the outline eye ([AppIcons.eyeLine]) while the text is [obscured] (tap
+/// to reveal) and the solid eye ([AppIcons.eyeFill]) once visible (tap to hide).
+/// Both are tinted to `textSecondary` to match the field's other icons; [onTap]
+/// flips the field's `obscureText`.
+class _VisibilityToggle extends StatelessWidget {
+  const _VisibilityToggle({required this.obscured, required this.onTap});
+
+  /// Whether the field is currently obscured.
+  final bool obscured;
+
+  /// Flips the obscure state.
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: onTap,
+      // Fill the host field's icon box; the SVG scales to it.
+      child: SizedBox.expand(
+        child: SvgPicture.asset(
+          obscured ? AppIcons.eyeLine : AppIcons.eyeFill,
+          fit: BoxFit.contain,
+          colorFilter: const ColorFilter.mode(
+            AppColors.textSecondary,
+            BlendMode.srcIn,
+          ),
+        ),
       ),
     );
   }

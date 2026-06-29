@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -106,6 +107,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   /// Opens the signup flow.
   void _goSignup() => Navigator.pushNamed(context, Routes.signup);
 
+  /// Opens the terms-of-service article (from the consent notice link).
+  void _goTerms() => Navigator.pushNamed(context, Routes.terms);
+
+  /// Opens the privacy-policy article (from the consent notice link).
+  void _goPrivacy() => Navigator.pushNamed(context, Routes.privacy);
+
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
@@ -173,7 +180,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             // Figma: email button → signup prompt = 16px.
             const SizedBox(height: AppSpacing.spacing16),
             // ── Signup prompt + terms notice ────────────────────────────
-            _SignupPrompt(onSignup: _goSignup),
+            _SignupPrompt(
+              onSignup: _goSignup,
+              onTerms: _goTerms,
+              onPrivacy: _goPrivacy,
+            ),
           ],
         ),
       ),
@@ -252,10 +263,20 @@ class _OrDivider extends StatelessWidget {
 
 /// "Don't have an account? Sign up" row plus the terms/privacy notice.
 class _SignupPrompt extends StatelessWidget {
-  const _SignupPrompt({required this.onSignup});
+  const _SignupPrompt({
+    required this.onSignup,
+    required this.onTerms,
+    required this.onPrivacy,
+  });
 
   /// Tapped when "Sign up" is pressed.
   final VoidCallback onSignup;
+
+  /// Tapped on the "Terms of Service" link in the consent notice.
+  final VoidCallback onTerms;
+
+  /// Tapped on the "Privacy Policy" link in the consent notice.
+  final VoidCallback onPrivacy;
 
   @override
   Widget build(BuildContext context) {
@@ -289,18 +310,75 @@ class _SignupPrompt extends StatelessWidget {
         // Figma left-aligns the terms notice across the full 295px width.
         SizedBox(
           width: double.infinity,
-          child: Text(
-            // TODO(i18n): localize
-            'By continuing, you agree to our Terms of Service and Privacy '
-            'Policy.',
-            textAlign: TextAlign.left,
-            // 12pt caption keeps the notice compact so it fits without
-            // scrolling; the body stays in a SingleChildScrollView for longer
-            // localized text.
-            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
-          ),
+          child: _TermsNotice(onTerms: onTerms, onPrivacy: onPrivacy),
         ),
       ],
+    );
+  }
+}
+
+/// Bottom consent notice with tappable, underlined "Terms of Service" and
+/// "Privacy Policy" links (Figma `hit/terms` / `hit/privacy` over node
+/// `2117:19693`). Stateful so the [TapGestureRecognizer]s are disposed.
+class _TermsNotice extends StatefulWidget {
+  const _TermsNotice({required this.onTerms, required this.onPrivacy});
+
+  /// Tapped on the "Terms of Service" link.
+  final VoidCallback onTerms;
+
+  /// Tapped on the "Privacy Policy" link.
+  final VoidCallback onPrivacy;
+
+  @override
+  State<_TermsNotice> createState() => _TermsNoticeState();
+}
+
+class _TermsNoticeState extends State<_TermsNotice> {
+  late final TapGestureRecognizer _termsTap =
+      TapGestureRecognizer()..onTap = () => widget.onTerms();
+  late final TapGestureRecognizer _privacyTap =
+      TapGestureRecognizer()..onTap = () => widget.onPrivacy();
+
+  @override
+  void dispose() {
+    _termsTap.dispose();
+    _privacyTap.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 12pt caption keeps the notice compact so it fits without scrolling; the
+    // login body stays in a SingleChildScrollView for longer localized text.
+    final base = AppType.caption1.r.copyWith(color: AppColors.textSecondary);
+    // Links read as links: brighter (white) + underlined, mirroring Figma's
+    // underlined `서비스 약관` / `개인정보 보호정책` spans.
+    final link = AppType.caption1.r.copyWith(
+      color: AppColors.text,
+      decoration: TextDecoration.underline,
+      decorationColor: AppColors.text,
+    );
+    return Text.rich(
+      // TODO(i18n): localize
+      TextSpan(
+        style: base,
+        children: [
+          const TextSpan(text: 'By continuing, you agree to our '),
+          TextSpan(
+            text: 'Terms of Service',
+            style: link,
+            recognizer: _termsTap,
+          ),
+          const TextSpan(text: ' and '),
+          TextSpan(
+            text: 'Privacy Policy',
+            style: link,
+            recognizer: _privacyTap,
+          ),
+          const TextSpan(text: '.'),
+        ],
+      ),
+      textAlign: TextAlign.left,
     );
   }
 }

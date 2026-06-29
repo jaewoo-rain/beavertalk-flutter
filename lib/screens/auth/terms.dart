@@ -8,12 +8,18 @@ import '../../theme/app_typography.dart';
 
 /// Terms-of-service article screen.
 ///
-/// Figma `screen/terms_of_service` (`2235:17306`). A [GnbType.main] header
-/// ("Terms of Service", back = pop) over a scrollable body of dummy clause
-/// sections. Static content only — no backend.
+/// Figma `screen/terms_of_service` (`2235:17306`) — a **full-screen page**:
+/// [AppScaffold] (status bar + home indicator) with a [GnbType.main] header
+/// ("Terms of service", back = pop) over a scrollable [LegalBody] — a bold
+/// section heading followed by dummy `(heading, body)` clause blocks. Static
+/// content only; no backend.
 class TermsScreen extends StatelessWidget {
   /// Creates the terms-of-service screen.
   const TermsScreen({super.key});
+
+  /// Bold section heading above the clauses (Figma Headline 1).
+  // TODO(i18n): localize
+  static const String _sectionTitle = 'Service Agreement';
 
   // TODO(legal): placeholder copy — replace with reviewed, localized terms.
   /// Dummy clauses rendered as (heading, body) pairs.
@@ -64,23 +70,36 @@ class TermsScreen extends StatelessWidget {
         children: [
           Gnb.main(
             // TODO(i18n): localize
-            title: 'Terms of Service',
+            title: 'Terms of service',
             onBack: () => Navigator.of(context).maybePop(),
           ),
-          Expanded(child: LegalBody(clauses: _clauses)),
+          const Expanded(
+            child: LegalBody(sectionTitle: _sectionTitle, clauses: _clauses),
+          ),
         ],
       ),
     );
   }
 }
 
-/// Scrollable legal-document body: a column of `(heading, body)` clause blocks.
+/// Scrollable legal-document body: a bold section heading over a column of
+/// `(heading, body)` clause blocks.
 ///
 /// Shared between [TermsScreen] and the privacy screen — both follow the Figma
-/// `Body` layout (20px side padding, 16px between clauses, 8px heading→body).
+/// `Body` layout: 20px side padding, 16px top; section heading in Headline 1
+/// (18, white); each clause is a 15px heading (white) + 8px gap + 14px body
+/// (secondary), with 16px between blocks. Adaptive: wraps and scrolls as the
+/// localized copy grows.
 class LegalBody extends StatelessWidget {
-  /// Creates a legal body for the given [clauses].
-  const LegalBody({super.key, required this.clauses});
+  /// Creates a legal body with a [sectionTitle] above the [clauses].
+  const LegalBody({
+    super.key,
+    required this.sectionTitle,
+    required this.clauses,
+  });
+
+  /// Bold section heading shown above the clauses.
+  final String sectionTitle;
 
   /// `(heading, body)` pairs rendered top-to-bottom.
   final List<(String, String)> clauses;
@@ -88,19 +107,30 @@ class LegalBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
+      // Figma Body: 20px side padding, 16px top. Bottom padding lets long,
+      // localized copy scroll clear of the home indicator.
       padding: const EdgeInsets.fromLTRB(AppSpacing.spacing20,
           AppSpacing.spacing16, AppSpacing.spacing20, AppSpacing.spacing24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          for (var i = 0; i < clauses.length; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.spacing16),
-            Text(clauses[i].$1, style: AppType.body2.r),
+          // Section heading — Figma Headline 1 / SemiBold 18, white.
+          Text(
+            sectionTitle,
+            style: AppType.headline1.sb.copyWith(color: AppColors.text),
+          ),
+          // 16px before each block (incl. after the section heading); 8px
+          // between a clause heading and its body.
+          for (final (heading, body) in clauses) ...[
+            const SizedBox(height: AppSpacing.spacing16),
+            Text(
+              heading,
+              style: AppType.body2.r.copyWith(color: AppColors.text),
+            ),
             const SizedBox(height: AppSpacing.spacing8),
             Text(
-              clauses[i].$2,
-              style:
-                  AppType.label1.r.copyWith(color: AppColors.textSecondary),
+              body,
+              style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
             ),
           ],
         ],

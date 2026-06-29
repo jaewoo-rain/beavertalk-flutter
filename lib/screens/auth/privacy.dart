@@ -7,12 +7,17 @@ import 'terms.dart';
 
 /// Privacy-policy article screen.
 ///
-/// Figma `screen/privacy_policy` (`2235:17392`). Same pattern as [TermsScreen]:
-/// a [GnbType.main] header ("Privacy Policy", back = pop) over a scrollable
-/// [LegalBody] of dummy clause sections. Static content only — no backend.
+/// Figma `screen/privacy_policy` (`2235:17392`) — a **full-screen page**, same
+/// pattern as [TermsScreen]: [AppScaffold] with a [GnbType.main] header
+/// ("Privacy policy", back = pop) over a scrollable [LegalBody] (a bold section
+/// heading + dummy clause blocks). Static content only; no backend.
 class PrivacyScreen extends StatelessWidget {
   /// Creates the privacy-policy screen.
   const PrivacyScreen({super.key});
+
+  /// Bold section heading above the clauses (Figma Headline 1).
+  // TODO(i18n): localize
+  static const String _sectionTitle = 'Personal Data We Collect';
 
   // TODO(legal): placeholder copy — replace with reviewed, localized policy.
   /// Dummy clauses rendered as (heading, body) pairs.
@@ -62,10 +67,12 @@ class PrivacyScreen extends StatelessWidget {
         children: [
           Gnb.main(
             // TODO(i18n): localize
-            title: 'Privacy Policy',
+            title: 'Privacy policy',
             onBack: () => Navigator.of(context).maybePop(),
           ),
-          const Expanded(child: LegalBody(clauses: _clauses)),
+          const Expanded(
+            child: LegalBody(sectionTitle: _sectionTitle, clauses: _clauses),
+          ),
         ],
       ),
     );

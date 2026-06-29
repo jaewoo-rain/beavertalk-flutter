@@ -83,6 +83,7 @@ class InputField extends StatefulWidget {
     this.onChanged,
     this.hintText,
     this.leftIcon,
+    this.rightIcon,
     this.enabled = true,
     this.size = InputFieldSize.size56,
     this.keyboardType,
@@ -108,6 +109,10 @@ class InputField extends StatefulWidget {
 
   /// Optional leading icon, sized to the variant's icon box.
   final Widget? leftIcon;
+
+  /// Optional trailing icon (e.g. a password visibility toggle), sized to the
+  /// variant's icon box. The caller wires its own tap handling.
+  final Widget? rightIcon;
 
   /// Whether the field accepts input. When false it renders the disabled style.
   final bool enabled;
@@ -244,6 +249,26 @@ class _InputFieldState extends State<InputField> {
       );
     }
 
+    Widget? trailing;
+    if (widget.rightIcon != null) {
+      trailing = Padding(
+        padding: EdgeInsets.only(left: spec.gap),
+        child: IconTheme.merge(
+          data: IconThemeData(
+            size: spec.iconSize,
+            color: widget.enabled
+                ? AppColors.textSecondary
+                : AppColors.textTertiary,
+          ),
+          child: SizedBox(
+            width: spec.iconSize,
+            height: spec.iconSize,
+            child: Center(child: widget.rightIcon),
+          ),
+        ),
+      );
+    }
+
     final TextField field = TextField(
       controller: _controller,
       focusNode: _focusNode,
@@ -285,6 +310,7 @@ class _InputFieldState extends State<InputField> {
         children: [
           ?icon,
           Expanded(child: field),
+          ?trailing,
         ],
       ),
     );
