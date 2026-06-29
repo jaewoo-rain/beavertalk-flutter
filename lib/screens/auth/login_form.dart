@@ -6,6 +6,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
+import '../../components/molecules/password_eye_toggle.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
@@ -36,6 +37,7 @@ class LoginFormScreen extends ConsumerStatefulWidget {
 class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
   String _email = '';
   String _password = '';
+  bool _obscurePassword = true; // password hidden by default
   bool _saveId = false;
   bool _submitting = false;
   String? _error;
@@ -110,8 +112,13 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     onChanged: (v) => setState(() => _password = v),
                     // TODO(i18n): localize
                     hintText: 'Enter your password',
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     leftIcon: const Icon(Icons.lock_outline),
+                    rightIcon: PasswordEyeToggle(
+                      obscured: _obscurePassword,
+                      onTap: () => setState(
+                          () => _obscurePassword = !_obscurePassword),
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.spacing20),
                   // ── Save-id checkbox + find-password link ───────────────

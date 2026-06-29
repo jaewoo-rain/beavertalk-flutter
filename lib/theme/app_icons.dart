@@ -28,6 +28,7 @@ abstract final class AppIcons {
   static const String edit = '$_base/edit.svg';
   static const String eyeFill = '$_base/eye-fill.svg';
   static const String eyeLine = '$_base/eye-line.svg';
+  static const String eyeOff = '$_base/eye-off.svg';
   static const String flag = '$_base/flag.svg';
   static const String global = '$_base/global.svg';
   static const String heartEyes = '$_base/heart-eyes.svg';
@@ -71,6 +72,7 @@ abstract final class AppIcons {
     edit,
     eyeFill,
     eyeLine,
+    eyeOff,
     flag,
     global,
     heartEyes,
