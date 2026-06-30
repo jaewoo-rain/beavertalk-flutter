@@ -15,7 +15,8 @@ enum GnbType {
   main,
 
   /// Back arrow (left) + progress bar (fill) + `current/total` label (right).
-  /// Background: surface2. Height fixed at `56`.
+  /// Background: transparent — the page body shows through, so the bar reads
+  /// seamlessly on any background (surface, surface2, …). Height fixed at `56`.
   ///
   /// Per Figma the progress fill is the mint [AppColors.primary] (#00FFB2) and
   /// the track is [AppColors.primary10] (the primary at ~10%).
@@ -195,7 +196,7 @@ class Gnb extends StatelessWidget {
       case GnbType.sub:
         return AppColors.surface;
       case GnbType.main2:
-        return AppColors.surface2;
+        return Colors.transparent;
       case GnbType.sub2:
         return AppColors.surfaceElevated;
     }
