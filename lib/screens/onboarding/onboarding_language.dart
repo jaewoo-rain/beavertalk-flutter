@@ -55,7 +55,9 @@ class _OnboardingLanguageScreenState
         children: [
           Gnb.main2(
             progress: const GnbProgress(current: 1, total: 3),
-            onBack: () => Navigator.pop(context),
+            // Team decision: back from the first onboarding step returns to the
+            // sign-up screen (its form is preserved — see SignupScreen).
+            onBack: () => Navigator.pushNamed(context, Routes.signup),
           ),
           Expanded(
             child: ListView(
