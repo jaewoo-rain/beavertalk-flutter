@@ -3,11 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../features/auth/presentation/providers/auth_controller.dart';
 import '../features/auth/presentation/providers/my_profile_provider.dart';
-import '../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../screens/auth/login.dart';
 import '../screens/home/home.dart';
 import '../screens/onboarding/onboarding_language.dart';
-import '../screens/onboarding/onboarding_name.dart';
 import '../theme/app_colors.dart';
 
 /// App entry point. Watches [authControllerProvider] and routes:
@@ -17,8 +15,8 @@ import '../theme/app_colors.dart';
 /// - [AuthStatus.authenticated] → reads `members/me`:
 ///   - loading → splash,
 ///   - `onboardingCompleted == true` → home,
-///   - `onboardingCompleted == false` → onboarding (name first; language was
-///     already picked before login),
+///   - `onboardingCompleted == false` → onboarding (language 1/3 → name 2/3 →
+///     reason 3/3 → done),
 ///   - error → the session-expiry path clears auth back to login.
 ///
 /// Deep navigation still goes through `onGenerateRoute` via
@@ -48,13 +46,9 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       case AuthStatus.unknown:
         return const _Splash();
       case AuthStatus.unauthenticated:
-        // Language/country is picked first; once captured in the draft, the
-        // gate rebuilds into the login screen (no manual navigation needed).
-        final hasLanguage =
-            ref.watch(signupDraftProvider).language != null;
-        return hasLanguage
-            ? const LoginScreen()
-            : const OnboardingLanguageScreen();
+        // The login screen prompts for the language via a bottom sheet on first
+        // entry (Figma `auth_login__sheet`) instead of a full-screen step.
+        return const LoginScreen();
       case AuthStatus.authenticated:
         return _authenticatedView();
     }
@@ -73,10 +67,11 @@ class _AuthGateState extends ConsumerState<AuthGate> {
         });
         return const _Splash();
       },
-      // Language was already picked pre-login, so onboarding starts at name.
+      // Onboarding starts at the native-language step (1/3); it then pushes
+      // name (2/3) → reason (3/3) → done.
       data: (member) => member.onboardingCompleted
           ? const HomeScreen()
-          : const OnboardingNameScreen(),
+          : const OnboardingLanguageScreen(),
     );
   }
 }

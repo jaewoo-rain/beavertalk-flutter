@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
+import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/country_select.dart';
 import '../../components/organisms/gnb.dart';
@@ -11,14 +12,15 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Onboarding step 1/5 — native language picker. Shown first, before login.
+/// Onboarding step 1/3 — native language picker. First onboarding step after
+/// login/signup completes.
 ///
-/// Figma `screen/auth_login` (`2291:21265`). Renders an [AppScaffold] with a
-/// [GnbType.main2] progress bar (1/5), the prompt "What is your native
+/// Figma `screen/onborading_language` (`2291:21265`). An [AppScaffold] with a
+/// [GnbType.main2] progress bar (1/3), the prompt "What is your native
 /// language?", a single-select [CountrySelect] list over [mockLanguages], and a
-/// pinned primary [Button] ("Continue") that is disabled until a language is
-/// chosen. Tapping it stores the language in the signup draft; the [AuthGate]
-/// then rebuilds into the login screen (no manual navigation).
+/// pinned primary [Button] ("Continue", disabled until a language is chosen).
+/// Tapping it stores the language in the signup draft and pushes the name step
+/// ([Routes.onboardingName], 2/3).
 class OnboardingLanguageScreen extends ConsumerStatefulWidget {
   /// Creates the language-selection onboarding screen.
   const OnboardingLanguageScreen({super.key});
@@ -36,12 +38,11 @@ class _OnboardingLanguageScreenState
   void _select(String id) => setState(() => _selectedId = id);
 
   void _next() {
-    // Stash the chosen language for the onboarding submit (sent later). The
-    // AuthGate watches the draft and rebuilds into the login screen — no manual
-    // navigation needed here.
-    if (_selectedId != null) {
-      ref.read(signupDraftProvider.notifier).setLanguage(_selectedId!);
-    }
+    // Stash the chosen native language for the onboarding submit, then advance
+    // to the name step (2/3). `_next` is only reachable once a language is
+    // selected (the Continue button is disabled otherwise).
+    ref.read(signupDraftProvider.notifier).setLanguage(_selectedId!);
+    Navigator.pushNamed(context, Routes.onboardingName);
   }
 
   @override

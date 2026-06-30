@@ -64,6 +64,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
     // TODO(i18n): localize
     this.confirmText = 'Confirm',
     this.onClose,
+    this.showHomeIndicator = true,
   });
 
   /// Header title (Figma default: "Select a country").
@@ -86,6 +87,11 @@ class BottomSheetCountrySelect extends StatelessWidget {
 
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
+
+  /// Whether to render the trailing [HomeIndicator]. Keep `true` for the
+  /// full-bleed gallery preview; pass `false` when shown as a real modal sheet
+  /// (the OS draws the home indicator and the sheet only needs its content).
+  final bool showHomeIndicator;
 
   static const double _sheetWidth = 375;
   static const double _contentWidth = 335;
@@ -190,7 +196,8 @@ class BottomSheetCountrySelect extends StatelessWidget {
             ),
           ),
         ),
-        const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+        if (showHomeIndicator)
+          const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
       ],
     );
   }

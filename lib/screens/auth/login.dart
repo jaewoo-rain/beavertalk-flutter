@@ -10,8 +10,10 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
+import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -51,6 +53,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   void initState() {
     super.initState();
+    // First entry with no language captured yet → prompt with the country/
+    // language bottom sheet over this screen (Figma `auth_login__sheet`).
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && ref.read(signupDraftProvider).language == null) {
+        _showLanguageSheet();
+      }
+    });
     if (kIsWeb) {
       // A signed-in user (idToken populated) arrives on this stream after the
       // GIS button is pressed and consent is granted.
@@ -58,6 +67,51 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // Tries to restore a prior session without UI (no-op if none).
       unawaited(_googleSignIn.signInSilently());
     }
+  }
+
+  /// Country/language picker shown as a modal bottom sheet over the login
+  /// screen (Figma `auth_login__sheet` / `BottomSheet-CountrySelect`). It is a
+  /// pure overlay — no status bar / progress bar / home indicator, just the
+  /// country list + confirm button over a dim. On confirm the chosen language
+  /// is stored in the signup draft.
+  Future<void> _showLanguageSheet() async {
+    final items = <CountryItem>[
+      for (final l in mockLanguages)
+        CountryItem(code: l.id, name: l.name, flag: l.flag),
+    ];
+    // Local selection while the sheet is open; seeded from the draft.
+    String? selected = ref.read(signupDraftProvider).language;
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: AppColors.scrim,
+      builder: (sheetContext) {
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            return SafeArea(
+              top: false,
+              child: BottomSheetCountrySelect(
+                items: items,
+                value: selected,
+                // Overlay over the login screen — omit the device chrome.
+                showHomeIndicator: false,
+                onChanged: (code) => setSheetState(() => selected = code),
+                onConfirm: selected == null
+                    ? null
+                    : () {
+                        ref
+                            .read(signupDraftProvider.notifier)
+                            .setLanguage(selected!);
+                        Navigator.of(sheetContext).pop();
+                      },
+                onClose: () => Navigator.of(sheetContext).pop(),
+              ),
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
