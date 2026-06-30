@@ -71,7 +71,21 @@ class HomeScreen extends ConsumerWidget {
                       behavior: HitTestBehavior.opaque,
                       onTap: () =>
                           Navigator.pushNamed(context, Routes.mypage),
-                      child: AppIcons.profile(size: 28, color: AppColors.text),
+                      // Figma `2296:26381` — a surface2 circle holding a muted
+                      // (label/assistive) person, not a bare white glyph.
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.surface2,
+                        ),
+                        child: AppIcons.profile(
+                          size: 20,
+                          color: AppColors.labelAssistive,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -96,7 +110,8 @@ class HomeScreen extends ConsumerWidget {
                 const SizedBox(height: 16),
                 Text(
                   mockPartnerName,
-                  style: AppType.title1.b.copyWith(color: AppColors.text),
+                  // Figma `2296:26390` — Title 3 / Bold (24px), updated from 32.
+                  style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
               ],
             ),

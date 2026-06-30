@@ -41,4 +41,29 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<List<CallSummary>> listCalls({int? limit, int? offset}) async {
+    try {
+      final dtos = await _remote.listCalls(limit: limit, offset: offset);
+      return dtos.map((d) => d.toEntity()).toList();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<int?> latestCallId() async {
+    try {
+      // Pull a small page and take max(call_id) so ordering need not be assumed
+      // (call_id is a monotonically increasing int → max == newest).
+      final dtos = await _remote.listCalls(limit: 5);
+      if (dtos.isEmpty) return null;
+      return dtos
+          .map((d) => d.toEntity().callId)
+          .reduce((a, b) => a > b ? a : b);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
 }

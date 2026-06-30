@@ -4,7 +4,6 @@ import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
-import '../atoms/button.dart';
 import '../atoms/dim.dart';
 import '../atoms/progress_bar.dart';
 
@@ -12,13 +11,21 @@ import '../atoms/progress_bar.dart';
 /// reused [ProgressBar] atom.
 class ProfileStat {
   /// Creates a profile stat.
-  const ProfileStat({required this.label, required this.value});
+  const ProfileStat({
+    required this.label,
+    required this.value,
+    this.active = true,
+  });
 
   /// Stat name shown on the left of the [ProgressBar] header.
   final String label;
 
   /// Progress value `0–100` (clamped by [ProgressBar]).
   final double value;
+
+  /// Whether this bar is the highlighted (primary/green) accent. The top accent
+  /// is active; the rest render muted (grey) per Figma `2235:4652`.
+  final bool active;
 }
 
 /// DialogShareProfile — Figma `03_Organisms / Dialog-ShareProfile`
@@ -32,9 +39,10 @@ class ProfileStat {
 ///   - [avatar] / [imageProvider] — `80×80` circle.
 ///   - [caption] in `AppType.body1.r` ([AppColors.textSecondary]).
 ///   - [title] in `AppType.title3.b` (white). Caption→title gap `8`.
-///   - [stats] — a column of [ProgressBar]s, gap `16`.
-/// - Share button — reused [Button] ([BtnType.secondaryFill], [BtnSize.s60]),
-///   full width, invoking [onShare].
+///   - [stats] — a column of [ProgressBar]s, gap `16`. The first (top) stat is
+///     the active green accent; the rest render muted (see [ProfileStat.active]).
+/// - Share button — full-width, [AppColors.surfaceElevatedNormal] (#2F3340)
+///   fill, radius 16, centered SemiBold label, invoking [onShare].
 ///
 /// Provide the avatar either as an [imageProvider] (rendered into the circle) or
 /// as a fully custom [avatar] widget; if both are null a neutral placeholder is
@@ -167,6 +175,7 @@ class DialogShareProfile extends StatelessWidget {
                           ProgressBar(
                             label: stats[i].label,
                             value: stats[i].value,
+                            active: stats[i].active,
                           ),
                         ],
                       ],
@@ -175,11 +184,30 @@ class DialogShareProfile extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s60,
-                text: shareLabel,
-                onPressed: onShare,
+              // Share button — Figma `2235:4647`: Background/Elevated/Normal
+              // (#2F3340 = [AppColors.surfaceElevatedNormal]) fill, radius 16,
+              // 18×16 padding, centered SemiBold label. Not the [Button] atom:
+              // its `secondary_fill` is `surface2` (the dialog's own fill) so the
+              // button blended into the background; no Button variant carries the
+              // Elevated/Normal fill this design calls for.
+              Material(
+                color: AppColors.surfaceElevatedNormal,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: onShare,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: 18,
+                      horizontal: 16,
+                    ),
+                    child: Text(
+                      shareLabel,
+                      textAlign: TextAlign.center,
+                      style: AppType.body1.sb.copyWith(color: AppColors.text),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

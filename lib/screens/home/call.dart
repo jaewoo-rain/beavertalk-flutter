@@ -36,6 +36,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// no [AppColors] token (app red is the softer `error #FF7070`).
   static const Color _endRed = Color(0xFFE52222);
 
+  /// Avatar ring — the dark muted teal sampled from Figma `screen/call_main`
+  /// (`2296:26242`, ~`#143E38`). The brighter `green700` used before rendered
+  /// as an over-saturated green glow (QA: "아이콘 이상한 그라데이션").
+  static const Color _avatarRing = Color(0xFF163A33);
+
   bool _navigated = false;
 
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
@@ -70,14 +75,20 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
-  /// Advances to the wrap-up screen, carrying the analyzable call id.
-  void _goFinish(String? callId) {
+  /// Advances to the wrap-up screen, carrying the analyzable call id, the final
+  /// call duration (seconds), and the pre-call [baselineCallId] so a manually
+  /// ended call (no `call_ended`/id) can recover its id from `GET /calls`.
+  void _goFinish(String? callId, int elapsedSec, int? baselineCallId) {
     if (_navigated) return;
     _navigated = true;
     Navigator.pushReplacementNamed(
       context,
       Routes.callFinish,
-      arguments: callId,
+      arguments: (
+        callId: callId,
+        elapsedSec: elapsedSec,
+        baselineCallId: baselineCallId,
+      ),
     );
   }
 
@@ -95,7 +106,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
       if (next.phase == CallPhase.ended) {
-        _goFinish(next.callId);
+        _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;
         _navigated = true;
@@ -167,7 +178,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   height: 140,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.green700, // ring
+                    color: _avatarRing, // ring (Figma dark teal)
                   ),
                   alignment: Alignment.center,
                   child: Container(
@@ -185,32 +196,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ),
               ),
             ),
-            // AI utterance + translation (Figma bottom block).
-            // NOTE(shell): the original line is wired to `beaverSubtitle` (real),
-            // but there is NO server field for the translation yet — it is left
-            // as a placeholder stub. TODO(server): add a translation field and
-            // wire the second line below when the API provides it.
+            // Beaver's live subtitle (server `output_transcript`). Shown only
+            // when a real line has arrived — no hardcoded placeholder, so a fake
+            // line never appears mid-call (QA: "통화 시 beaver의 자막 오류"). The
+            // earlier English translation line was a stub with no server field
+            // and has been removed (QA: "아래 자막 삭제").
             Padding(
               padding: const EdgeInsets.fromLTRB(32, 16, 32, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    beaverSubtitle.isNotEmpty
-                        ? beaverSubtitle
-                        : '안녕하세요. 어디 가세요?', // placeholder until a turn arrives
-                    textAlign: TextAlign.center,
-                    style: AppType.body1.sb.copyWith(color: AppColors.text),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    // TODO(server): no translation field — placeholder stub.
-                    '“Hello, Where are you going?”',
-                    textAlign: TextAlign.center,
-                    style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                ],
+              child: Text(
+                beaverSubtitle,
+                textAlign: TextAlign.center,
+                style: AppType.body1.sb.copyWith(color: AppColors.text),
               ),
             ),
             // End-call button — red 60px circular hang-up (Figma `2296:26249`).

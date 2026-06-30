@@ -8,9 +8,9 @@ import '../icons/app_icons.dart';
 /// HeroAvatar — a large circular avatar with a small "change" badge pinned to
 /// its bottom-right.
 ///
-/// Extracted from `screen/home` (`2117:23988`). Renders the [imageProvider]
-/// filling a [size]×[size] circle (with a soft [AppColors.primary24] glow), and
-/// a circular primary badge holding an [Icons.autorenew] glyph. The badge is
+/// Extracted from `screen/main_home` (`2296:26379`). Renders the
+/// [imageProvider] filling a [size]×[size] circle, and a small rounded "change"
+/// badge holding a swap (⇄) glyph pinned to its bottom-right. The badge is
 /// interactive only when [onEditTap] is provided.
 class HeroAvatar extends StatelessWidget {
   /// Creates a hero avatar.
@@ -43,9 +43,9 @@ class HeroAvatar extends StatelessWidget {
         color: AppColors.surface2,
         borderRadius: BorderRadius.circular(AppRadius.xs), // 8
       ),
-      child: AppIcons.redo(
-        size: 14,
-        color: AppColors.text,
+      child: AppIcons.swap(
+        size: 12,
+        color: AppColors.labelAssistive,
       ),
     );
 
@@ -66,12 +66,6 @@ class HeroAvatar extends StatelessWidget {
                 image: imageProvider,
                 fit: BoxFit.cover,
               ),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.primary24,
-                  blurRadius: 40,
-                ),
-              ],
             ),
           ),
           // Change badge — primary pill with an edit glyph, pinned bottom-right.

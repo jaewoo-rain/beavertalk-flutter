@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/network/ws_url.dart';
+import 'normalcall_providers.dart';
 
 /// Lifecycle phases of a live normalcall session.
 enum CallPhase {
@@ -37,6 +38,7 @@ class CallState {
     this.phase = CallPhase.idle,
     this.elapsedSec = 0,
     this.callId,
+    this.baselineCallId,
     this.beaverSubtitle = '',
     this.userSubtitle = '',
     this.errorMsg,
@@ -52,6 +54,12 @@ class CallState {
   /// Server call id, available once `call_ended` arrives. Pass to analysis.
   final String? callId;
 
+  /// Max existing `call_id` captured at call start, before the server creates
+  /// this call's row. On a manual hang-up (no `call_ended`/[callId]), the
+  /// wrap-up screen recovers the new id by polling `GET /calls` for an id
+  /// greater than this baseline. Null when the pre-call fetch failed/none.
+  final int? baselineCallId;
+
   /// Latest beaver (assistant) subtitle, updated by `output_transcript`.
   final String beaverSubtitle;
 
@@ -66,6 +74,7 @@ class CallState {
     CallPhase? phase,
     int? elapsedSec,
     String? callId,
+    int? baselineCallId,
     String? beaverSubtitle,
     String? userSubtitle,
     String? errorMsg,
@@ -74,6 +83,7 @@ class CallState {
       phase: phase ?? this.phase,
       elapsedSec: elapsedSec ?? this.elapsedSec,
       callId: callId ?? this.callId,
+      baselineCallId: baselineCallId ?? this.baselineCallId,
       beaverSubtitle: beaverSubtitle ?? this.beaverSubtitle,
       userSubtitle: userSubtitle ?? this.userSubtitle,
       errorMsg: errorMsg ?? this.errorMsg,
@@ -226,6 +236,17 @@ class NormalCallController extends Notifier<CallState> {
       // Start the single-consumer playback loop that applies backpressure.
       _startPlaybackLoop();
 
+      // Capture the baseline max call_id *before* the socket creates this call's
+      // row, so a manual hang-up (which gets no `call_ended`) can recover the new
+      // id later by polling for an id greater than this. Best-effort: a failure
+      // here must never block the call from starting.
+      try {
+        final base = await ref.read(normalcallRepositoryProvider).latestCallId();
+        state = state.copyWith(baselineCallId: base);
+      } catch (_) {
+        // Leave baselineCallId null; recovery degrades to "newest id".
+      }
+
       // Connect the WebSocket.
       final url = normalcallWsUrl(token);
       final channel = WebSocketChannel.connect(Uri.parse(url));
@@ -261,8 +282,19 @@ class NormalCallController extends Notifier<CallState> {
       return;
     }
     final preservedCallId = state.callId;
+    // Preserve the elapsed time too so the wrap-up screen can show the real call
+    // duration ([_teardown] would otherwise reset it to 0).
+    final preservedElapsed = state.elapsedSec;
+    // Preserve the baseline so the wrap-up screen can recover the call id when
+    // this was a manual hang-up (no `call_ended`, so [preservedCallId] is null).
+    final preservedBaseline = state.baselineCallId;
     await _teardown();
-    state = CallState(phase: CallPhase.ended, callId: preservedCallId);
+    state = CallState(
+      phase: CallPhase.ended,
+      callId: preservedCallId,
+      elapsedSec: preservedElapsed,
+      baselineCallId: preservedBaseline,
+    );
   }
 
   /// Opens the recorder and pipes its PCM16k stream straight to the socket.
@@ -553,8 +585,13 @@ class NormalCallController extends Notifier<CallState> {
     _drainScheduled = false;
     _send({'type': 'playback_done'});
     final preservedCallId = state.callId;
+    final preservedElapsed = state.elapsedSec;
     await _teardown();
-    state = CallState(phase: CallPhase.ended, callId: preservedCallId);
+    state = CallState(
+      phase: CallPhase.ended,
+      callId: preservedCallId,
+      elapsedSec: preservedElapsed,
+    );
   }
 
   /// Socket closed by the server (incl. 1008 auth reject) (§8-6).

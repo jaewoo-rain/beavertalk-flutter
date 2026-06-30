@@ -156,8 +156,10 @@ class _NavTab extends StatelessWidget {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Color(0x3D00FFB2), // Primary Blur: rgba(0,255,178,0.24)
-              blurRadius: 32,
+              // Figma `2296:26379` call button: drop-shadow 0 0 16 rgba(0,255,178,0.24).
+              // (Was 32 — read as an over-bright glow; halved to match the design.)
+              color: Color(0x3D00FFB2),
+              blurRadius: 16,
             ),
           ],
         ),

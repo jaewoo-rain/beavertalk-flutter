@@ -59,15 +59,69 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   /// Server call id from route arguments (string), parsed to int when valid.
   int? _callId;
 
+  /// Max `call_id` that existed before this call (from the call screen). Used to
+  /// recover [_callId] after a manual hang-up; null when unavailable.
+  int? _baselineCallId;
+
+  /// True while recovering [_callId] via `GET /calls` (disables the action).
+  bool _recovering = false;
+
+  /// Final call duration in whole seconds, from the call screen's live timer.
+  int _durationSec = 0;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is String) {
+    if (args is ({String? callId, int elapsedSec, int? baselineCallId})) {
+      final id = args.callId;
+      _callId = id == null ? null : int.tryParse(id);
+      _durationSec = args.elapsedSec;
+      _baselineCallId = args.baselineCallId;
+    } else if (args is ({String? callId, int elapsedSec})) {
+      final id = args.callId;
+      _callId = id == null ? null : int.tryParse(id);
+      _durationSec = args.elapsedSec;
+    } else if (args is String) {
       _callId = int.tryParse(args);
     } else if (args is int) {
       _callId = args;
     }
+  }
+
+  /// Recovers the just-finished call's id when it was a manual hang-up (no
+  /// `call_ended`, so [_callId] is null). Polls `GET /calls` for an id greater
+  /// than [_baselineCallId] — the server may lag finalizing the row, so retry a
+  /// few times. Returns null if no new call appears.
+  Future<int?> _recoverCallId() async {
+    final repo = ref.read(normalcallRepositoryProvider);
+    const attempts = 5;
+    const gap = Duration(milliseconds: 600);
+    final baseline = _baselineCallId;
+    for (var i = 0; i < attempts; i++) {
+      try {
+        final latest = await repo.latestCallId();
+        if (latest != null && (baseline == null || latest > baseline)) {
+          return latest;
+        }
+      } catch (_) {
+        // Transient (network/server) — fall through to retry.
+      }
+      if (i < attempts - 1) await Future<void>.delayed(gap);
+    }
+    return null;
+  }
+
+  /// Formats whole [seconds] as `mm:ss` (or `hh:mm:ss` past an hour).
+  String _formatDuration(int seconds) {
+    final s = (seconds % 60).toString().padLeft(2, '0');
+    if (seconds >= 3600) {
+      final h = (seconds ~/ 3600).toString().padLeft(2, '0');
+      final m = ((seconds % 3600) ~/ 60).toString().padLeft(2, '0');
+      return '$h:$m:$s';
+    }
+    final m = (seconds ~/ 60).toString().padLeft(2, '0');
+    return '$m:$s';
   }
 
   void _rate(_Rating r) => setState(() => _rating = r);
@@ -76,7 +130,20 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   /// screen. Rating is optional: if none was picked, the PATCH is skipped.
   /// A failed rating never blocks navigation.
   Future<void> _analyze() async {
-    final callId = _callId;
+    if (_recovering) return; // guard against double-taps during recovery
+
+    var callId = _callId;
+
+    // Manual hang-up gets no `call_ended`, so there's no call id yet. Recover it
+    // from `GET /calls` (baseline-gated) before analyzing.
+    if (callId == null) {
+      setState(() => _recovering = true);
+      callId = await _recoverCallId();
+      if (!mounted) return;
+      setState(() => _recovering = false);
+      if (callId != null) _callId = callId;
+    }
+
     final rating = _rating;
 
     if (callId != null && rating != null) {
@@ -152,9 +219,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  // TODO(server): call duration not passed to this screen yet —
-                  // placeholder. Wire when the API provides the call length.
-                  '통화 종료 05:00',
+                  '통화 종료 ${_formatDuration(_durationSec)}',
                   style:
                       AppType.body1.r.copyWith(color: AppColors.textSecondary),
                 ),
@@ -209,7 +274,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 Button(
                   type: BtnType.primaryFill,
                   size: BtnSize.s60,
-                  text: '대화 분석 바로가기',
+                  text: _recovering ? '불러오는 중…' : '대화 분석 바로가기',
+                  disabled: _recovering,
                   onPressed: _analyze,
                 ),
               ],

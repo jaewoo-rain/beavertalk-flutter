@@ -74,6 +74,9 @@ abstract final class AppIcons {
       _glyph('translate', size, color);
   static Widget redo({double size = 24, Color color = AppColors.text}) =>
       _glyph('redo', size, color);
+  /// Two-way swap arrows (⇄) — the avatar "change" badge glyph.
+  static Widget swap({double size = 24, Color color = AppColors.text}) =>
+      _glyph('swap', size, color);
 
   // ── Content actions ──────────────────────────────────────────
   static Widget bookmarkLine({double size = 24, Color color = AppColors.text}) =>

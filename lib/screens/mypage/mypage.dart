@@ -6,6 +6,8 @@ import '../../app/routes.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_line.dart';
+import '../../components/organisms/bottom_sheet_country_select.dart';
+import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -28,6 +30,46 @@ class MyPageScreen extends ConsumerStatefulWidget {
 class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   bool _notification = true;
 
+  /// Selected learning-language id (defaults to Korean — the app's target
+  /// language). Updated when the user picks one in the language bottom sheet.
+  String _learningLangId = 'ko';
+
+  /// Display name of the currently selected learning language.
+  String get _learningLangName => mockLanguages
+      .firstWhere(
+        (l) => l.id == _learningLangId,
+        orElse: () => mockLanguages.firstWhere((l) => l.id == 'ko'),
+      )
+      .name;
+
+  /// Opens the language bottom sheet (`BottomSheetCountrySelect`) seeded with the
+  /// current choice; on confirm, stores the picked language id. Selection is
+  /// staged locally until "확인" so cancelling/closing keeps the old value.
+  Future<void> _pickLearningLanguage() async {
+    var staged = _learningLangId;
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      isScrollControlled: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
+          title: '학습 언어를 선택하세요',
+          items: [
+            for (final l in mockLanguages)
+              CountryItem(code: l.id, name: l.name, flag: l.flag),
+          ],
+          value: staged,
+          onChanged: (code) => setSheetState(() => staged = code),
+          onConfirm: () => Navigator.of(sheetCtx).pop(staged),
+          onClose: () => Navigator.of(sheetCtx).pop(),
+        ),
+      ),
+    );
+    if (picked != null && mounted) {
+      setState(() => _learningLangId = picked);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Languages come from the real member (GET /members/me); show sensible
@@ -42,7 +84,18 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             title: '',
             onBack: () => Navigator.pop(context),
             trailing: IconButton(
-              onPressed: () => Navigator.pushNamed(context, Routes.share),
+              onPressed: () => showDialogShareProfile(
+                context,
+                imageProvider: beaverImage,
+                caption: 'Your Korean accent sounds',
+                title: 'American',
+                stats: const [
+                  ProfileStat(label: 'American', value: 87),
+                  ProfileStat(label: 'Korean', value: 7, active: false),
+                  ProfileStat(label: 'China', value: 6, active: false),
+                ],
+                onShare: () => Navigator.of(context).maybePop(),
+              ),
               icon: AppIcons.share(color: AppColors.text),
               tooltip: '공유',
             ),
@@ -58,7 +111,11 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 const SizedBox(height: 16),
                 _group([
                   _navRow('User Language', member?.language ?? 'English(US)'),
-                  _navRow('Learning Language', '한국어'),
+                  _navRow(
+                    'Learning Language',
+                    _learningLangName,
+                    onTap: _pickLearningLanguage,
+                  ),
                   CardLine(
                     type: CardLineType.defaultToggle,
                     label: 'Notification',
@@ -188,11 +245,16 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       );
 
   /// A tappable label/value row with a trailing chevron.
+  ///
+  /// Provide either a named [route] (pushed on tap) or a custom [onTap]; [onTap]
+  /// takes precedence. With neither, the row is inert.
   Widget _navRow(String label, String value,
-          {String? route, bool divider = true}) =>
+          {String? route, VoidCallback? onTap, bool divider = true}) =>
       InkWell(
-        onTap:
-            route == null ? null : () => Navigator.pushNamed(context, route),
+        onTap: onTap ??
+            (route == null
+                ? null
+                : () => Navigator.pushNamed(context, route)),
         child: CardLine(
           type: CardLineType.defaultRow,
           label: label,

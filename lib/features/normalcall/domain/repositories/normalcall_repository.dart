@@ -15,4 +15,15 @@ abstract interface class NormalcallRepository {
 
   /// `GET /calls/{call_id}/result` — the full analysis result.
   Future<CallResult> getResult(int callId);
+
+  /// `GET /calls` — past calls for the record list (newest first).
+  Future<List<CallSummary>> listCalls({int? limit, int? offset});
+
+  /// The largest existing `call_id` (newest call), or null when there are none.
+  ///
+  /// Used to recover the call id of a manually-ended call: the server does not
+  /// send `call_ended` on a client hang-up, so the just-finished call has no id
+  /// from the socket. Capturing this as a baseline before a call, then polling
+  /// for a larger id after, identifies the new call. Throws [AppException].
+  Future<int?> latestCallId();
 }

@@ -80,6 +80,54 @@ class CallResult {
   final List<LearnedSentence> sentences;
 }
 
+/// A character as it appears in a call list summary (lightweight brief).
+class CallCharacterBrief {
+  const CallCharacterBrief({
+    required this.characterId,
+    required this.name,
+    this.imageUrl,
+  });
+
+  /// Server character id.
+  final int characterId;
+
+  /// Display name shown as the record title.
+  final String name;
+
+  /// Avatar image URL, or null (falls back to a static asset).
+  final String? imageUrl;
+}
+
+/// One row of `GET /calls` — a past call as shown in the record list.
+class CallSummary {
+  const CallSummary({
+    required this.callId,
+    required this.character,
+    this.callDate,
+    this.totalTime,
+    this.summary,
+    this.rating,
+  });
+
+  /// Server call id; passed to the analysis flow on tap.
+  final int callId;
+
+  /// The conversation partner for this call.
+  final CallCharacterBrief character;
+
+  /// When the call took place (ISO datetime), or null.
+  final DateTime? callDate;
+
+  /// Call duration in seconds, or null.
+  final int? totalTime;
+
+  /// Human-readable summary of the call, or null.
+  final String? summary;
+
+  /// Optional 1–5 rating; null when not rated.
+  final int? rating;
+}
+
 /// Lifecycle of a call's post-call analysis.
 ///
 /// [unknown] also covers any status string the client does not recognize.

@@ -110,3 +110,70 @@ class CallResultDto {
         sentences: sentences.map((s) => s.toEntity()).toList(),
       );
 }
+
+/// Wire model for the `character` object of a call summary (snake_case).
+class CallCharacterBriefDto {
+  const CallCharacterBriefDto({
+    required this.characterId,
+    required this.name,
+    this.imageUrl,
+  });
+
+  final int characterId;
+  final String name;
+  final String? imageUrl;
+
+  factory CallCharacterBriefDto.fromJson(Map<String, dynamic> json) {
+    return CallCharacterBriefDto(
+      characterId: json['character_id'] as int,
+      name: json['name'] as String? ?? '',
+      imageUrl: json['image_url'] as String?,
+    );
+  }
+
+  CallCharacterBrief toEntity() => CallCharacterBrief(
+        characterId: characterId,
+        name: name,
+        imageUrl: imageUrl,
+      );
+}
+
+/// Wire model for one entry of `GET /calls` (snake_case payload).
+class CallSummaryDto {
+  const CallSummaryDto({
+    required this.callId,
+    required this.character,
+    this.callDate,
+    this.totalTime,
+    this.summary,
+    this.rating,
+  });
+
+  final int callId;
+  final CallCharacterBriefDto character;
+  final String? callDate;
+  final int? totalTime;
+  final String? summary;
+  final int? rating;
+
+  factory CallSummaryDto.fromJson(Map<String, dynamic> json) {
+    final character = (json['character'] as Map<String, dynamic>?) ?? const {};
+    return CallSummaryDto(
+      callId: json['call_id'] as int,
+      character: CallCharacterBriefDto.fromJson(character),
+      callDate: json['call_date'] as String?,
+      totalTime: json['total_time'] as int?,
+      summary: json['summary'] as String?,
+      rating: json['rating'] as int?,
+    );
+  }
+
+  CallSummary toEntity() => CallSummary(
+        callId: callId,
+        character: character.toEntity(),
+        callDate: DateTime.tryParse(callDate ?? ''),
+        totalTime: totalTime,
+        summary: summary,
+        rating: rating,
+      );
+}

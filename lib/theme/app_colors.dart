@@ -24,6 +24,7 @@ abstract final class AppColors {
   static const textSecondary = Color(0xFF9EA3B2);
   static const textTertiary = Color(0xFF777C89); // Text/Tertiary
   static const textDisabled = Color(0xFF5A5C63);
+  static const labelAssistive = Color(0xFF676E81); // Label/Assistive
 
   static const accentLime = Color(0xFF429E00); // Accent/Foreground/Lime — toggle on
   static const green700 = Color(0xFF00B57E); // Foundation/Green/green-700 — mic/record
