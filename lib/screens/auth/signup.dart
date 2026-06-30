@@ -14,15 +14,6 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Persists the sign-up form (email/password) across navigation so the typed
-/// values survive the screen being disposed — e.g. when the user reaches
-/// onboarding and taps back into sign-up. Lives for the app session.
-// TODO(security): clear on logout so a new user doesn't see prior credentials.
-final _signupFormProvider =
-    StateProvider<({String email, String password, String confirm})>(
-  (_) => (email: '', password: '', confirm: ''),
-);
-
 /// Auth — signup. Figma `screen/auth_signup` (`2117:19739`).
 ///
 /// A simple form (email + password + confirm). "Sign up" calls
@@ -47,22 +38,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   bool _obscureConfirm = true; // confirm field hidden by default
   bool _submitting = false; // signup in progress
   String? _error;
-
-  @override
-  void initState() {
-    super.initState();
-    // Restore values typed earlier (e.g. after backing out of onboarding into
-    // sign-up) so the email/password aren't lost when the screen is recreated.
-    final form = ref.read(_signupFormProvider);
-    _email = form.email;
-    _password = form.password;
-    _passwordConfirm = form.confirm;
-  }
-
-  /// Mirrors the form into [_signupFormProvider] so it survives this screen
-  /// being disposed and restores on the next push.
-  void _persistForm() => ref.read(_signupFormProvider.notifier).state =
-      (email: _email, password: _password, confirm: _passwordConfirm);
 
   /// Password length rule shown beneath the password field (8–16 chars).
   String? get _passwordError {
@@ -152,10 +127,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _email,
-                    onChanged: (v) {
-                      setState(() => _email = v);
-                      _persistForm();
-                    },
+                    onChanged: (v) => setState(() => _email = v),
                     // TODO(i18n): localize
                     hintText: 'Enter your email',
                     keyboardType: TextInputType.emailAddress,
@@ -169,10 +141,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _password,
-                    onChanged: (v) {
-                      setState(() => _password = v);
-                      _persistForm();
-                    },
+                    onChanged: (v) => setState(() => _password = v),
                     // TODO(i18n): localize
                     hintText: 'Enter your password',
                     obscureText: _obscurePassword,
@@ -191,10 +160,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   const SizedBox(height: AppSpacing.spacing8),
                   InputField(
                     value: _passwordConfirm,
-                    onChanged: (v) {
-                      setState(() => _passwordConfirm = v);
-                      _persistForm();
-                    },
+                    onChanged: (v) => setState(() => _passwordConfirm = v),
                     // TODO(i18n): localize
                     hintText: 'Re-enter your password',
                     obscureText: _obscureConfirm,
