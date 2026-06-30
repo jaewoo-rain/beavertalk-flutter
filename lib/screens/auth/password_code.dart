@@ -8,6 +8,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/molecules/otp_input.dart';
+import '../../components/molecules/password_eye_toggle.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
@@ -40,6 +41,8 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
   String _code = '';
   String _password = '';
   String _passwordConfirm = '';
+  bool _obscurePassword = true; // new password hidden by default
+  bool _obscureConfirm = true; // confirm hidden by default
   bool _submitting = false;
   String? _error;
 
@@ -220,8 +223,13 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                     onChanged: (v) => setState(() => _password = v),
                     // TODO(i18n): localize
                     hintText: 'Enter your new password',
-                    obscureText: true,
+                    obscureText: _obscurePassword,
                     leftIcon: const Icon(Icons.lock_outline),
+                    rightIcon: PasswordEyeToggle(
+                      obscured: _obscurePassword,
+                      onTap: () => setState(
+                          () => _obscurePassword = !_obscurePassword),
+                    ),
                   ),
                   _ErrorText(_passwordError),
                   const SizedBox(height: AppSpacing.spacing20),
@@ -233,8 +241,13 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                     onChanged: (v) => setState(() => _passwordConfirm = v),
                     // TODO(i18n): localize
                     hintText: 'Re-enter your new password',
-                    obscureText: true,
+                    obscureText: _obscureConfirm,
                     leftIcon: const Icon(Icons.lock_outline),
+                    rightIcon: PasswordEyeToggle(
+                      obscured: _obscureConfirm,
+                      onTap: () =>
+                          setState(() => _obscureConfirm = !_obscureConfirm),
+                    ),
                   ),
                   _ErrorText(_confirmError),
                   _ErrorText(_error),
