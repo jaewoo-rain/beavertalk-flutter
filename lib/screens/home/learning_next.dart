@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/review/data/audio_player.dart';
@@ -106,117 +107,121 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
         children: [
           Gnb.main2(
             progress: GnbProgress(current: args.step, total: args.total),
-            onBack: () => Navigator.pop(context),
+            onClose: () => Navigator.pop(context),
           ),
           Expanded(
             child: Stack(
               children: [
-                const Positioned(
+                Positioned(
                   top: 16,
                   left: 20,
                   right: 20,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.volume_up_outlined,
-                          size: 32, color: AppColors.text),
-                      Icon(Icons.bookmark_border,
-                          size: 32, color: AppColors.text),
+                      AppIcons.volume(size: 32, color: AppColors.text),
+                      AppIcons.bookmarkLine(size: 32, color: AppColors.text),
                     ],
                   ),
                 ),
-                // Per-character scored sentence + translation.
-                Align(
-                  alignment: const Alignment(0, -0.3),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        _ScoredSentence(
-                          charScores: feedback?.charScores ?? const [],
-                          fallbackText: sentence.korean,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          native,
-                          textAlign: TextAlign.center,
-                          style: AppType.body1.sb
-                              .copyWith(color: AppColors.textSecondary),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Native / Me playback buttons.
-                Align(
-                  alignment: const Alignment(0, 0.18),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Button(
-                            type: BtnType.secondaryWhite,
-                            size: BtnSize.s44,
-                            text: 'Native',
-                            leftIcon: const Icon(Icons.volume_up_outlined),
-                            onPressed: () => _playNative(feedback),
-                          ),
-                        ),
-                        const SizedBox(width: 13),
-                        Expanded(
-                          child: Button(
-                            type: BtnType.secondaryWhite,
-                            size: BtnSize.s44,
-                            text: 'Me',
-                            leftIcon: const Icon(Icons.volume_up_outlined),
-                            onPressed: () => _playMe(args),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                // Retry (white circle) + next (arrow).
-                Align(
-                  alignment: const Alignment(0, 0.72),
-                  child: Row(
+                // Per-character scored sentence + translation (Figma top 246).
+                Positioned(
+                  top: 246,
+                  left: 20,
+                  right: 20,
+                  child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const SizedBox(width: 56),
-                      const SizedBox(width: 24),
-                      RecordCircleButton(
-                        icon: Icons.refresh,
-                        semanticLabel: '다시하기',
-                        onTap: () => Navigator.pop(context),
+                      _ScoredSentence(
+                        charScores: feedback?.charScores ?? const [],
+                        fallbackText: sentence.korean,
                       ),
-                      const SizedBox(width: 24),
-                      SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: IconButton(
-                          // More sentences left → record the next one directly;
-                          // the score screen (learning_main) shows only once,
-                          // after the whole review sequence is done.
-                          onPressed: () => args.hasNext
-                              ? Navigator.pushNamed(
-                                  context,
-                                  Routes.learningIntro,
-                                  arguments: args.next(),
-                                )
-                              : Navigator.pushNamed(
-                                  context,
-                                  Routes.learningMain,
-                                  arguments: args,
-                                ),
-                          icon: const Icon(Icons.arrow_forward),
-                          iconSize: 32,
-                          color: AppColors.green700,
-                          tooltip: '다음',
+                      const SizedBox(height: 8),
+                      Text(
+                        native,
+                        textAlign: TextAlign.center,
+                        style: AppType.body1.sb.copyWith(
+                          color: AppColors.textSecondary,
                         ),
                       ),
                     ],
+                  ),
+                ),
+                // Native / Me playback buttons (Figma top 478).
+                Positioned(
+                  top: 478,
+                  left: 20,
+                  right: 20,
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Button(
+                          type: BtnType.secondaryWhite,
+                          size: BtnSize.s44,
+                          text: 'Native',
+                          leftIcon: AppIcons.volume(size: 20),
+                          onPressed: () => _playNative(feedback),
+                        ),
+                      ),
+                      const SizedBox(width: 13),
+                      Expanded(
+                        child: Button(
+                          type: BtnType.secondaryWhite,
+                          size: BtnSize.s44,
+                          text: 'Me',
+                          leftIcon: AppIcons.volume(size: 20),
+                          onPressed: () => _playMe(args),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Retry (white circle) + next (arrow), pinned bottom (Figma 24).
+                Positioned(
+                  bottom: 24,
+                  left: 0,
+                  right: 0,
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(width: 56),
+                        const SizedBox(width: 24),
+                        RecordCircleButton(
+                          icon: AppIcons.redo,
+                          semanticLabel: '다시하기',
+                          onTap: () => Navigator.pop(context),
+                        ),
+                        const SizedBox(width: 24),
+                        SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: IconButton(
+                            // More sentences left → record the next one directly;
+                            // the score screen (learning_main) shows only once,
+                            // after the whole review sequence is done.
+                            onPressed: () => args.hasNext
+                                ? Navigator.pushNamed(
+                                    context,
+                                    Routes.learningIntro,
+                                    arguments: args.next(),
+                                  )
+                                : Navigator.pushNamed(
+                                    context,
+                                    Routes.learningMain,
+                                    arguments: args,
+                                  ),
+                            icon: AppIcons.arrowForward(
+                              size: 32,
+                              color: AppColors.green700,
+                            ),
+                            iconSize: 32,
+                            color: AppColors.green700,
+                            tooltip: '다음',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -231,10 +236,7 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
 /// Renders the sentence character-by-character, each tinted by its grade.
 /// Falls back to a plain (un-tinted) sentence when no char scores exist.
 class _ScoredSentence extends StatelessWidget {
-  const _ScoredSentence({
-    required this.charScores,
-    required this.fallbackText,
-  });
+  const _ScoredSentence({required this.charScores, required this.fallbackText});
 
   final List<CharScore> charScores;
   final String fallbackText;

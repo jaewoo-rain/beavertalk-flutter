@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../components/icons/app_icons.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_icons.dart';
 
 /// Password-field visibility toggle for an [InputField]'s `rightIcon` slot.
 ///
@@ -30,18 +29,11 @@ class PasswordEyeToggle extends StatelessWidget {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: onTap,
-      // Fill the host field's icon box; the SVG scales to it.
-      child: SizedBox.expand(
-        child: SvgPicture.asset(
-          // hidden → slashed eye (eye-off); visible → open eye (eye-line).
-          obscured ? AppIcons.eyeOff : AppIcons.eyeLine,
-          fit: BoxFit.contain,
-          colorFilter: const ColorFilter.mode(
-            AppColors.textSecondary,
-            BlendMode.srcIn,
-          ),
-        ),
-      ),
+      // hidden → slashed eye (eye-off); visible → open eye (eye-line). 20px
+      // matches the InputField's icon box (size56). Tinted to textSecondary.
+      child: obscured
+          ? AppIcons.eyeOff(size: 20, color: AppColors.textSecondary)
+          : AppIcons.eyeLine(size: 20, color: AppColors.textSecondary),
     );
   }
 }

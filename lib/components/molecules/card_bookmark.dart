@@ -4,6 +4,7 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
+import '../icons/app_icons.dart';
 
 /// CardBookmark — a learned/saved sentence card, measured from Figma
 /// `Card-Bookmark` (`2224:21261`).
@@ -23,6 +24,7 @@ class CardBookmark extends StatelessWidget {
     required this.korean,
     required this.native,
     required this.bookmarked,
+    this.highlight,
     this.onBookmarkTap,
     this.onSpeakerTap,
     this.actionText,
@@ -32,6 +34,10 @@ class CardBookmark extends StatelessWidget {
 
   /// The learned sentence (Korean).
   final String korean;
+
+  /// Optional substring of [korean] to underline (the learned expression, per
+  /// Figma). When null or not found, [korean] renders plain.
+  final String? highlight;
 
   /// The translation shown under [korean].
   final String native;
@@ -66,10 +72,7 @@ class CardBookmark extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text(
-            korean,
-            style: AppType.body1.sb.copyWith(color: AppColors.text),
-          ),
+          _koreanText(),
           const SizedBox(height: 4),
           Text(
             native,
@@ -84,11 +87,12 @@ class CardBookmark extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              _glyph(Icons.volume_up_outlined, onSpeakerTap),
+              _glyph(AppIcons.volume, onSpeakerTap),
               const SizedBox(width: 8),
               _glyph(
-                bookmarked ? Icons.bookmark : Icons.bookmark_border,
+                bookmarked ? AppIcons.bookmarkFill : AppIcons.bookmarkLine,
                 onBookmarkTap,
+                color: bookmarked ? AppColors.primary : AppColors.text,
               ),
               const Spacer(),
               if (actionText != null)
@@ -113,9 +117,36 @@ class CardBookmark extends StatelessWidget {
     );
   }
 
+  /// The Korean line, underlining [highlight] (the learned expression) when set.
+  Widget _koreanText() {
+    final base = AppType.body1.sb.copyWith(color: AppColors.text);
+    final h = highlight;
+    if (h == null || h.isEmpty || !korean.contains(h)) {
+      return Text(korean, style: base);
+    }
+    final i = korean.indexOf(h);
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          TextSpan(text: korean.substring(0, i)),
+          TextSpan(
+            text: h,
+            style: const TextStyle(decoration: TextDecoration.underline),
+          ),
+          TextSpan(text: korean.substring(i + h.length)),
+        ],
+      ),
+    );
+  }
+
   /// A 24px tappable footer glyph (no ripple box when [onTap] is null).
-  Widget _glyph(IconData icon, VoidCallback? onTap) {
-    final glyph = Icon(icon, size: 24, color: AppColors.text);
+  Widget _glyph(
+    AppIconBuilder icon,
+    VoidCallback? onTap, {
+    Color color = AppColors.text,
+  }) {
+    final glyph = icon(size: 24, color: color);
     if (onTap == null) return glyph;
     return GestureDetector(
       behavior: HitTestBehavior.opaque,

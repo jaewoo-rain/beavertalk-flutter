@@ -30,4 +30,19 @@ class NormalcallRemoteDataSource {
     final res = await _dio.get<Map<String, dynamic>>('/calls/$callId/result');
     return CallResultDto.fromJson(res.data!);
   }
+
+  /// `GET /calls?limit=&offset=` — past calls, newest first.
+  Future<List<CallSummaryDto>> listCalls({int? limit, int? offset}) async {
+    final res = await _dio.get<List<dynamic>>(
+      '/calls',
+      queryParameters: {
+        'limit': ?limit,
+        'offset': ?offset,
+      },
+    );
+    final data = res.data ?? const [];
+    return data
+        .map((e) => CallSummaryDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }

@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -26,8 +27,8 @@ class HomeScreen extends ConsumerWidget {
   /// Creates the home screen.
   const HomeScreen({super.key});
 
-  /// Diameter of the hero beaver avatar (large circle).
-  static const double _avatarSize = 200;
+  /// Diameter of the hero beaver avatar (Figma improved `2296:26379`).
+  static const double _avatarSize = 120;
 
   /// Requests the mic permission, then enters the call flow with the member's
   /// representative character id (falling back to `1` / 비비). When permission is
@@ -55,45 +56,64 @@ class HomeScreen extends ConsumerWidget {
       background: AppColors.surface,
       body: Column(
         children: [
-          // Top bar — trailing person button → mypage.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 8, 0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                IconButton(
-                  onPressed: () =>
-                      Navigator.pushNamed(context, Routes.mypage),
-                  icon: const Icon(Icons.person_outline),
-                  color: AppColors.text,
-                  iconSize: 28,
-                  tooltip: '마이페이지',
-                ),
-              ],
-            ),
-          ),
-          // Hero — avatar + change badge + title, centered.
-          Expanded(
-            child: Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+          // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
+          SizedBox(
+            height: 56,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, Routes.avatar),
-                    child: HeroAvatar(
-                      imageProvider: beaverImage,
-                      size: _avatarSize,
-                      onEditTap: () =>
-                          Navigator.pushNamed(context, Routes.avatar),
+                  Semantics(
+                    button: true,
+                    label: '마이페이지',
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () =>
+                          Navigator.pushNamed(context, Routes.mypage),
+                      // Figma `2296:26381` — a surface2 circle holding a muted
+                      // (label/assistive) person, not a bare white glyph.
+                      child: Container(
+                        width: 28,
+                        height: 28,
+                        alignment: Alignment.center,
+                        decoration: const BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: AppColors.surface2,
+                        ),
+                        child: AppIcons.profile(
+                          size: 20,
+                          color: AppColors.labelAssistive,
+                        ),
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    mockPartnerName,
-                    style: AppType.title2.b.copyWith(color: AppColors.text),
                   ),
                 ],
               ),
+            ),
+          ),
+          // Hero — avatar + change badge + title, pinned near the top (Figma
+          // body top 37), horizontally centered.
+          Expanded(
+            child: Column(
+              children: [
+                const SizedBox(height: 37),
+                GestureDetector(
+                  onTap: () => Navigator.pushNamed(context, Routes.avatar),
+                  child: HeroAvatar(
+                    imageProvider: beaverImage,
+                    size: _avatarSize,
+                    onEditTap: () =>
+                        Navigator.pushNamed(context, Routes.avatar),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  mockPartnerName,
+                  // Figma `2296:26390` — Title 3 / Bold (24px), updated from 32.
+                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                ),
+              ],
             ),
           ),
           // Bottom navigation — call tab is the center action.

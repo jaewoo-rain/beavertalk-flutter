@@ -15,7 +15,7 @@ abstract final class AppColors {
   static const surfaceElevated = Color(0xFF1F222A); // Elevated/Alternative
   static const surfaceElevatedNormal = Color(0xFF2F3340); // Elevated/Normal — dialogs
 
-  static const border = Color(0x1AFFFFFF); // Line/Normal/Normal (10%)
+  static const border = Color(0x1FFFFFFF); // Line/Normal/Neutral (12%, Figma dark)
   static const borderSubtle = Color(0x0FFFFFFF); // Line/Normal/Alternative (6%)
   static const lineStrong = Color(0xFF70737C); // Line/Normal/Normal (strong)
   static const scrim = Color(0x66222531); // Dim overlay (≈40%)
@@ -24,6 +24,7 @@ abstract final class AppColors {
   static const textSecondary = Color(0xFF9EA3B2);
   static const textTertiary = Color(0xFF777C89); // Text/Tertiary
   static const textDisabled = Color(0xFF5A5C63);
+  static const labelAssistive = Color(0xFF676E81); // Label/Assistive
 
   static const accentLime = Color(0xFF429E00); // Accent/Foreground/Lime — toggle on
   static const green700 = Color(0xFF00B57E); // Foundation/Green/green-700 — mic/record

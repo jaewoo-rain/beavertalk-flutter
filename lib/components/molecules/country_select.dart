@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -78,7 +79,7 @@ class CountrySelect extends StatelessWidget {
             width: 24,
             height: 24,
             child: selected
-                ? const Icon(Icons.check, size: 24, color: AppColors.primary)
+                ? AppIcons.check(size: 24, color: AppColors.primary)
                 : null,
           ),
         ],

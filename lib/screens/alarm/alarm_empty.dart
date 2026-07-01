@@ -7,33 +7,37 @@ import '../../components/organisms/gnb.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
-/// The centered "no alarms yet" message block. Reused by both the standalone
-/// [AlarmEmptyScreen] and the empty state inside the live [AlarmListScreen].
+/// The "no alarms yet" message block (title + subtitle). Reused by the
+/// standalone [AlarmEmptyScreen] and the empty state inside [AlarmListScreen]
+/// (wrap in a [Center] there). Caller positions it.
 class AlarmEmptyBody extends StatelessWidget {
   /// Creates the empty-state message block.
   const AlarmEmptyBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Text('⏰', style: TextStyle(fontSize: 56)),
-          const SizedBox(height: 16),
-          Text('등록된 알림이 없어요',
-              style: AppType.heading2.sb.copyWith(color: AppColors.text)),
-          const SizedBox(height: 8),
-          Text('통화 일정을 추가해 꾸준히 대화해보세요',
-              style: AppType.body2.r
-                  .copyWith(color: AppColors.textSecondary)),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          '등록된 알람이 없어요',
+          textAlign: TextAlign.center,
+          style: AppType.headline1.sb.copyWith(color: AppColors.text),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '학습 리마인더를 추가하면\n꾸준한 습관을 만들 수 있어요.',
+          textAlign: TextAlign.center,
+          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+        ),
+      ],
     );
   }
 }
 
-/// Empty alarm list — Figma `screen/alarm_empty` (`2117:20513`).
+/// Empty alarm list — Figma `screen/alarm_empty` (`2296:26207`). Back-only GNB
+/// over a vertically-centered message + "새 일정 추가" CTA.
 class AlarmEmptyScreen extends StatelessWidget {
   /// Creates the empty-alarm screen.
   const AlarmEmptyScreen({super.key});
@@ -44,17 +48,24 @@ class AlarmEmptyScreen extends StatelessWidget {
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '알림', onBack: () => Navigator.pop(context)),
-          const Expanded(child: AlarmEmptyBody()),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: '새 일정 추가',
-                onPressed: () => Navigator.pushNamed(context, Routes.alarmAdd),
+          Gnb.main(title: '', onBack: () => Navigator.pop(context)),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const AlarmEmptyBody(),
+                  const SizedBox(height: 20),
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: '새 일정 추가',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.alarmAdd),
+                  ),
+                ],
               ),
             ),
           ),

@@ -145,9 +145,10 @@ class DialogBasic extends StatelessWidget {
 
     switch (variant) {
       case DialogBasicVariant.twoHorizontal:
-        // Row, gap 8, each button fills half the width.
+        // Row, gap 8, each button fills half the width. (No cross-axis stretch:
+        // the buttons are fixed-height [BtnSize.s48], and stretch would demand a
+        // bounded height — which breaks when the dialog is laid out inline.)
         return Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (var i = 0; i < list.length; i++) ...[
               if (i > 0) const SizedBox(width: 8),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_alarm.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -87,7 +88,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                     style: AppType.heading2.sb.copyWith(color: AppColors.text)),
                 IconButton(
                   onPressed: _add,
-                  icon: const Icon(Icons.add, color: AppColors.text),
+                  icon: AppIcons.plus(color: AppColors.text),
                   tooltip: '새 일정 추가',
                 ),
               ],
@@ -175,7 +176,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
         color: AppColors.error,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: const Icon(Icons.delete_outline, color: AppColors.text, size: 28),
+      child: AppIcons.trash(color: AppColors.text, size: 28),
     );
   }
 }
@@ -187,7 +188,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Reuse the existing empty screen's centered message block.
-    return const AlarmEmptyBody();
+    return const Center(child: AlarmEmptyBody());
   }
 }
 

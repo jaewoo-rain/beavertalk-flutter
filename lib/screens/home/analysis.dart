@@ -5,6 +5,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
+import '../../components/molecules/chat_bubble.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
@@ -158,6 +159,31 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             title,
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
+          const SizedBox(height: 8),
+          // TODO(server): call date + duration are not in CallResult yet —
+          // placeholder values. Wire when the API provides them.
+          Row(
+            children: [
+              Text(
+                '1월 2일',
+                style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+              ),
+              const SizedBox(width: 4),
+              Container(
+                width: 4,
+                height: 4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '10분 37초',
+                style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+              ),
+            ],
+          ),
           const SizedBox(height: 32),
           Center(
             child: PronunciationResult(
@@ -186,7 +212,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ),
 
           // ── section 2: 새로 배운 표현 ───────────────────────────────
-          const SizedBox(height: 40),
+          const SizedBox(height: 24),
           Text(
             '새로 배운 표현',
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
@@ -221,7 +247,23 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             ),
 
           // ── section 3: 대화 상세 ────────────────────────────────────
-          // Hidden: CallResult has no conversation transcript field.
+          // NOTE(shell): CallResult has no conversation transcript field yet —
+          // placeholder bubbles to match Figma `2296:26458`. TODO(server): wire
+          // the real transcript when the API provides it.
+          const SizedBox(height: 24),
+          Text(
+            '대화 상세',
+            style: AppType.headline1.sb.copyWith(color: AppColors.text),
+          ),
+          const SizedBox(height: 16),
+          const ChatBubble(sender: ChatSender.ai, text: '오, 정말 괜찮아!'),
+          const SizedBox(height: 16),
+          const ChatBubble(
+            sender: ChatSender.user,
+            text: '오늘 진짜 추워. 강아지랑 같이 얼음 됐어.',
+          ),
+          const SizedBox(height: 16),
+          const ChatBubble(sender: ChatSender.ai, text: '오, 정말 괜찮아!'),
         ],
       ),
     );
@@ -254,6 +296,9 @@ class _SentenceCard extends StatelessWidget {
           korean: sentence.korean ?? '',
           native: sentence.native ?? '',
           bookmarked: bookmarked,
+          // TODO(server): no "learned expression span" field — shell placeholder
+          // so the Figma underline shows on the mock copy.
+          highlight: '내 귀를 사로잡았다',
           onBookmarkTap: onBookmarkTap,
           actionText: '연습하기',
           onAction: onPractice,

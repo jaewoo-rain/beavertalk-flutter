@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_radius.dart';
+import '../icons/app_icons.dart';
 
 /// HeroAvatar — a large circular avatar with a small "change" badge pinned to
 /// its bottom-right.
 ///
-/// Extracted from `screen/home` (`2117:23988`). Renders the [imageProvider]
-/// filling a [size]×[size] circle (with a soft [AppColors.primary24] glow), and
-/// a circular primary badge holding an [Icons.autorenew] glyph. The badge is
+/// Extracted from `screen/main_home` (`2296:26379`). Renders the
+/// [imageProvider] filling a [size]×[size] circle, and a small rounded "change"
+/// badge holding a swap (⇄) glyph pinned to its bottom-right. The badge is
 /// interactive only when [onEditTap] is provided.
 class HeroAvatar extends StatelessWidget {
   /// Creates a hero avatar.
@@ -29,22 +31,21 @@ class HeroAvatar extends StatelessWidget {
   /// (non-interactive) but still shown.
   final VoidCallback? onEditTap;
 
-  static const double _badgeSize = 44;
+  static const double _badgeSize = 24;
 
   @override
   Widget build(BuildContext context) {
     final Widget badge = Container(
       width: _badgeSize,
       height: _badgeSize,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.primary,
-        shape: BoxShape.circle,
-        border: Border.all(color: AppColors.surface, width: 3),
+        color: AppColors.surface2,
+        borderRadius: BorderRadius.circular(AppRadius.xs), // 8
       ),
-      child: const Icon(
-        Icons.autorenew,
-        size: 22,
-        color: AppColors.onPrimary,
+      child: AppIcons.swap(
+        size: 12,
+        color: AppColors.labelAssistive,
       ),
     );
 
@@ -65,18 +66,12 @@ class HeroAvatar extends StatelessWidget {
                 image: imageProvider,
                 fit: BoxFit.cover,
               ),
-              boxShadow: const [
-                BoxShadow(
-                  color: AppColors.primary24,
-                  blurRadius: 40,
-                ),
-              ],
             ),
           ),
           // Change badge — primary pill with an edit glyph, pinned bottom-right.
           Positioned(
-            right: 4,
-            bottom: 4,
+            right: 8,
+            bottom: 8,
             child: onEditTap == null
                 ? badge
                 : Semantics(
@@ -84,10 +79,10 @@ class HeroAvatar extends StatelessWidget {
                     label: '아바타 변경',
                     child: Material(
                       color: Colors.transparent,
-                      shape: const CircleBorder(),
+                      borderRadius: BorderRadius.circular(AppRadius.xs),
                       clipBehavior: Clip.antiAlias,
                       child: InkWell(
-                        customBorder: const CircleBorder(),
+                        borderRadius: BorderRadius.circular(AppRadius.xs),
                         onTap: onEditTap,
                         child: badge,
                       ),

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -59,7 +58,7 @@ class PasswordCompleteScreen extends StatelessWidget {
                   // Figma `3D/location` key illustration (180×180), shown
                   // directly on the surface — no card, per node 2117:19858.
                   Image.asset(
-                    AppIcons.key3d,
+                    'assets/icons/3d/key.png',
                     width: 180,
                     height: 180,
                   ),

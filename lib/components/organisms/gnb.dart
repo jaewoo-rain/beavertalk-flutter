@@ -114,12 +114,14 @@ class Gnb extends StatelessWidget {
     Key? key,
     required GnbProgress progress,
     VoidCallback? onBack,
+    VoidCallback? onClose,
     Widget? trailing,
   }) : this(
           key: key,
           type: GnbType.main2,
           progress: progress,
           onBack: onBack,
+          onClose: onClose,
           trailing: trailing,
         );
 
@@ -255,7 +257,12 @@ class Gnb extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          _BackButton(onTap: onBack),
+          // Figma learning flow uses a close (X) on the left; other main2
+          // screens use a back arrow. (from feat/seoyeon)
+          if (onClose != null)
+            _CloseButton(onTap: onClose)
+          else
+            _BackButton(onTap: onBack),
           const SizedBox(width: 8),
           Expanded(child: _GnbProgressTrack(fraction: p.fraction)),
           const SizedBox(width: 8),

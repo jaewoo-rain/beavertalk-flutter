@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -98,7 +99,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                     // TODO(i18n): localize
                     hintText: 'Email address',
                     keyboardType: TextInputType.emailAddress,
-                    leftIcon: const Icon(Icons.mail_outline),
+                    leftIcon: AppIcons.mail(),
                     onSubmitted: (_) => _send(),
                   ),
                   if (_error != null) ...[

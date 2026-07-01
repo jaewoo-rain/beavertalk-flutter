@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 import 'record_circle_button.dart';
 
 /// MicButton — the 96px two-state recorder mic button.
@@ -33,7 +34,7 @@ class MicButton extends StatelessWidget {
     // Idle reuses the shared white-circle record control (mic glyph).
     if (!recording) {
       return RecordCircleButton(
-        icon: Icons.mic,
+        icon: AppIcons.mic,
         onTap: onTap,
         semanticLabel: '녹음 시작',
         size: _size,

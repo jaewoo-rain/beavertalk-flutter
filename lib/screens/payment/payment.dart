@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/organisms/gnb.dart';
 import '../../theme/app_colors.dart';
@@ -202,7 +203,7 @@ class _RadioMark extends StatelessWidget {
             : Border.all(color: AppColors.lineStrong, width: 1.5),
       ),
       child: selected
-          ? const Icon(Icons.check, size: 14, color: AppColors.onPrimary)
+          ? AppIcons.check(size: 14, color: AppColors.onPrimary)
           : null,
     );
   }

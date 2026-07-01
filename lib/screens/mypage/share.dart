@@ -28,8 +28,8 @@ class ShareScreen extends StatelessWidget {
                 title: 'American',
                 stats: const [
                   ProfileStat(label: 'American', value: 87),
-                  ProfileStat(label: 'Korean', value: 7),
-                  ProfileStat(label: 'China', value: 6),
+                  ProfileStat(label: 'Korean', value: 7, active: false),
+                  ProfileStat(label: 'China', value: 6, active: false),
                 ],
                 onShare: () => Navigator.pop(context),
               ),
