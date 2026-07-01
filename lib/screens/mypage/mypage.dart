@@ -14,6 +14,7 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// My page — Figma `screen/main_mypage` (`2296:26071`). A profile card (avatar +
@@ -102,13 +103,14 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 24, 20, 24),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
               children: [
                 _profileCard(),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s24),
 
                 _section('Settings'),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 _group([
                   _navRow('User Language', member?.language ?? 'English(US)'),
                   _navRow(
@@ -124,26 +126,26 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                     showDivider: false,
                   ),
                 ]),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s24),
 
                 _section('Payment'),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 _group([
                   _navRow('Current Plan', 'Pro', route: Routes.subscription),
                   _navRow('Payment History', '',
                       route: Routes.subscription, divider: false),
                 ]),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s24),
 
                 _section('Support'),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 _group([
                   _navRow('Contact Us', ''),
                   _navRow('Terms of service', '', route: Routes.terms),
                   _navRow('Privacy policy', '',
                       route: Routes.privacy, divider: false),
                 ]),
-                const SizedBox(height: 24),
+                const SizedBox(height: AppSpacing.s24),
 
                 // log out — elevated button card.
                 InkWell(
@@ -153,7 +155,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                   child: Container(
                     width: double.infinity,
                     padding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 14),
+                        horizontal: AppSpacing.s16, vertical: 14),
                     decoration: BoxDecoration(
                       color: AppColors.surface2,
                       borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -165,7 +167,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 Center(
                   child: Text(
                     'delete account',
@@ -173,7 +175,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                         AppType.body1.r.copyWith(color: AppColors.textSecondary),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 _version(),
               ],
             ),
@@ -186,7 +188,8 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   /// Profile card: 80px avatar, accent label, and three accent ProgressBars.
   Widget _profileCard() {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 16, 12, 24),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s12, AppSpacing.s16, AppSpacing.s12, AppSpacing.s24),
       decoration: BoxDecoration(
         color: AppColors.surface2,
         borderRadius: BorderRadius.circular(AppRadius.xs), // 8
@@ -196,8 +199,8 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
         children: [
           Center(
             child: Container(
-              width: 80,
-              height: 80,
+              width: AppSpacing.s80,
+              height: AppSpacing.s80,
               decoration: const BoxDecoration(
                 shape: BoxShape.circle,
                 color: AppColors.surfaceElevated,
@@ -211,7 +214,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             textAlign: TextAlign.center,
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s8),
           Text(
             'American',
             textAlign: TextAlign.center,
@@ -236,7 +239,8 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
 
   /// Wraps a section's rows in an elevated grouping card.
   Widget _group(List<Widget> rows) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.s12, vertical: AppSpacing.s8),
         decoration: BoxDecoration(
           color: AppColors.surface2,
           borderRadius: BorderRadius.circular(AppRadius.sm), // 12
@@ -271,16 +275,16 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             Text('Beavertalk',
                 style:
                     AppType.body1.r.copyWith(color: AppColors.textSecondary)),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.s4),
             Container(
-              width: 4,
-              height: 4,
+              width: AppSpacing.s4,
+              height: AppSpacing.s4,
               decoration: const BoxDecoration(
                 color: AppColors.textSecondary,
                 shape: BoxShape.circle,
               ),
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSpacing.s4),
             Text('v1.0.0',
                 style:
                     AppType.body1.r.copyWith(color: AppColors.textSecondary)),
