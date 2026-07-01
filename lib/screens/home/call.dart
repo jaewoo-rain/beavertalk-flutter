@@ -33,10 +33,6 @@ class CallScreen extends ConsumerStatefulWidget {
 }
 
 class _CallScreenState extends ConsumerState<CallScreen> {
-  /// Hang-up button fill — Figma `Accent/Foreground/Red` (`#E52222`), which has
-  /// no [AppColors] token (app red is the softer `error #FF7070`).
-  static const Color _endRed = Color(0xFFE52222);
-
   /// Avatar ring — the dark muted teal sampled from Figma `screen/call_main`
   /// (`2296:26242`, ~`#143E38`). The brighter `green700` used before rendered
   /// as an over-saturated green glow (QA: "아이콘 이상한 그라데이션").
@@ -218,7 +214,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   button: true,
                   label: '통화 종료',
                   child: Material(
-                    color: _endRed,
+                    color: AppColors.accentRed,
                     shape: const CircleBorder(),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(

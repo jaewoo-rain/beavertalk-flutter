@@ -27,6 +27,7 @@ abstract final class AppColors {
   static const labelAssistive = Color(0xFF676E81); // Label/Assistive
 
   static const accentLime = Color(0xFF429E00); // Accent/Foreground/Lime — toggle on
+  static const accentRed = Color(0xFFE52222); // Figma Semantics/Accent/Foreground/Red — call-end
   static const green700 = Color(0xFF00B57E); // Foundation/Green/green-700 — mic/record
   static const green50 = Color(0xFFE6FFF7); // Foundation/Green/green-50 — mic inner
   static const success = Color(0xFF1ED45A); // Status/Positive
