@@ -22,7 +22,7 @@ abstract final class AppColors {
 
   static const text = Color(0xFFFFFFFF);
   static const textSecondary = Color(0xFF9EA3B2);
-  static const textTertiary = Color(0xFF777C89); // Text/Tertiary
+  static const textTertiary = Color(0xFF878A93); // Figma Atomic/Cool Neutral/60
   static const textDisabled = Color(0xFF5A5C63);
   static const labelAssistive = Color(0xFF676E81); // Label/Assistive
 
@@ -30,7 +30,7 @@ abstract final class AppColors {
   static const green700 = Color(0xFF00B57E); // Foundation/Green/green-700 — mic/record
   static const green50 = Color(0xFFE6FFF7); // Foundation/Green/green-50 — mic inner
   static const success = Color(0xFF1ED45A); // Status/Positive
-  static const error = Color(0xFFFF7070); // Status/Negative
+  static const error = Color(0xFFFF6363); // Figma Atomic/Red/60 (Status/Negative; matches success·warning /60)
   static const warning = Color(0xFFFFA938); // Status/Warning
 
   // ── Cool-neutral ramp (subset used across components) ────────
