@@ -69,7 +69,7 @@ class PaymentFailedScreen extends StatelessWidget {
                     size: BtnSize.s60,
                     text: '홈으로',
                     onPressed: () => Navigator.of(context)
-                        .pushNamedAndRemoveUntil(Routes.home, (r) => false),
+                        .pushNamedAndRemoveUntil(Routes.home, (r) => r.isFirst),
                   ),
                 ),
                 const SizedBox(width: 10),

@@ -72,7 +72,7 @@ class PermissionScreen extends StatelessWidget {
               size: BtnSize.s60,
               text: '시작하기',
               onPressed: () => Navigator.of(context)
-                  .pushNamedAndRemoveUntil(Routes.home, (r) => false),
+                  .pushNamedAndRemoveUntil(Routes.home, (r) => r.isFirst),
             ),
           ),
         ],

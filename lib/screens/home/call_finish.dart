@@ -171,7 +171,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         ..showSnackBar(
           const SnackBar(content: Text('통화 정보를 찾을 수 없어 분석을 건너뜁니다.')),
         );
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
+      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
       return;
     }
     Navigator.pushReplacementNamed(
@@ -267,7 +267,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                   onPressed: () => Navigator.pushNamedAndRemoveUntil(
                     context,
                     Routes.home,
-                    (route) => false,
+                    (route) => route.isFirst,
                   ),
                 ),
                 const SizedBox(height: 16),

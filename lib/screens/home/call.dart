@@ -114,7 +114,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(SnackBar(content: Text(msg)));
-        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
+        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
       }
     });
 

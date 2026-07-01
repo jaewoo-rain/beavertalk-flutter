@@ -154,7 +154,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   }
 
   void _goHome() =>
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
+      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
 
   @override
   Widget build(BuildContext context) {

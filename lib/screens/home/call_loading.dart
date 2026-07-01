@@ -55,7 +55,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
   Future<void> _cancel() async {
     await ref.read(normalCallControllerProvider.notifier).hangUp();
     if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
+    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
   }
 
   @override
@@ -72,7 +72,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(SnackBar(content: Text(msg)));
-        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => false);
+        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
       }
     });
 
