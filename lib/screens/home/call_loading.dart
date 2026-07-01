@@ -30,10 +30,6 @@ class CallLoadingScreen extends ConsumerStatefulWidget {
 }
 
 class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
-  /// Screen background — Figma `screen/call_loading` uses pure `#111` (darker
-  /// than the app's default `bg`), so it's pinned locally.
-  static const Color _bg = Color(0xFF111111);
-
   bool _navigated = false;
 
   @override
@@ -77,7 +73,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     });
 
     return AppScaffold(
-      background: _bg,
+      background: AppColors.surface,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
       body: Stack(

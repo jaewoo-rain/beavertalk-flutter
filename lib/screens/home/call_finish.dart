@@ -236,7 +236,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               children: [
                 Text(
                   '통화는 어떠셨나요?',
-                  style: AppType.body1.r.copyWith(color: AppColors.text),
+                  style: AppType.headline1.r.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: 32),
                 Row(

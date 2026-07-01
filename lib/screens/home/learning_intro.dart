@@ -203,7 +203,7 @@ class _SubmittingOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     return Positioned.fill(
       child: ColoredBox(
-        color: Colors.black54,
+        color: AppColors.scrim,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
