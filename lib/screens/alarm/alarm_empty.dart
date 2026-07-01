@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// The "no alarms yet" message block (title + subtitle). Reused by the
@@ -25,7 +26,7 @@ class AlarmEmptyBody extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppType.headline1.sb.copyWith(color: AppColors.text),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.s8),
         Text(
           '학습 리마인더를 추가하면\n꾸준한 습관을 만들 수 있어요.',
           textAlign: TextAlign.center,
@@ -51,13 +52,13 @@ class AlarmEmptyScreen extends StatelessWidget {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const AlarmEmptyBody(),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.s20),
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,

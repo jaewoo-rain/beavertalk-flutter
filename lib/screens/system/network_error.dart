@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Network error — Figma `screen/network_error` (`2117:20406`).
@@ -27,23 +28,23 @@ class NetworkErrorScreen extends StatelessWidget {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Error illustration — Figma 3D asset (`281:20345`).
                   Image.asset(
                     'assets/images/error_3d.png',
-                    width: 100,
-                    height: 100,
+                    width: AppSpacing.s100,
+                    height: AppSpacing.s100,
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.s20),
                   Text(
                     '연결에 실패했어요',
                     textAlign: TextAlign.center,
                     style: AppType.heading2.sb,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s8),
                   Text(
                     '네트워크 상태를 확인하고\n다시 시도해주세요.',
                     textAlign: TextAlign.center,
@@ -55,7 +56,8 @@ class NetworkErrorScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, AppSpacing.s24),
             child: Row(
               children: [
                 Expanded(

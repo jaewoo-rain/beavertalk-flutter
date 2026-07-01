@@ -7,6 +7,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/icons/app_icons.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Permission request — Figma `screen/perm_request` (`2117:20385`).
@@ -29,12 +30,13 @@ class PermissionScreen extends StatelessWidget {
         children: [
           // ── Header ──
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 32, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20, AppSpacing.s32, AppSpacing.s20, AppSpacing.s24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text('원활한 사용을 위해\n권한을 허용해주세요', style: AppType.title3.b),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s8),
                 Text(
                   '필수 권한은 서비스 이용에 꼭 필요해요.',
                   style: AppType.label1.r
@@ -46,7 +48,8 @@ class PermissionScreen extends StatelessWidget {
           // ── Permission rows ──
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 0),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, 0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: const [
@@ -55,7 +58,7 @@ class PermissionScreen extends StatelessWidget {
                     title: '마이크 (필수)',
                     description: 'AI와 영어로 통화하려면 필요해요.',
                   ),
-                  SizedBox(height: 12),
+                  SizedBox(height: AppSpacing.s12),
                   _PermRow(
                     icon: AppIcons.volume,
                     title: '알림 (선택)',
@@ -66,7 +69,8 @@ class PermissionScreen extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, AppSpacing.s24),
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
@@ -98,7 +102,7 @@ class _PermRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: 18),
       decoration: BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -123,7 +127,7 @@ class _PermRow extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(title, style: AppType.body2.m),
-                const SizedBox(height: 2),
+                const SizedBox(height: AppSpacing.s2),
                 Text(
                   description,
                   style: AppType.label2.r

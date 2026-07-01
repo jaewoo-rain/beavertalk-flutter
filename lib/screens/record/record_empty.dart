@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Empty conversation records — Figma `screen/record_empty` (`2117:20502`).
@@ -22,7 +23,7 @@ class RecordEmptyScreen extends StatelessWidget {
           // Centered empty-state copy + CTA (Figma `2296:26201`).
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -33,14 +34,14 @@ class RecordEmptyScreen extends StatelessWidget {
                     style:
                         AppType.headline1.sb.copyWith(color: AppColors.text),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.s8),
                   Text(
                     'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.s20),
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
