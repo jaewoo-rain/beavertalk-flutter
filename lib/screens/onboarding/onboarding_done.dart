@@ -37,7 +37,7 @@ class OnboardingDoneScreen extends StatelessWidget {
           Expanded(
             child: Padding(
               padding:
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.spacing20),
+                  const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -54,7 +54,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                     ),
                   ),
                   // Figma: avatar → text frame gap = 20px (ds-space-screen-x).
-                  const SizedBox(height: AppSpacing.spacing20),
+                  const SizedBox(height: AppSpacing.s20),
                   Text(
                     // TODO(i18n): localize
                     'Beaver is waiting for your call',
@@ -62,7 +62,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                     style: AppType.heading2.sb.copyWith(color: AppColors.text),
                   ),
                   // Figma: heading → sub copy gap = 8px (ds-space-xs).
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   Text(
                     // TODO(i18n): localize
                     'Start a call right now',
@@ -77,10 +77,10 @@ class OnboardingDoneScreen extends StatelessWidget {
           // Figma `BottomSheet` two-button row: pt 12, px 20, gap 10.
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spacing20,
-                AppSpacing.spacing12,
-                AppSpacing.spacing20,
-                AppSpacing.spacing12),
+                AppSpacing.s20,
+                AppSpacing.s12,
+                AppSpacing.s20,
+                AppSpacing.s12),
             child: Row(
               children: [
                 Expanded(

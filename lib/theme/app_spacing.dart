@@ -26,26 +26,4 @@ abstract final class AppSpacing {
   static const s120 = 120.0;
   static const s140 = 140.0;
   static const s180 = 180.0;
-
-  // ── Aliases (feat/eunjung naming): `spacingN` == `sN`, identical values.
-  // Kept so the onboarding/auth screens (which use `AppSpacing.spacingN`)
-  // compile after the merge; to be unified in the B-step Figma re-sync.
-  static const spacing2 = s2;
-  static const spacing4 = s4;
-  static const spacing8 = s8;
-  static const spacing12 = s12;
-  static const spacing16 = s16;
-  static const spacing20 = s20;
-  static const spacing24 = s24;
-  static const spacing28 = s28;
-  static const spacing32 = s32;
-  static const spacing40 = s40;
-  static const spacing48 = s48;
-  static const spacing60 = s60;
-  static const spacing70 = s70;
-  static const spacing80 = s80;
-  static const spacing100 = s100;
-  static const spacing120 = s120;
-  static const spacing140 = s140;
-  static const spacing180 = s180;
 }

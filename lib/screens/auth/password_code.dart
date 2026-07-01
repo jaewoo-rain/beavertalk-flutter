@@ -160,10 +160,10 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24,
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24),
+                  AppSpacing.s20,
+                  AppSpacing.s24,
+                  AppSpacing.s20,
+                  AppSpacing.s24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -174,12 +174,12 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: AppSpacing.spacing32),
+                  const SizedBox(height: AppSpacing.s32),
                   OtpInput(
                     length: 6,
                     onChanged: (v) => setState(() => _code = v),
                   ),
-                  const SizedBox(height: AppSpacing.spacing32),
+                  const SizedBox(height: AppSpacing.s32),
                   Row(
                     children: [
                       // Wrap lets the prompt + resend flow to a second line if
@@ -206,7 +206,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: AppSpacing.spacing8),
+                      const SizedBox(width: AppSpacing.s8),
                       Text(
                         _clock,
                         style: AppType.label1.r
@@ -214,11 +214,11 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: AppSpacing.spacing28),
+                  const SizedBox(height: AppSpacing.s28),
                   // ── New password ────────────────────────────────────────
                   // TODO(i18n): localize
                   const _Label('New password'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
@@ -234,10 +234,10 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                     ),
                   ),
                   _ErrorText(_passwordError),
-                  const SizedBox(height: AppSpacing.spacing20),
+                  const SizedBox(height: AppSpacing.s20),
                   // TODO(i18n): localize
                   const _Label('Confirm new password'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _passwordConfirm,
                     onChanged: (v) => setState(() => _passwordConfirm = v),
@@ -260,7 +260,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spacing20, 0, AppSpacing.spacing20, AppSpacing.spacing24),
+                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
             child: Row(
               children: [
                 Expanded(
@@ -294,7 +294,7 @@ class _Label extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.spacing8),
+      padding: const EdgeInsets.only(left: AppSpacing.s8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -316,7 +316,7 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.spacing8, left: AppSpacing.spacing4),
+      padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),

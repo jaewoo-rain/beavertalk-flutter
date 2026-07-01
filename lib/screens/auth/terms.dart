@@ -109,8 +109,8 @@ class LegalBody extends StatelessWidget {
     return SingleChildScrollView(
       // Figma Body: 20px side padding, 16px top. Bottom padding lets long,
       // localized copy scroll clear of the home indicator.
-      padding: const EdgeInsets.fromLTRB(AppSpacing.spacing20,
-          AppSpacing.spacing16, AppSpacing.spacing20, AppSpacing.spacing24),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
+          AppSpacing.s16, AppSpacing.s20, AppSpacing.s24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -122,12 +122,12 @@ class LegalBody extends StatelessWidget {
           // 16px before each block (incl. after the section heading); 8px
           // between a clause heading and its body.
           for (final (heading, body) in clauses) ...[
-            const SizedBox(height: AppSpacing.spacing16),
+            const SizedBox(height: AppSpacing.s16),
             Text(
               heading,
               style: AppType.body2.r.copyWith(color: AppColors.text),
             ),
-            const SizedBox(height: AppSpacing.spacing8),
+            const SizedBox(height: AppSpacing.s8),
             Text(
               body,
               style: AppType.label1.r.copyWith(color: AppColors.textSecondary),

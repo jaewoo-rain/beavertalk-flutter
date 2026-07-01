@@ -79,10 +79,10 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24,
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24),
+                  AppSpacing.s20,
+                  AppSpacing.s24,
+                  AppSpacing.s20,
+                  AppSpacing.s24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -93,7 +93,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: AppSpacing.spacing32),
+                  const SizedBox(height: AppSpacing.s32),
                   InputField(
                     controller: _email,
                     // TODO(i18n): localize
@@ -103,9 +103,9 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                     onSubmitted: (_) => _send(),
                   ),
                   if (_error != null) ...[
-                    const SizedBox(height: AppSpacing.spacing12),
+                    const SizedBox(height: AppSpacing.s12),
                     Padding(
-                      padding: const EdgeInsets.only(left: AppSpacing.spacing4),
+                      padding: const EdgeInsets.only(left: AppSpacing.s4),
                       child: Text(_error!,
                           style: AppType.label2.r
                               .copyWith(color: AppColors.error)),
@@ -117,7 +117,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spacing20, 0, AppSpacing.spacing20, AppSpacing.spacing24),
+                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
             child: Row(
               children: [
                 Expanded(

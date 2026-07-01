@@ -35,7 +35,7 @@ class PasswordCompleteScreen extends StatelessWidget {
         children: [
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spacing20),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -45,7 +45,7 @@ class PasswordCompleteScreen extends StatelessWidget {
                     textAlign: TextAlign.center,
                     style: AppType.title2.b,
                   ),
-                  const SizedBox(height: AppSpacing.spacing16),
+                  const SizedBox(height: AppSpacing.s16),
                   Text(
                     // TODO(i18n): localize
                     'Your password has been reset. '
@@ -54,7 +54,7 @@ class PasswordCompleteScreen extends StatelessWidget {
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: AppSpacing.spacing48),
+                  const SizedBox(height: AppSpacing.s48),
                   // Figma `3D/location` key illustration (180×180), shown
                   // directly on the surface — no card, per node 2117:19858.
                   Image.asset(
@@ -68,7 +68,7 @@ class PasswordCompleteScreen extends StatelessWidget {
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spacing20, 0, AppSpacing.spacing20, AppSpacing.spacing24),
+                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
             child: Row(
               children: [
                 Expanded(

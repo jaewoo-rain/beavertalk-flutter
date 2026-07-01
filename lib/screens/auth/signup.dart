@@ -117,15 +117,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           Gnb.main(title: 'Sign up', onBack: () => Navigator.pop(context)),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.spacing20,
-                  AppSpacing.spacing24, AppSpacing.spacing20, AppSpacing.spacing24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
+                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Email ───────────────────────────────────────────────
                   // TODO(i18n): localize
                   const _FieldLabel('Email'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _email,
                     onChanged: (v) => setState(() => _email = v),
@@ -135,11 +135,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     leftIcon: const MailIcon(
                         size: 20, color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: AppSpacing.spacing20),
+                  const SizedBox(height: AppSpacing.s20),
                   // ── Password ────────────────────────────────────────────
                   // TODO(i18n): localize
                   const _FieldLabel('Password'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
@@ -155,11 +155,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     ),
                   ),
                   _ErrorText(_passwordError),
-                  const SizedBox(height: AppSpacing.spacing20),
+                  const SizedBox(height: AppSpacing.s20),
                   // ── Password confirm ────────────────────────────────────
                   // TODO(i18n): localize
                   const _FieldLabel('Confirm password'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _passwordConfirm,
                     onChanged: (v) => setState(() => _passwordConfirm = v),
@@ -177,7 +177,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   _ErrorText(_confirmError),
                   // ── Server / validation error ───────────────────────────
                   _ErrorText(_error),
-                  const SizedBox(height: AppSpacing.spacing32),
+                  const SizedBox(height: AppSpacing.s32),
                   // ── Signup (auto-logs in; AuthGate routes to onboarding) ─
                   Button(
                     type: BtnType.primaryFill,
@@ -187,10 +187,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     disabled: _submitting || !_canSubmit,
                     onPressed: _signup,
                   ),
-                  const SizedBox(height: AppSpacing.spacing48),
+                  const SizedBox(height: AppSpacing.s48),
                   // ── Social sign-up row (Kakao / Google / Apple) ─────────
                   _SocialButtonRow(onPressed: _socialSignup),
-                  const SizedBox(height: AppSpacing.spacing24),
+                  const SizedBox(height: AppSpacing.s24),
                   // ── Login prompt ────────────────────────────────────────
                   Center(child: _LoginPrompt(onLogin: _goLogin)),
                 ],
@@ -212,7 +212,7 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.spacing8),
+      padding: const EdgeInsets.only(left: AppSpacing.s8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -235,7 +235,7 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.spacing8, left: AppSpacing.spacing4),
+      padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),
@@ -266,9 +266,9 @@ class _SocialButtonRow extends StatelessWidget {
     return Row(
       children: [
         social(const KakaoIcon(size: 24)),
-        const SizedBox(width: AppSpacing.spacing12),
+        const SizedBox(width: AppSpacing.s12),
         social(const GoogleIcon(size: 24)),
-        const SizedBox(width: AppSpacing.spacing12),
+        const SizedBox(width: AppSpacing.s12),
         social(const AppleIcon(size: 24, color: AppColors.text)),
       ],
     );

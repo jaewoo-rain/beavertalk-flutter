@@ -86,15 +86,15 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
           Gnb.main(title: 'Log in', onBack: () => Navigator.pop(context)),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.spacing20,
-                  AppSpacing.spacing24, AppSpacing.spacing20, AppSpacing.spacing24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
+                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Email field ─────────────────────────────────────────
                   // TODO(i18n): localize
                   const _FieldLabel('Email'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _email,
                     onChanged: (v) => setState(() => _email = v),
@@ -104,11 +104,11 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     leftIcon:
                         const MailIcon(size: 20, color: AppColors.textSecondary),
                   ),
-                  const SizedBox(height: AppSpacing.spacing20),
+                  const SizedBox(height: AppSpacing.s20),
                   // ── Password field ──────────────────────────────────────
                   // TODO(i18n): localize
                   const _FieldLabel('Password'),
-                  const SizedBox(height: AppSpacing.spacing8),
+                  const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
@@ -123,11 +123,11 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                           () => _obscurePassword = !_obscurePassword),
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.spacing20),
+                  const SizedBox(height: AppSpacing.s20),
                   // ── Save-id checkbox + find-password link ───────────────
                   Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: AppSpacing.spacing8),
+                        const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -141,7 +141,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                               onChanged: (v) => setState(() => _saveId = v),
                               size: AppCheckboxSize.size20,
                             ),
-                            const SizedBox(width: AppSpacing.spacing8),
+                            const SizedBox(width: AppSpacing.s8),
                             GestureDetector(
                               onTap: () => setState(() => _saveId = !_saveId),
                               child: Text(
@@ -170,9 +170,9 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                   ),
                   // ── Inline error (login failure) ────────────────────────
                   if (_error != null) ...[
-                    const SizedBox(height: AppSpacing.spacing20),
+                    const SizedBox(height: AppSpacing.s20),
                     Padding(
-                      padding: const EdgeInsets.only(left: AppSpacing.spacing4),
+                      padding: const EdgeInsets.only(left: AppSpacing.s4),
                       child: Text(
                         _error!,
                         style: AppType.label2.r
@@ -180,7 +180,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                       ),
                     ),
                   ],
-                  const SizedBox(height: AppSpacing.spacing60),
+                  const SizedBox(height: AppSpacing.s60),
                   // ── Login (primary) ─────────────────────────────────────
                   Button(
                     type: BtnType.primaryFill,
@@ -190,10 +190,10 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     disabled: _submitting,
                     onPressed: _login,
                   ),
-                  const SizedBox(height: AppSpacing.spacing48),
+                  const SizedBox(height: AppSpacing.s48),
                   // ── Social sign-in row ──────────────────────────────────
                   _SocialButtonRow(onPressed: _socialLogin),
-                  const SizedBox(height: AppSpacing.spacing24),
+                  const SizedBox(height: AppSpacing.s24),
                   // ── Signup prompt ───────────────────────────────────────
                   Center(child: _SignupPrompt(onSignup: _goSignup)),
                 ],
@@ -215,7 +215,7 @@ class _FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: AppSpacing.spacing8),
+      padding: const EdgeInsets.only(left: AppSpacing.s8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(
@@ -248,9 +248,9 @@ class _SocialButtonRow extends StatelessWidget {
     return Row(
       children: [
         social(const KakaoIcon(size: 24)),
-        const SizedBox(width: AppSpacing.spacing12),
+        const SizedBox(width: AppSpacing.s12),
         social(const GoogleIcon(size: 24)),
-        const SizedBox(width: AppSpacing.spacing12),
+        const SizedBox(width: AppSpacing.s12),
         social(const AppleIcon(size: 24, color: AppColors.text)),
       ],
     );

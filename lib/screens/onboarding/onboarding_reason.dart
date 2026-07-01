@@ -83,27 +83,27 @@ class _OnboardingReasonScreenState
           Expanded(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24,
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24),
+                  AppSpacing.s20,
+                  AppSpacing.s24,
+                  AppSpacing.s20,
+                  AppSpacing.s24),
               children: [
                 Text(
                   // TODO(i18n): localize
                   'Why are you learning a language?',
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
-                const SizedBox(height: AppSpacing.spacing8),
+                const SizedBox(height: AppSpacing.s8),
                 Text(
                   // TODO(i18n): localize
                   "We'll tailor your learning to your goals.",
                   style:
                       AppType.body1.r.copyWith(color: AppColors.textSecondary),
                 ),
-                const SizedBox(height: AppSpacing.spacing24),
+                const SizedBox(height: AppSpacing.s24),
                 // Content data (reason title/description) is kept as-is.
                 for (int i = 0; i < mockReasons.length; i++) ...[
-                  if (i > 0) const SizedBox(height: AppSpacing.spacing12),
+                  if (i > 0) const SizedBox(height: AppSpacing.s12),
                   SelectCard(
                     title: mockReasons[i].title,
                     description: mockReasons[i].description,
@@ -118,7 +118,7 @@ class _OnboardingReasonScreenState
                   ),
                 ],
                 if (_error != null) ...[
-                  const SizedBox(height: AppSpacing.spacing16),
+                  const SizedBox(height: AppSpacing.s16),
                   Text(_error!,
                       style:
                           AppType.label2.r.copyWith(color: AppColors.error)),
@@ -128,10 +128,10 @@ class _OnboardingReasonScreenState
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spacing20,
-                AppSpacing.spacing12,
-                AppSpacing.spacing20,
-                AppSpacing.spacing12),
+                AppSpacing.s20,
+                AppSpacing.s12,
+                AppSpacing.s20,
+                AppSpacing.s12),
             child: SizedBox(
               width: double.infinity,
               child: Button(

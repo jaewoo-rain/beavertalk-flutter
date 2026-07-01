@@ -62,17 +62,17 @@ class _OnboardingLanguageScreenState
           Expanded(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24,
-                  AppSpacing.spacing20,
-                  AppSpacing.spacing24),
+                  AppSpacing.s20,
+                  AppSpacing.s24,
+                  AppSpacing.s20,
+                  AppSpacing.s24),
               children: [
                 Text(
                   // TODO(i18n): localize
                   'What is your native language?',
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
-                const SizedBox(height: AppSpacing.spacing20),
+                const SizedBox(height: AppSpacing.s20),
                 // Content data (language names) is kept as-is, not localized.
                 for (final lang in mockLanguages)
                   CountrySelect(
@@ -86,10 +86,10 @@ class _OnboardingLanguageScreenState
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.spacing20,
-                AppSpacing.spacing12,
-                AppSpacing.spacing20,
-                AppSpacing.spacing12),
+                AppSpacing.s20,
+                AppSpacing.s12,
+                AppSpacing.s20,
+                AppSpacing.s12),
             child: SizedBox(
               width: double.infinity,
               child: Button(

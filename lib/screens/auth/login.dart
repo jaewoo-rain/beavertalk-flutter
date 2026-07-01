@@ -177,10 +177,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // so the avatar lands at screen y≈120 as in node 2117:19693.
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.spacing40,
+            AppSpacing.s40,
             76, // Figma top offset (no AppSpacing token)
-            AppSpacing.spacing40,
-            AppSpacing.spacing24),
+            AppSpacing.s40,
+            AppSpacing.s24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -197,7 +197,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               leftIcon: const KakaoIcon(size: 24),
               onPressed: _socialLoginMock,
             ),
-            const SizedBox(height: AppSpacing.spacing16),
+            const SizedBox(height: AppSpacing.s16),
             // Google: custom button (matches Kakao/Apple) wired to the real
             // Google sign-in flow.
             Button(
@@ -209,7 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               disabled: _googleBusy,
               onPressed: _googleLogin,
             ),
-            const SizedBox(height: AppSpacing.spacing16),
+            const SizedBox(height: AppSpacing.s16),
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
@@ -218,10 +218,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               leftIcon: const AppleIcon(size: 24),
               onPressed: _socialLoginMock,
             ),
-            const SizedBox(height: AppSpacing.spacing16),
+            const SizedBox(height: AppSpacing.s16),
             // ── "or" divider ────────────────────────────────────────────
             const _OrDivider(),
-            const SizedBox(height: AppSpacing.spacing16),
+            const SizedBox(height: AppSpacing.s16),
             // ── Email login (primary) ───────────────────────────────────
             Button(
               type: BtnType.primaryFill,
@@ -232,7 +232,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onPressed: _emailLogin,
             ),
             // Figma: email button → signup prompt = 16px.
-            const SizedBox(height: AppSpacing.spacing16),
+            const SizedBox(height: AppSpacing.s16),
             // ── Signup prompt + terms notice ────────────────────────────
             _SignupPrompt(
               onSignup: _goSignup,
@@ -281,7 +281,7 @@ class _LogoBlock extends StatelessWidget {
             image: DecorationImage(image: beaverImage, fit: BoxFit.cover),
           ),
         ),
-        const SizedBox(height: AppSpacing.spacing8),
+        const SizedBox(height: AppSpacing.s8),
         // Figma wordmark is 179.663px wide → 180.
         const BeaverTalkLogo(width: 180, color: AppColors.text),
       ],
@@ -302,7 +302,7 @@ class _OrDivider extends StatelessWidget {
       children: [
         line,
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.spacing8),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
           child: Text(
             // TODO(i18n): localize
             'or',
@@ -360,7 +360,7 @@ class _SignupPrompt extends StatelessWidget {
           ],
         ),
         // Figma: signup link row → terms notice = 16px.
-        const SizedBox(height: AppSpacing.spacing16),
+        const SizedBox(height: AppSpacing.s16),
         // Figma left-aligns the terms notice across the full 295px width.
         SizedBox(
           width: double.infinity,
