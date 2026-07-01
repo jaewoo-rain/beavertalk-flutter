@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/molecules/password_eye_toggle.dart';
@@ -145,7 +146,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     // TODO(i18n): localize
                     hintText: 'Enter your password',
                     obscureText: _obscurePassword,
-                    leftIcon: const Icon(Icons.lock_outline),
+                    leftIcon:
+                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscurePassword,
                       onTap: () => setState(
@@ -164,7 +166,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     // TODO(i18n): localize
                     hintText: 'Re-enter your password',
                     obscureText: _obscureConfirm,
-                    leftIcon: const Icon(Icons.lock_outline),
+                    leftIcon:
+                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscureConfirm,
                       onTap: () =>

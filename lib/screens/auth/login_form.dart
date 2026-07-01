@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/checkbox.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/molecules/password_eye_toggle.dart';
@@ -113,7 +115,8 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     // TODO(i18n): localize
                     hintText: 'Enter your password',
                     obscureText: _obscurePassword,
-                    leftIcon: const Icon(Icons.lock_outline),
+                    leftIcon:
+                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscurePassword,
                       onTap: () => setState(
@@ -128,30 +131,27 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
-                          behavior: HitTestBehavior.opaque,
-                          onTap: () => setState(() => _saveId = !_saveId),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                _saveId
-                                    ? Icons.check_circle
-                                    : Icons.radio_button_unchecked,
-                                size: 22,
-                                color: _saveId
-                                    ? AppColors.primary
-                                    : AppColors.textSecondary,
-                              ),
-                              const SizedBox(width: AppSpacing.spacing8),
-                              Text(
+                        // DS checkbox box only; label rendered externally so it
+                        // keeps the Figma grey (AppCheckbox forces a white label).
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AppCheckbox(
+                              value: _saveId,
+                              onChanged: (v) => setState(() => _saveId = v),
+                              size: AppCheckboxSize.size20,
+                            ),
+                            const SizedBox(width: AppSpacing.spacing8),
+                            GestureDetector(
+                              onTap: () => setState(() => _saveId = !_saveId),
+                              child: Text(
                                 // TODO(i18n): localize
                                 'Remember me',
                                 style: AppType.label1.r
                                     .copyWith(color: AppColors.textSecondary),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                         Flexible(
                           child: GestureDetector(

@@ -11,10 +11,10 @@ import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Onboarding step 2/5 — what should we call you.
+/// Onboarding step 2/3 — what should we call you.
 ///
 /// Figma `screen/auth_login` (`2291:21281`). An [AppScaffold] with a
-/// [GnbType.main2] progress bar (2/5), the title "What should we call you?"
+/// [GnbType.main2] progress bar (2/3), the title "What should we call you?"
 /// with a subtitle, a labelled [InputField] for the name plus a helper line, and
 /// a pinned primary [Button] ("Continue") that is disabled until a name is
 /// entered.

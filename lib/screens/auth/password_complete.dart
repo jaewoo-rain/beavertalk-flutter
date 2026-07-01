@@ -10,7 +10,7 @@ import '../../theme/app_typography.dart';
 /// Password-recovery step 3 — reset complete.
 ///
 /// Figma `screen/auth_findpw_complete` (`2117:19851`). A title + guidance text,
-/// the celebratory 3D key illustration (`assets/icons/3d/key.svg`, the Figma
+/// the celebratory 3D key illustration (`assets/icons/3d/key.png`, the Figma
 /// `3D/location` asset at node `2117:19858`), and a
 /// primary "Log in" button that returns to the AuthGate root (which shows the
 /// login flow while unauthenticated), so a successful re-login can redirect to

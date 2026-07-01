@@ -43,8 +43,8 @@ class OnboardingDoneScreen extends StatelessWidget {
                 children: [
                   // Beaver avatar — Figma 120px circle.
                   Container(
-                    width: 120,
-                    height: 120,
+                    width: AppSpacing.s120,
+                    height: AppSpacing.s120,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
