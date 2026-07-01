@@ -11,6 +11,7 @@ import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
@@ -158,7 +159,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                             style: AppType.heading2.sb
                                 .copyWith(color: AppColors.text),
                           ),
-                          const SizedBox(height: 8),
+                          const SizedBox(height: AppSpacing.s8),
                           Text(
                             sentence.native,
                             textAlign: TextAlign.center,
@@ -210,7 +211,7 @@ class _SubmittingOverlay extends StatelessWidget {
             const CircularProgressIndicator(
               valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.s16),
             Text(
               '발음을 채점하고 있어요…',
               style: AppType.body1.r.copyWith(color: AppColors.text),

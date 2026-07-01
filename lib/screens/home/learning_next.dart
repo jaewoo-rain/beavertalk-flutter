@@ -9,6 +9,7 @@ import '../../components/organisms/gnb.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
@@ -136,7 +137,7 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                         charScores: feedback?.charScores ?? const [],
                         fallbackText: sentence.korean,
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: AppSpacing.s8),
                       Text(
                         native,
                         textAlign: TextAlign.center,
@@ -186,13 +187,13 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         const SizedBox(width: 56),
-                        const SizedBox(width: 24),
+                        const SizedBox(width: AppSpacing.s24),
                         RecordCircleButton(
                           icon: AppIcons.redo,
                           semanticLabel: '다시하기',
                           onTap: () => Navigator.pop(context),
                         ),
-                        const SizedBox(width: 24),
+                        const SizedBox(width: AppSpacing.s24),
                         SizedBox(
                           width: 56,
                           height: 56,

@@ -13,6 +13,7 @@ import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
@@ -150,7 +151,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         : '대화 분석 결과';
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 40),
+      padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s40),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -159,7 +160,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             title,
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s8),
           // TODO(server): call date + duration are not in CallResult yet —
           // placeholder values. Wire when the API provides them.
           Row(
@@ -168,23 +169,23 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 '1월 2일',
                 style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.s4),
               Container(
-                width: 4,
-                height: 4,
+                width: AppSpacing.s4,
+                height: AppSpacing.s4,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.textSecondary,
                 ),
               ),
-              const SizedBox(width: 4),
+              const SizedBox(width: AppSpacing.s4),
               Text(
                 '10분 37초',
                 style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
               ),
             ],
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.s32),
           Center(
             child: PronunciationResult(
               // Empty (no practice yet) → inactive gauge ("-%").
@@ -202,7 +203,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               ],
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.s32),
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
@@ -212,12 +213,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ),
 
           // ── section 2: 새로 배운 표현 ───────────────────────────────
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s24),
           Text(
             '새로 배운 표현',
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s16),
           if (result.sentences.isEmpty)
             Text(
               '이번 대화에서 새로 배운 표현이 없어요.',
@@ -230,7 +231,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   for (int i = 0; i < result.sentences.length; i++) ...[
-                    if (i > 0) const SizedBox(height: 20),
+                    if (i > 0) const SizedBox(height: AppSpacing.s20),
                     _SentenceCard(
                       sentence: result.sentences[i],
                       bookmarked:
@@ -250,19 +251,19 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           // NOTE(shell): CallResult has no conversation transcript field yet —
           // placeholder bubbles to match Figma `2296:26458`. TODO(server): wire
           // the real transcript when the API provides it.
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.s24),
           Text(
             '대화 상세',
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s16),
           const ChatBubble(sender: ChatSender.ai, text: '오, 정말 괜찮아!'),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s16),
           const ChatBubble(
             sender: ChatSender.user,
             text: '오늘 진짜 추워. 강아지랑 같이 얼음 됐어.',
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s16),
           const ChatBubble(sender: ChatSender.ai, text: '오, 정말 괜찮아!'),
         ],
       ),
@@ -305,7 +306,7 @@ class _SentenceCard extends StatelessWidget {
         ),
         if (score != null)
           Padding(
-            padding: const EdgeInsets.only(top: 8, left: 4),
+            padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
             child: Text(
               '최근 점수 ${score!.totalScore}%',
               style: AppType.label2.sb.copyWith(color: AppColors.primary),
@@ -324,7 +325,7 @@ class _EmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(24),
+        padding: const EdgeInsets.all(AppSpacing.s24),
         child: Text(
           '분석 결과를 불러올 수 없어요.',
           style: AppType.body1.r.copyWith(color: AppColors.textSecondary),

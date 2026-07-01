@@ -10,6 +10,7 @@ import '../../components/organisms/bottom_nav_bar.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Home — the post-login landing screen. Figma `screen/home` (`2117:23988`).
@@ -60,7 +61,7 @@ class HomeScreen extends ConsumerWidget {
           SizedBox(
             height: 56,
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20, vertical: 14),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -74,8 +75,8 @@ class HomeScreen extends ConsumerWidget {
                       // Figma `2296:26381` — a surface2 circle holding a muted
                       // (label/assistive) person, not a bare white glyph.
                       child: Container(
-                        width: 28,
-                        height: 28,
+                        width: AppSpacing.s28,
+                        height: AppSpacing.s28,
                         alignment: Alignment.center,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
@@ -107,7 +108,7 @@ class HomeScreen extends ConsumerWidget {
                         Navigator.pushNamed(context, Routes.avatar),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 Text(
                   mockPartnerName,
                   // Figma `2296:26390` — Title 3 / Bold (24px), updated from 32.

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Visual state of a [PronunciationResult].
@@ -106,7 +107,7 @@ class PronunciationResult extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.s16),
           _MetricsFooter(metrics: metrics),
         ],
       ),
@@ -161,7 +162,7 @@ class _MetricsFooter extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12, vertical: AppSpacing.s12),
       decoration: BoxDecoration(
         color: AppColors.surface2,
         borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -249,7 +250,7 @@ class PronunciationResultDemo extends StatelessWidget {
     ];
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSpacing.s16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: const [
@@ -258,7 +259,7 @@ class PronunciationResultDemo extends StatelessWidget {
             metrics: metrics,
             state: PronunciationState.active,
           ),
-          SizedBox(height: 24),
+          SizedBox(height: AppSpacing.s24),
           PronunciationResult(
             score: 0,
             metrics: emptyMetrics,

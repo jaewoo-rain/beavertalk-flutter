@@ -11,6 +11,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Call finished — Figma `screen/call_finish` (`2117:19981`).
@@ -201,8 +202,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 120,
-                  height: 120,
+                  width: AppSpacing.s120,
+                  height: AppSpacing.s120,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.surface2,
@@ -212,12 +213,12 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 Text(
                   mockPartnerName,
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s8),
                 Text(
                   '통화 종료 ${_formatDuration(_durationSec)}',
                   style:
@@ -238,13 +239,13 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                   '통화는 어떠셨나요?',
                   style: AppType.headline1.r.copyWith(color: AppColors.text),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: AppSpacing.s32),
                 Row(
                   children: [
                     _ratingCard(_Rating.bad),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppSpacing.s16),
                     _ratingCard(_Rating.ok),
-                    const SizedBox(width: 16),
+                    const SizedBox(width: AppSpacing.s16),
                     _ratingCard(_Rating.good),
                   ],
                 ),
@@ -270,7 +271,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                     (route) => route.isFirst,
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: AppSpacing.s16),
                 Button(
                   type: BtnType.primaryFill,
                   size: BtnSize.s60,

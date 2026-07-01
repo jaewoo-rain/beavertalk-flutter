@@ -10,6 +10,7 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Live call — Figma `screen/call_main` (`2117:19932`, dialog `2117:19956`).
@@ -133,7 +134,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           children: [
             // Status header — connected dot + name + live timer (Figma top).
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: AppSpacing.s12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -141,14 +142,14 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 8,
-                        height: 8,
+                        width: AppSpacing.s8,
+                        height: AppSpacing.s8,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
                           color: AppColors.primary,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.s12),
                       Text(
                         'Connected',
                         style: AppType.label1.r
@@ -156,12 +157,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.s4),
                   Text(
                     mockPartnerName,
                     style: AppType.body1.sb.copyWith(color: AppColors.text),
                   ),
-                  const SizedBox(height: 4),
+                  const SizedBox(height: AppSpacing.s4),
                   Text(
                     _formatted(elapsed),
                     style: AppType.label1.r
@@ -174,16 +175,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             Expanded(
               child: Center(
                 child: Container(
-                  width: 140,
-                  height: 140,
+                  width: AppSpacing.s140,
+                  height: AppSpacing.s140,
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
                     color: _avatarRing, // ring (Figma dark teal)
                   ),
                   alignment: Alignment.center,
                   child: Container(
-                    width: 120,
-                    height: 120,
+                    width: AppSpacing.s120,
+                    height: AppSpacing.s120,
                     decoration: const BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.surface2,
@@ -202,7 +203,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             // earlier English translation line was a stub with no server field
             // and has been removed (QA: "아래 자막 삭제").
             Padding(
-              padding: const EdgeInsets.fromLTRB(32, 16, 32, 24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.s32, AppSpacing.s16, AppSpacing.s32, AppSpacing.s24),
               child: Text(
                 beaverSubtitle,
                 textAlign: TextAlign.center,
@@ -224,8 +225,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       customBorder: const CircleBorder(),
                       onTap: _confirmEnd,
                       child: SizedBox(
-                        width: 60,
-                        height: 60,
+                        width: AppSpacing.s60,
+                        height: AppSpacing.s60,
                         child: Center(
                           child: AppIcons.callEnd(
                             size: 32,

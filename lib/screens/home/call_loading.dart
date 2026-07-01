@@ -8,6 +8,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Call connecting — Figma `screen/call_loading` (`2117:19923`).
@@ -84,19 +85,19 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 const SizedBox(
-                  width: 32,
-                  height: 32,
+                  width: AppSpacing.s32,
+                  height: AppSpacing.s32,
                   child: CircularProgressIndicator(
                     strokeWidth: 3,
                     valueColor: AlwaysStoppedAnimation<Color>(AppColors.text),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.s12),
                 Text(
                   '연결 중...',
                   style: AppType.body1.r.copyWith(color: AppColors.text),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: AppSpacing.s8),
                 Text(
                   '보통 5초 이내에 연결돼요',
                   style: AppType.label2.r
@@ -114,7 +115,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
               height: 56,
               child: Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                    const EdgeInsets.symmetric(horizontal: AppSpacing.s20, vertical: 14),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

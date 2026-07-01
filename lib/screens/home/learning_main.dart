@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import 'learning_args.dart';
 
 /// Learning step 3 — Figma `screen/learning_main` (`2221:3837`).
@@ -55,7 +56,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
           Expanded(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
                 child: PronunciationResult(
                   state: eval == null
                       ? PronunciationState.inactive
@@ -80,7 +81,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             child: SizedBox(
               width: double.infinity,
               child: Button(
