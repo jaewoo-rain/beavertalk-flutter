@@ -13,6 +13,7 @@ import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
@@ -163,7 +164,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
         child: _phase == _LoadingPhase.polling ? _polling() : _error(),
       ),
     );
@@ -183,18 +184,18 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
               image: DecorationImage(image: beaverImage, fit: BoxFit.cover),
             ),
           ),
-          const SizedBox(height: 32),
+          const SizedBox(height: AppSpacing.s32),
           Text(
             '대화를 분석하고 있어요…',
             style: AppType.heading2.sb.copyWith(color: AppColors.text),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s12),
           Text(
             '잠시만 기다려주세요',
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s28),
           // Indeterminate loading bar.
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -222,26 +223,26 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
             size: 56,
             color: AppColors.textSecondary,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s20),
           Text(
             '분석을 불러오지 못했어요',
             style: AppType.heading2.sb.copyWith(color: AppColors.text),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s12),
           Text(
             _errorMsg,
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: AppSpacing.s28),
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
             text: '다시 시도',
             onPressed: _callId == null ? _goHome : _start,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s12),
           Button(
             type: BtnType.secondaryFill,
             size: BtnSize.s60,

@@ -7,6 +7,7 @@ import '../../components/molecules/segmented_tabs.dart';
 import '../../components/organisms/gnb.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../home/learning_args.dart';
 
@@ -39,7 +40,7 @@ class RecordArchiveScreen extends StatelessWidget {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           // 기록 / 보관 tabs (보관 active).
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, 14, AppSpacing.s20, 14),
             child: SegmentedTabs(
               labels: const ['기록', '보관'],
               activeIndex: 1,
@@ -59,14 +60,15 @@ class RecordArchiveScreen extends StatelessWidget {
                     .toList(growable: false);
                 if (saved.isEmpty) return const _ArchiveEmpty();
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
                   children: [
                     Text('저장한 문장',
                         style: AppType.body1.sb
                             .copyWith(color: AppColors.textSecondary)),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.s12),
                     for (var i = 0; i < saved.length; i++) ...[
-                      if (i > 0) const SizedBox(height: 16),
+                      if (i > 0) const SizedBox(height: AppSpacing.s16),
                       CardBookmark(
                         korean: saved[i].korean,
                         native: saved[i].native,
@@ -94,7 +96,7 @@ class _ArchiveEmpty extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 40),
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s40),
         child: Text(
           '저장한 문장이 없어요.\n대화 기록에서 문장을 즐겨찾기 해보세요.',
           textAlign: TextAlign.center,

@@ -14,6 +14,7 @@ import '../../features/character/domain/entities/character.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Change avatar — Figma `screen/main_change_avatar` (`2117:20355`).
@@ -68,7 +69,8 @@ class AvatarScreen extends ConsumerWidget {
                     .toList();
 
                 return ListView(
-                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                  padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, AppSpacing.s24),
                   children: [
                     Text(
                       '통화 상대에 따라 목소리와 난이도가 상이합니다.\n'
@@ -76,33 +78,33 @@ class AvatarScreen extends ConsumerWidget {
                       style: AppType.body2.r
                           .copyWith(color: AppColors.textSecondary),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.s24),
                     if (owned.isNotEmpty) ...[
                       _label('나의 통화 상대 · 보유 ${owned.length}'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s12),
                       _ownedRow(context, owned, activeId),
-                      const SizedBox(height: 28),
+                      const SizedBox(height: AppSpacing.s28),
                     ],
                     if (discounted.isNotEmpty) ...[
                       _label('한정 할인 중'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s12),
                       for (final c in discounted) ...[
                         _discountCard(context, c),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.s12),
                       ],
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.s16),
                     ],
                     if (buyable.isNotEmpty) ...[
                       _label('구매 가능'),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s12),
                       for (final c in buyable) ...[
                         _buyableCard(context, c),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: AppSpacing.s12),
                       ],
                     ],
                     if (owned.isEmpty && discounted.isEmpty && buyable.isEmpty)
                       Padding(
-                        padding: const EdgeInsets.only(top: 40),
+                        padding: const EdgeInsets.only(top: AppSpacing.s40),
                         child: Center(
                           child: Text('표시할 캐릭터가 없어요',
                               style: AppType.body2.r.copyWith(
@@ -154,7 +156,7 @@ class AvatarScreen extends ConsumerWidget {
     return Row(
       children: [
         for (var i = 0; i < cards.length; i++) ...[
-          if (i > 0) const SizedBox(width: 12),
+          if (i > 0) const SizedBox(width: AppSpacing.s12),
           cards[i],
         ],
       ],
@@ -280,7 +282,7 @@ class _ErrorState extends StatelessWidget {
           Text(message,
               style: AppType.body2.r
                   .copyWith(color: AppColors.textSecondary)),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.s12),
           TextButton(onPressed: onRetry, child: const Text('다시 시도')),
         ],
       ),

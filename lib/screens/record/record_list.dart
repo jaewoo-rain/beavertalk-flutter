@@ -11,6 +11,7 @@ import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Conversation records — Figma `screen/record_list` (`2117:20307`).
@@ -35,7 +36,7 @@ class RecordListScreen extends ConsumerWidget {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           // 기록 / 보관 tabs (기록 active).
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 14),
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, 14, AppSpacing.s20, 14),
             child: SegmentedTabs(
               labels: const ['기록', '보관'],
               activeIndex: 0,
@@ -75,13 +76,14 @@ class _RecordList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
         Text('통화 기록',
             style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
         const SizedBox(height: 8),
         for (var i = 0; i < records.length; i++) ...[
-          if (i > 0) const SizedBox(height: 12),
+          if (i > 0) const SizedBox(height: AppSpacing.s12),
           InkWell(
             borderRadius: BorderRadius.circular(8),
             onTap: () => Navigator.pushNamed(
@@ -146,7 +148,7 @@ class _EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -156,14 +158,14 @@ class _EmptyState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s8),
           Text(
             'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
             textAlign: TextAlign.center,
             style:
                 AppType.label1.r.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s20),
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
@@ -186,7 +188,7 @@ class _ErrorState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -196,14 +198,14 @@ class _ErrorState extends StatelessWidget {
             textAlign: TextAlign.center,
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.s8),
           Text(
             '잠시 후 다시 시도해주세요.',
             textAlign: TextAlign.center,
             style:
                 AppType.label1.r.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSpacing.s20),
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
