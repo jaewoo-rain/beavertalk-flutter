@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../components/chrome/status_bar.dart';
@@ -57,27 +56,6 @@ class AppScaffold extends StatelessWidget {
               ),
             ),
           ),
-          // Debug-only shortcut to the component gallery (in the dark margin).
-          if (kDebugMode)
-            Positioned(
-              top: 12,
-              left: 12,
-              child: SafeArea(
-                child: Material(
-                  color: AppColors.surface2,
-                  shape: const StadiumBorder(),
-                  child: InkWell(
-                    customBorder: const StadiumBorder(),
-                    onTap: () => Navigator.of(context).pushNamed('/gallery'),
-                    child: const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                      child: Text('🎨 Gallery',
-                          style: TextStyle(color: AppColors.textSecondary, fontSize: 12)),
-                    ),
-                  ),
-                ),
-              ),
-            ),
         ],
       ),
     );
