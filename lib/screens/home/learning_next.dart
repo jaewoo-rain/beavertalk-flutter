@@ -111,12 +111,13 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
             onClose: () => Navigator.pop(context),
           ),
           Expanded(
-            child: Stack(
+            child: Column(
               children: [
-                Positioned(
-                  top: 16,
-                  left: 20,
-                  right: 20,
+                const SizedBox(height: AppSpacing.s16),
+                // Speaker / bookmark utility row — top (Figma body top 16).
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -125,34 +126,37 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                     ],
                   ),
                 ),
-                // Per-character scored sentence + translation (Figma top 246).
-                Positioned(
-                  top: 246,
-                  left: 20,
-                  right: 20,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _ScoredSentence(
-                        charScores: feedback?.charScores ?? const [],
-                        fallbackText: sentence.korean,
+                // Per-character scored sentence + translation — centred in the
+                // flexible middle (Figma body top 246).
+                Expanded(
+                  child: Center(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s20),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _ScoredSentence(
+                            charScores: feedback?.charScores ?? const [],
+                            fallbackText: sentence.korean,
+                          ),
+                          const SizedBox(height: AppSpacing.s8),
+                          Text(
+                            native,
+                            textAlign: TextAlign.center,
+                            style: AppType.body1.sb.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: AppSpacing.s8),
-                      Text(
-                        native,
-                        textAlign: TextAlign.center,
-                        style: AppType.body1.sb.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
                 // Native / Me playback buttons (Figma top 478).
-                Positioned(
-                  top: 478,
-                  left: 20,
-                  right: 20,
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
                   child: Row(
                     children: [
                       Expanded(
@@ -177,54 +181,52 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                     ],
                   ),
                 ),
-                // Retry (white circle) + next (arrow), pinned bottom (Figma 24).
-                Positioned(
-                  bottom: 24,
-                  left: 0,
-                  right: 0,
-                  child: Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const SizedBox(width: 56),
-                        const SizedBox(width: AppSpacing.s24),
-                        RecordCircleButton(
-                          icon: AppIcons.redo,
-                          semanticLabel: '다시하기',
-                          onTap: () => Navigator.pop(context),
-                        ),
-                        const SizedBox(width: AppSpacing.s24),
-                        SizedBox(
-                          width: 56,
-                          height: 56,
-                          child: IconButton(
-                            // More sentences left → record the next one directly;
-                            // the score screen (learning_main) shows only once,
-                            // after the whole review sequence is done.
-                            onPressed: () => args.hasNext
-                                ? Navigator.pushNamed(
-                                    context,
-                                    Routes.learningIntro,
-                                    arguments: args.next(),
-                                  )
-                                : Navigator.pushNamed(
-                                    context,
-                                    Routes.learningMain,
-                                    arguments: args,
-                                  ),
-                            icon: AppIcons.arrowForward(
-                              size: 32,
-                              color: AppColors.green700,
-                            ),
-                            iconSize: 32,
+                // Native/Me → controls gap (Figma 36; no AppSpacing token).
+                const SizedBox(height: 36),
+                // Retry (white circle, centred) + next (arrow) control cluster.
+                Center(
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const SizedBox(width: 56),
+                      const SizedBox(width: AppSpacing.s24),
+                      RecordCircleButton(
+                        icon: AppIcons.redo,
+                        semanticLabel: '다시하기',
+                        onTap: () => Navigator.pop(context),
+                      ),
+                      const SizedBox(width: AppSpacing.s24),
+                      SizedBox(
+                        width: 56,
+                        height: 56,
+                        child: IconButton(
+                          // More sentences left → record the next one directly;
+                          // the score screen (learning_main) shows only once,
+                          // after the whole review sequence is done.
+                          onPressed: () => args.hasNext
+                              ? Navigator.pushNamed(
+                                  context,
+                                  Routes.learningIntro,
+                                  arguments: args.next(),
+                                )
+                              : Navigator.pushNamed(
+                                  context,
+                                  Routes.learningMain,
+                                  arguments: args,
+                                ),
+                          icon: AppIcons.arrowForward(
+                            size: 32,
                             color: AppColors.green700,
-                            tooltip: '다음',
                           ),
+                          iconSize: 32,
+                          color: AppColors.green700,
+                          tooltip: '다음',
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
+                const SizedBox(height: AppSpacing.s24),
               ],
             ),
           ),
