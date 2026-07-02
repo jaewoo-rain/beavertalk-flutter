@@ -130,13 +130,13 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                 onClose: () => Navigator.pop(context),
               ),
               Expanded(
-                child: Stack(
+                child: Column(
                   children: [
-                    // Speaker / bookmark utility row (Figma body top 16).
-                    Positioned(
-                      top: 16,
-                      left: 20,
-                      right: 20,
+                    const SizedBox(height: AppSpacing.s16),
+                    // Speaker / bookmark utility row — top (Figma body top 16).
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s20),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -145,42 +145,41 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         ],
                       ),
                     ),
-                    // Sentence (KO + EN) — Figma body top 246.
-                    Positioned(
-                      top: 246,
-                      left: 20,
-                      right: 20,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            sentence.korean,
-                            textAlign: TextAlign.center,
-                            style: AppType.heading2.sb
-                                .copyWith(color: AppColors.text),
-                          ),
-                          const SizedBox(height: AppSpacing.s8),
-                          Text(
-                            sentence.native,
-                            textAlign: TextAlign.center,
-                            style: AppType.body1.sb
-                                .copyWith(color: AppColors.textSecondary),
-                          ),
-                        ],
-                      ),
-                    ),
-                    // Mic button — Figma body top 558.
-                    Positioned(
-                      top: 558,
-                      left: 0,
-                      right: 0,
+                    // Sentence (KO + EN) — centred in the flexible middle.
+                    Expanded(
                       child: Center(
-                        child: MicButton(
-                          recording: _recording,
-                          onTap: () => _onMicTap(args),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.s20),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                sentence.korean,
+                                textAlign: TextAlign.center,
+                                style: AppType.heading2.sb
+                                    .copyWith(color: AppColors.text),
+                              ),
+                              const SizedBox(height: AppSpacing.s8),
+                              Text(
+                                sentence.native,
+                                textAlign: TextAlign.center,
+                                style: AppType.body1.sb
+                                    .copyWith(color: AppColors.textSecondary),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
+                    // Mic button — pinned near the bottom (Figma body top 558).
+                    Center(
+                      child: MicButton(
+                        recording: _recording,
+                        onTap: () => _onMicTap(args),
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
                   ],
                 ),
               ),
