@@ -4,17 +4,16 @@ import '../theme/app_colors.dart';
 import '../components/chrome/status_bar.dart';
 import '../components/chrome/home_indicator.dart';
 
-/// Device shell for every design_app screen. Centers a 375-wide phone frame on a
-/// dark page and hosts the screen body in the middle band of the frame.
+/// Full-screen shell for every design_app screen. The body fills the real
+/// device height inside a [SafeArea] (so the OS status bar / home indicator
+/// insets are respected), capped at a 430px-wide phone column that is centred
+/// on a dark page for wide/desktop windows.
 ///
-/// The Figma mockups draw fake OS chrome (a StatusBar at the top and a
-/// HomeIndicator at the bottom). The chrome glyphs are no longer rendered
-/// (removed per design feedback), but their vertical footprint
-/// ([StatusBar.height] top, [HomeIndicator.height] bottom) is preserved as
-/// blank space so every screen body keeps the exact region it was laid out for
-/// instead of stretching into the old bar areas. [statusVariant] /
-/// [homeVariant] are retained so existing call sites keep compiling, but they
-/// no longer affect layout.
+/// The old fixed 375×812 mock frame (and its reserved fake-chrome spacers) was
+/// dropped: it scaled the whole UI down when the soft keyboard opened. Now the
+/// keyboard resizes the body and each screen's own scroll view handles it.
+/// [statusVariant] / [homeVariant] are retained so existing call sites keep
+/// compiling, but they no longer affect layout.
 class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
@@ -39,32 +38,21 @@ class AppScaffold extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFF0C0C10),
+      // Keep the soft keyboard resizing the body so each screen's own scroll
+      // view lifts the focused field above the keyboard (no whole-UI shrink).
+      resizeToAvoidBottomInset: true,
       body: Stack(
         children: [
+          // Full-height, phone-width column: fills the real device height and
+          // caps width at 430 so wide/desktop windows keep a centred phone
+          // column with dark side margins. SafeArea respects the OS insets.
           Center(
-            // Scale the fixed 375×812 phone frame to fit the viewport so the
-            // whole screen is always visible (no clipping) on windows shorter
-            // than 812 — e.g. the web/desktop preview.
-            child: FittedBox(
-              fit: BoxFit.contain,
-              child: SizedBox(
-                width: 375,
-                height: 812,
-                child: ClipRect(
-                  child: Container(
-                    color: background,
-                    child: Column(
-                      children: [
-                        // Mock OS chrome removed per design feedback, but its
-                        // footprint is kept as blank space so each screen body
-                        // stays in the 734px region it was laid out for (no
-                        // stretch / shift into the old bar areas).
-                        const SizedBox(height: StatusBar.height),
-                        Expanded(child: body),
-                        const SizedBox(height: HomeIndicator.height),
-                      ],
-                    ),
-                  ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 430),
+              child: ColoredBox(
+                color: background,
+                child: SafeArea(
+                  child: SizedBox.expand(child: body),
                 ),
               ),
             ),
