@@ -188,17 +188,18 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       background: AppColors.surface,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
-      // Figma `2296:26290` exact layout: 3 groups pinned at body-relative
-      // y = 50 / 339 / 598 (left/right inset 20), not space-between, so the
-      // gaps stay pixel-exact regardless of text metrics.
-      body: Stack(
-        children: [
-          Positioned(
-            top: 50,
-            left: 20,
-            right: 20,
+      // Figma `2296:26290`: 3 groups — avatar/name/duration (top), rating
+      // (middle), actions (bottom) — distributed space-between so they adapt to
+      // any device height (was fixed-y Positioned under the old 812 frame).
+      body: Padding(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s20, AppSpacing.s48, AppSpacing.s20, AppSpacing.s24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             // Avatar + name + call duration.
-            child: Column(
+            Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
@@ -226,13 +227,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 ),
               ],
             ),
-          ),
-          Positioned(
-            top: 339,
-            left: 20,
-            right: 20,
             // Rating prompt + 3 rating cards.
-            child: Column(
+            Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
@@ -251,13 +247,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 ),
               ],
             ),
-          ),
-          Positioned(
-            top: 598,
-            left: 20,
-            right: 20,
             // Actions — 홈으로 (secondary) / 대화 분석 바로가기 (primary).
-            child: Column(
+            Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -281,8 +272,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
