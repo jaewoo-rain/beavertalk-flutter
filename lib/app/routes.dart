@@ -10,6 +10,7 @@ import '../screens/auth/login_form.dart';
 import '../screens/auth/signup.dart';
 import '../screens/auth/password_method.dart';
 import '../screens/auth/password_code.dart';
+import '../screens/auth/password_new.dart';
 import '../screens/auth/password_complete.dart';
 import '../screens/auth/terms.dart';
 import '../screens/auth/privacy.dart';
@@ -50,6 +51,7 @@ abstract final class Routes {
   static const signup = '/signup';
   static const passwordMethod = '/password/method';
   static const passwordCode = '/password/code';
+  static const passwordNew = '/password/new';
   static const passwordComplete = '/password/complete';
   static const terms = '/terms';
   static const privacy = '/privacy';
@@ -104,6 +106,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.signup: (_) => const SignupScreen(),
     Routes.passwordMethod: (_) => const PasswordMethodScreen(),
     Routes.passwordCode: (_) => const PasswordCodeScreen(),
+    Routes.passwordNew: (_) => const PasswordNewScreen(),
     Routes.passwordComplete: (_) => const PasswordCompleteScreen(),
     Routes.terms: (_) => const TermsScreen(),
     Routes.privacy: (_) => const PrivacyScreen(),
@@ -143,6 +146,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.signup: '회원가입',
     Routes.passwordMethod: '비밀번호 찾기',
     Routes.passwordCode: '인증코드',
+    Routes.passwordNew: '새 비밀번호 설정',
     Routes.passwordComplete: '비밀번호 재설정 완료',
     Routes.terms: '이용약관',
     Routes.privacy: '개인정보처리방침',
