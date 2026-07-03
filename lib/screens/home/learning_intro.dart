@@ -4,12 +4,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/mic_button.dart';
+import '../../components/chrome/home_indicator.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -40,13 +43,54 @@ class LearningIntroScreen extends ConsumerStatefulWidget {
 
 class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   final ReviewAudioRecorder _recorder = ReviewAudioRecorder();
+  final ReviewAudioPlayer _player = ReviewAudioPlayer();
   bool _recording = false;
   bool _submitting = false;
+
+  /// Cached standard-pronunciation URL for this sentence (fetched once on the
+  /// first speaker tap; the server TTS is idempotent so this just avoids re-calls).
+  String? _ttsUrl;
+  bool _loadingTts = false;
 
   @override
   void dispose() {
     _recorder.dispose();
+    _player.dispose();
     super.dispose();
+  }
+
+  /// Plays the sentence's standard (native) pronunciation. Fetches the audio URL
+  /// from the server's on-demand TTS (`POST /sentences/{id}/tts`) on the first
+  /// tap, caches it, then plays. Shows a message when TTS is unavailable.
+  Future<void> _playStandard(MockSentence sentence) async {
+    if (_submitting || _loadingTts) return;
+    var url = _ttsUrl ?? sentence.voiceUrl;
+    if (url == null || !url.startsWith('http')) {
+      setState(() => _loadingTts = true);
+      try {
+        url = await ref
+            .read(reviewRepositoryProvider)
+            .sentenceTtsUrl(sentence.id);
+        _ttsUrl = url;
+      } on AppException catch (e) {
+        _snack(e.message);
+        return;
+      } catch (_) {
+        _snack('표준 발음 오디오를 재생할 수 없어요.');
+        return;
+      } finally {
+        if (mounted) setState(() => _loadingTts = false);
+      }
+    }
+    if (url == null || !url.startsWith('http')) {
+      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      return;
+    }
+    try {
+      await _player.playUrl(url);
+    } catch (_) {
+      _snack('표준 발음 오디오를 재생할 수 없어요.');
+    }
   }
 
   Future<void> _onMicTap(LearningArgs args) async {
@@ -119,6 +163,15 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
     final sentence = args.current;
 
+    // Figma (screen/learning_intro 2296:26318): the mic sits 24px above the Body
+    // bottom, with a 34px HomeIndicator zone below it. AppScaffold's SafeArea
+    // reserves the OS bottom inset on native (→ 24px is exact), but web reports
+    // no inset, so the mic would hug the viewport edge. When there's no OS inset,
+    // also reserve the 34px home-indicator zone so it matches Figma on web too.
+    final rawBottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    final micBottomGap =
+        AppSpacing.s24 + (rawBottomInset == 0 ? HomeIndicator.height : 0.0);
+
     return AppScaffold(
       background: AppColors.surface2,
       body: Stack(
@@ -140,7 +193,18 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          AppIcons.volume(size: 32, color: AppColors.text),
+                          // Speaker → plays this sentence's standard pronunciation
+                          // (ready for the server's per-sentence audio URL).
+                          Semantics(
+                            button: true,
+                            label: '표준 발음 듣기',
+                            child: GestureDetector(
+                              onTap: () => _playStandard(sentence),
+                              behavior: HitTestBehavior.opaque,
+                              child: AppIcons.volume(
+                                  size: 32, color: AppColors.text),
+                            ),
+                          ),
                           AppIcons.bookmarkLine(size: 32, color: AppColors.text),
                         ],
                       ),
@@ -172,14 +236,17 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         ),
                       ),
                     ),
-                    // Mic button — pinned near the bottom (Figma body top 558).
+                    // Mic button — Figma body top 558 (node 2296:26337). The gap
+                    // below is 24px (Figma) plus the home-indicator zone when the
+                    // platform reserves none (web), so the mic never hugs / gets
+                    // cut at the frame edge (QA: "마이크 짤림").
                     Center(
                       child: MicButton(
                         recording: _recording,
                         onTap: () => _onMicTap(args),
                       ),
                     ),
-                    const SizedBox(height: AppSpacing.s24),
+                    SizedBox(height: micBottomGap),
                   ],
                 ),
               ),

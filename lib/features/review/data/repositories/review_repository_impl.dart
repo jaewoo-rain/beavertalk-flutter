@@ -27,4 +27,13 @@ class ReviewRepositoryImpl implements ReviewRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<String?> sentenceTtsUrl(int sentenceId) async {
+    try {
+      return await _remote.sentenceTtsUrl(sentenceId);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
 }

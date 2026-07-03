@@ -38,4 +38,18 @@ class AuthRemoteDataSource {
     final res = await _dio.get<Map<String, dynamic>>(ApiEndpoints.membersMe);
     return MemberDto.fromJson(res.data!);
   }
+
+  /// `DELETE /members/me` (Bearer) — deletes the current member on the backend.
+  Future<void> deleteAccount() async {
+    await _dio.delete<void>(ApiEndpoints.membersMe);
+  }
+
+  /// `PATCH /members/me` (Bearer) — partial update; here the UI [language] code.
+  Future<MemberDto> updateLanguage(String language) async {
+    final res = await _dio.patch<Map<String, dynamic>>(
+      ApiEndpoints.membersMe,
+      data: {'language': language},
+    );
+    return MemberDto.fromJson(res.data!);
+  }
 }

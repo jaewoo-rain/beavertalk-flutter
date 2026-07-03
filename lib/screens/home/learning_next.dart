@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/chrome/home_indicator.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
+import '../../features/review/presentation/review_providers.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -28,16 +32,20 @@ import 'learning_args.dart';
 /// - → next → next sentence's intro, or [Routes.learningMain] when last.
 ///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
-class LearningNextScreen extends StatefulWidget {
+class LearningNextScreen extends ConsumerStatefulWidget {
   /// Creates the learning comparison screen.
   const LearningNextScreen({super.key});
 
   @override
-  State<LearningNextScreen> createState() => _LearningNextScreenState();
+  ConsumerState<LearningNextScreen> createState() => _LearningNextScreenState();
 }
 
-class _LearningNextScreenState extends State<LearningNextScreen> {
+class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   final ReviewAudioPlayer _player = ReviewAudioPlayer();
+
+  /// Cached standard-pronunciation URL for the current sentence (fetched once).
+  String? _nativeUrl;
+  bool _loadingNative = false;
 
   /// Color for a character by grade, falling back to score thresholds when the
   /// grade is unknown/missing.
@@ -75,11 +83,34 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
     }
   }
 
-  Future<void> _playNative(ReviewFeedback? feedback) async {
-    final url = feedback?.voiceUrl;
-    if (url == null || url.isEmpty || !url.startsWith('http')) {
-      // voiceUrl may be a storage key, not a directly playable URL.
-      _snack('표준 발음 오디오를 재생할 수 없어요.');
+  /// Plays the sentence's standard (native) pronunciation via server on-demand
+  /// TTS (`POST /sentences/{id}/tts`), cached after the first fetch.
+  ///
+  /// Note: the review feedback's `voiceUrl` is the user's own recording, not the
+  /// native audio — so the standard pronunciation must come from the sentence's
+  /// TTS, keyed by [sentenceId].
+  Future<void> _playNative(int sentenceId) async {
+    if (_loadingNative) return;
+    var url = _nativeUrl;
+    if (url == null || !url.startsWith('http')) {
+      setState(() => _loadingNative = true);
+      try {
+        url = await ref
+            .read(reviewRepositoryProvider)
+            .sentenceTtsUrl(sentenceId);
+        _nativeUrl = url;
+      } on AppException catch (e) {
+        _snack(e.message);
+        return;
+      } catch (_) {
+        _snack('표준 발음 오디오를 재생할 수 없어요.');
+        return;
+      } finally {
+        if (mounted) setState(() => _loadingNative = false);
+      }
+    }
+    if (url == null || !url.startsWith('http')) {
+      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
       return;
     }
     try {
@@ -102,6 +133,15 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
     final sentence = args.current;
     final native = feedback?.native ?? sentence.native;
 
+    // Figma (screen/learning_next 2296:26339): the control cluster sits 24px
+    // above the Body bottom, with a 34px HomeIndicator zone below it. AppScaffold's
+    // SafeArea reserves the OS bottom inset on native (→ 24px is exact), but web
+    // reports none, so the cluster would hug the viewport edge. When there's no OS
+    // inset, also reserve the 34px home-indicator zone (same fix as learning_intro).
+    final rawBottomInset = MediaQuery.viewPaddingOf(context).bottom;
+    final bottomGap =
+        AppSpacing.s24 + (rawBottomInset == 0 ? HomeIndicator.height : 0.0);
+
     return AppScaffold(
       background: AppColors.surface2,
       body: Column(
@@ -121,7 +161,18 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      AppIcons.volume(size: 32, color: AppColors.text),
+                      // Top speaker plays the standard (native) pronunciation —
+                      // same source as the "Native" button below. Best-effort:
+                      // shows a snackbar when the server has no playable URL.
+                      Semantics(
+                        button: true,
+                        label: '표준 발음 듣기',
+                        child: GestureDetector(
+                          onTap: () => _playNative(sentence.id),
+                          behavior: HitTestBehavior.opaque,
+                          child: AppIcons.volume(size: 32, color: AppColors.text),
+                        ),
+                      ),
                       AppIcons.bookmarkLine(size: 32, color: AppColors.text),
                     ],
                   ),
@@ -165,7 +216,7 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                           size: BtnSize.s44,
                           text: 'Native',
                           leftIcon: AppIcons.volume(size: 20),
-                          onPressed: () => _playNative(feedback),
+                          onPressed: () => _playNative(sentence.id),
                         ),
                       ),
                       const SizedBox(width: 13),
@@ -226,7 +277,7 @@ class _LearningNextScreenState extends State<LearningNextScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.s24),
+                SizedBox(height: bottomGap),
               ],
             ),
           ),

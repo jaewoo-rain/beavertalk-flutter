@@ -19,4 +19,12 @@ abstract interface class AuthRepository {
 
   /// Fetches the currently authenticated member (`GET /members/me`).
   Future<Member> getMe();
+
+  /// Deletes the current member's account (`DELETE /members/me`). Throws
+  /// [AppException] on failure. The caller signs out of Supabase afterwards.
+  Future<void> deleteAccount();
+
+  /// Updates the member's UI [language] code (`PATCH /members/me`) and returns
+  /// the updated member. Throws [AppException] on failure.
+  Future<Member> updateLanguage(String language);
 }

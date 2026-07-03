@@ -65,7 +65,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     } else {
       // Shouldn't happen (call_finish always passes an int), but fail safe.
       _phase = _LoadingPhase.error;
-      _errorMsg = '통화 정보를 찾을 수 없어요.';
+      _errorMsg = "We couldn't find the call information.";
     }
   }
 
@@ -95,7 +95,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
 
     // Timeout check.
     if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
-      _fail('분석이 예상보다 오래 걸리고 있어요. 잠시 후 다시 시도해주세요.');
+      _fail('This is taking longer than expected. Please try again in a moment.');
       return;
     }
 
@@ -108,7 +108,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         case CallAnalysisStatus.done:
           await _fetchResultAndGo(callId);
         case CallAnalysisStatus.failed:
-          _fail('대화 분석에 실패했어요. 다시 시도해주세요.');
+          _fail("We couldn't analyze the conversation. Please try again.");
         case CallAnalysisStatus.ongoing:
         case CallAnalysisStatus.analyzing:
         case CallAnalysisStatus.unknown:
@@ -186,13 +186,13 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           ),
           const SizedBox(height: AppSpacing.s32),
           Text(
-            '대화를 분석하고 있어요…',
+            'Analyzing your conversation…',
             style: AppType.heading2.sb.copyWith(color: AppColors.text),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.s12),
           Text(
-            '잠시만 기다려주세요',
+            'This will only take a moment',
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.s28),
@@ -225,7 +225,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           ),
           const SizedBox(height: AppSpacing.s20),
           Text(
-            '분석을 불러오지 못했어요',
+            "Couldn't load the analysis",
             style: AppType.heading2.sb.copyWith(color: AppColors.text),
             textAlign: TextAlign.center,
           ),
@@ -239,14 +239,14 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
-            text: '다시 시도',
+            text: 'Try again',
             onPressed: _callId == null ? _goHome : _start,
           ),
           const SizedBox(height: AppSpacing.s12),
           Button(
             type: BtnType.secondaryFill,
             size: BtnSize.s60,
-            text: '홈으로',
+            text: 'Home',
             onPressed: _goHome,
           ),
         ],

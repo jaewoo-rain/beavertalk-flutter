@@ -71,7 +71,7 @@ class DialogShareProfile extends StatelessWidget {
     required this.title,
     this.stats = const [],
     this.onShare,
-    this.shareLabel = '공유하기',
+    this.shareLabel = 'Share',
   });
 
   /// Image used for the `80×80` avatar circle. Ignored when [avatar] is set.
@@ -226,7 +226,7 @@ Future<T?> showDialogShareProfile<T>(
   required String title,
   List<ProfileStat> stats = const [],
   VoidCallback? onShare,
-  String shareLabel = '공유하기',
+  String shareLabel = 'Share',
 }) {
   return showDialog<T>(
     context: context,

@@ -40,4 +40,23 @@ class AuthRepositoryImpl implements AuthRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<void> deleteAccount() async {
+    try {
+      await _remote.deleteAccount();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<Member> updateLanguage(String language) async {
+    try {
+      final dto = await _remote.updateLanguage(language);
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
 }
