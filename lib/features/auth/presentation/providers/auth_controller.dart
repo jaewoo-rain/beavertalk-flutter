@@ -135,6 +135,9 @@ class AuthController extends Notifier<AuthStatus> {
   /// Confirms a password reset: verifies the emailed 6-digit recovery [code]
   /// then sets [newPassword]. Returns a user-facing confirmation message.
   /// Throws on a wrong/expired code.
+  ///
+  /// TODO: superseded by the two-step [verifyRecoveryCode] + [updatePassword];
+  /// remove once `password_code` migrates to the split flow.
   Future<String> confirmPasswordReset({
     required String email,
     required String code,
@@ -146,6 +149,38 @@ class AuthController extends Notifier<AuthStatus> {
         token: code,
         type: OtpType.recovery,
       );
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
+      return '비밀번호가 재설정되었어요.';
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.reset);
+    }
+  }
+
+  /// Step 1 of the two-step reset: verifies the emailed 6-digit recovery [code]
+  /// (Supabase recovery OTP). On success Supabase establishes a temporary
+  /// recovery session on the client, which [updatePassword] then uses to set
+  /// the new password (no token needs threading between screens). Throws on a
+  /// wrong/expired code.
+  Future<void> verifyRecoveryCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      await _client.auth.verifyOTP(
+        email: email,
+        token: code,
+        type: OtpType.recovery,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.reset);
+    }
+  }
+
+  /// Step 2 of the two-step reset: sets [newPassword] for the user signed in by
+  /// [verifyRecoveryCode]'s recovery session. Returns a user-facing
+  /// confirmation message. Throws if the recovery session is missing/expired.
+  Future<String> updatePassword({required String newPassword}) async {
+    try {
       await _client.auth.updateUser(UserAttributes(password: newPassword));
       return '비밀번호가 재설정되었어요.';
     } on AuthException catch (e) {
