@@ -31,6 +31,14 @@ class NormalcallRemoteDataSource {
     return CallResultDto.fromJson(res.data!);
   }
 
+  /// `GET /calls/{call_id}` — call detail. The `/result` endpoint omits
+  /// `call_date`/`total_time`, so we read them here (the CallDetail body is a
+  /// superset of CallSummary; extra fields like `sentences` are ignored).
+  Future<CallSummaryDto> getCall(int callId) async {
+    final res = await _dio.get<Map<String, dynamic>>('/calls/$callId');
+    return CallSummaryDto.fromJson(res.data!);
+  }
+
   /// `GET /calls?limit=&offset=` — past calls, newest first.
   Future<List<CallSummaryDto>> listCalls({int? limit, int? offset}) async {
     final res = await _dio.get<List<dynamic>>(

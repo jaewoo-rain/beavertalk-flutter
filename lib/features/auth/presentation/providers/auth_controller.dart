@@ -174,6 +174,29 @@ class AuthController extends Notifier<AuthStatus> {
     _popToRoot();
   }
 
+  /// Persists the member's UI [language] (`PATCH /members/me`) and refreshes the
+  /// cached profile so the new value is reflected app-wide. Throws on failure.
+  Future<void> updateLanguage(String language) async {
+    await ref.read(authRepositoryProvider).updateLanguage(language);
+    ref.invalidate(myProfileProvider);
+  }
+
+  /// Deletes the account: asks the backend to delete the member (`DELETE
+  /// /members/me`), then signs out of Supabase and returns to login. Throws
+  /// [AppException] on failure (caller shows it) — sign-out only runs after the
+  /// backend delete succeeds, so a failed delete leaves the user logged in.
+  ///
+  /// NOTE(server): the backend must also delete the Supabase auth user (needs
+  /// the admin/service key) — the client SDK cannot delete its own auth user.
+  /// Without that, the same email can sign back in and be find-or-created again.
+  Future<void> deleteAccount() async {
+    await ref.read(authRepositoryProvider).deleteAccount();
+    await _client.auth.signOut();
+    ref.invalidate(myProfileProvider);
+    state = AuthStatus.unauthenticated;
+    _popToRoot();
+  }
+
   /// Called by the auth interceptor on a 401. Best-effort sign-out, drops the
   /// cached profile, and marks the session expired so AuthGate shows login
   /// (prevents the next user briefly seeing stale member info).

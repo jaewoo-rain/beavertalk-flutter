@@ -5,10 +5,10 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
-import '../../components/molecules/chat_bubble.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../mock/mock_data.dart';
@@ -33,7 +33,7 @@ import 'learning_args.dart';
 ///   shows the sentence's latest practiced score when available.
 ///
 /// The "대화 상세" chat-bubble section has no backing field in [CallResult], so
-/// it is hidden.
+/// it has been removed (previously placeholder bubbles).
 ///
 /// Both review paths push [Routes.learningIntro] with a [LearningArgs]. The
 /// learning flow operates on [MockSentence] for layout, but the real scoring
@@ -48,6 +48,8 @@ class AnalysisScreen extends ConsumerStatefulWidget {
 }
 
 class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
+  final ReviewAudioPlayer _player = ReviewAudioPlayer();
+
   CallResult? _result;
 
   /// Learned sentences adapted to the learning flow's [MockSentence] shape
@@ -116,6 +118,80 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   String _pct(double? value) => value == null ? '-%' : '${value.round()}%';
 
   @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  /// Plays a learned sentence's standard pronunciation when the server provides
+  /// a playable URL ([LearnedSentence.voiceUrl]); otherwise shows a message.
+  Future<void> _playSentence(LearnedSentence sentence) async {
+    final url = sentence.voiceUrl;
+    if (url == null || url.isEmpty || !url.startsWith('http')) {
+      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      return;
+    }
+    try {
+      await _player.playUrl(url);
+    } catch (_) {
+      _snack('표준 발음 오디오를 재생할 수 없어요.');
+    }
+  }
+
+  void _snack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// Call date + duration row from the server result. Returns an empty list when
+  /// neither is available (so nothing — and no gap — renders).
+  List<Widget> _metaSection(CallResult result) {
+    final parts = <String>[
+      if (result.callDate != null) _formatDate(result.callDate!),
+      if (result.totalTime != null) _formatDuration(result.totalTime!),
+    ];
+    if (parts.isEmpty) return const [];
+    return [
+      const SizedBox(height: AppSpacing.s8),
+      Row(
+        children: [
+          for (var i = 0; i < parts.length; i++) ...[
+            if (i > 0) ...[
+              const SizedBox(width: AppSpacing.s4),
+              Container(
+                width: AppSpacing.s4,
+                height: AppSpacing.s4,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s4),
+            ],
+            Text(
+              parts[i],
+              style:
+                  AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+            ),
+          ],
+        ],
+      ),
+    ];
+  }
+
+  /// `M월 D일` (Figma date format).
+  String _formatDate(DateTime d) => '${d.month}월 ${d.day}일';
+
+  /// `N분 N초` from a duration in seconds.
+  String _formatDuration(int totalSeconds) {
+    final m = totalSeconds ~/ 60;
+    final s = totalSeconds % 60;
+    return '$m분 $s초';
+  }
+
+  @override
   Widget build(BuildContext context) {
     final result = _result;
 
@@ -160,31 +236,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             title,
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
-          const SizedBox(height: AppSpacing.s8),
-          // TODO(server): call date + duration are not in CallResult yet —
-          // placeholder values. Wire when the API provides them.
-          Row(
-            children: [
-              Text(
-                '1월 2일',
-                style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
-              ),
-              const SizedBox(width: AppSpacing.s4),
-              Container(
-                width: AppSpacing.s4,
-                height: AppSpacing.s4,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.textSecondary,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.s4),
-              Text(
-                '10분 37초',
-                style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
-              ),
-            ],
-          ),
+          // Call date + duration from the server result (hidden until provided).
+          ..._metaSection(result),
           const SizedBox(height: AppSpacing.s32),
           Center(
             child: PronunciationResult(
@@ -239,6 +292,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                       score: scores[result.sentences[i].sentenceId],
                       onBookmarkTap: () =>
                           toggleBookmark(result.sentences[i].sentenceId),
+                      onSpeak: () => _playSentence(result.sentences[i]),
                       onPractice: () =>
                           _startLearning([_learningSentences[i]]),
                     ),
@@ -246,25 +300,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 ],
               ),
             ),
-
-          // ── section 3: 대화 상세 ────────────────────────────────────
-          // NOTE(shell): CallResult has no conversation transcript field yet —
-          // placeholder bubbles to match Figma `2296:26458`. TODO(server): wire
-          // the real transcript when the API provides it.
-          const SizedBox(height: AppSpacing.s24),
-          Text(
-            '대화 상세',
-            style: AppType.headline1.sb.copyWith(color: AppColors.text),
-          ),
-          const SizedBox(height: AppSpacing.s16),
-          const ChatBubble(sender: ChatSender.ai, text: '오, 정말 괜찮아!'),
-          const SizedBox(height: AppSpacing.s16),
-          const ChatBubble(
-            sender: ChatSender.user,
-            text: '오늘 진짜 추워. 강아지랑 같이 얼음 됐어.',
-          ),
-          const SizedBox(height: AppSpacing.s16),
-          const ChatBubble(sender: ChatSender.ai, text: '오, 정말 괜찮아!'),
         ],
       ),
     );
@@ -279,6 +314,7 @@ class _SentenceCard extends StatelessWidget {
     required this.bookmarked,
     required this.score,
     required this.onBookmarkTap,
+    required this.onSpeak,
     required this.onPractice,
   });
 
@@ -286,6 +322,7 @@ class _SentenceCard extends StatelessWidget {
   final bool bookmarked;
   final PronScore? score;
   final VoidCallback onBookmarkTap;
+  final VoidCallback onSpeak;
   final VoidCallback onPractice;
 
   @override
@@ -301,6 +338,7 @@ class _SentenceCard extends StatelessWidget {
           // so the Figma underline shows on the mock copy.
           highlight: '내 귀를 사로잡았다',
           onBookmarkTap: onBookmarkTap,
+          onSpeakerTap: onSpeak,
           actionText: '연습하기',
           onAction: onPractice,
         ),

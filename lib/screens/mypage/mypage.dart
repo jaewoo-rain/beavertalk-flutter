@@ -7,8 +7,10 @@ import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_line.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
+import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
@@ -31,30 +33,31 @@ class MyPageScreen extends ConsumerStatefulWidget {
 class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   bool _notification = true;
 
-  /// Selected learning-language id (defaults to Korean — the app's target
-  /// language). Updated when the user picks one in the language bottom sheet.
-  String _learningLangId = 'ko';
+  /// User (UI) language id the user has picked locally, or null before any pick
+  /// (then the member's saved language is shown). Only the **user** language is
+  /// selectable — the learning language is fixed to Korean (the app teaches
+  /// Korean), so the two rows are: User Language (editable) / Learning Language
+  /// (fixed).
+  String? _userLangId;
 
-  /// Display name of the currently selected learning language.
-  String get _learningLangName => mockLanguages
-      .firstWhere(
-        (l) => l.id == _learningLangId,
-        orElse: () => mockLanguages.firstWhere((l) => l.id == 'ko'),
-      )
+  /// Display name for a language id (falls back to the first entry).
+  String _langName(String id) => mockLanguages
+      .firstWhere((l) => l.id == id, orElse: () => mockLanguages.first)
       .name;
 
-  /// Opens the language bottom sheet (`BottomSheetCountrySelect`) seeded with the
-  /// current choice; on confirm, stores the picked language id. Selection is
-  /// staged locally until "확인" so cancelling/closing keeps the old value.
-  Future<void> _pickLearningLanguage() async {
-    var staged = _learningLangId;
+  /// Opens the language bottom sheet for the **user (UI) language**, seeded with
+  /// [currentId]; on confirm stores the pick locally and persists it to the
+  /// backend (`PATCH /members/me`). Staged until "확인" so cancelling keeps the
+  /// old value; a failed save is surfaced via a snackbar (local pick stays).
+  Future<void> _pickUserLanguage(String currentId) async {
+    var staged = currentId;
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
-          title: '학습 언어를 선택하세요',
+          title: 'Select your language',
           items: [
             for (final l in mockLanguages)
               CountryItem(code: l.id, name: l.name, flag: l.flag),
@@ -66,8 +69,42 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
         ),
       ),
     );
-    if (picked != null && mounted) {
-      setState(() => _learningLangId = picked);
+    if (picked == null || picked == currentId || !mounted) return;
+    setState(() => _userLangId = picked);
+    try {
+      await ref.read(authControllerProvider.notifier).updateLanguage(picked);
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is AppException ? e.message : '언어 저장에 실패했어요.';
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(msg)));
+    }
+  }
+
+  /// Confirms and performs account deletion. Shows a [DialogBasic] first; on
+  /// confirm calls [AuthController.deleteAccount] (backend delete + sign-out).
+  Future<void> _confirmDeleteAccount() async {
+    final confirmed = await showDialogBasic<bool>(
+      context,
+      title: 'Delete account?',
+      description:
+          'This permanently deletes your account and data and cannot be undone.',
+      variant: DialogBasicVariant.twoHorizontal,
+      primary:
+          DialogAction(label: 'Cancel', onPressed: () => Navigator.of(context).pop(false)),
+      secondary:
+          DialogAction(label: 'Delete', onPressed: () => Navigator.of(context).pop(true)),
+    );
+    if (confirmed != true || !mounted) return;
+    try {
+      await ref.read(authControllerProvider.notifier).deleteAccount();
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is AppException ? e.message : '회원 탈퇴에 실패했어요.';
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 
@@ -76,6 +113,12 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     // Languages come from the real member (GET /members/me); show sensible
     // defaults until it loads.
     final member = ref.watch(myProfileProvider).valueOrNull;
+
+    // Effective user (UI) language id: the local pick, else the member's saved
+    // language when it maps to a known language, else English.
+    final memberLang = member?.language;
+    final userLangId = _userLangId ??
+        (mockLanguages.any((l) => l.id == memberLang) ? memberLang! : 'en');
 
     return AppScaffold(
       background: AppColors.surface,
@@ -98,7 +141,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 onShare: () => Navigator.of(context).maybePop(),
               ),
               icon: AppIcons.share(color: AppColors.text),
-              tooltip: '공유',
+              tooltip: 'Share',
             ),
           ),
           Expanded(
@@ -112,12 +155,14 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 _section('Settings'),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow('User Language', member?.language ?? 'English(US)'),
+                  // User (UI) language — editable.
                   _navRow(
-                    'Learning Language',
-                    _learningLangName,
-                    onTap: _pickLearningLanguage,
+                    'User Language',
+                    _langName(userLangId),
+                    onTap: () => _pickUserLanguage(userLangId),
                   ),
+                  // Learning language — fixed to Korean (the app teaches Korean).
+                  _navRow('Learning Language', 'Korean'),
                   CardLine(
                     type: CardLineType.defaultToggle,
                     label: 'Notification',
@@ -169,10 +214,17 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Center(
-                  child: Text(
-                    'delete account',
-                    style:
-                        AppType.body1.r.copyWith(color: AppColors.textSecondary),
+                  child: InkWell(
+                    onTap: _confirmDeleteAccount,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
+                      child: Text(
+                        'delete account',
+                        style: AppType.body1.r
+                            .copyWith(color: AppColors.textSecondary),
+                      ),
+                    ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s16),

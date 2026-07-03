@@ -78,6 +78,8 @@ class CallResultDto {
     required this.callId,
     this.summary,
     this.rating,
+    this.callDate,
+    this.totalTime,
     required this.average,
     required this.sentences,
   });
@@ -85,6 +87,8 @@ class CallResultDto {
   final int callId;
   final String? summary;
   final int? rating;
+  final String? callDate;
+  final int? totalTime;
   final ScoreAverageDto average;
   final List<LearnedSentenceDto> sentences;
 
@@ -95,6 +99,8 @@ class CallResultDto {
       callId: json['call_id'] as int,
       summary: json['summary'] as String?,
       rating: json['rating'] as int?,
+      callDate: json['call_date'] as String?,
+      totalTime: (json['total_time'] as num?)?.toInt(),
       average: ScoreAverageDto.fromJson(average),
       sentences: sentences
           .map((e) => LearnedSentenceDto.fromJson(e as Map<String, dynamic>))
@@ -106,6 +112,8 @@ class CallResultDto {
         callId: callId,
         summary: summary,
         rating: rating,
+        callDate: DateTime.tryParse(callDate ?? ''),
+        totalTime: totalTime,
         average: average.toEntity(),
         sentences: sentences.map((s) => s.toEntity()).toList(),
       );

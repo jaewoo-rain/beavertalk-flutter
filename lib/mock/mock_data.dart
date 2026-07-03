@@ -63,6 +63,7 @@ class MockSentence {
     required this.fluency,
     required this.rhythm,
     this.bookmarked = false,
+    this.voiceUrl,
   });
 
   final int id;
@@ -74,6 +75,11 @@ class MockSentence {
   final int fluency;
   final int rhythm;
   final bool bookmarked;
+
+  /// Standard (native) pronunciation audio URL for this sentence, when the
+  /// server provides one. Null until the backend exposes per-sentence audio;
+  /// the learning_intro speaker plays it when present, else shows a message.
+  final String? voiceUrl;
 }
 
 /// IDs of sentences the user has bookmarked (즐겨찾기). Mutable in-memory store

@@ -60,10 +60,13 @@ class CallState {
   /// greater than this baseline. Null when the pre-call fetch failed/none.
   final int? baselineCallId;
 
-  /// Latest beaver (assistant) subtitle, updated by `output_transcript`.
+  /// Current beaver (assistant) subtitle line. Built up by accumulating the
+  /// token deltas that arrive as `output_transcript`, and reset each `turn_start`.
   final String beaverSubtitle;
 
-  /// Latest user subtitle, updated by `input_transcript`.
+  /// Current user subtitle line. Built up by accumulating the token deltas that
+  /// arrive as `input_transcript`, and reset each `turn_end` (before the user
+  /// speaks again).
   final String userSubtitle;
 
   /// Human-readable error message when [phase] is [CallPhase.error].
@@ -508,20 +511,41 @@ class NormalCallController extends Notifier<CallState> {
           state = state.copyWith(phase: CallPhase.inCall);
           _startElapsedTimer();
         }
+        // New beaver turn → start a fresh subtitle line. The server streams the
+        // line token-by-token via `output_transcript`, so the line must be
+        // cleared here (not overwritten per token) and then accumulated below.
+        state = state.copyWith(beaverSubtitle: '');
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
-        state = state.copyWith(
-          beaverSubtitle: (msg['text'] as String?) ?? state.beaverSubtitle,
-        );
+        // Incremental token/delta of the current beaver line — ACCUMULATE it
+        // onto the running line instead of replacing, otherwise only the latest
+        // token shows and the sentence appears chopped word-by-word. The line is
+        // reset per turn in `turn_start` above.
+        {
+          final delta = msg['text'] as String?;
+          if (delta != null && delta.isNotEmpty) {
+            state =
+                state.copyWith(beaverSubtitle: state.beaverSubtitle + delta);
+          }
+        }
       case 'input_transcript':
-        state = state.copyWith(
-          userSubtitle: (msg['text'] as String?) ?? state.userSubtitle,
-        );
+        // Same streaming contract for the user's line: accumulate tokens; the
+        // line is reset when the beaver's turn ends (below), i.e. right before
+        // the user starts speaking.
+        {
+          final delta = msg['text'] as String?;
+          if (delta != null && delta.isNotEmpty) {
+            state = state.copyWith(userSubtitle: state.userSubtitle + delta);
+          }
+        }
       case 'turn_end':
         // Beaver turn finished generating. Clear the gate only once the
         // playback queue has also drained (+ hangover); see [_tryUngateMic].
         _turnEnded = true;
+        // The beaver is done and the user is about to speak → start a fresh user
+        // subtitle line so their next utterance accumulates from empty.
+        state = state.copyWith(userSubtitle: '');
         _tryUngateMic();
       case 'call_ended':
         final id = msg['call_id'];

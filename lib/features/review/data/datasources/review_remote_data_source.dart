@@ -34,4 +34,13 @@ class ReviewRemoteDataSource {
     );
     return ReviewFeedbackDto.fromJson(res.data!);
   }
+
+  /// `POST /sentences/{id}/tts` — on-demand standard-pronunciation TTS.
+  /// Returns the playable `voice_url` (public URL), or null when synthesis is
+  /// unavailable. Idempotent server-side (re-uses an existing url).
+  Future<String?> sentenceTtsUrl(int sentenceId) async {
+    final res =
+        await _dio.post<Map<String, dynamic>>('/sentences/$sentenceId/tts');
+    return res.data?['voice_url'] as String?;
+  }
 }

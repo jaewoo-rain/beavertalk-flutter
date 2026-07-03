@@ -35,8 +35,20 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
   @override
   Future<CallResult> getResult(int callId) async {
     try {
-      final dto = await _remote.getResult(callId);
-      return dto.toEntity();
+      final result = await _remote.getResult(callId);
+      final entity = result.toEntity();
+      // The `/result` endpoint omits call_date/total_time; recover them from the
+      // call detail (`GET /calls/{id}`) so the analysis screen shows the real
+      // date/duration. Best-effort: a failure here just leaves them hidden.
+      try {
+        final meta = (await _remote.getCall(callId)).toEntity();
+        return entity.copyWith(
+          callDate: meta.callDate,
+          totalTime: meta.totalTime,
+        );
+      } catch (_) {
+        return entity;
+      }
     } on DioException catch (e) {
       throw mapDioException(e);
     }

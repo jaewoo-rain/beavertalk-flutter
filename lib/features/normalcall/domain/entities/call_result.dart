@@ -60,6 +60,8 @@ class CallResult {
     required this.callId,
     this.summary,
     this.rating,
+    this.callDate,
+    this.totalTime,
     required this.average,
     required this.sentences,
   });
@@ -73,11 +75,29 @@ class CallResult {
   /// Optional 1–5 rating; null when not yet rated.
   final int? rating;
 
+  /// When the call took place, or null when the server doesn't provide it.
+  final DateTime? callDate;
+
+  /// Call duration in seconds, or null when the server doesn't provide it.
+  final int? totalTime;
+
   /// Average pronunciation scores (may be placeholder zeros/nulls).
   final ScoreAverage average;
 
   /// Sentences learned/spoken during the call.
   final List<LearnedSentence> sentences;
+
+  /// Returns a copy with [callDate]/[totalTime] overridden — used to graft the
+  /// date/duration (which the `/result` endpoint omits) from the call detail.
+  CallResult copyWith({DateTime? callDate, int? totalTime}) => CallResult(
+        callId: callId,
+        summary: summary,
+        rating: rating,
+        callDate: callDate ?? this.callDate,
+        totalTime: totalTime ?? this.totalTime,
+        average: average,
+        sentences: sentences,
+      );
 }
 
 /// A character as it appears in a call list summary (lightweight brief).
