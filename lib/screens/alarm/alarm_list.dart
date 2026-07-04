@@ -130,7 +130,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
       itemCount: alarms.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 16),
+      separatorBuilder: (_, _) => const SizedBox(height: 20),
       itemBuilder: (context, i) {
         final a = alarms[i];
         final view = AlarmData.fromEntity(a);

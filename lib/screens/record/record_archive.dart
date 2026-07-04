@@ -66,9 +66,9 @@ class RecordArchiveScreen extends StatelessWidget {
                     Text('저장한 문장',
                         style: AppType.body1.sb
                             .copyWith(color: AppColors.textSecondary)),
-                    const SizedBox(height: AppSpacing.s12),
+                    const SizedBox(height: AppSpacing.s8),
                     for (var i = 0; i < saved.length; i++) ...[
-                      if (i > 0) const SizedBox(height: AppSpacing.s16),
+                      if (i > 0) const SizedBox(height: AppSpacing.s12),
                       CardBookmark(
                         korean: saved[i].korean,
                         native: saved[i].native,
