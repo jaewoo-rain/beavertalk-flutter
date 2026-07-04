@@ -78,13 +78,9 @@ class CardBookmark extends StatelessWidget {
             native,
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),
-          const SizedBox(height: 8),
-          const Divider(
-            height: 1,
-            thickness: 1,
-            color: AppColors.borderSubtle,
-          ),
-          const SizedBox(height: 8),
+          // Figma Card-Bookmark: single gap-md (16) between the text block and
+          // the footer row — no divider (Figma 2296/2224 both have none).
+          const SizedBox(height: 16),
           Row(
             children: [
               _glyph(AppIcons.volume, onSpeakerTap),
