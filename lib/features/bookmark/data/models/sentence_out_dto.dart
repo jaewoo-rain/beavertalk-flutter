@@ -1,3 +1,5 @@
+import '../../domain/entities/bookmark_sentence.dart';
+
 /// Wire model for the server `SentenceOut` schema — the **archive-minimal
 /// subset** the 보관(bookmark) screen actually consumes.
 ///
@@ -42,4 +44,13 @@ class SentenceOutDto {
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
     );
   }
+
+  /// Converts to the domain [BookmarkSentence] entity (drops the wire naming).
+  BookmarkSentence toEntity() => BookmarkSentence(
+        sentenceId: sentenceId,
+        korean: koreanSentence,
+        native: nativeSentence,
+        voiceUrl: voiceUrl,
+        isBookmarked: isBookmarked,
+      );
 }
