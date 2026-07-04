@@ -63,7 +63,7 @@ class RecordArchiveScreen extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(
                       AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
                   children: [
-                    Text('저장한 문장',
+                    Text('My Saved Expressions',
                         style: AppType.body1.sb
                             .copyWith(color: AppColors.textSecondary)),
                     const SizedBox(height: AppSpacing.s8),
