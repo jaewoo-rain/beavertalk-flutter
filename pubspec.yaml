@@ -63,8 +63,11 @@ dependencies:
 
   # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
   web_socket_channel: ^3.0.1
-  # normalcall — 마이크 PCM16k 스트림 녹음 + 서버 PCM24k 스트림 재생(한 플러그인).
+  # normalcall — 마이크 PCM16k 스트림 녹음(FlutterSoundRecorder만 사용).
   flutter_sound: ^9.2.13
+  # normalcall — 서버 PCM24k gapless 재생(콜백-풀, 네이티브 레이트). 재생 언더플로우
+  # 고착(1분 후 끊김) 방지용으로 flutter_sound player를 대체. web 미지원(런타임 가드).
+  flutter_pcm_sound: ^3.1.4
   # normalcall — 마이크 권한 요청.
   permission_handler: ^11.3.1
   flutter_markdown: ^0.7.7+1

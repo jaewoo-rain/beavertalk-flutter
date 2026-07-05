@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, kIsWeb;
+import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -95,7 +97,10 @@ class CallState {
 }
 
 /// App-scoped singleton owning the live normalcall pipeline: a single WebSocket,
-/// the mic recorder (PCM 16k → server), and the player (PCM 24k ← server).
+/// the mic recorder (FlutterSoundRecorder, PCM 16k → server), and gapless native
+/// playback (flutter_pcm_sound, callback-pull PCM 24k ← server). Device-only:
+/// playback isn't available on web, where [start] fails cleanly (see the
+/// `kIsWeb` guard).
 ///
 /// Design guarantees (see plan §8):
 /// - **No double socket (§8-1):** [start] is guarded against re-entry and against
@@ -114,37 +119,79 @@ class NormalCallController extends Notifier<CallState> {
   StreamSubscription<dynamic>? _wsSub;
 
   FlutterSoundRecorder? _recorder;
-  FlutterSoundPlayer? _player;
   StreamController<Uint8List>? _micController;
   StreamSubscription<Uint8List>? _micSub;
 
-  /// FIFO queue of inbound PCM24k chunks awaiting playback. A single consumer
-  /// ([_playbackLoop]) drains it, awaiting each feed for backpressure.
-  StreamController<Uint8List>? _playbackController;
-  StreamSubscription<void>? _playbackSub;
+  // ── Gapless PCM playback (flutter_pcm_sound, callback-pull @ native 24kHz) ──
+  // A byte queue holds inbound server PCM16; the plugin's feed callback pulls
+  // from it. When the queue is empty we feed a short silence so the engine is
+  // never starved into a stuck underflow churn — the root cause of the ~1-min
+  // audio cutout with the old flutter_sound stream player.
 
-  /// Number of chunks queued but not yet accepted by the player. The closing
-  /// drain waits for this to reach 0 *and* the player to underflow before
-  /// sending `playback_done`.
-  int _pendingChunks = 0;
+  /// Inbound PCM16 byte queue (little-endian samples). Consumed from [_pcmHead]
+  /// forward; an odd trailing byte simply stays until the next chunk completes
+  /// its Int16 sample, so samples never split across chunks.
+  List<int> _pcmQueue = <int>[];
 
-  /// A dangling odd byte from the previous chunk's PCM16 parse, carried over to
-  /// prepend to the next chunk so a 16-bit sample never splits across chunks.
-  /// Reset on start/teardown so a new call never inherits a stray byte.
-  int? _carryByte;
+  /// Read offset into [_pcmQueue]. Bytes before it are already fed; the list is
+  /// compacted (see [_maybeCompact]) once the offset grows large.
+  int _pcmHead = 0;
+
+  /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
+  bool _pcmSetup = false;
+
+  /// True while playback is live; gates the feed callback and enqueue so no
+  /// audio work runs before setup or after teardown.
+  bool _pcmActive = false;
+
+  // Playback tuning (frames = samples; PCM16 mono → 2 bytes/frame @ 24kHz).
+  static const int _playbackSampleRate = 24000;
+  static const int _playbackChannels = 1;
+
+  /// Feed callback fires when buffered frames fall below this (~100ms).
+  static const int _feedThresholdFrames = 2400;
+
+  /// Bytes fed per callback when audio is available (~200ms of 24kHz PCM16).
+  static const int _feedChunkBytes = 9600;
+
+  /// Silence frames fed when the queue is empty (~50ms keep-alive).
+  static const int _silenceFrames = 1200;
+
+  /// Resync cap: if the queue exceeds this (~3s), drop oldest bytes down to
+  /// [_targetQueueBytes] so burst/drift latency can't accumulate and stall.
+  static const int _maxQueueBytes = _playbackSampleRate * 2 * 3;
+
+  /// Resync target after a drop (~1s of buffered audio).
+  static const int _targetQueueBytes = _playbackSampleRate * 2 * 1;
+
+  /// Bytes currently queued (unfed).
+  int get _queueLen => _pcmQueue.length - _pcmHead;
+
+  /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
+  /// only audio↔silence transitions instead of spamming every feed callback.
+  bool? _lastFeedSilent;
+
+  /// Dev-only pipeline log (compiled out of release builds via [kDebugMode]).
+  void _log(String msg) {
+    if (kDebugMode) debugPrint('[call] $msg');
+  }
 
   Timer? _elapsedTimer;
 
   /// Re-entry guard for [start] (§8-1).
   bool _starting = false;
 
-  /// Pending audio chunks awaiting the player's underflow signal, used to drain
-  /// the beaver's closing line before sending `playback_done` (§8-4).
+  /// Set after `call_ended` while draining the beaver's closing line before
+  /// sending `playback_done` (§8-4).
   bool _drainScheduled = false;
 
-  /// Set when the player's underflow has fired while a close is pending. The
-  /// close only completes once this is true *and* the queue is empty.
-  bool _underflowSeen = false;
+  /// Stability timer for the closing drain: the queue must stay empty for a
+  /// short window (no new audio) before the close completes, so the closing
+  /// line isn't cut off. Reset whenever fresh audio arrives.
+  Timer? _closingStableTimer;
+
+  /// Quiet window the queue must hold (empty) before the closing drain acks.
+  static const Duration _closingStableDelay = Duration(milliseconds: 300);
 
   // ── Half-duplex mic gating (echo-loop prevention) ──────────────────────────
   // On speakerphone the AI's voice bleeds into the mic, gets sent back, is
@@ -216,28 +263,36 @@ class NormalCallController extends Notifier<CallState> {
         return;
       }
 
-      // Open audio devices before networking so playback is ready for the
-      // opening line.
-      _player = FlutterSoundPlayer();
-      await _player!.openPlayer();
-      await _player!.startPlayerFromStream(
-        codec: Codec.pcm16,
-        interleaved: true,
-        numChannels: 1,
-        // Device AudioTrack runs natively at 48kHz. The server sends PCM16 mono
-        // @ 24kHz, but flutter_sound's internal resampling is unreliable and
-        // played 24k data at the native 48k rate → 2x-fast (chipmunk). So we
-        // run the player at the native 48kHz and upsample each incoming chunk
-        // 24k→48k ourselves (see [_upsample24to48]); the data rate then matches
-        // the playback rate and no implicit resample happens.
-        sampleRate: 48000,
-        // Larger buffer gives the AudioTrack more headroom; the awaited
-        // single-consumer feed loop below (backpressure) is the corruption fix.
-        bufferSize: 16384,
-        onBufferUnderflow: _onPlayerUnderflow,
+      // Playback is device-only (flutter_pcm_sound has no web support). Guard so
+      // entering a call on web fails cleanly instead of crashing on a missing
+      // platform channel. Mic/WS aren't opened either — the call is a no-op here.
+      if (kIsWeb) {
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: '웹에서는 음성 통화를 지원하지 않습니다. 앱에서 이용해 주세요.',
+        );
+        return;
+      }
+
+      // Open native gapless PCM playback at the server's 24kHz (no upsampling).
+      // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
+      // underflow-churn stall that cut audio out after ~1 minute.
+      _pcmQueue = <int>[];
+      _pcmHead = 0;
+      _pcmActive = false;
+      await FlutterPcmSound.setLogLevel(LogLevel.error);
+      await FlutterPcmSound.setup(
+        sampleRate: _playbackSampleRate,
+        channelCount: _playbackChannels,
       );
-      // Start the single-consumer playback loop that applies backpressure.
-      _startPlaybackLoop();
+      _pcmSetup = true;
+      await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
+      FlutterPcmSound.setFeedCallback(_onFeed);
+      _pcmActive = true;
+      // Kicks the first feed callback (queue empty → silence) to start the loop.
+      FlutterPcmSound.start();
+      _lastFeedSilent = null;
+      _log('playback started @ ${_playbackSampleRate}Hz (gapless PCM)');
 
       // Capture the baseline max call_id *before* the socket creates this call's
       // row, so a manual hang-up (which gets no `call_ended`) can recover the new
@@ -339,56 +394,90 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
-  /// Enqueues a PCM24k chunk for playback. The actual `feedUint8FromStream` is
-  /// done by the single-consumer [_playbackLoop], which awaits each feed so we
-  /// never overfeed the AudioTrack (the cause of "control block is corrupt").
+  /// Enqueues an inbound PCM24k chunk onto [_pcmQueue]. The plugin's feed
+  /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
+  /// closing-drain stability window, and cap the queue (resync).
   void _feedPlayer(Uint8List chunk) {
-    final controller = _playbackController;
-    if (controller == null || controller.isClosed) return;
+    if (!_pcmActive) return;
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
     // before/without a turn_start), and (re)arm the missed-turn_end safety.
     _gateMic();
     _armGateSafety();
-    _pendingChunks++;
-    controller.add(chunk);
-  }
+    // Fresh audio during a pending close resets the quiet window so the closing
+    // line isn't acked early.
+    _closingStableTimer?.cancel();
+    _closingStableTimer = null;
 
-  /// Opens the playback queue and wires its single consumer ([_playbackLoop]).
-  /// FIFO ordering is guaranteed by the single subscription.
-  void _startPlaybackLoop() {
-    final controller = StreamController<Uint8List>();
-    _playbackController = controller;
-    _pendingChunks = 0;
-    _underflowSeen = false;
-    _carryByte = null;
-    // `asyncMap` processes one event at a time and waits for the returned
-    // Future before pulling the next — exactly the backpressure we want.
-    _playbackSub = controller.stream.asyncMap(_playChunk).listen(
-      (_) {},
-      cancelOnError: false,
-    );
-  }
+    _pcmQueue.addAll(chunk);
 
-  /// Feeds one chunk to the player and awaits acceptance (backpressure).
-  /// Upsamples 24kHz→48kHz first so the data rate matches the native player
-  /// rate. Decrements the pending counter; when the queue empties during a
-  /// pending close, completes the drain.
-  Future<void> _playChunk(Uint8List chunk) async {
-    final player = _player;
-    if (player != null) {
-      try {
-        final upsampled = _upsample24to48(chunk);
-        if (upsampled.isNotEmpty) {
-          await player.feedUint8FromStream(upsampled);
-        }
-      } catch (_) {
-        // Player closing/closed mid-feed → drop the chunk.
-      }
+    // Resync: if the queue outgrows the cap (server bursts ahead / clock drift),
+    // drop the oldest bytes down to the target so latency can't pile up and
+    // stall — the callback-pull analogue of the demo's `playT = now`.
+    final len = _queueLen;
+    if (len > _maxQueueBytes) {
+      var drop = len - _targetQueueBytes;
+      if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
+      _pcmHead += drop;
+      _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
+      _maybeCompact();
     }
-    if (_pendingChunks > 0) _pendingChunks--;
-    // Queue drained → maybe the beaver finished talking; try to re-open the mic.
-    if (_pendingChunks == 0) _tryUngateMic();
-    _maybeFinishClosing();
+  }
+
+  /// flutter_pcm_sound feed callback: invoked when buffered frames fall below
+  /// the threshold (or hit zero). Pulls up to [_feedChunkBytes] of real audio
+  /// from [_pcmQueue]; when empty, feeds a short silence so the engine never
+  /// starves into a stuck underflow (the fix for the ~1-min cutout).
+  Future<void> _onFeed(int remainingFrames) async {
+    if (!_pcmActive) return;
+    final avail = _queueLen;
+    final whole = avail - (avail & 1); // even bytes = whole Int16 samples
+    try {
+      if (whole >= 2) {
+        if (_lastFeedSilent != false) {
+          _log('feed AUDIO (queue ${avail}B)');
+          _lastFeedSilent = false;
+        }
+        final take = whole < _feedChunkBytes ? whole : _feedChunkBytes;
+        await FlutterPcmSound.feed(_takeArray(take));
+      } else {
+        if (_lastFeedSilent != true) {
+          _log('feed silence — queue empty'
+              '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
+          _lastFeedSilent = true;
+        }
+        await FlutterPcmSound.feed(
+          PcmArrayInt16.zeros(count: _silenceFrames),
+        );
+      }
+    } catch (_) {
+      // Engine released mid-feed (teardown) → ignore.
+    }
+    // Real audio drained → maybe re-open the mic / finish the closing drain.
+    if (_queueLen < 2) {
+      _tryUngateMic();
+      _maybeFinishClosing();
+    }
+  }
+
+  /// Removes [byteCount] bytes from the front of [_pcmQueue] as a
+  /// [PcmArrayInt16]. The server's little-endian PCM16 passes straight through:
+  /// mobile targets are little-endian (host), which is what the native player
+  /// expects.
+  PcmArrayInt16 _takeArray(int byteCount) {
+    final out = Uint8List(byteCount);
+    out.setRange(0, byteCount, _pcmQueue, _pcmHead);
+    _pcmHead += byteCount;
+    _maybeCompact();
+    return PcmArrayInt16(bytes: out.buffer.asByteData());
+  }
+
+  /// Compacts [_pcmQueue] once the consumed prefix grows large, so the backing
+  /// list doesn't grow unbounded across a long call.
+  void _maybeCompact() {
+    if (_pcmHead > 65536 && _pcmHead * 2 > _pcmQueue.length) {
+      _pcmQueue = _pcmQueue.sublist(_pcmHead);
+      _pcmHead = 0;
+    }
   }
 
   // ── Half-duplex mic gating helpers ─────────────────────────────────────────
@@ -408,7 +497,7 @@ class NormalCallController extends Notifier<CallState> {
   void _tryUngateMic() {
     if (!_beaverSpeaking) return;
     if (!_turnEnded) return;
-    if (_pendingChunks > 0) return;
+    if (_queueLen >= 2) return;
     // Start (or restart) the hangover; if a new turn_start/audio arrives first,
     // [_gateMic] cancels this timer and keeps the gate closed.
     _micGateTimer?.cancel();
@@ -427,71 +516,12 @@ class NormalCallController extends Notifier<CallState> {
     _gateSafetyTimer?.cancel();
     _gateSafetyTimer = Timer(_gateSafetyWindow, () {
       _gateSafetyTimer = null;
-      if (_beaverSpeaking && _pendingChunks == 0) {
+      if (_beaverSpeaking && _queueLen < 2) {
         _micGateTimer?.cancel();
         _micGateTimer = null;
         _beaverSpeaking = false;
       }
     });
-  }
-
-  /// Upsamples a PCM16 mono chunk from 24kHz to 48kHz (2x) with linear
-  /// interpolation, returning little-endian Int16 bytes ready to feed.
-  ///
-  /// Byte math:
-  /// - Prepend any [_carryByte] left over from the previous chunk, then parse
-  ///   the bytes as little-endian Int16 samples. If the resulting length is odd,
-  ///   the final byte can't form a full sample → stash it in [_carryByte] for
-  ///   the next chunk (samples never split across chunks).
-  /// - For N input samples, emit 2N output samples: out[2i] = s[i];
-  ///   out[2i+1] = (s[i] + s[i+1]) / 2, and the very last odd slot duplicates
-  ///   the last sample (no successor to interpolate toward).
-  /// - The (s[i]+s[i+1]) average of two int16s stays within int16 range, so no
-  ///   clamping is needed; [Int16List] truncates the value to 16-bit anyway.
-  Uint8List _upsample24to48(Uint8List chunk) {
-    // Stitch the carried byte (if any) onto the front of this chunk.
-    final Uint8List bytes;
-    final carry = _carryByte;
-    if (carry != null) {
-      bytes = Uint8List(chunk.length + 1)
-        ..[0] = carry
-        ..setRange(1, chunk.length + 1, chunk);
-      _carryByte = null;
-    } else {
-      bytes = chunk;
-    }
-
-    // Carry a dangling odd byte forward so 16-bit samples stay intact.
-    var usableLen = bytes.length;
-    if (usableLen.isOdd) {
-      _carryByte = bytes[usableLen - 1];
-      usableLen -= 1;
-    }
-    final sampleCount = usableLen ~/ 2;
-    if (sampleCount == 0) return Uint8List(0);
-
-    final inView = ByteData.sublistView(bytes, 0, usableLen);
-    final input = Int16List(sampleCount);
-    for (var i = 0; i < sampleCount; i++) {
-      input[i] = inView.getInt16(i * 2, Endian.little);
-    }
-
-    // 2x output: original + interpolated sample for each input sample.
-    final output = Int16List(sampleCount * 2);
-    for (var i = 0; i < sampleCount; i++) {
-      final cur = input[i];
-      output[2 * i] = cur;
-      final next = (i + 1 < sampleCount) ? input[i + 1] : cur;
-      output[2 * i + 1] = (cur + next) ~/ 2;
-    }
-
-    // Re-serialize little-endian Int16.
-    final out = Uint8List(output.length * 2);
-    final outView = ByteData.sublistView(out);
-    for (var i = 0; i < output.length; i++) {
-      outView.setInt16(i * 2, output[i], Endian.little);
-    }
-    return out;
   }
 
   /// Parses and dispatches a control JSON frame from the server.
@@ -553,6 +583,7 @@ class NormalCallController extends Notifier<CallState> {
           phase: CallPhase.ending,
           callId: id?.toString(),
         );
+        _log('call_ended id=$id → draining closing line');
         _scheduleClosingDrain();
       case 'error':
         state = state.copyWith(
@@ -567,37 +598,36 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
-  /// After `call_ended`, waits for the player to drain the beaver's closing line
-  /// before acknowledging and closing (§8-4). The drain completes only once the
-  /// queue is empty (`_pendingChunks == 0`) *and* the player has underflowed.
-  /// A fallback timer guards against the underflow never firing.
+  /// After `call_ended`, waits for the queue to drain the beaver's closing line
+  /// before acknowledging and closing (§8-4). The drain completes once the queue
+  /// is empty *and* has stayed empty for [_closingStableDelay] (no new audio).
+  /// A fallback timer guards against the queue never settling.
   void _scheduleClosingDrain() {
     if (_drainScheduled) return;
     _drainScheduled = true;
-    // The queue may already be empty by now; re-check.
+    // The queue may already be empty by now; start the stability check.
     _maybeFinishClosing();
-    // Fallback: if underflow never fires (e.g. no trailing audio), finish after
-    // a short delay so the call still closes regardless.
+    // Fallback: finish after a short delay regardless (e.g. no trailing audio).
     Timer(const Duration(seconds: 3), _forceFinishClosing);
   }
 
-  /// Player underflow callback — the AudioTrack ran out of queued audio.
-  void _onPlayerUnderflow() {
-    _underflowSeen = true;
-    _maybeFinishClosing();
-  }
-
-  /// Completes the close iff a close is pending, the queue has been fully fed,
-  /// and the player has underflowed (so the trailing audio actually played).
+  /// While a close is pending, completes it once the queue has been empty for a
+  /// short quiet window. Fresh audio (in [_feedPlayer]) cancels the timer, so a
+  /// still-arriving closing line is never cut off.
   void _maybeFinishClosing() {
     if (!_drainScheduled) return;
-    if (_pendingChunks > 0) return;
-    if (!_underflowSeen) return;
-    unawaited(_finishClosing());
+    if (_queueLen >= 2) return; // still real audio queued
+    if (_closingStableTimer != null) return; // already waiting out the tail
+    _closingStableTimer = Timer(_closingStableDelay, () {
+      _closingStableTimer = null;
+      if (!_drainScheduled) return;
+      if (_queueLen >= 2) return; // audio came back; a later drain retries
+      _forceFinishClosing();
+    });
   }
 
-  /// Fallback path: closes even if underflow never fired (e.g. no trailing
-  /// audio or a stuck signal), but only after waiting out the fallback timer.
+  /// Fallback path: closes even if the queue never settles cleanly, but only
+  /// after waiting out the fallback timer.
   void _forceFinishClosing() {
     if (!_drainScheduled) return;
     unawaited(_finishClosing());
@@ -607,6 +637,9 @@ class NormalCallController extends Notifier<CallState> {
   Future<void> _finishClosing() async {
     if (!_drainScheduled) return;
     _drainScheduled = false;
+    _closingStableTimer?.cancel();
+    _closingStableTimer = null;
+    _log('playback drained → playback_done, closing');
     _send({'type': 'playback_done'});
     final preservedCallId = state.callId;
     final preservedElapsed = state.elapsedSec;
@@ -668,7 +701,8 @@ class NormalCallController extends Notifier<CallState> {
     _elapsedTimer?.cancel();
     _elapsedTimer = null;
     _drainScheduled = false;
-    _underflowSeen = false;
+    _closingStableTimer?.cancel();
+    _closingStableTimer = null;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
@@ -691,23 +725,21 @@ class NormalCallController extends Notifier<CallState> {
     await _micController?.close();
     _micController = null;
 
-    // Stop the playback queue/consumer BEFORE closing the player so no feed
-    // runs against a closed player.
-    await _playbackSub?.cancel();
-    _playbackSub = null;
-    await _playbackController?.close();
-    _playbackController = null;
-    _pendingChunks = 0;
-    _carryByte = null;
-
-    // Stop playback.
-    try {
-      await _player?.stopPlayer();
-    } catch (_) {}
-    try {
-      await _player?.closePlayer();
-    } catch (_) {}
-    _player = null;
+    // Stop native PCM playback: disable the feed callback first so no feed runs
+    // against a released engine, then release and clear the queue.
+    _pcmActive = false;
+    if (!kIsWeb && _pcmSetup) {
+      try {
+        FlutterPcmSound.setFeedCallback(null);
+      } catch (_) {}
+      try {
+        await FlutterPcmSound.release();
+      } catch (_) {}
+    }
+    _pcmSetup = false;
+    _pcmQueue = <int>[];
+    _pcmHead = 0;
+    _lastFeedSilent = null;
 
     // Close the socket.
     await _wsSub?.cancel();
