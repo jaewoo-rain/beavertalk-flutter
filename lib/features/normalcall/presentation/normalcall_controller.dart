@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, kIsWeb;
+import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
@@ -280,6 +281,11 @@ class NormalCallController extends Notifier<CallState> {
         return;
       }
 
+      // 잠금화면에서 예약전화를 받으면 accept 직후엔 아직 잠금 해제/화면 전환 전이라,
+      // 마이크·오디오가 제대로 잡히지 않는다. 앱이 실제로 포그라운드(통화 화면)로 올라온
+      // 뒤에 오디오 파이프라인을 시작한다. 일반 경로(홈→전화하기)는 이미 resumed라 즉시 통과.
+      await _awaitForeground();
+
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
       // underflow-churn stall that cut audio out after ~1 minute.
@@ -381,17 +387,64 @@ class NormalCallController extends Notifier<CallState> {
       }
     });
 
-    final recorder = FlutterSoundRecorder();
-    _recorder = recorder;
-    await recorder.openRecorder();
-    await recorder.startRecorder(
-      toStream: controller.sink,
-      codec: Codec.pcm16,
-      sampleRate: 16000,
-      numChannels: 1,
-      enableVoiceProcessing: true,
-      enableEchoCancellation: true,
-    );
+    // 마이크 열기 재시도: 잠금화면 accept 직후엔 (아직 잠금 해제/포그라운드 전환 중이거나)
+    // 직전 CallKit 통화가 잡았던 오디오 세션(Android MODE_IN_COMMUNICATION·오디오 포커스)이
+    // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
+    // ("AudioFlinger could not create record track, status: -1"). 잠깐 뒤 다시 열면 되는
+    // 일시 실패라, 짧은 백오프로 재시도한다.
+    Object? lastError;
+    for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
+      final recorder = FlutterSoundRecorder();
+      _recorder = recorder;
+      try {
+        await recorder.openRecorder();
+        await recorder.startRecorder(
+          toStream: controller.sink,
+          codec: Codec.pcm16,
+          sampleRate: 16000,
+          numChannels: 1,
+          enableVoiceProcessing: true,
+          enableEchoCancellation: true,
+        );
+        if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
+        return; // 성공
+      } catch (e) {
+        lastError = e;
+        _log('mic open failed ($attempt/$_micOpenMaxAttempts): $e');
+        try {
+          await recorder.closeRecorder();
+        } catch (_) {}
+        _recorder = null;
+        if (attempt < _micOpenMaxAttempts) {
+          await Future<void>.delayed(_micOpenRetryDelay);
+        }
+      }
+    }
+    throw Exception('마이크를 열 수 없습니다(재시도 $_micOpenMaxAttempts회 실패): $lastError');
+  }
+
+  /// 마이크 열기 최대 재시도 횟수(오디오 세션 해제 지연/포그라운드 전환 흡수).
+  static const int _micOpenMaxAttempts = 6;
+
+  /// 마이크 열기 재시도 간격.
+  static const Duration _micOpenRetryDelay = Duration(milliseconds: 400);
+
+  /// 앱이 실제로 포그라운드(resumed) 될 때까지 대기한다(최대 [timeout]).
+  ///
+  /// 잠금화면에서 예약전화를 받으면 accept 직후엔 아직 잠금 해제/화면 전환 전이라,
+  /// 안드로이드가 마이크 접근을 막고 오디오도 제대로 안 난다. 앱이 켜져 통화 화면으로
+  /// 들어온 뒤(resumed)에 오디오를 시작해야 한다. 일반(홈→전화하기) 경로는 이미
+  /// resumed라 즉시 통과한다. 타임아웃되면 그냥 진행한다(마이크 재시도가 흡수).
+  Future<void> _awaitForeground({
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    const interval = Duration(milliseconds: 200);
+    final deadline = DateTime.now().add(timeout);
+    while (
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      if (!DateTime.now().isBefore(deadline)) return;
+      await Future<void>.delayed(interval);
+    }
   }
 
   /// WebSocket data handler. Splits text (control JSON) from binary (PCM) (§8-7).
