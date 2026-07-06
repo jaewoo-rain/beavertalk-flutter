@@ -88,11 +88,16 @@ class CallkitService {
 
   /// 현재 활성(표시/수락) 콜 목록을 반환한다. 콜드스타트에서 "이미 받은 콜"을
   /// 판별하는 데 쓴다. 실패 시 빈 리스트.
-  Future<List<dynamic>> activeCalls() async {
+  ///
+  /// 플러그인(`flutter_callkit_incoming` 3.1.3)의 실제 반환 타입은
+  /// **`List<CallKitParams>`**(객체)다. 각 원소의 [CallKitParams.isAccepted]로
+  /// "이미 수락된 콜"인지 판별한다(과거엔 `List<dynamic>`으로 느슨히 선언해
+  /// 코디네이터에서 `is! Map` 오판정으로 폴백이 죽어 있었다 → 타입을 좁혀 재발 방지).
+  Future<List<CallKitParams>> activeCalls() async {
     try {
       return await FlutterCallkitIncoming.activeCalls();
     } catch (_) {
-      return const <dynamic>[];
+      return const <CallKitParams>[];
     }
   }
 

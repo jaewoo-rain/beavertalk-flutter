@@ -55,3 +55,4 @@ docs
 # FCM 테스트용 서비스 계정 키 (절대 커밋 금지)
 tools/service-account.json
 service-account.json
+google-services.json
