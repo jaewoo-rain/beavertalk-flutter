@@ -1,8 +1,11 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/config/feature_flags.dart';
+import '../features/incoming_call/data/models/incoming_call_payload_dto.dart';
 import '../features/incoming_call/presentation/incoming_call_providers.dart';
+import 'fcm_background_handler.dart';
 
 /// 인바운드 콜(비버가 거는 전화)의 **로컬 단계** 초기화 진입점.
 ///
@@ -26,10 +29,62 @@ Future<void> initIncomingCallLocal(ProviderContainer container) async {
     await container.read(incomingCallCoordinatorProvider).attach();
     // 저장된 알람 시각에 로컬로 전화를 띄우는 스케줄러 시작(앱 생존 중에만 동작).
     await container.read(inboundCallSchedulerProvider).start();
+
+    // ── 여기부터 FCM(밖에서 앱을 깨우는 트리거) 배선 ──
+    // 위 로컬 트리거들과 동일한 CallKit 수신 화면을 재사용한다. Firebase.initializeApp은
+    // main.dart(포그라운드 경로)와 background handler(별도 isolate)에서 각각 이미 호출된다.
+    await _initFcm(container);
   } catch (e, s) {
     // 실패해도 앱은 정상 부팅되어야 한다(로컬 트리거는 부가 기능).
     if (kDebugMode) {
       debugPrint('[push_bootstrap] 인바운드 콜 로컬 초기화 실패(무시): $e\n$s');
     }
+  }
+}
+
+/// FCM(밖에서 앱을 깨우는 푸시 트리거) 배선. [initIncomingCallLocal] 안에서만
+/// 호출되므로 이미 `kInboundCallEnabled && !kIsWeb` 가드를 통과한 상태다.
+///
+/// 하는 일:
+/// 1. 백그라운드/종료 상태 핸들러 등록(top-level [firebaseMessagingBackgroundHandler]),
+/// 2. 알림 권한 요청,
+/// 3. 포그라운드 메시지 구독 → FCM `data`를 CallKit 수신 화면으로,
+/// 4. 토큰 조회/갱신을 **디버그 로그로만** 출력(지금은 서버 등록 대신 확인용).
+///
+/// 개별 실패가 앱 부팅/다른 트리거를 막지 않도록 자체 try/catch로 한 번 더 감싼다.
+Future<void> _initFcm(ProviderContainer container) async {
+  try {
+    final fcm = container.read(fcmServiceProvider);
+    final callkit = container.read(callkitServiceProvider);
+
+    // 앱이 백그라운드/종료 상태일 때 도착하는 메시지는 별도 isolate의 top-level
+    // 핸들러가 처리한다(등록은 반드시 앱 시작 시 1회).
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+    // 알림 권한(Android 13+/iOS). 거부돼도 앱은 계속 동작.
+    await fcm.requestPermission();
+
+    // 포그라운드 메시지 → 로컬/백그라운드와 동일한 CallKit 수신 화면 표시.
+    fcm.onForegroundMessage.listen((m) {
+      try {
+        final payload = IncomingCallPayloadDto.fromMap(m.data);
+        // fire-and-forget: 표시 실패가 스트림 구독을 끊지 않게 개별 catch.
+        callkit.showIncoming(payload).catchError((Object e) {
+          if (kDebugMode) debugPrint('[fcm] 포그라운드 수신 화면 표시 실패: $e');
+        });
+      } catch (e) {
+        if (kDebugMode) debugPrint('[fcm] 포그라운드 메시지 파싱 실패: $e');
+      }
+    });
+
+    // 토큰 확인: 지금은 서버 /devices 등록 대신 디버그 로그로만 확인한다.
+    final token = await fcm.getToken();
+    if (kDebugMode) debugPrint('[fcm] token=$token');
+    fcm.onTokenRefresh.listen((t) {
+      if (kDebugMode) debugPrint('[fcm] token refreshed=$t');
+    });
+  } catch (e, s) {
+    // FCM 배선 실패가 로컬 트리거/앱 부팅을 막지 않도록 삼킨다.
+    if (kDebugMode) debugPrint('[fcm] 초기화 실패(무시): $e\n$s');
   }
 }

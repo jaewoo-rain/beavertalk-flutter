@@ -3,6 +3,9 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    // FCM/Firebase: android/app/google-services.json을 읽어 빌드에 주입한다
+    // (Firebase.initializeApp()가 옵션 없이 자동 설정을 찾도록). 버전은 settings.gradle.kts에서 관리.
+    id("com.google.gms.google-services")
 }
 
 android {
