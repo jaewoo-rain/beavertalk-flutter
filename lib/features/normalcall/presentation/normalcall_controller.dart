@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, kIsWeb;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -285,6 +286,20 @@ class NormalCallController extends Notifier<CallState> {
       // 마이크·오디오가 제대로 잡히지 않는다. 앱이 실제로 포그라운드(통화 화면)로 올라온
       // 뒤에 오디오 파이프라인을 시작한다. 일반 경로(홈→전화하기)는 이미 resumed라 즉시 통과.
       await _awaitForeground();
+
+      // 마이크(음성) 권한 확인·요청. 전화가 올 때마다 통화는 이 start()를 타므로 매 통화
+      // 시작 시 항상 체크한다. 이미 허용돼 있으면 즉시 통과하고, 아니면 시스템 권한 팝업을
+      // 띄운다. 거부 상태면 마이크 없이는 대화가 불가하므로 통화를 시작하지 않고 안내한다.
+      final micStatus = await Permission.microphone.request();
+      if (!micStatus.isGranted) {
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: micStatus.isPermanentlyDenied
+              ? '마이크 권한이 꺼져 있어요. 설정 > 앱 권한에서 마이크를 허용해 주세요.'
+              : '마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.',
+        );
+        return;
+      }
 
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
