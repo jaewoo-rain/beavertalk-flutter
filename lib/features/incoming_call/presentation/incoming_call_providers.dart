@@ -1,8 +1,13 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/di/providers.dart';
+import '../data/datasources/device_remote_data_source.dart';
+import '../data/repositories/device_repository_impl.dart';
+import '../domain/repositories/device_repository.dart';
 import '../services/callkit_service.dart';
 import '../services/fcm_service.dart';
 import '../services/missed_call_notifier.dart';
+import 'device_registration_controller.dart';
 import 'inbound_call_scheduler.dart';
 import 'incoming_call_coordinator.dart';
 
@@ -44,4 +49,28 @@ final inboundCallSchedulerProvider = Provider<InboundCallScheduler>((ref) {
   );
   ref.onDispose(scheduler.stop);
   return scheduler;
+});
+
+/// `/devices` 원격 데이터소스 DI(공유 dio).
+final deviceRemoteDataSourceProvider = Provider<DeviceRemoteDataSource>((ref) {
+  return DeviceRemoteDataSource(ref.watch(dioProvider));
+});
+
+/// 디바이스 토큰 저장소(도메인 인터페이스) DI.
+final deviceRepositoryProvider = Provider<DeviceRepository>((ref) {
+  return DeviceRepositoryImpl(
+    remote: ref.watch(deviceRemoteDataSourceProvider),
+  );
+});
+
+/// FCM 토큰 등록 컨트롤러 DI(앱 스코프). 로그인/토큰갱신 시 `POST /devices` 자동 등록.
+/// 서버 배포 후 `kDeviceRegistrationEnabled=true`로 켠다.
+final deviceRegistrationControllerProvider =
+    Provider<DeviceRegistrationController>((ref) {
+  final controller = DeviceRegistrationController(
+    repository: ref.watch(deviceRepositoryProvider),
+    fcm: ref.watch(fcmServiceProvider),
+  );
+  ref.onDispose(controller.dispose);
+  return controller;
 });

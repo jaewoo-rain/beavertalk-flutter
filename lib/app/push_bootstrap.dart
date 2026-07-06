@@ -77,12 +77,18 @@ Future<void> _initFcm(ProviderContainer container) async {
       }
     });
 
-    // 토큰 확인: 지금은 서버 /devices 등록 대신 디버그 로그로만 확인한다.
+    // 토큰 확인: 디버그 로그로 확인(FCM 테스트용).
     final token = await fcm.getToken();
     if (kDebugMode) debugPrint('[fcm] token=$token');
     fcm.onTokenRefresh.listen((t) {
       if (kDebugMode) debugPrint('[fcm] token refreshed=$t');
     });
+
+    // 서버 `POST /devices`로 토큰 자동 등록. 배선은 항상 준비돼 있고, 서버가 배포되면
+    // kDeviceRegistrationEnabled=true 로 켜면 로그인/토큰갱신 시 자동 등록된다.
+    if (kDeviceRegistrationEnabled) {
+      await container.read(deviceRegistrationControllerProvider).start();
+    }
   } catch (e, s) {
     // FCM 배선 실패가 로컬 트리거/앱 부팅을 막지 않도록 삼킨다.
     if (kDebugMode) debugPrint('[fcm] 초기화 실패(무시): $e\n$s');
