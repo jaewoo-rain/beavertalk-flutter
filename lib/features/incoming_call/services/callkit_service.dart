@@ -30,7 +30,7 @@ class CallkitService {
       id: p.callUuid,
       nameCaller: p.characterName ?? '비버 튜터',
       appName: 'BeaverTalk',
-      avatar: p.avatarUrl,
+      avatar: p.imageUrl,
       handle: '한국어 통화',
       // 0 = 음성 통화(1 = 영상). 이번 단계는 음성만.
       type: 0,
@@ -49,11 +49,13 @@ class CallkitService {
         isCustomNotification: true,
         isShowLogo: false,
         ringtonePath: 'system_ringtone_default',
-        backgroundColor: '#0955fa',
-        actionColor: '#4CAF50',
-        textColor: '#ffffff',
-        textAccept: '받기',
-        textDecline: '거절',
+        // 심플하게 검정 배경. (색은 여기만 바꾸면 됨: 배경/버튼/글자)
+        backgroundColor: '#000000',
+        actionColor: '#4CAF50', // 받기 버튼 강조색(검정 배경 대비 유지)
+        textColor: '#ffffff', // 검정 배경 위 글자는 흰색이어야 보임
+
+        textAccept: 'Accept',
+        textDecline: 'Decline',
         incomingCallNotificationChannelName: 'Incoming Call',
         missedCallNotificationChannelName: 'Missed Call',
         // 잠금화면 위 전체화면(full-screen intent)으로 표시.

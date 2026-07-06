@@ -17,8 +17,14 @@ abstract final class IncomingCallPayloadDto {
     final extraMap = extra is Map ? extra : const <dynamic, dynamic>{};
 
     return IncomingCallPayload(
-      callUuid:
-          asString(map['callUuid'] ?? map['call_uuid'] ?? map['id']) ?? '',
+      // 전화 식별자: 서버 DB는 `call_id`. CallKit 콜 맵에서 되읽을 때는 최상위 `id`.
+      callUuid: asString(
+            map['call_id'] ??
+                map['callUuid'] ??
+                map['call_uuid'] ??
+                map['id'],
+          ) ??
+          '',
       characterId: asInt(
             map['characterId'] ??
                 map['character_id'] ??
@@ -27,13 +33,15 @@ abstract final class IncomingCallPayloadDto {
           ) ??
           1,
       characterName: asString(
-        map['characterName'] ??
+        map['name'] ??
             map['character_name'] ??
             map['nameCaller'] ??
             extraMap['characterName'],
       ),
-      avatarUrl: asString(
-        map['avatarUrl'] ?? map['avatar_url'] ?? map['avatar'],
+      // 캐릭터 이미지는 서버 필드명 `image_url`. CallKit 콜 맵에서 되읽을 때만
+      // 최상위 `avatar` 키로 폴백(showIncoming이 avatar 파라미터로 넣기 때문).
+      imageUrl: asString(
+        map['imageUrl'] ?? map['image_url'] ?? map['avatar'],
       ),
     );
   }

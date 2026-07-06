@@ -170,7 +170,7 @@ class IncomingCallCoordinator {
       characterId: IncomingCallPayloadDto.asInt(p.extra?['characterId']) ??
           kDefaultInboundCharacterId,
       characterName: p.nameCaller,
-      avatarUrl: p.avatar,
+      imageUrl: p.avatar,
     );
   }
 

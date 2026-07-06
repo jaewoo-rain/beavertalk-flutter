@@ -24,6 +24,8 @@ Future<void> initIncomingCallLocal(ProviderContainer container) async {
     await container.read(missedCallNotifierProvider).init();
     // CallKit 이벤트 구독 + 콜드스타트(이미 수락된 콜) 소비.
     await container.read(incomingCallCoordinatorProvider).attach();
+    // 저장된 알람 시각에 로컬로 전화를 띄우는 스케줄러 시작(앱 생존 중에만 동작).
+    await container.read(inboundCallSchedulerProvider).start();
   } catch (e, s) {
     // 실패해도 앱은 정상 부팅되어야 한다(로컬 트리거는 부가 기능).
     if (kDebugMode) {

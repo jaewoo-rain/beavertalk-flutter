@@ -11,7 +11,7 @@ class IncomingCallPayload {
     required this.callUuid,
     required this.characterId,
     this.characterName,
-    this.avatarUrl,
+    this.imageUrl,
   });
 
   /// CallKit 세션 식별자(멱등 키). 같은 전화의 중복 이벤트/재전송을 dedup하는 기준.
@@ -24,6 +24,7 @@ class IncomingCallPayload {
   /// 수신 화면에 표시할 발신자 이름(예: 'Annoying Beaver'). 없으면 서비스가 기본값 사용.
   final String? characterName;
 
-  /// Android 수신 화면 아바타 URL. 없으면 표시 안 함.
-  final String? avatarUrl;
+  /// Android 수신 화면에 표시할 캐릭터 이미지 URL(서버 필드명 `image_url`).
+  /// 없으면 표시 안 함.
+  final String? imageUrl;
 }

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../services/callkit_service.dart';
 import '../services/missed_call_notifier.dart';
+import 'inbound_call_scheduler.dart';
 import 'incoming_call_coordinator.dart';
 
 /// CallKit 래퍼(무상태) DI.
@@ -24,4 +25,15 @@ final incomingCallCoordinatorProvider =
   );
   ref.onDispose(coordinator.dispose);
   return coordinator;
+});
+
+/// 알람 시간 연동 스케줄러 DI(앱 스코프). 저장된 알람 시각에 로컬로 전화를 띄운다.
+/// 구독 해제를 위해 stop을 dispose에 연결한다.
+final inboundCallSchedulerProvider = Provider<InboundCallScheduler>((ref) {
+  final scheduler = InboundCallScheduler(
+    ref: ref,
+    callkit: ref.watch(callkitServiceProvider),
+  );
+  ref.onDispose(scheduler.stop);
+  return scheduler;
 });
