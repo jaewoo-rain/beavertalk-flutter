@@ -157,12 +157,15 @@ class NormalCallController extends Notifier<CallState> {
   /// Silence frames fed when the queue is empty (~50ms keep-alive).
   static const int _silenceFrames = 1200;
 
-  /// Resync cap: if the queue exceeds this (~3s), drop oldest bytes down to
-  /// [_targetQueueBytes] so burst/drift latency can't accumulate and stall.
-  static const int _maxQueueBytes = _playbackSampleRate * 2 * 3;
+  /// Resync cap: a **runaway guard only**. A normal beaver turn arrives as a
+  /// burst and legitimately buffers several seconds (played out over the turn),
+  /// so this must be far above any real turn — otherwise resync would clip live
+  /// speech and immediately starve. Set to ~60s; only true drift/leak trips it.
+  static const int _maxQueueBytes = _playbackSampleRate * 2 * 60;
 
-  /// Resync target after a drop (~1s of buffered audio).
-  static const int _targetQueueBytes = _playbackSampleRate * 2 * 1;
+  /// Resync target after a drop (~45s buffered). Still huge — a drop here means
+  /// something is badly wrong; normal turns never reach it.
+  static const int _targetQueueBytes = _playbackSampleRate * 2 * 45;
 
   /// Bytes currently queued (unfed).
   int get _queueLen => _pcmQueue.length - _pcmHead;
@@ -200,6 +203,9 @@ class NormalCallController extends Notifier<CallState> {
   // DROP mic frames instead of forwarding them. This is intentionally
   // half-duplex: the user cannot barge-in / interrupt the AI mid-sentence — an
   // accepted tradeoff to kill the self-talk loop.
+
+  /// Count of mic frames actually forwarded to the socket (dev-log heartbeat).
+  int _micFramesSent = 0;
 
   /// True while the beaver is speaking (turn open and/or audio still playing).
   /// While true, mic PCM is dropped (not sent to the socket).
@@ -367,7 +373,12 @@ class NormalCallController extends Notifier<CallState> {
       // session / AEC stays stable; we only skip forwarding.
       if (_beaverSpeaking) return;
       final ch = _channel;
-      if (ch != null) ch.sink.add(bytes);
+      if (ch != null) {
+        ch.sink.add(bytes);
+        if (++_micFramesSent % 50 == 0) {
+          _log('mic → sent $_micFramesSent frames (your voice flowing)');
+        }
+      }
     });
 
     final recorder = FlutterSoundRecorder();
@@ -400,9 +411,13 @@ class NormalCallController extends Notifier<CallState> {
   void _feedPlayer(Uint8List chunk) {
     if (!_pcmActive) return;
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
-    // before/without a turn_start), and (re)arm the missed-turn_end safety.
+    // before/without a turn_start).
     _gateMic();
-    _armGateSafety();
+    // Queue is no longer empty → cancel any idle-ungate countdown so the mic
+    // stays closed while the beaver's buffered turn is still playing out. (The
+    // countdown is (re)armed by [_onFeed] only once the queue actually drains.)
+    _gateSafetyTimer?.cancel();
+    _gateSafetyTimer = null;
     // Fresh audio during a pending close resets the quiet window so the closing
     // line isn't acked early.
     _closingStableTimer?.cancel();
@@ -445,6 +460,10 @@ class NormalCallController extends Notifier<CallState> {
               '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
           _lastFeedSilent = true;
         }
+        // Queue genuinely drained while gated → start the idle-ungate countdown
+        // (covers a missed turn_end so the mic can't deadlock). Armed at most
+        // once per empty period; fresh audio in [_feedPlayer] cancels it.
+        _armIdleUngate();
         await FlutterPcmSound.feed(
           PcmArrayInt16.zeros(count: _silenceFrames),
         );
@@ -485,6 +504,7 @@ class NormalCallController extends Notifier<CallState> {
   /// Engages the mic gate for a new/ongoing beaver turn. Cancels any pending
   /// ungate (hangover/safety) since the beaver is speaking again.
   void _gateMic() {
+    if (!_beaverSpeaking) _log('mic GATED — beaver speaking (your mic paused)');
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _turnEnded = false;
@@ -506,20 +526,26 @@ class NormalCallController extends Notifier<CallState> {
       _gateSafetyTimer?.cancel();
       _gateSafetyTimer = null;
       _beaverSpeaking = false;
+      _log('mic OPEN — your turn (turn_end + drained)');
     });
   }
 
-  /// (Re)arms the missed-`turn_end` safety: if no new audio arrives and the
-  /// queue is empty for [_gateSafetyWindow], assume turn_end was missed and
-  /// ungate so the mic can't deadlock. Reset on every inbound audio chunk.
-  void _armGateSafety() {
-    _gateSafetyTimer?.cancel();
+  /// Idle-based ungate for the pull model: called from [_onFeed] once the queue
+  /// has actually drained (silence being fed) while the beaver is still gated.
+  /// If the queue is still empty after [_gateSafetyWindow], open the mic — this
+  /// covers a missed `turn_end` ([_tryUngateMic] handles the fast path). Armed at
+  /// most once per empty period (the `!= null` guard stops re-arming every
+  /// silence callback); a fresh inbound chunk in [_feedPlayer] cancels it.
+  void _armIdleUngate() {
+    if (!_beaverSpeaking) return;
+    if (_gateSafetyTimer != null) return; // already counting this empty period
     _gateSafetyTimer = Timer(_gateSafetyWindow, () {
       _gateSafetyTimer = null;
       if (_beaverSpeaking && _queueLen < 2) {
         _micGateTimer?.cancel();
         _micGateTimer = null;
         _beaverSpeaking = false;
+        _log('mic OPEN — your turn (idle drained)');
       }
     });
   }
@@ -711,6 +737,7 @@ class NormalCallController extends Notifier<CallState> {
     _gateSafetyTimer = null;
     _beaverSpeaking = false;
     _turnEnded = false;
+    _micFramesSent = 0;
 
     // Stop the mic first so no more bytes flow into a closing socket.
     await _micSub?.cancel();

@@ -11,6 +11,9 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
+        // flutter_local_notifications 18.x는 코어 라이브러리 디슈가링을 요구한다.
+        // 없으면 Android 빌드가 깨진다(java.time 등 최신 API 백포트).
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
@@ -43,4 +46,9 @@ android {
 
 flutter {
     source = "../.."
+}
+
+dependencies {
+    // 코어 라이브러리 디슈가링 런타임(flutter_local_notifications 18.x 요구).
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
 }

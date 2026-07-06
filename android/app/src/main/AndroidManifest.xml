@@ -1,6 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- 인바운드 콜(로컬 트리거) — flutter_callkit_incoming 수신 화면/부재중 알림용 -->
+    <!-- Android 13+ 알림 표시 권한(부재중 배너 + 수신 알림) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- 잠금화면 위 전체화면 수신 표시(Android 14+는 런타임 승인도 필요) -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <!-- 수신 시 화면/CPU 깨우기 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- 통화 진행 중 포그라운드 서비스(마이크) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
     <application
         android:label="beavertalk"
         android:name="${applicationName}"
