@@ -217,6 +217,17 @@ class NormalCallController extends Notifier<CallState> {
 
   Timer? _elapsedTimer;
 
+  /// Application-level keepalive: pings the server every [_keepaliveInterval] so
+  /// the socket has periodic client→server traffic. Without it, a long beaver
+  /// monologue (mic gated, no upstream bytes) lets a proxy/LB idle-timeout close
+  /// the WS around ~1 min — the "1분 경과 시 voice 끊김" symptom.
+  Timer? _keepaliveTimer;
+  static const Duration _keepaliveInterval = Duration(seconds: 15);
+
+  /// True once a close is expected (hang-up / `call_ended` / teardown) so the
+  /// socket's `onDone` isn't mistaken for an unexpected mid-call drop.
+  bool _expectClose = false;
+
   /// Re-entry guard for [start] (§8-1).
   bool _starting = false;
 
@@ -367,6 +378,7 @@ class NormalCallController extends Notifier<CallState> {
       }
 
       // Connect the WebSocket.
+      _expectClose = false;
       final url = normalcallWsUrl(token);
       final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
@@ -379,6 +391,9 @@ class NormalCallController extends Notifier<CallState> {
 
       // §8-3: trigger the server's auto opening line (no button).
       _send({'type': 'start', 'character_id': characterId});
+
+      // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
+      _startKeepalive();
 
       // Start streaming the mic to the server.
       await _startMic();
@@ -396,6 +411,7 @@ class NormalCallController extends Notifier<CallState> {
   /// User-initiated hang up: closes the socket (the server finalizes the call in
   /// its `finally`) and tears the pipeline down (§8-2).
   Future<void> hangUp() async {
+    _expectClose = true;
     if (state.phase == CallPhase.ended || state.phase == CallPhase.idle) {
       await _teardown();
       return;
@@ -709,6 +725,9 @@ class NormalCallController extends Notifier<CallState> {
         _tryUngateMic();
       case 'call_ended':
         final id = msg['call_id'];
+        // Server-initiated close is expected; the socket's onDone must not be
+        // treated as an unexpected drop.
+        _expectClose = true;
         state = state.copyWith(
           phase: CallPhase.ending,
           callId: id?.toString(),
@@ -807,8 +826,18 @@ class NormalCallController extends Notifier<CallState> {
         errorMsg: '연결에 실패했습니다. 다시 시도해 주세요.',
       );
       unawaited(_teardown(keepError: true));
+      return;
     }
-    // For inCall/ending, hangUp / call_ended already drives teardown.
+    // Expected close (hang-up / call_ended / teardown) already drives the exit.
+    if (_expectClose) return;
+    if (phase == CallPhase.inCall) {
+      // Unexpected mid-call drop with no `call_ended` (e.g. a ~1-min idle
+      // timeout on a proxy/LB). The old code did nothing here, stranding the
+      // user on a frozen, silent "live" call. Recover exactly like a hang-up so
+      // the wrap-up screen opens (and can recover the call id via the baseline).
+      _log('ws closed unexpectedly during inCall → recovering to wrap-up');
+      unawaited(hangUp());
+    }
   }
 
   /// Transport-level error (§8-6).
@@ -852,6 +881,16 @@ class NormalCallController extends Notifier<CallState> {
     });
   }
 
+  /// Starts the application keepalive: a periodic `ping` so the socket always
+  /// has recent client→server traffic (the server replies `pong`, already
+  /// handled). Cancelled in [_teardown].
+  void _startKeepalive() {
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = Timer.periodic(_keepaliveInterval, (_) {
+      _send({'type': 'ping'});
+    });
+  }
+
   /// Tears down all resources: recorder, player, socket, timers (§8-1/§8-2).
   ///
   /// When [keepError] is true the phase is left untouched (an error phase was
@@ -859,6 +898,8 @@ class NormalCallController extends Notifier<CallState> {
   Future<void> _teardown({bool keepError = false}) async {
     _elapsedTimer?.cancel();
     _elapsedTimer = null;
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = null;
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
