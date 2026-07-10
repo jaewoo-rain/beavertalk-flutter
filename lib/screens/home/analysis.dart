@@ -8,6 +8,7 @@ import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
@@ -105,6 +106,28 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         rhythm: 0,
         bookmarked: s.isBookmarked,
       );
+
+  /// Toggles a sentence's bookmark. Flips the shared in-memory store instantly
+  /// (optimistic), then **persists to the server** via
+  /// [bookmarkToggleControllerProvider] so the 보관 list (server-backed) actually
+  /// reflects it — previously this only flipped the local store, so bookmarks
+  /// made here never reached `GET /members/me/bookmarks`. Reverts on failure.
+  Future<void> _toggleBookmark(int sentenceId) async {
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId); // optimistic local flip
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (_) {
+      toggleBookmark(sentenceId); // revert on failure
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Something went wrong.')),
+        );
+      }
+    }
+  }
 
   /// Pushes the learning flow for [sentences], starting at [index].
   void _startLearning(List<MockSentence> sentences, {int index = 0}) {
@@ -303,7 +326,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                           ids.contains(result.sentences[i].sentenceId),
                       score: scores[result.sentences[i].sentenceId],
                       onBookmarkTap: () =>
-                          toggleBookmark(result.sentences[i].sentenceId),
+                          _toggleBookmark(result.sentences[i].sentenceId),
                       onSpeak: () => _playSentence(result.sentences[i]),
                       onPractice: () =>
                           _startLearning([_learningSentences[i]]),
