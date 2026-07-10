@@ -14,12 +14,12 @@ import '../molecules/country_select.dart';
 /// Shared flag rendering for a country/language row. Uses [CountryFlag] SVG
 /// assets (ISO 3166-1 alpha-2) so flags render identically on every platform —
 /// emoji regional-indicator glyphs do not render on Windows / many Androids.
-/// Sized to sit in place of the former 24px emoji `Text`.
+/// Sized 36×24 (3:2, rounded 4) to match the Figma flag slot.
 CountryFlag countryFlag(String countryCode) => CountryFlag.fromCountryCode(
       countryCode,
       theme: const ImageTheme(
         height: 24,
-        width: 32,
+        width: 36,
         shape: RoundedRectangle(4),
       ),
     );
