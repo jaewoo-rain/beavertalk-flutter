@@ -9,9 +9,11 @@ import '../../components/icons/app_icons.dart';
 import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -46,6 +48,42 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   /// Cached standard-pronunciation URL for the current sentence (fetched once).
   String? _nativeUrl;
   bool _loadingNative = false;
+
+  /// Guards the one-time seeding of the shared bookmark store from this
+  /// sentence's server flag ([MockSentence.bookmarked]).
+  bool _seededBookmark = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seededBookmark) return;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is LearningArgs) {
+      _seededBookmark = true;
+      final s = args.current;
+      if (s.bookmarked && !bookmarkedSentenceIds.value.contains(s.id)) {
+        bookmarkedSentenceIds.value = {...bookmarkedSentenceIds.value, s.id};
+      }
+    }
+  }
+
+  /// Toggles the current sentence's bookmark. Flips the shared in-memory store
+  /// first for instant, cross-screen UI (mirrors the analysis screen), then
+  /// persists via [bookmarkToggleControllerProvider]
+  /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
+  /// local flip and surfaces a message if the server call fails.
+  Future<void> _toggleBookmark(int sentenceId) async {
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId);
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (e) {
+      toggleBookmark(sentenceId); // revert on failure
+      _snack(e is AppException ? e.message : '문장 저장에 실패했어요.');
+    }
+  }
 
   /// Color for a character by grade, falling back to score thresholds when the
   /// grade is unknown/missing.
@@ -173,7 +211,27 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                           child: AppIcons.volume(size: 32, color: AppColors.text),
                         ),
                       ),
-                      AppIcons.bookmarkLine(size: 32, color: AppColors.text),
+                      // Bookmark (문장 저장) — toggles the current sentence's
+                      // saved state; reflects it live via the shared store.
+                      ValueListenableBuilder<Set<int>>(
+                        valueListenable: bookmarkedSentenceIds,
+                        builder: (context, ids, _) {
+                          final saved = ids.contains(sentence.id);
+                          return Semantics(
+                            button: true,
+                            label: saved ? '문장 저장 취소' : '문장 저장',
+                            child: GestureDetector(
+                              onTap: () => _toggleBookmark(sentence.id),
+                              behavior: HitTestBehavior.opaque,
+                              child: saved
+                                  ? AppIcons.bookmarkFill(
+                                      size: 32, color: AppColors.text)
+                                  : AppIcons.bookmarkLine(
+                                      size: 32, color: AppColors.text),
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),

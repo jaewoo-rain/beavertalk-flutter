@@ -19,6 +19,7 @@ class MicButton extends StatelessWidget {
     super.key,
     required this.recording,
     required this.onTap,
+    this.level,
   });
 
   /// Whether the button is in the recording (stop) state.
@@ -27,10 +28,58 @@ class MicButton extends StatelessWidget {
   /// Tap handler — starts recording when idle, stops when recording.
   final VoidCallback onTap;
 
+  /// Optional live input level (normalized 0..1) driving a subtle reactive
+  /// pulse while recording. `null` (default) keeps the button fully static, so
+  /// existing call sites are unaffected. When supplied, an expanding halo ring
+  /// and a gentle scale track the level; the two-state visuals are unchanged.
+  final double? level;
+
   static const double _size = 96;
+
+  /// Reserved padding around the button so the reactive halo has room to grow
+  /// without shifting layout (max ring overshoot = [_maxHalo]).
+  static const double _maxHalo = 20;
 
   @override
   Widget build(BuildContext context) {
+    final core = _buildCore();
+
+    final lvl = level;
+    // No level provided (or idle) → render the plain two-state button.
+    if (lvl == null || !recording) return core;
+
+    final clamped = lvl.clamp(0.0, 1.0);
+    return SizedBox(
+      width: _size + _maxHalo * 2,
+      height: _size + _maxHalo * 2,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Expanding halo ring — grows and fades in with the input level.
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 90),
+            curve: Curves.easeOut,
+            width: _size + _maxHalo * clamped,
+            height: _size + _maxHalo * clamped,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.green700.withValues(alpha: 0.14 * clamped),
+            ),
+          ),
+          // Gentle scale of the button face itself (max +5%).
+          AnimatedScale(
+            duration: const Duration(milliseconds: 90),
+            curve: Curves.easeOut,
+            scale: 1 + 0.05 * clamped,
+            child: core,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// The two-state button face (idle mic circle / recording stop face).
+  Widget _buildCore() {
     // Idle reuses the shared white-circle record control (mic glyph).
     if (!recording) {
       return RecordCircleButton(
@@ -45,7 +94,8 @@ class MicButton extends StatelessWidget {
       label: '녹음 정지',
       child: GestureDetector(
         onTap: onTap,
-        child: const SizedBox(width: _size, height: _size, child: _RecordingFace()),
+        child: const SizedBox(
+            width: _size, height: _size, child: _RecordingFace()),
       ),
     );
   }

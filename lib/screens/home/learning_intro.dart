@@ -8,6 +8,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
@@ -51,6 +52,42 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// first speaker tap; the server TTS is idempotent so this just avoids re-calls).
   String? _ttsUrl;
   bool _loadingTts = false;
+
+  /// Guards the one-time seeding of the shared bookmark store from this
+  /// sentence's server flag ([MockSentence.bookmarked]).
+  bool _seededBookmark = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seededBookmark) return;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is LearningArgs) {
+      _seededBookmark = true;
+      final s = args.current;
+      if (s.bookmarked && !bookmarkedSentenceIds.value.contains(s.id)) {
+        bookmarkedSentenceIds.value = {...bookmarkedSentenceIds.value, s.id};
+      }
+    }
+  }
+
+  /// Toggles the current sentence's bookmark. Flips the shared in-memory store
+  /// first for instant, cross-screen UI (mirrors the analysis screen), then
+  /// persists via [bookmarkToggleControllerProvider]
+  /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
+  /// local flip and surfaces a message if the server call fails.
+  Future<void> _toggleBookmark(int sentenceId) async {
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId);
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (e) {
+      toggleBookmark(sentenceId); // revert on failure
+      _snack(e is AppException ? e.message : '문장 저장에 실패했어요.');
+    }
+  }
 
   @override
   void dispose() {
@@ -205,7 +242,27 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                   size: 32, color: AppColors.text),
                             ),
                           ),
-                          AppIcons.bookmarkLine(size: 32, color: AppColors.text),
+                          // Bookmark (문장 저장) — toggles the current sentence's
+                          // saved state; reflects it live via the shared store.
+                          ValueListenableBuilder<Set<int>>(
+                            valueListenable: bookmarkedSentenceIds,
+                            builder: (context, ids, _) {
+                              final saved = ids.contains(sentence.id);
+                              return Semantics(
+                                button: true,
+                                label: saved ? '문장 저장 취소' : '문장 저장',
+                                child: GestureDetector(
+                                  onTap: () => _toggleBookmark(sentence.id),
+                                  behavior: HitTestBehavior.opaque,
+                                  child: saved
+                                      ? AppIcons.bookmarkFill(
+                                          size: 32, color: AppColors.text)
+                                      : AppIcons.bookmarkLine(
+                                          size: 32, color: AppColors.text),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -241,9 +298,15 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                     // platform reserves none (web), so the mic never hugs / gets
                     // cut at the frame edge (QA: "마이크 짤림").
                     Center(
-                      child: MicButton(
-                        recording: _recording,
-                        onTap: () => _onMicTap(args),
+                      child: StreamBuilder<double>(
+                        stream: _recorder.amplitude,
+                        builder: (context, snap) => MicButton(
+                          recording: _recording,
+                          // Drive the reactive pulse from the live mic level
+                          // while recording; static otherwise.
+                          level: _recording ? snap.data : null,
+                          onTap: () => _onMicTap(args),
+                        ),
                       ),
                     ),
                     SizedBox(height: micBottomGap),

@@ -19,8 +19,23 @@ class ReviewAudioRecorder {
   final BytesBuilder _pcm = BytesBuilder();
   bool _recording = false;
 
+  /// Broadcasts the live input level (normalized 0..1) while recording, driven
+  /// by flutter_sound's `onProgress` decibel readings. Additive — it never
+  /// touches the PCM capture path. Consumers (e.g. the mic button) can drive a
+  /// reactive visual from it; when no reading is available (e.g. web where the
+  /// streaming recorder may not report dbPeakLevel) it simply emits nothing.
+  StreamController<double>? _amp;
+  StreamSubscription<RecordingDisposition>? _ampSub;
+
   /// Whether a recording is currently in progress.
   bool get isRecording => _recording;
+
+  /// Live, normalized (0..1) microphone level stream while recording. Empty when
+  /// not recording. Best-effort: reflects `onProgress` decibels where the
+  /// platform provides them (mobile/desktop); may stay silent on platforms that
+  /// don't report a level during streaming capture (some web browsers).
+  Stream<double> get amplitude =>
+      _amp?.stream ?? const Stream<double>.empty();
 
   /// Requests mic permission (if needed) and starts recording into memory.
   ///
@@ -49,6 +64,27 @@ class ReviewAudioRecorder {
       enableVoiceProcessing: true,
       enableEchoCancellation: true,
     );
+
+    // Additive amplitude signal: subscribe to the recorder's progress events
+    // (decibel peak levels) and republish them as a normalized 0..1 stream.
+    // This does not affect the PCM capture above.
+    final amp = StreamController<double>.broadcast();
+    _amp = amp;
+    try {
+      await recorder
+          .setSubscriptionDuration(const Duration(milliseconds: 80));
+      _ampSub = recorder.onProgress?.listen((e) {
+        if (amp.isClosed) return;
+        final db = e.decibels ?? 0.0;
+        // flutter_sound's dbPeakLevel runs roughly 0..~90 for speech; map to a
+        // subtle 0..1 range (÷60 gives good headroom without clipping to 1 on
+        // normal talking). Silence → ~0.
+        amp.add((db / 60.0).clamp(0.0, 1.0));
+      });
+    } catch (_) {
+      // Amplitude is a nice-to-have; never let it block recording.
+    }
+
     _recording = true;
   }
 
@@ -64,6 +100,10 @@ class ReviewAudioRecorder {
     } catch (_) {
       // Ignore stop errors — we still return what we captured.
     }
+    await _ampSub?.cancel();
+    _ampSub = null;
+    await _amp?.close();
+    _amp = null;
     await _sub?.cancel();
     _sub = null;
     await _controller?.close();
@@ -81,6 +121,10 @@ class ReviewAudioRecorder {
     } catch (_) {
       // best-effort
     }
+    await _ampSub?.cancel();
+    _ampSub = null;
+    await _amp?.close();
+    _amp = null;
     await _sub?.cancel();
     _sub = null;
     await _controller?.close();
