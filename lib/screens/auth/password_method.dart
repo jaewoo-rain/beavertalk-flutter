@@ -10,7 +10,6 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -118,22 +117,16 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    child: Button(
-                      type: BtnType.primaryFill,
-                      size: BtnSize.s60,
-                      // TODO(i18n): localize
-                      text: _sending ? 'Sending...' : 'Send email',
-                      disabled: _sending,
-                      onPressed: _send,
-                    ),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                // TODO(i18n): localize
+                text: _sending ? 'Sending...' : 'Send email',
+                disabled: _sending,
+                onPressed: _send,
+              ),
             ),
           ),
         ],

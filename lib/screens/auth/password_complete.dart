@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -69,21 +68,15 @@ class PasswordCompleteScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    child: Button(
-                      type: BtnType.primaryFill,
-                      size: BtnSize.s60,
-                      // TODO(i18n): localize
-                      text: 'Log in',
-                      onPressed: () => _goLogin(context),
-                    ),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                // TODO(i18n): localize
+                text: 'Log in',
+                onPressed: () => _goLogin(context),
+              ),
             ),
           ),
         ],

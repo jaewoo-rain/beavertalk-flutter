@@ -60,6 +60,10 @@ abstract final class AppIcons {
       _glyph('thumbs-up', size, color);
   static Widget thumbsDown({double size = 24, Color color = AppColors.text}) =>
       _glyph('thumbs-down', size, color);
+  /// Double thumbs-up "쌍따봉" — the top satisfaction rating (Figma call_finish),
+  /// distinct from the single [thumbsUp] used for the middle rating.
+  static Widget thumbsUpDouble({double size = 24, Color color = AppColors.text}) =>
+      _glyph('thumbs-up-double', size, color);
   static Widget flag({double size = 24, Color color = AppColors.text}) =>
       _glyph('flag', size, color);
 

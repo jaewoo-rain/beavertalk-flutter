@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
+import '../icons/app_icons.dart';
 
 /// RatingButton — a circular icon toggle used for quick call ratings.
 ///
@@ -18,8 +19,8 @@ class RatingButton extends StatelessWidget {
     required this.onTap,
   });
 
-  /// Glyph shown inside the circle (e.g. thumbs up / down).
-  final IconData icon;
+  /// Glyph builder shown inside the circle (e.g. [AppIcons.thumbsUp]).
+  final AppIconBuilder icon;
 
   /// Accessible label for the choice (e.g. "좋아요").
   final String label;
@@ -48,10 +49,11 @@ class RatingButton extends StatelessWidget {
           child: SizedBox(
             width: _size,
             height: _size,
-            child: Icon(
-              icon,
-              size: 28,
-              color: selected ? AppColors.onPrimary : AppColors.textSecondary,
+            child: Center(
+              child: icon(
+                size: 28,
+                color: selected ? AppColors.onPrimary : AppColors.textSecondary,
+              ),
             ),
           ),
         ),
@@ -79,14 +81,14 @@ class _RatingButtonDemoState extends State<RatingButtonDemo> {
         mainAxisSize: MainAxisSize.min,
         children: [
           RatingButton(
-            icon: Icons.thumb_up_alt_outlined,
+            icon: AppIcons.thumbsUp,
             label: '좋아요',
             selected: _up == true,
             onTap: () => setState(() => _up = true),
           ),
           const SizedBox(width: 16),
           RatingButton(
-            icon: Icons.thumb_down_alt_outlined,
+            icon: AppIcons.thumbsDown,
             label: '아쉬워요',
             selected: _up == false,
             onTap: () => setState(() => _up = false),

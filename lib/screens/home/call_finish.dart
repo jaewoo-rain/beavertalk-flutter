@@ -35,11 +35,11 @@ class CallFinishScreen extends ConsumerStatefulWidget {
 /// The user's quick rating of the call, carrying the backend int value
 /// (ascending): 아쉬워요=1, 괜찮아요=2, 좋아요=3.
 enum _Rating {
-  // Figma `2296:26278` shows 👎 / 👍 / 👍 (card 2·3 both thumbs-up — appears to
-  // be a design placeholder; replicated 1:1 for now).
+  // 👎 / 👍 / 👍👍 — bad = thumbs-down, ok = single thumbs-up, good = double
+  // thumbs-up ("쌍따봉", the top satisfaction rating).
   bad(1, '아쉬워요', AppIcons.thumbsDown),
   ok(2, '괜찮아요', AppIcons.thumbsUp),
-  good(3, '좋아요', AppIcons.thumbsUp);
+  good(3, '좋아요', AppIcons.thumbsUpDouble);
 
   const _Rating(this.value, this.label, this.icon);
 
