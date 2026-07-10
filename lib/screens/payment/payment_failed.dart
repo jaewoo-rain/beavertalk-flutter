@@ -25,37 +25,48 @@ class PaymentFailedScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Failure illustration — emoji stand-in for the Figma 3D
-                  // asset (mock; no asset bundled).
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      color: AppColors.surface2,
-                      borderRadius: BorderRadius.circular(AppRadius.lg),
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints:
+                      BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Failure illustration — emoji stand-in for the Figma
+                          // 3D asset (mock; no asset bundled).
+                          Container(
+                            width: 100,
+                            height: 100,
+                            decoration: BoxDecoration(
+                              color: AppColors.surface2,
+                              borderRadius: BorderRadius.circular(AppRadius.lg),
+                            ),
+                            alignment: Alignment.center,
+                            child: const Text('❌',
+                                style: TextStyle(fontSize: 56)),
+                          ),
+                          const SizedBox(height: 24),
+                          Text(
+                            '결제에 실패했어요',
+                            textAlign: TextAlign.center,
+                            style: AppType.heading2.sb,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '결제가 처리되지 않았어요.\n다시 시도해주세요.',
+                            textAlign: TextAlign.center,
+                            style: AppType.label1.r
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
                     ),
-                    alignment: Alignment.center,
-                    child: const Text('❌', style: TextStyle(fontSize: 56)),
                   ),
-                  const SizedBox(height: 24),
-                  Text(
-                    '결제에 실패했어요',
-                    textAlign: TextAlign.center,
-                    style: AppType.heading2.sb,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '결제가 처리되지 않았어요.\n다시 시도해주세요.',
-                    textAlign: TextAlign.center,
-                    style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

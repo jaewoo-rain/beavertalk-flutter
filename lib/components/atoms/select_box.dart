@@ -27,6 +27,7 @@ class SelectBox extends StatelessWidget {
     this.bold = false,
     this.onChanged,
     this.disabled = false,
+    this.expand = false,
   });
 
   /// The single character shown in the chip (e.g. "T", "S").
@@ -44,6 +45,11 @@ class SelectBox extends StatelessWidget {
   /// When `true` the chip is non-interactive and rendered dimmed.
   final bool disabled;
 
+  /// When `true` the chip stretches to fill its parent's width (e.g. inside an
+  /// [Expanded] cell) instead of hug-sizing to its label — used so a row of
+  /// chips renders at identical widths. Defaults to `false` (hug).
+  final bool expand;
+
   @override
   Widget build(BuildContext context) {
     final Color bg =
@@ -53,6 +59,8 @@ class SelectBox extends StatelessWidget {
     final TextStyle base = bold ? AppType.body1.sb : AppType.body1.r;
 
     final Widget chip = Container(
+      width: expand ? double.infinity : null,
+      alignment: expand ? Alignment.center : null,
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: bg,

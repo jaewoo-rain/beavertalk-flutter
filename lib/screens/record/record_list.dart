@@ -147,33 +147,42 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '아직 통화 기록이 없어요',
-            textAlign: TextAlign.center,
-            style: AppType.headline1.sb.copyWith(color: AppColors.text),
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    '아직 통화 기록이 없어요',
+                    textAlign: TextAlign.center,
+                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
+                    textAlign: TextAlign.center,
+                    style:
+                        AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: AppSpacing.s20),
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: '통화하러 가기',
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.callLoading),
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: AppSpacing.s8),
-          Text(
-            'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
-            textAlign: TextAlign.center,
-            style:
-                AppType.label1.r.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: AppSpacing.s20),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: '통화하러 가기',
-            onPressed: () =>
-                Navigator.pushNamed(context, Routes.callLoading),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -187,32 +196,41 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            '기록을 불러오지 못했어요',
-            textAlign: TextAlign.center,
-            style: AppType.headline1.sb.copyWith(color: AppColors.text),
+    return LayoutBuilder(
+      builder: (context, constraints) => SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: constraints.maxHeight),
+          child: IntrinsicHeight(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    '기록을 불러오지 못했어요',
+                    textAlign: TextAlign.center,
+                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    '잠시 후 다시 시도해주세요.',
+                    textAlign: TextAlign.center,
+                    style:
+                        AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                  ),
+                  const SizedBox(height: AppSpacing.s20),
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: '다시 시도',
+                    onPressed: onRetry,
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: AppSpacing.s8),
-          Text(
-            '잠시 후 다시 시도해주세요.',
-            textAlign: TextAlign.center,
-            style:
-                AppType.label1.r.copyWith(color: AppColors.textSecondary),
-          ),
-          const SizedBox(height: AppSpacing.s20),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: '다시 시도',
-            onPressed: onRetry,
-          ),
-        ],
+        ),
       ),
     );
   }

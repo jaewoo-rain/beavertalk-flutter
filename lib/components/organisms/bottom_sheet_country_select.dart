@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
-import '../chrome/home_indicator.dart';
 import '../molecules/country_select.dart';
 
 /// A single selectable country entry for [BottomSheetCountrySelect].
@@ -89,12 +89,14 @@ class BottomSheetCountrySelect extends StatelessWidget {
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
 
-  /// Whether to render the trailing [HomeIndicator]. Keep `true` for the
-  /// full-bleed gallery preview; pass `false` when shown as a real modal sheet
-  /// (the OS draws the home indicator and the sheet only needs its content).
+  /// Whether to add trailing bottom safe-area padding for the OS gesture bar.
+  /// Keep `true` for the full-bleed gallery preview; pass `false` when the host
+  /// already provides its own bottom [SafeArea] (e.g. a real modal sheet).
   final bool showHomeIndicator;
 
-  static const double _sheetWidth = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double _maxWidth = 430;
   static const double _contentWidth = 335;
 
   @override
@@ -105,8 +107,8 @@ class BottomSheetCountrySelect extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _sheetWidth,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -197,8 +199,14 @@ class BottomSheetCountrySelect extends StatelessWidget {
             ),
           ),
         ),
+        // Bottom safe-area inset — clears the real OS gesture bar (replaces the
+        // former embedded fake HomeIndicator).
         if (showHomeIndicator)
-          const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+          const SafeArea(
+            top: false,
+            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+            child: SizedBox.shrink(),
+          ),
       ],
     );
   }

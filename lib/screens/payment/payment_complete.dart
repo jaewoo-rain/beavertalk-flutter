@@ -32,29 +32,39 @@ class PaymentCompleteScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const _ResultIllustration(emoji: '✅'),
-                  const SizedBox(height: 24),
-                  Text(
-                    '결제가 완료되었어요',
-                    textAlign: TextAlign.center,
-                    style: AppType.heading2.sb,
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints:
+                      BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const _ResultIllustration(emoji: '✅'),
+                          const SizedBox(height: 24),
+                          Text(
+                            '결제가 완료되었어요',
+                            textAlign: TextAlign.center,
+                            style: AppType.heading2.sb,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '아바타가 보관함에 추가되었어요.',
+                            textAlign: TextAlign.center,
+                            style: AppType.label1.r
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                          const SizedBox(height: 24),
+                          const _Receipt(),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '아바타가 보관함에 추가되었어요.',
-                    textAlign: TextAlign.center,
-                    style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 24),
-                  const _Receipt(),
-                ],
+                ),
               ),
             ),
           ),

@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
-import '../chrome/home_indicator.dart';
 
 /// Purchase / selection state of a [BottomSheetAvatar].
 ///
@@ -118,8 +118,9 @@ class BottomSheetAvatar extends StatelessWidget {
   /// Tap on the "샘플 목소리 듣기" card.
   final VoidCallback? onPlaySample;
 
-  /// Logical sheet width from Figma.
-  static const double width = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double maxWidth = 430;
 
   /// `Atomic/Light Blue/60` — the owned-badge accent. No semantic token exists
   /// for this hue, so a raw hex is used here (reported in the handoff).
@@ -133,7 +134,7 @@ class BottomSheetAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
+      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: const BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.only(
@@ -158,8 +159,12 @@ class BottomSheetAvatar extends StatelessWidget {
             ),
           ),
           _footer(),
-          const HomeIndicator(
-            variant: HomeIndicatorVariant.subTransparent,
+          // Bottom safe-area inset — clears the real OS gesture bar (replaces
+          // the former embedded fake HomeIndicator).
+          const SafeArea(
+            top: false,
+            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+            child: SizedBox.shrink(),
           ),
         ],
       ),

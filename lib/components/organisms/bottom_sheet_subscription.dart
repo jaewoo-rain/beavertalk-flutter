@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
-import '../chrome/home_indicator.dart';
 
 /// Which subscription flow a [BottomSheetSubscription] presents.
 ///
@@ -161,8 +161,9 @@ class BottomSheetSubscription extends StatelessWidget {
   /// Close / dismiss action: the header ✕ and the scrim.
   final VoidCallback? onClose;
 
-  /// Logical sheet width from Figma.
-  static const double width = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double maxWidth = 430;
 
   String get _title {
     switch (type) {
@@ -178,7 +179,7 @@ class BottomSheetSubscription extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: width,
+      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: const BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.only(
@@ -196,7 +197,13 @@ class BottomSheetSubscription extends StatelessWidget {
             child: _body(),
           ),
           _footer(),
-          const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+          // Bottom safe-area inset — clears the real OS gesture bar (replaces
+          // the former embedded fake HomeIndicator).
+          const SafeArea(
+            top: false,
+            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+            child: SizedBox.shrink(),
+          ),
         ],
       ),
     );

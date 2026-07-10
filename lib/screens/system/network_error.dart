@@ -27,31 +27,42 @@ class NetworkErrorScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Error illustration — Figma 3D asset (`281:20345`).
-                  Image.asset(
-                    'assets/images/error_3d.png',
-                    width: AppSpacing.s100,
-                    height: AppSpacing.s100,
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints:
+                      BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Error illustration — Figma 3D asset (`281:20345`).
+                          Image.asset(
+                            'assets/images/error_3d.png',
+                            width: AppSpacing.s100,
+                            height: AppSpacing.s100,
+                          ),
+                          const SizedBox(height: AppSpacing.s20),
+                          Text(
+                            '연결에 실패했어요',
+                            textAlign: TextAlign.center,
+                            style: AppType.heading2.sb,
+                          ),
+                          const SizedBox(height: AppSpacing.s8),
+                          Text(
+                            '네트워크 상태를 확인하고\n다시 시도해주세요.',
+                            textAlign: TextAlign.center,
+                            style: AppType.label1.r
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.s20),
-                  Text(
-                    '연결에 실패했어요',
-                    textAlign: TextAlign.center,
-                    style: AppType.heading2.sb,
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    '네트워크 상태를 확인하고\n다시 시도해주세요.',
-                    textAlign: TextAlign.center,
-                    style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                ],
+                ),
               ),
             ),
           ),

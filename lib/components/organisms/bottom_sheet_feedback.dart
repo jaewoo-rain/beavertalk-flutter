@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/dim.dart';
-import '../chrome/home_indicator.dart';
 
 /// One feedback option in [BottomSheetFeedback].
 class FeedbackOption {
@@ -82,7 +82,9 @@ class BottomSheetFeedback extends StatelessWidget {
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
 
-  static const double _sheetWidth = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double _maxWidth = 430;
   static const double _contentWidth = 335;
 
   @override
@@ -93,8 +95,8 @@ class BottomSheetFeedback extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _sheetWidth,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -187,7 +189,13 @@ class BottomSheetFeedback extends StatelessWidget {
             ),
           ),
         ),
-        const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+        // Bottom safe-area inset — clears the real OS gesture bar (replaces the
+        // former embedded fake HomeIndicator).
+        const SafeArea(
+          top: false,
+          minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          child: SizedBox.shrink(),
+        ),
       ],
     );
   }

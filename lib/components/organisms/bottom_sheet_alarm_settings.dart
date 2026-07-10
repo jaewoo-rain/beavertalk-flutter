@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
 import '../atoms/select_box.dart';
-import '../chrome/home_indicator.dart';
 import '../molecules/avatar_card.dart';
 
 /// AM / PM選択 value for [BottomSheetAlarmSettings].
@@ -128,8 +128,9 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// Two-letter labels for the 7 day chips (Mon→Sun).
   final List<String> dayLabels;
 
-  static const double _sheetWidth = 375;
-  static const double _contentWidth = 335;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double _maxWidth = 430;
 
   @override
   Widget build(BuildContext context) {
@@ -139,8 +140,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _sheetWidth,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -260,15 +261,14 @@ class BottomSheetAlarmSettings extends StatelessWidget {
             for (int i = 0; i < 7; i++) ...[
               if (i > 0) const SizedBox(width: 8),
               Expanded(
-                child: Center(
-                  child: SelectBox(
-                    label: i < dayLabels.length ? dayLabels[i] : '',
-                    selected: i < days.length && days[i],
-                    bold: true,
-                    onChanged: onDaysChanged == null
-                        ? null
-                        : (v) => onDaysChanged!(i, v),
-                  ),
+                child: SelectBox(
+                  label: i < dayLabels.length ? dayLabels[i] : '',
+                  selected: i < days.length && days[i],
+                  bold: true,
+                  expand: true,
+                  onChanged: onDaysChanged == null
+                      ? null
+                      : (v) => onDaysChanged!(i, v),
                 ),
               ),
             ],
@@ -320,19 +320,23 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-          child: Center(
-            child: SizedBox(
-              width: _contentWidth,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: saveText,
-                onPressed: onSave,
-              ),
+          child: SizedBox(
+            width: double.infinity,
+            child: Button(
+              type: BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: saveText,
+              onPressed: onSave,
             ),
           ),
         ),
-        const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+        // Bottom safe-area inset — clears the real OS gesture bar (replaces the
+        // former embedded fake HomeIndicator).
+        const SafeArea(
+          top: false,
+          minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          child: SizedBox.shrink(),
+        ),
       ],
     );
   }

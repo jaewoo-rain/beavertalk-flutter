@@ -47,24 +47,26 @@ class PermissionScreen extends StatelessWidget {
           ),
           // ── Permission rows ──
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
-                  _PermRow(
-                    icon: AppIcons.mic,
-                    title: '마이크 (필수)',
-                    description: 'AI와 영어로 통화하려면 필요해요.',
-                  ),
-                  SizedBox(height: AppSpacing.s12),
-                  _PermRow(
-                    icon: AppIcons.volume,
-                    title: '알림 (선택)',
-                    description: '학습 리마인더와 통화 일정을 알려드려요.',
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: const [
+                    _PermRow(
+                      icon: AppIcons.mic,
+                      title: '마이크 (필수)',
+                      description: 'AI와 영어로 통화하려면 필요해요.',
+                    ),
+                    SizedBox(height: AppSpacing.s12),
+                    _PermRow(
+                      icon: AppIcons.volume,
+                      title: '알림 (선택)',
+                      description: '학습 리마인더와 통화 일정을 알려드려요.',
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
