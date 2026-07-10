@@ -13,10 +13,9 @@ import '../../theme/app_typography.dart';
 /// - Row layout, hug sizing, padding `2px 7px`, `borderRadius` 8 ([AppRadius.xs]).
 /// - Label uses `MO/Body 1/*` (≈ [AppType.body1]); `bold` variant is SemiBold
 ///   (`.sb`), `regular` is `.r`.
-/// - `selected`   → bg `Background/Normal/Alternative` (surface2),
-///   text [AppColors.primary].
-/// - `unselected` → bg `Background/Elevated/Alternative` (surfaceElevated),
-///   text [AppColors.textSecondary].
+/// - Both states share bg `Background/Normal/Alternative` (surface2, #252932);
+///   selection is conveyed by the **text color only** (Figma alarm weekday chip):
+///   `selected` → text [AppColors.primary], `unselected` → [AppColors.textSecondary].
 ///
 /// Controlled atom: pass [selected] and handle [onChanged]; [disabled] dims it.
 class SelectBox extends StatelessWidget {
@@ -52,8 +51,9 @@ class SelectBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color bg =
-        selected ? AppColors.surface2 : AppColors.surfaceElevated;
+    // Figma weekday chip: both states use surface2 (#252932); selection shows
+    // via text color only (unselected surfaceElevated was a shade too dark).
+    const Color bg = AppColors.surface2;
     final Color fg =
         selected ? AppColors.primary : AppColors.textSecondary;
     final TextStyle base = bold ? AppType.body1.sb : AppType.body1.r;
