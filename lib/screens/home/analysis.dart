@@ -264,6 +264,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             disabled: _learningSentences.isEmpty,
             onPressed: () => _startLearning(_learningSentences),
           ),
+          const SizedBox(height: AppSpacing.s16),
+          Button(
+            type: BtnType.primaryOutline,
+            size: BtnSize.s60,
+            text: '발음 챌린지',
+            onPressed: () =>
+                Navigator.pushNamed(context, Routes.pronunciationChallenge),
+          ),
 
           // ── section 2: 새로 배운 표현 ───────────────────────────────
           const SizedBox(height: AppSpacing.s24),
