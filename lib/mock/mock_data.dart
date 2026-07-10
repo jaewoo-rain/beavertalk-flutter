@@ -7,23 +7,47 @@ import 'package:flutter/widgets.dart';
 const beaverImage = AssetImage('assets/images/beaver.png');
 const judiImage = AssetImage('assets/images/judi.png');
 
-/// Onboarding — native language options (emoji flags).
+/// Onboarding — native language / nationality options.
+///
+/// [id] is the opaque locale code stored in the signup draft / backend
+/// (e.g. 'en'); [countryCode] is the ISO 3166-1 alpha-2 code used to render an
+/// SVG flag via `CountryFlag.fromCountryCode` (reliable on every platform,
+/// unlike emoji regional-indicator glyphs which fall back to letter pairs on
+/// Windows and many Android devices).
 class MockLanguage {
-  const MockLanguage(this.id, this.name, this.flag);
+  const MockLanguage(this.id, this.name, this.countryCode);
   final String id;
   final String name;
-  final String flag;
+
+  /// ISO 3166-1 alpha-2 country code for the flag (e.g. 'US', 'KR').
+  final String countryCode;
 }
 
+/// Selectable user/native language + nationality options.
+///
+/// NOTE: This is an interim list (name + ISO country code) chosen for coverage
+/// of common learner native languages; it is NOT the canonical nationality /
+/// compatible-language spec (that lives in a Notion doc not available here).
+/// Korean stays the fixed LEARNING target elsewhere — these are the user's own
+/// language choices. Real per-locale UI translations are intentionally not
+/// wired here.
 const mockLanguages = <MockLanguage>[
-  MockLanguage('en', 'English', '🇺🇸'),
-  MockLanguage('ko', '한국어', '🇰🇷'),
-  MockLanguage('ja', '日本語', '🇯🇵'),
-  MockLanguage('zh', '中文', '🇨🇳'),
-  MockLanguage('es', 'Español', '🇪🇸'),
-  MockLanguage('fr', 'Français', '🇫🇷'),
-  MockLanguage('de', 'Deutsch', '🇩🇪'),
-  MockLanguage('vi', 'Tiếng Việt', '🇻🇳'),
+  MockLanguage('en', 'English', 'US'),
+  MockLanguage('ko', '한국어', 'KR'),
+  MockLanguage('ja', '日本語', 'JP'),
+  MockLanguage('zh', '中文', 'CN'),
+  MockLanguage('es', 'Español', 'ES'),
+  MockLanguage('fr', 'Français', 'FR'),
+  MockLanguage('de', 'Deutsch', 'DE'),
+  MockLanguage('vi', 'Tiếng Việt', 'VN'),
+  MockLanguage('pt', 'Português', 'BR'),
+  MockLanguage('ru', 'Русский', 'RU'),
+  MockLanguage('ar', 'العربية', 'SA'),
+  MockLanguage('hi', 'हिन्दी', 'IN'),
+  MockLanguage('it', 'Italiano', 'IT'),
+  MockLanguage('th', 'ไทย', 'TH'),
+  MockLanguage('id', 'Bahasa Indonesia', 'ID'),
+  MockLanguage('tr', 'Türkçe', 'TR'),
 ];
 
 /// Onboarding — learning reasons (Figma copy).

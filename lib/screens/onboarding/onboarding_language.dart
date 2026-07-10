@@ -5,6 +5,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/country_select.dart';
+import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../mock/mock_data.dart';
@@ -77,7 +78,7 @@ class _OnboardingLanguageScreenState
                 for (final lang in mockLanguages)
                   CountrySelect(
                     name: lang.name,
-                    flag: Text(lang.flag, style: const TextStyle(fontSize: 24)),
+                    flag: countryFlag(lang.countryCode),
                     selected: _selectedId == lang.id,
                     onSelect: () => _select(lang.id),
                   ),

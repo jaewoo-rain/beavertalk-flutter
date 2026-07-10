@@ -369,6 +369,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t play the standard pronunciation audio.'**
   String get standardAudioPlayError;
+
+  /// Default title of the country/language select bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a country'**
+  String get selectACountry;
+
+  /// Title of the language select sheet opened from My Page.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your language'**
+  String get selectYourLanguage;
+
+  /// Confirm button in the country/language select bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
 }
 
 class _AppLocalizationsDelegate

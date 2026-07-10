@@ -13,6 +13,7 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../l10n/app_localizations.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
@@ -59,10 +60,10 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       isScrollControlled: true,
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
-          title: 'Select your language',
+          title: AppLocalizations.of(sheetCtx).selectYourLanguage,
           items: [
             for (final l in mockLanguages)
-              CountryItem(code: l.id, name: l.name, flag: l.flag),
+              CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
           ],
           value: staged,
           onChanged: (code) => setSheetState(() => staged = code),

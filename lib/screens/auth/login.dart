@@ -77,7 +77,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _showLanguageSheet() async {
     final items = <CountryItem>[
       for (final l in mockLanguages)
-        CountryItem(code: l.id, name: l.name, flag: l.flag),
+        CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
     ];
     // Local selection while the sheet is open; seeded from the draft.
     String? selected = ref.read(signupDraftProvider).language;

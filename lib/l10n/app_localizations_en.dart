@@ -156,4 +156,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get standardAudioPlayError =>
       'Couldn\'t play the standard pronunciation audio.';
+
+  @override
+  String get selectACountry => 'Select a country';
+
+  @override
+  String get selectYourLanguage => 'Select your language';
+
+  @override
+  String get confirm => 'Confirm';
 }

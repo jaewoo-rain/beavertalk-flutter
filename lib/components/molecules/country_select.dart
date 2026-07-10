@@ -1,3 +1,4 @@
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_colors.dart';
@@ -112,10 +113,10 @@ class _CountrySelectDemoState extends State<CountrySelectDemo> {
   int _selected = 0;
 
   static const List<(String, String)> _countries = [
-    ('🇰🇷', '대한민국'),
-    ('🇺🇸', '미국'),
-    ('🇯🇵', '일본'),
-    ('🇨🇳', '중국'),
+    ('KR', '대한민국'),
+    ('US', '미국'),
+    ('JP', '일본'),
+    ('CN', '중국'),
   ];
 
   @override
@@ -133,9 +134,13 @@ class _CountrySelectDemoState extends State<CountrySelectDemo> {
               for (int i = 0; i < _countries.length; i++)
                 CountrySelect(
                   name: _countries[i].$2,
-                  flag: Text(
+                  flag: CountryFlag.fromCountryCode(
                     _countries[i].$1,
-                    style: const TextStyle(fontSize: 24),
+                    theme: const ImageTheme(
+                      height: 24,
+                      width: 32,
+                      shape: RoundedRectangle(4),
+                    ),
                   ),
                   selected: _selected == i,
                   onSelect: () => setState(() => _selected = i),
