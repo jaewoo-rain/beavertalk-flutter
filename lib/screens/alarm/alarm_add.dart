@@ -141,7 +141,7 @@ class _AlarmAddSheetState extends ConsumerState<AlarmAddSheet> {
       context: context,
       barrierDismissible: false,
       barrierColor: Colors.transparent,
-      barrierLabel: '시간 선택',
+      barrierLabel: AppLocalizations.of(context).selectTime,
       pageBuilder: (dialogCtx, _, _) => Stack(
         children: [
           Dim(onTap: () => Navigator.pop(dialogCtx)),

@@ -108,5 +108,118 @@
   "confirm": "Confirm",
   "@confirm": {
     "description": "Confirm button in the country/language select bottom sheet."
-  }
+  },
+
+  "cancel": "Cancel",
+  "selectTime": "Select time",
+  "getStarted": "Get Started",
+
+  "permissionTitle": "Allow permissions\nfor a smooth experience",
+  "permissionSubtitle": "Required permissions are essential to use the service.",
+  "permissionMicTitle": "Microphone (required)",
+  "permissionMicDesc": "Needed to talk with the AI in English.",
+  "permissionNotifTitle": "Notifications (optional)",
+  "permissionNotifDesc": "We'll send learning reminders and call schedules.",
+
+  "micPermissionNeededTitle": "Microphone access needed",
+  "micPermissionNeededBody": "To talk with the AI, you need to allow microphone access. Please enable it in Settings.",
+  "openSettings": "Open Settings",
+
+  "connectionFailedTitle": "Connection failed",
+  "connectionFailedBody": "Check your network connection\nand try again.",
+
+  "checkout": "Checkout",
+  "pay": "Pay",
+  "orderSummary": "Order Summary",
+  "paymentMethod": "Payment Method",
+  "payMethodCard": "Credit / Debit Card",
+  "payMethodKakao": "KakaoPay",
+  "productName": "Annoying Beaver Avatar",
+  "productTrait": "Premium character · Yours forever",
+  "amountItemPrice": "Item price",
+  "amountDiscount": "Discount",
+  "amountTotal": "Total",
+
+  "paymentCompleteTitle": "Payment complete",
+  "paymentCompleteBody": "The avatar has been added to your collection.",
+  "viewCollection": "View Collection",
+  "receiptItem": "Item",
+  "receiptAmount": "Amount",
+  "receiptMethod": "Payment method",
+  "receiptDate": "Date",
+
+  "paymentFailedTitle": "Payment failed",
+  "paymentFailedBody": "Your payment couldn't be processed.\nPlease try again.",
+
+  "freeCallEndingTitle": "Your free call is ending",
+  "freeCallEndingBody": "Subscribe to talk with Beaver for longer.",
+  "subscribe": "Subscribe",
+  "endCall": "End Call",
+  "callEnded": "The call has ended.",
+
+  "connecting": "Connecting…",
+  "connectingHint": "This usually takes less than 5 seconds",
+  "callConnectFailed": "Couldn't connect the call.",
+
+  "saveSentenceFailed": "Couldn't save the sentence.",
+  "recordStartFailed": "Couldn't start recording.",
+  "recordTooShort": "That recording was too short. Please try again.",
+  "gradingFailed": "Scoring failed. Please try again.",
+  "listenStandard": "Listen to standard pronunciation",
+  "saveSentence": "Save sentence",
+  "unsaveSentence": "Remove saved sentence",
+  "scoringPronunciation": "Scoring your pronunciation…",
+  "noRecordingToPlay": "No recording to play.",
+  "myRecordingPlayError": "Couldn't play your recording.",
+  "next": "Next",
+  "endLearning": "End Session",
+
+  "navCalendar": "Calendar",
+  "navCall": "Call",
+  "navStats": "Stats",
+  "myPage": "My Page",
+
+  "languageSaveFailed": "Couldn't save your language.",
+  "accountDeleteFailed": "Couldn't delete your account.",
+
+  "changeAvatar": "Change Avatar",
+  "avatarIntro": "Voice and difficulty vary by call partner.\nSome partners may require payment.",
+  "myPartnersOwned": "My Partners · {count} owned",
+  "@myPartnersOwned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "limitedDiscount": "Limited-time discount",
+  "available": "Available",
+  "inUse": "In use",
+  "owned": "Owned",
+  "noCharactersToShow": "No characters to show",
+  "buy": "Buy",
+
+  "noSavedSentences": "No saved sentences yet.\nBookmark sentences from your conversation records.",
+
+  "noAlarms": "No alarms yet",
+  "noAlarmsBody": "Add a learning reminder\nto build a consistent habit.",
+
+  "subscriptionManage": "Manage Subscription",
+  "changePlan": "Change Plan",
+  "cancelSubscription": "Cancel Subscription",
+  "benefitsInUse": "Your benefits",
+  "paymentInfo": "Payment info",
+  "nextBillingDate": "Next billing date",
+  "lostBenefitsTitle": "Benefits you'll lose if you cancel",
+  "viewBillingHistory": "View Billing History",
+  "keepUsingPro": "Keep Using Pro",
+  "proMembership": "Pro Membership",
+  "pricePerMonth": "$12.9 / mo",
+  "benefitUnlimitedCalls": "Unlimited calls",
+  "benefitDetailedAnalysis": "Detailed pronunciation & grammar analysis",
+  "benefitAllCharacters": "Access to all characters",
+  "benefitNoAds": "No ads",
+
+  "playSampleVoice": "Play sample voice",
+  "useThisAvatar": "Use This"
 }

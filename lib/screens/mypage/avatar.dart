@@ -12,6 +12,7 @@ import '../../features/auth/domain/entities/member.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/domain/entities/character.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -31,6 +32,7 @@ class AvatarScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final charactersAsync = ref.watch(charactersProvider);
     final ownedAsync = ref.watch(ownedCharactersProvider);
     final profileAsync = ref.watch(myProfileProvider);
@@ -39,14 +41,14 @@ class AvatarScreen extends ConsumerWidget {
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '아바타 변경', onBack: () => Navigator.pop(context)),
+          Gnb.main(title: l10n.changeAvatar, onBack: () => Navigator.pop(context)),
           Expanded(
             child: charactersAsync.when(
               loading: () => const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
               ),
               error: (e, _) => _ErrorState(
-                message: e is AppException ? e.message : '캐릭터를 불러오지 못했어요',
+                message: e is AppException ? e.message : l10n.charactersLoadError,
                 onRetry: () {
                   ref.invalidate(charactersProvider);
                   ref.invalidate(ownedCharactersProvider);
@@ -73,20 +75,19 @@ class AvatarScreen extends ConsumerWidget {
                       AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, AppSpacing.s24),
                   children: [
                     Text(
-                      '통화 상대에 따라 목소리와 난이도가 상이합니다.\n'
-                      '일부 통화 상대 이용은 결제가 필요할 수 있습니다.',
+                      l10n.avatarIntro,
                       style: AppType.body2.r
                           .copyWith(color: AppColors.textSecondary),
                     ),
                     const SizedBox(height: AppSpacing.s24),
                     if (owned.isNotEmpty) ...[
-                      _label('나의 통화 상대 · 보유 ${owned.length}'),
+                      _label(l10n.myPartnersOwned(owned.length)),
                       const SizedBox(height: AppSpacing.s12),
                       _ownedRow(context, owned, activeId),
                       const SizedBox(height: AppSpacing.s28),
                     ],
                     if (discounted.isNotEmpty) ...[
-                      _label('한정 할인 중'),
+                      _label(l10n.limitedDiscount),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in discounted) ...[
                         _discountCard(context, c),
@@ -95,7 +96,7 @@ class AvatarScreen extends ConsumerWidget {
                       const SizedBox(height: AppSpacing.s16),
                     ],
                     if (buyable.isNotEmpty) ...[
-                      _label('구매 가능'),
+                      _label(l10n.available),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in buyable) ...[
                         _buyableCard(context, c),
@@ -106,7 +107,7 @@ class AvatarScreen extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.s40),
                         child: Center(
-                          child: Text('표시할 캐릭터가 없어요',
+                          child: Text(l10n.noCharactersToShow,
                               style: AppType.body2.r.copyWith(
                                   color: AppColors.textSecondary)),
                         ),
@@ -127,6 +128,7 @@ class AvatarScreen extends ConsumerWidget {
     List<OwnedCharacter> owned,
     int? activeId,
   ) {
+    final l10n = AppLocalizations.of(context);
     final cards = <Widget>[];
     for (final c in owned) {
       final isActive = activeId != null && c.id == activeId;
@@ -134,7 +136,7 @@ class AvatarScreen extends ConsumerWidget {
         Expanded(
           child: AvatarCard(
             name: c.name,
-            statusLabel: isActive ? '사용 중' : '보유 중',
+            statusLabel: isActive ? l10n.inUse : l10n.owned,
             active: isActive,
             imageProvider: _imageFor(c.imageUrl, c.id),
             onTap: () => _openSheet(
@@ -173,7 +175,7 @@ class AvatarScreen extends ConsumerWidget {
       subtitle: 'Warm · Calm · Soft',
       price: _priceLabel(c.price),
       discountPrice: _priceLabel(c.effectivePrice),
-      action: _buyButton(() => _openSheet(
+      action: _buyButton(context, () => _openSheet(
             context,
             BottomSheetAvatarState.unownedDiscount,
             c.name,
@@ -193,7 +195,7 @@ class AvatarScreen extends ConsumerWidget {
       title: c.name,
       subtitle: 'Warm · Calm · Soft',
       price: _priceLabel(c.price),
-      action: _buyButton(() => _openSheet(
+      action: _buyButton(context, () => _openSheet(
             context,
             BottomSheetAvatarState.unownedNormal,
             c.name,
@@ -229,9 +231,9 @@ class AvatarScreen extends ConsumerWidget {
     );
   }
 
-  /// Formats integer KRW as "₩4,900"; 0 → "무료".
+  /// Formats integer KRW as "₩4,900"; 0 → "Free".
   String _priceLabel(int krw) {
-    if (krw <= 0) return '무료';
+    if (krw <= 0) return 'Free';
     final digits = krw.toString();
     final buf = StringBuffer();
     for (var i = 0; i < digits.length; i++) {
@@ -258,10 +260,10 @@ class AvatarScreen extends ConsumerWidget {
         ],
       );
 
-  Widget _buyButton(VoidCallback onTap) => Button(
+  Widget _buyButton(BuildContext context, VoidCallback onTap) => Button(
         type: BtnType.secondaryFill,
         size: BtnSize.s36,
-        text: '구매',
+        text: AppLocalizations.of(context).buy,
         onPressed: onTap,
       );
 }
@@ -283,7 +285,9 @@ class _ErrorState extends StatelessWidget {
               style: AppType.body2.r
                   .copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: AppSpacing.s12),
-          TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+          TextButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context).retry)),
         ],
       ),
     );

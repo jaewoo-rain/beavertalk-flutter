@@ -73,12 +73,13 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       ),
     );
     if (picked == null || picked == currentId || !mounted) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _userLangId = picked);
     try {
       await ref.read(authControllerProvider.notifier).updateLanguage(picked);
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : '언어 저장에 실패했어요.';
+      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -113,11 +114,12 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           DialogAction(label: 'Delete', onPressed: () => Navigator.of(context).pop(true)),
     );
     if (confirmed != true || !mounted) return;
+    final l10n = AppLocalizations.of(context);
     try {
       await ref.read(authControllerProvider.notifier).deleteAccount();
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : '회원 탈퇴에 실패했어요.';
+      final msg = e is AppException ? e.message : l10n.accountDeleteFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));

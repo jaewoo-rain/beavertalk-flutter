@@ -12,6 +12,7 @@ import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -116,18 +117,19 @@ class _RecordArchiveScreenState extends ConsumerState<RecordArchiveScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
-          // 기록 / 보관 tabs (보관 active).
+          // Records / Archive tabs (Archive active).
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.s20, 14, AppSpacing.s20, 14),
             child: SegmentedTabs(
-              labels: const ['기록', '보관'],
+              labels: [l10n.tabRecords, l10n.tabArchive],
               activeIndex: 1,
               onChanged: (i) {
                 if (i == 0) {
@@ -191,7 +193,7 @@ class _ArchiveEmpty extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s40),
         child: Text(
-          '저장한 문장이 없어요.\n대화 기록에서 문장을 즐겨찾기 해보세요.',
+          AppLocalizations.of(context).noSavedSentences,
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
         ),

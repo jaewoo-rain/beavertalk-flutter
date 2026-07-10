@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import 'learning_args.dart';
@@ -87,7 +88,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '학습 종료',
+                text: AppLocalizations.of(context).endLearning,
                 onPressed: _finish,
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -26,6 +27,7 @@ class PaymentCompleteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -47,13 +49,13 @@ class PaymentCompleteScreen extends StatelessWidget {
                           const _ResultIllustration(emoji: '✅'),
                           const SizedBox(height: 24),
                           Text(
-                            '결제가 완료되었어요',
+                            l10n.paymentCompleteTitle,
                             textAlign: TextAlign.center,
                             style: AppType.heading2.sb,
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '아바타가 보관함에 추가되었어요.',
+                            l10n.paymentCompleteBody,
                             textAlign: TextAlign.center,
                             style: AppType.label1.r
                                 .copyWith(color: AppColors.textSecondary),
@@ -76,7 +78,7 @@ class PaymentCompleteScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
-                    text: '홈으로',
+                    text: l10n.goHome,
                     onPressed: () => _goHome(context),
                   ),
                 ),
@@ -85,7 +87,7 @@ class PaymentCompleteScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '보관함 보기',
+                    text: l10n.viewCollection,
                     onPressed: () => _goHome(context),
                   ),
                 ),
@@ -105,6 +107,7 @@ class _Receipt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -113,14 +116,14 @@ class _Receipt extends StatelessWidget {
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          _ReceiptRow(label: '상품', value: 'Annoying Beaver 아바타'),
-          SizedBox(height: 10),
-          _ReceiptRow(label: '결제 금액', value: '₩4,900'),
-          SizedBox(height: 10),
-          _ReceiptRow(label: '결제 수단', value: '신용/체크카드'),
-          SizedBox(height: 10),
-          _ReceiptRow(label: '결제 일시', value: '2026.06.18 14:32'),
+        children: [
+          _ReceiptRow(label: l10n.receiptItem, value: l10n.productName),
+          const SizedBox(height: 10),
+          _ReceiptRow(label: l10n.receiptAmount, value: '₩4,900'),
+          const SizedBox(height: 10),
+          _ReceiptRow(label: l10n.receiptMethod, value: l10n.payMethodCard),
+          const SizedBox(height: 10),
+          _ReceiptRow(label: l10n.receiptDate, value: '2026.06.18 14:32'),
         ],
       ),
     );

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_basic.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 
 /// Microphone permission denied — Figma `screen/perm_mic_denied`
@@ -21,6 +22,7 @@ class MicDeniedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Stack(
@@ -30,16 +32,15 @@ class MicDeniedScreen extends StatelessWidget {
           // The permission dialog (Figma `2296:26216` — no illustration).
           Center(
             child: DialogBasic(
-              title: '마이크 권한이 필요해요',
-              description: 'AI와 통화하려면 마이크 권한을 허용해야 해요. '
-                  '설정에서 권한을 켜주세요.',
+              title: l10n.micPermissionNeededTitle,
+              description: l10n.micPermissionNeededBody,
               variant: DialogBasicVariant.twoHorizontal,
               primary: DialogAction(
-                label: '취소',
+                label: l10n.cancel,
                 onPressed: () => Navigator.maybePop(context),
               ),
               secondary: DialogAction(
-                label: '설정 열기',
+                label: l10n.openSettings,
                 onPressed: () => Navigator.maybePop(context),
               ),
             ),

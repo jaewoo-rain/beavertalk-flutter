@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -133,6 +134,7 @@ class BottomSheetAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: const BoxDecoration(
@@ -146,19 +148,19 @@ class BottomSheetAvatar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _header(),
+          _header(l10n),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _avatarBlock(),
+                _avatarBlock(l10n),
                 const SizedBox(height: 24),
               ],
             ),
           ),
-          _footer(),
+          _footer(l10n),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces
           // the former embedded fake HomeIndicator).
           const SafeArea(
@@ -172,7 +174,7 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   // ── Header (GNB sub-2: blank title, trailing close) ──────────────────────
-  Widget _header() {
+  Widget _header(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -181,7 +183,7 @@ class BottomSheetAvatar extends StatelessWidget {
           const Spacer(),
           Semantics(
             button: true,
-            label: '닫기',
+            label: l10n.close,
             child: GestureDetector(
               onTap: onClose,
               behavior: HitTestBehavior.opaque,
@@ -198,7 +200,7 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   // ── Avatar block: row + divider + sample card + description + price ───────
-  Widget _avatarBlock() {
+  Widget _avatarBlock(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,13 +216,13 @@ class BottomSheetAvatar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Expanded(child: _infoColumn()),
+            Expanded(child: _infoColumn(l10n)),
           ],
         ),
         const SizedBox(height: 10),
         const Divider(height: 1, thickness: 1, color: AppColors.borderSubtle),
         const SizedBox(height: 10),
-        _sampleVoiceCard(),
+        _sampleVoiceCard(l10n),
         if (description != null) ...[
           const SizedBox(height: 10),
           Text(
@@ -245,7 +247,7 @@ class BottomSheetAvatar extends StatelessWidget {
     );
   }
 
-  Widget _infoColumn() {
+  Widget _infoColumn(AppLocalizations l10n) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -261,7 +263,7 @@ class BottomSheetAvatar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            _statusBadge(),
+            _statusBadge(l10n),
             if (_isDiscount) ...[
               const SizedBox(width: 12),
               Text(
@@ -283,8 +285,8 @@ class BottomSheetAvatar extends StatelessWidget {
     );
   }
 
-  /// Status chip — "구매 가능" (neutral) for unowned, "보유" (light-blue) for owned.
-  Widget _statusBadge() {
+  /// Status chip — "Available" (neutral) for unowned, "Owned" (light-blue) for owned.
+  Widget _statusBadge(AppLocalizations l10n) {
     final owned = _isOwned;
     final fg = owned ? _ownedBadgeColor : AppColors.textSecondary;
     final bg = owned
@@ -298,7 +300,7 @@ class BottomSheetAvatar extends StatelessWidget {
         border: owned ? null : Border.all(color: AppColors.surface2),
       ),
       child: Text(
-        owned ? '보유' : '구매 가능',
+        owned ? l10n.owned : l10n.available,
         style: AppType.caption1.sb.copyWith(color: fg),
       ),
     );
@@ -319,7 +321,7 @@ class BottomSheetAvatar extends StatelessWidget {
     );
   }
 
-  Widget _sampleVoiceCard() {
+  Widget _sampleVoiceCard(AppLocalizations l10n) {
     return Material(
       color: AppColors.surface2,
       borderRadius: BorderRadius.circular(AppRadius.xs),
@@ -334,7 +336,7 @@ class BottomSheetAvatar extends StatelessWidget {
               AppIcons.volume(size: 24, color: AppColors.text),
               const SizedBox(width: 8),
               Text(
-                '샘플 목소리 듣기',
+                l10n.playSampleVoice,
                 style: AppType.label1.m.copyWith(color: AppColors.text),
               ),
             ],
@@ -377,14 +379,14 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   // ── Footer buttons (60-size), per state ──────────────────────────────────
-  Widget _footer() {
+  Widget _footer(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: _footerButtons(),
+      child: _footerButtons(l10n),
     );
   }
 
-  Widget _footerButtons() {
+  Widget _footerButtons(AppLocalizations l10n) {
     switch (state) {
       case BottomSheetAvatarState.unownedNormal:
       case BottomSheetAvatarState.unownedDiscount:
@@ -394,7 +396,7 @@ class BottomSheetAvatar extends StatelessWidget {
               child: Button(
                 type: BtnType.secondaryOutline,
                 size: BtnSize.s60,
-                text: '닫기',
+                text: l10n.close,
                 onPressed: onClose,
               ),
             ),
@@ -403,7 +405,7 @@ class BottomSheetAvatar extends StatelessWidget {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '구매하기',
+                text: l10n.buy,
                 onPressed: onConfirm,
               ),
             ),
@@ -413,14 +415,14 @@ class BottomSheetAvatar extends StatelessWidget {
         return Button(
           type: BtnType.primaryFill,
           size: BtnSize.s60,
-          text: '변경하기',
+          text: l10n.useThisAvatar,
           onPressed: onConfirm,
         );
       case BottomSheetAvatarState.ownedUsed:
         return Button(
           type: BtnType.secondaryWhite,
           size: BtnSize.s60,
-          text: '닫기',
+          text: l10n.close,
           onPressed: onClose,
         );
     }

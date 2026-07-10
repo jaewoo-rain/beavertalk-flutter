@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -48,18 +49,19 @@ class SubscriptionPlanInfo {
   const SubscriptionPlanInfo({
     required this.name,
     required this.priceLine,
-    this.nextBillingLabel = '다음 결제일',
+    this.nextBillingLabel,
     this.nextBillingDate,
   });
 
-  /// Plan name (e.g. "Pro 멤버십"), Heading 2 Bold.
+  /// Plan name (e.g. "Pro Membership"), Heading 2 Bold.
   final String name;
 
-  /// Price / renewal line (e.g. "\$ 12.9 / 월 자동 갱신"), Body 1 Regular secondary.
+  /// Price / renewal line (e.g. "\$12.9 / mo"), Body 1 Regular secondary.
   final String priceLine;
 
-  /// Left label of the next-billing row.
-  final String nextBillingLabel;
+  /// Left label of the next-billing row; falls back to the localized
+  /// "Next billing date" when null.
+  final String? nextBillingLabel;
 
   /// Next-billing date (e.g. "2026.06.20."), rendered in [AppColors.primary].
   /// When null the row is omitted.
@@ -122,7 +124,7 @@ class BottomSheetSubscription extends StatelessWidget {
     this.planOptions = const [],
     this.note,
     this.lostBenefits = const [],
-    this.lostBenefitsTitle = '취소 시 잃게 되는 혜택',
+    this.lostBenefitsTitle,
     this.onPrimary,
     this.onSecondary,
     this.onClose,
@@ -149,8 +151,9 @@ class BottomSheetSubscription extends StatelessWidget {
   /// Lost-benefit lines for [SubscriptionSheetType.cancel].
   final List<SubscriptionBenefit> lostBenefits;
 
-  /// Title of the cancel warning card.
-  final String lostBenefitsTitle;
+  /// Title of the cancel warning card; falls back to the localized default
+  /// when null.
+  final String? lostBenefitsTitle;
 
   /// Primary footer action: 플랜 변경 (manage) / 구독 취소 (change-plan & cancel).
   final VoidCallback? onPrimary;
@@ -165,19 +168,20 @@ class BottomSheetSubscription extends StatelessWidget {
   /// sheet otherwise fills its host width (Figma reference device: 375).
   static const double maxWidth = 430;
 
-  String get _title {
+  String _title(AppLocalizations l10n) {
     switch (type) {
       case SubscriptionSheetType.manage:
-        return '구독 관리';
+        return l10n.subscriptionManage;
       case SubscriptionSheetType.changePlan:
-        return '플랜 변경';
+        return l10n.changePlan;
       case SubscriptionSheetType.cancel:
-        return '구독 취소';
+        return l10n.cancelSubscription;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: const BoxDecoration(
@@ -191,12 +195,12 @@ class BottomSheetSubscription extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _header(),
+          _header(l10n),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: _body(),
+            child: _body(l10n),
           ),
-          _footer(),
+          _footer(l10n),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces
           // the former embedded fake HomeIndicator).
           const SafeArea(
@@ -210,7 +214,7 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Header (GNB sub-2: centered title + trailing close) ──────────────────
-  Widget _header() {
+  Widget _header(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -218,14 +222,14 @@ class BottomSheetSubscription extends StatelessWidget {
           const SizedBox(width: 28, height: 28),
           Expanded(
             child: Text(
-              _title,
+              _title(l10n),
               textAlign: TextAlign.center,
               style: AppType.body1.sb.copyWith(color: AppColors.text),
             ),
           ),
           Semantics(
             button: true,
-            label: '닫기',
+            label: l10n.close,
             child: GestureDetector(
               onTap: onClose,
               behavior: HitTestBehavior.opaque,
@@ -242,33 +246,33 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Body per type ────────────────────────────────────────────────────────
-  Widget _body() {
+  Widget _body(AppLocalizations l10n) {
     switch (type) {
       case SubscriptionSheetType.manage:
-        return _manageBody();
+        return _manageBody(l10n);
       case SubscriptionSheetType.changePlan:
-        return _changePlanBody();
+        return _changePlanBody(l10n);
       case SubscriptionSheetType.cancel:
-        return _cancelBody();
+        return _cancelBody(l10n);
     }
   }
 
-  Widget _manageBody() {
+  Widget _manageBody(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (plan != null) _planCard(plan!),
+        if (plan != null) _planCard(plan!, l10n),
         if (benefits.isNotEmpty) ...[
           const SizedBox(height: 16),
-          _section('사용 중인 혜택', [
+          _section(l10n.benefitsInUse, [
             for (final b in benefits)
               _benefitLine(b.label, AppColors.primary24, AppColors.text),
           ]),
         ],
         if (paymentRows.isNotEmpty) ...[
           const SizedBox(height: 16),
-          _section('결제 정보', [
+          _section(l10n.paymentInfo, [
             for (final r in paymentRows) _kvRow(r.label, r.value),
           ]),
         ],
@@ -276,7 +280,7 @@ class BottomSheetSubscription extends StatelessWidget {
     );
   }
 
-  Widget _planCard(SubscriptionPlanInfo plan) {
+  Widget _planCard(SubscriptionPlanInfo plan, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -302,7 +306,7 @@ class BottomSheetSubscription extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  plan.nextBillingLabel,
+                  plan.nextBillingLabel ?? l10n.nextBillingDate,
                   style:
                       AppType.body1.r.copyWith(color: AppColors.textSecondary),
                 ),
@@ -318,7 +322,7 @@ class BottomSheetSubscription extends StatelessWidget {
     );
   }
 
-  Widget _changePlanBody() {
+  Widget _changePlanBody(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -331,13 +335,13 @@ class BottomSheetSubscription extends StatelessWidget {
         const SizedBox(height: 8),
         for (var i = 0; i < planOptions.length; i++) ...[
           if (i > 0) const SizedBox(height: 12),
-          _planOptionCard(planOptions[i]),
+          _planOptionCard(planOptions[i], l10n),
         ],
       ],
     );
   }
 
-  Widget _planOptionCard(SubscriptionPlanOption option) {
+  Widget _planOptionCard(SubscriptionPlanOption option, AppLocalizations l10n) {
     final bulletColor =
         option.highlighted ? AppColors.primary : AppColors.text;
     return Container(
@@ -376,7 +380,7 @@ class BottomSheetSubscription extends StatelessWidget {
                   ],
                 ),
               ),
-              if (option.active) _activePill(),
+              if (option.active) _activePill(l10n),
             ],
           ),
           if (option.benefits.isNotEmpty) ...[
@@ -389,8 +393,8 @@ class BottomSheetSubscription extends StatelessWidget {
     );
   }
 
-  /// "이용 중" pill — primary_outline size 36.
-  Widget _activePill() {
+  /// "In use" pill — primary_outline size 36.
+  Widget _activePill(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
@@ -398,13 +402,13 @@ class BottomSheetSubscription extends StatelessWidget {
         border: Border.all(color: AppColors.primary),
       ),
       child: Text(
-        '이용 중',
+        l10n.inUse,
         style: AppType.label2.sb.copyWith(color: AppColors.primary),
       ),
     );
   }
 
-  Widget _cancelBody() {
+  Widget _cancelBody(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -426,7 +430,7 @@ class BottomSheetSubscription extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                lostBenefitsTitle,
+                lostBenefitsTitle ?? l10n.lostBenefitsTitle,
                 style: AppType.label1.r.copyWith(color: AppColors.error),
               ),
               const SizedBox(height: 8),
@@ -495,19 +499,19 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Footer per type ───────────────────────────────────────────────────────
-  Widget _footer() {
+  Widget _footer(AppLocalizations l10n) {
     switch (type) {
       case SubscriptionSheetType.manage:
-        return _stackedButtons('플랜 변경', '결제내역 보기');
+        return _stackedButtons(l10n.changePlan, l10n.viewBillingHistory);
       case SubscriptionSheetType.changePlan:
-        return _stackedButtons('구독 취소', 'Pro 계속 사용하기');
+        return _stackedButtons(l10n.cancelSubscription, l10n.keepUsingPro);
       case SubscriptionSheetType.cancel:
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
           child: Button(
             type: BtnType.secondaryWhite,
             size: BtnSize.s60,
-            text: '구독 취소',
+            text: l10n.cancelSubscription,
             onPressed: onPrimary,
           ),
         );

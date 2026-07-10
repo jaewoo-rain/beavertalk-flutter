@@ -76,7 +76,7 @@ class HeroAvatar extends StatelessWidget {
                 ? badge
                 : Semantics(
                     button: true,
-                    label: '아바타 변경',
+                    label: 'Change avatar',
                     child: Material(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(AppRadius.xs),

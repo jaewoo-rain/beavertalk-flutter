@@ -52,15 +52,15 @@ class CardAlarm extends StatelessWidget {
          'dayLabels must contain exactly 7 entries',
        );
 
-  /// Default single-character day labels (Sun..Sat, Korean).
+  /// Default single-character day labels (Sun..Sat).
   static const List<String> defaultDayLabels = [
-    '일',
-    '월',
-    '화',
-    '수',
-    '목',
-    '금',
-    '토',
+    'S',
+    'M',
+    'T',
+    'W',
+    'T',
+    'F',
+    'S',
   ];
 
   /// Whether the alarm is active or inactive.

@@ -11,6 +11,7 @@ import '../../components/organisms/bottom_nav_bar.dart';
 import '../../core/config/feature_flags.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/incoming_call/presentation/incoming_call_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -88,6 +89,7 @@ class HomeScreen extends ConsumerWidget {
 
   /// 실제 홈 콘텐츠(헤더 + 히어로 + 하단 네비).
   Widget _buildHome(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       children: [
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
@@ -100,7 +102,7 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   Semantics(
                     button: true,
-                    label: '마이페이지',
+                    label: l10n.myPage,
                     child: GestureDetector(
                       behavior: HitTestBehavior.opaque,
                       onTap: () =>
@@ -152,21 +154,21 @@ class HomeScreen extends ConsumerWidget {
           ),
           // Bottom navigation — call tab is the center action.
           BottomNavBar(
-            items: const [
+            items: [
               BottomNavItem(
                 key: 'calendar',
                 icon: BottomNavGlyph.calendar,
-                label: '달력',
+                label: l10n.navCalendar,
               ),
               BottomNavItem(
                 key: 'call',
                 icon: BottomNavGlyph.call,
-                label: '통화',
+                label: l10n.navCall,
               ),
               BottomNavItem(
                 key: 'history',
                 icon: BottomNavGlyph.history,
-                label: '통계',
+                label: l10n.navStats,
               ),
             ],
             activeKey: 'call',

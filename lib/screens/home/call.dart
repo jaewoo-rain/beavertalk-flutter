@@ -11,6 +11,7 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -60,20 +61,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   /// Opens the "free call ending" dialog with subscribe / end actions.
   Future<void> _confirmEnd() async {
+    final l10n = AppLocalizations.of(context);
     await showDialogBasic<void>(
       context,
-      title: '무료 통화가 끝나가요',
-      description: '구독하면 비버와 더 오래 대화할 수 있어요.',
+      title: l10n.freeCallEndingTitle,
+      description: l10n.freeCallEndingBody,
       variant: DialogBasicVariant.twoVertical,
       primary: DialogAction(
-        label: '구독하기',
+        label: l10n.subscribe,
         onPressed: () {
           Navigator.of(context).pop(); // close dialog
           Navigator.pushNamed(context, Routes.payment);
         },
       ),
       secondary: DialogAction(
-        label: '통화 종료',
+        label: l10n.endCall,
         onPressed: () {
           Navigator.of(context).pop(); // close dialog
           ref.read(normalCallControllerProvider.notifier).hangUp();
@@ -101,6 +103,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final elapsed = ref.watch(
       normalCallControllerProvider.select((s) => s.elapsedSec),
     );
@@ -127,7 +130,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;
         _navigated = true;
-        final msg = next.errorMsg ?? '통화가 종료되었습니다.';
+        final msg = next.errorMsg ?? l10n.callEnded;
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(SnackBar(content: Text(msg)));
@@ -287,7 +290,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
               child: Center(
                 child: Semantics(
                   button: true,
-                  label: '통화 종료',
+                  label: l10n.endCall,
                   child: Material(
                     color: AppColors.accentRed,
                     shape: const CircleBorder(),

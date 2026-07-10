@@ -13,6 +13,7 @@ import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -77,6 +78,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
   /// local flip and surfaces a message if the server call fails.
   Future<void> _toggleBookmark(int sentenceId) async {
+    final l10n = AppLocalizations.of(context);
     final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
     toggleBookmark(sentenceId);
     try {
@@ -85,7 +87,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           .toggleBookmark(sentenceId, willSave);
     } catch (e) {
       toggleBookmark(sentenceId); // revert on failure
-      _snack(e is AppException ? e.message : '문장 저장에 실패했어요.');
+      _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
     }
   }
 
@@ -101,6 +103,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// tap, caches it, then plays. Shows a message when TTS is unavailable.
   Future<void> _playStandard(MockSentence sentence) async {
     if (_submitting || _loadingTts) return;
+    final l10n = AppLocalizations.of(context);
     var url = _ttsUrl ?? sentence.voiceUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingTts = true);
@@ -113,20 +116,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         _snack(e.message);
         return;
       } catch (_) {
-        _snack('표준 발음 오디오를 재생할 수 없어요.');
+        _snack(l10n.standardAudioPlayError);
         return;
       } finally {
         if (mounted) setState(() => _loadingTts = false);
       }
     }
     if (url == null || !url.startsWith('http')) {
-      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      _snack(l10n.standardAudioNotReady);
       return;
     }
     try {
       await _player.playUrl(url);
     } catch (_) {
-      _snack('표준 발음 오디오를 재생할 수 없어요.');
+      _snack(l10n.standardAudioPlayError);
     }
   }
 
@@ -140,6 +143,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   }
 
   Future<void> _startRecording() async {
+    final l10n = AppLocalizations.of(context);
     try {
       await _recorder.start();
       if (!mounted) return;
@@ -147,11 +151,12 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     } on StateError catch (e) {
       _snack(e.message);
     } catch (_) {
-      _snack('녹음을 시작할 수 없어요.');
+      _snack(l10n.recordStartFailed);
     }
   }
 
   Future<void> _stopAndSubmit(LearningArgs args) async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _recording = false;
       _submitting = true;
@@ -161,7 +166,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       final pcm = await _recorder.stop();
       // Guard against an empty/too-short recording (< ~0.3s of PCM16 @16k).
       if (pcm.lengthInBytes < 16000 * 2 * 0.3) {
-        _snack('녹음이 너무 짧아요. 다시 시도해주세요.');
+        _snack(l10n.recordTooShort);
         return;
       }
 
@@ -182,7 +187,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     } on AppException catch (e) {
       _snack(e.message);
     } catch (_) {
-      _snack('채점 요청에 실패했어요. 다시 시도해주세요.');
+      _snack(l10n.gradingFailed);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -197,6 +202,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
     final sentence = args.current;
 
@@ -225,7 +231,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                           // (ready for the server's per-sentence audio URL).
                           Semantics(
                             button: true,
-                            label: '표준 발음 듣기',
+                            label: l10n.listenStandard,
                             child: GestureDetector(
                               onTap: () => _playStandard(sentence),
                               behavior: HitTestBehavior.opaque,
@@ -241,7 +247,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                               final saved = ids.contains(sentence.id);
                               return Semantics(
                                 button: true,
-                                label: saved ? '문장 저장 취소' : '문장 저장',
+                                label: saved ? l10n.unsaveSentence : l10n.saveSentence,
                                 child: GestureDetector(
                                   onTap: () => _toggleBookmark(sentence.id),
                                   behavior: HitTestBehavior.opaque,
@@ -325,6 +331,7 @@ class _SubmittingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Positioned.fill(
       child: ColoredBox(
         color: AppColors.scrim,
@@ -336,7 +343,7 @@ class _SubmittingOverlay extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.s16),
             Text(
-              '발음을 채점하고 있어요…',
+              l10n.scoringPronunciation,
               style: AppType.body1.r.copyWith(color: AppColors.text),
             ),
           ],

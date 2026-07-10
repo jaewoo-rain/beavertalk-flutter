@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -22,7 +23,7 @@ class BottomSheetTimePicker extends StatefulWidget {
     required this.initialMinute,
     required this.onConfirm,
     this.onCancel,
-    this.title = '시간 선택',
+    this.title,
   });
 
   /// Initial hour (1–12).
@@ -37,8 +38,8 @@ class BottomSheetTimePicker extends StatefulWidget {
   /// Called when the picker is dismissed without confirming.
   final VoidCallback? onCancel;
 
-  /// Header title.
-  final String title;
+  /// Header title; falls back to the localized "Select time" when null.
+  final String? title;
 
   @override
   State<BottomSheetTimePicker> createState() => _BottomSheetTimePickerState();
@@ -68,6 +69,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: AppColors.surfaceElevated,
       borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -81,7 +83,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                widget.title,
+                widget.title ?? l10n.selectTime,
                 textAlign: TextAlign.center,
                 style: AppType.body1.sb.copyWith(color: AppColors.text),
               ),
@@ -116,7 +118,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
                     child: Button(
                       type: BtnType.secondaryFill,
                       size: BtnSize.s48,
-                      text: '취소',
+                      text: l10n.cancel,
                       onPressed: widget.onCancel,
                     ),
                   ),
@@ -125,7 +127,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
                     child: Button(
                       type: BtnType.primaryFill,
                       size: BtnSize.s48,
-                      text: '확인',
+                      text: l10n.confirm,
                       onPressed: () => widget.onConfirm(_hour, _minute),
                     ),
                   ),

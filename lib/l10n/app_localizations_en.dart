@@ -165,4 +165,284 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get confirm => 'Confirm';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get selectTime => 'Select time';
+
+  @override
+  String get getStarted => 'Get Started';
+
+  @override
+  String get permissionTitle => 'Allow permissions\nfor a smooth experience';
+
+  @override
+  String get permissionSubtitle =>
+      'Required permissions are essential to use the service.';
+
+  @override
+  String get permissionMicTitle => 'Microphone (required)';
+
+  @override
+  String get permissionMicDesc => 'Needed to talk with the AI in English.';
+
+  @override
+  String get permissionNotifTitle => 'Notifications (optional)';
+
+  @override
+  String get permissionNotifDesc =>
+      'We\'ll send learning reminders and call schedules.';
+
+  @override
+  String get micPermissionNeededTitle => 'Microphone access needed';
+
+  @override
+  String get micPermissionNeededBody =>
+      'To talk with the AI, you need to allow microphone access. Please enable it in Settings.';
+
+  @override
+  String get openSettings => 'Open Settings';
+
+  @override
+  String get connectionFailedTitle => 'Connection failed';
+
+  @override
+  String get connectionFailedBody =>
+      'Check your network connection\nand try again.';
+
+  @override
+  String get checkout => 'Checkout';
+
+  @override
+  String get pay => 'Pay';
+
+  @override
+  String get orderSummary => 'Order Summary';
+
+  @override
+  String get paymentMethod => 'Payment Method';
+
+  @override
+  String get payMethodCard => 'Credit / Debit Card';
+
+  @override
+  String get payMethodKakao => 'KakaoPay';
+
+  @override
+  String get productName => 'Annoying Beaver Avatar';
+
+  @override
+  String get productTrait => 'Premium character · Yours forever';
+
+  @override
+  String get amountItemPrice => 'Item price';
+
+  @override
+  String get amountDiscount => 'Discount';
+
+  @override
+  String get amountTotal => 'Total';
+
+  @override
+  String get paymentCompleteTitle => 'Payment complete';
+
+  @override
+  String get paymentCompleteBody =>
+      'The avatar has been added to your collection.';
+
+  @override
+  String get viewCollection => 'View Collection';
+
+  @override
+  String get receiptItem => 'Item';
+
+  @override
+  String get receiptAmount => 'Amount';
+
+  @override
+  String get receiptMethod => 'Payment method';
+
+  @override
+  String get receiptDate => 'Date';
+
+  @override
+  String get paymentFailedTitle => 'Payment failed';
+
+  @override
+  String get paymentFailedBody =>
+      'Your payment couldn\'t be processed.\nPlease try again.';
+
+  @override
+  String get freeCallEndingTitle => 'Your free call is ending';
+
+  @override
+  String get freeCallEndingBody => 'Subscribe to talk with Beaver for longer.';
+
+  @override
+  String get subscribe => 'Subscribe';
+
+  @override
+  String get endCall => 'End Call';
+
+  @override
+  String get callEnded => 'The call has ended.';
+
+  @override
+  String get connecting => 'Connecting…';
+
+  @override
+  String get connectingHint => 'This usually takes less than 5 seconds';
+
+  @override
+  String get callConnectFailed => 'Couldn\'t connect the call.';
+
+  @override
+  String get saveSentenceFailed => 'Couldn\'t save the sentence.';
+
+  @override
+  String get recordStartFailed => 'Couldn\'t start recording.';
+
+  @override
+  String get recordTooShort =>
+      'That recording was too short. Please try again.';
+
+  @override
+  String get gradingFailed => 'Scoring failed. Please try again.';
+
+  @override
+  String get listenStandard => 'Listen to standard pronunciation';
+
+  @override
+  String get saveSentence => 'Save sentence';
+
+  @override
+  String get unsaveSentence => 'Remove saved sentence';
+
+  @override
+  String get scoringPronunciation => 'Scoring your pronunciation…';
+
+  @override
+  String get noRecordingToPlay => 'No recording to play.';
+
+  @override
+  String get myRecordingPlayError => 'Couldn\'t play your recording.';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get endLearning => 'End Session';
+
+  @override
+  String get navCalendar => 'Calendar';
+
+  @override
+  String get navCall => 'Call';
+
+  @override
+  String get navStats => 'Stats';
+
+  @override
+  String get myPage => 'My Page';
+
+  @override
+  String get languageSaveFailed => 'Couldn\'t save your language.';
+
+  @override
+  String get accountDeleteFailed => 'Couldn\'t delete your account.';
+
+  @override
+  String get changeAvatar => 'Change Avatar';
+
+  @override
+  String get avatarIntro =>
+      'Voice and difficulty vary by call partner.\nSome partners may require payment.';
+
+  @override
+  String myPartnersOwned(int count) {
+    return 'My Partners · $count owned';
+  }
+
+  @override
+  String get limitedDiscount => 'Limited-time discount';
+
+  @override
+  String get available => 'Available';
+
+  @override
+  String get inUse => 'In use';
+
+  @override
+  String get owned => 'Owned';
+
+  @override
+  String get noCharactersToShow => 'No characters to show';
+
+  @override
+  String get buy => 'Buy';
+
+  @override
+  String get noSavedSentences =>
+      'No saved sentences yet.\nBookmark sentences from your conversation records.';
+
+  @override
+  String get noAlarms => 'No alarms yet';
+
+  @override
+  String get noAlarmsBody =>
+      'Add a learning reminder\nto build a consistent habit.';
+
+  @override
+  String get subscriptionManage => 'Manage Subscription';
+
+  @override
+  String get changePlan => 'Change Plan';
+
+  @override
+  String get cancelSubscription => 'Cancel Subscription';
+
+  @override
+  String get benefitsInUse => 'Your benefits';
+
+  @override
+  String get paymentInfo => 'Payment info';
+
+  @override
+  String get nextBillingDate => 'Next billing date';
+
+  @override
+  String get lostBenefitsTitle => 'Benefits you\'ll lose if you cancel';
+
+  @override
+  String get viewBillingHistory => 'View Billing History';
+
+  @override
+  String get keepUsingPro => 'Keep Using Pro';
+
+  @override
+  String get proMembership => 'Pro Membership';
+
+  @override
+  String get pricePerMonth => '\$12.9 / mo';
+
+  @override
+  String get benefitUnlimitedCalls => 'Unlimited calls';
+
+  @override
+  String get benefitDetailedAnalysis =>
+      'Detailed pronunciation & grammar analysis';
+
+  @override
+  String get benefitAllCharacters => 'Access to all characters';
+
+  @override
+  String get benefitNoAds => 'No ads';
+
+  @override
+  String get playSampleVoice => 'Play sample voice';
+
+  @override
+  String get useThisAvatar => 'Use This';
 }

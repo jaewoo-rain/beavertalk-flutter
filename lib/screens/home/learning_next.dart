@@ -13,6 +13,7 @@ import '../../features/bookmark/presentation/providers/bookmark_toggle_controlle
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -73,6 +74,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
   /// local flip and surfaces a message if the server call fails.
   Future<void> _toggleBookmark(int sentenceId) async {
+    final l10n = AppLocalizations.of(context);
     final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
     toggleBookmark(sentenceId);
     try {
@@ -81,7 +83,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
           .toggleBookmark(sentenceId, willSave);
     } catch (e) {
       toggleBookmark(sentenceId); // revert on failure
-      _snack(e is AppException ? e.message : '문장 저장에 실패했어요.');
+      _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
     }
   }
 
@@ -109,15 +111,16 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   }
 
   Future<void> _playMe(LearningArgs args) async {
+    final l10n = AppLocalizations.of(context);
     final wav = args.recordedWav;
     if (wav == null || wav.isEmpty) {
-      _snack('재생할 녹음이 없어요.');
+      _snack(l10n.noRecordingToPlay);
       return;
     }
     try {
       await _player.playBytes(wav);
     } catch (_) {
-      _snack('내 녹음을 재생할 수 없어요.');
+      _snack(l10n.myRecordingPlayError);
     }
   }
 
@@ -129,6 +132,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   /// TTS, keyed by [sentenceId].
   Future<void> _playNative(int sentenceId) async {
     if (_loadingNative) return;
+    final l10n = AppLocalizations.of(context);
     var url = _nativeUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingNative = true);
@@ -141,20 +145,20 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
         _snack(e.message);
         return;
       } catch (_) {
-        _snack('표준 발음 오디오를 재생할 수 없어요.');
+        _snack(l10n.standardAudioPlayError);
         return;
       } finally {
         if (mounted) setState(() => _loadingNative = false);
       }
     }
     if (url == null || !url.startsWith('http')) {
-      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      _snack(l10n.standardAudioNotReady);
       return;
     }
     try {
       await _player.playUrl(url);
     } catch (_) {
-      _snack('표준 발음 오디오를 재생할 수 없어요.');
+      _snack(l10n.standardAudioPlayError);
     }
   }
 
@@ -166,6 +170,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
     final feedback = args.feedback;
     final sentence = args.current;
@@ -195,7 +200,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                       // shows a snackbar when the server has no playable URL.
                       Semantics(
                         button: true,
-                        label: '표준 발음 듣기',
+                        label: l10n.listenStandard,
                         child: GestureDetector(
                           onTap: () => _playNative(sentence.id),
                           behavior: HitTestBehavior.opaque,
@@ -210,7 +215,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                           final saved = ids.contains(sentence.id);
                           return Semantics(
                             button: true,
-                            label: saved ? '문장 저장 취소' : '문장 저장',
+                            label: saved ? l10n.unsaveSentence : l10n.saveSentence,
                             child: GestureDetector(
                               onTap: () => _toggleBookmark(sentence.id),
                               behavior: HitTestBehavior.opaque,
@@ -297,7 +302,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                         const SizedBox(width: AppSpacing.s24),
                         RecordCircleButton(
                           icon: AppIcons.redo,
-                          semanticLabel: '다시하기',
+                          semanticLabel: l10n.retry,
                           onTap: () => Navigator.pop(context),
                         ),
                         const SizedBox(width: AppSpacing.s24),
@@ -325,7 +330,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                             ),
                             iconSize: 32,
                             color: AppColors.green700,
-                            tooltip: '다음',
+                            tooltip: l10n.next,
                           ),
                         ),
                       ],

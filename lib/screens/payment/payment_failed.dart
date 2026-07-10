@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -19,6 +20,7 @@ class PaymentFailedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -51,13 +53,13 @@ class PaymentFailedScreen extends StatelessWidget {
                           ),
                           const SizedBox(height: 24),
                           Text(
-                            '결제에 실패했어요',
+                            l10n.paymentFailedTitle,
                             textAlign: TextAlign.center,
                             style: AppType.heading2.sb,
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            '결제가 처리되지 않았어요.\n다시 시도해주세요.',
+                            l10n.paymentFailedBody,
                             textAlign: TextAlign.center,
                             style: AppType.label1.r
                                 .copyWith(color: AppColors.textSecondary),
@@ -78,7 +80,7 @@ class PaymentFailedScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
-                    text: '홈으로',
+                    text: l10n.goHome,
                     onPressed: () => Navigator.of(context)
                         .pushNamedAndRemoveUntil(Routes.home, (r) => r.isFirst),
                   ),
@@ -88,7 +90,7 @@ class PaymentFailedScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '다시 시도',
+                    text: l10n.retry,
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),

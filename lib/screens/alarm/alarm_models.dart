@@ -62,7 +62,7 @@ class AlarmData {
       '${meridiem == Meridiem.am ? 'AM' : 'PM'} $clockLabel';
 
   /// Display name of the selected partner (falls back to a generic label).
-  String get partnerName => characterName ?? '캐릭터';
+  String get partnerName => characterName ?? 'Character';
 
   /// A deep copy (so edits can be staged then committed/discarded).
   AlarmData copy() => AlarmData(

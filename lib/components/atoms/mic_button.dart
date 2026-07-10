@@ -85,13 +85,13 @@ class MicButton extends StatelessWidget {
       return RecordCircleButton(
         icon: AppIcons.mic,
         onTap: onTap,
-        semanticLabel: '녹음 시작',
+        semanticLabel: 'Start recording',
         size: _size,
       );
     }
     return Semantics(
       button: true,
-      label: '녹음 정지',
+      label: 'Stop recording',
       child: GestureDetector(
         onTap: onTap,
         child: const SizedBox(
