@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet_alarm_settings.dart';
 import 'package:beavertalk/features/alarm/domain/entities/alarm.dart';
 import 'package:beavertalk/features/alarm/presentation/providers/alarm_providers.dart';
+import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/alarm/alarm_add.dart';
 import 'package:beavertalk/screens/alarm/alarm_models.dart';
 
@@ -24,6 +25,9 @@ void main() {
             .overrideWith((ref) async => characters),
       ],
       child: MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
         home: Scaffold(
           body: Builder(
             builder: (context) => Center(
@@ -59,8 +63,8 @@ void main() {
     // Sheet body is now on a modal route above the page.
     expect(find.byType(AlarmAddSheet), findsOneWidget);
     expect(find.byType(BottomSheetAlarmSettings), findsOneWidget);
-    // Add mode header.
-    expect(find.text('새 일정 추가'), findsOneWidget);
+    // Add mode header (English default locale).
+    expect(find.text('Add Schedule'), findsOneWidget);
   });
 
   testWidgets('saving pops the sheet and returns an AlarmData', (tester) async {
@@ -74,8 +78,8 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
 
-    // Tap the footer save button ("저장").
-    await tester.tap(find.text('저장'));
+    // Tap the footer save button ("Save").
+    await tester.tap(find.text('Save'));
     await tester.pumpAndSettle();
 
     expect(called, isTrue);

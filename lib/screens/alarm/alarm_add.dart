@@ -7,6 +7,7 @@ import '../../components/organisms/bottom_sheet_alarm_settings.dart';
 import '../../components/organisms/bottom_sheet_time_picker.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import 'alarm_models.dart';
@@ -87,24 +88,25 @@ class _AlarmAddSheetState extends ConsumerState<AlarmAddSheet> {
   @override
   Widget build(BuildContext context) {
     final data = _data;
+    final l10n = AppLocalizations.of(context);
     final charactersAsync = ref.watch(availableCharactersProvider);
 
     return charactersAsync.when(
       loading: () => const _SheetLoading(),
       error: (error, stack) => _SheetMessage(
-        message: '캐릭터를 불러오지 못했어요',
+        message: l10n.charactersLoadError,
         onClose: () => Navigator.pop(context),
       ),
       data: (characters) {
         if (characters.isEmpty) {
           return _SheetMessage(
-            message: '사용 가능한 캐릭터가 없어요',
+            message: l10n.noCharacters,
             onClose: () => Navigator.pop(context),
           );
         }
         _ensureCharacter(data, characters);
         return BottomSheetAlarmSettings(
-          title: _isEdit ? '일정 수정' : '새 일정 추가',
+          title: _isEdit ? l10n.editSchedule : l10n.addSchedule,
           time: data.clockLabel,
           onTimeTap: () => _pickTime(data),
           meridiem: data.meridiem,
@@ -210,7 +212,10 @@ class _SheetMessage extends StatelessWidget {
               style: AppType.body2.r
                   .copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 12),
-          TextButton(onPressed: onClose, child: const Text('닫기')),
+          TextButton(
+            onPressed: onClose,
+            child: Text(AppLocalizations.of(context).close),
+          ),
         ],
       ),
     );

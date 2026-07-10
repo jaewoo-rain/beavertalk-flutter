@@ -13,6 +13,7 @@ import 'app/push_bootstrap.dart';
 import 'app/routes.dart';
 import 'core/config/feature_flags.dart';
 import 'core/network/supabase_config.dart';
+import 'l10n/app_localizations.dart';
 import 'theme/app_colors.dart';
 import 'theme/app_typography.dart';
 
@@ -73,6 +74,11 @@ class BeaverTalkApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       // Lets the 401 interceptor navigate without a BuildContext.
       navigatorKey: appNavigatorKey,
+      // i18n (gen-l10n). English is forced as the default locale per QA — the
+      // migrated screens render in English regardless of device locale.
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('en'),
       theme: ThemeData(
         useMaterial3: true,
         scaffoldBackgroundColor: AppColors.bg,

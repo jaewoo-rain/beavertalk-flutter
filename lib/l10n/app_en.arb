@@ -1,0 +1,99 @@
+{
+  "@@locale": "en",
+
+  "callEndedDuration": "Call ended {duration}",
+  "@callEndedDuration": {
+    "description": "Sub-label on the call-finished screen showing the elapsed call time.",
+    "placeholders": {
+      "duration": {
+        "type": "String",
+        "example": "05:12"
+      }
+    }
+  },
+  "callRatingPrompt": "How was your call?",
+  "@callRatingPrompt": {
+    "description": "Heading asking the user to rate the call just ended."
+  },
+  "ratingBad": "Not great",
+  "@ratingBad": {
+    "description": "Lowest call rating choice (thumbs-down)."
+  },
+  "ratingOkay": "Okay",
+  "@ratingOkay": {
+    "description": "Middle call rating choice (single thumbs-up)."
+  },
+  "ratingGood": "Good",
+  "@ratingGood": {
+    "description": "Highest call rating choice (double thumbs-up)."
+  },
+  "goHome": "Home",
+  "viewAnalysis": "View Analysis",
+  "loadingShort": "Loading…",
+  "ratingSubmitFailed": "Failed to submit rating: {message}",
+  "@ratingSubmitFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "callInfoNotFound": "Call info not found, skipping analysis.",
+
+  "tabRecords": "Records",
+  "tabArchive": "Archive",
+  "callHistory": "Call History",
+  "conversationRecord": "Conversation record",
+  "noCallRecords": "No call records yet",
+  "noCallRecordsBody": "Once you finish your first call with AI,\nyour records will appear here.",
+  "startCall": "Start a Call",
+  "recordsLoadError": "Couldn't load records",
+  "tryAgainLater": "Please try again later.",
+  "retry": "Retry",
+  "durationMinSec": "{minutes} min {seconds} sec",
+  "@durationMinSec": {
+    "description": "A duration formatted as minutes and seconds.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+
+  "scheduleManagement": "Schedule",
+  "alarms": "Alarms",
+  "addSchedule": "Add Schedule",
+  "editSchedule": "Edit Schedule",
+  "somethingWentWrong": "Something went wrong",
+  "alarmsLoadError": "Couldn't load alarms",
+  "charactersLoadError": "Couldn't load characters",
+  "noCharacters": "No characters available",
+  "close": "Close",
+  "repeat": "Repeat",
+  "callPartner": "Character",
+  "am": "AM",
+  "pm": "PM",
+  "save": "Save",
+
+  "conversation": "Conversation",
+  "review": "Review",
+  "pronunciationChallenge": "Pronunciation Challenge",
+  "newExpressions": "New Expressions",
+  "analysisResult": "Analysis Result",
+  "noNewExpressions": "No new expressions from this conversation.",
+  "practice": "Practice",
+  "recentScore": "Recent score {score}%",
+  "@recentScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "analysisLoadError": "Couldn't load the analysis result.",
+  "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
+  "standardAudioPlayError": "Couldn't play the standard pronunciation audio."
+}

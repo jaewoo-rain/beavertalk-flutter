@@ -9,6 +9,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -32,8 +33,9 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   /// Surfaces a repository [AppException] as a snackbar.
   void _showError(Object error) {
     if (!mounted) return;
-    final message =
-        error is AppException ? error.message : '문제가 발생했어요';
+    final message = error is AppException
+        ? error.message
+        : AppLocalizations.of(context).somethingWentWrong;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -80,24 +82,27 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   @override
   Widget build(BuildContext context) {
     final alarmsAsync = ref.watch(alarmListControllerProvider);
+    final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '일정 관리', onBack: () => Navigator.pop(context)),
-          // "알람" subheader with an add (+) action.
+          Gnb.main(
+              title: l10n.scheduleManagement,
+              onBack: () => Navigator.pop(context)),
+          // "Alarms" subheader with an add (+) action.
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 12, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('알람',
+                Text(l10n.alarms,
                     style: AppType.heading2.sb.copyWith(color: AppColors.text)),
                 IconButton(
                   onPressed: _add,
                   icon: AppIcons.plus(color: AppColors.text),
-                  tooltip: '새 일정 추가',
+                  tooltip: l10n.addSchedule,
                 ),
               ],
             ),
@@ -108,7 +113,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                 child: CircularProgressIndicator(color: AppColors.primary),
               ),
               error: (e, _) => _ErrorState(
-                message: e is AppException ? e.message : '알람을 불러오지 못했어요',
+                message: e is AppException ? e.message : l10n.alarmsLoadError,
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
               ),
               data: (alarms) => alarms.isEmpty
@@ -123,7 +128,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '새 일정 추가',
+                text: l10n.addSchedule,
                 onPressed: _add,
               ),
             ),
@@ -217,7 +222,10 @@ class _ErrorState extends StatelessWidget {
               style: AppType.body2.r
                   .copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 12),
-          TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(AppLocalizations.of(context).retry),
+          ),
         ],
       ),
     );

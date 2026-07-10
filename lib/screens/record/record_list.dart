@@ -9,6 +9,7 @@ import '../../components/molecules/segmented_tabs.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -28,6 +29,7 @@ class RecordListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final calls = ref.watch(callListProvider);
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -38,7 +40,7 @@ class RecordListScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(AppSpacing.s20, 14, AppSpacing.s20, 14),
             child: SegmentedTabs(
-              labels: const ['기록', '보관'],
+              labels: [l10n.tabRecords, l10n.tabArchive],
               activeIndex: 0,
               onChanged: (i) {
                 if (i == 1) {
@@ -75,11 +77,12 @@ class _RecordList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
-        Text('통화 기록',
+        Text(l10n.callHistory,
             style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
         const SizedBox(height: 8),
         for (var i = 0; i < records.length; i++) ...[
@@ -97,10 +100,10 @@ class _RecordList extends StatelessWidget {
                 backgroundImage: _avatarFor(records[i].character.imageUrl),
               ),
               title: records[i].character.name,
-              subtitle: _subtitleFor(records[i].summary),
+              subtitle: _subtitleFor(l10n, records[i].summary),
               meta: [
                 _formatDate(records[i].callDate),
-                _formatDuration(records[i].totalTime),
+                _formatDuration(l10n, records[i].totalTime),
               ],
             ),
           ),
@@ -117,9 +120,9 @@ class _RecordList extends StatelessWidget {
     return beaverImage;
   }
 
-  String _subtitleFor(String? summary) {
+  String _subtitleFor(AppLocalizations l10n, String? summary) {
     if (summary != null && summary.trim().isNotEmpty) return summary;
-    return '대화 기록';
+    return l10n.conversationRecord;
   }
 
   /// `YYYY.MM.DD.` (e.g. `2026.01.01.`), or `-` when missing.
@@ -131,12 +134,12 @@ class _RecordList extends StatelessWidget {
     return '$y.$m.$d.';
   }
 
-  /// `N분 N초` from a duration in seconds, or `-` when missing.
-  String _formatDuration(int? totalSeconds) {
+  /// `N min NN sec` from a duration in seconds, or `-` when missing.
+  String _formatDuration(AppLocalizations l10n, int? totalSeconds) {
     if (totalSeconds == null) return '-';
     final minutes = totalSeconds ~/ 60;
     final seconds = totalSeconds % 60;
-    return '$minutes분 ${seconds.toString().padLeft(2, '0')}초';
+    return l10n.durationMinSec(minutes, seconds);
   }
 }
 
@@ -147,6 +150,7 @@ class _EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         child: ConstrainedBox(
@@ -159,13 +163,13 @@ class _EmptyState extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '아직 통화 기록이 없어요',
+                    l10n.noCallRecords,
                     textAlign: TextAlign.center,
                     style: AppType.headline1.sb.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
-                    'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
+                    l10n.noCallRecordsBody,
                     textAlign: TextAlign.center,
                     style:
                         AppType.label1.r.copyWith(color: AppColors.textSecondary),
@@ -174,7 +178,7 @@ class _EmptyState extends StatelessWidget {
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '통화하러 가기',
+                    text: l10n.startCall,
                     onPressed: () =>
                         Navigator.pushNamed(context, Routes.callLoading),
                   ),
@@ -196,6 +200,7 @@ class _ErrorState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return LayoutBuilder(
       builder: (context, constraints) => SingleChildScrollView(
         child: ConstrainedBox(
@@ -208,13 +213,13 @@ class _ErrorState extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '기록을 불러오지 못했어요',
+                    l10n.recordsLoadError,
                     textAlign: TextAlign.center,
                     style: AppType.headline1.sb.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
-                    '잠시 후 다시 시도해주세요.',
+                    l10n.tryAgainLater,
                     textAlign: TextAlign.center,
                     style:
                         AppType.label1.r.copyWith(color: AppColors.textSecondary),
@@ -223,7 +228,7 @@ class _ErrorState extends StatelessWidget {
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '다시 시도',
+                    text: l10n.retry,
                     onPressed: onRetry,
                   ),
                 ],

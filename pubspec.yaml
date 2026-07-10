@@ -88,6 +88,9 @@ dependencies:
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
   share_plus: ^12.0.2
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:
@@ -115,6 +118,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Generate the gen-l10n localizations (AppLocalizations) from lib/l10n/*.arb
+  # per l10n.yaml. Output lands in the source tree (Flutter 3.44: no synthetic
+  # package).
+  generate: true
 
   assets:
     - assets/images/
