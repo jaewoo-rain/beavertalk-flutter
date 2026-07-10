@@ -1,7 +1,14 @@
 import 'dart:async';
+import 'dart:io' show File;
+import 'dart:ui' as ui;
 
+import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../../app/app_scaffold.dart';
 import '../../../components/atoms/button.dart';
@@ -9,18 +16,27 @@ import '../../../components/organisms/gnb.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
+import '../data/camera_service.dart';
+import '../data/stt_service.dart';
+import '../domain/challenge_engine.dart';
 import '../domain/game_config.dart';
 import 'challenge_controller.dart';
 import 'challenge_painter.dart';
 
 /// Screen phases (which overlay panel is shown over the live game canvas).
-enum _Phase { start, countdown, playing, result }
+enum _Phase { start, loading, countdown, playing, result }
 
 /// Pronunciation Challenge — a Ticker + CustomPainter mini-game.
 ///
-/// PHASE 0/1: fully playable with a **temporary tap input** (a tap passes the
-/// front-most in-zone live card). Speech recognition, camera, and recording are
-/// intentionally stubbed for a later wave.
+/// PHASE 2/3: live Korean STT (Vosk over a single mic PCM capture) is the
+/// primary input, with tap-to-pass kept as a fallback when STT is unavailable
+/// (web / iOS-unsupported plugin / model download failure / denied mic). A
+/// front-camera selfie backdrop sits behind the canvas when available; the
+/// result panel shares a branded score-card image via `share_plus`.
+///
+/// Everything degrades gracefully: with no mic, camera, model, or on web, the
+/// game is still fully playable via tap on the solid `AppColors.surface`
+/// background and never crashes on missing hardware.
 class PronunciationChallengeScreen extends ConsumerStatefulWidget {
   /// Creates the challenge screen.
   const PronunciationChallengeScreen({super.key});
@@ -34,14 +50,25 @@ class _PronunciationChallengeScreenState
     extends ConsumerState<PronunciationChallengeScreen>
     with SingleTickerProviderStateMixin {
   late final ChallengeController _controller;
+  final SttService _stt = SttService();
+  final ChallengeCameraService _camera = ChallengeCameraService();
+  final GlobalKey _shareCardKey = GlobalKey();
+
   _Phase _phase = _Phase.start;
   int _countdown = 3;
   Timer? _countdownTimer;
+
+  /// Whether STT is driving input this round (false → tap fallback active).
+  bool _sttActive = false;
 
   @override
   void initState() {
     super.initState();
     _controller = ChallengeController(vsync: this);
+    // Wire speech tokens into the engine's pass logic (front-most in-zone,
+    // exact normalized match). The per-utterance bookkeeping lives in the
+    // SttService's SpeechMatcher.
+    _stt.onToken = _controller.engine.tryPassToken;
     _controller.addListener(_onFrame);
     // Ticker runs continuously so the belt animates behind every panel.
     _controller.startTicker();
@@ -51,11 +78,27 @@ class _PronunciationChallengeScreenState
   void _onFrame() {
     if (_phase == _Phase.playing && !_controller.engine.running) {
       _countdownTimer?.cancel();
+      unawaited(_stt.stopListening());
+      _sttActive = false;
       setState(() => _phase = _Phase.result);
     }
   }
 
-  void _beginCountdown() {
+  /// Start: initialize camera (backdrop) + STT (may download the model), then
+  /// count down and play. Both inits are best-effort and degrade gracefully.
+  Future<void> _onStart() async {
+    setState(() => _phase = _Phase.loading);
+    // Camera + STT init concurrently. Neither can throw (both return bool).
+    final results = await Future.wait<bool>(<Future<bool>>[
+      _camera.init(),
+      _stt.init(),
+    ]);
+    final sttReady = results[1];
+    if (!mounted) return;
+    _beginCountdown(sttReady: sttReady);
+  }
+
+  void _beginCountdown({required bool sttReady}) {
     _countdownTimer?.cancel();
     setState(() {
       _phase = _Phase.countdown;
@@ -66,16 +109,35 @@ class _PronunciationChallengeScreenState
       _countdown--;
       if (_countdown <= 0) {
         t.cancel();
-        _controller.engine.start();
-        setState(() => _phase = _Phase.playing);
+        _startPlaying(sttReady: sttReady);
       } else {
         setState(() {});
       }
     });
   }
 
+  Future<void> _startPlaying({required bool sttReady}) async {
+    _controller.engine.start();
+    setState(() => _phase = _Phase.playing);
+    if (sttReady) {
+      // startListening also returns false if the mic is denied at capture time.
+      _sttActive = await _stt.startListening();
+      if (mounted) setState(() {});
+    } else {
+      _sttActive = false;
+    }
+  }
+
+  /// Tap fallback: only passes cards when STT is NOT the active input.
   void _onTapDown() {
-    if (_phase == _Phase.playing) _controller.engine.tapPass();
+    if (_phase == _Phase.playing && !_sttActive) {
+      _controller.engine.tapPass();
+    }
+  }
+
+  /// Replay from the result panel (STT/camera already initialized).
+  void _replay() {
+    _beginCountdown(sttReady: _stt.isAvailable);
   }
 
   @override
@@ -83,6 +145,8 @@ class _PronunciationChallengeScreenState
     _countdownTimer?.cancel();
     _controller.removeListener(_onFrame);
     _controller.dispose();
+    unawaited(_stt.dispose());
+    unawaited(_camera.dispose());
     super.dispose();
   }
 
@@ -99,7 +163,7 @@ class _PronunciationChallengeScreenState
           Expanded(
             child: Stack(
               children: [
-                // ── live game canvas (9:16 stage) ──
+                // ── 9:16 stage: camera backdrop + game canvas ──
                 Positioned.fill(
                   child: Center(
                     child: AspectRatio(
@@ -107,12 +171,20 @@ class _PronunciationChallengeScreenState
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTapDown: (_) => _onTapDown(),
-                        child: CustomPaint(
-                          painter: ChallengePainter(
-                            engine: _controller.engine,
-                            repaint: _controller,
-                          ),
-                          child: const SizedBox.expand(),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            _cameraBackdrop(),
+                            CustomPaint(
+                              painter: ChallengePainter(
+                                engine: _controller.engine,
+                                repaint: _controller,
+                                cameraActive: _camera.isReady,
+                                micLevel: _stt.micLevel,
+                              ),
+                              child: const SizedBox.expand(),
+                            ),
+                          ],
                         ),
                       ),
                     ),
@@ -120,12 +192,40 @@ class _PronunciationChallengeScreenState
                 ),
                 // ── overlay panels ──
                 if (_phase == _Phase.start) _startPanel(),
+                if (_phase == _Phase.loading) _loadingPanel(),
                 if (_phase == _Phase.countdown) _countdownPanel(),
                 if (_phase == _Phase.result) _resultPanel(),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  // ── camera backdrop (mirrored selfie; web drawCamera parity) ─────────
+  Widget _cameraBackdrop() {
+    final controller = _camera.controller;
+    if (!_camera.isReady || controller == null) {
+      return const SizedBox.expand(); // solid painter background shows instead
+    }
+    final preview = controller.value.previewSize;
+    // previewSize is reported in sensor orientation (landscape); swap W/H for
+    // the portrait stage, then cover-fit and mirror for a selfie.
+    final w = preview?.height ?? 9;
+    final h = preview?.width ?? 16;
+    return ClipRect(
+      child: Transform(
+        alignment: Alignment.center,
+        transform: Matrix4.diagonal3Values(-1, 1, 1), // horizontal flip (selfie)
+        child: FittedBox(
+          fit: BoxFit.cover,
+          child: SizedBox(
+            width: w,
+            height: h,
+            child: CameraPreview(controller),
+          ),
+        ),
       ),
     );
   }
@@ -159,7 +259,8 @@ class _PronunciationChallengeScreenState
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
-          '존 안의 카드를 화면 탭으로 통과시켜요.\n(임시 입력 — 음성 인식은 다음 단계)',
+          '존 안의 카드를 한국어로 정확히 발음해 통과시켜요.\n'
+          '마이크가 없으면 화면 탭으로도 플레이할 수 있어요.',
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
         ),
@@ -169,9 +270,35 @@ class _PronunciationChallengeScreenState
         Button(
           type: BtnType.primaryFill,
           size: BtnSize.s60,
-          text: '시작하기',
-          onPressed: _beginCountdown,
+          text: '카메라 & 마이크 시작',
+          onPressed: _onStart,
         ),
+        const SizedBox(height: AppSpacing.s8),
+        Text(
+          '전면 카메라·마이크 접근이 필요합니다 (선택).',
+          textAlign: TextAlign.center,
+          style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+        ),
+      ],
+    );
+  }
+
+  Widget _loadingPanel() {
+    return _panelShell(
+      children: [
+        Text(
+          'Loading…',
+          textAlign: TextAlign.center,
+          style: AppType.title2.b.copyWith(color: AppColors.text),
+        ),
+        const SizedBox(height: AppSpacing.s12),
+        Text(
+          '첫 실행 시 한국어 음성 모델(~82MB)을 내려받습니다.\n잠시만 기다려 주세요.',
+          textAlign: TextAlign.center,
+          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        const CircularProgressIndicator(color: AppColors.primary),
       ],
     );
   }
@@ -198,34 +325,154 @@ class _PronunciationChallengeScreenState
     final engine = _controller.engine;
     return _panelShell(
       children: [
-        Text(
-          'RESULT',
-          style: AppType.label1.b.copyWith(color: AppColors.primary),
-        ),
-        const SizedBox(height: AppSpacing.s8),
-        Text(
-          engine.resultTitle,
-          textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: AppColors.text),
+        // Branded score card — captured to a PNG for sharing.
+        RepaintBoundary(
+          key: _shareCardKey,
+          child: _shareCard(engine),
         ),
         const SizedBox(height: AppSpacing.s16),
-        Text(
-          'Score ${_thousands(engine.score)}  ·  '
-          'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}',
-          textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
-        ),
-        const SizedBox(height: AppSpacing.s24),
+        if (!_stt.isAvailable)
+          Padding(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+            child: Text(
+              '음성 인식을 사용할 수 없어 탭 입력으로 진행했어요.',
+              textAlign: TextAlign.center,
+              style: AppType.label2.r.copyWith(color: const Color(0xFFFFCF5C)),
+            ),
+          ),
         _difficultyToggle(),
-        const SizedBox(height: AppSpacing.s24),
-        Button(
-          type: BtnType.primaryFill,
-          size: BtnSize.s60,
-          text: 'Play Again',
-          onPressed: _beginCountdown,
+        const SizedBox(height: AppSpacing.s16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: 'Share',
+                onPressed: _shareResult,
+              ),
+            ),
+            const SizedBox(width: AppSpacing.s12),
+            Expanded(
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: 'Play Again',
+                onPressed: _replay,
+              ),
+            ),
+          ],
         ),
       ],
     );
+  }
+
+  /// The shareable branded score card (also shown in the result panel).
+  Widget _shareCard(ChallengeEngine engine) {
+    return Container(
+      width: 300,
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.s24,
+        vertical: AppSpacing.s24,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceElevated,
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: const Color(0x1FFFFFFF)),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'BEAVERTALK',
+            style: AppType.label1.b.copyWith(
+              color: AppColors.primary,
+              letterSpacing: 1.5,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          Text(
+            engine.resultTitle,
+            textAlign: TextAlign.center,
+            style: AppType.title2.b.copyWith(color: AppColors.text),
+          ),
+          const SizedBox(height: AppSpacing.s16),
+          Text(
+            _thousands(engine.score),
+            style: AppType.display1.b.copyWith(
+              color: AppColors.primary,
+              fontSize: 56,
+              height: 1,
+            ),
+          ),
+          const SizedBox(height: AppSpacing.s4),
+          Text(
+            'SCORE',
+            style: AppType.label2.b.copyWith(color: AppColors.textTertiary),
+          ),
+          const SizedBox(height: AppSpacing.s16),
+          Text(
+            'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}',
+            textAlign: TextAlign.center,
+            style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          Text(
+            'beavertalk.im',
+            style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── share (score-card image + challenge copy) ───────────────────────
+  /// Web game `shareText()` (lines 596–598), with the player's real score.
+  String _shareText() {
+    return 'Think your Korean is good?\n\n'
+        'Beaver just proved you wrong.\n\n'
+        'His score: ${_thousands(_controller.engine.score)}\n\n'
+        'Yours?\n\n'
+        '👉 https://www.beavertalk.im';
+  }
+
+  Future<void> _shareResult() async {
+    try {
+      // Web can't write a temp file the same way; share text only there.
+      if (kIsWeb) {
+        await SharePlus.instance.share(ShareParams(text: _shareText()));
+        return;
+      }
+      final boundary = _shareCardKey.currentContext?.findRenderObject()
+          as RenderRepaintBoundary?;
+      if (boundary == null) {
+        await SharePlus.instance.share(ShareParams(text: _shareText()));
+        return;
+      }
+      final image = await boundary.toImage(pixelRatio: 3);
+      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
+      image.dispose();
+      if (bytes == null) {
+        await SharePlus.instance.share(ShareParams(text: _shareText()));
+        return;
+      }
+      final dir = await getTemporaryDirectory();
+      final file = File(
+        '${dir.path}/beavertalk_challenge_'
+        '${DateTime.now().millisecondsSinceEpoch}.png',
+      );
+      await file.writeAsBytes(bytes.buffer.asUint8List());
+      // TODO(device): the web game shares a recorded MP4 of the gameplay
+      // (canvas + selfie + voice). True gameplay-canvas+camera+mic muxing needs
+      // a native/ffmpeg frame-capture pipeline that can't be verified without a
+      // device; the shipped path shares this branded score-card image instead.
+      await SharePlus.instance.share(
+        ShareParams(text: _shareText(), files: <XFile>[XFile(file.path)]),
+      );
+    } catch (e) {
+      debugPrint('share failed: $e');
+    }
   }
 
   // ── difficulty toggle (Slow / Normal / Fast) ────────────────────────

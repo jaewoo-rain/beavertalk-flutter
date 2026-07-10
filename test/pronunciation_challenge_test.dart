@@ -170,7 +170,7 @@ void main() {
       );
       await tester.pump();
       expect(find.text('Pronunciation Challenge'), findsOneWidget);
-      expect(find.text('시작하기'), findsOneWidget);
+      expect(find.text('카메라 & 마이크 시작'), findsOneWidget); // start button
       expect(find.text('발음 챌린지'), findsOneWidget); // GNB title
     });
   });

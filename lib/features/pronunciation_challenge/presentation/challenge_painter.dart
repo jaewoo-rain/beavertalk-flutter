@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
@@ -19,11 +20,23 @@ import '../domain/game_config.dart';
 /// bg → belt → zone → non-live cards → live cards → flash → HUD → hit-texts.
 class ChallengePainter extends CustomPainter {
   /// Creates the painter, repainting whenever [engine]'s controller notifies.
-  ChallengePainter({required this.engine, required Listenable repaint})
-      : super(repaint: repaint);
+  ChallengePainter({
+    required this.engine,
+    required Listenable repaint,
+    this.cameraActive = false,
+    this.micLevel,
+  }) : super(repaint: repaint);
 
   /// The simulation to render.
   final ChallengeEngine engine;
+
+  /// When `true`, the solid background is skipped so a camera preview behind the
+  /// canvas shows through (web `drawCamera` parity).
+  final bool cameraActive;
+
+  /// Live mic level (0..1) for the on-screen gauge; `null` hides the gauge.
+  /// Read on every frame so the gauge tracks without rebuilding the painter.
+  final ValueListenable<double>? micLevel;
 
   /// Card-colour palette (web game `CARD_COLORS`, line 212). Indexed by
   /// [ChallengeCard.colorIndex]. Length must equal
@@ -60,6 +73,7 @@ class ChallengePainter extends CustomPainter {
     }
     _drawFlash(canvas);
     _drawHud(canvas);
+    if (micLevel != null && engine.running) _drawMic(canvas);
     _drawHits(canvas);
 
     canvas.restore();
@@ -67,9 +81,46 @@ class ChallengePainter extends CustomPainter {
 
   // ── background (solid; replaces the web game's camera feed) ─────────
   void _drawBackground(Canvas canvas) {
+    // When a camera preview sits behind the canvas, leave the background
+    // transparent so the selfie shows through (web `drawCamera` parity).
+    if (cameraActive) return;
     canvas.drawRect(
       const Rect.fromLTWH(0, 0, GameConfig.w, GameConfig.h),
       Paint()..color = AppColors.surface, // #181A20
+    );
+  }
+
+  // ── mic level gauge (web drawHUD mic indicator, lines 548–554) ──────
+  void _drawMic(Canvas canvas) {
+    final level = (micLevel?.value ?? 0).clamp(0.0, 1.0);
+    const micY = GameConfig.h - 215;
+    const micIconX = GameConfig.w / 2 - 108;
+    // Mint mic dot.
+    canvas.drawCircle(
+      const Offset(micIconX, micY),
+      32,
+      Paint()..color = _mint.withValues(alpha: 0.9),
+    );
+    // Level gauge.
+    const gw = 190.0;
+    const gx = micIconX + 52;
+    const gy = micY - 13;
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(gx, gy, gw * level, 26),
+        const Radius.circular(13),
+      ),
+      Paint()..color = _mint.withValues(alpha: 0.85),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(gx, gy, gw, 26),
+        const Radius.circular(13),
+      ),
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2
+        ..color = const Color(0x40FFFFFF),
     );
   }
 
@@ -412,7 +463,9 @@ class ChallengePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(covariant ChallengePainter oldDelegate) =>
-      oldDelegate.engine != engine;
+      oldDelegate.engine != engine ||
+      oldDelegate.cameraActive != cameraActive ||
+      oldDelegate.micLevel != micLevel;
 }
 
 enum _HAlign { left, center, right }

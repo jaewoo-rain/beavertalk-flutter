@@ -1,0 +1,97 @@
+import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
+
+/// Lifecycle of the [ChallengeCameraService].
+enum CameraStatus {
+  /// Never initialized.
+  idle,
+
+  /// Initializing.
+  loading,
+
+  /// Preview is live.
+  ready,
+
+  /// No camera / permission denied / unsupported — keep the solid backdrop.
+  unavailable,
+}
+
+/// Front-camera preview backdrop for the Pronunciation Challenge — the Flutter
+/// analogue of the web game's `drawCamera()` selfie background.
+///
+/// ## Mic coexistence
+/// The controller is created with `enableAudio: false` **on purpose**: a
+/// preview-only camera must NOT open the microphone, otherwise it would contend
+/// with [SttService]'s PCM capture (Android `AudioRecord` / iOS `AVAudioSession`
+/// only cleanly allow one mic owner). With audio off, the camera preview and
+/// Vosk's mic stream coexist.
+///
+/// ## Video recording (deliberately NOT wired here — see the screen's TODO)
+/// True "record the composited gameplay canvas + selfie + voice to MP4" needs a
+/// frame-capture + mux pipeline (`RepaintBoundary` frames + PCM → encoder),
+/// which is native/`ffmpeg`-heavy and unverifiable without a device. The
+/// shipped share path is a result **score-card image** (see the screen). This
+/// service intentionally stops at the preview backdrop.
+///
+/// Every failure resolves to [CameraStatus.unavailable]; the game stays
+/// playable on the solid `AppColors.surface` background.
+class ChallengeCameraService {
+  /// The initialized controller, or `null` until [CameraStatus.ready].
+  CameraController? controller;
+
+  /// Current lifecycle status.
+  final ValueNotifier<CameraStatus> status = ValueNotifier<CameraStatus>(
+    CameraStatus.idle,
+  );
+
+  bool _disposed = false;
+
+  /// Whether a live preview is available.
+  bool get isReady =>
+      status.value == CameraStatus.ready && controller != null;
+
+  /// Initializes the front camera preview. Returns `true` on success; `false`
+  /// (→ solid backdrop) on any failure. Never throws.
+  Future<bool> init() async {
+    if (_disposed) return false;
+    status.value = CameraStatus.loading;
+    try {
+      final cameras = await availableCameras();
+      if (cameras.isEmpty) {
+        status.value = CameraStatus.unavailable;
+        return false;
+      }
+      final front = cameras.firstWhere(
+        (c) => c.lensDirection == CameraLensDirection.front,
+        orElse: () => cameras.first,
+      );
+      final controller = CameraController(
+        front,
+        ResolutionPreset.medium,
+        enableAudio: false, // ← keep the mic free for Vosk (see class doc)
+      );
+      await controller.initialize();
+      if (_disposed) {
+        await controller.dispose();
+        return false;
+      }
+      this.controller = controller;
+      status.value = CameraStatus.ready;
+      return true;
+    } catch (e) {
+      debugPrint('ChallengeCameraService.init failed → solid backdrop: $e');
+      status.value = CameraStatus.unavailable;
+      return false;
+    }
+  }
+
+  /// Disposes the controller + notifier.
+  Future<void> dispose() async {
+    _disposed = true;
+    try {
+      await controller?.dispose();
+    } catch (_) {}
+    controller = null;
+    status.dispose();
+  }
+}

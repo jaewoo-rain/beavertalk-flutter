@@ -3,6 +3,7 @@ import 'dart:math';
 import '../data/curated_word_source.dart';
 import 'challenge_card.dart';
 import 'game_config.dart';
+import 'matcher.dart';
 
 /// The pure-Dart simulation for the Pronunciation Challenge.
 ///
@@ -214,5 +215,31 @@ class ChallengeEngine {
     if (c == null) return false;
     passCard(c);
     return true;
+  }
+
+  /// Speech input: passes the front-most in-zone live card whose word exactly
+  /// matches the normalized spoken [token]. Returns whether a card was passed.
+  ///
+  /// Port of the inner match loop of the web game's `tryPass` (lines 342–349):
+  /// it scans the in-zone cards front-to-back and passes the first exact match.
+  /// The per-utterance token bookkeeping (`consumed`/`lastTxt`) lives in
+  /// [SpeechMatcher] so a single utterance clears at most one card per token.
+  bool tryPassToken(String token) {
+    if (!running) return false;
+    final inZone = <ChallengeCard>[];
+    for (final c in cards) {
+      if (c.state == CardState.live &&
+          (c.x - GameConfig.zoneCx).abs() < GameConfig.acceptMargin) {
+        inZone.add(c);
+      }
+    }
+    inZone.sort((a, b) => a.x.compareTo(b.x));
+    for (final c in inZone) {
+      if (wordMatch(token, c.word)) {
+        passCard(c);
+        return true;
+      }
+    }
+    return false;
   }
 }
