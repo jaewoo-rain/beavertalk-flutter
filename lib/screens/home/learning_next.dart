@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
-import '../../components/chrome/home_indicator.dart';
+import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
@@ -171,15 +171,6 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
     final sentence = args.current;
     final native = feedback?.native ?? sentence.native;
 
-    // Figma (screen/learning_next 2296:26339): the control cluster sits 24px
-    // above the Body bottom, with a 34px HomeIndicator zone below it. AppScaffold's
-    // SafeArea reserves the OS bottom inset on native (→ 24px is exact), but web
-    // reports none, so the cluster would hug the viewport edge. When there's no OS
-    // inset, also reserve the 34px home-indicator zone (same fix as learning_intro).
-    final rawBottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    final bottomGap =
-        AppSpacing.s24 + (rawBottomInset == 0 ? HomeIndicator.height : 0.0);
-
     return AppScaffold(
       background: AppColors.surface2,
       body: Column(
@@ -293,49 +284,54 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                 // Native/Me → controls gap (Figma 36; no AppSpacing token).
                 const SizedBox(height: 36),
                 // Retry (white circle, centred) + next (arrow) control cluster.
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(width: 56),
-                      const SizedBox(width: AppSpacing.s24),
-                      RecordCircleButton(
-                        icon: AppIcons.redo,
-                        semanticLabel: '다시하기',
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(width: AppSpacing.s24),
-                      SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: IconButton(
-                          // More sentences left → record the next one directly;
-                          // the score screen (learning_main) shows only once,
-                          // after the whole review sequence is done.
-                          onPressed: () => args.hasNext
-                              ? Navigator.pushNamed(
-                                  context,
-                                  Routes.learningIntro,
-                                  arguments: args.next(),
-                                )
-                              : Navigator.pushNamed(
-                                  context,
-                                  Routes.learningMain,
-                                  arguments: args,
-                                ),
-                          icon: AppIcons.arrowForward(
-                            size: 32,
-                            color: AppColors.green700,
-                          ),
-                          iconSize: 32,
-                          color: AppColors.green700,
-                          tooltip: '다음',
+                // The bottom inset comes from the shared [BottomCtaBar] (OS
+                // gesture-bar inset on native, a guaranteed 24px floor on
+                // web/desktop), so the cluster sits at the same inset as other
+                // screens instead of hand-rolling the home-indicator fallback.
+                BottomCtaBar(
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(width: 56),
+                        const SizedBox(width: AppSpacing.s24),
+                        RecordCircleButton(
+                          icon: AppIcons.redo,
+                          semanticLabel: '다시하기',
+                          onTap: () => Navigator.pop(context),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: AppSpacing.s24),
+                        SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: IconButton(
+                            // More sentences left → record the next one directly;
+                            // the score screen (learning_main) shows only once,
+                            // after the whole review sequence is done.
+                            onPressed: () => args.hasNext
+                                ? Navigator.pushNamed(
+                                    context,
+                                    Routes.learningIntro,
+                                    arguments: args.next(),
+                                  )
+                                : Navigator.pushNamed(
+                                    context,
+                                    Routes.learningMain,
+                                    arguments: args,
+                                  ),
+                            icon: AppIcons.arrowForward(
+                              size: 32,
+                              color: AppColors.green700,
+                            ),
+                            iconSize: 32,
+                            color: AppColors.green700,
+                            tooltip: '다음',
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: bottomGap),
               ],
             ),
           ),

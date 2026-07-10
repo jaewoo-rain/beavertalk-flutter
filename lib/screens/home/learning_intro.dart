@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/mic_button.dart';
-import '../../components/chrome/home_indicator.dart';
+import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -200,15 +200,6 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
     final sentence = args.current;
 
-    // Figma (screen/learning_intro 2296:26318): the mic sits 24px above the Body
-    // bottom, with a 34px HomeIndicator zone below it. AppScaffold's SafeArea
-    // reserves the OS bottom inset on native (→ 24px is exact), but web reports
-    // no inset, so the mic would hug the viewport edge. When there's no OS inset,
-    // also reserve the 34px home-indicator zone so it matches Figma on web too.
-    final rawBottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    final micBottomGap =
-        AppSpacing.s24 + (rawBottomInset == 0 ? HomeIndicator.height : 0.0);
-
     return AppScaffold(
       background: AppColors.surface2,
       body: Stack(
@@ -293,23 +284,26 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         ),
                       ),
                     ),
-                    // Mic button — Figma body top 558 (node 2296:26337). The gap
-                    // below is 24px (Figma) plus the home-indicator zone when the
-                    // platform reserves none (web), so the mic never hugs / gets
-                    // cut at the frame edge (QA: "마이크 짤림").
-                    Center(
-                      child: StreamBuilder<double>(
-                        stream: _recorder.amplitude,
-                        builder: (context, snap) => MicButton(
-                          recording: _recording,
-                          // Drive the reactive pulse from the live mic level
-                          // while recording; static otherwise.
-                          level: _recording ? snap.data : null,
-                          onTap: () => _onMicTap(args),
+                    // Mic button — Figma body top 558 (node 2296:26337). The
+                    // bottom inset comes from the shared [BottomCtaBar]: the OS
+                    // gesture-bar inset on native, a guaranteed 24px floor on
+                    // web/desktop — so the mic never hugs / gets cut at the frame
+                    // edge (QA: "마이크 짤림") and sits at the same inset as other
+                    // screens.
+                    BottomCtaBar(
+                      child: Center(
+                        child: StreamBuilder<double>(
+                          stream: _recorder.amplitude,
+                          builder: (context, snap) => MicButton(
+                            recording: _recording,
+                            // Drive the reactive pulse from the live mic level
+                            // while recording; static otherwise.
+                            level: _recording ? snap.data : null,
+                            onTap: () => _onMicTap(args),
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(height: micBottomGap),
                   ],
                 ),
               ),
