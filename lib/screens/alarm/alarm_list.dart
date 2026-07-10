@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
-import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_alarm.dart';
@@ -13,6 +12,7 @@ import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
+import 'alarm_add.dart';
 import 'alarm_empty.dart';
 import 'alarm_models.dart';
 
@@ -48,22 +48,30 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
     }
   }
 
-  /// Opens the add sheet; creates the result (POST) if the user saved.
+  /// Opens the add sheet as a modal bottom sheet; creates the result (POST) if
+  /// the user saved. `isScrollControlled` lets the sheet + its inner time-picker
+  /// size correctly and rise above the keyboard.
   Future<void> _add() async {
-    final result =
-        await Navigator.pushNamed(context, Routes.alarmAdd) as AlarmData?;
+    final result = await showModalBottomSheet<AlarmData>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const AlarmAddSheet(),
+    );
     if (result == null) return;
     await _run(() =>
         ref.read(alarmListControllerProvider.notifier).add(result.toEntity()));
   }
 
-  /// Opens the edit sheet seeded with [alarm]; updates it (PUT) on save.
+  /// Opens the edit sheet (modal bottom sheet) seeded with [alarm]; updates it
+  /// (PUT) on save.
   Future<void> _edit(Alarm alarm) async {
-    final result = await Navigator.pushNamed(
-      context,
-      Routes.alarmAdd,
-      arguments: AlarmData.fromEntity(alarm),
-    ) as AlarmData?;
+    final result = await showModalBottomSheet<AlarmData>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AlarmAddSheet(initial: AlarmData.fromEntity(alarm)),
+    );
     if (result == null) return;
     await _run(() =>
         ref.read(alarmListControllerProvider.notifier).edit(result.toEntity()));

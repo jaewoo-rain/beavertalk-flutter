@@ -13,114 +13,153 @@ import 'alarm_models.dart';
 
 /// Add / edit alarm — Figma `screen/etc_alarm__add` (`2117:20276`).
 ///
-/// Hosts the [BottomSheetAlarmSettings] surface (time + AM/PM + weekday chips +
-/// call partner + save). The partner list is fed by the real server characters
-/// (`availableCharactersProvider`); a new alarm defaults to the first one.
+/// The interactive surface lives in [AlarmAddSheet] so it can be dropped
+/// straight into a modal bottom sheet (the primary entry point from the alarm
+/// list) — see `alarm_list.dart`. This [AlarmAddScreen] is kept as a thin
+/// full-page host for the legacy `Routes.alarmAdd` route (still used by
+/// `alarm_empty.dart`); it simply bottom-aligns the same [AlarmAddSheet].
 ///
 /// Reads an optional [AlarmData] off `ModalRoute.settings.arguments`:
-/// - present → **edit** mode (title "일정 수정"), pre-filled from that alarm;
-/// - absent → **add** mode (title "새 일정 추가"), seeded with a default.
-///
-/// On save it pops with the edited [AlarmData] (the caller commits it to the
-/// server); close pops with `null`.
-class AlarmAddScreen extends ConsumerStatefulWidget {
-  /// Creates the add/edit-alarm screen.
+/// - present → **edit** mode; absent → **add** mode.
+class AlarmAddScreen extends StatelessWidget {
+  /// Creates the add/edit-alarm host screen.
   const AlarmAddScreen({super.key});
 
   @override
-  ConsumerState<AlarmAddScreen> createState() => _AlarmAddScreenState();
+  Widget build(BuildContext context) {
+    final arg = ModalRoute.of(context)?.settings.arguments;
+    return AppScaffold(
+      background: AppColors.surface,
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: AlarmAddSheet(initial: arg is AlarmData ? arg : null),
+      ),
+    );
+  }
 }
 
-class _AlarmAddScreenState extends ConsumerState<AlarmAddScreen> {
-  AlarmData? _data;
-  bool _pickingTime = false;
+/// The add/edit-alarm content — the [BottomSheetAlarmSettings] surface (time +
+/// AM/PM + weekday chips + call partner + save) plus its state wiring.
+///
+/// Designed to size to its own content (`mainAxisSize.min`) so it works as a
+/// **modal bottom-sheet body** (present it via `showModalBottomSheet` with
+/// `isScrollControlled: true` and `backgroundColor: Colors.transparent`) as
+/// well as inside a bottom-aligned page host ([AlarmAddScreen]).
+///
+/// The partner list is fed by the real server characters
+/// (`availableCharactersProvider`); a new alarm defaults to the first one.
+///
+/// - [initial] present → **edit** mode (title "일정 수정"), seeded from a copy
+///   of that alarm; absent → **add** mode (title "새 일정 추가").
+///
+/// On save it pops its enclosing route/sheet with the edited [AlarmData] (the
+/// caller commits it to the server); close/dismiss pops with `null`.
+class AlarmAddSheet extends ConsumerStatefulWidget {
+  /// Creates the add/edit-alarm sheet body, optionally seeded with [initial].
+  const AlarmAddSheet({super.key, this.initial});
+
+  /// The alarm being edited, or `null` for add mode.
+  final AlarmData? initial;
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_data != null) return;
-    final arg = ModalRoute.of(context)?.settings.arguments;
-    _data = arg is AlarmData
-        ? arg.copy()
-        : AlarmData(
-            hour: 8,
-            minute: 0,
-            meridiem: Meridiem.am,
-            days: [true, false, false, false, false, false, false],
-            // Replaced with the first real character once loaded.
-            characterId: 0,
-          );
+  ConsumerState<AlarmAddSheet> createState() => _AlarmAddSheetState();
+}
+
+class _AlarmAddSheetState extends ConsumerState<AlarmAddSheet> {
+  late final AlarmData _data;
+
+  bool get _isEdit => widget.initial != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _data = widget.initial?.copy() ??
+        AlarmData(
+          hour: 8,
+          minute: 0,
+          meridiem: Meridiem.am,
+          days: [true, false, false, false, false, false, false],
+          // Replaced with the first real character once loaded.
+          characterId: 0,
+        );
   }
 
   @override
   Widget build(BuildContext context) {
-    final data = _data!;
-    final isEdit = ModalRoute.of(context)?.settings.arguments is AlarmData;
+    final data = _data;
     final charactersAsync = ref.watch(availableCharactersProvider);
 
-    return AppScaffold(
-      background: AppColors.surface,
-      body: Stack(
+    return charactersAsync.when(
+      loading: () => const _SheetLoading(),
+      error: (error, stack) => _SheetMessage(
+        message: '캐릭터를 불러오지 못했어요',
+        onClose: () => Navigator.pop(context),
+      ),
+      data: (characters) {
+        if (characters.isEmpty) {
+          return _SheetMessage(
+            message: '사용 가능한 캐릭터가 없어요',
+            onClose: () => Navigator.pop(context),
+          );
+        }
+        _ensureCharacter(data, characters);
+        return BottomSheetAlarmSettings(
+          title: _isEdit ? '일정 수정' : '새 일정 추가',
+          time: data.clockLabel,
+          onTimeTap: () => _pickTime(data),
+          meridiem: data.meridiem,
+          onMeridiemChanged: (m) => setState(() => data.meridiem = m),
+          days: data.days,
+          onDaysChanged: (index, selected) => setState(
+            () => data.days = [...data.days]..[index] = selected,
+          ),
+          partners: partnersFromCharacters(characters),
+          partner: data.characterId.toString(),
+          onPartnerChanged: (id) => setState(() {
+            data.characterId = int.tryParse(id) ?? data.characterId;
+            data.characterName = characters
+                .firstWhere((c) => c.characterId.toString() == id)
+                .name;
+          }),
+          onSave: () => Navigator.pop(context, data),
+          onClose: () => Navigator.pop(context),
+        );
+      },
+    );
+  }
+
+  /// Surfaces the [BottomSheetTimePicker] centered above everything (including
+  /// the enclosing modal sheet) via [showGeneralDialog], so it layers correctly
+  /// regardless of whether this body is hosted in a modal sheet or a page.
+  ///
+  /// Reuses the [Dim] atom for the blurred scrim + tap-to-dismiss, matching the
+  /// former in-page overlay. Applies the confirmed `(hour, minute)` on return.
+  Future<void> _pickTime(AlarmData data) async {
+    final picked = await showGeneralDialog<(int, int)>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.transparent,
+      barrierLabel: '시간 선택',
+      pageBuilder: (dialogCtx, _, _) => Stack(
         children: [
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: charactersAsync.when(
-              loading: () => const _SheetLoading(),
-              error: (error, stack) => _SheetMessage(
-                message: '캐릭터를 불러오지 못했어요',
-                onClose: () => Navigator.pop(context),
-              ),
-              data: (characters) {
-                if (characters.isEmpty) {
-                  return _SheetMessage(
-                    message: '사용 가능한 캐릭터가 없어요',
-                    onClose: () => Navigator.pop(context),
-                  );
-                }
-                _ensureCharacter(data, characters);
-                return BottomSheetAlarmSettings(
-                  title: isEdit ? '일정 수정' : '새 일정 추가',
-                  time: data.clockLabel,
-                  onTimeTap: () => setState(() => _pickingTime = true),
-                  meridiem: data.meridiem,
-                  onMeridiemChanged: (m) => setState(() => data.meridiem = m),
-                  days: data.days,
-                  onDaysChanged: (index, selected) => setState(
-                    () => data.days = [...data.days]..[index] = selected,
-                  ),
-                  partners: partnersFromCharacters(characters),
-                  partner: data.characterId.toString(),
-                  onPartnerChanged: (id) => setState(() {
-                    data.characterId = int.tryParse(id) ?? data.characterId;
-                    data.characterName = characters
-                        .firstWhere((c) => c.characterId.toString() == id)
-                        .name;
-                  }),
-                  onSave: () => Navigator.pop(context, data),
-                  onClose: () => Navigator.pop(context),
-                );
-              },
+          Dim(onTap: () => Navigator.pop(dialogCtx)),
+          Center(
+            child: BottomSheetTimePicker(
+              initialHour: data.hour,
+              initialMinute: data.minute,
+              onCancel: () => Navigator.pop(dialogCtx),
+              onConfirm: (h, m) => Navigator.pop(dialogCtx, (h, m)),
             ),
           ),
-          if (_pickingTime) ...[
-            Dim(onTap: () => setState(() => _pickingTime = false)),
-            Center(
-              child: BottomSheetTimePicker(
-                initialHour: data.hour,
-                initialMinute: data.minute,
-                onCancel: () => setState(() => _pickingTime = false),
-                onConfirm: (h, m) => setState(() {
-                  data
-                    ..hour = h
-                    ..minute = m;
-                  _pickingTime = false;
-                }),
-              ),
-            ),
-          ],
         ],
       ),
     );
+    if (picked == null || !mounted) return;
+    setState(() {
+      data
+        ..hour = picked.$1
+        ..minute = picked.$2;
+    });
   }
 
   /// Picks a sensible default character when none is selected yet (add mode),
