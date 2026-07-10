@@ -87,6 +87,7 @@ dependencies:
   # 필요해 제외(kInboundCallEnabled && !kIsWeb 가드 안에서만 초기화).
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
+  share_plus: ^12.0.2
 
 dev_dependencies:
   flutter_test:

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_line.dart';
@@ -82,6 +84,19 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     }
   }
 
+  /// Shares an app-invite line via the OS share sheet ([share_plus] 12,
+  /// `SharePlus.instance.share(ShareParams(...))`). Invoked from the share
+  /// dialog's button; after the sheet is dismissed the dialog is closed.
+  Future<void> _shareProfile() async {
+    const inviteText =
+        "I'm learning Korean with Beavertalk — my Korean accent sounds "
+        'American! 🦫 Come find your accent and learn with me: '
+        'https://beavertalk.im';
+    await SharePlus.instance.share(ShareParams(text: inviteText));
+    if (!mounted) return;
+    Navigator.of(context).maybePop();
+  }
+
   /// Confirms and performs account deletion. Shows a [DialogBasic] first; on
   /// confirm calls [AuthController.deleteAccount] (backend delete + sign-out).
   Future<void> _confirmDeleteAccount() async {
@@ -138,7 +153,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                   ProfileStat(label: 'Korean', value: 7, active: false),
                   ProfileStat(label: 'China', value: 6, active: false),
                 ],
-                onShare: () => Navigator.of(context).maybePop(),
+                onShare: _shareProfile,
               ),
               icon: AppIcons.share(color: AppColors.text),
               tooltip: 'Share',
@@ -192,25 +207,13 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
-                // log out — elevated button card.
-                InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  onTap: () =>
+                // log out — design-system secondary-fill Button (60).
+                Button(
+                  type: BtnType.secondaryFill,
+                  size: BtnSize.s60,
+                  text: 'log out',
+                  onPressed: () =>
                       ref.read(authControllerProvider.notifier).logout(),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s16, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface2,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Text(
-                      'log out',
-                      textAlign: TextAlign.center,
-                      style: AppType.label1.r.copyWith(color: AppColors.text),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Center(
