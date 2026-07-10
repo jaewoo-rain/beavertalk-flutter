@@ -140,12 +140,19 @@ class CardBox extends StatelessWidget {
             children: [
               Text(
                 title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppType.label1.sb.copyWith(color: AppColors.text),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
+                // Call summary can be long; cap it so the record card doesn't
+                // overflow (QA: "통화 요약 시 문장 길이 제한"). Durable fix is a
+                // server-side length cap at generation (see 서버변경제안 §5).
                 Text(
                   subtitle!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: AppType.label1.r.copyWith(color: AppColors.text),
                 ),
               ],
