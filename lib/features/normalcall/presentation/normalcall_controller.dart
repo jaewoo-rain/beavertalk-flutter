@@ -12,6 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/network/ws_url.dart';
+import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
 
 /// Lifecycle phases of a live normalcall session.
@@ -46,6 +47,10 @@ class CallState {
     this.beaverSubtitle = '',
     this.userSubtitle = '',
     this.errorMsg,
+    this.hint,
+    this.teachingPlan = const [],
+    this.subtitleOn = true,
+    this.hintOn = true,
   });
 
   /// Current lifecycle phase.
@@ -76,7 +81,28 @@ class CallState {
   /// Human-readable error message when [phase] is [CallPhase.error].
   final String? errorMsg;
 
-  /// Returns a copy with the given fields replaced.
+  /// Active dynamic hint for the current/last beaver question, or null when no
+  /// hint is showing. Cleared on each `turn_start` and on `call_ended`.
+  final HintData? hint;
+
+  /// Today's teaching plan (pushed once at call start; may be empty). Stored for
+  /// a future teaching-card screen — not rendered by `screen/call_main`.
+  final List<TeachingItem> teachingPlan;
+
+  /// Whether the subtitle (caption) is shown. When false the speaking
+  /// equalizer replaces it. UI preference; resets to true each call.
+  final bool subtitleOn;
+
+  /// Whether the hint affordance is enabled. When false the hint card is hidden
+  /// even if a hint has arrived. UI preference; resets to true each call.
+  final bool hintOn;
+
+  /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
+  /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
+  static const Object _keep = Object();
+
+  /// Returns a copy with the given fields replaced. Pass `hint: null` to clear
+  /// the active hint (the [_keep] sentinel preserves it when omitted).
   CallState copyWith({
     CallPhase? phase,
     int? elapsedSec,
@@ -85,6 +111,10 @@ class CallState {
     String? beaverSubtitle,
     String? userSubtitle,
     String? errorMsg,
+    Object? hint = _keep,
+    List<TeachingItem>? teachingPlan,
+    bool? subtitleOn,
+    bool? hintOn,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -94,6 +124,10 @@ class CallState {
       beaverSubtitle: beaverSubtitle ?? this.beaverSubtitle,
       userSubtitle: userSubtitle ?? this.userSubtitle,
       errorMsg: errorMsg ?? this.errorMsg,
+      hint: identical(hint, _keep) ? this.hint : hint as HintData?,
+      teachingPlan: teachingPlan ?? this.teachingPlan,
+      subtitleOn: subtitleOn ?? this.subtitleOn,
+      hintOn: hintOn ?? this.hintOn,
     );
   }
 }
@@ -638,7 +672,9 @@ class NormalCallController extends Notifier<CallState> {
         // New beaver turn → start a fresh subtitle line. The server streams the
         // line token-by-token via `output_transcript`, so the line must be
         // cleared here (not overwritten per token) and then accumulated below.
-        state = state.copyWith(beaverSubtitle: '');
+        // Also clear any stale hint: a new turn means the prior question is
+        // answered (matches the server "new question cancels previous").
+        state = state.copyWith(beaverSubtitle: '', hint: null);
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -676,6 +712,7 @@ class NormalCallController extends Notifier<CallState> {
         state = state.copyWith(
           phase: CallPhase.ending,
           callId: id?.toString(),
+          hint: null,
         );
         _log('call_ended id=$id → draining closing line');
         _scheduleClosingDrain();
@@ -685,6 +722,21 @@ class NormalCallController extends Notifier<CallState> {
           errorMsg: (msg['message'] as String?) ?? '통화 중 오류가 발생했습니다.',
         );
         unawaited(_teardown(keepError: true));
+      case 'hint':
+        // Dynamic example-answer hint for the beaver's question turn. Additive:
+        // unknown to older builds (harmlessly ignored). Replaces any prior hint.
+        final hint = HintData.fromJson(msg);
+        if (hint != null) state = state.copyWith(hint: hint);
+      case 'teaching_plan':
+        final raw = msg['items'];
+        if (raw is List) {
+          final items = raw
+              .whereType<Map<String, dynamic>>()
+              .map(TeachingItem.fromJson)
+              .whereType<TeachingItem>()
+              .toList(growable: false);
+          state = state.copyWith(teachingPlan: items);
+        }
       case 'pong':
         break;
       default:
@@ -778,6 +830,19 @@ class NormalCallController extends Notifier<CallState> {
       // Socket already closing; ignore.
     }
   }
+
+  /// Signals that the learner revealed a hint (fire-and-forget, no ack). The
+  /// server downgrades that turn's evidence, so the UI must call this exactly
+  /// once per hint, on first reveal.
+  void sendHintUsed(String turnId) =>
+      _send({'type': 'hint_used', 'turn_id': turnId});
+
+  /// Toggles the subtitle (caption) display. UI preference only.
+  void setSubtitleOn(bool value) =>
+      state = state.copyWith(subtitleOn: value);
+
+  /// Toggles whether the hint card is shown. UI preference only.
+  void setHintOn(bool value) => state = state.copyWith(hintOn: value);
 
   /// Starts the UI elapsed-time ticker.
   void _startElapsedTimer() {

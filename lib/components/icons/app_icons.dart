@@ -74,6 +74,12 @@ abstract final class AppIcons {
       _glyph('translate', size, color);
   static Widget redo({double size = 24, Color color = AppColors.text}) =>
       _glyph('redo', size, color);
+  /// Lightbulb — the in-call hint toggle glyph (Figma `btn/hint`).
+  static Widget lightbulb({double size = 24, Color color = AppColors.text}) =>
+      _glyph('lightbulb', size, color);
+  /// Closed-caption "CC" — the in-call subtitle toggle glyph (Figma `btn/subtitle`).
+  static Widget cc({double size = 24, Color color = AppColors.text}) =>
+      _glyph('cc', size, color);
   /// Two-way swap arrows (⇄) — the avatar "change" badge glyph.
   static Widget swap({double size = 24, Color color = AppColors.text}) =>
       _glyph('swap', size, color);
