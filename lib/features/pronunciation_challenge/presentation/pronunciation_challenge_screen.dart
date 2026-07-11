@@ -13,6 +13,7 @@ import 'package:share_plus/share_plus.dart';
 import '../../../app/app_scaffold.dart';
 import '../../../components/atoms/button.dart';
 import '../../../components/organisms/gnb.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
@@ -157,7 +158,7 @@ class _PronunciationChallengeScreenState
       body: Column(
         children: [
           Gnb.main(
-            title: '발음 챌린지',
+            title: AppLocalizations.of(context).challengeTitle,
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
@@ -250,17 +251,17 @@ class _PronunciationChallengeScreenState
   }
 
   Widget _startPanel() {
+    final l10n = AppLocalizations.of(context);
     return _panelShell(
       children: [
         Text(
-          'Pronunciation Challenge',
+          l10n.challengeTitle,
           textAlign: TextAlign.center,
           style: AppType.title2.b.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
-          '존 안의 카드를 한국어로 정확히 발음해 통과시켜요.\n'
-          '마이크가 없으면 화면 탭으로도 플레이할 수 있어요.',
+          l10n.challengeIntro,
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
         ),
@@ -270,12 +271,12 @@ class _PronunciationChallengeScreenState
         Button(
           type: BtnType.primaryFill,
           size: BtnSize.s60,
-          text: '카메라 & 마이크 시작',
+          text: l10n.challengeStart,
           onPressed: _onStart,
         ),
         const SizedBox(height: AppSpacing.s8),
         Text(
-          '전면 카메라·마이크 접근이 필요합니다 (선택).',
+          l10n.challengePermissionNote,
           textAlign: TextAlign.center,
           style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
         ),
@@ -284,16 +285,17 @@ class _PronunciationChallengeScreenState
   }
 
   Widget _loadingPanel() {
+    final l10n = AppLocalizations.of(context);
     return _panelShell(
       children: [
         Text(
-          'Loading…',
+          l10n.challengeLoadingTitle,
           textAlign: TextAlign.center,
           style: AppType.title2.b.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
-          '첫 실행 시 한국어 음성 모델(~82MB)을 내려받습니다.\n잠시만 기다려 주세요.',
+          l10n.challengeLoadingNote,
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
         ),
@@ -335,7 +337,7 @@ class _PronunciationChallengeScreenState
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.s12),
             child: Text(
-              '음성 인식을 사용할 수 없어 탭 입력으로 진행했어요.',
+              AppLocalizations.of(context).challengeSttFallback,
               textAlign: TextAlign.center,
               style: AppType.label2.r.copyWith(color: const Color(0xFFFFCF5C)),
             ),

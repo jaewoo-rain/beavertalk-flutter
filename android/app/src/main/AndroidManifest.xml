@@ -1,4 +1,14 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- vosk_flutter_2 declares minSdk 30 (Android 11), but the Pronunciation
+         Challenge already degrades to tap input whenever STT can't initialize
+         (SttService.init try/catch → tap fallback). Rather than raise the whole
+         app's floor to 30 (which would drop every Android 10 user for one
+         mini-game), override the library so the app keeps minSdk 29; on Android
+         10 the Vosk model just fails to load and the game stays playable by tap.
+         Trade-off documented in docs/ — revisit if an Android-10-safe STT
+         engine (or a bundled model path) is adopted. -->
+    <uses-sdk tools:overrideLibrary="org.vosk.vosk_flutter"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- 발음 챌린지 — 전면 카메라 셀피 배경 (camera 플러그인) -->

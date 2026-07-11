@@ -445,4 +445,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get useThisAvatar => 'Use This';
+
+  @override
+  String get challengeTitle => 'Pronunciation Challenge';
+
+  @override
+  String get challengeIntro =>
+      'Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.';
+
+  @override
+  String get challengeStart => 'Start Camera & Mic';
+
+  @override
+  String get challengePermissionNote =>
+      'Front camera and mic access is required (optional).';
+
+  @override
+  String get challengeLoadingTitle => 'Loading…';
+
+  @override
+  String get challengeLoadingNote =>
+      'Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.';
+
+  @override
+  String get challengeSttFallback =>
+      'Speech recognition wasn\'t available, so you played with tap input.';
 }

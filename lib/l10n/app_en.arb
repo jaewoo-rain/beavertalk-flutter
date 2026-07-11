@@ -221,5 +221,13 @@
   "benefitNoAds": "No ads",
 
   "playSampleVoice": "Play sample voice",
-  "useThisAvatar": "Use This"
+  "useThisAvatar": "Use This",
+
+  "challengeTitle": "Pronunciation Challenge",
+  "challengeIntro": "Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.",
+  "challengeStart": "Start Camera & Mic",
+  "challengePermissionNote": "Front camera and mic access is required (optional).",
+  "challengeLoadingTitle": "Loading…",
+  "challengeLoadingNote": "Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.",
+  "challengeSttFallback": "Speech recognition wasn't available, so you played with tap input."
 }

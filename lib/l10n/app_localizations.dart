@@ -921,6 +921,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use This'**
   String get useThisAvatar;
+
+  /// No description provided for @challengeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation Challenge'**
+  String get challengeTitle;
+
+  /// No description provided for @challengeIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.'**
+  String get challengeIntro;
+
+  /// No description provided for @challengeStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Camera & Mic'**
+  String get challengeStart;
+
+  /// No description provided for @challengePermissionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Front camera and mic access is required (optional).'**
+  String get challengePermissionNote;
+
+  /// No description provided for @challengeLoadingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading…'**
+  String get challengeLoadingTitle;
+
+  /// No description provided for @challengeLoadingNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.'**
+  String get challengeLoadingNote;
+
+  /// No description provided for @challengeSttFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Speech recognition wasn\'t available, so you played with tap input.'**
+  String get challengeSttFallback;
 }
 
 class _AppLocalizationsDelegate
