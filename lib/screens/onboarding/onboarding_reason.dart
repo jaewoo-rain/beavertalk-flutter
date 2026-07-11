@@ -10,6 +10,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -101,12 +102,15 @@ class _OnboardingReasonScreenState
                       AppType.body1.r.copyWith(color: AppColors.textSecondary),
                 ),
                 const SizedBox(height: AppSpacing.s24),
-                // Content data (reason title/description) is kept as-is.
+                // Reason copy is localized by id (the mock data holds Korean
+                // fallbacks); the emoji icon stays as-is.
                 for (int i = 0; i < mockReasons.length; i++) ...[
                   if (i > 0) const SizedBox(height: AppSpacing.s12),
                   SelectCard(
-                    title: mockReasons[i].title,
-                    description: mockReasons[i].description,
+                    title: _reasonTitle(context, mockReasons[i].id) ??
+                        mockReasons[i].title,
+                    description: _reasonDesc(context, mockReasons[i].id) ??
+                        mockReasons[i].description,
                     icon: Text(
                       mockReasons[i].icon,
                       style: const TextStyle(fontSize: 22),
@@ -148,4 +152,46 @@ class _OnboardingReasonScreenState
       ),
     );
   }
+}
+
+/// Localized title for a learning-reason [id]; null if unknown (caller falls
+/// back to the mock's Korean copy). Keeps the reason list's ids as the single
+/// source of truth while the display text is fully localized.
+String? _reasonTitle(BuildContext context, String id) {
+  final l10n = AppLocalizations.of(context);
+  switch (id) {
+    case 'travel':
+      return l10n.reasonTravelTitle;
+    case 'career':
+      return l10n.reasonCareerTitle;
+    case 'exam':
+      return l10n.reasonExamTitle;
+    case 'daily':
+      return l10n.reasonDailyTitle;
+    case 'friends':
+      return l10n.reasonFriendsTitle;
+    case 'brain':
+      return l10n.reasonBrainTitle;
+  }
+  return null;
+}
+
+/// Localized description for a learning-reason [id]; null if unknown.
+String? _reasonDesc(BuildContext context, String id) {
+  final l10n = AppLocalizations.of(context);
+  switch (id) {
+    case 'travel':
+      return l10n.reasonTravelDesc;
+    case 'career':
+      return l10n.reasonCareerDesc;
+    case 'exam':
+      return l10n.reasonExamDesc;
+    case 'daily':
+      return l10n.reasonDailyDesc;
+    case 'friends':
+      return l10n.reasonFriendsDesc;
+    case 'brain':
+      return l10n.reasonBrainDesc;
+  }
+  return null;
 }

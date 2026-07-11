@@ -963,6 +963,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Speech recognition wasn\'t available, so you played with tap input.'**
   String get challengeSttFallback;
+
+  /// No description provided for @reasonTravelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking while traveling'**
+  String get reasonTravelTitle;
+
+  /// No description provided for @reasonTravelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat confidently with locals'**
+  String get reasonTravelDesc;
+
+  /// No description provided for @reasonCareerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work & career'**
+  String get reasonCareerTitle;
+
+  /// No description provided for @reasonCareerDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Business conversation'**
+  String get reasonCareerDesc;
+
+  /// No description provided for @reasonExamTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Test prep'**
+  String get reasonExamTitle;
+
+  /// No description provided for @reasonExamDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Prepare for speaking tests'**
+  String get reasonExamDesc;
+
+  /// No description provided for @reasonDailyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Everyday conversation'**
+  String get reasonDailyTitle;
+
+  /// No description provided for @reasonDailyDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressions you use daily'**
+  String get reasonDailyDesc;
+
+  /// No description provided for @reasonFriendsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Making foreign friends'**
+  String get reasonFriendsTitle;
+
+  /// No description provided for @reasonFriendsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Natural conversation'**
+  String get reasonFriendsDesc;
+
+  /// No description provided for @reasonBrainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Brain stimulation'**
+  String get reasonBrainTitle;
+
+  /// No description provided for @reasonBrainDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Boost memory & focus'**
+  String get reasonBrainDesc;
+
+  /// No description provided for @challengeRecordToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Record this run'**
+  String get challengeRecordToggle;
+
+  /// No description provided for @challengeRecordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Saves a video of your gameplay to share (silent).'**
+  String get challengeRecordHint;
 }
 
 class _AppLocalizationsDelegate

@@ -229,5 +229,21 @@
   "challengePermissionNote": "Front camera and mic access is required (optional).",
   "challengeLoadingTitle": "Loading…",
   "challengeLoadingNote": "Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.",
-  "challengeSttFallback": "Speech recognition wasn't available, so you played with tap input."
+  "challengeSttFallback": "Speech recognition wasn't available, so you played with tap input.",
+
+  "reasonTravelTitle": "Speaking while traveling",
+  "reasonTravelDesc": "Chat confidently with locals",
+  "reasonCareerTitle": "Work & career",
+  "reasonCareerDesc": "Business conversation",
+  "reasonExamTitle": "Test prep",
+  "reasonExamDesc": "Prepare for speaking tests",
+  "reasonDailyTitle": "Everyday conversation",
+  "reasonDailyDesc": "Expressions you use daily",
+  "reasonFriendsTitle": "Making foreign friends",
+  "reasonFriendsDesc": "Natural conversation",
+  "reasonBrainTitle": "Brain stimulation",
+  "reasonBrainDesc": "Boost memory & focus",
+
+  "challengeRecordToggle": "Record this run",
+  "challengeRecordHint": "Saves a video of your gameplay to share (silent)."
 }

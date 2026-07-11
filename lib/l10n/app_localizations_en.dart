@@ -470,4 +470,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get challengeSttFallback =>
       'Speech recognition wasn\'t available, so you played with tap input.';
+
+  @override
+  String get reasonTravelTitle => 'Speaking while traveling';
+
+  @override
+  String get reasonTravelDesc => 'Chat confidently with locals';
+
+  @override
+  String get reasonCareerTitle => 'Work & career';
+
+  @override
+  String get reasonCareerDesc => 'Business conversation';
+
+  @override
+  String get reasonExamTitle => 'Test prep';
+
+  @override
+  String get reasonExamDesc => 'Prepare for speaking tests';
+
+  @override
+  String get reasonDailyTitle => 'Everyday conversation';
+
+  @override
+  String get reasonDailyDesc => 'Expressions you use daily';
+
+  @override
+  String get reasonFriendsTitle => 'Making foreign friends';
+
+  @override
+  String get reasonFriendsDesc => 'Natural conversation';
+
+  @override
+  String get reasonBrainTitle => 'Brain stimulation';
+
+  @override
+  String get reasonBrainDesc => 'Boost memory & focus';
+
+  @override
+  String get challengeRecordToggle => 'Record this run';
+
+  @override
+  String get challengeRecordHint =>
+      'Saves a video of your gameplay to share (silent).';
 }

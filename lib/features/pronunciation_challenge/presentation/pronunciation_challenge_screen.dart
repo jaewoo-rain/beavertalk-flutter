@@ -18,6 +18,7 @@ import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
 import '../data/camera_service.dart';
+import '../data/challenge_recorder.dart';
 import '../data/stt_service.dart';
 import '../domain/challenge_engine.dart';
 import '../domain/game_config.dart';
@@ -53,6 +54,7 @@ class _PronunciationChallengeScreenState
   late final ChallengeController _controller;
   final SttService _stt = SttService();
   final ChallengeCameraService _camera = ChallengeCameraService();
+  final ChallengeRecorder _recorder = ChallengeRecorder();
   final GlobalKey _shareCardKey = GlobalKey();
 
   _Phase _phase = _Phase.start;
@@ -61,6 +63,13 @@ class _PronunciationChallengeScreenState
 
   /// Whether STT is driving input this round (false → tap fallback active).
   bool _sttActive = false;
+
+  /// Whether the player opted to screen-record this run (start-panel toggle).
+  bool _recordEnabled = false;
+
+  /// Path of the recorded gameplay MP4, when a run was captured. Shared from
+  /// the result panel in place of the score-card image.
+  String? _videoPath;
 
   @override
   void initState() {
@@ -81,6 +90,13 @@ class _PronunciationChallengeScreenState
       _countdownTimer?.cancel();
       unawaited(_stt.stopListening());
       _sttActive = false;
+      // Finalize the clip (if any) before showing the result panel so the
+      // Share button can offer the MP4.
+      if (_recorder.isRecording) {
+        _recorder.stop().then((path) {
+          if (mounted) setState(() => _videoPath = path);
+        });
+      }
       setState(() => _phase = _Phase.result);
     }
   }
@@ -118,6 +134,13 @@ class _PronunciationChallengeScreenState
   }
 
   Future<void> _startPlaying({required bool sttReady}) async {
+    // Best-effort screen capture; started just before the engine so the whole
+    // run is in-frame. Never blocks or fails the game.
+    if (_recordEnabled && !_recorder.isRecording) {
+      _videoPath = null;
+      await _recorder.start();
+      if (!mounted) return;
+    }
     _controller.engine.start();
     setState(() => _phase = _Phase.playing);
     if (sttReady) {
@@ -148,6 +171,7 @@ class _PronunciationChallengeScreenState
     _controller.dispose();
     unawaited(_stt.dispose());
     unawaited(_camera.dispose());
+    unawaited(_recorder.dispose());
     super.dispose();
   }
 
@@ -267,6 +291,8 @@ class _PronunciationChallengeScreenState
         ),
         const SizedBox(height: AppSpacing.s24),
         _difficultyToggle(),
+        const SizedBox(height: AppSpacing.s16),
+        _recordToggle(l10n),
         const SizedBox(height: AppSpacing.s24),
         Button(
           type: BtnType.primaryFill,
@@ -279,6 +305,40 @@ class _PronunciationChallengeScreenState
           l10n.challengePermissionNote,
           textAlign: TextAlign.center,
           style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+        ),
+      ],
+    );
+  }
+
+  /// Opt-in gameplay screen-recording toggle (start panel). Off by default so
+  /// the OS MediaProjection consent sheet only appears for players who want a
+  /// clip. Records video only — see [ChallengeRecorder] for the audio rationale.
+  Widget _recordToggle(AppLocalizations l10n) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.challengeRecordToggle,
+                style: AppType.body2.sb.copyWith(color: AppColors.text),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                l10n.challengeRecordHint,
+                style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(width: AppSpacing.s12),
+        Switch(
+          value: _recordEnabled,
+          activeThumbColor: AppColors.primary,
+          onChanged: (v) => setState(() => _recordEnabled = v),
         ),
       ],
     );
@@ -446,6 +506,15 @@ class _PronunciationChallengeScreenState
         await SharePlus.instance.share(ShareParams(text: _shareText()));
         return;
       }
+      // Prefer the recorded gameplay MP4 (camera + overlay) when a run was
+      // captured; fall back to the branded score-card image otherwise.
+      final videoPath = _videoPath;
+      if (videoPath != null && File(videoPath).existsSync()) {
+        await SharePlus.instance.share(
+          ShareParams(text: _shareText(), files: <XFile>[XFile(videoPath)]),
+        );
+        return;
+      }
       final boundary = _shareCardKey.currentContext?.findRenderObject()
           as RenderRepaintBoundary?;
       if (boundary == null) {
@@ -465,10 +534,9 @@ class _PronunciationChallengeScreenState
         '${DateTime.now().millisecondsSinceEpoch}.png',
       );
       await file.writeAsBytes(bytes.buffer.asUint8List());
-      // TODO(device): the web game shares a recorded MP4 of the gameplay
-      // (canvas + selfie + voice). True gameplay-canvas+camera+mic muxing needs
-      // a native/ffmpeg frame-capture pipeline that can't be verified without a
-      // device; the shipped path shares this branded score-card image instead.
+      // Score-card image fallback: shown when the run wasn't screen-recorded
+      // (toggle off / consent denied / unsupported). The recorded-MP4 path
+      // above is the primary share when a clip exists.
       await SharePlus.instance.share(
         ShareParams(text: _shareText(), files: <XFile>[XFile(file.path)]),
       );
