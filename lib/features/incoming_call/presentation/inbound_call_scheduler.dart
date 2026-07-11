@@ -81,7 +81,9 @@ class InboundCallScheduler {
     }
 
     // 캐시된 알람 목록(없으면 이번 tick은 로드만 유도하고 종료).
-    final alarms = ref.read(alarmListControllerProvider).value;
+    // `.value`는 로드 실패(예: 알람 조회 401) 시 에러를 **재던져** 20초마다
+    // unhandled exception을 낸다. `.valueOrNull`은 에러/로딩 시 null → tick 스킵.
+    final alarms = ref.read(alarmListControllerProvider).valueOrNull;
     if (alarms == null || alarms.isEmpty) return;
 
     final now = DateTime.now();
