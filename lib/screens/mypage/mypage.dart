@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -86,18 +85,11 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     }
   }
 
-  /// Shares an app-invite line via the OS share sheet ([share_plus] 12,
-  /// `SharePlus.instance.share(ShareParams(...))`). Invoked from the share
-  /// dialog's button; after the sheet is dismissed the dialog is closed.
-  Future<void> _shareProfile() async {
-    const inviteText =
-        "I'm learning Korean with Beavertalk — my Korean accent sounds "
-        'American! 🦫 Come find your accent and learn with me: '
-        'https://beavertalk.im';
-    await SharePlus.instance.share(ShareParams(text: inviteText));
-    if (!mounted) return;
-    Navigator.of(context).maybePop();
-  }
+  /// Caption shared alongside the accent-card image (see [DialogShareProfile]).
+  static const String _inviteText =
+      "I'm learning Korean with Beavertalk — my Korean accent sounds "
+      'American! 🦫 Come find your accent and learn with me: '
+      'https://beavertalk.im';
 
   /// Confirms and performs account deletion. Shows a [DialogBasic] first; on
   /// confirm calls [AuthController.deleteAccount] (backend delete + sign-out).
@@ -156,7 +148,12 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                   ProfileStat(label: 'Korean', value: 7, active: false),
                   ProfileStat(label: 'China', value: 6, active: false),
                 ],
-                onShare: _shareProfile,
+                // The dialog rasterizes the accent card and shares it as a PNG;
+                // this text rides along as the caption.
+                shareText: _inviteText,
+                onShared: () {
+                  if (mounted) Navigator.of(context).maybePop();
+                },
               ),
               icon: AppIcons.share(color: AppColors.text),
               tooltip: 'Share',

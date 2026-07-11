@@ -10,6 +10,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -117,6 +118,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         ref.watch(normalCallControllerProvider.select((s) => s.subtitleOn));
     final hintOn =
         ref.watch(normalCallControllerProvider.select((s) => s.hintOn));
+    // Selected character (member `character_id`) → partner name + avatar, so the
+    // call shows the avatar the user picked (Bibi/Baba), not a fixed label.
+    final characterId =
+        ref.watch(myProfileProvider).valueOrNull?.characterId;
 
     // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
@@ -178,7 +183,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
-                    mockPartnerName,
+                    characterName(characterId),
                     style: AppType.body1.sb.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s4),
@@ -204,11 +209,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   child: Container(
                     width: AppSpacing.s120,
                     height: AppSpacing.s120,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.surface2,
                       image: DecorationImage(
-                        image: beaverImage,
+                        image: characterImage(characterId),
                         fit: BoxFit.cover,
                       ),
                     ),

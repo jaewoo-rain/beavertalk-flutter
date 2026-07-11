@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
+import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/avatar_card.dart';
 import '../../components/molecules/card_box.dart';
@@ -170,7 +171,7 @@ class AvatarScreen extends ConsumerWidget {
     final image = _imageFor(c.imageUrl, c.id);
     return CardBox(
       type: CardBoxType.purchaseDiscount,
-      avatar: CircleAvatar(backgroundImage: image),
+      avatar: BlurUpImage(image: image),
       title: c.name,
       subtitle: 'Warm · Calm · Soft',
       price: _priceLabel(c.price),
@@ -191,7 +192,7 @@ class AvatarScreen extends ConsumerWidget {
     final image = _imageFor(c.imageUrl, c.id);
     return CardBox(
       type: CardBoxType.purchase,
-      avatar: CircleAvatar(backgroundImage: image),
+      avatar: BlurUpImage(image: image),
       title: c.name,
       subtitle: 'Warm · Calm · Soft',
       price: _priceLabel(c.price),

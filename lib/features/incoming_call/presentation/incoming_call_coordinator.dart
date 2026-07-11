@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/navigation.dart';
 import '../../../app/routes.dart';
+import '../../../mock/mock_data.dart' show characterName;
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../data/models/incoming_call_payload_dto.dart';
 import '../domain/entities/incoming_call_payload.dart';
@@ -249,11 +250,16 @@ class IncomingCallCoordinator {
 
   /// CallKit 콜 파라미터 → 도메인 페이로드(라이브 이벤트 경로).
   IncomingCallPayload _payloadFromParams(CallKitParams p) {
+    final characterId =
+        IncomingCallPayloadDto.asInt(p.extra?['characterId']) ??
+            kDefaultInboundCharacterId;
+    final name = p.nameCaller;
     return IncomingCallPayload(
       callUuid: p.id,
-      characterId: IncomingCallPayloadDto.asInt(p.extra?['characterId']) ??
-          kDefaultInboundCharacterId,
-      characterName: p.nameCaller,
+      characterId: characterId,
+      characterName: (name == null || name.isEmpty)
+          ? characterName(characterId)
+          : name,
       imageUrl: p.avatar,
     );
   }
@@ -263,7 +269,7 @@ class IncomingCallCoordinator {
   /// 실기기에서 개발용 버튼으로 호출해 "전화 오는 화면"을 확인하는 용도.
   Future<void> simulateIncomingCall({
     int characterId = kDefaultInboundCharacterId,
-    String characterName = 'Annoying Beaver',
+    String? nameOverride,
   }) async {
     // Android 14+ 전체화면 인텐트 / 알림 권한을 먼저 요청(최초 1회 팝업).
     await callkit.requestNotificationPermission();
@@ -272,7 +278,8 @@ class IncomingCallCoordinator {
     final payload = IncomingCallPayload(
       callUuid: const Uuid().v4(),
       characterId: characterId,
-      characterName: characterName,
+      // Show the selected avatar's name (Bibi/Baba) instead of a fixed label.
+      characterName: nameOverride ?? characterName(characterId),
     );
     await callkit.showIncoming(payload);
   }

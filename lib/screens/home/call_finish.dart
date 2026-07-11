@@ -8,6 +8,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -194,6 +195,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final characterId =
+        ref.watch(myProfileProvider).valueOrNull?.characterId;
     return AppScaffold(
       background: AppColors.surface,
       statusVariant: StatusBarVariant.whiteTransparent,
@@ -215,18 +218,18 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 Container(
                   width: AppSpacing.s120,
                   height: AppSpacing.s120,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.surface2,
                     image: DecorationImage(
-                      image: beaverImage,
+                      image: characterImage(characterId),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Text(
-                  mockPartnerName,
+                  characterName(characterId),
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s8),

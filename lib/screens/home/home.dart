@@ -90,6 +90,8 @@ class HomeScreen extends ConsumerWidget {
   /// 실제 홈 콘텐츠(헤더 + 히어로 + 하단 네비).
   Widget _buildHome(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    // Selected character (member `character_id`) drives the hero name + avatar.
+    final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
     return Column(
       children: [
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
@@ -137,7 +139,7 @@ class HomeScreen extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => Navigator.pushNamed(context, Routes.avatar),
                   child: HeroAvatar(
-                    imageProvider: beaverImage,
+                    imageProvider: characterImage(characterId),
                     size: _avatarSize,
                     onEditTap: () =>
                         Navigator.pushNamed(context, Routes.avatar),
@@ -145,7 +147,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Text(
-                  mockPartnerName,
+                  characterName(characterId),
                   // Figma `2296:26390` — Title 3 / Bold (24px), updated from 32.
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),

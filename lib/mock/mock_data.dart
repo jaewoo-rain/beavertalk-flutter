@@ -136,7 +136,20 @@ void toggleBookmark(int id) {
 }
 
 /// The conversation partner / avatar.
+///
+/// Legacy fixed label — prefer [characterName]/[characterImage] keyed by the
+/// member's `characterId` so calls show the avatar the user actually selected.
 const mockPartnerName = 'Annoying Beaver';
+
+/// Display name for a selected character [id] (member `character_id`).
+/// `1` → Bibi (비비), `2` → Baba (바바); unknown/null falls back to Bibi, which
+/// is the app's default character (see `home.dart`). The server is the source of
+/// truth for alarm-triggered calls (`AlarmDto.characterName`); this maps the
+/// profile's id for manual calls and fallbacks.
+String characterName(int? id) => id == 2 ? 'Baba' : 'Bibi';
+
+/// Avatar image for a selected character [id], paired with [characterName].
+ImageProvider characterImage(int? id) => id == 2 ? beaverImage : judiImage;
 
 /// "새로 배운 표현" used in the analysis + learning flow.
 const mockSentences = <MockSentence>[

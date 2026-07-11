@@ -115,11 +115,18 @@ class BottomSheetCountrySelect extends StatelessWidget {
   static const double _maxWidth = 430;
   static const double _contentWidth = 335;
 
+  /// The sheet never grows past this fraction of the screen height. A long list
+  /// (e.g. the 24-language picker) would otherwise overflow its Column; capping
+  /// here + scrolling the body keeps the header/footer pinned and on-screen.
+  static const double _maxHeightFraction = 0.85;
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final effectiveTitle = title ?? l10n.selectACountry;
     final effectiveConfirm = confirmText ?? l10n.confirm;
+    final maxHeight =
+        MediaQuery.of(context).size.height * _maxHeightFraction;
     return Material(
       color: AppColors.surfaceElevated,
       borderRadius: const BorderRadius.vertical(
@@ -127,32 +134,38 @@ class BottomSheetCountrySelect extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _maxWidth),
+        constraints: BoxConstraints(maxWidth: _maxWidth, maxHeight: maxHeight),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _header(effectiveTitle),
-            // Body — country list.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              child: Center(
-                child: SizedBox(
-                  width: _contentWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final item in items)
-                        CountrySelect(
-                          name: item.name,
-                          flag: countryFlag(item.countryCode),
-                          selected: item.code == value,
-                          onSelect: onChanged == null
-                              ? null
-                              : () => onChanged!(item.code),
-                        ),
-                    ],
+            // Body — country list. Flexible + scroll so a list taller than the
+            // capped sheet scrolls instead of overflowing; the header above and
+            // footer below stay pinned.
+            Flexible(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                  child: Center(
+                    child: SizedBox(
+                      width: _contentWidth,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final item in items)
+                            CountrySelect(
+                              name: item.name,
+                              flag: countryFlag(item.countryCode),
+                              selected: item.code == value,
+                              onSelect: onChanged == null
+                                  ? null
+                                  : () => onChanged!(item.code),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

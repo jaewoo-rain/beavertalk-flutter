@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/molecules/segmented_tabs.dart';
@@ -96,9 +97,9 @@ class _RecordList extends StatelessWidget {
             ),
             child: CardBox(
               type: CardBoxType.record,
-              avatar: CircleAvatar(
-                backgroundImage: _avatarFor(records[i].character.imageUrl),
-              ),
+              // Blur-in while the remote character avatar loads (CardBox clips
+              // this to a 64px circle).
+              avatar: BlurUpImage(image: _avatarFor(records[i].character.imageUrl)),
               title: records[i].character.name,
               subtitle: _subtitleFor(l10n, records[i].summary),
               meta: [
