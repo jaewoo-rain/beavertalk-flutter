@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../core/i18n/locale_controller.dart';
 import '../../components/molecules/country_select.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/gnb.dart';
@@ -43,6 +44,8 @@ class _OnboardingLanguageScreenState
     // to the name step (2/3). `_next` is only reachable once a language is
     // selected (the Continue button is disabled otherwise).
     ref.read(signupDraftProvider.notifier).setLanguage(_selectedId!);
+    // Switch the UI to the chosen language for the rest of onboarding.
+    ref.read(localeControllerProvider.notifier).setLanguage(_selectedId!);
     Navigator.pushNamed(context, Routes.onboardingName);
   }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,6 +14,7 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/i18n/locale_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -74,6 +77,9 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     if (picked == null || picked == currentId || !mounted) return;
     final l10n = AppLocalizations.of(context);
     setState(() => _userLangId = picked);
+    // Switch the app UI to the chosen language immediately (persisted); the
+    // backend save follows.
+    unawaited(ref.read(localeControllerProvider.notifier).setLanguage(picked));
     try {
       await ref.read(authControllerProvider.notifier).updateLanguage(picked);
     } catch (e) {
