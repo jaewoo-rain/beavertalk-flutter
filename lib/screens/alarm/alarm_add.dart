@@ -79,7 +79,8 @@ class _AlarmAddSheetState extends ConsumerState<AlarmAddSheet> {
           hour: 8,
           minute: 0,
           meridiem: Meridiem.am,
-          days: [true, false, false, false, false, false, false],
+          // Sun-indexed (0=Sun..6=Sat); default Monday selected (index 1).
+          days: [false, true, false, false, false, false, false],
           // Replaced with the first real character once loaded.
           characterId: 0,
         );

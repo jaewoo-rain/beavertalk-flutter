@@ -11,6 +11,7 @@ import '../../../mock/mock_data.dart' show characterName;
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../domain/entities/incoming_call_payload.dart';
 import '../services/callkit_service.dart';
+import '../services/native_alarm_scheduler.dart';
 
 /// 저장된 **알람 시간**이 되면 로컬로 전화(수신 화면)를 띄우는 스케줄러.
 ///
@@ -47,6 +48,10 @@ class InboundCallScheduler {
   /// 이번 분에 이미 울린 알람 키(`alarmId:yyyy-M-d:H:m`) — 같은 분 중복 발사 방지.
   final Set<String> _firedKeys = <String>{};
 
+  /// 앱이 꺼져 있어도 전화가 오도록, 알람을 OS(AlarmManager)에도 미러링한다.
+  /// 인앱 Timer(_tick)는 포그라운드 보조 경로 — 네이티브가 백그라운드 주 경로.
+  final NativeAlarmScheduler _native = NativeAlarmScheduler();
+
   /// 스케줄러를 시작한다(멱등). 권한을 미리 요청하고, 주기 체크를 건다.
   Future<void> start() async {
     if (_started) return;
@@ -54,8 +59,18 @@ class InboundCallScheduler {
     // 잠금화면 위 표시 + 알림 권한을 미리 확보(최초 1회 팝업).
     await callkit.requestNotificationPermission();
     await callkit.requestFullIntentPermission();
-    // 알람 목록이 아직 안 불러와졌으면 로드를 시작시켜 둔다.
-    ref.read(alarmListControllerProvider);
+    // 정확 알람 권한(Android 12+). 없으면 부정확 폴백으로라도 동작.
+    if (!await _native.canScheduleExact()) {
+      await _native.requestExactPermission();
+    }
+    // 알람 목록 변경 때마다 OS 스케줄을 갱신(추가·수정·삭제·초기 로드 모두 커버).
+    ref.listen<AsyncValue<List<Alarm>>>(alarmListControllerProvider, (_, next) {
+      final list = next.valueOrNull;
+      if (list != null) unawaited(_native.sync(list));
+    });
+    // 알람 목록이 아직 안 불러와졌으면 로드를 시작시켜 둔다(위 listen이 동기화).
+    final current = ref.read(alarmListControllerProvider).valueOrNull;
+    if (current != null) unawaited(_native.sync(current));
     _timer = Timer.periodic(_checkInterval, (_) => _tick());
     _tick();
   }

@@ -129,6 +129,11 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// Two-letter labels for the 7 day chips (Mon→Sun).
   final List<String> dayLabels;
 
+  /// Visual chip slot (Monday-first) → Sun-indexed [days] index
+  /// (Mo→1, Tu→2, We→3, Th→4, Fr→5, Sa→6, Su→0). Keeps the Mon-first display
+  /// while storing to the Sun-indexed model the server/schedulers expect.
+  static const List<int> _visualToDataIndex = [1, 2, 3, 4, 5, 6, 0];
+
   /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
   /// sheet otherwise fills its host width (Figma reference device: 375).
   static const double _maxWidth = 430;
@@ -260,17 +265,23 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         const SizedBox(height: 4),
         Row(
           children: [
+            // Chips display Monday-first (dayLabels) but the [days] array is
+            // Sunday-indexed (0=Sun..6=Sat, matching Alarm.days + the server +
+            // both schedulers). Map each visual slot to its data index so a
+            // tapped weekday stores/reads the correct day (a Mon-first index
+            // fed straight into a Sun-indexed array shifts every alarm by a day).
             for (int i = 0; i < 7; i++) ...[
               if (i > 0) const SizedBox(width: 8),
               Expanded(
                 child: SelectBox(
                   label: i < dayLabels.length ? dayLabels[i] : '',
-                  selected: i < days.length && days[i],
+                  selected: _visualToDataIndex[i] < days.length &&
+                      days[_visualToDataIndex[i]],
                   bold: true,
                   expand: true,
                   onChanged: onDaysChanged == null
                       ? null
-                      : (v) => onDaysChanged!(i, v),
+                      : (v) => onDaysChanged!(_visualToDataIndex[i], v),
                 ),
               ),
             ],
