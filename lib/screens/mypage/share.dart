@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_share_profile.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 
@@ -14,6 +15,7 @@ class ShareScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Stack(
@@ -24,7 +26,7 @@ class ShareScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: DialogShareProfile(
                 imageProvider: beaverImage,
-                caption: 'Your Korean accent sounds',
+                caption: l10n.accentSoundsLike,
                 title: 'American',
                 stats: const [
                   ProfileStat(label: 'American', value: 87),

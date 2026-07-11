@@ -173,16 +173,16 @@ class AvatarScreen extends ConsumerWidget {
       type: CardBoxType.purchaseDiscount,
       avatar: BlurUpImage(image: image),
       title: c.name,
-      subtitle: 'Warm · Calm · Soft',
-      price: _priceLabel(c.price),
-      discountPrice: _priceLabel(c.effectivePrice),
+      subtitle: AppLocalizations.of(context).avatarTraits,
+      price: _priceLabel(context, c.price),
+      discountPrice: _priceLabel(context, c.effectivePrice),
       action: _buyButton(context, () => _openSheet(
             context,
             BottomSheetAvatarState.unownedDiscount,
             c.name,
             image,
-            price: _priceLabel(c.price),
-            discountPrice: _priceLabel(c.effectivePrice),
+            price: _priceLabel(context, c.price),
+            discountPrice: _priceLabel(context, c.effectivePrice),
           )),
     );
   }
@@ -194,14 +194,14 @@ class AvatarScreen extends ConsumerWidget {
       type: CardBoxType.purchase,
       avatar: BlurUpImage(image: image),
       title: c.name,
-      subtitle: 'Warm · Calm · Soft',
-      price: _priceLabel(c.price),
+      subtitle: AppLocalizations.of(context).avatarTraits,
+      price: _priceLabel(context, c.price),
       action: _buyButton(context, () => _openSheet(
             context,
             BottomSheetAvatarState.unownedNormal,
             c.name,
             image,
-            price: _priceLabel(c.price),
+            price: _priceLabel(context, c.price),
           )),
     );
   }
@@ -233,8 +233,8 @@ class AvatarScreen extends ConsumerWidget {
   }
 
   /// Formats integer KRW as "₩4,900"; 0 → "Free".
-  String _priceLabel(int krw) {
-    if (krw <= 0) return 'Free';
+  String _priceLabel(BuildContext context, int krw) {
+    if (krw <= 0) return AppLocalizations.of(context).priceFree;
     final digits = krw.toString();
     final buf = StringBuffer();
     for (var i = 0; i < digits.length; i++) {

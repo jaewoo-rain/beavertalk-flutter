@@ -55,10 +55,11 @@ class _RecordArchiveScreenState extends ConsumerState<RecordArchiveScreen> {
 
   /// Runs a mutation, surfacing any failure ([AppException]) as a snackbar.
   Future<void> _run(Future<void> Function() action) async {
+    final l10n = AppLocalizations.of(context);
     try {
       await action();
     } catch (e) {
-      _snack(e is AppException ? e.message : 'Something went wrong.');
+      _snack(e is AppException ? e.message : l10n.somethingWentWrong);
     }
   }
 
@@ -83,12 +84,14 @@ class _RecordArchiveScreenState extends ConsumerState<RecordArchiveScreen> {
       }
       if (!mounted) return;
       if (url == null || !url.startsWith('http')) {
-        _snack("Standard pronunciation audio isn't ready yet.");
+        _snack(AppLocalizations.of(context).standardAudioNotReady);
         return;
       }
       await _player.playUrl(url);
     } catch (_) {
-      if (mounted) _snack("Couldn't play the pronunciation audio.");
+      if (mounted) {
+        _snack(AppLocalizations.of(context).pronunciationPlayError);
+      }
     }
   }
 
@@ -146,7 +149,7 @@ class _RecordArchiveScreenState extends ConsumerState<RecordArchiveScreen> {
                   error: (e, _) => _ErrorState(
                     message: e is AppException
                         ? e.message
-                        : "Couldn't load your saved expressions.",
+                        : l10n.savedExpressionsLoadError,
                     onRetry: () => ref.invalidate(bookmarkListProvider),
                   ),
                   data: (saved) =>
@@ -164,7 +167,7 @@ class _RecordArchiveScreenState extends ConsumerState<RecordArchiveScreen> {
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
-        Text('My Saved Expressions',
+        Text(AppLocalizations.of(context).mySavedExpressions,
             style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
         const SizedBox(height: AppSpacing.s8),
         for (var i = 0; i < saved.length; i++) ...[
@@ -223,7 +226,9 @@ class _ErrorState extends StatelessWidget {
               style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
             ),
             const SizedBox(height: 12),
-            TextButton(onPressed: onRetry, child: const Text('Retry')),
+            TextButton(
+                onPressed: onRetry,
+                child: Text(AppLocalizations.of(context).retry)),
           ],
         ),
       ),

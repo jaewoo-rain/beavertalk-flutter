@@ -100,19 +100,20 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   /// Confirms and performs account deletion. Shows a [DialogBasic] first; on
   /// confirm calls [AuthController.deleteAccount] (backend delete + sign-out).
   Future<void> _confirmDeleteAccount() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialogBasic<bool>(
       context,
-      title: 'Delete account?',
-      description:
-          'This permanently deletes your account and data and cannot be undone.',
+      title: l10n.deleteAccountTitle,
+      description: l10n.deleteAccountBody,
       variant: DialogBasicVariant.twoHorizontal,
-      primary:
-          DialogAction(label: 'Cancel', onPressed: () => Navigator.of(context).pop(false)),
-      secondary:
-          DialogAction(label: 'Delete', onPressed: () => Navigator.of(context).pop(true)),
+      primary: DialogAction(
+          label: l10n.cancel,
+          onPressed: () => Navigator.of(context).pop(false)),
+      secondary: DialogAction(
+          label: l10n.delete,
+          onPressed: () => Navigator.of(context).pop(true)),
     );
     if (confirmed != true || !mounted) return;
-    final l10n = AppLocalizations.of(context);
     try {
       await ref.read(authControllerProvider.notifier).deleteAccount();
     } catch (e) {
@@ -126,6 +127,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Languages come from the real member (GET /members/me); show sensible
     // defaults until it loads.
     final member = ref.watch(myProfileProvider).valueOrNull;
@@ -147,7 +149,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
               onPressed: () => showDialogShareProfile(
                 context,
                 imageProvider: beaverImage,
-                caption: 'Your Korean accent sounds',
+                caption: l10n.accentSoundsLike,
                 title: 'American',
                 stats: const [
                   ProfileStat(label: 'American', value: 87),
@@ -162,7 +164,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 },
               ),
               icon: AppIcons.share(color: AppColors.text),
-              tooltip: 'Share',
+              tooltip: l10n.share,
             ),
           ),
           Expanded(
@@ -173,20 +175,20 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 _profileCard(),
                 const SizedBox(height: AppSpacing.s24),
 
-                _section('Settings'),
+                _section(l10n.settingsSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
                   // User (UI) language — editable.
                   _navRow(
-                    'User Language',
+                    l10n.userLanguage,
                     _langName(userLangId),
                     onTap: () => _pickUserLanguage(userLangId),
                   ),
                   // Learning language — fixed to Korean (the app teaches Korean).
-                  _navRow('Learning Language', 'Korean'),
+                  _navRow(l10n.learningLanguage, l10n.learningLanguageKorean),
                   CardLine(
                     type: CardLineType.defaultToggle,
-                    label: 'Notification',
+                    label: l10n.notificationLabel,
                     checked: _notification,
                     onChanged: (v) => setState(() => _notification = v),
                     showDivider: false,
@@ -194,21 +196,21 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
-                _section('Payment'),
+                _section(l10n.paymentSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow('Current Plan', 'Pro', route: Routes.subscription),
-                  _navRow('Payment History', '',
+                  _navRow(l10n.currentPlan, 'Pro', route: Routes.subscription),
+                  _navRow(l10n.paymentHistory, '',
                       route: Routes.subscription, divider: false),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
-                _section('Support'),
+                _section(l10n.supportSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow('Contact Us', ''),
-                  _navRow('Terms of service', '', route: Routes.terms),
-                  _navRow('Privacy policy', '',
+                  _navRow(l10n.contactUs, ''),
+                  _navRow(l10n.termsOfService, '', route: Routes.terms),
+                  _navRow(l10n.privacyPolicy, '',
                       route: Routes.privacy, divider: false),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
@@ -217,7 +219,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 Button(
                   type: BtnType.secondaryFill,
                   size: BtnSize.s60,
-                  text: 'log out',
+                  text: l10n.logOut,
                   onPressed: () =>
                       ref.read(authControllerProvider.notifier).logout(),
                 ),
@@ -229,7 +231,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
                       child: Text(
-                        'delete account',
+                        l10n.deleteAccount,
                         style: AppType.body1.r
                             .copyWith(color: AppColors.textSecondary),
                       ),
@@ -248,6 +250,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
 
   /// Profile card: 80px avatar, accent label, and three accent ProgressBars.
   Widget _profileCard() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s12, AppSpacing.s16, AppSpacing.s12, AppSpacing.s24),
@@ -271,7 +274,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(
-            'Your Korean accent sounds',
+            l10n.accentSoundsLike,
             textAlign: TextAlign.center,
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),

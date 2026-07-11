@@ -9,6 +9,7 @@ import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -42,8 +43,8 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
     if (_sending) return;
     final email = _email.text.trim();
     if (email.isEmpty) {
-      // TODO(i18n): localize
-      setState(() => _error = 'Enter your email');
+      setState(
+          () => _error = AppLocalizations.of(context).passwordMethodEmailRequired);
       return;
     }
     setState(() {
@@ -65,14 +66,14 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            // TODO(i18n): localize
-            title: 'Reset password',
+            title: l10n.passwordResetTitle,
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
@@ -86,17 +87,14 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    // TODO(i18n): localize
-                    "Enter the email address where you'd like to receive "
-                    'the password reset code.',
+                    l10n.passwordMethodDescription,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.s32),
                   InputField(
                     controller: _email,
-                    // TODO(i18n): localize
-                    hintText: 'Email address',
+                    hintText: l10n.emailAddressHint,
                     keyboardType: TextInputType.emailAddress,
                     leftIcon: AppIcons.mail(),
                     onSubmitted: (_) => _send(),
@@ -122,8 +120,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                // TODO(i18n): localize
-                text: _sending ? 'Sending...' : 'Send email',
+                text: _sending ? l10n.passwordMethodSending : l10n.passwordMethodSendEmail,
                 disabled: _sending,
                 onPressed: _send,
               ),

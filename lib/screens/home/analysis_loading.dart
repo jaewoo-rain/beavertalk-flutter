@@ -11,6 +11,7 @@ import '../../components/chrome/status_bar.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -65,7 +66,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     } else {
       // Shouldn't happen (call_finish always passes an int), but fail safe.
       _phase = _LoadingPhase.error;
-      _errorMsg = "We couldn't find the call information.";
+      _errorMsg = AppLocalizations.of(context).callInfoNotFound;
     }
   }
 
@@ -95,7 +96,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
 
     // Timeout check.
     if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
-      _fail('This is taking longer than expected. Please try again in a moment.');
+      _fail(AppLocalizations.of(context).analysisTimeout);
       return;
     }
 
@@ -108,7 +109,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         case CallAnalysisStatus.done:
           await _fetchResultAndGo(callId);
         case CallAnalysisStatus.failed:
-          _fail("We couldn't analyze the conversation. Please try again.");
+          _fail(AppLocalizations.of(context).analysisFailed);
         case CallAnalysisStatus.ongoing:
         case CallAnalysisStatus.analyzing:
         case CallAnalysisStatus.unknown:
@@ -171,6 +172,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   }
 
   Widget _polling() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -186,13 +188,13 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           ),
           const SizedBox(height: AppSpacing.s32),
           Text(
-            'Analyzing your conversation…',
+            l10n.analyzingConversation,
             style: AppType.heading2.sb.copyWith(color: AppColors.text),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.s12),
           Text(
-            'This will only take a moment',
+            l10n.analyzingSubtitle,
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),
           const SizedBox(height: AppSpacing.s28),
@@ -214,6 +216,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   }
 
   Widget _error() {
+    final l10n = AppLocalizations.of(context);
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -225,7 +228,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           ),
           const SizedBox(height: AppSpacing.s20),
           Text(
-            "Couldn't load the analysis",
+            l10n.analysisLoadError,
             style: AppType.heading2.sb.copyWith(color: AppColors.text),
             textAlign: TextAlign.center,
           ),
@@ -239,14 +242,14 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
-            text: 'Try again',
+            text: l10n.tryAgain,
             onPressed: _callId == null ? _goHome : _start,
           ),
           const SizedBox(height: AppSpacing.s12),
           Button(
             type: BtnType.secondaryFill,
             size: BtnSize.s60,
-            text: 'Home',
+            text: l10n.home,
             onPressed: _goHome,
           ),
         ],

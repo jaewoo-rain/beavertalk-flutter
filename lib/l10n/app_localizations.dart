@@ -1051,6 +1051,612 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saves a video of your gameplay to share (silent).'**
   String get challengeRecordHint;
+
+  /// No description provided for @settingsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsSection;
+
+  /// No description provided for @paymentSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentSection;
+
+  /// No description provided for @supportSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get supportSection;
+
+  /// No description provided for @userLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'User Language'**
+  String get userLanguage;
+
+  /// No description provided for @learningLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning Language'**
+  String get learningLanguage;
+
+  /// No description provided for @learningLanguageKorean.
+  ///
+  /// In en, this message translates to:
+  /// **'Korean'**
+  String get learningLanguageKorean;
+
+  /// No description provided for @notificationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification'**
+  String get notificationLabel;
+
+  /// No description provided for @currentPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Current Plan'**
+  String get currentPlan;
+
+  /// No description provided for @paymentHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment History'**
+  String get paymentHistory;
+
+  /// No description provided for @contactUs.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact Us'**
+  String get contactUs;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
+  String get termsOfService;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @logOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Log out'**
+  String get logOut;
+
+  /// No description provided for @deleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account'**
+  String get deleteAccount;
+
+  /// No description provided for @deleteAccountTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account?'**
+  String get deleteAccountTitle;
+
+  /// No description provided for @deleteAccountBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This permanently deletes your account and data and cannot be undone.'**
+  String get deleteAccountBody;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @share.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get share;
+
+  /// No description provided for @accentSoundsLike.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Korean accent sounds'**
+  String get accentSoundsLike;
+
+  /// No description provided for @hintLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hint'**
+  String get hintLabel;
+
+  /// No description provided for @nextHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Next hint'**
+  String get nextHint;
+
+  /// No description provided for @translateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Translate'**
+  String get translateLabel;
+
+  /// No description provided for @startRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Start recording'**
+  String get startRecording;
+
+  /// No description provided for @stopRecording.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop recording'**
+  String get stopRecording;
+
+  /// No description provided for @back.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get back;
+
+  /// No description provided for @onboardingNameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What should we call you?'**
+  String get onboardingNameTitle;
+
+  /// No description provided for @onboardingNameSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your AI tutor will remember your name.'**
+  String get onboardingNameSubtitle;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get nameLabel;
+
+  /// No description provided for @nameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name'**
+  String get nameHint;
+
+  /// No description provided for @nameHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'It doesn\'t have to be your real name — a nickname works too.'**
+  String get nameHelper;
+
+  /// No description provided for @continueLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueLabel;
+
+  /// No description provided for @onboardingDoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Beaver is waiting for your call'**
+  String get onboardingDoneTitle;
+
+  /// No description provided for @onboardingDoneSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a call right now'**
+  String get onboardingDoneSubtitle;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @callNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Call now'**
+  String get callNow;
+
+  /// No description provided for @pronunciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation'**
+  String get pronunciation;
+
+  /// No description provided for @fluency.
+  ///
+  /// In en, this message translates to:
+  /// **'Fluency'**
+  String get fluency;
+
+  /// No description provided for @rhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Rhythm'**
+  String get rhythm;
+
+  /// No description provided for @analysisTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'This is taking longer than expected. Please try again in a moment.'**
+  String get analysisTimeout;
+
+  /// No description provided for @analysisFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t analyze the conversation. Please try again.'**
+  String get analysisFailed;
+
+  /// No description provided for @analyzingConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Analyzing your conversation…'**
+  String get analyzingConversation;
+
+  /// No description provided for @analyzingSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This will only take a moment'**
+  String get analyzingSubtitle;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get tryAgain;
+
+  /// No description provided for @nativeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Native'**
+  String get nativeLabel;
+
+  /// No description provided for @meLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Me'**
+  String get meLabel;
+
+  /// No description provided for @pronunciationPlayError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t play the pronunciation audio.'**
+  String get pronunciationPlayError;
+
+  /// No description provided for @savedExpressionsLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load your saved expressions.'**
+  String get savedExpressionsLoadError;
+
+  /// No description provided for @mySavedExpressions.
+  ///
+  /// In en, this message translates to:
+  /// **'My Saved Expressions'**
+  String get mySavedExpressions;
+
+  /// No description provided for @avatarTraits.
+  ///
+  /// In en, this message translates to:
+  /// **'Warm · Calm · Soft'**
+  String get avatarTraits;
+
+  /// No description provided for @priceFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get priceFree;
+
+  /// No description provided for @loginGoogleTokenError.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t get a Google sign-in token.'**
+  String get loginGoogleTokenError;
+
+  /// No description provided for @loginGoogleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed.'**
+  String get loginGoogleSignInFailed;
+
+  /// No description provided for @loginContinueWithKakao.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Kakao'**
+  String get loginContinueWithKakao;
+
+  /// No description provided for @loginContinueWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Google'**
+  String get loginContinueWithGoogle;
+
+  /// No description provided for @loginContinueWithApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Apple'**
+  String get loginContinueWithApple;
+
+  /// No description provided for @loginContinueWithEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with email'**
+  String get loginContinueWithEmail;
+
+  /// No description provided for @loginOrDivider.
+  ///
+  /// In en, this message translates to:
+  /// **'or'**
+  String get loginOrDivider;
+
+  /// No description provided for @loginNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get loginNoAccount;
+
+  /// No description provided for @signUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up'**
+  String get signUp;
+
+  /// No description provided for @loginTermsNoticePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'By continuing, you agree to our '**
+  String get loginTermsNoticePrefix;
+
+  /// No description provided for @loginTermsNoticeAnd.
+  ///
+  /// In en, this message translates to:
+  /// **' and '**
+  String get loginTermsNoticeAnd;
+
+  /// No description provided for @loginTermsNoticeSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'.'**
+  String get loginTermsNoticeSuffix;
+
+  /// No description provided for @loginLogIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in'**
+  String get loginLogIn;
+
+  /// No description provided for @fieldEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get fieldEmailLabel;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get emailHint;
+
+  /// No description provided for @fieldPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get fieldPasswordLabel;
+
+  /// No description provided for @passwordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get passwordHint;
+
+  /// No description provided for @loginRememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember me'**
+  String get loginRememberMe;
+
+  /// No description provided for @loginForgotPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get loginForgotPassword;
+
+  /// No description provided for @loginLoggingIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Logging in...'**
+  String get loginLoggingIn;
+
+  /// No description provided for @passwordLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be 8–16 characters.'**
+  String get passwordLengthError;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords don\'t match.'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @signupCheckInput.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your input.'**
+  String get signupCheckInput;
+
+  /// No description provided for @fieldConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get fieldConfirmPasswordLabel;
+
+  /// No description provided for @confirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get confirmPasswordHint;
+
+  /// No description provided for @signupSigningUp.
+  ///
+  /// In en, this message translates to:
+  /// **'Signing up...'**
+  String get signupSigningUp;
+
+  /// No description provided for @signupHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get signupHaveAccount;
+
+  /// No description provided for @passwordMethodEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get passwordMethodEmailRequired;
+
+  /// No description provided for @passwordResetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset password'**
+  String get passwordResetTitle;
+
+  /// No description provided for @passwordMethodDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the email address where you\'d like to receive the password reset code.'**
+  String get passwordMethodDescription;
+
+  /// No description provided for @emailAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Email address'**
+  String get emailAddressHint;
+
+  /// No description provided for @passwordMethodSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending...'**
+  String get passwordMethodSending;
+
+  /// No description provided for @passwordMethodSendEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Send email'**
+  String get passwordMethodSendEmail;
+
+  /// No description provided for @passwordCodeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter code'**
+  String get passwordCodeTitle;
+
+  /// No description provided for @passwordCodeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve sent a recovery code to your email. Enter it to continue.'**
+  String get passwordCodeDescription;
+
+  /// No description provided for @passwordCodeNoCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t get the code?'**
+  String get passwordCodeNoCode;
+
+  /// No description provided for @passwordCodeResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Resend code'**
+  String get passwordCodeResend;
+
+  /// No description provided for @passwordCodeVerifying.
+  ///
+  /// In en, this message translates to:
+  /// **'Verifying...'**
+  String get passwordCodeVerifying;
+
+  /// No description provided for @passwordNewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get passwordNewTitle;
+
+  /// No description provided for @passwordNewDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password for your account.'**
+  String get passwordNewDescription;
+
+  /// No description provided for @fieldNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get fieldNewPasswordLabel;
+
+  /// No description provided for @newPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your new password'**
+  String get newPasswordHint;
+
+  /// No description provided for @fieldConfirmNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new password'**
+  String get fieldConfirmNewPasswordLabel;
+
+  /// No description provided for @confirmNewPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your new password'**
+  String get confirmNewPasswordHint;
+
+  /// No description provided for @passwordNewSubmitting.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get passwordNewSubmitting;
+
+  /// No description provided for @passwordNewSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get passwordNewSubmit;
+
+  /// No description provided for @passwordCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset complete'**
+  String get passwordCompleteTitle;
+
+  /// No description provided for @passwordCompleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been reset. Log in with your new password to continue.'**
+  String get passwordCompleteBody;
+
+  /// No description provided for @termsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
+  String get termsTitle;
+
+  /// No description provided for @privacyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get privacyTitle;
+
+  /// No description provided for @passwordNewDescriptionEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a new password for {email}.'**
+  String passwordNewDescriptionEmail(String email);
 }
 
 class _AppLocalizationsDelegate

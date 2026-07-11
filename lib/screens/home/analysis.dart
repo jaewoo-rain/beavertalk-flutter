@@ -123,7 +123,10 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       toggleBookmark(sentenceId); // revert on failure
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Something went wrong.')),
+          SnackBar(
+            content:
+                Text(AppLocalizations.of(context).somethingWentWrong),
+          ),
         );
       }
     }
@@ -275,11 +278,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               score: total ?? 0,
               metrics: [
                 PronunciationMetric(
-                  label: 'Pronunciation',
+                  label: l10n.pronunciation,
                   value: _pct(pronunciation),
                 ),
-                PronunciationMetric(label: 'Fluency', value: _pct(fluency)),
-                PronunciationMetric(label: 'Rhythm', value: _pct(rhythm)),
+                PronunciationMetric(label: l10n.fluency, value: _pct(fluency)),
+                PronunciationMetric(label: l10n.rhythm, value: _pct(rhythm)),
               ],
             ),
           ),

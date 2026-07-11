@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -63,7 +64,7 @@ class TranslateToggle extends StatelessWidget {
       button: true,
       toggled: active,
       enabled: !disabled,
-      label: 'Translate',
+      label: AppLocalizations.of(context).translateLabel,
       child: Opacity(
         opacity: disabled ? 0.4 : 1,
         child: Material(

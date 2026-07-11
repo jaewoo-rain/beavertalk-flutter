@@ -7,6 +7,7 @@ import '../../components/atoms/button.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -40,6 +41,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final bool canContinue = _name.trim().isNotEmpty;
 
     return AppScaffold(
@@ -61,37 +63,32 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    // TODO(i18n): localize
-                    'What should we call you?',
+                    l10n.onboardingNameTitle,
                     style: AppType.title3.b.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
-                    // TODO(i18n): localize
-                    'Your AI tutor will remember your name.',
+                    l10n.onboardingNameSubtitle,
                     style: AppType.body1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.s24),
                   Text(
-                    // TODO(i18n): localize
-                    'Your name',
+                    l10n.nameLabel,
                     style: AppType.body1.r.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s12),
                   InputField(
                     value: _name,
                     onChanged: (v) => setState(() => _name = v),
-                    // TODO(i18n): localize
-                    hintText: 'Enter your name',
+                    hintText: l10n.nameHint,
                     onSubmitted: (_) {
                       if (_name.trim().isNotEmpty) _next();
                     },
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
-                    // TODO(i18n): localize
-                    "It doesn't have to be your real name — a nickname works too.",
+                    l10n.nameHelper,
                     style: AppType.body1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
@@ -110,8 +107,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                // TODO(i18n): localize
-                text: 'Continue',
+                text: l10n.continueLabel,
                 disabled: !canContinue,
                 onPressed: _next,
               ),

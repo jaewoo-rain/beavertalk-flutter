@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../features/normalcall/domain/entities/call_hint.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -56,12 +57,13 @@ class HintCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final card = Container(
       decoration: BoxDecoration(
         color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: revealed ? _full() : _peek(),
+      child: revealed ? _full(l10n) : _peek(),
     );
 
     // In peek the whole card is the reveal target; in full the card itself is
@@ -106,7 +108,7 @@ class HintCard extends StatelessWidget {
     );
   }
 
-  Widget _full() {
+  Widget _full(AppLocalizations l10n) {
     final ex = _current;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -118,7 +120,7 @@ class HintCard extends StatelessWidget {
           // Header: "Hint" + counter/cycle.
           Row(
             children: [
-              Text('Hint',
+              Text(l10n.hintLabel,
                   style: AppType.caption2.sb
                       .copyWith(color: AppColors.hintAccent)),
               const Spacer(),
@@ -129,7 +131,7 @@ class HintCard extends StatelessWidget {
                 const SizedBox(width: AppSpacing.s4),
                 Semantics(
                   button: true,
-                  label: 'Next hint',
+                  label: l10n.nextHint,
                   child: InkResponse(
                     onTap: onCycle,
                     radius: 18,

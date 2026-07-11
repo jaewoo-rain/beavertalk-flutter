@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../mock/mock_data.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../icons/app_icons.dart';
@@ -76,7 +77,7 @@ class HeroAvatar extends StatelessWidget {
                 ? badge
                 : Semantics(
                     button: true,
-                    label: 'Change avatar',
+                    label: AppLocalizations.of(context).changeAvatar,
                     child: Material(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(AppRadius.xs),

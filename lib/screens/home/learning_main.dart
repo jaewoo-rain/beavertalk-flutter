@@ -44,6 +44,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final args =
         ModalRoute.of(context)!.settings.arguments as LearningArgs;
     // Bind the gauge to the real scored attempt. If somehow opened without
@@ -65,15 +66,15 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
                   score: (eval?.totalScore ?? 0).toDouble(),
                   metrics: [
                     PronunciationMetric(
-                      label: 'Pronunciation',
+                      label: l10n.pronunciation,
                       value: eval == null ? '-%' : '${eval.pronunciation}%',
                     ),
                     PronunciationMetric(
-                      label: 'Fluency',
+                      label: l10n.fluency,
                       value: eval == null ? '-%' : '${eval.fluency}%',
                     ),
                     PronunciationMetric(
-                      label: 'Rhythm',
+                      label: l10n.rhythm,
                       value: eval == null ? '-%' : '${eval.rhythm}%',
                     ),
                   ],

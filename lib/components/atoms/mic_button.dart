@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import 'record_circle_button.dart';
@@ -42,7 +43,7 @@ class MicButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final core = _buildCore();
+    final core = _buildCore(context);
 
     final lvl = level;
     // No level provided (or idle) → render the plain two-state button.
@@ -79,19 +80,20 @@ class MicButton extends StatelessWidget {
   }
 
   /// The two-state button face (idle mic circle / recording stop face).
-  Widget _buildCore() {
+  Widget _buildCore(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Idle reuses the shared white-circle record control (mic glyph).
     if (!recording) {
       return RecordCircleButton(
         icon: AppIcons.mic,
         onTap: onTap,
-        semanticLabel: 'Start recording',
+        semanticLabel: l10n.startRecording,
         size: _size,
       );
     }
     return Semantics(
       button: true,
-      label: 'Stop recording',
+      label: l10n.stopRecording,
       child: GestureDetector(
         onTap: onTap,
         child: const SizedBox(

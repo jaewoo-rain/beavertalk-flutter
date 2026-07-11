@@ -268,7 +268,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                         child: Button(
                           type: BtnType.secondaryWhite,
                           size: BtnSize.s44,
-                          text: 'Native',
+                          text: l10n.nativeLabel,
                           leftIcon: AppIcons.volume(size: 20),
                           onPressed: () => _playNative(sentence.id),
                         ),
@@ -278,7 +278,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                         child: Button(
                           type: BtnType.secondaryWhite,
                           size: BtnSize.s44,
-                          text: 'Me',
+                          text: l10n.meLabel,
                           leftIcon: AppIcons.volume(size: 20),
                           onPressed: () => _playMe(args),
                         ),

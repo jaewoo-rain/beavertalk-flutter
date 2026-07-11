@@ -497,4 +497,309 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get challengeRecordHint => 'プレイ動画を保存してシェアできます（無音）。';
+
+  @override
+  String get settingsSection => '設定';
+
+  @override
+  String get paymentSection => '決済';
+
+  @override
+  String get supportSection => 'サポート';
+
+  @override
+  String get userLanguage => '表示言語';
+
+  @override
+  String get learningLanguage => '学習言語';
+
+  @override
+  String get learningLanguageKorean => '韓国語';
+
+  @override
+  String get notificationLabel => '通知';
+
+  @override
+  String get currentPlan => '現在のプラン';
+
+  @override
+  String get paymentHistory => '支払い履歴';
+
+  @override
+  String get contactUs => 'お問い合わせ';
+
+  @override
+  String get termsOfService => '利用規約';
+
+  @override
+  String get privacyPolicy => 'プライバシーポリシー';
+
+  @override
+  String get logOut => 'ログアウト';
+
+  @override
+  String get deleteAccount => 'アカウント削除';
+
+  @override
+  String get deleteAccountTitle => 'アカウントを削除しますか？';
+
+  @override
+  String get deleteAccountBody => 'アカウントとデータが完全に削除され、元に戻せません。';
+
+  @override
+  String get delete => '削除';
+
+  @override
+  String get share => 'シェア';
+
+  @override
+  String get accentSoundsLike => 'あなたの韓国語アクセントは';
+
+  @override
+  String get hintLabel => 'ヒント';
+
+  @override
+  String get nextHint => '次のヒント';
+
+  @override
+  String get translateLabel => '翻訳';
+
+  @override
+  String get startRecording => '録音を開始';
+
+  @override
+  String get stopRecording => '録音を停止';
+
+  @override
+  String get back => '戻る';
+
+  @override
+  String get onboardingNameTitle => '何とお呼びすればいいですか?';
+
+  @override
+  String get onboardingNameSubtitle => 'AIチューターがあなたの名前を覚えます。';
+
+  @override
+  String get nameLabel => 'お名前';
+
+  @override
+  String get nameHint => '名前を入力してください';
+
+  @override
+  String get nameHelper => '本名でなくても大丈夫です。ニックネームでもかまいません。';
+
+  @override
+  String get continueLabel => '続ける';
+
+  @override
+  String get onboardingDoneTitle => 'ビーバーがあなたの電話を待っています';
+
+  @override
+  String get onboardingDoneSubtitle => '今すぐ通話を始めましょう';
+
+  @override
+  String get home => 'ホーム';
+
+  @override
+  String get callNow => '今すぐ通話';
+
+  @override
+  String get pronunciation => '発音';
+
+  @override
+  String get fluency => '流暢さ';
+
+  @override
+  String get rhythm => 'リズム';
+
+  @override
+  String get analysisTimeout => '予想より時間がかかっています。しばらくしてからもう一度お試しください。';
+
+  @override
+  String get analysisFailed => '会話を分析できませんでした。もう一度お試しください。';
+
+  @override
+  String get analyzingConversation => '会話を分析しています…';
+
+  @override
+  String get analyzingSubtitle => '少しだけお待ちください';
+
+  @override
+  String get tryAgain => 'もう一度試す';
+
+  @override
+  String get nativeLabel => 'ネイティブ';
+
+  @override
+  String get meLabel => '自分';
+
+  @override
+  String get pronunciationPlayError => '発音の音声を再生できませんでした。';
+
+  @override
+  String get savedExpressionsLoadError => '保存した表現を読み込めませんでした。';
+
+  @override
+  String get mySavedExpressions => '保存した表現';
+
+  @override
+  String get avatarTraits => '温かい・穏やか・優しい';
+
+  @override
+  String get priceFree => '無料';
+
+  @override
+  String get loginGoogleTokenError => 'Googleサインイントークンを取得できませんでした。';
+
+  @override
+  String get loginGoogleSignInFailed => 'Googleサインインに失敗しました。';
+
+  @override
+  String get loginContinueWithKakao => 'Kakaoで続ける';
+
+  @override
+  String get loginContinueWithGoogle => 'Googleで続ける';
+
+  @override
+  String get loginContinueWithApple => 'Appleで続ける';
+
+  @override
+  String get loginContinueWithEmail => 'メールで続ける';
+
+  @override
+  String get loginOrDivider => 'または';
+
+  @override
+  String get loginNoAccount => 'アカウントをお持ちでないですか？';
+
+  @override
+  String get signUp => '新規登録';
+
+  @override
+  String get loginTermsNoticePrefix => '続行することで、';
+
+  @override
+  String get loginTermsNoticeAnd => 'および';
+
+  @override
+  String get loginTermsNoticeSuffix => 'に同意したものとみなされます。';
+
+  @override
+  String get loginLogIn => 'ログイン';
+
+  @override
+  String get fieldEmailLabel => 'メールアドレス';
+
+  @override
+  String get emailHint => 'メールアドレスを入力してください';
+
+  @override
+  String get fieldPasswordLabel => 'パスワード';
+
+  @override
+  String get passwordHint => 'パスワードを入力してください';
+
+  @override
+  String get loginRememberMe => 'ログイン情報を保存';
+
+  @override
+  String get loginForgotPassword => 'パスワードをお忘れですか？';
+
+  @override
+  String get loginLoggingIn => 'ログイン中...';
+
+  @override
+  String get passwordLengthError => 'パスワードは8〜16文字で入力してください。';
+
+  @override
+  String get passwordsDoNotMatch => 'パスワードが一致しません。';
+
+  @override
+  String get signupCheckInput => '入力内容をご確認ください。';
+
+  @override
+  String get fieldConfirmPasswordLabel => 'パスワード（確認）';
+
+  @override
+  String get confirmPasswordHint => 'パスワードを再入力してください';
+
+  @override
+  String get signupSigningUp => '登録中...';
+
+  @override
+  String get signupHaveAccount => 'すでにアカウントをお持ちですか？';
+
+  @override
+  String get passwordMethodEmailRequired => 'メールアドレスを入力してください';
+
+  @override
+  String get passwordResetTitle => 'パスワードの再設定';
+
+  @override
+  String get passwordMethodDescription => 'パスワード再設定コードを受け取るメールアドレスを入力してください。';
+
+  @override
+  String get emailAddressHint => 'メールアドレス';
+
+  @override
+  String get passwordMethodSending => '送信中...';
+
+  @override
+  String get passwordMethodSendEmail => 'メールを送信';
+
+  @override
+  String get passwordCodeTitle => 'コードを入力';
+
+  @override
+  String get passwordCodeDescription => 'メールに再設定コードを送信しました。コードを入力して続行してください。';
+
+  @override
+  String get passwordCodeNoCode => 'コードが届きませんか？';
+
+  @override
+  String get passwordCodeResend => 'コードを再送信';
+
+  @override
+  String get passwordCodeVerifying => '確認中...';
+
+  @override
+  String get passwordNewTitle => '新しいパスワード';
+
+  @override
+  String get passwordNewDescription => 'アカウントの新しいパスワードを設定してください。';
+
+  @override
+  String get fieldNewPasswordLabel => '新しいパスワード';
+
+  @override
+  String get newPasswordHint => '新しいパスワードを入力してください';
+
+  @override
+  String get fieldConfirmNewPasswordLabel => '新しいパスワード（確認）';
+
+  @override
+  String get confirmNewPasswordHint => '新しいパスワードを再入力してください';
+
+  @override
+  String get passwordNewSubmitting => '送信中...';
+
+  @override
+  String get passwordNewSubmit => '送信';
+
+  @override
+  String get passwordCompleteTitle => 'パスワードの再設定が完了しました';
+
+  @override
+  String get passwordCompleteBody => 'パスワードが再設定されました。新しいパスワードでログインして続行してください。';
+
+  @override
+  String get termsTitle => '利用規約';
+
+  @override
+  String get privacyTitle => 'プライバシーポリシー';
+
+  @override
+  String passwordNewDescriptionEmail(String email) {
+    return '$email の新しいパスワードを設定してください。';
+  }
 }

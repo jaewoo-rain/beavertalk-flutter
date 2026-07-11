@@ -12,6 +12,7 @@ import '../../components/molecules/password_eye_toggle.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -78,12 +79,12 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         children: [
-          // TODO(i18n): localize
-          Gnb.main(title: 'Log in', onBack: () => Navigator.pop(context)),
+          Gnb.main(title: l10n.loginLogIn, onBack: () => Navigator.pop(context)),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
@@ -92,28 +93,24 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Email field ─────────────────────────────────────────
-                  // TODO(i18n): localize
-                  const _FieldLabel('Email'),
+                  _FieldLabel(l10n.fieldEmailLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _email,
                     onChanged: (v) => setState(() => _email = v),
-                    // TODO(i18n): localize
-                    hintText: 'Enter your email',
+                    hintText: l10n.emailHint,
                     keyboardType: TextInputType.emailAddress,
                     leftIcon:
                         const MailIcon(size: 20, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   // ── Password field ──────────────────────────────────────
-                  // TODO(i18n): localize
-                  const _FieldLabel('Password'),
+                  _FieldLabel(l10n.fieldPasswordLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
-                    // TODO(i18n): localize
-                    hintText: 'Enter your password',
+                    hintText: l10n.passwordHint,
                     obscureText: _obscurePassword,
                     leftIcon:
                         AppIcons.lock(size: 20, color: AppColors.textSecondary),
@@ -145,8 +142,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                             GestureDetector(
                               onTap: () => setState(() => _saveId = !_saveId),
                               child: Text(
-                                // TODO(i18n): localize
-                                'Remember me',
+                                l10n.loginRememberMe,
                                 style: AppType.label1.r
                                     .copyWith(color: AppColors.textSecondary),
                               ),
@@ -157,8 +153,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                           child: GestureDetector(
                             onTap: _findPassword,
                             child: Text(
-                              // TODO(i18n): localize
-                              'Forgot password?',
+                              l10n.loginForgotPassword,
                               textAlign: TextAlign.right,
                               style: AppType.label1.r
                                   .copyWith(color: AppColors.textSecondary),
@@ -185,8 +180,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    // TODO(i18n): localize
-                    text: _submitting ? 'Logging in...' : 'Log in',
+                    text: _submitting ? l10n.loginLoggingIn : l10n.loginLogIn,
                     disabled: _submitting,
                     onPressed: _login,
                   ),
@@ -266,6 +260,7 @@ class _SignupPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Wrap so the prompt + action can flow onto a second line if localized
     // text grows.
     return Wrap(
@@ -273,15 +268,13 @@ class _SignupPrompt extends StatelessWidget {
       spacing: 6, // Figma 6px gap (no AppSpacing token)
       children: [
         Text(
-          // TODO(i18n): localize
-          "Don't have an account?",
+          l10n.loginNoAccount,
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
         ),
         GestureDetector(
           onTap: onSignup,
           child: Text(
-            // TODO(i18n): localize
-            'Sign up',
+            l10n.signUp,
             style: AppType.label1.sb.copyWith(color: AppColors.primary),
           ),
         ),

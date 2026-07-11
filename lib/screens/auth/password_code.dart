@@ -10,6 +10,7 @@ import '../../components/molecules/otp_input.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -121,14 +122,14 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            // TODO(i18n): localize
-            title: 'Enter code',
+            title: l10n.passwordCodeTitle,
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
@@ -139,9 +140,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    // TODO(i18n): localize
-                    "We've sent a recovery code to your email. Enter it to "
-                    'continue.',
+                    l10n.passwordCodeDescription,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
@@ -160,16 +159,14 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                           spacing: 6, // Figma 6px gap (no AppSpacing token)
                           children: [
                             Text(
-                              // TODO(i18n): localize
-                              "Didn't get the code?",
+                              l10n.passwordCodeNoCode,
                               style: AppType.label1.r
                                   .copyWith(color: AppColors.textSecondary),
                             ),
                             GestureDetector(
                               onTap: _resend,
                               child: Text(
-                                // TODO(i18n): localize
-                                'Resend code',
+                                l10n.passwordCodeResend,
                                 style: AppType.label1.sb
                                     .copyWith(color: AppColors.primary),
                               ),
@@ -198,8 +195,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                // TODO(i18n): localize
-                text: _submitting ? 'Verifying...' : 'Next',
+                text: _submitting ? l10n.passwordCodeVerifying : l10n.next,
                 disabled: _submitting || !_canSubmit,
                 onPressed: _submit,
               ),

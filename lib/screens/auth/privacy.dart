@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/legal/legal_body.dart';
 import '../../features/legal/legal_texts.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 
 /// Privacy-Policy article screen.
@@ -19,14 +20,14 @@ class PrivacyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            // TODO(i18n): localize
-            title: 'Privacy policy',
+            title: l10n.privacyTitle,
             onBack: () => Navigator.of(context).maybePop(),
           ),
           const Expanded(child: LegalBody(data: privacyMarkdown)),

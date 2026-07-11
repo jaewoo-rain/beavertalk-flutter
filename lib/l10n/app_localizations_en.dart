@@ -513,4 +513,318 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get challengeRecordHint =>
       'Saves a video of your gameplay to share (silent).';
+
+  @override
+  String get settingsSection => 'Settings';
+
+  @override
+  String get paymentSection => 'Payment';
+
+  @override
+  String get supportSection => 'Support';
+
+  @override
+  String get userLanguage => 'User Language';
+
+  @override
+  String get learningLanguage => 'Learning Language';
+
+  @override
+  String get learningLanguageKorean => 'Korean';
+
+  @override
+  String get notificationLabel => 'Notification';
+
+  @override
+  String get currentPlan => 'Current Plan';
+
+  @override
+  String get paymentHistory => 'Payment History';
+
+  @override
+  String get contactUs => 'Contact Us';
+
+  @override
+  String get termsOfService => 'Terms of service';
+
+  @override
+  String get privacyPolicy => 'Privacy policy';
+
+  @override
+  String get logOut => 'Log out';
+
+  @override
+  String get deleteAccount => 'Delete account';
+
+  @override
+  String get deleteAccountTitle => 'Delete account?';
+
+  @override
+  String get deleteAccountBody =>
+      'This permanently deletes your account and data and cannot be undone.';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get share => 'Share';
+
+  @override
+  String get accentSoundsLike => 'Your Korean accent sounds';
+
+  @override
+  String get hintLabel => 'Hint';
+
+  @override
+  String get nextHint => 'Next hint';
+
+  @override
+  String get translateLabel => 'Translate';
+
+  @override
+  String get startRecording => 'Start recording';
+
+  @override
+  String get stopRecording => 'Stop recording';
+
+  @override
+  String get back => 'Back';
+
+  @override
+  String get onboardingNameTitle => 'What should we call you?';
+
+  @override
+  String get onboardingNameSubtitle => 'Your AI tutor will remember your name.';
+
+  @override
+  String get nameLabel => 'Your name';
+
+  @override
+  String get nameHint => 'Enter your name';
+
+  @override
+  String get nameHelper =>
+      'It doesn\'t have to be your real name — a nickname works too.';
+
+  @override
+  String get continueLabel => 'Continue';
+
+  @override
+  String get onboardingDoneTitle => 'Beaver is waiting for your call';
+
+  @override
+  String get onboardingDoneSubtitle => 'Start a call right now';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get callNow => 'Call now';
+
+  @override
+  String get pronunciation => 'Pronunciation';
+
+  @override
+  String get fluency => 'Fluency';
+
+  @override
+  String get rhythm => 'Rhythm';
+
+  @override
+  String get analysisTimeout =>
+      'This is taking longer than expected. Please try again in a moment.';
+
+  @override
+  String get analysisFailed =>
+      'We couldn\'t analyze the conversation. Please try again.';
+
+  @override
+  String get analyzingConversation => 'Analyzing your conversation…';
+
+  @override
+  String get analyzingSubtitle => 'This will only take a moment';
+
+  @override
+  String get tryAgain => 'Try again';
+
+  @override
+  String get nativeLabel => 'Native';
+
+  @override
+  String get meLabel => 'Me';
+
+  @override
+  String get pronunciationPlayError =>
+      'Couldn\'t play the pronunciation audio.';
+
+  @override
+  String get savedExpressionsLoadError =>
+      'Couldn\'t load your saved expressions.';
+
+  @override
+  String get mySavedExpressions => 'My Saved Expressions';
+
+  @override
+  String get avatarTraits => 'Warm · Calm · Soft';
+
+  @override
+  String get priceFree => 'Free';
+
+  @override
+  String get loginGoogleTokenError => 'Couldn\'t get a Google sign-in token.';
+
+  @override
+  String get loginGoogleSignInFailed => 'Google sign-in failed.';
+
+  @override
+  String get loginContinueWithKakao => 'Continue with Kakao';
+
+  @override
+  String get loginContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get loginContinueWithApple => 'Continue with Apple';
+
+  @override
+  String get loginContinueWithEmail => 'Continue with email';
+
+  @override
+  String get loginOrDivider => 'or';
+
+  @override
+  String get loginNoAccount => 'Don\'t have an account?';
+
+  @override
+  String get signUp => 'Sign up';
+
+  @override
+  String get loginTermsNoticePrefix => 'By continuing, you agree to our ';
+
+  @override
+  String get loginTermsNoticeAnd => ' and ';
+
+  @override
+  String get loginTermsNoticeSuffix => '.';
+
+  @override
+  String get loginLogIn => 'Log in';
+
+  @override
+  String get fieldEmailLabel => 'Email';
+
+  @override
+  String get emailHint => 'Enter your email';
+
+  @override
+  String get fieldPasswordLabel => 'Password';
+
+  @override
+  String get passwordHint => 'Enter your password';
+
+  @override
+  String get loginRememberMe => 'Remember me';
+
+  @override
+  String get loginForgotPassword => 'Forgot password?';
+
+  @override
+  String get loginLoggingIn => 'Logging in...';
+
+  @override
+  String get passwordLengthError => 'Password must be 8–16 characters.';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords don\'t match.';
+
+  @override
+  String get signupCheckInput => 'Please check your input.';
+
+  @override
+  String get fieldConfirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get confirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get signupSigningUp => 'Signing up...';
+
+  @override
+  String get signupHaveAccount => 'Already have an account?';
+
+  @override
+  String get passwordMethodEmailRequired => 'Enter your email';
+
+  @override
+  String get passwordResetTitle => 'Reset password';
+
+  @override
+  String get passwordMethodDescription =>
+      'Enter the email address where you\'d like to receive the password reset code.';
+
+  @override
+  String get emailAddressHint => 'Email address';
+
+  @override
+  String get passwordMethodSending => 'Sending...';
+
+  @override
+  String get passwordMethodSendEmail => 'Send email';
+
+  @override
+  String get passwordCodeTitle => 'Enter code';
+
+  @override
+  String get passwordCodeDescription =>
+      'We\'ve sent a recovery code to your email. Enter it to continue.';
+
+  @override
+  String get passwordCodeNoCode => 'Didn\'t get the code?';
+
+  @override
+  String get passwordCodeResend => 'Resend code';
+
+  @override
+  String get passwordCodeVerifying => 'Verifying...';
+
+  @override
+  String get passwordNewTitle => 'New password';
+
+  @override
+  String get passwordNewDescription => 'Set a new password for your account.';
+
+  @override
+  String get fieldNewPasswordLabel => 'New password';
+
+  @override
+  String get newPasswordHint => 'Enter your new password';
+
+  @override
+  String get fieldConfirmNewPasswordLabel => 'Confirm new password';
+
+  @override
+  String get confirmNewPasswordHint => 'Re-enter your new password';
+
+  @override
+  String get passwordNewSubmitting => 'Submitting...';
+
+  @override
+  String get passwordNewSubmit => 'Submit';
+
+  @override
+  String get passwordCompleteTitle => 'Password reset complete';
+
+  @override
+  String get passwordCompleteBody =>
+      'Your password has been reset. Log in with your new password to continue.';
+
+  @override
+  String get termsTitle => 'Terms of service';
+
+  @override
+  String get privacyTitle => 'Privacy policy';
+
+  @override
+  String passwordNewDescriptionEmail(String email) {
+    return 'Set a new password for $email.';
+  }
 }
