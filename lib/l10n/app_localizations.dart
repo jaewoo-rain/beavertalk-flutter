@@ -6,7 +6,12 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
+import 'app_localizations_hi.dart';
+import 'app_localizations_id.dart';
 import 'app_localizations_ja.dart';
+import 'app_localizations_th.dart';
+import 'app_localizations_vi.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -95,7 +100,12 @@ abstract class AppLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
+    Locale('hi'),
+    Locale('id'),
     Locale('ja'),
+    Locale('th'),
+    Locale('vi'),
+    Locale('zh'),
   ];
 
   /// Sub-label on the call-finished screen showing the elapsed call time.
@@ -1669,8 +1679,15 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en', 'ja'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'en',
+    'hi',
+    'id',
+    'ja',
+    'th',
+    'vi',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1681,8 +1698,18 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return AppLocalizationsEn();
+    case 'hi':
+      return AppLocalizationsHi();
+    case 'id':
+      return AppLocalizationsId();
     case 'ja':
       return AppLocalizationsJa();
+    case 'th':
+      return AppLocalizationsTh();
+    case 'vi':
+      return AppLocalizationsVi();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(
