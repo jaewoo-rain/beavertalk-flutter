@@ -6,6 +6,7 @@ import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_eng
 import 'package:beavertalk/features/pronunciation_challenge/domain/game_config.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/matcher.dart';
 import 'package:beavertalk/features/pronunciation_challenge/presentation/pronunciation_challenge_screen.dart';
+import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -165,13 +166,19 @@ void main() {
     testWidgets('builds and shows the start panel', (tester) async {
       await tester.pumpWidget(
         const ProviderScope(
-          child: MaterialApp(home: PronunciationChallengeScreen()),
+          child: MaterialApp(
+            locale: Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: PronunciationChallengeScreen(),
+          ),
         ),
       );
       await tester.pump();
-      expect(find.text('Pronunciation Challenge'), findsOneWidget);
-      expect(find.text('카메라 & 마이크 시작'), findsOneWidget); // start button
-      expect(find.text('발음 챌린지'), findsOneWidget); // GNB title
+      // "Pronunciation Challenge" now appears twice (GNB title + start-panel
+      // heading, both bound to l10n.challengeTitle after the i18n sweep).
+      expect(find.text('Pronunciation Challenge'), findsNWidgets(2));
+      expect(find.text('Start Camera & Mic'), findsOneWidget); // start button
     });
   });
 }
