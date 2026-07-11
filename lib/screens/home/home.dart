@@ -10,6 +10,7 @@ import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../core/config/feature_flags.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/presentation/incoming_call_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -91,7 +92,14 @@ class HomeScreen extends ConsumerWidget {
   Widget _buildHome(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     // Selected character (member `character_id`) drives the hero name + avatar.
+    // Resolve the real catalog entry so the actual in-use character (e.g. Baba)
+    // shows — never a hardcoded id→name guess.
     final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
+    final selected = ref.watch(selectedCharacterProvider);
+    final selectedUrl = selected?.imageUrl;
+    final heroImage = (selectedUrl != null && selectedUrl.isNotEmpty)
+        ? NetworkImage(selectedUrl) as ImageProvider
+        : characterImage(characterId);
     return Column(
       children: [
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
@@ -139,7 +147,7 @@ class HomeScreen extends ConsumerWidget {
                 GestureDetector(
                   onTap: () => Navigator.pushNamed(context, Routes.avatar),
                   child: HeroAvatar(
-                    imageProvider: characterImage(characterId),
+                    imageProvider: heroImage,
                     size: _avatarSize,
                     onEditTap: () =>
                         Navigator.pushNamed(context, Routes.avatar),
@@ -147,7 +155,7 @@ class HomeScreen extends ConsumerWidget {
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Text(
-                  characterName(characterId),
+                  selected?.name ?? characterName(characterId),
                   // Figma `2296:26390` — Title 3 / Bold (24px), updated from 32.
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),

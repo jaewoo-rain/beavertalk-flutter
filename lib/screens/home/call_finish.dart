@@ -9,6 +9,7 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -197,6 +198,11 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
     final l10n = AppLocalizations.of(context);
     final characterId =
         ref.watch(myProfileProvider).valueOrNull?.characterId;
+    final selectedChar = ref.watch(selectedCharacterProvider);
+    final selectedCharUrl = selectedChar?.imageUrl;
+    final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
+        ? NetworkImage(selectedCharUrl) as ImageProvider
+        : characterImage(characterId);
     return AppScaffold(
       background: AppColors.surface,
       statusVariant: StatusBarVariant.whiteTransparent,
@@ -222,14 +228,14 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                     shape: BoxShape.circle,
                     color: AppColors.surface2,
                     image: DecorationImage(
-                      image: characterImage(characterId),
+                      image: partnerImage,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Text(
-                  characterName(characterId),
+                  selectedChar?.name ?? characterName(characterId),
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s8),
