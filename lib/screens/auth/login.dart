@@ -298,18 +298,11 @@ class _OrDivider extends StatelessWidget {
     return Row(
       children: [
         line,
-        // Flexible + ellipsis: the two hairlines are Expanded, so a long
-        // localized divider label could otherwise overflow the Row.
-        Flexible(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
-            child: Text(
-              AppLocalizations.of(context).loginOrDivider,
-              style:
-                  AppType.caption1.r.copyWith(color: AppColors.textSecondary),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
+          child: Text(
+            AppLocalizations.of(context).loginOrDivider,
+            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
           ),
         ),
         line,

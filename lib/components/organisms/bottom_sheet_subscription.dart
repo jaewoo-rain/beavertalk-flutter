@@ -316,13 +316,11 @@ class BottomSheetSubscription extends StatelessWidget {
                         .copyWith(color: AppColors.textSecondary),
                   ),
                 ),
-                const SizedBox(width: 8),
                 Flexible(
                   child: Text(
                     plan.nextBillingDate!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
                     style: AppType.body1.r.copyWith(color: AppColors.primary),
                   ),
                 ),
@@ -507,13 +505,11 @@ class BottomSheetSubscription extends StatelessWidget {
               style: AppType.label1.r.copyWith(color: AppColors.text),
             ),
           ),
-          const SizedBox(width: 8),
           Flexible(
             child: Text(
               value,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.right,
               style: AppType.label1.r.copyWith(color: AppColors.text),
             ),
           ),

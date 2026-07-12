@@ -140,9 +140,14 @@ class _ReceiptRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Label left / value right (spaceBetween pins both to the edges). Both are
+    // Flexible + ellipsis so a long localized value stays flush-right and shrinks
+    // instead of overflowing — value never detaches to mid-row (spaceBetween),
+    // and never overflows (Flexible).
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Expanded(
+        Flexible(
           child: Text(
             label,
             style: AppType.label2.m.copyWith(color: AppColors.textSecondary),
@@ -150,13 +155,14 @@ class _ReceiptRow extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
         ),
+        const SizedBox(width: 8),
         Flexible(
           child: Text(
             value,
             style: AppType.label2.m,
-            textAlign: TextAlign.end,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.end,
           ),
         ),
       ],

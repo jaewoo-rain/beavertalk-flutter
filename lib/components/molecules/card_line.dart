@@ -108,9 +108,17 @@ class CardLine extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
+          // Keep the original label-left / value-right split: both sides use
+          // Flexible (loose) + spaceBetween so the value+status column stays
+          // pinned to the right edge for normal text (matching the original
+          // Expanded-label + bare-Column layout) and only shrinks under real
+          // overflow pressure, instead of the two competing for an even
+          // 50/50 share of the row (which detached the value from the right
+          // edge).
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -172,8 +180,12 @@ class CardLine extends StatelessWidget {
             children: [
               Expanded(
                 child: Row(
+                  // Keep the original label-left / value-right split; only wrap
+                  // the two texts in Flexible + ellipsis so long translations
+                  // shrink in place instead of overflowing (design preserved).
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Expanded(
+                    Flexible(
                       child: Text(
                         label,
                         maxLines: 1,
