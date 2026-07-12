@@ -29,115 +29,49 @@ class MockLanguage {
   final String countryCode;
 }
 
-/// Selectable user/native language options.
+/// Selectable user/native language options — **app-supported languages only**.
 ///
-/// Source: Notion "05_Localization" — the canonical supported-language table
-/// (한국어 대상 / Native / BCP 47 / ISO 639-1/3 / 국기 코드). Each entry is
-/// `MockLanguage(BCP47 id, native endonym, ISO 3166-1 alpha-2 flag code)`.
-/// Korean/English are surfaced first; the rest follow the doc order. Korean
-/// stays the fixed LEARNING target elsewhere — these are the user's own
-/// native-language choices.
-/// NOTE: flag subdivisions in the doc (ES-CT, GB-WLS) are normalized to their
-/// base country (ES, GB) because `country_flags` renders ISO alpha-2 only.
+/// Source: `한국어학습자_K팝팬_국가별_통합.xlsx` → sheet `앱_지원언어(필터)`. The
+/// earlier 95-language Notion "05_Localization" list is filtered down to the
+/// **primary/official language of each of the 38 target-market countries**
+/// (Korean learners + K-pop fans, all measured figures): 29 market languages +
+/// Korean (app default) = **30**. Ordered by the workbook's combined market rank.
+/// Each entry is `MockLanguage(BCP47 id, native endonym, ISO 3166-1 alpha-2 flag
+/// code)`. Korean stays the fixed LEARNING target elsewhere — these are the
+/// user's own native-language choices.
 /// `id` is BCP 47 (Korean hyphenated `ko-KR`); confirm the backend accepts it.
 const mockLanguages = <MockLanguage>[
+  // 한국어(앱 기본·학습 대상)·영어(공용)를 맨 위 고정, 나머지는 한국어명 가나다순.
   MockLanguage('ko-KR', '한국어', 'KR'),
   MockLanguage('en', 'English', 'US'),
-  MockLanguage('af', 'Afrikaans', 'ZA'),
-  MockLanguage('ak', 'Akan', 'GH'),
-  MockLanguage('sq', 'Shqip', 'AL'),
-  MockLanguage('am', 'አማርኛ', 'ET'),
-  MockLanguage('ar', 'العربية', 'SA'),
-  MockLanguage('hy', 'Հայերեն', 'AM'),
-  MockLanguage('as', 'অসমীয়া', 'IN'),
-  MockLanguage('az', 'Azərbaycan dili', 'AZ'),
-  MockLanguage('eu', 'Euskara', 'ES'),
-  MockLanguage('be', 'Беларуская', 'BY'),
-  MockLanguage('bn', 'বাংলা', 'BD'),
-  MockLanguage('bs', 'Bosanski', 'BA'),
-  MockLanguage('bg', 'Български', 'BG'),
-  MockLanguage('my', 'မြန်မာ', 'MM'),
-  MockLanguage('ca', 'Català', 'ES'),
-  MockLanguage('ceb', 'Cebuano', 'PH'),
-  MockLanguage('zh', '中文', 'CN'),
-  MockLanguage('hr', 'Hrvatski', 'HR'),
-  MockLanguage('cs', 'Čeština', 'CZ'),
-  MockLanguage('da', 'Dansk', 'DK'),
-  MockLanguage('nl', 'Nederlands', 'NL'),
-  MockLanguage('et', 'Eesti', 'EE'),
-  MockLanguage('fo', 'Føroyskt', 'FO'),
-  MockLanguage('fil', 'Filipino', 'PH'),
-  MockLanguage('fi', 'Suomi', 'FI'),
-  MockLanguage('fr', 'Français', 'FR'),
-  MockLanguage('gl', 'Galego', 'ES'),
-  MockLanguage('ka', 'ქართული', 'GE'),
-  MockLanguage('de', 'Deutsch', 'DE'),
-  MockLanguage('el', 'Ελληνικά', 'GR'),
-  MockLanguage('gu', 'ગુજરાતી', 'IN'),
-  MockLanguage('ha', 'Hausa', 'NG'),
-  MockLanguage('he', 'עברית', 'IL'),
-  MockLanguage('hi', 'हिन्दी', 'IN'),
-  MockLanguage('hu', 'Magyar', 'HU'),
-  MockLanguage('is', 'Íslenska', 'IS'),
-  MockLanguage('id', 'Bahasa Indonesia', 'ID'),
-  MockLanguage('ga', 'Gaeilge', 'IE'),
-  MockLanguage('it', 'Italiano', 'IT'),
-  MockLanguage('ja', '日本語', 'JP'),
-  MockLanguage('kn', 'ಕನ್ನಡ', 'IN'),
-  MockLanguage('kk', 'Қазақ тілі', 'KZ'),
-  MockLanguage('km', 'ខ្មែរ', 'KH'),
-  MockLanguage('rw', 'Kinyarwanda', 'RW'),
-  MockLanguage('ku', 'Kurdî', 'TR'),
-  MockLanguage('ky', 'Кыргызча', 'KG'),
-  MockLanguage('lo', 'ລາວ', 'LA'),
-  MockLanguage('lv', 'Latviešu', 'LV'),
-  MockLanguage('lt', 'Lietuvių', 'LT'),
-  MockLanguage('mk', 'Македонски', 'MK'),
-  MockLanguage('ms', 'Bahasa Melayu', 'MY'),
-  MockLanguage('ml', 'മലയാളം', 'IN'),
-  MockLanguage('mt', 'Malti', 'MT'),
-  MockLanguage('mi', 'Te Reo Māori', 'NZ'),
-  MockLanguage('mr', 'मराठी', 'IN'),
-  MockLanguage('mn', 'Монгол', 'MN'),
   MockLanguage('ne', 'नेपाली', 'NP'),
-  MockLanguage('no', 'Norsk', 'NO'),
-  MockLanguage('or', 'ଓଡ଼ିଆ', 'IN'),
-  MockLanguage('om', 'Afaan Oromoo', 'ET'),
-  MockLanguage('ps', 'پښتو', 'AF'),
-  MockLanguage('fa', 'فارسی', 'IR'),
-  MockLanguage('pl', 'Polski', 'PL'),
-  MockLanguage('pt', 'Português', 'PT'),
-  MockLanguage('pa', 'ਪੰਜਾਬੀ', 'IN'),
-  MockLanguage('qu', 'Runa Simi', 'PE'),
-  MockLanguage('ro', 'Română', 'RO'),
-  MockLanguage('rm', 'Rumantsch', 'CH'),
+  MockLanguage('de', 'Deutsch', 'DE'),
   MockLanguage('ru', 'Русский', 'RU'),
-  MockLanguage('sr', 'Српски', 'RS'),
-  MockLanguage('sd', 'سنڌي', 'PK'),
-  MockLanguage('si', 'සිංහල', 'LK'),
-  MockLanguage('sk', 'Slovenčina', 'SK'),
-  MockLanguage('sl', 'Slovenščina', 'SI'),
-  MockLanguage('so', 'Soomaali', 'SO'),
-  MockLanguage('st', 'Sesotho', 'LS'),
+  MockLanguage('ms', 'Bahasa Melayu', 'MY'),
+  MockLanguage('mn', 'Монгол', 'MN'),
+  MockLanguage('my', 'မြန်မာ', 'MM'),
+  MockLanguage('vi', 'Tiếng Việt', 'VN'),
+  MockLanguage('bn', 'বাংলা', 'BD'),
   MockLanguage('es', 'Español', 'ES'),
-  MockLanguage('sw', 'Kiswahili', 'TZ'),
-  MockLanguage('sv', 'Svenska', 'SE'),
-  MockLanguage('tg', 'Тоҷикӣ', 'TJ'),
-  MockLanguage('ta', 'தமிழ்', 'IN'),
-  MockLanguage('te', 'తెలుగు', 'IN'),
-  MockLanguage('th', 'ไทย', 'TH'),
-  MockLanguage('tn', 'Setswana', 'BW'),
-  MockLanguage('tr', 'Türkçe', 'TR'),
-  MockLanguage('tk', 'Türkmen', 'TM'),
-  MockLanguage('uk', 'Українська', 'UA'),
+  MockLanguage('si', 'සිංහල', 'LK'),
+  MockLanguage('ar', 'العربية', 'SA'),
   MockLanguage('ur', 'اردو', 'PK'),
   MockLanguage('uz', 'Oʻzbek', 'UZ'),
-  MockLanguage('vi', 'Tiếng Việt', 'VN'),
-  MockLanguage('cy', 'Cymraeg', 'GB'),
-  MockLanguage('fy', 'Frysk', 'NL'),
-  MockLanguage('wo', 'Wolof', 'SN'),
-  MockLanguage('yo', 'Yorùbá', 'NG'),
-  MockLanguage('zu', 'isiZulu', 'ZA'),
+  MockLanguage('it', 'Italiano', 'IT'),
+  MockLanguage('id', 'Bahasa Indonesia', 'ID'),
+  MockLanguage('ja', '日本語', 'JP'),
+  MockLanguage('zh', '中文', 'CN'),
+  MockLanguage('kk', 'Қазақ тілі', 'KZ'),
+  MockLanguage('km', 'ខ្មែរ', 'KH'),
+  MockLanguage('ky', 'Кыргызча', 'KG'),
+  MockLanguage('th', 'ไทย', 'TH'),
+  MockLanguage('tr', 'Türkçe', 'TR'),
+  MockLanguage('pt', 'Português', 'PT'),
+  MockLanguage('fr', 'Français', 'FR'),
+  MockLanguage('fi', 'Suomi', 'FI'),
+  MockLanguage('fil', 'Filipino', 'PH'),
+  MockLanguage('hu', 'Magyar', 'HU'),
+  MockLanguage('hi', 'हिन्दी', 'IN'),
 ];
 
 /// Onboarding — learning reasons (Figma copy).
