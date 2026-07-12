@@ -37,7 +37,6 @@ import '../screens/alarm/alarm_list.dart';
 import '../screens/alarm/alarm_add.dart';
 import '../screens/alarm/alarm_empty.dart';
 import '../screens/record/record_list.dart';
-import '../screens/record/record_archive.dart';
 import '../screens/record/record_empty.dart';
 
 /// Route names for the design_app flows.
@@ -136,7 +135,9 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.alarmAdd: (_) => const AlarmAddScreen(),
     Routes.alarmEmpty: (_) => const AlarmEmptyScreen(),
     Routes.records: (_) => const RecordListScreen(),
-    Routes.recordsArchive: (_) => const RecordArchiveScreen(),
+    // Archive is now an in-page tab of RecordListScreen; the route is kept for
+    // deep links and opens the same page pre-selected on the 보관 tab.
+    Routes.recordsArchive: (_) => const RecordListScreen(initialTab: 1),
     Routes.recordsEmpty: (_) => const RecordEmptyScreen(),
   };
 
