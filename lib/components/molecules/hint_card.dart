@@ -120,14 +120,15 @@ class HintCard extends StatelessWidget {
           // Header: "Hint" + counter/cycle.
           Row(
             children: [
-              Flexible(
-                child: Text(
-                  l10n.hintLabel,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppType.caption2.sb
-                      .copyWith(color: AppColors.hintAccent),
-                ),
+              // Non-flex: the short "Hint" label must not share flex with the
+              // Spacer (that split the row 50/50 and shoved the counter/cycle
+              // group left instead of pinning it to the right).
+              Text(
+                l10n.hintLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style:
+                    AppType.caption2.sb.copyWith(color: AppColors.hintAccent),
               ),
               const Spacer(),
               if (examples.length > 1) ...[

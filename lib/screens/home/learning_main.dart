@@ -83,7 +83,12 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
+            // Bottom is the literal home-indicator gap (34), not an
+            // AppSpacing token — this screen has no trailing SafeArea /
+            // BottomCtaBar (unlike its learning_intro/learning_next
+            // siblings), so it would otherwise sit flush against the
+            // physical bottom edge on devices with viewPadding.bottom == 0.
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 34),
             child: SizedBox(
               width: double.infinity,
               child: Button(

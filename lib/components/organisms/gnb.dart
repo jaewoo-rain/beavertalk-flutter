@@ -270,16 +270,17 @@ class Gnb extends StatelessWidget {
           if (trailing != null)
             trailing!
           else if (label != null)
-            Flexible(
-              child: Semantics(
-                label: 'Step $label',
-                child: Text(
-                  label,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppType.body1.sb.copyWith(color: AppColors.text),
-                ),
+            // Non-flex: the `current/total` label is always a short numeric
+            // string (never overflows), so it must stay natural-width. Wrapping
+            // it in Flexible made it share the row's flex 50/50 with the
+            // Expanded track, shrinking the progress bar to half width and
+            // skewing it left.
+            Semantics(
+              label: 'Step $label',
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: AppType.body1.sb.copyWith(color: AppColors.text),
               ),
             ),
         ],

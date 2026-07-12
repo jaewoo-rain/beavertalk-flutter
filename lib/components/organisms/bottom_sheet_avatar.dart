@@ -263,7 +263,11 @@ class BottomSheetAvatar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Flexible(child: _statusBadge(l10n)),
+            // Non-flex (as in the original): only [name] is Flexible so it
+            // absorbs slack and the badge stays adjacent right after it. Wrapping
+            // the badge in Flexible too made the two share the row 50/50, opening
+            // a gap between the name and the badge.
+            _statusBadge(l10n),
             if (_isDiscount) ...[
               const SizedBox(width: 12),
               Text(

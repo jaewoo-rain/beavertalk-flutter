@@ -390,7 +390,10 @@ class BottomSheetSubscription extends StatelessWidget {
                   ],
                 ),
               ),
-              if (option.active) Flexible(child: _activePill(l10n)),
+              // Non-flex: the name Column is Expanded (absorbs slack), so the
+              // pill stays hugged to the right. Wrapping it in Flexible made the
+              // two split the row 50/50, floating the pill toward the middle.
+              if (option.active) _activePill(l10n),
             ],
           ),
           if (option.benefits.isNotEmpty) ...[
