@@ -37,9 +37,11 @@ class SentenceOutDto {
 
   factory SentenceOutDto.fromJson(Map<String, dynamic> json) {
     return SentenceOutDto(
-      sentenceId: json['sentence_id'] as int,
-      koreanSentence: json['korean_sentence'] as String,
-      nativeSentence: json['native_sentence'] as String,
+      // Defensive coercion (matches the review DTOs): a null/odd-typed field from
+      // the server degrades gracefully instead of throwing a raw TypeError.
+      sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,
+      koreanSentence: json['korean_sentence'] as String? ?? '',
+      nativeSentence: json['native_sentence'] as String? ?? '',
       voiceUrl: json['voice_url'] as String?,
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
     );

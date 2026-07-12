@@ -326,9 +326,14 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   /// Un-saves a bookmarked sentence. The archive only lists bookmarked ones, so
   /// the tap always clears it (`is_bookmarked: false`); on success the controller
   /// invalidates the list and the row disappears.
-  Future<void> _toggleOff(int sentenceId) => _run(() => ref
-      .read(bookmarkToggleControllerProvider.notifier)
-      .toggleBookmark(sentenceId, false));
+  Future<void> _toggleOff(int sentenceId) => _run(() async {
+        await ref
+            .read(bookmarkToggleControllerProvider.notifier)
+            .toggleBookmark(sentenceId, false);
+        // Keep the shared in-memory store in sync so analysis/learning don't keep
+        // showing this sentence as bookmarked after it's un-saved here.
+        setBookmark(sentenceId, false);
+      });
 
   /// Plays the sentence's standard-pronunciation audio: uses the existing
   /// [BookmarkSentence.voiceUrl] when present, otherwise fetches it on demand

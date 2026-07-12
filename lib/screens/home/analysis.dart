@@ -82,12 +82,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         // don't leak across different calls (keyed by call id; re-opening the
         // same call keeps scores the user already earned).
         ref.read(reviewScoresProvider.notifier).resetForCall(args.callId);
-        // Seed the in-memory bookmark store from the server's flags.
-        final saved = {...bookmarkedSentenceIds.value};
+        // Reconcile the in-memory bookmark store with the server's flags — set
+        // each id to its true state (add saved, clear un-saved) so a stale
+        // `true` from a prior session can't linger.
         for (final s in args.sentences) {
-          if (s.isBookmarked) saved.add(s.sentenceId);
+          setBookmark(s.sentenceId, s.isBookmarked);
         }
-        bookmarkedSentenceIds.value = saved;
         setState(() => _scoresReset = true);
       });
     }
@@ -112,7 +112,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// [bookmarkToggleControllerProvider] so the 보관 list (server-backed) actually
   /// reflects it — previously this only flipped the local store, so bookmarks
   /// made here never reached `GET /members/me/bookmarks`. Reverts on failure.
+  final Set<int> _bookmarkInFlight = <int>{};
+
   Future<void> _toggleBookmark(int sentenceId) async {
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
     final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
     toggleBookmark(sentenceId); // optimistic local flip
     try {
@@ -129,6 +133,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ),
         );
       }
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
     }
   }
 

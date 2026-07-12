@@ -135,12 +135,28 @@ class MockSentence {
 /// the 보관 (archive) tab lists the matching sentences. A [ValueNotifier] so
 /// screens can rebuild reactively via [ValueListenableBuilder].
 final ValueNotifier<Set<int>> bookmarkedSentenceIds =
-    ValueNotifier<Set<int>>({1});
+    ValueNotifier<Set<int>>(<int>{});
 
 /// Toggles [id] in [bookmarkedSentenceIds], notifying listeners.
 void toggleBookmark(int id) {
   final next = {...bookmarkedSentenceIds.value};
   if (!next.remove(id)) next.add(id);
+  bookmarkedSentenceIds.value = next;
+}
+
+/// Sets [id]'s bookmark state to [saved] (idempotent). Use this to reconcile the
+/// in-memory store with server truth (add when saved, remove when not) — unlike
+/// [toggleBookmark], seeding must be able to clear a stale `true`, otherwise the
+/// store permanently diverges from the server.
+void setBookmark(int id, bool saved) {
+  final has = bookmarkedSentenceIds.value.contains(id);
+  if (has == saved) return;
+  final next = {...bookmarkedSentenceIds.value};
+  if (saved) {
+    next.add(id);
+  } else {
+    next.remove(id);
+  }
   bookmarkedSentenceIds.value = next;
 }
 

@@ -66,11 +66,15 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (args is LearningArgs) {
       _seededBookmark = true;
       final s = args.current;
-      if (s.bookmarked && !bookmarkedSentenceIds.value.contains(s.id)) {
-        bookmarkedSentenceIds.value = {...bookmarkedSentenceIds.value, s.id};
-      }
+      // Reconcile to server truth (add when saved, clear when not) so a stale
+      // `true` can't stick — union-only seeding permanently diverged before.
+      setBookmark(s.id, s.bookmarked);
     }
   }
+
+  /// Sentence ids with an in-flight bookmark mutation — a second tap while one is
+  /// pending is ignored so two opposite PATCHes can't resolve out of order.
+  final Set<int> _bookmarkInFlight = <int>{};
 
   /// Toggles the current sentence's bookmark. Flips the shared in-memory store
   /// first for instant, cross-screen UI (mirrors the analysis screen), then
@@ -78,6 +82,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
   /// local flip and surfaces a message if the server call fails.
   Future<void> _toggleBookmark(int sentenceId) async {
+    // Ignore a second tap while a mutation for this id is outstanding, so two
+    // opposite PATCHes can't complete out of order and desync from the server.
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
     final l10n = AppLocalizations.of(context);
     final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
     toggleBookmark(sentenceId);
@@ -88,6 +96,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     } catch (e) {
       toggleBookmark(sentenceId); // revert on failure
       _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
     }
   }
 
@@ -102,7 +112,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// from the server's on-demand TTS (`POST /sentences/{id}/tts`) on the first
   /// tap, caches it, then plays. Shows a message when TTS is unavailable.
   Future<void> _playStandard(MockSentence sentence) async {
-    if (_submitting || _loadingTts) return;
+    // Don't play the standard-pronunciation audio through the speaker while the
+    // mic is recording — it bleeds into the user's take and skews the score.
+    if (_submitting || _loadingTts || _recording) return;
     final l10n = AppLocalizations.of(context);
     var url = _ttsUrl ?? sentence.voiceUrl;
     if (url == null || !url.startsWith('http')) {
@@ -203,7 +215,14 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    // Mobile always arrives via in-app `pushNamed(arguments:)`; guard the cast
+    // so a web refresh / deep link (args == null) degrades to an empty screen
+    // instead of a build-time TypeError white-screen.
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    if (rawArgs is! LearningArgs) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    final args = rawArgs;
     final sentence = args.current;
 
     return AppScaffold(

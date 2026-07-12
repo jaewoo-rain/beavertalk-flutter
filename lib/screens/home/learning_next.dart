@@ -62,11 +62,13 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
     if (args is LearningArgs) {
       _seededBookmark = true;
       final s = args.current;
-      if (s.bookmarked && !bookmarkedSentenceIds.value.contains(s.id)) {
-        bookmarkedSentenceIds.value = {...bookmarkedSentenceIds.value, s.id};
-      }
+      // Reconcile to server truth (add when saved, clear when not).
+      setBookmark(s.id, s.bookmarked);
     }
   }
+
+  /// Sentence ids with an in-flight bookmark mutation (drops out-of-order taps).
+  final Set<int> _bookmarkInFlight = <int>{};
 
   /// Toggles the current sentence's bookmark. Flips the shared in-memory store
   /// first for instant, cross-screen UI (mirrors the analysis screen), then
@@ -74,6 +76,8 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
   /// local flip and surfaces a message if the server call fails.
   Future<void> _toggleBookmark(int sentenceId) async {
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
     final l10n = AppLocalizations.of(context);
     final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
     toggleBookmark(sentenceId);
@@ -84,6 +88,8 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
     } catch (e) {
       toggleBookmark(sentenceId); // revert on failure
       _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
     }
   }
 
@@ -163,6 +169,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   }
 
   void _snack(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(SnackBar(content: Text(message)));
@@ -171,7 +178,11 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    if (rawArgs is! LearningArgs) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    final args = rawArgs;
     final feedback = args.feedback;
     final sentence = args.current;
     final native = feedback?.native ?? sentence.native;

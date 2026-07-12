@@ -45,8 +45,11 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final args =
-        ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    if (rawArgs is! LearningArgs) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    final args = rawArgs;
     // Bind the gauge to the real scored attempt. If somehow opened without
     // feedback, fall back to the inactive ("-%") gauge.
     final eval = args.feedback?.evaluation;
