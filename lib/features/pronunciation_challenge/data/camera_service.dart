@@ -46,13 +46,26 @@ class ChallengeCameraService {
 
   bool _disposed = false;
 
+  /// Guards concurrent [init] calls (e.g. a fast double tap on Start) so we
+  /// never build two `CameraController`s and leak one.
+  Future<bool>? _initFuture;
+
   /// Whether a live preview is available.
   bool get isReady =>
       status.value == CameraStatus.ready && controller != null;
 
   /// Initializes the front camera preview. Returns `true` on success; `false`
   /// (→ solid backdrop) on any failure. Never throws.
-  Future<bool> init() async {
+  Future<bool> init() {
+    final inFlight = _initFuture;
+    if (inFlight != null) return inFlight;
+    final future = _initInternal();
+    _initFuture = future;
+    future.whenComplete(() => _initFuture = null);
+    return future;
+  }
+
+  Future<bool> _initInternal() async {
     if (_disposed) return false;
     status.value = CameraStatus.loading;
     try {
@@ -82,6 +95,20 @@ class ChallengeCameraService {
       debugPrint('ChallengeCameraService.init failed → solid backdrop: $e');
       status.value = CameraStatus.unavailable;
       return false;
+    }
+  }
+
+  /// Releases the controller without permanently disposing the service —
+  /// used when the app is backgrounded, where the OS can invalidate the
+  /// preview session. Unlike [dispose], [init] can rebuild the preview
+  /// afterwards (standard `camera` package pause/resume pattern).
+  Future<void> pause() async {
+    try {
+      await controller?.dispose();
+    } catch (_) {}
+    controller = null;
+    if (!_disposed) {
+      status.value = CameraStatus.idle;
     }
   }
 

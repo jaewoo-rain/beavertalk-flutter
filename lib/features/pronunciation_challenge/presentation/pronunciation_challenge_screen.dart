@@ -50,7 +50,7 @@ class PronunciationChallengeScreen extends ConsumerStatefulWidget {
 
 class _PronunciationChallengeScreenState
     extends ConsumerState<PronunciationChallengeScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late final ChallengeController _controller;
   final SttService _stt = SttService();
   final ChallengeCameraService _camera = ChallengeCameraService();
@@ -71,17 +71,77 @@ class _PronunciationChallengeScreenState
   /// the result panel in place of the score-card image.
   String? _videoPath;
 
+  /// Whether STT was actively driving input right before the app was
+  /// backgrounded, so [_onAppResumed] knows whether to try restarting it.
+  bool _sttActiveBeforePause = false;
+
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _controller = ChallengeController(vsync: this);
     // Wire speech tokens into the engine's pass logic (front-most in-zone,
     // exact normalized match). The per-utterance bookkeeping lives in the
     // SttService's SpeechMatcher.
     _stt.onToken = _controller.engine.tryPassToken;
     _controller.addListener(_onFrame);
+    // Re-arm tap fallback if the STT pump watchdog (or anything else) flips
+    // status to unavailable mid-round.
+    _stt.status.addListener(_onSttStatusChanged);
     // Ticker runs continuously so the belt animates behind every panel.
     _controller.startTicker();
+  }
+
+  /// Detects STT going dark mid-round (e.g. the pump watchdog tripping after
+  /// repeated recognizer failures) and re-arms tap input.
+  void _onSttStatusChanged() {
+    if (_sttActive && _stt.status.value == SttStatus.unavailable) {
+      setState(() => _sttActive = false);
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        unawaited(_onAppPaused());
+        break;
+      case AppLifecycleState.resumed:
+        unawaited(_onAppResumed());
+        break;
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
+  /// Backgrounded: the OS can invalidate the `CameraController` at any time,
+  /// and the mic stream would go silent anyway — release both cleanly rather
+  /// than let them fail mid-operation.
+  Future<void> _onAppPaused() async {
+    await _camera.pause();
+    _sttActiveBeforePause = _sttActive;
+    if (_sttActive) {
+      await _stt.stopListening();
+      if (mounted) setState(() => _sttActive = false);
+    }
+  }
+
+  /// Foregrounded: rebuild the camera preview (standard `camera` package
+  /// pause/resume pattern) and, if we were mid-round on STT input, try to
+  /// resume it — treating a failure to restart as an STT failure so tap
+  /// input takes back over.
+  Future<void> _onAppResumed() async {
+    await _camera.init();
+    if (!mounted) return;
+    if (_phase == _Phase.playing && _sttActiveBeforePause) {
+      final resumed = await _stt.startListening();
+      if (mounted) setState(() => _sttActive = resumed);
+    } else {
+      setState(() {});
+    }
+    _sttActiveBeforePause = false;
   }
 
   /// Detects the running→ended transition to reveal the result panel.
@@ -166,6 +226,8 @@ class _PronunciationChallengeScreenState
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _stt.status.removeListener(_onSttStatusChanged);
     _countdownTimer?.cancel();
     _controller.removeListener(_onFrame);
     _controller.dispose();

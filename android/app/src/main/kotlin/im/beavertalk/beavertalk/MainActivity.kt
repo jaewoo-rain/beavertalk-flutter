@@ -36,10 +36,12 @@ class MainActivity : FlutterActivity() {
 
     private var projectionManager: MediaProjectionManager? = null
     private var projection: MediaProjection? = null
+    private var projectionCallback: MediaProjection.Callback? = null
     private var virtualDisplay: VirtualDisplay? = null
     private var recorder: MediaRecorder? = null
     private var outputPath: String? = null
     private var pendingStart: MethodChannel.Result? = null
+    private var tearingDown = false
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -62,6 +64,13 @@ class MainActivity : FlutterActivity() {
             return
         }
         if (recorder != null) {
+            result.success(false)
+            return
+        }
+        if (pendingStart != null) {
+            // A consent dialog is already in flight; don't overwrite its
+            // Result (would hang the first Dart await) or launch a second
+            // consent Intent.
             result.success(false)
             return
         }
@@ -110,6 +119,11 @@ class MainActivity : FlutterActivity() {
         } else {
             @Suppress("DEPRECATION") MediaRecorder()
         }
+        // Assign to the field immediately after each resource is created so
+        // teardown()/the outer catch in onActivityResult can always release
+        // whatever was allocated so far, even if a later step returns early
+        // or throws.
+        recorder = rec
         rec.setVideoSource(MediaRecorder.VideoSource.SURFACE)
         rec.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         rec.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
@@ -119,22 +133,28 @@ class MainActivity : FlutterActivity() {
         rec.setOutputFile(file.absolutePath)
         rec.prepare()
 
-        val proj = manager.getMediaProjection(resultCode, data) ?: return false
-        proj.registerCallback(object : MediaProjection.Callback() {
+        val proj = manager.getMediaProjection(resultCode, data)
+        if (proj == null) {
+            // rec was already prepared (encoder allocated) — release it.
+            teardown()
+            return false
+        }
+        projection = proj
+        val callback = object : MediaProjection.Callback() {
             override fun onStop() {
                 teardown()
             }
-        }, null)
+        }
+        proj.registerCallback(callback, null)
+        projectionCallback = callback
         val vd = proj.createVirtualDisplay(
             "beavertalk_challenge",
             width, height, metrics.densityDpi,
             DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
             rec.surface, null, null,
         )
-        rec.start()
-        projection = proj
         virtualDisplay = vd
-        recorder = rec
+        rec.start()
         return true
     }
 
@@ -146,10 +166,25 @@ class MainActivity : FlutterActivity() {
         } catch (_: Exception) {
         }
         teardown()
-        result.success(if (hadRecorder && path != null && File(path).exists()) path else null)
+        // A truncated/near-empty MP4 (e.g. because stop() threw right after
+        // start()) still passes File.exists() — also require a minimal size.
+        val file = path?.let { File(it) }
+        val minSizeBytes = 4_096L
+        val ok = hadRecorder && file != null && file.exists() && file.length() > minSizeBytes
+        result.success(if (ok) path else null)
     }
 
     private fun teardown() {
+        // projection.stop() re-invokes the registered Callback's onStop(),
+        // which calls back into teardown() re-entrantly; guard against that
+        // and unregister the callback before stopping the projection.
+        if (tearingDown) return
+        tearingDown = true
+        try {
+            val proj = projection
+            val cb = projectionCallback
+            if (proj != null && cb != null) proj.unregisterCallback(cb)
+        } catch (_: Exception) {}
         try { recorder?.reset() } catch (_: Exception) {}
         try { recorder?.release() } catch (_: Exception) {}
         try { virtualDisplay?.release() } catch (_: Exception) {}
@@ -157,5 +192,7 @@ class MainActivity : FlutterActivity() {
         recorder = null
         virtualDisplay = null
         projection = null
+        projectionCallback = null
+        tearingDown = false
     }
 }

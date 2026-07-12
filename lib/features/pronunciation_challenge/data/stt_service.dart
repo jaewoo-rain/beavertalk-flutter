@@ -67,6 +67,12 @@ class SttService {
   /// Recognizer sample rate — must match the [RecordConfig.sampleRate].
   static const int sampleRate = 16000;
 
+  /// Consecutive [_pump] failures (recognizer throwing on
+  /// `acceptWaveformBytes`/`getResult`) tolerated before we give up on STT
+  /// for this session and flip [status] to [SttStatus.unavailable] so the
+  /// screen re-arms tap input.
+  static const int _maxPumpFailures = 5;
+
   final SpeechMatcher _matcher;
 
   /// Current lifecycle status (drives the loading panel + fallback decision).
@@ -87,8 +93,21 @@ class SttService {
   AudioRecorder? _recorder;
   StreamSubscription<Uint8List>? _sub;
   final BytesBuilder _buffer = BytesBuilder(copy: false);
-  bool _pumping = false;
+
+  /// The currently in-flight [_pump] call, if any. `stopListening`/`dispose`/
+  /// `startListening` must await this before touching the shared
+  /// [_recognizer] — otherwise they race a pump that's mid-`await` on
+  /// `acceptWaveformBytes`.
+  Future<void>? _pumpFuture;
+
+  /// Consecutive pump failures since the last success; reset on a clean pump
+  /// and on every [startListening]. See [_maxPumpFailures].
+  int _pumpFailures = 0;
   bool _disposed = false;
+
+  /// Guards concurrent [init] calls (e.g. a fast double tap on Start) so we
+  /// never build two Models/Recognizers and leak one.
+  Future<bool>? _initFuture;
 
   /// Whether the recognizer is ready (or already listening).
   bool get isAvailable =>
@@ -97,7 +116,16 @@ class SttService {
   /// Loads the model and builds the recognizer. Returns `true` when STT is
   /// usable; `false` (with [status] == [SttStatus.unavailable]) to signal the
   /// caller to use tap input. Never throws.
-  Future<bool> init() async {
+  Future<bool> init() {
+    final inFlight = _initFuture;
+    if (inFlight != null) return inFlight;
+    final future = _initInternal();
+    _initFuture = future;
+    future.whenComplete(() => _initFuture = null);
+    return future;
+  }
+
+  Future<bool> _initInternal() async {
     if (_disposed) return false;
     // Web has no dart:io/FFI — Vosk can't run. (Web could use the Web Speech
     // API, but that's out of scope; the screen falls back to tap.)
@@ -146,6 +174,10 @@ class SttService {
   /// `false` (→ tap fallback) if unavailable or the mic is denied.
   Future<bool> startListening() async {
     if (_disposed || _recognizer == null) return false;
+    // A previous session's pump may still be mid-flight (e.g. a fast
+    // stop→start); let it settle before touching the shared recognizer.
+    await _settlePump();
+    _pumpFailures = 0;
     _matcher.reset();
     try {
       await _recognizer!.reset();
@@ -184,6 +216,10 @@ class SttService {
     try {
       await _recorder?.stop();
     } catch (_) {}
+    // Cancelling the sub stops new pumps from being kicked off, but one may
+    // already be mid-`await` on acceptWaveformBytes — let it finish before
+    // calling getFinalResult()/reset() on the same recognizer.
+    await _settlePump();
     _buffer.clear();
     micLevel.value = 0;
     if (_recognizer != null) {
@@ -201,14 +237,26 @@ class SttService {
   void _onPcm(Uint8List data) {
     _updateMicLevel(data);
     _buffer.add(data);
-    unawaited(_pump());
+    // Only one _pump may be in flight at a time (ordering); track it so
+    // stop/dispose/start can wait for it instead of racing the recognizer.
+    _pumpFuture ??= _pump();
+  }
+
+  /// Awaits any in-flight [_pump] before the caller touches the shared
+  /// [_recognizer]. [_pump] never throws (it catches its own errors), but the
+  /// try/catch here is defensive.
+  Future<void> _settlePump() async {
+    final pending = _pumpFuture;
+    if (pending == null) return;
+    try {
+      await pending;
+    } catch (_) {}
   }
 
   /// Drains the PCM buffer through the recognizer sequentially (one in-flight
   /// [Recognizer.acceptWaveformBytes] at a time to preserve ordering).
   Future<void> _pump() async {
-    if (_pumping || _recognizer == null) return;
-    _pumping = true;
+    if (_recognizer == null) return;
     try {
       while (_buffer.length > 0 && !_disposed) {
         final chunk = _buffer.takeBytes(); // returns + clears
@@ -228,10 +276,38 @@ class SttService {
           _matcher.feed('', isFinal: true, attempt: (_) => false);
         }
       }
+      _pumpFailures = 0;
     } catch (e) {
-      debugPrint('vosk feed error: $e');
+      _pumpFailures++;
+      debugPrint(
+        'vosk feed error ($_pumpFailures/$_maxPumpFailures): $e',
+      );
+      if (_pumpFailures >= _maxPumpFailures) {
+        debugPrint(
+          'SttService: $_maxPumpFailures consecutive pump failures → '
+          'stopping STT, tap fallback re-arms',
+        );
+        unawaited(_failListening());
+      }
     } finally {
-      _pumping = false;
+      _pumpFuture = null;
+    }
+  }
+
+  /// Watchdog trip: the recognizer is no longer usable mid-round. Stops
+  /// capture and flips [status] to [SttStatus.unavailable] — the same signal
+  /// used everywhere else in this class to mean "fall back to tap input" —
+  /// so the screen (listening to [status]) can re-arm the tap fallback.
+  Future<void> _failListening() async {
+    await _sub?.cancel();
+    _sub = null;
+    try {
+      await _recorder?.stop();
+    } catch (_) {}
+    _buffer.clear();
+    micLevel.value = 0;
+    if (!_disposed) {
+      status.value = SttStatus.unavailable;
     }
   }
 
@@ -269,6 +345,9 @@ class SttService {
     try {
       await _recorder?.stop();
     } catch (_) {}
+    // Let any in-flight pump finish its current acceptWaveformBytes/getResult
+    // call before disposing the recognizer out from under it.
+    await _settlePump();
     try {
       await _recorder?.dispose();
     } catch (_) {}
