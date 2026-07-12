@@ -257,6 +257,12 @@ class NormalCallController extends Notifier<CallState> {
   /// Re-entry guard for [start] (§8-1).
   bool _starting = false;
 
+  /// Bumped by every [hangUp]/[_teardown]; [start] claims a generation and
+  /// aborts if it changes across any await — so hanging up while `connecting`
+  /// (e.g. the call-loading X) can't be silently overwritten by an in-flight
+  /// start that keeps recording/playing after the UI has left (zombie call).
+  int _gen = 0;
+
   /// Set after `call_ended` while draining the beaver's closing line before
   /// sending `playback_done` (§8-4).
   bool _drainScheduled = false;
@@ -265,6 +271,11 @@ class NormalCallController extends Notifier<CallState> {
   /// short window (no new audio) before the close completes, so the closing
   /// line isn't cut off. Reset whenever fresh audio arrives.
   Timer? _closingStableTimer;
+
+  /// The `call_ended` drain fallback timer. Stored so it can be cancelled when a
+  /// call finishes/tears down — otherwise a stray timer could fire against a
+  /// later call.
+  Timer? _closingFallbackTimer;
 
   /// Quiet window the queue must hold (empty) before the closing drain acks.
   static const Duration _closingStableDelay = Duration(milliseconds: 300);
@@ -330,6 +341,9 @@ class NormalCallController extends Notifier<CallState> {
     try {
       // teardown-first-then-connect → two sockets are structurally impossible.
       await _teardown();
+      // Claim this start's generation AFTER the initial teardown. A hangUp() at
+      // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
+      final myGen = ++_gen;
       state = const CallState(phase: CallPhase.connecting);
 
       final token =
@@ -357,6 +371,7 @@ class NormalCallController extends Notifier<CallState> {
       // 마이크·오디오가 제대로 잡히지 않는다. 앱이 실제로 포그라운드(통화 화면)로 올라온
       // 뒤에 오디오 파이프라인을 시작한다. 일반 경로(홈→전화하기)는 이미 resumed라 즉시 통과.
       await _awaitForeground();
+      if (myGen != _gen) return _abortStart();
 
       // 마이크(음성) 권한 확인·요청. 전화가 올 때마다 통화는 이 start()를 타므로 매 통화
       // 시작 시 항상 체크한다. 이미 허용돼 있으면 즉시 통과하고, 아니면 시스템 권한 팝업을
@@ -371,6 +386,7 @@ class NormalCallController extends Notifier<CallState> {
         );
         return;
       }
+      if (myGen != _gen) return _abortStart();
 
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
@@ -410,6 +426,10 @@ class NormalCallController extends Notifier<CallState> {
         // Leave baselineCallId null; recovery degrades to "newest id".
       }
 
+      // Aborted while setting up playback / fetching the baseline id → don't open
+      // a socket or mic for a call the user already hung up.
+      if (myGen != _gen) return _abortStart();
+
       // Connect the WebSocket.
       _expectClose = false;
       final url = normalcallWsUrl(token);
@@ -430,6 +450,7 @@ class NormalCallController extends Notifier<CallState> {
 
       // Start streaming the mic to the server.
       await _startMic();
+      if (myGen != _gen) return _abortStart();
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
@@ -441,9 +462,20 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
+  /// Aborts an in-flight [start] whose generation was superseded by a [hangUp]:
+  /// tears down anything already opened. The phase was already set by the
+  /// hangUp, so [_teardown] preserves it.
+  Future<void> _abortStart() async {
+    _log('start aborted — superseded by hang up');
+    await _teardown();
+  }
+
   /// User-initiated hang up: closes the socket (the server finalizes the call in
   /// its `finally`) and tears the pipeline down (§8-2).
   Future<void> hangUp() async {
+    // Invalidate any in-flight start() so it can't re-establish the pipeline
+    // after we tear it down here.
+    _gen++;
     _expectClose = true;
     if (state.phase == CallPhase.ended || state.phase == CallPhase.idle) {
       await _teardown();
@@ -830,7 +862,13 @@ class NormalCallController extends Notifier<CallState> {
     // The queue may already be empty by now; start the stability check.
     _maybeFinishClosing();
     // Fallback: finish after a short delay regardless (e.g. no trailing audio).
-    Timer(const Duration(seconds: 3), _forceFinishClosing);
+    // Stored + cancelled in [_teardown]/[_finishClosing] so a stray timer from a
+    // finished call can't fire against a *later* call and end it early.
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = Timer(
+      const Duration(seconds: 3),
+      _forceFinishClosing,
+    );
   }
 
   /// While a close is pending, completes it once the queue has been empty for a
@@ -861,6 +899,8 @@ class NormalCallController extends Notifier<CallState> {
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = null;
     _log('playback drained → playback_done, closing');
     _send({'type': 'playback_done'});
     final preservedCallId = state.callId;
@@ -899,6 +939,17 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Transport-level error (§8-6).
   void _onWsError(Object error) {
+    // Expected close (hang-up / call_ended / teardown) — the exit is already
+    // being driven; a trailing error frame must not clobber it.
+    if (_expectClose) return;
+    // The call already completed (`call_ended` received, id captured) and is just
+    // draining its closing line — an error here should finish the call normally
+    // (opening the wrap-up screen), not discard a successful conversation.
+    if (state.phase == CallPhase.ending && state.callId != null) {
+      _log('ws error during closing drain → finishing normally');
+      unawaited(_finishClosing());
+      return;
+    }
     state = state.copyWith(
       phase: CallPhase.error,
       errorMsg: '네트워크 오류가 발생했습니다.',
@@ -960,6 +1011,8 @@ class NormalCallController extends Notifier<CallState> {
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = null;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
