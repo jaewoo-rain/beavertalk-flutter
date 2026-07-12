@@ -34,7 +34,7 @@ AppException mapDioException(DioException e) {
     case 401:
       return UnauthorizedFailure(detail.message ?? '로그인이 필요해요');
     case 403:
-      return UnauthorizedFailure(detail.message ?? '권한이 없어요');
+      return ForbiddenFailure(detail.message ?? '권한이 없어요');
     case 404:
       return NotFoundFailure(detail.message ?? '대상을 찾을 수 없어요');
     case 409:

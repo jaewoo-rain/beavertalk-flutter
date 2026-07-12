@@ -75,36 +75,45 @@ class AuthInterceptor extends Interceptor {
     final skip = err.requestOptions.extra[skipAuthKey] == true;
     final retried = err.requestOptions.extra[_retriedKey] == true;
 
-    // First 401 on a normal request: the server rejected our token. This is
-    // usually a boundary/stale token (a manual retry "works" once the session
-    // refreshes). Refresh once and replay the request transparently so the user
-    // never sees the error/retry button (e.g. the alarm list's initial load).
-    if (is401 && !skip && !retried) {
-      try {
-        final auth = Supabase.instance.client.auth;
-        _refresh ??= auth
-            .refreshSession()
-            .then((_) {})
-            .whenComplete(() => _refresh = null);
-        await _refresh;
-        final token = auth.currentSession?.accessToken;
-        final dio = retryDio;
-        if (token != null && token.isNotEmpty && dio != null) {
-          final opts = err.requestOptions
-            ..extra[_retriedKey] = true
-            ..headers['Authorization'] = 'Bearer $token';
-          final res = await dio.fetch<dynamic>(opts);
-          handler.resolve(res);
-          return;
-        }
-      } catch (_) {
-        // Refresh or replay failed → the session is genuinely dead; sign out.
-      }
-      onSessionExpired();
-    } else if (is401) {
-      // Replay also 401'd (or auth was skipped) → token is truly invalid.
-      onSessionExpired();
+    // Only a first 401 on an authed request triggers refresh+replay. A `skip`
+    // (anonymous) request must never affect the session, and a `retried` request
+    // is the failed replay itself — let it propagate so the ORIGINAL request's
+    // catch below does the single sign-out (avoids double onSessionExpired).
+    if (!is401 || skip || retried) {
+      handler.next(err);
+      return;
     }
+
+    // First 401: the server rejected our token — usually a boundary/stale token
+    // (a manual retry "works" once the session refreshes). Refresh once and
+    // replay transparently so the user never sees the error/retry button.
+    try {
+      final auth = Supabase.instance.client.auth;
+      _refresh ??= auth
+          .refreshSession()
+          .then((_) {})
+          .whenComplete(() => _refresh = null);
+      await _refresh;
+      final token = auth.currentSession?.accessToken;
+      final dio = retryDio;
+      if (token != null && token.isNotEmpty && dio != null) {
+        final opts = err.requestOptions;
+        // Multipart/stream bodies can only be sent once (Dio finalizes FormData
+        // in place). Clone so the replay of an audio-review upload doesn't throw
+        // "FormData has already been finalized".
+        if (opts.data is FormData) {
+          opts.data = (opts.data as FormData).clone();
+        }
+        opts.extra[_retriedKey] = true;
+        opts.headers['Authorization'] = 'Bearer $token';
+        final res = await dio.fetch<dynamic>(opts);
+        handler.resolve(res);
+        return;
+      }
+    } catch (_) {
+      // Refresh or replay failed → the session is genuinely dead; sign out.
+    }
+    onSessionExpired();
     handler.next(err);
   }
 }

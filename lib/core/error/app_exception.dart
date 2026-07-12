@@ -22,6 +22,13 @@ class UnauthorizedFailure extends AppException {
   const UnauthorizedFailure([super.message = '로그인이 필요해요']);
 }
 
+/// 403 — authenticated but not allowed. Distinct from [UnauthorizedFailure] so
+/// callers (e.g. the auth gate) don't sign the user out on a mere permission
+/// error — the session is still valid.
+class ForbiddenFailure extends AppException {
+  const ForbiddenFailure([super.message = '권한이 없어요']);
+}
+
 /// 404 — resource not found.
 class NotFoundFailure extends AppException {
   const NotFoundFailure([super.message = '대상을 찾을 수 없어요']);

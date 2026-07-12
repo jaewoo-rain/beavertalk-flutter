@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../core/error/app_exception.dart';
 import '../features/auth/presentation/providers/auth_controller.dart';
 import '../features/auth/presentation/providers/my_profile_provider.dart';
 import '../screens/auth/login.dart';
@@ -60,12 +61,17 @@ class _AuthGateState extends ConsumerState<AuthGate> {
     return profile.when(
       loading: () => const _Splash(),
       error: (error, stack) {
-        // A 401 already triggers onSessionExpired via the interceptor; for any
-        // other error, fall back to login rather than trapping the user.
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(authControllerProvider.notifier).onSessionExpired();
-        });
-        return const _Splash();
+        // Only a genuine auth failure should clear the session. A transient
+        // NetworkFailure/ServerFailure (offline, backend 500) must NOT sign the
+        // user out — otherwise reopening the app offline destroys a valid
+        // session. For non-auth errors, show a retry instead of bouncing.
+        if (error is UnauthorizedFailure) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ref.read(authControllerProvider.notifier).onSessionExpired();
+          });
+          return const _Splash();
+        }
+        return _ProfileError(onRetry: () => ref.invalidate(myProfileProvider));
       },
       // Onboarding starts at the native-language step (1/3); it then pushes
       // name (2/3) → reason (3/3) → done.
@@ -86,6 +92,36 @@ class _Splash extends StatelessWidget {
       backgroundColor: AppColors.bg,
       body: Center(
         child: CircularProgressIndicator(color: AppColors.primary),
+      ),
+    );
+  }
+}
+
+/// Shown when `members/me` fails for a NON-auth reason (offline / server error).
+/// The session is left intact; the user can retry instead of being signed out.
+class _ProfileError extends StatelessWidget {
+  const _ProfileError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.bg,
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.wifi_off, color: AppColors.textSecondary),
+            const SizedBox(height: 12),
+            const Text(
+              '연결에 문제가 있어요',
+              style: TextStyle(color: AppColors.text),
+            ),
+            const SizedBox(height: 12),
+            TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+          ],
+        ),
       ),
     );
   }
