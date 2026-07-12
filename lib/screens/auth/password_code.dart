@@ -217,7 +217,8 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
+      padding: const EdgeInsetsDirectional.only(
+          top: AppSpacing.s8, start: AppSpacing.s4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),

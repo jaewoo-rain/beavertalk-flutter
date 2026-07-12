@@ -829,4 +829,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Задайте новый пароль для $email.';
   }
+
+  @override
+  String get selectComplete => 'Готово';
+
+  @override
+  String get onboardingLanguageTitle => 'Какой ваш родной язык?';
+
+  @override
+  String get onboardingReasonTitle => 'Почему вы изучаете язык?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Мы адаптируем обучение под ваши цели.';
+
+  @override
+  String get savingLabel => 'Сохранение...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

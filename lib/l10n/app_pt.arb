@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Sua senha foi redefinida. Faça login com sua nova senha para continuar.",
   "termsTitle": "Termos de serviço",
   "privacyTitle": "Política de privacidade",
-  "passwordNewDescriptionEmail": "Defina uma nova senha para {email}."
+  "passwordNewDescriptionEmail": "Defina uma nova senha para {email}.",
+  "selectComplete": "Concluído",
+  "onboardingLanguageTitle": "Qual é o seu idioma nativo?",
+  "onboardingReasonTitle": "Por que você está aprendendo um idioma?",
+  "onboardingReasonSubtitle": "Vamos adaptar seu aprendizado aos seus objetivos.",
+  "savingLabel": "Salvando...",
+  "payMethodApple": "Apple Pay"
 }

@@ -802,4 +802,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email の新しいパスワードを設定してください。';
   }
+
+  @override
+  String get selectComplete => '完了';
+
+  @override
+  String get onboardingLanguageTitle => '母国語は何ですか?';
+
+  @override
+  String get onboardingReasonTitle => 'なぜ言語を学んでいますか?';
+
+  @override
+  String get onboardingReasonSubtitle => '目標に合わせて学習をカスタマイズします。';
+
+  @override
+  String get savingLabel => '保存中...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

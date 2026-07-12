@@ -836,4 +836,23 @@ class AppLocalizationsMs extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Tetapkan kata laluan baharu untuk $email.';
   }
+
+  @override
+  String get selectComplete => 'Selesai';
+
+  @override
+  String get onboardingLanguageTitle => 'Apakah bahasa ibunda anda?';
+
+  @override
+  String get onboardingReasonTitle => 'Mengapa anda belajar bahasa?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Kami akan menyesuaikan pembelajaran anda mengikut matlamat anda.';
+
+  @override
+  String get savingLabel => 'Menyimpan...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

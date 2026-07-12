@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -64,7 +65,7 @@ class DialogShareProfile extends StatefulWidget {
     this.stats = const [],
     this.shareText,
     this.onShared,
-    this.shareLabel = 'Share',
+    this.shareLabel,
   });
 
   /// Image used for the `80×80` avatar circle. Ignored when [avatar] is set.
@@ -90,8 +91,9 @@ class DialogShareProfile extends StatefulWidget {
   /// dialog). Not awaited.
   final VoidCallback? onShared;
 
-  /// Share button label.
-  final String shareLabel;
+  /// Share button label. Defaults to the localized `share` string when
+  /// omitted.
+  final String? shareLabel;
 
   @override
   State<DialogShareProfile> createState() => _DialogShareProfileState();
@@ -180,6 +182,8 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
 
   @override
   Widget build(BuildContext context) {
+    final resolvedShareLabel =
+        widget.shareLabel ?? AppLocalizations.of(context).share;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -281,7 +285,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                         ),
                       )
                     : Text(
-                        widget.shareLabel,
+                        resolvedShareLabel,
                         textAlign: TextAlign.center,
                         style: AppType.body1.sb.copyWith(color: AppColors.text),
                       ),
@@ -304,7 +308,7 @@ Future<T?> showDialogShareProfile<T>(
   List<ProfileStat> stats = const [],
   String? shareText,
   VoidCallback? onShared,
-  String shareLabel = 'Share',
+  String? shareLabel,
 }) {
   return showDialog<T>(
     context: context,

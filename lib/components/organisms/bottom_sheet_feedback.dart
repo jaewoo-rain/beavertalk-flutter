@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -53,7 +54,7 @@ class BottomSheetFeedback extends StatelessWidget {
     required this.value,
     this.onChanged,
     this.onConfirm,
-    this.confirmText = '선택 완료',
+    this.confirmText,
     this.onClose,
   });
 
@@ -76,8 +77,9 @@ class BottomSheetFeedback extends StatelessWidget {
   /// Called when the confirm button is pressed.
   final VoidCallback? onConfirm;
 
-  /// Confirm button label (Figma: "선택 완료").
-  final String confirmText;
+  /// Confirm button label (Figma: "선택 완료"). Defaults to the localized
+  /// `selectComplete` string when omitted.
+  final String? confirmText;
 
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
@@ -123,7 +125,7 @@ class BottomSheetFeedback extends StatelessWidget {
                 ),
               ),
             ),
-            _footer(),
+            _footer(context),
           ],
         ),
       ),
@@ -155,7 +157,9 @@ class BottomSheetFeedback extends StatelessWidget {
   }
 
   /// Footer: primary confirm button (335 wide) + home indicator.
-  Widget _footer() {
+  Widget _footer(BuildContext context) {
+    final resolvedConfirmText =
+        confirmText ?? AppLocalizations.of(context).selectComplete;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -176,7 +180,7 @@ class BottomSheetFeedback extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                     child: Text(
-                      confirmText,
+                      resolvedConfirmText,
                       textAlign: TextAlign.center,
                       style: AppType.body1.sb.copyWith(
                         color: AppColors.onPrimary,

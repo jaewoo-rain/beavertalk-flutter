@@ -826,4 +826,23 @@ class AppLocalizationsSi extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email සඳහා නව මුරපදයක් සකසන්න.';
   }
+
+  @override
+  String get selectComplete => 'නිමයි';
+
+  @override
+  String get onboardingLanguageTitle => 'ඔබේ මව් භාෂාව කුමක්ද?';
+
+  @override
+  String get onboardingReasonTitle => 'ඔබ භාෂාවක් ඉගෙන ගන්නේ ඇයි?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'අපි ඔබේ ඉලක්ක වලට ගැලපෙන පරිදි ඉගෙනුම සකසන්නෙමු.';
+
+  @override
+  String get savingLabel => 'සුරකිමින්...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

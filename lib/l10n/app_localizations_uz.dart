@@ -833,4 +833,23 @@ class AppLocalizationsUz extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email uchun yangi parol oʻrnating.';
   }
+
+  @override
+  String get selectComplete => 'Tayyor';
+
+  @override
+  String get onboardingLanguageTitle => 'Sizning ona tilingiz nima?';
+
+  @override
+  String get onboardingReasonTitle => 'Nima uchun til o\'rganyapsiz?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Biz o\'quv jarayonini sizning maqsadlaringizga moslashtiramiz.';
+
+  @override
+  String get savingLabel => 'Saqlanmoqda...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

@@ -829,4 +829,23 @@ class AppLocalizationsFi extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Aseta uusi salasana käyttäjälle $email.';
   }
+
+  @override
+  String get selectComplete => 'Valmis';
+
+  @override
+  String get onboardingLanguageTitle => 'Mikä on äidinkielesi?';
+
+  @override
+  String get onboardingReasonTitle => 'Miksi opiskelet kieltä?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Räätälöimme oppimisesi tavoitteidesi mukaan.';
+
+  @override
+  String get savingLabel => 'Tallennetaan...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

@@ -72,6 +72,7 @@ class _OnboardingReasonScreenState
   Widget build(BuildContext context) {
     final selected = ref.watch(signupDraftProvider).selectedReasonIds;
     final bool canContinue = selected.isNotEmpty;
+    final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
       background: AppColors.surface,
@@ -90,14 +91,12 @@ class _OnboardingReasonScreenState
                   AppSpacing.s24),
               children: [
                 Text(
-                  // TODO(i18n): localize
-                  'Why are you learning a language?',
+                  l10n.onboardingReasonTitle,
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
-                  // TODO(i18n): localize
-                  "We'll tailor your learning to your goals.",
+                  l10n.onboardingReasonSubtitle,
                   style:
                       AppType.body1.r.copyWith(color: AppColors.textSecondary),
                 ),
@@ -141,8 +140,7 @@ class _OnboardingReasonScreenState
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                // TODO(i18n): localize
-                text: _submitting ? 'Saving...' : 'Continue',
+                text: _submitting ? l10n.savingLabel : l10n.continueLabel,
                 disabled: !canContinue || _submitting,
                 onPressed: _next,
               ),

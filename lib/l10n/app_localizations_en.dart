@@ -827,4 +827,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Set a new password for $email.';
   }
+
+  @override
+  String get selectComplete => 'Done';
+
+  @override
+  String get onboardingLanguageTitle => 'What is your native language?';
+
+  @override
+  String get onboardingReasonTitle => 'Why are you learning a language?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'We\'ll tailor your learning to your goals.';
+
+  @override
+  String get savingLabel => 'Saving...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

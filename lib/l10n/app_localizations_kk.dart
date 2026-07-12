@@ -822,4 +822,23 @@ class AppLocalizationsKk extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email үшін жаңа құпия сөз орнатыңыз.';
   }
+
+  @override
+  String get selectComplete => 'Дайын';
+
+  @override
+  String get onboardingLanguageTitle => 'Сіздің ана тіліңіз қандай?';
+
+  @override
+  String get onboardingReasonTitle => 'Сіз неге тіл үйреніп жатырсыз?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Біз оқуыңызды мақсаттарыңызға сай бейімдейміз.';
+
+  @override
+  String get savingLabel => 'Сақталуда...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

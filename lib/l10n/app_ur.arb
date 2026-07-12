@@ -259,5 +259,11 @@
   "passwordCompleteBody": "آپ کا پاس ورڈ ری سیٹ ہو چکا ہے۔ جاری رکھنے کے لیے اپنے نئے پاس ورڈ سے لاگ ان کریں۔",
   "termsTitle": "سروس کی شرائط",
   "privacyTitle": "پرائیویسی پالیسی",
-  "passwordNewDescriptionEmail": "{email} کے لیے نیا پاس ورڈ سیٹ کریں۔"
+  "passwordNewDescriptionEmail": "{email} کے لیے نیا پاس ورڈ سیٹ کریں۔",
+  "selectComplete": "ہو گیا",
+  "onboardingLanguageTitle": "آپ کی مادری زبان کیا ہے؟",
+  "onboardingReasonTitle": "آپ زبان کیوں سیکھ رہے ہیں؟",
+  "onboardingReasonSubtitle": "ہم آپ کے مقاصد کے مطابق آپ کی تعلیم کو ڈھالیں گے۔",
+  "savingLabel": "محفوظ ہو رہا ہے...",
+  "payMethodApple": "Apple Pay"
 }

@@ -259,5 +259,11 @@
   "passwordCompleteBody": "আপনার পাসওয়ার্ড রিসেট করা হয়েছে। চালিয়ে যেতে আপনার নতুন পাসওয়ার্ড দিয়ে লগ ইন করুন।",
   "termsTitle": "সেবার শর্তাবলী",
   "privacyTitle": "গোপনীয়তা নীতি",
-  "passwordNewDescriptionEmail": "{email}-এর জন্য একটি নতুন পাসওয়ার্ড সেট করুন।"
+  "passwordNewDescriptionEmail": "{email}-এর জন্য একটি নতুন পাসওয়ার্ড সেট করুন।",
+  "selectComplete": "সম্পন্ন",
+  "onboardingLanguageTitle": "আপনার মাতৃভাষা কী?",
+  "onboardingReasonTitle": "আপনি কেন একটি ভাষা শিখছেন?",
+  "onboardingReasonSubtitle": "আমরা আপনার লক্ষ্য অনুযায়ী আপনার শেখা কাস্টমাইজ করব।",
+  "savingLabel": "সংরক্ষণ করা হচ্ছে...",
+  "payMethodApple": "Apple Pay"
 }

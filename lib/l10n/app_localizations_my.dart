@@ -832,4 +832,23 @@ class AppLocalizationsMy extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ။';
   }
+
+  @override
+  String get selectComplete => 'ပြီးပါပြီ';
+
+  @override
+  String get onboardingLanguageTitle => 'သင့်မိခင်ဘာသာစကားက ဘာလဲ။';
+
+  @override
+  String get onboardingReasonTitle => 'သင် ဘာကြောင့် ဘာသာစကားတစ်ခု သင်နေတာလဲ။';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'သင့်ရည်မှန်းချက်များနှင့်ကိုက်ညီအောင် သင်ယူမှုကို ချိန်ညှိပေးပါမည်။';
+
+  @override
+  String get savingLabel => 'သိမ်းဆည်းနေသည်...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

@@ -259,5 +259,11 @@
   "passwordCompleteBody": "パスワードが再設定されました。新しいパスワードでログインして続行してください。",
   "termsTitle": "利用規約",
   "privacyTitle": "プライバシーポリシー",
-  "passwordNewDescriptionEmail": "{email} の新しいパスワードを設定してください。"
+  "passwordNewDescriptionEmail": "{email} の新しいパスワードを設定してください。",
+  "selectComplete": "完了",
+  "onboardingLanguageTitle": "母国語は何ですか?",
+  "onboardingReasonTitle": "なぜ言語を学んでいますか?",
+  "onboardingReasonSubtitle": "目標に合わせて学習をカスタマイズします。",
+  "savingLabel": "保存中...",
+  "payMethodApple": "Apple Pay"
 }

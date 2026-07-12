@@ -259,5 +259,11 @@
   "passwordCompleteBody": "تمت إعادة تعيين كلمة مرورك. سجّل الدخول بكلمة المرور الجديدة للمتابعة.",
   "termsTitle": "شروط الخدمة",
   "privacyTitle": "سياسة الخصوصية",
-  "passwordNewDescriptionEmail": "عيّن كلمة مرور جديدة لـ {email}."
+  "passwordNewDescriptionEmail": "عيّن كلمة مرور جديدة لـ {email}.",
+  "selectComplete": "تم",
+  "onboardingLanguageTitle": "ما هي لغتك الأم؟",
+  "onboardingReasonTitle": "لماذا تتعلم لغة؟",
+  "onboardingReasonSubtitle": "سنخصص تعلمك وفقًا لأهدافك.",
+  "savingLabel": "جارٍ الحفظ...",
+  "payMethodApple": "Apple Pay"
 }

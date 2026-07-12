@@ -828,4 +828,23 @@ class AppLocalizationsKm extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'កំណត់ពាក្យសម្ងាត់ថ្មីសម្រាប់ $email។';
   }
+
+  @override
+  String get selectComplete => 'រួចរាល់';
+
+  @override
+  String get onboardingLanguageTitle => 'តើភាសាកំណើតរបស់អ្នកជាអ្វី?';
+
+  @override
+  String get onboardingReasonTitle => 'ហេតុអ្វីបានជាអ្នកកំពុងរៀនភាសា?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'យើងនឹងកែសម្រួលការសិក្សារបស់អ្នកឱ្យសមស្របតាមគោលដៅរបស់អ្នក។';
+
+  @override
+  String get savingLabel => 'កំពុងរក្សាទុក...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

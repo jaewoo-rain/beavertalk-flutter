@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -125,7 +126,7 @@ class BottomSheet extends StatelessWidget {
             ),
           Padding(
             padding: const EdgeInsets.fromLTRB(_footerH, _footerTop, _footerH, 0),
-            child: _footer(),
+            child: _footer(context),
           ),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces
           // the former embedded fake HomeIndicator).
@@ -140,17 +141,18 @@ class BottomSheet extends StatelessWidget {
   }
 
   /// Builds the footer for the current [layout].
-  Widget _footer() {
+  Widget _footer(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     switch (layout) {
       case BottomSheetLayout.singleButton:
         return _fullButton(
           BtnType.primaryFill,
-          primaryAction ?? const SheetAction(label: '확인'),
+          primaryAction ?? SheetAction(label: l10n.confirm),
         );
       case BottomSheetLayout.singleButtonSub:
         return _fullButton(
           BtnType.secondaryFill,
-          primaryAction ?? const SheetAction(label: '확인'),
+          primaryAction ?? SheetAction(label: l10n.confirm),
         );
       case BottomSheetLayout.twoButtonCol:
         return Column(
@@ -159,12 +161,12 @@ class BottomSheet extends StatelessWidget {
           children: [
             _fullButton(
               BtnType.secondaryFill,
-              secondaryAction ?? const SheetAction(label: '취소'),
+              secondaryAction ?? SheetAction(label: l10n.cancel),
             ),
             const SizedBox(height: _gap),
             _fullButton(
               BtnType.primaryFill,
-              primaryAction ?? const SheetAction(label: '확인'),
+              primaryAction ?? SheetAction(label: l10n.confirm),
             ),
           ],
         );
@@ -175,14 +177,14 @@ class BottomSheet extends StatelessWidget {
             Expanded(
               child: _button(
                 BtnType.secondaryOutline,
-                secondaryAction ?? const SheetAction(label: '취소'),
+                secondaryAction ?? SheetAction(label: l10n.cancel),
               ),
             ),
             const SizedBox(width: _gap),
             Expanded(
               child: _button(
                 BtnType.primaryFill,
-                primaryAction ?? const SheetAction(label: '확인'),
+                primaryAction ?? SheetAction(label: l10n.confirm),
               ),
             ),
           ],

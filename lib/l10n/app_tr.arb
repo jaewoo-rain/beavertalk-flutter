@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Şifreniz sıfırlandı. Devam etmek için yeni şifrenizle giriş yapın.",
   "termsTitle": "Kullanım şartları",
   "privacyTitle": "Gizlilik politikası",
-  "passwordNewDescriptionEmail": "{email} için yeni bir şifre belirleyin."
+  "passwordNewDescriptionEmail": "{email} için yeni bir şifre belirleyin.",
+  "selectComplete": "Tamam",
+  "onboardingLanguageTitle": "Ana diliniz nedir?",
+  "onboardingReasonTitle": "Neden bir dil öğreniyorsunuz?",
+  "onboardingReasonSubtitle": "Öğrenmenizi hedeflerinize göre uyarlayacağız.",
+  "savingLabel": "Kaydediliyor...",
+  "payMethodApple": "Apple Pay"
 }

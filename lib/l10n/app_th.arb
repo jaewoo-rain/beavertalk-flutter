@@ -259,5 +259,11 @@
   "passwordCompleteBody": "รหัสผ่านของคุณถูกรีเซ็ตแล้ว เข้าสู่ระบบด้วยรหัสผ่านใหม่ของคุณเพื่อดำเนินการต่อ",
   "termsTitle": "ข้อกำหนดในการให้บริการ",
   "privacyTitle": "นโยบายความเป็นส่วนตัว",
-  "passwordNewDescriptionEmail": "ตั้งรหัสผ่านใหม่สำหรับ {email}"
+  "passwordNewDescriptionEmail": "ตั้งรหัสผ่านใหม่สำหรับ {email}",
+  "selectComplete": "เสร็จสิ้น",
+  "onboardingLanguageTitle": "ภาษาแม่ของคุณคืออะไร",
+  "onboardingReasonTitle": "ทำไมคุณถึงเรียนภาษา",
+  "onboardingReasonSubtitle": "เราจะปรับการเรียนรู้ให้เหมาะกับเป้าหมายของคุณ",
+  "savingLabel": "กำลังบันทึก...",
+  "payMethodApple": "Apple Pay"
 }

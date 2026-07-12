@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Tu contraseña ha sido restablecida. Inicia sesión con tu nueva contraseña para continuar.",
   "termsTitle": "Términos de servicio",
   "privacyTitle": "Política de privacidad",
-  "passwordNewDescriptionEmail": "Establece una nueva contraseña para {email}."
+  "passwordNewDescriptionEmail": "Establece una nueva contraseña para {email}.",
+  "selectComplete": "Listo",
+  "onboardingLanguageTitle": "¿Cuál es tu idioma nativo?",
+  "onboardingReasonTitle": "¿Por qué estás aprendiendo un idioma?",
+  "onboardingReasonSubtitle": "Adaptaremos tu aprendizaje a tus objetivos.",
+  "savingLabel": "Guardando...",
+  "payMethodApple": "Apple Pay"
 }

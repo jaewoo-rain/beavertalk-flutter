@@ -188,7 +188,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   /// The red "delete" panel revealed when swiping a card left.
   Widget _deleteBackground() {
     return Container(
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerEnd,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: AppColors.error,

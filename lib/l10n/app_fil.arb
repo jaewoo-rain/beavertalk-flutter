@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Na-reset na ang iyong password. Mag-log in gamit ang bagong password para magpatuloy.",
   "termsTitle": "Mga tuntunin ng serbisyo",
   "privacyTitle": "Patakaran sa privacy",
-  "passwordNewDescriptionEmail": "Magtakda ng bagong password para sa {email}."
+  "passwordNewDescriptionEmail": "Magtakda ng bagong password para sa {email}.",
+  "selectComplete": "Tapos na",
+  "onboardingLanguageTitle": "Ano ang katutubong wika mo?",
+  "onboardingReasonTitle": "Bakit ka natututo ng wika?",
+  "onboardingReasonSubtitle": "Iaangkop namin ang iyong pagkatuto sa iyong mga layunin.",
+  "savingLabel": "Sine-save...",
+  "payMethodApple": "Apple Pay"
 }

@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Parolingiz tiklandi. Davom etish uchun yangi parolingiz bilan kiring.",
   "termsTitle": "Foydalanish shartlari",
   "privacyTitle": "Maxfiylik siyosati",
-  "passwordNewDescriptionEmail": "{email} uchun yangi parol oʻrnating."
+  "passwordNewDescriptionEmail": "{email} uchun yangi parol oʻrnating.",
+  "selectComplete": "Tayyor",
+  "onboardingLanguageTitle": "Sizning ona tilingiz nima?",
+  "onboardingReasonTitle": "Nima uchun til o'rganyapsiz?",
+  "onboardingReasonSubtitle": "Biz o'quv jarayonini sizning maqsadlaringizga moslashtiramiz.",
+  "savingLabel": "Saqlanmoqda...",
+  "payMethodApple": "Apple Pay"
 }

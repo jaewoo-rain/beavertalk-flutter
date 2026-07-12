@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Kata laluan anda telah ditetapkan semula. Log masuk dengan kata laluan baharu anda untuk meneruskan.",
   "termsTitle": "Terma perkhidmatan",
   "privacyTitle": "Dasar privasi",
-  "passwordNewDescriptionEmail": "Tetapkan kata laluan baharu untuk {email}."
+  "passwordNewDescriptionEmail": "Tetapkan kata laluan baharu untuk {email}.",
+  "selectComplete": "Selesai",
+  "onboardingLanguageTitle": "Apakah bahasa ibunda anda?",
+  "onboardingReasonTitle": "Mengapa anda belajar bahasa?",
+  "onboardingReasonSubtitle": "Kami akan menyesuaikan pembelajaran anda mengikut matlamat anda.",
+  "savingLabel": "Menyimpan...",
+  "payMethodApple": "Apple Pay"
 }

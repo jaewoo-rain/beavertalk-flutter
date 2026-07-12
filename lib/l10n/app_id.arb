@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Kata sandimu telah diatur ulang. Masuk dengan kata sandi barumu untuk melanjutkan.",
   "termsTitle": "Ketentuan layanan",
   "privacyTitle": "Kebijakan privasi",
-  "passwordNewDescriptionEmail": "Atur kata sandi baru untuk {email}."
+  "passwordNewDescriptionEmail": "Atur kata sandi baru untuk {email}.",
+  "selectComplete": "Selesai",
+  "onboardingLanguageTitle": "Apa bahasa ibu Anda?",
+  "onboardingReasonTitle": "Mengapa Anda belajar bahasa?",
+  "onboardingReasonSubtitle": "Kami akan menyesuaikan pembelajaran Anda dengan tujuan Anda.",
+  "savingLabel": "Menyimpan...",
+  "payMethodApple": "Apple Pay"
 }

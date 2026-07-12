@@ -827,4 +827,23 @@ class AppLocalizationsId extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Atur kata sandi baru untuk $email.';
   }
+
+  @override
+  String get selectComplete => 'Selesai';
+
+  @override
+  String get onboardingLanguageTitle => 'Apa bahasa ibu Anda?';
+
+  @override
+  String get onboardingReasonTitle => 'Mengapa Anda belajar bahasa?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Kami akan menyesuaikan pembelajaran Anda dengan tujuan Anda.';
+
+  @override
+  String get savingLabel => 'Menyimpan...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

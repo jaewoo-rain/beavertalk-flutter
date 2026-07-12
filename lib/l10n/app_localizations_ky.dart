@@ -828,4 +828,23 @@ class AppLocalizationsKy extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email үчүн жаңы сырсөз коюңуз.';
   }
+
+  @override
+  String get selectComplete => 'Бүттү';
+
+  @override
+  String get onboardingLanguageTitle => 'Сиздин эне тилиңиз кайсы?';
+
+  @override
+  String get onboardingReasonTitle => 'Эмне үчүн тил үйрөнүп жатасыз?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Биз үйрөнүүнү сиздин максаттарыңызга ылайыкташтырабыз.';
+
+  @override
+  String get savingLabel => 'Сакталууда...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

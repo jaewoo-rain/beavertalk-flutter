@@ -45,7 +45,7 @@ enum _PayMethod {
       case _PayMethod.kakao:
         return l10n.payMethodKakao;
       case _PayMethod.apple:
-        return 'Apple Pay';
+        return l10n.payMethodApple;
     }
   }
 }

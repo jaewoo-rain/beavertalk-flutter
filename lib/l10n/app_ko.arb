@@ -259,5 +259,11 @@
   "passwordCompleteBody": "비밀번호가 재설정되었어요. 새 비밀번호로 로그인해 계속 진행하세요.",
   "termsTitle": "이용약관",
   "privacyTitle": "개인정보처리방침",
-  "passwordNewDescriptionEmail": "{email}의 새 비밀번호를 설정하세요."
+  "passwordNewDescriptionEmail": "{email}의 새 비밀번호를 설정하세요.",
+  "selectComplete": "완료",
+  "onboardingLanguageTitle": "모국어가 무엇인가요?",
+  "onboardingReasonTitle": "언어를 배우는 이유가 무엇인가요?",
+  "onboardingReasonSubtitle": "목표에 맞춰 학습을 구성해드릴게요.",
+  "savingLabel": "저장 중...",
+  "payMethodApple": "Apple Pay"
 }

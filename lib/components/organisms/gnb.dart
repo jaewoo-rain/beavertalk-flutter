@@ -393,10 +393,13 @@ class _BackButton extends StatelessWidget {
       child: InkResponse(
         onTap: onTap,
         radius: 24,
-        child: const SizedBox(
+        child: SizedBox(
           width: Gnb._iconBox,
           height: Gnb._iconBox,
-          child: CustomPaint(painter: _ArrowLeftPainter()),
+          child: Transform.flip(
+            flipX: Directionality.of(context) == TextDirection.rtl,
+            child: const CustomPaint(painter: _ArrowLeftPainter()),
+          ),
         ),
       ),
     );
@@ -413,7 +416,7 @@ class _CloseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Close',
+      label: AppLocalizations.of(context).close,
       child: InkResponse(
         onTap: onTap,
         radius: 24,

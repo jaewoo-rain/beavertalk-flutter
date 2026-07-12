@@ -180,7 +180,8 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                   if (_error != null) ...[
                     const SizedBox(height: AppSpacing.s20),
                     Padding(
-                      padding: const EdgeInsets.only(left: AppSpacing.s4),
+                      padding:
+                          const EdgeInsetsDirectional.only(start: AppSpacing.s4),
                       child: Text(
                         _error!,
                         style: AppType.label2.r
@@ -224,7 +225,7 @@ class _FieldLabel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: AppSpacing.s8),
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),

@@ -823,4 +823,23 @@ class AppLocalizationsTh extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'ตั้งรหัสผ่านใหม่สำหรับ $email';
   }
+
+  @override
+  String get selectComplete => 'เสร็จสิ้น';
+
+  @override
+  String get onboardingLanguageTitle => 'ภาษาแม่ของคุณคืออะไร';
+
+  @override
+  String get onboardingReasonTitle => 'ทำไมคุณถึงเรียนภาษา';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'เราจะปรับการเรียนรู้ให้เหมาะกับเป้าหมายของคุณ';
+
+  @override
+  String get savingLabel => 'กำลังบันทึก...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

@@ -259,5 +259,11 @@
   "passwordCompleteBody": "La tua password è stata reimpostata. Accedi con la nuova password per continuare.",
   "termsTitle": "Termini di servizio",
   "privacyTitle": "Informativa sulla privacy",
-  "passwordNewDescriptionEmail": "Imposta una nuova password per {email}."
+  "passwordNewDescriptionEmail": "Imposta una nuova password per {email}.",
+  "selectComplete": "Fatto",
+  "onboardingLanguageTitle": "Qual è la tua lingua madre?",
+  "onboardingReasonTitle": "Perché stai imparando una lingua?",
+  "onboardingReasonSubtitle": "Personalizzeremo il tuo apprendimento in base ai tuoi obiettivi.",
+  "savingLabel": "Salvataggio...",
+  "payMethodApple": "Apple Pay"
 }

@@ -827,4 +827,23 @@ class AppLocalizationsVi extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Đặt mật khẩu mới cho $email.';
   }
+
+  @override
+  String get selectComplete => 'Xong';
+
+  @override
+  String get onboardingLanguageTitle => 'Tiếng mẹ đẻ của bạn là gì?';
+
+  @override
+  String get onboardingReasonTitle => 'Tại sao bạn học ngôn ngữ?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Chúng tôi sẽ điều chỉnh việc học theo mục tiêu của bạn.';
+
+  @override
+  String get savingLabel => 'Đang lưu...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

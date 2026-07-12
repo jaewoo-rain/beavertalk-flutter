@@ -835,4 +835,23 @@ class AppLocalizationsFil extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Magtakda ng bagong password para sa $email.';
   }
+
+  @override
+  String get selectComplete => 'Tapos na';
+
+  @override
+  String get onboardingLanguageTitle => 'Ano ang katutubong wika mo?';
+
+  @override
+  String get onboardingReasonTitle => 'Bakit ka natututo ng wika?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Iaangkop namin ang iyong pagkatuto sa iyong mga layunin.';
+
+  @override
+  String get savingLabel => 'Sine-save...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

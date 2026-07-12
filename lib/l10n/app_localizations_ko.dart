@@ -803,4 +803,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email의 새 비밀번호를 설정하세요.';
   }
+
+  @override
+  String get selectComplete => '완료';
+
+  @override
+  String get onboardingLanguageTitle => '모국어가 무엇인가요?';
+
+  @override
+  String get onboardingReasonTitle => '언어를 배우는 이유가 무엇인가요?';
+
+  @override
+  String get onboardingReasonSubtitle => '목표에 맞춰 학습을 구성해드릴게요.';
+
+  @override
+  String get savingLabel => '저장 중...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

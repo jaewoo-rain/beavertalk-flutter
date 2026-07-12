@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide BottomSheet;
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -147,7 +148,8 @@ class BottomSheetDocument extends StatelessWidget {
           body,
           BottomSheet(
             layout: BottomSheetLayout.singleButton,
-            primaryAction: action ?? const SheetAction(label: '확인'),
+            primaryAction:
+                action ?? SheetAction(label: AppLocalizations.of(context).confirm),
           ),
         ],
       ),

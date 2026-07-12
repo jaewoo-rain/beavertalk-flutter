@@ -259,5 +259,11 @@
   "passwordCompleteBody": "आपका पासवर्ड रीसेट हो गया है। जारी रखने के लिए अपने नए पासवर्ड से लॉग इन करें।",
   "termsTitle": "सेवा की शर्तें",
   "privacyTitle": "गोपनीयता नीति",
-  "passwordNewDescriptionEmail": "{email} के लिए एक नया पासवर्ड सेट करें।"
+  "passwordNewDescriptionEmail": "{email} के लिए एक नया पासवर्ड सेट करें।",
+  "selectComplete": "हो गया",
+  "onboardingLanguageTitle": "आपकी मातृभाषा क्या है?",
+  "onboardingReasonTitle": "आप भाषा क्यों सीख रहे हैं?",
+  "onboardingReasonSubtitle": "हम आपके लक्ष्यों के अनुसार आपकी सीख को अनुकूलित करेंगे।",
+  "savingLabel": "सहेजा जा रहा है...",
+  "payMethodApple": "Apple Pay"
 }

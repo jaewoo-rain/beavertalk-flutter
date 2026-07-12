@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Сырсөзүңүз калыбына келтирилди. Улантуу үчүн жаңы сырсөзүңүз менен кириңиз.",
   "termsTitle": "Кызмат көрсөтүү шарттары",
   "privacyTitle": "Купуялык саясаты",
-  "passwordNewDescriptionEmail": "{email} үчүн жаңы сырсөз коюңуз."
+  "passwordNewDescriptionEmail": "{email} үчүн жаңы сырсөз коюңуз.",
+  "selectComplete": "Бүттү",
+  "onboardingLanguageTitle": "Сиздин эне тилиңиз кайсы?",
+  "onboardingReasonTitle": "Эмне үчүн тил үйрөнүп жатасыз?",
+  "onboardingReasonSubtitle": "Биз үйрөнүүнү сиздин максаттарыңызга ылайыкташтырабыз.",
+  "savingLabel": "Сакталууда...",
+  "payMethodApple": "Apple Pay"
 }

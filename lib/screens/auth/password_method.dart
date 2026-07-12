@@ -102,7 +102,8 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                   if (_error != null) ...[
                     const SizedBox(height: AppSpacing.s12),
                     Padding(
-                      padding: const EdgeInsets.only(left: AppSpacing.s4),
+                      padding:
+                          const EdgeInsetsDirectional.only(start: AppSpacing.s4),
                       child: Text(_error!,
                           style: AppType.label2.r
                               .copyWith(color: AppColors.error)),

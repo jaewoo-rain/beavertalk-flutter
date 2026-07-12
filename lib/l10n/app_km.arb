@@ -259,5 +259,11 @@
   "passwordCompleteBody": "ពាក្យសម្ងាត់របស់អ្នកត្រូវបានកំណត់ឡើងវិញ។ សូមចូលដោយប្រើពាក្យសម្ងាត់ថ្មីដើម្បីបន្ត។",
   "termsTitle": "លក្ខខណ្ឌប្រើប្រាស់សេវាកម្ម",
   "privacyTitle": "គោលការណ៍ភាពឯកជន",
-  "passwordNewDescriptionEmail": "កំណត់ពាក្យសម្ងាត់ថ្មីសម្រាប់ {email}។"
+  "passwordNewDescriptionEmail": "កំណត់ពាក្យសម្ងាត់ថ្មីសម្រាប់ {email}។",
+  "selectComplete": "រួចរាល់",
+  "onboardingLanguageTitle": "តើភាសាកំណើតរបស់អ្នកជាអ្វី?",
+  "onboardingReasonTitle": "ហេតុអ្វីបានជាអ្នកកំពុងរៀនភាសា?",
+  "onboardingReasonSubtitle": "យើងនឹងកែសម្រួលការសិក្សារបស់អ្នកឱ្យសមស្របតាមគោលដៅរបស់អ្នក។",
+  "savingLabel": "កំពុងរក្សាទុក...",
+  "payMethodApple": "Apple Pay"
 }

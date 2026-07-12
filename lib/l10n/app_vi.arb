@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Mật khẩu của bạn đã được đặt lại. Đăng nhập bằng mật khẩu mới để tiếp tục.",
   "termsTitle": "Điều khoản dịch vụ",
   "privacyTitle": "Chính sách bảo mật",
-  "passwordNewDescriptionEmail": "Đặt mật khẩu mới cho {email}."
+  "passwordNewDescriptionEmail": "Đặt mật khẩu mới cho {email}.",
+  "selectComplete": "Xong",
+  "onboardingLanguageTitle": "Tiếng mẹ đẻ của bạn là gì?",
+  "onboardingReasonTitle": "Tại sao bạn học ngôn ngữ?",
+  "onboardingReasonSubtitle": "Chúng tôi sẽ điều chỉnh việc học theo mục tiêu của bạn.",
+  "savingLabel": "Đang lưu...",
+  "payMethodApple": "Apple Pay"
 }

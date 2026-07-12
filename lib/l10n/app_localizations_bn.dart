@@ -827,4 +827,23 @@ class AppLocalizationsBn extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email-এর জন্য একটি নতুন পাসওয়ার্ড সেট করুন।';
   }
+
+  @override
+  String get selectComplete => 'সম্পন্ন';
+
+  @override
+  String get onboardingLanguageTitle => 'আপনার মাতৃভাষা কী?';
+
+  @override
+  String get onboardingReasonTitle => 'আপনি কেন একটি ভাষা শিখছেন?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'আমরা আপনার লক্ষ্য অনুযায়ী আপনার শেখা কাস্টমাইজ করব।';
+
+  @override
+  String get savingLabel => 'সংরক্ষণ করা হচ্ছে...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

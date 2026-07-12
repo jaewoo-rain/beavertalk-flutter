@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Таны нууц үг шинэчлэгдлээ. Үргэлжлүүлэхийн тулд шинэ нууц үгээрээ нэвтэрнэ үү.",
   "termsTitle": "Үйлчилгээний нөхцөл",
   "privacyTitle": "Нууцлалын бодлого",
-  "passwordNewDescriptionEmail": "{email}-д зориулж шинэ нууц үг тохируулна уу."
+  "passwordNewDescriptionEmail": "{email}-д зориулж шинэ нууц үг тохируулна уу.",
+  "selectComplete": "Дууслаа",
+  "onboardingLanguageTitle": "Таны эх хэл юу вэ?",
+  "onboardingReasonTitle": "Та яагаад хэл сурч байна вэ?",
+  "onboardingReasonSubtitle": "Бид таны зорилгод тохируулан сургалтыг тохируулна.",
+  "savingLabel": "Хадгалж байна...",
+  "payMethodApple": "Apple Pay"
 }

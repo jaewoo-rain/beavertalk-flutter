@@ -799,4 +799,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '为 $email 设置一个新密码。';
   }
+
+  @override
+  String get selectComplete => '完成';
+
+  @override
+  String get onboardingLanguageTitle => '你的母语是什么？';
+
+  @override
+  String get onboardingReasonTitle => '你为什么要学习一门语言？';
+
+  @override
+  String get onboardingReasonSubtitle => '我们会根据你的目标定制学习内容。';
+
+  @override
+  String get savingLabel => '保存中...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

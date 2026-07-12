@@ -835,4 +835,23 @@ class AppLocalizationsPt extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Defina uma nova senha para $email.';
   }
+
+  @override
+  String get selectComplete => 'Concluído';
+
+  @override
+  String get onboardingLanguageTitle => 'Qual é o seu idioma nativo?';
+
+  @override
+  String get onboardingReasonTitle => 'Por que você está aprendendo um idioma?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Vamos adaptar seu aprendizado aos seus objetivos.';
+
+  @override
+  String get savingLabel => 'Salvando...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

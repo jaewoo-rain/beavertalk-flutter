@@ -15,6 +15,11 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LocaleController extends Notifier<Locale> {
   static const _prefKey = 'ui_locale';
 
+  /// True once the user has explicitly picked a language this session, so a
+  /// late-resolving [_hydrate] can't overwrite a fresh selection with the stale
+  /// persisted value.
+  bool _userSet = false;
+
   @override
   Locale build() {
     // Default to English immediately; hydrate the persisted choice async.
@@ -26,6 +31,9 @@ class LocaleController extends Notifier<Locale> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final code = prefs.getString(_prefKey);
+      // If the user picked a language while this async read was in flight, don't
+      // clobber their choice.
+      if (_userSet) return;
       if (code != null && code.isNotEmpty) state = localeFromCode(code);
     } catch (_) {
       // Prefs unavailable → keep the default; not fatal.
@@ -34,6 +42,7 @@ class LocaleController extends Notifier<Locale> {
 
   /// Switches the UI to [bcp47] (a `mockLanguages` id) and persists it.
   Future<void> setLanguage(String bcp47) async {
+    _userSet = true;
     final next = localeFromCode(bcp47);
     if (next == state) return;
     state = next;

@@ -820,4 +820,22 @@ class AppLocalizationsAr extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'عيّن كلمة مرور جديدة لـ $email.';
   }
+
+  @override
+  String get selectComplete => 'تم';
+
+  @override
+  String get onboardingLanguageTitle => 'ما هي لغتك الأم؟';
+
+  @override
+  String get onboardingReasonTitle => 'لماذا تتعلم لغة؟';
+
+  @override
+  String get onboardingReasonSubtitle => 'سنخصص تعلمك وفقًا لأهدافك.';
+
+  @override
+  String get savingLabel => 'جارٍ الحفظ...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

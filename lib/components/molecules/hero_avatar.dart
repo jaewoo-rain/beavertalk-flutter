@@ -70,8 +70,8 @@ class HeroAvatar extends StatelessWidget {
             ),
           ),
           // Change badge — primary pill with an edit glyph, pinned bottom-right.
-          Positioned(
-            right: 8,
+          PositionedDirectional(
+            end: 8,
             bottom: 8,
             child: onEditTap == null
                 ? badge

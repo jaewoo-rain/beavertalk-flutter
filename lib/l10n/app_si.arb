@@ -259,5 +259,11 @@
   "passwordCompleteBody": "ඔබේ මුරපදය යළි පිහිටුවා ඇත. ඉදිරියට යාමට ඔබේ නව මුරපදයෙන් ලොග් වන්න.",
   "termsTitle": "සේවා නියම",
   "privacyTitle": "රහස්‍යතා ප්‍රතිපත්තිය",
-  "passwordNewDescriptionEmail": "{email} සඳහා නව මුරපදයක් සකසන්න."
+  "passwordNewDescriptionEmail": "{email} සඳහා නව මුරපදයක් සකසන්න.",
+  "selectComplete": "නිමයි",
+  "onboardingLanguageTitle": "ඔබේ මව් භාෂාව කුමක්ද?",
+  "onboardingReasonTitle": "ඔබ භාෂාවක් ඉගෙන ගන්නේ ඇයි?",
+  "onboardingReasonSubtitle": "අපි ඔබේ ඉලක්ක වලට ගැලපෙන පරිදි ඉගෙනුම සකසන්නෙමු.",
+  "savingLabel": "සුරකිමින්...",
+  "payMethodApple": "Apple Pay"
 }

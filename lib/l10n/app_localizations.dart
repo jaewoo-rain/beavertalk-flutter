@@ -1713,6 +1713,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Set a new password for {email}.'**
   String passwordNewDescriptionEmail(String email);
+
+  /// No description provided for @selectComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get selectComplete;
+
+  /// No description provided for @onboardingLanguageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What is your native language?'**
+  String get onboardingLanguageTitle;
+
+  /// No description provided for @onboardingReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you learning a language?'**
+  String get onboardingReasonTitle;
+
+  /// No description provided for @onboardingReasonSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll tailor your learning to your goals.'**
+  String get onboardingReasonSubtitle;
+
+  /// No description provided for @savingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving...'**
+  String get savingLabel;
+
+  /// No description provided for @payMethodApple.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple Pay'**
+  String get payMethodApple;
 }
 
 class _AppLocalizationsDelegate

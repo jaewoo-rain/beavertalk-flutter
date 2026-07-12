@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Dein Passwort wurde zurückgesetzt. Melde dich mit deinem neuen Passwort an, um fortzufahren.",
   "termsTitle": "Nutzungsbedingungen",
   "privacyTitle": "Datenschutzerklärung",
-  "passwordNewDescriptionEmail": "Lege ein neues Passwort für {email} fest."
+  "passwordNewDescriptionEmail": "Lege ein neues Passwort für {email} fest.",
+  "selectComplete": "Fertig",
+  "onboardingLanguageTitle": "Was ist deine Muttersprache?",
+  "onboardingReasonTitle": "Warum lernst du eine Sprache?",
+  "onboardingReasonSubtitle": "Wir passen dein Lernen an deine Ziele an.",
+  "savingLabel": "Wird gespeichert…",
+  "payMethodApple": "Apple Pay"
 }

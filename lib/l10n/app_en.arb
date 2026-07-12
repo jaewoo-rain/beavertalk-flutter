@@ -328,5 +328,11 @@
         "type": "String"
       }
     }
-  }
+  },
+  "selectComplete": "Done",
+  "onboardingLanguageTitle": "What is your native language?",
+  "onboardingReasonTitle": "Why are you learning a language?",
+  "onboardingReasonSubtitle": "We'll tailor your learning to your goals.",
+  "savingLabel": "Saving...",
+  "payMethodApple": "Apple Pay"
 }

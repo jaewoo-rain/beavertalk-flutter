@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Salasanasi on nollattu. Kirjaudu sisään uudella salasanallasi jatkaaksesi.",
   "termsTitle": "Käyttöehdot",
   "privacyTitle": "Tietosuojakäytäntö",
-  "passwordNewDescriptionEmail": "Aseta uusi salasana käyttäjälle {email}."
+  "passwordNewDescriptionEmail": "Aseta uusi salasana käyttäjälle {email}.",
+  "selectComplete": "Valmis",
+  "onboardingLanguageTitle": "Mikä on äidinkielesi?",
+  "onboardingReasonTitle": "Miksi opiskelet kieltä?",
+  "onboardingReasonSubtitle": "Räätälöimme oppimisesi tavoitteidesi mukaan.",
+  "savingLabel": "Tallennetaan...",
+  "payMethodApple": "Apple Pay"
 }

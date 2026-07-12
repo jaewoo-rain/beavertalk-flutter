@@ -837,4 +837,23 @@ class AppLocalizationsHu extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return 'Állíts be egy új jelszót ehhez: $email.';
   }
+
+  @override
+  String get selectComplete => 'Kész';
+
+  @override
+  String get onboardingLanguageTitle => 'Mi az anyanyelved?';
+
+  @override
+  String get onboardingReasonTitle => 'Miért tanulsz nyelvet?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'A céljaidhoz igazítjuk a tanulásodat.';
+
+  @override
+  String get savingLabel => 'Mentés…';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

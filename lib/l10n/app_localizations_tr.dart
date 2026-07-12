@@ -828,4 +828,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email için yeni bir şifre belirleyin.';
   }
+
+  @override
+  String get selectComplete => 'Tamam';
+
+  @override
+  String get onboardingLanguageTitle => 'Ana diliniz nedir?';
+
+  @override
+  String get onboardingReasonTitle => 'Neden bir dil öğreniyorsunuz?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Öğrenmenizi hedeflerinize göre uyarlayacağız.';
+
+  @override
+  String get savingLabel => 'Kaydediliyor...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

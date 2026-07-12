@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Ваш пароль был сброшен. Войдите с новым паролем, чтобы продолжить.",
   "termsTitle": "Условия использования",
   "privacyTitle": "Политика конфиденциальности",
-  "passwordNewDescriptionEmail": "Задайте новый пароль для {email}."
+  "passwordNewDescriptionEmail": "Задайте новый пароль для {email}.",
+  "selectComplete": "Готово",
+  "onboardingLanguageTitle": "Какой ваш родной язык?",
+  "onboardingReasonTitle": "Почему вы изучаете язык?",
+  "onboardingReasonSubtitle": "Мы адаптируем обучение под ваши цели.",
+  "savingLabel": "Сохранение...",
+  "payMethodApple": "Apple Pay"
 }

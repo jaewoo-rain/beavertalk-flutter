@@ -827,4 +827,23 @@ class AppLocalizationsUr extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email کے لیے نیا پاس ورڈ سیٹ کریں۔';
   }
+
+  @override
+  String get selectComplete => 'ہو گیا';
+
+  @override
+  String get onboardingLanguageTitle => 'آپ کی مادری زبان کیا ہے؟';
+
+  @override
+  String get onboardingReasonTitle => 'آپ زبان کیوں سیکھ رہے ہیں؟';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'ہم آپ کے مقاصد کے مطابق آپ کی تعلیم کو ڈھالیں گے۔';
+
+  @override
+  String get savingLabel => 'محفوظ ہو رہا ہے...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

@@ -259,5 +259,11 @@
   "passwordCompleteBody": "A jelszavad visszaállításra került. A folytatáshoz jelentkezz be az új jelszavaddal.",
   "termsTitle": "Felhasználási feltételek",
   "privacyTitle": "Adatvédelmi irányelvek",
-  "passwordNewDescriptionEmail": "Állíts be egy új jelszót ehhez: {email}."
+  "passwordNewDescriptionEmail": "Állíts be egy új jelszót ehhez: {email}.",
+  "selectComplete": "Kész",
+  "onboardingLanguageTitle": "Mi az anyanyelved?",
+  "onboardingReasonTitle": "Miért tanulsz nyelvet?",
+  "onboardingReasonSubtitle": "A céljaidhoz igazítjuk a tanulásodat.",
+  "savingLabel": "Mentés…",
+  "payMethodApple": "Apple Pay"
 }

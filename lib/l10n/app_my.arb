@@ -259,5 +259,11 @@
   "passwordCompleteBody": "သင့်စကားဝှက်ကို ပြန်လည်သတ်မှတ်ပြီးပါပြီ။ ဆက်လက်ရန် သင့်စကားဝှက်အသစ်ဖြင့် လော့ဂ်အင်ဝင်ပါ။",
   "termsTitle": "ဝန်ဆောင်မှု စည်းမျဉ်းများ",
   "privacyTitle": "ကိုယ်ရေးအချက်အလက် မူဝါဒ",
-  "passwordNewDescriptionEmail": "{email} အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ။"
+  "passwordNewDescriptionEmail": "{email} အတွက် စကားဝှက်အသစ် သတ်မှတ်ပါ။",
+  "selectComplete": "ပြီးပါပြီ",
+  "onboardingLanguageTitle": "သင့်မိခင်ဘာသာစကားက ဘာလဲ။",
+  "onboardingReasonTitle": "သင် ဘာကြောင့် ဘာသာစကားတစ်ခု သင်နေတာလဲ။",
+  "onboardingReasonSubtitle": "သင့်ရည်မှန်းချက်များနှင့်ကိုက်ညီအောင် သင်ယူမှုကို ချိန်ညှိပေးပါမည်။",
+  "savingLabel": "သိမ်းဆည်းနေသည်...",
+  "payMethodApple": "Apple Pay"
 }

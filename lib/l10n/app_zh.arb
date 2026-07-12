@@ -259,5 +259,11 @@
   "passwordCompleteBody": "你的密码已重置。请使用新密码登录以继续。",
   "termsTitle": "服务条款",
   "privacyTitle": "隐私政策",
-  "passwordNewDescriptionEmail": "为 {email} 设置一个新密码。"
+  "passwordNewDescriptionEmail": "为 {email} 设置一个新密码。",
+  "selectComplete": "完成",
+  "onboardingLanguageTitle": "你的母语是什么？",
+  "onboardingReasonTitle": "你为什么要学习一门语言？",
+  "onboardingReasonSubtitle": "我们会根据你的目标定制学习内容。",
+  "savingLabel": "保存中...",
+  "payMethodApple": "Apple Pay"
 }

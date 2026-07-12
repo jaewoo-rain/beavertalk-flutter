@@ -826,4 +826,23 @@ class AppLocalizationsMn extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email-д зориулж шинэ нууц үг тохируулна уу.';
   }
+
+  @override
+  String get selectComplete => 'Дууслаа';
+
+  @override
+  String get onboardingLanguageTitle => 'Таны эх хэл юу вэ?';
+
+  @override
+  String get onboardingReasonTitle => 'Та яагаад хэл сурч байна вэ?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'Бид таны зорилгод тохируулан сургалтыг тохируулна.';
+
+  @override
+  String get savingLabel => 'Хадгалж байна...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

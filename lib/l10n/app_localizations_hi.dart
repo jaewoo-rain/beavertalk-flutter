@@ -826,4 +826,23 @@ class AppLocalizationsHi extends AppLocalizations {
   String passwordNewDescriptionEmail(String email) {
     return '$email के लिए एक नया पासवर्ड सेट करें।';
   }
+
+  @override
+  String get selectComplete => 'हो गया';
+
+  @override
+  String get onboardingLanguageTitle => 'आपकी मातृभाषा क्या है?';
+
+  @override
+  String get onboardingReasonTitle => 'आप भाषा क्यों सीख रहे हैं?';
+
+  @override
+  String get onboardingReasonSubtitle =>
+      'हम आपके लक्ष्यों के अनुसार आपकी सीख को अनुकूलित करेंगे।';
+
+  @override
+  String get savingLabel => 'सहेजा जा रहा है...';
+
+  @override
+  String get payMethodApple => 'Apple Pay';
 }

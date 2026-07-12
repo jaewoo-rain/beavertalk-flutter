@@ -259,5 +259,11 @@
   "passwordCompleteBody": "Құпия сөзіңіз қалпына келтірілді. Жалғастыру үшін жаңа құпия сөзіңізбен кіріңіз.",
   "termsTitle": "Пайдалану шарттары",
   "privacyTitle": "Құпиялылық саясаты",
-  "passwordNewDescriptionEmail": "{email} үшін жаңа құпия сөз орнатыңыз."
+  "passwordNewDescriptionEmail": "{email} үшін жаңа құпия сөз орнатыңыз.",
+  "selectComplete": "Дайын",
+  "onboardingLanguageTitle": "Сіздің ана тіліңіз қандай?",
+  "onboardingReasonTitle": "Сіз неге тіл үйреніп жатырсыз?",
+  "onboardingReasonSubtitle": "Біз оқуыңызды мақсаттарыңызға сай бейімдейміз.",
+  "savingLabel": "Сақталуда...",
+  "payMethodApple": "Apple Pay"
 }

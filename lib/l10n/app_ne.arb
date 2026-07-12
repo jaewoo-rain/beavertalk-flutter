@@ -259,5 +259,11 @@
   "passwordCompleteBody": "तपाईंको पासवर्ड रिसेट भयो। जारी राख्न आफ्नो नयाँ पासवर्डले लगइन गर्नुहोस्।",
   "termsTitle": "सेवाका सर्तहरू",
   "privacyTitle": "गोपनीयता नीति",
-  "passwordNewDescriptionEmail": "{email} का लागि नयाँ पासवर्ड सेट गर्नुहोस्।"
+  "passwordNewDescriptionEmail": "{email} का लागि नयाँ पासवर्ड सेट गर्नुहोस्।",
+  "selectComplete": "सम्पन्न",
+  "onboardingLanguageTitle": "तपाईंको मातृभाषा के हो?",
+  "onboardingReasonTitle": "तपाईं भाषा किन सिक्दै हुनुहुन्छ?",
+  "onboardingReasonSubtitle": "हामी तपाईंको लक्ष्य अनुसार सिकाइलाई अनुकूल बनाउनेछौं।",
+  "savingLabel": "सुरक्षित गर्दै...",
+  "payMethodApple": "Apple Pay"
 }

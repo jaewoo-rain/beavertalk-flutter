@@ -255,7 +255,7 @@ class _DropdownState<T> extends State<Dropdown<T>> {
     Widget? leadingIcon;
     if (widget.leftIcon != null) {
       leadingIcon = Padding(
-        padding: EdgeInsets.only(right: spec.gap),
+        padding: EdgeInsetsDirectional.only(end: spec.gap),
         child: IconTheme.merge(
           data: IconThemeData(size: spec.leftIconSize, color: iconColor),
           child: SizedBox(
@@ -397,7 +397,7 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
             onTap: () => widget.onSelect(item),
             child: Container(
               height: spec.rowHeight,
-              alignment: Alignment.centerLeft,
+              alignment: AlignmentDirectional.centerStart,
               padding: EdgeInsets.symmetric(horizontal: spec.padH),
               decoration: BoxDecoration(
                 color: AppColors.surface2,
