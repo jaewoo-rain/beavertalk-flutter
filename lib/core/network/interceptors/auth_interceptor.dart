@@ -17,6 +17,15 @@ class AuthInterceptor extends Interceptor {
   /// Extra flag that disables Bearer attachment for a single request.
   static const skipAuthKey = 'skipAuth';
 
+  /// Marks a request that has already been replayed after a 401 refresh, so a
+  /// still-failing token can't loop forever.
+  static const _retriedKey = '__authRetried';
+
+  /// The Dio used to replay a request after refreshing on 401. Set by
+  /// `core/di/providers.dart` right after the client is built (can't be a
+  /// constructor arg — the interceptor lives inside this same Dio).
+  Dio? retryDio;
+
   /// Shared in-flight refresh so concurrent requests await one network refresh
   /// instead of each firing their own.
   Future<void>? _refresh;
@@ -62,8 +71,38 @@ class AuthInterceptor extends Interceptor {
     DioException err,
     ErrorInterceptorHandler handler,
   ) async {
-    if (err.response?.statusCode == 401) {
-      // Token is stale/invalid: signal the app to re-auth (which signs out).
+    final is401 = err.response?.statusCode == 401;
+    final skip = err.requestOptions.extra[skipAuthKey] == true;
+    final retried = err.requestOptions.extra[_retriedKey] == true;
+
+    // First 401 on a normal request: the server rejected our token. This is
+    // usually a boundary/stale token (a manual retry "works" once the session
+    // refreshes). Refresh once and replay the request transparently so the user
+    // never sees the error/retry button (e.g. the alarm list's initial load).
+    if (is401 && !skip && !retried) {
+      try {
+        final auth = Supabase.instance.client.auth;
+        _refresh ??= auth
+            .refreshSession()
+            .then((_) {})
+            .whenComplete(() => _refresh = null);
+        await _refresh;
+        final token = auth.currentSession?.accessToken;
+        final dio = retryDio;
+        if (token != null && token.isNotEmpty && dio != null) {
+          final opts = err.requestOptions
+            ..extra[_retriedKey] = true
+            ..headers['Authorization'] = 'Bearer $token';
+          final res = await dio.fetch<dynamic>(opts);
+          handler.resolve(res);
+          return;
+        }
+      } catch (_) {
+        // Refresh or replay failed → the session is genuinely dead; sign out.
+      }
+      onSessionExpired();
+    } else if (is401) {
+      // Replay also 401'd (or auth was skipped) → token is truly invalid.
       onSessionExpired();
     }
     handler.next(err);
