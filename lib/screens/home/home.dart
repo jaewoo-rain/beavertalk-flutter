@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kDebugMode, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -8,10 +7,8 @@ import '../../app/routes.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
-import '../../core/config/feature_flags.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
-import '../../features/incoming_call/presentation/incoming_call_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
@@ -60,31 +57,7 @@ class HomeScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
       background: AppColors.surface,
-      body: Stack(
-        children: [
-          _buildHome(context, ref),
-          // TODO(dev): 로컬 테스트용 임시 트리거 — 제거 예정.
-          // 디버그 빌드에서만 보이는 작은 버튼. 누르면 로컬로 "전화 오는 화면"을 띄운다
-          // (푸시 대체). 이 Positioned 블록만 지우면 흔적 없이 제거된다.
-          if (kDebugMode && kInboundCallEnabled && !kIsWeb)
-            Positioned(
-              left: AppSpacing.s16,
-              bottom: 96,
-              child: Semantics(
-                button: true,
-                label: '개발용 전화 수신 테스트',
-                child: FloatingActionButton.small(
-                  heroTag: 'dev-incoming-call',
-                  backgroundColor: AppColors.primary,
-                  onPressed: () => ref
-                      .read(incomingCallCoordinatorProvider)
-                      .simulateIncomingCall(),
-                  child: const Icon(Icons.phone_callback),
-                ),
-              ),
-            ),
-        ],
-      ),
+      body: _buildHome(context, ref),
     );
   }
 
