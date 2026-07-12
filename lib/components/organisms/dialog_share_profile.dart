@@ -1,5 +1,12 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -31,37 +38,23 @@ class ProfileStat {
 /// DialogShareProfile — Figma `03_Organisms / Dialog-ShareProfile`
 /// (`2235:4652`).
 ///
-/// A centered share card measured 1:1 from Figma:
-/// - Width `335`, padding `16` top / `12` horizontal / `24` bottom,
-///   radius [AppRadius.xs] (8), fill [AppColors.surface2] (#252932).
-/// - Outer column gap `24` between the content block and the share button.
-/// - Content: centered column.
-///   - [avatar] / [imageProvider] — `80×80` circle.
-///   - [caption] in `AppType.body1.r` ([AppColors.textSecondary]).
-///   - [title] in `AppType.title3.b` (white). Caption→title gap `8`.
-///   - [stats] — a column of [ProgressBar]s, gap `16`. The first (top) stat is
-///     the active green accent; the rest render muted (see [ProfileStat.active]).
-/// - Share button — full-width, [AppColors.surfaceElevatedNormal] (#2F3340)
-///   fill, radius 16, centered SemiBold label, invoking [onShare].
+/// A centered share card measured 1:1 from Figma: avatar, `caption` + `title`,
+/// and a column of accent [ProgressBar]s, with a share affordance below.
 ///
-/// Provide the avatar either as an [imageProvider] (rendered into the circle) or
-/// as a fully custom [avatar] widget; if both are null a neutral placeholder is
-/// shown. This widget renders only the card — lay it over a [Dim] scrim to
-/// present it (see [DialogShareProfileDemo] or use [showDialogShareProfile]).
+/// ## Sharing an image (not text)
+/// The web app shares this result as a **PNG** of the card (see
+/// `guess-my-accent/share/ShareCard.tsx` + `useShareImage.ts` — capture the 9:16
+/// card DOM at scale 3). This dialog does the Flutter equivalent: the card
+/// (avatar + accent + bars + branding, everything except the Share button) sits
+/// in a [RepaintBoundary]; tapping Share rasterizes it via
+/// [RenderRepaintBoundary.toImage] and shares the file through `share_plus`,
+/// with [shareText] as the accompanying caption. If capture fails it degrades to
+/// sharing [shareText] alone, so Share never silently no-ops.
 ///
-/// ```dart
-/// DialogShareProfile(
-///   imageProvider: NetworkImage(url),
-///   caption: 'Your Korean accent sounds',
-///   title: 'American',
-///   stats: const [
-///     ProfileStat(label: 'American', value: 87),
-///     ProfileStat(label: 'British', value: 42),
-///   ],
-///   onShare: () {},
-/// )
-/// ```
-class DialogShareProfile extends StatelessWidget {
+/// Provide the avatar either as an [imageProvider] or a fully custom [avatar];
+/// if both are null a neutral placeholder is shown. Render the card over a [Dim]
+/// scrim (see [showDialogShareProfile] / [DialogShareProfileDemo]).
+class DialogShareProfile extends StatefulWidget {
   /// Creates a DialogShareProfile card.
   const DialogShareProfile({
     super.key,
@@ -70,8 +63,9 @@ class DialogShareProfile extends StatelessWidget {
     required this.caption,
     required this.title,
     this.stats = const [],
-    this.onShare,
-    this.shareLabel = 'Share',
+    this.shareText,
+    this.onShared,
+    this.shareLabel,
   });
 
   /// Image used for the `80×80` avatar circle. Ignored when [avatar] is set.
@@ -89,11 +83,28 @@ class DialogShareProfile extends StatelessWidget {
   /// Progress stats, each a reused [ProgressBar]; laid out in a column (gap 16).
   final List<ProfileStat> stats;
 
-  /// Share button tap callback.
-  final VoidCallback? onShare;
+  /// Text shared alongside the card image (invite/caption). When capture fails
+  /// this is shared on its own.
+  final String? shareText;
 
-  /// Share button label.
-  final String shareLabel;
+  /// Called after the share sheet has been dispatched (e.g. to close the
+  /// dialog). Not awaited.
+  final VoidCallback? onShared;
+
+  /// Share button label. Defaults to the localized `share` string when
+  /// omitted.
+  final String? shareLabel;
+
+  @override
+  State<DialogShareProfile> createState() => _DialogShareProfileState();
+}
+
+class _DialogShareProfileState extends State<DialogShareProfile> {
+  /// Wraps the shareable card (everything but the Share button) so it can be
+  /// rasterized to a PNG on share.
+  final GlobalKey _cardKey = GlobalKey();
+
+  bool _sharing = false;
 
   /// Figma card width.
   static const double _width = 335;
@@ -102,9 +113,13 @@ class DialogShareProfile extends StatelessWidget {
   static const double _avatarSize = 80;
 
   Widget _buildAvatar() {
-    if (avatar != null) {
+    if (widget.avatar != null) {
       return ClipOval(
-        child: SizedBox(width: _avatarSize, height: _avatarSize, child: avatar),
+        child: SizedBox(
+          width: _avatarSize,
+          height: _avatarSize,
+          child: widget.avatar,
+        ),
       );
     }
     return Container(
@@ -113,106 +128,172 @@ class DialogShareProfile extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         color: AppColors.surfaceElevated,
-        image: imageProvider == null
+        image: widget.imageProvider == null
             ? null
-            : DecorationImage(image: imageProvider!, fit: BoxFit.cover),
+            : DecorationImage(image: widget.imageProvider!, fit: BoxFit.cover),
       ),
       alignment: Alignment.center,
-      child: imageProvider == null
+      child: widget.imageProvider == null
           ? AppIcons.profile(color: AppColors.textTertiary, size: 40)
           : null,
     );
   }
 
+  /// Rasterizes the card and shares it as a PNG (+ [DialogShareProfile.shareText]).
+  /// Degrades to text-only on any failure; never throws.
+  Future<void> _shareCardImage() async {
+    if (_sharing) return;
+    setState(() => _sharing = true);
+    final text = widget.shareText;
+    try {
+      final boundary =
+          _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final image = boundary == null ? null : await boundary.toImage(pixelRatio: 3);
+      final bytes = image == null
+          ? null
+          : await image.toByteData(format: ui.ImageByteFormat.png);
+      image?.dispose();
+      if (bytes != null) {
+        final dir = await getTemporaryDirectory();
+        final file = File(
+          '${dir.path}/beavertalk_accent_'
+          '${DateTime.now().millisecondsSinceEpoch}.png',
+        );
+        await file.writeAsBytes(bytes.buffer.asUint8List());
+        await SharePlus.instance.share(
+          ShareParams(text: text, files: <XFile>[XFile(file.path)]),
+        );
+      } else if (text != null) {
+        // Capture unavailable → share the caption alone rather than nothing.
+        await SharePlus.instance.share(ShareParams(text: text));
+      }
+    } catch (e) {
+      debugPrint('share card failed → text fallback: $e');
+      if (text != null) {
+        try {
+          await SharePlus.instance.share(ShareParams(text: text));
+        } catch (_) {}
+      }
+    } finally {
+      if (mounted) setState(() => _sharing = false);
+      widget.onShared?.call();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.surface2,
-      borderRadius: BorderRadius.circular(AppRadius.xs),
-      clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _width,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(12, 16, 12, 24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Content block (gap 24 to the button).
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(child: _buildAvatar()),
-                  const SizedBox(height: 16),
-                  // Caption + title, centered (gap 8).
-                  Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        caption,
-                        textAlign: TextAlign.center,
-                        style: AppType.body1.r
-                            .copyWith(color: AppColors.textSecondary),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        title,
-                        textAlign: TextAlign.center,
-                        style: AppType.title3.b.copyWith(color: AppColors.text),
-                      ),
-                    ],
-                  ),
-                  if (stats.isNotEmpty) ...[
-                    const SizedBox(height: 32),
-                    // Stats column of reused ProgressBars (gap 16).
+    final resolvedShareLabel =
+        widget.shareLabel ?? AppLocalizations.of(context).share;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Captured region: the card itself (with its own background + branding),
+        // excluding the Share button below.
+        RepaintBoundary(
+          key: _cardKey,
+          child: Material(
+            color: AppColors.surface2,
+            borderRadius: BorderRadius.circular(AppRadius.xs),
+            clipBehavior: Clip.antiAlias,
+            child: SizedBox(
+              width: _width,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(12, 16, 12, 20),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(child: _buildAvatar()),
+                    const SizedBox(height: 16),
                     Column(
                       mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        for (var i = 0; i < stats.length; i++) ...[
-                          if (i > 0) const SizedBox(height: 16),
-                          ProgressBar(
-                            label: stats[i].label,
-                            value: stats[i].value,
-                            active: stats[i].active,
-                          ),
-                        ],
+                        Text(
+                          widget.caption,
+                          textAlign: TextAlign.center,
+                          style: AppType.body1.r
+                              .copyWith(color: AppColors.textSecondary),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          widget.title,
+                          textAlign: TextAlign.center,
+                          style:
+                              AppType.title3.b.copyWith(color: AppColors.text),
+                        ),
                       ],
                     ),
-                  ],
-                ],
-              ),
-              const SizedBox(height: 24),
-              // Share button — Figma `2235:4647`: Background/Elevated/Normal
-              // (#2F3340 = [AppColors.surfaceElevatedNormal]) fill, radius 16,
-              // 18×16 padding, centered SemiBold label. Not the [Button] atom:
-              // its `secondary_fill` is `surface2` (the dialog's own fill) so the
-              // button blended into the background; no Button variant carries the
-              // Elevated/Normal fill this design calls for.
-              Material(
-                color: AppColors.surfaceElevatedNormal,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: onShare,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 18,
-                      horizontal: 16,
-                    ),
-                    child: Text(
-                      shareLabel,
+                    if (widget.stats.isNotEmpty) ...[
+                      const SizedBox(height: 32),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (var i = 0; i < widget.stats.length; i++) ...[
+                            if (i > 0) const SizedBox(height: 16),
+                            ProgressBar(
+                              label: widget.stats[i].label,
+                              value: widget.stats[i].value,
+                              active: widget.stats[i].active,
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+                    // Branding footer (matches the web ShareCard) so the shared
+                    // image is self-identifying.
+                    const SizedBox(height: 24),
+                    Text(
+                      'BeaverTalk',
                       textAlign: TextAlign.center,
-                      style: AppType.body1.sb.copyWith(color: AppColors.text),
+                      style: AppType.body1.b.copyWith(color: AppColors.primary),
                     ),
-                  ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'www.beavertalk.im',
+                      textAlign: TextAlign.center,
+                      style: AppType.label2.r
+                          .copyWith(color: AppColors.textTertiary),
+                    ),
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
         ),
-      ),
+        const SizedBox(height: 16),
+        // Share button — kept below the captured card so it isn't in the image.
+        SizedBox(
+          width: _width,
+          child: Material(
+            color: AppColors.surfaceElevatedNormal,
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: _sharing ? null : _shareCardImage,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
+                child: _sharing
+                    ? const Center(
+                        child: SizedBox(
+                          width: 18,
+                          height: 18,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.text,
+                          ),
+                        ),
+                      )
+                    : Text(
+                        resolvedShareLabel,
+                        textAlign: TextAlign.center,
+                        style: AppType.body1.sb.copyWith(color: AppColors.text),
+                      ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -225,8 +306,9 @@ Future<T?> showDialogShareProfile<T>(
   required String caption,
   required String title,
   List<ProfileStat> stats = const [],
-  VoidCallback? onShare,
-  String shareLabel = 'Share',
+  String? shareText,
+  VoidCallback? onShared,
+  String? shareLabel,
 }) {
   return showDialog<T>(
     context: context,
@@ -235,14 +317,18 @@ Future<T?> showDialogShareProfile<T>(
       children: [
         Dim(onTap: () => Navigator.of(context).maybePop()),
         Center(
-          child: DialogShareProfile(
-            imageProvider: imageProvider,
-            avatar: avatar,
-            caption: caption,
-            title: title,
-            stats: stats,
-            onShare: onShare,
-            shareLabel: shareLabel,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 24),
+            child: DialogShareProfile(
+              imageProvider: imageProvider,
+              avatar: avatar,
+              caption: caption,
+              title: title,
+              stats: stats,
+              shareText: shareText,
+              onShared: onShared,
+              shareLabel: shareLabel,
+            ),
           ),
         ),
       ],

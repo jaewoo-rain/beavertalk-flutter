@@ -6,6 +6,7 @@ import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/organisms/gnb.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -27,19 +28,26 @@ class PaymentScreen extends StatefulWidget {
 
 /// The selectable payment methods shown on the checkout screen.
 enum _PayMethod {
-  /// 신용/체크카드.
-  card('신용/체크카드'),
+  /// Credit / debit card.
+  card,
 
-  /// 카카오페이.
-  kakao('카카오페이'),
+  /// KakaoPay.
+  kakao,
 
   /// Apple Pay.
-  apple('Apple Pay');
+  apple;
 
-  const _PayMethod(this.label);
-
-  /// Display label (Figma copy).
-  final String label;
+  /// Display label for this method under the given localizations.
+  String label(AppLocalizations l10n) {
+    switch (this) {
+      case _PayMethod.card:
+        return l10n.payMethodCard;
+      case _PayMethod.kakao:
+        return l10n.payMethodKakao;
+      case _PayMethod.apple:
+        return l10n.payMethodApple;
+    }
+  }
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
@@ -47,13 +55,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            title: '결제하기',
+            title: l10n.checkout,
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
@@ -62,17 +71,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ── 주문 상품 ──
-                  Text('주문 상품', style: AppType.body2.sb),
+                  // ── Order summary ──
+                  Text(l10n.orderSummary, style: AppType.body2.sb),
                   const SizedBox(height: 16),
                   _ProductCard(),
                   const SizedBox(height: 16),
-                  // ── 결제 수단 ──
-                  Text('결제 수단', style: AppType.body2.sb),
+                  // ── Payment method ──
+                  Text(l10n.paymentMethod, style: AppType.body2.sb),
                   const SizedBox(height: 16),
                   for (final m in _PayMethod.values) ...[
                     _MethodRow(
-                      label: m.label,
+                      label: m.label(l10n),
                       selected: _method == m,
                       onTap: () => setState(() => _method = m),
                     ),
@@ -80,7 +89,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       const SizedBox(height: 12),
                   ],
                   const SizedBox(height: 16),
-                  // ── 결제 금액 요약 ──
+                  // ── Amount summary ──
                   _AmountSummary(),
                 ],
               ),
@@ -91,7 +100,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
-              text: '결제하기',
+              text: l10n.pay,
               onPressed: () =>
                   Navigator.pushNamed(context, Routes.paymentComplete),
             ),
@@ -107,6 +116,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
 class _ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -121,10 +131,10 @@ class _ProductCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Annoying Beaver 아바타', style: AppType.body2.sb),
+                Text(l10n.productName, style: AppType.body2.sb),
                 const SizedBox(height: 4),
                 Text(
-                  '프리미엄 캐릭터 · 영구 소장',
+                  l10n.productTrait,
                   style: AppType.label2.r
                       .copyWith(color: AppColors.textSecondary),
                 ),
@@ -174,7 +184,14 @@ class _MethodRow extends StatelessWidget {
           children: [
             _RadioMark(selected: selected),
             const SizedBox(width: 12),
-            Text(label, style: AppType.body2.r),
+            Expanded(
+              child: Text(
+                label,
+                style: AppType.body2.r,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),
@@ -214,6 +231,7 @@ class _RadioMark extends StatelessWidget {
 class _AmountSummary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
@@ -224,11 +242,11 @@ class _AmountSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _row('상품 금액', '₩4,900'),
+          _row(l10n.amountItemPrice, '₩4,900'),
           const SizedBox(height: 8),
-          _row('할인', '-₩0'),
+          _row(l10n.amountDiscount, '-₩0'),
           const SizedBox(height: 8),
-          _row('총 결제 금액', '₩4,900', total: true),
+          _row(l10n.amountTotal, '₩4,900', total: true),
         ],
       ),
     );
@@ -243,7 +261,14 @@ class _AmountSummary extends StatelessWidget {
         : AppType.label1.sb;
     return Row(
       children: [
-        Expanded(child: Text(label, style: labelStyle)),
+        Expanded(
+          child: Text(
+            label,
+            style: labelStyle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         Text(value, style: valueStyle),
       ],
     );

@@ -10,8 +10,8 @@ import '../../components/molecules/password_eye_toggle.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -52,16 +52,16 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
   String? get _passwordError {
     if (_password.isEmpty) return null;
     if (_password.length < 8 || _password.length > 16) {
-      // TODO(i18n): localize
-      return 'Password must be 8–16 characters.';
+      return AppLocalizations.of(context).passwordLengthError;
     }
     return null;
   }
 
   String? get _confirmError {
     if (_passwordConfirm.isEmpty) return null;
-    // TODO(i18n): localize
-    if (_passwordConfirm != _password) return "Passwords don't match.";
+    if (_passwordConfirm != _password) {
+      return AppLocalizations.of(context).passwordsDoNotMatch;
+    }
     return null;
   }
 
@@ -92,14 +92,14 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            // TODO(i18n): localize
-            title: 'New password',
+            title: l10n.passwordNewTitle,
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
@@ -110,23 +110,20 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    // TODO(i18n): localize
                     _email.isEmpty
-                        ? 'Set a new password for your account.'
-                        : 'Set a new password for $_email.',
+                        ? l10n.passwordNewDescription
+                        : l10n.passwordNewDescriptionEmail(_email),
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.s32),
                   // ── New password ────────────────────────────────────────
-                  // TODO(i18n): localize
-                  const _Label('New password'),
+                  _Label(l10n.fieldNewPasswordLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
-                    // TODO(i18n): localize
-                    hintText: 'Enter your new password',
+                    hintText: l10n.newPasswordHint,
                     obscureText: _obscurePassword,
                     leftIcon:
                         AppIcons.lock(size: 20, color: AppColors.textSecondary),
@@ -138,14 +135,12 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
                   ),
                   _ErrorText(_passwordError),
                   const SizedBox(height: AppSpacing.s20),
-                  // TODO(i18n): localize
-                  const _Label('Confirm new password'),
+                  _Label(l10n.fieldConfirmNewPasswordLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _passwordConfirm,
                     onChanged: (v) => setState(() => _passwordConfirm = v),
-                    // TODO(i18n): localize
-                    hintText: 'Re-enter your new password',
+                    hintText: l10n.confirmNewPasswordHint,
                     obscureText: _obscureConfirm,
                     leftIcon:
                         AppIcons.lock(size: 20, color: AppColors.textSecondary),
@@ -164,22 +159,15 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    child: Button(
-                      type: BtnType.primaryFill,
-                      size: BtnSize.s60,
-                      // TODO(i18n): localize
-                      text: _submitting ? 'Submitting...' : 'Submit',
-                      disabled: _submitting || !_canSubmit,
-                      onPressed: _submit,
-                    ),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: _submitting ? l10n.passwordNewSubmitting : l10n.passwordNewSubmit,
+                disabled: _submitting || !_canSubmit,
+                onPressed: _submit,
+              ),
             ),
           ),
         ],
@@ -199,7 +187,7 @@ class _Label extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: AppSpacing.s8),
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
@@ -219,7 +207,8 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
+      padding: const EdgeInsetsDirectional.only(
+          top: AppSpacing.s8, start: AppSpacing.s4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),

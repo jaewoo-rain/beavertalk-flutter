@@ -8,6 +8,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/navigation.dart';
 import '../../../app/routes.dart';
+import '../../../mock/mock_data.dart' show characterName;
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../data/models/incoming_call_payload_dto.dart';
 import '../domain/entities/incoming_call_payload.dart';
@@ -103,7 +104,9 @@ class IncomingCallCoordinator {
       case CallEventActionCallDecline(:final callKitParams):
         await callkit.endCall(callKitParams.id);
       case CallEventActionCallTimeout(:final id):
-        await _onTimeout(uuid: id, name: '비버');
+        // 타임아웃 이벤트엔 이름이 없어서(id만), 표시 시점에 기억해 둔 실제
+        // 캐릭터명을 쓴다(없으면 '비버'로 폴백).
+        await _onTimeout(uuid: id, name: callkit.nameFor(id) ?? '비버');
       case CallEventActionCallEnded(:final callKitParams):
         // 세션 종료 → dedup에서 제거해 (동일 uuid의) 재수신 여지를 남긴다.
         _handledUuids.remove(callKitParams.id);
@@ -119,6 +122,7 @@ class IncomingCallCoordinator {
     // 중복 진입 방지(라이브 이벤트 + 콜드스타트 폴링).
     if (uuid != null) {
       if (_handledUuids.contains(uuid)) return;
+      if (_handledUuids.length > 200) _handledUuids.clear();
       _handledUuids.add(uuid);
     }
 
@@ -249,11 +253,16 @@ class IncomingCallCoordinator {
 
   /// CallKit 콜 파라미터 → 도메인 페이로드(라이브 이벤트 경로).
   IncomingCallPayload _payloadFromParams(CallKitParams p) {
+    final characterId =
+        IncomingCallPayloadDto.asInt(p.extra?['characterId']) ??
+            kDefaultInboundCharacterId;
+    final name = p.nameCaller;
     return IncomingCallPayload(
       callUuid: p.id,
-      characterId: IncomingCallPayloadDto.asInt(p.extra?['characterId']) ??
-          kDefaultInboundCharacterId,
-      characterName: p.nameCaller,
+      characterId: characterId,
+      characterName: (name == null || name.isEmpty)
+          ? characterName(characterId)
+          : name,
       imageUrl: p.avatar,
     );
   }
@@ -263,7 +272,7 @@ class IncomingCallCoordinator {
   /// 실기기에서 개발용 버튼으로 호출해 "전화 오는 화면"을 확인하는 용도.
   Future<void> simulateIncomingCall({
     int characterId = kDefaultInboundCharacterId,
-    String characterName = 'Annoying Beaver',
+    String? nameOverride,
   }) async {
     // Android 14+ 전체화면 인텐트 / 알림 권한을 먼저 요청(최초 1회 팝업).
     await callkit.requestNotificationPermission();
@@ -272,7 +281,8 @@ class IncomingCallCoordinator {
     final payload = IncomingCallPayload(
       callUuid: const Uuid().v4(),
       characterId: characterId,
-      characterName: characterName,
+      // Show the selected avatar's name (Bibi/Baba) instead of a fixed label.
+      characterName: nameOverride ?? characterName(characterId),
     );
     await callkit.showIncoming(payload);
   }

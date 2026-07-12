@@ -17,6 +17,7 @@ class AppScaffold extends StatelessWidget {
   const AppScaffold({
     super.key,
     required this.body,
+    this.bottomBar,
     this.statusVariant = StatusBarVariant.whiteTransparent,
     this.homeVariant = HomeIndicatorVariant.whiteTransparent,
     this.background = AppColors.bg,
@@ -25,6 +26,12 @@ class AppScaffold extends StatelessWidget {
   /// Screen content; fills the frame's middle band (between the reserved
   /// status-bar and home-indicator spacers).
   final Widget body;
+
+  /// Optional bottom bar pinned below [body], OUTSIDE any scroll area, so a CTA
+  /// / control cluster stays fixed at the bottom of the phone column. Wrap it in
+  /// [BottomCtaBar] for the shared, consistent bottom inset. Defaults to null
+  /// (no bar), preserving existing call sites.
+  final Widget? bottomBar;
 
   /// Retained for call-site compatibility; no longer rendered.
   final StatusBarVariant statusVariant;
@@ -51,7 +58,14 @@ class AppScaffold extends StatelessWidget {
               child: ColoredBox(
                 color: background,
                 child: SafeArea(
-                  child: SizedBox.expand(child: body),
+                  child: SizedBox.expand(
+                    child: Column(
+                      children: [
+                        Expanded(child: body),
+                        ?bottomBar,
+                      ],
+                    ),
+                  ),
                 ),
               ),
             ),

@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/dim.dart';
-import '../chrome/home_indicator.dart';
 
 /// One feedback option in [BottomSheetFeedback].
 class FeedbackOption {
@@ -53,7 +54,7 @@ class BottomSheetFeedback extends StatelessWidget {
     required this.value,
     this.onChanged,
     this.onConfirm,
-    this.confirmText = '선택 완료',
+    this.confirmText,
     this.onClose,
   });
 
@@ -76,13 +77,16 @@ class BottomSheetFeedback extends StatelessWidget {
   /// Called when the confirm button is pressed.
   final VoidCallback? onConfirm;
 
-  /// Confirm button label (Figma: "선택 완료").
-  final String confirmText;
+  /// Confirm button label (Figma: "선택 완료"). Defaults to the localized
+  /// `selectComplete` string when omitted.
+  final String? confirmText;
 
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
 
-  static const double _sheetWidth = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double _maxWidth = 430;
   static const double _contentWidth = 335;
 
   @override
@@ -93,8 +97,8 @@ class BottomSheetFeedback extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _sheetWidth,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -121,7 +125,7 @@ class BottomSheetFeedback extends StatelessWidget {
                 ),
               ),
             ),
-            _footer(),
+            _footer(context),
           ],
         ),
       ),
@@ -153,7 +157,9 @@ class BottomSheetFeedback extends StatelessWidget {
   }
 
   /// Footer: primary confirm button (335 wide) + home indicator.
-  Widget _footer() {
+  Widget _footer(BuildContext context) {
+    final resolvedConfirmText =
+        confirmText ?? AppLocalizations.of(context).selectComplete;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -174,7 +180,7 @@ class BottomSheetFeedback extends StatelessWidget {
                     padding:
                         const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
                     child: Text(
-                      confirmText,
+                      resolvedConfirmText,
                       textAlign: TextAlign.center,
                       style: AppType.body1.sb.copyWith(
                         color: AppColors.onPrimary,
@@ -187,7 +193,13 @@ class BottomSheetFeedback extends StatelessWidget {
             ),
           ),
         ),
-        const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+        // Bottom safe-area inset — clears the real OS gesture bar (replaces the
+        // former embedded fake HomeIndicator).
+        const SafeArea(
+          top: false,
+          minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          child: SizedBox.shrink(),
+        ),
       ],
     );
   }

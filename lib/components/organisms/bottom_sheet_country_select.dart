@@ -1,35 +1,51 @@
+import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
-import '../chrome/home_indicator.dart';
 import '../molecules/country_select.dart';
+
+/// Shared flag rendering for a country/language row. Uses [CountryFlag] SVG
+/// assets (ISO 3166-1 alpha-2) so flags render identically on every platform —
+/// emoji regional-indicator glyphs do not render on Windows / many Androids.
+/// Sized 36×24 (3:2, rounded 4) to match the Figma flag slot.
+CountryFlag countryFlag(String countryCode) => CountryFlag.fromCountryCode(
+      countryCode,
+      theme: const ImageTheme(
+        height: 24,
+        width: 36,
+        shape: RoundedRectangle(4),
+      ),
+    );
 
 /// A single selectable country entry for [BottomSheetCountrySelect].
 ///
 /// [code] is an opaque value used to identify the row (it is what flows
-/// through [BottomSheetCountrySelect.value] / `onChanged`); [name] and [flag]
-/// are forwarded to the reused [CountrySelect] molecule.
+/// through [BottomSheetCountrySelect.value] / `onChanged`); [name] and
+/// [countryCode] are forwarded to the reused [CountrySelect] molecule, the
+/// latter rendered as a cross-platform SVG flag via [countryFlag].
 class CountryItem {
   /// Creates a country list item.
   const CountryItem({
     required this.code,
     required this.name,
-    required this.flag,
+    required this.countryCode,
   });
 
-  /// Opaque identity of the row (e.g. ISO code "KR"); compared by `==`.
+  /// Opaque identity of the row (e.g. locale "en"); compared by `==`.
   final String code;
 
   /// Display name shown next to the flag.
   final String name;
 
-  /// Flag glyph, rendered as an emoji `Text` by [CountrySelect].
-  final String flag;
+  /// ISO 3166-1 alpha-2 country code (e.g. "KR"), rendered as an SVG flag.
+  final String countryCode;
 }
 
 /// BottomSheet-CountrySelect — country picker sheet.
@@ -56,20 +72,19 @@ class BottomSheetCountrySelect extends StatelessWidget {
   /// Creates a country-select bottom sheet.
   const BottomSheetCountrySelect({
     super.key,
-    // TODO(i18n): localize
-    this.title = 'Select a country',
+    this.title,
     required this.items,
     required this.value,
     this.onChanged,
     this.onConfirm,
-    // TODO(i18n): localize
-    this.confirmText = 'Confirm',
+    this.confirmText,
     this.onClose,
     this.showHomeIndicator = true,
   });
 
-  /// Header title (Figma default: "Select a country").
-  final String title;
+  /// Header title. When null, falls back to the localized "Select a country"
+  /// (`AppLocalizations.selectACountry`).
+  final String? title;
 
   /// The countries to list, rendered top-to-bottom as [CountrySelect] rows.
   final List<CountryItem> items;
@@ -83,63 +98,79 @@ class BottomSheetCountrySelect extends StatelessWidget {
   /// Called when the confirm button is pressed.
   final VoidCallback? onConfirm;
 
-  /// Confirm button label (Figma footer button).
-  final String confirmText;
+  /// Confirm button label. When null, falls back to the localized "Confirm"
+  /// (`AppLocalizations.confirm`).
+  final String? confirmText;
 
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
 
-  /// Whether to render the trailing [HomeIndicator]. Keep `true` for the
-  /// full-bleed gallery preview; pass `false` when shown as a real modal sheet
-  /// (the OS draws the home indicator and the sheet only needs its content).
+  /// Whether to add trailing bottom safe-area padding for the OS gesture bar.
+  /// Keep `true` for the full-bleed gallery preview; pass `false` when the host
+  /// already provides its own bottom [SafeArea] (e.g. a real modal sheet).
   final bool showHomeIndicator;
 
-  static const double _sheetWidth = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double _maxWidth = 430;
   static const double _contentWidth = 335;
+
+  /// The sheet never grows past this fraction of the screen height. A long list
+  /// (e.g. the 24-language picker) would otherwise overflow its Column; capping
+  /// here + scrolling the body keeps the header/footer pinned and on-screen.
+  static const double _maxHeightFraction = 0.85;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final effectiveTitle = title ?? l10n.selectACountry;
+    final effectiveConfirm = confirmText ?? l10n.confirm;
+    final maxHeight =
+        MediaQuery.of(context).size.height * _maxHeightFraction;
     return Material(
       color: AppColors.surfaceElevated,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _sheetWidth,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: _maxWidth, maxHeight: maxHeight),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(),
-            // Body — country list.
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-              child: Center(
-                child: SizedBox(
-                  width: _contentWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      for (final item in items)
-                        CountrySelect(
-                          name: item.name,
-                          flag: Text(
-                            item.flag,
-                            style: const TextStyle(fontSize: 24),
-                          ),
-                          selected: item.code == value,
-                          onSelect: onChanged == null
-                              ? null
-                              : () => onChanged!(item.code),
-                        ),
-                    ],
+            _header(effectiveTitle),
+            // Body — country list. Flexible + scroll so a list taller than the
+            // capped sheet scrolls instead of overflowing; the header above and
+            // footer below stay pinned.
+            Flexible(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                  child: Center(
+                    child: SizedBox(
+                      width: _contentWidth,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          for (final item in items)
+                            CountrySelect(
+                              name: item.name,
+                              flag: countryFlag(item.countryCode),
+                              selected: item.code == value,
+                              onSelect: onChanged == null
+                                  ? null
+                                  : () => onChanged!(item.code),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-            _footer(),
+            _footer(effectiveConfirm),
           ],
         ),
       ),
@@ -147,7 +178,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
-  Widget _header() {
+  Widget _header(String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -158,6 +189,8 @@ class BottomSheetCountrySelect extends StatelessWidget {
             child: Text(
               title,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppType.body1.sb.copyWith(color: AppColors.text),
             ),
           ),
@@ -178,7 +211,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   }
 
   /// Footer: primary confirm button (335 wide) + home indicator.
-  Widget _footer() {
+  Widget _footer(String confirmText) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -197,8 +230,14 @@ class BottomSheetCountrySelect extends StatelessWidget {
             ),
           ),
         ),
+        // Bottom safe-area inset — clears the real OS gesture bar (replaces the
+        // former embedded fake HomeIndicator).
         if (showHomeIndicator)
-          const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+          const SafeArea(
+            top: false,
+            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+            child: SizedBox.shrink(),
+          ),
       ],
     );
   }
@@ -217,11 +256,11 @@ class BottomSheetCountrySelectDemo extends StatefulWidget {
 class _BottomSheetCountrySelectDemoState
     extends State<BottomSheetCountrySelectDemo> {
   static const List<CountryItem> _items = [
-    CountryItem(code: 'KR', name: '대한민국', flag: '🇰🇷'),
-    CountryItem(code: 'US', name: '미국', flag: '🇺🇸'),
-    CountryItem(code: 'JP', name: '일본', flag: '🇯🇵'),
-    CountryItem(code: 'CN', name: '중국', flag: '🇨🇳'),
-    CountryItem(code: 'GB', name: '영국', flag: '🇬🇧'),
+    CountryItem(code: 'KR', name: '대한민국', countryCode: 'KR'),
+    CountryItem(code: 'US', name: '미국', countryCode: 'US'),
+    CountryItem(code: 'JP', name: '일본', countryCode: 'JP'),
+    CountryItem(code: 'CN', name: '중국', countryCode: 'CN'),
+    CountryItem(code: 'GB', name: '영국', countryCode: 'GB'),
   ];
 
   String _value = 'US';

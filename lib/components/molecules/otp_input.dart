@@ -85,8 +85,12 @@ class _OtpInputState extends State<OtpInput> {
         event.logicalKey == LogicalKeyboardKey.backspace &&
         _controllers[i].text.isEmpty &&
         i > 0) {
-      _nodes[i - 1].requestFocus();
-      _controllers[i - 1].clear();
+      // setState so the previous box's filled/focused styling (read in build)
+      // updates immediately instead of desyncing until the next rebuild.
+      setState(() {
+        _nodes[i - 1].requestFocus();
+        _controllers[i - 1].clear();
+      });
       widget.onChanged?.call(_value);
       return KeyEventResult.handled;
     }

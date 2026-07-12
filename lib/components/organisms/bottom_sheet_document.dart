@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide BottomSheet;
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -95,8 +96,9 @@ class BottomSheetDocument extends StatelessWidget {
   /// Close-button tap callback (top-right of the header).
   final VoidCallback? onClose;
 
-  /// Sheet width measured from Figma (`375`).
-  static const double width = 375;
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double maxWidth = 430;
 
   // ── Per-size body spec, measured from Figma 175:18500 ──────────────────────
   static const Map<BottomSheetDocumentSize, _DocSpec> _specs = {
@@ -132,7 +134,7 @@ class BottomSheetDocument extends StatelessWidget {
     }
 
     return Container(
-      width: width,
+      constraints: const BoxConstraints(maxWidth: maxWidth),
       clipBehavior: Clip.antiAlias,
       decoration: const BoxDecoration(
         color: AppColors.surfaceElevated,
@@ -146,7 +148,8 @@ class BottomSheetDocument extends StatelessWidget {
           body,
           BottomSheet(
             layout: BottomSheetLayout.singleButton,
-            primaryAction: action ?? const SheetAction(label: '확인'),
+            primaryAction:
+                action ?? SheetAction(label: AppLocalizations.of(context).confirm),
           ),
         ],
       ),

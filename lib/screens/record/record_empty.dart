@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -15,6 +16,7 @@ class RecordEmptyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -29,14 +31,14 @@ class RecordEmptyScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Text(
-                    '아직 통화 기록이 없어요',
+                    l10n.noCallRecords,
                     textAlign: TextAlign.center,
                     style:
                         AppType.headline1.sb.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
-                    'AI와 첫 통화를 마치면\n여기에 기록이 쌓여요.',
+                    l10n.noCallRecordsBody,
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
@@ -45,7 +47,7 @@ class RecordEmptyScreen extends StatelessWidget {
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '통화하러 가기',
+                    text: l10n.startCall,
                     onPressed: () =>
                         Navigator.pushNamed(context, Routes.callLoading),
                   ),

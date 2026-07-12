@@ -140,12 +140,19 @@ class CardBox extends StatelessWidget {
             children: [
               Text(
                 title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppType.label1.sb.copyWith(color: AppColors.text),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
+                // Call summary can be long; cap it so the record card doesn't
+                // overflow (QA: "통화 요약 시 문장 길이 제한"). Durable fix is a
+                // server-side length cap at generation (see 서버변경제안 §5).
                 Text(
                   subtitle!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: AppType.label1.r.copyWith(color: AppColors.text),
                 ),
               ],
@@ -197,6 +204,8 @@ class CardBox extends StatelessWidget {
                   Flexible(
                     child: Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style:
                           AppType.label1.sb.copyWith(color: AppColors.text),
                     ),
@@ -234,20 +243,28 @@ class CardBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (price != null)
-            Text(
-              price!,
-              style: AppType.label1.r.copyWith(
-                color: AppColors.textSecondary,
-                decoration: TextDecoration.lineThrough,
-                decorationColor: AppColors.textSecondary,
+            Flexible(
+              child: Text(
+                price!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.label1.r.copyWith(
+                  color: AppColors.textSecondary,
+                  decoration: TextDecoration.lineThrough,
+                  decorationColor: AppColors.textSecondary,
+                ),
               ),
             ),
           if (price != null && discountPrice != null)
             const SizedBox(width: 4),
           if (discountPrice != null)
-            Text(
-              discountPrice!,
-              style: AppType.label1.sb.copyWith(color: AppColors.error),
+            Flexible(
+              child: Text(
+                discountPrice!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.label1.sb.copyWith(color: AppColors.error),
+              ),
             ),
         ],
       );
@@ -293,7 +310,16 @@ class _DottedRow extends StatelessWidget {
         );
         children.add(SizedBox(width: gap));
       }
-      children.add(Text(segments[i], style: style));
+      children.add(
+        Flexible(
+          child: Text(
+            segments[i],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: style,
+          ),
+        ),
+      );
     }
     return Row(mainAxisSize: MainAxisSize.min, children: children);
   }

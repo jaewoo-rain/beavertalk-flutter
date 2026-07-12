@@ -7,6 +7,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../alarm/domain/entities/alarm.dart';
 import '../../alarm/presentation/providers/alarm_list_controller.dart';
+import '../../../mock/mock_data.dart' show characterName;
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../domain/entities/incoming_call_payload.dart';
 import '../services/callkit_service.dart';
@@ -53,7 +54,7 @@ class InboundCallScheduler {
     // 잠금화면 위 표시 + 알림 권한을 미리 확보(최초 1회 팝업).
     await callkit.requestNotificationPermission();
     await callkit.requestFullIntentPermission();
-    // 알람 목록이 아직 안 불러와졌으면 로드를 시작시켜 둔다.
+    // 알람 목록이 아직 안 불러와졌으면 로드를 시작시켜 둔다(_tick이 이후 캐시를 읽음).
     ref.read(alarmListControllerProvider);
     _timer = Timer.periodic(_checkInterval, (_) => _tick());
     _tick();
@@ -81,7 +82,9 @@ class InboundCallScheduler {
     }
 
     // 캐시된 알람 목록(없으면 이번 tick은 로드만 유도하고 종료).
-    final alarms = ref.read(alarmListControllerProvider).value;
+    // `.value`는 로드 실패(예: 알람 조회 401) 시 에러를 **재던져** 20초마다
+    // unhandled exception을 낸다. `.valueOrNull`은 에러/로딩 시 null → tick 스킵.
+    final alarms = ref.read(alarmListControllerProvider).valueOrNull;
     if (alarms == null || alarms.isEmpty) return;
 
     final now = DateTime.now();
@@ -98,9 +101,12 @@ class InboundCallScheduler {
           '${now.hour}:${now.minute}';
       if (_firedKeys.contains(key)) continue;
       _firedKeys.add(key);
-      _pruneFiredKeys();
+      _pruneFiredKeys(now);
 
       await _ring(a);
+      // Ring at most one alarm per tick: if two alarms share the same
+      // weekday+time, showing two stacked incoming-call screens is wrong.
+      break;
     }
   }
 
@@ -113,14 +119,19 @@ class InboundCallScheduler {
     final payload = IncomingCallPayload(
       callUuid: const Uuid().v4(),
       characterId: a.characterId,
-      characterName: a.characterName ?? '비버 튜터',
+      // Server name when present, else the selected avatar's name (Bibi/Baba).
+      characterName: a.characterName ?? characterName(a.characterId),
       imageUrl: a.imageUrl,
     );
     await callkit.showIncoming(payload);
   }
 
-  /// 발사 키 세트가 무한히 커지지 않도록 오래된 것을 정리(간단히 상한만 둔다).
-  void _pruneFiredKeys() {
-    if (_firedKeys.length > 200) _firedKeys.clear();
+  /// 발사 키 세트가 무한히 커지지 않도록 정리하되, **오늘 키는 보존**한다. 전체
+  /// clear()는 방금 추가한 키까지 지워 같은 분(20초 tick) 내 중복 발사를 유발할 수
+  /// 있으므로, 오늘이 아닌 날짜의 키만 제거한다.
+  void _pruneFiredKeys(DateTime now) {
+    if (_firedKeys.length <= 200) return;
+    final today = ':${now.year}-${now.month}-${now.day}:';
+    _firedKeys.removeWhere((k) => !k.contains(today));
   }
 }

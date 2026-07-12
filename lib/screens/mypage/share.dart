@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_share_profile.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 
@@ -14,6 +15,7 @@ class ShareScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Stack(
@@ -24,14 +26,19 @@ class ShareScreen extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: DialogShareProfile(
                 imageProvider: beaverImage,
-                caption: 'Your Korean accent sounds',
+                caption: l10n.accentSoundsLike,
                 title: 'American',
                 stats: const [
                   ProfileStat(label: 'American', value: 87),
                   ProfileStat(label: 'Korean', value: 7, active: false),
                   ProfileStat(label: 'China', value: 6, active: false),
                 ],
-                onShare: () => Navigator.pop(context),
+                // Shares the rasterized accent card (PNG) + invite caption.
+                shareText:
+                    "I'm learning Korean with Beavertalk — my Korean accent "
+                    'sounds American! 🦫 Come find your accent and learn with '
+                    'me: https://beavertalk.im',
+                onShared: () => Navigator.pop(context),
               ),
             ),
           ),

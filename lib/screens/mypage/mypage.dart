@@ -1,8 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_line.dart';
@@ -11,6 +14,8 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/i18n/locale_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../mock/mock_data.dart';
@@ -57,10 +62,10 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       isScrollControlled: true,
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
-          title: 'Select your language',
+          title: AppLocalizations.of(sheetCtx).selectYourLanguage,
           items: [
             for (final l in mockLanguages)
-              CountryItem(code: l.id, name: l.name, flag: l.flag),
+              CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
           ],
           value: staged,
           onChanged: (code) => setSheetState(() => staged = code),
@@ -70,38 +75,50 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       ),
     );
     if (picked == null || picked == currentId || !mounted) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _userLangId = picked);
+    // Switch the app UI to the chosen language immediately (persisted); the
+    // backend save follows.
+    unawaited(ref.read(localeControllerProvider.notifier).setLanguage(picked));
     try {
       await ref.read(authControllerProvider.notifier).updateLanguage(picked);
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : '언어 저장에 실패했어요.';
+      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
     }
   }
 
+  /// Caption shared alongside the accent-card image (see [DialogShareProfile]).
+  static const String _inviteText =
+      "I'm learning Korean with Beavertalk — my Korean accent sounds "
+      'American! 🦫 Come find your accent and learn with me: '
+      'https://beavertalk.im';
+
   /// Confirms and performs account deletion. Shows a [DialogBasic] first; on
   /// confirm calls [AuthController.deleteAccount] (backend delete + sign-out).
   Future<void> _confirmDeleteAccount() async {
+    final l10n = AppLocalizations.of(context);
     final confirmed = await showDialogBasic<bool>(
       context,
-      title: 'Delete account?',
-      description:
-          'This permanently deletes your account and data and cannot be undone.',
+      title: l10n.deleteAccountTitle,
+      description: l10n.deleteAccountBody,
       variant: DialogBasicVariant.twoHorizontal,
-      primary:
-          DialogAction(label: 'Cancel', onPressed: () => Navigator.of(context).pop(false)),
-      secondary:
-          DialogAction(label: 'Delete', onPressed: () => Navigator.of(context).pop(true)),
+      primary: DialogAction(
+          label: l10n.cancel,
+          onPressed: () => Navigator.of(context).pop(false)),
+      secondary: DialogAction(
+          label: l10n.delete,
+          onPressed: () => Navigator.of(context).pop(true)),
     );
     if (confirmed != true || !mounted) return;
     try {
       await ref.read(authControllerProvider.notifier).deleteAccount();
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : '회원 탈퇴에 실패했어요.';
+      final msg = e is AppException ? e.message : l10n.accountDeleteFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -110,6 +127,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Languages come from the real member (GET /members/me); show sensible
     // defaults until it loads.
     final member = ref.watch(myProfileProvider).valueOrNull;
@@ -131,17 +149,22 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
               onPressed: () => showDialogShareProfile(
                 context,
                 imageProvider: beaverImage,
-                caption: 'Your Korean accent sounds',
+                caption: l10n.accentSoundsLike,
                 title: 'American',
                 stats: const [
                   ProfileStat(label: 'American', value: 87),
                   ProfileStat(label: 'Korean', value: 7, active: false),
                   ProfileStat(label: 'China', value: 6, active: false),
                 ],
-                onShare: () => Navigator.of(context).maybePop(),
+                // The dialog rasterizes the accent card and shares it as a PNG;
+                // this text rides along as the caption.
+                shareText: _inviteText,
+                onShared: () {
+                  if (mounted) Navigator.of(context).maybePop();
+                },
               ),
               icon: AppIcons.share(color: AppColors.text),
-              tooltip: 'Share',
+              tooltip: l10n.share,
             ),
           ),
           Expanded(
@@ -152,20 +175,20 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 _profileCard(),
                 const SizedBox(height: AppSpacing.s24),
 
-                _section('Settings'),
+                _section(l10n.settingsSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
                   // User (UI) language — editable.
                   _navRow(
-                    'User Language',
+                    l10n.userLanguage,
                     _langName(userLangId),
                     onTap: () => _pickUserLanguage(userLangId),
                   ),
                   // Learning language — fixed to Korean (the app teaches Korean).
-                  _navRow('Learning Language', 'Korean'),
+                  _navRow(l10n.learningLanguage, l10n.learningLanguageKorean),
                   CardLine(
                     type: CardLineType.defaultToggle,
-                    label: 'Notification',
+                    label: l10n.notificationLabel,
                     checked: _notification,
                     onChanged: (v) => setState(() => _notification = v),
                     showDivider: false,
@@ -173,44 +196,32 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
-                _section('Payment'),
+                _section(l10n.paymentSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow('Current Plan', 'Pro', route: Routes.subscription),
-                  _navRow('Payment History', '',
+                  _navRow(l10n.currentPlan, 'Pro', route: Routes.subscription),
+                  _navRow(l10n.paymentHistory, '',
                       route: Routes.subscription, divider: false),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
-                _section('Support'),
+                _section(l10n.supportSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow('Contact Us', ''),
-                  _navRow('Terms of service', '', route: Routes.terms),
-                  _navRow('Privacy policy', '',
+                  _navRow(l10n.contactUs, ''),
+                  _navRow(l10n.termsOfService, '', route: Routes.terms),
+                  _navRow(l10n.privacyPolicy, '',
                       route: Routes.privacy, divider: false),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
-                // log out — elevated button card.
-                InkWell(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  onTap: () =>
+                // log out — design-system secondary-fill Button (60).
+                Button(
+                  type: BtnType.secondaryFill,
+                  size: BtnSize.s60,
+                  text: l10n.logOut,
+                  onPressed: () =>
                       ref.read(authControllerProvider.notifier).logout(),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s16, vertical: 14),
-                    decoration: BoxDecoration(
-                      color: AppColors.surface2,
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Text(
-                      'log out',
-                      textAlign: TextAlign.center,
-                      style: AppType.label1.r.copyWith(color: AppColors.text),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Center(
@@ -220,7 +231,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
                       child: Text(
-                        'delete account',
+                        l10n.deleteAccount,
                         style: AppType.body1.r
                             .copyWith(color: AppColors.textSecondary),
                       ),
@@ -239,6 +250,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
 
   /// Profile card: 80px avatar, accent label, and three accent ProgressBars.
   Widget _profileCard() {
+    final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s12, AppSpacing.s16, AppSpacing.s12, AppSpacing.s24),
@@ -262,7 +274,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(
-            'Your Korean accent sounds',
+            l10n.accentSoundsLike,
             textAlign: TextAlign.center,
             style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
           ),

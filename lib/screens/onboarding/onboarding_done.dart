@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -29,6 +30,7 @@ class OnboardingDoneScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -56,16 +58,14 @@ class OnboardingDoneScreen extends StatelessWidget {
                   // Figma: avatar → text frame gap = 20px (ds-space-screen-x).
                   const SizedBox(height: AppSpacing.s20),
                   Text(
-                    // TODO(i18n): localize
-                    'Beaver is waiting for your call',
+                    l10n.onboardingDoneTitle,
                     textAlign: TextAlign.center,
                     style: AppType.heading2.sb.copyWith(color: AppColors.text),
                   ),
                   // Figma: heading → sub copy gap = 8px (ds-space-xs).
                   const SizedBox(height: AppSpacing.s8),
                   Text(
-                    // TODO(i18n): localize
-                    'Start a call right now',
+                    l10n.onboardingDoneSubtitle,
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
@@ -87,8 +87,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
-                    // TODO(i18n): localize
-                    text: 'Home',
+                    text: l10n.home,
                     onPressed: () => _goHome(context),
                   ),
                 ),
@@ -97,8 +96,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    // TODO(i18n): localize
-                    text: 'Call now',
+                    text: l10n.callNow,
                     onPressed: () => _startCall(context),
                   ),
                 ),

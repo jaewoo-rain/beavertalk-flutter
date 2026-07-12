@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/icons/app_icons.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -22,6 +23,7 @@ class PermissionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       homeVariant: HomeIndicatorVariant.subTransparent,
@@ -35,10 +37,10 @@ class PermissionScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('원활한 사용을 위해\n권한을 허용해주세요', style: AppType.title3.b),
+                Text(l10n.permissionTitle, style: AppType.title3.b),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
-                  '필수 권한은 서비스 이용에 꼭 필요해요.',
+                  l10n.permissionSubtitle,
                   style: AppType.label1.r
                       .copyWith(color: AppColors.textSecondary),
                 ),
@@ -47,24 +49,26 @@ class PermissionScreen extends StatelessWidget {
           ),
           // ── Permission rows ──
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: const [
-                  _PermRow(
-                    icon: AppIcons.mic,
-                    title: '마이크 (필수)',
-                    description: 'AI와 영어로 통화하려면 필요해요.',
-                  ),
-                  SizedBox(height: AppSpacing.s12),
-                  _PermRow(
-                    icon: AppIcons.volume,
-                    title: '알림 (선택)',
-                    description: '학습 리마인더와 통화 일정을 알려드려요.',
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _PermRow(
+                      icon: AppIcons.mic,
+                      title: l10n.permissionMicTitle,
+                      description: l10n.permissionMicDesc,
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    _PermRow(
+                      icon: AppIcons.volume,
+                      title: l10n.permissionNotifTitle,
+                      description: l10n.permissionNotifDesc,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -74,7 +78,7 @@ class PermissionScreen extends StatelessWidget {
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
-              text: '시작하기',
+              text: l10n.getStarted,
               onPressed: () => Navigator.of(context)
                   .pushNamedAndRemoveUntil(Routes.home, (r) => r.isFirst),
             ),

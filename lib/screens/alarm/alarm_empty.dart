@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -17,18 +18,19 @@ class AlarmEmptyBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(
-          '등록된 알람이 없어요',
+          l10n.noAlarms,
           textAlign: TextAlign.center,
           style: AppType.headline1.sb.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: AppSpacing.s8),
         Text(
-          '학습 리마인더를 추가하면\n꾸준한 습관을 만들 수 있어요.',
+          l10n.noAlarmsBody,
           textAlign: TextAlign.center,
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
         ),
@@ -45,6 +47,7 @@ class AlarmEmptyScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -62,7 +65,7 @@ class AlarmEmptyScreen extends StatelessWidget {
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '새 일정 추가',
+                    text: l10n.addSchedule,
                     onPressed: () =>
                         Navigator.pushNamed(context, Routes.alarmAdd),
                   ),

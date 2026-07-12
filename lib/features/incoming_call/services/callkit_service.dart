@@ -15,6 +15,13 @@ class CallkitService {
   /// 서비스를 생성한다(무상태).
   const CallkitService();
 
+  /// uuid→표시 이름. 타임아웃 이벤트엔 이름이 없어서(id만), 표시 시점에 기억해
+  /// 부재중 배너가 실제 캐릭터명을 쓰게 한다. 200개 상한으로 무한 증가 방지.
+  static final Map<String, String> _names = <String, String>{};
+
+  /// 표시 시점에 기억해 둔 [uuid]의 caller 이름(없으면 null).
+  String? nameFor(String uuid) => _names[uuid];
+
   /// CallKit 이벤트 스트림(accept/decline/timeout/ended…). 코디네이터가 구독한다.
   Stream<CallEvent?> get onEvent => FlutterCallkitIncoming.onEvent;
 
@@ -26,9 +33,12 @@ class CallkitService {
     IncomingCallPayload p, {
     int durationMs = 60000,
   }) async {
+    final nameCaller = p.characterName ?? '비버 튜터';
+    if (_names.length > 200) _names.clear();
+    _names[p.callUuid] = nameCaller;
     final params = CallKitParams(
       id: p.callUuid,
-      nameCaller: p.characterName ?? '비버 튜터',
+      nameCaller: nameCaller,
       appName: 'BeaverTalk',
       avatar: p.imageUrl,
       handle: '한국어 통화',

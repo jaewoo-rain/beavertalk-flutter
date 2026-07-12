@@ -26,6 +26,9 @@ abstract final class AppColors {
   static const textDisabled = Color(0xFF5A5C63);
   static const labelAssistive = Color(0xFF676E81); // Label/Assistive
 
+  static const hintAccent = Color(0xFFD17600); // Orange/39 — in-call hint accent (btn/hint on, "Hint" label)
+  static const equalizerBar = Color(0xFF37383C); // cool-neutral/25 — speaking equalizer bars (자막off)
+
   static const accentLime = Color(0xFF429E00); // Accent/Foreground/Lime — toggle on
   static const accentRed = Color(0xFFE52222); // Figma Semantics/Accent/Foreground/Red — call-end
   static const green700 = Color(0xFF00B57E); // Foundation/Green/green-700 — mic/record

@@ -30,9 +30,12 @@ android {
         applicationId = "im.beavertalk.beavertalk"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        // flutter_sound's startPlayerFromStream (PCM stream playback) requires
-        // Android API 29+ ("Need SDK 29"); pin the floor explicitly.
-        minSdk = 29
+        // flutter_sound 9.30 only needs minSdk 24 (recorder floor); the app never
+        // calls startPlayerFromStream (the only API-29 path), so 29 was overly
+        // conservative. Lowered to 26 so Android-8+ devices (e.g. the API-28
+        // Galaxy S8 QA device) can install; the Pronunciation Challenge STT still
+        // needs API 30 (vosk) and degrades to tap below that.
+        minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

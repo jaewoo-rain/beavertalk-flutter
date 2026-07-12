@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -7,10 +8,12 @@ import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -79,12 +82,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         // don't leak across different calls (keyed by call id; re-opening the
         // same call keeps scores the user already earned).
         ref.read(reviewScoresProvider.notifier).resetForCall(args.callId);
-        // Seed the in-memory bookmark store from the server's flags.
-        final saved = {...bookmarkedSentenceIds.value};
+        // Reconcile the in-memory bookmark store with the server's flags — set
+        // each id to its true state (add saved, clear un-saved) so a stale
+        // `true` from a prior session can't linger.
         for (final s in args.sentences) {
-          if (s.isBookmarked) saved.add(s.sentenceId);
+          setBookmark(s.sentenceId, s.isBookmarked);
         }
-        bookmarkedSentenceIds.value = saved;
         setState(() => _scoresReset = true);
       });
     }
@@ -103,6 +106,37 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         rhythm: 0,
         bookmarked: s.isBookmarked,
       );
+
+  /// Toggles a sentence's bookmark. Flips the shared in-memory store instantly
+  /// (optimistic), then **persists to the server** via
+  /// [bookmarkToggleControllerProvider] so the 보관 list (server-backed) actually
+  /// reflects it — previously this only flipped the local store, so bookmarks
+  /// made here never reached `GET /members/me/bookmarks`. Reverts on failure.
+  final Set<int> _bookmarkInFlight = <int>{};
+
+  Future<void> _toggleBookmark(int sentenceId) async {
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId); // optimistic local flip
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (_) {
+      toggleBookmark(sentenceId); // revert on failure
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content:
+                Text(AppLocalizations.of(context).somethingWentWrong),
+          ),
+        );
+      }
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
+    }
+  }
 
   /// Pushes the learning flow for [sentences], starting at [index].
   void _startLearning(List<MockSentence> sentences, {int index = 0}) {
@@ -126,15 +160,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// Plays a learned sentence's standard pronunciation when the server provides
   /// a playable URL ([LearnedSentence.voiceUrl]); otherwise shows a message.
   Future<void> _playSentence(LearnedSentence sentence) async {
+    final l10n = AppLocalizations.of(context);
     final url = sentence.voiceUrl;
     if (url == null || url.isEmpty || !url.startsWith('http')) {
-      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      _snack(l10n.standardAudioNotReady);
       return;
     }
     try {
       await _player.playUrl(url);
     } catch (_) {
-      _snack('표준 발음 오디오를 재생할 수 없어요.');
+      _snack(l10n.standardAudioPlayError);
     }
   }
 
@@ -170,10 +205,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               ),
               const SizedBox(width: AppSpacing.s4),
             ],
-            Text(
-              parts[i],
-              style:
-                  AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+            Flexible(
+              child: Text(
+                parts[i],
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style:
+                    AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+              ),
             ),
           ],
         ],
@@ -181,14 +220,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     ];
   }
 
-  /// `M월 D일` (Figma date format).
-  String _formatDate(DateTime d) => '${d.month}월 ${d.day}일';
+  /// Localized short date, e.g. `Jul 10`.
+  String _formatDate(DateTime d) => DateFormat.MMMd('en').format(d);
 
-  /// `N분 N초` from a duration in seconds.
+  /// `N min N sec` from a duration in seconds.
   String _formatDuration(int totalSeconds) {
     final m = totalSeconds ~/ 60;
     final s = totalSeconds % 60;
-    return '$m분 $s초';
+    return AppLocalizations.of(context).durationMinSec(m, s);
   }
 
   @override
@@ -200,7 +239,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       body: Column(
         children: [
           Gnb.main(
-            title: '대화 기록',
+            title: AppLocalizations.of(context).conversation,
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
@@ -212,6 +251,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   }
 
   Widget _content(CallResult result) {
+    final l10n = AppLocalizations.of(context);
     // Recompute the gauge average from the per-sentence review scores. Until the
     // deferred per-call reset has run, treat scores as empty so a fresh call
     // never shows a previous call's leftover scores on the first frame.
@@ -224,7 +264,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
 
     final title = (result.summary != null && result.summary!.trim().isNotEmpty)
         ? result.summary!
-        : '대화 분석 결과';
+        : l10n.analysisResult;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s40),
@@ -248,11 +288,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               score: total ?? 0,
               metrics: [
                 PronunciationMetric(
-                  label: 'Pronunciation',
+                  label: l10n.pronunciation,
                   value: _pct(pronunciation),
                 ),
-                PronunciationMetric(label: 'Fluency', value: _pct(fluency)),
-                PronunciationMetric(label: 'Rhythm', value: _pct(rhythm)),
+                PronunciationMetric(label: l10n.fluency, value: _pct(fluency)),
+                PronunciationMetric(label: l10n.rhythm, value: _pct(rhythm)),
               ],
             ),
           ),
@@ -260,21 +300,29 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           Button(
             type: BtnType.primaryFill,
             size: BtnSize.s60,
-            text: '복습하기',
+            text: l10n.review,
             disabled: _learningSentences.isEmpty,
             onPressed: () => _startLearning(_learningSentences),
           ),
+          const SizedBox(height: AppSpacing.s16),
+          Button(
+            type: BtnType.primaryOutline,
+            size: BtnSize.s60,
+            text: l10n.pronunciationChallenge,
+            onPressed: () =>
+                Navigator.pushNamed(context, Routes.pronunciationChallenge),
+          ),
 
-          // ── section 2: 새로 배운 표현 ───────────────────────────────
+          // ── section 2: new expressions ─────────────────────────────
           const SizedBox(height: AppSpacing.s24),
           Text(
-            '새로 배운 표현',
+            l10n.newExpressions,
             style: AppType.headline1.sb.copyWith(color: AppColors.text),
           ),
           const SizedBox(height: AppSpacing.s16),
           if (result.sentences.isEmpty)
             Text(
-              '이번 대화에서 새로 배운 표현이 없어요.',
+              l10n.noNewExpressions,
               style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
             )
           else
@@ -291,7 +339,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                           ids.contains(result.sentences[i].sentenceId),
                       score: scores[result.sentences[i].sentenceId],
                       onBookmarkTap: () =>
-                          toggleBookmark(result.sentences[i].sentenceId),
+                          _toggleBookmark(result.sentences[i].sentenceId),
                       onSpeak: () => _playSentence(result.sentences[i]),
                       onPractice: () =>
                           _startLearning([_learningSentences[i]]),
@@ -327,6 +375,7 @@ class _SentenceCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -339,14 +388,14 @@ class _SentenceCard extends StatelessWidget {
           highlight: '내 귀를 사로잡았다',
           onBookmarkTap: onBookmarkTap,
           onSpeakerTap: onSpeak,
-          actionText: '연습하기',
+          actionText: l10n.practice,
           onAction: onPractice,
         ),
         if (score != null)
           Padding(
             padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
             child: Text(
-              '최근 점수 ${score!.totalScore}%',
+              l10n.recentScore(score!.totalScore),
               style: AppType.label2.sb.copyWith(color: AppColors.primary),
             ),
           ),
@@ -365,7 +414,7 @@ class _EmptyState extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.s24),
         child: Text(
-          '분석 결과를 불러올 수 없어요.',
+          AppLocalizations.of(context).analysisLoadError,
           style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
         ),
       ),

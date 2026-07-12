@@ -13,10 +13,9 @@ import '../../theme/app_typography.dart';
 /// - Row layout, hug sizing, padding `2px 7px`, `borderRadius` 8 ([AppRadius.xs]).
 /// - Label uses `MO/Body 1/*` (≈ [AppType.body1]); `bold` variant is SemiBold
 ///   (`.sb`), `regular` is `.r`.
-/// - `selected`   → bg `Background/Normal/Alternative` (surface2),
-///   text [AppColors.primary].
-/// - `unselected` → bg `Background/Elevated/Alternative` (surfaceElevated),
-///   text [AppColors.textSecondary].
+/// - Both states share bg `Background/Normal/Alternative` (surface2, #252932);
+///   selection is conveyed by the **text color only** (Figma alarm weekday chip):
+///   `selected` → text [AppColors.primary], `unselected` → [AppColors.textSecondary].
 ///
 /// Controlled atom: pass [selected] and handle [onChanged]; [disabled] dims it.
 class SelectBox extends StatelessWidget {
@@ -27,6 +26,7 @@ class SelectBox extends StatelessWidget {
     this.bold = false,
     this.onChanged,
     this.disabled = false,
+    this.expand = false,
   });
 
   /// The single character shown in the chip (e.g. "T", "S").
@@ -44,15 +44,23 @@ class SelectBox extends StatelessWidget {
   /// When `true` the chip is non-interactive and rendered dimmed.
   final bool disabled;
 
+  /// When `true` the chip stretches to fill its parent's width (e.g. inside an
+  /// [Expanded] cell) instead of hug-sizing to its label — used so a row of
+  /// chips renders at identical widths. Defaults to `false` (hug).
+  final bool expand;
+
   @override
   Widget build(BuildContext context) {
-    final Color bg =
-        selected ? AppColors.surface2 : AppColors.surfaceElevated;
+    // Figma weekday chip: both states use surface2 (#252932); selection shows
+    // via text color only (unselected surfaceElevated was a shade too dark).
+    const Color bg = AppColors.surface2;
     final Color fg =
         selected ? AppColors.primary : AppColors.textSecondary;
     final TextStyle base = bold ? AppType.body1.sb : AppType.body1.r;
 
     final Widget chip = Container(
+      width: expand ? double.infinity : null,
+      alignment: expand ? Alignment.center : null,
       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
       decoration: BoxDecoration(
         color: bg,
@@ -62,6 +70,9 @@ class SelectBox extends StatelessWidget {
         label,
         textAlign: TextAlign.center,
         style: base.copyWith(color: fg),
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
       ),
     );
 

@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -20,6 +21,7 @@ class NetworkErrorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       homeVariant: HomeIndicatorVariant.subTransparent,
@@ -27,31 +29,42 @@ class NetworkErrorScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Error illustration — Figma 3D asset (`281:20345`).
-                  Image.asset(
-                    'assets/images/error_3d.png',
-                    width: AppSpacing.s100,
-                    height: AppSpacing.s100,
+            child: LayoutBuilder(
+              builder: (context, constraints) => SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints:
+                      BoxConstraints(minHeight: constraints.maxHeight),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          // Error illustration — Figma 3D asset (`281:20345`).
+                          Image.asset(
+                            'assets/images/error_3d.png',
+                            width: AppSpacing.s100,
+                            height: AppSpacing.s100,
+                          ),
+                          const SizedBox(height: AppSpacing.s20),
+                          Text(
+                            l10n.connectionFailedTitle,
+                            textAlign: TextAlign.center,
+                            style: AppType.heading2.sb,
+                          ),
+                          const SizedBox(height: AppSpacing.s8),
+                          Text(
+                            l10n.connectionFailedBody,
+                            textAlign: TextAlign.center,
+                            style: AppType.label1.r
+                                .copyWith(color: AppColors.textSecondary),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: AppSpacing.s20),
-                  Text(
-                    '연결에 실패했어요',
-                    textAlign: TextAlign.center,
-                    style: AppType.heading2.sb,
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    '네트워크 상태를 확인하고\n다시 시도해주세요.',
-                    textAlign: TextAlign.center,
-                    style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
@@ -64,7 +77,7 @@ class NetworkErrorScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
-                    text: '홈으로',
+                    text: l10n.goHome,
                     onPressed: () => Navigator.of(context)
                         .pushNamedAndRemoveUntil(Routes.home, (r) => false),
                   ),
@@ -74,7 +87,7 @@ class NetworkErrorScreen extends StatelessWidget {
                   child: Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    text: '다시시도',
+                    text: l10n.retry,
                     onPressed: () => Navigator.maybePop(context),
                   ),
                 ),

@@ -83,7 +83,9 @@ class AppToggle extends StatelessWidget {
           child: AnimatedAlign(
             duration: const Duration(milliseconds: 180),
             curve: Curves.easeInOut,
-            alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+            alignment: value
+                ? AlignmentDirectional.centerEnd
+                : AlignmentDirectional.centerStart,
             child: Container(
               width: _thumb,
               height: _thumb,

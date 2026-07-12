@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import 'learning_args.dart';
@@ -43,8 +44,12 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final l10n = AppLocalizations.of(context);
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    if (rawArgs is! LearningArgs) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    final args = rawArgs;
     // Bind the gauge to the real scored attempt. If somehow opened without
     // feedback, fall back to the inactive ("-%") gauge.
     final eval = args.feedback?.evaluation;
@@ -64,15 +69,15 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
                   score: (eval?.totalScore ?? 0).toDouble(),
                   metrics: [
                     PronunciationMetric(
-                      label: 'Pronunciation',
+                      label: l10n.pronunciation,
                       value: eval == null ? '-%' : '${eval.pronunciation}%',
                     ),
                     PronunciationMetric(
-                      label: 'Fluency',
+                      label: l10n.fluency,
                       value: eval == null ? '-%' : '${eval.fluency}%',
                     ),
                     PronunciationMetric(
-                      label: 'Rhythm',
+                      label: l10n.rhythm,
                       value: eval == null ? '-%' : '${eval.rhythm}%',
                     ),
                   ],
@@ -81,13 +86,18 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
+            // Bottom is the literal home-indicator gap (34), not an
+            // AppSpacing token — this screen has no trailing SafeArea /
+            // BottomCtaBar (unlike its learning_intro/learning_next
+            // siblings), so it would otherwise sit flush against the
+            // physical bottom edge on devices with viewPadding.bottom == 0.
+            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 34),
             child: SizedBox(
               width: double.infinity,
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '학습 종료',
+                text: AppLocalizations.of(context).endLearning,
                 onPressed: _finish,
               ),
             ),

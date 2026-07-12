@@ -108,15 +108,25 @@ class CardLine extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
+          // Keep the original label-left / value-right split: both sides use
+          // Flexible (loose) + spaceBetween so the value+status column stays
+          // pinned to the right edge for normal text (matching the original
+          // Expanded-label + bare-Column layout) and only shrinks under real
+          // overflow pressure, instead of the two competing for an even
+          // 50/50 share of the row (which detached the value from the right
+          // edge).
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Expanded(
+            Flexible(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
                     label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppType.label1.r.copyWith(color: AppColors.text),
                   ),
                   if (meta != null) ...[
@@ -127,24 +137,30 @@ class CardLine extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (value != null)
-                  Text(
-                    value!,
-                    style: AppType.label1.sb.copyWith(color: AppColors.text),
-                  ),
-                if (status != null) ...[
-                  const SizedBox(height: 7),
-                  Text(
-                    status!,
-                    style:
-                        AppType.label1.r.copyWith(color: AppColors.success),
-                  ),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (value != null)
+                    Text(
+                      value!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppType.label1.sb.copyWith(color: AppColors.text),
+                    ),
+                  if (status != null) ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      status!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          AppType.label1.r.copyWith(color: AppColors.success),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ],
         ),
@@ -164,19 +180,33 @@ class CardLine extends StatelessWidget {
             children: [
               Expanded(
                 child: Row(
+                  // Keep the original label-left / value-right split; only wrap
+                  // the two texts in Flexible + ellipsis so long translations
+                  // shrink in place instead of overflowing (design preserved).
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      label,
-                      style:
-                          AppType.body1.r.copyWith(color: AppColors.text),
-                    ),
-                    if (value != null)
-                      Text(
-                        value!,
+                    Flexible(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style:
                             AppType.body1.r.copyWith(color: AppColors.text),
                       ),
+                    ),
+                    if (value != null) ...[
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          value!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                          style:
+                              AppType.body1.r.copyWith(color: AppColors.text),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -205,6 +235,8 @@ class CardLine extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppType.body1.r.copyWith(color: AppColors.text),
                 ),
               ),
@@ -250,9 +282,13 @@ class _MetaRow extends StatelessWidget {
         children.add(const SizedBox(width: 4));
       }
       children.add(
-        Text(
-          segments[i],
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+        Flexible(
+          child: Text(
+            segments[i],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          ),
         ),
       );
     }

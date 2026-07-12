@@ -87,6 +87,16 @@ dependencies:
   # 필요해 제외(kInboundCallEnabled && !kIsWeb 가드 안에서만 초기화).
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
+  share_plus: ^12.0.2
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  country_flags: ^4.1.2
+  record: ^7.1.1
+  camera: ^0.12.0+1
+  vosk_flutter_2: ^1.0.5
+  path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
@@ -114,6 +124,11 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Generate the gen-l10n localizations (AppLocalizations) from lib/l10n/*.arb
+  # per l10n.yaml. Output lands in the source tree (Flutter 3.44: no synthetic
+  # package).
+  generate: true
 
   assets:
     - assets/images/

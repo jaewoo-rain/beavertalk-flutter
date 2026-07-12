@@ -52,15 +52,15 @@ class CardAlarm extends StatelessWidget {
          'dayLabels must contain exactly 7 entries',
        );
 
-  /// Default single-character day labels (Sun..Sat, Korean).
+  /// Default single-character day labels (Sun..Sat).
   static const List<String> defaultDayLabels = [
-    '일',
-    '월',
-    '화',
-    '수',
-    '목',
-    '금',
-    '토',
+    'S',
+    'M',
+    'T',
+    'W',
+    'T',
+    'F',
+    'S',
   ];
 
   /// Whether the alarm is active or inactive.
@@ -112,10 +112,15 @@ class CardAlarm extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  time,
-                  style: AppType.heading2.m.copyWith(color: fg),
+                Expanded(
+                  child: Text(
+                    time,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppType.heading2.m.copyWith(color: fg),
+                  ),
                 ),
+                const SizedBox(width: 12),
                 AppToggle(value: _active, onChanged: onChanged),
               ],
             ),
@@ -143,9 +148,13 @@ class CardAlarm extends StatelessWidget {
               children: [
                 AppIcons.user(size: 24, color: fg),
                 const SizedBox(width: 10),
-                Text(
-                  userName,
-                  style: AppType.label1.sb.copyWith(color: fg),
+                Flexible(
+                  child: Text(
+                    userName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppType.label1.sb.copyWith(color: fg),
+                  ),
                 ),
               ],
             ),

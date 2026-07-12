@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -269,6 +270,11 @@ class Gnb extends StatelessWidget {
           if (trailing != null)
             trailing!
           else if (label != null)
+            // Non-flex: the `current/total` label is always a short numeric
+            // string (never overflows), so it must stay natural-width. Wrapping
+            // it in Flexible made it share the row's flex 50/50 with the
+            // Expanded track, shrinking the progress bar to half width and
+            // skewing it left.
             Semantics(
               label: 'Step $label',
               child: Text(
@@ -302,10 +308,14 @@ class Gnb extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                status!,
-                style:
-                    AppType.label1.r.copyWith(color: AppColors.textSecondary),
+              Flexible(
+                child: Text(
+                  status!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.label1.r
+                      .copyWith(color: AppColors.textSecondary),
+                ),
               ),
             ],
           ),
@@ -379,14 +389,17 @@ class _BackButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Back',
+      label: AppLocalizations.of(context).back,
       child: InkResponse(
         onTap: onTap,
         radius: 24,
-        child: const SizedBox(
+        child: SizedBox(
           width: Gnb._iconBox,
           height: Gnb._iconBox,
-          child: CustomPaint(painter: _ArrowLeftPainter()),
+          child: Transform.flip(
+            flipX: Directionality.of(context) == TextDirection.rtl,
+            child: const CustomPaint(painter: _ArrowLeftPainter()),
+          ),
         ),
       ),
     );
@@ -403,7 +416,7 @@ class _CloseButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       button: true,
-      label: 'Close',
+      label: AppLocalizations.of(context).close,
       child: InkResponse(
         onTap: onTap,
         radius: 24,

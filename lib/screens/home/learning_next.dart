@@ -4,14 +4,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
-import '../../components/chrome/home_indicator.dart';
+import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/atoms/record_circle_button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../l10n/app_localizations.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -47,6 +50,49 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   String? _nativeUrl;
   bool _loadingNative = false;
 
+  /// Guards the one-time seeding of the shared bookmark store from this
+  /// sentence's server flag ([MockSentence.bookmarked]).
+  bool _seededBookmark = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seededBookmark) return;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is LearningArgs) {
+      _seededBookmark = true;
+      final s = args.current;
+      // Reconcile to server truth (add when saved, clear when not).
+      setBookmark(s.id, s.bookmarked);
+    }
+  }
+
+  /// Sentence ids with an in-flight bookmark mutation (drops out-of-order taps).
+  final Set<int> _bookmarkInFlight = <int>{};
+
+  /// Toggles the current sentence's bookmark. Flips the shared in-memory store
+  /// first for instant, cross-screen UI (mirrors the analysis screen), then
+  /// persists via [bookmarkToggleControllerProvider]
+  /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
+  /// local flip and surfaces a message if the server call fails.
+  Future<void> _toggleBookmark(int sentenceId) async {
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
+    final l10n = AppLocalizations.of(context);
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId);
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (e) {
+      toggleBookmark(sentenceId); // revert on failure
+      _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
+    }
+  }
+
   /// Color for a character by grade, falling back to score thresholds when the
   /// grade is unknown/missing.
   static Color _gradeColor(CharScore cs) {
@@ -71,15 +117,16 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   }
 
   Future<void> _playMe(LearningArgs args) async {
+    final l10n = AppLocalizations.of(context);
     final wav = args.recordedWav;
     if (wav == null || wav.isEmpty) {
-      _snack('재생할 녹음이 없어요.');
+      _snack(l10n.noRecordingToPlay);
       return;
     }
     try {
       await _player.playBytes(wav);
     } catch (_) {
-      _snack('내 녹음을 재생할 수 없어요.');
+      _snack(l10n.myRecordingPlayError);
     }
   }
 
@@ -91,6 +138,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
   /// TTS, keyed by [sentenceId].
   Future<void> _playNative(int sentenceId) async {
     if (_loadingNative) return;
+    final l10n = AppLocalizations.of(context);
     var url = _nativeUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingNative = true);
@@ -103,24 +151,25 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
         _snack(e.message);
         return;
       } catch (_) {
-        _snack('표준 발음 오디오를 재생할 수 없어요.');
+        _snack(l10n.standardAudioPlayError);
         return;
       } finally {
         if (mounted) setState(() => _loadingNative = false);
       }
     }
     if (url == null || !url.startsWith('http')) {
-      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      _snack(l10n.standardAudioNotReady);
       return;
     }
     try {
       await _player.playUrl(url);
     } catch (_) {
-      _snack('표준 발음 오디오를 재생할 수 없어요.');
+      _snack(l10n.standardAudioPlayError);
     }
   }
 
   void _snack(String message) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(SnackBar(content: Text(message)));
@@ -128,19 +177,15 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final l10n = AppLocalizations.of(context);
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    if (rawArgs is! LearningArgs) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    final args = rawArgs;
     final feedback = args.feedback;
     final sentence = args.current;
     final native = feedback?.native ?? sentence.native;
-
-    // Figma (screen/learning_next 2296:26339): the control cluster sits 24px
-    // above the Body bottom, with a 34px HomeIndicator zone below it. AppScaffold's
-    // SafeArea reserves the OS bottom inset on native (→ 24px is exact), but web
-    // reports none, so the cluster would hug the viewport edge. When there's no OS
-    // inset, also reserve the 34px home-indicator zone (same fix as learning_intro).
-    final rawBottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    final bottomGap =
-        AppSpacing.s24 + (rawBottomInset == 0 ? HomeIndicator.height : 0.0);
 
     return AppScaffold(
       background: AppColors.surface2,
@@ -166,14 +211,34 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                       // shows a snackbar when the server has no playable URL.
                       Semantics(
                         button: true,
-                        label: '표준 발음 듣기',
+                        label: l10n.listenStandard,
                         child: GestureDetector(
                           onTap: () => _playNative(sentence.id),
                           behavior: HitTestBehavior.opaque,
                           child: AppIcons.volume(size: 32, color: AppColors.text),
                         ),
                       ),
-                      AppIcons.bookmarkLine(size: 32, color: AppColors.text),
+                      // Bookmark (문장 저장) — toggles the current sentence's
+                      // saved state; reflects it live via the shared store.
+                      ValueListenableBuilder<Set<int>>(
+                        valueListenable: bookmarkedSentenceIds,
+                        builder: (context, ids, _) {
+                          final saved = ids.contains(sentence.id);
+                          return Semantics(
+                            button: true,
+                            label: saved ? l10n.unsaveSentence : l10n.saveSentence,
+                            child: GestureDetector(
+                              onTap: () => _toggleBookmark(sentence.id),
+                              behavior: HitTestBehavior.opaque,
+                              child: saved
+                                  ? AppIcons.bookmarkFill(
+                                      size: 32, color: AppColors.text)
+                                  : AppIcons.bookmarkLine(
+                                      size: 32, color: AppColors.text),
+                            ),
+                          );
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -214,7 +279,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                         child: Button(
                           type: BtnType.secondaryWhite,
                           size: BtnSize.s44,
-                          text: 'Native',
+                          text: l10n.nativeLabel,
                           leftIcon: AppIcons.volume(size: 20),
                           onPressed: () => _playNative(sentence.id),
                         ),
@@ -224,7 +289,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                         child: Button(
                           type: BtnType.secondaryWhite,
                           size: BtnSize.s44,
-                          text: 'Me',
+                          text: l10n.meLabel,
                           leftIcon: AppIcons.volume(size: 20),
                           onPressed: () => _playMe(args),
                         ),
@@ -235,49 +300,54 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                 // Native/Me → controls gap (Figma 36; no AppSpacing token).
                 const SizedBox(height: 36),
                 // Retry (white circle, centred) + next (arrow) control cluster.
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(width: 56),
-                      const SizedBox(width: AppSpacing.s24),
-                      RecordCircleButton(
-                        icon: AppIcons.redo,
-                        semanticLabel: '다시하기',
-                        onTap: () => Navigator.pop(context),
-                      ),
-                      const SizedBox(width: AppSpacing.s24),
-                      SizedBox(
-                        width: 56,
-                        height: 56,
-                        child: IconButton(
-                          // More sentences left → record the next one directly;
-                          // the score screen (learning_main) shows only once,
-                          // after the whole review sequence is done.
-                          onPressed: () => args.hasNext
-                              ? Navigator.pushNamed(
-                                  context,
-                                  Routes.learningIntro,
-                                  arguments: args.next(),
-                                )
-                              : Navigator.pushNamed(
-                                  context,
-                                  Routes.learningMain,
-                                  arguments: args,
-                                ),
-                          icon: AppIcons.arrowForward(
-                            size: 32,
-                            color: AppColors.green700,
-                          ),
-                          iconSize: 32,
-                          color: AppColors.green700,
-                          tooltip: '다음',
+                // The bottom inset comes from the shared [BottomCtaBar] (OS
+                // gesture-bar inset on native, a guaranteed 24px floor on
+                // web/desktop), so the cluster sits at the same inset as other
+                // screens instead of hand-rolling the home-indicator fallback.
+                BottomCtaBar(
+                  child: Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(width: 56),
+                        const SizedBox(width: AppSpacing.s24),
+                        RecordCircleButton(
+                          icon: AppIcons.redo,
+                          semanticLabel: l10n.retry,
+                          onTap: () => Navigator.pop(context),
                         ),
-                      ),
-                    ],
+                        const SizedBox(width: AppSpacing.s24),
+                        SizedBox(
+                          width: 56,
+                          height: 56,
+                          child: IconButton(
+                            // More sentences left → record the next one directly;
+                            // the score screen (learning_main) shows only once,
+                            // after the whole review sequence is done.
+                            onPressed: () => args.hasNext
+                                ? Navigator.pushNamed(
+                                    context,
+                                    Routes.learningIntro,
+                                    arguments: args.next(),
+                                  )
+                                : Navigator.pushNamed(
+                                    context,
+                                    Routes.learningMain,
+                                    arguments: args,
+                                  ),
+                            icon: AppIcons.arrowForward(
+                              size: 32,
+                              color: AppColors.green700,
+                            ),
+                            iconSize: 32,
+                            color: AppColors.green700,
+                            tooltip: l10n.next,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-                SizedBox(height: bottomGap),
               ],
             ),
           ),

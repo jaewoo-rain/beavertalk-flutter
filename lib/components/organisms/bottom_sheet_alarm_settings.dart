@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
 import '../atoms/select_box.dart';
-import '../chrome/home_indicator.dart';
 import '../molecules/avatar_card.dart';
 
 /// AM / PM選択 value for [BottomSheetAlarmSettings].
@@ -69,7 +70,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// Creates an alarm-settings bottom sheet.
   const BottomSheetAlarmSettings({
     super.key,
-    this.title = '새 일정 추가',
+    this.title,
     required this.time,
     this.onTimeTap,
     required this.meridiem,
@@ -80,13 +81,13 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     this.partner,
     this.onPartnerChanged,
     this.onSave,
-    this.saveText = '저장',
+    this.saveText,
     this.onClose,
     this.dayLabels = const ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
   });
 
-  /// Header title (Figma default: "새 일정 추가").
-  final String title;
+  /// Header title; falls back to the localized "Add Schedule" when null.
+  final String? title;
 
   /// The large time string shown at the top (e.g. "8:00").
   final String time;
@@ -119,8 +120,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// Called when the save button is pressed.
   final VoidCallback? onSave;
 
-  /// Save button label.
-  final String saveText;
+  /// Save button label; falls back to the localized "Save" when null.
+  final String? saveText;
 
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
@@ -128,39 +129,46 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// Two-letter labels for the 7 day chips (Mon→Sun).
   final List<String> dayLabels;
 
-  static const double _sheetWidth = 375;
-  static const double _contentWidth = 335;
+  /// Visual chip slot (Monday-first) → Sun-indexed [days] index
+  /// (Mo→1, Tu→2, We→3, Th→4, Fr→5, Sa→6, Su→0). Keeps the Mon-first display
+  /// while storing to the Sun-indexed model the server/schedulers expect.
+  static const List<int> _visualToDataIndex = [1, 2, 3, 4, 5, 6, 0];
+
+  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
+  /// sheet otherwise fills its host width (Figma reference device: 375).
+  static const double _maxWidth = 430;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: AppColors.surfaceElevated,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _sheetWidth,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: _maxWidth),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(),
+            _header(l10n),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _timeBlock(),
+                  _timeBlock(l10n),
                   const SizedBox(height: 20),
-                  _repeatSection(),
+                  _repeatSection(l10n),
                   const SizedBox(height: 20),
-                  _partnerSection(),
+                  _partnerSection(l10n),
                 ],
               ),
             ),
-            _footer(),
+            _footer(l10n),
           ],
         ),
       ),
@@ -168,7 +176,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
-  Widget _header() {
+  Widget _header(AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -176,8 +184,10 @@ class BottomSheetAlarmSettings extends StatelessWidget {
           const SizedBox(width: 28, height: 28),
           Expanded(
             child: Text(
-              title,
+              title ?? l10n.addSchedule,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppType.body1.sb.copyWith(color: AppColors.text),
             ),
           ),
@@ -197,8 +207,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     );
   }
 
-  /// Big time text + 오전/오후 toggle buttons.
-  Widget _timeBlock() {
+  /// Big time text + AM/PM toggle buttons.
+  Widget _timeBlock(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -222,9 +232,9 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         const SizedBox(height: 8),
         Row(
           children: [
-            Expanded(child: _meridiemButton(Meridiem.am, '오전')),
+            Expanded(child: _meridiemButton(Meridiem.am, l10n.am)),
             const SizedBox(width: 8),
-            Expanded(child: _meridiemButton(Meridiem.pm, '오후')),
+            Expanded(child: _meridiemButton(Meridiem.pm, l10n.pm)),
           ],
         ),
       ],
@@ -244,31 +254,36 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     );
   }
 
-  /// "반복" label + 7 reused [SelectBox] day chips.
-  Widget _repeatSection() {
+  /// "Repeat" label + 7 reused [SelectBox] day chips.
+  Widget _repeatSection(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          '반복',
+          l10n.repeat,
           style: AppType.label1.r.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: 4),
         Row(
           children: [
+            // Chips display Monday-first (dayLabels) but the [days] array is
+            // Sunday-indexed (0=Sun..6=Sat, matching Alarm.days + the server +
+            // both schedulers). Map each visual slot to its data index so a
+            // tapped weekday stores/reads the correct day (a Mon-first index
+            // fed straight into a Sun-indexed array shifts every alarm by a day).
             for (int i = 0; i < 7; i++) ...[
               if (i > 0) const SizedBox(width: 8),
               Expanded(
-                child: Center(
-                  child: SelectBox(
-                    label: i < dayLabels.length ? dayLabels[i] : '',
-                    selected: i < days.length && days[i],
-                    bold: true,
-                    onChanged: onDaysChanged == null
-                        ? null
-                        : (v) => onDaysChanged!(i, v),
-                  ),
+                child: SelectBox(
+                  label: i < dayLabels.length ? dayLabels[i] : '',
+                  selected: _visualToDataIndex[i] < days.length &&
+                      days[_visualToDataIndex[i]],
+                  bold: true,
+                  expand: true,
+                  onChanged: onDaysChanged == null
+                      ? null
+                      : (v) => onDaysChanged!(_visualToDataIndex[i], v),
                 ),
               ),
             ],
@@ -278,14 +293,14 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     );
   }
 
-  /// "통화 상대" label + a row of reused [AvatarCard]s.
-  Widget _partnerSection() {
+  /// "Character" label + a row of reused [AvatarCard]s.
+  Widget _partnerSection(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '통화 상대',
+          l10n.callPartner,
           style: AppType.label1.r.copyWith(color: AppColors.text),
         ),
         const SizedBox(height: 6),
@@ -313,26 +328,30 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   }
 
   /// Footer: primary save button (335 wide) + home indicator.
-  Widget _footer() {
+  Widget _footer(AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-          child: Center(
-            child: SizedBox(
-              width: _contentWidth,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: saveText,
-                onPressed: onSave,
-              ),
+          child: SizedBox(
+            width: double.infinity,
+            child: Button(
+              type: BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: saveText ?? l10n.save,
+              onPressed: onSave,
             ),
           ),
         ),
-        const HomeIndicator(variant: HomeIndicatorVariant.subTransparent),
+        // Bottom safe-area inset — clears the real OS gesture bar (replaces the
+        // former embedded fake HomeIndicator).
+        const SafeArea(
+          top: false,
+          minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+          child: SizedBox.shrink(),
+        ),
       ],
     );
   }

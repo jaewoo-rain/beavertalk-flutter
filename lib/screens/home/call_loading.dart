@@ -7,6 +7,7 @@ import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -57,6 +58,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // React to phase transitions.
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
       if (_navigated) return;
@@ -65,7 +67,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         Navigator.pushReplacementNamed(context, Routes.call);
       } else if (next.phase == CallPhase.error) {
         _navigated = true;
-        final msg = next.errorMsg ?? '통화 연결에 실패했습니다.';
+        final msg = next.errorMsg ?? l10n.callConnectFailed;
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(SnackBar(content: Text(msg)));
@@ -94,12 +96,12 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                 ),
                 const SizedBox(height: AppSpacing.s12),
                 Text(
-                  '연결 중...',
+                  l10n.connecting,
                   style: AppType.body1.r.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
-                  '보통 5초 이내에 연결돼요',
+                  l10n.connectingHint,
                   style: AppType.label2.r
                       .copyWith(color: AppColors.textSecondary),
                 ),
@@ -121,7 +123,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                   children: [
                     Semantics(
                       button: true,
-                      label: '닫기',
+                      label: l10n.close,
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: _cancel,

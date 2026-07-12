@@ -145,6 +145,8 @@ class _MetricsFooter extends StatelessWidget {
             children: [
               Text(
                 m.label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppType.caption1.r
                     .copyWith(color: AppColors.textSecondary),
                 textAlign: TextAlign.center,
@@ -152,6 +154,8 @@ class _MetricsFooter extends StatelessWidget {
               const SizedBox(height: 6),
               Text(
                 m.value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: AppType.body1.sb,
                 textAlign: TextAlign.center,
               ),

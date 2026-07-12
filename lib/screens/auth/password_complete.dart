@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -28,6 +28,7 @@ class PasswordCompleteScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
@@ -40,16 +41,13 @@ class PasswordCompleteScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    // TODO(i18n): localize
-                    'Password reset complete',
+                    l10n.passwordCompleteTitle,
                     textAlign: TextAlign.center,
                     style: AppType.title2.b,
                   ),
                   const SizedBox(height: AppSpacing.s16),
                   Text(
-                    // TODO(i18n): localize
-                    'Your password has been reset. '
-                    'Log in with your new password to continue.',
+                    l10n.passwordCompleteBody,
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
                         .copyWith(color: AppColors.textSecondary),
@@ -69,21 +67,14 @@ class PasswordCompleteScreen extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(
                 AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                    child: Button(
-                      type: BtnType.primaryFill,
-                      size: BtnSize.s60,
-                      // TODO(i18n): localize
-                      text: 'Log in',
-                      onPressed: () => _goLogin(context),
-                    ),
-                  ),
-                ),
-              ],
+            child: SizedBox(
+              width: double.infinity,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: l10n.loginLogIn,
+                onPressed: () => _goLogin(context),
+              ),
             ),
           ),
         ],

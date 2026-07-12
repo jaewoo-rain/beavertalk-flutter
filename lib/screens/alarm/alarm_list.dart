@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
-import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_alarm.dart';
@@ -10,9 +9,11 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
+import 'alarm_add.dart';
 import 'alarm_empty.dart';
 import 'alarm_models.dart';
 
@@ -32,8 +33,9 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   /// Surfaces a repository [AppException] as a snackbar.
   void _showError(Object error) {
     if (!mounted) return;
-    final message =
-        error is AppException ? error.message : '문제가 발생했어요';
+    final message = error is AppException
+        ? error.message
+        : AppLocalizations.of(context).somethingWentWrong;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(message)),
     );
@@ -48,22 +50,30 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
     }
   }
 
-  /// Opens the add sheet; creates the result (POST) if the user saved.
+  /// Opens the add sheet as a modal bottom sheet; creates the result (POST) if
+  /// the user saved. `isScrollControlled` lets the sheet + its inner time-picker
+  /// size correctly and rise above the keyboard.
   Future<void> _add() async {
-    final result =
-        await Navigator.pushNamed(context, Routes.alarmAdd) as AlarmData?;
+    final result = await showModalBottomSheet<AlarmData>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const AlarmAddSheet(),
+    );
     if (result == null) return;
     await _run(() =>
         ref.read(alarmListControllerProvider.notifier).add(result.toEntity()));
   }
 
-  /// Opens the edit sheet seeded with [alarm]; updates it (PUT) on save.
+  /// Opens the edit sheet (modal bottom sheet) seeded with [alarm]; updates it
+  /// (PUT) on save.
   Future<void> _edit(Alarm alarm) async {
-    final result = await Navigator.pushNamed(
-      context,
-      Routes.alarmAdd,
-      arguments: AlarmData.fromEntity(alarm),
-    ) as AlarmData?;
+    final result = await showModalBottomSheet<AlarmData>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => AlarmAddSheet(initial: AlarmData.fromEntity(alarm)),
+    );
     if (result == null) return;
     await _run(() =>
         ref.read(alarmListControllerProvider.notifier).edit(result.toEntity()));
@@ -72,24 +82,32 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   @override
   Widget build(BuildContext context) {
     final alarmsAsync = ref.watch(alarmListControllerProvider);
+    final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         children: [
-          Gnb.main(title: '일정 관리', onBack: () => Navigator.pop(context)),
-          // "알람" subheader with an add (+) action.
+          Gnb.main(
+              title: l10n.scheduleManagement,
+              onBack: () => Navigator.pop(context)),
+          // "Alarms" subheader with an add (+) action.
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 8, 12, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('알람',
-                    style: AppType.heading2.sb.copyWith(color: AppColors.text)),
+                Flexible(
+                  child: Text(l10n.alarms,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: AppType.heading2.sb
+                          .copyWith(color: AppColors.text)),
+                ),
                 IconButton(
                   onPressed: _add,
                   icon: AppIcons.plus(color: AppColors.text),
-                  tooltip: '새 일정 추가',
+                  tooltip: l10n.addSchedule,
                 ),
               ],
             ),
@@ -100,7 +118,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                 child: CircularProgressIndicator(color: AppColors.primary),
               ),
               error: (e, _) => _ErrorState(
-                message: e is AppException ? e.message : '알람을 불러오지 못했어요',
+                message: e is AppException ? e.message : l10n.alarmsLoadError,
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
               ),
               data: (alarms) => alarms.isEmpty
@@ -115,7 +133,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: '새 일정 추가',
+                text: l10n.addSchedule,
                 onPressed: _add,
               ),
             ),
@@ -170,7 +188,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   /// The red "delete" panel revealed when swiping a card left.
   Widget _deleteBackground() {
     return Container(
-      alignment: Alignment.centerRight,
+      alignment: AlignmentDirectional.centerEnd,
       padding: const EdgeInsets.symmetric(horizontal: 24),
       decoration: BoxDecoration(
         color: AppColors.error,
@@ -209,7 +227,10 @@ class _ErrorState extends StatelessWidget {
               style: AppType.body2.r
                   .copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 12),
-          TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+          TextButton(
+            onPressed: onRetry,
+            child: Text(AppLocalizations.of(context).retry),
+          ),
         ],
       ),
     );

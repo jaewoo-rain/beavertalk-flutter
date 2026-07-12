@@ -4,14 +4,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/mic_button.dart';
-import '../../components/chrome/home_indicator.dart';
+import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
 import '../../features/review/presentation/review_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -52,6 +54,53 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   String? _ttsUrl;
   bool _loadingTts = false;
 
+  /// Guards the one-time seeding of the shared bookmark store from this
+  /// sentence's server flag ([MockSentence.bookmarked]).
+  bool _seededBookmark = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_seededBookmark) return;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is LearningArgs) {
+      _seededBookmark = true;
+      final s = args.current;
+      // Reconcile to server truth (add when saved, clear when not) so a stale
+      // `true` can't stick — union-only seeding permanently diverged before.
+      setBookmark(s.id, s.bookmarked);
+    }
+  }
+
+  /// Sentence ids with an in-flight bookmark mutation — a second tap while one is
+  /// pending is ignored so two opposite PATCHes can't resolve out of order.
+  final Set<int> _bookmarkInFlight = <int>{};
+
+  /// Toggles the current sentence's bookmark. Flips the shared in-memory store
+  /// first for instant, cross-screen UI (mirrors the analysis screen), then
+  /// persists via [bookmarkToggleControllerProvider]
+  /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
+  /// local flip and surfaces a message if the server call fails.
+  Future<void> _toggleBookmark(int sentenceId) async {
+    // Ignore a second tap while a mutation for this id is outstanding, so two
+    // opposite PATCHes can't complete out of order and desync from the server.
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
+    final l10n = AppLocalizations.of(context);
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId);
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (e) {
+      toggleBookmark(sentenceId); // revert on failure
+      _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
+    }
+  }
+
   @override
   void dispose() {
     _recorder.dispose();
@@ -63,7 +112,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// from the server's on-demand TTS (`POST /sentences/{id}/tts`) on the first
   /// tap, caches it, then plays. Shows a message when TTS is unavailable.
   Future<void> _playStandard(MockSentence sentence) async {
-    if (_submitting || _loadingTts) return;
+    // Don't play the standard-pronunciation audio through the speaker while the
+    // mic is recording — it bleeds into the user's take and skews the score.
+    if (_submitting || _loadingTts || _recording) return;
+    final l10n = AppLocalizations.of(context);
     var url = _ttsUrl ?? sentence.voiceUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingTts = true);
@@ -76,20 +128,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         _snack(e.message);
         return;
       } catch (_) {
-        _snack('표준 발음 오디오를 재생할 수 없어요.');
+        _snack(l10n.standardAudioPlayError);
         return;
       } finally {
         if (mounted) setState(() => _loadingTts = false);
       }
     }
     if (url == null || !url.startsWith('http')) {
-      _snack('표준 발음 오디오가 아직 준비되지 않았어요.');
+      _snack(l10n.standardAudioNotReady);
       return;
     }
     try {
       await _player.playUrl(url);
     } catch (_) {
-      _snack('표준 발음 오디오를 재생할 수 없어요.');
+      _snack(l10n.standardAudioPlayError);
     }
   }
 
@@ -103,6 +155,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   }
 
   Future<void> _startRecording() async {
+    final l10n = AppLocalizations.of(context);
     try {
       await _recorder.start();
       if (!mounted) return;
@@ -110,11 +163,12 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     } on StateError catch (e) {
       _snack(e.message);
     } catch (_) {
-      _snack('녹음을 시작할 수 없어요.');
+      _snack(l10n.recordStartFailed);
     }
   }
 
   Future<void> _stopAndSubmit(LearningArgs args) async {
+    final l10n = AppLocalizations.of(context);
     setState(() {
       _recording = false;
       _submitting = true;
@@ -124,7 +178,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       final pcm = await _recorder.stop();
       // Guard against an empty/too-short recording (< ~0.3s of PCM16 @16k).
       if (pcm.lengthInBytes < 16000 * 2 * 0.3) {
-        _snack('녹음이 너무 짧아요. 다시 시도해주세요.');
+        _snack(l10n.recordTooShort);
         return;
       }
 
@@ -145,7 +199,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     } on AppException catch (e) {
       _snack(e.message);
     } catch (_) {
-      _snack('채점 요청에 실패했어요. 다시 시도해주세요.');
+      _snack(l10n.gradingFailed);
     } finally {
       if (mounted) setState(() => _submitting = false);
     }
@@ -160,17 +214,16 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as LearningArgs;
+    final l10n = AppLocalizations.of(context);
+    // Mobile always arrives via in-app `pushNamed(arguments:)`; guard the cast
+    // so a web refresh / deep link (args == null) degrades to an empty screen
+    // instead of a build-time TypeError white-screen.
+    final rawArgs = ModalRoute.of(context)?.settings.arguments;
+    if (rawArgs is! LearningArgs) {
+      return const Scaffold(body: SizedBox.shrink());
+    }
+    final args = rawArgs;
     final sentence = args.current;
-
-    // Figma (screen/learning_intro 2296:26318): the mic sits 24px above the Body
-    // bottom, with a 34px HomeIndicator zone below it. AppScaffold's SafeArea
-    // reserves the OS bottom inset on native (→ 24px is exact), but web reports
-    // no inset, so the mic would hug the viewport edge. When there's no OS inset,
-    // also reserve the 34px home-indicator zone so it matches Figma on web too.
-    final rawBottomInset = MediaQuery.viewPaddingOf(context).bottom;
-    final micBottomGap =
-        AppSpacing.s24 + (rawBottomInset == 0 ? HomeIndicator.height : 0.0);
 
     return AppScaffold(
       background: AppColors.surface2,
@@ -197,7 +250,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                           // (ready for the server's per-sentence audio URL).
                           Semantics(
                             button: true,
-                            label: '표준 발음 듣기',
+                            label: l10n.listenStandard,
                             child: GestureDetector(
                               onTap: () => _playStandard(sentence),
                               behavior: HitTestBehavior.opaque,
@@ -205,7 +258,27 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                   size: 32, color: AppColors.text),
                             ),
                           ),
-                          AppIcons.bookmarkLine(size: 32, color: AppColors.text),
+                          // Bookmark (문장 저장) — toggles the current sentence's
+                          // saved state; reflects it live via the shared store.
+                          ValueListenableBuilder<Set<int>>(
+                            valueListenable: bookmarkedSentenceIds,
+                            builder: (context, ids, _) {
+                              final saved = ids.contains(sentence.id);
+                              return Semantics(
+                                button: true,
+                                label: saved ? l10n.unsaveSentence : l10n.saveSentence,
+                                child: GestureDetector(
+                                  onTap: () => _toggleBookmark(sentence.id),
+                                  behavior: HitTestBehavior.opaque,
+                                  child: saved
+                                      ? AppIcons.bookmarkFill(
+                                          size: 32, color: AppColors.text)
+                                      : AppIcons.bookmarkLine(
+                                          size: 32, color: AppColors.text),
+                                ),
+                              );
+                            },
+                          ),
                         ],
                       ),
                     ),
@@ -236,17 +309,26 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         ),
                       ),
                     ),
-                    // Mic button — Figma body top 558 (node 2296:26337). The gap
-                    // below is 24px (Figma) plus the home-indicator zone when the
-                    // platform reserves none (web), so the mic never hugs / gets
-                    // cut at the frame edge (QA: "마이크 짤림").
-                    Center(
-                      child: MicButton(
-                        recording: _recording,
-                        onTap: () => _onMicTap(args),
+                    // Mic button — Figma body top 558 (node 2296:26337). The
+                    // bottom inset comes from the shared [BottomCtaBar]: the OS
+                    // gesture-bar inset on native, a guaranteed 24px floor on
+                    // web/desktop — so the mic never hugs / gets cut at the frame
+                    // edge (QA: "마이크 짤림") and sits at the same inset as other
+                    // screens.
+                    BottomCtaBar(
+                      child: Center(
+                        child: StreamBuilder<double>(
+                          stream: _recorder.amplitude,
+                          builder: (context, snap) => MicButton(
+                            recording: _recording,
+                            // Drive the reactive pulse from the live mic level
+                            // while recording; static otherwise.
+                            level: _recording ? snap.data : null,
+                            onTap: () => _onMicTap(args),
+                          ),
+                        ),
                       ),
                     ),
-                    SizedBox(height: micBottomGap),
                   ],
                 ),
               ),
@@ -268,6 +350,7 @@ class _SubmittingOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Positioned.fill(
       child: ColoredBox(
         color: AppColors.scrim,
@@ -279,7 +362,7 @@ class _SubmittingOverlay extends StatelessWidget {
             ),
             const SizedBox(height: AppSpacing.s16),
             Text(
-              '발음을 채점하고 있어요…',
+              l10n.scoringPronunciation,
               style: AppType.body1.r.copyWith(color: AppColors.text),
             ),
           ],

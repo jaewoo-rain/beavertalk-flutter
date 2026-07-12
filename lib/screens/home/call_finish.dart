@@ -8,7 +8,10 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -33,24 +36,28 @@ class CallFinishScreen extends ConsumerStatefulWidget {
 }
 
 /// The user's quick rating of the call, carrying the backend int value
-/// (ascending): 아쉬워요=1, 괜찮아요=2, 좋아요=3.
+/// (ascending): bad=1, ok=2, good=3.
 enum _Rating {
-  // Figma `2296:26278` shows 👎 / 👍 / 👍 (card 2·3 both thumbs-up — appears to
-  // be a design placeholder; replicated 1:1 for now).
-  bad(1, '아쉬워요', AppIcons.thumbsDown),
-  ok(2, '괜찮아요', AppIcons.thumbsUp),
-  good(3, '좋아요', AppIcons.thumbsUp);
+  // 👎 / 👍 / 👍👍 — bad = thumbs-down, ok = single thumbs-up, good = double
+  // thumbs-up (the top satisfaction rating).
+  bad(1, AppIcons.thumbsDown),
+  ok(2, AppIcons.thumbsUp),
+  good(3, AppIcons.thumbsUpDouble);
 
-  const _Rating(this.value, this.label, this.icon);
+  const _Rating(this.value, this.icon);
 
   /// Backend rating value sent in `PATCH /calls/{id}` `{"rating": value}`.
   final int value;
 
-  /// Accessible label.
-  final String label;
-
   /// Glyph builder shown in the rating card.
   final AppIconBuilder icon;
+
+  /// Localized accessible label.
+  String label(AppLocalizations l10n) => switch (this) {
+        _Rating.bad => l10n.ratingBad,
+        _Rating.ok => l10n.ratingOkay,
+        _Rating.good => l10n.ratingGood,
+      };
 }
 
 class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
@@ -157,7 +164,11 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context)
             ..clearSnackBars()
-            ..showSnackBar(SnackBar(content: Text('평가 전송 실패: ${e.message}')));
+            ..showSnackBar(SnackBar(
+              content: Text(
+                AppLocalizations.of(context).ratingSubmitFailed(e.message),
+              ),
+            ));
         }
       } catch (_) {
         // Swallow any other error — rating is non-critical.
@@ -170,7 +181,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(
-          const SnackBar(content: Text('통화 정보를 찾을 수 없어 분석을 건너뜁니다.')),
+          SnackBar(content: Text(AppLocalizations.of(context).callInfoNotFound)),
         );
       Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
       return;
@@ -184,6 +195,14 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final characterId =
+        ref.watch(myProfileProvider).valueOrNull?.characterId;
+    final selectedChar = ref.watch(selectedCharacterProvider);
+    final selectedCharUrl = selectedChar?.imageUrl;
+    final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
+        ? NetworkImage(selectedCharUrl) as ImageProvider
+        : characterImage(characterId);
     return AppScaffold(
       background: AppColors.surface,
       statusVariant: StatusBarVariant.whiteTransparent,
@@ -205,23 +224,23 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 Container(
                   width: AppSpacing.s120,
                   height: AppSpacing.s120,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     color: AppColors.surface2,
                     image: DecorationImage(
-                      image: beaverImage,
+                      image: partnerImage,
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Text(
-                  mockPartnerName,
+                  selectedChar?.name ?? characterName(characterId),
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
-                  '통화 종료 ${_formatDuration(_durationSec)}',
+                  l10n.callEndedDuration(_formatDuration(_durationSec)),
                   style:
                       AppType.body1.r.copyWith(color: AppColors.textSecondary),
                 ),
@@ -232,7 +251,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '통화는 어떠셨나요?',
+                  l10n.callRatingPrompt,
                   style: AppType.headline1.r.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s32),
@@ -255,7 +274,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 Button(
                   type: BtnType.secondaryFill,
                   size: BtnSize.s60,
-                  text: '홈으로',
+                  text: l10n.goHome,
                   onPressed: () => Navigator.pushNamedAndRemoveUntil(
                     context,
                     Routes.home,
@@ -266,7 +285,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 Button(
                   type: BtnType.primaryFill,
                   size: BtnSize.s60,
-                  text: _recovering ? '불러오는 중…' : '대화 분석 바로가기',
+                  text: _recovering ? l10n.loadingShort : l10n.viewAnalysis,
                   disabled: _recovering,
                   onPressed: _analyze,
                 ),
@@ -287,7 +306,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       child: Semantics(
         button: true,
         selected: selected,
-        label: r.label,
+        label: r.label(AppLocalizations.of(context)),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: () => _rate(r),

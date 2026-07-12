@@ -235,7 +235,7 @@ class _InputFieldState extends State<InputField> {
     Widget? icon;
     if (widget.leftIcon != null) {
       icon = Padding(
-        padding: EdgeInsets.only(right: spec.gap),
+        padding: EdgeInsetsDirectional.only(end: spec.gap),
         child: IconTheme.merge(
           data: IconThemeData(
             size: spec.iconSize,
@@ -253,7 +253,7 @@ class _InputFieldState extends State<InputField> {
     Widget? trailing;
     if (widget.rightIcon != null) {
       trailing = Padding(
-        padding: EdgeInsets.only(left: spec.gap),
+        padding: EdgeInsetsDirectional.only(start: spec.gap),
         child: IconTheme.merge(
           data: IconThemeData(
             size: spec.iconSize,

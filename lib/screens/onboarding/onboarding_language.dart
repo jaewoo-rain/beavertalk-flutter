@@ -4,9 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../core/i18n/locale_controller.dart';
 import '../../components/molecules/country_select.dart';
+import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -42,12 +45,15 @@ class _OnboardingLanguageScreenState
     // to the name step (2/3). `_next` is only reachable once a language is
     // selected (the Continue button is disabled otherwise).
     ref.read(signupDraftProvider.notifier).setLanguage(_selectedId!);
+    // Switch the UI to the chosen language for the rest of onboarding.
+    ref.read(localeControllerProvider.notifier).setLanguage(_selectedId!);
     Navigator.pushNamed(context, Routes.onboardingName);
   }
 
   @override
   Widget build(BuildContext context) {
     final bool canContinue = _selectedId != null;
+    final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
       background: AppColors.surface,
@@ -68,8 +74,7 @@ class _OnboardingLanguageScreenState
                   AppSpacing.s24),
               children: [
                 Text(
-                  // TODO(i18n): localize
-                  'What is your native language?',
+                  l10n.onboardingLanguageTitle,
                   style: AppType.title3.b.copyWith(color: AppColors.text),
                 ),
                 const SizedBox(height: AppSpacing.s20),
@@ -77,7 +82,7 @@ class _OnboardingLanguageScreenState
                 for (final lang in mockLanguages)
                   CountrySelect(
                     name: lang.name,
-                    flag: Text(lang.flag, style: const TextStyle(fontSize: 24)),
+                    flag: countryFlag(lang.countryCode),
                     selected: _selectedId == lang.id,
                     onSelect: () => _select(lang.id),
                   ),
@@ -95,8 +100,7 @@ class _OnboardingLanguageScreenState
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                // TODO(i18n): localize
-                text: 'Continue',
+                text: l10n.continueLabel,
                 disabled: !canContinue,
                 onPressed: _next,
               ),

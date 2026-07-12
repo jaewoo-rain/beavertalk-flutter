@@ -7,23 +7,71 @@ import 'package:flutter/widgets.dart';
 const beaverImage = AssetImage('assets/images/beaver.png');
 const judiImage = AssetImage('assets/images/judi.png');
 
-/// Onboarding — native language options (emoji flags).
+/// Onboarding — native language / nationality options.
+///
+/// [id] is the **BCP 47** locale code stored in the signup draft / backend
+/// (hyphenated, e.g. 'en-US', 'ko-KR' — per the team's "사용 가능한 언어코드"
+/// spec). [name] is the language's native endonym. [countryCode] is the ISO
+/// 3166-1 alpha-2 code used to render an SVG flag via
+/// `CountryFlag.fromCountryCode` (reliable on every platform, unlike emoji
+/// regional-indicator glyphs which fall back to letter pairs on Windows and
+/// many Android devices).
 class MockLanguage {
-  const MockLanguage(this.id, this.name, this.flag);
+  const MockLanguage(this.id, this.name, this.countryCode);
+
+  /// BCP 47 locale code (hyphenated), e.g. 'en-US'.
   final String id;
+
+  /// Native endonym shown in the picker, e.g. '日本語'.
   final String name;
-  final String flag;
+
+  /// ISO 3166-1 alpha-2 country code for the flag (e.g. 'US', 'KR').
+  final String countryCode;
 }
 
+/// Selectable user/native language options — **app-supported languages only**.
+///
+/// Source: `한국어학습자_K팝팬_국가별_통합.xlsx` → sheet `앱_지원언어(필터)`. The
+/// earlier 95-language Notion "05_Localization" list is filtered down to the
+/// **primary/official language of each of the 38 target-market countries**
+/// (Korean learners + K-pop fans, all measured figures): 29 market languages +
+/// Korean (app default) = **30**. Ordered by the workbook's combined market rank.
+/// Each entry is `MockLanguage(BCP47 id, native endonym, ISO 3166-1 alpha-2 flag
+/// code)`. Korean stays the fixed LEARNING target elsewhere — these are the
+/// user's own native-language choices.
+/// `id` is BCP 47 (Korean hyphenated `ko-KR`); confirm the backend accepts it.
 const mockLanguages = <MockLanguage>[
-  MockLanguage('en', 'English', '🇺🇸'),
-  MockLanguage('ko', '한국어', '🇰🇷'),
-  MockLanguage('ja', '日本語', '🇯🇵'),
-  MockLanguage('zh', '中文', '🇨🇳'),
-  MockLanguage('es', 'Español', '🇪🇸'),
-  MockLanguage('fr', 'Français', '🇫🇷'),
-  MockLanguage('de', 'Deutsch', '🇩🇪'),
-  MockLanguage('vi', 'Tiếng Việt', '🇻🇳'),
+  // 한국어(앱 기본·학습 대상)·영어(공용)를 맨 위 고정, 나머지는 한국어명 가나다순.
+  MockLanguage('ko-KR', '한국어', 'KR'),
+  MockLanguage('en', 'English', 'US'),
+  MockLanguage('ne', 'नेपाली', 'NP'),
+  MockLanguage('de', 'Deutsch', 'DE'),
+  MockLanguage('ru', 'Русский', 'RU'),
+  MockLanguage('ms', 'Bahasa Melayu', 'MY'),
+  MockLanguage('mn', 'Монгол', 'MN'),
+  MockLanguage('my', 'မြန်မာ', 'MM'),
+  MockLanguage('vi', 'Tiếng Việt', 'VN'),
+  MockLanguage('bn', 'বাংলা', 'BD'),
+  MockLanguage('es', 'Español', 'ES'),
+  MockLanguage('si', 'සිංහල', 'LK'),
+  MockLanguage('ar', 'العربية', 'SA'),
+  MockLanguage('ur', 'اردو', 'PK'),
+  MockLanguage('uz', 'Oʻzbek', 'UZ'),
+  MockLanguage('it', 'Italiano', 'IT'),
+  MockLanguage('id', 'Bahasa Indonesia', 'ID'),
+  MockLanguage('ja', '日本語', 'JP'),
+  MockLanguage('zh', '中文', 'CN'),
+  MockLanguage('kk', 'Қазақ тілі', 'KZ'),
+  MockLanguage('km', 'ខ្មែរ', 'KH'),
+  MockLanguage('ky', 'Кыргызча', 'KG'),
+  MockLanguage('th', 'ไทย', 'TH'),
+  MockLanguage('tr', 'Türkçe', 'TR'),
+  MockLanguage('pt', 'Português', 'PT'),
+  MockLanguage('fr', 'Français', 'FR'),
+  MockLanguage('fi', 'Suomi', 'FI'),
+  MockLanguage('fil', 'Filipino', 'PH'),
+  MockLanguage('hu', 'Magyar', 'HU'),
+  MockLanguage('hi', 'हिन्दी', 'IN'),
 ];
 
 /// Onboarding — learning reasons (Figma copy).
@@ -87,7 +135,7 @@ class MockSentence {
 /// the 보관 (archive) tab lists the matching sentences. A [ValueNotifier] so
 /// screens can rebuild reactively via [ValueListenableBuilder].
 final ValueNotifier<Set<int>> bookmarkedSentenceIds =
-    ValueNotifier<Set<int>>({1});
+    ValueNotifier<Set<int>>(<int>{});
 
 /// Toggles [id] in [bookmarkedSentenceIds], notifying listeners.
 void toggleBookmark(int id) {
@@ -96,8 +144,37 @@ void toggleBookmark(int id) {
   bookmarkedSentenceIds.value = next;
 }
 
+/// Sets [id]'s bookmark state to [saved] (idempotent). Use this to reconcile the
+/// in-memory store with server truth (add when saved, remove when not) — unlike
+/// [toggleBookmark], seeding must be able to clear a stale `true`, otherwise the
+/// store permanently diverges from the server.
+void setBookmark(int id, bool saved) {
+  final has = bookmarkedSentenceIds.value.contains(id);
+  if (has == saved) return;
+  final next = {...bookmarkedSentenceIds.value};
+  if (saved) {
+    next.add(id);
+  } else {
+    next.remove(id);
+  }
+  bookmarkedSentenceIds.value = next;
+}
+
 /// The conversation partner / avatar.
+///
+/// Legacy fixed label — prefer [characterName]/[characterImage] keyed by the
+/// member's `characterId` so calls show the avatar the user actually selected.
 const mockPartnerName = 'Annoying Beaver';
+
+/// Display name for a selected character [id] (member `character_id`).
+/// `1` → Bibi (비비), `2` → Baba (바바); unknown/null falls back to Bibi, which
+/// is the app's default character (see `home.dart`). The server is the source of
+/// truth for alarm-triggered calls (`AlarmDto.characterName`); this maps the
+/// profile's id for manual calls and fallbacks.
+String characterName(int? id) => id == 2 ? 'Baba' : 'Bibi';
+
+/// Avatar image for a selected character [id], paired with [characterName].
+ImageProvider characterImage(int? id) => id == 2 ? beaverImage : judiImage;
 
 /// "새로 배운 표현" used in the analysis + learning flow.
 const mockSentences = <MockSentence>[

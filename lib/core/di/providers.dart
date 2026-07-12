@@ -15,14 +15,16 @@ import '../network/interceptors/logging_interceptor.dart';
 final dioProvider = Provider<Dio>((ref) {
   final dio = buildDio();
 
-  dio.interceptors.addAll([
-    AuthInterceptor(
-      onSessionExpired: () {
-        ref.read(authControllerProvider.notifier).onSessionExpired();
-      },
-    ),
-    LoggingInterceptor(),
-  ]);
+  final auth = AuthInterceptor(
+    onSessionExpired: () {
+      ref.read(authControllerProvider.notifier).onSessionExpired();
+    },
+  );
+  // Let the auth interceptor replay a request through this same client after a
+  // 401 refresh (the replay carries a retried flag so it can't loop).
+  auth.retryDio = dio;
+
+  dio.interceptors.addAll([auth, LoggingInterceptor()]);
 
   return dio;
 });

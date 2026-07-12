@@ -55,7 +55,7 @@ class LearnedSentenceDto {
 
   factory LearnedSentenceDto.fromJson(Map<String, dynamic> json) {
     return LearnedSentenceDto(
-      sentenceId: json['sentence_id'] as int,
+      sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,
       koreanSentence: json['korean_sentence'] as String?,
       nativeSentence: json['native_sentence'] as String?,
       voiceUrl: json['voice_url'] as String?,
@@ -96,7 +96,7 @@ class CallResultDto {
     final average = (json['average'] as Map<String, dynamic>?) ?? const {};
     final sentences = (json['sentences'] as List<dynamic>?) ?? const [];
     return CallResultDto(
-      callId: json['call_id'] as int,
+      callId: (json['call_id'] as num?)?.toInt() ?? 0,
       summary: json['summary'] as String?,
       rating: json['rating'] as int?,
       callDate: json['call_date'] as String?,

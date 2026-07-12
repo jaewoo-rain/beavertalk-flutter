@@ -35,13 +35,19 @@ class SegmentedTabs extends StatelessWidget {
       children: [
         for (var i = 0; i < labels.length; i++) ...[
           if (i > 0) const SizedBox(width: 12),
-          Button(
-            type: i == activeIndex
-                ? BtnType.secondaryFill
-                : BtnType.secondaryOutline,
-            size: BtnSize.s44,
-            text: labels[i],
-            onPressed: onChanged == null ? null : () => onChanged!(i),
+          // Flexible (not Expanded): each tab hugs its natural width when it
+          // fits, but shrinks — letting the Button's own ellipsis kick in —
+          // rather than overflowing the row when labels run long in some
+          // translations.
+          Flexible(
+            child: Button(
+              type: i == activeIndex
+                  ? BtnType.secondaryFill
+                  : BtnType.secondaryOutline,
+              size: BtnSize.s44,
+              text: labels[i],
+              onPressed: onChanged == null ? null : () => onChanged!(i),
+            ),
           ),
         ],
       ],

@@ -12,6 +12,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/network/ws_url.dart';
+import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
 
 /// Lifecycle phases of a live normalcall session.
@@ -46,6 +47,10 @@ class CallState {
     this.beaverSubtitle = '',
     this.userSubtitle = '',
     this.errorMsg,
+    this.hint,
+    this.teachingPlan = const [],
+    this.subtitleOn = true,
+    this.hintOn = true,
   });
 
   /// Current lifecycle phase.
@@ -76,7 +81,28 @@ class CallState {
   /// Human-readable error message when [phase] is [CallPhase.error].
   final String? errorMsg;
 
-  /// Returns a copy with the given fields replaced.
+  /// Active dynamic hint for the current/last beaver question, or null when no
+  /// hint is showing. Cleared on each `turn_start` and on `call_ended`.
+  final HintData? hint;
+
+  /// Today's teaching plan (pushed once at call start; may be empty). Stored for
+  /// a future teaching-card screen — not rendered by `screen/call_main`.
+  final List<TeachingItem> teachingPlan;
+
+  /// Whether the subtitle (caption) is shown. When false the speaking
+  /// equalizer replaces it. UI preference; resets to true each call.
+  final bool subtitleOn;
+
+  /// Whether the hint affordance is enabled. When false the hint card is hidden
+  /// even if a hint has arrived. UI preference; resets to true each call.
+  final bool hintOn;
+
+  /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
+  /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
+  static const Object _keep = Object();
+
+  /// Returns a copy with the given fields replaced. Pass `hint: null` to clear
+  /// the active hint (the [_keep] sentinel preserves it when omitted).
   CallState copyWith({
     CallPhase? phase,
     int? elapsedSec,
@@ -85,6 +111,10 @@ class CallState {
     String? beaverSubtitle,
     String? userSubtitle,
     String? errorMsg,
+    Object? hint = _keep,
+    List<TeachingItem>? teachingPlan,
+    bool? subtitleOn,
+    bool? hintOn,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -94,6 +124,10 @@ class CallState {
       beaverSubtitle: beaverSubtitle ?? this.beaverSubtitle,
       userSubtitle: userSubtitle ?? this.userSubtitle,
       errorMsg: errorMsg ?? this.errorMsg,
+      hint: identical(hint, _keep) ? this.hint : hint as HintData?,
+      teachingPlan: teachingPlan ?? this.teachingPlan,
+      subtitleOn: subtitleOn ?? this.subtitleOn,
+      hintOn: hintOn ?? this.hintOn,
     );
   }
 }
@@ -159,6 +193,18 @@ class NormalCallController extends Notifier<CallState> {
   /// Silence frames fed when the queue is empty (~50ms keep-alive).
   static const int _silenceFrames = 1200;
 
+  /// Jitter prebuffer (~120ms of PCM16): at the start of a beaver turn, hold real
+  /// audio (feed silence) until this much is queued, so brief network jitter can't
+  /// starve the engine into an audible gap ("voice 씹힘"). Bounded by
+  /// [_prebufferFlush] so a short utterance is never held back forever.
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 120 ~/ 1000;
+  static const Duration _prebufferFlush = Duration(milliseconds: 90);
+
+  /// Settle after `release()` so the singleton native engine fully tears down
+  /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
+  /// re-init race).
+  static const Duration _releaseSettle = Duration(milliseconds: 120);
+
   /// Resync cap: a **runaway guard only**. A normal beaver turn arrives as a
   /// burst and legitimately buffers several seconds (played out over the turn),
   /// so this must be far above any real turn — otherwise resync would clip live
@@ -176,6 +222,20 @@ class NormalCallController extends Notifier<CallState> {
   /// only audio↔silence transitions instead of spamming every feed callback.
   bool? _lastFeedSilent;
 
+  /// True while a feed callback is mid-flight (awaiting the native `feed`), so
+  /// [_teardown] can wait for it before `release()` — a fresh call's `setup()`
+  /// must not race a feed running against the old (releasing) engine.
+  bool _feeding = false;
+
+  /// True once the jitter prebuffer has filled and real audio is draining. Reset
+  /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
+  /// mid-turn starve, so resumed audio plays instantly without a re-buffer gap.
+  bool _playing = false;
+
+  /// Bounded flush for the prebuffer: if audio is queued but stays below
+  /// [_prebufferBytes], start playing anyway so a short utterance never stalls.
+  Timer? _prebufferFlushTimer;
+
   /// Dev-only pipeline log (compiled out of release builds via [kDebugMode]).
   void _log(String msg) {
     if (kDebugMode) debugPrint('[call] $msg');
@@ -183,8 +243,25 @@ class NormalCallController extends Notifier<CallState> {
 
   Timer? _elapsedTimer;
 
+  /// Application-level keepalive: pings the server every [_keepaliveInterval] so
+  /// the socket has periodic client→server traffic. Without it, a long beaver
+  /// monologue (mic gated, no upstream bytes) lets a proxy/LB idle-timeout close
+  /// the WS around ~1 min — the "1분 경과 시 voice 끊김" symptom.
+  Timer? _keepaliveTimer;
+  static const Duration _keepaliveInterval = Duration(seconds: 15);
+
+  /// True once a close is expected (hang-up / `call_ended` / teardown) so the
+  /// socket's `onDone` isn't mistaken for an unexpected mid-call drop.
+  bool _expectClose = false;
+
   /// Re-entry guard for [start] (§8-1).
   bool _starting = false;
+
+  /// Bumped by every [hangUp]/[_teardown]; [start] claims a generation and
+  /// aborts if it changes across any await — so hanging up while `connecting`
+  /// (e.g. the call-loading X) can't be silently overwritten by an in-flight
+  /// start that keeps recording/playing after the UI has left (zombie call).
+  int _gen = 0;
 
   /// Set after `call_ended` while draining the beaver's closing line before
   /// sending `playback_done` (§8-4).
@@ -194,6 +271,11 @@ class NormalCallController extends Notifier<CallState> {
   /// short window (no new audio) before the close completes, so the closing
   /// line isn't cut off. Reset whenever fresh audio arrives.
   Timer? _closingStableTimer;
+
+  /// The `call_ended` drain fallback timer. Stored so it can be cancelled when a
+  /// call finishes/tears down — otherwise a stray timer could fire against a
+  /// later call.
+  Timer? _closingFallbackTimer;
 
   /// Quiet window the queue must hold (empty) before the closing drain acks.
   static const Duration _closingStableDelay = Duration(milliseconds: 300);
@@ -259,6 +341,9 @@ class NormalCallController extends Notifier<CallState> {
     try {
       // teardown-first-then-connect → two sockets are structurally impossible.
       await _teardown();
+      // Claim this start's generation AFTER the initial teardown. A hangUp() at
+      // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
+      final myGen = ++_gen;
       state = const CallState(phase: CallPhase.connecting);
 
       final token =
@@ -286,6 +371,7 @@ class NormalCallController extends Notifier<CallState> {
       // 마이크·오디오가 제대로 잡히지 않는다. 앱이 실제로 포그라운드(통화 화면)로 올라온
       // 뒤에 오디오 파이프라인을 시작한다. 일반 경로(홈→전화하기)는 이미 resumed라 즉시 통과.
       await _awaitForeground();
+      if (myGen != _gen) return _abortStart();
 
       // 마이크(음성) 권한 확인·요청. 전화가 올 때마다 통화는 이 start()를 타므로 매 통화
       // 시작 시 항상 체크한다. 이미 허용돼 있으면 즉시 통과하고, 아니면 시스템 권한 팝업을
@@ -300,6 +386,7 @@ class NormalCallController extends Notifier<CallState> {
         );
         return;
       }
+      if (myGen != _gen) return _abortStart();
 
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
@@ -307,6 +394,7 @@ class NormalCallController extends Notifier<CallState> {
       _pcmQueue = <int>[];
       _pcmHead = 0;
       _pcmActive = false;
+      _playing = false;
       await FlutterPcmSound.setLogLevel(LogLevel.error);
       await FlutterPcmSound.setup(
         sampleRate: _playbackSampleRate,
@@ -316,9 +404,15 @@ class NormalCallController extends Notifier<CallState> {
       await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
       FlutterPcmSound.setFeedCallback(_onFeed);
       _pcmActive = true;
-      // Kicks the first feed callback (queue empty → silence) to start the loop.
-      FlutterPcmSound.start();
       _lastFeedSilent = null;
+      // Kick the pull loop directly instead of FlutterPcmSound.start().
+      // start() only kicks when the plugin's *static* `_needsStart` flag is true,
+      // and that flag is NEVER reset by release()/setup(): the first call feeds
+      // audio → sets it false → it stays false, so on the 2nd call start() no-ops
+      // and playback never begins (the "재통화 시 음성 안 나옴" bug). Priming the
+      // feed callback ourselves (a silence frame starts the native OnFeedSamples
+      // loop) is independent of that stale flag and works on every call.
+      unawaited(_onFeed(0));
       _log('playback started @ ${_playbackSampleRate}Hz (gapless PCM)');
 
       // Capture the baseline max call_id *before* the socket creates this call's
@@ -332,7 +426,12 @@ class NormalCallController extends Notifier<CallState> {
         // Leave baselineCallId null; recovery degrades to "newest id".
       }
 
+      // Aborted while setting up playback / fetching the baseline id → don't open
+      // a socket or mic for a call the user already hung up.
+      if (myGen != _gen) return _abortStart();
+
       // Connect the WebSocket.
+      _expectClose = false;
       final url = normalcallWsUrl(token);
       final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
@@ -346,8 +445,12 @@ class NormalCallController extends Notifier<CallState> {
       // §8-3: trigger the server's auto opening line (no button).
       _send({'type': 'start', 'character_id': characterId});
 
+      // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
+      _startKeepalive();
+
       // Start streaming the mic to the server.
       await _startMic();
+      if (myGen != _gen) return _abortStart();
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
@@ -359,9 +462,21 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
+  /// Aborts an in-flight [start] whose generation was superseded by a [hangUp]:
+  /// tears down anything already opened. The phase was already set by the
+  /// hangUp, so [_teardown] preserves it.
+  Future<void> _abortStart() async {
+    _log('start aborted — superseded by hang up');
+    await _teardown();
+  }
+
   /// User-initiated hang up: closes the socket (the server finalizes the call in
   /// its `finally`) and tears the pipeline down (§8-2).
   Future<void> hangUp() async {
+    // Invalidate any in-flight start() so it can't re-establish the pipeline
+    // after we tear it down here.
+    _gen++;
+    _expectClose = true;
     if (state.phase == CallPhase.ended || state.phase == CallPhase.idle) {
       await _teardown();
       return;
@@ -512,10 +627,20 @@ class NormalCallController extends Notifier<CallState> {
   /// starves into a stuck underflow (the fix for the ~1-min cutout).
   Future<void> _onFeed(int remainingFrames) async {
     if (!_pcmActive) return;
-    final avail = _queueLen;
-    final whole = avail - (avail & 1); // even bytes = whole Int16 samples
+    _feeding = true;
     try {
-      if (whole >= 2) {
+      final avail = _queueLen;
+      final whole = avail - (avail & 1); // even bytes = whole Int16 samples
+      // Jitter prebuffer: at a turn start, hold real audio (feed silence) until a
+      // small cushion is buffered so brief jitter can't starve mid-word. Bypassed
+      // once playing, while closing (must drain), or when the flush timer fires.
+      final ready = _playing || _drainScheduled || whole >= _prebufferBytes;
+      if (whole >= 2 && ready) {
+        if (!_playing) {
+          _playing = true;
+          _prebufferFlushTimer?.cancel();
+          _prebufferFlushTimer = null;
+        }
         if (_lastFeedSilent != false) {
           _log('feed AUDIO (queue ${avail}B)');
           _lastFeedSilent = false;
@@ -523,21 +648,35 @@ class NormalCallController extends Notifier<CallState> {
         final take = whole < _feedChunkBytes ? whole : _feedChunkBytes;
         await FlutterPcmSound.feed(_takeArray(take));
       } else {
-        if (_lastFeedSilent != true) {
-          _log('feed silence — queue empty'
-              '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
-          _lastFeedSilent = true;
+        if (whole >= 2) {
+          // Buffering the prebuffer cushion → arm a bounded flush so a short
+          // utterance (never reaching the cushion) still plays out.
+          _prebufferFlushTimer ??= Timer(_prebufferFlush, () {
+            _prebufferFlushTimer = null;
+            _playing = true; // next feed drains whatever is queued
+          });
+        } else {
+          // Queue genuinely drained. Between turns (beaver not speaking) require a
+          // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
+          // instant (no re-buffer gap).
+          if (!_beaverSpeaking) _playing = false;
+          if (_lastFeedSilent != true) {
+            _log('feed silence — queue empty'
+                '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
+            _lastFeedSilent = true;
+          }
+          // Idle-ungate countdown (covers a missed turn_end so the mic can't
+          // deadlock). Armed once per empty period; fresh audio cancels it.
+          _armIdleUngate();
         }
-        // Queue genuinely drained while gated → start the idle-ungate countdown
-        // (covers a missed turn_end so the mic can't deadlock). Armed at most
-        // once per empty period; fresh audio in [_feedPlayer] cancels it.
-        _armIdleUngate();
         await FlutterPcmSound.feed(
           PcmArrayInt16.zeros(count: _silenceFrames),
         );
       }
     } catch (_) {
       // Engine released mid-feed (teardown) → ignore.
+    } finally {
+      _feeding = false;
     }
     // Real audio drained → maybe re-open the mic / finish the closing drain.
     if (_queueLen < 2) {
@@ -638,7 +777,9 @@ class NormalCallController extends Notifier<CallState> {
         // New beaver turn → start a fresh subtitle line. The server streams the
         // line token-by-token via `output_transcript`, so the line must be
         // cleared here (not overwritten per token) and then accumulated below.
-        state = state.copyWith(beaverSubtitle: '');
+        // Also clear any stale hint: a new turn means the prior question is
+        // answered (matches the server "new question cancels previous").
+        state = state.copyWith(beaverSubtitle: '', hint: null);
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -673,9 +814,13 @@ class NormalCallController extends Notifier<CallState> {
         _tryUngateMic();
       case 'call_ended':
         final id = msg['call_id'];
+        // Server-initiated close is expected; the socket's onDone must not be
+        // treated as an unexpected drop.
+        _expectClose = true;
         state = state.copyWith(
           phase: CallPhase.ending,
           callId: id?.toString(),
+          hint: null,
         );
         _log('call_ended id=$id → draining closing line');
         _scheduleClosingDrain();
@@ -685,6 +830,21 @@ class NormalCallController extends Notifier<CallState> {
           errorMsg: (msg['message'] as String?) ?? '통화 중 오류가 발생했습니다.',
         );
         unawaited(_teardown(keepError: true));
+      case 'hint':
+        // Dynamic example-answer hint for the beaver's question turn. Additive:
+        // unknown to older builds (harmlessly ignored). Replaces any prior hint.
+        final hint = HintData.fromJson(msg);
+        if (hint != null) state = state.copyWith(hint: hint);
+      case 'teaching_plan':
+        final raw = msg['items'];
+        if (raw is List) {
+          final items = raw
+              .whereType<Map<String, dynamic>>()
+              .map(TeachingItem.fromJson)
+              .whereType<TeachingItem>()
+              .toList(growable: false);
+          state = state.copyWith(teachingPlan: items);
+        }
       case 'pong':
         break;
       default:
@@ -702,7 +862,13 @@ class NormalCallController extends Notifier<CallState> {
     // The queue may already be empty by now; start the stability check.
     _maybeFinishClosing();
     // Fallback: finish after a short delay regardless (e.g. no trailing audio).
-    Timer(const Duration(seconds: 3), _forceFinishClosing);
+    // Stored + cancelled in [_teardown]/[_finishClosing] so a stray timer from a
+    // finished call can't fire against a *later* call and end it early.
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = Timer(
+      const Duration(seconds: 3),
+      _forceFinishClosing,
+    );
   }
 
   /// While a close is pending, completes it once the queue has been empty for a
@@ -733,6 +899,8 @@ class NormalCallController extends Notifier<CallState> {
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = null;
     _log('playback drained → playback_done, closing');
     _send({'type': 'playback_done'});
     final preservedCallId = state.callId;
@@ -755,12 +923,33 @@ class NormalCallController extends Notifier<CallState> {
         errorMsg: '연결에 실패했습니다. 다시 시도해 주세요.',
       );
       unawaited(_teardown(keepError: true));
+      return;
     }
-    // For inCall/ending, hangUp / call_ended already drives teardown.
+    // Expected close (hang-up / call_ended / teardown) already drives the exit.
+    if (_expectClose) return;
+    if (phase == CallPhase.inCall) {
+      // Unexpected mid-call drop with no `call_ended` (e.g. a ~1-min idle
+      // timeout on a proxy/LB). The old code did nothing here, stranding the
+      // user on a frozen, silent "live" call. Recover exactly like a hang-up so
+      // the wrap-up screen opens (and can recover the call id via the baseline).
+      _log('ws closed unexpectedly during inCall → recovering to wrap-up');
+      unawaited(hangUp());
+    }
   }
 
   /// Transport-level error (§8-6).
   void _onWsError(Object error) {
+    // Expected close (hang-up / call_ended / teardown) — the exit is already
+    // being driven; a trailing error frame must not clobber it.
+    if (_expectClose) return;
+    // The call already completed (`call_ended` received, id captured) and is just
+    // draining its closing line — an error here should finish the call normally
+    // (opening the wrap-up screen), not discard a successful conversation.
+    if (state.phase == CallPhase.ending && state.callId != null) {
+      _log('ws error during closing drain → finishing normally');
+      unawaited(_finishClosing());
+      return;
+    }
     state = state.copyWith(
       phase: CallPhase.error,
       errorMsg: '네트워크 오류가 발생했습니다.',
@@ -779,11 +968,34 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
+  /// Signals that the learner revealed a hint (fire-and-forget, no ack). The
+  /// server downgrades that turn's evidence, so the UI must call this exactly
+  /// once per hint, on first reveal.
+  void sendHintUsed(String turnId) =>
+      _send({'type': 'hint_used', 'turn_id': turnId});
+
+  /// Toggles the subtitle (caption) display. UI preference only.
+  void setSubtitleOn(bool value) =>
+      state = state.copyWith(subtitleOn: value);
+
+  /// Toggles whether the hint card is shown. UI preference only.
+  void setHintOn(bool value) => state = state.copyWith(hintOn: value);
+
   /// Starts the UI elapsed-time ticker.
   void _startElapsedTimer() {
     _elapsedTimer?.cancel();
     _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       state = state.copyWith(elapsedSec: state.elapsedSec + 1);
+    });
+  }
+
+  /// Starts the application keepalive: a periodic `ping` so the socket always
+  /// has recent client→server traffic (the server replies `pong`, already
+  /// handled). Cancelled in [_teardown].
+  void _startKeepalive() {
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = Timer.periodic(_keepaliveInterval, (_) {
+      _send({'type': 'ping'});
     });
   }
 
@@ -794,9 +1006,13 @@ class NormalCallController extends Notifier<CallState> {
   Future<void> _teardown({bool keepError = false}) async {
     _elapsedTimer?.cancel();
     _elapsedTimer = null;
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = null;
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = null;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
@@ -823,15 +1039,27 @@ class NormalCallController extends Notifier<CallState> {
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
     _pcmActive = false;
+    _prebufferFlushTimer?.cancel();
+    _prebufferFlushTimer = null;
+    _playing = false;
     if (!kIsWeb && _pcmSetup) {
       try {
         FlutterPcmSound.setFeedCallback(null);
       } catch (_) {}
+      // Wait out any feed callback that's mid-flight so release() doesn't race a
+      // feed against the engine — that race can leave a fast re-call silent.
+      for (var i = 0; i < 20 && _feeding; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
       try {
         await FlutterPcmSound.release();
       } catch (_) {}
+      // Let the singleton native engine fully tear down before a rapid re-call
+      // re-runs setup() (guards the re-init race → "재통화 시 voice 안 나옴").
+      await Future<void>.delayed(_releaseSettle);
     }
     _pcmSetup = false;
+    _feeding = false;
     _pcmQueue = <int>[];
     _pcmHead = 0;
     _lastFeedSilent = null;

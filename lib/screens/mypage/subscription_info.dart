@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../components/organisms/bottom_sheet_subscription.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 
 /// Subscription management — Figma `screen/main_mypage_payment` (`2117:20206`).
@@ -12,22 +13,23 @@ class SubscriptionInfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Align(
         alignment: Alignment.bottomCenter,
         child: BottomSheetSubscription(
           type: SubscriptionSheetType.manage,
-          plan: const SubscriptionPlanInfo(
-            name: 'Pro 멤버십',
-            priceLine: '\$12.9 / 월',
+          plan: SubscriptionPlanInfo(
+            name: l10n.proMembership,
+            priceLine: l10n.pricePerMonth,
             nextBillingDate: '2026.07.01.',
           ),
-          benefits: const [
-            SubscriptionBenefit('무제한 통화'),
-            SubscriptionBenefit('상세 발음 및 문법 분석'),
-            SubscriptionBenefit('모든 캐릭터 사용 가능'),
-            SubscriptionBenefit('광고 제거'),
+          benefits: [
+            SubscriptionBenefit(l10n.benefitUnlimitedCalls),
+            SubscriptionBenefit(l10n.benefitDetailedAnalysis),
+            SubscriptionBenefit(l10n.benefitAllCharacters),
+            SubscriptionBenefit(l10n.benefitNoAds),
           ],
           onPrimary: () => Navigator.pop(context),
           onSecondary: () => Navigator.pop(context),

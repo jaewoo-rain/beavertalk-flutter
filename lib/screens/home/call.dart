@@ -3,11 +3,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/call_toggle_button.dart';
+import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
+import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -40,6 +46,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   bool _navigated = false;
 
+  /// turn_id of the hint the learner has revealed (peek → full). Ephemeral UI
+  /// state: a new hint carries a new turn_id, so the card auto-collapses.
+  String? _revealedTurnId;
+
+  /// Currently shown suggestion index in the revealed hint; reset per new hint.
+  int _suggestionIndex = 0;
+
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
   String _formatted(int seconds) {
     final h = (seconds ~/ 3600).toString().padLeft(2, '0');
@@ -50,20 +63,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   /// Opens the "free call ending" dialog with subscribe / end actions.
   Future<void> _confirmEnd() async {
+    final l10n = AppLocalizations.of(context);
     await showDialogBasic<void>(
       context,
-      title: '무료 통화가 끝나가요',
-      description: '구독하면 비버와 더 오래 대화할 수 있어요.',
+      title: l10n.freeCallEndingTitle,
+      description: l10n.freeCallEndingBody,
       variant: DialogBasicVariant.twoVertical,
       primary: DialogAction(
-        label: '구독하기',
+        label: l10n.subscribe,
         onPressed: () {
           Navigator.of(context).pop(); // close dialog
           Navigator.pushNamed(context, Routes.payment);
         },
       ),
       secondary: DialogAction(
-        label: '통화 종료',
+        label: l10n.endCall,
         onPressed: () {
           Navigator.of(context).pop(); // close dialog
           ref.read(normalCallControllerProvider.notifier).hangUp();
@@ -91,6 +105,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final elapsed = ref.watch(
       normalCallControllerProvider.select((s) => s.elapsedSec),
     );
@@ -99,15 +114,35 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final beaverSubtitle = ref.watch(
       normalCallControllerProvider.select((s) => s.beaverSubtitle),
     );
+    final hint = ref.watch(normalCallControllerProvider.select((s) => s.hint));
+    final subtitleOn =
+        ref.watch(normalCallControllerProvider.select((s) => s.subtitleOn));
+    final hintOn =
+        ref.watch(normalCallControllerProvider.select((s) => s.hintOn));
+    // Selected character (member `character_id`) → partner name + avatar, so the
+    // call shows the avatar the user picked (resolved from the catalog, not a
+    // hardcoded id→name guess).
+    final characterId =
+        ref.watch(myProfileProvider).valueOrNull?.characterId;
+    final selectedChar = ref.watch(selectedCharacterProvider);
+    final selectedCharUrl = selectedChar?.imageUrl;
+    final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
+        ? NetworkImage(selectedCharUrl) as ImageProvider
+        : characterImage(characterId);
 
     // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
+      // A new hint (different turn_id) resets the ephemeral suggestion index;
+      // the revealed flag auto-resets since _revealedTurnId won't match.
+      if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
+        setState(() => _suggestionIndex = 0);
+      }
       if (next.phase == CallPhase.ended) {
         _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;
         _navigated = true;
-        final msg = next.errorMsg ?? '통화가 종료되었습니다.';
+        final msg = next.errorMsg ?? l10n.callEnded;
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(SnackBar(content: Text(msg)));
@@ -155,7 +190,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
-                    mockPartnerName,
+                    selectedChar?.name ?? characterName(characterId),
                     style: AppType.body1.sb.copyWith(color: AppColors.text),
                   ),
                   const SizedBox(height: AppSpacing.s4),
@@ -181,11 +216,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   child: Container(
                     width: AppSpacing.s120,
                     height: AppSpacing.s120,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: AppColors.surface2,
                       image: DecorationImage(
-                        image: beaverImage,
+                        image: partnerImage,
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -193,17 +228,72 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ),
               ),
             ),
-            // Beaver's live subtitle (server `output_transcript`). Shown only
-            // when a real line has arrived — no hardcoded placeholder, so a fake
-            // line never appears mid-call (QA: "통화 시 beaver의 자막 오류"). The
-            // earlier English translation line was a stub with no server field
-            // and has been removed (QA: "아래 자막 삭제").
+            // Caption zone: the beaver's live subtitle (server `output_transcript`)
+            // when subtitles are on, else the speaking equalizer (Figma 자막on/off
+            // variants). The subtitle shows only when a real line has arrived — no
+            // hardcoded placeholder, so a fake line never appears mid-call
+            // (QA: "통화 시 beaver의 자막 오류"; the stub translation line was removed).
             Padding(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s32, AppSpacing.s16, AppSpacing.s32, AppSpacing.s24),
-              child: Text(
-                beaverSubtitle,
-                textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(color: AppColors.text),
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s32, AppSpacing.s16, AppSpacing.s32, 0),
+              child: subtitleOn
+                  ? Text(
+                      beaverSubtitle,
+                      textAlign: TextAlign.center,
+                      style: AppType.body1.sb.copyWith(color: AppColors.text),
+                    )
+                  : const Center(child: SpeakingEqualizer()),
+            ),
+            // Hint card (Figma `card/hint`) — only when hints are enabled and a
+            // hint has arrived (question turns only; may never arrive → no card).
+            if (hintOn && hint != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s32, AppSpacing.s24, AppSpacing.s32, 0),
+                child: HintCard(
+                  examples: hint.examples,
+                  revealed: _revealedTurnId == hint.turnId,
+                  index: _suggestionIndex,
+                  onReveal: () {
+                    // First reveal only: mark it and signal the server exactly
+                    // once (it downgrades this turn's learning evidence).
+                    setState(() => _revealedTurnId = hint.turnId);
+                    ref
+                        .read(normalCallControllerProvider.notifier)
+                        .sendHintUsed(hint.turnId);
+                  },
+                  onCycle: () => setState(() => _suggestionIndex =
+                      (_suggestionIndex + 1) % hint.examples.length),
+                  // btn/speak deferred: no in-call TTS source wired yet.
+                ),
+              ),
+            // Hint / subtitle toggles (Figma `Frame 1707484597`, right-aligned).
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s32, AppSpacing.s24, AppSpacing.s32, 0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  CallToggleButton(
+                    icon: AppIcons.lightbulb,
+                    active: hintOn,
+                    activeFill: AppColors.hintAccent,
+                    semanticLabel: 'Hint',
+                    onChanged: (v) => ref
+                        .read(normalCallControllerProvider.notifier)
+                        .setHintOn(v),
+                  ),
+                  const SizedBox(width: AppSpacing.s8),
+                  CallToggleButton(
+                    icon: AppIcons.cc,
+                    active: subtitleOn,
+                    activeFill: AppColors.surface2,
+                    semanticLabel: 'Subtitle',
+                    onChanged: (v) => ref
+                        .read(normalCallControllerProvider.notifier)
+                        .setSubtitleOn(v),
+                  ),
+                ],
               ),
             ),
             // End-call button — red 60px circular hang-up (Figma `2296:26249`).
@@ -212,7 +302,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
               child: Center(
                 child: Semantics(
                   button: true,
-                  label: '통화 종료',
+                  label: l10n.endCall,
                   child: Material(
                     color: AppColors.accentRed,
                     shape: const CircleBorder(),

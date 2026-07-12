@@ -11,6 +11,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -44,8 +45,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   String? get _passwordError {
     if (_password.isEmpty) return null;
     if (_password.length < 8 || _password.length > 16) {
-      // TODO(i18n): localize
-      return 'Password must be 8–16 characters.';
+      return AppLocalizations.of(context).passwordLengthError;
     }
     return null;
   }
@@ -53,8 +53,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   /// Confirm-match rule shown beneath the confirm field.
   String? get _confirmError {
     if (_passwordConfirm.isEmpty) return null;
-    // TODO(i18n): localize
-    if (_passwordConfirm != _password) return "Passwords don't match.";
+    if (_passwordConfirm != _password) {
+      return AppLocalizations.of(context).passwordsDoNotMatch;
+    }
     return null;
   }
 
@@ -71,8 +72,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Future<void> _signup() async {
     if (_submitting) return;
     if (!_canSubmit) {
-      // TODO(i18n): localize
-      setState(() => _error = 'Please check your input.');
+      setState(() => _error = AppLocalizations.of(context).signupCheckInput);
       return;
     }
     setState(() {
@@ -109,12 +109,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       body: Column(
         children: [
-          // TODO(i18n): localize
-          Gnb.main(title: 'Sign up', onBack: () => Navigator.pop(context)),
+          Gnb.main(title: l10n.signUp, onBack: () => Navigator.pop(context)),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
@@ -123,28 +123,24 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Email ───────────────────────────────────────────────
-                  // TODO(i18n): localize
-                  const _FieldLabel('Email'),
+                  _FieldLabel(l10n.fieldEmailLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _email,
                     onChanged: (v) => setState(() => _email = v),
-                    // TODO(i18n): localize
-                    hintText: 'Enter your email',
+                    hintText: l10n.emailHint,
                     keyboardType: TextInputType.emailAddress,
                     leftIcon: const MailIcon(
                         size: 20, color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   // ── Password ────────────────────────────────────────────
-                  // TODO(i18n): localize
-                  const _FieldLabel('Password'),
+                  _FieldLabel(l10n.fieldPasswordLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _password,
                     onChanged: (v) => setState(() => _password = v),
-                    // TODO(i18n): localize
-                    hintText: 'Enter your password',
+                    hintText: l10n.passwordHint,
                     obscureText: _obscurePassword,
                     leftIcon:
                         AppIcons.lock(size: 20, color: AppColors.textSecondary),
@@ -157,14 +153,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   _ErrorText(_passwordError),
                   const SizedBox(height: AppSpacing.s20),
                   // ── Password confirm ────────────────────────────────────
-                  // TODO(i18n): localize
-                  const _FieldLabel('Confirm password'),
+                  _FieldLabel(l10n.fieldConfirmPasswordLabel),
                   const SizedBox(height: AppSpacing.s8),
                   InputField(
                     value: _passwordConfirm,
                     onChanged: (v) => setState(() => _passwordConfirm = v),
-                    // TODO(i18n): localize
-                    hintText: 'Re-enter your password',
+                    hintText: l10n.confirmPasswordHint,
                     obscureText: _obscureConfirm,
                     leftIcon:
                         AppIcons.lock(size: 20, color: AppColors.textSecondary),
@@ -182,8 +176,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   Button(
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
-                    // TODO(i18n): localize
-                    text: _submitting ? 'Signing up...' : 'Sign up',
+                    text: _submitting ? l10n.signupSigningUp : l10n.signUp,
                     disabled: _submitting || !_canSubmit,
                     onPressed: _signup,
                   ),
@@ -214,7 +207,7 @@ class _FieldLabel extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: AppSpacing.s8),
       child: Align(
-        alignment: Alignment.centerLeft,
+        alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
@@ -235,7 +228,8 @@ class _ErrorText extends StatelessWidget {
   Widget build(BuildContext context) {
     if (text == null) return const SizedBox.shrink();
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.s8, left: AppSpacing.s4),
+      padding: const EdgeInsetsDirectional.only(
+          top: AppSpacing.s8, start: AppSpacing.s4),
       child: Text(
         text!,
         style: AppType.label2.r.copyWith(color: AppColors.error),
@@ -284,6 +278,7 @@ class _LoginPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // Wrap so the prompt + action can flow onto a second line if localized
     // text grows.
     return Wrap(
@@ -291,15 +286,13 @@ class _LoginPrompt extends StatelessWidget {
       spacing: 6, // Figma 6px gap (no AppSpacing token)
       children: [
         Text(
-          // TODO(i18n): localize
-          'Already have an account?',
+          l10n.signupHaveAccount,
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
         ),
         GestureDetector(
           onTap: onLogin,
           child: Text(
-            // TODO(i18n): localize
-            'Log in',
+            l10n.loginLogIn,
             style: AppType.label1.sb.copyWith(color: AppColors.primary),
           ),
         ),

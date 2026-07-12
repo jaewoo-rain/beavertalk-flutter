@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../mock/mock_data.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../icons/app_icons.dart';
@@ -69,14 +70,14 @@ class HeroAvatar extends StatelessWidget {
             ),
           ),
           // Change badge — primary pill with an edit glyph, pinned bottom-right.
-          Positioned(
-            right: 8,
+          PositionedDirectional(
+            end: 8,
             bottom: 8,
             child: onEditTap == null
                 ? badge
                 : Semantics(
                     button: true,
-                    label: '아바타 변경',
+                    label: AppLocalizations.of(context).changeAvatar,
                     child: Material(
                       color: Colors.transparent,
                       borderRadius: BorderRadius.circular(AppRadius.xs),

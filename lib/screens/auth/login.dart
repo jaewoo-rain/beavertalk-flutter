@@ -14,6 +14,7 @@ import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
@@ -77,7 +78,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Future<void> _showLanguageSheet() async {
     final items = <CountryItem>[
       for (final l in mockLanguages)
-        CountryItem(code: l.id, name: l.name, flag: l.flag),
+        CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
     ];
     // Local selection while the sheet is open; seeded from the draft.
     String? selected = ref.read(signupDraftProvider).language;
@@ -123,13 +124,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   /// Exchanges the Google idToken for our JWT via `POST /auth/social`.
   Future<void> _onGoogleUser(GoogleSignInAccount? account) async {
     if (account == null || _googleBusy) return;
+    final l10n = AppLocalizations.of(context);
     setState(() => _googleBusy = true);
     try {
       final auth = await account.authentication;
       final idToken = auth.idToken;
       if (idToken == null || idToken.isEmpty) {
-        // TODO(i18n): localize
-        throw const UnknownFailure("Couldn't get a Google sign-in token.");
+        throw UnknownFailure(l10n.loginGoogleTokenError);
       }
       await ref
           .read(authControllerProvider.notifier)
@@ -139,8 +140,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     } on AppException catch (e) {
       _showError(e.message);
     } catch (_) {
-      // TODO(i18n): localize
-      _showError('Google sign-in failed.');
+      _showError(l10n.loginGoogleSignInFailed);
     } finally {
       if (mounted) setState(() => _googleBusy = false);
     }
@@ -169,6 +169,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
       // Figma horizontal screen padding is 40px (buttons are 295 wide,
@@ -192,8 +193,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
-              // TODO(i18n): localize
-              text: 'Continue with Kakao',
+              text: l10n.loginContinueWithKakao,
               leftIcon: const KakaoIcon(size: 24),
               onPressed: _socialLoginMock,
             ),
@@ -203,8 +203,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
-              // TODO(i18n): localize
-              text: 'Continue with Google',
+              text: l10n.loginContinueWithGoogle,
               leftIcon: const GoogleIcon(size: 24),
               disabled: _googleBusy,
               onPressed: _googleLogin,
@@ -213,8 +212,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Button(
               type: BtnType.secondaryFill,
               size: BtnSize.s60,
-              // TODO(i18n): localize
-              text: 'Continue with Apple',
+              text: l10n.loginContinueWithApple,
               leftIcon: const AppleIcon(size: 24),
               onPressed: _socialLoginMock,
             ),
@@ -226,8 +224,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
-              // TODO(i18n): localize
-              text: 'Continue with email',
+              text: l10n.loginContinueWithEmail,
               leftIcon: const MailIcon(size: 24, color: AppColors.onPrimary),
               onPressed: _emailLogin,
             ),
@@ -253,13 +250,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   /// `signIn()` triggers it but token availability depends on the GIS session.
   Future<void> _googleLogin() async {
     if (_googleBusy) return;
+    final l10n = AppLocalizations.of(context);
     try {
       await _googleSignIn.signIn();
     } on AppException catch (e) {
       _showError(e.message);
     } catch (_) {
-      // TODO(i18n): localize
-      _showError('Google sign-in failed.');
+      _showError(l10n.loginGoogleSignInFailed);
     }
   }
 }
@@ -304,8 +301,7 @@ class _OrDivider extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
           child: Text(
-            // TODO(i18n): localize
-            'or',
+            AppLocalizations.of(context).loginOrDivider,
             style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
           ),
         ),
@@ -334,6 +330,7 @@ class _SignupPrompt extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -344,16 +341,14 @@ class _SignupPrompt extends StatelessWidget {
           spacing: 6, // Figma 6px gap (no AppSpacing token)
           children: [
             Text(
-              // TODO(i18n): localize
-              "Don't have an account?",
+              l10n.loginNoAccount,
               style:
                   AppType.label1.r.copyWith(color: AppColors.textSecondary),
             ),
             GestureDetector(
               onTap: onSignup,
               child: Text(
-                // TODO(i18n): localize
-                'Sign up',
+                l10n.signUp,
                 style: AppType.label1.sb.copyWith(color: AppColors.primary),
               ),
             ),
@@ -402,6 +397,7 @@ class _TermsNoticeState extends State<_TermsNotice> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     // 12pt caption keeps the notice compact so it fits without scrolling; the
     // login body stays in a SingleChildScrollView for longer localized text.
     final base = AppType.caption1.r.copyWith(color: AppColors.textSecondary);
@@ -413,23 +409,22 @@ class _TermsNoticeState extends State<_TermsNotice> {
       decorationColor: AppColors.text,
     );
     return Text.rich(
-      // TODO(i18n): localize
       TextSpan(
         style: base,
         children: [
-          const TextSpan(text: 'By continuing, you agree to our '),
+          TextSpan(text: l10n.loginTermsNoticePrefix),
           TextSpan(
-            text: 'Terms of Service',
+            text: l10n.termsOfService,
             style: link,
             recognizer: _termsTap,
           ),
-          const TextSpan(text: ' and '),
+          TextSpan(text: l10n.loginTermsNoticeAnd),
           TextSpan(
-            text: 'Privacy Policy',
+            text: l10n.privacyPolicy,
             style: link,
             recognizer: _privacyTap,
           ),
-          const TextSpan(text: '.'),
+          TextSpan(text: l10n.loginTermsNoticeSuffix),
         ],
       ),
       textAlign: TextAlign.left,

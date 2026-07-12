@@ -6,6 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   flutter_secure_storage_linux
   flutter_sound
   gtk
+  record_linux
   url_launcher_linux
 )
 

@@ -244,7 +244,15 @@ class Button extends StatelessWidget {
       children.add(_sizedIcon(leftIcon!, spec.icon, fg));
     }
     children.add(
-      Text(text, style: _textStyle().copyWith(color: fg)),
+      Flexible(
+        child: Text(
+          text,
+          style: _textStyle().copyWith(color: fg),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          softWrap: false,
+        ),
+      ),
     );
     if (rightIcon != null) {
       children.add(_sizedIcon(rightIcon!, spec.icon, fg));

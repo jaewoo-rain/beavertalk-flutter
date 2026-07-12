@@ -58,6 +58,9 @@ class AppIconButton extends StatelessWidget {
         label,
         textAlign: TextAlign.center,
         style: AppType.label1.r.copyWith(color: fg),
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
       ),
     );
 
