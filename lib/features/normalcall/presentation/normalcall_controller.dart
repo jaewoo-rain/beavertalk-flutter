@@ -193,6 +193,18 @@ class NormalCallController extends Notifier<CallState> {
   /// Silence frames fed when the queue is empty (~50ms keep-alive).
   static const int _silenceFrames = 1200;
 
+  /// Jitter prebuffer (~120ms of PCM16): at the start of a beaver turn, hold real
+  /// audio (feed silence) until this much is queued, so brief network jitter can't
+  /// starve the engine into an audible gap ("voice 씹힘"). Bounded by
+  /// [_prebufferFlush] so a short utterance is never held back forever.
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 120 ~/ 1000;
+  static const Duration _prebufferFlush = Duration(milliseconds: 90);
+
+  /// Settle after `release()` so the singleton native engine fully tears down
+  /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
+  /// re-init race).
+  static const Duration _releaseSettle = Duration(milliseconds: 120);
+
   /// Resync cap: a **runaway guard only**. A normal beaver turn arrives as a
   /// burst and legitimately buffers several seconds (played out over the turn),
   /// so this must be far above any real turn — otherwise resync would clip live
@@ -209,6 +221,20 @@ class NormalCallController extends Notifier<CallState> {
   /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
   /// only audio↔silence transitions instead of spamming every feed callback.
   bool? _lastFeedSilent;
+
+  /// True while a feed callback is mid-flight (awaiting the native `feed`), so
+  /// [_teardown] can wait for it before `release()` — a fresh call's `setup()`
+  /// must not race a feed running against the old (releasing) engine.
+  bool _feeding = false;
+
+  /// True once the jitter prebuffer has filled and real audio is draining. Reset
+  /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
+  /// mid-turn starve, so resumed audio plays instantly without a re-buffer gap.
+  bool _playing = false;
+
+  /// Bounded flush for the prebuffer: if audio is queued but stays below
+  /// [_prebufferBytes], start playing anyway so a short utterance never stalls.
+  Timer? _prebufferFlushTimer;
 
   /// Dev-only pipeline log (compiled out of release builds via [kDebugMode]).
   void _log(String msg) {
@@ -352,6 +378,7 @@ class NormalCallController extends Notifier<CallState> {
       _pcmQueue = <int>[];
       _pcmHead = 0;
       _pcmActive = false;
+      _playing = false;
       await FlutterPcmSound.setLogLevel(LogLevel.error);
       await FlutterPcmSound.setup(
         sampleRate: _playbackSampleRate,
@@ -562,10 +589,20 @@ class NormalCallController extends Notifier<CallState> {
   /// starves into a stuck underflow (the fix for the ~1-min cutout).
   Future<void> _onFeed(int remainingFrames) async {
     if (!_pcmActive) return;
-    final avail = _queueLen;
-    final whole = avail - (avail & 1); // even bytes = whole Int16 samples
+    _feeding = true;
     try {
-      if (whole >= 2) {
+      final avail = _queueLen;
+      final whole = avail - (avail & 1); // even bytes = whole Int16 samples
+      // Jitter prebuffer: at a turn start, hold real audio (feed silence) until a
+      // small cushion is buffered so brief jitter can't starve mid-word. Bypassed
+      // once playing, while closing (must drain), or when the flush timer fires.
+      final ready = _playing || _drainScheduled || whole >= _prebufferBytes;
+      if (whole >= 2 && ready) {
+        if (!_playing) {
+          _playing = true;
+          _prebufferFlushTimer?.cancel();
+          _prebufferFlushTimer = null;
+        }
         if (_lastFeedSilent != false) {
           _log('feed AUDIO (queue ${avail}B)');
           _lastFeedSilent = false;
@@ -573,21 +610,35 @@ class NormalCallController extends Notifier<CallState> {
         final take = whole < _feedChunkBytes ? whole : _feedChunkBytes;
         await FlutterPcmSound.feed(_takeArray(take));
       } else {
-        if (_lastFeedSilent != true) {
-          _log('feed silence — queue empty'
-              '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
-          _lastFeedSilent = true;
+        if (whole >= 2) {
+          // Buffering the prebuffer cushion → arm a bounded flush so a short
+          // utterance (never reaching the cushion) still plays out.
+          _prebufferFlushTimer ??= Timer(_prebufferFlush, () {
+            _prebufferFlushTimer = null;
+            _playing = true; // next feed drains whatever is queued
+          });
+        } else {
+          // Queue genuinely drained. Between turns (beaver not speaking) require a
+          // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
+          // instant (no re-buffer gap).
+          if (!_beaverSpeaking) _playing = false;
+          if (_lastFeedSilent != true) {
+            _log('feed silence — queue empty'
+                '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
+            _lastFeedSilent = true;
+          }
+          // Idle-ungate countdown (covers a missed turn_end so the mic can't
+          // deadlock). Armed once per empty period; fresh audio cancels it.
+          _armIdleUngate();
         }
-        // Queue genuinely drained while gated → start the idle-ungate countdown
-        // (covers a missed turn_end so the mic can't deadlock). Armed at most
-        // once per empty period; fresh audio in [_feedPlayer] cancels it.
-        _armIdleUngate();
         await FlutterPcmSound.feed(
           PcmArrayInt16.zeros(count: _silenceFrames),
         );
       }
     } catch (_) {
       // Engine released mid-feed (teardown) → ignore.
+    } finally {
+      _feeding = false;
     }
     // Real audio drained → maybe re-open the mic / finish the closing drain.
     if (_queueLen < 2) {
@@ -929,15 +980,27 @@ class NormalCallController extends Notifier<CallState> {
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
     _pcmActive = false;
+    _prebufferFlushTimer?.cancel();
+    _prebufferFlushTimer = null;
+    _playing = false;
     if (!kIsWeb && _pcmSetup) {
       try {
         FlutterPcmSound.setFeedCallback(null);
       } catch (_) {}
+      // Wait out any feed callback that's mid-flight so release() doesn't race a
+      // feed against the engine — that race can leave a fast re-call silent.
+      for (var i = 0; i < 20 && _feeding; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
       try {
         await FlutterPcmSound.release();
       } catch (_) {}
+      // Let the singleton native engine fully tear down before a rapid re-call
+      // re-runs setup() (guards the re-init race → "재통화 시 voice 안 나옴").
+      await Future<void>.delayed(_releaseSettle);
     }
     _pcmSetup = false;
+    _feeding = false;
     _pcmQueue = <int>[];
     _pcmHead = 0;
     _lastFeedSilent = null;
