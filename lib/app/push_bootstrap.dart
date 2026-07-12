@@ -1,11 +1,16 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../core/config/feature_flags.dart';
 import '../features/incoming_call/data/models/incoming_call_payload_dto.dart';
 import '../features/incoming_call/presentation/incoming_call_providers.dart';
+import '../features/normalcall/presentation/normalcall_controller.dart';
 import 'fcm_background_handler.dart';
+
+/// Pre-display dedup for FCM's at-least-once redelivery of the same call.
+final Set<String> _fcmSeenCalls = <String>{};
 
 /// 인바운드 콜(비버가 거는 전화)의 **로컬 단계** 초기화 진입점.
 ///
@@ -67,7 +72,24 @@ Future<void> _initFcm(ProviderContainer container) async {
     // 포그라운드 메시지 → 로컬/백그라운드와 동일한 CallKit 수신 화면 표시.
     fcm.onForegroundMessage.listen((m) {
       try {
+        // 로그아웃 상태에선 (토큰 삭제 실패 등으로) 스트레이/재전송 푸시가 와도
+        // 수신 화면을 띄우지 않는다.
+        if (Supabase.instance.client.auth.currentSession == null) return;
         final payload = IncomingCallPayloadDto.fromMap(m.data);
+        // 이미 통화 중이면 라이브 통화 위에 두 번째 수신 화면을 쌓지 않는다.
+        final phase = container.read(normalCallControllerProvider).phase;
+        if (phase == CallPhase.connecting ||
+            phase == CallPhase.inCall ||
+            phase == CallPhase.ending) {
+          return;
+        }
+        // FCM at-least-once 재전송으로 같은 콜이 여러 번 오면 한 번만 띄운다.
+        if (!_fcmSeenCalls.add(payload.callUuid)) return;
+        if (_fcmSeenCalls.length > 200) {
+          _fcmSeenCalls
+            ..clear()
+            ..add(payload.callUuid);
+        }
         // fire-and-forget: 표시 실패가 스트림 구독을 끊지 않게 개별 catch.
         callkit.showIncoming(payload).catchError((Object e) {
           if (kDebugMode) debugPrint('[fcm] 포그라운드 수신 화면 표시 실패: $e');

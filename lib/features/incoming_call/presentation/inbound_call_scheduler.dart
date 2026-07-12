@@ -101,9 +101,12 @@ class InboundCallScheduler {
           '${now.hour}:${now.minute}';
       if (_firedKeys.contains(key)) continue;
       _firedKeys.add(key);
-      _pruneFiredKeys();
+      _pruneFiredKeys(now);
 
       await _ring(a);
+      // Ring at most one alarm per tick: if two alarms share the same
+      // weekday+time, showing two stacked incoming-call screens is wrong.
+      break;
     }
   }
 
@@ -123,8 +126,12 @@ class InboundCallScheduler {
     await callkit.showIncoming(payload);
   }
 
-  /// 발사 키 세트가 무한히 커지지 않도록 오래된 것을 정리(간단히 상한만 둔다).
-  void _pruneFiredKeys() {
-    if (_firedKeys.length > 200) _firedKeys.clear();
+  /// 발사 키 세트가 무한히 커지지 않도록 정리하되, **오늘 키는 보존**한다. 전체
+  /// clear()는 방금 추가한 키까지 지워 같은 분(20초 tick) 내 중복 발사를 유발할 수
+  /// 있으므로, 오늘이 아닌 날짜의 키만 제거한다.
+  void _pruneFiredKeys(DateTime now) {
+    if (_firedKeys.length <= 200) return;
+    final today = ':${now.year}-${now.month}-${now.day}:';
+    _firedKeys.removeWhere((k) => !k.contains(today));
   }
 }

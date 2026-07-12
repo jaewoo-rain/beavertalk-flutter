@@ -19,6 +19,17 @@ class AlarmListController extends AsyncNotifier<List<Alarm>> {
 
   List<Alarm> get _current => state.value ?? const [];
 
+  /// Serializes mutations so an in-flight PUT (which replaces the whole `days[]`)
+  /// finishes — and updates state — before the next one snapshots. Without this,
+  /// two fast day-chip taps both build from the same stale snapshot and the
+  /// later response silently overwrites the earlier toggle (lost update).
+  Future<void> _chain = Future<void>.value();
+  Future<void> _serialize(Future<void> Function() op) {
+    final next = _chain.then((_) => op());
+    _chain = next.catchError((_) {});
+    return next;
+  }
+
   /// Creates an alarm (POST) and appends the server copy.
   Future<void> add(Alarm alarm) async {
     final created = await _repo.create(alarm);
@@ -51,12 +62,15 @@ class AlarmListController extends AsyncNotifier<List<Alarm>> {
   }
 
   /// Flips a single weekday (PUT with the new day set).
-  Future<void> toggleDay(int id, int dayIndex, bool selected) async {
-    final target = _current.firstWhere((a) => a.id == id);
-    final nextDays = [...target.days];
-    if (dayIndex >= 0 && dayIndex < nextDays.length) {
-      nextDays[dayIndex] = selected;
-    }
-    await edit(target.copyWith(days: nextDays));
-  }
+  Future<void> toggleDay(int id, int dayIndex, bool selected) =>
+      _serialize(() async {
+        // Re-derive from the LATEST state (after any prior serialized edit) so we
+        // never PUT a stale days[].
+        final target = _current.firstWhere((a) => a.id == id);
+        final nextDays = [...target.days];
+        if (dayIndex >= 0 && dayIndex < nextDays.length) {
+          nextDays[dayIndex] = selected;
+        }
+        await edit(target.copyWith(days: nextDays));
+      });
 }

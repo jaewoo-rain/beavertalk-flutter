@@ -104,7 +104,9 @@ class IncomingCallCoordinator {
       case CallEventActionCallDecline(:final callKitParams):
         await callkit.endCall(callKitParams.id);
       case CallEventActionCallTimeout(:final id):
-        await _onTimeout(uuid: id, name: '비버');
+        // 타임아웃 이벤트엔 이름이 없어서(id만), 표시 시점에 기억해 둔 실제
+        // 캐릭터명을 쓴다(없으면 '비버'로 폴백).
+        await _onTimeout(uuid: id, name: callkit.nameFor(id) ?? '비버');
       case CallEventActionCallEnded(:final callKitParams):
         // 세션 종료 → dedup에서 제거해 (동일 uuid의) 재수신 여지를 남긴다.
         _handledUuids.remove(callKitParams.id);
@@ -120,6 +122,7 @@ class IncomingCallCoordinator {
     // 중복 진입 방지(라이브 이벤트 + 콜드스타트 폴링).
     if (uuid != null) {
       if (_handledUuids.contains(uuid)) return;
+      if (_handledUuids.length > 200) _handledUuids.clear();
       _handledUuids.add(uuid);
     }
 
