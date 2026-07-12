@@ -370,6 +370,10 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
       fluency: 0,
       rhythm: 0,
       voiceUrl: sentence.voiceUrl,
+      // Carry the saved state so the learning screen seeds its bookmark toggle as
+      // ON. Archive rows are always bookmarked; without this the review screen
+      // showed the sentence as un-bookmarked.
+      bookmarked: sentence.isBookmarked,
     );
     Navigator.pushNamed(
       context,
