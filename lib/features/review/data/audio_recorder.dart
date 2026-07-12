@@ -18,6 +18,7 @@ class ReviewAudioRecorder {
   StreamSubscription<Uint8List>? _sub;
   final BytesBuilder _pcm = BytesBuilder();
   bool _recording = false;
+  bool _starting = false;
 
   /// Broadcasts the live input level (normalized 0..1) while recording, driven
   /// by flutter_sound's `onProgress` decibel readings. Additive — it never
@@ -41,8 +42,19 @@ class ReviewAudioRecorder {
   ///
   /// Throws [StateError] with a user-facing message when permission is denied.
   Future<void> start() async {
-    if (_recording) return;
+    // `_recording` only flips true at the very end (after several awaits), so a
+    // fast double-tap could enter twice and interleave two recorders into the
+    // same buffer. Guard synchronously up front.
+    if (_recording || _starting) return;
+    _starting = true;
+    try {
+      await _startInternal();
+    } finally {
+      _starting = false;
+    }
+  }
 
+  Future<void> _startInternal() async {
     final status = await Permission.microphone.request();
     if (!status.isGranted) {
       throw StateError('마이크 권한이 필요해요.');
