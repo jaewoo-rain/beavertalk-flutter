@@ -1,11 +1,8 @@
 package im.beavertalk.beavertalk
 
 import android.app.Activity
-import android.app.AlarmManager
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
-import android.provider.Settings
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.MediaRecorder
@@ -53,34 +50,6 @@ class MainActivity : FlutterActivity() {
                 when (call.method) {
                     "start" -> onStart(result)
                     "stop" -> onStop(result)
-                    else -> result.notImplemented()
-                }
-            }
-        // Background alarm scheduling (fires even when the app is killed).
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "beavertalk/alarm_scheduler")
-            .setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "syncAlarms" -> {
-                        AlarmReceiver.syncAlarms(this, call.argument<String>("alarms") ?: "[]")
-                        result.success(true)
-                    }
-                    "canScheduleExact" -> {
-                        val am = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                        result.success(Build.VERSION.SDK_INT < 31 || am.canScheduleExactAlarms())
-                    }
-                    "requestExactPermission" -> {
-                        if (Build.VERSION.SDK_INT >= 31) {
-                            try {
-                                startActivity(
-                                    Intent(
-                                        Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
-                                        Uri.parse("package:$packageName"),
-                                    ).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
-                                )
-                            } catch (_: Exception) {}
-                        }
-                        result.success(true)
-                    }
                     else -> result.notImplemented()
                 }
             }
