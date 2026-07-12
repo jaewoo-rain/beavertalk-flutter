@@ -388,9 +388,15 @@ class NormalCallController extends Notifier<CallState> {
       await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
       FlutterPcmSound.setFeedCallback(_onFeed);
       _pcmActive = true;
-      // Kicks the first feed callback (queue empty → silence) to start the loop.
-      FlutterPcmSound.start();
       _lastFeedSilent = null;
+      // Kick the pull loop directly instead of FlutterPcmSound.start().
+      // start() only kicks when the plugin's *static* `_needsStart` flag is true,
+      // and that flag is NEVER reset by release()/setup(): the first call feeds
+      // audio → sets it false → it stays false, so on the 2nd call start() no-ops
+      // and playback never begins (the "재통화 시 음성 안 나옴" bug). Priming the
+      // feed callback ourselves (a silence frame starts the native OnFeedSamples
+      // loop) is independent of that stale flag and works on every call.
+      unawaited(_onFeed(0));
       _log('playback started @ ${_playbackSampleRate}Hz (gapless PCM)');
 
       // Capture the baseline max call_id *before* the socket creates this call's
