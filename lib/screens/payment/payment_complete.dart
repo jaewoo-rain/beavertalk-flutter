@@ -146,9 +146,19 @@ class _ReceiptRow extends StatelessWidget {
           child: Text(
             label,
             style: AppType.label2.m.copyWith(color: AppColors.textSecondary),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
-        Text(value, style: AppType.label2.m),
+        Flexible(
+          child: Text(
+            value,
+            style: AppType.label2.m,
+            textAlign: TextAlign.end,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ],
     );
   }

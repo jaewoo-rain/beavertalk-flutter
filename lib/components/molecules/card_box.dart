@@ -204,6 +204,8 @@ class CardBox extends StatelessWidget {
                   Flexible(
                     child: Text(
                       title,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style:
                           AppType.label1.sb.copyWith(color: AppColors.text),
                     ),
@@ -241,20 +243,28 @@ class CardBox extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           if (price != null)
-            Text(
-              price!,
-              style: AppType.label1.r.copyWith(
-                color: AppColors.textSecondary,
-                decoration: TextDecoration.lineThrough,
-                decorationColor: AppColors.textSecondary,
+            Flexible(
+              child: Text(
+                price!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.label1.r.copyWith(
+                  color: AppColors.textSecondary,
+                  decoration: TextDecoration.lineThrough,
+                  decorationColor: AppColors.textSecondary,
+                ),
               ),
             ),
           if (price != null && discountPrice != null)
             const SizedBox(width: 4),
           if (discountPrice != null)
-            Text(
-              discountPrice!,
-              style: AppType.label1.sb.copyWith(color: AppColors.error),
+            Flexible(
+              child: Text(
+                discountPrice!,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.label1.sb.copyWith(color: AppColors.error),
+              ),
             ),
         ],
       );
@@ -300,7 +310,16 @@ class _DottedRow extends StatelessWidget {
         );
         children.add(SizedBox(width: gap));
       }
-      children.add(Text(segments[i], style: style));
+      children.add(
+        Flexible(
+          child: Text(
+            segments[i],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: style,
+          ),
+        ),
+      );
     }
     return Row(mainAxisSize: MainAxisSize.min, children: children);
   }

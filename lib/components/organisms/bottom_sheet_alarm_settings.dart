@@ -186,6 +186,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
             child: Text(
               title ?? l10n.addSchedule,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppType.body1.sb.copyWith(color: AppColors.text),
             ),
           ),

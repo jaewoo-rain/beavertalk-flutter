@@ -189,6 +189,8 @@ class BottomSheetCountrySelect extends StatelessWidget {
             child: Text(
               title,
               textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppType.body1.sb.copyWith(color: AppColors.text),
             ),
           ),

@@ -184,7 +184,14 @@ class _MethodRow extends StatelessWidget {
           children: [
             _RadioMark(selected: selected),
             const SizedBox(width: 12),
-            Text(label, style: AppType.body2.r),
+            Expanded(
+              child: Text(
+                label,
+                style: AppType.body2.r,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
           ],
         ),
       ),
@@ -254,7 +261,14 @@ class _AmountSummary extends StatelessWidget {
         : AppType.label1.sb;
     return Row(
       children: [
-        Expanded(child: Text(label, style: labelStyle)),
+        Expanded(
+          child: Text(
+            label,
+            style: labelStyle,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         Text(value, style: valueStyle),
       ],
     );

@@ -120,9 +120,15 @@ class HintCard extends StatelessWidget {
           // Header: "Hint" + counter/cycle.
           Row(
             children: [
-              Text(l10n.hintLabel,
+              Flexible(
+                child: Text(
+                  l10n.hintLabel,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppType.caption2.sb
-                      .copyWith(color: AppColors.hintAccent)),
+                      .copyWith(color: AppColors.hintAccent),
+                ),
+              ),
               const Spacer(),
               if (examples.length > 1) ...[
                 Text('${index + 1}/${examples.length}',

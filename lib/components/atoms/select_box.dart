@@ -70,6 +70,9 @@ class SelectBox extends StatelessWidget {
         label,
         textAlign: TextAlign.center,
         style: base.copyWith(color: fg),
+        maxLines: 1,
+        softWrap: false,
+        overflow: TextOverflow.ellipsis,
       ),
     );
 

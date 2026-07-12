@@ -253,11 +253,20 @@ class AvatarScreen extends ConsumerWidget {
   Widget _label(String text, {String? trailing}) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(text,
-              style: AppType.label1.m.copyWith(color: AppColors.textSecondary)),
+          Flexible(
+            child: Text(text,
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style:
+                    AppType.label1.m.copyWith(color: AppColors.textSecondary)),
+          ),
           if (trailing != null)
-            Text(trailing,
-                style: AppType.label1.m.copyWith(color: AppColors.error)),
+            Flexible(
+              child: Text(trailing,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: AppType.label1.m.copyWith(color: AppColors.error)),
+            ),
         ],
       );
 

@@ -263,7 +263,7 @@ class BottomSheetAvatar extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            _statusBadge(l10n),
+            Flexible(child: _statusBadge(l10n)),
             if (_isDiscount) ...[
               const SizedBox(width: 12),
               Text(
@@ -301,6 +301,8 @@ class BottomSheetAvatar extends StatelessWidget {
       ),
       child: Text(
         owned ? l10n.owned : l10n.available,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
         style: AppType.caption1.sb.copyWith(color: fg),
       ),
     );
@@ -335,9 +337,13 @@ class BottomSheetAvatar extends StatelessWidget {
             children: [
               AppIcons.volume(size: 24, color: AppColors.text),
               const SizedBox(width: 8),
-              Text(
-                l10n.playSampleVoice,
-                style: AppType.label1.m.copyWith(color: AppColors.text),
+              Flexible(
+                child: Text(
+                  l10n.playSampleVoice,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.label1.m.copyWith(color: AppColors.text),
+                ),
               ),
             ],
           ),

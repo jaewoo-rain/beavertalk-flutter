@@ -89,9 +89,13 @@ class AvatarCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(
-                  statusLabel!,
-                  style: AppType.label1.r.copyWith(color: accent),
+                Flexible(
+                  child: Text(
+                    statusLabel!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppType.label1.r.copyWith(color: accent),
+                  ),
                 ),
               ],
             ),
@@ -107,6 +111,8 @@ class AvatarCard extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: AppType.label1.sb,
             textAlign: TextAlign.center,
           ),

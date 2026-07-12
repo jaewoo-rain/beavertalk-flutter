@@ -117,6 +117,8 @@ class CardLine extends StatelessWidget {
                 children: [
                   Text(
                     label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: AppType.label1.r.copyWith(color: AppColors.text),
                   ),
                   if (meta != null) ...[
@@ -127,24 +129,30 @@ class CardLine extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (value != null)
-                  Text(
-                    value!,
-                    style: AppType.label1.sb.copyWith(color: AppColors.text),
-                  ),
-                if (status != null) ...[
-                  const SizedBox(height: 7),
-                  Text(
-                    status!,
-                    style:
-                        AppType.label1.r.copyWith(color: AppColors.success),
-                  ),
+            Flexible(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (value != null)
+                    Text(
+                      value!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppType.label1.sb.copyWith(color: AppColors.text),
+                    ),
+                  if (status != null) ...[
+                    const SizedBox(height: 7),
+                    Text(
+                      status!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style:
+                          AppType.label1.r.copyWith(color: AppColors.success),
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ],
         ),
@@ -164,19 +172,29 @@ class CardLine extends StatelessWidget {
             children: [
               Expanded(
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      label,
-                      style:
-                          AppType.body1.r.copyWith(color: AppColors.text),
-                    ),
-                    if (value != null)
-                      Text(
-                        value!,
+                    Expanded(
+                      child: Text(
+                        label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style:
                             AppType.body1.r.copyWith(color: AppColors.text),
                       ),
+                    ),
+                    if (value != null) ...[
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: Text(
+                          value!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                          style:
+                              AppType.body1.r.copyWith(color: AppColors.text),
+                        ),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -205,6 +223,8 @@ class CardLine extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: AppType.body1.r.copyWith(color: AppColors.text),
                 ),
               ),
@@ -250,9 +270,13 @@ class _MetaRow extends StatelessWidget {
         children.add(const SizedBox(width: 4));
       }
       children.add(
-        Text(
-          segments[i],
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+        Flexible(
+          child: Text(
+            segments[i],
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          ),
         ),
       );
     }

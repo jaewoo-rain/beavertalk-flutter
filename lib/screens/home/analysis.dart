@@ -199,10 +199,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
               ),
               const SizedBox(width: AppSpacing.s4),
             ],
-            Text(
-              parts[i],
-              style:
-                  AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+            Flexible(
+              child: Text(
+                parts[i],
+                overflow: TextOverflow.ellipsis,
+                maxLines: 1,
+                style:
+                    AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+              ),
             ),
           ],
         ],

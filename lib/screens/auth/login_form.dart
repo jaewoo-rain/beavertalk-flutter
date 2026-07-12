@@ -130,31 +130,44 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                       children: [
                         // DS checkbox box only; label rendered externally so it
                         // keeps the Figma grey (AppCheckbox forces a white label).
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            AppCheckbox(
-                              value: _saveId,
-                              onChanged: (v) => setState(() => _saveId = v),
-                              size: AppCheckboxSize.size20,
-                            ),
-                            const SizedBox(width: AppSpacing.s8),
-                            GestureDetector(
-                              onTap: () => setState(() => _saveId = !_saveId),
-                              child: Text(
-                                l10n.loginRememberMe,
-                                style: AppType.label1.r
-                                    .copyWith(color: AppColors.textSecondary),
+                        // Flexible: with spaceBetween, this Row has no flex of its
+                        // own, so a long localized "Remember me" label could
+                        // otherwise overflow against the forgot-password link.
+                        Flexible(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AppCheckbox(
+                                value: _saveId,
+                                onChanged: (v) => setState(() => _saveId = v),
+                                size: AppCheckboxSize.size20,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: AppSpacing.s8),
+                              Flexible(
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      setState(() => _saveId = !_saveId),
+                                  child: Text(
+                                    l10n.loginRememberMe,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: AppType.label1.r.copyWith(
+                                        color: AppColors.textSecondary),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
+                        const SizedBox(width: AppSpacing.s8),
                         Flexible(
                           child: GestureDetector(
                             onTap: _findPassword,
                             child: Text(
                               l10n.loginForgotPassword,
                               textAlign: TextAlign.right,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: AppType.label1.r
                                   .copyWith(color: AppColors.textSecondary),
                             ),

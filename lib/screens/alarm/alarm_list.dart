@@ -97,8 +97,13 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(l10n.alarms,
-                    style: AppType.heading2.sb.copyWith(color: AppColors.text)),
+                Flexible(
+                  child: Text(l10n.alarms,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: AppType.heading2.sb
+                          .copyWith(color: AppColors.text)),
+                ),
                 IconButton(
                   onPressed: _add,
                   icon: AppIcons.plus(color: AppColors.text),

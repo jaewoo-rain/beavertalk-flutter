@@ -270,12 +270,16 @@ class Gnb extends StatelessWidget {
           if (trailing != null)
             trailing!
           else if (label != null)
-            Semantics(
-              label: 'Step $label',
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(color: AppColors.text),
+            Flexible(
+              child: Semantics(
+                label: 'Step $label',
+                child: Text(
+                  label,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.body1.sb.copyWith(color: AppColors.text),
+                ),
               ),
             ),
         ],
@@ -303,10 +307,14 @@ class Gnb extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 12),
-              Text(
-                status!,
-                style:
-                    AppType.label1.r.copyWith(color: AppColors.textSecondary),
+              Flexible(
+                child: Text(
+                  status!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.label1.r
+                      .copyWith(color: AppColors.textSecondary),
+                ),
               ),
             ],
           ),
