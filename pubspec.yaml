@@ -66,6 +66,13 @@ dependencies:
   # signInWithIdToken(provider: kakao)에 넘겨 세션을 만든다(Android 우선).
   kakao_flutter_sdk_user: ^2.0.0
 
+  # 애플 간편 로그인(iOS 네이티브). getAppleIDCredential → identityToken을
+  # Supabase signInWithIdToken(provider: apple, nonce)로 넘겨 세션 생성.
+  sign_in_with_apple: ^8.1.0
+  # 애플 nonce 해시(SHA-256)용. supabase_flutter 경유 transitive지만 직접
+  # import하므로 명시 선언.
+  crypto: ^3.0.0
+
   # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
   web_socket_channel: ^3.0.1
   # normalcall — 마이크 PCM16k 스트림 녹음(FlutterSoundRecorder만 사용).

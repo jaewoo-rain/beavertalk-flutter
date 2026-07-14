@@ -42,9 +42,12 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  /// Web Google Sign-In. `clientId` matches index.html + the server.
+  /// Google Sign-In. On web the GIS `clientId` is used; on mobile the same web
+  /// client id is passed as `serverClientId` so the returned idToken's audience
+  /// matches Supabase's Google provider (required by `signInWithIdToken`).
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: _googleClientId,
+    clientId: kIsWeb ? _googleClientId : null,
+    serverClientId: kIsWeb ? null : _googleClientId,
     scopes: const ['email', 'profile'],
   );
 
@@ -53,6 +56,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   /// Guards double-taps while the Kakao login flow is in progress.
   bool _kakaoBusy = false;
+
+  /// Guards double-taps while the Apple login flow is in progress.
+  bool _appleBusy = false;
 
   @override
   void initState() {
@@ -137,7 +143,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       await ref
           .read(authControllerProvider.notifier)
-          .socialLogin(loginMethod: 'google', token: idToken);
+          .signInWithGoogle(idToken: idToken, accessToken: auth.accessToken);
       // Success → AuthGate is authenticated and shows home; pop the auth flow.
       if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
     } on AppException catch (e) {
@@ -174,8 +180,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  /// Apple stays mocked for now → straight to home.
-  void _socialLoginMock() => Navigator.pushNamed(context, Routes.home);
+  /// Apple sign-in (iOS): runs the native Apple flow and, on success, exchanges
+  /// the identityToken for a Supabase session (in [AuthController.signInWithApple]).
+  /// User cancellation returns silently (no snackbar). On Android this surfaces a
+  /// generic error (Apple needs extra web-flow config there).
+  Future<void> _appleLogin() async {
+    if (_appleBusy) return;
+    setState(() => _appleBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithApple();
+      if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError('애플 로그인에 실패했어요.');
+    } finally {
+      if (mounted) setState(() => _appleBusy = false);
+    }
+  }
 
   /// Email login opens the dedicated email/password form.
   void _emailLogin() => Navigator.pushNamed(context, Routes.loginForm);
@@ -237,7 +259,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               size: BtnSize.s60,
               text: l10n.loginContinueWithApple,
               leftIcon: const AppleIcon(size: 24),
-              onPressed: _socialLoginMock,
+              disabled: _appleBusy,
+              onPressed: _appleLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             // ── "or" divider ────────────────────────────────────────────

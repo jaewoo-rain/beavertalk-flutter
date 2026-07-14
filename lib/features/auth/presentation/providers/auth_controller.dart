@@ -1,7 +1,12 @@
+import 'dart:convert' show utf8;
+import 'dart:math' show Random;
+
+import 'package:crypto/crypto.dart' show sha256;
 import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // 카카오 SDK는 Supabase와 여러 타입명(User/AuthApi 등)이 겹치므로 프리픽스로 import.
 import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
@@ -213,15 +218,81 @@ class AuthController extends Notifier<AuthStatus> {
     return kakao.UserApi.instance.loginWithKakaoAccount();
   }
 
-  /// Social login (Google/Kakao). Not configured yet — see TODO below.
-  Future<void> socialLogin({
-    required String loginMethod,
-    required String token,
+  /// 구글 로그인의 Supabase 단계: UI(google_sign_in)에서 받은 [idToken]을
+  /// `signInWithIdToken(provider: google)`에 넘겨 세션을 만든다. 토큰 획득은
+  /// 웹/모바일 차이가 있어 UI(login.dart)가 담당하고, 여기서는 Supabase 세션
+  /// 생성만 한다. [idToken]의 audience는 Supabase Google provider에 등록된
+  /// 웹 클라이언트 ID여야 하므로, 모바일에서는 `serverClientId`로 발급해야 한다.
+  Future<void> signInWithGoogle({
+    required String idToken,
+    String? accessToken,
   }) async {
-    // TODO(auth): wire OAuth once providers are configured in Supabase, e.g.
-    //   await _client.auth.signInWithOAuth(OAuthProvider.google);
-    // The deleted `/auth/social` backend endpoint is intentionally NOT called.
-    throw const UnknownFailure('소셜 로그인은 아직 준비 중이에요.');
+    try {
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+      state = AuthStatus.authenticated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// 애플 간편 로그인 → Supabase 세션 생성 (iOS 네이티브).
+  ///
+  /// 리플레이 방지를 위해 raw nonce를 만들어 SHA-256 해시를 애플에 전달하고,
+  /// 발급된 `identityToken`을 raw nonce와 함께 `signInWithIdToken(provider:
+  /// apple)`에 넘긴다(Supabase 권장 패턴). 사용자가 취소하면 조용히 반환한다.
+  ///
+  /// 주의: Android에서는 별도의 Apple Service ID + 웹 리다이렉트(webAuthentication
+  /// Options)가 필요하다. 이 구현은 iOS 네이티브 기준이며, Android에서 호출하면
+  /// SDK가 예외를 던져 호출부가 일반 오류 메시지로 처리한다.
+  Future<void> signInWithApple() async {
+    final rawNonce = _generateRawNonce();
+    final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+
+    final AuthorizationCredentialAppleID credential;
+    try {
+      credential = await SignInWithApple.getAppleIDCredential(
+        scopes: const [
+          AppleIDAuthorizationScopes.email,
+          AppleIDAuthorizationScopes.fullName,
+        ],
+        nonce: hashedNonce,
+      );
+    } on SignInWithAppleAuthorizationException catch (e) {
+      // 사용자가 취소 → 조용히 종료(에러 스낵바 없음).
+      if (e.code == AuthorizationErrorCode.canceled) return;
+      rethrow;
+    }
+
+    final idToken = credential.identityToken;
+    if (idToken == null) {
+      throw const UnknownFailure('애플 로그인에 실패했어요. (identityToken 없음)');
+    }
+    try {
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.apple,
+        idToken: idToken,
+        nonce: rawNonce,
+      );
+      state = AuthStatus.authenticated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// 애플 로그인 리플레이 방지용 raw nonce(16진수 문자열). 해시(SHA-256)는 애플에,
+  /// 원문은 Supabase에 전달돼 idToken의 nonce 클레임과 대조된다.
+  String _generateRawNonce([int length = 32]) {
+    const charset =
+        '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-._';
+    final random = Random.secure();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   /// Explicit logout — signs out of Supabase, drops the cached profile, shows
