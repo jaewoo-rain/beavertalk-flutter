@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/auth_gate.dart';
@@ -28,6 +29,13 @@ Future<void> main() async {
     // No .env bundled / parse error → fall through to dart-define/platform
     // and the public Supabase fallback constants.
   }
+  // 카카오 간편 로그인 SDK 초기화. nativeAppKey/javaScriptAppKey는 클라이언트에
+  // 포함돼도 되는 공개 성격의 키(클라이언트 시크릿은 Supabase 대시보드에만 존재).
+  // 로그인 시 loginWithKakaoTalk/Account → OIDC idToken → signInWithIdToken.
+  KakaoSdk.init(
+    nativeAppKey: '77a9ddea236b8c107c69017bb499e5e2',
+    javaScriptAppKey: '263ef7df2cb9a703a2c213623ab24373',
+  );
   // Supabase persists + auto-refreshes its own session; the backend verifies
   // the issued access token. URL/key are public (env-or-fallback).
   await Supabase.initialize(

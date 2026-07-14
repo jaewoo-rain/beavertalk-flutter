@@ -61,6 +61,11 @@ dependencies:
   # session; the backend verifies the Supabase access token (ES256 JWT).
   supabase_flutter: ^2.15.0
 
+  # 카카오 간편 로그인(네이티브 SDK). 로그인만 쓰므로 _user 서브패키지.
+  # loginWithKakaoTalk/Account 로 OIDC idToken을 받아 Supabase
+  # signInWithIdToken(provider: kakao)에 넘겨 세션을 만든다(Android 우선).
+  kakao_flutter_sdk_user: ^2.0.0
+
   # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
   web_socket_channel: ^3.0.1
   # normalcall — 마이크 PCM16k 스트림 녹음(FlutterSoundRecorder만 사용).

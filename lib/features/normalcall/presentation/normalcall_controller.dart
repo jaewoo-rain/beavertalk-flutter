@@ -11,6 +11,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/network/ws_connect.dart';
 import '../../../core/network/ws_url.dart';
 import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
@@ -243,10 +244,19 @@ class NormalCallController extends Notifier<CallState> {
 
   Timer? _elapsedTimer;
 
-  /// Application-level keepalive: pings the server every [_keepaliveInterval] so
-  /// the socket has periodic client→server traffic. Without it, a long beaver
-  /// monologue (mic gated, no upstream bytes) lets a proxy/LB idle-timeout close
-  /// the WS around ~1 min — the "1분 경과 시 voice 끊김" symptom.
+  /// Transport-level heartbeat for the WebSocket (native only, see
+  /// [connectNormalcallWs]). The primary defense against the ~1-min idle drop:
+  /// it emits protocol PING frames and, crucially, *detects* a half-open socket
+  /// (no PONG within the interval → the socket closes and the call recovers
+  /// instead of freezing silently).
+  static const Duration _wsPingInterval = Duration(seconds: 15);
+
+  /// Application-level keepalive (belt-and-suspenders alongside [_wsPingInterval]):
+  /// pings the server every [_keepaliveInterval] so the socket has periodic
+  /// client→server traffic even where the transport ping isn't available. Without
+  /// any keepalive, a long beaver monologue (mic gated, no upstream bytes) lets a
+  /// proxy/LB idle-timeout close the WS around ~1 min — the "1분 경과 시 voice
+  /// 끊김" symptom.
   Timer? _keepaliveTimer;
   static const Duration _keepaliveInterval = Duration(seconds: 15);
 
@@ -430,10 +440,15 @@ class NormalCallController extends Notifier<CallState> {
       // a socket or mic for a call the user already hung up.
       if (myGen != _gen) return _abortStart();
 
-      // Connect the WebSocket.
+      // Connect the WebSocket with a transport-level heartbeat (native only).
+      // pingInterval sends protocol PING/PONG so an idle proxy/LB can't close a
+      // silent call at ~1 min, AND closes the socket if the peer stops answering
+      // — turning a silently-dropped (half-open) connection into an onError/onDone
+      // the recovery path handles, instead of a frozen "live" call with no audio.
       _expectClose = false;
       final url = normalcallWsUrl(token);
-      final channel = WebSocketChannel.connect(Uri.parse(url));
+      final channel =
+          connectNormalcallWs(url, pingInterval: _wsPingInterval);
       _channel = channel;
       _wsSub = channel.stream.listen(
         _onWsData,

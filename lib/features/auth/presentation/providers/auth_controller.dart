@@ -1,4 +1,7 @@
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+// 카카오 SDK는 Supabase와 여러 타입명(User/AuthApi 등)이 겹치므로 프리픽스로 import.
+import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart' as kakao;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
@@ -162,6 +165,52 @@ class AuthController extends Notifier<AuthStatus> {
     } on AuthException catch (e) {
       throw _mapAuthException(e, context: _AuthContext.reset);
     }
+  }
+
+  /// 카카오 간편 로그인 → Supabase 세션 생성.
+  ///
+  /// 카카오톡이 설치돼 있으면 앱으로(간편 로그인), 아니면 카카오계정(웹)으로 로그인해
+  /// OIDC `idToken`을 받고, 그대로 [SupabaseClient]의 `signInWithIdToken`에 넘겨
+  /// 세션을 만든다(가이드의 OIDC 방식). 성공 시 상태를 authenticated로 올리며,
+  /// `onAuthStateChange` 리스너도 함께 반영한다.
+  ///
+  /// 사용자가 로그인을 취소하면 조용히 반환한다(예외 없음). 그 외 실패는:
+  /// - `idToken == null`(카카오 OIDC 미활성/openid scope 누락) → [UnknownFailure]
+  /// - Supabase 인증 거부(audience 불일치 등) → [_mapAuthException]
+  /// - 카카오 SDK 오류 → 원본 예외를 그대로 전파(호출부가 일반 메시지로 처리)
+  Future<void> signInWithKakao() async {
+    try {
+      final token = await _kakaoAuthenticate();
+      if (token == null) return; // 사용자가 취소 → 조용히 종료
+      final idToken = token.idToken;
+      if (idToken == null) {
+        throw const UnknownFailure('카카오 로그인에 실패했어요. (OIDC 설정 확인 필요)');
+      }
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.kakao,
+        idToken: idToken,
+        accessToken: token.accessToken,
+      );
+      state = AuthStatus.authenticated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// 카카오톡 앱 우선 로그인, 실패 시 카카오계정(웹) 폴백. 카카오톡 로그인 화면에서
+  /// 사용자가 취소(뒤로가기)하면 폴백하지 않고 `null`을 반환한다.
+  Future<kakao.OAuthToken?> _kakaoAuthenticate() async {
+    if (await kakao.isKakaoTalkInstalled()) {
+      try {
+        return await kakao.UserApi.instance.loginWithKakaoTalk();
+      } catch (e) {
+        // 사용자가 카카오톡 로그인을 취소 → 계정 로그인으로 밀지 않고 종료.
+        if (e is PlatformException && e.code == 'CANCELED') return null;
+        // 그 외(카톡 미로그인 등) → 카카오계정(웹) 로그인으로 폴백.
+        return kakao.UserApi.instance.loginWithKakaoAccount();
+      }
+    }
+    return kakao.UserApi.instance.loginWithKakaoAccount();
   }
 
   /// Social login (Google/Kakao). Not configured yet — see TODO below.

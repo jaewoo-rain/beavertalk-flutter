@@ -51,6 +51,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   StreamSubscription<GoogleSignInAccount?>? _googleSub;
   bool _googleBusy = false;
 
+  /// Guards double-taps while the Kakao login flow is in progress.
+  bool _kakaoBusy = false;
+
   @override
   void initState() {
     super.initState();
@@ -152,7 +155,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Kakao/Apple stay mocked for now → straight to home.
+  /// Kakao sign-in: runs the native Kakao flow and, on success, exchanges the
+  /// OIDC idToken for a Supabase session (in [AuthController.signInWithKakao]).
+  /// The AuthGate then shows home/onboarding; here we just pop the auth flow.
+  /// User cancellation returns silently (no snackbar).
+  Future<void> _kakaoLogin() async {
+    if (_kakaoBusy) return;
+    setState(() => _kakaoBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithKakao();
+      if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError('카카오 로그인에 실패했어요.');
+    } finally {
+      if (mounted) setState(() => _kakaoBusy = false);
+    }
+  }
+
+  /// Apple stays mocked for now → straight to home.
   void _socialLoginMock() => Navigator.pushNamed(context, Routes.home);
 
   /// Email login opens the dedicated email/password form.
@@ -195,7 +217,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               size: BtnSize.s60,
               text: l10n.loginContinueWithKakao,
               leftIcon: const KakaoIcon(size: 24),
-              onPressed: _socialLoginMock,
+              disabled: _kakaoBusy,
+              onPressed: _kakaoLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             // Google: custom button (matches Kakao/Apple) wired to the real
