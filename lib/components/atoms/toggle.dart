@@ -14,7 +14,11 @@ import '../../theme/app_typography.dart';
 /// * track — 52×28, full pill radius.
 /// * thumb — 24px circle, 2px inset, animated between the two ends with
 ///   [AnimatedAlign].
-/// * default (off) — track `surface2` (#252932), thumb white.
+/// * default (off) — track `surface` (#181A20, Background/Normal/Normal), thumb
+///   white. NOTE: this is dark by design, so it only reads against a *lighter*
+///   surface (e.g. MyPage's `surface2` settings card). On a `surface`-filled
+///   parent — [CardAlarm] uses exactly that — the track disappears and only the
+///   thumb shows. Figma has the same characteristic; flagged, not worked around.
 /// * selected (on) — track `accentLime` (#429E00), thumb white.
 /// * disabled (off) — track `textTertiary` (#777C89), thumb `textSecondary`
 ///   (#9EA3B2). NOTE: the prompt described the disabled thumb as white, but the
@@ -66,7 +70,11 @@ class AppToggle extends StatelessWidget {
       trackColor = AppColors.accentLime;
       thumbColor = AppColors.text;
     } else {
-      trackColor = AppColors.surface2;
+      // Figma `175:11391` (style=a, state=default): the off track is
+      // Background/Normal/Normal (#181A20), not `surface2`. The old #252932 was
+      // a drift, and it happened to be the exact fill of MyPage's settings card
+      // (`mypage.dart` `_group`), so a switched-off toggle vanished into it.
+      trackColor = AppColors.surface;
       thumbColor = AppColors.text;
     }
 

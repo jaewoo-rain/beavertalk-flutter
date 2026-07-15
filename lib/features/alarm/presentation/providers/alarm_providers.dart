@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/providers.dart';
+import '../../../character/presentation/providers/character_providers.dart';
 import '../../data/datasources/alarm_remote_data_source.dart';
 import '../../data/repositories/alarm_repository_impl.dart';
 import '../../domain/entities/alarm.dart';
@@ -18,10 +19,30 @@ final alarmRepositoryProvider = Provider<AlarmRepository>((ref) {
   );
 });
 
-/// Selectable alarm partners (`GET /characters`), read-only for this slice.
-/// Consume with `AsyncValue.when`; defaults to the first character.
+/// Selectable alarm partners — the characters the member actually **owns**
+/// (`GET /members/me/characters`). Consume with `AsyncValue.when`.
+///
+/// This used to call `GET /characters` (the whole catalog) via
+/// `alarmRepository.listCharacters()`, so the alarm picker offered characters
+/// the user had not bought — scheduling a call with a partner they cannot use.
+/// Owned-only is the requirement, and `ownedCharactersProvider` is exactly that
+/// list, so it feeds the picker directly instead of fetching the catalog and
+/// filtering it (one request instead of two).
+///
+/// [OwnedCharacter] maps field-for-field onto [AlarmCharacter]
+/// (`id`→`characterId`, `name`, `imageUrl`); the extra purchase fields are not
+/// needed here. The alarm screen already renders an empty state when this is
+/// empty (`alarm_add.dart`), which is the correct result for a member who owns
+/// nothing.
 final availableCharactersProvider =
     FutureProvider<List<AlarmCharacter>>((ref) async {
-  final repo = ref.watch(alarmRepositoryProvider);
-  return repo.listCharacters();
+  final owned = await ref.watch(ownedCharactersProvider.future);
+  return [
+    for (final c in owned)
+      AlarmCharacter(
+        characterId: c.id,
+        name: c.name,
+        imageUrl: c.imageUrl,
+      ),
+  ];
 });

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../domain/entities/alarm.dart';
 import '../../domain/repositories/alarm_repository.dart';
@@ -15,7 +16,21 @@ class AlarmListController extends AsyncNotifier<List<Alarm>> {
   AlarmRepository get _repo => ref.read(alarmRepositoryProvider);
 
   @override
-  Future<List<Alarm>> build() => _repo.list();
+  Future<List<Alarm>> build() {
+    // No session → no alarms. Never fire `GET /alarms` unauthenticated: the
+    // interceptor would try to refresh, fail, and call onSessionExpired() →
+    // signOut() → the `signedOut` listener invalidates this provider → build()
+    // runs again → another doomed request. That is an infinite loop that pegs
+    // the UI thread (it renders the app untappable), not merely a wasted call.
+    //
+    // An empty list is the honest answer here and every consumer already
+    // handles it: the screen shows its empty state, and the scheduler's tick
+    // returns early on `alarms.isEmpty`.
+    if (Supabase.instance.client.auth.currentSession == null) {
+      return Future<List<Alarm>>.value(const <Alarm>[]);
+    }
+    return _repo.list();
+  }
 
   List<Alarm> get _current => state.value ?? const [];
 

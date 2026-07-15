@@ -42,11 +42,20 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   }
 
   /// Runs a controller mutation, showing any failure as a snackbar.
-  Future<void> _run(Future<void> Function() action) async {
+  ///
+  /// Returns `true` when [action] completed and `false` when it threw. Callers
+  /// that must not proceed on failure need this: `Dismissible.confirmDismiss`
+  /// used to `return true` unconditionally because the error was swallowed here,
+  /// so a failed DELETE still animated the card away while the controller state
+  /// kept the alarm — tripping Flutter's "dismissed Dismissible is still part of
+  /// the tree" assertion, and the alarm still rang.
+  Future<bool> _run(Future<void> Function() action) async {
     try {
       await action();
+      return true;
     } catch (e) {
       _showError(e);
+      return false;
     }
   }
 
@@ -58,6 +67,9 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      // Flutter defaults the barrier to black @ 54%; pin it to the app scrim
+      // so every dim in the product is the same black @ 50%.
+      barrierColor: AppColors.scrim,
       builder: (_) => const AlarmAddSheet(),
     );
     if (result == null) return;
@@ -72,6 +84,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
+      barrierColor: AppColors.scrim,
       builder: (_) => AlarmAddSheet(initial: AlarmData.fromEntity(alarm)),
     );
     if (result == null) return;
@@ -159,9 +172,12 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
           background: _deleteBackground(),
           confirmDismiss: (_) async {
             if (id == null) return false;
-            await _run(() =>
+            // Only let the card go if the server actually deleted it. The
+            // controller mutates state after a successful DELETE, so dismissing
+            // on failure would desync the list from itemCount and the alarm
+            // would reappear on the next refetch — still ringing meanwhile.
+            return _run(() =>
                 ref.read(alarmListControllerProvider.notifier).remove(id));
-            return true;
           },
           child: CardAlarm(
             state: a.active ? CardAlarmState.active : CardAlarmState.inactive,

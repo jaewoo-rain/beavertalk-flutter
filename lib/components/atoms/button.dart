@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
@@ -280,7 +281,15 @@ class Button extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: _isDisabled ? null : onPressed,
+        // The ripple is visual only — it gives no physical confirmation. Every
+        // CTA in the app routes through this widget, so the tick is added once
+        // here instead of at 38 call sites. Disabled buttons stay silent.
+        onTap: _isDisabled || onPressed == null
+            ? null
+            : () {
+                HapticFeedback.selectionClick();
+                onPressed!();
+              },
         borderRadius: radius,
         child: content,
       ),

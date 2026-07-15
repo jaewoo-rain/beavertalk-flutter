@@ -77,6 +77,7 @@ class BottomSheetAvatar extends StatelessWidget {
     this.description,
     this.price,
     this.discountPrice,
+    this.discountPercent,
     this.onConfirm,
     this.onClose,
     this.onPlaySample,
@@ -109,6 +110,16 @@ class BottomSheetAvatar extends StatelessWidget {
   /// Discounted price (e.g. "5\$"), rendered in [AppColors.error] SemiBold.
   /// Only used for [BottomSheetAvatarState.unownedDiscount].
   final String? discountPrice;
+
+  /// Discount percentage shown next to the name (e.g. `40` → "-40%").
+  ///
+  /// Must be supplied by the caller: [price] and [discountPrice] arrive
+  /// pre-formatted as display strings, so the rate cannot be derived here.
+  /// This was previously a hardcoded `'-50%'` literal, which silently
+  /// mislabelled every discount that was not exactly half off.
+  ///
+  /// When null the badge is omitted rather than guessing a rate.
+  final int? discountPercent;
 
   /// Primary action: 구매하기 (unowned) or 변경하기 (owned-unused).
   final VoidCallback? onConfirm;
@@ -268,10 +279,12 @@ class BottomSheetAvatar extends StatelessWidget {
             // the badge in Flexible too made the two share the row 50/50, opening
             // a gap between the name and the badge.
             _statusBadge(l10n),
-            if (_isDiscount) ...[
+            // Omitted when the caller didn't supply a rate — better no badge
+            // than a wrong one (this was hardcoded '-50%' before).
+            if (_isDiscount && discountPercent != null) ...[
               const SizedBox(width: 12),
               Text(
-                '-50%',
+                '-$discountPercent%',
                 style: AppType.label1.m.copyWith(color: AppColors.error),
               ),
             ],
@@ -304,7 +317,10 @@ class BottomSheetAvatar extends StatelessWidget {
         border: owned ? null : Border.all(color: AppColors.surface2),
       ),
       child: Text(
-        owned ? l10n.owned : l10n.available,
+        // Figma v2 `3360:20576`: the unowned chip reads "구매 가능", the same
+        // wording as the catalog section — not "이용 가능" (`l10n.available`),
+        // which claims the character is usable when it has not been bought.
+        owned ? l10n.owned : l10n.availableForPurchase,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppType.caption1.sb.copyWith(color: fg),

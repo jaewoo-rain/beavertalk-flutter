@@ -10,6 +10,7 @@ import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_line.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
+import '../../components/organisms/bottom_sheet_subscription.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
@@ -50,6 +51,141 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       .firstWhere((l) => l.id == id, orElse: () => mockLanguages.first)
       .name;
 
+  /// Stand-in subscription expiry for the change-plan / cancel note.
+  ///
+  /// Mock: no subscription expiry exists on Member or any DTO. Replace with the
+  /// server value — and format it per locale — once the billing contract lands.
+  static const _mockExpiry = '2026.06.20.';
+
+  /// Opens the subscription sheet as a real bottom sheet over MyPage.
+  ///
+  /// Figma v2 `screen/mypage__sub_manage` (`3360:20267`) shows exactly this:
+  /// MyPage still visible and dimmed, the sheet resting on top of it.
+  ///
+  /// It used to push [Routes.subscription] — a full-screen route that faked a
+  /// sheet by bottom-anchoring the bare surface in an `Align`. That gave no
+  /// scrim, no slide-up, no drag/tap-outside dismiss, and dead space above;
+  /// and since every handler there was `Navigator.pop`, tapping 플랜 변경 or
+  /// 결제내역 보기 just looked like going back.
+  ///
+  /// Uses [showModalBottomSheet] — the same call the language picker below
+  /// makes — rather than `showDialog` + `asModal()`. Both overlay, but only the
+  /// modal-sheet route slides up and drags to dismiss. It supplies the scrim
+  /// itself, so the sheet widget is passed bare (no `asModal()`, which would
+  /// paint a second [Dim] on top of the route's own barrier).
+  ///
+  /// The three types are one flow, matching the Figma frames:
+  /// manage (`3360:20267`) → 요금제 변경 → change-plan (`3360:20312`) →
+  /// 구독 취소 → cancel (`3360:20357`). The sheet rebuilds in place via
+  /// [StatefulBuilder] rather than stacking routes, so the surface stays put and
+  /// only its contents swap.
+  ///
+  /// ## Values are mock
+  /// Plan name, price, dates, card and the expiry driving [_mockExpiry] are all
+  /// stand-ins — there is no billing/subscription endpoint in the client. Only
+  /// the copy is localized; swap [_mockExpiry] and the literals when the
+  /// contract lands.
+  Future<void> _openSubscriptionSheet(AppLocalizations l10n) {
+    var type = SubscriptionSheetType.manage;
+    return showModalBottomSheet<void>(
+      context: context,
+      // The sheet paints its own surface + rounded top; the route must not add
+      // a Material behind it.
+      backgroundColor: Colors.transparent,
+      // Flutter defaults the barrier to black @ 54%; pin it to the app scrim so
+      // every dim in the product is the same black @ 50%.
+      barrierColor: AppColors.scrim,
+      // The sheets are tall — without this they are capped at half the screen
+      // and their footer buttons fall off.
+      isScrollControlled: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (sheetCtx, setSheetState) {
+          void show(SubscriptionSheetType next) =>
+              setSheetState(() => type = next);
+          final note = l10n.subscriptionSwitchNote(_mockExpiry);
+          return BottomSheetSubscription(
+            type: type,
+            plan: SubscriptionPlanInfo(
+              name: l10n.proMembership,
+              priceLine: l10n.pricePerMonth,
+              nextBillingDate: '2026.07.01.',
+            ),
+            benefits: [
+              SubscriptionBenefit(l10n.benefitUnlimitedCalls),
+              SubscriptionBenefit(l10n.benefitDetailedAnalysis),
+              SubscriptionBenefit(l10n.benefitAllCharacters),
+              SubscriptionBenefit(l10n.benefitNoAds),
+            ],
+            // Figma `176:14577` type=manage carries a 결제 정보 section. The sheet
+            // hides it when this list is empty (`bottom_sheet_subscription.dart:275`)
+            // and the old screen passed nothing, so it never rendered at all.
+            //
+            // Labels come from l10n — hardcoding them left "결제 수단"/"최근 결제"
+            // in Korean for all 30 locales.
+            paymentRows: [
+              (label: l10n.paymentMethod, value: 'Visa 1234'),
+              (label: l10n.lastPayment, value: '2026.05.20.'),
+            ],
+            // Shown by change-plan and cancel only; the sheet ignores it for manage.
+            note: note,
+            planOptions: [
+              SubscriptionPlanOption(
+                name: 'Free',
+                benefits: [
+                  SubscriptionBenefit(l10n.freePlanCallLimit),
+                  SubscriptionBenefit(l10n.freePlanBasicCharacters),
+                ],
+              ),
+              SubscriptionPlanOption(
+                name: 'Pro',
+                priceLine: l10n.pricePerMonth,
+                highlighted: true,
+                active: true,
+                benefits: [
+                  SubscriptionBenefit(l10n.benefitUnlimitedCalls),
+                  SubscriptionBenefit(l10n.benefitDetailedAnalysis),
+                  SubscriptionBenefit(l10n.benefitAllCharacters),
+                  SubscriptionBenefit(l10n.benefitNoAds),
+                ],
+              ),
+            ],
+            lostBenefits: [
+              SubscriptionBenefit(l10n.benefitUnlimitedCalls),
+              SubscriptionBenefit(l10n.benefitDetailedAnalysis),
+              SubscriptionBenefit(l10n.benefitAllCharacters),
+            ],
+            onPrimary: switch (type) {
+              // 요금제 변경 → the change-plan step.
+              SubscriptionSheetType.manage => () =>
+                  show(SubscriptionSheetType.changePlan),
+              // 구독 취소 → the confirm step.
+              SubscriptionSheetType.changePlan => () =>
+                  show(SubscriptionSheetType.cancel),
+              // Final 구독 취소. There is no cancellation endpoint in the client
+              // (neither AuthRepository nor CharacterRepository exposes one), so
+              // this can only close — it must not pretend the plan was cancelled.
+              SubscriptionSheetType.cancel => () => Navigator.pop(sheetCtx),
+            },
+            onSecondary: switch (type) {
+              // 결제내역 보기 → the history screen. Close the sheet first, then
+              // push from the screen's own context (sheetCtx dies on pop).
+              SubscriptionSheetType.manage => () {
+                  Navigator.pop(sheetCtx);
+                  Navigator.pushNamed(context, Routes.paymentHistory);
+                },
+              // Pro 계속 사용하기 → back to manage.
+              SubscriptionSheetType.changePlan => () =>
+                  show(SubscriptionSheetType.manage),
+              // cancel has a single-button footer.
+              SubscriptionSheetType.cancel => null,
+            },
+            onClose: () => Navigator.pop(sheetCtx),
+          );
+        },
+      ),
+    );
+  }
+
   /// Opens the language bottom sheet for the **user (UI) language**, seeded with
   /// [currentId]; on confirm stores the pick locally and persists it to the
   /// backend (`PATCH /members/me`). Staged until "확인" so cancelling keeps the
@@ -59,6 +195,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
+      barrierColor: AppColors.scrim,
       isScrollControlled: true,
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
@@ -199,9 +336,13 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 _section(l10n.paymentSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow(l10n.currentPlan, 'Pro', route: Routes.subscription),
+                  _navRow(l10n.currentPlan, 'Pro',
+                      onTap: () => _openSubscriptionSheet(l10n)),
+                  // Was pointed at the subscription sheet — the same
+                  // destination as 현재 요금제 — because the history screen
+                  // didn't exist. It does now (Figma `2117:20206`).
                   _navRow(l10n.paymentHistory, '',
-                      route: Routes.subscription, divider: false),
+                      route: Routes.paymentHistory, divider: false),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 

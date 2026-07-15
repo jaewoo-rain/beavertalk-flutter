@@ -265,5 +265,15 @@
   "onboardingReasonTitle": "언어를 배우는 이유가 무엇인가요?",
   "onboardingReasonSubtitle": "목표에 맞춰 학습을 구성해드릴게요.",
   "savingLabel": "저장 중...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "thisMonthPayment": "이번 달 결제 금액",
+  "filterAll": "전체",
+  "filterSubscription": "구독",
+  "filterCharacter": "캐릭터",
+  "statusCompleted": "완료",
+  "lastPayment": "최근 결제",
+  "subscriptionSwitchNote": "{date}까지 Pro 혜택을 계속 사용할 수 있고 그 이후 자동으로 무료 플랜으로 전환됩니다.",
+  "freePlanCallLimit": "하루 1통화 · 5분 제한",
+  "freePlanBasicCharacters": "기본 캐릭터 사용 가능",
+  "availableForPurchase": "구매 가능"
 }

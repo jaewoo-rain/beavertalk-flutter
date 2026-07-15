@@ -334,5 +334,51 @@
   "onboardingReasonTitle": "Why are you learning a language?",
   "onboardingReasonSubtitle": "We'll tailor your learning to your goals.",
   "savingLabel": "Saving...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "thisMonthPayment": "This month's payment",
+  "@thisMonthPayment": {
+    "description": "Header of the summary card on the payment-history screen."
+  },
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Payment-history filter chip: show every transaction."
+  },
+  "filterSubscription": "Subscription",
+  "@filterSubscription": {
+    "description": "Payment-history filter chip: subscription charges only."
+  },
+  "filterCharacter": "Character",
+  "@filterCharacter": {
+    "description": "Payment-history filter chip: character purchases only."
+  },
+  "statusCompleted": "Completed",
+  "@statusCompleted": {
+    "description": "Payment-history row status: the charge went through."
+  },
+  "lastPayment": "Last payment",
+  "@lastPayment": {
+    "description": "Label of the most-recent-charge row in the subscription sheet's 결제 정보 section."
+  },
+  "subscriptionSwitchNote": "You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.",
+  "@subscriptionSwitchNote": {
+    "description": "Note paragraph on the change-plan and cancel subscription sheets.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "June 20, 2026"
+      }
+    }
+  },
+  "freePlanCallLimit": "1 call a day · 5 min limit",
+  "@freePlanCallLimit": {
+    "description": "Free plan benefit line on the change-plan sheet."
+  },
+  "freePlanBasicCharacters": "Basic characters included",
+  "@freePlanBasicCharacters": {
+    "description": "Free plan benefit line on the change-plan sheet."
+  },
+  "availableForPurchase": "Available to purchase",
+  "@availableForPurchase": {
+    "description": "Section heading on the change-avatar screen listing characters the user does not own yet and can buy. Distinct from the sheet's 'Available' status chip."
+  }
 }

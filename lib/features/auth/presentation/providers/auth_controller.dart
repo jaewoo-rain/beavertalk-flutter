@@ -3,8 +3,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
 import '../../../../core/error/app_exception.dart';
+import '../../../../mock/mock_data.dart' show clearBookmarks;
+import '../../../alarm/presentation/providers/alarm_list_controller.dart';
+import '../../../bookmark/presentation/providers/bookmark_providers.dart';
+import '../../../character/presentation/providers/character_providers.dart';
 import 'auth_providers.dart';
 import 'my_profile_provider.dart';
+import 'signup_draft_provider.dart';
 
 /// High-level auth state the UI (AuthGate) switches on.
 enum AuthStatus {
@@ -45,6 +50,33 @@ class AuthController extends Notifier<AuthStatus> {
 
   bool _subscribed = false;
 
+  /// Drops every piece of user-scoped state so nothing survives into the next
+  /// session. Call from EVERY sign-out path (explicit logout, account deletion,
+  /// 401 expiry, and the `signedOut` event) and on sign-in as a belt-and-braces
+  /// guard against state cached before the session existed.
+  ///
+  /// Only [myProfileProvider] used to be invalidated here. The rest of these are
+  /// plain (non-autoDispose) providers, so their cached values outlived sign-out
+  /// entirely — user A's alarms would still be in memory when user B signed in
+  /// on the same device, and [InboundCallScheduler] reads that cache on a timer,
+  /// so B's phone would ring with A's alarm and A's character.
+  /// [callListProvider] is `.autoDispose` and needs no entry here.
+  void _clearUserScopedState() {
+    ref.invalidate(myProfileProvider);
+    // A's alarms → B's ring (see above). Also clears a 401 cached pre-login.
+    ref.invalidate(alarmListControllerProvider);
+    // A's saved sentences would show in B's 보관 tab.
+    ref.invalidate(bookmarkListProvider);
+    // A's owned characters would show in B's avatar screen.
+    ref.invalidate(ownedCharactersProvider);
+    // A's language/name/reasons would prefill B's onboarding — the login screen
+    // skips the language sheet when `language != null`, and the reason step
+    // would open with A's answers already checked and Continue enabled.
+    ref.invalidate(signupDraftProvider);
+    // Top-level global, outside Riverpod — must be cleared by hand.
+    clearBookmarks();
+  }
+
   /// Wires the Supabase auth stream to [AuthStatus] (idempotent).
   void _subscribeOnce() {
     if (_subscribed) return;
@@ -52,13 +84,22 @@ class AuthController extends Notifier<AuthStatus> {
     final sub = _client.auth.onAuthStateChange.listen((data) {
       switch (data.event) {
         case AuthChangeEvent.signedIn:
+          // Clear anything cached before this session existed. The alarm list in
+          // particular can hold a 401 AsyncError from boot (the scheduler used to
+          // fetch it with no session), which the alarm screen would then render
+          // with no network call at all — leaving Retry as the only way out.
+          _clearUserScopedState();
+          if (state != AuthStatus.authenticated) {
+            state = AuthStatus.authenticated;
+          }
         case AuthChangeEvent.tokenRefreshed:
         case AuthChangeEvent.userUpdated:
+          // Same session — keep caches; only the gate state matters here.
           if (state != AuthStatus.authenticated) {
             state = AuthStatus.authenticated;
           }
         case AuthChangeEvent.signedOut:
-          ref.invalidate(myProfileProvider);
+          _clearUserScopedState();
           if (state != AuthStatus.unauthenticated) {
             state = AuthStatus.unauthenticated;
           }
@@ -179,8 +220,18 @@ class AuthController extends Notifier<AuthStatus> {
   /// login. The `onAuthStateChange` listener also flips the gate, but we set it
   /// here too for immediacy.
   Future<void> logout() async {
-    await _client.auth.signOut();
-    ref.invalidate(myProfileProvider);
+    // signOut() clears the local session first, then revokes over the network —
+    // so an offline tap still logs you out locally but throws afterwards. Letting
+    // that throw escape skipped _popToRoot(), stranding the user on MyPage while
+    // the root had already swapped to login: nothing appeared to happen, and the
+    // un-awaited call surfaced as an unhandled async error. Local sign-out is
+    // what the UI depends on, so a failed revoke must not abort the rest.
+    try {
+      await _client.auth.signOut();
+    } catch (_) {
+      // Ignored on purpose: the local session is gone either way.
+    }
+    _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
   }
@@ -202,8 +253,14 @@ class AuthController extends Notifier<AuthStatus> {
   /// Without that, the same email can sign back in and be find-or-created again.
   Future<void> deleteAccount() async {
     await ref.read(authRepositoryProvider).deleteAccount();
-    await _client.auth.signOut();
-    ref.invalidate(myProfileProvider);
+    // The backend delete already succeeded — a failed network revoke must not
+    // leave the user staring at a deleted account's UI. Same reasoning as logout().
+    try {
+      await _client.auth.signOut();
+    } catch (_) {
+      // Ignored on purpose: the local session is gone either way.
+    }
+    _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
   }
@@ -214,7 +271,7 @@ class AuthController extends Notifier<AuthStatus> {
   void onSessionExpired() {
     // Best-effort: don't await (interceptor callback is sync); errors ignored.
     _client.auth.signOut().ignore();
-    ref.invalidate(myProfileProvider);
+    _clearUserScopedState();
     if (state != AuthStatus.unauthenticated) {
       state = AuthStatus.unauthenticated;
     }

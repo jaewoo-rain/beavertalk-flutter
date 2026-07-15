@@ -108,17 +108,17 @@ class CardLine extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
-          // Keep the original label-left / value-right split: both sides use
-          // Flexible (loose) + spaceBetween so the value+status column stays
-          // pinned to the right edge for normal text (matching the original
-          // Expanded-label + bare-Column layout) and only shrinks under real
-          // overflow pressure, instead of the two competing for an even
-          // 50/50 share of the row (which detached the value from the right
-          // edge).
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          // Left takes all remaining width; right hugs its content.
+          //
+          // Both sides used to be Flexible(flex: 1), which splits the free space
+          // exactly 50/50 regardless of need — so an amount as short as "12.9$"
+          // still reserved half the row, squeezing the label/meta column into
+          // the other half and ellipsizing meta text that had room to spare
+          // ("신한카드 1234" → "신한카드 12…"). Figma has both sides shrink-to-fit
+          // under justify-between, i.e. the value never claims unused width.
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Flexible(
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
@@ -137,30 +137,28 @@ class CardLine extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 12),
-            Flexible(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (value != null)
-                    Text(
-                      value!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppType.label1.sb.copyWith(color: AppColors.text),
-                    ),
-                  if (status != null) ...[
-                    const SizedBox(height: 7),
-                    Text(
-                      status!,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style:
-                          AppType.label1.r.copyWith(color: AppColors.success),
-                    ),
-                  ],
+            // Not flexed: sizes to the amount/status, staying pinned right.
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (value != null)
+                  Text(
+                    value!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppType.label1.sb.copyWith(color: AppColors.text),
+                  ),
+                if (status != null) ...[
+                  const SizedBox(height: 7),
+                  Text(
+                    status!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppType.label1.r.copyWith(color: AppColors.success),
+                  ),
                 ],
-              ),
+              ],
             ),
           ],
         ),
@@ -281,16 +279,19 @@ class _MetaRow extends StatelessWidget {
         );
         children.add(const SizedBox(width: 4));
       }
-      children.add(
-        Flexible(
-          child: Text(
-            segments[i],
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
-          ),
-        ),
+      final text = Text(
+        segments[i],
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
       );
+      // Only the last segment may shrink. Wrapping every segment in Flexible
+      // split the row evenly between them, so "6월 3일 · 신한카드 1234" gave the
+      // short date as much width as the long card name and clipped the name
+      // ("신한카드 12…") even with space left over. Leading segments are the
+      // stable ones (a date), so they keep their intrinsic width and any real
+      // overflow lands on the trailing segment.
+      children.add(i == segments.length - 1 ? Flexible(child: text) : text);
     }
     return Row(mainAxisSize: MainAxisSize.min, children: children);
   }

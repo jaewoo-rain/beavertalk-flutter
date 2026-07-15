@@ -305,9 +305,12 @@ class BottomSheetSubscription extends StatelessWidget {
           if (plan.nextBillingDate != null) ...[
             const SizedBox(height: 4),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
+                // Label absorbs the slack; the date keeps its intrinsic width.
+                // Both were Flexible(flex: 1), which hands each exactly half the
+                // row no matter how short one is — so a long label clipped while
+                // the date sat on unused space (and vice versa).
+                Expanded(
                   child: Text(
                     plan.nextBillingLabel ?? l10n.nextBillingDate,
                     maxLines: 1,
@@ -316,13 +319,12 @@ class BottomSheetSubscription extends StatelessWidget {
                         .copyWith(color: AppColors.textSecondary),
                   ),
                 ),
-                Flexible(
-                  child: Text(
-                    plan.nextBillingDate!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppType.body1.r.copyWith(color: AppColors.primary),
-                  ),
+                const SizedBox(width: AppSpacing.s8),
+                Text(
+                  plan.nextBillingDate!,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: AppType.body1.r.copyWith(color: AppColors.primary),
                 ),
               ],
             ),
@@ -450,7 +452,8 @@ class BottomSheetSubscription extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               for (final b in lostBenefits)
-                _benefitLine(b.label, AppColors.error, AppColors.text),
+                _benefitLine(b.label, AppColors.error, AppColors.text,
+                    lost: true),
             ],
           ),
         ),
@@ -474,14 +477,25 @@ class BottomSheetSubscription extends StatelessWidget {
     );
   }
 
-  /// A bullet (✓/×-style glyph in [bulletColor]) + label (in [labelColor]).
-  Widget _benefitLine(String label, Color bulletColor, Color labelColor) {
+  /// A bullet + label (in [labelColor]) with the glyph in [bulletColor].
+  ///
+  /// [lost] flips the glyph from a check to an ×. The cancel sheet lists
+  /// "취소 시 잃게 되는 혜택" — benefits you give up — so a check there read as
+  /// "kept", the opposite of the intent. Figma `176:14575` marks those rows ×.
+  Widget _benefitLine(
+    String label,
+    Color bulletColor,
+    Color labelColor, {
+    bool lost = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          AppIcons.check(size: 16, color: bulletColor),
+          lost
+              ? AppIcons.close(size: 16, color: bulletColor)
+              : AppIcons.check(size: 16, color: bulletColor),
           const SizedBox(width: 4),
           Expanded(
             child: Text(
@@ -498,9 +512,11 @@ class BottomSheetSubscription extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Flexible(
+          // Same fix as the plan card's billing row: an even Flexible split gave
+          // "결제 수단" half the row and clipped "Visa 1234" beside empty space.
+          // Label takes the slack; the value keeps its natural width.
+          Expanded(
             child: Text(
               label,
               maxLines: 1,
@@ -508,13 +524,12 @@ class BottomSheetSubscription extends StatelessWidget {
               style: AppType.label1.r.copyWith(color: AppColors.text),
             ),
           ),
-          Flexible(
-            child: Text(
-              value,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: AppType.label1.r.copyWith(color: AppColors.text),
-            ),
+          const SizedBox(width: AppSpacing.s8),
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppType.label1.r.copyWith(color: AppColors.text),
           ),
         ],
       ),
@@ -532,7 +547,12 @@ class BottomSheetSubscription extends StatelessWidget {
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
           child: Button(
-            type: BtnType.secondaryWhite,
+            // Figma `176:14575` fills this button with `#252932` (surface2) —
+            // that is `secondaryFill`, and it matches the other two sheets'
+            // footers. `secondaryWhite` fills with `surfaceElevated`, the very
+            // colour of the sheet behind it, so the button read as a bare
+            // outline instead of a filled control.
+            type: BtnType.secondaryFill,
             size: BtnSize.s60,
             text: l10n.cancelSubscription,
             onPressed: onPrimary,
@@ -546,6 +566,11 @@ class BottomSheetSubscription extends StatelessWidget {
   Widget _stackedButtons(String primary, String secondary) {
     return Column(
       mainAxisSize: MainAxisSize.min,
+      // Without this the Column defaults to CrossAxisAlignment.center, which
+      // lets each Button hug its label and float centred — the footer CTAs are
+      // full-width (fill) like every other sheet action. Every other Column in
+      // this file already stretches; this one was the outlier.
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),

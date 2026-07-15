@@ -84,11 +84,20 @@ Future<void> _initFcm(ProviderContainer container) async {
           return;
         }
         // FCM at-least-once 재전송으로 같은 콜이 여러 번 오면 한 번만 띄운다.
-        if (!_fcmSeenCalls.add(payload.callUuid)) return;
-        if (_fcmSeenCalls.length > 200) {
-          _fcmSeenCalls
-            ..clear()
-            ..add(payload.callUuid);
+        //
+        // call_id가 비면(누락/빈 문자열 → DTO가 '' 폴백, payload dto :21-27) dedup을
+        // 건너뛴다. ''를 그대로 등록하면 첫 푸시가 ''를 seen에 넣어버려, 이후 call_id
+        // 없는 모든 콜이 영구히 조용히 버려진다 — 프로세스가 사는 동안 전화가 다시는
+        // 울리지 않고 로그도 kDebugMode 밖엔 안 남는다. 중복 링 위험보다 전화를 통째로
+        // 잃는 쪽이 훨씬 나쁘므로 이 경우엔 표시를 진행한다.
+        final uuid = payload.callUuid;
+        if (uuid.isNotEmpty) {
+          if (!_fcmSeenCalls.add(uuid)) return;
+          if (_fcmSeenCalls.length > 200) {
+            _fcmSeenCalls
+              ..clear()
+              ..add(uuid);
+          }
         }
         // fire-and-forget: 표시 실패가 스트림 구독을 끊지 않게 개별 catch.
         callkit.showIncoming(payload).catchError((Object e) {

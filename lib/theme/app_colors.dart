@@ -18,7 +18,7 @@ abstract final class AppColors {
   static const border = Color(0x1FFFFFFF); // Line/Normal/Neutral (12%, Figma dark)
   static const borderSubtle = Color(0x0FFFFFFF); // Line/Normal/Alternative (6%)
   static const lineStrong = Color(0xFF70737C); // Line/Normal/Normal (strong)
-  static const scrim = Color(0x66222531); // Dim overlay (≈40%)
+  static const scrim = Color(0x80000000); // Dim overlay — black @ 50%
 
   static const text = Color(0xFFFFFFFF);
   static const textSecondary = Color(0xFF9EA3B2);

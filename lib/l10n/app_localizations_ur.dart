@@ -846,4 +846,36 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get payMethodApple => 'Apple Pay';
+
+  @override
+  String get thisMonthPayment => 'This month\'s payment';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get filterSubscription => 'Subscription';
+
+  @override
+  String get filterCharacter => 'Character';
+
+  @override
+  String get statusCompleted => 'Completed';
+
+  @override
+  String get lastPayment => 'Last payment';
+
+  @override
+  String subscriptionSwitchNote(String date) {
+    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+  }
+
+  @override
+  String get freePlanCallLimit => '1 call a day · 5 min limit';
+
+  @override
+  String get freePlanBasicCharacters => 'Basic characters included';
+
+  @override
+  String get availableForPurchase => 'Available to purchase';
 }

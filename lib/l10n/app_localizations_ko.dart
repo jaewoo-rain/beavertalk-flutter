@@ -821,4 +821,36 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get payMethodApple => 'Apple Pay';
+
+  @override
+  String get thisMonthPayment => '이번 달 결제 금액';
+
+  @override
+  String get filterAll => '전체';
+
+  @override
+  String get filterSubscription => '구독';
+
+  @override
+  String get filterCharacter => '캐릭터';
+
+  @override
+  String get statusCompleted => '완료';
+
+  @override
+  String get lastPayment => '최근 결제';
+
+  @override
+  String subscriptionSwitchNote(String date) {
+    return '$date까지 Pro 혜택을 계속 사용할 수 있고 그 이후 자동으로 무료 플랜으로 전환됩니다.';
+  }
+
+  @override
+  String get freePlanCallLimit => '하루 1통화 · 5분 제한';
+
+  @override
+  String get freePlanBasicCharacters => '기본 캐릭터 사용 가능';
+
+  @override
+  String get availableForPurchase => '구매 가능';
 }
