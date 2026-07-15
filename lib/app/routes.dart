@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../preview/gallery_screen.dart';
+import '../theme/app_motion.dart';
 import 'placeholder_screen.dart';
 import '../screens/onboarding/onboarding_language.dart';
 import '../screens/onboarding/onboarding_name.dart';
@@ -27,6 +28,7 @@ import '../screens/home/learning_main.dart';
 import '../screens/payment/payment.dart';
 import '../screens/payment/payment_complete.dart';
 import '../screens/payment/payment_failed.dart';
+import '../screens/payment/payment_history.dart';
 import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
 import '../screens/mypage/mypage.dart';
@@ -87,6 +89,7 @@ abstract final class Routes {
   static const payment = '/payment';
   static const paymentComplete = '/payment/complete';
   static const paymentFailed = '/payment/failed';
+  static const paymentHistory = '/payment/history';
   static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
 
@@ -125,6 +128,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.payment: (_) => const PaymentScreen(),
     Routes.paymentComplete: (_) => const PaymentCompleteScreen(),
     Routes.paymentFailed: (_) => const PaymentFailedScreen(),
+    Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
     Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
@@ -168,10 +172,92 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.mypage: '마이페이지',
     Routes.alarms: '알림',
     Routes.payment: '결제',
+    Routes.paymentHistory: '결제 내역',
   };
 
   final name = settings.name ?? Routes.onboarding;
   final builder = builders[name] ??
       (_) => PlaceholderScreen(names[name] ?? name);
-  return MaterialPageRoute(builder: builder, settings: settings);
+  return _AppPageRoute<dynamic>(builder: builder, settings: settings);
+}
+
+/// The app's page transition — a shared-axis style slide + fade.
+///
+/// Every route in the table above flows through here, so this is the single
+/// place the app's navigation feel is defined. It replaces [MaterialPageRoute],
+/// whose Android default is a full vertical slide that reads heavier than this
+/// product wants and differs per platform.
+///
+/// The outgoing page dims and drifts slightly against the incoming one, giving
+/// depth without a full-width slide. Durations and curves come from [AppMotion]
+/// so pages match the component layer.
+class _AppPageRoute<T> extends PageRoute<T> {
+  _AppPageRoute({required this.builder, required RouteSettings settings})
+      : super(settings: settings);
+
+  final WidgetBuilder builder;
+
+  @override
+  Duration get transitionDuration => AppMotion.page;
+
+  @override
+  Duration get reverseTransitionDuration => AppMotion.page;
+
+  @override
+  bool get opaque => true;
+
+  @override
+  bool get barrierDismissible => false;
+
+  @override
+  Color? get barrierColor => null;
+
+  @override
+  String? get barrierLabel => null;
+
+  @override
+  bool get maintainState => true;
+
+  @override
+  Widget buildPage(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+  ) =>
+      builder(context);
+
+  @override
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    final enter = CurvedAnimation(parent: animation, curve: AppMotion.pageCurve);
+    // The page being covered drifts back and dims, so the incoming page reads
+    // as stacked on top rather than sliding in beside it.
+    final exit = CurvedAnimation(
+      parent: secondaryAnimation,
+      curve: AppMotion.pageCurve,
+    );
+    return FadeTransition(
+      opacity: Tween<double>(begin: 1, end: 0).animate(exit),
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: Offset.zero,
+          end: const Offset(-0.06, 0),
+        ).animate(exit),
+        child: FadeTransition(
+          opacity: enter,
+          child: SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(0.06, 0),
+              end: Offset.zero,
+            ).animate(enter),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
 }

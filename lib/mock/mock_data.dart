@@ -137,6 +137,16 @@ class MockSentence {
 final ValueNotifier<Set<int>> bookmarkedSentenceIds =
     ValueNotifier<Set<int>>(<int>{});
 
+/// Clears every in-memory bookmark. Call on sign-out: this store is a top-level
+/// global, so it outlives the session and would otherwise carry user A's
+/// bookmarks into user B's app. Screens only reconcile ids present in their
+/// current payload ([setBookmark]), so any id B never opens would keep A's
+/// `true` for the whole process lifetime.
+void clearBookmarks() {
+  if (bookmarkedSentenceIds.value.isEmpty) return;
+  bookmarkedSentenceIds.value = <int>{};
+}
+
 /// Toggles [id] in [bookmarkedSentenceIds], notifying listeners.
 void toggleBookmark(int id) {
   final next = {...bookmarkedSentenceIds.value};

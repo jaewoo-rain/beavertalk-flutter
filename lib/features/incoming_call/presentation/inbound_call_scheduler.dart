@@ -55,7 +55,16 @@ class InboundCallScheduler {
     await callkit.requestNotificationPermission();
     await callkit.requestFullIntentPermission();
     // 알람 목록이 아직 안 불러와졌으면 로드를 시작시켜 둔다(_tick이 이후 캐시를 읽음).
-    ref.read(alarmListControllerProvider);
+    //
+    // 로그인 전에는 read하지 않는다. start()는 부팅 시 unawaited로 호출되어
+    // AuthGate의 세션 복원과 경쟁하는데, 세션이 없는 상태로 read하면 토큰 없는
+    // `GET /alarms`가 나가 401이 뜬다. alarmListControllerProvider는 autoDispose가
+    // 아니라 그 AsyncError가 앱 전역에 그대로 캐시되고, 이후 로그인에 성공해도
+    // 알람 화면이 네트워크 호출 없이 부팅 때의 401을 렌더한다(Retry만 살아남음).
+    // _tick도 같은 이유로 :74에서 세션을 가드한다.
+    if (Supabase.instance.client.auth.currentSession != null) {
+      ref.read(alarmListControllerProvider);
+    }
     _timer = Timer.periodic(_checkInterval, (_) => _tick());
     _tick();
   }

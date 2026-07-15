@@ -69,7 +69,13 @@ class AvatarCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: active ? AppColors.primary10 : AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(AppRadius.xs),
-        border: active ? Border.all(color: AppColors.primary) : null,
+        // Both states are bordered per Figma (`2117:20367` / `2117:20368`):
+        // active = `primary`, inactive = `line/normal`. The inactive border was
+        // missing entirely, so unselected cards read as flat fills and sat 1px
+        // smaller than the selected one.
+        border: Border.all(
+          color: active ? AppColors.primary : AppColors.lineStrong,
+        ),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,

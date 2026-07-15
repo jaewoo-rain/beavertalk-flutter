@@ -31,6 +31,20 @@ final ownedCharactersProvider =
   return ref.watch(characterRepositoryProvider).listOwned();
 });
 
+/// One character's detail (`GET /characters/{id}`), keyed by id.
+///
+/// [Character.description] only comes from this endpoint — the list at
+/// [charactersProvider] leaves it null. The avatar sheet shows a description
+/// paragraph (Figma v2 `3360:20576`), so it has to fetch the detail on open;
+/// without this provider there was no way to reach `getDetail`, and the
+/// paragraph silently never rendered.
+///
+/// autoDispose: a sheet-scoped read, not app state.
+final characterDetailProvider =
+    FutureProvider.autoDispose.family<Character, int>((ref, id) async {
+  return ref.watch(characterRepositoryProvider).getDetail(id);
+});
+
 /// The member's currently in-use ("representative") character, resolved from
 /// the catalog by `members/me.character_id`. Returns null while the profile or
 /// catalog is still loading, or when the id has no catalog match — callers then

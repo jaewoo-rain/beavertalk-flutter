@@ -4,6 +4,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/pressable.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
@@ -86,8 +87,7 @@ class HomeScreen extends ConsumerWidget {
                   Semantics(
                     button: true,
                     label: l10n.myPage,
-                    child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
+                    child: Pressable(
                       onTap: () =>
                           Navigator.pushNamed(context, Routes.mypage),
                       // Figma `2296:26381` — a surface2 circle holding a muted
@@ -117,7 +117,7 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               children: [
                 const SizedBox(height: 37),
-                GestureDetector(
+                Pressable(
                   onTap: () => Navigator.pushNamed(context, Routes.avatar),
                   child: HeroAvatar(
                     imageProvider: heroImage,

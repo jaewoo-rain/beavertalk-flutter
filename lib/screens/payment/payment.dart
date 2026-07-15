@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/pressable.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
+import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Payment checkout — Figma `screen/main_payment_checkout` (`2117:20419`).
@@ -67,18 +70,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20,
+                AppSpacing.s20,
+                AppSpacing.s20,
+                AppSpacing.s20,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   // ── Order summary ──
                   Text(l10n.orderSummary, style: AppType.body2.sb),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s16),
                   _ProductCard(),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s16),
                   // ── Payment method ──
                   Text(l10n.paymentMethod, style: AppType.body2.sb),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s16),
                   for (final m in _PayMethod.values) ...[
                     _MethodRow(
                       label: m.label(l10n),
@@ -86,9 +94,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       onTap: () => setState(() => _method = m),
                     ),
                     if (m != _PayMethod.values.last)
-                      const SizedBox(height: 12),
+                      const SizedBox(height: AppSpacing.s12),
                   ],
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.s16),
                   // ── Amount summary ──
                   _AmountSummary(),
                 ],
@@ -96,7 +104,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+            padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s20,
+              AppSpacing.s12,
+              AppSpacing.s20,
+              AppSpacing.s24,
+            ),
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
@@ -168,22 +181,34 @@ class _MethodRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return Pressable(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(16),
+      semanticLabel: label,
+      // Selection is signalled by the border only — per Figma the fill stays
+      // `surfaceElevated` in both states. The border used to snap on; it now
+      // cross-fades, and Pressable adds the press scale + haptic (this is a
+      // money screen, so confirming the tap landed matters).
+      child: AnimatedContainer(
+        duration: AppMotion.fast,
+        curve: AppMotion.toggle,
+        // Figma `method/*`: min-height 56 — keeps rows a consistent height
+        // regardless of label wrapping.
+        constraints: const BoxConstraints(minHeight: 56),
+        padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
           color: AppColors.surfaceElevated,
           borderRadius: BorderRadius.circular(AppRadius.sm),
-          border: selected
-              ? Border.all(color: AppColors.primary, width: 1.5)
-              : null,
+          border: Border.all(
+            // Painted in both states so the colour animates instead of a
+            // null→Border pop shifting the row by 1.5px.
+            color: selected ? AppColors.primary : Colors.transparent,
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
             _RadioMark(selected: selected),
-            const SizedBox(width: 12),
+            const SizedBox(width: AppSpacing.s12),
             Expanded(
               child: Text(
                 label,
@@ -209,19 +234,40 @@ class _RadioMark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return AnimatedContainer(
+      duration: AppMotion.fast,
+      curve: AppMotion.toggle,
       width: 22,
       height: 22,
+      alignment: Alignment.center,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: selected ? AppColors.primary : Colors.transparent,
-        border: selected
-            ? null
-            : Border.all(color: AppColors.lineStrong, width: 1.5),
+        // Figma: unselected is a `surface2` disc with a `textSecondary` hairline,
+        // not a transparent hole — the mark reads as a filled control in both
+        // states and only the colours swap.
+        color: selected ? AppColors.primary : AppColors.surface2,
+        border: Border.all(
+          color: selected ? AppColors.primary : AppColors.textSecondary,
+          width: 1,
+        ),
       ),
-      child: selected
-          ? AppIcons.check(size: 14, color: AppColors.onPrimary)
-          : null,
+      // The check is present in BOTH states per Figma (muted when unselected,
+      // dark-on-green when selected) — it does not appear on selection, it
+      // recolours. Previously the unselected row had no glyph at all.
+      //
+      // Cross-faded rather than swapped: the disc colour animates, so a hard
+      // glyph swap would flash a dark check against the not-yet-green disc.
+      // AppIcons.check takes no key, so the switcher is keyed via KeyedSubtree.
+      child: AnimatedSwitcher(
+        duration: AppMotion.fast,
+        child: KeyedSubtree(
+          key: ValueKey<bool>(selected),
+          child: AppIcons.check(
+            size: 14,
+            color: selected ? AppColors.onPrimary : AppColors.textSecondary,
+          ),
+        ),
+      ),
     );
   }
 }

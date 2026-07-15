@@ -97,7 +97,12 @@ class AvatarScreen extends ConsumerWidget {
                       const SizedBox(height: AppSpacing.s16),
                     ],
                     if (buyable.isNotEmpty) ...[
-                      _label(l10n.available),
+                      // Figma `2117:20381` / v2 `3360:20447`: "구매 가능".
+                      // This used to reuse `l10n.available` ("이용 가능"), which
+                      // reads as "you can use these" — so unowned, paid
+                      // characters looked selectable. That key belongs to the
+                      // sheet's status chip; the section needs its own.
+                      _label(l10n.availableForPurchase),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in buyable) ...[
                         _buyableCard(context, c),
@@ -130,38 +135,40 @@ class AvatarScreen extends ConsumerWidget {
     int? activeId,
   ) {
     final l10n = AppLocalizations.of(context);
-    final cards = <Widget>[];
-    for (final c in owned) {
-      final isActive = activeId != null && c.id == activeId;
-      cards.add(
-        Expanded(
-          child: AvatarCard(
-            name: c.name,
-            statusLabel: isActive ? l10n.inUse : l10n.owned,
-            active: isActive,
-            imageProvider: _imageFor(c.imageUrl, c.id),
-            onTap: () => _openSheet(
-              context,
-              isActive
-                  ? BottomSheetAvatarState.ownedUsed
-                  : BottomSheetAvatarState.ownedUnused,
-              c.name,
-              _imageFor(c.imageUrl, c.id),
-            ),
-          ),
-        ),
-      );
-    }
-    // Pad to a 3-column grid so cards keep their width.
-    while (cards.length < 3) {
-      cards.add(const Expanded(child: SizedBox()));
-    }
-    return Row(
+    // Figma `2117:20366`: a left-aligned flex row of intrinsic-width cards with
+    // a 16px gap — NOT a 3-column grid. The old code wrapped each card in
+    // `Expanded` and padded with empty `Expanded`s to three, which stretched
+    // cards to a third of the screen and overflowed once a 4th was owned.
+    //
+    // Wrap (rather than Row) is identical to the design for the 1–3 cards it
+    // depicts, and simply flows onto a second line beyond that instead of
+    // throwing a layout overflow.
+    return Wrap(
+      spacing: AppSpacing.s16,
+      runSpacing: AppSpacing.s16,
       children: [
-        for (var i = 0; i < cards.length; i++) ...[
-          if (i > 0) const SizedBox(width: AppSpacing.s12),
-          cards[i],
-        ],
+        for (final c in owned)
+          Builder(
+            builder: (context) {
+              final isActive = activeId != null && c.id == activeId;
+              final image = _imageFor(c.imageUrl, c.id);
+              return AvatarCard(
+                name: c.name,
+                statusLabel: isActive ? l10n.inUse : l10n.owned,
+                active: isActive,
+                imageProvider: image,
+                onTap: () => _openSheet(
+                  context,
+                  isActive
+                      ? BottomSheetAvatarState.ownedUsed
+                      : BottomSheetAvatarState.ownedUnused,
+                  c.name,
+                  image,
+                  characterId: c.id,
+                ),
+              );
+            },
+          ),
       ],
     );
   }
@@ -181,10 +188,24 @@ class AvatarScreen extends ConsumerWidget {
             BottomSheetAvatarState.unownedDiscount,
             c.name,
             image,
+            characterId: c.id,
             price: _priceLabel(context, c.price),
             discountPrice: _priceLabel(context, c.effectivePrice),
+            discountPercent: _discountPercent(c),
           )),
     );
+  }
+
+  /// Whole-percent discount off list price, e.g. 4900 → 2450 = 50.
+  ///
+  /// The sheet cannot compute this itself — it receives prices as already
+  /// formatted strings — so it is derived here from the raw int KRW fields.
+  /// Returns null when there is nothing sensible to show (no discount, or a
+  /// zero list price), and the sheet then omits the badge.
+  int? _discountPercent(Character c) {
+    if (!c.hasDiscount || c.price <= 0) return null;
+    final off = ((c.price - c.effectivePrice) / c.price * 100).round();
+    return off <= 0 ? null : off;
   }
 
   /// A full-price (or free) buyable catalog character.
@@ -201,34 +222,53 @@ class AvatarScreen extends ConsumerWidget {
             BottomSheetAvatarState.unownedNormal,
             c.name,
             image,
+            characterId: c.id,
             price: _priceLabel(context, c.price),
           )),
     );
   }
 
-  /// Opens the avatar sheet. Purchase confirm is **not** wired — it just closes.
+  /// Opens the avatar sheet. Purchase confirm is **not** wired — it just closes
+  /// (there is no purchase/setActive method on CharacterRepository).
+  ///
+  /// [characterId] drives the description fetch: the paragraph in Figma v2
+  /// `3360:20576` comes from `GET /characters/{id}`, which the list endpoint
+  /// behind this screen does not include. It resolves after the sheet is up, so
+  /// the paragraph fades in rather than blocking the sheet on a request.
   void _openSheet(
     BuildContext context,
     BottomSheetAvatarState state,
     String name,
     ImageProvider image, {
+    required int characterId,
     String? price,
     String? discountPrice,
+    int? discountPercent,
   }) {
     showDialog<void>(
       context: context,
       barrierColor: Colors.transparent,
-      builder: (ctx) => BottomSheetAvatar(
-        state: state,
-        name: name,
-        imageProvider: image,
-        // Tags are mock (server has no tags).
-        tags: const ['Warm', 'Calm', 'Soft'],
-        price: price,
-        discountPrice: discountPrice,
-        onConfirm: () => Navigator.pop(ctx),
-        onClose: () => Navigator.pop(ctx),
-      ).asModal(),
+      builder: (ctx) => Consumer(
+        builder: (ctx, ref, _) {
+          // Detail is best-effort: on error/loading the sheet renders without
+          // the paragraph instead of showing a spinner or an error over a
+          // purchase flow.
+          final detail = ref.watch(characterDetailProvider(characterId));
+          return BottomSheetAvatar(
+            state: state,
+            name: name,
+            imageProvider: image,
+            // Tags are mock (server has no tags).
+            tags: const ['Warm', 'Calm', 'Soft'],
+            description: detail.valueOrNull?.description,
+            price: price,
+            discountPrice: discountPrice,
+            discountPercent: discountPercent,
+            onConfirm: () => Navigator.pop(ctx),
+            onClose: () => Navigator.pop(ctx),
+          ).asModal();
+        },
+      ),
     );
   }
 

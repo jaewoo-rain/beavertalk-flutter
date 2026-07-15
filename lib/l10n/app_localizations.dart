@@ -1749,6 +1749,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Apple Pay'**
   String get payMethodApple;
+
+  /// Header of the summary card on the payment-history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'This month\'s payment'**
+  String get thisMonthPayment;
+
+  /// Payment-history filter chip: show every transaction.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// Payment-history filter chip: subscription charges only.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get filterSubscription;
+
+  /// Payment-history filter chip: character purchases only.
+  ///
+  /// In en, this message translates to:
+  /// **'Character'**
+  String get filterCharacter;
+
+  /// Payment-history row status: the charge went through.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get statusCompleted;
+
+  /// Label of the most-recent-charge row in the subscription sheet's 결제 정보 section.
+  ///
+  /// In en, this message translates to:
+  /// **'Last payment'**
+  String get lastPayment;
+
+  /// Note paragraph on the change-plan and cancel subscription sheets.
+  ///
+  /// In en, this message translates to:
+  /// **'You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.'**
+  String subscriptionSwitchNote(String date);
+
+  /// Free plan benefit line on the change-plan sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'1 call a day · 5 min limit'**
+  String get freePlanCallLimit;
+
+  /// Free plan benefit line on the change-plan sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Basic characters included'**
+  String get freePlanBasicCharacters;
+
+  /// Section heading on the change-avatar screen listing characters the user does not own yet and can buy. Distinct from the sheet's 'Available' status chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Available to purchase'**
+  String get availableForPurchase;
 }
 
 class _AppLocalizationsDelegate
