@@ -853,4 +853,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get availableForPurchase => '구매 가능';
+
+  @override
+  String get paymentsLoadError => '결제 내역을 불러오지 못했어요';
+
+  @override
+  String get noPayments => '아직 결제 내역이 없어요';
+
+  @override
+  String get morePaymentsExist => '이전 결제 내역은 아직 표시되지 않아요';
+
+  @override
+  String get undatedPayments => '날짜 없음';
+
+  @override
+  String get paymentLabelFallback => '결제';
 }

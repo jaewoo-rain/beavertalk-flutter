@@ -59,4 +59,14 @@ class AuthRepositoryImpl implements AuthRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<Member> updateCharacter(int characterId) async {
+    try {
+      final dto = await _remote.updateCharacter(characterId);
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
 }

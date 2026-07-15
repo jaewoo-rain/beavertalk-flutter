@@ -32,4 +32,16 @@ class CharacterRemoteDataSource {
         .map((e) => OwnedCharacterDto.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  /// `POST /characters/{id}/purchase` → 201.
+  ///
+  /// The body is optional server-side; only `card_info` is accepted and the
+  /// price is never sent — the server prices the purchase itself.
+  Future<PurchaseResponseDto> purchase(int id, {String? cardInfo}) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '/characters/$id/purchase',
+      data: cardInfo == null ? null : {'card_info': cardInfo},
+    );
+    return PurchaseResponseDto.fromJson(res.data!);
+  }
 }

@@ -19,6 +19,7 @@ import '../../core/i18n/locale_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
@@ -51,11 +52,21 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       .firstWhere((l) => l.id == id, orElse: () => mockLanguages.first)
       .name;
 
-  /// Stand-in subscription expiry for the change-plan / cancel note.
-  ///
-  /// Mock: no subscription expiry exists on Member or any DTO. Replace with the
-  /// server value — and format it per locale — once the billing contract lands.
-  static const _mockExpiry = '2026.06.20.';
+  /// Formats a date the way the sheets show it: `2026.06.20.`
+  String _dateLabel(DateTime d) =>
+      '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}.';
+
+  /// Formats whole currency units as "₩4,900" (same convention as the avatar
+  /// and checkout screens).
+  String _money(int amount) {
+    final digits = amount.toString();
+    final buf = StringBuffer();
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
+      buf.write(digits[i]);
+    }
+    return '₩$buf';
+  }
 
   /// Opens the subscription sheet as a real bottom sheet over MyPage.
   ///
@@ -80,11 +91,12 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   /// [StatefulBuilder] rather than stacking routes, so the surface stays put and
   /// only its contents swap.
   ///
-  /// ## Values are mock
-  /// Plan name, price, dates, card and the expiry driving [_mockExpiry] are all
-  /// stand-ins — there is no billing/subscription endpoint in the client. Only
-  /// the copy is localized; swap [_mockExpiry] and the literals when the
-  /// contract lands.
+  /// ## Data
+  /// Price and dates come from `GET /subscriptions` via
+  /// [currentSubscriptionProvider]; 구독 취소 calls
+  /// `POST /subscriptions/{id}/cancel`. Benefit copy is static product text, and
+  /// the card line is still a placeholder — the server records `card_info` on
+  /// payments, but exposes no "current payment method" to read it back from.
   Future<void> _openSubscriptionSheet(AppLocalizations l10n) {
     var type = SubscriptionSheetType.manage;
     return showModalBottomSheet<void>(
@@ -98,17 +110,26 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       // The sheets are tall — without this they are capped at half the screen
       // and their footer buttons fall off.
       isScrollControlled: true,
-      builder: (sheetCtx) => StatefulBuilder(
-        builder: (sheetCtx, setSheetState) {
+      builder: (sheetCtx) => Consumer(
+        builder: (sheetCtx, ref, _) => StatefulBuilder(
+          builder: (sheetCtx, setSheetState) {
           void show(SubscriptionSheetType next) =>
               setSheetState(() => type = next);
-          final note = l10n.subscriptionSwitchNote(_mockExpiry);
+          final sub = ref.watch(currentSubscriptionProvider);
+          final end = sub?.endDate;
+          // The note names the date Pro access lapses. With no end_date the
+          // subscription is open-ended and the sentence has nothing to say, so
+          // it is dropped rather than printed with a blank or invented date.
+          final note = end == null
+              ? null
+              : l10n.subscriptionSwitchNote(_dateLabel(end));
+          final price = sub?.price;
           return BottomSheetSubscription(
             type: type,
             plan: SubscriptionPlanInfo(
               name: l10n.proMembership,
-              priceLine: l10n.pricePerMonth,
-              nextBillingDate: '2026.07.01.',
+              priceLine: price == null ? l10n.pricePerMonth : _money(price),
+              nextBillingDate: end == null ? null : _dateLabel(end),
             ),
             benefits: [
               SubscriptionBenefit(l10n.benefitUnlimitedCalls),
@@ -120,11 +141,14 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             // hides it when this list is empty (`bottom_sheet_subscription.dart:275`)
             // and the old screen passed nothing, so it never rendered at all.
             //
-            // Labels come from l10n — hardcoding them left "결제 수단"/"최근 결제"
-            // in Korean for all 30 locales.
+            // 최근 결제 is the subscription's start date — the charge that
+            // created it (`SubscriptionService.start` writes a Payment in the
+            // same transaction). 결제 수단 has no server source: `card_info` is
+            // written onto payments but never exposed as a "current method", so
+            // that row is omitted rather than faked.
             paymentRows: [
-              (label: l10n.paymentMethod, value: 'Visa 1234'),
-              (label: l10n.lastPayment, value: '2026.05.20.'),
+              if (sub?.startDate != null)
+                (label: l10n.lastPayment, value: _dateLabel(sub!.startDate!)),
             ],
             // Shown by change-plan and cancel only; the sheet ignores it for manage.
             note: note,
@@ -161,10 +185,10 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
               // 구독 취소 → the confirm step.
               SubscriptionSheetType.changePlan => () =>
                   show(SubscriptionSheetType.cancel),
-              // Final 구독 취소. There is no cancellation endpoint in the client
-              // (neither AuthRepository nor CharacterRepository exposes one), so
-              // this can only close — it must not pretend the plan was cancelled.
-              SubscriptionSheetType.cancel => () => Navigator.pop(sheetCtx),
+              // Final 구독 취소 → POST /subscriptions/{id}/cancel. Disabled when
+              // there is nothing active to cancel, so the button can't no-op.
+              SubscriptionSheetType.cancel =>
+                sub == null ? null : () => _cancelSubscription(sheetCtx, sub.id),
             },
             onSecondary: switch (type) {
               // 결제내역 보기 → the history screen. Close the sheet first, then
@@ -181,9 +205,38 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             },
             onClose: () => Navigator.pop(sheetCtx),
           );
-        },
+          },
+        ),
       ),
     );
+  }
+
+  /// Cancels [subscribeId] (`POST /subscriptions/{id}/cancel`), closes the sheet
+  /// and refreshes the subscription list.
+  ///
+  /// The cancel is a soft flag server-side — the row stays and keeps appearing
+  /// in `GET /subscriptions` with `is_activate: false`, which is why the list is
+  /// invalidated rather than mutated locally.
+  Future<void> _cancelSubscription(BuildContext sheetCtx, int subscribeId) async {
+    try {
+      await ref
+          .read(subscriptionRepositoryProvider)
+          .cancel(subscribeId);
+      ref.invalidate(subscriptionsProvider);
+      // The cancel wrote no payment row, but the plan state the rest of the
+      // screen shows is derived from this list.
+      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
+    } catch (e) {
+      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e is AppException
+              ? e.message
+              : AppLocalizations.of(context).somethingWentWrong),
+        ),
+      );
+    }
   }
 
   /// Opens the language bottom sheet for the **user (UI) language**, seeded with

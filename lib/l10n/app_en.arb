@@ -380,5 +380,25 @@
   "availableForPurchase": "Available to purchase",
   "@availableForPurchase": {
     "description": "Section heading on the change-avatar screen listing characters the user does not own yet and can buy. Distinct from the sheet's 'Available' status chip."
+  },
+  "paymentsLoadError": "Couldn't load payment history",
+  "@paymentsLoadError": {
+    "description": "Error state on the payment-history screen when GET /payments fails."
+  },
+  "noPayments": "No payments yet",
+  "@noPayments": {
+    "description": "Empty state on the payment-history screen."
+  },
+  "morePaymentsExist": "Older payments aren't shown yet",
+  "@morePaymentsExist": {
+    "description": "Shown when the server reports has_more but load-more isn't wired."
+  },
+  "undatedPayments": "Undated",
+  "@undatedPayments": {
+    "description": "Month-group heading for payments whose payment_date is null."
+  },
+  "paymentLabelFallback": "Payment",
+  "@paymentLabelFallback": {
+    "description": "Row label when the server sends no description and the category is unknown."
   }
 }

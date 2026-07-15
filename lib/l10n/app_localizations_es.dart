@@ -885,4 +885,19 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get availableForPurchase => 'Available to purchase';
+
+  @override
+  String get paymentsLoadError => 'Couldn\'t load payment history';
+
+  @override
+  String get noPayments => 'No payments yet';
+
+  @override
+  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+
+  @override
+  String get undatedPayments => 'Undated';
+
+  @override
+  String get paymentLabelFallback => 'Payment';
 }

@@ -275,5 +275,10 @@
   "subscriptionSwitchNote": "{date}까지 Pro 혜택을 계속 사용할 수 있고 그 이후 자동으로 무료 플랜으로 전환됩니다.",
   "freePlanCallLimit": "하루 1통화 · 5분 제한",
   "freePlanBasicCharacters": "기본 캐릭터 사용 가능",
-  "availableForPurchase": "구매 가능"
+  "availableForPurchase": "구매 가능",
+  "paymentsLoadError": "결제 내역을 불러오지 못했어요",
+  "noPayments": "아직 결제 내역이 없어요",
+  "morePaymentsExist": "이전 결제 내역은 아직 표시되지 않아요",
+  "undatedPayments": "날짜 없음",
+  "paymentLabelFallback": "결제"
 }

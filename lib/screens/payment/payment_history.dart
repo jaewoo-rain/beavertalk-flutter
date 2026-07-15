@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../app/app_scaffold.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/pressable.dart';
 import '../../components/molecules/card_line.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/payment/domain/entities/payment.dart';
+import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_motion.dart';
@@ -15,109 +19,29 @@ import '../../theme/app_typography.dart';
 /// Payment history — Figma `screen/main_mypage_payment` (`2117:20206`).
 ///
 /// A back-only GNB (the design's title is `opacity-0`) over: a summary card
-/// ("이번 달 결제 금액" + amount + next-billing line), a filter chip row
+/// ("이번 달 결제 금액" + month total + next-billing line), a filter chip row
 /// (전체 / 구독 / 캐릭터), then transactions grouped by month, each rendered as a
 /// [CardLine] of [CardLineType.payment].
 ///
-/// ## Data is mock
-/// UI only for now. There is no payment feature in the client — no
-/// `lib/features/payment/`, no repository, no DTO, and no server endpoint for
-/// a transaction list. [_mockItems] stands in until that contract exists; the
-/// widget already reads everything through [_Txn] so wiring a real source is a
-/// swap of that one list.
-class PaymentHistoryScreen extends StatefulWidget {
+/// Backed by `GET /payments?type=&page=` — the tab chips map 1:1 onto the
+/// server's `type` filter, so switching tabs refetches rather than filtering
+/// client-side (the server pages at 10 and only the active tab's page is held).
+class PaymentHistoryScreen extends ConsumerStatefulWidget {
   /// Creates the payment-history screen.
   const PaymentHistoryScreen({super.key});
 
   @override
-  State<PaymentHistoryScreen> createState() => _PaymentHistoryScreenState();
+  ConsumerState<PaymentHistoryScreen> createState() =>
+      _PaymentHistoryScreenState();
 }
 
-/// Which transactions the chip row is showing.
-enum _Filter { all, subscription, character }
-
-/// What kind of purchase a row represents — drives [_Filter].
-enum _TxnKind { subscription, character }
-
-/// One transaction row.
-class _Txn {
-  const _Txn({
-    required this.title,
-    required this.date,
-    required this.method,
-    required this.amount,
-    required this.kind,
-  });
-
-  /// Row label, e.g. "프리미엄 구독(월간)".
-  final String title;
-
-  /// When the charge happened — also drives the month grouping.
-  final DateTime date;
-
-  /// Payment method line, e.g. "신한카드 1234".
-  final String method;
-
-  /// Formatted amount as shown, e.g. "12.9$".
-  final String amount;
-
-  final _TxnKind kind;
-}
-
-class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
-  _Filter _filter = _Filter.all;
-
-  /// Stand-in data mirroring the Figma frame. Replace with the server list.
-  static final List<_Txn> _mockItems = [
-    _Txn(
-      title: '프리미엄 구독(월간)',
-      date: DateTime(2026, 6, 3),
-      method: '신한카드 1234',
-      amount: '12.9\$',
-      kind: _TxnKind.subscription,
-    ),
-    _Txn(
-      title: '프리미엄 구독(월간)',
-      date: DateTime(2026, 5, 3),
-      method: '신한카드 1234',
-      amount: '12.9\$',
-      kind: _TxnKind.subscription,
-    ),
-    _Txn(
-      title: '캐릭터 구매',
-      date: DateTime(2026, 5, 3),
-      method: '신한카드 1234',
-      amount: '5\$',
-      kind: _TxnKind.character,
-    ),
-  ];
-
-  List<_Txn> get _visible => switch (_filter) {
-        _Filter.all => _mockItems,
-        _Filter.subscription =>
-          _mockItems.where((t) => t.kind == _TxnKind.subscription).toList(),
-        _Filter.character =>
-          _mockItems.where((t) => t.kind == _TxnKind.character).toList(),
-      };
-
-  /// Groups [_visible] by calendar month, newest month first, preserving the
-  /// source order inside each group.
-  List<MapEntry<DateTime, List<_Txn>>> get _grouped {
-    final byMonth = <DateTime, List<_Txn>>{};
-    for (final t in _visible) {
-      final key = DateTime(t.date.year, t.date.month);
-      byMonth.putIfAbsent(key, () => []).add(t);
-    }
-    final entries = byMonth.entries.toList()
-      ..sort((a, b) => b.key.compareTo(a.key));
-    return entries;
-  }
+class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
+  PaymentFilter _filter = PaymentFilter.all;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final locale = Localizations.localeOf(context).toString();
-    final groups = _grouped;
+    final async = ref.watch(paymentPageProvider(_filter));
 
     return AppScaffold(
       background: AppColors.surface,
@@ -127,37 +51,15 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
           // Figma: the GNB title is opacity-0 — back arrow only.
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  const SizedBox(height: AppSpacing.s24),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s20,
-                    ),
-                    child: _summaryCard(l10n),
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  _filterRow(l10n),
-                  const SizedBox(height: AppSpacing.s12),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s20,
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        for (var g = 0; g < groups.length; g++) ...[
-                          if (g > 0) const SizedBox(height: AppSpacing.s12),
-                          _monthGroup(groups[g], locale),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
+            child: async.when(
+              loading: () => const Center(
+                child: CircularProgressIndicator(color: AppColors.primary),
               ),
+              error: (e, _) => _ErrorState(
+                message: l10n.paymentsLoadError,
+                onRetry: () => ref.invalidate(paymentPageProvider(_filter)),
+              ),
+              data: (page) => _body(l10n, page),
             ),
           ),
         ],
@@ -165,9 +67,63 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  /// "이번 달 결제 금액" card (Figma `2117:20223`): fill `surfaceElevated`,
-  /// radius 8, top 16 / bottom 24 / sides 16.
-  Widget _summaryCard(AppLocalizations l10n) {
+  Widget _body(AppLocalizations l10n, PaymentPage page) {
+    final locale = Localizations.localeOf(context).toString();
+    final groups = _groupByMonth(page.items);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: AppSpacing.s24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const SizedBox(height: AppSpacing.s24),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: _summaryCard(l10n, page.monthTotal),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          _filterRow(l10n),
+          const SizedBox(height: AppSpacing.s12),
+          if (groups.isEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.s80),
+              child: Text(
+                l10n.noPayments,
+                textAlign: TextAlign.center,
+                style:
+                    AppType.label1.r.copyWith(color: AppColors.textSecondary),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  for (var g = 0; g < groups.length; g++) ...[
+                    if (g > 0) const SizedBox(height: AppSpacing.s12),
+                    _monthGroup(l10n, groups[g], locale),
+                  ],
+                ],
+              ),
+            ),
+          // The server pages at 10 (`has_more`); surfaced rather than silently
+          // truncating the list. Load-more is not wired yet — see the handoff.
+          if (page.hasMore) ...[
+            const SizedBox(height: AppSpacing.s16),
+            Text(
+              l10n.morePaymentsExist,
+              textAlign: TextAlign.center,
+              style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// "이번 달 결제 금액" card (Figma `2117:20223`).
+  Widget _summaryCard(AppLocalizations l10n, int monthTotal) {
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.s16,
@@ -185,34 +141,14 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
         children: [
           Text(l10n.thisMonthPayment, style: AppType.body1.r),
           const SizedBox(height: AppSpacing.s8),
-          // Mock: the month's total is not computed from a server figure.
-          Text('12.9\$', style: AppType.title3.b),
-          const SizedBox(height: AppSpacing.s8),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n.nextBillingDate,
-                style: AppType.label1.r
-                    .copyWith(color: AppColors.textSecondary),
-              ),
-              const SizedBox(width: 10),
-              _dot(4, AppColors.textSecondary),
-              const SizedBox(width: 10),
-              Text(
-                '7월 1일',
-                style: AppType.label1.r
-                    .copyWith(color: AppColors.textSecondary),
-              ),
-            ],
-          ),
+          Text(_money(l10n, monthTotal), style: AppType.title3.b),
         ],
       ),
     );
   }
 
   /// Filter chips (Figma `2117:20237`): fill `surface2` in both states — only
-  /// the label colour changes (white when selected, `textSecondary` otherwise).
+  /// the label colour changes.
   Widget _filterRow(AppLocalizations l10n) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -222,8 +158,9 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
       ),
       child: Row(
         children: [
-          for (final f in _Filter.values) ...[
-            if (f != _Filter.values.first) const SizedBox(width: AppSpacing.s12),
+          for (final f in PaymentFilter.values) ...[
+            if (f != PaymentFilter.values.first)
+              const SizedBox(width: AppSpacing.s12),
             _chip(_filterLabel(f, l10n), selected: _filter == f, onTap: () {
               if (_filter != f) setState(() => _filter = f);
             }),
@@ -233,10 +170,10 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  String _filterLabel(_Filter f, AppLocalizations l10n) => switch (f) {
-        _Filter.all => l10n.filterAll,
-        _Filter.subscription => l10n.filterSubscription,
-        _Filter.character => l10n.filterCharacter,
+  String _filterLabel(PaymentFilter f, AppLocalizations l10n) => switch (f) {
+        PaymentFilter.all => l10n.filterAll,
+        PaymentFilter.subscribe => l10n.filterSubscription,
+        PaymentFilter.character => l10n.filterCharacter,
       };
 
   Widget _chip(String label,
@@ -265,42 +202,123 @@ class _PaymentHistoryScreenState extends State<PaymentHistoryScreen> {
     );
   }
 
-  /// One month heading + its rows. The last row drops its divider so the group
-  /// doesn't end on a dangling hairline.
-  Widget _monthGroup(MapEntry<DateTime, List<_Txn>> group, String locale) {
+  /// Groups by calendar month, newest first. Rows with no `payment_date` can't
+  /// be bucketed, so they collect under a null key rendered last.
+  List<MapEntry<DateTime?, List<Payment>>> _groupByMonth(List<Payment> items) {
+    final byMonth = <DateTime?, List<Payment>>{};
+    for (final p in items) {
+      final d = p.date;
+      final key = d == null ? null : DateTime(d.year, d.month);
+      byMonth.putIfAbsent(key, () => []).add(p);
+    }
+    final dated = byMonth.entries.where((e) => e.key != null).toList()
+      ..sort((a, b) => b.key!.compareTo(a.key!));
+    final undated = byMonth.entries.where((e) => e.key == null);
+    return [...dated, ...undated];
+  }
+
+  Widget _monthGroup(
+    AppLocalizations l10n,
+    MapEntry<DateTime?, List<Payment>> group,
+    String locale,
+  ) {
     final rows = group.value;
+    final key = group.key;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          // Locale-aware rather than a hardcoded "2026년 6월": the same screen
-          // renders in 30 locales.
-          intl.DateFormat.yMMMM(locale).format(group.key),
+          // Locale-aware: this screen renders in 30 locales.
+          key == null ? l10n.undatedPayments : intl.DateFormat.yMMMM(locale).format(key),
           style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
         ),
         const SizedBox(height: AppSpacing.s8),
         for (var i = 0; i < rows.length; i++)
-          _row(rows[i], locale, showDivider: i < rows.length - 1),
+          _row(l10n, rows[i], locale, showDivider: i < rows.length - 1),
       ],
     );
   }
 
-  Widget _row(_Txn t, String locale, {required bool showDivider}) {
-    final l10n = AppLocalizations.of(context);
+  Widget _row(
+    AppLocalizations l10n,
+    Payment p,
+    String locale, {
+    required bool showDivider,
+  }) {
+    // `description` and `card_info` are server-authored and nullable; a row with
+    // neither still shows its amount rather than being dropped.
+    final date = p.date;
+    final meta = [
+      if (date != null) intl.DateFormat.MMMd(locale).format(date),
+      if (p.cardInfo != null && p.cardInfo!.isNotEmpty) p.cardInfo!,
+    ].join('·'); // CardLine splits on `·` into dot-separated segments.
+
     return CardLine(
       type: CardLineType.payment,
-      label: t.title,
-      // CardLine splits `meta` on `·` into dot-separated segments.
-      meta: '${intl.DateFormat.MMMd(locale).format(t.date)}·${t.method}',
-      value: t.amount,
+      label: p.description ?? _categoryLabel(l10n, p.category),
+      meta: meta.isEmpty ? null : meta,
+      value: _money(l10n, p.price),
       status: l10n.statusCompleted,
       showDivider: showDivider,
     );
   }
 
-  Widget _dot(double size, Color color) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-      );
+  /// Fallback label when the server sends no description.
+  String _categoryLabel(AppLocalizations l10n, PaymentCategory c) =>
+      switch (c) {
+        PaymentCategory.subscribe => l10n.filterSubscription,
+        PaymentCategory.character => l10n.filterCharacter,
+        PaymentCategory.unknown => l10n.paymentLabelFallback,
+      };
+
+  /// Formats whole currency units as "₩4,900" — the same convention as the
+  /// avatar and checkout screens (`avatar.dart` `_priceLabel`).
+  ///
+  /// Zero renders as "₩0", not "무료": that label belongs to a free *product*
+  /// (`priceFree` on a character card). A month with no charges has a total of
+  /// zero — calling it "무료" reads as if the plan itself were free.
+  String _money(AppLocalizations l10n, int amount) {
+    final digits = amount.toString();
+    final buf = StringBuffer();
+    for (var i = 0; i < digits.length; i++) {
+      if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
+      buf.write(digits[i]);
+    }
+    return '₩$buf';
+  }
+}
+
+/// Load failure + retry, matching the avatar screen's error state.
+class _ErrorState extends StatelessWidget {
+  const _ErrorState({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: AppSpacing.s16),
+            Button(
+              type: BtnType.secondaryFill,
+              size: BtnSize.s44,
+              text: l10n.retry,
+              onPressed: onRetry,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

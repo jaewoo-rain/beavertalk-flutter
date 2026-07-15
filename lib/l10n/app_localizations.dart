@@ -1809,6 +1809,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available to purchase'**
   String get availableForPurchase;
+
+  /// Error state on the payment-history screen when GET /payments fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load payment history'**
+  String get paymentsLoadError;
+
+  /// Empty state on the payment-history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get noPayments;
+
+  /// Shown when the server reports has_more but load-more isn't wired.
+  ///
+  /// In en, this message translates to:
+  /// **'Older payments aren\'t shown yet'**
+  String get morePaymentsExist;
+
+  /// Month-group heading for payments whose payment_date is null.
+  ///
+  /// In en, this message translates to:
+  /// **'Undated'**
+  String get undatedPayments;
+
+  /// Row label when the server sends no description and the category is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentLabelFallback;
 }
 
 class _AppLocalizationsDelegate
