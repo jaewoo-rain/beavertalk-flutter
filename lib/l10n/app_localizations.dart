@@ -343,8 +343,74 @@ abstract class AppLocalizations {
   /// No description provided for @callPartner.
   ///
   /// In en, this message translates to:
-  /// **'Character'**
+  /// **'Call partner'**
   String get callPartner;
+
+  /// No description provided for @quickStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick start'**
+  String get quickStart;
+
+  /// No description provided for @presetMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning routine'**
+  String get presetMorning;
+
+  /// No description provided for @presetMorningSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays 8:00'**
+  String get presetMorningSub;
+
+  /// No description provided for @presetEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening wind-down'**
+  String get presetEvening;
+
+  /// No description provided for @presetEveningSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day 21:00'**
+  String get presetEveningSub;
+
+  /// No description provided for @presetCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get presetCustom;
+
+  /// No description provided for @presetCustomSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own'**
+  String get presetCustomSub;
+
+  /// Summary under the alarm form. monthly = count × 4.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× a week · {monthly} calls a month'**
+  String alarmSummary(int count, int monthly);
+
+  /// No description provided for @alarmSummaryNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least one day'**
+  String get alarmSummaryNone;
+
+  /// No description provided for @partnerInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get partnerInUse;
+
+  /// No description provided for @partnerOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get partnerOwned;
 
   /// No description provided for @am.
   ///

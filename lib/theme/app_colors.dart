@@ -9,6 +9,16 @@ abstract final class AppColors {
   static const primary10 = Color(0x1A00FFB2); // Primary/Primary-10 (≈10%)
   static const primary24 = Color(0x3D00FFB2); // ≈24%
 
+  /// Semantics/Primary/Strong — a *different hue*, not an alpha of [primary].
+  /// The alarm sheet's 빠른 시작 border and 요약 line, and the summary screen's
+  /// selected preset icon (`3665:12460`).
+  static const primaryStrong = Color(0xFF00E8A2);
+
+  /// Primary/Primary-4 — the 4% wash behind a selected 빠른 시작 card
+  /// (`3665:12362`). Far fainter than [primary10]; on #1F222A the two are
+  /// distinguishable side by side, which the sheet does.
+  static const primary04 = Color(0x0A00FFB2);
+
   // Alphas the learning-session summary asks for (`screen/learning_main`,
   // 3569:15065). Each is within a couple of percent of one above, but they sit
   // side by side on that screen — the delta pill against the bars, the bars

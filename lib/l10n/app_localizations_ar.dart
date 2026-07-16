@@ -113,6 +113,41 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callPartner => 'الشخصية';
 
   @override
+  String get quickStart => 'Quick start';
+
+  @override
+  String get presetMorning => 'Morning routine';
+
+  @override
+  String get presetMorningSub => 'Weekdays 8:00';
+
+  @override
+  String get presetEvening => 'Evening wind-down';
+
+  @override
+  String get presetEveningSub => 'Every day 21:00';
+
+  @override
+  String get presetCustom => 'Custom';
+
+  @override
+  String get presetCustomSub => 'Your own';
+
+  @override
+  String alarmSummary(int count, int monthly) {
+    return '$count× a week · $monthly calls a month';
+  }
+
+  @override
+  String get alarmSummaryNone => 'Pick at least one day';
+
+  @override
+  String get partnerInUse => 'In use';
+
+  @override
+  String get partnerOwned => 'Owned';
+
+  @override
   String get am => 'ص';
 
   @override

@@ -108,7 +108,42 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repeat => '반복';
 
   @override
-  String get callPartner => '캐릭터';
+  String get callPartner => '통화 상대';
+
+  @override
+  String get quickStart => '빠른 시작';
+
+  @override
+  String get presetMorning => '아침 루틴';
+
+  @override
+  String get presetMorningSub => '평일 8:00';
+
+  @override
+  String get presetEvening => '저녁 정리';
+
+  @override
+  String get presetEveningSub => '매일 21:00';
+
+  @override
+  String get presetCustom => '직접 설정';
+
+  @override
+  String get presetCustomSub => '자유롭게';
+
+  @override
+  String alarmSummary(int count, int monthly) {
+    return '주 $count회 · 한 달이면 $monthly번 통화하게 돼요';
+  }
+
+  @override
+  String get alarmSummaryNone => '요일을 하나 이상 골라 주세요';
+
+  @override
+  String get partnerInUse => '사용 중';
+
+  @override
+  String get partnerOwned => '보유 중';
 
   @override
   String get am => '오전';

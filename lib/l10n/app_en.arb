@@ -70,7 +70,25 @@
   "noCharacters": "No characters available",
   "close": "Close",
   "repeat": "Repeat",
-  "callPartner": "Character",
+  "callPartner": "Call partner",
+  "quickStart": "Quick start",
+  "presetMorning": "Morning routine",
+  "presetMorningSub": "Weekdays 8:00",
+  "presetEvening": "Evening wind-down",
+  "presetEveningSub": "Every day 21:00",
+  "presetCustom": "Custom",
+  "presetCustomSub": "Your own",
+  "alarmSummary": "{count}× a week · {monthly} calls a month",
+  "@alarmSummary": {
+    "description": "Summary under the alarm form. monthly = count × 4.",
+    "placeholders": {
+      "count": { "type": "int" },
+      "monthly": { "type": "int" }
+    }
+  },
+  "alarmSummaryNone": "Pick at least one day",
+  "partnerInUse": "In use",
+  "partnerOwned": "Owned",
   "am": "AM",
   "pm": "PM",
   "save": "Save",

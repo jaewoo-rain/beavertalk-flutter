@@ -98,6 +98,25 @@ abstract final class AppIcons {
   static Widget calendar({double size = 24, Color color = AppColors.text}) =>
       _glyph('calendar', size, color);
 
+  // ── Alarm quick-start presets (`screen/etc_alarm__add`, 3665:12018) ──
+  //
+  // Unlike every other glyph here, these three are **not** in the
+  // `02_Icon Component` library — they are drawn inline on the sheet
+  // (`3665:12365` / `3665:12374` / `3665:12381`), so they were exported from
+  // those nodes. Figma's export of a nested node drags the whole ancestor
+  // chain in with it (an `#F5F5F5` backdrop and the artboard's rects), so each
+  // file here holds only the glyph's own paths, lifted verbatim out of that
+  // export — the vector data is Figma's, the wrapper is not.
+  //
+  // The exports carry a hardcoded `#00E8A2` stroke; `_glyph`'s `srcIn` filter
+  // paints over it, so [color] still rules.
+  static Widget sun({double size = 24, Color color = AppColors.text}) =>
+      _glyph('sun', size, color);
+  static Widget moon({double size = 24, Color color = AppColors.text}) =>
+      _glyph('moon', size, color);
+  static Widget sliders({double size = 24, Color color = AppColors.text}) =>
+      _glyph('sliders', size, color);
+
   // ── Account / auth ───────────────────────────────────────────
   static Widget profile({double size = 24, Color color = AppColors.text}) =>
       _glyph('profile', size, color);
