@@ -162,7 +162,7 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => 'One thing to fix today';
+  String get oneFixTitle => 'Today\'s feedback';
 
   @override
   String streakBadge(int count) {
@@ -170,23 +170,9 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String get firstTimeTitle => 'A first this time';
-
-  @override
   String newExpressionsCount(int count) {
     return 'New expressions $count';
   }
-
-  @override
-  String expressionsTotal(int count) {
-    return '$count total';
-  }
-
-  @override
-  String get nextCallTitle => 'To try on your next call';
-
-  @override
-  String get nextCallFooter => 'Shown on your next call\'s start screen';
 
   @override
   String get analysisLoadError => 'विश्लेषण नतिजा लोड गर्न सकिएन।';

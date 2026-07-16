@@ -433,7 +433,7 @@ abstract class AppLocalizations {
   /// No description provided for @oneFixTitle.
   ///
   /// In en, this message translates to:
-  /// **'One thing to fix today'**
+  /// **'Today\'s feedback'**
   String get oneFixTitle;
 
   /// Shown when the same fix has recurred across consecutive calls.
@@ -442,35 +442,11 @@ abstract class AppLocalizations {
   /// **'{count} calls in a row'**
   String streakBadge(int count);
 
-  /// No description provided for @firstTimeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A first this time'**
-  String get firstTimeTitle;
-
   /// No description provided for @newExpressionsCount.
   ///
   /// In en, this message translates to:
   /// **'New expressions {count}'**
   String newExpressionsCount(int count);
-
-  /// Lifetime count of learned expressions, not just this call.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} total'**
-  String expressionsTotal(int count);
-
-  /// No description provided for @nextCallTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'To try on your next call'**
-  String get nextCallTitle;
-
-  /// No description provided for @nextCallFooter.
-  ///
-  /// In en, this message translates to:
-  /// **'Shown on your next call\'s start screen'**
-  String get nextCallFooter;
 
   /// No description provided for @analysisLoadError.
   ///

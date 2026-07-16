@@ -138,7 +138,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noNewExpressions => '이번 대화에서는 새로운 표현이 없어요.';
 
   @override
-  String get practice => '연습';
+  String get practice => '연습하기';
 
   @override
   String recentScore(int score) {
@@ -161,7 +161,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => '오늘 고칠 것 하나';
+  String get oneFixTitle => '오늘의 피드백';
 
   @override
   String streakBadge(int count) {
@@ -169,23 +169,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get firstTimeTitle => '이번에 처음 한 것';
-
-  @override
   String newExpressionsCount(int count) {
     return '새로 배운 표현 $count';
   }
-
-  @override
-  String expressionsTotal(int count) {
-    return '누적 $count';
-  }
-
-  @override
-  String get nextCallTitle => '다음 통화에 해볼 것';
-
-  @override
-  String get nextCallFooter => '다음 통화 시작 화면에 뜹니다';
 
   @override
   String get analysisLoadError => '분석 결과를 불러오지 못했어요.';

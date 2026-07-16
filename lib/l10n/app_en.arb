@@ -116,7 +116,7 @@
       }
     }
   },
-  "oneFixTitle": "One thing to fix today",
+  "oneFixTitle": "Today's feedback",
   "streakBadge": "{count} calls in a row",
   "@streakBadge": {
     "description": "Shown when the same fix has recurred across consecutive calls.",
@@ -126,7 +126,6 @@
       }
     }
   },
-  "firstTimeTitle": "A first this time",
   "newExpressionsCount": "New expressions {count}",
   "@newExpressionsCount": {
     "placeholders": {
@@ -135,17 +134,6 @@
       }
     }
   },
-  "expressionsTotal": "{count} total",
-  "@expressionsTotal": {
-    "description": "Lifetime count of learned expressions, not just this call.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "nextCallTitle": "To try on your next call",
-  "nextCallFooter": "Shown on your next call's start screen",
   "analysisLoadError": "Couldn't load the analysis result.",
   "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
   "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",

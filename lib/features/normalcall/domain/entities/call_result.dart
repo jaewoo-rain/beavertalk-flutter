@@ -62,7 +62,7 @@ class CharacterNote {
   final String text;
 }
 
-/// The single thing to fix, surfaced as "오늘 고칠 것 하나".
+/// The single thing to fix, surfaced as "오늘의 피드백".
 ///
 /// Only [title] is required: the server may know *what* is off without having
 /// an example to quote or an L1-interference explanation to offer.
@@ -89,17 +89,6 @@ class OneFix {
   final int? streakCount;
 }
 
-/// A first-in-this-call achievement ("이번에 처음 한 것").
-class FirstTime {
-  const FirstTime({required this.text, this.previous});
-
-  /// What the learner did for the first time, e.g. "되묻지 않고 바로 답했어요 · 7회".
-  final String text;
-
-  /// The comparison against the previous call, or null.
-  final String? previous;
-}
-
 /// Full analysis result for a finished call.
 class CallResult {
   const CallResult({
@@ -114,9 +103,6 @@ class CallResult {
     this.callSequence,
     this.note,
     this.oneFix,
-    this.firstTime,
-    this.nextCall,
-    this.expressionsTotal,
   });
 
   /// Server call id.
@@ -143,11 +129,10 @@ class CallResult {
   // ── Fields the v2 analysis design renders (Figma `screen/analysis__확정`) ──
   //
   // Every one of these is nullable and **the server does not send any of them
-  // yet** — see `docs/2026-07-15_2114_analysis-screen-redesign.md` for the
-  // proposed payload. They are declared (and parsed in the DTO) ahead of the
-  // server so that wiring them up later needs no client change. Until then each
-  // stays null and the screen hides that section outright rather than showing a
-  // placeholder.
+  // yet** — see `docs/2026-07-16_1145_analysis-확정디자인-정합.md` for the proposed
+  // payload. They are declared (and parsed in the DTO) ahead of the server so
+  // that wiring them up later needs no client change. Until then each stays null
+  // and the screen hides that section outright rather than showing a placeholder.
 
   /// The conversation partner. `GET /calls` sends this per row, but
   /// `/calls/{id}/result` does not — so the avatar/name have no source here yet.
@@ -161,16 +146,6 @@ class CallResult {
 
   /// The one thing to fix, or null.
   final OneFix? oneFix;
-
-  /// A first-in-this-call achievement, or null.
-  final FirstTime? firstTime;
-
-  /// What to try on the next call, or null.
-  final String? nextCall;
-
-  /// Lifetime count of learned expressions ("누적 27"), or null. Distinct from
-  /// `sentences.length`, which counts only *this* call.
-  final int? expressionsTotal;
 
   /// Returns a copy with [callDate]/[totalTime] overridden — used to graft the
   /// date/duration (which the `/result` endpoint omits) from the call detail.
@@ -186,9 +161,6 @@ class CallResult {
         callSequence: callSequence,
         note: note,
         oneFix: oneFix,
-        firstTime: firstTime,
-        nextCall: nextCall,
-        expressionsTotal: expressionsTotal,
       );
 }
 

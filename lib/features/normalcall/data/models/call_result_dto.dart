@@ -74,11 +74,11 @@ class LearnedSentenceDto {
 
 /// Wire model for `GET /calls/{call_id}/result` (snake_case payload).
 ///
-/// The `character`/`call_sequence`/`character_note`/`one_fix`/`first_time`/
-/// `next_call`/`expressions_total` keys are what the v2 analysis design needs
-/// (Figma `screen/analysis__확정`). **The server sends none of them today** —
-/// they are parsed defensively so the screen lights up the moment it does, with
-/// no client release. Every one stays null against the current payload.
+/// The `character`/`call_sequence`/`character_note`/`one_fix` keys are what the
+/// v2 analysis design needs (Figma `screen/analysis__확정`). **The server sends
+/// none of them today** — they are parsed defensively so the screen lights up
+/// the moment it does, with no client release. Every one stays null against the
+/// current payload.
 class CallResultDto {
   const CallResultDto({
     required this.callId,
@@ -92,9 +92,6 @@ class CallResultDto {
     this.callSequence,
     this.note,
     this.oneFix,
-    this.firstTime,
-    this.nextCall,
-    this.expressionsTotal,
   });
 
   final int callId;
@@ -108,9 +105,6 @@ class CallResultDto {
   final int? callSequence;
   final CharacterNote? note;
   final OneFix? oneFix;
-  final FirstTime? firstTime;
-  final String? nextCall;
-  final int? expressionsTotal;
 
   factory CallResultDto.fromJson(Map<String, dynamic> json) {
     final average = (json['average'] as Map<String, dynamic>?) ?? const {};
@@ -129,9 +123,6 @@ class CallResultDto {
       callSequence: (json['call_sequence'] as num?)?.toInt(),
       note: _note(json['character_note']),
       oneFix: _oneFix(json['one_fix']),
-      firstTime: _firstTime(json['first_time']),
-      nextCall: _text(json['next_call']),
-      expressionsTotal: (json['expressions_total'] as num?)?.toInt(),
     );
   }
 
@@ -163,13 +154,6 @@ class CallResultDto {
     );
   }
 
-  static FirstTime? _firstTime(Object? value) {
-    if (value is! Map<String, dynamic>) return null;
-    final text = _text(value['text']);
-    if (text == null) return null;
-    return FirstTime(text: text, previous: _text(value['previous']));
-  }
-
   /// A blank string is as absent as null — both must hide the section rather
   /// than render an empty card.
   static String? _text(Object? value) {
@@ -190,9 +174,6 @@ class CallResultDto {
         callSequence: callSequence,
         note: note,
         oneFix: oneFix,
-        firstTime: firstTime,
-        nextCall: nextCall,
-        expressionsTotal: expressionsTotal,
       );
 }
 
