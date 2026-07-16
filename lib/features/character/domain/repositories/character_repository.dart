@@ -1,6 +1,6 @@
 import '../entities/character.dart';
 
-/// Character read capabilities. Implemented in the data layer.
+/// Character capabilities. Implemented in the data layer.
 ///
 /// Returns entities and throws [AppException]
 /// (see `core/error/app_exception.dart`) on failure. No dio/JSON leaks here.
@@ -13,4 +13,16 @@ abstract interface class CharacterRepository {
 
   /// `GET /members/me/characters` — characters the member owns.
   Future<List<OwnedCharacter>> listOwned();
+
+  /// `POST /characters/{id}/purchase` — buys [id] for the current member.
+  ///
+  /// The amount is **not** sent: the server prices it from the active discount
+  /// window, so a stale client price can't be used to underpay. [cardInfo] is an
+  /// opaque masked string recorded on the payment row.
+  ///
+  /// Throws `ConflictFailure` when already owned (409 `ALREADY_OWNED` — the
+  /// server's only semantic error code), `NotFoundFailure` for an unknown id.
+  /// There is no insufficient-funds case: the server has no wallet and calls no
+  /// payment gateway, so a purchase never fails for lack of money.
+  Future<PurchaseResult> purchase(int id, {String? cardInfo});
 }

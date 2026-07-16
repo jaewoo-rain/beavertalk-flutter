@@ -89,6 +89,63 @@
       }
     }
   },
+  "conversationRecord": "Conversation record",
+  "callSequence": "Call #{count}",
+  "@callSequence": {
+    "description": "Which call this is with the same partner, shown in the analysis meta line.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "characterNoteTitle": "A word from {name}",
+  "@characterNoteTitle": {
+    "description": "Section title for the partner's post-call remark.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "characterNoteFooter": "Left by {name} right after the call",
+  "@characterNoteFooter": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "oneFixTitle": "One thing to fix today",
+  "streakBadge": "{count} calls in a row",
+  "@streakBadge": {
+    "description": "Shown when the same fix has recurred across consecutive calls.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "firstTimeTitle": "A first this time",
+  "newExpressionsCount": "New expressions {count}",
+  "@newExpressionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expressionsTotal": "{count} total",
+  "@expressionsTotal": {
+    "description": "Lifetime count of learned expressions, not just this call.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nextCallTitle": "To try on your next call",
+  "nextCallFooter": "Shown on your next call's start screen",
   "analysisLoadError": "Couldn't load the analysis result.",
   "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
   "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",
@@ -380,5 +437,25 @@
   "availableForPurchase": "Available to purchase",
   "@availableForPurchase": {
     "description": "Section heading on the change-avatar screen listing characters the user does not own yet and can buy. Distinct from the sheet's 'Available' status chip."
+  },
+  "paymentsLoadError": "Couldn't load payment history",
+  "@paymentsLoadError": {
+    "description": "Error state on the payment-history screen when GET /payments fails."
+  },
+  "noPayments": "No payments yet",
+  "@noPayments": {
+    "description": "Empty state on the payment-history screen."
+  },
+  "morePaymentsExist": "Older payments aren't shown yet",
+  "@morePaymentsExist": {
+    "description": "Shown when the server reports has_more but load-more isn't wired."
+  },
+  "undatedPayments": "Undated",
+  "@undatedPayments": {
+    "description": "Month-group heading for payments whose payment_date is null."
+  },
+  "paymentLabelFallback": "Payment",
+  "@paymentLabelFallback": {
+    "description": "Row label when the server sends no description and the category is unknown."
   }
 }

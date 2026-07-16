@@ -412,6 +412,66 @@ abstract class AppLocalizations {
   /// **'Recent score {score}%'**
   String recentScore(int score);
 
+  /// Which call this is with the same partner, shown in the analysis meta line.
+  ///
+  /// In en, this message translates to:
+  /// **'Call #{count}'**
+  String callSequence(int count);
+
+  /// Section title for the partner's post-call remark.
+  ///
+  /// In en, this message translates to:
+  /// **'A word from {name}'**
+  String characterNoteTitle(String name);
+
+  /// No description provided for @characterNoteFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Left by {name} right after the call'**
+  String characterNoteFooter(String name);
+
+  /// No description provided for @oneFixTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One thing to fix today'**
+  String get oneFixTitle;
+
+  /// Shown when the same fix has recurred across consecutive calls.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} calls in a row'**
+  String streakBadge(int count);
+
+  /// No description provided for @firstTimeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A first this time'**
+  String get firstTimeTitle;
+
+  /// No description provided for @newExpressionsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'New expressions {count}'**
+  String newExpressionsCount(int count);
+
+  /// Lifetime count of learned expressions, not just this call.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} total'**
+  String expressionsTotal(int count);
+
+  /// No description provided for @nextCallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'To try on your next call'**
+  String get nextCallTitle;
+
+  /// No description provided for @nextCallFooter.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown on your next call\'s start screen'**
+  String get nextCallFooter;
+
   /// No description provided for @analysisLoadError.
   ///
   /// In en, this message translates to:
@@ -1809,6 +1869,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available to purchase'**
   String get availableForPurchase;
+
+  /// Error state on the payment-history screen when GET /payments fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load payment history'**
+  String get paymentsLoadError;
+
+  /// Empty state on the payment-history screen.
+  ///
+  /// In en, this message translates to:
+  /// **'No payments yet'**
+  String get noPayments;
+
+  /// Shown when the server reports has_more but load-more isn't wired.
+  ///
+  /// In en, this message translates to:
+  /// **'Older payments aren\'t shown yet'**
+  String get morePaymentsExist;
+
+  /// Month-group heading for payments whose payment_date is null.
+  ///
+  /// In en, this message translates to:
+  /// **'Undated'**
+  String get undatedPayments;
+
+  /// Row label when the server sends no description and the category is unknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get paymentLabelFallback;
 }
 
 class _AppLocalizationsDelegate

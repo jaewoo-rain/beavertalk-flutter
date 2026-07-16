@@ -146,6 +146,48 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String callSequence(int count) {
+    return '$count번째 통화';
+  }
+
+  @override
+  String characterNoteTitle(String name) {
+    return '$name의 한마디';
+  }
+
+  @override
+  String characterNoteFooter(String name) {
+    return '통화 직후 $name가 남김';
+  }
+
+  @override
+  String get oneFixTitle => '오늘 고칠 것 하나';
+
+  @override
+  String streakBadge(int count) {
+    return '$count번째 통화 연속';
+  }
+
+  @override
+  String get firstTimeTitle => '이번에 처음 한 것';
+
+  @override
+  String newExpressionsCount(int count) {
+    return '새로 배운 표현 $count';
+  }
+
+  @override
+  String expressionsTotal(int count) {
+    return '누적 $count';
+  }
+
+  @override
+  String get nextCallTitle => '다음 통화에 해볼 것';
+
+  @override
+  String get nextCallFooter => '다음 통화 시작 화면에 뜹니다';
+
+  @override
   String get analysisLoadError => '분석 결과를 불러오지 못했어요.';
 
   @override
@@ -853,4 +895,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get availableForPurchase => '구매 가능';
+
+  @override
+  String get paymentsLoadError => '결제 내역을 불러오지 못했어요';
+
+  @override
+  String get noPayments => '아직 결제 내역이 없어요';
+
+  @override
+  String get morePaymentsExist => '이전 결제 내역은 아직 표시되지 않아요';
+
+  @override
+  String get undatedPayments => '날짜 없음';
+
+  @override
+  String get paymentLabelFallback => '결제';
 }

@@ -33,13 +33,17 @@ final ownedCharactersProvider =
 
 /// One character's detail (`GET /characters/{id}`), keyed by id.
 ///
-/// [Character.description] only comes from this endpoint — the list at
-/// [charactersProvider] leaves it null. The avatar sheet shows a description
-/// paragraph (Figma v2 `3360:20576`), so it has to fetch the detail on open;
-/// without this provider there was no way to reach `getDetail`, and the
-/// paragraph silently never rendered.
+/// Only worth fetching for `active_discount` — the discount window
+/// (`discount_price` / `start_time` / `end_time`) is the single field
+/// `CharacterDetail` adds over `CharacterSummary`.
 ///
-/// autoDispose: a sheet-scoped read, not app state.
+/// Do NOT reach for this to get `description`, `voice_url` or `tags`: the list
+/// response already carries all three. The server puts them on
+/// `CharacterSummary` deliberately ("캐릭터당 상세조회 N+1 회피" in its schema
+/// docstring), and an earlier revision of the avatar sheet fetched detail on
+/// every open for a description it already had.
+///
+/// autoDispose: a screen-scoped read, not app state.
 final characterDetailProvider =
     FutureProvider.autoDispose.family<Character, int>((ref, id) async {
   return ref.watch(characterRepositoryProvider).getDetail(id);

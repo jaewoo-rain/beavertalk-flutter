@@ -27,4 +27,12 @@ abstract interface class AuthRepository {
   /// Updates the member's UI [language] code (`PATCH /members/me`) and returns
   /// the updated member. Throws [AppException] on failure.
   Future<Member> updateLanguage(String language);
+
+  /// Sets the member's in-use call partner to [characterId]
+  /// (`PATCH /members/me`) and returns the updated member.
+  ///
+  /// The server does not check ownership here — it writes whatever id it is
+  /// given, so callers must only offer characters the member owns.
+  /// Throws [AppException] on failure.
+  Future<Member> updateCharacter(int characterId);
 }

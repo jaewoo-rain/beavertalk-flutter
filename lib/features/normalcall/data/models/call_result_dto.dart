@@ -73,6 +73,12 @@ class LearnedSentenceDto {
 }
 
 /// Wire model for `GET /calls/{call_id}/result` (snake_case payload).
+///
+/// The `character`/`call_sequence`/`character_note`/`one_fix`/`first_time`/
+/// `next_call`/`expressions_total` keys are what the v2 analysis design needs
+/// (Figma `screen/analysis__확정`). **The server sends none of them today** —
+/// they are parsed defensively so the screen lights up the moment it does, with
+/// no client release. Every one stays null against the current payload.
 class CallResultDto {
   const CallResultDto({
     required this.callId,
@@ -82,6 +88,13 @@ class CallResultDto {
     this.totalTime,
     required this.average,
     required this.sentences,
+    this.character,
+    this.callSequence,
+    this.note,
+    this.oneFix,
+    this.firstTime,
+    this.nextCall,
+    this.expressionsTotal,
   });
 
   final int callId;
@@ -91,6 +104,13 @@ class CallResultDto {
   final int? totalTime;
   final ScoreAverageDto average;
   final List<LearnedSentenceDto> sentences;
+  final CallCharacterBriefDto? character;
+  final int? callSequence;
+  final CharacterNote? note;
+  final OneFix? oneFix;
+  final FirstTime? firstTime;
+  final String? nextCall;
+  final int? expressionsTotal;
 
   factory CallResultDto.fromJson(Map<String, dynamic> json) {
     final average = (json['average'] as Map<String, dynamic>?) ?? const {};
@@ -105,7 +125,57 @@ class CallResultDto {
       sentences: sentences
           .map((e) => LearnedSentenceDto.fromJson(e as Map<String, dynamic>))
           .toList(),
+      character: _character(json['character']),
+      callSequence: (json['call_sequence'] as num?)?.toInt(),
+      note: _note(json['character_note']),
+      oneFix: _oneFix(json['one_fix']),
+      firstTime: _firstTime(json['first_time']),
+      nextCall: _text(json['next_call']),
+      expressionsTotal: (json['expressions_total'] as num?)?.toInt(),
     );
+  }
+
+  /// `character` is only usable with an id — [CallCharacterBriefDto] casts
+  /// `character_id` non-null, so an id-less object would throw and take the
+  /// whole result parse down with it.
+  static CallCharacterBriefDto? _character(Object? value) {
+    if (value is! Map<String, dynamic>) return null;
+    if (value['character_id'] is! num) return null;
+    return CallCharacterBriefDto.fromJson(value);
+  }
+
+  static CharacterNote? _note(Object? value) {
+    if (value is! Map<String, dynamic>) return null;
+    final text = _text(value['text']);
+    return text == null ? null : CharacterNote(text: text);
+  }
+
+  static OneFix? _oneFix(Object? value) {
+    if (value is! Map<String, dynamic>) return null;
+    // Without a title there is nothing to render a card around.
+    final title = _text(value['title']);
+    if (title == null) return null;
+    return OneFix(
+      title: title,
+      evidence: _text(value['evidence']),
+      l1Interference: _text(value['l1_interference']),
+      streakCount: (value['streak_count'] as num?)?.toInt(),
+    );
+  }
+
+  static FirstTime? _firstTime(Object? value) {
+    if (value is! Map<String, dynamic>) return null;
+    final text = _text(value['text']);
+    if (text == null) return null;
+    return FirstTime(text: text, previous: _text(value['previous']));
+  }
+
+  /// A blank string is as absent as null — both must hide the section rather
+  /// than render an empty card.
+  static String? _text(Object? value) {
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
   }
 
   CallResult toEntity() => CallResult(
@@ -116,6 +186,13 @@ class CallResultDto {
         totalTime: totalTime,
         average: average.toEntity(),
         sentences: sentences.map((s) => s.toEntity()).toList(),
+        character: character?.toEntity(),
+        callSequence: callSequence,
+        note: note,
+        oneFix: oneFix,
+        firstTime: firstTime,
+        nextCall: nextCall,
+        expressionsTotal: expressionsTotal,
       );
 }
 

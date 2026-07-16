@@ -52,4 +52,16 @@ class AuthRemoteDataSource {
     );
     return MemberDto.fromJson(res.data!);
   }
+
+  /// `PATCH /members/me` (Bearer) — sets the in-use call partner.
+  ///
+  /// `MemberUpdate` accepts `language`, `character_id` and `is_auto_payment`,
+  /// all optional; sending only `character_id` leaves the rest untouched.
+  Future<MemberDto> updateCharacter(int characterId) async {
+    final res = await _dio.patch<Map<String, dynamic>>(
+      ApiEndpoints.membersMe,
+      data: {'character_id': characterId},
+    );
+    return MemberDto.fromJson(res.data!);
+  }
 }
