@@ -16,6 +16,7 @@ import '../../theme/app_typography.dart';
 /// - [secondaryFill] — `bg surface2 / text white`
 /// - [secondaryOutline] — `bg surface2 / border surface2 / text textSecondary`
 /// - [secondaryWhite] — `bg surfaceElevated / border surface2 / text white`
+/// - [secondaryElevated] — `bg surfaceElevatedNormal / text white`
 /// - [disabled] — `bg surface / border borderSubtle / text textTertiary`
 enum BtnType {
   primaryFill,
@@ -24,6 +25,15 @@ enum BtnType {
   secondaryFill,
   secondaryOutline,
   secondaryWhite,
+
+  /// Like [secondaryFill] but a shade lighter — `Background/Elevated/Normal`
+  /// (#2F3340) instead of `surface2` (#252932).
+  ///
+  /// The 연습하기 button inside `Card-Bookmark` (`176:15497`, in both the
+  /// analysis and archive instances) is filled this way. It sits on the card's
+  /// own #1F222A, where `secondaryFill` would be only one step lighter than the
+  /// card and read as flat.
+  secondaryElevated,
   disabled,
 }
 
@@ -191,6 +201,8 @@ class Button extends StatelessWidget {
         return AppColors.surface2;
       case BtnType.secondaryWhite:
         return AppColors.surfaceElevated;
+      case BtnType.secondaryElevated:
+        return AppColors.surfaceElevatedNormal;
     }
   }
 
@@ -203,6 +215,7 @@ class Button extends StatelessWidget {
       case BtnType.primaryOutlineWhite:
         return AppColors.primary;
       case BtnType.secondaryFill:
+      case BtnType.secondaryElevated:
         return null; // no stroke in Figma
       case BtnType.secondaryOutline:
         return AppColors.surface2;
@@ -223,6 +236,7 @@ class Button extends StatelessWidget {
       case BtnType.primaryOutlineWhite:
         return AppColors.text; // white
       case BtnType.secondaryFill:
+      case BtnType.secondaryElevated:
         return AppColors.text; // white
       case BtnType.secondaryOutline:
         return AppColors.textSecondary;

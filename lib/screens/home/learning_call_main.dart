@@ -323,10 +323,11 @@ class LearningCallMainScreen extends StatelessWidget {
           children: [
             _row(header, vertical: 10),
             for (final r in rows) ...[
-              // The design's divider is white 7%; `borderSubtle` is 6% — one
-              // alpha step apart, indistinguishable on a hairline.
-              const Divider(
-                  height: 1, thickness: 1, color: AppColors.borderSubtle),
+              // `Line/Neutral` — 12% white. (This read `borderSubtle` (6%) under
+              // a comment claiming the design was 7%; the variable actually
+              // resolves to 12%, so every divider on this screen was drawn at
+              // half the intended weight.)
+              const Divider(height: 1, thickness: 1, color: AppColors.border),
               _row(r, vertical: 11),
             ],
           ],
@@ -503,11 +504,12 @@ class _TrendChart extends StatelessWidget {
                 top: _valueRow + _y(v),
                 left: 0,
                 right: 0,
-                child: Container(
-                  height: 1,
-                  // 60 is the baseline the bars stand on, so it reads a step
-                  // stronger than the two above it.
-                  color: v == 60 ? AppColors.border : AppColors.borderSubtle,
+                // All three bind `Line/Neutral` (12%) in the frame — the
+                // baseline is not singled out. This used to draw 100/80 at 6%
+                // under an invented hierarchy.
+                child: const ColoredBox(
+                  color: AppColors.border,
+                  child: SizedBox(height: 1),
                 ),
               ),
           ],

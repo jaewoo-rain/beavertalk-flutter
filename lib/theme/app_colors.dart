@@ -30,6 +30,11 @@ abstract final class AppColors {
 
   static const bg = Color(0xFF121217); // screen background
   static const surface = Color(0xFF181A20); // Background/Normal/Normal
+  /// Semantics/Common/Black — a true black-ish, darker than [surface].
+  /// `screen/call_loading` (`3360:19104`) fills the whole screen with it; the
+  /// call flow starts by dimming everything else away.
+  static const black = Color(0xFF111111);
+
   static const surface2 = Color(0xFF252932); // Background/Normal/Alternative
   static const surfaceElevated = Color(0xFF1F222A); // Elevated/Alternative
   static const surfaceElevatedNormal = Color(0xFF2F3340); // Elevated/Normal — dialogs

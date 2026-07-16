@@ -19,10 +19,9 @@ enum CardAlarmState {
 /// CardAlarm — an alarm card measured 1:1 from Figma (`Card-Alarm`
 /// set `176:20652`, as instanced in `screen/etc_alarm` `3665:11992`).
 ///
-/// Measured spec: `radius` 8 ([AppRadius.xs]), `20px` padding, the
-/// [AppColors.surface] (Background/Normal/Normal) fill and a 1px
-/// [AppColors.lineStrong] (Line/Normal/Normal) border. The inner content is a
-/// column with a `12px` gap holding three rows:
+/// Measured spec: `radius` 8 ([AppRadius.xs]), `20px` padding and the
+/// [AppColors.surfaceElevated] (Background/Elevated/Alternative) fill, with no
+/// border. The inner content is a column with a `12px` gap holding three rows:
 ///
 /// 1. [time] (Heading 2 Medium) space-between an [AppToggle].
 /// 2. seven day chips ([SelectBox]) with a `4px` gap.
@@ -111,9 +110,12 @@ class CardAlarm extends StatelessWidget {
     final Color fg = _active ? AppColors.text : AppColors.textTertiary;
 
     final card = DecoratedBox(
+      // `3665:12009` fills the card with Elevated/Alternative (#1F222A) and
+      // draws **no** border. It used to be `surface` (#181A20) + a 1px
+      // `lineStrong` hairline, i.e. a card that read as an outline on the
+      // background rather than a surface lifted off it.
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.lineStrong),
+        color: AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Padding(

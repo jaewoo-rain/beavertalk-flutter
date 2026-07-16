@@ -452,6 +452,13 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
             bookmarked: saved[i].isBookmarked,
             onBookmarkTap: () => _toggleOff(saved[i].sentenceId),
             onSpeakerTap: () => _speak(saved[i]),
+            // The frame's archive cards carry the same 연습하기 button as the
+            // analysis ones (`I3360:115;176:15497`); this tab was dropping it,
+            // which cost the archive its only visible way into practice (the
+            // whole-card tap does the same thing, but nothing said so) and left
+            // the card 12px shorter than [CardLoading] reserves for it.
+            actionText: AppLocalizations.of(context).practice,
+            onAction: () => _review(saved[i]),
             onTap: () => _review(saved[i]),
           ),
         ],

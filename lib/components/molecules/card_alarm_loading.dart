@@ -7,9 +7,9 @@ import '../atoms/skeleton.dart';
 /// CardAlarmLoading — the loading stand-in for [CardAlarm], Figma
 /// `screen/etc_alarm_loading` (`3489:4550`).
 ///
-/// Mirrors [CardAlarm]'s box exactly — the same [AppColors.surface] fill, 1px
-/// [AppColors.lineStrong] border, radius 8 and 20 padding — and the same three
-/// rows at the same heights, so the card does not resize when the alarms land:
+/// Mirrors [CardAlarm]'s box exactly — the same [AppColors.surfaceElevated]
+/// fill, no border, radius 8, 20 padding — and the same three rows at the same
+/// heights, so the card does not resize when the alarms land:
 ///
 /// 1. the time beside the toggle's 52×28 pill (the toggle is taller than the
 ///    time's 24 line box, so 28 is the row),
@@ -28,8 +28,7 @@ class CardAlarmLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.surface,
-          border: Border.all(color: AppColors.lineStrong),
+          color: AppColors.surfaceElevated,
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
         child: const Padding(

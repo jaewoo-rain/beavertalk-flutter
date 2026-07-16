@@ -14,9 +14,9 @@ import '../../theme/app_typography.dart';
 /// - Column, `padding` 8, `gap` 4, `borderRadius` [AppRadius.xs] (8),
 ///   center-aligned, hug sizing.
 /// - Status row on top (row, gap 8): a 6×6 dot + status label
-///   ([AppType.label1]). Then a 64×64 circular avatar, then the name
+///   ([AppType.caption1]). Then a 64×64 circular avatar, then the name
 ///   ([AppType.label1] SemiBold).
-/// - `active`   → fill [AppColors.primary10], 1px [AppColors.primary]
+/// - `active`   → fill [AppColors.primary04], 1px [AppColors.primary]
 ///   border, dot/label in [AppColors.primary].
 /// - `inactive` → fill [AppColors.surfaceElevated], no border, dot/label
 ///   in [AppColors.textSecondary].
@@ -67,7 +67,9 @@ class AvatarCard extends StatelessWidget {
     final card = Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: active ? AppColors.primary10 : AppColors.surfaceElevated,
+        // `primary/normal-4` (4%), not the 10% this used to wash the selected
+        // card with (`I3665:12415`).
+        color: active ? AppColors.primary04 : AppColors.surfaceElevated,
         borderRadius: BorderRadius.circular(AppRadius.xs),
         // Both states are bordered per Figma (`2117:20367` / `2117:20368`):
         // active = `primary`, inactive = `line/normal`. The inactive border was
@@ -100,7 +102,9 @@ class AvatarCard extends StatelessWidget {
                     statusLabel!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.r.copyWith(color: accent),
+                    // Caption 1 (12), not Label 1 (14) — measured on the alarm
+                    // sheet's instances (`I3665:12415;164:13214`).
+                    style: AppType.caption1.r.copyWith(color: accent),
                   ),
                 ),
               ],

@@ -107,15 +107,17 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
               onBack: () => Navigator.pop(context)),
           // "Alarms" subheader with an add (+) action.
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 8, 12, 0),
+            // 24 below the GNB (`3665:12005` sits at Body y24), not 8.
+            padding: const EdgeInsets.fromLTRB(20, 24, 12, 0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Flexible(
+                  // Headline 1 (18 SemiBold), not Heading 2's 20.
                   child: Text(l10n.alarms,
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
-                      style: AppType.heading2.sb
+                      style: AppType.headline1.sb
                           .copyWith(color: AppColors.text)),
                 ),
                 IconButton(

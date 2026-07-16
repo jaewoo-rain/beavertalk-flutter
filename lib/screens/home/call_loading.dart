@@ -34,6 +34,10 @@ class CallLoadingScreen extends ConsumerStatefulWidget {
 class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
   bool _navigated = false;
 
+  /// `Frame 4` (`3360:19104`) — the spinner (32) + gap (12) + 연결 중's line
+  /// box (24). This is the box the frame centres on the screen.
+  static const double _groupHeight = AppSpacing.s32 + AppSpacing.s12 + 24;
+
   @override
   void initState() {
     super.initState();
@@ -76,36 +80,61 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     });
 
     return AppScaffold(
-      background: AppColors.surface,
+      // `common/dark-&-white` (#111111), not `surface` — this screen is darker
+      // than the rest of the app on purpose.
+      background: AppColors.black,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
       body: Stack(
         children: [
-          // Centered spinner + status line + subtitle (Figma `2296:26221`).
+          // The frame (`3360:19104`) centres **only** the spinner + 연결 중
+          // group (`Frame 4`, 68 tall) and hangs the hint below it — centring
+          // all three together, as this used to, pushes the spinner ~8.5px
+          // above where the design puts it.
           Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const SizedBox(
-                  width: AppSpacing.s32,
-                  height: AppSpacing.s32,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 3,
-                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.text),
+            child: SizedBox(
+              width: double.infinity,
+              height: _groupHeight,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: AppSpacing.s32,
+                          height: AppSpacing.s32,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(AppColors.text),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.s12),
+                        Text(
+                          l10n.connecting,
+                          style: AppType.body1.r.copyWith(color: AppColors.text),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.s12),
-                Text(
-                  l10n.connecting,
-                  style: AppType.body1.r.copyWith(color: AppColors.text),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.connectingHint,
-                  style: AppType.label2.r
-                      .copyWith(color: AppColors.textSecondary),
-                ),
-              ],
+                  // The frame pins this 9.5 below the group — a residue of
+                  // absolute positioning against a half-pixel-centred box, so
+                  // it rounds to the 8 token.
+                  Positioned(
+                    top: _groupHeight + AppSpacing.s8,
+                    left: 0,
+                    right: 0,
+                    child: Text(
+                      l10n.connectingHint,
+                      textAlign: TextAlign.center,
+                      style: AppType.label2.r
+                          .copyWith(color: AppColors.textSecondary),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           // Top-right close button → hang up + home (Figma GNB, 56 tall).

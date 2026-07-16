@@ -278,14 +278,34 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
                   Skeleton.circle(size: 32),
                   SizedBox(width: AppSpacing.s12),
                   Expanded(
+                    // The frame gives the two skeleton slots the line boxes of
+                    // the text they stand in for — Body 38 (`3569:27517`) and
+                    // Attribution 14 (`3569:27520`) — which is what makes the
+                    // card 90, exactly the loaded BabaNote's 88 + its 2px of
+                    // extra leading. Stacking the bars bare rendered 83.
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Skeleton.bar(width: 255, height: 12),
+                        SizedBox(
+                          height: 38,
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Skeleton.bar(width: 255, height: 12),
+                              SizedBox(height: 6),
+                              Skeleton.bar(width: 150, height: 12),
+                            ],
+                          ),
+                        ),
                         SizedBox(height: 6),
-                        Skeleton.bar(width: 150, height: 12),
-                        SizedBox(height: 12),
-                        Skeleton.bar(width: 110, height: 9),
+                        SizedBox(
+                          height: 14,
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Skeleton.bar(width: 110, height: 9),
+                          ),
+                        ),
                       ],
                     ),
                   ),

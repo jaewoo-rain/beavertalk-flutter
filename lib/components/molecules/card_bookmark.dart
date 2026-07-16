@@ -14,7 +14,10 @@ import '../icons/app_icons.dart';
 /// [korean] sentence (Label 1 SemiBold, white) over its [native] translation
 /// (Caption 1 Regular, secondary), then a footer row of a speaker glyph + a
 /// toggleable bookmark glyph and — optionally — a trailing [actionText]
-/// [Button]. 116 tall with [highlight] unset.
+/// [Button]. 116 tall with [highlight] unset **and [actionText] set**; without
+/// the button the footer row collapses to the 24px glyphs and the card is 104,
+/// which is 12 short of what [CardLoading] reserves. Every frame that instances
+/// this card has the button.
 ///
 /// The two instances differ by 4px (116 vs 120) purely in how they style the
 /// highlighted span — analysis underlines it at 14px, the archive bumps it to
@@ -100,7 +103,10 @@ class CardBookmark extends StatelessWidget {
               const Spacer(),
               if (actionText != null)
                 Button(
-                  type: BtnType.secondaryFill,
+                  // `176:15497` fills this with Elevated/Normal (#2F3340), not
+                  // the #252932 `secondaryFill` gives — on the card's own
+                  // #1F222A that one step would barely register.
+                  type: BtnType.secondaryElevated,
                   size: BtnSize.s36,
                   text: actionText!,
                   onPressed: onAction,

@@ -6,29 +6,35 @@ import '../../theme/app_colors.dart';
 ///
 /// Every placeholder in the design is the same shape: a rounded rectangle filled
 /// with a left→right ramp of [AppColors.skeletonBase] → [AppColors.skeletonHighlight]
-/// (at the midpoint) → base again, radius 4. Only the box size changes, so this
-/// takes a size and nothing else — callers never pick the colour or the radius.
+/// (at the midpoint) → base again. Only the box size changes, so this takes a
+/// size and nothing else — callers never pick the colour or the radius.
+///
+/// Text lines are radius 4 and block slots radius 6 (`3569:27541` vs
+/// `3569:27547`), which is why [Skeleton.bar] and [Skeleton.box] are not quite
+/// interchangeable after all.
 ///
 /// **The design draws that ramp static** because Figma cannot express animation;
 /// a frozen shimmer is the convention for drawing one. Here the highlight band
 /// sweeps left→right on a loop instead — see [SkeletonShimmer], which every
 /// [Skeleton] must sit under.
 class Skeleton extends StatelessWidget {
-  /// A text-line placeholder. [width] null stretches to the parent.
+  /// A text-line placeholder (radius 4). [width] null stretches to the parent.
   const Skeleton.bar({super.key, this.width, required this.height})
-      : _shape = BoxShape.rectangle;
+      : _shape = BoxShape.rectangle,
+        _radius = _barRadius;
 
   /// A block placeholder — glyph slots (24×24), button slots (70×36), CTAs.
-  /// Identical to [Skeleton.bar]; named apart so call sites read as the design
-  /// layer they stand in for.
+  /// Radius 6, a step rounder than [Skeleton.bar], as the design draws them.
   const Skeleton.box({super.key, required double this.width, required this.height})
-      : _shape = BoxShape.rectangle;
+      : _shape = BoxShape.rectangle,
+        _radius = _boxRadius;
 
   /// An avatar placeholder.
   const Skeleton.circle({super.key, required double size})
       : width = size,
         height = size,
-        _shape = BoxShape.circle;
+        _shape = BoxShape.circle,
+        _radius = _barRadius;
 
   /// Placeholder width; null means "fill the parent".
   final double? width;
@@ -37,10 +43,12 @@ class Skeleton extends StatelessWidget {
   final double height;
 
   final BoxShape _shape;
+  final double _radius;
 
-  /// Figma radius on every `skeleton/*` rectangle. Below `AppRadius.xs` (8), so
-  /// it has no token — and it is not a caller's choice, so it stays private.
-  static const double _radius = 4;
+  /// Figma radii on `skeleton/*` rectangles. Both sit below `AppRadius.xs` (8),
+  /// so neither has a token — and neither is a caller's choice, so they stay
+  /// private: which one you get follows from the constructor you pick.
+  static const double _barRadius = 4, _boxRadius = 6;
 
   @override
   Widget build(BuildContext context) {

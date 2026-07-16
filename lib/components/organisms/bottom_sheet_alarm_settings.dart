@@ -311,10 +311,14 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// `background/normal/alternative`.
   Widget _timeAndDaysCard(BuildContext context, AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.s16),
+      // 16/12 with a 14 gap, not 16 all round: the frame puts the clock 12
+      // below the card's top and the chips 12 above its bottom, which is what
+      // lands it on 116 (16 all round rendered 126).
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s16, AppSpacing.s12, AppSpacing.s16, AppSpacing.s12),
       decoration: BoxDecoration(
         color: AppColors.surface2,
-        borderRadius: BorderRadius.circular(AppRadius.sm),
+        borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -352,7 +356,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppSpacing.s16),
+          const SizedBox(height: 14), // no s14 token
           _dayChips(context),
         ],
       ),
@@ -614,7 +618,9 @@ class _MeridiemSegment extends StatelessWidget {
       height: _trackH,
       padding: const EdgeInsets.all(_pad),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        // The track sinks to `surface` (#181A20) — darker than the card it
+        // sits on, not lighter.
+        color: AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Stack(
@@ -627,7 +633,9 @@ class _MeridiemSegment extends StatelessWidget {
               width: half,
               height: _trackH - _pad * 2,
               decoration: BoxDecoration(
-                color: AppColors.primary,
+                // primaryStrong, not primary — this card's mint is #00E8A2
+                // throughout (thumb and selected chips alike).
+                color: AppColors.primaryStrong,
                 borderRadius: BorderRadius.circular(6), // no r6 token
               ),
             ),
@@ -680,7 +688,8 @@ class _DayChip extends StatelessWidget {
       height: 34,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: selected ? AppColors.primary : AppColors.surfaceElevated,
+        // Same pairing as the segment: primaryStrong on, `surface` off.
+        color: selected ? AppColors.primaryStrong : AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Text(

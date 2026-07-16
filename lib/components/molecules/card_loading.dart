@@ -17,10 +17,16 @@ import '../atoms/skeleton.dart';
 /// `screen/analysis_loading` draws its own 113-tall `Card/Expression-1` — four
 /// heights for one skeleton whose only job is to not jump.
 ///
-/// So this matches **[CardBookmark] itself (116)**, not the stale component:
-/// copying the 136 would mint a 20px jump per card. The bar sizes are still
-/// Figma's (210×20, 150×16, 70×36) — only the gaps follow the card this stands
-/// in for. Design owes `Card-Loading` an update either way.
+/// So the **box** matches [CardBookmark] itself (116) rather than the stale
+/// component — copying the 136 would mint a 20px jump per card — while the
+/// **bars** come from `screen/analysis_loading`'s own card (`3569:27538`), the
+/// node this actually stands in for: 130×14 over 170×11, sized for the 14px/12px
+/// text the restyled card now uses. (`Card-Loading`'s 210×20 / 150×16 were drawn
+/// for the old 16px lines and are wrong at both ends.) Design owes
+/// `Card-Loading` an update either way.
+///
+/// The one thing taken from neither: horizontal padding stays [CardBookmark]'s
+/// 20, not the frame card's 16, so the bars start where the real text will.
 ///
 /// Use this anywhere [CardBookmark] is about to appear. Takes no size arguments
 /// that could drift from it. Must sit under a [SkeletonShimmer].
@@ -39,12 +45,25 @@ class CardLoading extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            // Skeleton/Text (3444:912) — the sentence over its translation.
-            // 20 + 4 + 16 is the card's own line box stack (Label 1 over
-            // Caption 1), so the two lines land where the real text will.
-            Skeleton.bar(width: 210, height: 20),
+            // The sentence over its translation (`3569:27540`/`3569:27542`).
+            // Each bar sits in the line box of the text it replaces — 14 in
+            // Label 1's 20, 11 in Caption 1's 16 — so the lines land exactly
+            // where the real ones will and the card still totals 116.
+            SizedBox(
+              height: 20,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Skeleton.bar(width: 130, height: 14),
+              ),
+            ),
             SizedBox(height: AppSpacing.s4),
-            Skeleton.bar(width: 150, height: 16),
+            SizedBox(
+              height: 16,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Skeleton.bar(width: 170, height: 11),
+              ),
+            ),
             SizedBox(height: AppSpacing.s8),
             // Skeleton/Action (3444:915) — speaker + bookmark, then 연습하기.
             Row(

@@ -128,6 +128,8 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                         // what is loading, so this is a shape, not a promise.
                         rowCount: 4,
                         nameWidths: const [88, 104, 76, 96],
+                        // 정확도 carries a percent, so its bar is wider.
+                        valueWidths: const [22, 22, 29],
                       ),
                     ),
 
@@ -144,7 +146,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                         ],
                         rowCount: 4,
                         nameWidths: const [148, 120, 100, 112],
-                        valueWidth: 20,
+                        valueWidths: const [20, 20, 20],
                       ),
                     ),
 
@@ -174,10 +176,8 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                             ],
                             rowCount: 5,
                             nameWidths: const [104, 84, 84, 84, 84],
-                            // 26 — the trend rows carry a signed delta, so
-                            // their value bars are wider than the other tables'
-                            // (`3583:34668`).
-                            valueWidth: 26,
+                            // Only 변화 is wider — it carries a signed delta.
+                            valueWidths: const [22, 22, 26],
                           ),
                         ],
                       ),
@@ -245,11 +245,16 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
 
   /// The loaded screen's table with its cells stubbed. Headers stay real —
   /// 소리 / 시도 / 정확 / 정확도 do not depend on the response.
+  /// [valueWidths] is per value column, not one number for all of them: the
+  /// frame widens only the columns whose text is longer — 정확도 to 29
+  /// (`3583:34544`), the signed delta 변화 to 26 (`3583:34668`) — and leaves the
+  /// rest at 22. A single scalar could not say that, and passing the widest
+  /// stretched every column with it.
   Widget _tableSkeleton({
     required List<_H> header,
     required int rowCount,
     required List<double> nameWidths,
-    double valueWidth = 22,
+    required List<double> valueWidths,
   }) =>
       Container(
         decoration: BoxDecoration(
@@ -271,8 +276,9 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
               ),
             ),
             for (var r = 0; r < rowCount; r++) ...[
-              const Divider(
-                  height: 1, thickness: 1, color: AppColors.borderSubtle),
+              // `Line/Neutral` (12%) — the loaded table's divider; see
+              // [LearningCallMainScreen].
+              const Divider(height: 1, thickness: 1, color: AppColors.border),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 11),
                 child: Row(
@@ -294,7 +300,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                         width: header[i].width,
                         child: Align(
                           alignment: Alignment.centerRight,
-                          child: Skeleton.bar(width: valueWidth, height: 12),
+                          child: Skeleton.bar(
+                            width: valueWidths[(i - 1) % valueWidths.length],
+                            height: 12,
+                          ),
                         ),
                       ),
                     ],
