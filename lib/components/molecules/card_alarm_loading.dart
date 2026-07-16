@@ -73,13 +73,22 @@ class _DayChips extends StatelessWidget {
   const _DayChips();
 
   @override
-  Widget build(BuildContext context) => Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var i = 0; i < 7; i++) ...[
-            if (i > 0) const SizedBox(width: 4),
-            const Skeleton.box(width: 32, height: 28),
-          ],
-        ],
+  Widget build(BuildContext context) => SizedBox(
+        // Same 28 box + scale-down as the real card's chip row, so the two keep
+        // the same height on a narrow screen instead of drifting apart.
+        height: 28,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          alignment: Alignment.centerLeft,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (var i = 0; i < 7; i++) ...[
+                if (i > 0) const SizedBox(width: 4),
+                const Skeleton.box(width: 32, height: 28),
+              ],
+            ],
+          ),
+        ),
       );
 }

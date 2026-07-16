@@ -139,24 +139,37 @@ class CardAlarm extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                for (var i = 0; i < 7; i++) ...[
-                  if (i > 0) const SizedBox(width: 4),
-                  // `i` is the visual slot; the data index is a lookup away.
-                  // [onDayChange] still reports the **data** index, which is
-                  // what `toggleDay` sends the server.
-                  SelectBox(
-                    label: dayLabels[i],
-                    selected: days[_visualToDataIndex[i]],
-                    bold: days[_visualToDataIndex[i]],
-                    onChanged: onDayChange == null
-                        ? null
-                        : (v) => onDayChange!(_visualToDataIndex[i], v),
-                  ),
-                ],
-              ],
+            // The frame fits seven two-letter chips (16px, 7 side padding, gap
+            // 4 ≈ 269) into its 295 content box — but only because it is drawn
+            // at 375dp. A 320dp phone leaves 240, so they would overflow by
+            // ~29. Scaling down keeps the design's proportions where there is
+            // room and degrades instead of clipping where there isn't; the 28
+            // box pins the row's height so the card never changes size.
+            SizedBox(
+              height: 28,
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    for (var i = 0; i < 7; i++) ...[
+                      if (i > 0) const SizedBox(width: 4),
+                      // `i` is the visual slot; the data index is a lookup
+                      // away. [onDayChange] still reports the **data** index,
+                      // which is what `toggleDay` sends the server.
+                      SelectBox(
+                        label: dayLabels[i],
+                        selected: days[_visualToDataIndex[i]],
+                        bold: days[_visualToDataIndex[i]],
+                        onChanged: onDayChange == null
+                            ? null
+                            : (v) => onDayChange!(_visualToDataIndex[i], v),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
             const SizedBox(height: 12),
             Row(
