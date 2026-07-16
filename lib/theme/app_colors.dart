@@ -41,6 +41,14 @@ abstract final class AppColors {
   static const negativeAccent16 = Color(0x29FF7070); // streak badge fill (16%)
   static const primary08 = Color(0x1400FFB2); // L1-interference box fill (8%)
 
+  // ── Skeleton (loading) ──────────────────────────────────────
+  // The `skeleton/*` frames across `design_app_v2 · Dark` fill every placeholder
+  // with this white ramp. Deliberately not folded into [borderSubtle], which is
+  // the identical value but a *Line* token — a stroke and a loading fill that
+  // happen to match today should still be free to diverge.
+  static const skeletonBase = Color(0x0FFFFFFF); // 6%
+  static const skeletonHighlight = Color(0x24FFFFFF); // 14% — shimmer band
+
   static const hintAccent = Color(0xFFD17600); // Orange/39 — in-call hint accent (btn/hint on, "Hint" label)
   static const equalizerBar = Color(0xFF37383C); // cool-neutral/25 — speaking equalizer bars (자막off)
 

@@ -123,13 +123,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get conversation => '대화';
 
   @override
-  String get review => '복습';
+  String get review => '복습하기';
 
   @override
-  String get pronunciationChallenge => '발음 챌린지';
+  String get pronunciationChallenge => '발음 챌린지 도전하기';
 
   @override
-  String get newExpressions => '새로운 표현';
+  String get newExpressions => '새로 배운 표현';
 
   @override
   String get analysisResult => '분석 결과';

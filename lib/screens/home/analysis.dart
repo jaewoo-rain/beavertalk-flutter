@@ -33,6 +33,9 @@ import 'learning_args.dart';
 ///   [reviewScoresProvider], the mean over sentences practiced this session.
 ///   Before any practice the map is empty → inactive ("-%"); it updates live as
 ///   the user records sentences and returns here. (`result.average` is unused.)
+/// - **복습하기 / 발음 챌린지 도전하기** — the two `Footer/PrimaryAction`s the
+///   loading frame pins at `3569:27509`; see the note below on why they are here
+///   even though `screen/analysis__확정` omits them.
 /// - **Baba의 한마디** (`3474:582`) / **오늘의 피드백** (`3474:589`).
 /// - **새로 배운 표현** (`3475:550`) — one [CardBookmark] per `result.sentences`
 ///   entry (speaker · bookmark toggle · 연습하기), as the frame instantiates.
@@ -44,16 +47,20 @@ import 'learning_args.dart';
 /// omitted outright: a fabricated "today's feedback" is worse than no section at
 /// all, and this screen's whole credibility rests on those lines being real.
 ///
-/// Two deliberate departures from the frame, both load-bearing:
-/// - The 발음 챌린지 button is **not in the design**, but it is the app's only
-///   entry point to that feature — without it `Routes.pronunciationChallenge` is
-///   unreachable from anywhere (the screen, controller and tests all still
-///   exist, so nothing catches the orphaning). Kept on the user's call
-///   (2026-07-16) until the design gives it a home.
-/// - [CardBookmark.highlight] stays null, so the learned expression renders
-///   without the design's underline: no server field carries that span, and the
-///   previous hardcoded `'내 귀를 사로잡았다'` underlined a fixed string regardless
-///   of the sentence. Proposed to the server in the doc above.
+/// **On the two buttons.** `screen/analysis__확정` (`3474:435`) has no buttons,
+/// but both of this screen's loading frames do — `screen/analysis_loading__확정`
+/// (`3476:494`) and `screen/analysis_loading` (`3569:27509`) each place 복습하기
+/// over 발음 챌린지 도전하기, right under the gauge. Two frames out of three
+/// carry them, and a loading state cannot show a control the loaded state drops,
+/// so the confirmed frame is read as the omission. This is also the app's only
+/// entry to the challenge: without it `Routes.pronunciationChallenge` is
+/// unreachable from anywhere, and nothing would catch that — the tests mount the
+/// screen directly, so they pass either way.
+///
+/// [CardBookmark.highlight] stays null, so the learned expression renders
+/// without the design's underline: no server field carries that span, and the
+/// previous hardcoded `'내 귀를 사로잡았다'` underlined a fixed string regardless of
+/// the sentence. Proposed to the server in the doc above.
 class AnalysisScreen extends ConsumerStatefulWidget {
   /// Creates the call analysis screen.
   const AnalysisScreen({super.key});
@@ -259,14 +266,17 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             ),
           ),
 
-          ..._babaNote(l10n, result),
-          ..._oneFix(l10n, result.oneFix),
-          ..._expressions(l10n, result),
-
-          // Not in `screen/analysis__확정` — see the class doc. This is the only
-          // way into the pronunciation challenge; drop it and the feature is
-          // dead code that still compiles and still passes its tests.
+          // ── Actions (`3569:27509`) ─────────────────────────────────
           const SizedBox(height: AppSpacing.s24),
+          Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.review,
+            // Nothing to practice → nothing for the button to do.
+            disabled: _learningSentences.isEmpty,
+            onPressed: () => _startLearning(_learningSentences),
+          ),
+          const SizedBox(height: AppSpacing.s12),
           Button(
             type: BtnType.primaryOutline,
             size: BtnSize.s60,
@@ -274,6 +284,10 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             onPressed: () =>
                 Navigator.pushNamed(context, Routes.pronunciationChallenge),
           ),
+
+          ..._babaNote(l10n, result),
+          ..._oneFix(l10n, result.oneFix),
+          ..._expressions(l10n, result),
         ],
       ),
     );
