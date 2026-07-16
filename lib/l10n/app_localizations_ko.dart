@@ -78,13 +78,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => '일정';
+  String get scheduleManagement => '일정 관리';
 
   @override
   String get alarms => '알람';
 
   @override
-  String get addSchedule => '일정 추가';
+  String get addSchedule => '새 일정 추가';
 
   @override
   String get editSchedule => '일정 수정';
@@ -397,10 +397,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noSavedSentences => '저장한 문장이 아직 없어요.\n대화 기록에서 문장을 북마크해 보세요.';
 
   @override
-  String get noAlarms => '아직 알람이 없어요';
+  String get noAlarms => '등록된 알람이 없어요';
 
   @override
-  String get noAlarmsBody => '학습 리마인더를 추가해서\n꾸준한 습관을 만들어 보세요.';
+  String get noAlarmsBody => '학습 리마인더를 추가하면\n꾸준한 습관을 만들 수 있어요.';
 
   @override
   String get subscriptionManage => '구독 관리';

@@ -63,8 +63,9 @@ void main() {
     // Sheet body is now on a modal route above the page.
     expect(find.byType(AlarmAddSheet), findsOneWidget);
     expect(find.byType(BottomSheetAlarmSettings), findsOneWidget);
-    // Add mode header (English default locale).
-    expect(find.text('Add Schedule'), findsOneWidget);
+    // Add mode header (English default locale). `screen/etc_alarm__add`
+    // (`3665:12018`) titles this 새 일정 추가 — "new", not just "add".
+    expect(find.text('Add new schedule'), findsOneWidget);
   });
 
   testWidgets('saving pops the sheet and returns an AlarmData', (tester) async {

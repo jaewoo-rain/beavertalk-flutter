@@ -79,13 +79,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Schedule';
+  String get scheduleManagement => 'Manage schedule';
 
   @override
   String get alarms => 'Alarms';
 
   @override
-  String get addSchedule => 'Add Schedule';
+  String get addSchedule => 'Add new schedule';
 
   @override
   String get editSchedule => 'Edit Schedule';
@@ -408,11 +408,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'No saved sentences yet.\nBookmark sentences from your conversation records.';
 
   @override
-  String get noAlarms => 'No alarms yet';
+  String get noAlarms => 'No alarms registered';
 
   @override
   String get noAlarmsBody =>
-      'Add a learning reminder\nto build a consistent habit.';
+      'Add a learning reminder\nand you can build a consistent habit.';
 
   @override
   String get subscriptionManage => 'Manage Subscription';

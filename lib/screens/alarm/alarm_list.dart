@@ -3,21 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_alarm.dart';
+import '../../components/molecules/card_alarm_loading.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_colors.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import 'alarm_add.dart';
 import 'alarm_empty.dart';
 import 'alarm_models.dart';
 
-/// Alarm list — Figma `screen/etc_alarm` (`2117:20250`). A scrollable list of
+/// Alarm list — Figma `screen/etc_alarm` (`3665:11992`). A scrollable list of
 /// [CardAlarm]s backed by the server (`alarmListControllerProvider`). Each card
 /// can be **swiped** to delete (DELETE), **tapped** to edit (PUT), and toggled
 /// active (activate/deactivate) or per-day (PUT). The footer "+" adds (POST).
@@ -127,9 +128,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
           ),
           Expanded(
             child: alarmsAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
+              loading: () => const _AlarmsLoading(),
               error: (e, _) => _ErrorState(
                 message: e is AppException ? e.message : l10n.alarmsLoadError,
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
@@ -201,18 +200,53 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
     );
   }
 
-  /// The red "delete" panel revealed when swiping a card left.
+  /// The "delete" affordance revealed when swiping a card left — a single red
+  /// 48 circle holding a 24 trash glyph, centred on the card (`3665:12016`).
+  ///
+  /// The frame reveals the circle against the screen, not a full-height red
+  /// panel behind the card, which is what this used to paint.
   Widget _deleteBackground() {
-    return Container(
+    return Align(
       alignment: AlignmentDirectional.centerEnd,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
-      decoration: BoxDecoration(
-        color: AppColors.error,
-        borderRadius: BorderRadius.circular(AppRadius.xs),
+      child: Padding(
+        padding: const EdgeInsets.only(right: 20),
+        child: Container(
+          width: 48,
+          height: 48,
+          alignment: Alignment.center,
+          decoration: const BoxDecoration(
+            color: AppColors.error,
+            shape: BoxShape.circle,
+          ),
+          child: AppIcons.trash(color: AppColors.text, size: 24),
+        ),
       ),
-      child: AppIcons.trash(color: AppColors.text, size: 28),
     );
   }
+}
+
+/// The waiting state — Figma `screen/etc_alarm_loading` (`3489:4550`).
+///
+/// Two [CardAlarmLoading]s on the list's own padding and gap, so the real cards
+/// drop straight in. Two, as the frame draws: the alarm count is exactly what
+/// is loading, and a longer stack would guess at it.
+class _AlarmsLoading extends StatelessWidget {
+  const _AlarmsLoading();
+
+  @override
+  Widget build(BuildContext context) => const SkeletonShimmer(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(20, 16, 20, 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CardAlarmLoading(),
+              SizedBox(height: 20),
+              CardAlarmLoading(),
+            ],
+          ),
+        ),
+      );
 }
 
 /// Empty list — reuses the [AlarmEmptyScreen] body styling inline.

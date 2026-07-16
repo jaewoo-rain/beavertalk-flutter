@@ -283,7 +283,7 @@ abstract class AppLocalizations {
   /// No description provided for @scheduleManagement.
   ///
   /// In en, this message translates to:
-  /// **'Schedule'**
+  /// **'Manage schedule'**
   String get scheduleManagement;
 
   /// No description provided for @alarms.
@@ -295,7 +295,7 @@ abstract class AppLocalizations {
   /// No description provided for @addSchedule.
   ///
   /// In en, this message translates to:
-  /// **'Add Schedule'**
+  /// **'Add new schedule'**
   String get addSchedule;
 
   /// No description provided for @editSchedule.
@@ -895,13 +895,13 @@ abstract class AppLocalizations {
   /// No description provided for @noAlarms.
   ///
   /// In en, this message translates to:
-  /// **'No alarms yet'**
+  /// **'No alarms registered'**
   String get noAlarms;
 
   /// No description provided for @noAlarmsBody.
   ///
   /// In en, this message translates to:
-  /// **'Add a learning reminder\nto build a consistent habit.'**
+  /// **'Add a learning reminder\nand you can build a consistent habit.'**
   String get noAlarmsBody;
 
   /// No description provided for @subscriptionManage.

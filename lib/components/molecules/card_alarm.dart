@@ -17,7 +17,7 @@ enum CardAlarmState {
 }
 
 /// CardAlarm — an alarm card measured 1:1 from Figma (`Card-Alarm`
-/// set `176:20652`).
+/// set `176:20652`, as instanced in `screen/etc_alarm` `3665:11992`).
 ///
 /// Measured spec: `radius` 8 ([AppRadius.xs]), `20px` padding, the
 /// [AppColors.surface] (Background/Normal/Normal) fill and a 1px
@@ -31,9 +31,10 @@ enum CardAlarmState {
 /// In [CardAlarmState.active] the time/name are white and the toggle is on; in
 /// [CardAlarmState.inactive] they are `textTertiary` and the toggle is off.
 ///
-/// The chips are driven by [days] (length 7); tapping one calls [onDayChange]
-/// with its index and new value. A selected chip uses the SelectBox
-/// `selected, bold` styling; an unselected one uses `unselected, regular`.
+/// The chips are driven by [days] (length 7, **0=Sun … 6=Sat**) but display
+/// Monday-first; tapping one calls [onDayChange] with its **data** index and
+/// new value. A selected chip uses the SelectBox `selected, bold` styling; an
+/// unselected one uses `unselected, regular`.
 class CardAlarm extends StatelessWidget {
   /// Creates an alarm card.
   const CardAlarm({
@@ -52,16 +53,29 @@ class CardAlarm extends StatelessWidget {
          'dayLabels must contain exactly 7 entries',
        );
 
-  /// Default single-character day labels (Sun..Sat).
+  /// Default day labels, **Monday-first** (`3665:11992`).
+  ///
+  /// These are *visual* order. [days] stays Sunday-indexed (0=Sun … 6=Sat) to
+  /// match [Alarm.days], the server's `days_of_week` codes and both schedulers,
+  /// so [_visualToDataIndex] bridges the two — the same bridge
+  /// `BottomSheetAlarmSettings` already uses. Feeding a Mon-first index straight
+  /// into a Sun-indexed array would shift every alarm by a day.
+  ///
+  /// Was `S M T W T F S` (Sunday-first, single letter), which disagreed with
+  /// both the frame and the add sheet.
   static const List<String> defaultDayLabels = [
-    'S',
-    'M',
-    'T',
-    'W',
-    'T',
-    'F',
-    'S',
+    'Mo',
+    'Tu',
+    'We',
+    'Th',
+    'Fr',
+    'Sa',
+    'Su',
   ];
+
+  /// Visual slot → index into [days]. Monday-first display over Sunday-first
+  /// data.
+  static const List<int> _visualToDataIndex = [1, 2, 3, 4, 5, 6, 0];
 
   /// Whether the alarm is active or inactive.
   final CardAlarmState state;
@@ -130,13 +144,16 @@ class CardAlarm extends StatelessWidget {
               children: [
                 for (var i = 0; i < 7; i++) ...[
                   if (i > 0) const SizedBox(width: 4),
+                  // `i` is the visual slot; the data index is a lookup away.
+                  // [onDayChange] still reports the **data** index, which is
+                  // what `toggleDay` sends the server.
                   SelectBox(
                     label: dayLabels[i],
-                    selected: days[i],
-                    bold: days[i],
+                    selected: days[_visualToDataIndex[i]],
+                    bold: days[_visualToDataIndex[i]],
                     onChanged: onDayChange == null
                         ? null
-                        : (v) => onDayChange!(i, v),
+                        : (v) => onDayChange!(_visualToDataIndex[i], v),
                   ),
                 ],
               ],

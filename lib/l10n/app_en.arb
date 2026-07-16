@@ -60,9 +60,9 @@
       }
     }
   },
-  "scheduleManagement": "Schedule",
+  "scheduleManagement": "Manage schedule",
   "alarms": "Alarms",
-  "addSchedule": "Add Schedule",
+  "addSchedule": "Add new schedule",
   "editSchedule": "Edit Schedule",
   "somethingWentWrong": "Something went wrong",
   "alarmsLoadError": "Couldn't load alarms",
@@ -215,8 +215,8 @@
   "noCharactersToShow": "No characters to show",
   "buy": "Buy",
   "noSavedSentences": "No saved sentences yet.\nBookmark sentences from your conversation records.",
-  "noAlarms": "No alarms yet",
-  "noAlarmsBody": "Add a learning reminder\nto build a consistent habit.",
+  "noAlarms": "No alarms registered",
+  "noAlarmsBody": "Add a learning reminder\nand you can build a consistent habit.",
   "subscriptionManage": "Manage Subscription",
   "changePlan": "Change Plan",
   "cancelSubscription": "Cancel Subscription",
