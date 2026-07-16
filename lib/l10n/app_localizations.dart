@@ -430,18 +430,6 @@ abstract class AppLocalizations {
   /// **'Left by {name} right after the call'**
   String characterNoteFooter(String name);
 
-  /// No description provided for @oneFixTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Today\'s feedback'**
-  String get oneFixTitle;
-
-  /// Shown when the same fix has recurred across consecutive calls.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} calls in a row'**
-  String streakBadge(int count);
-
   /// No description provided for @newExpressionsCount.
   ///
   /// In en, this message translates to:
@@ -1881,18 +1869,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{passed} of {total} sentences passed'**
   String learningPassed(int passed, int total);
-
-  /// Badge next to the headline; delta is signed, e.g. +5.
-  ///
-  /// In en, this message translates to:
-  /// **'{delta}% vs last session'**
-  String learningDelta(String delta);
-
-  /// No description provided for @learningTodayMeta.
-  ///
-  /// In en, this message translates to:
-  /// **'Today\'s session · {duration}'**
-  String learningTodayMeta(String duration);
 
   /// No description provided for @hardestSound.
   ///

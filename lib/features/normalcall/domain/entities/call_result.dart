@@ -62,33 +62,6 @@ class CharacterNote {
   final String text;
 }
 
-/// The single thing to fix, surfaced as "오늘의 피드백".
-///
-/// Only [title] is required: the server may know *what* is off without having
-/// an example to quote or an L1-interference explanation to offer.
-class OneFix {
-  const OneFix({
-    required this.title,
-    this.evidence,
-    this.l1Interference,
-    this.streakCount,
-  });
-
-  /// What to fix, e.g. "받침 ㄹ이 자꾸 새요".
-  final String title;
-
-  /// Concrete evidence from this call, or null.
-  final String? evidence;
-
-  /// Why the learner's first language makes this hard, or null. Rendered as the
-  /// reassurance box — the design's whole point is "당신 잘못이 아니에요".
-  final String? l1Interference;
-
-  /// How many consecutive calls this fix has recurred over. Null (or < 2) means
-  /// no streak, and the badge is hidden — "1번째 통화 연속" is not a streak.
-  final int? streakCount;
-}
-
 /// Full analysis result for a finished call.
 class CallResult {
   const CallResult({
@@ -102,7 +75,6 @@ class CallResult {
     this.character,
     this.callSequence,
     this.note,
-    this.oneFix,
   });
 
   /// Server call id.
@@ -144,9 +116,6 @@ class CallResult {
   /// The partner's post-call remark, or null.
   final CharacterNote? note;
 
-  /// The one thing to fix, or null.
-  final OneFix? oneFix;
-
   /// Returns a copy with [callDate]/[totalTime] overridden — used to graft the
   /// date/duration (which the `/result` endpoint omits) from the call detail.
   CallResult copyWith({DateTime? callDate, int? totalTime}) => CallResult(
@@ -160,7 +129,6 @@ class CallResult {
         character: character,
         callSequence: callSequence,
         note: note,
-        oneFix: oneFix,
       );
 }
 

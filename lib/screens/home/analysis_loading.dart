@@ -40,8 +40,7 @@ import '../../theme/app_typography.dart';
 /// `call_finish` hands it a bare `callId` and nothing else, and the partner and
 /// call sequence are fields the server does not send even *after* the result
 /// arrives. Those three slots are skeletons here rather than invented text. The
-/// labels that are static — 오늘의 피드백, 새로 배운 표현 — render for real, as
-/// the frame has them.
+/// label that is static — 새로 배운 표현 — renders for real, as the frame has it.
 class AnalysisLoadingScreen extends ConsumerStatefulWidget {
   /// Creates the analysis-loading screen.
   const AnalysisLoadingScreen({super.key});
@@ -295,67 +294,20 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
             ),
           ),
 
-          // ── Section/OneFix (3569:27522) ────────────────────────────
-          ..._section(
-            label: Text(l10n.oneFixTitle, style: AppType.body2.m),
-            trailing: _badgeShell(const Skeleton.bar(width: 66, height: 9)),
-            child: _card(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Skeleton.bar(width: 150, height: 15),
-                  const SizedBox(height: 10), // no s10 token
-                  const Skeleton.bar(width: 270, height: 12),
-                  const SizedBox(height: 10),
-                  // The L1 box keeps its tint while empty (3569:27533) — the
-                  // reassurance is the shape as much as the words.
-                  Container(
-                    height: 33,
-                    decoration: BoxDecoration(
-                      color: AppColors.primary08,
-                      borderRadius: BorderRadius.circular(AppRadius.xs),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
           // ── Section/Expressions (3569:27534) ───────────────────────
           ..._section(
             // Countless here — the frame's label is 새로 배운 표현 with no number,
             // since the count is exactly what is still loading.
             label: Text(l10n.newExpressions, style: AppType.body2.m),
-            child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // [CardLoading], not this frame's own `Card/Expression-1`
-                // (`3569:27538`): that one is 113 tall against the real
-                // [CardBookmark]'s 136, so it would jump 23px per card on load —
-                // which is the one thing the skeleton exists to prevent.
-                CardLoading(),
-                SizedBox(height: AppSpacing.s12),
-                CardLoading(),
-                SizedBox(height: AppSpacing.s12),
-                CardLoading(),
-              ],
-            ),
+            // One card, as the frame draws (`3569:27537` holds a single
+            // `Card/Expression-1`). It used to stack three; that promised a
+            // count the response hasn't given yet.
+            child: const CardLoading(),
           ),
         ],
       ),
     );
   }
-
-  /// The streak badge's shell, holding [child] instead of its text.
-  Widget _badgeShell(Widget child) => Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: 3),
-        decoration: BoxDecoration(
-          color: AppColors.negativeAccent16,
-          borderRadius: BorderRadius.circular(6), // no r6 token
-        ),
-        child: child,
-      );
 
   /// Mirrors the analysis screen's section rhythm (24 above, 8 under the label).
   List<Widget> _section({

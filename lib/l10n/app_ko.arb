@@ -46,8 +46,6 @@
   "callSequence": "{count}번째 통화",
   "characterNoteTitle": "{name}의 한마디",
   "characterNoteFooter": "통화 직후 {name}가 남김",
-  "oneFixTitle": "오늘의 피드백",
-  "streakBadge": "{count}번째 통화 연속",
   "newExpressionsCount": "새로 배운 표현 {count}",
   "analysisLoadError": "분석 결과를 불러오지 못했어요.",
   "standardAudioNotReady": "표준 발음 음성이 아직 준비되지 않았어요.",
@@ -289,8 +287,6 @@
   "paymentLabelFallback": "결제",
 
   "learningPassed": "{total}문장 중 {passed}개 통과",
-  "learningDelta": "지난 세션 {delta}%",
-  "learningTodayMeta": "오늘 학습 · {duration}",
   "hardestSound": "가장 어려웠던 소리",
   "soundAccuracy": "소리별 정확도",
   "phonemeAttempts": "음소 단위 · {count}회 시도",

@@ -22,14 +22,19 @@ import '../../theme/app_typography.dart';
 /// moment a real request sits behind it: build it into that screen's `loading:`
 /// branch then, and delete this note.
 ///
-/// Two departures from the frame, both because it draws things the app cannot
-/// know before the response:
-/// - The frame keeps `오늘 학습 · 6분 12초` as real text; the duration is exactly
-///   what is loading, so the meta line is a skeleton here.
-/// - The frame's trend section is a full chart skeleton (bars at a fixed
-///   height, ticks). A bar chart of placeholder bars reads as data — five equal
-///   mint columns look like five equal scores — so this holds the card's height
-///   with a plain block instead. The tables carry the "rows are coming" signal.
+/// **This frame is stale and is deliberately not followed in one place.** It
+/// still draws the head that `screen/learning_main` (`3569:15065`) has since
+/// dropped: a `skeleton-pill` for the delta (`3583:34484`) and the meta line as
+/// real `오늘 학습 · 6분 12초` text (`3583:34485`). The loaded frame now shows the
+/// pass count over a bare session date and no pill at all — and a loading state
+/// cannot hold a value the loaded state has dropped — so the head here follows
+/// the loaded frame. Design owes this frame an update.
+///
+/// One further departure: the frame's trend section is a full chart skeleton
+/// (bars at a fixed height, ticks). A bar chart of placeholder bars reads as
+/// data — five equal mint columns look like five equal scores — so this holds
+/// the card's height with a plain block instead. The tables carry the "rows are
+/// coming" signal.
 class LearningCallMainLoadingScreen extends StatelessWidget {
   /// Creates the learning-summary loading screen.
   const LearningCallMainLoadingScreen({super.key});
@@ -55,38 +60,23 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // ── Head (3583:34481) ──────────────────────────────
-                    Row(
-                      children: [
-                        // 28 = Heading 2's line box, so the gauge lands where
-                        // it will once the headline arrives.
-                        const Expanded(
-                          child: SizedBox(
-                            height: 28,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Skeleton.bar(width: 160, height: 20),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: AppSpacing.s8),
-                        // Badge/Delta's pill, still empty (3583:34484).
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary12,
-                            borderRadius: BorderRadius.circular(AppRadius.pill),
-                          ),
-                          child: const Skeleton.bar(width: 69, height: 14),
-                        ),
-                      ],
+                    // 28 = Heading 2's line box, so the gauge lands where it
+                    // will once the headline arrives.
+                    const SizedBox(
+                      height: 28,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Skeleton.bar(width: 160, height: 20),
+                      ),
                     ),
                     const SizedBox(height: AppSpacing.s4),
+                    // The session date's line (`3569:15082`), 90 wide for an
+                    // ISO `2026-07-16`.
                     const SizedBox(
                       height: 18,
                       child: Align(
                         alignment: Alignment.centerLeft,
-                        child: Skeleton.bar(width: 120, height: 12),
+                        child: Skeleton.bar(width: 90, height: 12),
                       ),
                     ),
 
@@ -167,8 +157,8 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           _card(
-                            // 174 = Card/Trend's height, held so the chart drops
-                            // straight in.
+                            // 142 + the card's 16/16 padding = Card/Trend's 174,
+                            // held so the chart drops straight in.
                             child: const SizedBox(
                               height: 142,
                               child: Skeleton.bar(height: 142),
@@ -184,7 +174,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                             ],
                             rowCount: 5,
                             nameWidths: const [104, 84, 84, 84, 84],
-                            valueWidth: 22,
+                            // 26 — the trend rows carry a signed delta, so
+                            // their value bars are wider than the other tables'
+                            // (`3583:34668`).
+                            valueWidth: 26,
                           ),
                         ],
                       ),

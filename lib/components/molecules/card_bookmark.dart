@@ -7,13 +7,19 @@ import '../atoms/button.dart';
 import '../icons/app_icons.dart';
 
 /// CardBookmark — a learned/saved sentence card, measured from Figma
-/// `Card-Bookmark` (`2224:21261`).
+/// `Card-Bookmark` (`176:14676`, as instanced at `3583:34466` in
+/// `screen/analysis` and `3360:115` in `screen/record_archive`).
 ///
 /// An [AppColors.surfaceElevated] box (radius 12, padding `16/20`) holding the
-/// [korean] sentence (Body 1 SemiBold, white) over its [native] translation
-/// (Body 1 Regular, secondary), a hairline divider, then a footer row of a
-/// speaker glyph + a toggleable bookmark glyph and — optionally — a trailing
-/// [actionText] [Button].
+/// [korean] sentence (Label 1 SemiBold, white) over its [native] translation
+/// (Caption 1 Regular, secondary), then a footer row of a speaker glyph + a
+/// toggleable bookmark glyph and — optionally — a trailing [actionText]
+/// [Button]. 116 tall with [highlight] unset.
+///
+/// The two instances differ by 4px (116 vs 120) purely in how they style the
+/// highlighted span — analysis underlines it at 14px, the archive bumps it to
+/// 16px. No server field carries that span, so [highlight] is null in practice
+/// and both render at 116.
 ///
 /// Used by both the 대화 기록 detail (analysis, "연습하기" action + bookmark
 /// toggle) and the 보관 archive (whole-card tap → that sentence's review).
@@ -76,11 +82,12 @@ class CardBookmark extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             native,
-            style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
           ),
-          // Figma Card-Bookmark: single gap-md (16) between the text block and
-          // the footer row — no divider (Figma 2296/2224 both have none).
-          const SizedBox(height: 16),
+          // Figma Card-Bookmark: a single gap-xs (8) between the text block and
+          // the footer row — no divider (`176:14677` wraps both in one gap-8
+          // column).
+          const SizedBox(height: 8),
           Row(
             children: [
               _glyph(AppIcons.volume, onSpeakerTap),
@@ -115,7 +122,7 @@ class CardBookmark extends StatelessWidget {
 
   /// The Korean line, underlining [highlight] (the learned expression) when set.
   Widget _koreanText() {
-    final base = AppType.body1.sb.copyWith(color: AppColors.text);
+    final base = AppType.label1.sb.copyWith(color: AppColors.text);
     final h = highlight;
     if (h == null || h.isEmpty || !korean.contains(h)) {
       return Text(korean, style: base);

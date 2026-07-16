@@ -10,16 +10,20 @@ import '../atoms/skeleton.dart';
 ///
 /// Figma's own note on the component: *"새로 배운 표현 로딩(스켈레톤) 카드.
 /// Card-Bookmark(335×136)와 동일한 골격이라 로드 완료 시 레이아웃 점프가 없다."*
-/// That equal height is the whole point, so this mirrors [CardBookmark]'s box
-/// exactly — padding `20/16`, radius 12, and the same 52 + 16 + 36 stack — and
-/// takes no size arguments that could drift from it.
+/// The equal height is the point; the 136 is not. **That note is now false
+/// against its own file**: `Card-Bookmark` was restyled (a 14px sentence over a
+/// 12px translation, gap 8) and measures 116 in `screen/analysis` and 120 in
+/// `screen/record_archive`, while `Card-Loading` still sits at 136 and
+/// `screen/analysis_loading` draws its own 113-tall `Card/Expression-1` — four
+/// heights for one skeleton whose only job is to not jump.
 ///
-/// Use this anywhere [CardBookmark] is about to appear. Note that
-/// `screen/analysis_loading` (`3569:27500`) draws its own 113-tall
-/// `Card/Expression-1` instead of instancing this: that frame predates the
-/// component and would jump 23px per card on load, so this is used there too.
+/// So this matches **[CardBookmark] itself (116)**, not the stale component:
+/// copying the 136 would mint a 20px jump per card. The bar sizes are still
+/// Figma's (210×20, 150×16, 70×36) — only the gaps follow the card this stands
+/// in for. Design owes `Card-Loading` an update either way.
 ///
-/// Must sit under a [SkeletonShimmer].
+/// Use this anywhere [CardBookmark] is about to appear. Takes no size arguments
+/// that could drift from it. Must sit under a [SkeletonShimmer].
 class CardLoading extends StatelessWidget {
   /// Creates a learned-sentence loading card.
   const CardLoading({super.key});
@@ -36,10 +40,12 @@ class CardLoading extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // Skeleton/Text (3444:912) — the sentence over its translation.
+            // 20 + 4 + 16 is the card's own line box stack (Label 1 over
+            // Caption 1), so the two lines land where the real text will.
             Skeleton.bar(width: 210, height: 20),
-            SizedBox(height: AppSpacing.s8),
+            SizedBox(height: AppSpacing.s4),
             Skeleton.bar(width: 150, height: 16),
-            SizedBox(height: AppSpacing.s16),
+            SizedBox(height: AppSpacing.s8),
             // Skeleton/Action (3444:915) — speaker + bookmark, then 연습하기.
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

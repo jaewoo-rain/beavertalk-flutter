@@ -115,16 +115,6 @@
       }
     }
   },
-  "oneFixTitle": "Today's feedback",
-  "streakBadge": "{count} calls in a row",
-  "@streakBadge": {
-    "description": "Shown when the same fix has recurred across consecutive calls.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
   "newExpressionsCount": "New expressions {count}",
   "@newExpressionsCount": {
     "placeholders": {
@@ -452,19 +442,6 @@
     "placeholders": {
       "passed": { "type": "int" },
       "total": { "type": "int" }
-    }
-  },
-  "learningDelta": "{delta}% vs last session",
-  "@learningDelta": {
-    "description": "Badge next to the headline; delta is signed, e.g. +5.",
-    "placeholders": {
-      "delta": { "type": "String" }
-    }
-  },
-  "learningTodayMeta": "Today's session · {duration}",
-  "@learningTodayMeta": {
-    "placeholders": {
-      "duration": { "type": "String" }
     }
   },
   "hardestSound": "Hardest sound today",

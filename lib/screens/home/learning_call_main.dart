@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart' as intl;
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
@@ -36,7 +37,7 @@ class LearningCallMainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const s = mockLearningSummary;
+    final s = mockLearningSummary;
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: AppColors.surface,
@@ -98,49 +99,32 @@ class LearningCallMainScreen extends StatelessWidget {
     );
   }
 
-  /// Head (`3569:15077`) — the pass count with a delta pill, then the meta line.
+  /// Head (`3569:15077`) — the pass count, then the session date.
+  ///
+  /// The delta pill that sat beside the count ("지난 세션 +5%") was **deleted
+  /// from the frame** on 2026-07-16, and the meta line changed from
+  /// "오늘 학습 · 6분 12초" to the date. `screen/learning_main_loading` still
+  /// draws the old head; it is the stale one (a loading state cannot hold a
+  /// value the loaded state has dropped), so both follow this frame.
+  ///
+  /// The date renders ISO (`3569:15082` reads `2026-07-16`), which is what the
+  /// frame specifies and is unambiguous in all 30 locales — unlike the call
+  /// meta line in `analysis.dart`, which is localized via `DateFormat.MMMd`. If
+  /// design wants this localized too, it is a one-line change here.
   Widget _head(AppLocalizations l10n, LearningSummary s) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  l10n.learningPassed(s.passed, s.total),
-                  style: AppType.heading2.b,
-                ),
-              ),
-              const SizedBox(width: AppSpacing.s8),
-              _deltaPill(l10n, s.deltaPercent),
-            ],
+          Text(
+            l10n.learningPassed(s.passed, s.total),
+            style: AppType.heading2.b,
           ),
           const SizedBox(height: AppSpacing.s4),
           Text(
-            l10n.learningTodayMeta(s.duration),
+            intl.DateFormat('yyyy-MM-dd').format(s.date),
             style: AppType.label2.r.copyWith(color: AppColors.textSecondary),
           ),
         ],
       );
-
-  /// Delta (`3569:15080`). Always signed, and red when it is a drop — the frame
-  /// only ever drew a gain, but a summary that paints a regression mint is
-  /// worse than useless.
-  Widget _deltaPill(AppLocalizations l10n, int delta) {
-    final down = delta < 0;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: down ? AppColors.negativeAccent16 : AppColors.primary12,
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(
-        l10n.learningDelta(_signed(delta)),
-        style: AppType.caption2.m.copyWith(
-          color: down ? AppColors.negativeAccent : AppColors.primary,
-        ),
-      ),
-    );
-  }
 
   /// Section/OneFix (`3569:15113`).
   List<Widget> _oneFix(AppLocalizations l10n, LearningSummary s) => _section(
@@ -438,7 +422,11 @@ class _TrendChart extends StatelessWidget {
   static const double _plotHeight = 100;
 
   /// Room above the plot for the value labels, and below it for the ticks.
-  static const double _valueRow = 20, _tickRow = 18;
+  ///
+  /// 26 = the frame's 8 gap + a 14 tick line + 4 slack (`3569:15204` sits at
+  /// y128 under a plot whose baseline is y120). With it, the chart is 146 and
+  /// the card lands on `Card/Trend`'s 174 once padded.
+  static const double _valueRow = 20, _tickRow = 26;
 
   double _y(num score) =>
       (_max - score.toDouble().clamp(_min, _max)) / (_max - _min) * _plotHeight;
@@ -587,7 +575,7 @@ class _TrendChart extends StatelessWidget {
               ],
             ),
           ),
-          const SizedBox(height: AppSpacing.s4),
+          const SizedBox(height: AppSpacing.s8),
           Text(
             p.label,
             maxLines: 1,

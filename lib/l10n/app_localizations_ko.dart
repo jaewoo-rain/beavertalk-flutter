@@ -161,14 +161,6 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => '오늘의 피드백';
-
-  @override
-  String streakBadge(int count) {
-    return '$count번째 통화 연속';
-  }
-
-  @override
   String newExpressionsCount(int count) {
     return '새로 배운 표현 $count';
   }
@@ -900,16 +892,6 @@ class AppLocalizationsKo extends AppLocalizations {
   @override
   String learningPassed(int passed, int total) {
     return '$total문장 중 $passed개 통과';
-  }
-
-  @override
-  String learningDelta(String delta) {
-    return '지난 세션 $delta%';
-  }
-
-  @override
-  String learningTodayMeta(String duration) {
-    return '오늘 학습 · $duration';
   }
 
   @override

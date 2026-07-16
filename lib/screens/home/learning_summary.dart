@@ -96,8 +96,7 @@ class LearningSummary {
   const LearningSummary({
     required this.passed,
     required this.total,
-    required this.deltaPercent,
-    required this.duration,
+    required this.date,
     required this.overall,
     required this.pronunciation,
     required this.fluency,
@@ -113,11 +112,12 @@ class LearningSummary {
   /// Sentences passed, out of [total].
   final int passed, total;
 
-  /// Signed change against the previous session, in points.
-  final int deltaPercent;
-
-  /// Time spent, already formatted (e.g. `6분 12초`).
-  final String duration;
+  /// When the session happened — the head's meta line (`3569:15082`).
+  ///
+  /// This replaced both the delta pill and the "오늘 학습 · 6분 12초" duration
+  /// when the frame changed on 2026-07-16. Confirm the server sends a session
+  /// timestamp when the endpoint lands; nothing supplies one today.
+  final DateTime date;
 
   /// 0–100 gauge score and its three sub-scores.
   final int overall, pronunciation, fluency, rhythm;
@@ -141,11 +141,10 @@ class LearningSummary {
 }
 
 /// ⚠️ FAKE. The Figma frame's sample values (`3569:15065`). See the library doc.
-const mockLearningSummary = LearningSummary(
+final mockLearningSummary = LearningSummary(
   passed: 8,
   total: 10,
-  deltaPercent: 5,
-  duration: '6분 12초',
+  date: DateTime(2026, 7, 16),
   overall: 97,
   pronunciation: 96,
   fluency: 91,

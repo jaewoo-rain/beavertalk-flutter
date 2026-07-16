@@ -164,14 +164,6 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => 'Today\'s feedback';
-
-  @override
-  String streakBadge(int count) {
-    return '$count calls in a row';
-  }
-
-  @override
   String newExpressionsCount(int count) {
     return 'New expressions $count';
   }
@@ -935,16 +927,6 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String learningPassed(int passed, int total) {
     return '$passed of $total sentences passed';
-  }
-
-  @override
-  String learningDelta(String delta) {
-    return '$delta% vs last session';
-  }
-
-  @override
-  String learningTodayMeta(String duration) {
-    return 'Today\'s session · $duration';
   }
 
   @override

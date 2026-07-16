@@ -22,40 +22,37 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
-/// Call analysis screen — Figma `screen/analysis__확정` (`3474:435`).
+/// Call analysis screen — Figma `screen/analysis` (`3583:34434`).
 ///
-/// A rework of the previous `screen/analysis` (`2224:21244`) layout. Sections,
-/// top to bottom, are exactly the confirmed frame's children:
-/// - **CallHeader** (`3474:457`) — `result.summary` as the title, then a
+/// Sections, top to bottom, are exactly that frame's children:
+/// - **CallHeader** (`3583:34438`) — `result.summary` as the title, then a
 ///   `·`-joined meta line (partner · date · duration · which call this is).
-/// - **Gauge** (`3474:520`) — pinned by the design as `pronunciation_result
+/// - **Gauge** (`3583:34441`) — pinned by the design as `pronunciation_result
 ///   (고정)`. The average is **recomputed on the frontend** from
 ///   [reviewScoresProvider], the mean over sentences practiced this session.
 ///   Before any practice the map is empty → inactive ("-%"); it updates live as
 ///   the user records sentences and returns here. (`result.average` is unused.)
-/// - **복습하기 / 발음 챌린지 도전하기** — the two `Footer/PrimaryAction`s the
-///   loading frame pins at `3569:27509`; see the note below on why they are here
-///   even though `screen/analysis__확정` omits them.
-/// - **Baba의 한마디** (`3474:582`) / **오늘의 피드백** (`3474:589`).
-/// - **새로 배운 표현** (`3475:550`) — one [CardBookmark] per `result.sentences`
-///   entry (speaker · bookmark toggle · 연습하기), as the frame instantiates.
+/// - **복습하기 / 발음 챌린지 도전하기** — the two `Footer/PrimaryAction`s
+///   (`3583:34443`/`3583:34444`), right under the gauge. This is also the app's
+///   only entry to the challenge: without them `Routes.pronunciationChallenge`
+///   is unreachable, and nothing would catch that — the tests mount the screen
+///   directly, so they pass either way.
+/// - **Baba의 한마디** (`3583:34445`).
+/// - **새로 배운 표현 N** (`3583:34462`) — one [CardBookmark] per
+///   `result.sentences` entry (speaker · bookmark toggle · 연습하기).
 ///
-/// **The server sends neither narrative section yet** (nor the partner or call
+/// **오늘의 피드백 (OneFix) was deleted from the design** (2026-07-16) — it is
+/// gone from both the loaded frame and `screen/analysis_loading` (`3569:27500`),
+/// so this is the design agreeing with itself rather than the frame-vs-frame
+/// split the buttons once had. The section, its entity and its DTO parsing went
+/// with it; nothing consumed them (the server never sent the field).
+///
+/// **The server still sends no narrative fields** (nor the partner or call
 /// sequence) — see `docs/2026-07-16_1145_analysis-확정디자인-정합.md` for the
 /// proposed payload. [CallResult] declares them and the DTO parses them, so they
 /// light up without a client change. Until then each is null and its section is
-/// omitted outright: a fabricated "today's feedback" is worse than no section at
-/// all, and this screen's whole credibility rests on those lines being real.
-///
-/// **On the two buttons.** `screen/analysis__확정` (`3474:435`) has no buttons,
-/// but both of this screen's loading frames do — `screen/analysis_loading__확정`
-/// (`3476:494`) and `screen/analysis_loading` (`3569:27509`) each place 복습하기
-/// over 발음 챌린지 도전하기, right under the gauge. Two frames out of three
-/// carry them, and a loading state cannot show a control the loaded state drops,
-/// so the confirmed frame is read as the omission. This is also the app's only
-/// entry to the challenge: without it `Routes.pronunciationChallenge` is
-/// unreachable from anywhere, and nothing would catch that — the tests mount the
-/// screen directly, so they pass either way.
+/// omitted outright: a fabricated remark is worse than no section at all, and
+/// this screen's whole credibility rests on those lines being real.
 ///
 /// [CardBookmark.highlight] stays null, so the learned expression renders
 /// without the design's underline: no server field carries that span, and the
@@ -266,7 +263,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             ),
           ),
 
-          // ── Actions (`3569:27509`) ─────────────────────────────────
+          // ── Actions (`3583:34442`) ─────────────────────────────────
           const SizedBox(height: AppSpacing.s24),
           Button(
             type: BtnType.primaryFill,
@@ -286,7 +283,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ),
 
           ..._babaNote(l10n, result),
-          ..._oneFix(l10n, result.oneFix),
           ..._expressions(l10n, result),
         ],
       ),
@@ -321,8 +317,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   String _formatDuration(AppLocalizations l10n, int totalSeconds) =>
       l10n.durationMinSec(totalSeconds ~/ 60, totalSeconds % 60);
 
-  /// Section/BabaNote (3474:582) — needs both the remark and the partner it is
-  /// attributed to, so it is hidden unless the server sends both.
+  /// Section/BabaNote (`3583:34445`) — needs both the remark and the partner it
+  /// is attributed to, so it is hidden unless the server sends both.
   List<Widget> _babaNote(AppLocalizations l10n, CallResult result) {
     final note = result.note;
     final character = result.character;
@@ -366,71 +362,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ? NetworkImage(imageUrl)
           : beaverImage;
 
-  /// Section/OneFix (3474:589).
-  List<Widget> _oneFix(AppLocalizations l10n, OneFix? fix) {
-    if (fix == null) return const [];
-    final streak = fix.streakCount;
-    return _section(
-      label: l10n.oneFixTitle,
-      // A streak of 1 is just "this call" — only 2+ is a recurrence worth
-      // flagging, so the badge stays hidden below that.
-      trailing: (streak != null && streak >= 2)
-          ? _streakBadge(l10n.streakBadge(streak))
-          : null,
-      child: _card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(fix.title, style: AppType.body2.m),
-            if (fix.evidence != null) ...[
-              const SizedBox(height: 10), // no s10 token
-              Text(
-                fix.evidence!,
-                style: AppType.caption1.r.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-            if (fix.l1Interference != null) ...[
-              const SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: AppSpacing.s8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary08,
-                  borderRadius: BorderRadius.circular(AppRadius.xs),
-                ),
-                child: Text(
-                  fix.l1Interference!,
-                  style: AppType.caption1.r.copyWith(color: AppColors.primary),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Badge/Streak (3474:592) — 11px on a 16%-alpha negative fill.
-  Widget _streakBadge(String text) => Container(
-        padding:
-            const EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: 3),
-        decoration: BoxDecoration(
-          color: AppColors.negativeAccent16,
-          borderRadius: BorderRadius.circular(6), // no r6 token
-        ),
-        child: Text(
-          text,
-          style: AppType.caption2.r.copyWith(color: AppColors.negativeAccent),
-        ),
-      );
-
-  /// Section/Expressions (3475:550) — one `Card-Bookmark` per sentence
-  /// (`3569:13862`–`3569:13864`), each with a speaker, a bookmark toggle and a
+  /// Section/Expressions (`3583:34462`) — one `Card-Bookmark` per sentence
+  /// (`3583:34466`–`3583:34468`), each with a speaker, a bookmark toggle and a
   /// 연습하기 button that practices just that sentence.
   List<Widget> _expressions(AppLocalizations l10n, CallResult result) {
     final sentences = result.sentences;
@@ -460,24 +393,10 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     );
   }
 
-  /// A titled section: 24px above it, an optional trailing badge/count on the
-  /// label row, then the content 8px below.
-  List<Widget> _section({
-    required String label,
-    Widget? trailing,
-    required Widget child,
-  }) =>
-      [
+  /// A titled section: 24px above it, then the content 8px below the label.
+  List<Widget> _section({required String label, required Widget child}) => [
         const SizedBox(height: AppSpacing.s24),
-        Row(
-          children: [
-            Expanded(child: Text(label, style: AppType.body2.m)),
-            if (trailing != null) ...[
-              const SizedBox(width: AppSpacing.s8),
-              trailing,
-            ],
-          ],
-        ),
+        Text(label, style: AppType.body2.m),
         const SizedBox(height: AppSpacing.s8),
         child,
       ];
@@ -546,13 +465,6 @@ CallResult _withDesignPreview(CallResult r) => CallResult(
       note: r.note ??
           const CharacterNote(
             text: '강아지 얘기 나오니까 갑자기 말이 빨라지던데요.\n그 톤이 진짜예요.',
-          ),
-      oneFix: r.oneFix ??
-          const OneFix(
-            title: '받침 ㄹ이 자꾸 새요',
-            evidence: '“산책시킬게요”를 “산책시키게요”로 3번 발음했어요',
-            l1Interference: '스페인어엔 이 받침이 없어요. 당신 잘못이 아니에요.',
-            streakCount: 3,
           ),
     );
 
