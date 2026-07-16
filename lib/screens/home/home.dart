@@ -5,6 +5,7 @@ import 'package:permission_handler/permission_handler.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/pressable.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
@@ -68,7 +69,8 @@ class HomeScreen extends ConsumerWidget {
     // Selected character (member `character_id`) drives the hero name + avatar.
     // Resolve the real catalog entry so the actual in-use character (e.g. Baba)
     // shows — never a hardcoded id→name guess.
-    final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
+    final profile = ref.watch(myProfileProvider);
+    final characterId = profile.valueOrNull?.characterId;
     final selected = ref.watch(selectedCharacterProvider);
     final selectedUrl = selected?.imageUrl;
     final heroImage = (selectedUrl != null && selectedUrl.isNotEmpty)
@@ -127,10 +129,35 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s16),
-                Text(
-                  selected?.name ?? characterName(characterId),
-                  // Figma `2296:26390` — Title 3 / Bold (24px), updated from 32.
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                // `skeleton/Annoying Beaver` (`3489:3919`) — the name is a
+                // placeholder until the profile lands, because
+                // [characterName] answers a null id with 'Bibi'. That is a
+                // guess: a Baba user would read their partner as Bibi for as
+                // long as the request takes, then watch it change. The box
+                // keeps Title 3's 32 line-height so nothing shifts.
+                SizedBox(
+                  height: 32,
+                  // `isLoading && !hasValue` = the first fetch only. On failure
+                  // both are false and the guessed name comes back, which is
+                  // the old behaviour and beats shimmering forever; on a
+                  // refresh `hasValue` holds, so the current name stays put
+                  // instead of flickering to a placeholder.
+                  child: (selected == null &&
+                          profile.isLoading &&
+                          !profile.hasValue)
+                      ? const SkeletonShimmer(
+                          child: Center(
+                            child: Skeleton.bar(width: 170, height: 22),
+                          ),
+                        )
+                      : Center(
+                          child: Text(
+                            selected?.name ?? characterName(characterId),
+                            // Figma `2296:26390` — Title 3 / Bold (24px).
+                            style:
+                                AppType.title3.b.copyWith(color: AppColors.text),
+                          ),
+                        ),
                 ),
               ],
             ),

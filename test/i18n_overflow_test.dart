@@ -37,6 +37,7 @@ import 'package:beavertalk/screens/payment/payment_complete.dart';
 import 'package:beavertalk/screens/payment/payment_failed.dart';
 import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
+import 'package:beavertalk/screens/home/learning_call_main_loading.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/system/mic_denied.dart';
 import 'package:beavertalk/screens/system/network_error.dart';
@@ -70,6 +71,7 @@ void main() {
     // Densest screen in the app — three tables and a chart, all fixed-width
     // number columns. Narrow locales break here first.
     'LearningCallMain': () => const LearningCallMainScreen(),
+    'LearningCallMainLoading': () => const LearningCallMainLoadingScreen(),
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
     'Permission': () => const PermissionScreen(),

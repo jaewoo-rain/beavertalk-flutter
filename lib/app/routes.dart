@@ -25,6 +25,7 @@ import '../screens/home/learning_intro.dart';
 import '../features/pronunciation_challenge/presentation/pronunciation_challenge_screen.dart';
 import '../screens/home/learning_next.dart';
 import '../screens/home/learning_call_main.dart';
+import '../screens/home/learning_call_main_loading.dart';
 import '../screens/home/learning_sentence_main.dart';
 import '../screens/payment/payment.dart';
 import '../screens/payment/payment_complete.dart';
@@ -69,6 +70,7 @@ abstract final class Routes {
   static const learningNext = '/learning/next';
   static const learningSentenceMain = '/learning/sentence-main';
   static const learningCallMain = '/learning/call-main';
+  static const learningCallMainLoading = '/learning/call-main/loading';
   static const pronunciationChallenge = '/pronunciation-challenge';
 
   // ── My page / subscription / avatar / share ──
@@ -126,6 +128,8 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.learningNext: (_) => const LearningNextScreen(),
     Routes.learningSentenceMain: (_) => const LearningSentenceMainScreen(),
     Routes.learningCallMain: (_) => const LearningCallMainScreen(),
+    Routes.learningCallMainLoading: (_) =>
+        const LearningCallMainLoadingScreen(),
     Routes.pronunciationChallenge: (_) =>
         const PronunciationChallengeScreen(),
     Routes.payment: (_) => const PaymentScreen(),
@@ -172,6 +176,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.learningNext: '학습 비교',
     Routes.learningSentenceMain: '문장 결과',
     Routes.learningCallMain: '학습 결과',
+    Routes.learningCallMainLoading: '학습 결과 로딩',
     Routes.pronunciationChallenge: '발음 챌린지',
     Routes.mypage: '마이페이지',
     Routes.alarms: '알림',
