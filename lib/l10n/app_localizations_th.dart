@@ -147,6 +147,48 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String callSequence(int count) {
+    return 'Call #$count';
+  }
+
+  @override
+  String characterNoteTitle(String name) {
+    return 'A word from $name';
+  }
+
+  @override
+  String characterNoteFooter(String name) {
+    return 'Left by $name right after the call';
+  }
+
+  @override
+  String get oneFixTitle => 'One thing to fix today';
+
+  @override
+  String streakBadge(int count) {
+    return '$count calls in a row';
+  }
+
+  @override
+  String get firstTimeTitle => 'A first this time';
+
+  @override
+  String newExpressionsCount(int count) {
+    return 'New expressions $count';
+  }
+
+  @override
+  String expressionsTotal(int count) {
+    return '$count total';
+  }
+
+  @override
+  String get nextCallTitle => 'To try on your next call';
+
+  @override
+  String get nextCallFooter => 'Shown on your next call\'s start screen';
+
+  @override
   String get analysisLoadError => 'โหลดผลการวิเคราะห์ไม่สำเร็จ';
 
   @override

@@ -26,6 +26,21 @@ abstract final class AppColors {
   static const textDisabled = Color(0xFF5A5C63);
   static const labelAssistive = Color(0xFF676E81); // Label/Assistive
 
+  // ── Analysis screen (Figma `screen/analysis__확정`, 3474:435) ──
+  // That frame was drawn with raw hex rather than design-system styles, so these
+  // four have no Figma token name — they are named by role. Each is close to but
+  // not equal to an existing token, so none can be folded into one:
+  // labelMeta≉textTertiary(#878A93), labelFootnote≉labelAssistive(#676E81).
+  static const labelMeta = Color(0xFF777C89); // call date/duration line
+  static const labelFootnote = Color(0xFF626877); // "통화 직후 Baba가 남김" etc.
+
+  /// Status/Negative as the v2 design uses it. Deliberately **not** [error]
+  /// (#FF6363): 38 files render `error`, so repointing it is a separate call.
+  /// Until that is settled the two coexist; use this only on analysis surfaces.
+  static const negativeAccent = Color(0xFFFF7070);
+  static const negativeAccent16 = Color(0x29FF7070); // streak badge fill (16%)
+  static const primary08 = Color(0x1400FFB2); // L1-interference box fill (8%)
+
   static const hintAccent = Color(0xFFD17600); // Orange/39 — in-call hint accent (btn/hint on, "Hint" label)
   static const equalizerBar = Color(0xFF37383C); // cool-neutral/25 — speaking equalizer bars (자막off)
 

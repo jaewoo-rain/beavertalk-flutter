@@ -89,6 +89,63 @@
       }
     }
   },
+  "conversationRecord": "Conversation record",
+  "callSequence": "Call #{count}",
+  "@callSequence": {
+    "description": "Which call this is with the same partner, shown in the analysis meta line.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "characterNoteTitle": "A word from {name}",
+  "@characterNoteTitle": {
+    "description": "Section title for the partner's post-call remark.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "characterNoteFooter": "Left by {name} right after the call",
+  "@characterNoteFooter": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "oneFixTitle": "One thing to fix today",
+  "streakBadge": "{count} calls in a row",
+  "@streakBadge": {
+    "description": "Shown when the same fix has recurred across consecutive calls.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "firstTimeTitle": "A first this time",
+  "newExpressionsCount": "New expressions {count}",
+  "@newExpressionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "expressionsTotal": "{count} total",
+  "@expressionsTotal": {
+    "description": "Lifetime count of learned expressions, not just this call.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nextCallTitle": "To try on your next call",
+  "nextCallFooter": "Shown on your next call's start screen",
   "analysisLoadError": "Couldn't load the analysis result.",
   "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
   "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",
