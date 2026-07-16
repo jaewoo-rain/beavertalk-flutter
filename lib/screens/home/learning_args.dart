@@ -4,7 +4,7 @@ import '../../features/review/domain/entities/review_feedback.dart';
 import '../../mock/mock_data.dart';
 
 /// Navigation payload shared across the learning flow
-/// ([Routes.learningIntro] → [Routes.learningNext] → [Routes.learningMain]).
+/// ([Routes.learningIntro] → [Routes.learningNext] → [Routes.learningSentenceMain]).
 ///
 /// Carries the full list of sentences in the current learning session plus the
 /// [index] of the sentence currently being practiced. "복습하기" passes every

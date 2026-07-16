@@ -896,4 +896,92 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => '결제';
+
+  @override
+  String learningPassed(int passed, int total) {
+    return '$total문장 중 $passed개 통과';
+  }
+
+  @override
+  String learningDelta(String delta) {
+    return '지난 세션 $delta%';
+  }
+
+  @override
+  String learningTodayMeta(String duration) {
+    return '오늘 학습 · $duration';
+  }
+
+  @override
+  String get hardestSound => '가장 어려웠던 소리';
+
+  @override
+  String get soundAccuracy => '소리별 정확도';
+
+  @override
+  String phonemeAttempts(int count) {
+    return '음소 단위 · $count회 시도';
+  }
+
+  @override
+  String get colSound => '소리';
+
+  @override
+  String get colAttempts => '시도';
+
+  @override
+  String get colCorrect => '정확';
+
+  @override
+  String get colAccuracy => '정확도';
+
+  @override
+  String get sentenceResults => '문장별 결과';
+
+  @override
+  String viewAllSentences(int count) {
+    return '$count개 전체 보기';
+  }
+
+  @override
+  String get colSentence => '문장';
+
+  @override
+  String get colPronunciation => '발음';
+
+  @override
+  String get colFluency => '유창';
+
+  @override
+  String get colRhythm => '리듬';
+
+  @override
+  String recentSessions(int count) {
+    return '최근 $count세션';
+  }
+
+  @override
+  String trendAverage(int score) {
+    return '평균 $score';
+  }
+
+  @override
+  String get today => '오늘';
+
+  @override
+  String get colDate => '날짜';
+
+  @override
+  String get colSentences => '문장';
+
+  @override
+  String get colScore => '점수';
+
+  @override
+  String get colChange => '변화';
+
+  @override
+  String dateToday(String date) {
+    return '$date (오늘)';
+  }
 }

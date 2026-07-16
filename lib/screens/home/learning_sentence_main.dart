@@ -11,6 +11,11 @@ import 'learning_args.dart';
 
 /// Learning step 3 — Figma `screen/learning_main` (`2221:3837`).
 ///
+/// Named *sentence* main because it scores **one sentence**: `design_app_v2 ·
+/// Dark` introduces a `screen/learning_main` (`3569:15065`) that summarises the
+/// whole session instead, built here as [LearningCallMainScreen]. Two different
+/// screens under one Figma name, so the code splits them by what they measure.
+///
 /// The per-sentence result: a centered [PronunciationResult] gauge fed by the
 /// current sentence's scores, with a pinned footer of two actions:
 /// - "학습 종료" ([BtnType.secondaryFill]) → pop back to the start of the flow,
@@ -19,15 +24,15 @@ import 'learning_args.dart';
 ///   otherwise return to [Routes.home].
 ///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
-class LearningMainScreen extends StatefulWidget {
+class LearningSentenceMainScreen extends StatefulWidget {
   /// Creates the learning result screen.
-  const LearningMainScreen({super.key});
+  const LearningSentenceMainScreen({super.key});
 
   @override
-  State<LearningMainScreen> createState() => _LearningMainScreenState();
+  State<LearningSentenceMainScreen> createState() => _LearningSentenceMainScreenState();
 }
 
-class _LearningMainScreenState extends State<LearningMainScreen> {
+class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen> {
   /// Ends the session: unwind back to whatever launched the learning flow —
   /// the call analysis (대화 기록) or the 보관 archive. Pops every learning
   /// screen (intro/next/main) and stops at the first non-learning route, so it
@@ -38,7 +43,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
       final name = route.settings.name;
       return name != Routes.learningIntro &&
           name != Routes.learningNext &&
-          name != Routes.learningMain;
+          name != Routes.learningSentenceMain;
     });
   }
 

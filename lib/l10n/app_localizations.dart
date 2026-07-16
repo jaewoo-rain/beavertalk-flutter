@@ -1875,6 +1875,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment'**
   String get paymentLabelFallback;
+
+  /// Headline of the learning summary screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{passed} of {total} sentences passed'**
+  String learningPassed(int passed, int total);
+
+  /// Badge next to the headline; delta is signed, e.g. +5.
+  ///
+  /// In en, this message translates to:
+  /// **'{delta}% vs last session'**
+  String learningDelta(String delta);
+
+  /// No description provided for @learningTodayMeta.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s session · {duration}'**
+  String learningTodayMeta(String duration);
+
+  /// No description provided for @hardestSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardest sound today'**
+  String get hardestSound;
+
+  /// No description provided for @soundAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy by sound'**
+  String get soundAccuracy;
+
+  /// No description provided for @phonemeAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Per phoneme · {count} attempts'**
+  String phonemeAttempts(int count);
+
+  /// No description provided for @colSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get colSound;
+
+  /// No description provided for @colAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Tries'**
+  String get colAttempts;
+
+  /// No description provided for @colCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get colCorrect;
+
+  /// No description provided for @colAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get colAccuracy;
+
+  /// No description provided for @sentenceResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Results by sentence'**
+  String get sentenceResults;
+
+  /// No description provided for @viewAllSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'See all {count}'**
+  String viewAllSentences(int count);
+
+  /// No description provided for @colSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence'**
+  String get colSentence;
+
+  /// No description provided for @colPronunciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pron.'**
+  String get colPronunciation;
+
+  /// No description provided for @colFluency.
+  ///
+  /// In en, this message translates to:
+  /// **'Flu.'**
+  String get colFluency;
+
+  /// No description provided for @colRhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Rhy.'**
+  String get colRhythm;
+
+  /// No description provided for @recentSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Last {count} sessions'**
+  String recentSessions(int count);
+
+  /// No description provided for @trendAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg {score}'**
+  String trendAverage(int score);
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @colDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get colDate;
+
+  /// No description provided for @colSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentences'**
+  String get colSentences;
+
+  /// No description provided for @colScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get colScore;
+
+  /// No description provided for @colChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get colChange;
+
+  /// The most recent row of the trend table.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} (today)'**
+  String dateToday(String date);
 }
 
 class _AppLocalizationsDelegate

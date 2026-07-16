@@ -32,7 +32,7 @@ import 'learning_args.dart';
 /// - "Native" plays [ReviewFeedback.voiceUrl] when present (best-effort; a
 ///   storage key that isn't directly playable just shows a message).
 /// - 다시하기 → pop back to re-record the same sentence.
-/// - → next → next sentence's intro, or [Routes.learningMain] when last.
+/// - → next → next sentence's intro, or [Routes.learningSentenceMain] when last.
 ///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
 class LearningNextScreen extends ConsumerStatefulWidget {
@@ -322,7 +322,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                           height: 56,
                           child: IconButton(
                             // More sentences left → record the next one directly;
-                            // the score screen (learning_main) shows only once,
+                            // the score screen (learning_sentence_main) shows only once,
                             // after the whole review sequence is done.
                             onPressed: () => args.hasNext
                                 ? Navigator.pushNamed(
@@ -332,7 +332,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                                   )
                                 : Navigator.pushNamed(
                                     context,
-                                    Routes.learningMain,
+                                    Routes.learningSentenceMain,
                                     arguments: args,
                                   ),
                             icon: AppIcons.arrowForward(

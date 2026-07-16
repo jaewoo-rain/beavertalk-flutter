@@ -9,6 +9,15 @@ abstract final class AppColors {
   static const primary10 = Color(0x1A00FFB2); // Primary/Primary-10 (≈10%)
   static const primary24 = Color(0x3D00FFB2); // ≈24%
 
+  // Alphas the learning-session summary asks for (`screen/learning_main`,
+  // 3569:15065). Each is within a couple of percent of one above, but they sit
+  // side by side on that screen — the delta pill against the bars, the bars
+  // against the average line — so rounding them together would flatten the
+  // depth the chart reads by.
+  static const primary12 = Color(0x1F00FFB2); // delta pill fill
+  static const primary22 = Color(0x3800FFB2); // past-session bars
+  static const primary35 = Color(0x5900FFB2); // average line
+
   static const bg = Color(0xFF121217); // screen background
   static const surface = Color(0xFF181A20); // Background/Normal/Normal
   static const surface2 = Color(0xFF252932); // Background/Normal/Alternative

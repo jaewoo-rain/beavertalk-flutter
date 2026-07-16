@@ -926,4 +926,92 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => 'Payment';
+
+  @override
+  String learningPassed(int passed, int total) {
+    return '$passed of $total sentences passed';
+  }
+
+  @override
+  String learningDelta(String delta) {
+    return '$delta% vs last session';
+  }
+
+  @override
+  String learningTodayMeta(String duration) {
+    return 'Today\'s session · $duration';
+  }
+
+  @override
+  String get hardestSound => 'Hardest sound today';
+
+  @override
+  String get soundAccuracy => 'Accuracy by sound';
+
+  @override
+  String phonemeAttempts(int count) {
+    return 'Per phoneme · $count attempts';
+  }
+
+  @override
+  String get colSound => 'Sound';
+
+  @override
+  String get colAttempts => 'Tries';
+
+  @override
+  String get colCorrect => 'Right';
+
+  @override
+  String get colAccuracy => 'Accuracy';
+
+  @override
+  String get sentenceResults => 'Results by sentence';
+
+  @override
+  String viewAllSentences(int count) {
+    return 'See all $count';
+  }
+
+  @override
+  String get colSentence => 'Sentence';
+
+  @override
+  String get colPronunciation => 'Pron.';
+
+  @override
+  String get colFluency => 'Flu.';
+
+  @override
+  String get colRhythm => 'Rhy.';
+
+  @override
+  String recentSessions(int count) {
+    return 'Last $count sessions';
+  }
+
+  @override
+  String trendAverage(int score) {
+    return 'Avg $score';
+  }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get colDate => 'Date';
+
+  @override
+  String get colSentences => 'Sentences';
+
+  @override
+  String get colScore => 'Score';
+
+  @override
+  String get colChange => 'Change';
+
+  @override
+  String dateToday(String date) {
+    return '$date (today)';
+  }
 }

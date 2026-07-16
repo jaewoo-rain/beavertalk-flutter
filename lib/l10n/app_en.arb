@@ -89,7 +89,6 @@
       }
     }
   },
-  "conversationRecord": "Conversation record",
   "callSequence": "Call #{count}",
   "@callSequence": {
     "description": "Which call this is with the same partner, shown in the analysis meta line.",
@@ -445,5 +444,74 @@
   "paymentLabelFallback": "Payment",
   "@paymentLabelFallback": {
     "description": "Row label when the server sends no description and the category is unknown."
+  },
+
+  "learningPassed": "{passed} of {total} sentences passed",
+  "@learningPassed": {
+    "description": "Headline of the learning summary screen.",
+    "placeholders": {
+      "passed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "learningDelta": "{delta}% vs last session",
+  "@learningDelta": {
+    "description": "Badge next to the headline; delta is signed, e.g. +5.",
+    "placeholders": {
+      "delta": { "type": "String" }
+    }
+  },
+  "learningTodayMeta": "Today's session · {duration}",
+  "@learningTodayMeta": {
+    "placeholders": {
+      "duration": { "type": "String" }
+    }
+  },
+  "hardestSound": "Hardest sound today",
+  "soundAccuracy": "Accuracy by sound",
+  "phonemeAttempts": "Per phoneme · {count} attempts",
+  "@phonemeAttempts": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "colSound": "Sound",
+  "colAttempts": "Tries",
+  "colCorrect": "Right",
+  "colAccuracy": "Accuracy",
+  "sentenceResults": "Results by sentence",
+  "viewAllSentences": "See all {count}",
+  "@viewAllSentences": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "colSentence": "Sentence",
+  "colPronunciation": "Pron.",
+  "colFluency": "Flu.",
+  "colRhythm": "Rhy.",
+  "recentSessions": "Last {count} sessions",
+  "@recentSessions": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "trendAverage": "Avg {score}",
+  "@trendAverage": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "today": "Today",
+  "colDate": "Date",
+  "colSentences": "Sentences",
+  "colScore": "Score",
+  "colChange": "Change",
+  "dateToday": "{date} (today)",
+  "@dateToday": {
+    "description": "The most recent row of the trend table.",
+    "placeholders": {
+      "date": { "type": "String" }
+    }
   }
 }
