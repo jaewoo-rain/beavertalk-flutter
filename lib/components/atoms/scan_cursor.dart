@@ -69,6 +69,11 @@ class _ScanCursorState extends State<ScanCursor>
               // Ease so the bar slows at each end instead of snapping back —
               // `reverse: true` on a linear curve reads as a bounce.
               final double t = Curves.easeInOut.transform(_sweep.value);
+              // Glow off the cursor's own colour, not a fixed #00FFB2. In Dark
+              // `primaryNormal` *is* #00FFB2, so this is unchanged there; in
+              // Light it becomes #007A55, matching the bar instead of leaving a
+              // bright-mint halo around a dark-teal cursor on a pale background.
+              final Color primary = context.c.primaryNormal;
               return Stack(
                 alignment: Alignment.center,
                 children: [
@@ -82,12 +87,12 @@ class _ScanCursorState extends State<ScanCursor>
                       child: Container(
                         width: 64,
                         height: haloH,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              Color(0x0000FFB2),
-                              Color(0x4D00FFB2), // 30%
-                              Color(0x0000FFB2),
+                              primary.withValues(alpha: 0),
+                              primary.withValues(alpha: 0.3),
+                              primary.withValues(alpha: 0),
                             ],
                           ),
                         ),
@@ -100,11 +105,11 @@ class _ScanCursorState extends State<ScanCursor>
                       width: 2,
                       height: widget.height,
                       decoration: BoxDecoration(
-                        color: context.c.primaryNormal,
+                        color: primary,
                         borderRadius: BorderRadius.circular(1),
-                        boxShadow: const [
+                        boxShadow: [
                           BoxShadow(
-                            color: Color(0x9900FFB2), // 60%
+                            color: primary.withValues(alpha: 0.6),
                             blurRadius: 8,
                           ),
                         ],
