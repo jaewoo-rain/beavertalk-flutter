@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/app_spacing.dart';
@@ -57,7 +57,7 @@ class SheetAction {
 /// - Footer padding `12 / 20 / 0` (top / horizontal / bottom), inter-button
 ///   gap `10`.
 /// - Buttons use [BtnSize.s60] (the size-60 [Button]).
-/// - Sheet background [AppColors.surfaceElevated] with a top radius of
+/// - Sheet background `Background/Elevated/Alternative` with a top radius of
 ///   [AppRadius.lg] (24).
 /// - Trailing [HomeIndicator] in [HomeIndicatorVariant.subTransparent].
 ///
@@ -111,8 +111,8 @@ class BottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceElevated,
+      decoration: BoxDecoration(
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
       child: Column(
@@ -145,12 +145,12 @@ class BottomSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     switch (layout) {
       case BottomSheetLayout.singleButton:
-        return _fullButton(
+        return _fullButton(context, 
           BtnType.primaryFill,
           primaryAction ?? SheetAction(label: l10n.confirm),
         );
       case BottomSheetLayout.singleButtonSub:
-        return _fullButton(
+        return _fullButton(context, 
           BtnType.secondaryFill,
           primaryAction ?? SheetAction(label: l10n.confirm),
         );
@@ -159,12 +159,12 @@ class BottomSheet extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _fullButton(
+            _fullButton(context, 
               BtnType.secondaryFill,
               secondaryAction ?? SheetAction(label: l10n.cancel),
             ),
             const SizedBox(height: _gap),
-            _fullButton(
+            _fullButton(context, 
               BtnType.primaryFill,
               primaryAction ?? SheetAction(label: l10n.confirm),
             ),
@@ -175,14 +175,14 @@ class BottomSheet extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Expanded(
-              child: _button(
+              child: _button(context, 
                 BtnType.secondaryOutline,
                 secondaryAction ?? SheetAction(label: l10n.cancel),
               ),
             ),
             const SizedBox(width: _gap),
             Expanded(
-              child: _button(
+              child: _button(context, 
                 BtnType.primaryFill,
                 primaryAction ?? SheetAction(label: l10n.confirm),
               ),
@@ -193,12 +193,12 @@ class BottomSheet extends StatelessWidget {
   }
 
   /// A full-width size-60 button.
-  Widget _fullButton(BtnType type, SheetAction action) {
-    return SizedBox(width: double.infinity, child: _button(type, action));
+  Widget _fullButton(BuildContext context, BtnType type, SheetAction action) {
+    return SizedBox(width: double.infinity, child: _button(context, type, action));
   }
 
   /// A size-60 [Button] for the given [type] and [action].
-  Widget _button(BtnType type, SheetAction action) {
+  Widget _button(BuildContext context, BtnType type, SheetAction action) {
     return Button(
       type: type,
       size: BtnSize.s60,
@@ -245,7 +245,7 @@ class BottomSheetDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
@@ -258,12 +258,12 @@ class BottomSheetDemo extends StatelessWidget {
                   child: Text(
                     label,
                     style: AppType.label2.sb
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ),
               ),
               const SizedBox(height: 8),
-              _phoneFrame(
+              _phoneFrame(context, 
                 child: BottomSheet.modal(
                   onDismiss: () {},
                   sheet: BottomSheet(
@@ -284,7 +284,7 @@ class BottomSheetDemo extends StatelessWidget {
   }
 
   /// A 375-wide phone frame with the modal overlay [Stack] inside.
-  static Widget _phoneFrame({required Widget child}) {
+  static Widget _phoneFrame(BuildContext context, {required Widget child}) {
     return Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -293,7 +293,7 @@ class BottomSheetDemo extends StatelessWidget {
           height: 320,
           child: Stack(
             children: [
-              const Positioned.fill(child: ColoredBox(color: AppColors.surface)),
+              Positioned.fill(child: ColoredBox(color: context.c.backgroundNormalNormal)),
               child,
             ],
           ),

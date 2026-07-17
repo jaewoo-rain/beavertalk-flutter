@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 
 /// Visual variant of [StatusBar].
@@ -48,12 +49,12 @@ class StatusBar extends StatelessWidget {
   static const double height = 44;
 
   /// Background fill, or `null` for the transparent variants.
-  Color? get _background {
+  Color? _background(BuildContext context) {
     switch (variant) {
       case StatusBarVariant.whiteBg:
-        return AppColors.text; // #FFFFFF
+        return context.c.staticWhite;
       case StatusBarVariant.blackBg:
-        return AppColors.onPrimary; // #111111
+        return context.c.commonDarkAndWhite;
       case StatusBarVariant.blackTransparent:
       case StatusBarVariant.whiteTransparent:
         return null;
@@ -61,25 +62,25 @@ class StatusBar extends StatelessWidget {
   }
 
   /// Content (text + glyph) color derived from the variant.
-  Color get _content {
+  Color _content(BuildContext context) {
     switch (variant) {
       case StatusBarVariant.whiteBg:
       case StatusBarVariant.blackTransparent:
-        return AppColors.onPrimary; // #111111 — dark content
+        return context.c.commonDarkAndWhite; // dark content
       case StatusBarVariant.blackBg:
       case StatusBarVariant.whiteTransparent:
-        return AppColors.text; // #FFFFFF — light content
+        return context.c.staticWhite; // light content
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final content = _content;
+    final content = _content(context);
     return SizedBox(
       width: width,
       height: height,
       child: ColoredBox(
-        color: _background ?? const Color(0x00000000),
+        color: _background(context) ?? const Color(0x00000000),
         child: Stack(
           children: [
             // Time "9:41" — Figma group at x:18, y:12; text box 54×20.
@@ -370,7 +371,7 @@ class StatusBarDemo extends StatelessWidget {
       ('white-transparent', StatusBarVariant.whiteTransparent),
     ];
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -378,13 +379,13 @@ class StatusBarDemo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (final (label, variant) in items) ...[
-              Text(label, style: TextStyle(color: AppColors.textSecondary)),
+              Text(label, style: TextStyle(color: context.c.labelNormal)),
               const SizedBox(height: 6),
               // Checkerboard-ish backdrop so transparent variants are visible.
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  border: Border.all(color: AppColors.border),
+                  color: context.c.backgroundNormalNormal,
+                  border: Border.all(color: context.c.lineNeutral),
                 ),
                 child: StatusBar(variant: variant),
               ),

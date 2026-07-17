@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 
 /// A single tab in a [BottomNavBar].
@@ -45,10 +45,10 @@ enum BottomNavGlyph {
 /// BottomNavBar` (`164:441`).
 ///
 /// Three tabs in a row (gap `40`): left, a glowing **center pill**, and right.
-/// The active tab renders as a [AppColors.primary] pill (`68` wide, `18`
+/// The active tab renders as a `Primary/Normal` pill (`68` wide, `18`
 /// vertical padding, fully rounded) with a soft mint glow ("Primary Blur",
 /// `0 0 32 rgba(0,255,178,0.24)`); inactive icons render at
-/// [AppColors.textSecondary].
+/// `Label/Normal`.
 ///
 /// Props (per spec): [items] (icon + key), [activeKey], [onTap].
 ///
@@ -93,8 +93,8 @@ class BottomNavBar extends StatelessWidget {
         color: Colors.transparent,
         child: Container(
           height: _barHeight,
-          decoration: const BoxDecoration(
-            color: AppColors.surface,
+          decoration: BoxDecoration(
+            color: context.c.backgroundNormalNormal,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             boxShadow: [
               BoxShadow(
@@ -151,8 +151,8 @@ class _NavTab extends StatelessWidget {
       child = Container(
         width: 68,
         height: 68,
-        decoration: const BoxDecoration(
-          color: AppColors.primary,
+        decoration: BoxDecoration(
+          color: context.c.primaryNormal,
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
@@ -167,7 +167,7 @@ class _NavTab extends StatelessWidget {
           child: _NavIcon(
             icon: item.icon,
             size: 32,
-            color: AppColors.onPrimary,
+            color: context.c.primaryOnPrimary,
           ),
         ),
       );
@@ -180,7 +180,7 @@ class _NavTab extends StatelessWidget {
           child: _NavIcon(
             icon: item.icon,
             size: 24,
-            color: AppColors.textSecondary,
+            color: context.c.labelNormal,
           ),
         ),
       );
@@ -402,7 +402,7 @@ class _BottomNavBarDemoState extends State<BottomNavBarDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -413,7 +413,7 @@ class _BottomNavBarDemoState extends State<BottomNavBarDemo> {
               child: Text(
                 'active: $_active (tap to change)',
                 style: AppType.caption1.m
-                    .copyWith(color: AppColors.textSecondary),
+                    .copyWith(color: context.c.labelNormal),
               ),
             ),
           ),

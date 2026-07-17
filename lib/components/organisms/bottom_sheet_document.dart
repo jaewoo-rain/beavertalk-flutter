@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide BottomSheet;
 
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -59,7 +60,7 @@ class _DocSpec {
 /// 3. A button footer reusing [BottomSheet] (`single-button`, size-60 primary)
 ///    with its trailing `sub-transparent` home indicator.
 ///
-/// The sheet background is [AppColors.surfaceElevated] and the sheet itself is
+/// The sheet background is `Background/Elevated/Alternative` and the sheet itself is
 /// clipped to a top radius of [AppRadius.lg] (24).
 ///
 /// ```dart
@@ -136,8 +137,8 @@ class BottomSheetDocument extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
       clipBehavior: Clip.antiAlias,
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceElevated,
+      decoration: BoxDecoration(
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
       child: Column(
@@ -196,8 +197,8 @@ class _Sub2Header extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceElevated,
+      decoration: BoxDecoration(
+        color: context.c.backgroundElevatedAlternative,
         borderRadius:
             BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
@@ -246,7 +247,7 @@ class BottomSheetDocumentDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
@@ -259,12 +260,12 @@ class BottomSheetDocumentDemo extends StatelessWidget {
                   child: Text(
                     label,
                     style: AppType.label2.sb
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ),
               ),
               const SizedBox(height: 8),
-              _phoneFrame(
+              _phoneFrame(context, 
                 height: frameH,
                 child: BottomSheetDocument.modal(
                   onDismiss: () {},
@@ -276,7 +277,7 @@ class BottomSheetDocumentDemo extends StatelessWidget {
                     child: Text(
                       _sampleBody(size),
                       style: AppType.label1.r
-                          .copyWith(color: AppColors.textSecondary),
+                          .copyWith(color: context.c.labelNormal),
                     ),
                   ),
                 ),
@@ -305,7 +306,7 @@ class BottomSheetDocumentDemo extends StatelessWidget {
   }
 
   /// A 375-wide phone frame with the modal overlay [Stack] inside.
-  static Widget _phoneFrame({required Widget child, required double height}) {
+  static Widget _phoneFrame(BuildContext context, {required Widget child, required double height}) {
     return Center(
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppRadius.lg),
@@ -314,7 +315,7 @@ class BottomSheetDocumentDemo extends StatelessWidget {
           height: height,
           child: Stack(
             children: [
-              const Positioned.fill(child: ColoredBox(color: AppColors.surface)),
+              Positioned.fill(child: ColoredBox(color: context.c.backgroundNormalNormal)),
               child,
             ],
           ),

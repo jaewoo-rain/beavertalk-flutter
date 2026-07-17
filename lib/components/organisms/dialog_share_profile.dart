@@ -7,6 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -74,7 +75,7 @@ class DialogShareProfile extends StatefulWidget {
   /// Fully custom avatar widget; takes precedence over [imageProvider].
   final Widget? avatar;
 
-  /// Caption above the title — `AppType.body1.r`, [AppColors.textSecondary].
+  /// Caption above the title — `AppType.body1.r`, `Label/Normal`.
   final String caption;
 
   /// Title — `AppType.title3.b`, white.
@@ -127,7 +128,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
       height: _avatarSize,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         image: widget.imageProvider == null
             ? null
             : DecorationImage(image: widget.imageProvider!, fit: BoxFit.cover),
@@ -192,7 +193,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
         RepaintBoundary(
           key: _cardKey,
           child: Material(
-            color: AppColors.surface2,
+            color: context.c.backgroundNormalAlternative,
             borderRadius: BorderRadius.circular(AppRadius.xs),
             clipBehavior: Clip.antiAlias,
             child: SizedBox(
@@ -212,7 +213,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                           widget.caption,
                           textAlign: TextAlign.center,
                           style: AppType.body1.r
-                              .copyWith(color: AppColors.textSecondary),
+                              .copyWith(color: context.c.labelNormal),
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -246,7 +247,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                     Text(
                       'BeaverTalk',
                       textAlign: TextAlign.center,
-                      style: AppType.body1.b.copyWith(color: AppColors.primary),
+                      style: AppType.body1.b.copyWith(color: context.c.primaryNormal),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -266,7 +267,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
         SizedBox(
           width: _width,
           child: Material(
-            color: AppColors.surfaceElevatedNormal,
+            color: context.c.backgroundElevatedNormal,
             borderRadius: BorderRadius.circular(AppRadius.md),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
@@ -345,7 +346,7 @@ class DialogShareProfileDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           const Dim(),

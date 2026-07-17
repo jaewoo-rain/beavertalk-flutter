@@ -2,6 +2,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -65,7 +66,7 @@ class CountryItem {
 ///   ("Confirm" → [onConfirm]) above a reused [HomeIndicator].
 ///
 /// Sheet shell: 375 wide, top corners `AppRadius.lg` (24), fill
-/// [AppColors.surfaceElevated]. Controlled component: pass [value] (the
+/// `Background/Elevated/Alternative`. Controlled component: pass [value] (the
 /// selected [CountryItem.code]) and react to [onChanged]; the widget never
 /// mutates its own selection.
 class BottomSheetCountrySelect extends StatelessWidget {
@@ -128,7 +129,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
     final maxHeight =
         MediaQuery.of(context).size.height * _maxHeightFraction;
     return Material(
-      color: AppColors.surfaceElevated,
+      color: context.c.backgroundElevatedAlternative,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppRadius.lg),
       ),
@@ -268,7 +269,7 @@ class _BottomSheetCountrySelectDemoState
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           // Faux content behind the dim.

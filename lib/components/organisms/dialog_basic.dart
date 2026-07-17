@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -43,11 +44,11 @@ class DialogAction {
 ///
 /// A centered modal card measured 1:1 from Figma:
 /// - Width `335`, padding `24` (vertical) / `16` (horizontal),
-///   radius [AppRadius.xs] (8), fill [AppColors.surfaceElevatedNormal] (#2F3340).
+///   radius [AppRadius.xs] (8), fill `Background/Elevated/Normal` (#2F3340).
 /// - Body column: `16px` gap between the header block and the action block.
 /// - Header block: centered column, `8px` gap.
 ///   - [title] in `AppType.body1.sb` (white).
-///   - [description] in `AppType.label1.r` ([AppColors.textSecondary]).
+///   - [description] in `AppType.label1.r` (`Label/Normal`).
 /// - Actions per [variant]; see [DialogBasicVariant].
 ///
 /// Actions are supplied either via [actions] (a list of [DialogAction]) or via
@@ -83,7 +84,7 @@ class DialogBasic extends StatelessWidget {
   /// Title text — `AppType.body1.sb`, white, centered.
   final String title;
 
-  /// Optional body text — `AppType.label1.r`, [AppColors.textSecondary].
+  /// Optional body text — `AppType.label1.r`, `Label/Normal`.
   final String? description;
 
   /// Action layout; see [DialogBasicVariant].
@@ -176,7 +177,7 @@ class DialogBasic extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surfaceElevatedNormal,
+      color: context.c.backgroundElevatedNormal,
       borderRadius: BorderRadius.circular(AppRadius.xs),
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
@@ -203,7 +204,7 @@ class DialogBasic extends StatelessWidget {
                       description!,
                       textAlign: TextAlign.center,
                       style: AppType.label1.r
-                          .copyWith(color: AppColors.textSecondary),
+                          .copyWith(color: context.c.labelNormal),
                     ),
                   ],
                 ],
@@ -261,7 +262,7 @@ class DialogBasicDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           // Dim scrim behind the dialogs.

@@ -16,7 +16,7 @@ enum PronunciationState {
   /// `Primary/Normal`.
   active,
 
-  /// No score yet: track is dimmed ([context.c.primaryNormal24]), no progress
+  /// No score yet: track is dimmed (`Primary/Normal-24`), no progress
   /// arc, center shows `-%`.
   inactive,
 }
@@ -41,8 +41,8 @@ class PronunciationMetric {
 /// - Gauge: a 180° semicircle, frame ≈ 255×127.5 (2:1 → half circle).
 ///   Track + rounded-cap progress arc drawn by [_GaugePainter]. Center
 ///   percent in [AppType.title1] Bold, `Primary/Normal`.
-/// - `inactive`: track [context.c.primaryNormal24], no progress arc, center "-%"
-///   tinted [context.c.primaryNormal24].
+/// - `inactive`: track `Primary/Normal-24`, no progress arc, center "-%"
+///   tinted `Primary/Normal-24`.
 /// - Footer card: fill `Background/Normal/Alternative` (`Background/Normal/Alternative`),
 ///   `borderRadius` [AppRadius.sm] (12), vertical padding 12, horizontal 12.
 ///   Three equal columns (label caption1 `Label/Normal` + value

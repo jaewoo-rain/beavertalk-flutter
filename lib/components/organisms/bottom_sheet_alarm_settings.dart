@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -77,7 +78,7 @@ class AlarmPartner {
 /// - Footer: a 335-wide primary [Button] ([saveText] → [onSave]).
 ///
 /// Sheet shell: top corners `AppRadius.lg` (24), fill
-/// [AppColors.surfaceElevated]. Fully controlled — selection state flows in via
+/// `Background/Elevated/Alternative`. Fully controlled — selection state flows in via
 /// [meridiem] / [days] / [partner] / [preset] and out via the `on*Changed`
 /// callbacks.
 ///
@@ -175,7 +176,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Material(
-      color: AppColors.surfaceElevated,
+      color: context.c.backgroundElevatedAlternative,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppRadius.lg),
       ),
@@ -186,7 +187,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(l10n),
+            _header(context, l10n),
             // The redesign made the body tall enough (quick-start cards, the
             // time card, the partner row and the summary) that it no longer
             // clears a short viewport — it overflowed a 600-high one by 73.
@@ -201,19 +202,19 @@ class BottomSheetAlarmSettings extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _quickStartSection(l10n),
+                      _quickStartSection(context, l10n),
                       const SizedBox(height: 20),
                       _timeAndDaysCard(context, l10n),
                       const SizedBox(height: 20),
-                      _partnerSection(l10n),
+                      _partnerSection(context, l10n),
                       const SizedBox(height: 20),
-                      _summary(l10n),
+                      _summary(context, l10n),
                     ],
                   ),
                 ),
               ),
             ),
-            _footer(l10n),
+            _footer(context, l10n),
           ],
         ),
       ),
@@ -221,7 +222,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
-  Widget _header(AppLocalizations l10n) {
+  Widget _header(BuildContext context, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -253,7 +254,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   }
 
   /// 빠른 시작 (`3665:12359`) — label + three preset cards.
-  Widget _quickStartSection(AppLocalizations l10n) {
+  Widget _quickStartSection(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -317,7 +318,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s16, AppSpacing.s12, AppSpacing.s16, AppSpacing.s12),
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Column(
@@ -409,7 +410,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// 요약 (`3665:12419`) — derived from [days] alone; nothing on the server
   /// backs it. With no day picked there is no "주 N회" to state, so it asks for
   /// one rather than claiming 주 0회.
-  Widget _summary(AppLocalizations l10n) {
+  Widget _summary(BuildContext context, AppLocalizations l10n) {
     final count = days.where((d) => d).length;
     final text = count == 0
         ? l10n.alarmSummaryNone
@@ -417,14 +418,14 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        AppIcons.check(size: 12, color: AppColors.primaryStrong),
+        AppIcons.check(size: 12, color: context.c.primaryStrong),
         const SizedBox(width: 9), // no s9 token
         Flexible(
           child: Text(
             text,
             maxLines: 2,
             textAlign: TextAlign.center,
-            style: AppType.caption1.r.copyWith(color: AppColors.primaryStrong),
+            style: AppType.caption1.r.copyWith(color: context.c.primaryStrong),
           ),
         ),
       ],
@@ -432,7 +433,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   }
 
   /// "Character" label + a row of reused [AvatarCard]s.
-  Widget _partnerSection(AppLocalizations l10n) {
+  Widget _partnerSection(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -473,7 +474,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   }
 
   /// Footer: primary save button (335 wide) + home indicator.
-  Widget _footer(AppLocalizations l10n) {
+  Widget _footer(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -535,13 +536,13 @@ class _QuickStartCard extends StatelessWidget {
         vertical: AppSpacing.s12,
       ),
       decoration: BoxDecoration(
-        color: selected ? AppColors.primary04 : null,
+        color: selected ? context.c.primaryNormal4 : null,
         // 16. ⚠️ Figma's radius scale is shifted one step from [AppRadius]'s —
         // Figma `lg` is 16 where [AppRadius.lg] is 24. Read the number, not the
         // name.
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
-          color: selected ? AppColors.primaryStrong : AppColors.labelMeta,
+          color: selected ? context.c.primaryStrong : context.c.labelNeutral,
           width: selected ? 1.5 : 1,
         ),
       ),
@@ -551,7 +552,7 @@ class _QuickStartCard extends StatelessWidget {
         children: [
           icon(
             size: 24,
-            color: selected ? AppColors.primaryStrong : AppColors.textSecondary,
+            color: selected ? context.c.primaryStrong : context.c.labelNormal,
           ),
           const SizedBox(height: 10), // no s10 token
           Text(
@@ -560,7 +561,7 @@ class _QuickStartCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppType.label2.r.copyWith(
-              color: selected ? AppColors.text : AppColors.textSecondary,
+              color: selected ? AppColors.text : context.c.labelNormal,
             ),
           ),
           const SizedBox(height: 2),
@@ -570,7 +571,7 @@ class _QuickStartCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppType.caption2.r.copyWith(
-              color: selected ? AppColors.textSecondary : AppColors.labelMeta,
+              color: selected ? context.c.labelNormal : context.c.labelNeutral,
             ),
           ),
         ],
@@ -624,7 +625,7 @@ class _MeridiemSegment extends StatelessWidget {
       decoration: BoxDecoration(
         // The track sinks to `surface` (#181A20) — darker than the card it
         // sits on, not lighter.
-        color: AppColors.surface,
+        color: context.c.backgroundNormalNormal,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Stack(
@@ -639,15 +640,15 @@ class _MeridiemSegment extends StatelessWidget {
               decoration: BoxDecoration(
                 // primaryStrong, not primary — this card's mint is #00E8A2
                 // throughout (thumb and selected chips alike).
-                color: AppColors.primaryStrong,
+                color: context.c.primaryStrong,
                 borderRadius: BorderRadius.circular(6), // no r6 token
               ),
             ),
           ),
           Row(
             children: [
-              Expanded(child: _half(amLabel, isAm, Meridiem.am)),
-              Expanded(child: _half(pmLabel, !isAm, Meridiem.pm)),
+              Expanded(child: _half(context, amLabel, isAm, Meridiem.am)),
+              Expanded(child: _half(context, pmLabel, !isAm, Meridiem.pm)),
             ],
           ),
         ],
@@ -655,7 +656,7 @@ class _MeridiemSegment extends StatelessWidget {
     );
   }
 
-  Widget _half(String label, bool on, Meridiem value) => Semantics(
+  Widget _half(BuildContext context, String label, bool on, Meridiem value) => Semantics(
         button: true,
         selected: on,
         child: GestureDetector(
@@ -668,7 +669,7 @@ class _MeridiemSegment extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppType.label2.r.copyWith(
                 // On the mint thumb the label must go dark, not white.
-                color: on ? AppColors.onPrimary : AppColors.textSecondary,
+                color: on ? context.c.primaryOnPrimary : context.c.labelNormal,
               ),
             ),
           ),
@@ -693,7 +694,7 @@ class _DayChip extends StatelessWidget {
       alignment: Alignment.center,
       decoration: BoxDecoration(
         // Same pairing as the segment: primaryStrong on, `surface` off.
-        color: selected ? AppColors.primaryStrong : AppColors.surface,
+        color: selected ? context.c.primaryStrong : context.c.backgroundNormalNormal,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Text(
@@ -701,7 +702,7 @@ class _DayChip extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppType.caption1.r.copyWith(
-          color: selected ? AppColors.onPrimary : AppColors.textSecondary,
+          color: selected ? context.c.primaryOnPrimary : context.c.labelNormal,
         ),
       ),
     );
@@ -745,7 +746,7 @@ class _BottomSheetAlarmSettingsDemoState
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           Dim(onTap: () {}),
