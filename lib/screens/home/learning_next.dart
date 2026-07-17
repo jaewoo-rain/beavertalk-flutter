@@ -216,7 +216,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                         child: GestureDetector(
                           onTap: () => _playNative(sentence.id),
                           behavior: HitTestBehavior.opaque,
-                          child: AppIcons.volume(size: 32, color: AppColors.text),
+                          child: AppIcons.volume(size: 32, color: context.c.labelStrong),
                         ),
                       ),
                       // Bookmark (문장 저장) — toggles the current sentence's
@@ -233,9 +233,9 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                               behavior: HitTestBehavior.opaque,
                               child: saved
                                   ? AppIcons.bookmarkFill(
-                                      size: 32, color: AppColors.text)
+                                      size: 32, color: context.c.labelStrong)
                                   : AppIcons.bookmarkLine(
-                                      size: 32, color: AppColors.text),
+                                      size: 32, color: context.c.labelStrong),
                             ),
                           );
                         },

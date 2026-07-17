@@ -48,7 +48,7 @@ class LegalBody extends StatelessWidget {
           .copyWith(color: context.c.labelNormal, height: bodyHeight),
       // Emphasis — brighter + heavier on the dark theme.
       strong:
-          AppType.body2.sb.copyWith(color: AppColors.text, height: bodyHeight),
+          AppType.body2.sb.copyWith(color: context.c.labelStrong, height: bodyHeight),
       em: AppType.body2.r.copyWith(
         color: context.c.labelNormal,
         fontStyle: FontStyle.italic,

@@ -227,10 +227,10 @@ class _InputFieldState extends State<InputField> {
 
     final TextStyle baseStyle = (spec.isBody1 ? AppType.body1 : AppType.label1).r;
     final TextStyle textStyle = baseStyle.copyWith(
-      color: widget.enabled ? AppColors.text : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelStrong : context.c.labelDisabled,
     );
     final TextStyle hintStyle = baseStyle.copyWith(
-      color: widget.enabled ? context.c.labelNormal : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelNormal : context.c.labelDisabled,
     );
 
     Widget? icon;
@@ -240,7 +240,7 @@ class _InputFieldState extends State<InputField> {
         child: IconTheme.merge(
           data: IconThemeData(
             size: spec.iconSize,
-            color: widget.enabled ? context.c.labelNormal : AppColors.textTertiary,
+            color: widget.enabled ? context.c.labelNormal : context.c.labelDisabled,
           ),
           child: SizedBox(
             width: spec.iconSize,
@@ -260,7 +260,7 @@ class _InputFieldState extends State<InputField> {
             size: spec.iconSize,
             color: widget.enabled
                 ? context.c.labelNormal
-                : AppColors.textTertiary,
+                : context.c.labelDisabled,
           ),
           child: SizedBox(
             width: spec.iconSize,

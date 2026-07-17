@@ -200,7 +200,7 @@ class HintCard extends StatelessWidget {
           width: 32,
           height: 32,
           child: Center(
-            child: AppIcons.volume(size: 20, color: AppColors.text),
+            child: AppIcons.volume(size: 20, color: context.c.labelStrong),
           ),
         ),
       ),

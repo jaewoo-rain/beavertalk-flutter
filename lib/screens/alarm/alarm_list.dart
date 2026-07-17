@@ -123,7 +123,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                 ),
                 IconButton(
                   onPressed: _add,
-                  icon: AppIcons.plus(color: AppColors.text),
+                  icon: AppIcons.plus(color: context.c.labelStrong),
                   tooltip: l10n.addSchedule,
                 ),
               ],
@@ -221,7 +221,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
             color: context.c.accentForegroundRed,
             shape: BoxShape.circle,
           ),
-          child: AppIcons.trash(color: AppColors.text, size: 24),
+          child: AppIcons.trash(color: context.c.labelStrong, size: 24),
         ),
       ),
     );

@@ -179,7 +179,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                       Text(
                         _clock,
                         style: AppType.label1.r
-                            .copyWith(color: AppColors.textTertiary),
+                            .copyWith(color: context.c.labelDisabled),
                       ),
                     ],
                   ),

@@ -202,7 +202,7 @@ class BottomSheetAvatar extends StatelessWidget {
               child: SizedBox(
                 width: 28,
                 height: 28,
-                child: AppIcons.close(size: 24, color: AppColors.text),
+                child: AppIcons.close(size: 24, color: context.c.labelStrong),
               ),
             ),
           ),
@@ -255,7 +255,7 @@ class BottomSheetAvatar extends StatelessWidget {
     }
     return ColoredBox(
       color: context.c.backgroundNormalAlternative,
-      child: AppIcons.profile(color: AppColors.textTertiary, size: 36),
+      child: AppIcons.profile(color: context.c.labelDisabled, size: 36),
     );
   }
 
@@ -356,7 +356,7 @@ class BottomSheetAvatar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppIcons.volume(size: 24, color: AppColors.text),
+              AppIcons.volume(size: 24, color: context.c.labelStrong),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(

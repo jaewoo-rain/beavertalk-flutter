@@ -214,7 +214,7 @@ class CardLine extends StatelessWidget {
               const SizedBox(width: 10),
               AppIcons.chevronRight(
                 size: 24,
-                color: AppColors.text,
+                color: context.c.labelStrong,
               ),
             ],
           ),
@@ -274,8 +274,8 @@ class _MetaRow extends StatelessWidget {
           Container(
             width: 2,
             height: 2,
-            decoration: const BoxDecoration(
-              color: AppColors.textTertiary,
+            decoration: BoxDecoration(
+              color: context.c.labelDisabled,
               shape: BoxShape.circle,
             ),
           ),

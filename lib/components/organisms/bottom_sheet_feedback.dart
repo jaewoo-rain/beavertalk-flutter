@@ -104,7 +104,7 @@ class BottomSheetFeedback extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(),
+            _header(context),
             // Options row.
             Center(
               child: SizedBox(
@@ -134,7 +134,7 @@ class BottomSheetFeedback extends StatelessWidget {
   }
 
   /// Header row: invisible spacer + close glyph (right-aligned).
-  Widget _header() {
+  Widget _header(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -149,7 +149,7 @@ class BottomSheetFeedback extends StatelessWidget {
               iconSize: 24,
               splashRadius: 18,
               onPressed: onClose,
-              icon: AppIcons.close(color: AppColors.text),
+              icon: AppIcons.close(color: context.c.labelStrong),
             ),
           ),
         ],

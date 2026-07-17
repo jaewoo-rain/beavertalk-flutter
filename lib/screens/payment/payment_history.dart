@@ -115,7 +115,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
             Text(
               l10n.morePaymentsExist,
               textAlign: TextAlign.center,
-              style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+              style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
             ),
           ],
         ],
@@ -195,7 +195,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
           duration: AppMotion.fast,
           curve: AppMotion.toggle,
           style: AppType.label1.sb.copyWith(
-            color: selected ? AppColors.text : context.c.labelNormal,
+            color: selected ? context.c.labelStrong : context.c.labelNormal,
           ),
           child: Text(label),
         ),

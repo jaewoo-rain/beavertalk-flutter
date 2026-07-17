@@ -256,7 +256,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                               onTap: () => _playStandard(sentence),
                               behavior: HitTestBehavior.opaque,
                               child: AppIcons.volume(
-                                  size: 32, color: AppColors.text),
+                                  size: 32, color: context.c.labelStrong),
                             ),
                           ),
                           // Bookmark (문장 저장) — toggles the current sentence's
@@ -273,9 +273,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                   behavior: HitTestBehavior.opaque,
                                   child: saved
                                       ? AppIcons.bookmarkFill(
-                                          size: 32, color: AppColors.text)
+                                          size: 32, color: context.c.labelStrong)
                                       : AppIcons.bookmarkLine(
-                                          size: 32, color: AppColors.text),
+                                          size: 32, color: context.c.labelStrong),
                                 ),
                               );
                             },

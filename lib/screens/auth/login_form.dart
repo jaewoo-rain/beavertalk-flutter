@@ -260,7 +260,7 @@ class _SocialButtonRow extends StatelessWidget {
         const SizedBox(width: AppSpacing.s12),
         social(const GoogleIcon(size: 24)),
         const SizedBox(width: AppSpacing.s12),
-        social(const AppleIcon(size: 24, color: AppColors.text)),
+        social(AppleIcon(size: 24, color: context.c.labelStrong)),
       ],
     );
   }

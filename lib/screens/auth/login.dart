@@ -281,7 +281,7 @@ class _LogoBlock extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.s8),
         // Figma wordmark is 179.663px wide → 180.
-        const BeaverTalkLogo(width: 180, color: AppColors.text),
+        BeaverTalkLogo(width: 180, color: context.c.labelStrong),
       ],
     );
   }
@@ -294,7 +294,7 @@ class _OrDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final line = Expanded(
-      child: Container(height: 1, color: AppColors.textTertiary),
+      child: Container(height: 1, color: context.c.labelDisabled),
     );
     return Row(
       children: [
@@ -405,9 +405,9 @@ class _TermsNoticeState extends State<_TermsNotice> {
     // Links read as links: brighter (white) + underlined, mirroring Figma's
     // underlined `서비스 약관` / `개인정보 보호정책` spans.
     final link = AppType.caption1.r.copyWith(
-      color: AppColors.text,
+      color: context.c.labelStrong,
       decoration: TextDecoration.underline,
-      decorationColor: AppColors.text,
+      decorationColor: context.c.labelStrong,
     );
     return Text.rich(
       TextSpan(

@@ -41,7 +41,9 @@ class RecordCircleButton extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: AppColors.text, // white fill
+            // Static/White, not Label/Strong: this is the white disc inside a
+            // mint ring, and it must stay white in Light too.
+            color: context.c.staticWhite,
             shape: BoxShape.circle,
             border: Border.all(color: context.c.primaryHeavy, width: 4),
           ),

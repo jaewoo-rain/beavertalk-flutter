@@ -239,7 +239,7 @@ class BottomSheetSubscription extends StatelessWidget {
               child: SizedBox(
                 width: 28,
                 height: 28,
-                child: AppIcons.close(size: 24, color: AppColors.text),
+                child: AppIcons.close(size: 24, color: context.c.labelStrong),
               ),
             ),
           ),
@@ -270,7 +270,7 @@ class BottomSheetSubscription extends StatelessWidget {
           const SizedBox(height: 16),
           _section(context, l10n.benefitsInUse, [
             for (final b in benefits)
-              _benefitLine(context, b.label, context.c.primaryNormal24, AppColors.text),
+              _benefitLine(context, b.label, context.c.primaryNormal24, context.c.labelStrong),
           ]),
         ],
         if (paymentRows.isNotEmpty) ...[
@@ -356,7 +356,7 @@ class BottomSheetSubscription extends StatelessWidget {
 
   Widget _planOptionCard(BuildContext context, SubscriptionPlanOption option, AppLocalizations l10n) {
     final bulletColor =
-        option.highlighted ? context.c.primaryNormal : AppColors.text;
+        option.highlighted ? context.c.primaryNormal : context.c.labelStrong;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -402,7 +402,7 @@ class BottomSheetSubscription extends StatelessWidget {
           if (option.benefits.isNotEmpty) ...[
             const SizedBox(height: 8),
             for (final b in option.benefits)
-              _benefitLine(context, b.label, bulletColor, AppColors.text),
+              _benefitLine(context, b.label, bulletColor, context.c.labelStrong),
           ],
         ],
       ),
@@ -453,7 +453,7 @@ class BottomSheetSubscription extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               for (final b in lostBenefits)
-                _benefitLine(context, b.label, context.c.accentForegroundRed, AppColors.text,
+                _benefitLine(context, b.label, context.c.accentForegroundRed, context.c.labelStrong,
                     lost: true),
             ],
           ),

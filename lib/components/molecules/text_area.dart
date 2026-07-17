@@ -145,10 +145,10 @@ class _TextAreaState extends State<TextArea> {
     final bool isBox = widget.style == TextAreaStyle.box;
 
     final TextStyle textStyle = AppType.label1.r.copyWith(
-      color: widget.enabled ? AppColors.text : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelStrong : context.c.labelDisabled,
     );
     final TextStyle hintStyle = AppType.label1.r.copyWith(
-      color: widget.enabled ? context.c.labelNormal : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelNormal : context.c.labelDisabled,
     );
 
     final field = TextField(

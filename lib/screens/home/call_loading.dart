@@ -103,13 +103,13 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const SizedBox(
+                        SizedBox(
                           width: AppSpacing.s32,
                           height: AppSpacing.s32,
                           child: CircularProgressIndicator(
                             strokeWidth: 3,
                             valueColor:
-                                AlwaysStoppedAnimation<Color>(AppColors.text),
+                                AlwaysStoppedAnimation<Color>(context.c.labelStrong),
                           ),
                         ),
                         const SizedBox(height: AppSpacing.s12),
@@ -158,7 +158,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                         behavior: HitTestBehavior.opaque,
                         onTap: _cancel,
                         child:
-                            AppIcons.close(size: 28, color: AppColors.text),
+                            AppIcons.close(size: 28, color: context.c.labelStrong),
                       ),
                     ),
                   ],

@@ -245,7 +245,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
               iconSize: 24,
               splashRadius: 20,
               onPressed: onClose,
-              icon: AppIcons.close(color: AppColors.text),
+              icon: AppIcons.close(color: context.c.labelStrong),
             ),
           ),
         ],
@@ -337,13 +337,13 @@ class BottomSheetAlarmSettings extends StatelessWidget {
                     // Title 1 Regular 32/1.375. The frame dropped the old 40px
                     // SemiBold centred clock for this: left-aligned, sharing
                     // its row with the segment.
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontFamily: kFontFamily,
                       fontWeight: FontWeight.w400,
                       fontSize: 32,
                       height: 1.375,
                       letterSpacing: -0.81,
-                      color: AppColors.text,
+                      color: context.c.labelStrong,
                     ),
                   ),
                 ),
@@ -561,7 +561,7 @@ class _QuickStartCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.center,
             style: AppType.label2.r.copyWith(
-              color: selected ? AppColors.text : context.c.labelNormal,
+              color: selected ? context.c.labelStrong : context.c.labelNormal,
             ),
           ),
           const SizedBox(height: 2),

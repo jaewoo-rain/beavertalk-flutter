@@ -163,7 +163,7 @@ class CardBox extends StatelessWidget {
                   segments: meta!,
                   style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   dotSize: 4,
-                  dotColor: AppColors.text,
+                  dotColor: context.c.labelStrong,
                   gap: 4,
                 ),
               ],
@@ -199,7 +199,7 @@ class CardBox extends StatelessWidget {
                 children: [
                   AppIcons.volume(
                     size: 16,
-                    color: AppColors.text,
+                    color: context.c.labelStrong,
                   ),
                   const SizedBox(width: 8),
                   Flexible(
@@ -220,7 +220,7 @@ class CardBox extends StatelessWidget {
                   style:
                       AppType.caption1.r.copyWith(color: context.c.labelStrong),
                   dotSize: 2,
-                  dotColor: AppColors.text,
+                  dotColor: context.c.labelStrong,
                   gap: 3,
                 ),
               ],

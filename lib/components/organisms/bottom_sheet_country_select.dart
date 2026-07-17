@@ -203,7 +203,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
               iconSize: 24,
               splashRadius: 20,
               onPressed: onClose,
-              icon: AppIcons.close(color: AppColors.text),
+              icon: AppIcons.close(color: context.c.labelStrong),
             ),
           ),
         ],
@@ -273,11 +273,11 @@ class _BottomSheetCountrySelectDemoState
       child: Stack(
         children: [
           // Faux content behind the dim.
-          const Positioned.fill(
+          Positioned.fill(
             child: Center(
               child: Text(
                 'Background',
-                style: TextStyle(color: AppColors.textTertiary),
+                style: TextStyle(color: context.c.labelDisabled),
               ),
             ),
           ),

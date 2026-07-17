@@ -223,7 +223,7 @@ class _Sub2Header extends StatelessWidget {
               padding: EdgeInsets.zero,
               iconSize: _iconBox,
               onPressed: onClose,
-              icon: AppIcons.close(color: AppColors.text),
+              icon: AppIcons.close(color: context.c.labelStrong),
             ),
           ),
         ],

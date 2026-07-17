@@ -348,13 +348,13 @@ class Gnb extends StatelessWidget {
       children: [
         // Transparent mirror arrow on the left (Figma opacity 0) — present for
         // symmetry so the title is centered against the close button.
-        const Opacity(
+        Opacity(
           opacity: 0,
           child: ExcludeSemantics(
             child: SizedBox(
               width: _iconBox,
               height: _iconBox,
-              child: CustomPaint(painter: _ArrowLeftPainter()),
+              child: CustomPaint(painter: _ArrowLeftPainter(context.c.labelStrong)),
             ),
           ),
         ),
@@ -402,7 +402,7 @@ class _BackButton extends StatelessWidget {
           height: Gnb._iconBox,
           child: Transform.flip(
             flipX: Directionality.of(context) == TextDirection.rtl,
-            child: const CustomPaint(painter: _ArrowLeftPainter()),
+            child: CustomPaint(painter: _ArrowLeftPainter(context.c.labelStrong)),
           ),
         ),
       ),
@@ -424,10 +424,10 @@ class _CloseButton extends StatelessWidget {
       child: InkResponse(
         onTap: onTap,
         radius: 24,
-        child: const SizedBox(
+        child: SizedBox(
           width: Gnb._iconBox,
           height: Gnb._iconBox,
-          child: CustomPaint(painter: _ClosePainter()),
+          child: CustomPaint(painter: _ClosePainter(context.c.labelStrong)),
         ),
       ),
     );
@@ -476,7 +476,10 @@ class _GnbProgressTrack extends StatelessWidget {
 
 /// Paints the Figma `arrow-left` glyph (`162:4156`) scaled into its 28×28 box.
 class _ArrowLeftPainter extends CustomPainter {
-  const _ArrowLeftPainter();
+  const _ArrowLeftPainter(this.color);
+
+  /// Glyph tint for the current mode — a painter has no context.
+  final Color color;
 
   // Path data taken verbatim from the Figma SVG export (28×28 viewBox).
   static const String _d =
@@ -498,7 +501,7 @@ class _ArrowLeftPainter extends CustomPainter {
     final scale = size.width / 28.0;
     canvas.save();
     canvas.scale(scale);
-    canvas.drawPath(path, Paint()..color = AppColors.text);
+    canvas.drawPath(path, Paint()..color = color);
     canvas.restore();
   }
 
@@ -508,7 +511,10 @@ class _ArrowLeftPainter extends CustomPainter {
 
 /// Paints the Figma `close` glyph (`162:4163`) scaled into its 28×28 box.
 class _ClosePainter extends CustomPainter {
-  const _ClosePainter();
+  const _ClosePainter(this.color);
+
+  /// Glyph tint for the current mode — a painter has no context.
+  final Color color;
 
   static const String _d =
       'M8.28301 21.3499C7.83197 21.801 7.10071 21.801 6.64967 21.3499C6.19864 '
@@ -526,7 +532,7 @@ class _ClosePainter extends CustomPainter {
     final scale = size.width / 28.0;
     canvas.save();
     canvas.scale(scale);
-    canvas.drawPath(path, Paint()..color = AppColors.text);
+    canvas.drawPath(path, Paint()..color = color);
     canvas.restore();
   }
 

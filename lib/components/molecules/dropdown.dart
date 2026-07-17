@@ -244,14 +244,14 @@ class _DropdownState<T> extends State<Dropdown<T>> {
     }
 
     final Color labelColor = !widget.enabled
-        ? AppColors.textTertiary
-        : (filled ? AppColors.text : context.c.labelNormal);
+        ? context.c.labelDisabled
+        : (filled ? context.c.labelStrong : context.c.labelNormal);
     final TextStyle labelStyle =
         (filled ? spec._typeBase.sb : spec._typeBase.r)
             .copyWith(color: labelColor);
 
     final Color iconColor =
-        widget.enabled ? context.c.labelNormal : AppColors.textTertiary;
+        widget.enabled ? context.c.labelNormal : context.c.labelDisabled;
 
     Widget? leadingIcon;
     if (widget.leftIcon != null) {
@@ -383,7 +383,7 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
       final bool isPointed = i == _pointed;
 
       final Color labelColor =
-          isSelected ? AppColors.text : context.c.labelNormal;
+          isSelected ? context.c.labelStrong : context.c.labelNormal;
       final TextStyle style = (isSelected
               ? spec._rowTypeBase.sb
               : spec._rowTypeBase.r)

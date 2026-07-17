@@ -317,7 +317,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         child: Center(
                           child: AppIcons.callEnd(
                             size: 32,
-                            color: AppColors.text,
+                            color: context.c.labelStrong,
                           ),
                         ),
                       ),

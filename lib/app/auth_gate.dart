@@ -115,9 +115,9 @@ class _ProfileError extends StatelessWidget {
           children: [
             Icon(Icons.wifi_off, color: context.c.labelNormal),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               '연결에 문제가 있어요',
-              style: TextStyle(color: AppColors.text),
+              style: TextStyle(color: context.c.labelStrong),
             ),
             const SizedBox(height: 12),
             TextButton(onPressed: onRetry, child: const Text('다시 시도')),

@@ -134,7 +134,7 @@ class _SampleField extends StatelessWidget {
         const SizedBox(width: 6),
         AppIcons.eye(
           size: 20,
-          color: AppColors.textTertiary,
+          color: context.c.labelDisabled,
         ),
       ],
     );

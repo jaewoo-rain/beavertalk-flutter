@@ -354,7 +354,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                   if (mounted) Navigator.of(context).maybePop();
                 },
               ),
-              icon: AppIcons.share(color: AppColors.text),
+              icon: AppIcons.share(color: context.c.labelStrong),
               tooltip: l10n.share,
             ),
           ),

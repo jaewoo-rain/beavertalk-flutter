@@ -113,7 +113,7 @@ class _Sidebar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Text(e.title,
                       style: AppType.label1.r.copyWith(
-                          color: active ? AppColors.text : context.c.labelNormal)),
+                          color: active ? context.c.labelStrong : context.c.labelNormal)),
                 ),
               ),
             ),

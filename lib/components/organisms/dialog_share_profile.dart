@@ -135,7 +135,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
       ),
       alignment: Alignment.center,
       child: widget.imageProvider == null
-          ? AppIcons.profile(color: AppColors.textTertiary, size: 40)
+          ? AppIcons.profile(color: context.c.labelDisabled, size: 40)
           : null,
     );
   }
@@ -254,7 +254,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                       'www.beavertalk.im',
                       textAlign: TextAlign.center,
                       style: AppType.label2.r
-                          .copyWith(color: AppColors.textTertiary),
+                          .copyWith(color: context.c.labelDisabled),
                     ),
                   ],
                 ),
@@ -275,13 +275,13 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 16),
                 child: _sharing
-                    ? const Center(
+                    ? Center(
                         child: SizedBox(
                           width: 18,
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: AppColors.text,
+                            color: context.c.labelStrong,
                           ),
                         ),
                       )

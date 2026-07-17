@@ -17,6 +17,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../theme/app_color_tokens.dart';
+
 import '../../theme/app_colors.dart';
 
 /// KakaoTalk brand mark — yellow bubble + dark glyph (Figma `kakao` 160:84688).
@@ -70,13 +72,15 @@ class GoogleIcon extends StatelessWidget {
 /// (default 24, matching the source `viewBox`).
 class AppleIcon extends StatelessWidget {
   /// Creates the Apple brand icon.
-  const AppleIcon({super.key, this.size = 24, this.color = AppColors.text});
+  const AppleIcon({super.key, this.size = 24, this.color});
 
   /// Width and height of the square icon box, in logical pixels.
   final double size;
 
   /// Glyph tint colour.
-  final Color color;
+  /// Glyph tint; defaults to `Label/Strong` at build time (a constructor
+  /// default must be const, so it could hold only one mode).
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +89,8 @@ class AppleIcon extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.contain,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      colorFilter:
+          ColorFilter.mode(color ?? context.c.labelStrong, BlendMode.srcIn),
     );
   }
 }
@@ -96,13 +101,15 @@ class AppleIcon extends StatelessWidget {
 /// to a [size]×[size] box (default 24, matching the source `viewBox`).
 class MailIcon extends StatelessWidget {
   /// Creates the mail glyph icon.
-  const MailIcon({super.key, this.size = 24, this.color = AppColors.text});
+  const MailIcon({super.key, this.size = 24, this.color});
 
   /// Width and height of the square icon box, in logical pixels.
   final double size;
 
   /// Glyph tint colour.
-  final Color color;
+  /// Glyph tint; defaults to `Label/Strong` at build time (a constructor
+  /// default must be const, so it could hold only one mode).
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +118,8 @@ class MailIcon extends StatelessWidget {
       width: size,
       height: size,
       fit: BoxFit.contain,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      colorFilter:
+          ColorFilter.mode(color ?? context.c.labelStrong, BlendMode.srcIn),
     );
   }
 }
@@ -127,7 +135,7 @@ class BeaverTalkLogo extends StatelessWidget {
     super.key,
     this.width = 204,
     this.height,
-    this.color = AppColors.text,
+    this.color,
   });
 
   /// Rendered width in logical pixels (default 204, the source `viewBox` width).
@@ -137,7 +145,9 @@ class BeaverTalkLogo extends StatelessWidget {
   final double? height;
 
   /// Wordmark tint colour.
-  final Color color;
+  /// Glyph tint; defaults to `Label/Strong` at build time (a constructor
+  /// default must be const, so it could hold only one mode).
+  final Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +156,8 @@ class BeaverTalkLogo extends StatelessWidget {
       width: width,
       height: height ?? width * (84 / 204),
       fit: BoxFit.contain,
-      colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
+      colorFilter:
+          ColorFilter.mode(color ?? context.c.labelStrong, BlendMode.srcIn),
     );
   }
 }

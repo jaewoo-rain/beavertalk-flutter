@@ -17,7 +17,7 @@ class PlaceholderScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('화면 준비 중',
-                style: AppType.caption1.m.copyWith(color: AppColors.textTertiary)),
+                style: AppType.caption1.m.copyWith(color: context.c.labelDisabled)),
             const SizedBox(height: 8),
             Text(name, style: AppType.title3.sb),
             const SizedBox(height: 16),

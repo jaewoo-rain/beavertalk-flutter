@@ -47,7 +47,7 @@ class CallToggleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color fill = active ? activeFill : Colors.transparent;
-    final Color glyph = active ? AppColors.text : context.c.labelNormal;
+    final Color glyph = active ? context.c.labelStrong : context.c.labelNormal;
 
     return Semantics(
       button: true,

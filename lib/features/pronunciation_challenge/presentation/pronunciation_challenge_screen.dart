@@ -369,7 +369,7 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengePermissionNote,
           textAlign: TextAlign.center,
-          style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+          style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
         ),
       ],
     );
@@ -394,7 +394,7 @@ class _PronunciationChallengeScreenState
               const SizedBox(height: 2),
               Text(
                 l10n.challengeRecordHint,
-                style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+                style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
               ),
             ],
           ),
@@ -438,7 +438,7 @@ class _PronunciationChallengeScreenState
           child: Text(
             '$_countdown',
             style: AppType.display1.b.copyWith(
-              color: AppColors.text,
+              color: context.c.labelStrong,
               fontSize: 120,
               height: 1,
             ),
@@ -536,7 +536,7 @@ class _PronunciationChallengeScreenState
           const SizedBox(height: AppSpacing.s4),
           Text(
             'SCORE',
-            style: AppType.label2.b.copyWith(color: AppColors.textTertiary),
+            style: AppType.label2.b.copyWith(color: context.c.labelDisabled),
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(
@@ -547,7 +547,7 @@ class _PronunciationChallengeScreenState
           const SizedBox(height: AppSpacing.s8),
           Text(
             'beavertalk.im',
-            style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+            style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
           ),
         ],
       ),
@@ -617,7 +617,7 @@ class _PronunciationChallengeScreenState
       children: [
         Text(
           'Difficulty',
-          style: AppType.label2.b.copyWith(color: AppColors.textTertiary),
+          style: AppType.label2.b.copyWith(color: context.c.labelDisabled),
         ),
         const SizedBox(height: AppSpacing.s8),
         Row(
