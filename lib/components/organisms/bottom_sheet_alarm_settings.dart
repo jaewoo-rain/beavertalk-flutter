@@ -536,7 +536,10 @@ class _QuickStartCard extends StatelessWidget {
       ),
       decoration: BoxDecoration(
         color: selected ? AppColors.primary04 : null,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        // 16. ⚠️ Figma's radius scale is shifted one step from [AppRadius]'s —
+        // Figma `lg` is 16 where [AppRadius.lg] is 24. Read the number, not the
+        // name.
+        borderRadius: BorderRadius.circular(AppRadius.md),
         border: Border.all(
           color: selected ? AppColors.primaryStrong : AppColors.labelMeta,
           width: selected ? 1.5 : 1,
@@ -581,7 +584,8 @@ class _QuickStartCard extends StatelessWidget {
       label: '$title, $subtitle',
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
+        // Must match the card's own 16, or the ripple leaks past its corners.
+        borderRadius: BorderRadius.circular(AppRadius.md),
         clipBehavior: Clip.antiAlias,
         child: InkWell(onTap: onTap, child: content),
       ),
