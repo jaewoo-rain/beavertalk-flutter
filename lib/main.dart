@@ -116,21 +116,32 @@ class BeaverTalkApp extends ConsumerWidget {
   /// stock widget (dialogs, pickers, text selection) lands in the right mode
   /// instead of Material's defaults — previously only `primary` and `surface`
   /// were passed, and only for dark.
-  static ThemeData _theme(Brightness brightness, AppColorTokens tokens) =>
-      ThemeData(
-        useMaterial3: true,
+  static ThemeData _theme(Brightness brightness, AppColorTokens tokens) {
+    final base = ThemeData(brightness: brightness);
+    return ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      scaffoldBackgroundColor: tokens.backgroundNormalDeep,
+      fontFamily: kFontFamily,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: tokens.primaryNormal,
         brightness: brightness,
-        scaffoldBackgroundColor: tokens.backgroundNormalDeep,
+        primary: tokens.primaryNormal,
+        onPrimary: tokens.primaryOnPrimary,
+        surface: tokens.backgroundNormalNormal,
+        onSurface: tokens.labelStrong,
+        error: tokens.statusNegative,
+      ),
+      // [AppType]'s styles carry no colour, so every uncoloured `Text` falls
+      // through to here. Without this the app would inherit Material's own
+      // body colour (a near-white in dark, near-black in light) instead of
+      // `Label/Strong` — close enough to look right and wrong everywhere.
+      textTheme: base.textTheme.apply(
+        bodyColor: tokens.labelStrong,
+        displayColor: tokens.labelStrong,
         fontFamily: kFontFamily,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: tokens.primaryNormal,
-          brightness: brightness,
-          primary: tokens.primaryNormal,
-          onPrimary: tokens.primaryOnPrimary,
-          surface: tokens.backgroundNormalNormal,
-          onSurface: tokens.labelStrong,
-          error: tokens.statusNegative,
-        ),
-        extensions: [tokens],
-      );
+      ),
+      extensions: [tokens],
+    );
+  }
 }

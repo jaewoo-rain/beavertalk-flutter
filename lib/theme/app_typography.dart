@@ -1,11 +1,16 @@
 import 'package:flutter/widgets.dart';
-import 'app_colors.dart';
 
 /// BeaverTalk typography — Pretendard, the MO/* scale from Figma.
 ///
 /// Each style is a base (size + height + letter-spacing); use `.r/.m/.sb/.b`
-/// for Regular(400)/Medium(500)/SemiBold(600)/Bold(700) weights. Color defaults
-/// to white; override with `.copyWith(color: ...)` at the call site.
+/// for Regular(400)/Medium(500)/SemiBold(600)/Bold(700) weights.
+///
+/// **These carry no colour.** A `TextStyle` with a null colour inherits the
+/// enclosing `DefaultTextStyle`, which `MaterialApp` builds from
+/// `ThemeData.textTheme` — and that is wired to `Label/Strong` for the active
+/// mode in [BeaverTalkApp]. It used to bake in `AppColors.text` (white), which
+/// meant all 330 call sites were pinned to Dark no matter what the theme said.
+/// Override per call site with `.copyWith(color: context.c.<token>)` as before.
 ///
 /// The Pretendard font is bundled: `pubspec.yaml` declares the `Pretendard`
 /// family with the 400/500/600/700 weights in `assets/fonts/`, so these styles
@@ -24,7 +29,6 @@ class AppType {
         height: height / size,
         letterSpacing: spacing,
         fontWeight: w,
-        color: AppColors.text,
       );
 
   TextStyle get r => _w(FontWeight.w400);
