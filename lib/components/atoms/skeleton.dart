@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 
 /// Loading placeholders — Figma `skeleton/*` across ` ┗ ✮ design_app_v2 · Dark`.
 ///
 /// Every placeholder in the design is the same shape: a rounded rectangle filled
-/// with a left→right ramp of [AppColors.skeletonBase] → [AppColors.skeletonHighlight]
-/// (at the midpoint) → base again. Only the box size changes, so this takes a
-/// size and nothing else — callers never pick the colour or the radius.
+/// with a left→right ramp of `Fill/Skeleton-Edge` → `Fill/Skeleton-Peak` (at the
+/// midpoint) → edge again. Only the box size changes, so this takes a size and
+/// nothing else — callers never pick the colour or the radius.
+///
+/// Both tokens are mode-aware: white 6%/14% in Dark, grey (`#70737C`) 14%/24% in
+/// Light. They are read from [BuildContext.c] at build time.
 ///
 /// Text lines are radius 4 and block slots radius 6 (`3569:27541` vs
 /// `3569:27547`), which is why [Skeleton.bar] and [Skeleton.box] are not quite
@@ -53,6 +56,7 @@ class Skeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = SkeletonShimmer.of(context);
+    final tokens = context.c;
     return SizedBox(
       width: width,
       height: height,
@@ -62,6 +66,12 @@ class Skeleton extends StatelessWidget {
             progress: t,
             shape: _shape,
             radius: _radius,
+            // Read here, not in the painter: a CustomPainter has no context.
+            // In Dark these two are 6%/14% white; in Light they are 14%/24%
+            // *grey* (`#70737C`) — the old `skeletonBase`/`skeletonHighlight`
+            // constants could only ever be the white pair.
+            edge: tokens.fillSkeletonEdge,
+            peak: tokens.fillSkeletonPeak,
           ),
         ),
       ),
@@ -75,12 +85,17 @@ class _SkeletonPainter extends CustomPainter {
     required this.progress,
     required this.shape,
     required this.radius,
+    required this.edge,
+    required this.peak,
   });
 
   /// 0→1 sweep position, shared by every placeholder on the screen.
   final double progress;
   final BoxShape shape;
   final double radius;
+
+  /// `Fill/Skeleton-Edge` / `Fill/Skeleton-Peak` for the current mode.
+  final Color edge, peak;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -92,11 +107,7 @@ class _SkeletonPainter extends CustomPainter {
       ..shader = LinearGradient(
         begin: Alignment.centerLeft,
         end: Alignment.centerRight,
-        colors: const [
-          AppColors.skeletonBase,
-          AppColors.skeletonHighlight,
-          AppColors.skeletonBase,
-        ],
+        colors: [edge, peak, edge],
         stops: const [0.0, 0.5, 1.0],
         transform: _SlideGradient(dx),
       ).createShader(rect);
@@ -113,7 +124,13 @@ class _SkeletonPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_SkeletonPainter old) =>
-      old.progress != progress || old.shape != shape || old.radius != radius;
+      old.progress != progress ||
+      old.shape != shape ||
+      old.radius != radius ||
+      // Without these the shimmer would keep the old mode's colours until the
+      // next sweep tick happened to differ.
+      old.edge != edge ||
+      old.peak != peak;
 }
 
 /// Slides a gradient horizontally by [dx] logical pixels.
