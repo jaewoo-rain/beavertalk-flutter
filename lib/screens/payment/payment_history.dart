@@ -16,6 +16,7 @@ import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'payment_history_loading.dart';
 
 /// Payment history — Figma `screen/main_mypage_payment` (`2117:20206`).
 ///
@@ -53,9 +54,9 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
             child: async.when(
-              loading: () => Center(
-                child: CircularProgressIndicator(color: context.c.primaryNormal),
-              ),
+              // The page's own layout held with bars, not a spinner in an empty
+              // screen, so the summary and rows don't jump in when they land.
+              loading: () => const PaymentHistoryLoading(),
               error: (e, _) => _ErrorState(
                 message: l10n.paymentsLoadError,
                 onRetry: () => ref.invalidate(paymentPageProvider(_filter)),
