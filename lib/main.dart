@@ -96,12 +96,17 @@ class BeaverTalkApp extends ConsumerWidget {
       // Both modes are built from the Figma `Semantics` tokens
       // ([AppColorTokens]); a screen reads them via `context.c.<token>`.
       //
-      // **`themeMode` is pinned to dark on purpose.** The token set is complete
-      // in both modes, but the screens are still being mapped off the old
-      // Dark-only [AppColors] palette — until that is finished, letting the OS
-      // flip this to light would render half the app in the wrong mode. Lift
-      // the pin (to `ThemeMode.system`, or a user setting) once the mapping is
-      // done; see `docs/2026-07-17_0530_컬러토큰-Dark-Light-매핑.md`.
+      // **`themeMode` is still pinned to dark**, but no longer because Light
+      // cannot render: the mapping is done (855 → 8 raw references) and Light
+      // was verified on device — background `#F1F1F5`, `Label/Strong` black,
+      // `Primary/Normal` `#007A55`, and the white glyphs that were split to
+      // `Static/White` stayed white.
+      //
+      // What is left is judgement, not wiring: no screen has been compared to
+      // its Light frame yet, and shipping a half-checked Light mode to users is
+      // worse than not offering one. Flip to `ThemeMode.system` (or a user
+      // setting) once the Light audit in
+      // `docs/CHECKLIST_2026-07-17.md` §1 is done.
       theme: _theme(Brightness.light, AppColorTokens.light),
       darkTheme: _theme(Brightness.dark, AppColorTokens.dark),
       themeMode: ThemeMode.dark,
