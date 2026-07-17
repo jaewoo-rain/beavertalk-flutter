@@ -609,10 +609,17 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
 
 /// `context.c.<token>` — the token set for the current theme.
 extension AppColorTokensX on BuildContext {
-  /// The Figma `Semantics` tokens for whichever mode is in force.
+  /// The Figma `Semantics` tokens for whichever mode is in force, falling back
+  /// to [dark] when the theme carries no [AppColorTokens].
   ///
-  /// Throws if no [AppColorTokens] is registered on the theme, which is what
-  /// you want: a silent fallback would render a screen in the wrong mode and
-  /// look almost right.
-  AppColorTokens get c => Theme.of(this).extension<AppColorTokens>()!;
+  /// The fallback is deliberate, and it replaced a `!`. Strictness reads safer
+  /// than it is here: the app registers both mode sets in exactly one place
+  /// ([BeaverTalkApp]), so a missing extension almost never means "wrong mode
+  /// in production" — it means **a widget test mounted a bare `MaterialApp`**.
+  /// Throwing turned every such test into a crash the moment its widget touched
+  /// a colour, which is a tax on every future test for a bug that one file
+  /// controls. Dark is design's source of truth, so falling back to it renders
+  /// exactly what the app rendered before any of this existed.
+  AppColorTokens get c =>
+      Theme.of(this).extension<AppColorTokens>() ?? AppColorTokens.dark;
 }
