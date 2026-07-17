@@ -372,6 +372,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get analyzingByWord => 'Checking your pronunciation word by word';
 
   @override
+  String get analyzingTakingLonger => 'This is taking a little longer';
+
+  @override
   String get noRecordingToPlay => '没有可播放的录音。';
 
   @override

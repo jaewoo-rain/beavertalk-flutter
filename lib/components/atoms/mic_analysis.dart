@@ -19,6 +19,17 @@ import '../../theme/app_color_tokens.dart';
 /// **Not a button.** The frame's Analyzing state is explicitly un-pressable —
 /// there is nothing to cancel, since `submitAudio` is a single blocking POST.
 ///
+/// ## The assets are hand-corrected — keep them that way
+///
+/// Figma exports these with `fill="var(--fill-0, #00FFB2)"`. **flutter_svg does
+/// not understand CSS custom properties**, so it resolves the paint to nothing
+/// and draws an empty box — the spinner simply vanishes, silently, with no error
+/// and nothing the analyzer or a widget test would catch (it only showed on a
+/// device). Every other icon in `assets/icons/` uses a plain hex, which is why
+/// this had never come up. The three SVGs here keep the export's exact path data
+/// but with `var(...)` replaced by its own fallback hex and a fixed width/height
+/// instead of `100%`. **Re-exporting from Figma will reintroduce the bug.**
+///
 /// The turn duration is **not in the design** (the frame is one static
 /// keyframe); 1.2s is this app's spinner cadence.
 class MicAnalysis extends StatefulWidget {

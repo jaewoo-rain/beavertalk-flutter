@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -36,6 +38,19 @@ import 'learning_args.dart';
 ///   with the recorded WAV to [Routes.learningNext]. On error a snackbar shows
 ///   and the user can re-record.
 ///
+/// How long scoring may run before the caption softens to
+/// `analyzingTakingLonger` (`screen/learning_analysis__지연5s` `3745:2`).
+///
+/// The frame is named 지연**5s**, but 5s is too long to sit on a caption that
+/// claims progress — 2s is the product's call (2026-07-17).
+///
+/// The frame's `SkipButton` (`3745:28`, 「건너뛰기」) is **deliberately not built**:
+/// `submitAudio` is a single POST with no cancel, so skipping would have to
+/// either bin a score the server is already computing or land a result on a
+/// screen the user has left. Dropped on a product decision — while scoring is one
+/// blocking call, waiting is the only thing the screen can honestly offer.
+const _kSlowScoring = Duration(seconds: 2);
+
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
 class LearningIntroScreen extends ConsumerStatefulWidget {
   /// Creates the learning intro screen.
@@ -51,6 +66,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   final ReviewAudioPlayer _player = ReviewAudioPlayer();
   bool _recording = false;
   bool _submitting = false;
+
+  /// Scoring has passed [_kSlowScoring] and the caption has softened.
+  bool _scoringSlow = false;
+  Timer? _slowTimer;
 
   /// Cached standard-pronunciation URL for this sentence (fetched once on the
   /// first speaker tap; the server TTS is idempotent so this just avoids re-calls).
@@ -106,6 +125,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   @override
   void dispose() {
+    _slowTimer?.cancel();
     _recorder.dispose();
     _player.dispose();
     super.dispose();
@@ -175,6 +195,14 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     setState(() {
       _recording = false;
       _submitting = true;
+      _scoringSlow = false;
+    });
+    // `learning_analysis__지연5s` (3745:2) — the caption softens once scoring
+    // runs long, so a slow response reads as slow rather than stuck. The frame
+    // is named for 5s; 2s is the product's call.
+    _slowTimer?.cancel();
+    _slowTimer = Timer(_kSlowScoring, () {
+      if (mounted) setState(() => _scoringSlow = true);
     });
 
     try {
@@ -214,7 +242,13 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     } catch (_) {
       _snack(l10n.gradingFailed);
     } finally {
-      if (mounted) setState(() => _submitting = false);
+      _slowTimer?.cancel();
+      if (mounted) {
+        setState(() {
+          _submitting = false;
+          _scoringSlow = false;
+        });
+      }
     }
   }
 
@@ -355,7 +389,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         padding: const EdgeInsets.symmetric(
                             horizontal: AppSpacing.s20),
                         child: Text(
-                          l10n.analyzingByWord,
+                          _scoringSlow
+                              ? l10n.analyzingTakingLonger
+                              : l10n.analyzingByWord,
                           textAlign: TextAlign.center,
                           style: AppType.label1.m
                               .copyWith(color: context.c.labelNormal),

@@ -210,6 +210,10 @@
   "@analyzingByWord": {
     "description": "Caption under the scan cursor while a recording is scored (proto/2_scan_start AnalyzingCaption 3627:9708)."
   },
+  "analyzingTakingLonger": "This is taking a little longer",
+  "@analyzingTakingLonger": {
+    "description": "Replaces analyzingByWord once scoring runs long (screen/learning_analysis__지연5s AnalyzingCaption 3745:27)."
+  },
   "noRecordingToPlay": "No recording to play.",
   "myRecordingPlayError": "Couldn't play your recording.",
   "next": "Next",

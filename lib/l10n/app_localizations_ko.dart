@@ -373,6 +373,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get analyzingByWord => '단어별로 발음을 확인하고 있어요';
 
   @override
+  String get analyzingTakingLonger => '조금만 더 걸리고 있어요';
+
+  @override
   String get noRecordingToPlay => '재생할 녹음이 없어요.';
 
   @override

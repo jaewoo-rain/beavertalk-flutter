@@ -385,6 +385,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get analyzingByWord => 'Checking your pronunciation word by word';
 
   @override
+  String get analyzingTakingLonger => 'This is taking a little longer';
+
+  @override
   String get noRecordingToPlay => 'Nenhuma gravação para reproduzir.';
 
   @override

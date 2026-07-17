@@ -115,6 +115,7 @@
   "unsaveSentence": "저장한 문장 삭제",
   "scoringPronunciation": "발음을 채점하는 중…",
   "analyzingByWord": "단어별로 발음을 확인하고 있어요",
+  "analyzingTakingLonger": "조금만 더 걸리고 있어요",
   "noRecordingToPlay": "재생할 녹음이 없어요.",
   "myRecordingPlayError": "녹음을 재생하지 못했어요.",
   "next": "다음",

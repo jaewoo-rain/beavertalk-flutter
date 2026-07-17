@@ -844,6 +844,12 @@ abstract class AppLocalizations {
   /// **'Checking your pronunciation word by word'**
   String get analyzingByWord;
 
+  /// Replaces analyzingByWord once scoring runs long (screen/learning_analysis__지연5s AnalyzingCaption 3745:27).
+  ///
+  /// In en, this message translates to:
+  /// **'This is taking a little longer'**
+  String get analyzingTakingLonger;
+
   /// No description provided for @noRecordingToPlay.
   ///
   /// In en, this message translates to:
