@@ -5,18 +5,27 @@
 ///
 /// [mockLearningSummary] is **fake**. It is the Figma frame's own sample values,
 /// hardcoded, and [LearningCallMainScreen] renders it unconditionally — so the
-/// screen currently shows invented phoneme statistics and an invented session
-/// history to whoever opens it.
+/// screen shows invented phoneme statistics and an invented session history to
+/// whoever opens it.
 ///
 /// That is a deliberate exception (decision, 2026-07-16: UI first, server
 /// later), not the house style — elsewhere this app hides a section rather than
-/// fabricate it (`analysis.dart`). Two things follow:
+/// fabricate it (`analysis.dart`).
 ///
-/// 1. **The screen must not be given an entry point until this is real.** It has
-///    none today, which is the only reason the mock is harmless.
-/// 2. **Wiring the server means replacing [mockLearningSummary]**, nothing else.
-///    Every widget reads [LearningSummary], so building one from the response is
-///    the whole job — then delete the mock and this warning with it.
+/// ## 🔴 This is now reachable — do not ship it
+///
+/// It used to have no entry point, and that was the only thing making the mock
+/// harmless. As of 2026-07-17 it is the ending of every call review (analysis →
+/// 복습하기 → … → [Routes.learningCallMain]; see [LearningOrigin]), wired on an
+/// explicit product decision to accept the fake numbers for now.
+///
+/// **So the mock is live: real users would read invented statistics about their
+/// own pronunciation.** It must be replaced before a release build ships, and
+/// this is a release blocker, not a nice-to-have.
+///
+/// **Wiring the server means replacing [mockLearningSummary]**, nothing else.
+/// Every widget reads [LearningSummary], so building one from the response is
+/// the whole job — then delete the mock and this warning with it.
 ///
 /// No endpoint serves phoneme accuracy or session history yet. The client shape
 /// below is a proposal, not a contract.

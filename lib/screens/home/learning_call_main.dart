@@ -24,14 +24,16 @@ import 'learning_summary.dart';
 /// kept as a separate screen (decision, 2026-07-16) so the per-sentence result
 /// survives.
 ///
-/// **No entry point yet.** Routed, but nothing navigates here — where a session
-/// summary belongs in the flow is an open product question. Until it is
-/// answered this screen is unreachable, and nothing in the build will catch
-/// that (the pronunciation challenge sat orphaned the same way), so it is
-/// called out here.
+/// **Entry point (2026-07-17):** the end of a call review — analysis 복습하기 →
+/// learning_intro → learning_next → here, once the last sentence is done. The
+/// single-sentence flow (Card-Bookmark 연습하기) still ends on
+/// [LearningSentenceMainScreen]; [LearningOrigin] is what splits them.
 ///
-/// **No data source yet.** Everything comes from [mockLearningSummary]; see
-/// `learning_summary.dart`.
+/// **🔴 No data source yet — release blocker.** Everything comes from
+/// [mockLearningSummary], which is fabricated. It was harmless only while this
+/// screen was unreachable, and it no longer is: the numbers a user reads here
+/// about their own pronunciation are invented. Wired anyway on an explicit
+/// product decision (UI first, server later). See `learning_summary.dart`.
 class LearningCallMainScreen extends StatelessWidget {
   /// Creates the learning session summary screen.
   const LearningCallMainScreen({super.key});

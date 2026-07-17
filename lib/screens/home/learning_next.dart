@@ -331,9 +331,16 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                                     Routes.learningIntro,
                                     arguments: args.next(),
                                   )
+                                // Last sentence → the result screen this
+                                // session's origin calls for: a call review
+                                // (analysis 복습하기) ends on the call-level
+                                // summary, a single sentence on the sentence
+                                // one. See [LearningOrigin].
                                 : Navigator.pushNamed(
                                     context,
-                                    Routes.learningSentenceMain,
+                                    args.origin == LearningOrigin.callReview
+                                        ? Routes.learningCallMain
+                                        : Routes.learningSentenceMain,
                                     arguments: args,
                                   ),
                             icon: AppIcons.arrowForward(

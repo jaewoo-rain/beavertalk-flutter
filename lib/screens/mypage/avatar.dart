@@ -18,6 +18,7 @@ import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
+import 'avatar_loading.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -48,9 +49,10 @@ class AvatarScreen extends ConsumerWidget {
           Gnb.main(title: l10n.changeAvatar, onBack: () => Navigator.pop(context)),
           Expanded(
             child: charactersAsync.when(
-              loading: () => Center(
-                child: CircularProgressIndicator(color: context.c.primaryNormal),
-              ),
+              // `screen/main_change_avatar_loading` (3490:4126) — the list's
+              // own shape held with bars, not a spinner in an empty screen, so
+              // nothing jumps when the characters land.
+              loading: () => const AvatarLoading(),
               error: (e, _) => _ErrorState(
                 message: e is AppException ? e.message : l10n.charactersLoadError,
                 onRetry: () {

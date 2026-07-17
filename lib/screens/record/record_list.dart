@@ -417,7 +417,14 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
-      arguments: LearningArgs(sentences: [bridged]),
+      // One sentence, practiced on its own → the sentence result
+      // (`learning_main__word`). Same as the default, but stated: this is the
+      // half of the pair that decides the ending, and it should not be silent
+      // about it.
+      arguments: LearningArgs(
+        sentences: [bridged],
+        origin: LearningOrigin.sentence,
+      ),
     );
   }
 

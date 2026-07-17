@@ -136,7 +136,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
-      arguments: LearningArgs(sentences: sentences, index: index),
+      // This screen *is* the call record, so the session it starts is a call
+      // review and ends on `learning_main__pronunciation`, not on the
+      // single-sentence result.
+      arguments: LearningArgs(
+        sentences: sentences,
+        index: index,
+        origin: LearningOrigin.callReview,
+      ),
     );
   }
 
