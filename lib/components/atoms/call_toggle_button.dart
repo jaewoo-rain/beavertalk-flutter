@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 
@@ -10,8 +11,8 @@ import '../icons/app_icons.dart';
 /// Measured from Figma:
 /// - 40×40, fully rounded (pill).
 /// - **on**  → filled with [activeFill], glyph [AppColors.text] (white).
-/// - **off** → transparent, 1px [AppColors.border] stroke, glyph
-///   [AppColors.textSecondary].
+/// - **off** → transparent, 1px `Line/Neutral` stroke, glyph
+///   `Label/Normal`.
 ///
 /// The two instances differ only by [activeFill]: hint = `hintAccent` (orange),
 /// subtitle = `surface2`. Controlled: pass [active] and handle [onChanged].
@@ -46,7 +47,7 @@ class CallToggleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color fill = active ? activeFill : Colors.transparent;
-    final Color glyph = active ? AppColors.text : AppColors.textSecondary;
+    final Color glyph = active ? AppColors.text : context.c.labelNormal;
 
     return Semantics(
       button: true,
@@ -57,7 +58,7 @@ class CallToggleButton extends StatelessWidget {
         shape: CircleBorder(
           side: active
               ? BorderSide.none
-              : const BorderSide(color: AppColors.border),
+              : BorderSide(color: context.c.lineNeutral),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(

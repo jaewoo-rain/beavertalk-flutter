@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
+import '../../../theme/app_color_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../../theme/app_colors.dart';
@@ -23,9 +24,13 @@ class ChallengePainter extends CustomPainter {
   ChallengePainter({
     required this.engine,
     required Listenable repaint,
+    required Color mint,
+    required Color background,
     this.cameraActive = false,
     this.micLevel,
-  }) : super(repaint: repaint);
+  })  : _mint = mint,
+        _background = background,
+        super(repaint: repaint);
 
   /// The simulation to render.
   final ChallengeEngine engine;
@@ -50,7 +55,12 @@ class ChallengePainter extends CustomPainter {
     Color(0xFFE64F92),
   ];
 
-  static const Color _mint = AppColors.primary; // #00FFB2
+  /// `Primary/Normal` for the current mode, handed in by the widget — a
+  /// painter has no context, and a `static` could only ever hold one mode.
+  final Color _mint;
+
+  /// `Background/Normal/Normal` for the current mode — the game canvas fill.
+  final Color _background;
 
   /// Per-(word,colour) laid-out text cache — avoids re-layout every frame.
   static final Map<String, TextPainter> _wordCache = <String, TextPainter>{};
@@ -86,7 +96,7 @@ class ChallengePainter extends CustomPainter {
     if (cameraActive) return;
     canvas.drawRect(
       const Rect.fromLTWH(0, 0, GameConfig.w, GameConfig.h),
-      Paint()..color = AppColors.surface, // #181A20
+      Paint()..color = _background,
     );
   }
 

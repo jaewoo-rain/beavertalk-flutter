@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 
@@ -14,9 +14,9 @@ import '../../theme/app_radius.dart';
 /// - 48×48 fixed, `borderRadius` 8 ([AppRadius.xs]), padding 12, 1px stroke,
 ///   transparent fill.
 /// - 24×24 translate icon (Figma `translate` icon → [Icons.translate]).
-/// - `active`   → stroke + icon [AppColors.primary].
-/// - `inactive` → stroke `Line/Normal/Normal` ([AppColors.lineStrong]),
-///   icon [AppColors.textSecondary].
+/// - `active`   → stroke + icon `Primary/Normal`.
+/// - `inactive` → stroke `Line/Normal/Normal` (`Line/Normal`),
+///   icon `Label/Normal`.
 ///
 /// Controlled atom: pass [active] and handle [onPressed]; [disabled] dims it.
 class TranslateToggle extends StatelessWidget {
@@ -42,9 +42,9 @@ class TranslateToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color stroke =
-        active ? AppColors.primary : AppColors.lineStrong;
+        active ? context.c.primaryNormal : context.c.lineNormal;
     final Color iconColor =
-        active ? AppColors.primary : AppColors.textSecondary;
+        active ? context.c.primaryNormal : context.c.labelNormal;
 
     final Widget box = Container(
       width: _size,
@@ -103,16 +103,16 @@ class _TranslateToggleDemoState extends State<TranslateToggleDemo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Interactive (tap to toggle)',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('Interactive (tap to toggle)',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           TranslateToggle(
             active: _active,
             onPressed: (v) => setState(() => _active = v),
           ),
           const SizedBox(height: 24),
-          const Text('States',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('States',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Row(
             mainAxisSize: MainAxisSize.min,

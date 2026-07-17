@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 
 /// AppIconButton — a 40×40 circular, selectable atom.
 ///
 /// Figma component set `176:13875` (IconButton), states `selected` /
 /// `unselected`. Renders a short label (e.g. a weekday abbreviation or a single
-/// Hangul character) centered on a circular [AppColors.surface2] background.
+/// Hangul character) centered on a circular `Background/Normal/Alternative` background.
 ///
 /// Measured from Figma:
 /// - 40×40 fixed, `borderRadius` 20 → perfect circle.
 /// - Background fill `Semantics/Background/Normal/Alternative` (surface2).
 /// - Label uses `MO/Label 1/Normal - Regular` (≈ [AppType.label1] regular).
-/// - `selected` → label color [AppColors.primary];
-///   `unselected` → label color [AppColors.textSecondary].
+/// - `selected` → label color `Primary/Normal`;
+///   `unselected` → label color `Label/Normal`.
 ///
 /// This is a *controlled* atom: it owns no selection state. Pass [selected]
 /// and react to [onChanged]. Set [disabled] to make it inert and dimmed.
@@ -44,14 +44,14 @@ class AppIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color fg =
-        selected ? AppColors.primary : AppColors.textSecondary;
+        selected ? context.c.primaryNormal : context.c.labelNormal;
 
     final Widget circle = Container(
       width: _size,
       height: _size,
       alignment: Alignment.center,
-      decoration: const BoxDecoration(
-        color: AppColors.surface2,
+      decoration: BoxDecoration(
+        color: context.c.backgroundNormalAlternative,
         shape: BoxShape.circle,
       ),
       child: Text(
@@ -108,8 +108,8 @@ class _AppIconButtonDemoState extends State<AppIconButtonDemo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Interactive (tap to toggle)',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('Interactive (tap to toggle)',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,
@@ -126,8 +126,8 @@ class _AppIconButtonDemoState extends State<AppIconButtonDemo> {
             ],
           ),
           const SizedBox(height: 24),
-          const Text('States',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('States',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Wrap(
             spacing: 8,

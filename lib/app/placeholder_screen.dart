@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_color_tokens.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import 'app_scaffold.dart';
@@ -23,7 +24,7 @@ class PlaceholderScreen extends StatelessWidget {
             TextButton(
               onPressed: () => Navigator.of(context).maybePop(),
               child: Text('← 뒤로',
-                  style: AppType.label1.r.copyWith(color: AppColors.textSecondary)),
+                  style: AppType.label1.r.copyWith(color: context.c.labelNormal)),
             ),
           ],
         ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -13,8 +14,8 @@ import '../../theme/app_typography.dart';
 ///   - Right: percentage text (e.g. `87%`).
 ///   - Both use `AppType.label1.sb` (MO/Label 1 SemiBold) in white.
 /// - Track: `8px` tall, radius `AppRadius.md` (16).
-///   - Empty track: transparent fill with a `1px` [AppColors.primary] outline.
-///   - Fill: solid [AppColors.primary], width driven by [value].
+///   - Empty track: transparent fill with a `1px` `Primary/Normal` outline.
+///   - Fill: solid `Primary/Normal`, width driven by [value].
 ///   - Knob: white circle the size of the track height (8×8), centered on the
 ///     trailing edge of the fill.
 ///
@@ -81,9 +82,9 @@ class ProgressBar extends StatelessWidget {
               final trackWidth = constraints.maxWidth;
               final fillWidth = trackWidth * (clamped / 100.0);
               final fillColor =
-                  active ? AppColors.primary : AppColors.lineStrong;
+                  active ? context.c.primaryNormal : context.c.lineNormal;
               final trackColor =
-                  active ? AppColors.primary10 : AppColors.border;
+                  active ? context.c.primaryNormal10 : context.c.lineNeutral;
               return SizedBox(
                 height: _trackHeight,
                 width: trackWidth,
@@ -128,7 +129,7 @@ class ProgressBarDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     const values = <double>[0, 34, 62, 87, 100];
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

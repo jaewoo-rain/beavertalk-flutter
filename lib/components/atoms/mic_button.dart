@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import 'record_circle_button.dart';
@@ -64,7 +65,7 @@ class MicButton extends StatelessWidget {
             height: _size + _maxHalo * clamped,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.green700.withValues(alpha: 0.14 * clamped),
+              color: context.c.primaryHeavy.withValues(alpha: 0.14 * clamped),
             ),
           ),
           // Gentle scale of the button face itself (max +5%).
@@ -110,8 +111,8 @@ class _RecordingFace extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.green700,
+      decoration: BoxDecoration(
+        color: context.c.primaryHeavy,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
@@ -127,7 +128,7 @@ class _RecordingFace extends StatelessWidget {
           width: 25,
           height: 25,
           decoration: BoxDecoration(
-            color: AppColors.green700,
+            color: context.c.primaryHeavy,
             borderRadius: BorderRadius.circular(2),
           ),
         ),

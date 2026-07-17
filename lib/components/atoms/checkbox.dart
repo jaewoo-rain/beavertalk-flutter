@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
@@ -90,11 +91,11 @@ class AppCheckbox extends StatelessWidget {
       borderColor = value ? null : _disabledFg;
       checkColor = value ? _disabledFg : null;
     } else if (value) {
-      fill = AppColors.primary10;
+      fill = context.c.primaryNormal10;
       borderColor = null;
-      checkColor = AppColors.primary;
+      checkColor = context.c.primaryNormal;
     } else {
-      fill = AppColors.surface2;
+      fill = context.c.backgroundNormalAlternative;
       borderColor = _defaultBorder;
       checkColor = null;
     }
@@ -226,7 +227,7 @@ class _CheckboxDemoState extends State<CheckboxDemo> {
     Widget row(String title, List<Widget> children) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+            Text(title, style: AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             Wrap(spacing: 24, runSpacing: 16, children: children),
             const SizedBox(height: 24),
@@ -234,7 +235,7 @@ class _CheckboxDemoState extends State<CheckboxDemo> {
         );
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

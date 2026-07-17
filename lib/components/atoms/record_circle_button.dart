@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 
@@ -42,10 +43,10 @@ class RecordCircleButton extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.text, // white fill
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.green700, width: 4),
+            border: Border.all(color: context.c.primaryHeavy, width: 4),
           ),
           alignment: Alignment.center,
-          child: icon(size: 40, color: AppColors.green700),
+          child: icon(size: 40, color: context.c.primaryHeavy),
         ),
       ),
     );

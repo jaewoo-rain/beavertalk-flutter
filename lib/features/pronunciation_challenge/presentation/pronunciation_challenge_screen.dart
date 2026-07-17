@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../theme/app_color_tokens.dart';
 import 'dart:io' show File;
 import 'dart:ui' as ui;
 
@@ -37,7 +38,7 @@ enum _Phase { start, loading, countdown, playing, result }
 /// result panel shares a branded score-card image via `share_plus`.
 ///
 /// Everything degrades gracefully: with no mic, camera, model, or on web, the
-/// game is still fully playable via tap on the solid `AppColors.surface`
+/// game is still fully playable via tap on the solid `context.c.backgroundNormalNormal`
 /// background and never crashes on missing hardware.
 class PronunciationChallengeScreen extends ConsumerStatefulWidget {
   /// Creates the challenge screen.
@@ -240,7 +241,7 @@ class _PronunciationChallengeScreenState
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -264,6 +265,8 @@ class _PronunciationChallengeScreenState
                             _cameraBackdrop(),
                             CustomPaint(
                               painter: ChallengePainter(
+                                mint: context.c.primaryNormal,
+                                background: context.c.backgroundNormalNormal,
                                 engine: _controller.engine,
                                 repaint: _controller,
                                 cameraActive: _camera.isReady,
@@ -349,7 +352,7 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeIntro,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: AppSpacing.s24),
         _difficultyToggle(),
@@ -399,7 +402,7 @@ class _PronunciationChallengeScreenState
         const SizedBox(width: AppSpacing.s12),
         Switch(
           value: _recordEnabled,
-          activeThumbColor: AppColors.primary,
+          activeThumbColor: context.c.primaryNormal,
           onChanged: (v) => setState(() => _recordEnabled = v),
         ),
       ],
@@ -419,10 +422,10 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeLoadingNote,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: AppSpacing.s24),
-        const CircularProgressIndicator(color: AppColors.primary),
+        CircularProgressIndicator(color: context.c.primaryNormal),
       ],
     );
   }
@@ -501,7 +504,7 @@ class _PronunciationChallengeScreenState
         vertical: AppSpacing.s24,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0x1FFFFFFF)),
       ),
@@ -511,7 +514,7 @@ class _PronunciationChallengeScreenState
           Text(
             'BEAVERTALK',
             style: AppType.label1.b.copyWith(
-              color: AppColors.primary,
+              color: context.c.primaryNormal,
               letterSpacing: 1.5,
             ),
           ),
@@ -525,7 +528,7 @@ class _PronunciationChallengeScreenState
           Text(
             _thousands(engine.score),
             style: AppType.display1.b.copyWith(
-              color: AppColors.primary,
+              color: context.c.primaryNormal,
               fontSize: 56,
               height: 1,
             ),
@@ -539,7 +542,7 @@ class _PronunciationChallengeScreenState
           Text(
             'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}',
             textAlign: TextAlign.center,
-            style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.body2.r.copyWith(color: context.c.labelNormal),
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(

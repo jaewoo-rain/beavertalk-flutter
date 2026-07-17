@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_color_tokens.dart';
 import '../theme/app_colors.dart';
 import '../components/chrome/status_bar.dart';
 import '../components/chrome/home_indicator.dart';
@@ -20,7 +21,7 @@ class AppScaffold extends StatelessWidget {
     this.bottomBar,
     this.statusVariant = StatusBarVariant.whiteTransparent,
     this.homeVariant = HomeIndicatorVariant.whiteTransparent,
-    this.background = AppColors.bg,
+    this.background,
   });
 
   /// Screen content; fills the frame's middle band (between the reserved
@@ -38,7 +39,9 @@ class AppScaffold extends StatelessWidget {
 
   /// Retained for call-site compatibility; no longer rendered.
   final HomeIndicatorVariant homeVariant;
-  final Color background;
+  /// Screen fill. Defaults to `Background/Normal/Deep` **at build time** —
+  /// a constructor default must be const, so it could only hold one mode.
+  final Color? background;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +59,7 @@ class AppScaffold extends StatelessWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 430),
               child: ColoredBox(
-                color: background,
+                color: background ?? context.c.backgroundNormalDeep,
                 child: SafeArea(
                   child: SizedBox.expand(
                     child: Column(
