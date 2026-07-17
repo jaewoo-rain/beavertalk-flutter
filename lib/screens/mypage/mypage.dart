@@ -21,6 +21,7 @@ import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -106,7 +107,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       backgroundColor: Colors.transparent,
       // Flutter defaults the barrier to black @ 54%; pin it to the app scrim so
       // every dim in the product is the same black @ 50%.
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       // The sheets are tall — without this they are capped at half the screen
       // and their footer buttons fall off.
       isScrollControlled: true,
@@ -248,7 +249,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       isScrollControlled: true,
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
@@ -329,7 +330,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
         (mockLanguages.any((l) => l.id == memberLang) ? memberLang! : 'en');
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -427,7 +428,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                       child: Text(
                         l10n.deleteAccount,
                         style: AppType.body1.r
-                            .copyWith(color: AppColors.textSecondary),
+                            .copyWith(color: context.c.labelNormal),
                       ),
                     ),
                   ),
@@ -449,7 +450,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s12, AppSpacing.s16, AppSpacing.s12, AppSpacing.s24),
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs), // 8
       ),
       child: Column(
@@ -459,9 +460,9 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             child: Container(
               width: AppSpacing.s80,
               height: AppSpacing.s80,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: AppColors.surfaceElevated,
+                color: context.c.backgroundElevatedAlternative,
                 image: DecorationImage(image: beaverImage, fit: BoxFit.cover),
               ),
             ),
@@ -470,7 +471,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           Text(
             l10n.accentSoundsLike,
             textAlign: TextAlign.center,
-            style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
@@ -500,7 +501,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
         padding: const EdgeInsets.symmetric(
             horizontal: AppSpacing.s12, vertical: AppSpacing.s8),
         decoration: BoxDecoration(
-          color: AppColors.surface2,
+          color: context.c.backgroundNormalAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm), // 12
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: rows),
@@ -532,20 +533,20 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           children: [
             Text('Beavertalk',
                 style:
-                    AppType.body1.r.copyWith(color: AppColors.textSecondary)),
+                    AppType.body1.r.copyWith(color: context.c.labelNormal)),
             const SizedBox(width: AppSpacing.s4),
             Container(
               width: AppSpacing.s4,
               height: AppSpacing.s4,
-              decoration: const BoxDecoration(
-                color: AppColors.textSecondary,
+              decoration: BoxDecoration(
+                color: context.c.labelNormal,
                 shape: BoxShape.circle,
               ),
             ),
             const SizedBox(width: AppSpacing.s4),
             Text('v1.0.0',
                 style:
-                    AppType.body1.r.copyWith(color: AppColors.textSecondary)),
+                    AppType.body1.r.copyWith(color: context.c.labelNormal)),
           ],
         ),
       );

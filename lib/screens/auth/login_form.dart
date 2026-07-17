@@ -13,6 +13,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -81,7 +82,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(title: l10n.loginLogIn, onBack: () => Navigator.pop(context)),
@@ -101,7 +102,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     hintText: l10n.emailHint,
                     keyboardType: TextInputType.emailAddress,
                     leftIcon:
-                        const MailIcon(size: 20, color: AppColors.textSecondary),
+                        MailIcon(size: 20, color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   // ── Password field ──────────────────────────────────────
@@ -113,7 +114,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     hintText: l10n.passwordHint,
                     obscureText: _obscurePassword,
                     leftIcon:
-                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
+                        AppIcons.lock(size: 20, color: context.c.labelNormal),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscurePassword,
                       onTap: () => setState(
@@ -152,7 +153,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: AppType.label1.r.copyWith(
-                                        color: AppColors.textSecondary),
+                                        color: context.c.labelNormal),
                                   ),
                                 ),
                               ),
@@ -169,7 +170,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppType.label1.r
-                                  .copyWith(color: AppColors.textSecondary),
+                                  .copyWith(color: context.c.labelNormal),
                             ),
                           ),
                         ),
@@ -185,7 +186,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                       child: Text(
                         _error!,
                         style: AppType.label2.r
-                            .copyWith(color: AppColors.error),
+                            .copyWith(color: context.c.accentForegroundRed),
                       ),
                     ),
                   ],
@@ -228,7 +229,7 @@ class _FieldLabel extends StatelessWidget {
         alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );
@@ -283,13 +284,13 @@ class _SignupPrompt extends StatelessWidget {
       children: [
         Text(
           l10n.loginNoAccount,
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
         GestureDetector(
           onTap: onSignup,
           child: Text(
             l10n.signUp,
-            style: AppType.label1.sb.copyWith(color: AppColors.primary),
+            style: AppType.label1.sb.copyWith(color: context.c.primaryNormal),
           ),
         ),
       ],

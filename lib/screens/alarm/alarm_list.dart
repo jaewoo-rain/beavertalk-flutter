@@ -12,6 +12,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import 'alarm_add.dart';
@@ -70,7 +71,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
       backgroundColor: Colors.transparent,
       // Flutter defaults the barrier to black @ 54%; pin it to the app scrim
       // so every dim in the product is the same black @ 50%.
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       builder: (_) => const AlarmAddSheet(),
     );
     if (result == null) return;
@@ -85,7 +86,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       builder: (_) => AlarmAddSheet(initial: AlarmData.fromEntity(alarm)),
     );
     if (result == null) return;
@@ -99,7 +100,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
     final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -216,8 +217,8 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
           width: 48,
           height: 48,
           alignment: Alignment.center,
-          decoration: const BoxDecoration(
-            color: AppColors.error,
+          decoration: BoxDecoration(
+            color: context.c.accentForegroundRed,
             shape: BoxShape.circle,
           ),
           child: AppIcons.trash(color: AppColors.text, size: 24),
@@ -277,7 +278,7 @@ class _ErrorState extends StatelessWidget {
         children: [
           Text(message,
               style: AppType.body2.r
-                  .copyWith(color: AppColors.textSecondary)),
+                  .copyWith(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           TextButton(
             onPressed: onRetry,

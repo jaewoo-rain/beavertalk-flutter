@@ -15,6 +15,7 @@ import '../../features/review/data/wav_writer.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -23,7 +24,7 @@ import 'learning_args.dart';
 /// Learning step 1 — Figma `screen/learning_intro` (`2117:20089`).
 ///
 /// Shows the current sentence (KO in Heading 2, EN in Body 1 secondary) over a
-/// [AppColors.surface2] page, with a large mic button pinned low. The mic is a
+/// `Background/Normal/Alternative` page, with a large mic button pinned low. The mic is a
 /// real two-state recorder:
 /// - **idle** — tap to start capturing PCM16/16k/mono audio.
 /// - **recording** — tap to stop; the captured PCM is wrapped in a WAV header
@@ -226,7 +227,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     final sentence = args.current;
 
     return AppScaffold(
-      background: AppColors.surface2,
+      background: context.c.backgroundNormalAlternative,
       body: Stack(
         children: [
           Column(
@@ -302,7 +303,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                 sentence.native,
                                 textAlign: TextAlign.center,
                                 style: AppType.body1.sb
-                                    .copyWith(color: AppColors.textSecondary),
+                                    .copyWith(color: context.c.labelNormal),
                               ),
                             ],
                           ),
@@ -353,12 +354,12 @@ class _SubmittingOverlay extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Positioned.fill(
       child: ColoredBox(
-        color: AppColors.scrim,
+        color: context.c.materialDim,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+            CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(context.c.primaryNormal),
             ),
             const SizedBox(height: AppSpacing.s16),
             Text(

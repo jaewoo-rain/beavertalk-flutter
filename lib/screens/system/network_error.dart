@@ -5,7 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -23,7 +23,7 @@ class NetworkErrorScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       homeVariant: HomeIndicatorVariant.subTransparent,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,7 +58,7 @@ class NetworkErrorScreen extends StatelessWidget {
                             l10n.connectionFailedBody,
                             textAlign: TextAlign.center,
                             style: AppType.label1.r
-                                .copyWith(color: AppColors.textSecondary),
+                                .copyWith(color: context.c.labelNormal),
                           ),
                         ],
                       ),

@@ -12,6 +12,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -111,7 +112,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(title: l10n.signUp, onBack: () => Navigator.pop(context)),
@@ -130,8 +131,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     onChanged: (v) => setState(() => _email = v),
                     hintText: l10n.emailHint,
                     keyboardType: TextInputType.emailAddress,
-                    leftIcon: const MailIcon(
-                        size: 20, color: AppColors.textSecondary),
+                    leftIcon: MailIcon(
+                        size: 20, color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   // ── Password ────────────────────────────────────────────
@@ -143,7 +144,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     hintText: l10n.passwordHint,
                     obscureText: _obscurePassword,
                     leftIcon:
-                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
+                        AppIcons.lock(size: 20, color: context.c.labelNormal),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscurePassword,
                       onTap: () => setState(
@@ -161,7 +162,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     hintText: l10n.confirmPasswordHint,
                     obscureText: _obscureConfirm,
                     leftIcon:
-                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
+                        AppIcons.lock(size: 20, color: context.c.labelNormal),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscureConfirm,
                       onTap: () =>
@@ -210,7 +211,7 @@ class _FieldLabel extends StatelessWidget {
         alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );
@@ -232,7 +233,7 @@ class _ErrorText extends StatelessWidget {
           top: AppSpacing.s8, start: AppSpacing.s4),
       child: Text(
         text!,
-        style: AppType.label2.r.copyWith(color: AppColors.error),
+        style: AppType.label2.r.copyWith(color: context.c.accentForegroundRed),
       ),
     );
   }
@@ -287,13 +288,13 @@ class _LoginPrompt extends StatelessWidget {
       children: [
         Text(
           l10n.signupHaveAccount,
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
         GestureDetector(
           onTap: onLogin,
           child: Text(
             l10n.loginLogIn,
-            style: AppType.label1.sb.copyWith(color: AppColors.primary),
+            style: AppType.label1.sb.copyWith(color: context.c.primaryNormal),
           ),
         ),
       ],

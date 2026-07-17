@@ -5,7 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import 'learning_args.dart';
 
@@ -60,7 +60,7 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
     final eval = args.feedback?.evaluation;
 
     return AppScaffold(
-      background: AppColors.surface2,
+      background: context.c.backgroundNormalAlternative,
       body: Column(
         children: [
           Expanded(

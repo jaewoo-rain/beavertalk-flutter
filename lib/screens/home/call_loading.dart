@@ -8,6 +8,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -82,7 +83,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     return AppScaffold(
       // `common/dark-&-white` (#111111), not `surface` — this screen is darker
       // than the rest of the app on purpose.
-      background: AppColors.black,
+      background: context.c.commonDarkAndWhite,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
       body: Stack(
@@ -130,7 +131,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                       l10n.connectingHint,
                       textAlign: TextAlign.center,
                       style: AppType.label2.r
-                          .copyWith(color: AppColors.textSecondary),
+                          .copyWith(color: context.c.labelNormal),
                     ),
                   ),
                 ],

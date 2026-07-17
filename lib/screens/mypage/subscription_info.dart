@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/organisms/bottom_sheet_subscription.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 
 /// Subscription management — Figma `screen/main_mypage_payment` (`2117:20206`).
 /// Surfaces the [BottomSheetSubscription] (manage) with the user's current plan.
@@ -15,7 +15,7 @@ class SubscriptionInfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Align(
         alignment: Alignment.bottomCenter,
         child: BottomSheetSubscription(

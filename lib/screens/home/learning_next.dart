@@ -15,6 +15,7 @@ import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -24,8 +25,8 @@ import 'learning_args.dart';
 ///
 /// Shows the just-scored attempt from the real [ReviewFeedback] in
 /// [LearningArgs.feedback]: the sentence rendered **per character** colored by
-/// its 상/중/하 grade (상 → [AppColors.success], 중 → [AppColors.warning], 하 →
-/// [AppColors.error]; falls back to score thresholds when the grade is unknown),
+/// its 상/중/하 grade (상 → `Status/Positive`, 중 → `Status/Cautionary`, 하 →
+/// `Accent/Foreground/Red`; falls back to score thresholds when the grade is unknown),
 /// the native translation, Native / Me playback, then a retry/next control row.
 ///
 /// - "Me" plays the user's recorded WAV ([LearningArgs.recordedWav]).
@@ -95,18 +96,18 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
 
   /// Color for a character by grade, falling back to score thresholds when the
   /// grade is unknown/missing.
-  static Color _gradeColor(CharScore cs) {
+  static Color _gradeColor(BuildContext context, CharScore cs) {
     switch (cs.grade) {
       case CharGrade.high:
-        return AppColors.success;
+        return context.c.statusPositive;
       case CharGrade.medium:
-        return AppColors.warning;
+        return context.c.statusCautionary;
       case CharGrade.low:
-        return AppColors.error;
+        return context.c.accentForegroundRed;
       case CharGrade.unknown:
-        if (cs.score >= 85) return AppColors.success;
-        if (cs.score >= 70) return AppColors.warning;
-        return AppColors.error;
+        if (cs.score >= 85) return context.c.statusPositive;
+        if (cs.score >= 70) return context.c.statusCautionary;
+        return context.c.accentForegroundRed;
     }
   }
 
@@ -188,7 +189,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
     final native = feedback?.native ?? sentence.native;
 
     return AppScaffold(
-      background: AppColors.surface2,
+      background: context.c.backgroundNormalAlternative,
       body: Column(
         children: [
           Gnb.main2(
@@ -261,7 +262,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                             native,
                             textAlign: TextAlign.center,
                             style: AppType.body1.sb.copyWith(
-                              color: AppColors.textSecondary,
+                              color: context.c.labelNormal,
                             ),
                           ),
                         ],
@@ -337,10 +338,10 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                                   ),
                             icon: AppIcons.arrowForward(
                               size: 32,
-                              color: AppColors.green700,
+                              color: context.c.primaryHeavy,
                             ),
                             iconSize: 32,
-                            color: AppColors.green700,
+                            color: context.c.primaryHeavy,
                             tooltip: l10n.next,
                           ),
                         ),
@@ -383,7 +384,7 @@ class _ScoredSentence extends StatelessWidget {
             TextSpan(
               text: cs.char,
               style: base.copyWith(
-                color: _LearningNextScreenState._gradeColor(cs),
+                color: _LearningNextScreenState._gradeColor(context, cs),
               ),
             ),
         ],

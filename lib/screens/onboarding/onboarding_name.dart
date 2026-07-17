@@ -8,6 +8,7 @@ import '../../components/molecules/input_field.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -45,7 +46,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
     final bool canContinue = _name.trim().isNotEmpty;
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main2(
@@ -70,7 +71,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
                   Text(
                     l10n.onboardingNameSubtitle,
                     style: AppType.body1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s24),
                   Text(
@@ -90,7 +91,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
                   Text(
                     l10n.nameHelper,
                     style: AppType.body1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ],
               ),

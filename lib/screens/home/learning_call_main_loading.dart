@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -43,7 +44,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: SkeletonShimmer(
         child: Column(
           children: [
@@ -95,9 +96,9 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                     ),
 
                     // ── Section/OneFix (3583:34516) ────────────────────
-                    ..._section(
+                    ..._section(context,
                       label: l10n.hardestSound,
-                      child: _card(
+                      child: _card(context, 
                         child: const Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -114,10 +115,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                     ),
 
                     // ── Section/Phonemes (3583:34525) ──────────────────
-                    ..._section(
+                    ..._section(context,
                       label: l10n.soundAccuracy,
                       trailing: const Skeleton.bar(width: 100, height: 12),
-                      child: _tableSkeleton(
+                      child: _tableSkeleton(context, 
                         header: [
                           _H.flex(l10n.colSound),
                           _H.fixed(l10n.colAttempts, 40),
@@ -134,10 +135,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                     ),
 
                     // ── Section/Sentences (3583:34575) ─────────────────
-                    ..._section(
+                    ..._section(context,
                       label: l10n.sentenceResults,
                       trailing: const Skeleton.bar(width: 69, height: 12),
-                      child: _tableSkeleton(
+                      child: _tableSkeleton(context, 
                         header: [
                           _H.flex(l10n.colSentence),
                           _H.fixed(l10n.colPronunciation, 36),
@@ -151,14 +152,14 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                     ),
 
                     // ── Section/Trend (3583:34625) ─────────────────────
-                    ..._section(
+                    ..._section(context,
                       // The count is unknown until the sessions land; the frame
                       // labels it 최근 5세션 regardless, which would be a claim.
                       labelWidget: const Skeleton.bar(width: 68, height: 15),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _card(
+                          _card(context, 
                             // 142 + the card's 16/16 padding = Card/Trend's 174,
                             // held so the chart drops straight in.
                             child: const SizedBox(
@@ -167,7 +168,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(height: AppSpacing.s8),
-                          _tableSkeleton(
+                          _tableSkeleton(context, 
                             header: [
                               _H.flex(l10n.colDate),
                               _H.fixed(l10n.colSentences, 40),
@@ -201,7 +202,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
   /// The loaded screen's section rhythm (24 above, 8 under the label). Takes
   /// either a real [label] or a [labelWidget] for the one that is itself a
   /// skeleton.
-  List<Widget> _section({
+  List<Widget> _section(BuildContext context, {
     String? label,
     Widget? labelWidget,
     Widget? trailing,
@@ -233,11 +234,11 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
         child,
       ];
 
-  Widget _card({required Widget child}) => Container(
+  Widget _card(BuildContext context, {required Widget child}) => Container(
         width: double.infinity,
         padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: child,
@@ -250,7 +251,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
   /// (`3583:34544`), the signed delta 변화 to 26 (`3583:34668`) — and leaves the
   /// rest at 22. A single scalar could not say that, and passing the widest
   /// stretched every column with it.
-  Widget _tableSkeleton({
+  Widget _tableSkeleton(BuildContext context, {
     required List<_H> header,
     required int rowCount,
     required List<double> nameWidths,
@@ -258,7 +259,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
   }) =>
       Container(
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 4, AppSpacing.s16, 6),
@@ -270,7 +271,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                 children: [
                   for (var i = 0; i < header.length; i++) ...[
                     if (i > 0) const SizedBox(width: AppSpacing.s8),
-                    header[i].build(),
+                    header[i].build(context),
                   ],
                 ],
               ),
@@ -278,7 +279,7 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
             for (var r = 0; r < rowCount; r++) ...[
               // `Line/Neutral` (12%) — the loaded table's divider; see
               // [LearningCallMainScreen].
-              const Divider(height: 1, thickness: 1, color: AppColors.border),
+              Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 11),
                 child: Row(
@@ -340,10 +341,10 @@ class _H {
   final String text;
   final double? width;
 
-  Widget build() {
+  Widget build(BuildContext context) {
     final child = Text(
       text,
-      style: AppType.caption2.r.copyWith(color: AppColors.labelFootnote),
+      style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
       textAlign: width == null ? TextAlign.left : TextAlign.right,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,

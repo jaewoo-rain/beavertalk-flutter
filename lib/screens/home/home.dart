@@ -13,13 +13,14 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
 /// Home — the post-login landing screen. Figma `screen/home` (`2117:23988`).
 ///
-/// Renders an [AppScaffold] over [AppColors.surface] with:
+/// Renders an [AppScaffold] over `Background/Normal/Normal` with:
 /// - a top row holding a single trailing `person` [IconButton] that opens
 ///   [Routes.mypage],
 /// - a centered hero: the large circular [beaverImage] avatar with a small
@@ -58,7 +59,7 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: _buildHome(context, ref),
     );
   }
@@ -98,13 +99,13 @@ class HomeScreen extends ConsumerWidget {
                         width: AppSpacing.s28,
                         height: AppSpacing.s28,
                         alignment: Alignment.center,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.surface2,
+                          color: context.c.backgroundNormalAlternative,
                         ),
                         child: AppIcons.profile(
                           size: 20,
-                          color: AppColors.labelAssistive,
+                          color: context.c.labelAssistive,
                         ),
                       ),
                     ),

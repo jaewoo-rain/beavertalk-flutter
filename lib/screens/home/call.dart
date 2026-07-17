@@ -15,6 +15,7 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -158,7 +159,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         ref.read(normalCallControllerProvider.notifier).hangUp();
       },
       child: AppScaffold(
-        background: AppColors.surface,
+        background: context.c.backgroundNormalNormal,
         statusVariant: StatusBarVariant.whiteTransparent,
         homeVariant: HomeIndicatorVariant.whiteTransparent,
         body: Column(
@@ -175,16 +176,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       Container(
                         width: AppSpacing.s8,
                         height: AppSpacing.s8,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColors.primary,
+                          color: context.c.primaryNormal,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s12),
                       Text(
                         'Connected',
                         style: AppType.label1.r
-                            .copyWith(color: AppColors.textSecondary),
+                            .copyWith(color: context.c.labelNormal),
                       ),
                     ],
                   ),
@@ -197,7 +198,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   Text(
                     _formatted(elapsed),
                     style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ],
               ),
@@ -218,7 +219,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     height: AppSpacing.s120,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: AppColors.surface2,
+                      color: context.c.backgroundNormalAlternative,
                       image: DecorationImage(
                         image: partnerImage,
                         fit: BoxFit.cover,
@@ -277,7 +278,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   CallToggleButton(
                     icon: AppIcons.lightbulb,
                     active: hintOn,
-                    activeFill: AppColors.hintAccent,
+                    activeFill: context.c.accentActive,
                     semanticLabel: 'Hint',
                     onChanged: (v) => ref
                         .read(normalCallControllerProvider.notifier)
@@ -287,7 +288,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   CallToggleButton(
                     icon: AppIcons.cc,
                     active: subtitleOn,
-                    activeFill: AppColors.surface2,
+                    activeFill: context.c.backgroundNormalAlternative,
                     semanticLabel: 'Subtitle',
                     onChanged: (v) => ref
                         .read(normalCallControllerProvider.notifier)
@@ -304,7 +305,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   button: true,
                   label: l10n.endCall,
                   child: Material(
-                    color: AppColors.accentRed,
+                    color: context.c.accentBackgroundRed,
                     shape: const CircleBorder(),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(

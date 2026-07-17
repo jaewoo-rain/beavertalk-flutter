@@ -16,6 +16,7 @@ import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -86,7 +87,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
@@ -171,7 +172,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       // Figma horizontal screen padding is 40px (buttons are 295 wide,
       // centered in the 375 frame). The 76px top matches the design's
       // vertical position: the (empty/hidden) 56px GNB + 20px body inset,
@@ -225,7 +226,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               type: BtnType.primaryFill,
               size: BtnSize.s60,
               text: l10n.loginContinueWithEmail,
-              leftIcon: const MailIcon(size: 24, color: AppColors.onPrimary),
+              leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
               onPressed: _emailLogin,
             ),
             // Figma: email button → signup prompt = 16px.
@@ -302,7 +303,7 @@ class _OrDivider extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
           child: Text(
             AppLocalizations.of(context).loginOrDivider,
-            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.caption1.r.copyWith(color: context.c.labelNormal),
           ),
         ),
         line,
@@ -343,13 +344,13 @@ class _SignupPrompt extends StatelessWidget {
             Text(
               l10n.loginNoAccount,
               style:
-                  AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                  AppType.label1.r.copyWith(color: context.c.labelNormal),
             ),
             GestureDetector(
               onTap: onSignup,
               child: Text(
                 l10n.signUp,
-                style: AppType.label1.sb.copyWith(color: AppColors.primary),
+                style: AppType.label1.sb.copyWith(color: context.c.primaryNormal),
               ),
             ),
           ],
@@ -400,7 +401,7 @@ class _TermsNoticeState extends State<_TermsNotice> {
     final l10n = AppLocalizations.of(context);
     // 12pt caption keeps the notice compact so it fits without scrolling; the
     // login body stays in a SingleChildScrollView for longer localized text.
-    final base = AppType.caption1.r.copyWith(color: AppColors.textSecondary);
+    final base = AppType.caption1.r.copyWith(color: context.c.labelNormal);
     // Links read as links: brighter (white) + underlined, mirroring Figma's
     // underlined `서비스 약관` / `개인정보 보호정책` spans.
     final link = AppType.caption1.r.copyWith(

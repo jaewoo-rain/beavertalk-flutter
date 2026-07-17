@@ -14,6 +14,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -178,7 +179,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   Widget build(BuildContext context) {
     if (_phase == _LoadingPhase.error) {
       return AppScaffold(
-        background: AppColors.surface,
+        background: context.c.backgroundNormalNormal,
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
           child: _error(),
@@ -186,7 +187,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       );
     }
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -357,7 +358,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: child,
@@ -369,10 +370,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Icon(
+          Icon(
             Icons.error_outline,
             size: 56,
-            color: AppColors.textSecondary,
+            color: context.c.labelNormal,
           ),
           const SizedBox(height: AppSpacing.s20),
           Text(
@@ -383,7 +384,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           const SizedBox(height: AppSpacing.s12),
           Text(
             _errorMsg,
-            style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.s28),

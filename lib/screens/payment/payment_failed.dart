@@ -4,7 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -22,7 +22,7 @@ class PaymentFailedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -44,7 +44,7 @@ class PaymentFailedScreen extends StatelessWidget {
                             width: 100,
                             height: 100,
                             decoration: BoxDecoration(
-                              color: AppColors.surface2,
+                              color: context.c.backgroundNormalAlternative,
                               borderRadius: BorderRadius.circular(AppRadius.lg),
                             ),
                             alignment: Alignment.center,
@@ -62,7 +62,7 @@ class PaymentFailedScreen extends StatelessWidget {
                             l10n.paymentFailedBody,
                             textAlign: TextAlign.center,
                             style: AppType.label1.r
-                                .copyWith(color: AppColors.textSecondary),
+                                .copyWith(color: context.c.labelNormal),
                           ),
                         ],
                       ),

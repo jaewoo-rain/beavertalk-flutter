@@ -8,7 +8,7 @@ import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -60,7 +60,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -133,7 +133,7 @@ class _ProductCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -149,7 +149,7 @@ class _ProductCard extends StatelessWidget {
                 Text(
                   l10n.productTrait,
                   style: AppType.label2.r
-                      .copyWith(color: AppColors.textSecondary),
+                      .copyWith(color: context.c.labelNormal),
                 ),
               ],
             ),
@@ -157,7 +157,7 @@ class _ProductCard extends StatelessWidget {
           const SizedBox(width: 14),
           Text(
             '₩4,900',
-            style: AppType.body2.sb.copyWith(color: AppColors.primary),
+            style: AppType.body2.sb.copyWith(color: context.c.primaryNormal),
           ),
         ],
       ),
@@ -196,12 +196,12 @@ class _MethodRow extends StatelessWidget {
         constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
           border: Border.all(
             // Painted in both states so the colour animates instead of a
             // null→Border pop shifting the row by 1.5px.
-            color: selected ? AppColors.primary : Colors.transparent,
+            color: selected ? context.c.primaryNormal : Colors.transparent,
             width: 1.5,
           ),
         ),
@@ -245,9 +245,9 @@ class _RadioMark extends StatelessWidget {
         // Figma: unselected is a `surface2` disc with a `textSecondary` hairline,
         // not a transparent hole — the mark reads as a filled control in both
         // states and only the colours swap.
-        color: selected ? AppColors.primary : AppColors.surface2,
+        color: selected ? context.c.primaryNormal : context.c.backgroundNormalAlternative,
         border: Border.all(
-          color: selected ? AppColors.primary : AppColors.textSecondary,
+          color: selected ? context.c.primaryNormal : context.c.labelNormal,
           width: 1,
         ),
       ),
@@ -264,7 +264,7 @@ class _RadioMark extends StatelessWidget {
           key: ValueKey<bool>(selected),
           child: AppIcons.check(
             size: 14,
-            color: selected ? AppColors.onPrimary : AppColors.textSecondary,
+            color: selected ? context.c.primaryOnPrimary : context.c.labelNormal,
           ),
         ),
       ),
@@ -281,29 +281,29 @@ class _AmountSummary extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _row(l10n.amountItemPrice, '₩4,900'),
+          _row(context, l10n.amountItemPrice, '₩4,900'),
           const SizedBox(height: 8),
-          _row(l10n.amountDiscount, '-₩0'),
+          _row(context, l10n.amountDiscount, '-₩0'),
           const SizedBox(height: 8),
-          _row(l10n.amountTotal, '₩4,900', total: true),
+          _row(context, l10n.amountTotal, '₩4,900', total: true),
         ],
       ),
     );
   }
 
-  Widget _row(String label, String value, {bool total = false}) {
+  Widget _row(BuildContext context, String label, String value, {bool total = false}) {
     final labelStyle = total
         ? AppType.body1.sb
-        : AppType.label1.r.copyWith(color: AppColors.textSecondary);
+        : AppType.label1.r.copyWith(color: context.c.labelNormal);
     final valueStyle = total
-        ? AppType.body1.sb.copyWith(color: AppColors.primary)
+        ? AppType.body1.sb.copyWith(color: context.c.primaryNormal)
         : AppType.label1.sb;
     return Row(
       children: [

@@ -22,6 +22,7 @@ import '../../features/review/data/audio_player.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -53,7 +54,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -128,7 +129,7 @@ class _RecordsLoading extends StatelessWidget {
             AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
         children: [
           Text(l10n.callHistory,
-              style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
           const SizedBox(height: 8),
           for (var i = 0; i < 5; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -154,7 +155,7 @@ class _RecordList extends StatelessWidget {
           AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
         Text(l10n.callHistory,
-            style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
         const SizedBox(height: 8),
         for (var i = 0; i < records.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -243,7 +244,7 @@ class _RecordsEmpty extends StatelessWidget {
                     l10n.noCallRecordsBody,
                     textAlign: TextAlign.center,
                     style:
-                        AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                        AppType.label1.r.copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Button(
@@ -293,7 +294,7 @@ class _RecordsError extends StatelessWidget {
                     l10n.tryAgainLater,
                     textAlign: TextAlign.center,
                     style:
-                        AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                        AppType.label1.r.copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Button(
@@ -442,7 +443,7 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
           AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
         Text(AppLocalizations.of(context).mySavedExpressions,
-            style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
         const SizedBox(height: AppSpacing.s8),
         for (var i = 0; i < saved.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -484,7 +485,7 @@ class _ArchiveLoading extends StatelessWidget {
           children: [
             Text(AppLocalizations.of(context).mySavedExpressions,
                 style:
-                    AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
+                    AppType.body1.sb.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: AppSpacing.s8),
             for (var i = 0; i < 3; i++) ...[
               if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -507,7 +508,7 @@ class _ArchiveEmpty extends StatelessWidget {
         child: Text(
           AppLocalizations.of(context).noSavedSentences,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );
@@ -532,7 +533,7 @@ class _ArchiveError extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
             ),
             const SizedBox(height: 12),
             TextButton(

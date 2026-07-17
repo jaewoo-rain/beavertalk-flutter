@@ -4,7 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 
 /// Microphone permission denied — Figma `screen/perm_mic_denied`
 /// (`2117:20524`).
@@ -24,7 +24,7 @@ class MicDeniedScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Stack(
         children: [
           // Dim scrim over the (blank) underlying screen.

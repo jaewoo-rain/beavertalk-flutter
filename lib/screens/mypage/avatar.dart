@@ -17,7 +17,7 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -42,14 +42,14 @@ class AvatarScreen extends ConsumerWidget {
     final profileAsync = ref.watch(myProfileProvider);
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(title: l10n.changeAvatar, onBack: () => Navigator.pop(context)),
           Expanded(
             child: charactersAsync.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+              loading: () => Center(
+                child: CircularProgressIndicator(color: context.c.primaryNormal),
               ),
               error: (e, _) => _ErrorState(
                 message: e is AppException ? e.message : l10n.charactersLoadError,
@@ -81,17 +81,17 @@ class AvatarScreen extends ConsumerWidget {
                     Text(
                       l10n.avatarIntro,
                       style: AppType.body2.r
-                          .copyWith(color: AppColors.textSecondary),
+                          .copyWith(color: context.c.labelNormal),
                     ),
                     const SizedBox(height: AppSpacing.s24),
                     if (owned.isNotEmpty) ...[
-                      _label(l10n.myPartnersOwned(owned.length)),
+                      _label(context, l10n.myPartnersOwned(owned.length)),
                       const SizedBox(height: AppSpacing.s12),
                       _ownedRow(context, owned, activeId),
                       const SizedBox(height: AppSpacing.s28),
                     ],
                     if (discounted.isNotEmpty) ...[
-                      _label(l10n.limitedDiscount),
+                      _label(context, l10n.limitedDiscount),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in discounted) ...[
                         _discountCard(context, c),
@@ -105,7 +105,7 @@ class AvatarScreen extends ConsumerWidget {
                       // reads as "you can use these" — so unowned, paid
                       // characters looked selectable. That key belongs to the
                       // sheet's status chip; the section needs its own.
-                      _label(l10n.availableForPurchase),
+                      _label(context, l10n.availableForPurchase),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in buyable) ...[
                         _buyableCard(context, c),
@@ -118,7 +118,7 @@ class AvatarScreen extends ConsumerWidget {
                         child: Center(
                           child: Text(l10n.noCharactersToShow,
                               style: AppType.body2.r.copyWith(
-                                  color: AppColors.textSecondary)),
+                                  color: context.c.labelNormal)),
                         ),
                       ),
                   ],
@@ -360,7 +360,7 @@ class AvatarScreen extends ConsumerWidget {
     return id.isEven ? judiImage : beaverImage;
   }
 
-  Widget _label(String text, {String? trailing}) => Row(
+  Widget _label(BuildContext context, String text, {String? trailing}) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
@@ -368,14 +368,14 @@ class AvatarScreen extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
                 style:
-                    AppType.label1.m.copyWith(color: AppColors.textSecondary)),
+                    AppType.label1.m.copyWith(color: context.c.labelNormal)),
           ),
           if (trailing != null)
             Flexible(
               child: Text(trailing,
                   overflow: TextOverflow.ellipsis,
                   maxLines: 1,
-                  style: AppType.label1.m.copyWith(color: AppColors.error)),
+                  style: AppType.label1.m.copyWith(color: context.c.accentForegroundRed)),
             ),
         ],
       );
@@ -403,7 +403,7 @@ class _ErrorState extends StatelessWidget {
         children: [
           Text(message,
               style: AppType.body2.r
-                  .copyWith(color: AppColors.textSecondary)),
+                  .copyWith(color: context.c.labelNormal)),
           const SizedBox(height: AppSpacing.s12),
           TextButton(
               onPressed: onRetry,

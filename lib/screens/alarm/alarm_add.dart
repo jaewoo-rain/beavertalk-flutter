@@ -8,7 +8,7 @@ import '../../components/organisms/bottom_sheet_time_picker.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_providers.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 import 'alarm_models.dart';
 
@@ -30,7 +30,7 @@ class AlarmAddScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final arg = ModalRoute.of(context)?.settings.arguments;
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Align(
         alignment: Alignment.bottomCenter,
         child: AlarmAddSheet(initial: arg is AlarmData ? arg : null),
@@ -261,10 +261,10 @@ class _SheetLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       height: 200,
       child: Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+        child: CircularProgressIndicator(color: context.c.primaryNormal),
       ),
     );
   }
@@ -282,13 +282,13 @@ class _SheetMessage extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(20, 32, 20, 32),
-      color: AppColors.surfaceElevated,
+      color: context.c.backgroundElevatedAlternative,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(message,
               style: AppType.body2.r
-                  .copyWith(color: AppColors.textSecondary)),
+                  .copyWith(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           TextButton(
             onPressed: onClose,

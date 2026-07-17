@@ -5,6 +5,7 @@ import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -40,7 +41,7 @@ class LearningCallMainScreen extends StatelessWidget {
     final s = mockLearningSummary;
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Expanded(
@@ -54,7 +55,7 @@ class LearningCallMainScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _head(l10n, s),
+                  _head(context, l10n, s),
                   const SizedBox(height: AppSpacing.s24),
                   Center(
                     child: PronunciationResult(
@@ -76,10 +77,10 @@ class LearningCallMainScreen extends StatelessWidget {
                       ],
                     ),
                   ),
-                  ..._oneFix(l10n, s),
-                  ..._phonemes(l10n, s),
-                  ..._sentences(l10n, s),
-                  ..._trend(l10n, s),
+                  ..._oneFix(context, l10n, s),
+                  ..._phonemes(context, l10n, s),
+                  ..._sentences(context, l10n, s),
+                  ..._trend(context, l10n, s),
                 ],
               ),
             ),
@@ -111,7 +112,7 @@ class LearningCallMainScreen extends StatelessWidget {
   /// frame specifies and is unambiguous in all 30 locales — unlike the call
   /// meta line in `analysis.dart`, which is localized via `DateFormat.MMMd`. If
   /// design wants this localized too, it is a one-line change here.
-  Widget _head(AppLocalizations l10n, LearningSummary s) => Column(
+  Widget _head(BuildContext context, AppLocalizations l10n, LearningSummary s) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
@@ -121,15 +122,15 @@ class LearningCallMainScreen extends StatelessWidget {
           const SizedBox(height: AppSpacing.s4),
           Text(
             intl.DateFormat('yyyy-MM-dd').format(s.date),
-            style: AppType.label2.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.label2.r.copyWith(color: context.c.labelNormal),
           ),
         ],
       );
 
   /// Section/OneFix (`3569:15113`).
-  List<Widget> _oneFix(AppLocalizations l10n, LearningSummary s) => _section(
+  List<Widget> _oneFix(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
         label: l10n.hardestSound,
-        child: _card(
+        child: _card(context, 
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -138,7 +139,7 @@ class LearningCallMainScreen extends StatelessWidget {
               Text(
                 s.hardestEvidence,
                 style:
-                    AppType.caption1.r.copyWith(color: AppColors.textSecondary),
+                    AppType.caption1.r.copyWith(color: context.c.labelNormal),
               ),
               const SizedBox(height: 10),
               Container(
@@ -151,7 +152,7 @@ class LearningCallMainScreen extends StatelessWidget {
                 ),
                 child: Text(
                   s.l1Interference,
-                  style: AppType.caption1.r.copyWith(color: AppColors.primary),
+                  style: AppType.caption1.r.copyWith(color: context.c.primaryNormal),
                 ),
               ),
             ],
@@ -160,15 +161,15 @@ class LearningCallMainScreen extends StatelessWidget {
       );
 
   /// Section/Phonemes (`3569:15122`).
-  List<Widget> _phonemes(AppLocalizations l10n, LearningSummary s) => _section(
+  List<Widget> _phonemes(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
         label: l10n.soundAccuracy,
         trailing: Text(
           l10n.phonemeAttempts(s.phonemeAttempts),
-          style: AppType.caption2.r.copyWith(color: AppColors.labelFootnote),
+          style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        child: _table(
+        child: _table(context, 
           header: [
             _Cell.flex(l10n.colSound),
             _Cell.fixed(l10n.colAttempts, 40),
@@ -178,28 +179,28 @@ class LearningCallMainScreen extends StatelessWidget {
           rows: [
             for (final p in s.phonemes)
               [
-                _Cell.flex(p.sound, style: _rowName),
-                _Cell.fixed('${p.attempts}', 40, style: _rowValue),
-                _Cell.fixed('${p.correct}', 40, style: _rowValue),
+                _Cell.flex(p.sound, style: _rowName(context)),
+                _Cell.fixed('${p.attempts}', 40, style: _rowValue(context)),
+                _Cell.fixed('${p.correct}', 40, style: _rowValue(context)),
                 _Cell.fixed('${p.accuracy}%', 52,
-                    style: _rowEmphasis(_accuracyColor(p.accuracy))),
+                    style: _rowEmphasis(_accuracyColor(context, p.accuracy))),
               ],
           ],
         ),
       );
 
   /// Section/Sentences (`3569:15156`).
-  List<Widget> _sentences(AppLocalizations l10n, LearningSummary s) => _section(
+  List<Widget> _sentences(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
         label: l10n.sentenceResults,
         // Counts the whole session, not the rows shown — the table is a preview
         // and this is the way into the rest.
         trailing: Text(
           l10n.viewAllSentences(s.total),
-          style: AppType.caption2.m.copyWith(color: AppColors.primary),
+          style: AppType.caption2.m.copyWith(color: context.c.primaryNormal),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
-        child: _table(
+        child: _table(context, 
           header: [
             _Cell.flex(l10n.colSentence),
             _Cell.fixed(l10n.colPronunciation, 36),
@@ -209,28 +210,28 @@ class LearningCallMainScreen extends StatelessWidget {
           rows: [
             for (final x in s.sentences)
               [
-                _Cell.flex(x.sentence, style: _rowName),
-                _Cell.fixed('${x.pronunciation}', 36, style: _rowValue),
-                _Cell.fixed('${x.fluency}', 36, style: _rowValue),
-                _Cell.fixed('${x.rhythm}', 36, style: _rowValue),
+                _Cell.flex(x.sentence, style: _rowName(context)),
+                _Cell.fixed('${x.pronunciation}', 36, style: _rowValue(context)),
+                _Cell.fixed('${x.fluency}', 36, style: _rowValue(context)),
+                _Cell.fixed('${x.rhythm}', 36, style: _rowValue(context)),
               ],
           ],
         ),
       );
 
   /// Section/Trend (`3569:15190`) — the chart, then the same data as a table.
-  List<Widget> _trend(AppLocalizations l10n, LearningSummary s) => _section(
+  List<Widget> _trend(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
         label: l10n.recentSessions(s.sessions.length),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _card(
+            _card(context, 
               padding: const EdgeInsets.fromLTRB(AppSpacing.s16, AppSpacing.s16,
                   AppSpacing.s16, AppSpacing.s12),
               child: _TrendChart(sessions: s.sessions, l10n: l10n),
             ),
             const SizedBox(height: AppSpacing.s8),
-            _table(
+            _table(context, 
               header: [
                 _Cell.flex(l10n.colDate),
                 _Cell.fixed(l10n.colSentences, 40),
@@ -246,17 +247,17 @@ class LearningCallMainScreen extends StatelessWidget {
                       i == s.sessions.length - 1
                           ? l10n.dateToday(s.sessions[i].date)
                           : s.sessions[i].date,
-                      style: _rowName,
+                      style: _rowName(context),
                     ),
                     _Cell.fixed('${s.sessions[i].sentences}', 40,
-                        style: _rowValue),
-                    _Cell.fixed('${s.sessions[i].score}', 40, style: _rowValue),
+                        style: _rowValue(context)),
+                    _Cell.fixed('${s.sessions[i].score}', 40, style: _rowValue(context)),
                     _Cell.fixed(
                       s.sessions[i].delta == null
                           ? '—'
                           : _signed(s.sessions[i].delta!),
                       48,
-                      style: _rowEmphasis(_deltaColor(s.sessions[i].delta)),
+                      style: _rowEmphasis(_deltaColor(context, s.sessions[i].delta)),
                     ),
                   ],
               ],
@@ -267,7 +268,7 @@ class LearningCallMainScreen extends StatelessWidget {
 
   // ── shared shells ─────────────────────────────────────────────────────────
 
-  List<Widget> _section({
+  List<Widget> _section(BuildContext context, {
     required String label,
     Widget? trailing,
     required Widget child,
@@ -297,11 +298,11 @@ class LearningCallMainScreen extends StatelessWidget {
         child,
       ];
 
-  Widget _card({required Widget child, EdgeInsets? padding}) => Container(
+  Widget _card(BuildContext context, {required Widget child, EdgeInsets? padding}) => Container(
         width: double.infinity,
         padding: padding ?? const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: child,
@@ -309,66 +310,67 @@ class LearningCallMainScreen extends StatelessWidget {
 
   /// The table shell shared by all three tables (`3569:15126`) — a header row,
   /// then rows split by hairlines.
-  Widget _table({
+  Widget _table(BuildContext context, {
     required List<_Cell> header,
     required List<List<_Cell>> rows,
   }) =>
       Container(
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 4, AppSpacing.s16, 6),
         child: Column(
           children: [
-            _row(header, vertical: 10),
+            _row(context, header, vertical: 10),
             for (final r in rows) ...[
               // `Line/Neutral` — 12% white. (This read `borderSubtle` (6%) under
               // a comment claiming the design was 7%; the variable actually
               // resolves to 12%, so every divider on this screen was drawn at
               // half the intended weight.)
-              const Divider(height: 1, thickness: 1, color: AppColors.border),
-              _row(r, vertical: 11),
+              Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
+              _row(context, r, vertical: 11),
             ],
           ],
         ),
       );
 
-  Widget _row(List<_Cell> cells, {required double vertical}) => Padding(
+  Widget _row(BuildContext context, List<_Cell> cells, {required double vertical}) => Padding(
         padding: EdgeInsets.symmetric(vertical: vertical),
         child: Row(
           children: [
             for (var i = 0; i < cells.length; i++) ...[
               if (i > 0) const SizedBox(width: AppSpacing.s8),
-              cells[i].build(),
+              cells[i].build(context),
             ],
           ],
         ),
       );
 }
 
-TextStyle get _headerStyle =>
-    AppType.caption2.r.copyWith(color: AppColors.labelFootnote);
-TextStyle get _rowName => AppType.label2.m.copyWith(color: AppColors.text);
-TextStyle get _rowValue =>
-    AppType.label2.r.copyWith(color: AppColors.textSecondary);
+TextStyle _headerStyle(BuildContext context) =>
+    AppType.caption2.r.copyWith(color: context.c.labelAlternative);
+TextStyle _rowName(BuildContext context) =>
+    AppType.label2.m.copyWith(color: context.c.labelStrong);
+TextStyle _rowValue(BuildContext context) =>
+    AppType.label2.r.copyWith(color: context.c.labelNormal);
 TextStyle _rowEmphasis(Color color) => AppType.label2.b.copyWith(color: color);
 
 /// The design's accuracy ramp, read off its four samples: 43% red, 75% amber,
 /// 89% and 100% mint. The exact cut-offs are written down nowhere, so these are
 /// inferred — revisit if the design ever states them.
-Color _accuracyColor(int accuracy) {
-  if (accuracy >= 80) return AppColors.primary;
-  if (accuracy >= 60) return AppColors.warning;
-  return AppColors.negativeAccent;
+Color _accuracyColor(BuildContext context, int accuracy) {
+  if (accuracy >= 80) return context.c.primaryNormal;
+  if (accuracy >= 60) return context.c.statusCautionary;
+  return context.c.statusNegative;
 }
 
 /// A missing delta (the earliest session on record) is not a flat one.
-Color _deltaColor(int? delta) {
-  if (delta == null) return AppColors.textSecondary;
-  if (delta > 0) return AppColors.primary;
-  if (delta < 0) return AppColors.negativeAccent;
-  return AppColors.textSecondary;
+Color _deltaColor(BuildContext context, int? delta) {
+  if (delta == null) return context.c.labelNormal;
+  if (delta > 0) return context.c.primaryNormal;
+  if (delta < 0) return context.c.statusNegative;
+  return context.c.labelNormal;
 }
 
 /// `+5` / `−3` — an explicit sign either way, with a real minus (U+2212) as the
@@ -389,10 +391,10 @@ class _Cell {
   final TextStyle? style;
   final bool _alignRight;
 
-  Widget build() {
+  Widget build(BuildContext context) {
     final child = Text(
       text,
-      style: style ?? _headerStyle,
+      style: style ?? _headerStyle(context),
       textAlign: _alignRight ? TextAlign.right : TextAlign.left,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
@@ -442,13 +444,13 @@ class _TrendChart extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _axis(),
+          _axis(context),
           const SizedBox(width: 6), // no s6 token
           Expanded(
             child: Stack(
               children: [
-                _gridlines(),
-                _avgLine(avg),
+                _gridlines(context),
+                _avgLine(context, avg),
                 Row(
                   children: [
                     // Each column takes an equal share rather than a fixed
@@ -459,7 +461,7 @@ class _TrendChart extends StatelessWidget {
                     for (var i = 0; i < sessions.length; i++)
                       Expanded(
                         child:
-                            _bar(sessions[i], isToday: i == sessions.length - 1),
+                            _bar(context, sessions[i], isToday: i == sessions.length - 1),
                       ),
                   ],
                 ),
@@ -472,7 +474,7 @@ class _TrendChart extends StatelessWidget {
   }
 
   /// 100 / 80 / 60, each sitting on its gridline.
-  Widget _axis() => SizedBox(
+  Widget _axis(BuildContext context) => SizedBox(
         width: 20,
         height: _valueRow + _plotHeight,
         child: Stack(
@@ -487,7 +489,7 @@ class _TrendChart extends StatelessWidget {
                   // 10px — under `caption2`'s 11 floor, and the axis has to stay
                   // quieter than the values it labels.
                   style: AppType.caption2.r.copyWith(
-                    color: AppColors.labelFootnote,
+                    color: context.c.labelAlternative,
                     fontSize: 10,
                   ),
                 ),
@@ -496,7 +498,7 @@ class _TrendChart extends StatelessWidget {
         ),
       );
 
-  Widget _gridlines() => Positioned.fill(
+  Widget _gridlines(BuildContext context) => Positioned.fill(
         child: Stack(
           children: [
             for (final v in [100, 80, 60])
@@ -507,8 +509,8 @@ class _TrendChart extends StatelessWidget {
                 // All three bind `Line/Neutral` (12%) in the frame — the
                 // baseline is not singled out. This used to draw 100/80 at 6%
                 // under an invented hierarchy.
-                child: const ColoredBox(
-                  color: AppColors.border,
+                child: ColoredBox(
+                  color: context.c.lineNeutral,
                   child: SizedBox(height: 1),
                 ),
               ),
@@ -516,7 +518,7 @@ class _TrendChart extends StatelessWidget {
         ),
       );
 
-  Widget _avgLine(int avg) => Positioned(
+  Widget _avgLine(BuildContext context, int avg) => Positioned(
         top: _valueRow + _y(avg),
         left: 0,
         right: 0,
@@ -531,14 +533,14 @@ class _TrendChart extends StatelessWidget {
                 // 9px — the smallest thing on the screen by design; it labels
                 // the line without competing with the bars.
                 style: AppType.caption2.m
-                    .copyWith(color: AppColors.primary, fontSize: 9),
+                    .copyWith(color: context.c.primaryNormal, fontSize: 9),
               ),
             ),
           ],
         ),
       );
 
-  Widget _bar(SessionPoint p, {required bool isToday}) => Column(
+  Widget _bar(BuildContext context, SessionPoint p, {required bool isToday}) => Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
@@ -552,7 +554,7 @@ class _TrendChart extends StatelessWidget {
                     style: isToday
                         ? AppType.caption2.b.copyWith(color: AppColors.text)
                         : AppType.caption2.m
-                            .copyWith(color: AppColors.textSecondary),
+                            .copyWith(color: context.c.labelNormal),
                   ),
                 ),
                 const SizedBox(height: 2),
@@ -566,7 +568,7 @@ class _TrendChart extends StatelessWidget {
                     height: _plotHeight - _y(p.score),
                     decoration: BoxDecoration(
                       // Today is the point of the chart; the rest are context.
-                      color: isToday ? AppColors.primary : AppColors.primary22,
+                      color: isToday ? context.c.primaryNormal : AppColors.primary22,
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(6),
                         bottom: Radius.circular(2),
@@ -584,11 +586,11 @@ class _TrendChart extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             style: isToday
                 ? AppType.caption2.m.copyWith(
-                    color: AppColors.textSecondary,
+                    color: context.c.labelNormal,
                     fontSize: 10,
                   )
                 : AppType.caption2.r.copyWith(
-                    color: AppColors.labelFootnote,
+                    color: context.c.labelAlternative,
                     fontSize: 10,
                   ),
           ),

@@ -16,7 +16,7 @@ import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -199,7 +199,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     final result = _result;
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -308,7 +308,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       const SizedBox(height: 6), // no s6 token
       Text(
         parts.join(' · '),
-        style: AppType.label2.r.copyWith(color: AppColors.labelMeta),
+        style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
       ),
     ];
   }
@@ -331,7 +331,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           children: [
             CircleAvatar(
               radius: 16,
-              backgroundColor: AppColors.surface2,
+              backgroundColor: context.c.backgroundNormalAlternative,
               backgroundImage: _avatarFor(character.imageUrl),
             ),
             const SizedBox(width: AppSpacing.s12),
@@ -344,7 +344,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                   Text(
                     l10n.characterNoteFooter(character.name),
                     style: AppType.caption2.r
-                        .copyWith(color: AppColors.labelFootnote),
+                        .copyWith(color: context.c.labelAlternative),
                   ),
                 ],
               ),
@@ -406,7 +406,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: child,
@@ -479,7 +479,7 @@ class _EmptyState extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s24),
         child: Text(
           AppLocalizations.of(context).analysisLoadError,
-          style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );
