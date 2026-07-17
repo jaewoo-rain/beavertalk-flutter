@@ -414,7 +414,7 @@ class ButtonDemo extends StatelessWidget {
                   type: BtnType.primaryOutline,
                   size: BtnSize.s48,
                   text: '오른쪽 아이콘',
-                  rightIcon: AppIcons.arrowRight(),
+                  rightIcon: AppIcons.arrowRight(color: context.c.labelStrong),
                   onPressed: () {},
                 ),
                 Button(
@@ -422,7 +422,7 @@ class ButtonDemo extends StatelessWidget {
                   size: BtnSize.s36,
                   text: '양쪽',
                   leftIcon: const Icon(Icons.star),
-                  rightIcon: AppIcons.chevronRight(),
+                  rightIcon: AppIcons.chevronRight(color: context.c.labelStrong),
                   onPressed: () {},
                 ),
               ],

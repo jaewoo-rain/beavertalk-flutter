@@ -213,7 +213,7 @@ class _Sub2Header extends StatelessWidget {
               title,
               textAlign: TextAlign.center,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           SizedBox(

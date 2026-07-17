@@ -378,7 +378,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           const SizedBox(height: AppSpacing.s20),
           Text(
             l10n.analysisLoadError,
-            style: AppType.heading2.sb.copyWith(color: AppColors.text),
+            style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: AppSpacing.s12),

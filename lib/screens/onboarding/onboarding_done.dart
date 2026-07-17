@@ -61,7 +61,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                   Text(
                     l10n.onboardingDoneTitle,
                     textAlign: TextAlign.center,
-                    style: AppType.heading2.sb.copyWith(color: AppColors.text),
+                    style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
                   ),
                   // Figma: heading → sub copy gap = 8px (ds-space-xs).
                   const SizedBox(height: AppSpacing.s8),

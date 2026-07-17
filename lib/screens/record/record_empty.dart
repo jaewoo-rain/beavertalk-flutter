@@ -35,7 +35,7 @@ class RecordEmptyScreen extends StatelessWidget {
                     l10n.noCallRecords,
                     textAlign: TextAlign.center,
                     style:
-                        AppType.headline1.sb.copyWith(color: AppColors.text),
+                        AppType.headline1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(

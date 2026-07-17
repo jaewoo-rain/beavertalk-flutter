@@ -27,7 +27,7 @@ class AlarmEmptyBody extends StatelessWidget {
         Text(
           l10n.noAlarms,
           textAlign: TextAlign.center,
-          style: AppType.headline1.sb.copyWith(color: AppColors.text),
+          style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: AppSpacing.s8),
         Text(

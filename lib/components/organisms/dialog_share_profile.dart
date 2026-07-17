@@ -220,7 +220,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                           widget.title,
                           textAlign: TextAlign.center,
                           style:
-                              AppType.title3.b.copyWith(color: AppColors.text),
+                              AppType.title3.b.copyWith(color: context.c.labelStrong),
                         ),
                       ],
                     ),
@@ -288,7 +288,7 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                     : Text(
                         resolvedShareLabel,
                         textAlign: TextAlign.center,
-                        style: AppType.body1.sb.copyWith(color: AppColors.text),
+                        style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                       ),
               ),
             ),

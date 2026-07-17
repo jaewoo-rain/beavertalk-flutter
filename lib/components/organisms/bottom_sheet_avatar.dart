@@ -239,7 +239,7 @@ class BottomSheetAvatar extends StatelessWidget {
           const SizedBox(height: 10),
           Text(
             description!,
-            style: AppType.label1.m.copyWith(color: AppColors.text),
+            style: AppType.label1.m.copyWith(color: context.c.labelStrong),
           ),
         ],
         const SizedBox(height: 10),
@@ -270,7 +270,7 @@ class BottomSheetAvatar extends StatelessWidget {
             Flexible(
               child: Text(
                 name,
-                style: AppType.body1.m.copyWith(color: AppColors.text),
+                style: AppType.body1.m.copyWith(color: context.c.labelStrong),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -363,7 +363,7 @@ class BottomSheetAvatar extends StatelessWidget {
                   l10n.playSampleVoice,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.label1.m.copyWith(color: AppColors.text),
+                  style: AppType.label1.m.copyWith(color: context.c.labelStrong),
                 ),
               ),
             ],
@@ -401,7 +401,7 @@ class BottomSheetAvatar extends StatelessWidget {
     }
     return Text(
       price ?? '',
-      style: AppType.body1.r.copyWith(color: AppColors.text),
+      style: AppType.body1.r.copyWith(color: context.c.labelStrong),
     );
   }
 

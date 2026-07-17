@@ -479,7 +479,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
             items: _items,
             value: _values[label],
             hintText: '클릭 했을 경우',
-            leftIcon: AppIcons.calendar(),
+            leftIcon: AppIcons.calendar(color: context.c.labelNormal),
             onChanged: (v) => setState(() => _values[label] = v),
           ),
           // Pre-filled (no icon).
@@ -496,7 +496,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
             items: _items,
             value: 'd',
             enabled: false,
-            leftIcon: AppIcons.calendar(),
+            leftIcon: AppIcons.calendar(color: context.c.labelNormal),
             onChanged: (_) {},
           ),
         ]);

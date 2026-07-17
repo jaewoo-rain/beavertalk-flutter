@@ -346,7 +346,7 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeTitle,
           textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: AppColors.text),
+          style: AppType.title2.b.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
@@ -389,7 +389,7 @@ class _PronunciationChallengeScreenState
             children: [
               Text(
                 l10n.challengeRecordToggle,
-                style: AppType.body2.sb.copyWith(color: AppColors.text),
+                style: AppType.body2.sb.copyWith(color: context.c.labelStrong),
               ),
               const SizedBox(height: 2),
               Text(
@@ -416,7 +416,7 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeLoadingTitle,
           textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: AppColors.text),
+          style: AppType.title2.b.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
@@ -522,7 +522,7 @@ class _PronunciationChallengeScreenState
           Text(
             engine.resultTitle,
             textAlign: TextAlign.center,
-            style: AppType.title2.b.copyWith(color: AppColors.text),
+            style: AppType.title2.b.copyWith(color: context.c.labelStrong),
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(

@@ -143,7 +143,7 @@ class CardBox extends StatelessWidget {
                 title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppType.label1.sb.copyWith(color: AppColors.text),
+                style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
@@ -154,14 +154,14 @@ class CardBox extends StatelessWidget {
                   subtitle!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.label1.r.copyWith(color: AppColors.text),
+                  style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                 ),
               ],
               if (meta != null && meta!.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 _DottedRow(
                   segments: meta!,
-                  style: AppType.label1.r.copyWith(color: AppColors.text),
+                  style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   dotSize: 4,
                   dotColor: AppColors.text,
                   gap: 4,
@@ -208,7 +208,7 @@ class CardBox extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style:
-                          AppType.label1.sb.copyWith(color: AppColors.text),
+                          AppType.label1.sb.copyWith(color: context.c.labelStrong),
                     ),
                   ),
                 ],
@@ -218,7 +218,7 @@ class CardBox extends StatelessWidget {
                 _DottedRow(
                   segments: traits,
                   style:
-                      AppType.caption1.r.copyWith(color: AppColors.text),
+                      AppType.caption1.r.copyWith(color: context.c.labelStrong),
                   dotSize: 2,
                   dotColor: AppColors.text,
                   gap: 3,
@@ -272,7 +272,7 @@ class CardBox extends StatelessWidget {
     }
     return Text(
       price ?? '',
-      style: AppType.label1.r.copyWith(color: AppColors.text),
+      style: AppType.label1.r.copyWith(color: context.c.labelStrong),
     );
   }
 }
@@ -340,7 +340,7 @@ class CardBoxDemo extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           child: Text(
             '구매',
-            style: AppType.label2.sb.copyWith(color: AppColors.text),
+            style: AppType.label2.sb.copyWith(color: context.c.labelStrong),
           ),
         ),
       );

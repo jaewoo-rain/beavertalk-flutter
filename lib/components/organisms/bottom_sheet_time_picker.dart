@@ -86,7 +86,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
               Text(
                 widget.title ?? l10n.selectTime,
                 textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(color: AppColors.text),
+                style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
               ),
               const SizedBox(height: 16),
               SizedBox(
@@ -102,7 +102,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
                     ),
                     Text(':',
                         style: AppType.heading2.sb
-                            .copyWith(color: AppColors.text)),
+                            .copyWith(color: context.c.labelStrong)),
                     _wheel(
                       controller: _minuteCtrl,
                       count: 60,
@@ -163,7 +163,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
           builder: (context, i) => Center(
             child: Text(
               label(i),
-              style: AppType.heading2.sb.copyWith(color: AppColors.text),
+              style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
         ),

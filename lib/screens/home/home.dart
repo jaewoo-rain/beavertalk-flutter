@@ -156,7 +156,7 @@ class HomeScreen extends ConsumerWidget {
                             selected?.name ?? characterName(characterId),
                             // Figma `2296:26390` — Title 3 / Bold (24px).
                             style:
-                                AppType.title3.b.copyWith(color: AppColors.text),
+                                AppType.title3.b.copyWith(color: context.c.labelStrong),
                           ),
                         ),
                 ),

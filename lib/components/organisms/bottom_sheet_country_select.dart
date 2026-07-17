@@ -140,7 +140,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(effectiveTitle),
+            _header(context, effectiveTitle),
             // Body — country list. Flexible + scroll so a list taller than the
             // capped sheet scrolls instead of overflowing; the header above and
             // footer below stay pinned.
@@ -171,7 +171,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
                 ),
               ),
             ),
-            _footer(effectiveConfirm),
+            _footer(context, effectiveConfirm),
           ],
         ),
       ),
@@ -179,7 +179,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
-  Widget _header(String title) {
+  Widget _header(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -192,7 +192,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           SizedBox(
@@ -212,7 +212,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   }
 
   /// Footer: primary confirm button (335 wide) + home indicator.
-  Widget _footer(String confirmText) {
+  Widget _footer(BuildContext context, String confirmText) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,

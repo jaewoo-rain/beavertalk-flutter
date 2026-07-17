@@ -34,14 +34,14 @@ class LegalBody extends StatelessWidget {
     const bodyHeight = 1.38;
     final sheet = MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
       // Page title (`#`) — biggest.
-      h1: AppType.title2.b.copyWith(color: AppColors.text),
+      h1: AppType.title2.b.copyWith(color: context.c.labelStrong),
       h1Padding: const EdgeInsets.only(bottom: AppSpacing.s8),
       // Section heading (`##`) — white; source uppercase reads as emphasis.
-      h2: AppType.headline1.sb.copyWith(color: AppColors.text),
+      h2: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
       h2Padding:
           const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s4),
       // Sub-section heading (`###`) — smaller.
-      h3: AppType.body1.sb.copyWith(color: AppColors.text),
+      h3: AppType.body1.sb.copyWith(color: context.c.labelStrong),
       h3Padding: const EdgeInsets.only(top: AppSpacing.s12),
       // Body — readable secondary grey.
       p: AppType.body2.r

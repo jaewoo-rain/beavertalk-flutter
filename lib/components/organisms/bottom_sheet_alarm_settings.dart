@@ -234,7 +234,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           SizedBox(
@@ -261,7 +261,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       children: [
         Text(
           l10n.quickStart,
-          style: AppType.label1.r.copyWith(color: AppColors.text),
+          style: AppType.label1.r.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: AppSpacing.s8),
         IntrinsicHeight(
@@ -440,7 +440,7 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       children: [
         Text(
           l10n.callPartner,
-          style: AppType.label1.r.copyWith(color: AppColors.text),
+          style: AppType.label1.r.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: 6),
         SingleChildScrollView(

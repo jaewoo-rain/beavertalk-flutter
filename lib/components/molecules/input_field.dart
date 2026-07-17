@@ -360,12 +360,12 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
             size: size,
             controller: _ctrl('$label-default'),
             hintText: '디폴트',
-            leftIcon: AppIcons.search(),
+            leftIcon: AppIcons.search(color: context.c.labelNormal),
           ),
           InputField(
             size: size,
             controller: _ctrl('$label-filled', '입력 완료 했을 경우'),
-            leftIcon: AppIcons.search(),
+            leftIcon: AppIcons.search(color: context.c.labelNormal),
           ),
           InputField(
             size: size,
@@ -376,7 +376,7 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
             size: size,
             enabled: false,
             controller: _ctrl('$label-disabled', '비활성화 처리 상태'),
-            leftIcon: AppIcons.search(),
+            leftIcon: AppIcons.search(color: context.c.labelNormal),
           ),
         ]);
 

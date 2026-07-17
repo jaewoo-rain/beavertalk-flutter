@@ -96,7 +96,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                     controller: _email,
                     hintText: l10n.emailAddressHint,
                     keyboardType: TextInputType.emailAddress,
-                    leftIcon: AppIcons.mail(),
+                    leftIcon: AppIcons.mail(color: context.c.labelStrong),
                     onSubmitted: (_) => _send(),
                   ),
                   if (_error != null) ...[

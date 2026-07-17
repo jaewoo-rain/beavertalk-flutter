@@ -76,7 +76,7 @@ class _OnboardingLanguageScreenState
               children: [
                 Text(
                   l10n.onboardingLanguageTitle,
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s20),
                 // Content data (language names) is kept as-is, not localized.

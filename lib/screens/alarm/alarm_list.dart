@@ -119,7 +119,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                       style: AppType.headline1.sb
-                          .copyWith(color: AppColors.text)),
+                          .copyWith(color: context.c.labelStrong)),
                 ),
                 IconButton(
                   onPressed: _add,

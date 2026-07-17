@@ -237,7 +237,7 @@ class _RecordsEmpty extends StatelessWidget {
                   Text(
                     l10n.noCallRecords,
                     textAlign: TextAlign.center,
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
+                    style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
@@ -287,7 +287,7 @@ class _RecordsError extends StatelessWidget {
                   Text(
                     l10n.recordsLoadError,
                     textAlign: TextAlign.center,
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
+                    style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(

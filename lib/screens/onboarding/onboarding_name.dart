@@ -65,7 +65,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
                 children: [
                   Text(
                     l10n.onboardingNameTitle,
-                    style: AppType.title3.b.copyWith(color: AppColors.text),
+                    style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
@@ -76,7 +76,7 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
                   const SizedBox(height: AppSpacing.s24),
                   Text(
                     l10n.nameLabel,
-                    style: AppType.body1.r.copyWith(color: AppColors.text),
+                    style: AppType.body1.r.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s12),
                   InputField(

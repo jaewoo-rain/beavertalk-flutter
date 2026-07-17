@@ -192,7 +192,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   const SizedBox(height: AppSpacing.s4),
                   Text(
                     selectedChar?.name ?? characterName(characterId),
-                    style: AppType.body1.sb.copyWith(color: AppColors.text),
+                    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
@@ -241,7 +241,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   ? Text(
                       beaverSubtitle,
                       textAlign: TextAlign.center,
-                      style: AppType.body1.sb.copyWith(color: AppColors.text),
+                      style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                     )
                   : const Center(child: SpeakingEqualizer()),
             ),

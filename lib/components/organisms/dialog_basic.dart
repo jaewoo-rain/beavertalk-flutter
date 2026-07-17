@@ -196,7 +196,7 @@ class DialogBasic extends StatelessWidget {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: AppType.body1.sb.copyWith(color: AppColors.text),
+                    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   if (description != null && description!.isNotEmpty) ...[
                     const SizedBox(height: 8),

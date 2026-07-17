@@ -116,7 +116,7 @@ class AppCheckbox extends StatelessWidget {
     final TextStyle labelStyle =
         (size == AppCheckboxSize.size22 ? AppType.body2 : AppType.label1)
             .r
-            .copyWith(color: AppColors.text);
+            .copyWith(color: context.c.labelStrong);
 
     Widget content = box;
     if (label != null) {

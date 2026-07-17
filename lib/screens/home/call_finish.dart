@@ -237,7 +237,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 const SizedBox(height: AppSpacing.s16),
                 Text(
                   selectedChar?.name ?? characterName(characterId),
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
@@ -253,7 +253,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               children: [
                 Text(
                   l10n.callRatingPrompt,
-                  style: AppType.headline1.r.copyWith(color: AppColors.text),
+                  style: AppType.headline1.r.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s32),
                 Row(

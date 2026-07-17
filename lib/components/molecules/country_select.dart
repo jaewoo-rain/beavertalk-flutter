@@ -70,7 +70,7 @@ class CountrySelect extends StatelessWidget {
                   child: Text(
                     name,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.m.copyWith(color: AppColors.text),
+                    style: AppType.label1.m.copyWith(color: context.c.labelStrong),
                   ),
                 ),
               ],

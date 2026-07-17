@@ -552,7 +552,7 @@ class _TrendChart extends StatelessWidget {
                   child: Text(
                     '${p.score}',
                     style: isToday
-                        ? AppType.caption2.b.copyWith(color: AppColors.text)
+                        ? AppType.caption2.b.copyWith(color: context.c.labelStrong)
                         : AppType.caption2.m
                             .copyWith(color: context.c.labelNormal),
                   ),

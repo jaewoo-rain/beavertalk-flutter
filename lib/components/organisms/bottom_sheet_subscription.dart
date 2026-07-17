@@ -227,7 +227,7 @@ class BottomSheetSubscription extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           Semantics(
@@ -296,7 +296,7 @@ class BottomSheetSubscription extends StatelessWidget {
         children: [
           Text(
             plan.name,
-            style: AppType.heading2.sb.copyWith(color: AppColors.text),
+            style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
           ),
           const SizedBox(height: 4),
           Text(
@@ -343,7 +343,7 @@ class BottomSheetSubscription extends StatelessWidget {
         if (note != null)
           Text(
             note!,
-            style: AppType.label1.r.copyWith(color: AppColors.text),
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         const SizedBox(height: 8),
         for (var i = 0; i < planOptions.length; i++) ...[
@@ -380,7 +380,7 @@ class BottomSheetSubscription extends StatelessWidget {
                   children: [
                     Text(
                       option.name,
-                      style: AppType.body1.sb.copyWith(color: AppColors.text),
+                      style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                     ),
                     if (option.priceLine != null) ...[
                       const SizedBox(height: 4),
@@ -434,7 +434,7 @@ class BottomSheetSubscription extends StatelessWidget {
         if (note != null)
           Text(
             note!,
-            style: AppType.label1.r.copyWith(color: AppColors.text),
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         const SizedBox(height: 8),
         Container(
@@ -522,7 +522,7 @@ class BottomSheetSubscription extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.label1.r.copyWith(color: AppColors.text),
+              style: AppType.label1.r.copyWith(color: context.c.labelStrong),
             ),
           ),
           const SizedBox(width: AppSpacing.s8),
@@ -530,7 +530,7 @@ class BottomSheetSubscription extends StatelessWidget {
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppType.label1.r.copyWith(color: AppColors.text),
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         ],
       ),

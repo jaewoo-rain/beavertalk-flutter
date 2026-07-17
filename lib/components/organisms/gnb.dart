@@ -284,7 +284,7 @@ class Gnb extends StatelessWidget {
               child: Text(
                 label,
                 textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(color: AppColors.text),
+                style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
               ),
             ),
         ],
@@ -328,7 +328,7 @@ class Gnb extends StatelessWidget {
         Text(
           title ?? '',
           textAlign: TextAlign.center,
-          style: AppType.body1.sb.copyWith(color: AppColors.text),
+          style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
         ),
         if (caption != null) ...[
           const SizedBox(height: 4),
@@ -378,7 +378,7 @@ class _CenteredTitle extends StatelessWidget {
       textAlign: TextAlign.center,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: AppType.body1.sb.copyWith(color: AppColors.text),
+      style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
     );
   }
 }

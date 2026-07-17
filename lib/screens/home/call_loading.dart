@@ -115,7 +115,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                         const SizedBox(height: AppSpacing.s12),
                         Text(
                           l10n.connecting,
-                          style: AppType.body1.r.copyWith(color: AppColors.text),
+                          style: AppType.body1.r.copyWith(color: context.c.labelStrong),
                         ),
                       ],
                     ),

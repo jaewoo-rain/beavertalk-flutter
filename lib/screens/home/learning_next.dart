@@ -281,7 +281,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                           type: BtnType.secondaryWhite,
                           size: BtnSize.s44,
                           text: l10n.nativeLabel,
-                          leftIcon: AppIcons.volume(size: 20),
+                          leftIcon: AppIcons.volume(size: 20, color: context.c.labelStrong),
                           onPressed: () => _playNative(sentence.id),
                         ),
                       ),
@@ -291,7 +291,7 @@ class _LearningNextScreenState extends ConsumerState<LearningNextScreen> {
                           type: BtnType.secondaryWhite,
                           size: BtnSize.s44,
                           text: l10n.meLabel,
-                          leftIcon: AppIcons.volume(size: 20),
+                          leftIcon: AppIcons.volume(size: 20, color: context.c.labelStrong),
                           onPressed: () => _playMe(args),
                         ),
                       ),
@@ -373,7 +373,7 @@ class _ScoredSentence extends StatelessWidget {
       return Text(
         fallbackText,
         textAlign: TextAlign.center,
-        style: base.copyWith(color: AppColors.text),
+        style: base.copyWith(color: context.c.labelStrong),
       );
     }
     return RichText(

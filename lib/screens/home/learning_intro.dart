@@ -296,7 +296,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                 sentence.korean,
                                 textAlign: TextAlign.center,
                                 style: AppType.heading2.sb
-                                    .copyWith(color: AppColors.text),
+                                    .copyWith(color: context.c.labelStrong),
                               ),
                               const SizedBox(height: AppSpacing.s8),
                               Text(
@@ -364,7 +364,7 @@ class _SubmittingOverlay extends StatelessWidget {
             const SizedBox(height: AppSpacing.s16),
             Text(
               l10n.scoringPronunciation,
-              style: AppType.body1.r.copyWith(color: AppColors.text),
+              style: AppType.body1.r.copyWith(color: context.c.labelStrong),
             ),
           ],
         ),

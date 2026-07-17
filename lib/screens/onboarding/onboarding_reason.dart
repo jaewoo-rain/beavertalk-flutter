@@ -93,7 +93,7 @@ class _OnboardingReasonScreenState
               children: [
                 Text(
                   l10n.onboardingReasonTitle,
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(

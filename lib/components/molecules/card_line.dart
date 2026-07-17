@@ -130,7 +130,7 @@ class CardLine extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.r.copyWith(color: AppColors.text),
+                    style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   ),
                   if (meta != null) ...[
                     const SizedBox(height: 7),
@@ -150,7 +150,7 @@ class CardLine extends StatelessWidget {
                     value!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.sb.copyWith(color: AppColors.text),
+                    style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
                   ),
                 if (status != null) ...[
                   const SizedBox(height: 7),
@@ -192,7 +192,7 @@ class CardLine extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style:
-                            AppType.body1.r.copyWith(color: AppColors.text),
+                            AppType.body1.r.copyWith(color: context.c.labelStrong),
                       ),
                     ),
                     if (value != null) ...[
@@ -204,7 +204,7 @@ class CardLine extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.end,
                           style:
-                              AppType.body1.r.copyWith(color: AppColors.text),
+                              AppType.body1.r.copyWith(color: context.c.labelStrong),
                         ),
                       ),
                     ],
@@ -238,7 +238,7 @@ class CardLine extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.body1.r.copyWith(color: AppColors.text),
+                  style: AppType.body1.r.copyWith(color: context.c.labelStrong),
                 ),
               ),
               const SizedBox(width: 10),

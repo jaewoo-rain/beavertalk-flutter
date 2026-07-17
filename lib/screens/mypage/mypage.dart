@@ -477,7 +477,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           Text(
             'American',
             textAlign: TextAlign.center,
-            style: AppType.title3.b.copyWith(color: AppColors.text),
+            style: AppType.title3.b.copyWith(color: context.c.labelStrong),
           ),
           const SizedBox(height: AppSpacing.s16),
           const ProgressBar(label: 'American', value: 87),
@@ -493,7 +493,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   /// Section header (Body 1 SemiBold, white).
   Widget _section(String title) => Text(
         title,
-        style: AppType.body1.sb.copyWith(color: AppColors.text),
+        style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
       );
 
   /// Wraps a section's rows in an elevated grouping card.

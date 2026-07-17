@@ -89,7 +89,7 @@ class HintCard extends StatelessWidget {
               examples.first.korean,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           if (onSpeak != null) ...[
@@ -161,7 +161,7 @@ class HintCard extends StatelessWidget {
                   children: [
                     Text(ex.korean,
                         style: AppType.body1.sb
-                            .copyWith(color: AppColors.text)),
+                            .copyWith(color: context.c.labelStrong)),
                     if (ex.roman != null && ex.roman!.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.s2),
                       Text(ex.roman!,
