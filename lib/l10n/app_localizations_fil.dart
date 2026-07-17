@@ -384,6 +384,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get scoringPronunciation => 'Sino-score ang iyong bigkas…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Walang recording na ipe-play.';
 
   @override

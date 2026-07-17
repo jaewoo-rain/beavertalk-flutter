@@ -386,6 +386,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get scoringPronunciation => 'Deine Aussprache wird bewertet…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Keine Aufnahme zum Abspielen vorhanden.';
 
   @override

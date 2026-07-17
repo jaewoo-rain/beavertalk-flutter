@@ -378,6 +378,9 @@ class AppLocalizationsKy extends AppLocalizations {
   String get scoringPronunciation => 'Айтылышыңыз бааланууда…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Ойнотуу үчүн жазуу жок.';
 
   @override

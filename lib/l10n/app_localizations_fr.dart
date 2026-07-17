@@ -385,6 +385,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get scoringPronunciation => 'Évaluation de votre prononciation…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Aucun enregistrement à lire.';
 
   @override

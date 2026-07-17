@@ -376,6 +376,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get scoringPronunciation => 'กำลังให้คะแนนการออกเสียงของคุณ…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'ไม่มีเสียงบันทึกให้เล่น';
 
   @override

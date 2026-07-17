@@ -379,6 +379,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get scoringPronunciation => 'Оцениваем ваше произношение…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Нет записи для воспроизведения.';
 
   @override

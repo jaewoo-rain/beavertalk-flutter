@@ -382,6 +382,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get scoringPronunciation => 'Talaffuzingiz baholanmoqda…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Ijro etish uchun yozuv yoʻq.';
 
   @override

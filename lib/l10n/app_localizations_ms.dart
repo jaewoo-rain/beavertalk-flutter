@@ -382,6 +382,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get scoringPronunciation => 'Menilai sebutan anda…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Tiada rakaman untuk dimainkan.';
 
   @override

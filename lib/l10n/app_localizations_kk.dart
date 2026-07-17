@@ -376,6 +376,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get scoringPronunciation => 'Айтылымыңыз бағалануда…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Ойнатуға жазба жоқ.';
 
   @override

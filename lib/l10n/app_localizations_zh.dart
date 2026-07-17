@@ -369,6 +369,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scoringPronunciation => '正在为你的发音评分…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => '没有可播放的录音。';
 
   @override

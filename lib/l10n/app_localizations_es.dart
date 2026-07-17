@@ -383,6 +383,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get scoringPronunciation => 'Calificando tu pronunciación…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'No hay grabación para reproducir.';
 
   @override

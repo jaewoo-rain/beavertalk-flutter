@@ -382,6 +382,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get scoringPronunciation => 'သင့်အသံထွက်ကို အမှတ်ပေးနေသည်…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'ဖွင့်ရန် အသံဖမ်းချက် မရှိပါ။';
 
   @override

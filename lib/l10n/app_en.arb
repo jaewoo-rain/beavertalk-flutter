@@ -206,6 +206,10 @@
   "saveSentence": "Save sentence",
   "unsaveSentence": "Remove saved sentence",
   "scoringPronunciation": "Scoring your pronunciation…",
+  "analyzingByWord": "Checking your pronunciation word by word",
+  "@analyzingByWord": {
+    "description": "Caption under the scan cursor while a recording is scored (proto/2_scan_start AnalyzingCaption 3627:9708)."
+  },
   "noRecordingToPlay": "No recording to play.",
   "myRecordingPlayError": "Couldn't play your recording.",
   "next": "Next",

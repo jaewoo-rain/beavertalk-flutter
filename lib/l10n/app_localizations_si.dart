@@ -380,6 +380,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get scoringPronunciation => 'ඔබේ උච්චාරණයට ලකුණු දෙමින්…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'වාදනය කිරීමට පටිගත කිරීමක් නැත.';
 
   @override

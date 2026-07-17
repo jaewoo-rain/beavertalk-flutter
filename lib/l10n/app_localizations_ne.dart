@@ -376,6 +376,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get scoringPronunciation => 'तपाईंको उच्चारण स्कोर गर्दैछ…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'बजाउनको लागि कुनै रेकर्डिङ छैन।';
 
   @override

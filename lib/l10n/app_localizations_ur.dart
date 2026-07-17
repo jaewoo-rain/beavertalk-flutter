@@ -380,6 +380,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get scoringPronunciation => 'آپ کے تلفظ کا اسکور لگایا جا رہا ہے…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'چلانے کے لیے کوئی ریکارڈنگ نہیں ہے۔';
 
   @override

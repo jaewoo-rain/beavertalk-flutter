@@ -385,6 +385,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get scoringPronunciation => 'A kiejtésed értékelése…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Nincs lejátszható felvétel.';
 
   @override

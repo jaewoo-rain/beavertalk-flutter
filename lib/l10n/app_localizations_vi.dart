@@ -380,6 +380,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get scoringPronunciation => 'Đang chấm điểm phát âm của bạn…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Không có bản ghi âm để phát.';
 
   @override

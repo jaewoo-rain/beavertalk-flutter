@@ -381,6 +381,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get scoringPronunciation => 'আপনার উচ্চারণ স্কোর করা হচ্ছে…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'চালানোর জন্য কোনো রেকর্ডিং নেই।';
 
   @override

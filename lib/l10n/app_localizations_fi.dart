@@ -382,6 +382,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get scoringPronunciation => 'Arvioidaan ääntämistäsi…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'Ei toistettavaa tallennetta.';
 
   @override

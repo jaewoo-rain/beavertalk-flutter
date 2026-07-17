@@ -379,6 +379,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get scoringPronunciation => 'កំពុងគិតពិន្ទុការបញ្ចេញសំឡេងរបស់អ្នក…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
   String get noRecordingToPlay => 'មិនមានការថតដើម្បីចាក់ទេ។';
 
   @override

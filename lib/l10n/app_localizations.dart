@@ -838,6 +838,12 @@ abstract class AppLocalizations {
   /// **'Scoring your pronunciation…'**
   String get scoringPronunciation;
 
+  /// Caption under the scan cursor while a recording is scored (proto/2_scan_start AnalyzingCaption 3627:9708).
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your pronunciation word by word'**
+  String get analyzingByWord;
+
   /// No description provided for @noRecordingToPlay.
   ///
   /// In en, this message translates to:

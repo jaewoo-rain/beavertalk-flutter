@@ -3,7 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/mic_analysis.dart';
 import '../../components/atoms/mic_button.dart';
+import '../../components/atoms/scan_cursor.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
@@ -197,6 +199,16 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         Routes.learningNext,
         arguments: args.withFeedback(feedback, wav),
       );
+    } on NetworkFailure {
+      // Split out because the copy asserts a cause. `proto/E_failed` says
+      // "연결이 끊겼어요", which is only true when the request never reached the
+      // server — `dio_error_mapper` already classifies exactly that case
+      // (connectionError + the three timeouts) as [NetworkFailure]. Everything
+      // below is a *scoring* failure and must not borrow that wording.
+      //
+      // Uses the l10n string rather than `e.message`: [AppException]'s defaults
+      // are hardcoded Korean, and this screen renders in 30 locales.
+      _snack(l10n.connectionFailedTitle);
     } on AppException catch (e) {
       _snack(e.message);
     } catch (_) {
@@ -283,28 +295,46 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         ],
                       ),
                     ),
-                    // Sentence (KO + EN) — centred in the flexible middle.
+                    // Sentence (KO + EN) — centred in the flexible middle. While
+                    // scoring, `Scan/Cursor` sweeps across it (`3627:9694`);
+                    // the cursor sits *over* the text, so it shares this box
+                    // rather than pushing anything.
                     Expanded(
                       child: Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: AppSpacing.s20),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
+                          child: Stack(
+                            alignment: Alignment.center,
                             children: [
-                              Text(
-                                sentence.korean,
-                                textAlign: TextAlign.center,
-                                style: AppType.heading2.sb
-                                    .copyWith(color: context.c.labelStrong),
+                              Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    sentence.korean,
+                                    textAlign: TextAlign.center,
+                                    style: AppType.heading2.sb
+                                        .copyWith(color: context.c.labelStrong),
+                                  ),
+                                  const SizedBox(height: AppSpacing.s8),
+                                  Text(
+                                    sentence.native,
+                                    textAlign: TextAlign.center,
+                                    style: AppType.body1.sb
+                                        .copyWith(color: context.c.labelNormal),
+                                  ),
+                                ],
                               ),
-                              const SizedBox(height: AppSpacing.s8),
-                              Text(
-                                sentence.native,
-                                textAlign: TextAlign.center,
-                                style: AppType.body1.sb
-                                    .copyWith(color: context.c.labelNormal),
-                              ),
+                              // 84 over the frame's 60-high sentence block —
+                              // the bar overhangs the text top and bottom.
+                              // Left unpositioned so the Stack centres it and
+                              // hands it loose constraints: `Positioned.fill`
+                              // would force it to the full height and eat the
+                              // 84.
+                              if (_submitting)
+                                const IgnorePointer(
+                                  child: ScanCursor(height: 84),
+                                ),
                             ],
                           ),
                         ),
@@ -316,18 +346,40 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                     // web/desktop — so the mic never hugs / gets cut at the frame
                     // edge (QA: "마이크 짤림") and sits at the same inset as other
                     // screens.
+                    // `AnalyzingCaption` (`3627:9708`) — sits between the
+                    // sentence and the mic anchor, so it only exists while
+                    // scoring. Reserving its 20 when idle would push the mic
+                    // off the frame's 558.
+                    if (_submitting) ...[
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: AppSpacing.s20),
+                        child: Text(
+                          l10n.analyzingByWord,
+                          textAlign: TextAlign.center,
+                          style: AppType.label1.m
+                              .copyWith(color: context.c.labelNormal),
+                        ),
+                      ),
+                      const SizedBox(height: AppSpacing.s16),
+                    ],
                     BottomCtaBar(
                       child: Center(
-                        child: StreamBuilder<double>(
-                          stream: _recorder.amplitude,
-                          builder: (context, snap) => MicButton(
-                            recording: _recording,
-                            // Drive the reactive pulse from the live mic level
-                            // while recording; static otherwise.
-                            level: _recording ? snap.data : null,
-                            onTap: () => _onMicTap(args),
-                          ),
-                        ),
+                        // Same 96 anchor either way — `Mic/Spinner` replaces the
+                        // mic in place, which is why scoring no longer dims the
+                        // screen behind an overlay.
+                        child: _submitting
+                            ? const MicAnalysis()
+                            : StreamBuilder<double>(
+                                stream: _recorder.amplitude,
+                                builder: (context, snap) => MicButton(
+                                  recording: _recording,
+                                  // Drive the reactive pulse from the live mic
+                                  // level while recording; static otherwise.
+                                  level: _recording ? snap.data : null,
+                                  onTap: () => _onMicTap(args),
+                                ),
+                              ),
                       ),
                     ),
                   ],
@@ -335,40 +387,14 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
               ),
             ],
           ),
-          // Upload/scoring overlay.
-          if (_submitting)
-            const _SubmittingOverlay(),
         ],
       ),
     );
   }
 }
 
-/// Dimmed full-screen overlay with a spinner shown while the recording is
-/// uploaded and scored.
-class _SubmittingOverlay extends StatelessWidget {
-  const _SubmittingOverlay();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Positioned.fill(
-      child: ColoredBox(
-        color: context.c.materialDim,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(
-              valueColor: AlwaysStoppedAnimation<Color>(context.c.primaryNormal),
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            Text(
-              l10n.scoringPronunciation,
-              style: AppType.body1.r.copyWith(color: context.c.labelStrong),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+// The dimmed `_SubmittingOverlay` (a centred CircularProgressIndicator over
+// `l10n.scoringPronunciation`) used to live here. `proto/2_scan_start` replaces
+// it: scoring is now a state of this screen — the mic anchor becomes
+// [MicAnalysis], [ScanCursor] sweeps the sentence and the caption sits between
+// them — so nothing dims and the sentence stays readable throughout.
