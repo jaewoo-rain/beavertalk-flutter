@@ -73,5 +73,9 @@ void main() {
     final skeleton = await heightOf(tester, const CardAlarmLoading());
 
     expect(skeleton, real);
+    // The measured value from `Card-Alarm`'s variants (`state=active`
+    // 3793:31193): 20+28+12+34+12+27+20. Pinned so a restyle of either card
+    // has to come here and say so.
+    expect(real, 153);
   });
 }

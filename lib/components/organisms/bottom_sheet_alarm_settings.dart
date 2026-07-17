@@ -3,12 +3,12 @@ import 'package:intl/intl.dart' as intl;
 
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
+import '../atoms/day_chip.dart';
 import '../atoms/dim.dart';
 import '../molecules/avatar_card.dart';
 
@@ -375,9 +375,9 @@ class BottomSheetAlarmSettings extends StatelessWidget {
     return Row(
       children: [
         for (int i = 0; i < 7; i++) ...[
-          if (i > 0) const SizedBox(width: 5), // no s5 token
+          if (i > 0) const SizedBox(width: kDayChipGap),
           Expanded(
-            child: _DayChip(
+            child: DayChip(
               label: i < labels.length ? labels[i] : '',
               selected: _visualToDataIndex[i] < days.length &&
                   days[_visualToDataIndex[i]],
@@ -675,48 +675,6 @@ class _MeridiemSegment extends StatelessWidget {
           ),
         ),
       );
-}
-
-/// One day chip inside the 시간과 요일 card (`3665:12397`) — 34 tall, the label
-/// centred. Selected fills primary with a dark label; unselected is a
-/// `surface2` box with a muted one.
-class _DayChip extends StatelessWidget {
-  const _DayChip({required this.label, required this.selected, this.onTap});
-
-  final String label;
-  final bool selected;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final chip = Container(
-      height: 34,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        // Same pairing as the segment: primaryStrong on, `surface` off.
-        color: selected ? context.c.primaryStrong : context.c.backgroundNormalNormal,
-        borderRadius: BorderRadius.circular(AppRadius.xs),
-      ),
-      child: Text(
-        label,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: AppType.caption1.r.copyWith(
-          color: selected ? context.c.primaryOnPrimary : context.c.labelNormal,
-        ),
-      ),
-    );
-    if (onTap == null) return chip;
-    return Semantics(
-      button: true,
-      selected: selected,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: chip,
-      ),
-    );
-  }
 }
 
 /// Gallery demo: [BottomSheetAlarmSettings] over a [Dim], bottom-aligned.
