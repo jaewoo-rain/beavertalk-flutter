@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -15,7 +15,7 @@ import '../../theme/app_typography.dart';
 ///   (`.sb`), `regular` is `.r`.
 /// - Both states share bg `Background/Normal/Alternative` (surface2, #252932);
 ///   selection is conveyed by the **text color only** (Figma alarm weekday chip):
-///   `selected` → text [AppColors.primary], `unselected` → [AppColors.textSecondary].
+///   `selected` → text [context.c.primaryNormal], `unselected` → [context.c.labelNormal].
 ///
 /// Controlled atom: pass [selected] and handle [onChanged]; [disabled] dims it.
 class SelectBox extends StatelessWidget {
@@ -53,9 +53,9 @@ class SelectBox extends StatelessWidget {
   Widget build(BuildContext context) {
     // Figma weekday chip: both states use surface2 (#252932); selection shows
     // via text color only (unselected surfaceElevated was a shade too dark).
-    const Color bg = AppColors.surface2;
+    final Color bg = context.c.backgroundNormalAlternative;
     final Color fg =
-        selected ? AppColors.primary : AppColors.textSecondary;
+        selected ? context.c.primaryNormal : context.c.labelNormal;
     final TextStyle base = bold ? AppType.body1.sb : AppType.body1.r;
 
     final Widget chip = Container(
@@ -120,8 +120,8 @@ class _SelectBoxDemoState extends State<SelectBoxDemo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Interactive (tap to toggle)',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('Interactive (tap to toggle)',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -141,8 +141,8 @@ class _SelectBoxDemoState extends State<SelectBoxDemo> {
             ],
           ),
           const SizedBox(height: 24),
-          const Text('selected × regular/bold',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('selected × regular/bold',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -153,8 +153,8 @@ class _SelectBoxDemoState extends State<SelectBoxDemo> {
             ],
           ),
           const SizedBox(height: 16),
-          const Text('unselected × regular/bold',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('unselected × regular/bold',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Row(
             mainAxisSize: MainAxisSize.min,

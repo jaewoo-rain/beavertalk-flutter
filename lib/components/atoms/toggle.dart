@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
+// accentLime 만 raw: Accent/Foreground/Lime 이 로컬(#58CF04)과 라이브러리(#429E00)로
+// 갈려 있고 이 토글이 무는 건 라이브러리 쪽이다. 디자인 확정 전까지 토큰화 보류.
 import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
@@ -64,18 +67,18 @@ class AppToggle extends StatelessWidget {
     final Color trackColor;
     final Color thumbColor;
     if (disabled) {
-      trackColor = AppColors.textTertiary;
-      thumbColor = AppColors.textSecondary;
+      trackColor = context.c.fillDisabled;
+      thumbColor = context.c.labelNormal;
     } else if (value) {
       trackColor = AppColors.accentLime;
-      thumbColor = AppColors.text;
+      thumbColor = context.c.staticWhite;
     } else {
       // Figma `175:11391` (style=a, state=default): the off track is
       // Background/Normal/Normal (#181A20), not `surface2`. The old #252932 was
       // a drift, and it happened to be the exact fill of MyPage's settings card
       // (`mypage.dart` `_group`), so a switched-off toggle vanished into it.
-      trackColor = AppColors.surface;
-      thumbColor = AppColors.text;
+      trackColor = context.c.backgroundNormalNormal;
+      thumbColor = context.c.staticWhite;
     }
 
     final Widget track = SizedBox(
@@ -118,7 +121,7 @@ class AppToggle extends StatelessWidget {
           Flexible(
             child: Text(
               label!,
-              style: AppType.label1.r.copyWith(color: AppColors.text),
+              style: AppType.label1.r.copyWith(color: context.c.labelStrong),
             ),
           ),
         ],
@@ -157,7 +160,7 @@ class _ToggleDemoState extends State<ToggleDemo> {
     Widget row(String title, List<Widget> children) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+            Text(title, style: AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             Wrap(spacing: 24, runSpacing: 16, children: children),
             const SizedBox(height: 24),
@@ -165,7 +168,7 @@ class _ToggleDemoState extends State<ToggleDemo> {
         );
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

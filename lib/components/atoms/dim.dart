@@ -2,13 +2,13 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_motion.dart';
 
 /// Dim — Figma `01_Atoms / Dim` (`176:26363`).
 ///
 /// A full-screen scrim used behind modals, sheets and dialogs.
-/// - Fill: black @ 50% → [AppColors.scrim].
+/// - Fill: black @ 50% → [context.c.materialDim].
 /// - Backdrop: `blur(4)` ([ui.ImageFilter.blur]).
 ///
 /// Intended to be laid over a [Stack] via [Positioned.fill]; [build] already
@@ -83,8 +83,8 @@ class _DimState extends State<Dim> with SingleTickerProviderStateMixin {
                   sigmaY: _blurSigma * v,
                 ),
                 child: ColoredBox(
-                  color: AppColors.scrim.withValues(
-                    alpha: AppColors.scrim.a * v,
+                  color: context.c.materialDim.withValues(
+                    alpha: context.c.materialDim.a * v,
                   ),
                   child: child,
                 ),
@@ -105,7 +105,7 @@ class DimDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           // Faux background content (a sheet) that the Dim sits over.
@@ -117,13 +117,13 @@ class DimDemo extends StatelessWidget {
                 child: Container(
                   height: 220,
                   decoration: BoxDecoration(
-                    color: AppColors.surface,
+                    color: context.c.backgroundNormalNormal,
                     borderRadius: BorderRadius.circular(16),
                   ),
                   alignment: Alignment.center,
-                  child: const Text(
+                  child: Text(
                     'Background content',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(color: context.c.labelNormal),
                   ),
                 ),
               ),
@@ -136,12 +136,12 @@ class DimDemo extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceElevatedNormal,
+                  color: context.c.backgroundElevatedNormal,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Text(
+                child: Text(
                   'Overlay dialog',
-                  style: TextStyle(color: AppColors.text),
+                  style: TextStyle(color: context.c.labelStrong),
                 ),
               ),
             ),
