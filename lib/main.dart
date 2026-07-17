@@ -15,7 +15,7 @@ import 'core/config/feature_flags.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/network/supabase_config.dart';
 import 'l10n/app_localizations.dart';
-import 'theme/app_colors.dart';
+import 'theme/app_color_tokens.dart';
 import 'theme/app_typography.dart';
 
 Future<void> main() async {
@@ -93,17 +93,44 @@ class BeaverTalkApp extends ConsumerWidget {
         }
         return const Locale('en');
       },
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.bg,
-        fontFamily: kFontFamily,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primary,
-          surface: AppColors.surface,
-        ),
-      ),
+      // Both modes are built from the Figma `Semantics` tokens
+      // ([AppColorTokens]); a screen reads them via `context.c.<token>`.
+      //
+      // **`themeMode` is pinned to dark on purpose.** The token set is complete
+      // in both modes, but the screens are still being mapped off the old
+      // Dark-only [AppColors] palette — until that is finished, letting the OS
+      // flip this to light would render half the app in the wrong mode. Lift
+      // the pin (to `ThemeMode.system`, or a user setting) once the mapping is
+      // done; see `docs/2026-07-17_0530_컬러토큰-Dark-Light-매핑.md`.
+      theme: _theme(Brightness.light, AppColorTokens.light),
+      darkTheme: _theme(Brightness.dark, AppColorTokens.dark),
+      themeMode: ThemeMode.dark,
       home: const AuthGate(),
       onGenerateRoute: onGenerateRoute,
     );
   }
+
+  /// One [ThemeData] per mode, driven entirely by [tokens].
+  ///
+  /// The Material `ColorScheme` is filled in from the same tokens so that any
+  /// stock widget (dialogs, pickers, text selection) lands in the right mode
+  /// instead of Material's defaults — previously only `primary` and `surface`
+  /// were passed, and only for dark.
+  static ThemeData _theme(Brightness brightness, AppColorTokens tokens) =>
+      ThemeData(
+        useMaterial3: true,
+        brightness: brightness,
+        scaffoldBackgroundColor: tokens.backgroundNormalDeep,
+        fontFamily: kFontFamily,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: tokens.primaryNormal,
+          brightness: brightness,
+          primary: tokens.primaryNormal,
+          onPrimary: tokens.primaryOnPrimary,
+          surface: tokens.backgroundNormalNormal,
+          onSurface: tokens.labelStrong,
+          error: tokens.statusNegative,
+        ),
+        extensions: [tokens],
+      );
 }
