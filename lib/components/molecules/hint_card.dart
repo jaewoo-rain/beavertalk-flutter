@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../l10n/app_localizations.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -60,10 +61,10 @@ class HintCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final card = Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: revealed ? _full(l10n) : _peek(),
+      child: revealed ? _full(context, l10n) : _peek(context),
     );
 
     // In peek the whole card is the reveal target; in full the card itself is
@@ -77,7 +78,7 @@ class HintCard extends StatelessWidget {
     );
   }
 
-  Widget _peek() {
+  Widget _peek(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s16, AppSpacing.s12, AppSpacing.s12, AppSpacing.s12),
@@ -93,7 +94,7 @@ class HintCard extends StatelessWidget {
           ),
           if (onSpeak != null) ...[
             const SizedBox(width: AppSpacing.s8),
-            _speakButton(),
+            _speakButton(context),
           ],
           const SizedBox(width: AppSpacing.s8),
           // Expand affordance: chevron-right rotated to point up (no chevron-up
@@ -101,14 +102,14 @@ class HintCard extends StatelessWidget {
           Transform.rotate(
             angle: -math.pi / 2,
             child: AppIcons.chevronRight(
-                size: 20, color: AppColors.textSecondary),
+                size: 20, color: context.c.labelNormal),
           ),
         ],
       ),
     );
   }
 
-  Widget _full(AppLocalizations l10n) {
+  Widget _full(BuildContext context, AppLocalizations l10n) {
     final ex = _current;
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -128,13 +129,13 @@ class HintCard extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style:
-                    AppType.caption2.sb.copyWith(color: AppColors.hintAccent),
+                    AppType.caption2.sb.copyWith(color: context.c.accentActive),
               ),
               const Spacer(),
               if (examples.length > 1) ...[
                 Text('${index + 1}/${examples.length}',
                     style: AppType.caption2.r
-                        .copyWith(color: AppColors.textSecondary)),
+                        .copyWith(color: context.c.labelNormal)),
                 const SizedBox(width: AppSpacing.s4),
                 Semantics(
                   button: true,
@@ -143,7 +144,7 @@ class HintCard extends StatelessWidget {
                     onTap: onCycle,
                     radius: 18,
                     child: AppIcons.redo(
-                        size: 16, color: AppColors.textSecondary),
+                        size: 16, color: context.c.labelNormal),
                   ),
                 ),
               ],
@@ -165,20 +166,20 @@ class HintCard extends StatelessWidget {
                       const SizedBox(height: AppSpacing.s2),
                       Text(ex.roman!,
                           style: AppType.caption1.r
-                              .copyWith(color: AppColors.textSecondary)),
+                              .copyWith(color: context.c.labelNormal)),
                     ],
                     if (ex.native.isNotEmpty) ...[
                       const SizedBox(height: AppSpacing.s2),
                       Text(ex.native,
                           style: AppType.caption1.r
-                              .copyWith(color: AppColors.textSecondary)),
+                              .copyWith(color: context.c.labelNormal)),
                     ],
                   ],
                 ),
               ),
               if (onSpeak != null) ...[
                 const SizedBox(width: AppSpacing.s8),
-                _speakButton(),
+                _speakButton(context),
               ],
             ],
           ),
@@ -187,9 +188,9 @@ class HintCard extends StatelessWidget {
     );
   }
 
-  Widget _speakButton() {
+  Widget _speakButton(BuildContext context) {
     return Material(
-      color: AppColors.surfaceElevatedNormal,
+      color: context.c.backgroundElevatedNormal,
       shape: const CircleBorder(),
       clipBehavior: Clip.antiAlias,
       child: InkWell(

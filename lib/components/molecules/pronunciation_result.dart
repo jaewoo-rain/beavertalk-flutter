@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -13,10 +13,10 @@ import '../../theme/app_typography.dart';
 /// `active` / `inactive`.
 enum PronunciationState {
   /// A real, scored result: progress arc + center percent in
-  /// [AppColors.primary].
+  /// `Primary/Normal`.
   active,
 
-  /// No score yet: track is dimmed ([AppColors.primary24]), no progress
+  /// No score yet: track is dimmed ([context.c.primaryNormal24]), no progress
   /// arc, center shows `-%`.
   inactive,
 }
@@ -40,13 +40,13 @@ class PronunciationMetric {
 /// - Outer column, `gap` 16, width 335.
 /// - Gauge: a 180° semicircle, frame ≈ 255×127.5 (2:1 → half circle).
 ///   Track + rounded-cap progress arc drawn by [_GaugePainter]. Center
-///   percent in [AppType.title1] Bold, [AppColors.primary].
-/// - `inactive`: track [AppColors.primary24], no progress arc, center "-%"
-///   tinted [AppColors.primary24].
-/// - Footer card: fill `Background/Normal/Alternative` ([AppColors.surface2]),
+///   percent in [AppType.title1] Bold, `Primary/Normal`.
+/// - `inactive`: track [context.c.primaryNormal24], no progress arc, center "-%"
+///   tinted [context.c.primaryNormal24].
+/// - Footer card: fill `Background/Normal/Alternative` (`Background/Normal/Alternative`),
 ///   `borderRadius` [AppRadius.sm] (12), vertical padding 12, horizontal 12.
-///   Three equal columns (label caption1 [AppColors.textSecondary] + value
-///   body1.sb white), separated by 1px [AppColors.lineStrong] dividers.
+///   Three equal columns (label caption1 `Label/Normal` + value
+///   body1.sb white), separated by 1px `Line/Normal` dividers.
 ///
 /// Presentation-only: pass [score] (0–100), [metrics], and [state].
 class PronunciationResult extends StatelessWidget {
@@ -89,6 +89,8 @@ class PronunciationResult extends StatelessWidget {
                 CustomPaint(
                   size: const Size(_gaugeWidth, _gaugeHeight),
                   painter: _GaugePainter(
+                    trackColor: context.c.primaryNormal24,
+                    arcColor: context.c.primaryNormal,
                     progress: active ? clamped / 100 : 0,
                     active: active,
                   ),
@@ -99,8 +101,8 @@ class PronunciationResult extends StatelessWidget {
                     active ? '${clamped.round()}%' : '-%',
                     style: AppType.title1.b.copyWith(
                       color: active
-                          ? AppColors.primary
-                          : AppColors.primary24,
+                          ? context.c.primaryNormal
+                          : context.c.primaryNormal24,
                     ),
                   ),
                 ),
@@ -127,12 +129,12 @@ class _MetricsFooter extends StatelessWidget {
     for (int i = 0; i < metrics.length; i++) {
       if (i > 0) {
         children.add(
-          const SizedBox(
+          SizedBox(
             height: 36,
             child: VerticalDivider(
               width: 1,
               thickness: 1,
-              color: AppColors.lineStrong,
+              color: context.c.lineNormal,
             ),
           ),
         );
@@ -148,7 +150,7 @@ class _MetricsFooter extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppType.caption1.r
-                    .copyWith(color: AppColors.textSecondary),
+                    .copyWith(color: context.c.labelNormal),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 6),
@@ -168,7 +170,7 @@ class _MetricsFooter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12, vertical: AppSpacing.s12),
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: IntrinsicHeight(
@@ -188,7 +190,16 @@ class _MetricsFooter extends StatelessWidget {
 /// a true half circle. Center sits at the bottom-middle; the arc spans
 /// 180° (π) from left (180°) to right (0°), swept clockwise.
 class _GaugePainter extends CustomPainter {
-  const _GaugePainter({required this.progress, required this.active});
+  const _GaugePainter({
+    required this.progress,
+    required this.active,
+    required this.trackColor,
+    required this.arcColor,
+  });
+
+  /// `Primary/Normal-24` (the unfilled ring) and `Primary/Normal` (the filled
+  /// arc), read from the theme by the caller — a painter has no context.
+  final Color trackColor, arcColor;
 
   /// 0–1 fraction of the 180° arc to fill.
   final double progress;
@@ -211,7 +222,7 @@ class _GaugePainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = _stroke
       ..strokeCap = StrokeCap.round
-      ..color = AppColors.primary24;
+      ..color = trackColor;
 
     canvas.drawArc(arcRect, startAngle, sweep, false, track);
 
@@ -220,7 +231,7 @@ class _GaugePainter extends CustomPainter {
         ..style = PaintingStyle.stroke
         ..strokeWidth = _stroke
         ..strokeCap = StrokeCap.round
-        ..color = AppColors.primary;
+        ..color = arcColor;
       canvas.drawArc(
         arcRect,
         startAngle,
@@ -233,7 +244,12 @@ class _GaugePainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_GaugePainter old) =>
-      old.progress != progress || old.active != active;
+      old.progress != progress ||
+      old.active != active ||
+      // The colours are theme-dependent now; without these the gauge would keep
+      // the previous mode's ring until the score happened to change.
+      old.trackColor != trackColor ||
+      old.arcColor != arcColor;
 }
 
 /// Gallery demo exposing both [PronunciationResult] states.

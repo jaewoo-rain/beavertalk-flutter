@@ -8,7 +8,7 @@ import '../../theme/app_motion.dart';
 /// Dim — Figma `01_Atoms / Dim` (`176:26363`).
 ///
 /// A full-screen scrim used behind modals, sheets and dialogs.
-/// - Fill: black @ 50% → [context.c.materialDim].
+/// - Fill: black @ 50% → `Material/Dim`.
 /// - Backdrop: `blur(4)` ([ui.ImageFilter.blur]).
 ///
 /// Intended to be laid over a [Stack] via [Positioned.fill]; [build] already

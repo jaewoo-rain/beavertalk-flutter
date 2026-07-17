@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
 /// OtpInput — a local one-time-code (OTP) field of [length] digit boxes.
 ///
 /// Extracted from `screen/auth_findpw_code` (`2117:19868`). Renders [length]
-/// 68×68 [AppColors.surface2] boxes; typing a digit auto-advances focus to the
+/// 68×68 `Background/Normal/Alternative` boxes; typing a digit auto-advances focus to the
 /// next box, and backspace on an empty box steps focus back. Reports the joined
 /// value via [onChanged], and fires [onCompleted] once every box is filled.
 ///
@@ -121,12 +121,12 @@ class _OtpInputState extends State<OtpInput> {
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 120),
           decoration: BoxDecoration(
-            color: focused ? AppColors.primary10 : AppColors.surface2,
+            color: focused ? context.c.primaryNormal10 : context.c.backgroundNormalAlternative,
             borderRadius: BorderRadius.circular(AppRadius.md),
             border: Border.all(
               color: focused
-                  ? AppColors.primary
-                  : (filled ? AppColors.border : AppColors.surface2),
+                  ? context.c.primaryNormal
+                  : (filled ? context.c.lineNeutral : context.c.backgroundNormalAlternative),
               width: 1,
             ),
           ),
@@ -137,7 +137,7 @@ class _OtpInputState extends State<OtpInput> {
             keyboardType: TextInputType.number,
             textAlign: TextAlign.center,
             maxLength: 1,
-            cursorColor: AppColors.primary,
+            cursorColor: context.c.primaryNormal,
             style: AppType.title3.sb,
             inputFormatters: [FilteringTextInputFormatter.digitsOnly],
             onChanged: (v) {

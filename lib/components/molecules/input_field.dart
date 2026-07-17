@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
@@ -208,20 +209,20 @@ class _InputFieldState extends State<InputField> {
     final Color fill;
     final Color border;
     if (!widget.enabled) {
-      fill = AppColors.surface2;
-      border = AppColors.borderSubtle;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.lineAlternative;
     } else if (_focused && hasText) {
       // typing
-      fill = AppColors.primary10;
-      border = AppColors.primary;
+      fill = context.c.primaryNormal10;
+      border = context.c.primaryNormal;
     } else if (_focused) {
       // focus
-      fill = AppColors.surface2;
-      border = AppColors.primary;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.primaryNormal;
     } else {
       // default / filled — both share surface2 fill + surface2 (borderless) edge
-      fill = AppColors.surface2;
-      border = AppColors.surface2;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.backgroundNormalAlternative;
     }
 
     final TextStyle baseStyle = (spec.isBody1 ? AppType.body1 : AppType.label1).r;
@@ -229,7 +230,7 @@ class _InputFieldState extends State<InputField> {
       color: widget.enabled ? AppColors.text : AppColors.textTertiary,
     );
     final TextStyle hintStyle = baseStyle.copyWith(
-      color: widget.enabled ? AppColors.textSecondary : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelNormal : AppColors.textTertiary,
     );
 
     Widget? icon;
@@ -239,7 +240,7 @@ class _InputFieldState extends State<InputField> {
         child: IconTheme.merge(
           data: IconThemeData(
             size: spec.iconSize,
-            color: widget.enabled ? AppColors.textSecondary : AppColors.textTertiary,
+            color: widget.enabled ? context.c.labelNormal : AppColors.textTertiary,
           ),
           child: SizedBox(
             width: spec.iconSize,
@@ -258,7 +259,7 @@ class _InputFieldState extends State<InputField> {
           data: IconThemeData(
             size: spec.iconSize,
             color: widget.enabled
-                ? AppColors.textSecondary
+                ? context.c.labelNormal
                 : AppColors.textTertiary,
           ),
           child: SizedBox(
@@ -275,7 +276,7 @@ class _InputFieldState extends State<InputField> {
       focusNode: _focusNode,
       enabled: widget.enabled,
       style: textStyle,
-      cursorColor: AppColors.primary,
+      cursorColor: context.c.primaryNormal,
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
       onChanged: widget.onChanged == null
@@ -347,7 +348,7 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title,
-                style: AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+                style: AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             ...children.expand((w) => [w, const SizedBox(height: 12)]),
             const SizedBox(height: 12),
@@ -380,7 +381,7 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
         ]);
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(

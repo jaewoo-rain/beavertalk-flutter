@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -147,7 +148,7 @@ class _TextAreaState extends State<TextArea> {
       color: widget.enabled ? AppColors.text : AppColors.textTertiary,
     );
     final TextStyle hintStyle = AppType.label1.r.copyWith(
-      color: widget.enabled ? AppColors.textSecondary : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelNormal : AppColors.textTertiary,
     );
 
     final field = TextField(
@@ -155,7 +156,7 @@ class _TextAreaState extends State<TextArea> {
       enabled: widget.enabled,
       focusNode: widget.focusNode,
       style: textStyle,
-      cursorColor: AppColors.primary,
+      cursorColor: context.c.primaryNormal,
       minLines: widget.minLines,
       maxLines: widget.maxLines,
       maxLength: widget.maxLength,
@@ -177,13 +178,13 @@ class _TextAreaState extends State<TextArea> {
 
     final BoxDecoration decoration = isBox
         ? BoxDecoration(
-            color: AppColors.surface2,
+            color: context.c.backgroundNormalAlternative,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: AppColors.lineStrong, width: 1),
+            border: Border.all(color: context.c.lineNormal, width: 1),
           )
-        : const BoxDecoration(
+        : BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: AppColors.lineStrong, width: 1),
+              bottom: BorderSide(color: context.c.lineNormal, width: 1),
             ),
           );
 
@@ -199,7 +200,7 @@ class _TextAreaState extends State<TextArea> {
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             '${_controller.text.characters.length}/${widget.maxLength}',
-            style: AppType.label2.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.label2.r.copyWith(color: context.c.labelNormal),
           ),
         ),
       );
@@ -250,7 +251,7 @@ class _TextAreaDemoState extends State<TextAreaDemo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title,
-                style: AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+                style: AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             child,
             const SizedBox(height: 24),
@@ -258,7 +259,7 @@ class _TextAreaDemoState extends State<TextAreaDemo> {
         );
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(
