@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -20,6 +21,17 @@ import 'theme/app_typography.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Portrait only. Every frame in the design is 375×812 portrait and nothing is
+  // laid out for a landscape box, so a rotation only breaks the screen.
+  //
+  // Locked here rather than with `android:screenOrientation` in the manifest:
+  // one owner beats two, and the manifest route lets Android recreate the
+  // activity on rotation — which `MainActivity`'s MediaProjection recorder
+  // (`beavertalk/challenge_recorder`) would not survive mid-capture.
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   // Load .env first (API_BASE_URL + Supabase keys). Optional — the app still
   // boots on the hardcoded fallbacks if the file is missing or fails to parse.
   try {
