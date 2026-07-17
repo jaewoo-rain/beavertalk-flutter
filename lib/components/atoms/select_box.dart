@@ -15,7 +15,7 @@ import '../../theme/app_typography.dart';
 ///   (`.sb`), `regular` is `.r`.
 /// - Both states share bg `Background/Normal/Alternative` (surface2, #252932);
 ///   selection is conveyed by the **text color only** (Figma alarm weekday chip):
-///   `selected` → text [context.c.primaryNormal], `unselected` → [context.c.labelNormal].
+///   `selected` → text `Primary/Normal`, `unselected` → `Label/Normal`.
 ///
 /// Controlled atom: pass [selected] and handle [onChanged]; [disabled] dims it.
 class SelectBox extends StatelessWidget {

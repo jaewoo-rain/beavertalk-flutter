@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../atoms/skeleton.dart';
@@ -38,7 +38,7 @@ class CardLoading extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: const Column(

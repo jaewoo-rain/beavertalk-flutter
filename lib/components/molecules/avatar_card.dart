@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -16,10 +16,10 @@ import '../../theme/app_typography.dart';
 /// - Status row on top (row, gap 8): a 6×6 dot + status label
 ///   ([AppType.caption1]). Then a 64×64 circular avatar, then the name
 ///   ([AppType.label1] SemiBold).
-/// - `active`   → fill [AppColors.primary04], 1px [AppColors.primary]
-///   border, dot/label in [AppColors.primary].
-/// - `inactive` → fill [AppColors.surfaceElevated], no border, dot/label
-///   in [AppColors.textSecondary].
+/// - `active`   → fill [context.c.primaryNormal4], 1px `Primary/Normal`
+///   border, dot/label in `Primary/Normal`.
+/// - `inactive` → fill `Background/Elevated/Alternative`, no border, dot/label
+///   in `Label/Normal`.
 ///
 /// Presentation-only aside from [onTap]. Provide the avatar via either
 /// [imageProvider] (drawn 64×64, cover) or a custom [avatar] widget;
@@ -62,21 +62,21 @@ class AvatarCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color accent =
-        active ? AppColors.primary : AppColors.textSecondary;
+        active ? context.c.primaryNormal : context.c.labelNormal;
 
     final card = Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         // `primary/normal-4` (4%), not the 10% this used to wash the selected
         // card with (`I3665:12415`).
-        color: active ? AppColors.primary04 : AppColors.surfaceElevated,
+        color: active ? context.c.primaryNormal4 : context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs),
         // Both states are bordered per Figma (`2117:20367` / `2117:20368`):
         // active = `primary`, inactive = `line/normal`. The inactive border was
         // missing entirely, so unselected cards read as flat fills and sat 1px
         // smaller than the selected one.
         border: Border.all(
-          color: active ? AppColors.primary : AppColors.lineStrong,
+          color: active ? context.c.primaryNormal : context.c.lineNormal,
         ),
       ),
       child: Column(
@@ -115,7 +115,7 @@ class AvatarCard extends StatelessWidget {
             child: SizedBox(
               width: _avatarSize,
               height: _avatarSize,
-              child: _buildAvatar(),
+              child: _buildAvatar(context.c),
             ),
           ),
           const SizedBox(height: 4),
@@ -144,14 +144,14 @@ class AvatarCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(AppColorTokens c) {
     if (avatar != null) return avatar!;
     if (imageProvider != null) {
       return Image(image: imageProvider!, fit: BoxFit.cover);
     }
     return ColoredBox(
-      color: AppColors.surface2,
-      child: AppIcons.profile(color: AppColors.textTertiary, size: 32),
+      color: c.backgroundNormalAlternative,
+      child: AppIcons.profile(color: c.labelAssistive, size: 32),
     );
   }
 }

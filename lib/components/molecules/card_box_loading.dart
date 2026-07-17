@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../atoms/skeleton.dart';
 
@@ -20,7 +20,7 @@ class CardBoxLoading extends StatelessWidget {
   Widget build(BuildContext context) => Container(
         padding: const EdgeInsets.all(10), // no s10 token
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
         child: const Row(

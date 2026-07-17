@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
@@ -10,7 +10,7 @@ import '../icons/app_icons.dart';
 /// `Card-Bookmark` (`176:14676`, as instanced at `3583:34466` in
 /// `screen/analysis` and `3360:115` in `screen/record_archive`).
 ///
-/// An [AppColors.surfaceElevated] box (radius 12, padding `16/20`) holding the
+/// An `Background/Elevated/Alternative` box (radius 12, padding `16/20`) holding the
 /// [korean] sentence (Label 1 SemiBold, white) over its [native] translation
 /// (Caption 1 Regular, secondary), then a footer row of a speaker glyph + a
 /// toggleable bookmark glyph and — optionally — a trailing [actionText]
@@ -74,18 +74,18 @@ class CardBookmark extends StatelessWidget {
     final card = Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _koreanText(),
+          _koreanText(context.c.labelStrong),
           const SizedBox(height: 4),
           Text(
             native,
-            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.caption1.r.copyWith(color: context.c.labelNormal),
           ),
           // Figma Card-Bookmark: a single gap-xs (8) between the text block and
           // the footer row — no divider (`176:14677` wraps both in one gap-8
@@ -93,12 +93,12 @@ class CardBookmark extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              _glyph(AppIcons.volume, onSpeakerTap),
+              _glyph(AppIcons.volume, onSpeakerTap, color: context.c.labelStrong),
               const SizedBox(width: 8),
               _glyph(
                 bookmarked ? AppIcons.bookmarkFill : AppIcons.bookmarkLine,
                 onBookmarkTap,
-                color: bookmarked ? AppColors.primary : AppColors.text,
+                color: bookmarked ? context.c.primaryNormal : context.c.labelStrong,
               ),
               const Spacer(),
               if (actionText != null)
@@ -127,8 +127,8 @@ class CardBookmark extends StatelessWidget {
   }
 
   /// The Korean line, underlining [highlight] (the learned expression) when set.
-  Widget _koreanText() {
-    final base = AppType.label1.sb.copyWith(color: AppColors.text);
+  Widget _koreanText(Color base_) {
+    final base = AppType.label1.sb.copyWith(color: base_);
     final h = highlight;
     if (h == null || h.isEmpty || !korean.contains(h)) {
       return Text(korean, style: base);
@@ -153,7 +153,7 @@ class CardBookmark extends StatelessWidget {
   Widget _glyph(
     AppIconBuilder icon,
     VoidCallback? onTap, {
-    Color color = AppColors.text,
+    required Color color,
   }) {
     final glyph = icon(size: 24, color: color);
     if (onTap == null) return glyph;

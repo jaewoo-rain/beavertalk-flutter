@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../atoms/skeleton.dart';
 
 /// CardAlarmLoading — the loading stand-in for [CardAlarm], Figma
 /// `screen/etc_alarm_loading` (`3489:4550`).
 ///
-/// Mirrors [CardAlarm]'s box exactly — the same [AppColors.surfaceElevated]
+/// Mirrors [CardAlarm]'s box exactly — the same `Background/Elevated/Alternative`
 /// fill, no border, radius 8, 20 padding — and the same three rows at the same
 /// heights, so the card does not resize when the alarms land:
 ///
@@ -28,7 +28,7 @@ class CardAlarmLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) => DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
         child: const Padding(

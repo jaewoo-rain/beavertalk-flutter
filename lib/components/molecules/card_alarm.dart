@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -20,7 +20,7 @@ enum CardAlarmState {
 /// set `176:20652`, as instanced in `screen/etc_alarm` `3665:11992`).
 ///
 /// Measured spec: `radius` 8 ([AppRadius.xs]), `20px` padding and the
-/// [AppColors.surfaceElevated] (Background/Elevated/Alternative) fill, with no
+/// `Background/Elevated/Alternative` (Background/Elevated/Alternative) fill, with no
 /// border. The inner content is a column with a `12px` gap holding three rows:
 ///
 /// 1. [time] (Heading 2 Medium) space-between an [AppToggle].
@@ -107,7 +107,8 @@ class CardAlarm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color fg = _active ? AppColors.text : AppColors.textTertiary;
+    final Color fg =
+        _active ? context.c.labelStrong : context.c.labelDisabled;
 
     final card = DecoratedBox(
       // `3665:12009` fills the card with Elevated/Alternative (#1F222A) and
@@ -115,7 +116,7 @@ class CardAlarm extends StatelessWidget {
       // `lineStrong` hairline, i.e. a card that read as an outline on the
       // background rather than a surface lifted off it.
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Padding(
@@ -221,7 +222,7 @@ class _CardAlarmDemoState extends State<CardAlarmDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
