@@ -482,7 +482,8 @@ class BottomSheetSubscription extends StatelessWidget {
   /// [lost] flips the glyph from a check to an ×. The cancel sheet lists
   /// "취소 시 잃게 되는 혜택" — benefits you give up — so a check there read as
   /// "kept", the opposite of the intent. Figma `176:14575` marks those rows ×.
-  Widget _benefitLine(context, 
+  Widget _benefitLine(
+    BuildContext context,
     String label,
     Color bulletColor,
     Color labelColor, {
