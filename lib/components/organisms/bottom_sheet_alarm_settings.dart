@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart' as intl;
 
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -11,6 +10,7 @@ import '../atoms/button.dart';
 import '../atoms/day_chip.dart';
 import '../atoms/dim.dart';
 import '../molecules/avatar_card.dart';
+import '../molecules/card_alarm.dart';
 
 /// AM / PM選択 value for [BottomSheetAlarmSettings].
 enum Meridiem {
@@ -371,7 +371,13 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// each visual slot maps through [_visualToDataIndex]. A Mon-first index fed
   /// straight into a Sun-indexed array shifts every alarm by a day.
   Widget _dayChips(BuildContext context) {
-    final labels = dayLabels ?? _narrowWeekdays(context);
+    // Two-letter labels shared with the list card ([CardAlarm.defaultDayLabels]),
+    // so the add/edit sheet reads Mo Tu We Th Fr Sa Su exactly like the alarm it
+    // creates — instead of the locale's single-letter narrow names (M T W T F S
+    // S). Trade-off: these are English-fixed, i.e. Korean/JP/AR no longer get
+    // their own weekday letters here. That matches the list, which is already
+    // English-fixed; the two used to disagree.
+    final labels = dayLabels ?? CardAlarm.defaultDayLabels;
     return Row(
       children: [
         for (int i = 0; i < 7; i++) ...[
@@ -392,19 +398,6 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         ],
       ],
     );
-  }
-
-  /// The locale's narrow weekday names, reordered Monday-first.
-  ///
-  /// The frame spells the row 월 화 수 목 금 토 일, which is only right in
-  /// Korean — this screen renders in 30 locales, so the names come from the
-  /// locale itself and Korean lands on the frame's exactly. `intl` indexes them
-  /// 0=Sun, the same order as [days].
-  List<String> _narrowWeekdays(BuildContext context) {
-    final symbols = intl.DateFormat.yMd(
-      Localizations.localeOf(context).toString(),
-    ).dateSymbols.NARROWWEEKDAYS;
-    return [for (final i in _visualToDataIndex) symbols[i]];
   }
 
   /// 요약 (`3665:12419`) — derived from [days] alone; nothing on the server
