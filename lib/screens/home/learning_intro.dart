@@ -51,6 +51,17 @@ import 'learning_args.dart';
 /// blocking call, waiting is the only thing the screen can honestly offer.
 const _kSlowScoring = Duration(seconds: 2);
 
+/// Minimum time the scan screen stays up before advancing to the result, even
+/// when scoring returns faster.
+///
+/// `submitAudio` is ~0.1s against a warm server but ~9s on a Cloud Run cold
+/// start, so without a floor the scan animation (cursor sweep, spinner) would
+/// flash for a single frame and snap to the result on a warm server — the
+/// animation you built barely shows. 1.5s ≈ one cursor sweep, so the scan reads
+/// as a real step regardless of server latency. The result push waits on
+/// `max(scoring, this)`.
+const _kMinScan = Duration(milliseconds: 1500);
+
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
 class LearningIntroScreen extends ConsumerStatefulWidget {
   /// Creates the learning intro screen.
@@ -214,14 +225,26 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       }
 
       final wav = pcm16ToWav(pcm);
-      final feedback = await ref
-          .read(reviewRepositoryProvider)
-          .submitAudio(args.current.id, wav);
+      // Start scoring and the minimum-scan floor together, then wait on both:
+      // total time = max(scoring, _kMinScan). A warm-server response (~0.1s)
+      // still shows the scan for _kMinScan; a slow one dominates on its own.
+      final scoring =
+          ref.read(reviewRepositoryProvider).submitAudio(args.current.id, wav);
+      await Future<void>.delayed(_kMinScan);
+      final feedback = await scoring;
 
       // Feed the running average for the analysis gauge.
       ref.read(reviewScoresProvider.notifier).record(feedback);
 
       if (!mounted) return;
+      // Leave the scan state *before* pushing, so returning from the result
+      // (this route keeps its state) doesn't flash the spinning scan screen on
+      // the way back to the mic.
+      _slowTimer?.cancel();
+      setState(() {
+        _submitting = false;
+        _scoringSlow = false;
+      });
       await Navigator.pushNamed(
         context,
         Routes.learningNext,
