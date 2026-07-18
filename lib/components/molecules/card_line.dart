@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/toggle.dart';

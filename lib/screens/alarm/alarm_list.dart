@@ -13,7 +13,6 @@ import '../../features/alarm/domain/entities/alarm.dart';
 import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 import 'alarm_add.dart';
 import 'alarm_empty.dart';

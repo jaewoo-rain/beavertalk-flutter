@@ -15,7 +15,6 @@ import '../../../app/app_scaffold.dart';
 import '../../../components/atoms/button.dart';
 import '../../../components/organisms/gnb.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
 import '../data/camera_service.dart';

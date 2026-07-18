@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';

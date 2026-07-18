@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../theme/app_color_tokens.dart';
-import '../theme/app_colors.dart';
 import '../components/chrome/status_bar.dart';
 import '../components/chrome/home_indicator.dart';
 

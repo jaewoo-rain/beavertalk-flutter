@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 import 'record_circle_button.dart';
+
+/// Recording-face inner disc — a pale mint on the green record disc. Mode-
+/// invariant: it sits on `primaryHeavy` in both themes and keeps its contrast,
+/// so it stays a literal rather than flipping. Figma has no token for it.
+const _kRecordingInner = Color(0xFFE6FFF7);
 
 /// MicButton — the 96px two-state recorder mic button.
 ///
@@ -120,7 +124,7 @@ class _RecordingFace extends StatelessWidget {
         width: 72,
         height: 72,
         decoration: const BoxDecoration(
-          color: AppColors.green50,
+          color: _kRecordingInner,
           shape: BoxShape.circle,
         ),
         alignment: Alignment.center,

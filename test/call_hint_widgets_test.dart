@@ -6,7 +6,6 @@ import 'package:beavertalk/components/atoms/speaking_equalizer.dart';
 import 'package:beavertalk/components/icons/app_icons.dart';
 import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
-import 'package:beavertalk/theme/app_colors.dart';
 
 void main() {
   group('HintData.fromJson', () {
@@ -91,7 +90,7 @@ void main() {
           child: CallToggleButton(
             icon: AppIcons.lightbulb,
             active: true,
-            activeFill: AppColors.hintAccent,
+            activeFill: const Color(0xFFD17600),
             semanticLabel: 'Hint',
             onChanged: (v) => got = v,
           ),

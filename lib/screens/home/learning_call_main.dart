@@ -6,7 +6,6 @@ import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -149,7 +148,9 @@ class LearningCallMainScreen extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 10, vertical: AppSpacing.s8),
                 decoration: BoxDecoration(
-                  color: AppColors.primary08,
+                  // Primary/Normal @ 8% — an alpha of the theme's primary, so it
+                  // flips with the mode (Dark #00FFB2 / Light #007A55).
+                  color: context.c.primaryNormal.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
                 child: Text(
@@ -527,7 +528,9 @@ class _TrendChart extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(height: 1, color: AppColors.primary35),
+            Container(
+                height: 1,
+                color: context.c.primaryNormal.withValues(alpha: 0.35)),
             Padding(
               padding: const EdgeInsets.only(left: 2, top: 2),
               child: Text(
@@ -570,7 +573,9 @@ class _TrendChart extends StatelessWidget {
                     height: _plotHeight - _y(p.score),
                     decoration: BoxDecoration(
                       // Today is the point of the chart; the rest are context.
-                      color: isToday ? context.c.primaryNormal : AppColors.primary22,
+                      color: isToday
+                          ? context.c.primaryNormal
+                          : context.c.primaryNormal.withValues(alpha: 0.22),
                       borderRadius: const BorderRadius.vertical(
                         top: Radius.circular(6),
                         bottom: Radius.circular(2),

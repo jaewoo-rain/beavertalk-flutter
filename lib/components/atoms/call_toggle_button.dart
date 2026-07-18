@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 
 /// A 40×40 circular on/off toggle used in the in-call control row — the

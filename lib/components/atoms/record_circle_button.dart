@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../icons/app_icons.dart';
 
 /// RecordCircleButton — a 96px white circle with a green-700 ring and a centered

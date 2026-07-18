@@ -5,7 +5,6 @@ import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -327,7 +326,7 @@ class _L1Placeholder extends StatelessWidget {
         width: double.infinity,
         height: 33,
         decoration: BoxDecoration(
-          color: AppColors.primary08,
+          color: context.c.primaryNormal.withValues(alpha: 0.08),
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
       );

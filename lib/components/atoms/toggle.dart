@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../theme/app_color_tokens.dart';
 // accentLime 만 raw: Accent/Foreground/Lime 이 로컬(#58CF04)과 라이브러리(#429E00)로
 // 갈려 있고 이 토글이 무는 건 라이브러리 쪽이다. 디자인 확정 전까지 토큰화 보류.
-import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
 /// A pill switch measured 1:1 from Figma (`Toggle` set `175:11388`).
@@ -70,7 +69,9 @@ class AppToggle extends StatelessWidget {
       trackColor = context.c.fillDisabled;
       thumbColor = context.c.labelNormal;
     } else if (value) {
-      trackColor = AppColors.accentLime;
+      // `Accent/Foreground/Lime` — Dark #58CF04 / Light #429E00 (the token now
+      // carries both; design confirmed Dark = #58CF04 on 2026-07-18).
+      trackColor = context.c.accentForegroundLime;
       thumbColor = context.c.staticWhite;
     } else {
       // Figma `175:11391` (style=a, state=default): the off track is

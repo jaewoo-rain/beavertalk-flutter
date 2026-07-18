@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../theme/app_color_tokens.dart';
-import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import 'gallery_entry.dart';
 import 'gallery_registry.dart';

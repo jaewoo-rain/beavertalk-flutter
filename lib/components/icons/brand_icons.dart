@@ -19,7 +19,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../theme/app_color_tokens.dart';
 
-import '../../theme/app_colors.dart';
 
 /// KakaoTalk brand mark — yellow bubble + dark glyph (Figma `kakao` 160:84688).
 ///

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_typography.dart';
 
 /// Available render sizes for [AppCheckbox] (the circular box diameter in px).

@@ -23,7 +23,6 @@ import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../home/learning_args.dart';
