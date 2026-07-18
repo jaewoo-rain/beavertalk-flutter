@@ -385,6 +385,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get analyzingTakingLonger => 'This is taking a little longer';
 
   @override
+  String get scanConnectionLost => 'Connection lost';
+
+  @override
   String get noRecordingToPlay => 'Oynatılacak kayıt yok.';
 
   @override

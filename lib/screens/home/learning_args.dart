@@ -18,7 +18,7 @@ enum LearningOrigin {
 }
 
 /// Navigation payload shared across the learning flow
-/// ([Routes.learningIntro] → [Routes.learningNext] → the [origin]'s result
+/// ([Routes.learningIntro] → the [origin]'s result
 /// screen).
 ///
 /// Carries the full list of sentences in the current learning session plus the

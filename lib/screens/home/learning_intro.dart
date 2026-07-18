@@ -1,12 +1,15 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/mic_analysis.dart';
 import '../../components/atoms/mic_button.dart';
+import '../../components/atoms/record_circle_button.dart';
 import '../../components/atoms/scan_cursor.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
@@ -16,28 +19,41 @@ import '../../features/bookmark/presentation/providers/bookmark_toggle_controlle
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
+import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_colors.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
-/// Learning step 1 — Figma `screen/learning_intro` (`2117:20089`).
+/// The step a learning sentence is at. All three are **states of one screen**,
+/// not separate routes — a recording flows to scoring to its result without a
+/// page transition, so the sentence, header and progress never slide.
 ///
-/// Shows the current sentence (KO in Heading 2, EN in Body 1 secondary) over a
-/// `Background/Normal/Alternative` page, with a large mic button pinned low. The mic is a
-/// real two-state recorder:
-/// - **idle** — tap to start capturing PCM16/16k/mono audio.
-/// - **recording** — tap to stop; the captured PCM is wrapped in a WAV header
-///   and uploaded to `POST /sentences/{id}/reviews/audio`. While the upload
-///   runs a spinner overlay is shown. On success the scored [ReviewFeedback] is
-///   recorded into [reviewScoresProvider] (for the gauge average) and forwarded
-///   with the recorded WAV to [Routes.learningNext]. On error a snackbar shows
-///   and the user can re-record.
-///
+/// This replaces the old `learningIntro → learningNext` push: `learning_next`
+/// was the same layout (GNB, progress, speaker/bookmark, centred sentence) with
+/// only the bottom controls and the sentence's colouring changed, so pushing it
+/// read as a page move. Now it is [LearningPhase.result] here.
+enum LearningPhase {
+  /// Mic idle/recording — tap to capture, tap to submit.
+  recording,
+
+  /// The take is uploaded and scored; `ScanCursor` sweeps and `MicAnalysis`
+  /// spins in the mic's place.
+  scoring,
+
+  /// The scored attempt: the sentence tinted per character, Native/Me playback,
+  /// and retry/next.
+  result,
+
+  /// Scoring failed (`proto/E_failed` `3627:9822`) — same layout as [scoring]
+  /// but the mic anchor is a retry button and the caption states the failure.
+  /// Tapping retry returns to [recording] for the same sentence.
+  failed,
+}
+
 /// How long scoring may run before the caption softens to
 /// `analyzingTakingLonger` (`screen/learning_analysis__지연5s` `3745:2`).
 ///
@@ -51,20 +67,30 @@ import 'learning_args.dart';
 /// blocking call, waiting is the only thing the screen can honestly offer.
 const _kSlowScoring = Duration(seconds: 2);
 
-/// Minimum time the scan screen stays up before advancing to the result, even
-/// when scoring returns faster.
+/// Minimum time the scan stays up before advancing to the result, even when
+/// scoring returns faster.
 ///
 /// `submitAudio` is ~0.1s against a warm server but ~9s on a Cloud Run cold
 /// start, so without a floor the scan animation (cursor sweep, spinner) would
-/// flash for a single frame and snap to the result on a warm server — the
-/// animation you built barely shows. 1.5s ≈ one cursor sweep, so the scan reads
-/// as a real step regardless of server latency. The result push waits on
-/// `max(scoring, this)`.
+/// flash for a single frame and snap to the result on a warm server. 1.5s ≈ one
+/// cursor sweep, so the scan reads as a real step regardless of server latency.
+/// The result transition waits on `max(scoring, this)`.
 const _kMinScan = Duration(milliseconds: 1500);
 
+/// The whole learning flow for a sentence sequence — Figma `screen/learning_intro`
+/// (`2117:20089`) through `learning_next` (`2117:20110`) — as **one screen**.
+///
+/// Holds the sequence ([LearningArgs.sentences]) and walks its own [_index]
+/// through [LearningPhase.recording] → `scoring` → `result` per sentence, all by
+/// `setState`. "다음" advances [_index] in place (no push); only the **last**
+/// sentence's "다음" pushes the session's result screen ([LearningCallMainScreen]
+/// or [LearningSentenceMainScreen], per [LearningArgs.origin]). "다시하기" returns
+/// to `recording` for the same sentence. Closing pops to whatever launched the
+/// flow.
+///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
 class LearningIntroScreen extends ConsumerStatefulWidget {
-  /// Creates the learning intro screen.
+  /// Creates the learning flow screen.
   const LearningIntroScreen({super.key});
 
   @override
@@ -75,48 +101,69 @@ class LearningIntroScreen extends ConsumerStatefulWidget {
 class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   final ReviewAudioRecorder _recorder = ReviewAudioRecorder();
   final ReviewAudioPlayer _player = ReviewAudioPlayer();
+
+  LearningPhase _phase = LearningPhase.recording;
+
+  /// Position in [LearningArgs.sentences]. Seeded from `args.index` once, then
+  /// advanced by "다음". Kept in state (not read from args each build) so the
+  /// sequence progresses within this one screen instead of across pushes.
+  int _index = 0;
+  bool _initialized = false;
+
   bool _recording = false;
-  bool _submitting = false;
 
   /// Scoring has passed [_kSlowScoring] and the caption has softened.
   bool _scoringSlow = false;
   Timer? _slowTimer;
 
-  /// Cached standard-pronunciation URL for this sentence (fetched once on the
-  /// first speaker tap; the server TTS is idempotent so this just avoids re-calls).
+  /// The scored attempt for the current sentence, shown in [LearningPhase.result].
+  ReviewFeedback? _feedback;
+
+  /// The user's just-recorded WAV, for "Me" playback in the result.
+  Uint8List? _recordedWav;
+
+  /// Failure caption shown in [LearningPhase.failed]. Network vs other is split
+  /// so a scoring failure doesn't borrow "연결이 끊겼어요".
+  String? _failMessage;
+
+  /// Cached standard-pronunciation URL for the current sentence (fetched once;
+  /// cleared when the sentence changes). The server TTS is idempotent.
   String? _ttsUrl;
   bool _loadingTts = false;
 
-  /// Guards the one-time seeding of the shared bookmark store from this
-  /// sentence's server flag ([MockSentence.bookmarked]).
-  bool _seededBookmark = false;
+  final Set<int> _bookmarkInFlight = <int>{};
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (_seededBookmark) return;
     final args = ModalRoute.of(context)?.settings.arguments;
-    if (args is LearningArgs) {
-      _seededBookmark = true;
-      final s = args.current;
-      // Reconcile to server truth (add when saved, clear when not) so a stale
-      // `true` can't stick — union-only seeding permanently diverged before.
-      setBookmark(s.id, s.bookmarked);
-    }
+    if (args is! LearningArgs) return;
+    if (_initialized) return;
+    _initialized = true;
+    _index = args.index;
+    _seedBookmarkFor(args.sentences[_index]);
   }
 
-  /// Sentence ids with an in-flight bookmark mutation — a second tap while one is
-  /// pending is ignored so two opposite PATCHes can't resolve out of order.
-  final Set<int> _bookmarkInFlight = <int>{};
+  /// Reconcile the shared bookmark store to this sentence's server flag (add
+  /// when saved, clear when not) so a stale `true` can't stick across sentences.
+  void _seedBookmarkFor(MockSentence s) => setBookmark(s.id, s.bookmarked);
 
-  /// Toggles the current sentence's bookmark. Flips the shared in-memory store
+  @override
+  void dispose() {
+    _slowTimer?.cancel();
+    _recorder.dispose();
+    _player.dispose();
+    super.dispose();
+  }
+
+  // ── Bookmark ──────────────────────────────────────────────────────────────
+
+  /// Toggles the current sentence's bookmark: flips the shared in-memory store
   /// first for instant, cross-screen UI (mirrors the analysis screen), then
-  /// persists via [bookmarkToggleControllerProvider]
-  /// (`PATCH /sentences/{id}/bookmark`, mirrors record_archive). Reverts the
-  /// local flip and surfaces a message if the server call fails.
+  /// persists via [bookmarkToggleControllerProvider]. Reverts on failure. A
+  /// second tap while one is pending is ignored so opposite PATCHes can't
+  /// resolve out of order.
   Future<void> _toggleBookmark(int sentenceId) async {
-    // Ignore a second tap while a mutation for this id is outstanding, so two
-    // opposite PATCHes can't complete out of order and desync from the server.
     if (_bookmarkInFlight.contains(sentenceId)) return;
     _bookmarkInFlight.add(sentenceId);
     final l10n = AppLocalizations.of(context);
@@ -134,29 +181,21 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
   }
 
-  @override
-  void dispose() {
-    _slowTimer?.cancel();
-    _recorder.dispose();
-    _player.dispose();
-    super.dispose();
-  }
+  // ── Audio ─────────────────────────────────────────────────────────────────
 
-  /// Plays the sentence's standard (native) pronunciation. Fetches the audio URL
-  /// from the server's on-demand TTS (`POST /sentences/{id}/tts`) on the first
-  /// tap, caches it, then plays. Shows a message when TTS is unavailable.
+  /// Plays the current sentence's standard (native) pronunciation via the
+  /// server's on-demand TTS (`POST /sentences/{id}/tts`), cached after the first
+  /// fetch. Used by both the top speaker and the result's "Native" button.
   Future<void> _playStandard(MockSentence sentence) async {
-    // Don't play the standard-pronunciation audio through the speaker while the
-    // mic is recording — it bleeds into the user's take and skews the score.
-    if (_submitting || _loadingTts || _recording) return;
+    // Never play the standard audio while scoring or recording — it would bleed
+    // into the take and skew the score.
+    if (_phase == LearningPhase.scoring || _loadingTts || _recording) return;
     final l10n = AppLocalizations.of(context);
     var url = _ttsUrl ?? sentence.voiceUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingTts = true);
       try {
-        url = await ref
-            .read(reviewRepositoryProvider)
-            .sentenceTtsUrl(sentence.id);
+        url = await ref.read(reviewRepositoryProvider).sentenceTtsUrl(sentence.id);
         _ttsUrl = url;
       } on AppException catch (e) {
         _snack(e.message);
@@ -179,12 +218,29 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
   }
 
+  /// Plays the user's own recorded take (result's "Me" button).
+  Future<void> _playMe() async {
+    final l10n = AppLocalizations.of(context);
+    final wav = _recordedWav;
+    if (wav == null || wav.isEmpty) {
+      _snack(l10n.noRecordingToPlay);
+      return;
+    }
+    try {
+      await _player.playBytes(wav);
+    } catch (_) {
+      _snack(l10n.myRecordingPlayError);
+    }
+  }
+
+  // ── Phase transitions ───────────────────────────────────────────────────────
+
   Future<void> _onMicTap(LearningArgs args) async {
-    if (_submitting) return;
+    if (_phase != LearningPhase.recording) return;
     if (!_recording) {
       await _startRecording();
     } else {
-      await _stopAndSubmit(args);
+      await _stopAndScore(args);
     }
   }
 
@@ -201,16 +257,14 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
   }
 
-  Future<void> _stopAndSubmit(LearningArgs args) async {
+  Future<void> _stopAndScore(LearningArgs args) async {
     final l10n = AppLocalizations.of(context);
+    final sentence = args.sentences[_index];
     setState(() {
       _recording = false;
-      _submitting = true;
+      _phase = LearningPhase.scoring;
       _scoringSlow = false;
     });
-    // `learning_analysis__지연5s` (3745:2) — the caption softens once scoring
-    // runs long, so a slow response reads as slow rather than stuck. The frame
-    // is named for 5s; 2s is the product's call.
     _slowTimer?.cancel();
     _slowTimer = Timer(_kSlowScoring, () {
       if (mounted) setState(() => _scoringSlow = true);
@@ -218,18 +272,18 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
     try {
       final pcm = await _recorder.stop();
-      // Guard against an empty/too-short recording (< ~0.3s of PCM16 @16k).
+      // Guard an empty/too-short recording (< ~0.3s of PCM16 @16k).
       if (pcm.lengthInBytes < 16000 * 2 * 0.3) {
         _snack(l10n.recordTooShort);
+        _backToRecording();
         return;
       }
 
       final wav = pcm16ToWav(pcm);
-      // Start scoring and the minimum-scan floor together, then wait on both:
-      // total time = max(scoring, _kMinScan). A warm-server response (~0.1s)
-      // still shows the scan for _kMinScan; a slow one dominates on its own.
+      // Start scoring and the minimum-scan floor together: total = max(scoring,
+      // _kMinScan). A warm-server response still shows the scan for _kMinScan.
       final scoring =
-          ref.read(reviewRepositoryProvider).submitAudio(args.current.id, wav);
+          ref.read(reviewRepositoryProvider).submitAudio(sentence.id, wav);
       await Future<void>.delayed(_kMinScan);
       final feedback = await scoring;
 
@@ -237,42 +291,87 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       ref.read(reviewScoresProvider.notifier).record(feedback);
 
       if (!mounted) return;
-      // Leave the scan state *before* pushing, so returning from the result
-      // (this route keeps its state) doesn't flash the spinning scan screen on
-      // the way back to the mic.
       _slowTimer?.cancel();
       setState(() {
-        _submitting = false;
+        _phase = LearningPhase.result;
+        _feedback = feedback;
+        _recordedWav = wav;
         _scoringSlow = false;
       });
-      await Navigator.pushNamed(
-        context,
-        Routes.learningNext,
-        arguments: args.withFeedback(feedback, wav),
-      );
     } on NetworkFailure {
-      // Split out because the copy asserts a cause. `proto/E_failed` says
-      // "연결이 끊겼어요", which is only true when the request never reached the
-      // server — `dio_error_mapper` already classifies exactly that case
-      // (connectionError + the three timeouts) as [NetworkFailure]. Everything
-      // below is a *scoring* failure and must not borrow that wording.
-      //
-      // Uses the l10n string rather than `e.message`: [AppException]'s defaults
-      // are hardcoded Korean, and this screen renders in 30 locales.
-      _snack(l10n.connectionFailedTitle);
+      // `proto/E_failed`'s caption is "연결이 끊겼어요", true only when the request
+      // never reached the server — `dio_error_mapper` already classifies exactly
+      // that (connectionError + timeouts) as [NetworkFailure]. A *scoring*
+      // failure below must not borrow that wording.
+      _toFailed(l10n.scanConnectionLost);
     } on AppException catch (e) {
-      _snack(e.message);
+      _toFailed(e.message);
     } catch (_) {
-      _snack(l10n.gradingFailed);
-    } finally {
-      _slowTimer?.cancel();
-      if (mounted) {
-        setState(() {
-          _submitting = false;
-          _scoringSlow = false;
-        });
-      }
+      _toFailed(l10n.gradingFailed);
     }
+  }
+
+  /// Scoring failed → the E_failed state (a retry button + [message] caption).
+  void _toFailed(String message) {
+    _slowTimer?.cancel();
+    if (!mounted) return;
+    setState(() {
+      _phase = LearningPhase.failed;
+      _failMessage = message;
+      _scoringSlow = false;
+    });
+  }
+
+  /// Return to the recording state on an aborted score (e.g. too-short take),
+  /// keeping the sentence. A snackbar already told the user why.
+  void _backToRecording() {
+    _slowTimer?.cancel();
+    if (!mounted) return;
+    setState(() {
+      _phase = LearningPhase.recording;
+      _scoringSlow = false;
+    });
+  }
+
+  /// "다시하기" (result) / retry (E_failed) — re-record the same sentence.
+  void _retry() {
+    setState(() {
+      _phase = LearningPhase.recording;
+      _feedback = null;
+      _recordedWav = null;
+      _failMessage = null;
+      _recording = false;
+    });
+  }
+
+  /// "다음" — advance to the next sentence in place, or push the session's
+  /// result screen after the last one.
+  void _next(LearningArgs args) {
+    if (_index >= args.sentences.length - 1) {
+      Navigator.pushNamed(
+        context,
+        args.origin == LearningOrigin.callReview
+            ? Routes.learningCallMain
+            : Routes.learningSentenceMain,
+        arguments: LearningArgs(
+          sentences: args.sentences,
+          index: _index,
+          feedback: _feedback,
+          recordedWav: _recordedWav,
+          origin: args.origin,
+        ),
+      );
+      return;
+    }
+    setState(() {
+      _index++;
+      _phase = LearningPhase.recording;
+      _feedback = null;
+      _recordedWav = null;
+      _recording = false;
+      _ttsUrl = null; // per-sentence TTS
+    });
+    _seedBookmarkFor(args.sentences[_index]);
   }
 
   void _snack(String message) {
@@ -282,178 +381,316 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
+  /// Character colour by grade, falling back to score thresholds when unknown.
+  static Color _gradeColor(BuildContext context, CharScore cs) {
+    switch (cs.grade) {
+      case CharGrade.high:
+        return context.c.statusPositive;
+      case CharGrade.medium:
+        return context.c.statusCautionary;
+      case CharGrade.low:
+        return context.c.accentForegroundRed;
+      case CharGrade.unknown:
+        if (cs.score >= 85) return context.c.statusPositive;
+        if (cs.score >= 70) return context.c.statusCautionary;
+        return context.c.accentForegroundRed;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    // Mobile always arrives via in-app `pushNamed(arguments:)`; guard the cast
-    // so a web refresh / deep link (args == null) degrades to an empty screen
-    // instead of a build-time TypeError white-screen.
+    // Mobile always arrives via in-app `pushNamed(arguments:)`; guard the cast so
+    // a web refresh / deep link (args == null) degrades to an empty screen.
     final rawArgs = ModalRoute.of(context)?.settings.arguments;
     if (rawArgs is! LearningArgs) {
       return const Scaffold(body: SizedBox.shrink());
     }
     final args = rawArgs;
-    final sentence = args.current;
+    final sentence = args.sentences[_index];
+    final scoring = _phase == LearningPhase.scoring;
+    final isResult = _phase == LearningPhase.result;
 
     return AppScaffold(
       background: context.c.backgroundNormalAlternative,
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              Gnb.main2(
-                progress: GnbProgress(current: args.step, total: args.total),
-                onClose: () => Navigator.pop(context),
-              ),
-              Expanded(
-                child: Column(
-                  children: [
-                    const SizedBox(height: AppSpacing.s16),
-                    // Speaker / bookmark utility row — top (Figma body top 16).
-                    Padding(
+          Gnb.main2(
+            progress: GnbProgress(current: _index + 1, total: args.sentences.length),
+            onClose: () => Navigator.pop(context),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                const SizedBox(height: AppSpacing.s16),
+                // Speaker / bookmark utility row — shared by every phase.
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Semantics(
+                        button: true,
+                        label: l10n.listenStandard,
+                        child: GestureDetector(
+                          onTap: () => _playStandard(sentence),
+                          behavior: HitTestBehavior.opaque,
+                          child: AppIcons.volume(
+                              size: 32, color: context.c.labelStrong),
+                        ),
+                      ),
+                      ValueListenableBuilder<Set<int>>(
+                        valueListenable: bookmarkedSentenceIds,
+                        builder: (context, ids, _) {
+                          final saved = ids.contains(sentence.id);
+                          return Semantics(
+                            button: true,
+                            label:
+                                saved ? l10n.unsaveSentence : l10n.saveSentence,
+                            child: GestureDetector(
+                              onTap: () => _toggleBookmark(sentence.id),
+                              behavior: HitTestBehavior.opaque,
+                              child: saved
+                                  ? AppIcons.bookmarkFill(
+                                      size: 32, color: context.c.labelStrong)
+                                  : AppIcons.bookmarkLine(
+                                      size: 32, color: context.c.labelStrong),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                // Sentence — shared position across phases. Its colouring
+                // cross-fades between plain (recording/scoring) and per-character
+                // tinted (result), so nothing slides; while scoring, ScanCursor
+                // sweeps over it.
+                Expanded(
+                  child: Center(
+                    child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.s20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Stack(
+                        alignment: Alignment.center,
                         children: [
-                          // Speaker → plays this sentence's standard pronunciation
-                          // (ready for the server's per-sentence audio URL).
-                          Semantics(
-                            button: true,
-                            label: l10n.listenStandard,
-                            child: GestureDetector(
-                              onTap: () => _playStandard(sentence),
-                              behavior: HitTestBehavior.opaque,
-                              child: AppIcons.volume(
-                                  size: 32, color: context.c.labelStrong),
-                            ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 250),
+                                child: isResult
+                                    ? _ScoredSentence(
+                                        key: const ValueKey('scored'),
+                                        charScores:
+                                            _feedback?.charScores ?? const [],
+                                        fallbackText: sentence.korean,
+                                      )
+                                    : Text(
+                                        sentence.korean,
+                                        key: const ValueKey('plain'),
+                                        textAlign: TextAlign.center,
+                                        style: AppType.heading2.sb.copyWith(
+                                            color: context.c.labelStrong),
+                                      ),
+                              ),
+                              const SizedBox(height: AppSpacing.s8),
+                              Text(
+                                _feedback?.native ?? sentence.native,
+                                textAlign: TextAlign.center,
+                                style: AppType.body1.sb
+                                    .copyWith(color: context.c.labelNormal),
+                              ),
+                            ],
                           ),
-                          // Bookmark (문장 저장) — toggles the current sentence's
-                          // saved state; reflects it live via the shared store.
-                          ValueListenableBuilder<Set<int>>(
-                            valueListenable: bookmarkedSentenceIds,
-                            builder: (context, ids, _) {
-                              final saved = ids.contains(sentence.id);
-                              return Semantics(
-                                button: true,
-                                label: saved ? l10n.unsaveSentence : l10n.saveSentence,
-                                child: GestureDetector(
-                                  onTap: () => _toggleBookmark(sentence.id),
-                                  behavior: HitTestBehavior.opaque,
-                                  child: saved
-                                      ? AppIcons.bookmarkFill(
-                                          size: 32, color: context.c.labelStrong)
-                                      : AppIcons.bookmarkLine(
-                                          size: 32, color: context.c.labelStrong),
-                                ),
-                              );
-                            },
-                          ),
+                          if (scoring)
+                            const IgnorePointer(child: ScanCursor(height: 84)),
                         ],
                       ),
                     ),
-                    // Sentence (KO + EN) — centred in the flexible middle. While
-                    // scoring, `Scan/Cursor` sweeps across it (`3627:9694`);
-                    // the cursor sits *over* the text, so it shares this box
-                    // rather than pushing anything.
-                    Expanded(
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.s20),
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    sentence.korean,
-                                    textAlign: TextAlign.center,
-                                    style: AppType.heading2.sb
-                                        .copyWith(color: context.c.labelStrong),
-                                  ),
-                                  const SizedBox(height: AppSpacing.s8),
-                                  Text(
-                                    sentence.native,
-                                    textAlign: TextAlign.center,
-                                    style: AppType.body1.sb
-                                        .copyWith(color: context.c.labelNormal),
-                                  ),
-                                ],
-                              ),
-                              // 84 over the frame's 60-high sentence block —
-                              // the bar overhangs the text top and bottom.
-                              // Left unpositioned so the Stack centres it and
-                              // hands it loose constraints: `Positioned.fill`
-                              // would force it to the full height and eat the
-                              // 84.
-                              if (_submitting)
-                                const IgnorePointer(
-                                  child: ScanCursor(height: 84),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Mic button — Figma body top 558 (node 2296:26337). The
-                    // bottom inset comes from the shared [BottomCtaBar]: the OS
-                    // gesture-bar inset on native, a guaranteed 24px floor on
-                    // web/desktop — so the mic never hugs / gets cut at the frame
-                    // edge (QA: "마이크 짤림") and sits at the same inset as other
-                    // screens.
-                    // `AnalyzingCaption` (`3627:9708`) — sits between the
-                    // sentence and the mic anchor, so it only exists while
-                    // scoring. Reserving its 20 when idle would push the mic
-                    // off the frame's 558.
-                    if (_submitting) ...[
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: AppSpacing.s20),
-                        child: Text(
-                          _scoringSlow
-                              ? l10n.analyzingTakingLonger
-                              : l10n.analyzingByWord,
-                          textAlign: TextAlign.center,
-                          style: AppType.label1.m
-                              .copyWith(color: context.c.labelNormal),
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.s16),
-                    ],
-                    BottomCtaBar(
-                      child: Center(
-                        // Same 96 anchor either way — `Mic/Spinner` replaces the
-                        // mic in place, which is why scoring no longer dims the
-                        // screen behind an overlay.
-                        child: _submitting
-                            ? const MicAnalysis()
-                            : StreamBuilder<double>(
-                                stream: _recorder.amplitude,
-                                builder: (context, snap) => MicButton(
-                                  recording: _recording,
-                                  // Drive the reactive pulse from the live mic
-                                  // level while recording; static otherwise.
-                                  level: _recording ? snap.data : null,
-                                  onTap: () => _onMicTap(args),
-                                ),
-                              ),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ],
+                // Bottom — the only part that changes shape per phase, cross-faded.
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  child: _bottom(context, l10n, args, sentence),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
+
+  /// The caption between the sentence and the mic anchor — shared by scoring
+  /// (`AnalyzingCaption` 3627:9708) and failed (E_failed 3627:9847).
+  Widget _caption(BuildContext context, String text) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+        child: Text(
+          text,
+          textAlign: TextAlign.center,
+          style: AppType.label1.m.copyWith(color: context.c.labelNormal),
+        ),
+      );
+
+  Widget _bottom(BuildContext context, AppLocalizations l10n, LearningArgs args,
+      MockSentence sentence) {
+    switch (_phase) {
+      case LearningPhase.recording:
+        return BottomCtaBar(
+          key: const ValueKey('recording'),
+          child: Center(
+            child: StreamBuilder<double>(
+              stream: _recorder.amplitude,
+              builder: (context, snap) => MicButton(
+                recording: _recording,
+                level: _recording ? snap.data : null,
+                onTap: () => _onMicTap(args),
+              ),
+            ),
+          ),
+        );
+      case LearningPhase.scoring:
+        return Column(
+          key: const ValueKey('scoring'),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // `AnalyzingCaption` (`3627:9708`) — between the sentence and the
+            // mic anchor.
+            _caption(
+                context,
+                _scoringSlow
+                    ? l10n.analyzingTakingLonger
+                    : l10n.analyzingByWord),
+            const SizedBox(height: AppSpacing.s16),
+            const BottomCtaBar(child: Center(child: MicAnalysis())),
+          ],
+        );
+      case LearningPhase.failed:
+        // `proto/E_failed` (`3627:9822`) — same as scoring but the mic anchor is
+        // a retry button and the caption states the failure.
+        return Column(
+          key: const ValueKey('failed'),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _caption(context, _failMessage ?? l10n.gradingFailed),
+            const SizedBox(height: AppSpacing.s16),
+            BottomCtaBar(
+              child: Center(
+                child: RecordCircleButton(
+                  icon: AppIcons.redo,
+                  semanticLabel: l10n.retry,
+                  onTap: _retry,
+                ),
+              ),
+            ),
+          ],
+        );
+      case LearningPhase.result:
+        return Column(
+          key: const ValueKey('result'),
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Button(
+                      type: BtnType.secondaryWhite,
+                      size: BtnSize.s44,
+                      text: l10n.nativeLabel,
+                      leftIcon: AppIcons.volume(
+                          size: 20, color: context.c.labelStrong),
+                      onPressed: () => _playStandard(sentence),
+                    ),
+                  ),
+                  const SizedBox(width: 13),
+                  Expanded(
+                    child: Button(
+                      type: BtnType.secondaryWhite,
+                      size: BtnSize.s44,
+                      text: l10n.meLabel,
+                      leftIcon: AppIcons.volume(
+                          size: 20, color: context.c.labelStrong),
+                      onPressed: _playMe,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 36), // Native/Me → controls (Figma 36; no token)
+            BottomCtaBar(
+              child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 56),
+                    const SizedBox(width: AppSpacing.s24),
+                    RecordCircleButton(
+                      icon: AppIcons.redo,
+                      semanticLabel: l10n.retry,
+                      onTap: _retry,
+                    ),
+                    const SizedBox(width: AppSpacing.s24),
+                    SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: IconButton(
+                        onPressed: () => _next(args),
+                        icon: AppIcons.arrowForward(
+                            size: 32, color: context.c.primaryHeavy),
+                        iconSize: 32,
+                        color: context.c.primaryHeavy,
+                        tooltip: l10n.next,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        );
+    }
+  }
 }
 
-// The dimmed `_SubmittingOverlay` (a centred CircularProgressIndicator over
-// `l10n.scoringPronunciation`) used to live here. `proto/2_scan_start` replaces
-// it: scoring is now a state of this screen — the mic anchor becomes
-// [MicAnalysis], [ScanCursor] sweeps the sentence and the caption sits between
-// them — so nothing dims and the sentence stays readable throughout.
+/// Renders the sentence character-by-character, each tinted by its grade. Falls
+/// back to a plain (un-tinted) sentence when no char scores exist.
+class _ScoredSentence extends StatelessWidget {
+  const _ScoredSentence({
+    super.key,
+    required this.charScores,
+    required this.fallbackText,
+  });
+
+  final List<CharScore> charScores;
+  final String fallbackText;
+
+  @override
+  Widget build(BuildContext context) {
+    final base = AppType.heading2.sb;
+    if (charScores.isEmpty) {
+      return Text(
+        fallbackText,
+        textAlign: TextAlign.center,
+        style: base.copyWith(color: context.c.labelStrong),
+      );
+    }
+    return RichText(
+      textAlign: TextAlign.center,
+      text: TextSpan(
+        children: [
+          for (final cs in charScores)
+            TextSpan(
+              text: cs.char,
+              style: base.copyWith(
+                color: _LearningIntroScreenState._gradeColor(context, cs),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}

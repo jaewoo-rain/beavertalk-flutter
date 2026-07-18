@@ -375,6 +375,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get analyzingTakingLonger => 'This is taking a little longer';
 
   @override
+  String get scanConnectionLost => 'Connection lost';
+
+  @override
   String get noRecordingToPlay => '没有可播放的录音。';
 
   @override

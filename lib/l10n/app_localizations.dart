@@ -850,6 +850,12 @@ abstract class AppLocalizations {
   /// **'This is taking a little longer'**
   String get analyzingTakingLonger;
 
+  /// Caption on the scan-failed screen when the request never reached the server (proto/E_failed AnalyzingCaption 3627:9847).
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost'**
+  String get scanConnectionLost;
+
   /// No description provided for @noRecordingToPlay.
   ///
   /// In en, this message translates to:

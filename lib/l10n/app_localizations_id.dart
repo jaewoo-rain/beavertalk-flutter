@@ -385,6 +385,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get analyzingTakingLonger => 'This is taking a little longer';
 
   @override
+  String get scanConnectionLost => 'Connection lost';
+
+  @override
   String get noRecordingToPlay => 'Tidak ada rekaman untuk diputar.';
 
   @override

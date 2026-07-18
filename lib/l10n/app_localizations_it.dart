@@ -390,6 +390,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get analyzingTakingLonger => 'This is taking a little longer';
 
   @override
+  String get scanConnectionLost => 'Connection lost';
+
+  @override
   String get noRecordingToPlay => 'Nessuna registrazione da riprodurre.';
 
   @override

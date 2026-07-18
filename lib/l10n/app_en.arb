@@ -214,6 +214,10 @@
   "@analyzingTakingLonger": {
     "description": "Replaces analyzingByWord once scoring runs long (screen/learning_analysis__지연5s AnalyzingCaption 3745:27)."
   },
+  "scanConnectionLost": "Connection lost",
+  "@scanConnectionLost": {
+    "description": "Caption on the scan-failed screen when the request never reached the server (proto/E_failed AnalyzingCaption 3627:9847)."
+  },
   "noRecordingToPlay": "No recording to play.",
   "myRecordingPlayError": "Couldn't play your recording.",
   "next": "Next",

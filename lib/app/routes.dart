@@ -23,7 +23,6 @@ import '../screens/home/analysis_loading.dart';
 import '../screens/home/analysis.dart';
 import '../screens/home/learning_intro.dart';
 import '../features/pronunciation_challenge/presentation/pronunciation_challenge_screen.dart';
-import '../screens/home/learning_next.dart';
 import '../screens/home/learning_call_main.dart';
 import '../screens/home/learning_call_main_loading.dart';
 import '../screens/home/learning_sentence_main.dart';
@@ -67,7 +66,6 @@ abstract final class Routes {
   static const analysisLoading = '/analysis/loading';
   static const analysis = '/analysis';
   static const learningIntro = '/learning/intro';
-  static const learningNext = '/learning/next';
   static const learningSentenceMain = '/learning/sentence-main';
   static const learningCallMain = '/learning/call-main';
   static const learningCallMainLoading = '/learning/call-main/loading';
@@ -125,7 +123,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.analysisLoading: (_) => const AnalysisLoadingScreen(),
     Routes.analysis: (_) => const AnalysisScreen(),
     Routes.learningIntro: (_) => const LearningIntroScreen(),
-    Routes.learningNext: (_) => const LearningNextScreen(),
     Routes.learningSentenceMain: (_) => const LearningSentenceMainScreen(),
     Routes.learningCallMain: (_) => const LearningCallMainScreen(),
     Routes.learningCallMainLoading: (_) =>
@@ -173,7 +170,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.analysisLoading: '분석 중',
     Routes.analysis: '통화 분석',
     Routes.learningIntro: '학습 인트로',
-    Routes.learningNext: '학습 비교',
     Routes.learningSentenceMain: '문장 결과',
     Routes.learningCallMain: '학습 결과',
     Routes.learningCallMainLoading: '학습 결과 로딩',

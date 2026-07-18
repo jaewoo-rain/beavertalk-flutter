@@ -21,7 +21,7 @@ import 'learning_args.dart';
 /// current sentence's scores over a pinned footer of **one** action —
 /// "학습 종료" ([BtnType.primaryFill]) → unwind to whatever launched the flow.
 /// The redraw confirms the single CTA; there is no "다음" button in the frame
-/// (advancing is [LearningNextScreen]'s job).
+/// (advancing happens in [LearningIntroScreen]).
 ///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
 class LearningSentenceMainScreen extends StatefulWidget {
@@ -42,7 +42,6 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
     Navigator.popUntil(context, (route) {
       final name = route.settings.name;
       return name != Routes.learningIntro &&
-          name != Routes.learningNext &&
           name != Routes.learningSentenceMain;
     });
   }
