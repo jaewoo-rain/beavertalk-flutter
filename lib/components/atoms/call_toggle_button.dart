@@ -46,7 +46,10 @@ class CallToggleButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color fill = active ? activeFill : Colors.transparent;
-    final Color glyph = active ? context.c.labelStrong : context.c.labelNormal;
+    // Active sits on the coloured [activeFill] and its glyph is always white
+    // (staticWhite, not labelStrong — that flips to #000 in Light). Inactive is
+    // a transparent chip, so the theme label colour is right there.
+    final Color glyph = active ? context.c.staticWhite : context.c.labelNormal;
 
     return Semantics(
       button: true,

@@ -315,8 +315,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         height: AppSpacing.s60,
                         child: Center(
                           child: AppIcons.callEnd(
+                            // Always white on the red end-call button —
+                            // staticWhite, not labelStrong (which is #000 in
+                            // Light and would vanish on the red).
                             size: 32,
-                            color: context.c.labelStrong,
+                            color: context.c.staticWhite,
                           ),
                         ),
                       ),

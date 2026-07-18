@@ -220,7 +220,9 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
             color: context.c.accentForegroundRed,
             shape: BoxShape.circle,
           ),
-          child: AppIcons.trash(color: context.c.labelStrong, size: 24),
+          // On the red delete circle the glyph is always white — staticWhite,
+          // not labelStrong (which flips to #000 in Light and vanishes on red).
+          child: AppIcons.trash(color: context.c.staticWhite, size: 24),
         ),
       ),
     );
