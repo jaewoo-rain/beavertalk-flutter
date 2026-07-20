@@ -107,29 +107,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            return SafeArea(
-              top: false,
-              // 24px bottom floor (matches BottomCtaBar / the sheet's own
-              // footer). `showHomeIndicator: false` drops the sheet's internal
-              // inset, so without this the confirm button sits flush at the
-              // bottom on devices with no/short OS gesture inset.
-              minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
-              child: BottomSheetCountrySelect(
-                items: items,
-                value: selected,
-                // Overlay over the login screen — omit the device chrome.
-                showHomeIndicator: false,
-                onChanged: (code) => setSheetState(() => selected = code),
-                onConfirm: selected == null
-                    ? null
-                    : () {
-                        ref
-                            .read(signupDraftProvider.notifier)
-                            .setLanguage(selected!);
-                        Navigator.of(sheetContext).pop();
-                      },
-                onClose: () => Navigator.of(sheetContext).pop(),
-              ),
+            // Flush bottom sheet — NO outer SafeArea (that lifts the whole
+            // sheet off the bottom, leaving a gap beneath it). The sheet's own
+            // footer puts the 24px floor + OS gesture inset INSIDE the surface
+            // via showHomeIndicator (default true), so the sheet stays anchored
+            // to the bottom and only the confirm button clears it. Matches the
+            // MyPage language picker.
+            return BottomSheetCountrySelect(
+              items: items,
+              value: selected,
+              onChanged: (code) => setSheetState(() => selected = code),
+              onConfirm: selected == null
+                  ? null
+                  : () {
+                      ref
+                          .read(signupDraftProvider.notifier)
+                          .setLanguage(selected!);
+                      Navigator.of(sheetContext).pop();
+                    },
+              onClose: () => Navigator.of(sheetContext).pop(),
             );
           },
         );
