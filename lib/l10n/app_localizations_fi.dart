@@ -743,6 +743,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google-kirjautuminen epäonnistui.';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao-kirjautuminen epäonnistui.';
+
+  @override
   String get loginContinueWithKakao => 'Jatka Kakaolla';
 
   @override

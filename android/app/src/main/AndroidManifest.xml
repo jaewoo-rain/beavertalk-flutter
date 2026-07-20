@@ -49,6 +49,17 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Supabase OAuth (Kakao, and the Apple/Android fallback) deep-link
+                 redirect. After browser consent the external browser returns to
+                 the app via this scheme/host; supabase_flutter then completes the
+                 session. Must match kOAuthRedirect in auth_controller.dart and the
+                 Supabase dashboard's Redirect URLs. -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="im.beavertalk.beavertalk" android:host="login-callback"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->

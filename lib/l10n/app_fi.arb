@@ -211,6 +211,7 @@
   "priceFree": "Ilmainen",
   "loginGoogleTokenError": "Google-kirjautumistunnusta ei saatu.",
   "loginGoogleSignInFailed": "Google-kirjautuminen epäonnistui.",
+  "loginKakaoSignInFailed": "Kakao-kirjautuminen epäonnistui.",
   "loginContinueWithKakao": "Jatka Kakaolla",
   "loginContinueWithGoogle": "Jatka Googlella",
   "loginContinueWithApple": "Jatka Applella",

@@ -11,6 +11,13 @@ import 'auth_providers.dart';
 import 'my_profile_provider.dart';
 import 'signup_draft_provider.dart';
 
+/// Deep link Supabase OAuth (Kakao, and the Apple/Android fallback) redirects
+/// back to after the browser consent step. Must be registered in three places:
+/// `AndroidManifest.xml` (intent-filter), iOS `Info.plist` (CFBundleURLTypes),
+/// and the Supabase dashboard → Authentication → URL Configuration → Redirect
+/// URLs.
+const kOAuthRedirect = 'im.beavertalk.beavertalk://login-callback';
+
 /// High-level auth state the UI (AuthGate) switches on.
 enum AuthStatus {
   /// Boot in progress — we don't yet know if a session exists.
@@ -205,15 +212,51 @@ class AuthController extends Notifier<AuthStatus> {
     }
   }
 
-  /// Social login (Google/Kakao). Not configured yet — see TODO below.
-  Future<void> socialLogin({
-    required String loginMethod,
-    required String token,
+  /// Google sign-in: exchanges a Google [idToken] (plus the optional
+  /// [accessToken], which lets Supabase fetch the provider profile) for a
+  /// Supabase session via `signInWithIdToken`.
+  ///
+  /// The token is obtained natively on mobile (`google_sign_in`, audience = the
+  /// web `serverClientId`) or via GIS on web. No backend change is needed:
+  /// Supabase issues the same JWT it does for email login, so `/members/me`
+  /// and every other authed call keep working. A first-time social user lands
+  /// with `onboardingCompleted == false`, so the AuthGate routes to onboarding.
+  /// Throws [AppException] on failure (caller shows it).
+  Future<void> signInWithGoogle({
+    required String idToken,
+    String? accessToken,
   }) async {
-    // TODO(auth): wire OAuth once providers are configured in Supabase, e.g.
-    //   await _client.auth.signInWithOAuth(OAuthProvider.google);
-    // The deleted `/auth/social` backend endpoint is intentionally NOT called.
-    throw const UnknownFailure('소셜 로그인은 아직 준비 중이에요.');
+    try {
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+      state = AuthStatus.authenticated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// Kakao sign-in via Supabase OAuth. Supabase has no Kakao *native* id_token
+  /// path, so this opens Kakao's consent page in an external browser; on success
+  /// the deep link [kOAuthRedirect] returns to the app and `onAuthStateChange`
+  /// (wired in [_subscribeOnce]) flips the gate to authenticated — so, unlike the
+  /// email/Google paths, this method does NOT set [state] itself and the caller
+  /// needs no post-login navigation (the AuthGate re-routes on the event).
+  ///
+  /// Returns as soon as the browser is launched; the session arrives
+  /// asynchronously. Throws [AppException] if the browser can't be launched.
+  Future<void> signInWithKakao() async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.kakao,
+        redirectTo: kOAuthRedirect,
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
   }
 
   /// Explicit logout — signs out of Supabase, drops the cached profile, shows

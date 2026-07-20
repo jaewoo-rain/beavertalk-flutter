@@ -719,6 +719,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loginGoogleSignInFailed => '구글 로그인에 실패했어요.';
 
   @override
+  String get loginKakaoSignInFailed => '카카오 로그인에 실패했어요.';
+
+  @override
   String get loginContinueWithKakao => '카카오로 계속하기';
 
   @override

@@ -740,6 +740,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google нэвтрэлт амжилтгүй боллоо.';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao нэвтрэлт амжилтгүй боллоо.';
+
+  @override
   String get loginContinueWithKakao => 'Kakao-гаар үргэлжлүүлэх';
 
   @override

@@ -737,6 +737,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get loginGoogleSignInFailed => 'ลงชื่อเข้าใช้ด้วย Google ไม่สำเร็จ';
 
   @override
+  String get loginKakaoSignInFailed => 'ลงชื่อเข้าใช้ด้วย Kakao ไม่สำเร็จ';
+
+  @override
   String get loginContinueWithKakao => 'ดำเนินการต่อด้วย Kakao';
 
   @override

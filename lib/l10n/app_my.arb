@@ -211,6 +211,7 @@
   "priceFree": "အခမဲ့",
   "loginGoogleTokenError": "Google အကောင့်ဝင်ရန် တိုကင် ရယူ၍မရပါ။",
   "loginGoogleSignInFailed": "Google အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။",
+  "loginKakaoSignInFailed": "Kakao အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။",
   "loginContinueWithKakao": "Kakao ဖြင့် ဆက်လုပ်ရန်",
   "loginContinueWithGoogle": "Google ဖြင့် ဆက်လုပ်ရန်",
   "loginContinueWithApple": "Apple ဖြင့် ဆက်လုပ်ရန်",

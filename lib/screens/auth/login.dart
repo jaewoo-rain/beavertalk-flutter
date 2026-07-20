@@ -20,19 +20,27 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Web client id (public value) — must match the server's `GOOGLE_CLIENT_ID`.
+/// Web client id (public value) — the GCP `bt-dev-web-01` "Web application"
+/// OAuth client. Used as the web GIS `clientId` and, on mobile, as the
+/// `serverClientId` so the returned idToken's audience is this ID (which
+/// Supabase validates against its Google provider "Client IDs" list). Must
+/// stay identical here, in `web/index.html`, and in the Supabase dashboard.
 const _googleClientId =
-    '117133754675-ovpf9bvvm96e18d0089692k51bq75esk.apps.googleusercontent.com';
+    '333511894671-mfss7vgjb3nmgl16jpo2e56bp6ne770e.apps.googleusercontent.com';
 
 /// Auth — landing login screen. Figma `screen/auth_login` (`2117:19693`).
 ///
 /// Brand block + social sign-in buttons + "or" divider + email login +
 /// sign-up prompt.
 ///
-/// **Google is real on web**: the GIS [gis_web.renderButton] yields an idToken
-/// via [GoogleSignIn.onCurrentUserChanged], which we hand to
-/// `authController.socialLogin('google', idToken)`; the AuthGate then shows
-/// home. Kakao/Apple remain mocked for now.
+/// **Google is real (web + Android)**: mobile uses the native `google_sign_in`
+/// sheet, web uses GIS; either way we get an idToken (audience = the web client)
+/// and hand it to `authController.signInWithGoogle`, which exchanges it for a
+/// Supabase session via `signInWithIdToken`. The AuthGate then shows home (or
+/// onboarding for a first-time user).
+///
+/// **Kakao is real too** via Supabase OAuth (external browser → deep link
+/// `kOAuthRedirect` → `onAuthStateChange` → AuthGate). Apple remains mocked.
 class LoginScreen extends ConsumerStatefulWidget {
   /// Creates the login landing screen.
   const LoginScreen({super.key});
@@ -42,14 +50,21 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  /// Web Google Sign-In. `clientId` matches index.html + the server.
+  /// Google Sign-In, configured per platform:
+  /// - **web** → `clientId` = the web client (matches index.html), GIS flow.
+  /// - **mobile** → `serverClientId` = the *web* client, so the returned
+  ///   idToken's audience is the client Supabase validates; the Android OAuth
+  ///   client (package + SHA-1) authorizes the request implicitly. (iOS will
+  ///   also need its own `clientId` once that provider is set up.)
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: _googleClientId,
+    clientId: kIsWeb ? _googleClientId : null,
+    serverClientId: kIsWeb ? null : _googleClientId,
     scopes: const ['email', 'profile'],
   );
 
   StreamSubscription<GoogleSignInAccount?>? _googleSub;
   bool _googleBusy = false;
+  bool _kakaoBusy = false;
 
   @override
   void initState() {
@@ -121,7 +136,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  /// Exchanges the Google idToken for our JWT via `POST /auth/social`.
+  /// Exchanges the Google idToken for a Supabase session via
+  /// `authController.signInWithGoogle` (→ `signInWithIdToken`).
   Future<void> _onGoogleUser(GoogleSignInAccount? account) async {
     if (account == null || _googleBusy) return;
     final l10n = AppLocalizations.of(context);
@@ -134,7 +150,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       await ref
           .read(authControllerProvider.notifier)
-          .socialLogin(loginMethod: 'google', token: idToken);
+          .signInWithGoogle(idToken: idToken, accessToken: auth.accessToken);
       // Success → AuthGate is authenticated and shows home; pop the auth flow.
       if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
     } on AppException catch (e) {
@@ -152,7 +168,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Kakao/Apple stay mocked for now → straight to home.
+  /// Kakao sign-in via Supabase OAuth (external browser). Supabase has no Kakao
+  /// native id_token path, so the session returns asynchronously through the
+  /// deep link → `onAuthStateChange` → AuthGate re-routes; there is no
+  /// navigation here. We only surface a launch failure.
+  Future<void> _kakaoLogin() async {
+    if (_kakaoBusy) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _kakaoBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithKakao();
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError(l10n.loginKakaoSignInFailed);
+    } finally {
+      if (mounted) setState(() => _kakaoBusy = false);
+    }
+  }
+
+  /// Apple stays mocked for now → straight to home.
   void _socialLoginMock() => Navigator.pushNamed(context, Routes.home);
 
   /// Email login opens the dedicated email/password form.
@@ -195,7 +230,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               size: BtnSize.s60,
               text: l10n.loginContinueWithKakao,
               leftIcon: const KakaoIcon(size: 24),
-              onPressed: _socialLoginMock,
+              disabled: _kakaoBusy,
+              onPressed: _kakaoLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             // Google: custom button (matches Kakao/Apple) wired to the real
@@ -252,7 +288,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (_googleBusy) return;
     final l10n = AppLocalizations.of(context);
     try {
-      await _googleSignIn.signIn();
+      final account = await _googleSignIn.signIn();
+      // Web delivers the signed-in user via `onCurrentUserChanged` (wired in
+      // initState); mobile returns it right here (null = the user cancelled).
+      if (!kIsWeb && account != null) {
+        await _onGoogleUser(account);
+      }
     } on AppException catch (e) {
       _showError(e.message);
     } catch (_) {

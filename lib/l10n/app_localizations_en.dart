@@ -741,6 +741,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google sign-in failed.';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao sign-in failed.';
+
+  @override
   String get loginContinueWithKakao => 'Continue with Kakao';
 
   @override

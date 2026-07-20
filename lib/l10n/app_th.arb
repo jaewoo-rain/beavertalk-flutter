@@ -211,6 +211,7 @@
   "priceFree": "ฟรี",
   "loginGoogleTokenError": "รับโทเค็นการลงชื่อเข้าใช้ Google ไม่สำเร็จ",
   "loginGoogleSignInFailed": "ลงชื่อเข้าใช้ด้วย Google ไม่สำเร็จ",
+  "loginKakaoSignInFailed": "ลงชื่อเข้าใช้ด้วย Kakao ไม่สำเร็จ",
   "loginContinueWithKakao": "ดำเนินการต่อด้วย Kakao",
   "loginContinueWithGoogle": "ดำเนินการต่อด้วย Google",
   "loginContinueWithApple": "ดำเนินการต่อด้วย Apple",

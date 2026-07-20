@@ -211,6 +211,7 @@
   "priceFree": "Бесплатно",
   "loginGoogleTokenError": "Не удалось получить токен входа Google.",
   "loginGoogleSignInFailed": "Не удалось войти через Google.",
+  "loginKakaoSignInFailed": "Не удалось войти через Kakao.",
   "loginContinueWithKakao": "Продолжить с Kakao",
   "loginContinueWithGoogle": "Продолжить с Google",
   "loginContinueWithApple": "Продолжить с Apple",

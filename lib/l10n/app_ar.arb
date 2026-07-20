@@ -211,6 +211,7 @@
   "priceFree": "مجاني",
   "loginGoogleTokenError": "تعذّر الحصول على رمز تسجيل الدخول عبر Google.",
   "loginGoogleSignInFailed": "فشل تسجيل الدخول عبر Google.",
+  "loginKakaoSignInFailed": "فشل تسجيل الدخول عبر Kakao.",
   "loginContinueWithKakao": "المتابعة عبر Kakao",
   "loginContinueWithGoogle": "المتابعة عبر Google",
   "loginContinueWithApple": "المتابعة عبر Apple",

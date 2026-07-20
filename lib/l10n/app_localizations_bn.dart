@@ -740,6 +740,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google সাইন-ইন ব্যর্থ হয়েছে।';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao সাইন-ইন ব্যর্থ হয়েছে।';
+
+  @override
   String get loginContinueWithKakao => 'Kakao দিয়ে চালিয়ে যান';
 
   @override

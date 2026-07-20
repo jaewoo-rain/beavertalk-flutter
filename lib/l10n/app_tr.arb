@@ -211,6 +211,7 @@
   "priceFree": "Ücretsiz",
   "loginGoogleTokenError": "Google giriş jetonu alınamadı.",
   "loginGoogleSignInFailed": "Google ile giriş başarısız oldu.",
+  "loginKakaoSignInFailed": "Kakao ile giriş başarısız oldu.",
   "loginContinueWithKakao": "Kakao ile devam et",
   "loginContinueWithGoogle": "Google ile devam et",
   "loginContinueWithApple": "Apple ile devam et",

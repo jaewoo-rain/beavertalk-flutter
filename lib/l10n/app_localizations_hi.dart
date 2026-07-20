@@ -739,6 +739,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google साइन-इन विफल रहा।';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao साइन-इन विफल रहा।';
+
+  @override
   String get loginContinueWithKakao => 'Kakao के साथ जारी रखें';
 
   @override

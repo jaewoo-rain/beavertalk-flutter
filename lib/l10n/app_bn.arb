@@ -211,6 +211,7 @@
   "priceFree": "ফ্রি",
   "loginGoogleTokenError": "Google সাইন-ইন টোকেন পাওয়া যায়নি।",
   "loginGoogleSignInFailed": "Google সাইন-ইন ব্যর্থ হয়েছে।",
+  "loginKakaoSignInFailed": "Kakao সাইন-ইন ব্যর্থ হয়েছে।",
   "loginContinueWithKakao": "Kakao দিয়ে চালিয়ে যান",
   "loginContinueWithGoogle": "Google দিয়ে চালিয়ে যান",
   "loginContinueWithApple": "Apple দিয়ে চালিয়ে যান",

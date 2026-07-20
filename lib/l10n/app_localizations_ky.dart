@@ -742,6 +742,9 @@ class AppLocalizationsKy extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google аркылуу кирүү ишке ашкан жок.';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao аркылуу кирүү ишке ашкан жок.';
+
+  @override
   String get loginContinueWithKakao => 'Kakao аркылуу улантуу';
 
   @override

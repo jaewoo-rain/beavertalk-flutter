@@ -750,6 +750,9 @@ class AppLocalizationsHu extends AppLocalizations {
       'A Google bejelentkezés sikertelen volt.';
 
   @override
+  String get loginKakaoSignInFailed => 'A Kakao bejelentkezés sikertelen volt.';
+
+  @override
   String get loginContinueWithKakao => 'Folytatás Kakao fiókkal';
 
   @override

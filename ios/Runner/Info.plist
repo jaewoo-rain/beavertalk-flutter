@@ -26,6 +26,23 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<!-- Supabase OAuth (Kakao, and the Apple/Android fallback) deep-link
+	     redirect scheme. After browser consent, iOS returns to the app via this
+	     scheme; supabase_flutter completes the session. Must match kOAuthRedirect
+	     in auth_controller.dart and the Supabase dashboard's Redirect URLs. -->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>im.beavertalk.beavertalk.login-callback</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>im.beavertalk.beavertalk</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>

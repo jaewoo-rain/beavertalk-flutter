@@ -211,6 +211,7 @@
   "priceFree": "ឥតគិតថ្លៃ",
   "loginGoogleTokenError": "មិនអាចទទួលបានតូខឹនចូល Google បានទេ។",
   "loginGoogleSignInFailed": "ការចូល Google បរាជ័យ។",
+  "loginKakaoSignInFailed": "ការចូល Kakao បរាជ័យ។",
   "loginContinueWithKakao": "បន្តជាមួយ Kakao",
   "loginContinueWithGoogle": "បន្តជាមួយ Google",
   "loginContinueWithApple": "បន្តជាមួយ Apple",

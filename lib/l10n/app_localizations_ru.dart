@@ -741,6 +741,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Не удалось войти через Google.';
 
   @override
+  String get loginKakaoSignInFailed => 'Не удалось войти через Kakao.';
+
+  @override
   String get loginContinueWithKakao => 'Продолжить с Kakao';
 
   @override

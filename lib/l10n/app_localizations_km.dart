@@ -741,6 +741,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get loginGoogleSignInFailed => 'ការចូល Google បរាជ័យ។';
 
   @override
+  String get loginKakaoSignInFailed => 'ការចូល Kakao បរាជ័យ។';
+
+  @override
   String get loginContinueWithKakao => 'បន្តជាមួយ Kakao';
 
   @override

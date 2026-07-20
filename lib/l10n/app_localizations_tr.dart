@@ -741,6 +741,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google ile giriş başarısız oldu.';
 
   @override
+  String get loginKakaoSignInFailed => 'Kakao ile giriş başarısız oldu.';
+
+  @override
   String get loginContinueWithKakao => 'Kakao ile devam et';
 
   @override
