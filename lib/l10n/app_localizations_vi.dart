@@ -740,6 +740,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Đăng nhập Google thất bại.';
 
   @override
+  String get loginAppleSignInFailed => 'Đăng nhập Apple thất bại.';
+
+  @override
   String get loginKakaoSignInFailed => 'Đăng nhập Kakao thất bại.';
 
   @override

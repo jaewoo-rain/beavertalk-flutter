@@ -39,8 +39,9 @@ const _googleClientId =
 /// Supabase session via `signInWithIdToken`. The AuthGate then shows home (or
 /// onboarding for a first-time user).
 ///
-/// **Kakao is real too** via Supabase OAuth (external browser → deep link
-/// `kOAuthRedirect` → `onAuthStateChange` → AuthGate). Apple remains mocked.
+/// **Kakao and Apple are real too** via Supabase OAuth (external browser → deep
+/// link `kOAuthRedirect` → `onAuthStateChange` → AuthGate). Apple uses the same
+/// browser-OAuth fallback on Android; its iOS-native path is future work.
 class LoginScreen extends ConsumerStatefulWidget {
   /// Creates the login landing screen.
   const LoginScreen({super.key});
@@ -65,6 +66,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   StreamSubscription<GoogleSignInAccount?>? _googleSub;
   bool _googleBusy = false;
   bool _kakaoBusy = false;
+  bool _appleBusy = false;
 
   @override
   void initState() {
@@ -187,8 +189,24 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  /// Apple stays mocked for now → straight to home.
-  void _socialLoginMock() => Navigator.pushNamed(context, Routes.home);
+  /// Apple sign-in via Supabase OAuth (external browser) — Android/web path. Like
+  /// Kakao, the session returns asynchronously through the deep link →
+  /// `onAuthStateChange` → AuthGate re-routes; no navigation here. (iOS native
+  /// Sign in with Apple is future work — needs a Mac/Xcode capability.)
+  Future<void> _appleLogin() async {
+    if (_appleBusy) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _appleBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithApple();
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError(l10n.loginAppleSignInFailed);
+    } finally {
+      if (mounted) setState(() => _appleBusy = false);
+    }
+  }
 
   /// Email login opens the dedicated email/password form.
   void _emailLogin() => Navigator.pushNamed(context, Routes.loginForm);
@@ -250,7 +268,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               size: BtnSize.s60,
               text: l10n.loginContinueWithApple,
               leftIcon: const AppleIcon(size: 24),
-              onPressed: _socialLoginMock,
+              disabled: _appleBusy,
+              onPressed: _appleLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             // ── "or" divider ────────────────────────────────────────────

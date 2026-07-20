@@ -101,6 +101,26 @@ abstract final class Routes {
 /// Central route table. Screens are swapped for real ones flow-by-flow; until
 /// then a [PlaceholderScreen] keeps every route navigable.
 Route<dynamic> onGenerateRoute(RouteSettings settings) {
+  // Supabase OAuth (Kakao/Apple) returns through the deep link
+  // `im.beavertalk.beavertalk://login-callback?code=…`, which the OS delivers to
+  // the already-running app and Flutter surfaces here as a route name like
+  // `/?code=…`. supabase_flutter's own app_links listener ALREADY handles this
+  // link (PKCE code exchange → session → onAuthStateChange → AuthGate re-routes),
+  // so rendering it as an unknown route showed the "화면 준비 중" placeholder on
+  // top of everything. Intercept it with a transient splash that pops itself,
+  // revealing the AuthGate root which flips to home/onboarding once the session
+  // lands. (`flutter_deeplinking_enabled=false` in the manifest covers the
+  // cold-start initial-link case; this covers the running/onNewIntent case.)
+  final rawName = settings.name ?? '';
+  if (rawName.contains('code=') ||
+      rawName.contains('access_token=') ||
+      rawName.contains('error_description=')) {
+    return _AppPageRoute<dynamic>(
+      builder: (_) => const _OAuthCallbackScreen(),
+      settings: settings,
+    );
+  }
+
   final builders = <String, WidgetBuilder>{
     Routes.gallery: (_) => const GalleryScreen(),
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
@@ -184,6 +204,36 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
   final builder = builders[name] ??
       (_) => PlaceholderScreen(names[name] ?? name);
   return _AppPageRoute<dynamic>(builder: builder, settings: settings);
+}
+
+/// Transient screen for the Supabase OAuth deep-link callback
+/// (`…://login-callback?code=…`). supabase_flutter completes the PKCE code
+/// exchange in the background (its app_links listener); this screen just pops
+/// itself on the first frame so the AuthGate root shows through and re-routes to
+/// home/onboarding when `onAuthStateChange` lands the session. A spinner covers
+/// the brief gap. See the interception at the top of [onGenerateRoute].
+class _OAuthCallbackScreen extends StatefulWidget {
+  const _OAuthCallbackScreen();
+
+  @override
+  State<_OAuthCallbackScreen> createState() => _OAuthCallbackScreenState();
+}
+
+class _OAuthCallbackScreenState extends State<_OAuthCallbackScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) Navigator.of(context).maybePop();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      body: Center(child: CircularProgressIndicator()),
+    );
+  }
 }
 
 /// The app's page transition — a shared-axis style slide + fade.

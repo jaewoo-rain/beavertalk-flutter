@@ -735,6 +735,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google арқылы кіру сәтсіз аяқталды.';
 
   @override
+  String get loginAppleSignInFailed => 'Apple арқылы кіру сәтсіз аяқталды.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao арқылы кіру сәтсіз аяқталды.';
 
   @override

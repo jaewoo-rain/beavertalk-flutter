@@ -211,6 +211,7 @@
   "priceFree": "නොමිලේ",
   "loginGoogleTokenError": "Google පිවිසුම් ටෝකනය ලබාගත නොහැකි විය.",
   "loginGoogleSignInFailed": "Google පිවිසුම අසාර්ථක විය.",
+  "loginAppleSignInFailed": "Apple පිවිසුම අසාර්ථක විය.",
   "loginKakaoSignInFailed": "Kakao පිවිසුම අසාර්ථක විය.",
   "loginContinueWithKakao": "Kakao සමඟ ඉදිරියට යන්න",
   "loginContinueWithGoogle": "Google සමඟ ඉදිරියට යන්න",

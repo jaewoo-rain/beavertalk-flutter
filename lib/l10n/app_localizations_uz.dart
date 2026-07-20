@@ -745,6 +745,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google orqali kirish amalga oshmadi.';
 
   @override
+  String get loginAppleSignInFailed => 'Apple orqali kirish amalga oshmadi.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao orqali kirish amalga oshmadi.';
 
   @override

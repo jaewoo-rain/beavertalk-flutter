@@ -259,6 +259,32 @@ class AuthController extends Notifier<AuthStatus> {
     }
   }
 
+  /// Apple sign-in via Supabase OAuth (external browser) — the Android/web path.
+  /// Apple has no Android native SDK, so this opens Apple's consent page in an
+  /// external browser (Services ID `im.beavertalk.beavertalk` + the .p8-signed
+  /// secret configured in Supabase); on success the deep link [kOAuthRedirect]
+  /// returns to the app and `onAuthStateChange` flips the gate — so, like Kakao,
+  /// this method does NOT set [state] and needs no post-login navigation.
+  ///
+  /// NOTE: the iOS *native* path (App ID `beavertalk.beavertalk.im` via
+  /// `sign_in_with_apple` → `signInWithIdToken(OAuthProvider.apple, nonce: …)`)
+  /// is future work — it needs an Xcode "Sign in with Apple" capability and a Mac
+  /// build, so every platform uses this browser OAuth fallback for now.
+  ///
+  /// Returns as soon as the browser is launched. Throws [AppException] if the
+  /// browser can't be launched.
+  Future<void> signInWithApple() async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.apple,
+        redirectTo: kOAuthRedirect,
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
   /// Explicit logout — signs out of Supabase, drops the cached profile, shows
   /// login. The `onAuthStateChange` listener also flips the gate, but we set it
   /// here too for immediacy.

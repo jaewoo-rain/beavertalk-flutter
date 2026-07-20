@@ -211,6 +211,7 @@
   "priceFree": "Bepul",
   "loginGoogleTokenError": "Google kirish tokenini olib boʻlmadi.",
   "loginGoogleSignInFailed": "Google orqali kirish amalga oshmadi.",
+  "loginAppleSignInFailed": "Apple orqali kirish amalga oshmadi.",
   "loginKakaoSignInFailed": "Kakao orqali kirish amalga oshmadi.",
   "loginContinueWithKakao": "Kakao bilan davom etish",
   "loginContinueWithGoogle": "Google bilan davom etish",

@@ -211,6 +211,7 @@
   "priceFree": "無料",
   "loginGoogleTokenError": "Googleサインイントークンを取得できませんでした。",
   "loginGoogleSignInFailed": "Googleサインインに失敗しました。",
+  "loginAppleSignInFailed": "Appleサインインに失敗しました。",
   "loginKakaoSignInFailed": "Kakaoサインインに失敗しました。",
   "loginContinueWithKakao": "Kakaoで続ける",
   "loginContinueWithGoogle": "Googleで続ける",

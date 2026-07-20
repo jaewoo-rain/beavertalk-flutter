@@ -211,6 +211,7 @@
   "priceFree": "Libre",
   "loginGoogleTokenError": "Hindi makuha ang Google sign-in token.",
   "loginGoogleSignInFailed": "Nabigo ang Google sign-in.",
+  "loginAppleSignInFailed": "Nabigo ang Apple sign-in.",
   "loginKakaoSignInFailed": "Nabigo ang Kakao sign-in.",
   "loginContinueWithKakao": "Magpatuloy gamit ang Kakao",
   "loginContinueWithGoogle": "Magpatuloy gamit ang Google",

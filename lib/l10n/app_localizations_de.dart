@@ -752,6 +752,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google-Anmeldung fehlgeschlagen.';
 
   @override
+  String get loginAppleSignInFailed => 'Apple-Anmeldung fehlgeschlagen.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao-Anmeldung fehlgeschlagen.';
 
   @override

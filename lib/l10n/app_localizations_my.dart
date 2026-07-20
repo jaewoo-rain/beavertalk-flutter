@@ -743,6 +743,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
 
   @override
+  String get loginAppleSignInFailed => 'Apple အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
 
   @override

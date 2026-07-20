@@ -737,6 +737,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google साइन-इन असफल भयो।';
 
   @override
+  String get loginAppleSignInFailed => 'Apple साइन-इन असफल भयो।';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao साइन-इन असफल भयो।';
 
   @override

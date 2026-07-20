@@ -716,6 +716,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google 登录失败。';
 
   @override
+  String get loginAppleSignInFailed => 'Apple 登录失败。';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao 登录失败。';
 
   @override

@@ -211,6 +211,7 @@
   "priceFree": "Акысыз",
   "loginGoogleTokenError": "Google кирүү токенин алып болбоду.",
   "loginGoogleSignInFailed": "Google аркылуу кирүү ишке ашкан жок.",
+  "loginAppleSignInFailed": "Apple аркылуу кирүү ишке ашкан жок.",
   "loginKakaoSignInFailed": "Kakao аркылуу кирүү ишке ашкан жок.",
   "loginContinueWithKakao": "Kakao аркылуу улантуу",
   "loginContinueWithGoogle": "Google аркылуу улантуу",

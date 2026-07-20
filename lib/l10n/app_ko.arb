@@ -229,6 +229,7 @@
   "priceFree": "무료",
   "loginGoogleTokenError": "구글 로그인 토큰을 가져오지 못했어요.",
   "loginGoogleSignInFailed": "구글 로그인에 실패했어요.",
+  "loginAppleSignInFailed": "애플 로그인에 실패했어요.",
   "loginKakaoSignInFailed": "카카오 로그인에 실패했어요.",
   "loginContinueWithKakao": "카카오로 계속하기",
   "loginContinueWithGoogle": "구글로 계속하기",

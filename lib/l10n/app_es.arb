@@ -211,6 +211,7 @@
   "priceFree": "Gratis",
   "loginGoogleTokenError": "No se pudo obtener el token de inicio de sesión de Google.",
   "loginGoogleSignInFailed": "Error al iniciar sesión con Google.",
+  "loginAppleSignInFailed": "Error al iniciar sesión con Apple.",
   "loginKakaoSignInFailed": "Error al iniciar sesión con Kakao.",
   "loginContinueWithKakao": "Continuar con Kakao",
   "loginContinueWithGoogle": "Continuar con Google",

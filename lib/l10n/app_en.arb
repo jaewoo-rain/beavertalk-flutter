@@ -337,6 +337,7 @@
   "priceFree": "Free",
   "loginGoogleTokenError": "Couldn't get a Google sign-in token.",
   "loginGoogleSignInFailed": "Google sign-in failed.",
+  "loginAppleSignInFailed": "Apple sign-in failed.",
   "loginKakaoSignInFailed": "Kakao sign-in failed.",
   "loginContinueWithKakao": "Continue with Kakao",
   "loginContinueWithGoogle": "Continue with Google",

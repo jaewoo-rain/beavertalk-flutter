@@ -66,6 +66,16 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Disable Flutter's built-in deep-link routing so the Supabase OAuth
+             callback (im.beavertalk.beavertalk://login-callback?code=…) is NOT
+             pushed onto the Navigator as an unknown route (which showed the
+             "화면 준비 중" placeholder). With this off, supabase_flutter's own
+             app_links listener receives the link and completes the PKCE code
+             exchange → session → AuthGate. In-app Navigator.pushNamed is
+             unaffected (this only governs OS-delivered links). -->
+        <meta-data
+            android:name="flutter_deeplinking_enabled"
+            android:value="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

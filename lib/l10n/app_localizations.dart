@@ -1528,6 +1528,12 @@ abstract class AppLocalizations {
   /// **'Google sign-in failed.'**
   String get loginGoogleSignInFailed;
 
+  /// No description provided for @loginAppleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign-in failed.'**
+  String get loginAppleSignInFailed;
+
   /// No description provided for @loginKakaoSignInFailed.
   ///
   /// In en, this message translates to:

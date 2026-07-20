@@ -740,6 +740,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get loginGoogleSignInFailed => 'گوگل سائن ان ناکام ہو گیا۔';
 
   @override
+  String get loginAppleSignInFailed => 'گوگل سائن ان ناکام ہو گیا۔';
+
+  @override
   String get loginKakaoSignInFailed => 'گوگل سائن ان ناکام ہو گیا۔';
 
   @override

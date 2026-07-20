@@ -211,6 +211,7 @@
   "priceFree": "Miễn phí",
   "loginGoogleTokenError": "Không thể lấy mã đăng nhập Google.",
   "loginGoogleSignInFailed": "Đăng nhập Google thất bại.",
+  "loginAppleSignInFailed": "Đăng nhập Apple thất bại.",
   "loginKakaoSignInFailed": "Đăng nhập Kakao thất bại.",
   "loginContinueWithKakao": "Tiếp tục với Kakao",
   "loginContinueWithGoogle": "Tiếp tục với Google",

@@ -211,6 +211,7 @@
   "priceFree": "Kostenlos",
   "loginGoogleTokenError": "Google-Anmeldetoken konnte nicht abgerufen werden.",
   "loginGoogleSignInFailed": "Google-Anmeldung fehlgeschlagen.",
+  "loginAppleSignInFailed": "Apple-Anmeldung fehlgeschlagen.",
   "loginKakaoSignInFailed": "Kakao-Anmeldung fehlgeschlagen.",
   "loginContinueWithKakao": "Mit Kakao fortfahren",
   "loginContinueWithGoogle": "Mit Google fortfahren",

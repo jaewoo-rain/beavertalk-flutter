@@ -211,6 +211,7 @@
   "priceFree": "Gratuit",
   "loginGoogleTokenError": "Impossible d'obtenir un jeton de connexion Google.",
   "loginGoogleSignInFailed": "Échec de la connexion avec Google.",
+  "loginAppleSignInFailed": "Échec de la connexion avec Apple.",
   "loginKakaoSignInFailed": "Échec de la connexion avec Kakao.",
   "loginContinueWithKakao": "Continuer avec Kakao",
   "loginContinueWithGoogle": "Continuer avec Google",

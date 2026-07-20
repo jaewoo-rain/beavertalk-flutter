@@ -211,6 +211,7 @@
   "priceFree": "免费",
   "loginGoogleTokenError": "无法获取 Google 登录令牌。",
   "loginGoogleSignInFailed": "Google 登录失败。",
+  "loginAppleSignInFailed": "Apple 登录失败。",
   "loginKakaoSignInFailed": "Kakao 登录失败。",
   "loginContinueWithKakao": "使用 Kakao 继续",
   "loginContinueWithGoogle": "使用 Google 继续",

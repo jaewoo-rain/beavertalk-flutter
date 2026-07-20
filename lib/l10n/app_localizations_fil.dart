@@ -747,6 +747,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Nabigo ang Google sign-in.';
 
   @override
+  String get loginAppleSignInFailed => 'Nabigo ang Apple sign-in.';
+
+  @override
   String get loginKakaoSignInFailed => 'Nabigo ang Kakao sign-in.';
 
   @override

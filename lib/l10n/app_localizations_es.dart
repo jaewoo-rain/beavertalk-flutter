@@ -746,6 +746,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Error al iniciar sesión con Google.';
 
   @override
+  String get loginAppleSignInFailed => 'Error al iniciar sesión con Apple.';
+
+  @override
   String get loginKakaoSignInFailed => 'Error al iniciar sesión con Kakao.';
 
   @override
