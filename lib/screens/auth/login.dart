@@ -109,6 +109,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           builder: (context, setSheetState) {
             return SafeArea(
               top: false,
+              // 24px bottom floor (matches BottomCtaBar / the sheet's own
+              // footer). `showHomeIndicator: false` drops the sheet's internal
+              // inset, so without this the confirm button sits flush at the
+              // bottom on devices with no/short OS gesture inset.
+              minimum: const EdgeInsets.only(bottom: AppSpacing.s24),
               child: BottomSheetCountrySelect(
                 items: items,
                 value: selected,
