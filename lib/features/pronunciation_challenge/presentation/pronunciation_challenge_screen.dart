@@ -19,6 +19,7 @@ import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
 import '../data/camera_service.dart';
 import '../data/challenge_recorder.dart';
+import '../data/curated_word_source.dart';
 import '../data/stt_service.dart';
 import '../domain/challenge_engine.dart';
 import '../domain/game_config.dart';
@@ -30,9 +31,10 @@ enum _Phase { start, loading, countdown, playing, result }
 
 /// Pronunciation Challenge — a Ticker + CustomPainter mini-game.
 ///
-/// PHASE 2/3: live Korean STT (Vosk over a single mic PCM capture) is the
-/// primary input, with tap-to-pass kept as a fallback when STT is unavailable
-/// (web / iOS-unsupported plugin / model download failure / denied mic). A
+/// PHASE 2/3: live Korean STT (server Google Speech-to-Text over a single mic
+/// PCM capture streamed via WebSocket) is the primary input, with tap-to-pass
+/// kept as a fallback when STT is unavailable (web / denied mic / STT server
+/// unreachable). A
 /// front-camera selfie backdrop sits behind the canvas when available; the
 /// result panel shares a branded score-card image via `share_plus`.
 ///
@@ -75,19 +77,45 @@ class _PronunciationChallengeScreenState
   /// backgrounded, so [_onAppResumed] knows whether to try restarting it.
   bool _sttActiveBeforePause = false;
 
+  /// Guards the one-time [didChangeDependencies] setup (needs route args, which
+  /// aren't available in [initState]).
+  bool _setup = false;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _controller = ChallengeController(vsync: this);
-    // Wire speech tokens into the engine's pass logic (front-most in-zone,
-    // exact normalized match). The per-utterance bookkeeping lives in the
-    // SttService's SpeechMatcher.
-    _stt.onToken = _controller.engine.tryPassToken;
-    _controller.addListener(_onFrame);
-    // Re-arm tap fallback if the STT pump watchdog (or anything else) flips
-    // status to unavailable mid-round.
+    // Re-arm tap fallback if STT flips to unavailable mid-round.
     _stt.status.addListener(_onSttStatusChanged);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_setup) return;
+    _setup = true;
+
+    // Learned sentences for this call are passed as route arguments
+    // (`analysis.dart`). When present the game draws from them and matches whole
+    // spoken sentences; otherwise it falls back to the default word list and
+    // per-word matching, so direct entry still works.
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final sentences = args is List<String>
+        ? args.where((s) => s.trim().isNotEmpty).toList(growable: false)
+        : const <String>[];
+    final useSentences = sentences.isNotEmpty;
+
+    final engine = ChallengeEngine(
+      wordSource: CuratedWordSource(items: useSentences ? sentences : null),
+    );
+    _controller = ChallengeController(vsync: this, engine: engine);
+    if (useSentences) {
+      _stt.sentenceMode = true;
+      _stt.onTranscript = engine.tryPassSentence;
+    } else {
+      _stt.onToken = engine.tryPassToken;
+    }
+    _controller.addListener(_onFrame);
     // Ticker runs continuously so the belt animates behind every panel.
     _controller.startTicker();
   }
@@ -161,8 +189,9 @@ class _PronunciationChallengeScreenState
     }
   }
 
-  /// Start: initialize camera (backdrop) + STT (may download the model), then
-  /// count down and play. Both inits are best-effort and degrade gracefully.
+  /// Start: initialize camera (backdrop) + STT (marks the platform capable; the
+  /// STT WebSocket connects at [_startPlaying]), then count down and play. Both
+  /// inits are best-effort and degrade gracefully.
   Future<void> _onStart() async {
     setState(() => _phase = _Phase.loading);
     // Camera + STT init concurrently. Neither can throw (both return bool).
@@ -300,20 +329,24 @@ class _PronunciationChallengeScreenState
     }
     final preview = controller.value.previewSize;
     // previewSize is reported in sensor orientation (landscape); swap W/H for
-    // the portrait stage, then cover-fit and mirror for a selfie.
+    // the portrait stage.
     final w = preview?.height ?? 9;
     final h = preview?.width ?? 16;
+    // Fit-WIDTH (not cover): fill the stage width and let the height crop, so
+    // the selfie isn't over-zoomed — cover scales to the taller dimension and
+    // blows the face up (web drawCamera parity, lines 669–676, which uses
+    // scale = W/vw for exactly this reason). Bias the crop ~30% toward the top
+    // (web dy≈0.30) so the face sits up top and the belt / mic gauge keep room
+    // at the bottom. No manual mirror: the earlier horizontal flip made the
+    // preview read as left–right reversed, so the front camera is shown as-is.
     return ClipRect(
-      child: Transform(
-        alignment: Alignment.center,
-        transform: Matrix4.diagonal3Values(-1, 1, 1), // horizontal flip (selfie)
-        child: FittedBox(
-          fit: BoxFit.cover,
-          child: SizedBox(
-            width: w,
-            height: h,
-            child: CameraPreview(controller),
-          ),
+      child: FittedBox(
+        fit: BoxFit.fitWidth,
+        alignment: const Alignment(0, -0.4),
+        child: SizedBox(
+          width: w,
+          height: h,
+          child: CameraPreview(controller),
         ),
       ),
     );

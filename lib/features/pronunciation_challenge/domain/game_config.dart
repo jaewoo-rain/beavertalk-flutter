@@ -25,7 +25,11 @@ abstract final class GameConfig {
   static const double zoneHalf = 230;
 
   /// Pronunciation-accept range (wider than the zone) → time to speak.
-  static const double acceptMargin = 400;
+  ///
+  /// Widened past the web game's 400: server STT has ~0.5–1s of recognition
+  /// latency (mic → WS → Google → transcript), so a card must stay acceptable a
+  /// bit longer after it enters the zone for a spoken word to still land.
+  static const double acceptMargin = 470;
 
   /// A live card left of this X counts as a miss.
   static const double missX = 80;

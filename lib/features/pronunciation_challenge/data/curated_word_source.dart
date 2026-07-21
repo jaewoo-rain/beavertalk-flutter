@@ -20,9 +20,19 @@ class DrawnWord {
 /// game: `colorIndex = wordIndex % paletteSize` (line 270).
 class CuratedWordSource {
   /// Creates a source. Pass a seeded [random] for deterministic tests.
-  CuratedWordSource({Random? random}) : _random = random ?? Random();
+  ///
+  /// [items] overrides the pool with the caller's own list — the Pronunciation
+  /// Challenge feeds the sentences the user just learned on a call. When null or
+  /// empty, the default beginner [words] are used (direct entry / no learned
+  /// sentences), so the game is never empty.
+  CuratedWordSource({Random? random, List<String>? items})
+      : _random = random ?? Random(),
+        _pool = (items != null && items.isNotEmpty)
+            ? List<String>.unmodifiable(items)
+            : words;
 
   final Random _random;
+  final List<String> _pool;
   final List<int> _bag = <int>[];
 
   /// Number of colours in the card palette (see the painter's `cardColors`).
@@ -46,7 +56,7 @@ class CuratedWordSource {
   /// Port of `drawBag()` (web game lines 267–271).
   DrawnWord draw() {
     if (_bag.isEmpty) {
-      _bag.addAll(List<int>.generate(words.length, (i) => i));
+      _bag.addAll(List<int>.generate(_pool.length, (i) => i));
       // Fisher–Yates shuffle.
       for (var i = _bag.length - 1; i > 0; i--) {
         final j = _random.nextInt(i + 1);
@@ -56,7 +66,7 @@ class CuratedWordSource {
       }
     }
     final idx = _bag.removeLast();
-    return DrawnWord(words[idx], idx % paletteSize);
+    return DrawnWord(_pool[idx], idx % paletteSize);
   }
 
   /// Empties the bag (called on a fresh game so words re-shuffle).

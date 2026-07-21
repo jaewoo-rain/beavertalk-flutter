@@ -285,8 +285,16 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             type: BtnType.primaryOutline,
             size: BtnSize.s60,
             text: l10n.pronunciationChallenge,
-            onPressed: () =>
-                Navigator.pushNamed(context, Routes.pronunciationChallenge),
+            // Feed this call's learned sentences to the challenge so its cards
+            // are what the user just practised (not the default word list).
+            onPressed: () => Navigator.pushNamed(
+              context,
+              Routes.pronunciationChallenge,
+              arguments: _learningSentences
+                  .map((s) => s.korean)
+                  .where((k) => k.trim().isNotEmpty)
+                  .toList(growable: false),
+            ),
           ),
 
           ..._babaNote(l10n, result),

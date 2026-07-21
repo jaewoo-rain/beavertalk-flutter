@@ -123,9 +123,11 @@ class ChallengeEngine {
       ));
     }
 
-    // Chosen difficulty × a gentle ramp with cleared count (web game line 457).
-    final speed = (GameConfig.baseSpeed + min(90, passCount * 2)) *
-        difficulty.mult;
+    // Chosen difficulty × a gentle ramp with cleared count. Softened from the
+    // web game's `min(90, passCount*2)`: server STT latency means a steep ramp
+    // makes later cards outrun recognition, so they slid past uncleared once a
+    // few had been passed. Gentler cap + accrual keeps the pace matchable.
+    final speed = (GameConfig.baseSpeed + min(55, passCount)) * difficulty.mult;
     for (final c in cards) {
       switch (c.state) {
         case CardState.live:
@@ -226,6 +228,34 @@ class ChallengeEngine {
   /// [SpeechMatcher] so a single utterance clears at most one card per token.
   bool tryPassToken(String token) {
     if (!running) return false;
+    final inZone = _inZoneCards();
+    for (final c in inZone) {
+      if (wordMatch(token, c.word)) {
+        passCard(c);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// Sentence input: passes the front-most in-zone live card whose sentence the
+  /// spoken [transcript] covers (see [sentenceMatch]). Used when the cards are
+  /// learned **sentences** (DB-sourced) rather than single words — the player
+  /// speaks the whole sentence and its card clears. Returns whether one passed.
+  bool tryPassSentence(String transcript) {
+    if (!running) return false;
+    final inZone = _inZoneCards();
+    for (final c in inZone) {
+      if (sentenceMatch(transcript, c.word)) {
+        passCard(c);
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /// In-zone live cards, front-most (nearest the exit) first.
+  List<ChallengeCard> _inZoneCards() {
     final inZone = <ChallengeCard>[];
     for (final c in cards) {
       if (c.state == CardState.live &&
@@ -234,12 +264,6 @@ class ChallengeEngine {
       }
     }
     inZone.sort((a, b) => a.x.compareTo(b.x));
-    for (final c in inZone) {
-      if (wordMatch(token, c.word)) {
-        passCard(c);
-        return true;
-      }
-    }
-    return false;
+    return inZone;
   }
 }

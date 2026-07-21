@@ -65,14 +65,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
-  archive:
-    dependency: transitive
-    description:
-      name: archive
-      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.6.1"
   args:
     dependency: transitive
     description:
@@ -97,14 +89,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.2"
-  build_cli_annotations:
-    dependency: transitive
-    description:
-      name: build_cli_annotations
-      sha256: e563c2e01de8974566a1998410d3f6f03521788160a02503b0b1f1a46c7b3d95
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.1.1"
   camera:
     dependency: "direct main"
     description:
@@ -1546,14 +1530,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "15.2.0"
-  vosk_flutter_2:
-    dependency: "direct main"
-    description:
-      name: vosk_flutter_2
-      sha256: d638f300e14f56cd292be7200b495cee62cd6f08e4ef09f980578a26c56995db
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.5"
   watcher:
     dependency: transitive
     description:
