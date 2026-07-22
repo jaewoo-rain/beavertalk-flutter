@@ -26,8 +26,10 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "im.beavertalk.beavertalk"
+        // 도그푸딩(다국어) 빌드는 별도 applicationId 로 설치 — 기존 앱을 덮어쓰지 않고
+        // 한 기기에 나란히 설치된다. Firebase(bt-dev-web-01)에 이 패키지도 등록돼 있고
+        // google-services.json 에 두 패키지 client 가 모두 들어있다.
+        applicationId = "im.beavertalk.beavertalk.dogfood"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         // flutter_sound 9.30 only needs minSdk 24 (recorder floor); the app never

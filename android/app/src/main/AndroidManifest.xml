@@ -25,7 +25,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
     <application
-        android:label="beavertalk"
+        android:label="beavertalk dogfood"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
