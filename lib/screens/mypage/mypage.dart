@@ -15,6 +15,7 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/i18n/learning_language_controller.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
@@ -41,15 +42,29 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   bool _notification = true;
 
   /// User (UI) language id the user has picked locally, or null before any pick
-  /// (then the member's saved language is shown). Only the **user** language is
-  /// selectable — the learning language is fixed to Korean (the app teaches
-  /// Korean), so the two rows are: User Language (editable) / Learning Language
-  /// (fixed).
+  /// (then the member's saved language is shown). The two rows are:
+  /// User Language (UI locale, editable) / Learning Language (call target, editable).
   String? _userLangId;
 
   /// Display name for a language id (falls back to the first entry).
   String _langName(String id) => mockLanguages
       .firstWhere((l) => l.id == id, orElse: () => mockLanguages.first)
+      .name;
+
+  /// (멀티랭귀지 도그푸딩) 학습 언어 선택지 — 서버 target_language **코드**(커리큘럼
+  /// 시드된 것만). 지금은 ko·ja. 다른 언어가 시드되면 여기 한 줄 추가하면 된다.
+  static const _learningLanguages = <MockLanguage>[
+    MockLanguage('ko', '한국어', 'KR'),
+    MockLanguage('ja', '日本語', 'JP'),
+    MockLanguage('en', 'English', 'US'),
+    MockLanguage('zh', '中文', 'CN'),
+    MockLanguage('fr', 'Français', 'FR'),
+    MockLanguage('vi', 'Tiếng Việt', 'VN'),
+  ];
+
+  /// Display name for a learning-language code (falls back to the first entry).
+  String _learningName(String code) => _learningLanguages
+      .firstWhere((l) => l.id == code, orElse: () => _learningLanguages.first)
       .name;
 
   /// Formats a date the way the sheets show it: `2026.06.20.`
@@ -281,6 +296,36 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     }
   }
 
+  /// Opens the **learning-language** bottom sheet (도그푸딩 시드된 언어), seeded with
+  /// [currentCode]. On confirm persists the pick via [learningLanguageProvider] —
+  /// the normalcall socket then sends it as `target_language` at call start.
+  /// Local-only(백엔드 PATCH 없음): 서버가 통화마다 그 언어 코스를 잡고
+  /// member_language_level 을 자동 생성한다.
+  Future<void> _pickLearningLanguage(String currentCode) async {
+    var staged = currentCode;
+    final picked = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: AppColors.scrim,
+      isScrollControlled: true,
+      builder: (sheetCtx) => StatefulBuilder(
+        builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
+          title: AppLocalizations.of(sheetCtx).learningLanguage,
+          items: [
+            for (final l in _learningLanguages)
+              CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
+          ],
+          value: staged,
+          onChanged: (code) => setSheetState(() => staged = code),
+          onConfirm: () => Navigator.of(sheetCtx).pop(staged),
+          onClose: () => Navigator.of(sheetCtx).pop(),
+        ),
+      ),
+    );
+    if (picked == null || picked == currentCode || !mounted) return;
+    await ref.read(learningLanguageProvider.notifier).setLanguage(picked);
+  }
+
   /// Caption shared alongside the accent-card image (see [DialogShareProfile]).
   static const String _inviteText =
       "I'm learning Korean with Beavertalk — my Korean accent sounds "
@@ -374,8 +419,14 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                     _langName(userLangId),
                     onTap: () => _pickUserLanguage(userLangId),
                   ),
-                  // Learning language — fixed to Korean (the app teaches Korean).
-                  _navRow(l10n.learningLanguage, l10n.learningLanguageKorean),
+                  // Learning language — (도그푸딩) 시드된 언어(ko·ja) 중 선택.
+                  // 통화 시작 시 target_language 로 실려 그 언어 코스로 진행된다.
+                  _navRow(
+                    l10n.learningLanguage,
+                    _learningName(ref.watch(learningLanguageProvider)),
+                    onTap: () => _pickLearningLanguage(
+                        ref.read(learningLanguageProvider)),
+                  ),
                   CardLine(
                     type: CardLineType.defaultToggle,
                     label: l10n.notificationLabel,
