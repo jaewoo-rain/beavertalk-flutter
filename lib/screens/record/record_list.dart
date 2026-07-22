@@ -16,7 +16,6 @@ import '../../core/error/app_exception.dart';
 import '../../features/bookmark/domain/entities/bookmark_sentence.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
-import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/presentation/review_providers.dart';
@@ -101,9 +100,12 @@ class _RecordsBody extends ConsumerWidget {
       error: (_, _) => _RecordsError(
         onRetry: () => ref.invalidate(callListProvider),
       ),
-      data: (records) => records.isEmpty
+      data: (state) => state.items.isEmpty
           ? const _RecordsEmpty()
-          : _RecordList(records: records),
+          : _RecordList(
+              state: state,
+              onLoadMore: () => ref.read(callListProvider.notifier).loadMore(),
+            ),
     );
   }
 }
@@ -140,46 +142,72 @@ class _RecordsLoading extends StatelessWidget {
   }
 }
 
-/// The populated list of past calls.
+/// The populated list of past calls. Grows via infinite scroll: nearing the
+/// bottom triggers [onLoadMore], which appends the next page (guarded in the
+/// notifier), with a spinner while a page is in flight.
 class _RecordList extends StatelessWidget {
-  const _RecordList({required this.records});
+  const _RecordList({required this.state, required this.onLoadMore});
 
-  final List<CallSummary> records;
+  final CallListState state;
+  final VoidCallback onLoadMore;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
-      children: [
-        Text(l10n.callHistory,
-            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
-        const SizedBox(height: 8),
-        for (var i = 0; i < records.length; i++) ...[
-          if (i > 0) const SizedBox(height: AppSpacing.s12),
-          InkWell(
-            borderRadius: BorderRadius.circular(8),
-            onTap: () => Navigator.pushNamed(
-              context,
-              Routes.analysisLoading,
-              arguments: records[i].callId,
+    final records = state.items;
+    return NotificationListener<ScrollNotification>(
+      onNotification: (n) {
+        // Prefetch before the very bottom so the next page is ready in time.
+        if (state.hasMore &&
+            !state.isLoadingMore &&
+            n.metrics.pixels >= n.metrics.maxScrollExtent - 320) {
+          onLoadMore();
+        }
+        return false;
+      },
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
+        children: [
+          Text(l10n.callHistory,
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
+          const SizedBox(height: 8),
+          for (var i = 0; i < records.length; i++) ...[
+            if (i > 0) const SizedBox(height: AppSpacing.s12),
+            InkWell(
+              borderRadius: BorderRadius.circular(8),
+              onTap: () => Navigator.pushNamed(
+                context,
+                Routes.analysisLoading,
+                arguments: records[i].callId,
+              ),
+              child: CardBox(
+                type: CardBoxType.record,
+                // Blur-in while the remote character avatar loads (CardBox clips
+                // this to a 64px circle).
+                avatar:
+                    BlurUpImage(image: _avatarFor(records[i].character.imageUrl)),
+                title: records[i].character.name,
+                subtitle: _subtitleFor(l10n, records[i].summary),
+                meta: [
+                  _formatDate(records[i].callDate),
+                  _formatDuration(l10n, records[i].totalTime),
+                ],
+              ),
             ),
-            child: CardBox(
-              type: CardBoxType.record,
-              // Blur-in while the remote character avatar loads (CardBox clips
-              // this to a 64px circle).
-              avatar: BlurUpImage(image: _avatarFor(records[i].character.imageUrl)),
-              title: records[i].character.name,
-              subtitle: _subtitleFor(l10n, records[i].summary),
-              meta: [
-                _formatDate(records[i].callDate),
-                _formatDuration(l10n, records[i].totalTime),
-              ],
+          ],
+          if (state.isLoadingMore) ...[
+            const SizedBox(height: AppSpacing.s16),
+            const Center(
+              child: SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             ),
-          ),
+          ],
         ],
-      ],
+      ),
     );
   }
 

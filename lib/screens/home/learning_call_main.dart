@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../app/app_scaffold.dart';
+import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'learning_args.dart';
+import 'learning_call_main_loading.dart';
 import 'learning_summary.dart';
 
 /// Learning session summary — Figma `screen/learning_main` (`3569:15065`).
@@ -28,19 +33,72 @@ import 'learning_summary.dart';
 /// single-sentence flow (Card-Bookmark 연습하기) still ends on
 /// [LearningSentenceMainScreen]; [LearningOrigin] is what splits them.
 ///
-/// **🔴 No data source yet — release blocker.** Everything comes from
-/// [mockLearningSummary], which is fabricated. It was harmless only while this
-/// screen was unreachable, and it no longer is: the numbers a user reads here
-/// about their own pronunciation are invented. Wired anyway on an explicit
-/// product decision (UI first, server later). See `learning_summary.dart`.
-class LearningCallMainScreen extends StatelessWidget {
+/// **Server-wired.** Reads the [LearningArgs.callId] off the route and fetches
+/// `GET /calls/{callId}/pronunciation-report` via [pronunciationReportProvider]
+/// ([LearningSummary.fromJson]) — [LearningCallMainLoadingScreen] while it
+/// loads, a retry on error. 문장별·통과·최근 세션은 실집계, 소리별 정확도·가장
+/// 어려웠던 소리는 아직 서버 목값(음소 채점 모델 도입 전). See `learning_summary.dart`.
+class LearningCallMainScreen extends ConsumerWidget {
   /// Creates the learning session summary screen.
   const LearningCallMainScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final s = mockLearningSummary;
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    // callId 는 복습 플로우가 LearningArgs 로 실어 온다(callReview origin).
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final callId = args is LearningArgs ? args.callId : null;
+    if (callId == null) {
+      return _errorView(context, l10n, null);
+    }
+    return ref.watch(pronunciationReportProvider(callId)).when(
+          loading: () => const LearningCallMainLoadingScreen(),
+          error: (_, _) => _errorView(
+            context,
+            l10n,
+            () => ref.invalidate(pronunciationReportProvider(callId)),
+          ),
+          data: (s) => _content(context, l10n, s),
+        );
+  }
+
+  /// Error state — a message and, when recoverable, a retry that refetches.
+  Widget _errorView(
+    BuildContext context,
+    AppLocalizations l10n,
+    VoidCallback? onRetry,
+  ) {
+    return AppScaffold(
+      background: context.c.backgroundNormalNormal,
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.s24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l10n.analysisFailed,
+                textAlign: TextAlign.center,
+                style: AppType.label2.r.copyWith(color: context.c.labelNormal),
+              ),
+              if (onRetry != null) ...[
+                const SizedBox(height: AppSpacing.s16),
+                Button(
+                  type: BtnType.primaryFill,
+                  size: BtnSize.s48,
+                  text: l10n.retry,
+                  onPressed: onRetry,
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _content(
+      BuildContext context, AppLocalizations l10n, LearningSummary s) {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: Column(
@@ -93,7 +151,14 @@ class LearningCallMainScreen extends StatelessWidget {
               type: BtnType.primaryFill,
               size: BtnSize.s60,
               text: l10n.endLearning,
-              onPressed: () => Navigator.pop(context),
+              // 학습 화면(intro/report/loading)을 모두 걷어내고 시작점(대화 기록
+              // = 전화기록)에 착지 — 하드코딩 route 대신 첫 비-학습 route 에서 멈춘다.
+              onPressed: () => Navigator.popUntil(context, (route) {
+                final name = route.settings.name;
+                return name != Routes.learningIntro &&
+                    name != Routes.learningCallMain &&
+                    name != Routes.learningCallMainLoading;
+              }),
             ),
           ),
         ],
@@ -440,8 +505,11 @@ class _TrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (sessions.isEmpty) return const SizedBox.shrink();
-    final avg =
-        (sessions.fold<int>(0, (a, b) => a + b.score) / sessions.length).round();
+    // 점수 0(미복습/집계없음) 세션은 평균에서 제외한다.
+    final scored = sessions.where((s) => s.score > 0).toList();
+    final avg = scored.isEmpty
+        ? 0
+        : (scored.fold<int>(0, (a, b) => a + b.score) / scored.length).round();
     return SizedBox(
       height: _valueRow + _plotHeight + _tickRow,
       child: Row(

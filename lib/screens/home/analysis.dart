@@ -131,18 +131,22 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
 
   /// Pushes the learning flow for [sentences], starting at [index].
-  void _startLearning(List<MockSentence> sentences, {int index = 0}) {
+  void _startLearning(
+    List<MockSentence> sentences, {
+    int index = 0,
+    LearningOrigin origin = LearningOrigin.callReview,
+  }) {
     if (sentences.isEmpty) return;
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
-      // This screen *is* the call record, so the session it starts is a call
-      // review and ends on `learning_main__pronunciation`, not on the
-      // single-sentence result.
+      // 복습하기(전체) 는 call review 라 발음 리포트(learning_call_main)로 끝나고,
+      // 표현 하나 "연습하기" 는 origin=sentence 로 단문장 결과(learning_sentence_main)로 끝난다.
       arguments: LearningArgs(
         sentences: sentences,
         index: index,
-        origin: LearningOrigin.callReview,
+        origin: origin,
+        callId: _result?.callId,
       ),
     );
   }
@@ -391,7 +395,10 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
                 onSpeakerTap: () => _playSentence(sentences[i]),
                 actionText: l10n.practice,
-                onAction: () => _startLearning([_learningSentences[i]]),
+                onAction: () => _startLearning(
+                  [_learningSentences[i]],
+                  origin: LearningOrigin.sentence,
+                ),
               ),
             ],
           ],

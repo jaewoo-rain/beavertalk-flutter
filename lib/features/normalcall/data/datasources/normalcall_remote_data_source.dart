@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../../screens/home/learning_summary.dart';
 import '../models/call_result_dto.dart';
 
 /// Talks to the call status/result endpoints over dio. Returns DTOs / raw
@@ -29,6 +30,14 @@ class NormalcallRemoteDataSource {
   Future<CallResultDto> getResult(int callId) async {
     final res = await _dio.get<Map<String, dynamic>>('/calls/$callId/result');
     return CallResultDto.fromJson(res.data!);
+  }
+
+  /// `GET /calls/{call_id}/pronunciation-report` — 복습 종료 발음 리포트.
+  Future<LearningSummary> getPronunciationReport(int callId) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/calls/$callId/pronunciation-report',
+    );
+    return LearningSummary.fromJson(res.data!);
   }
 
   /// `GET /calls/{call_id}` — call detail. The `/result` endpoint omits

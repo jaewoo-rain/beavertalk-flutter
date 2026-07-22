@@ -1,3 +1,4 @@
+import '../../../../screens/home/learning_summary.dart';
 import '../entities/call_result.dart';
 
 /// Post-call analysis capabilities the app depends on. Implemented in the data
@@ -15,6 +16,9 @@ abstract interface class NormalcallRepository {
 
   /// `GET /calls/{call_id}/result` — the full analysis result.
   Future<CallResult> getResult(int callId);
+
+  /// `GET /calls/{call_id}/pronunciation-report` — 복습 종료 발음 리포트.
+  Future<LearningSummary> getPronunciationReport(int callId);
 
   /// `GET /calls` — past calls for the record list (newest first).
   Future<List<CallSummary>> listCalls({int? limit, int? offset});

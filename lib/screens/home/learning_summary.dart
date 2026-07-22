@@ -1,35 +1,19 @@
-/// Data for the learning session summary (`screen/learning_main`, `3569:15065`)
-/// — and, for now, the mock that stands in for it.
+/// Data model for the learning session summary (`screen/learning_main`,
+/// `3569:15065`) — what [LearningCallMainScreen] draws.
 ///
-/// ## Read this before wiring the API
+/// Built from `GET /calls/{callId}/pronunciation-report` via
+/// [LearningSummary.fromJson] (see `normalcall_providers.dart`
+/// `pronunciationReportProvider`). The old hardcoded `mockLearningSummary` is
+/// gone — the screen now renders the server's data, with loading/error handled
+/// by the provider's `AsyncValue`.
 ///
-/// [mockLearningSummary] is **fake**. It is the Figma frame's own sample values,
-/// hardcoded, and [LearningCallMainScreen] renders it unconditionally — so the
-/// screen shows invented phoneme statistics and an invented session history to
-/// whoever opens it.
-///
-/// That is a deliberate exception (decision, 2026-07-16: UI first, server
-/// later), not the house style — elsewhere this app hides a section rather than
-/// fabricate it (`analysis.dart`).
-///
-/// ## 🔴 This is now reachable — do not ship it
-///
-/// It used to have no entry point, and that was the only thing making the mock
-/// harmless. As of 2026-07-17 it is the ending of every call review (analysis →
-/// 복습하기 → … → [Routes.learningCallMain]; see [LearningOrigin]), wired on an
-/// explicit product decision to accept the fake numbers for now.
-///
-/// **So the mock is live: real users would read invented statistics about their
-/// own pronunciation.** It must be replaced before a release build ships, and
-/// this is a release blocker, not a nice-to-have.
-///
-/// **Wiring the server means replacing [mockLearningSummary]**, nothing else.
-/// Every widget reads [LearningSummary], so building one from the response is
-/// the whole job — then delete the mock and this warning with it.
-///
-/// No endpoint serves phoneme accuracy or session history yet. The client shape
-/// below is a proposal, not a contract.
+/// Server note: 문장별·통과·최근 세션은 실집계지만, 소리별 정확도(phonemes)·가장
+/// 어려웠던 소리는 아직 서버가 목값으로 내려준다(음소 채점 모델 도입 전). [fromJson]
+/// 은 없는 키를 안전 기본값으로 흡수한다(엔드포인트 계약이 아직 확정 전).
 library;
+
+/// Lenient JSON int — accepts num or numeric string, else 0.
+int _asInt(Object? v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
 
 /// One row of `Section/Phonemes` — how a single sound went this session.
 class PhonemeStat {
@@ -39,6 +23,13 @@ class PhonemeStat {
     required this.attempts,
     required this.correct,
   });
+
+  /// From `{sound, attempts, correct}` (server: pronunciation-report).
+  factory PhonemeStat.fromJson(Map<String, dynamic> j) => PhonemeStat(
+        sound: j['sound'] as String? ?? '',
+        attempts: _asInt(j['attempts']),
+        correct: _asInt(j['correct']),
+      );
 
   /// The sound as the learner sees it, e.g. `받침 ㄹ`, `ㅓ / ㅗ 구분`.
   final String sound;
@@ -64,6 +55,14 @@ class SentenceScore {
     required this.rhythm,
   });
 
+  /// From `{sentence, pronunciation, fluency, rhythm}`.
+  factory SentenceScore.fromJson(Map<String, dynamic> j) => SentenceScore(
+        sentence: j['sentence'] as String? ?? '',
+        pronunciation: _asInt(j['pronunciation']),
+        fluency: _asInt(j['fluency']),
+        rhythm: _asInt(j['rhythm']),
+      );
+
   /// The Korean sentence practiced.
   final String sentence;
 
@@ -81,6 +80,16 @@ class SessionPoint {
     required this.score,
     this.delta,
   });
+
+  /// From `{label, date, sentences, score, delta}` — label/date are
+  /// server-formatted strings; delta is null for the earliest session.
+  factory SessionPoint.fromJson(Map<String, dynamic> j) => SessionPoint(
+        label: j['label'] as String? ?? '',
+        date: j['date'] as String? ?? '',
+        sentences: _asInt(j['sentences']),
+        score: _asInt(j['score']),
+        delta: j['delta'] == null ? null : _asInt(j['delta']),
+      );
 
   /// The chart's x-axis tick, e.g. `12/21` — or `오늘` for the latest.
   final String label;
@@ -118,6 +127,31 @@ class LearningSummary {
     required this.sessions,
   });
 
+  /// Builds a summary from the `GET /calls/{id}/pronunciation-report` body.
+  /// Missing keys degrade to safe defaults rather than throwing (the endpoint
+  /// contract is still settling — phoneme/session fields especially).
+  factory LearningSummary.fromJson(Map<String, dynamic> j) => LearningSummary(
+        passed: _asInt(j['passed']),
+        total: _asInt(j['total']),
+        date: DateTime.tryParse(j['date'] as String? ?? '') ?? DateTime.now(),
+        overall: _asInt(j['overall']),
+        pronunciation: _asInt(j['pronunciation']),
+        fluency: _asInt(j['fluency']),
+        rhythm: _asInt(j['rhythm']),
+        hardestSound: j['hardest_sound'] as String? ?? '',
+        hardestEvidence: j['hardest_evidence'] as String? ?? '',
+        l1Interference: j['l1_interference'] as String? ?? '',
+        phonemes: ((j['phonemes'] as List?) ?? const [])
+            .map((e) => PhonemeStat.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        sentences: ((j['sentences'] as List?) ?? const [])
+            .map((e) => SentenceScore.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        sessions: ((j['sessions'] as List?) ?? const [])
+            .map((e) => SessionPoint.fromJson(e as Map<String, dynamic>))
+            .toList(),
+      );
+
   /// Sentences passed, out of [total].
   final int passed, total;
 
@@ -148,59 +182,3 @@ class LearningSummary {
   /// Total attempts across [phonemes], for the section's sub-label.
   int get phonemeAttempts => phonemes.fold(0, (sum, p) => sum + p.attempts);
 }
-
-/// ⚠️ FAKE. The Figma frame's sample values (`3569:15065`). See the library doc.
-final mockLearningSummary = LearningSummary(
-  passed: 8,
-  total: 10,
-  date: DateTime(2026, 7, 16),
-  overall: 97,
-  pronunciation: 96,
-  fluency: 91,
-  rhythm: 91,
-  hardestSound: '받침 ㄹ',
-  hardestEvidence: '“산책시킬게요”에서 7번 중 4번 새어 나갔어요',
-  l1Interference: '스페인어엔 이 받침이 없어요. 당신 잘못이 아니에요.',
-  phonemes: [
-    PhonemeStat(sound: '받침 ㄹ', attempts: 7, correct: 3),
-    PhonemeStat(sound: 'ㅓ / ㅗ 구분', attempts: 12, correct: 9),
-    PhonemeStat(sound: '받침 ㅇ', attempts: 9, correct: 8),
-    PhonemeStat(sound: 'ㅅ / ㅆ 구분', attempts: 5, correct: 5),
-  ],
-  sentences: [
-    SentenceScore(
-      sentence: '이 식당은 맛있는 음식을 팔아',
-      pronunciation: 98,
-      fluency: 95,
-      rhythm: 97,
-    ),
-    SentenceScore(
-      sentence: '강아지를 산책시킬게요',
-      pronunciation: 71,
-      fluency: 88,
-      rhythm: 84,
-    ),
-    SentenceScore(
-      sentence: '취향이 비슷하네요',
-      pronunciation: 94,
-      fluency: 90,
-      rhythm: 92,
-    ),
-    SentenceScore(
-      sentence: '내 귀를 사로잡았다',
-      pronunciation: 89,
-      fluency: 86,
-      rhythm: 91,
-    ),
-  ],
-  sessions: [
-    SessionPoint(label: '12/21', date: '12월 21일', sentences: 9, score: 80),
-    SessionPoint(
-        label: '12/24', date: '12월 24일', sentences: 10, score: 87, delta: 7),
-    SessionPoint(
-        label: '12/28', date: '12월 28일', sentences: 8, score: 84, delta: -3),
-    SessionPoint(
-        label: '12/30', date: '12월 30일', sentences: 10, score: 92, delta: 8),
-    SessionPoint(label: '오늘', date: '1월 2일', sentences: 10, score: 97, delta: 5),
-  ],
-);

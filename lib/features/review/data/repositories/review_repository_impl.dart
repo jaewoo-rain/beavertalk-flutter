@@ -18,10 +18,15 @@ class ReviewRepositoryImpl implements ReviewRepository {
   @override
   Future<ReviewFeedback> submitAudio(
     int sentenceId,
-    Uint8List wavBytes,
-  ) async {
+    Uint8List wavBytes, {
+    bool applyScore = true,
+  }) async {
     try {
-      final dto = await _remote.submitAudio(sentenceId, wavBytes);
+      final dto = await _remote.submitAudio(
+        sentenceId,
+        wavBytes,
+        applyScore: applyScore,
+      );
       return dto.toEntity();
     } on DioException catch (e) {
       throw mapDioException(e);

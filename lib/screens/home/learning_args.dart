@@ -38,6 +38,7 @@ class LearningArgs {
     this.feedback,
     this.recordedWav,
     this.origin = LearningOrigin.sentence,
+    this.callId,
   });
 
   /// The sentence sequence for this session (1+ items).
@@ -58,6 +59,13 @@ class LearningArgs {
 
   /// Zero-based position of the active sentence within [sentences].
   final int index;
+
+  /// The call this review belongs to — set for [LearningOrigin.callReview] so
+  /// the session-summary screen ([Routes.learningCallMain]) can fetch
+  /// `GET /calls/{callId}/pronunciation-report`. Null for single-sentence
+  /// (연습하기) origin. Like [origin], it must survive the whole sequence —
+  /// it is only read at the end.
+  final int? callId;
 
   /// Scored feedback for the current sentence's latest attempt, or null before
   /// the user has recorded.
@@ -83,8 +91,12 @@ class LearningArgs {
   /// which has to survive the whole sequence: it is only read at the end, on the
   /// last sentence, and dropping it here would silently send every multi-sentence
   /// review to the wrong result screen.
-  LearningArgs next() =>
-      LearningArgs(sentences: sentences, index: index + 1, origin: origin);
+  LearningArgs next() => LearningArgs(
+        sentences: sentences,
+        index: index + 1,
+        origin: origin,
+        callId: callId,
+      );
 
   /// A copy carrying the freshly-scored [feedback] and [recordedWav].
   LearningArgs withFeedback(ReviewFeedback feedback, Uint8List recordedWav) =>
@@ -94,5 +106,6 @@ class LearningArgs {
         feedback: feedback,
         recordedWav: recordedWav,
         origin: origin,
+        callId: callId,
       );
 }
