@@ -98,7 +98,9 @@ class DeviceRegistrationController {
 
   /// 로그아웃 시 마지막 토큰을 삭제한다.
   Future<void> _unregister() async {
-    final token = _lastRegistered;
+    // 이번 세션에 등록한 토큰(_lastRegistered)이 비어 있으면(등록 스킵/실패) 실시간 FCM
+    // 토큰을 조회해 삭제한다 — 로그아웃 시 이 기기 토큰이 확실히 서버에서 지워지도록.
+    final token = _lastRegistered ?? await fcm.getToken();
     _lastRegistered = null;
     if (token == null) return;
     try {
