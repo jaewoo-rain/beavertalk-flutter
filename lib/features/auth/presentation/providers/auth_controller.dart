@@ -7,6 +7,7 @@ import '../../../../mock/mock_data.dart' show clearBookmarks;
 import '../../../alarm/presentation/providers/alarm_list_controller.dart';
 import '../../../bookmark/presentation/providers/bookmark_providers.dart';
 import '../../../character/presentation/providers/character_providers.dart';
+import '../../../incoming_call/presentation/incoming_call_providers.dart';
 import 'auth_providers.dart';
 import 'my_profile_provider.dart';
 import 'signup_draft_provider.dart';
@@ -289,6 +290,16 @@ class AuthController extends Notifier<AuthStatus> {
   /// login. The `onAuthStateChange` listener also flips the gate, but we set it
   /// here too for immediacy.
   Future<void> logout() async {
+    // Delete this device's FCM token BEFORE signOut, while the session is still
+    // valid — the `signedOut` listener also unregisters, but by then signOut()
+    // has cleared the session so its `DELETE /devices` is unauthenticated (401)
+    // and the token would survive: user A's alarm could then push to this device
+    // (now at login, or after user B signs in) until B's login reassigns it.
+    try {
+      await ref.read(deviceRegistrationControllerProvider).unregister();
+    } catch (_) {
+      // Best-effort: a failed delete must not block logout (login reassigns).
+    }
     // signOut() clears the local session first, then revokes over the network —
     // so an offline tap still logs you out locally but throws afterwards. Letting
     // that throw escape skipped _popToRoot(), stranding the user on MyPage while
