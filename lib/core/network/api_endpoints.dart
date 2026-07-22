@@ -5,5 +5,6 @@
 abstract final class ApiEndpoints {
   // ── Members ──
   static const membersMe = '/members/me';
+  static const membersMeProfile = '/members/me/profile';
   static const onboarding = '/members/me/onboarding';
 }

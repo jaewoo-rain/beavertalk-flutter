@@ -18,6 +18,7 @@ import '../../core/error/app_exception.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/domain/entities/accent_breakdown.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../mock/mock_data.dart';
@@ -321,6 +322,10 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     // Languages come from the real member (GET /members/me); show sensible
     // defaults until it loads.
     final member = ref.watch(myProfileProvider).valueOrNull;
+    // Accent (nationality) breakdown from GET /members/me/profile. Empty until
+    // it loads or when the member has no classification yet.
+    final accentStats =
+        ref.watch(myAccentProvider).valueOrNull?.stats ?? const <AccentStat>[];
 
     // Effective user (UI) language id: the local pick, else the member's saved
     // language when it maps to a known language, else English.
@@ -340,11 +345,14 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                 context,
                 imageProvider: beaverImage,
                 caption: l10n.accentSoundsLike,
-                title: 'American',
-                stats: const [
-                  ProfileStat(label: 'American', value: 87),
-                  ProfileStat(label: 'Korean', value: 7, active: false),
-                  ProfileStat(label: 'China', value: 6, active: false),
+                title: accentStats.isEmpty ? '—' : accentStats.first.label,
+                stats: [
+                  for (var i = 0; i < accentStats.length; i++)
+                    ProfileStat(
+                      label: accentStats[i].label,
+                      value: accentStats[i].percent.toDouble(),
+                      active: i == 0,
+                    ),
                 ],
                 // The dialog rasterizes the accent card and shares it as a PNG;
                 // this text rides along as the caption.
@@ -362,7 +370,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
               padding: const EdgeInsets.fromLTRB(
                   AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
               children: [
-                _profileCard(),
+                _profileCard(accentStats),
                 const SizedBox(height: AppSpacing.s24),
 
                 _section(l10n.settingsSection),
@@ -442,8 +450,9 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     );
   }
 
-  /// Profile card: 80px avatar, accent label, and three accent ProgressBars.
-  Widget _profileCard() {
+  /// Profile card: 80px avatar, accent label, and the accent ProgressBars from
+  /// the real [stats] (`speak_country`). Empty until analyzed → shows a dash.
+  Widget _profileCard(List<AccentStat> stats) {
     final l10n = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -474,16 +483,19 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
-            'American',
+            stats.isEmpty ? '—' : stats.first.label,
             textAlign: TextAlign.center,
             style: AppType.title3.b.copyWith(color: context.c.labelStrong),
           ),
           const SizedBox(height: AppSpacing.s16),
-          const ProgressBar(label: 'American', value: 87),
-          const SizedBox(height: AppSpacing.s16),
-          const ProgressBar(label: 'Korean', value: 7, active: false),
-          const SizedBox(height: AppSpacing.s16),
-          const ProgressBar(label: 'China', value: 6, active: false),
+          for (var i = 0; i < stats.length; i++) ...[
+            if (i > 0) const SizedBox(height: AppSpacing.s16),
+            ProgressBar(
+              label: stats[i].label,
+              value: stats[i].percent.toDouble(),
+              active: i == 0,
+            ),
+          ],
         ],
       ),
     );

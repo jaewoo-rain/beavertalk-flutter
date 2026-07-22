@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_endpoints.dart';
+import '../../domain/entities/accent_breakdown.dart';
 import '../models/member_dto.dart';
 
 /// Talks to the member endpoints over dio. Auth itself (login/signup/etc.) now
@@ -37,6 +38,30 @@ class AuthRemoteDataSource {
   Future<MemberDto> getMe() async {
     final res = await _dio.get<Map<String, dynamic>>(ApiEndpoints.membersMe);
     return MemberDto.fromJson(res.data!);
+  }
+
+  /// `GET /members/me/profile` (Bearer) — MyPageOut. Here we only take the
+  /// `speak_country` accent breakdown (1·2·3순위 국가 + %). Empty when the member
+  /// has no classification yet.
+  Future<AccentBreakdown> getMyAccent() async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      ApiEndpoints.membersMeProfile,
+    );
+    final sc = res.data?['speak_country'] as Map<String, dynamic>?;
+    if (sc == null) return const AccentBreakdown([]);
+    final stats = <AccentStat>[];
+    void add(String countryKey, String percentKey) {
+      final country = sc[countryKey] as String?;
+      final percent = sc[percentKey];
+      if (country != null && country.isNotEmpty && percent is num) {
+        stats.add(AccentStat(label: country, percent: percent.toInt()));
+      }
+    }
+
+    add('first_country', 'first_percent');
+    add('second_country', 'second_percent');
+    add('third_country', 'third_percent');
+    return AccentBreakdown(stats);
   }
 
   /// `DELETE /members/me` (Bearer) — deletes the current member on the backend.
