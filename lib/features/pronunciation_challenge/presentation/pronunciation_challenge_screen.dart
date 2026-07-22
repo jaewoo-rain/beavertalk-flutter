@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../theme/app_color_tokens.dart';
 import 'dart:io' show File;
 import 'dart:ui' as ui;
 
@@ -14,7 +15,6 @@ import '../../../app/app_scaffold.dart';
 import '../../../components/atoms/button.dart';
 import '../../../components/organisms/gnb.dart';
 import '../../../l10n/app_localizations.dart';
-import '../../../theme/app_colors.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
 import '../data/camera_service.dart';
@@ -37,7 +37,7 @@ enum _Phase { start, loading, countdown, playing, result }
 /// result panel shares a branded score-card image via `share_plus`.
 ///
 /// Everything degrades gracefully: with no mic, camera, model, or on web, the
-/// game is still fully playable via tap on the solid `AppColors.surface`
+/// game is still fully playable via tap on the solid `context.c.backgroundNormalNormal`
 /// background and never crashes on missing hardware.
 class PronunciationChallengeScreen extends ConsumerStatefulWidget {
   /// Creates the challenge screen.
@@ -240,7 +240,7 @@ class _PronunciationChallengeScreenState
   @override
   Widget build(BuildContext context) {
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -264,6 +264,8 @@ class _PronunciationChallengeScreenState
                             _cameraBackdrop(),
                             CustomPaint(
                               painter: ChallengePainter(
+                                mint: context.c.primaryNormal,
+                                background: context.c.backgroundNormalNormal,
                                 engine: _controller.engine,
                                 repaint: _controller,
                                 cameraActive: _camera.isReady,
@@ -343,13 +345,13 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeTitle,
           textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: AppColors.text),
+          style: AppType.title2.b.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
           l10n.challengeIntro,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: AppSpacing.s24),
         _difficultyToggle(),
@@ -366,7 +368,7 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengePermissionNote,
           textAlign: TextAlign.center,
-          style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+          style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
         ),
       ],
     );
@@ -386,12 +388,12 @@ class _PronunciationChallengeScreenState
             children: [
               Text(
                 l10n.challengeRecordToggle,
-                style: AppType.body2.sb.copyWith(color: AppColors.text),
+                style: AppType.body2.sb.copyWith(color: context.c.labelStrong),
               ),
               const SizedBox(height: 2),
               Text(
                 l10n.challengeRecordHint,
-                style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+                style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
               ),
             ],
           ),
@@ -399,7 +401,7 @@ class _PronunciationChallengeScreenState
         const SizedBox(width: AppSpacing.s12),
         Switch(
           value: _recordEnabled,
-          activeThumbColor: AppColors.primary,
+          activeThumbColor: context.c.primaryNormal,
           onChanged: (v) => setState(() => _recordEnabled = v),
         ),
       ],
@@ -413,16 +415,16 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeLoadingTitle,
           textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: AppColors.text),
+          style: AppType.title2.b.copyWith(color: context.c.labelStrong),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
           l10n.challengeLoadingNote,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: AppSpacing.s24),
-        const CircularProgressIndicator(color: AppColors.primary),
+        CircularProgressIndicator(color: context.c.primaryNormal),
       ],
     );
   }
@@ -435,7 +437,7 @@ class _PronunciationChallengeScreenState
           child: Text(
             '$_countdown',
             style: AppType.display1.b.copyWith(
-              color: AppColors.text,
+              color: context.c.labelStrong,
               fontSize: 120,
               height: 1,
             ),
@@ -501,7 +503,7 @@ class _PronunciationChallengeScreenState
         vertical: AppSpacing.s24,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(color: const Color(0x1FFFFFFF)),
       ),
@@ -511,7 +513,7 @@ class _PronunciationChallengeScreenState
           Text(
             'BEAVERTALK',
             style: AppType.label1.b.copyWith(
-              color: AppColors.primary,
+              color: context.c.primaryNormal,
               letterSpacing: 1.5,
             ),
           ),
@@ -519,13 +521,13 @@ class _PronunciationChallengeScreenState
           Text(
             engine.resultTitle,
             textAlign: TextAlign.center,
-            style: AppType.title2.b.copyWith(color: AppColors.text),
+            style: AppType.title2.b.copyWith(color: context.c.labelStrong),
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(
             _thousands(engine.score),
             style: AppType.display1.b.copyWith(
-              color: AppColors.primary,
+              color: context.c.primaryNormal,
               fontSize: 56,
               height: 1,
             ),
@@ -533,18 +535,18 @@ class _PronunciationChallengeScreenState
           const SizedBox(height: AppSpacing.s4),
           Text(
             'SCORE',
-            style: AppType.label2.b.copyWith(color: AppColors.textTertiary),
+            style: AppType.label2.b.copyWith(color: context.c.labelDisabled),
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(
             'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}',
             textAlign: TextAlign.center,
-            style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.body2.r.copyWith(color: context.c.labelNormal),
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
             'beavertalk.im',
-            style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+            style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
           ),
         ],
       ),
@@ -614,7 +616,7 @@ class _PronunciationChallengeScreenState
       children: [
         Text(
           'Difficulty',
-          style: AppType.label2.b.copyWith(color: AppColors.textTertiary),
+          style: AppType.label2.b.copyWith(color: context.c.labelDisabled),
         ),
         const SizedBox(height: AppSpacing.s8),
         Row(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../icons/app_icons.dart';
@@ -23,13 +23,13 @@ enum ChatSender {
 /// Figma component set `176:21728` (ChatBubble).
 ///
 /// Measured from Figma:
-/// - Bubble fill [AppColors.surfaceElevated] (`#1F222A`), padding `18`,
+/// - Bubble fill `Background/Elevated/Alternative` (`#1F222A`), padding `18`,
 ///   `maxWidth` 295, column gap `8`.
 /// - Asymmetric radius (16 elsewhere): `ai` squares `topLeft`
 ///   (`0,16,16,16`), `user` squares `topRight` (`16,0,16,16`).
 /// - Primary text: Korean copy in white [AppType.body1] (`MO/Body 1`).
-/// - [translation] (e.g. English): [AppColors.textSecondary], same size.
-/// - Divider before the toolbar: 1px [AppColors.borderSubtle]
+/// - [translation] (e.g. English): `Label/Normal`, same size.
+/// - Divider before the toolbar: 1px `Line/Alternative`
 ///   (`Line/Normal/Alternative`).
 /// - Optional [actions] toolbar (row, gap 8) — speaker / translate /
 ///   bookmark / flag in Figma; provide any widgets (e.g. [TranslateToggle]).
@@ -53,7 +53,7 @@ class ChatBubble extends StatelessWidget {
   final String text;
 
   /// Optional secondary/translation line, rendered in
-  /// [AppColors.textSecondary]. When `null` the line is omitted.
+  /// `Label/Normal`. When `null` the line is omitted.
   final String? translation;
 
   /// Optional action toolbar widgets (speaker / translate / bookmark /
@@ -91,7 +91,7 @@ class ChatBubble extends StatelessWidget {
       constraints: const BoxConstraints(maxWidth: _maxWidth),
       padding: const EdgeInsets.all(_padding),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: _radius,
       ),
       child: Column(
@@ -103,15 +103,15 @@ class ChatBubble extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               translation!,
-              style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+              style: AppType.body1.r.copyWith(color: context.c.labelNormal),
             ),
           ],
           if (hasToolbar) ...[
             const SizedBox(height: 8),
-            const Divider(
+            Divider(
               height: 1,
               thickness: 1,
-              color: AppColors.borderSubtle,
+              color: context.c.lineAlternative,
             ),
             const SizedBox(height: 8),
             Row(
@@ -145,7 +145,7 @@ class ChatBubbleDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget toolIcon(AppIconBuilder icon, {bool active = false}) => icon(
           size: 24,
-          color: active ? AppColors.primary : AppColors.textSecondary,
+          color: active ? context.c.primaryNormal : context.c.labelNormal,
         );
 
     return Padding(

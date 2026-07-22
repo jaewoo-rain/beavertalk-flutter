@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../mock/mock_data.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../icons/app_icons.dart';
 
@@ -41,12 +41,12 @@ class HeroAvatar extends StatelessWidget {
       height: _badgeSize,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs), // 8
       ),
       child: AppIcons.swap(
         size: 12,
-        color: AppColors.labelAssistive,
+        color: context.c.labelAssistive,
       ),
     );
 
@@ -62,7 +62,7 @@ class HeroAvatar extends StatelessWidget {
             height: size,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppColors.surface2,
+              color: context.c.backgroundNormalAlternative,
               image: DecorationImage(
                 image: imageProvider,
                 fit: BoxFit.cover,

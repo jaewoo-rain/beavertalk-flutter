@@ -13,7 +13,7 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -204,7 +204,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         ? NetworkImage(selectedCharUrl) as ImageProvider
         : characterImage(characterId);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
       // Figma `2296:26290`: 3 groups — avatar/name/duration (top), rating
@@ -226,7 +226,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                   height: AppSpacing.s120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: AppColors.surface2,
+                    color: context.c.backgroundNormalAlternative,
                     image: DecorationImage(
                       image: partnerImage,
                       fit: BoxFit.cover,
@@ -236,13 +236,13 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 const SizedBox(height: AppSpacing.s16),
                 Text(
                   selectedChar?.name ?? characterName(characterId),
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
                   l10n.callEndedDuration(_formatDuration(_durationSec)),
                   style:
-                      AppType.body1.r.copyWith(color: AppColors.textSecondary),
+                      AppType.body1.r.copyWith(color: context.c.labelNormal),
                 ),
               ],
             ),
@@ -252,7 +252,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               children: [
                 Text(
                   l10n.callRatingPrompt,
-                  style: AppType.headline1.r.copyWith(color: AppColors.text),
+                  style: AppType.headline1.r.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s32),
                 Row(
@@ -315,7 +315,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20), // radius/ml
               border: Border.all(
-                color: selected ? AppColors.primary : AppColors.border,
+                color: selected ? context.c.primaryNormal : context.c.lineNeutral,
               ),
             ),
             alignment: Alignment.center,
@@ -325,12 +325,12 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color:
-                    selected ? AppColors.primary10 : AppColors.surfaceElevated,
+                    selected ? context.c.primaryNormal10 : context.c.backgroundElevatedAlternative,
               ),
               alignment: Alignment.center,
               child: r.icon(
                 size: 24,
-                color: selected ? AppColors.primary : AppColors.textSecondary,
+                color: selected ? context.c.primaryNormal : context.c.labelNormal,
               ),
             ),
           ),

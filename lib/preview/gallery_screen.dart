@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
+import '../theme/app_color_tokens.dart';
 import '../theme/app_typography.dart';
 import 'gallery_entry.dart';
 import 'gallery_registry.dart';
@@ -30,12 +30,12 @@ class _GalleryScreenState extends State<GalleryScreen> {
   Widget build(BuildContext context) {
     final entries = _sorted;
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: context.c.backgroundNormalDeep,
       body: SafeArea(
         child: entries.isEmpty
             ? Center(
                 child: Text('등록된 컴포넌트가 없습니다.',
-                    style: AppType.label1.r.copyWith(color: AppColors.textSecondary)),
+                    style: AppType.label1.r.copyWith(color: context.c.labelNormal)),
               )
             : Row(
                 children: [
@@ -47,10 +47,10 @@ class _GalleryScreenState extends State<GalleryScreen> {
                       onSelect: (i) => setState(() => _selected = i),
                     ),
                   ),
-                  const VerticalDivider(width: 1, color: AppColors.border),
+                  VerticalDivider(width: 1, color: context.c.lineNeutral),
                   Expanded(
                     child: Container(
-                      color: AppColors.bg,
+                      color: context.c.backgroundNormalDeep,
                       child: SingleChildScrollView(
                         padding: const EdgeInsets.all(24),
                         child: Column(
@@ -62,7 +62,7 @@ class _GalleryScreenState extends State<GalleryScreen> {
                                 padding: const EdgeInsets.only(top: 4),
                                 child: Text('Figma ${entries[_selected].node}',
                                     style: AppType.caption1.r
-                                        .copyWith(color: AppColors.textSecondary)),
+                                        .copyWith(color: context.c.labelNormal)),
                               ),
                             const SizedBox(height: 24),
                             Builder(builder: entries[_selected].builder),
@@ -100,10 +100,10 @@ class _Sidebar extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.only(top: i == 0 ? 0 : 16, bottom: 8, left: 8),
                 child: Text(e.group.toUpperCase(),
-                    style: AppType.caption1.m.copyWith(color: AppColors.textSecondary)),
+                    style: AppType.caption1.m.copyWith(color: context.c.labelNormal)),
               ),
             Material(
-              color: active ? AppColors.surface2 : Colors.transparent,
+              color: active ? context.c.backgroundNormalAlternative : Colors.transparent,
               borderRadius: BorderRadius.circular(8),
               child: InkWell(
                 borderRadius: BorderRadius.circular(8),
@@ -112,7 +112,7 @@ class _Sidebar extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
                   child: Text(e.title,
                       style: AppType.label1.r.copyWith(
-                          color: active ? AppColors.text : AppColors.textSecondary)),
+                          color: active ? context.c.labelStrong : context.c.labelNormal)),
                 ),
               ),
             ),

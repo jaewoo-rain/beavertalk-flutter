@@ -78,13 +78,13 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => '일정';
+  String get scheduleManagement => '일정 관리';
 
   @override
   String get alarms => '알람';
 
   @override
-  String get addSchedule => '일정 추가';
+  String get addSchedule => '새 일정 추가';
 
   @override
   String get editSchedule => '일정 수정';
@@ -108,7 +108,42 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repeat => '반복';
 
   @override
-  String get callPartner => '캐릭터';
+  String get callPartner => '통화 상대';
+
+  @override
+  String get quickStart => '빠른 시작';
+
+  @override
+  String get presetMorning => '아침 루틴';
+
+  @override
+  String get presetMorningSub => '평일 8:00';
+
+  @override
+  String get presetEvening => '저녁 정리';
+
+  @override
+  String get presetEveningSub => '매일 21:00';
+
+  @override
+  String get presetCustom => '직접 설정';
+
+  @override
+  String get presetCustomSub => '자유롭게';
+
+  @override
+  String alarmSummary(int count, int monthly) {
+    return '주 $count회 · 한 달이면 $monthly번 통화하게 돼요';
+  }
+
+  @override
+  String get alarmSummaryNone => '요일을 하나 이상 골라 주세요';
+
+  @override
+  String get partnerInUse => '사용 중';
+
+  @override
+  String get partnerOwned => '보유 중';
 
   @override
   String get am => '오전';
@@ -123,13 +158,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get conversation => '대화';
 
   @override
-  String get review => '복습';
+  String get review => '복습하기';
 
   @override
-  String get pronunciationChallenge => '발음 챌린지';
+  String get pronunciationChallenge => '발음 챌린지 도전하기';
 
   @override
-  String get newExpressions => '새로운 표현';
+  String get newExpressions => '새로 배운 표현';
 
   @override
   String get analysisResult => '분석 결과';
@@ -138,7 +173,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noNewExpressions => '이번 대화에서는 새로운 표현이 없어요.';
 
   @override
-  String get practice => '연습';
+  String get practice => '연습하기';
 
   @override
   String recentScore(int score) {
@@ -161,31 +196,9 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => '오늘 고칠 것 하나';
-
-  @override
-  String streakBadge(int count) {
-    return '$count번째 통화 연속';
-  }
-
-  @override
-  String get firstTimeTitle => '이번에 처음 한 것';
-
-  @override
   String newExpressionsCount(int count) {
     return '새로 배운 표현 $count';
   }
-
-  @override
-  String expressionsTotal(int count) {
-    return '누적 $count';
-  }
-
-  @override
-  String get nextCallTitle => '다음 통화에 해볼 것';
-
-  @override
-  String get nextCallFooter => '다음 통화 시작 화면에 뜹니다';
 
   @override
   String get analysisLoadError => '분석 결과를 불러오지 못했어요.';
@@ -357,6 +370,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get scoringPronunciation => '발음을 채점하는 중…';
 
   @override
+  String get analyzingByWord => '단어별로 발음을 확인하고 있어요';
+
+  @override
+  String get analyzingTakingLonger => '조금만 더 걸리고 있어요';
+
+  @override
+  String get scanConnectionLost => '연결이 끊겼어요';
+
+  @override
   String get noRecordingToPlay => '재생할 녹음이 없어요.';
 
   @override
@@ -419,10 +441,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noSavedSentences => '저장한 문장이 아직 없어요.\n대화 기록에서 문장을 북마크해 보세요.';
 
   @override
-  String get noAlarms => '아직 알람이 없어요';
+  String get noAlarms => '등록된 알람이 없어요';
 
   @override
-  String get noAlarmsBody => '학습 리마인더를 추가해서\n꾸준한 습관을 만들어 보세요.';
+  String get noAlarmsBody => '학습 리마인더를 추가하면\n꾸준한 습관을 만들 수 있어요.';
 
   @override
   String get subscriptionManage => '구독 관리';
@@ -697,6 +719,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loginGoogleSignInFailed => '구글 로그인에 실패했어요.';
 
   @override
+  String get loginAppleSignInFailed => '애플 로그인에 실패했어요.';
+
+  @override
+  String get loginKakaoSignInFailed => '카카오 로그인에 실패했어요.';
+
+  @override
   String get loginContinueWithKakao => '카카오로 계속하기';
 
   @override
@@ -910,4 +938,82 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => '결제';
+
+  @override
+  String learningPassed(int passed, int total) {
+    return '$total문장 중 $passed개 통과';
+  }
+
+  @override
+  String get hardestSound => '가장 어려웠던 소리';
+
+  @override
+  String get soundAccuracy => '소리별 정확도';
+
+  @override
+  String phonemeAttempts(int count) {
+    return '음소 단위 · $count회 시도';
+  }
+
+  @override
+  String get colSound => '소리';
+
+  @override
+  String get colAttempts => '시도';
+
+  @override
+  String get colCorrect => '정확';
+
+  @override
+  String get colAccuracy => '정확도';
+
+  @override
+  String get sentenceResults => '문장별 결과';
+
+  @override
+  String viewAllSentences(int count) {
+    return '$count개 전체 보기';
+  }
+
+  @override
+  String get colSentence => '문장';
+
+  @override
+  String get colPronunciation => '발음';
+
+  @override
+  String get colFluency => '유창';
+
+  @override
+  String get colRhythm => '리듬';
+
+  @override
+  String recentSessions(int count) {
+    return '최근 $count세션';
+  }
+
+  @override
+  String trendAverage(int score) {
+    return '평균 $score';
+  }
+
+  @override
+  String get today => '오늘';
+
+  @override
+  String get colDate => '날짜';
+
+  @override
+  String get colSentences => '문장';
+
+  @override
+  String get colScore => '점수';
+
+  @override
+  String get colChange => '변화';
+
+  @override
+  String dateToday(String date) {
+    return '$date (오늘)';
+  }
 }

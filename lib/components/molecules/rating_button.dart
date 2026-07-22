@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 
 /// RatingButton — a circular icon toggle used for quick call ratings.
 ///
 /// Extracted from `screen/call_finish` (`2117:19981`). Renders a 64×64 circle
-/// holding [icon]; when [selected] the circle fills with [AppColors.primary]
-/// and the glyph turns [AppColors.onPrimary], otherwise it sits on
-/// [AppColors.surface2] with a [AppColors.textSecondary] glyph.
+/// holding [icon]; when [selected] the circle fills with `Primary/Normal`
+/// and the glyph turns `Primary/On-Primary`, otherwise it sits on
+/// `Background/Normal/Alternative` with a `Label/Normal` glyph.
 class RatingButton extends StatelessWidget {
   /// Creates a rating button.
   const RatingButton({
@@ -40,7 +40,7 @@ class RatingButton extends StatelessWidget {
       selected: selected,
       label: label,
       child: Material(
-        color: selected ? AppColors.primary : AppColors.surface2,
+        color: selected ? context.c.primaryNormal : context.c.backgroundNormalAlternative,
         shape: const CircleBorder(),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -52,7 +52,7 @@ class RatingButton extends StatelessWidget {
             child: Center(
               child: icon(
                 size: 28,
-                color: selected ? AppColors.onPrimary : AppColors.textSecondary,
+                color: selected ? context.c.primaryOnPrimary : context.c.labelNormal,
               ),
             ),
           ),

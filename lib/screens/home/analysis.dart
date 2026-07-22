@@ -5,47 +5,59 @@ import 'package:intl/intl.dart' as intl;
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/pressable.dart';
-import '../../components/icons/app_icons.dart';
+import '../../components/atoms/button.dart';
+import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/review/data/audio_player.dart';
 import '../../features/review/domain/entities/review_feedback.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
 
-/// Call analysis screen — Figma `screen/analysis__확정` (`3474:435`).
+/// Call analysis screen — Figma `screen/analysis` (`3583:34434`).
 ///
-/// A full rework of the previous `screen/analysis` (`2224:21244`) layout. The
-/// gauge stays (the design pins it as `pronunciation_result (고정)`); everything
-/// below it is new, and the old 복습하기 / 발음 챌린지 buttons and the bookmark +
-/// speaker + 연습하기 card actions are gone.
-///
-/// Sections, top to bottom:
-/// - **CallHeader** — `result.summary` as the title, then a `·`-joined meta line
-///   (partner · date · duration · which call this is).
-/// - **Gauge** — average **recomputed on the frontend** from
+/// Sections, top to bottom, are exactly that frame's children:
+/// - **CallHeader** (`3583:34438`) — `result.summary` as the title, then a
+///   `·`-joined meta line (partner · date · duration · which call this is).
+/// - **Gauge** (`3583:34441`) — pinned by the design as `pronunciation_result
+///   (고정)`. The average is **recomputed on the frontend** from
 ///   [reviewScoresProvider], the mean over sentences practiced this session.
 ///   Before any practice the map is empty → inactive ("-%"); it updates live as
 ///   the user records sentences and returns here. (`result.average` is unused.)
-/// - **Baba의 한마디 / 오늘 고칠 것 하나 / 이번에 처음 한 것 / 다음 통화에 해볼 것** —
-///   see below.
-/// - **새로 배운 표현** — one row per `result.sentences` entry; tapping a row
-///   practices that one sentence (what the old per-card 연습하기 button did).
+/// - **복습하기 / 발음 챌린지 도전하기** — the two `Footer/PrimaryAction`s
+///   (`3583:34443`/`3583:34444`), right under the gauge. This is also the app's
+///   only entry to the challenge: without them `Routes.pronunciationChallenge`
+///   is unreachable, and nothing would catch that — the tests mount the screen
+///   directly, so they pass either way.
+/// - **Baba의 한마디** (`3583:34445`).
+/// - **새로 배운 표현 N** (`3583:34462`) — one [CardBookmark] per
+///   `result.sentences` entry (speaker · bookmark toggle · 연습하기).
 ///
-/// **The server sends none of the four narrative sections yet** (nor the partner
-/// or call sequence) — see `docs/2026-07-15_2114_analysis-screen-redesign.md`
-/// for the proposed payload. [CallResult] declares them and the DTO parses them,
-/// so they light up without a client change. Until then each is null and its
-/// section is omitted outright: a fabricated "one thing to fix" is worse than no
-/// section at all, and this screen's whole credibility rests on those lines
-/// being real.
+/// **오늘의 피드백 (OneFix) was deleted from the design** (2026-07-16) — it is
+/// gone from both the loaded frame and `screen/analysis_loading` (`3569:27500`),
+/// so this is the design agreeing with itself rather than the frame-vs-frame
+/// split the buttons once had. The section, its entity and its DTO parsing went
+/// with it; nothing consumed them (the server never sent the field).
+///
+/// **The server still sends no narrative fields** (nor the partner or call
+/// sequence) — see `docs/2026-07-16_1145_analysis-확정디자인-정합.md` for the
+/// proposed payload. [CallResult] declares them and the DTO parses them, so they
+/// light up without a client change. Until then each is null and its section is
+/// omitted outright: a fabricated remark is worse than no section at all, and
+/// this screen's whole credibility rests on those lines being real.
+///
+/// [CardBookmark.highlight] stays null, so the learned expression renders
+/// without the design's underline: no server field carries that span, and the
+/// previous hardcoded `'내 귀를 사로잡았다'` underlined a fixed string regardless of
+/// the sentence. Proposed to the server in the doc above.
 class AnalysisScreen extends ConsumerStatefulWidget {
   /// Creates the call analysis screen.
   const AnalysisScreen({super.key});
@@ -65,6 +77,13 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// Until then the gauge ignores any (possibly stale) scores so a fresh call
   /// starts empty even on the first frame, before the post-frame reset lands.
   bool _scoresReset = false;
+
+  /// Plays a sentence's standard pronunciation for the card speaker glyph.
+  final ReviewAudioPlayer _player = ReviewAudioPlayer();
+
+  /// Sentence ids with a bookmark write in flight — a second tap while the
+  /// first is still landing would toggle the server back and desync the store.
+  final Set<int> _bookmarkInFlight = <int>{};
 
   @override
   void didChangeDependencies() {
@@ -87,9 +106,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         ref.read(reviewScoresProvider.notifier).resetForCall(args.callId);
         // Reconcile the in-memory bookmark store with the server's flags — set
         // each id to its true state (add saved, clear un-saved) so a stale
-        // `true` from a prior session can't linger. This screen no longer shows
-        // bookmarks, but the learning flow it pushes into does, and this is
-        // where those ids are seeded from the server.
+        // `true` from a prior session can't linger. Seeds both this screen's
+        // card glyphs and the learning flow it pushes into.
         for (final s in args.sentences) {
           setBookmark(s.sentenceId, s.isBookmarked);
         }
@@ -118,7 +136,14 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
-      arguments: LearningArgs(sentences: sentences, index: index),
+      // This screen *is* the call record, so the session it starts is a call
+      // review and ends on `learning_main__pronunciation`, not on the
+      // single-sentence result.
+      arguments: LearningArgs(
+        sentences: sentences,
+        index: index,
+        origin: LearningOrigin.callReview,
+      ),
     );
   }
 
@@ -126,11 +151,62 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   String _pct(double? value) => value == null ? '-%' : '${value.round()}%';
 
   @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  /// Plays a learned sentence's standard pronunciation when the server provides
+  /// a playable URL ([LearnedSentence.voiceUrl]); otherwise says so.
+  Future<void> _playSentence(LearnedSentence sentence) async {
+    final l10n = AppLocalizations.of(context);
+    final url = sentence.voiceUrl;
+    if (url == null || url.isEmpty || !url.startsWith('http')) {
+      _snack(l10n.standardAudioNotReady);
+      return;
+    }
+    try {
+      await _player.playUrl(url);
+    } catch (_) {
+      _snack(l10n.standardAudioPlayError);
+    }
+  }
+
+  /// Toggles a sentence's bookmark: flips the shared in-memory store instantly,
+  /// then **persists to the server** so the 보관함 list (server-backed, via
+  /// `GET /members/me/bookmarks`) actually reflects it. Reverts on failure —
+  /// leaving the glyph filled after a failed write would claim a save that the
+  /// archive won't have.
+  Future<void> _toggleBookmark(int sentenceId) async {
+    if (_bookmarkInFlight.contains(sentenceId)) return;
+    _bookmarkInFlight.add(sentenceId);
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId); // optimistic local flip
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (_) {
+      toggleBookmark(sentenceId); // revert
+      if (mounted) _snack(AppLocalizations.of(context).somethingWentWrong);
+    } finally {
+      _bookmarkInFlight.remove(sentenceId);
+    }
+  }
+
+  void _snack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
   Widget build(BuildContext context) {
     final result = _result;
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(
@@ -194,11 +270,27 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             ),
           ),
 
+          // ── Actions (`3583:34442`) ─────────────────────────────────
+          const SizedBox(height: AppSpacing.s24),
+          Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.review,
+            // Nothing to practice → nothing for the button to do.
+            disabled: _learningSentences.isEmpty,
+            onPressed: () => _startLearning(_learningSentences),
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          Button(
+            type: BtnType.primaryOutline,
+            size: BtnSize.s60,
+            text: l10n.pronunciationChallenge,
+            onPressed: () =>
+                Navigator.pushNamed(context, Routes.pronunciationChallenge),
+          ),
+
           ..._babaNote(l10n, result),
-          ..._oneFix(l10n, result.oneFix),
-          ..._firstTime(l10n, result.firstTime),
           ..._expressions(l10n, result),
-          ..._nextCall(l10n, result.nextCall),
         ],
       ),
     );
@@ -223,7 +315,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       const SizedBox(height: 6), // no s6 token
       Text(
         parts.join(' · '),
-        style: AppType.label2.r.copyWith(color: AppColors.labelMeta),
+        style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
       ),
     ];
   }
@@ -232,8 +324,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   String _formatDuration(AppLocalizations l10n, int totalSeconds) =>
       l10n.durationMinSec(totalSeconds ~/ 60, totalSeconds % 60);
 
-  /// Section/BabaNote (3474:582) — needs both the remark and the partner it is
-  /// attributed to, so it is hidden unless the server sends both.
+  /// Section/BabaNote (`3583:34445`) — needs both the remark and the partner it
+  /// is attributed to, so it is hidden unless the server sends both.
   List<Widget> _babaNote(AppLocalizations l10n, CallResult result) {
     final note = result.note;
     final character = result.character;
@@ -246,7 +338,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           children: [
             CircleAvatar(
               radius: 16,
-              backgroundColor: AppColors.surface2,
+              backgroundColor: context.c.backgroundNormalAlternative,
               backgroundImage: _avatarFor(character.imageUrl),
             ),
             const SizedBox(width: AppSpacing.s12),
@@ -255,10 +347,11 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(note.text, style: AppType.label2.r),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 6), // no s6 token
                   Text(
                     l10n.characterNoteFooter(character.name),
-                    style: _micro(AppColors.labelFootnote),
+                    style: AppType.caption2.r
+                        .copyWith(color: context.c.labelAlternative),
                   ),
                 ],
               ),
@@ -276,165 +369,41 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           ? NetworkImage(imageUrl)
           : beaverImage;
 
-  /// Section/OneFix (3474:589).
-  List<Widget> _oneFix(AppLocalizations l10n, OneFix? fix) {
-    if (fix == null) return const [];
-    final streak = fix.streakCount;
-    return _section(
-      label: l10n.oneFixTitle,
-      // A streak of 1 is just "this call" — only 2+ is a recurrence worth
-      // flagging, so the badge stays hidden below that.
-      trailing: (streak != null && streak >= 2)
-          ? _streakBadge(l10n.streakBadge(streak))
-          : null,
-      child: _card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(fix.title, style: AppType.body2.m),
-            if (fix.evidence != null) ...[
-              const SizedBox(height: 10), // no s10 token
-              Text(
-                fix.evidence!,
-                style: AppType.caption1.r.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-            if (fix.l1Interference != null) ...[
-              const SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: AppSpacing.s8,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColors.primary08,
-                  borderRadius: BorderRadius.circular(AppRadius.xs),
-                ),
-                child: Text(
-                  fix.l1Interference!,
-                  style: AppType.caption1.r.copyWith(color: AppColors.primary),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _streakBadge(String text) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8, vertical: 3),
-        decoration: BoxDecoration(
-          color: AppColors.negativeAccent16,
-          borderRadius: BorderRadius.circular(6), // no r6 token
-        ),
-        child: Text(
-          text,
-          style: _micro(AppColors.negativeAccent, weight: FontWeight.w500),
-        ),
-      );
-
-  /// Section/FirstTime (3475:545).
-  List<Widget> _firstTime(AppLocalizations l10n, FirstTime? first) {
-    if (first == null) return const [];
-    return _section(
-      label: l10n.firstTimeTitle,
-      child: _card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(first.text, style: AppType.label2.r),
-            if (first.previous != null) ...[
-              const SizedBox(height: AppSpacing.s4),
-              Text(
-                first.previous!,
-                style:
-                    AppType.caption2.r.copyWith(color: AppColors.labelFootnote),
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Section/Expressions (3475:550). The only interactive section: each row
-  /// pushes the learning flow for that one sentence.
+  /// Section/Expressions (`3583:34462`) — one `Card-Bookmark` per sentence
+  /// (`3583:34466`–`3583:34468`), each with a speaker, a bookmark toggle and a
+  /// 연습하기 button that practices just that sentence.
   List<Widget> _expressions(AppLocalizations l10n, CallResult result) {
     final sentences = result.sentences;
-    final total = result.expressionsTotal;
+    if (sentences.isEmpty) return const [];
     return _section(
       label: l10n.newExpressionsCount(sentences.length),
-      trailing: total == null
-          ? null
-          : Text(
-              l10n.expressionsTotal(total),
-              style:
-                  AppType.caption2.r.copyWith(color: AppColors.labelFootnote),
-            ),
-      child: sentences.isEmpty
-          ? Text(
-              l10n.noNewExpressions,
-              style: AppType.label2.r.copyWith(color: AppColors.textSecondary),
-            )
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                for (var i = 0; i < sentences.length; i++) ...[
-                  if (i > 0) const SizedBox(height: 10),
-                  _ExpressionRow(
-                    sentence: sentences[i],
-                    onTap: () => _startLearning([_learningSentences[i]]),
-                  ),
-                ],
-              ],
-            ),
-    );
-  }
-
-  /// Section/NextCall (3475:581).
-  List<Widget> _nextCall(AppLocalizations l10n, String? next) {
-    if (next == null) return const [];
-    return _section(
-      label: l10n.nextCallTitle,
-      child: _card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      child: ValueListenableBuilder<Set<int>>(
+        valueListenable: bookmarkedSentenceIds,
+        builder: (context, saved, _) => Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(next, style: AppType.label2.r),
-            const SizedBox(height: AppSpacing.s4),
-            Text(
-              l10n.nextCallFooter,
-              style:
-                  AppType.caption2.r.copyWith(color: AppColors.labelFootnote),
-            ),
+            for (var i = 0; i < sentences.length; i++) ...[
+              if (i > 0) const SizedBox(height: AppSpacing.s12),
+              CardBookmark(
+                korean: sentences[i].korean ?? '',
+                native: sentences[i].native ?? '',
+                bookmarked: saved.contains(sentences[i].sentenceId),
+                onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
+                onSpeakerTap: () => _playSentence(sentences[i]),
+                actionText: l10n.practice,
+                onAction: () => _startLearning([_learningSentences[i]]),
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  /// A titled section: 24px above it, an optional trailing badge/count on the
-  /// label row, then the content 8px below.
-  List<Widget> _section({
-    required String label,
-    Widget? trailing,
-    required Widget child,
-  }) =>
-      [
+  /// A titled section: 24px above it, then the content 8px below the label.
+  List<Widget> _section({required String label, required Widget child}) => [
         const SizedBox(height: AppSpacing.s24),
-        Row(
-          children: [
-            Expanded(child: Text(label, style: AppType.body2.m)),
-            if (trailing != null) ...[
-              const SizedBox(width: AppSpacing.s8),
-              trailing,
-            ],
-          ],
-        ),
+        Text(label, style: AppType.body2.m),
         const SizedBox(height: AppSpacing.s8),
         child,
       ];
@@ -444,7 +413,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         width: double.infinity,
         padding: const EdgeInsets.all(AppSpacing.s16),
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
+          color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: child,
@@ -504,76 +473,7 @@ CallResult _withDesignPreview(CallResult r) => CallResult(
           const CharacterNote(
             text: '강아지 얘기 나오니까 갑자기 말이 빨라지던데요.\n그 톤이 진짜예요.',
           ),
-      oneFix: r.oneFix ??
-          const OneFix(
-            title: '받침 ㄹ이 자꾸 새요',
-            evidence: '“산책시킬게요”를 “산책시키게요”로 3번 발음했어요',
-            l1Interference: '스페인어엔 이 받침이 없어요. 당신 잘못이 아니에요.',
-            streakCount: 3,
-          ),
-      firstTime: r.firstTime ??
-          const FirstTime(text: '되묻지 않고 바로 답했어요 · 7회', previous: '지난 통화엔 2회'),
-      nextCall: r.nextCall ?? '“내 귀를 사로잡았다”를 직접 써보기',
-      expressionsTotal: r.expressionsTotal ?? 27,
     );
-
-/// 10px/14 — below the `MO/*` scale's floor (`caption2` is 11px), so the size
-/// and line-height are set explicitly rather than scaled off a token.
-TextStyle _micro(Color color, {FontWeight weight = FontWeight.w400}) => TextStyle(
-      fontFamily: kFontFamily,
-      fontSize: 10,
-      height: 14 / 10,
-      fontWeight: weight,
-      color: color,
-    );
-
-/// One "새로 배운 표현" row (3475:555) — Korean over its native translation,
-/// with a chevron. The whole card is the tap target.
-class _ExpressionRow extends StatelessWidget {
-  const _ExpressionRow({required this.sentence, required this.onTap});
-
-  final LearnedSentence sentence;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final korean = sentence.korean ?? '';
-    final native = sentence.native ?? '';
-    return Pressable(
-      onTap: onTap,
-      semanticLabel: korean.isEmpty ? native : korean,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpacing.s16),
-        decoration: BoxDecoration(
-          color: AppColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(korean, style: AppType.label1.m),
-                  if (native.isNotEmpty) ...[
-                    const SizedBox(height: AppSpacing.s4),
-                    Text(
-                      native,
-                      style: AppType.caption1.r
-                          .copyWith(color: AppColors.textSecondary),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-            const SizedBox(width: AppSpacing.s16),
-            AppIcons.chevronRight(size: 16, color: AppColors.textSecondary),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 /// Shown when the screen is opened without a [CallResult] argument.
 class _EmptyState extends StatelessWidget {
@@ -586,7 +486,7 @@ class _EmptyState extends StatelessWidget {
         padding: const EdgeInsets.all(AppSpacing.s24),
         child: Text(
           AppLocalizations.of(context).analysisLoadError,
-          style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );

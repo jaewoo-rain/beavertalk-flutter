@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
@@ -19,8 +19,8 @@ enum GnbType {
   /// Background: transparent — the page body shows through, so the bar reads
   /// seamlessly on any background (surface, surface2, …). Height fixed at `56`.
   ///
-  /// Per Figma the progress fill is the mint [AppColors.primary] (#00FFB2) and
-  /// the track is [AppColors.primary10] (the primary at ~10%).
+  /// Per Figma the progress fill is the mint `Primary/Normal` (#00FFB2) and
+  /// the track is `Primary/Normal-10` (the primary at ~10%).
   main2,
 
   /// A centered column: a status row (colored dot + caption), a title, and a
@@ -91,7 +91,7 @@ class Gnb extends StatelessWidget {
     this.onClose,
     this.progress,
     this.status,
-    this.statusColor = AppColors.primary,
+    this.statusColor,
     this.caption,
     this.trailing,
   });
@@ -131,7 +131,7 @@ class Gnb extends StatelessWidget {
     Key? key,
     required String title,
     String? status,
-    Color statusColor = AppColors.primary,
+    Color? statusColor,
     String? caption,
   }) : this(
           key: key,
@@ -175,7 +175,10 @@ class Gnb extends StatelessWidget {
   final String? status;
 
   /// Color of the status dot in [GnbType.sub].
-  final Color statusColor;
+  /// Tint of the status dot/label. Defaults to `Primary/Normal` **at build
+  /// time**, not in the constructor: a default value must be const, so a
+  /// constructor default could only ever hold one mode's colour.
+  final Color? statusColor;
 
   /// Caption below the title in [GnbType.sub] (e.g. a `00:00:01` timer).
   final String? caption;
@@ -193,15 +196,15 @@ class Gnb extends StatelessWidget {
   /// Tap-target size for the back/close icons.
   static const double _iconBox = 28;
 
-  Color get _background {
+  Color _background(BuildContext context) {
     switch (type) {
       case GnbType.main:
       case GnbType.sub:
-        return AppColors.surface;
+        return context.c.backgroundNormalNormal;
       case GnbType.main2:
         return Colors.transparent;
       case GnbType.sub2:
-        return AppColors.surfaceElevated;
+        return context.c.backgroundElevatedAlternative;
     }
   }
 
@@ -210,13 +213,13 @@ class Gnb extends StatelessWidget {
     final Widget content;
     switch (type) {
       case GnbType.main:
-        content = _buildMain();
+        content = _buildMain(context);
       case GnbType.main2:
-        content = _buildMain2();
+        content = _buildMain2(context);
       case GnbType.sub:
-        content = _buildSub();
+        content = _buildSub(context);
       case GnbType.sub2:
-        content = _buildSub2();
+        content = _buildSub2(context);
     }
 
     final padding = type == GnbType.sub
@@ -227,7 +230,7 @@ class Gnb extends StatelessWidget {
       container: true,
       header: true,
       child: Material(
-        color: _background,
+        color: _background(context),
         child: SafeArea(
           bottom: false,
           child: Padding(padding: padding, child: content),
@@ -237,7 +240,7 @@ class Gnb extends StatelessWidget {
   }
 
   // ── main: back + centered title ────────────────────────────────
-  Widget _buildMain() {
+  Widget _buildMain(BuildContext context) {
     return Row(
       children: [
         _BackButton(onTap: onBack),
@@ -250,7 +253,7 @@ class Gnb extends StatelessWidget {
   }
 
   // ── main-2: back + progress + current/total ────────────────────
-  Widget _buildMain2() {
+  Widget _buildMain2(BuildContext context) {
     final p = progress ?? const GnbProgress(value: 0);
     final label = p.label;
     return SizedBox(
@@ -280,7 +283,7 @@ class Gnb extends StatelessWidget {
               child: Text(
                 label,
                 textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(color: AppColors.text),
+                style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
               ),
             ),
         ],
@@ -289,7 +292,7 @@ class Gnb extends StatelessWidget {
   }
 
   // ── sub: status dot + title + caption (centered column) ─────────
-  Widget _buildSub() {
+  Widget _buildSub(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -303,7 +306,7 @@ class Gnb extends StatelessWidget {
                 width: 8,
                 height: 8,
                 decoration: BoxDecoration(
-                  color: statusColor,
+                  color: statusColor ?? context.c.primaryNormal,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -314,7 +317,7 @@ class Gnb extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: AppType.label1.r
-                      .copyWith(color: AppColors.textSecondary),
+                      .copyWith(color: context.c.labelNormal),
                 ),
               ),
             ],
@@ -324,14 +327,14 @@ class Gnb extends StatelessWidget {
         Text(
           title ?? '',
           textAlign: TextAlign.center,
-          style: AppType.body1.sb.copyWith(color: AppColors.text),
+          style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
         ),
         if (caption != null) ...[
           const SizedBox(height: 4),
           Text(
             caption!,
             textAlign: TextAlign.center,
-            style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.label1.r.copyWith(color: context.c.labelNormal),
           ),
         ],
       ],
@@ -339,18 +342,18 @@ class Gnb extends StatelessWidget {
   }
 
   // ── sub-2: mirror back + centered title + close ────────────────
-  Widget _buildSub2() {
+  Widget _buildSub2(BuildContext context) {
     return Row(
       children: [
         // Transparent mirror arrow on the left (Figma opacity 0) — present for
         // symmetry so the title is centered against the close button.
-        const Opacity(
+        Opacity(
           opacity: 0,
           child: ExcludeSemantics(
             child: SizedBox(
               width: _iconBox,
               height: _iconBox,
-              child: CustomPaint(painter: _ArrowLeftPainter()),
+              child: CustomPaint(painter: _ArrowLeftPainter(context.c.labelStrong)),
             ),
           ),
         ),
@@ -374,7 +377,7 @@ class _CenteredTitle extends StatelessWidget {
       textAlign: TextAlign.center,
       maxLines: 1,
       overflow: TextOverflow.ellipsis,
-      style: AppType.body1.sb.copyWith(color: AppColors.text),
+      style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
     );
   }
 }
@@ -398,7 +401,7 @@ class _BackButton extends StatelessWidget {
           height: Gnb._iconBox,
           child: Transform.flip(
             flipX: Directionality.of(context) == TextDirection.rtl,
-            child: const CustomPaint(painter: _ArrowLeftPainter()),
+            child: CustomPaint(painter: _ArrowLeftPainter(context.c.labelStrong)),
           ),
         ),
       ),
@@ -420,10 +423,10 @@ class _CloseButton extends StatelessWidget {
       child: InkResponse(
         onTap: onTap,
         radius: 24,
-        child: const SizedBox(
+        child: SizedBox(
           width: Gnb._iconBox,
           height: Gnb._iconBox,
-          child: CustomPaint(painter: _ClosePainter()),
+          child: CustomPaint(painter: _ClosePainter(context.c.labelStrong)),
         ),
       ),
     );
@@ -433,7 +436,7 @@ class _CloseButton extends StatelessWidget {
 /// Slim progress track for [GnbType.main2].
 ///
 /// Per Figma (measured): track height `4`, radius `8`; fill is the mint
-/// [AppColors.primary]; track background is [AppColors.primary10].
+/// `Primary/Normal`; track background is `Primary/Normal-10`.
 class _GnbProgressTrack extends StatelessWidget {
   const _GnbProgressTrack({required this.fraction});
 
@@ -452,13 +455,13 @@ class _GnbProgressTrack extends StatelessWidget {
             builder: (context, constraints) {
               return Stack(
                 children: [
-                  const Positioned.fill(
-                    child: ColoredBox(color: AppColors.primary10),
+                  Positioned.fill(
+                    child: ColoredBox(color: context.c.primaryNormal10),
                   ),
                   Container(
                     width: constraints.maxWidth * value,
                     height: 4,
-                    color: AppColors.primary,
+                    color: context.c.primaryNormal,
                   ),
                 ],
               );
@@ -472,7 +475,10 @@ class _GnbProgressTrack extends StatelessWidget {
 
 /// Paints the Figma `arrow-left` glyph (`162:4156`) scaled into its 28×28 box.
 class _ArrowLeftPainter extends CustomPainter {
-  const _ArrowLeftPainter();
+  const _ArrowLeftPainter(this.color);
+
+  /// Glyph tint for the current mode — a painter has no context.
+  final Color color;
 
   // Path data taken verbatim from the Figma SVG export (28×28 viewBox).
   static const String _d =
@@ -494,7 +500,7 @@ class _ArrowLeftPainter extends CustomPainter {
     final scale = size.width / 28.0;
     canvas.save();
     canvas.scale(scale);
-    canvas.drawPath(path, Paint()..color = AppColors.text);
+    canvas.drawPath(path, Paint()..color = color);
     canvas.restore();
   }
 
@@ -504,7 +510,10 @@ class _ArrowLeftPainter extends CustomPainter {
 
 /// Paints the Figma `close` glyph (`162:4163`) scaled into its 28×28 box.
 class _ClosePainter extends CustomPainter {
-  const _ClosePainter();
+  const _ClosePainter(this.color);
+
+  /// Glyph tint for the current mode — a painter has no context.
+  final Color color;
 
   static const String _d =
       'M8.28301 21.3499C7.83197 21.801 7.10071 21.801 6.64967 21.3499C6.19864 '
@@ -522,7 +531,7 @@ class _ClosePainter extends CustomPainter {
     final scale = size.width / 28.0;
     canvas.save();
     canvas.scale(scale);
-    canvas.drawPath(path, Paint()..color = AppColors.text);
+    canvas.drawPath(path, Paint()..color = color);
     canvas.restore();
   }
 
@@ -620,30 +629,30 @@ class GnbDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _label('main'),
+            _label(context, 'main'),
             Gnb.main(title: 'Page name', onBack: () {}),
-            _label('main-2 (1/10)'),
+            _label(context, 'main-2 (1/10)'),
             Gnb.main2(
               progress: const GnbProgress(current: 1, total: 10),
               onBack: () {},
             ),
-            _label('main-2 (7/10)'),
+            _label(context, 'main-2 (7/10)'),
             Gnb.main2(
               progress: const GnbProgress(current: 7, total: 10),
               onBack: () {},
             ),
-            _label('sub'),
+            _label(context, 'sub'),
             const Gnb.sub(
               status: 'Connected',
               title: 'Annoying Beaver',
               caption: '00:00:01',
             ),
-            _label('sub-2'),
+            _label(context, 'sub-2'),
             Gnb.sub2(title: 'Page name', onBack: () {}, onClose: () {}),
           ],
         ),
@@ -651,13 +660,13 @@ class GnbDemo extends StatelessWidget {
     );
   }
 
-  Widget _label(String text) => Padding(
+  Widget _label(BuildContext context, String text) => Padding(
         padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
         child: Align(
           alignment: Alignment.centerLeft,
           child: Text(
             text,
-            style: AppType.caption1.m.copyWith(color: AppColors.textSecondary),
+            style: AppType.caption1.m.copyWith(color: context.c.labelNormal),
           ),
         ),
       );

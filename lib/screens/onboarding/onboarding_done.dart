@@ -4,7 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../components/atoms/button.dart';
@@ -32,7 +32,7 @@ class OnboardingDoneScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -60,7 +60,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                   Text(
                     l10n.onboardingDoneTitle,
                     textAlign: TextAlign.center,
-                    style: AppType.heading2.sb.copyWith(color: AppColors.text),
+                    style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
                   ),
                   // Figma: heading → sub copy gap = 8px (ds-space-xs).
                   const SizedBox(height: AppSpacing.s8),
@@ -68,7 +68,7 @@ class OnboardingDoneScreen extends StatelessWidget {
                     l10n.onboardingDoneSubtitle,
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ],
               ),

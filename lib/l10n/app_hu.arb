@@ -211,6 +211,8 @@
   "priceFree": "Ingyenes",
   "loginGoogleTokenError": "Nem sikerült lekérni a Google bejelentkezési tokent.",
   "loginGoogleSignInFailed": "A Google bejelentkezés sikertelen volt.",
+  "loginAppleSignInFailed": "A Apple bejelentkezés sikertelen volt.",
+  "loginKakaoSignInFailed": "A Kakao bejelentkezés sikertelen volt.",
   "loginContinueWithKakao": "Folytatás Kakao fiókkal",
   "loginContinueWithGoogle": "Folytatás Google fiókkal",
   "loginContinueWithApple": "Folytatás Apple fiókkal",

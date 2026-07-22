@@ -60,9 +60,9 @@
       }
     }
   },
-  "scheduleManagement": "Schedule",
+  "scheduleManagement": "Manage schedule",
   "alarms": "Alarms",
-  "addSchedule": "Add Schedule",
+  "addSchedule": "Add new schedule",
   "editSchedule": "Edit Schedule",
   "somethingWentWrong": "Something went wrong",
   "alarmsLoadError": "Couldn't load alarms",
@@ -70,7 +70,25 @@
   "noCharacters": "No characters available",
   "close": "Close",
   "repeat": "Repeat",
-  "callPartner": "Character",
+  "callPartner": "Call partner",
+  "quickStart": "Quick start",
+  "presetMorning": "Morning routine",
+  "presetMorningSub": "Weekdays 8:00",
+  "presetEvening": "Evening wind-down",
+  "presetEveningSub": "Every day 21:00",
+  "presetCustom": "Custom",
+  "presetCustomSub": "Your own",
+  "alarmSummary": "{count}× a week · {monthly} calls a month",
+  "@alarmSummary": {
+    "description": "Summary under the alarm form. monthly = count × 4.",
+    "placeholders": {
+      "count": { "type": "int" },
+      "monthly": { "type": "int" }
+    }
+  },
+  "alarmSummaryNone": "Pick at least one day",
+  "partnerInUse": "In use",
+  "partnerOwned": "Owned",
   "am": "AM",
   "pm": "PM",
   "save": "Save",
@@ -89,7 +107,6 @@
       }
     }
   },
-  "conversationRecord": "Conversation record",
   "callSequence": "Call #{count}",
   "@callSequence": {
     "description": "Which call this is with the same partner, shown in the analysis meta line.",
@@ -116,17 +133,6 @@
       }
     }
   },
-  "oneFixTitle": "One thing to fix today",
-  "streakBadge": "{count} calls in a row",
-  "@streakBadge": {
-    "description": "Shown when the same fix has recurred across consecutive calls.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "firstTimeTitle": "A first this time",
   "newExpressionsCount": "New expressions {count}",
   "@newExpressionsCount": {
     "placeholders": {
@@ -135,17 +141,6 @@
       }
     }
   },
-  "expressionsTotal": "{count} total",
-  "@expressionsTotal": {
-    "description": "Lifetime count of learned expressions, not just this call.",
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "nextCallTitle": "To try on your next call",
-  "nextCallFooter": "Shown on your next call's start screen",
   "analysisLoadError": "Couldn't load the analysis result.",
   "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
   "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",
@@ -211,6 +206,18 @@
   "saveSentence": "Save sentence",
   "unsaveSentence": "Remove saved sentence",
   "scoringPronunciation": "Scoring your pronunciation…",
+  "analyzingByWord": "Checking your pronunciation word by word",
+  "@analyzingByWord": {
+    "description": "Caption under the scan cursor while a recording is scored (proto/2_scan_start AnalyzingCaption 3627:9708)."
+  },
+  "analyzingTakingLonger": "This is taking a little longer",
+  "@analyzingTakingLonger": {
+    "description": "Replaces analyzingByWord once scoring runs long (screen/learning_analysis__지연5s AnalyzingCaption 3745:27)."
+  },
+  "scanConnectionLost": "Connection lost",
+  "@scanConnectionLost": {
+    "description": "Caption on the scan-failed screen when the request never reached the server (proto/E_failed AnalyzingCaption 3627:9847)."
+  },
   "noRecordingToPlay": "No recording to play.",
   "myRecordingPlayError": "Couldn't play your recording.",
   "next": "Next",
@@ -238,8 +245,8 @@
   "noCharactersToShow": "No characters to show",
   "buy": "Buy",
   "noSavedSentences": "No saved sentences yet.\nBookmark sentences from your conversation records.",
-  "noAlarms": "No alarms yet",
-  "noAlarmsBody": "Add a learning reminder\nto build a consistent habit.",
+  "noAlarms": "No alarms registered",
+  "noAlarmsBody": "Add a learning reminder\nand you can build a consistent habit.",
   "subscriptionManage": "Manage Subscription",
   "changePlan": "Change Plan",
   "cancelSubscription": "Cancel Subscription",
@@ -330,6 +337,8 @@
   "priceFree": "Free",
   "loginGoogleTokenError": "Couldn't get a Google sign-in token.",
   "loginGoogleSignInFailed": "Google sign-in failed.",
+  "loginAppleSignInFailed": "Apple sign-in failed.",
+  "loginKakaoSignInFailed": "Kakao sign-in failed.",
   "loginContinueWithKakao": "Continue with Kakao",
   "loginContinueWithGoogle": "Continue with Google",
   "loginContinueWithApple": "Continue with Apple",
@@ -457,5 +466,61 @@
   "paymentLabelFallback": "Payment",
   "@paymentLabelFallback": {
     "description": "Row label when the server sends no description and the category is unknown."
+  },
+
+  "learningPassed": "{passed} of {total} sentences passed",
+  "@learningPassed": {
+    "description": "Headline of the learning summary screen.",
+    "placeholders": {
+      "passed": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "hardestSound": "Hardest sound today",
+  "soundAccuracy": "Accuracy by sound",
+  "phonemeAttempts": "Per phoneme · {count} attempts",
+  "@phonemeAttempts": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "colSound": "Sound",
+  "colAttempts": "Tries",
+  "colCorrect": "Right",
+  "colAccuracy": "Accuracy",
+  "sentenceResults": "Results by sentence",
+  "viewAllSentences": "See all {count}",
+  "@viewAllSentences": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "colSentence": "Sentence",
+  "colPronunciation": "Pron.",
+  "colFluency": "Flu.",
+  "colRhythm": "Rhy.",
+  "recentSessions": "Last {count} sessions",
+  "@recentSessions": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "trendAverage": "Avg {score}",
+  "@trendAverage": {
+    "placeholders": {
+      "score": { "type": "int" }
+    }
+  },
+  "today": "Today",
+  "colDate": "Date",
+  "colSentences": "Sentences",
+  "colScore": "Score",
+  "colChange": "Change",
+  "dateToday": "{date} (today)",
+  "@dateToday": {
+    "description": "The most recent row of the trend table.",
+    "placeholders": {
+      "date": { "type": "String" }
+    }
   }
 }

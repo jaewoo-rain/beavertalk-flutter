@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -15,7 +15,7 @@ import '../atoms/dim.dart';
 /// - [unownedNormal] — `state=unowned-normal`: avatar not owned, shown at full
 ///   price. Bottom = 닫기 + 구매하기 (two buttons).
 /// - [unownedDiscount] — `state=unowned-discount`: not owned, on sale. Adds a
-///   red `-50%` ([AppColors.error]) badge next to the name and shows a
+///   red `-50%` (`Accent/Foreground/Red`) badge next to the name and shows a
 ///   struck-through original price plus a red discounted price. Bottom = 닫기 +
 ///   구매하기.
 /// - [ownedUnused] — `state=owned-unused`: owned but not the active avatar.
@@ -39,7 +39,7 @@ enum BottomSheetAvatarState {
 /// BottomSheetAvatar — avatar purchase / selection sheet, measured 1:1 from
 /// Figma `BottomSheet-Avatar` (`176:13383`).
 ///
-/// A bottom-anchored 375-wide sheet on [AppColors.surfaceElevated] with a top
+/// A bottom-anchored 375-wide sheet on `Background/Elevated/Alternative` with a top
 /// [AppRadius.lg] corner radius. Composition (top → bottom):
 /// 1. A header bar (구독/아바타 title row — `GNB type=sub-2`, 14×20 padding) with
 ///    a trailing close (✕) tap target wired to [onClose].
@@ -48,13 +48,13 @@ enum BottomSheetAvatarState {
 ///      an info column (name in Body 1 Medium white, a status badge, and an
 ///      optional `-50%` discount label for [BottomSheetAvatarState.unownedDiscount]),
 ///      then a tag-chip row ([tags]).
-///    - a 1px [AppColors.borderSubtle] divider.
+///    - a 1px `Line/Alternative` divider.
 ///    - a "샘플 목소리 듣기" sample-voice card (surface2, r8, volume glyph + label).
 ///    - a [description] paragraph (Label 1 Medium white).
 ///    - a price row: a plain [price] for non-discount states; for
 ///      [BottomSheetAvatarState.unownedDiscount] the [price] is struck-through in
-///      [AppColors.textSecondary] followed by [discountPrice] in
-///      [AppColors.error] SemiBold.
+///      `Label/Normal` followed by [discountPrice] in
+///      `Accent/Foreground/Red` SemiBold.
 /// 3. A footer built from [Button] (60-size), then a [HomeIndicator]
 ///    (`sub-transparent`).
 ///
@@ -107,7 +107,7 @@ class BottomSheetAvatar extends StatelessWidget {
   /// this is rendered struck-through as the original price.
   final String? price;
 
-  /// Discounted price (e.g. "5\$"), rendered in [AppColors.error] SemiBold.
+  /// Discounted price (e.g. "5\$"), rendered in `Accent/Foreground/Red` SemiBold.
   /// Only used for [BottomSheetAvatarState.unownedDiscount].
   final String? discountPrice;
 
@@ -148,8 +148,8 @@ class BottomSheetAvatar extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceElevated,
+      decoration: BoxDecoration(
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(AppRadius.lg),
           topRight: Radius.circular(AppRadius.lg),
@@ -159,19 +159,19 @@ class BottomSheetAvatar extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _header(l10n),
+          _header(context, l10n),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _avatarBlock(l10n),
+                _avatarBlock(context, l10n),
                 const SizedBox(height: 24),
               ],
             ),
           ),
-          _footer(l10n),
+          _footer(context, l10n),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces
           // the former embedded fake HomeIndicator).
           const SafeArea(
@@ -185,7 +185,7 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   // ── Header (GNB sub-2: blank title, trailing close) ──────────────────────
-  Widget _header(AppLocalizations l10n) {
+  Widget _header(BuildContext context, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -201,7 +201,7 @@ class BottomSheetAvatar extends StatelessWidget {
               child: SizedBox(
                 width: 28,
                 height: 28,
-                child: AppIcons.close(size: 24, color: AppColors.text),
+                child: AppIcons.close(size: 24, color: context.c.labelStrong),
               ),
             ),
           ),
@@ -211,7 +211,7 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   // ── Avatar block: row + divider + sample card + description + price ───────
-  Widget _avatarBlock(AppLocalizations l10n) {
+  Widget _avatarBlock(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,42 +223,42 @@ class BottomSheetAvatar extends StatelessWidget {
               child: SizedBox(
                 width: 72,
                 height: 72,
-                child: _buildAvatar(),
+                child: _buildAvatar(context),
               ),
             ),
             const SizedBox(width: 10),
-            Expanded(child: _infoColumn(l10n)),
+            Expanded(child: _infoColumn(context, l10n)),
           ],
         ),
         const SizedBox(height: 10),
-        const Divider(height: 1, thickness: 1, color: AppColors.borderSubtle),
+        Divider(height: 1, thickness: 1, color: context.c.lineAlternative),
         const SizedBox(height: 10),
-        _sampleVoiceCard(l10n),
+        _sampleVoiceCard(context, l10n),
         if (description != null) ...[
           const SizedBox(height: 10),
           Text(
             description!,
-            style: AppType.label1.m.copyWith(color: AppColors.text),
+            style: AppType.label1.m.copyWith(color: context.c.labelStrong),
           ),
         ],
         const SizedBox(height: 10),
-        _priceRow(),
+        _priceRow(context),
       ],
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context) {
     if (avatar != null) return avatar!;
     if (imageProvider != null) {
       return Image(image: imageProvider!, fit: BoxFit.cover);
     }
     return ColoredBox(
-      color: AppColors.surface2,
-      child: AppIcons.profile(color: AppColors.textTertiary, size: 36),
+      color: context.c.backgroundNormalAlternative,
+      child: AppIcons.profile(color: context.c.labelDisabled, size: 36),
     );
   }
 
-  Widget _infoColumn(AppLocalizations l10n) {
+  Widget _infoColumn(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +269,7 @@ class BottomSheetAvatar extends StatelessWidget {
             Flexible(
               child: Text(
                 name,
-                style: AppType.body1.m.copyWith(color: AppColors.text),
+                style: AppType.body1.m.copyWith(color: context.c.labelStrong),
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -278,14 +278,14 @@ class BottomSheetAvatar extends StatelessWidget {
             // absorbs slack and the badge stays adjacent right after it. Wrapping
             // the badge in Flexible too made the two share the row 50/50, opening
             // a gap between the name and the badge.
-            _statusBadge(l10n),
+            _statusBadge(context, l10n),
             // Omitted when the caller didn't supply a rate — better no badge
             // than a wrong one (this was hardcoded '-50%' before).
             if (_isDiscount && discountPercent != null) ...[
               const SizedBox(width: 12),
               Text(
                 '-$discountPercent%',
-                style: AppType.label1.m.copyWith(color: AppColors.error),
+                style: AppType.label1.m.copyWith(color: context.c.accentForegroundRed),
               ),
             ],
           ],
@@ -295,7 +295,7 @@ class BottomSheetAvatar extends StatelessWidget {
           Wrap(
             spacing: 10,
             runSpacing: 6,
-            children: [for (final t in tags) _tagChip(t)],
+            children: [for (final t in tags) _tagChip(context, t)],
           ),
         ],
       ],
@@ -303,18 +303,18 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   /// Status chip — "Available" (neutral) for unowned, "Owned" (light-blue) for owned.
-  Widget _statusBadge(AppLocalizations l10n) {
+  Widget _statusBadge(BuildContext context, AppLocalizations l10n) {
     final owned = _isOwned;
-    final fg = owned ? _ownedBadgeColor : AppColors.textSecondary;
+    final fg = owned ? _ownedBadgeColor : context.c.labelNormal;
     final bg = owned
         ? _ownedBadgeColor.withValues(alpha: 0.1)
-        : AppColors.surface2;
+        : context.c.backgroundNormalAlternative;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
-        border: owned ? null : Border.all(color: AppColors.surface2),
+        border: owned ? null : Border.all(color: context.c.backgroundNormalAlternative),
       ),
       child: Text(
         // Figma v2 `3360:20576`: the unowned chip reads "구매 가능", the same
@@ -329,23 +329,23 @@ class BottomSheetAvatar extends StatelessWidget {
   }
 
   /// Trait chip (secondary_outline size 24): surface2 fill, textSecondary label.
-  Widget _tagChip(String text) {
+  Widget _tagChip(BuildContext context, String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         text,
-        style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
+        style: AppType.caption1.r.copyWith(color: context.c.labelNormal),
       ),
     );
   }
 
-  Widget _sampleVoiceCard(AppLocalizations l10n) {
+  Widget _sampleVoiceCard(BuildContext context, AppLocalizations l10n) {
     return Material(
-      color: AppColors.surface2,
+      color: context.c.backgroundNormalAlternative,
       borderRadius: BorderRadius.circular(AppRadius.xs),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
@@ -355,14 +355,14 @@ class BottomSheetAvatar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              AppIcons.volume(size: 24, color: AppColors.text),
+              AppIcons.volume(size: 24, color: context.c.labelStrong),
               const SizedBox(width: 8),
               Flexible(
                 child: Text(
                   l10n.playSampleVoice,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.label1.m.copyWith(color: AppColors.text),
+                  style: AppType.label1.m.copyWith(color: context.c.labelStrong),
                 ),
               ),
             ],
@@ -372,7 +372,7 @@ class BottomSheetAvatar extends StatelessWidget {
     );
   }
 
-  Widget _priceRow() {
+  Widget _priceRow(BuildContext context) {
     if (price == null && discountPrice == null) {
       return const SizedBox.shrink();
     }
@@ -384,7 +384,7 @@ class BottomSheetAvatar extends StatelessWidget {
             Text(
               price!,
               style: AppType.body1.r.copyWith(
-                color: AppColors.textSecondary,
+                color: context.c.labelNormal,
                 decoration: TextDecoration.lineThrough,
               ),
             ),
@@ -392,7 +392,7 @@ class BottomSheetAvatar extends StatelessWidget {
             const SizedBox(width: 10),
             Text(
               discountPrice!,
-              style: AppType.body1.sb.copyWith(color: AppColors.error),
+              style: AppType.body1.sb.copyWith(color: context.c.accentForegroundRed),
             ),
           ],
         ],
@@ -400,19 +400,19 @@ class BottomSheetAvatar extends StatelessWidget {
     }
     return Text(
       price ?? '',
-      style: AppType.body1.r.copyWith(color: AppColors.text),
+      style: AppType.body1.r.copyWith(color: context.c.labelStrong),
     );
   }
 
   // ── Footer buttons (60-size), per state ──────────────────────────────────
-  Widget _footer(AppLocalizations l10n) {
+  Widget _footer(BuildContext context, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: _footerButtons(l10n),
+      child: _footerButtons(context, l10n),
     );
   }
 
-  Widget _footerButtons(AppLocalizations l10n) {
+  Widget _footerButtons(BuildContext context, AppLocalizations l10n) {
     switch (state) {
       case BottomSheetAvatarState.unownedNormal:
       case BottomSheetAvatarState.unownedDiscount:
@@ -483,7 +483,7 @@ class BottomSheetAvatarDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
@@ -497,7 +497,7 @@ class BottomSheetAvatarDemo extends StatelessWidget {
                   child: Text(
                     label,
                     style: AppType.label2.sb
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ),
               ),
@@ -506,8 +506,8 @@ class BottomSheetAvatarDemo extends StatelessWidget {
                 height: 560,
                 child: Stack(
                   children: [
-                    const Positioned.fill(
-                      child: ColoredBox(color: AppColors.scrim),
+                    Positioned.fill(
+                      child: ColoredBox(color: context.c.materialDim),
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,

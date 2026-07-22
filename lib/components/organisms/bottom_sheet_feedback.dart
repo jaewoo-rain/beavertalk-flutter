@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -34,17 +34,17 @@ class FeedbackOption {
 ///   styling 1:1:
 ///   - Card 101×112, `borderRadius` 20, padding `28×24`, 1px stroke.
 ///   - Inner circle 56×56 (pill radius) holding a 24px icon.
-///   - selected → stroke + icon [AppColors.primary], inner fill
-///     [AppColors.primary10].
-///   - unselected → stroke + inner fill [AppColors.borderSubtle], icon
-///     [AppColors.textSecondary].
+///   - selected → stroke + icon `Primary/Normal`, inner fill
+///     `Primary/Normal-10`.
+///   - unselected → stroke + inner fill `Line/Alternative`, icon
+///     `Label/Normal`.
 ///   Default ordering per spec: 좌 👎 / 중 👍 / 우 😍 (using
 ///   `Icons.thumb_down` / `Icons.thumb_up` / `Icons.sentiment_very_satisfied`).
 /// - Footer: a 335-wide primary "선택 완료" button ([confirmText] → [onConfirm])
 ///   above a reused [HomeIndicator].
 ///
 /// Sheet shell: 375 wide, top corners `AppRadius.lg` (24), fill
-/// [AppColors.surfaceElevated]. Controlled — pass [value] (the selected
+/// `Background/Elevated/Alternative`. Controlled — pass [value] (the selected
 /// [FeedbackOption.value]) and react to [onChanged].
 class BottomSheetFeedback extends StatelessWidget {
   /// Creates a feedback bottom sheet.
@@ -92,7 +92,7 @@ class BottomSheetFeedback extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surfaceElevated,
+      color: context.c.backgroundElevatedAlternative,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppRadius.lg),
       ),
@@ -103,7 +103,7 @@ class BottomSheetFeedback extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(),
+            _header(context),
             // Options row.
             Center(
               child: SizedBox(
@@ -133,7 +133,7 @@ class BottomSheetFeedback extends StatelessWidget {
   }
 
   /// Header row: invisible spacer + close glyph (right-aligned).
-  Widget _header() {
+  Widget _header(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       child: Row(
@@ -148,7 +148,7 @@ class BottomSheetFeedback extends StatelessWidget {
               iconSize: 24,
               splashRadius: 18,
               onPressed: onClose,
-              icon: AppIcons.close(color: AppColors.text),
+              icon: AppIcons.close(color: context.c.labelStrong),
             ),
           ),
         ],
@@ -170,7 +170,7 @@ class BottomSheetFeedback extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(top: 16),
               child: Material(
-                color: AppColors.primary,
+                color: context.c.primaryNormal,
                 borderRadius: BorderRadius.circular(AppRadius.md),
                 clipBehavior: Clip.antiAlias,
                 child: InkWell(
@@ -183,7 +183,7 @@ class BottomSheetFeedback extends StatelessWidget {
                       resolvedConfirmText,
                       textAlign: TextAlign.center,
                       style: AppType.body1.sb.copyWith(
-                        color: AppColors.onPrimary,
+                        color: context.c.primaryOnPrimary,
                         letterSpacing: -0.4, // Figma -0.025em × 16
                       ),
                     ),
@@ -229,11 +229,11 @@ class _OptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color stroke =
-        selected ? AppColors.primary : AppColors.borderSubtle;
+        selected ? context.c.primaryNormal : context.c.lineAlternative;
     final Color innerFill =
-        selected ? AppColors.primary10 : AppColors.borderSubtle;
+        selected ? context.c.primaryNormal10 : context.c.lineAlternative;
     final Color iconColor =
-        selected ? AppColors.primary : AppColors.textSecondary;
+        selected ? context.c.primaryNormal : context.c.labelNormal;
 
     final content = Container(
       width: _width,
@@ -288,7 +288,7 @@ class _BottomSheetFeedbackDemoState extends State<BottomSheetFeedbackDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           Dim(onTap: () {}),

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -227,30 +227,30 @@ class _DropdownState<T> extends State<Dropdown<T>> {
     final Color fill;
     final Color border;
     if (!widget.enabled) {
-      fill = AppColors.surface2;
-      border = AppColors.borderSubtle;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.lineAlternative;
     } else if (_open) {
       // focus / expanded
-      fill = AppColors.surface2;
-      border = AppColors.primary;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.primaryNormal;
     } else if (filled) {
-      fill = AppColors.primary10;
-      border = AppColors.primary;
+      fill = context.c.primaryNormal10;
+      border = context.c.primaryNormal;
     } else {
       // default — borderless look
-      fill = AppColors.surface2;
-      border = AppColors.surface2;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.backgroundNormalAlternative;
     }
 
     final Color labelColor = !widget.enabled
-        ? AppColors.textTertiary
-        : (filled ? AppColors.text : AppColors.textSecondary);
+        ? context.c.labelDisabled
+        : (filled ? context.c.labelStrong : context.c.labelNormal);
     final TextStyle labelStyle =
         (filled ? spec._typeBase.sb : spec._typeBase.r)
             .copyWith(color: labelColor);
 
     final Color iconColor =
-        widget.enabled ? AppColors.textSecondary : AppColors.textTertiary;
+        widget.enabled ? context.c.labelNormal : context.c.labelDisabled;
 
     Widget? leadingIcon;
     if (widget.leftIcon != null) {
@@ -382,7 +382,7 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
       final bool isPointed = i == _pointed;
 
       final Color labelColor =
-          isSelected ? AppColors.text : AppColors.textSecondary;
+          isSelected ? context.c.labelStrong : context.c.labelNormal;
       final TextStyle style = (isSelected
               ? spec._rowTypeBase.sb
               : spec._rowTypeBase.r)
@@ -400,9 +400,9 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
               alignment: AlignmentDirectional.centerStart,
               padding: EdgeInsets.symmetric(horizontal: spec.padH),
               decoration: BoxDecoration(
-                color: AppColors.surface2,
+                color: context.c.backgroundNormalAlternative,
                 border: Border.all(
-                  color: isPointed ? AppColors.primary : Colors.transparent,
+                  color: isPointed ? context.c.primaryNormal : Colors.transparent,
                   width: 1,
                 ),
               ),
@@ -420,7 +420,7 @@ class _OptionPanelState<T> extends State<_OptionPanel<T>> {
 
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: radius,
         boxShadow: const [
           BoxShadow(
@@ -464,7 +464,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
           children: [
             Text(title,
                 style:
-                    AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+                    AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             ...children.expand((w) => [w, const SizedBox(height: 12)]),
             const SizedBox(height: 12),
@@ -478,7 +478,7 @@ class _DropdownDemoState extends State<DropdownDemo> {
             items: _items,
             value: _values[label],
             hintText: '클릭 했을 경우',
-            leftIcon: AppIcons.calendar(),
+            leftIcon: AppIcons.calendar(color: context.c.labelNormal),
             onChanged: (v) => setState(() => _values[label] = v),
           ),
           // Pre-filled (no icon).
@@ -495,13 +495,13 @@ class _DropdownDemoState extends State<DropdownDemo> {
             items: _items,
             value: 'd',
             enabled: false,
-            leftIcon: AppIcons.calendar(),
+            leftIcon: AppIcons.calendar(color: context.c.labelNormal),
             onChanged: (_) {},
           ),
         ]);
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(

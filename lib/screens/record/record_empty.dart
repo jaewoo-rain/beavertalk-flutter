@@ -5,7 +5,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -18,7 +18,7 @@ class RecordEmptyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
@@ -34,14 +34,14 @@ class RecordEmptyScreen extends StatelessWidget {
                     l10n.noCallRecords,
                     textAlign: TextAlign.center,
                     style:
-                        AppType.headline1.sb.copyWith(color: AppColors.text),
+                        AppType.headline1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
                     l10n.noCallRecordsBody,
                     textAlign: TextAlign.center,
                     style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Button(

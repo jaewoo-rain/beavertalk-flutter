@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet_alarm_settings.dart';
 import 'package:beavertalk/features/alarm/domain/entities/alarm.dart';
 import 'package:beavertalk/features/alarm/presentation/providers/alarm_providers.dart';
@@ -63,8 +64,10 @@ void main() {
     // Sheet body is now on a modal route above the page.
     expect(find.byType(AlarmAddSheet), findsOneWidget);
     expect(find.byType(BottomSheetAlarmSettings), findsOneWidget);
-    // Add mode header (English default locale).
-    expect(find.text('Add Schedule'), findsOneWidget);
+    // Add mode header (English default locale). `screen/etc_alarm__add`
+    // (`3665:12018`) titles this 새 일정 추가 — "new", not just "add" — and
+    // repeats it on the footer CTA, so the string is on screen twice.
+    expect(find.text('Add new schedule'), findsNWidgets(2));
   });
 
   testWidgets('saving pops the sheet and returns an AlarmData', (tester) async {
@@ -78,8 +81,9 @@ void main() {
     await tester.tap(find.text('open'));
     await tester.pumpAndSettle();
 
-    // Tap the footer save button ("Save").
-    await tester.tap(find.text('Save'));
+    // Tap the footer CTA. In add mode it reads "Add new schedule", same as the
+    // header — so target the footer's [Button], not the string.
+    await tester.tap(find.widgetWithText(Button, 'Add new schedule'));
     await tester.pumpAndSettle();
 
     expect(called, isTrue);

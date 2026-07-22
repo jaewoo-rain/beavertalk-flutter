@@ -211,6 +211,8 @@
   "priceFree": "Grátis",
   "loginGoogleTokenError": "Não foi possível obter um token de login do Google.",
   "loginGoogleSignInFailed": "Falha no login com o Google.",
+  "loginAppleSignInFailed": "Falha no login com o Apple.",
+  "loginKakaoSignInFailed": "Falha no login com o Kakao.",
   "loginContinueWithKakao": "Continuar com o Kakao",
   "loginContinueWithGoogle": "Continuar com o Google",
   "loginContinueWithApple": "Continuar com a Apple",

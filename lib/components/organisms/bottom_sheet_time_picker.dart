@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
@@ -71,7 +71,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Material(
-      color: AppColors.surfaceElevated,
+      color: context.c.backgroundElevatedAlternative,
       borderRadius: BorderRadius.circular(AppRadius.lg),
       clipBehavior: Clip.antiAlias,
       child: SizedBox(
@@ -85,7 +85,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
               Text(
                 widget.title ?? l10n.selectTime,
                 textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(color: AppColors.text),
+                style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
               ),
               const SizedBox(height: 16),
               SizedBox(
@@ -101,7 +101,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
                     ),
                     Text(':',
                         style: AppType.heading2.sb
-                            .copyWith(color: AppColors.text)),
+                            .copyWith(color: context.c.labelStrong)),
                     _wheel(
                       controller: _minuteCtrl,
                       count: 60,
@@ -162,7 +162,7 @@ class _BottomSheetTimePickerState extends State<BottomSheetTimePicker> {
           builder: (context, i) => Center(
             child: Text(
               label(i),
-              style: AppType.heading2.sb.copyWith(color: AppColors.text),
+              style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
         ),

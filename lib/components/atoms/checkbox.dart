@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 
 /// Available render sizes for [AppCheckbox] (the circular box diameter in px).
@@ -26,11 +26,17 @@ enum AppCheckboxSize {
 /// styling.
 ///
 /// Visual spec (measured):
-/// * default — fill `surface2` (#252932), 2px border white@12%, no check.
-/// * checked — fill `primary10` (#00FFB2 @10%), check stroke `primary` (#00FFB2).
-/// * disabled — fill #676E81, 1px border + check stroke #969CAD (no design
-///   token exists for these two greys; hex is used — see file-level note).
-/// * checked-disabled — fill #676E81, check stroke #969CAD.
+/// * default — fill `Background/Normal/Alternative`, 2px `Fill/Normal` border,
+///   no check.
+/// * checked — fill `Primary/Normal-10`, check stroke `Primary/Normal`.
+/// * disabled — fill `Fill/Disabled`, 1px `Line/Disabled` border + check.
+/// * checked-disabled — fill `Fill/Disabled`, check stroke `Line/Disabled`.
+///
+/// The disabled greys used to be hardcoded `#676E81` / `#969CAD` under a note
+/// that "no design token exists for these two". **Design has since made them**
+/// — `Fill/Disabled` and `Line/Disabled` (`175:11455` binds both) — and the
+/// check stroke was the wrong grey: the frame uses `Line/Disabled` (#474C58),
+/// not #969CAD.
 ///
 /// The check mark is drawn with a [CustomPainter] (path `M7 11 L10 14 L15 8`
 /// on the 22px artboard, scaled to [size]).
@@ -67,14 +73,6 @@ class AppCheckbox extends StatelessWidget {
   /// The box size (and the matching label typography). Defaults to 22px.
   final AppCheckboxSize size;
 
-  // ── Measured tokens (no AppColors entry exists for these) ──────────────
-  // default border: Semantics/Fill/Normal = rgba(255,255,255,0.12)
-  static const Color _defaultBorder = Color(0x1FFFFFFF);
-  // disabled fill: #676E81 (Figma had no semantic token)
-  static const Color _disabledFill = Color(0xFF676E81);
-  // disabled border + check: Semantics/Label/Disabled = #969CAD
-  static const Color _disabledFg = Color(0xFF969CAD);
-
   bool get _isInteractive => !disabled && onChanged != null;
 
   @override
@@ -86,16 +84,16 @@ class AppCheckbox extends StatelessWidget {
     final Color? borderColor;
     final Color? checkColor;
     if (disabled) {
-      fill = _disabledFill;
-      borderColor = value ? null : _disabledFg;
-      checkColor = value ? _disabledFg : null;
+      fill = context.c.fillDisabled;
+      borderColor = value ? null : context.c.lineDisabled;
+      checkColor = value ? context.c.lineDisabled : null;
     } else if (value) {
-      fill = AppColors.primary10;
+      fill = context.c.primaryNormal10;
       borderColor = null;
-      checkColor = AppColors.primary;
+      checkColor = context.c.primaryNormal;
     } else {
-      fill = AppColors.surface2;
-      borderColor = _defaultBorder;
+      fill = context.c.backgroundNormalAlternative;
+      borderColor = context.c.fillNormal;
       checkColor = null;
     }
 
@@ -115,7 +113,7 @@ class AppCheckbox extends StatelessWidget {
     final TextStyle labelStyle =
         (size == AppCheckboxSize.size22 ? AppType.body2 : AppType.label1)
             .r
-            .copyWith(color: AppColors.text);
+            .copyWith(color: context.c.labelStrong);
 
     Widget content = box;
     if (label != null) {
@@ -226,7 +224,7 @@ class _CheckboxDemoState extends State<CheckboxDemo> {
     Widget row(String title, List<Widget> children) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(title, style: AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+            Text(title, style: AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             Wrap(spacing: 24, runSpacing: 16, children: children),
             const SizedBox(height: 24),
@@ -234,7 +232,7 @@ class _CheckboxDemoState extends State<CheckboxDemo> {
         );
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(

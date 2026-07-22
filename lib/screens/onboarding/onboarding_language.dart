@@ -11,7 +11,7 @@ import '../../components/organisms/gnb.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -56,7 +56,7 @@ class _OnboardingLanguageScreenState
     final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main2(
@@ -75,7 +75,7 @@ class _OnboardingLanguageScreenState
               children: [
                 Text(
                   l10n.onboardingLanguageTitle,
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s20),
                 // Content data (language names) is kept as-is, not localized.

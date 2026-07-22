@@ -11,7 +11,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -94,7 +94,7 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -114,7 +114,7 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
                         ? l10n.passwordNewDescription
                         : l10n.passwordNewDescriptionEmail(_email),
                     style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s32),
                   // ── New password ────────────────────────────────────────
@@ -126,7 +126,7 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
                     hintText: l10n.newPasswordHint,
                     obscureText: _obscurePassword,
                     leftIcon:
-                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
+                        AppIcons.lock(size: 20, color: context.c.labelNormal),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscurePassword,
                       onTap: () => setState(
@@ -143,7 +143,7 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
                     hintText: l10n.confirmNewPasswordHint,
                     obscureText: _obscureConfirm,
                     leftIcon:
-                        AppIcons.lock(size: 20, color: AppColors.textSecondary),
+                        AppIcons.lock(size: 20, color: context.c.labelNormal),
                     rightIcon: PasswordEyeToggle(
                       obscured: _obscureConfirm,
                       onTap: () =>
@@ -190,7 +190,7 @@ class _Label extends StatelessWidget {
         alignment: AlignmentDirectional.centerStart,
         child: Text(
           text,
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );
@@ -211,7 +211,7 @@ class _ErrorText extends StatelessWidget {
           top: AppSpacing.s8, start: AppSpacing.s4),
       child: Text(
         text!,
-        style: AppType.label2.r.copyWith(color: AppColors.error),
+        style: AppType.label2.r.copyWith(color: context.c.accentForegroundRed),
       ),
     );
   }

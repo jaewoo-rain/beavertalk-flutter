@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -14,18 +14,24 @@ import '../../theme/app_typography.dart';
 /// * [warning] → `Semantics/Status/Warning` (#FFA938).
 enum FieldValidationState {
   /// Negative / error state — red border + red helper text.
-  error(AppColors.error),
+  error,
 
   /// Positive / success state — green border + green helper text.
-  success(AppColors.success),
+  success,
 
   /// Warning state — amber border + amber helper text.
-  warning(AppColors.warning);
+  warning;
 
-  const FieldValidationState(this.color);
-
-  /// The status token applied to both the box border and the helper text.
-  final Color color;
+  /// The status token for this state, in the current mode.
+  ///
+  /// Resolved from a [BuildContext] rather than held as an enum field: an enum
+  /// value is `const`, so it could only ever carry one mode's colour — which is
+  /// exactly how this used to hardcode the Dark palette.
+  Color color(BuildContext context) => switch (this) {
+        FieldValidationState.error => context.c.statusNegative,
+        FieldValidationState.success => context.c.statusPositive,
+        FieldValidationState.warning => context.c.statusCautionary,
+      };
 }
 
 /// A field wrapper that surrounds an arbitrary input ([child]) with a status
@@ -75,7 +81,7 @@ class FieldValidation extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<String> lines = _lines;
     final TextStyle helperStyle =
-        AppType.label2.r.copyWith(color: state.color);
+        AppType.label2.r.copyWith(color: state.color(context));
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -85,9 +91,9 @@ class FieldValidation extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
-            color: AppColors.surface2,
+            color: context.c.backgroundNormalAlternative,
             borderRadius: BorderRadius.circular(AppRadius.md),
-            border: Border.all(color: state.color, width: 1),
+            border: Border.all(color: state.color(context), width: 1),
           ),
           child: child,
         ),
@@ -116,18 +122,18 @@ class _SampleField extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        AppIcons.lock(size: 24, color: AppColors.textSecondary),
+        AppIcons.lock(size: 24, color: context.c.labelNormal),
         const SizedBox(width: 6),
         Expanded(
           child: Text(
             '비밀번호를 입력해주세요',
-            style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.label1.r.copyWith(color: context.c.labelNormal),
           ),
         ),
         const SizedBox(width: 6),
         AppIcons.eye(
           size: 20,
-          color: AppColors.textTertiary,
+          color: context.c.labelDisabled,
         ),
       ],
     );
@@ -142,7 +148,7 @@ class FieldValidationDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: SizedBox(

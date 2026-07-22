@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -208,28 +208,28 @@ class _InputFieldState extends State<InputField> {
     final Color fill;
     final Color border;
     if (!widget.enabled) {
-      fill = AppColors.surface2;
-      border = AppColors.borderSubtle;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.lineAlternative;
     } else if (_focused && hasText) {
       // typing
-      fill = AppColors.primary10;
-      border = AppColors.primary;
+      fill = context.c.primaryNormal10;
+      border = context.c.primaryNormal;
     } else if (_focused) {
       // focus
-      fill = AppColors.surface2;
-      border = AppColors.primary;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.primaryNormal;
     } else {
       // default / filled — both share surface2 fill + surface2 (borderless) edge
-      fill = AppColors.surface2;
-      border = AppColors.surface2;
+      fill = context.c.backgroundNormalAlternative;
+      border = context.c.backgroundNormalAlternative;
     }
 
     final TextStyle baseStyle = (spec.isBody1 ? AppType.body1 : AppType.label1).r;
     final TextStyle textStyle = baseStyle.copyWith(
-      color: widget.enabled ? AppColors.text : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelStrong : context.c.labelDisabled,
     );
     final TextStyle hintStyle = baseStyle.copyWith(
-      color: widget.enabled ? AppColors.textSecondary : AppColors.textTertiary,
+      color: widget.enabled ? context.c.labelNormal : context.c.labelDisabled,
     );
 
     Widget? icon;
@@ -239,7 +239,7 @@ class _InputFieldState extends State<InputField> {
         child: IconTheme.merge(
           data: IconThemeData(
             size: spec.iconSize,
-            color: widget.enabled ? AppColors.textSecondary : AppColors.textTertiary,
+            color: widget.enabled ? context.c.labelNormal : context.c.labelDisabled,
           ),
           child: SizedBox(
             width: spec.iconSize,
@@ -258,8 +258,8 @@ class _InputFieldState extends State<InputField> {
           data: IconThemeData(
             size: spec.iconSize,
             color: widget.enabled
-                ? AppColors.textSecondary
-                : AppColors.textTertiary,
+                ? context.c.labelNormal
+                : context.c.labelDisabled,
           ),
           child: SizedBox(
             width: spec.iconSize,
@@ -275,7 +275,7 @@ class _InputFieldState extends State<InputField> {
       focusNode: _focusNode,
       enabled: widget.enabled,
       style: textStyle,
-      cursorColor: AppColors.primary,
+      cursorColor: context.c.primaryNormal,
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
       onChanged: widget.onChanged == null
@@ -347,7 +347,7 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(title,
-                style: AppType.label2.m.copyWith(color: AppColors.textSecondary)),
+                style: AppType.label2.m.copyWith(color: context.c.labelNormal)),
             const SizedBox(height: 12),
             ...children.expand((w) => [w, const SizedBox(height: 12)]),
             const SizedBox(height: 12),
@@ -359,12 +359,12 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
             size: size,
             controller: _ctrl('$label-default'),
             hintText: '디폴트',
-            leftIcon: AppIcons.search(),
+            leftIcon: AppIcons.search(color: context.c.labelNormal),
           ),
           InputField(
             size: size,
             controller: _ctrl('$label-filled', '입력 완료 했을 경우'),
-            leftIcon: AppIcons.search(),
+            leftIcon: AppIcons.search(color: context.c.labelNormal),
           ),
           InputField(
             size: size,
@@ -375,12 +375,12 @@ class _InputFieldDemoState extends State<InputFieldDemo> {
             size: size,
             enabled: false,
             controller: _ctrl('$label-disabled', '비활성화 처리 상태'),
-            leftIcon: AppIcons.search(),
+            leftIcon: AppIcons.search(color: context.c.labelNormal),
           ),
         ]);
 
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(24),
         child: Column(

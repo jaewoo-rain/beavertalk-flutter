@@ -10,11 +10,12 @@ import '../../components/organisms/gnb.dart';
 import '../../features/payment/domain/entities/payment.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'payment_history_loading.dart';
 
 /// Payment history — Figma `screen/main_mypage_payment` (`2117:20206`).
 ///
@@ -44,7 +45,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
     final async = ref.watch(paymentPageProvider(_filter));
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -52,9 +53,9 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
             child: async.when(
-              loading: () => const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
+              // The page's own layout held with bars, not a spinner in an empty
+              // screen, so the summary and rows don't jump in when they land.
+              loading: () => const PaymentHistoryLoading(),
               error: (e, _) => _ErrorState(
                 message: l10n.paymentsLoadError,
                 onRetry: () => ref.invalidate(paymentPageProvider(_filter)),
@@ -91,7 +92,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
                 l10n.noPayments,
                 textAlign: TextAlign.center,
                 style:
-                    AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                    AppType.label1.r.copyWith(color: context.c.labelNormal),
               ),
             )
           else
@@ -114,7 +115,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
             Text(
               l10n.morePaymentsExist,
               textAlign: TextAlign.center,
-              style: AppType.label2.r.copyWith(color: AppColors.textTertiary),
+              style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
             ),
           ],
         ],
@@ -132,7 +133,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
         AppSpacing.s24,
       ),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Column(
@@ -187,14 +188,14 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
           vertical: AppSpacing.s12,
         ),
         decoration: BoxDecoration(
-          color: AppColors.surface2,
+          color: context.c.backgroundNormalAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: AnimatedDefaultTextStyle(
           duration: AppMotion.fast,
           curve: AppMotion.toggle,
           style: AppType.label1.sb.copyWith(
-            color: selected ? AppColors.text : AppColors.textSecondary,
+            color: selected ? context.c.labelStrong : context.c.labelNormal,
           ),
           child: Text(label),
         ),
@@ -230,7 +231,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
         Text(
           // Locale-aware: this screen renders in 30 locales.
           key == null ? l10n.undatedPayments : intl.DateFormat.yMMMM(locale).format(key),
-          style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: AppSpacing.s8),
         for (var i = 0; i < rows.length; i++)
@@ -307,7 +308,7 @@ class _ErrorState extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
             ),
             const SizedBox(height: AppSpacing.s16),
             Button(

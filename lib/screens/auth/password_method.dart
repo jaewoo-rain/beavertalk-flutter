@@ -10,7 +10,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -68,7 +68,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -89,14 +89,14 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                   Text(
                     l10n.passwordMethodDescription,
                     style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s32),
                   InputField(
                     controller: _email,
                     hintText: l10n.emailAddressHint,
                     keyboardType: TextInputType.emailAddress,
-                    leftIcon: AppIcons.mail(),
+                    leftIcon: AppIcons.mail(color: context.c.labelStrong),
                     onSubmitted: (_) => _send(),
                   ),
                   if (_error != null) ...[
@@ -106,7 +106,7 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
                           const EdgeInsetsDirectional.only(start: AppSpacing.s4),
                       child: Text(_error!,
                           style: AppType.label2.r
-                              .copyWith(color: AppColors.error)),
+                              .copyWith(color: context.c.accentForegroundRed)),
                     ),
                   ],
                 ],

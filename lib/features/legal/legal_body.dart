@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -33,33 +33,33 @@ class LegalBody extends StatelessWidget {
     const bodyHeight = 1.38;
     final sheet = MarkdownStyleSheet.fromTheme(Theme.of(context)).copyWith(
       // Page title (`#`) — biggest.
-      h1: AppType.title2.b.copyWith(color: AppColors.text),
+      h1: AppType.title2.b.copyWith(color: context.c.labelStrong),
       h1Padding: const EdgeInsets.only(bottom: AppSpacing.s8),
       // Section heading (`##`) — white; source uppercase reads as emphasis.
-      h2: AppType.headline1.sb.copyWith(color: AppColors.text),
+      h2: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
       h2Padding:
           const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s4),
       // Sub-section heading (`###`) — smaller.
-      h3: AppType.body1.sb.copyWith(color: AppColors.text),
+      h3: AppType.body1.sb.copyWith(color: context.c.labelStrong),
       h3Padding: const EdgeInsets.only(top: AppSpacing.s12),
       // Body — readable secondary grey.
       p: AppType.body2.r
-          .copyWith(color: AppColors.textSecondary, height: bodyHeight),
+          .copyWith(color: context.c.labelNormal, height: bodyHeight),
       // Emphasis — brighter + heavier on the dark theme.
       strong:
-          AppType.body2.sb.copyWith(color: AppColors.text, height: bodyHeight),
+          AppType.body2.sb.copyWith(color: context.c.labelStrong, height: bodyHeight),
       em: AppType.body2.r.copyWith(
-        color: AppColors.textSecondary,
+        color: context.c.labelNormal,
         fontStyle: FontStyle.italic,
         height: bodyHeight,
       ),
       // Bullet / ordered lists.
       listBullet: AppType.body2.r
-          .copyWith(color: AppColors.textSecondary, height: bodyHeight),
+          .copyWith(color: context.c.labelNormal, height: bodyHeight),
       listIndent: AppSpacing.s20,
       // Inline links (if any appear in the copy).
       a: AppType.body2.r.copyWith(
-        color: AppColors.primary,
+        color: context.c.primaryNormal,
         decoration: TextDecoration.underline,
         height: bodyHeight,
       ),

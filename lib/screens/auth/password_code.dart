@@ -11,7 +11,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -124,7 +124,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -142,7 +142,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                   Text(
                     l10n.passwordCodeDescription,
                     style: AppType.label1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s32),
                   OtpInput(
@@ -161,14 +161,14 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                             Text(
                               l10n.passwordCodeNoCode,
                               style: AppType.label1.r
-                                  .copyWith(color: AppColors.textSecondary),
+                                  .copyWith(color: context.c.labelNormal),
                             ),
                             GestureDetector(
                               onTap: _resend,
                               child: Text(
                                 l10n.passwordCodeResend,
                                 style: AppType.label1.sb
-                                    .copyWith(color: AppColors.primary),
+                                    .copyWith(color: context.c.primaryNormal),
                               ),
                             ),
                           ],
@@ -178,7 +178,7 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
                       Text(
                         _clock,
                         style: AppType.label1.r
-                            .copyWith(color: AppColors.textTertiary),
+                            .copyWith(color: context.c.labelDisabled),
                       ),
                     ],
                   ),
@@ -221,7 +221,7 @@ class _ErrorText extends StatelessWidget {
           top: AppSpacing.s8, start: AppSpacing.s4),
       child: Text(
         text!,
-        style: AppType.label2.r.copyWith(color: AppColors.error),
+        style: AppType.label2.r.copyWith(color: context.c.accentForegroundRed),
       ),
     );
   }

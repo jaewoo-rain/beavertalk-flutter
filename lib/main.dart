@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,11 +16,22 @@ import 'core/config/feature_flags.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/network/supabase_config.dart';
 import 'l10n/app_localizations.dart';
-import 'theme/app_colors.dart';
+import 'theme/app_color_tokens.dart';
 import 'theme/app_typography.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // Portrait only. Every frame in the design is 375×812 portrait and nothing is
+  // laid out for a landscape box, so a rotation only breaks the screen.
+  //
+  // Locked here rather than with `android:screenOrientation` in the manifest:
+  // one owner beats two, and the manifest route lets Android recreate the
+  // activity on rotation — which `MainActivity`'s MediaProjection recorder
+  // (`beavertalk/challenge_recorder`) would not survive mid-capture.
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   // Load .env first (API_BASE_URL + Supabase keys). Optional — the app still
   // boots on the hardcoded fallbacks if the file is missing or fails to parse.
   try {
@@ -93,17 +105,55 @@ class BeaverTalkApp extends ConsumerWidget {
         }
         return const Locale('en');
       },
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: AppColors.bg,
-        fontFamily: kFontFamily,
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primary,
-          surface: AppColors.surface,
-        ),
-      ),
+      // Both modes are built from the Figma `Semantics` tokens
+      // ([AppColorTokens]); a screen reads them via `context.c.<token>`.
+      //
+      // Follows the OS light/dark setting. The dark pin is gone: Stage 3 removed
+      // the last `AppColors` literals (the mapping was 855 → 0), and the Light
+      // audit — a 9-screen on-device sweep — found no white-glyph-goes-black
+      // breakage. There is no in-app theme toggle because the design has none;
+      // if one is wanted later, add a stored setting and drive `themeMode` from
+      // it. See `docs/2026-07-18_0053_컬러-전수조사.md`.
+      theme: _theme(Brightness.light, AppColorTokens.light),
+      darkTheme: _theme(Brightness.dark, AppColorTokens.dark),
+      themeMode: ThemeMode.system,
       home: const AuthGate(),
       onGenerateRoute: onGenerateRoute,
+    );
+  }
+
+  /// One [ThemeData] per mode, driven entirely by [tokens].
+  ///
+  /// The Material `ColorScheme` is filled in from the same tokens so that any
+  /// stock widget (dialogs, pickers, text selection) lands in the right mode
+  /// instead of Material's defaults — previously only `primary` and `surface`
+  /// were passed, and only for dark.
+  static ThemeData _theme(Brightness brightness, AppColorTokens tokens) {
+    final base = ThemeData(brightness: brightness);
+    return ThemeData(
+      useMaterial3: true,
+      brightness: brightness,
+      scaffoldBackgroundColor: tokens.backgroundNormalDeep,
+      fontFamily: kFontFamily,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: tokens.primaryNormal,
+        brightness: brightness,
+        primary: tokens.primaryNormal,
+        onPrimary: tokens.primaryOnPrimary,
+        surface: tokens.backgroundNormalNormal,
+        onSurface: tokens.labelStrong,
+        error: tokens.statusNegative,
+      ),
+      // [AppType]'s styles carry no colour, so every uncoloured `Text` falls
+      // through to here. Without this the app would inherit Material's own
+      // body colour (a near-white in dark, near-black in light) instead of
+      // `Label/Strong` — close enough to look right and wrong everywhere.
+      textTheme: base.textTheme.apply(
+        bodyColor: tokens.labelStrong,
+        displayColor: tokens.labelStrong,
+        fontFamily: kFontFamily,
+      ),
+      extensions: [tokens],
     );
   }
 }

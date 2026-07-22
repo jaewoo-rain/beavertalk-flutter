@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -26,9 +26,9 @@ enum CardBoxType {
 /// set `176:15524`).
 ///
 /// Measured spec (shared): `radius` 8 ([AppRadius.xs]), `10px` padding.
-/// `record`/`purchase` use the [AppColors.surfaceElevated] fill;
+/// `record`/`purchase` use the `Background/Elevated/Alternative` fill;
 /// `purchase-discount` uses an `error`-tinted fill (white-on-pink @ 6%) with a
-/// 1px [AppColors.error] border. The avatar is a 64px circle.
+/// 1px `Accent/Foreground/Red` border. The avatar is a 64px circle.
 ///
 /// * [CardBoxType.record] — avatar + a column of title (Label 1 SemiBold),
 ///   [subtitle] (Label 1 Regular), and a [meta] row (Label 1 Regular, white)
@@ -91,12 +91,12 @@ class CardBox extends StatelessWidget {
   Widget build(BuildContext context) {
     final BoxDecoration decoration = _isDiscount
         ? BoxDecoration(
-            color: AppColors.error.withValues(alpha: 0.06),
-            border: Border.all(color: AppColors.error),
+            color: context.c.accentForegroundRed.withValues(alpha: 0.06),
+            border: Border.all(color: context.c.accentForegroundRed),
             borderRadius: BorderRadius.circular(AppRadius.xs),
           )
         : BoxDecoration(
-            color: AppColors.surfaceElevated,
+            color: context.c.backgroundElevatedAlternative,
             borderRadius: BorderRadius.circular(AppRadius.xs),
           );
 
@@ -105,13 +105,13 @@ class CardBox extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(10),
         child: type == CardBoxType.record
-            ? _buildRecord()
-            : _buildPurchase(),
+            ? _buildRecord(context)
+            : _buildPurchase(context),
       ),
     );
   }
 
-  Widget _buildAvatar() {
+  Widget _buildAvatar(BuildContext context) {
     if (avatar != null) {
       return ClipOval(
         child: SizedBox(width: 64, height: 64, child: avatar),
@@ -120,18 +120,18 @@ class CardBox extends StatelessWidget {
     return Container(
       width: 64,
       height: 64,
-      decoration: const BoxDecoration(
-        color: AppColors.surface2,
+      decoration: BoxDecoration(
+        color: context.c.backgroundNormalAlternative,
         shape: BoxShape.circle,
       ),
     );
   }
 
-  Widget _buildRecord() {
+  Widget _buildRecord(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildAvatar(),
+        _buildAvatar(context),
         const SizedBox(width: 6),
         Expanded(
           child: Column(
@@ -142,7 +142,7 @@ class CardBox extends StatelessWidget {
                 title,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppType.label1.sb.copyWith(color: AppColors.text),
+                style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
@@ -153,16 +153,16 @@ class CardBox extends StatelessWidget {
                   subtitle!,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.label1.r.copyWith(color: AppColors.text),
+                  style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                 ),
               ],
               if (meta != null && meta!.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 _DottedRow(
                   segments: meta!,
-                  style: AppType.label1.r.copyWith(color: AppColors.text),
+                  style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   dotSize: 4,
-                  dotColor: AppColors.text,
+                  dotColor: context.c.labelStrong,
                   gap: 4,
                 ),
               ],
@@ -173,7 +173,7 @@ class CardBox extends StatelessWidget {
     );
   }
 
-  Widget _buildPurchase() {
+  Widget _buildPurchase(BuildContext context) {
     final traits = subtitle == null
         ? const <String>[]
         : subtitle!
@@ -185,7 +185,7 @@ class CardBox extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _buildAvatar(),
+        _buildAvatar(context),
         const SizedBox(width: 6),
         Expanded(
           child: Column(
@@ -198,7 +198,7 @@ class CardBox extends StatelessWidget {
                 children: [
                   AppIcons.volume(
                     size: 16,
-                    color: AppColors.text,
+                    color: context.c.labelStrong,
                   ),
                   const SizedBox(width: 8),
                   Flexible(
@@ -207,7 +207,7 @@ class CardBox extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style:
-                          AppType.label1.sb.copyWith(color: AppColors.text),
+                          AppType.label1.sb.copyWith(color: context.c.labelStrong),
                     ),
                   ),
                 ],
@@ -217,14 +217,14 @@ class CardBox extends StatelessWidget {
                 _DottedRow(
                   segments: traits,
                   style:
-                      AppType.caption1.r.copyWith(color: AppColors.text),
+                      AppType.caption1.r.copyWith(color: context.c.labelStrong),
                   dotSize: 2,
-                  dotColor: AppColors.text,
+                  dotColor: context.c.labelStrong,
                   gap: 3,
                 ),
               ],
               const SizedBox(height: 4),
-              _buildPriceRow(),
+              _buildPriceRow(context),
             ],
           ),
         ),
@@ -236,7 +236,7 @@ class CardBox extends StatelessWidget {
     );
   }
 
-  Widget _buildPriceRow() {
+  Widget _buildPriceRow(BuildContext context) {
     if (_isDiscount) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -249,9 +249,9 @@ class CardBox extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: AppType.label1.r.copyWith(
-                  color: AppColors.textSecondary,
+                  color: context.c.labelNormal,
                   decoration: TextDecoration.lineThrough,
-                  decorationColor: AppColors.textSecondary,
+                  decorationColor: context.c.labelNormal,
                 ),
               ),
             ),
@@ -263,7 +263,7 @@ class CardBox extends StatelessWidget {
                 discountPrice!,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: AppType.label1.sb.copyWith(color: AppColors.error),
+                style: AppType.label1.sb.copyWith(color: context.c.accentForegroundRed),
               ),
             ),
         ],
@@ -271,7 +271,7 @@ class CardBox extends StatelessWidget {
     }
     return Text(
       price ?? '',
-      style: AppType.label1.r.copyWith(color: AppColors.text),
+      style: AppType.label1.r.copyWith(color: context.c.labelStrong),
     );
   }
 }
@@ -330,16 +330,16 @@ class CardBoxDemo extends StatelessWidget {
   /// Creates the CardBox gallery demo.
   const CardBoxDemo({super.key});
 
-  Widget _button() => DecoratedBox(
+  Widget _button(BuildContext context) => DecoratedBox(
         decoration: BoxDecoration(
-          color: AppColors.surfaceElevatedNormal,
+          color: context.c.backgroundElevatedNormal,
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           child: Text(
             '구매',
-            style: AppType.label2.sb.copyWith(color: AppColors.text),
+            style: AppType.label2.sb.copyWith(color: context.c.labelStrong),
           ),
         ),
       );
@@ -347,7 +347,7 @@ class CardBoxDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -366,7 +366,7 @@ class CardBoxDemo extends StatelessWidget {
               title: 'Judi',
               subtitle: 'Warm·Calm·Soft',
               price: '10\$',
-              action: _button(),
+              action: _button(context),
             ),
             const SizedBox(height: 16),
             CardBox(
@@ -375,7 +375,7 @@ class CardBoxDemo extends StatelessWidget {
               subtitle: 'Warm·Calm·Soft',
               price: '10\$',
               discountPrice: '5\$',
-              action: _button(),
+              action: _button(context),
             ),
           ],
         ),

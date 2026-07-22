@@ -6,7 +6,16 @@ import 'package:beavertalk/components/atoms/speaking_equalizer.dart';
 import 'package:beavertalk/components/icons/app_icons.dart';
 import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
-import 'package:beavertalk/theme/app_colors.dart';
+import 'package:beavertalk/l10n/app_localizations.dart';
+
+/// Widgets that call `AppLocalizations.of(context)` (HintCard's counter/label)
+/// crash with a null-check unless the host installs the l10n delegates — the
+/// real app wires these in `main.dart`. Mirror that here.
+Widget _host(Widget body) => MaterialApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(body: body),
+    );
 
 void main() {
   group('HintData.fromJson', () {
@@ -43,15 +52,13 @@ void main() {
 
   testWidgets('HintCard peek → tap fires onReveal exactly once', (tester) async {
     var reveals = 0;
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: HintCard(
-          examples: examples,
-          revealed: false,
-          index: 0,
-          onReveal: () => reveals++,
-          onCycle: () {},
-        ),
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: false,
+        index: 0,
+        onReveal: () => reveals++,
+        onCycle: () {},
       ),
     ));
     // Peek shows only the first Korean line; roman/native hidden.
@@ -65,15 +72,13 @@ void main() {
 
   testWidgets('HintCard full shows roman/native + counter and cycles',
       (tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: HintCard(
-          examples: examples,
-          revealed: true,
-          index: 1,
-          onReveal: () {},
-          onCycle: () {},
-        ),
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 1,
+        onReveal: () {},
+        onCycle: () {},
       ),
     ));
     expect(find.text('Hint'), findsOneWidget);
@@ -85,16 +90,14 @@ void main() {
 
   testWidgets('CallToggleButton reports toggled value', (tester) async {
     bool? got;
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: CallToggleButton(
-            icon: AppIcons.lightbulb,
-            active: true,
-            activeFill: AppColors.hintAccent,
-            semanticLabel: 'Hint',
-            onChanged: (v) => got = v,
-          ),
+    await tester.pumpWidget(_host(
+      Center(
+        child: CallToggleButton(
+          icon: AppIcons.lightbulb,
+          active: true,
+          activeFill: const Color(0xFFD17600),
+          semanticLabel: 'Hint',
+          onChanged: (v) => got = v,
         ),
       ),
     ));
@@ -105,9 +108,7 @@ void main() {
 
   testWidgets('SpeakingEqualizer builds and animates without throwing',
       (tester) async {
-    await tester.pumpWidget(const MaterialApp(
-      home: Scaffold(body: Center(child: SpeakingEqualizer())),
-    ));
+    await tester.pumpWidget(_host(const Center(child: SpeakingEqualizer())));
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.byType(SpeakingEqualizer), findsOneWidget);
   });

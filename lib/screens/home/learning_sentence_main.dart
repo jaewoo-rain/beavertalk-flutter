@@ -5,29 +5,34 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import 'learning_args.dart';
 
-/// Learning step 3 — Figma `screen/learning_main` (`2221:3837`).
+/// Learning step 3 — Figma `screen/learning_main` (`3627:24364`, redrawn
+/// 2026-07-16; previously `2221:3837`).
+///
+/// Named *sentence* main because it scores **one sentence**. Three frames now
+/// share the name `screen/learning_main`, so the code splits them by what they
+/// measure: `2221:3837` and `3627:24364` score one sentence (this screen), while
+/// `3569:15065` summarises a whole session ([LearningCallMainScreen]).
 ///
 /// The per-sentence result: a centered [PronunciationResult] gauge fed by the
-/// current sentence's scores, with a pinned footer of two actions:
-/// - "학습 종료" ([BtnType.secondaryFill]) → pop back to the start of the flow,
-/// - "다음" ([BtnType.primaryFill]) → if another sentence follows, push a fresh
-///   [Routes.learningIntro] for it (advancing the [LearningArgs] index);
-///   otherwise return to [Routes.home].
+/// current sentence's scores over a pinned footer of **one** action —
+/// "학습 종료" ([BtnType.primaryFill]) → unwind to whatever launched the flow.
+/// The redraw confirms the single CTA; there is no "다음" button in the frame
+/// (advancing happens in [LearningIntroScreen]).
 ///
 /// Reads its [LearningArgs] from `ModalRoute.of(context)!.settings.arguments`.
-class LearningMainScreen extends StatefulWidget {
+class LearningSentenceMainScreen extends StatefulWidget {
   /// Creates the learning result screen.
-  const LearningMainScreen({super.key});
+  const LearningSentenceMainScreen({super.key});
 
   @override
-  State<LearningMainScreen> createState() => _LearningMainScreenState();
+  State<LearningSentenceMainScreen> createState() => _LearningSentenceMainScreenState();
 }
 
-class _LearningMainScreenState extends State<LearningMainScreen> {
+class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen> {
   /// Ends the session: unwind back to whatever launched the learning flow —
   /// the call analysis (대화 기록) or the 보관 archive. Pops every learning
   /// screen (intro/next/main) and stops at the first non-learning route, so it
@@ -37,8 +42,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
     Navigator.popUntil(context, (route) {
       final name = route.settings.name;
       return name != Routes.learningIntro &&
-          name != Routes.learningNext &&
-          name != Routes.learningMain;
+          name != Routes.learningSentenceMain;
     });
   }
 
@@ -55,7 +59,7 @@ class _LearningMainScreenState extends State<LearningMainScreen> {
     final eval = args.feedback?.evaluation;
 
     return AppScaffold(
-      background: AppColors.surface2,
+      background: context.c.backgroundNormalAlternative,
       body: Column(
         children: [
           Expanded(

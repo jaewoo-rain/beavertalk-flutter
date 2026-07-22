@@ -211,6 +211,8 @@
   "priceFree": "Gratis",
   "loginGoogleTokenError": "Tidak dapat memperoleh token masuk Google.",
   "loginGoogleSignInFailed": "Masuk dengan Google gagal.",
+  "loginAppleSignInFailed": "Masuk dengan Apple gagal.",
+  "loginKakaoSignInFailed": "Masuk dengan Kakao gagal.",
   "loginContinueWithKakao": "Lanjutkan dengan Kakao",
   "loginContinueWithGoogle": "Lanjutkan dengan Google",
   "loginContinueWithApple": "Lanjutkan dengan Apple",

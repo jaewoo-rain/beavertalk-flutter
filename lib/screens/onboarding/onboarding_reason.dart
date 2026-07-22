@@ -12,7 +12,7 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -75,7 +75,7 @@ class _OnboardingReasonScreenState
     final l10n = AppLocalizations.of(context);
 
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
           Gnb.main2(
@@ -92,13 +92,13 @@ class _OnboardingReasonScreenState
               children: [
                 Text(
                   l10n.onboardingReasonTitle,
-                  style: AppType.title3.b.copyWith(color: AppColors.text),
+                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s8),
                 Text(
                   l10n.onboardingReasonSubtitle,
                   style:
-                      AppType.body1.r.copyWith(color: AppColors.textSecondary),
+                      AppType.body1.r.copyWith(color: context.c.labelNormal),
                 ),
                 const SizedBox(height: AppSpacing.s24),
                 // Reason copy is localized by id (the mock data holds Korean
@@ -124,7 +124,7 @@ class _OnboardingReasonScreenState
                   const SizedBox(height: AppSpacing.s16),
                   Text(_error!,
                       style:
-                          AppType.label2.r.copyWith(color: AppColors.error)),
+                          AppType.label2.r.copyWith(color: context.c.accentForegroundRed)),
                 ],
               ],
             ),

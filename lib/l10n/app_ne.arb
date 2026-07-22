@@ -211,6 +211,8 @@
   "priceFree": "निःशुल्क",
   "loginGoogleTokenError": "Google साइन-इन टोकन प्राप्त गर्न सकिएन।",
   "loginGoogleSignInFailed": "Google साइन-इन असफल भयो।",
+  "loginAppleSignInFailed": "Apple साइन-इन असफल भयो।",
+  "loginKakaoSignInFailed": "Kakao साइन-इन असफल भयो।",
   "loginContinueWithKakao": "Kakao बाट जारी राख्नुहोस्",
   "loginContinueWithGoogle": "Google बाट जारी राख्नुहोस्",
   "loginContinueWithApple": "Apple बाट जारी राख्नुहोस्",

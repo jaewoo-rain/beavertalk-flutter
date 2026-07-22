@@ -1,6 +1,6 @@
 // Pronunciation-review entities for a single learned sentence. Pure Dart —
 // no Flutter/dio/JSON knowledge. Produced by `POST /sentences/{id}/reviews/audio`
-// and consumed by the learning flow (learning_next / learning_main) and the
+// and consumed by the learning flow (learning_next / learning_sentence_main) and the
 // frontend gauge-average recompute.
 
 /// Overall scores for one review attempt. Each value is 0–100.

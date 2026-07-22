@@ -5,8 +5,11 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/card_box.dart';
+import '../../components/molecules/card_box_loading.dart';
+import '../../components/molecules/card_loading.dart';
 import '../../components/molecules/segmented_tabs.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -19,7 +22,7 @@ import '../../features/review/data/audio_player.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../home/learning_args.dart';
@@ -50,7 +53,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -94,15 +97,45 @@ class _RecordsBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final calls = ref.watch(callListProvider);
     return calls.when(
-      loading: () => const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      ),
+      loading: () => const _RecordsLoading(),
       error: (_, _) => _RecordsError(
         onRetry: () => ref.invalidate(callListProvider),
       ),
       data: (records) => records.isEmpty
           ? const _RecordsEmpty()
           : _RecordList(records: records),
+    );
+  }
+}
+
+/// 기록 tab while `GET /calls` is in flight — Figma `screen/record_list_loading`
+/// (`3489:3921`).
+///
+/// Deliberately mirrors [_RecordList]: same padding, same 통화 기록 label (it is
+/// static, so it renders for real), then five [CardBoxLoading] rows at the same
+/// 88 height and 12 gap as the [CardBox]es that replace them. Five is the
+/// design's count — it fills the viewport without implying how many calls the
+/// user actually has.
+class _RecordsLoading extends StatelessWidget {
+  const _RecordsLoading();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SkeletonShimmer(
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
+        children: [
+          Text(l10n.callHistory,
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
+          const SizedBox(height: 8),
+          for (var i = 0; i < 5; i++) ...[
+            if (i > 0) const SizedBox(height: AppSpacing.s12),
+            const CardBoxLoading(),
+          ],
+        ],
+      ),
     );
   }
 }
@@ -121,7 +154,7 @@ class _RecordList extends StatelessWidget {
           AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
         Text(l10n.callHistory,
-            style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
         const SizedBox(height: 8),
         for (var i = 0; i < records.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -203,14 +236,14 @@ class _RecordsEmpty extends StatelessWidget {
                   Text(
                     l10n.noCallRecords,
                     textAlign: TextAlign.center,
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
+                    style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
                     l10n.noCallRecordsBody,
                     textAlign: TextAlign.center,
                     style:
-                        AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                        AppType.label1.r.copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Button(
@@ -253,14 +286,14 @@ class _RecordsError extends StatelessWidget {
                   Text(
                     l10n.recordsLoadError,
                     textAlign: TextAlign.center,
-                    style: AppType.headline1.sb.copyWith(color: AppColors.text),
+                    style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(
                     l10n.tryAgainLater,
                     textAlign: TextAlign.center,
                     style:
-                        AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                        AppType.label1.r.copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Button(
@@ -383,7 +416,14 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
-      arguments: LearningArgs(sentences: [bridged]),
+      // One sentence, practiced on its own → the sentence result
+      // (`learning_main__word`). Same as the default, but stated: this is the
+      // half of the pair that decides the ending, and it should not be silent
+      // about it.
+      arguments: LearningArgs(
+        sentences: [bridged],
+        origin: LearningOrigin.sentence,
+      ),
     );
   }
 
@@ -391,9 +431,7 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return ref.watch(bookmarkListProvider).when(
-          loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.primary),
-          ),
+          loading: () => const _ArchiveLoading(),
           error: (e, _) => _ArchiveError(
             message:
                 e is AppException ? e.message : l10n.savedExpressionsLoadError,
@@ -411,7 +449,7 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
           AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
       children: [
         Text(AppLocalizations.of(context).mySavedExpressions,
-            style: AppType.body1.sb.copyWith(color: AppColors.textSecondary)),
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
         const SizedBox(height: AppSpacing.s8),
         for (var i = 0; i < saved.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -421,12 +459,47 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
             bookmarked: saved[i].isBookmarked,
             onBookmarkTap: () => _toggleOff(saved[i].sentenceId),
             onSpeakerTap: () => _speak(saved[i]),
+            // The frame's archive cards carry the same 연습하기 button as the
+            // analysis ones (`I3360:115;176:15497`); this tab was dropping it,
+            // which cost the archive its only visible way into practice (the
+            // whole-card tap does the same thing, but nothing said so) and left
+            // the card 12px shorter than [CardLoading] reserves for it.
+            actionText: AppLocalizations.of(context).practice,
+            onAction: () => _review(saved[i]),
             onTap: () => _review(saved[i]),
           ),
         ],
       ],
     );
   }
+}
+
+/// 보관함 tab while `GET /members/me/bookmarks` is in flight — Figma
+/// `screen/record_archive_loading` (`3489:4197`).
+///
+/// Mirrors `_ArchiveBodyState._list`: same padding, the static 나의 저장 표현
+/// label for real, then three [CardLoading]s — which Figma builds to
+/// [CardBookmark]'s exact 136 height so the swap costs no reflow.
+class _ArchiveLoading extends StatelessWidget {
+  const _ArchiveLoading();
+
+  @override
+  Widget build(BuildContext context) => SkeletonShimmer(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+              AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
+          children: [
+            Text(AppLocalizations.of(context).mySavedExpressions,
+                style:
+                    AppType.body1.sb.copyWith(color: context.c.labelNormal)),
+            const SizedBox(height: AppSpacing.s8),
+            for (var i = 0; i < 3; i++) ...[
+              if (i > 0) const SizedBox(height: AppSpacing.s12),
+              const CardLoading(),
+            ],
+          ],
+        ),
+      );
 }
 
 /// Shown when no sentence has been bookmarked yet.
@@ -441,7 +514,7 @@ class _ArchiveEmpty extends StatelessWidget {
         child: Text(
           AppLocalizations.of(context).noSavedSentences,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
         ),
       ),
     );
@@ -466,7 +539,7 @@ class _ArchiveError extends StatelessWidget {
             Text(
               message,
               textAlign: TextAlign.center,
-              style: AppType.body2.r.copyWith(color: AppColors.textSecondary),
+              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
             ),
             const SizedBox(height: 12),
             TextButton(

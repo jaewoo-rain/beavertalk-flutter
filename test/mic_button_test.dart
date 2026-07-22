@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/atoms/mic_button.dart';
+import 'package:beavertalk/l10n/app_localizations.dart';
 
 void main() {
-  Widget host(Widget child) => MaterialApp(home: Scaffold(body: Center(child: child)));
+  // MicButton reads `AppLocalizations.of(context)`, which null-checks unless the
+  // host installs the l10n delegates (as `main.dart` does).
+  Widget host(Widget child) => MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(body: Center(child: child)),
+      );
 
   testWidgets('MicButton renders idle without a level (static)', (tester) async {
     var taps = 0;

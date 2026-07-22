@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 
 /// RecordCircleButton — a 96px white circle with a green-700 ring and a centered
@@ -40,12 +40,14 @@ class RecordCircleButton extends StatelessWidget {
           width: size,
           height: size,
           decoration: BoxDecoration(
-            color: AppColors.text, // white fill
+            // Static/White, not Label/Strong: this is the white disc inside a
+            // mint ring, and it must stay white in Light too.
+            color: context.c.staticWhite,
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.green700, width: 4),
+            border: Border.all(color: context.c.primaryHeavy, width: 4),
           ),
           alignment: Alignment.center,
-          child: icon(size: 40, color: AppColors.green700),
+          child: icon(size: 40, color: context.c.primaryHeavy),
         ),
       ),
     );

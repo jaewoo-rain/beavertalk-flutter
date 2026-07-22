@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 
 /// An image that **blurs in** as it loads: a frosted placeholder shows
 /// immediately, then the decoded image fades over it. Use for network images
@@ -27,7 +27,7 @@ class BlurUpImage extends StatelessWidget {
   /// How the decoded image is inscribed into its box.
   final BoxFit fit;
 
-  /// Base color of the frosted placeholder; defaults to [AppColors.surface2].
+  /// Base color of the frosted placeholder; defaults to `Background/Normal/Alternative`.
   final Color? placeholderColor;
 
   /// Fade-in duration once the first frame decodes.
@@ -35,7 +35,7 @@ class BlurUpImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final base = placeholderColor ?? AppColors.surface2;
+    final base = placeholderColor ?? context.c.backgroundNormalAlternative;
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -48,7 +48,7 @@ class BlurUpImage extends StatelessWidget {
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [base, AppColors.surfaceElevated],
+                colors: [base, context.c.backgroundElevatedAlternative],
               ),
             ),
           ),

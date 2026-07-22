@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -16,6 +16,7 @@ import '../../theme/app_typography.dart';
 /// - [secondaryFill] — `bg surface2 / text white`
 /// - [secondaryOutline] — `bg surface2 / border surface2 / text textSecondary`
 /// - [secondaryWhite] — `bg surfaceElevated / border surface2 / text white`
+/// - [secondaryElevated] — `bg surfaceElevatedNormal / text white`
 /// - [disabled] — `bg surface / border borderSubtle / text textTertiary`
 enum BtnType {
   primaryFill,
@@ -24,6 +25,15 @@ enum BtnType {
   secondaryFill,
   secondaryOutline,
   secondaryWhite,
+
+  /// Like [secondaryFill] but a shade lighter — `Background/Elevated/Normal`
+  /// (#2F3340) instead of `surface2` (#252932).
+  ///
+  /// The 연습하기 button inside `Card-Bookmark` (`176:15497`, in both the
+  /// analysis and archive instances) is filled this way. It sits on the card's
+  /// own #1F222A, where `secondaryFill` would be only one step lighter than the
+  /// card and read as flat.
+  secondaryElevated,
   disabled,
 }
 
@@ -57,7 +67,7 @@ class _Spec {
 /// BeaverTalk Figma `Button` component set (`45:45158`) 1:1.
 ///
 /// 7 [BtnType] styles × 7 [BtnSize] heights, all colors/typography/radii pulled
-/// from design tokens ([AppColors] / [AppType] / [AppRadius]).
+/// from design tokens ([AppColorTokens] / [AppType] / [AppRadius]).
 ///
 /// The button renders disabled (non-interactive, no ripple) when [disabled] is
 /// `true` **or** when [type] is [BtnType.disabled]. A disabled button keeps its
@@ -178,66 +188,73 @@ class Button extends StatelessWidget {
   }
 
   /// Fill color for the current effective type.
-  Color _fill() {
+  Color _fill(AppColorTokens c) {
     switch (_effectiveType) {
       case BtnType.primaryFill:
-        return AppColors.primary;
+        return c.primaryNormal;
       case BtnType.primaryOutline:
       case BtnType.primaryOutlineWhite:
       case BtnType.disabled:
-        return AppColors.surface;
+        return c.backgroundNormalNormal;
       case BtnType.secondaryFill:
       case BtnType.secondaryOutline:
-        return AppColors.surface2;
+        return c.backgroundNormalAlternative;
       case BtnType.secondaryWhite:
-        return AppColors.surfaceElevated;
+        return c.backgroundElevatedAlternative;
+      case BtnType.secondaryElevated:
+        return c.backgroundElevatedNormal;
     }
   }
 
   /// Border color for the current effective type, or `null` for no stroke.
-  Color? _border() {
+  Color? _border(AppColorTokens c) {
     switch (_effectiveType) {
       case BtnType.primaryFill:
-        return AppColors.primary;
+        return c.primaryNormal;
       case BtnType.primaryOutline:
       case BtnType.primaryOutlineWhite:
-        return AppColors.primary;
+        return c.primaryNormal;
       case BtnType.secondaryFill:
+      case BtnType.secondaryElevated:
         return null; // no stroke in Figma
       case BtnType.secondaryOutline:
-        return AppColors.surface2;
+        return c.backgroundNormalAlternative;
       case BtnType.secondaryWhite:
-        return AppColors.surface2;
+        return c.backgroundNormalAlternative;
       case BtnType.disabled:
-        return AppColors.borderSubtle;
+        return c.lineAlternative;
     }
   }
 
   /// Label/icon foreground color for the current effective type.
-  Color _foreground() {
+  Color _foreground(AppColorTokens c) {
     switch (_effectiveType) {
       case BtnType.primaryFill:
-        return AppColors.onPrimary; // black
+        return c.primaryOnPrimary; // black
       case BtnType.primaryOutline:
-        return AppColors.primary;
+        return c.primaryNormal;
       case BtnType.primaryOutlineWhite:
-        return AppColors.text; // white
+        return c.labelStrong; // white
       case BtnType.secondaryFill:
-        return AppColors.text; // white
+      case BtnType.secondaryElevated:
+        return c.labelStrong; // white
       case BtnType.secondaryOutline:
-        return AppColors.textSecondary;
+        return c.labelNormal;
       case BtnType.secondaryWhite:
-        return AppColors.text; // white
+        return c.labelStrong; // white
       case BtnType.disabled:
-        return AppColors.textTertiary;
+        return c.labelDisabled;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final spec = _specs[size]!;
-    final fg = _foreground();
-    final border = _border();
+    // The palette helpers below take the token set rather than reading a
+    // static: they are plain methods with no context of their own.
+    final c = context.c;
+    final fg = _foreground(c);
+    final border = _border(c);
     final radius = BorderRadius.circular(_radius());
 
     final children = <Widget>[];
@@ -272,7 +289,7 @@ class Button extends StatelessWidget {
     );
 
     return Material(
-      color: _fill(),
+      color: _fill(c),
       shape: RoundedRectangleBorder(
         borderRadius: radius,
         side: border == null
@@ -347,7 +364,7 @@ class ButtonDemo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -357,7 +374,7 @@ class ButtonDemo extends StatelessWidget {
             for (final (typeLabel, type) in _types) ...[
               Text(
                 typeLabel,
-                style: AppType.label2.sb.copyWith(color: AppColors.textSecondary),
+                style: AppType.label2.sb.copyWith(color: context.c.labelNormal),
               ),
               const SizedBox(height: 8),
               Wrap(
@@ -378,7 +395,7 @@ class ButtonDemo extends StatelessWidget {
             // icon showcase
             Text(
               'with icons',
-              style: AppType.label2.sb.copyWith(color: AppColors.textSecondary),
+              style: AppType.label2.sb.copyWith(color: context.c.labelNormal),
             ),
             const SizedBox(height: 8),
             Wrap(
@@ -397,7 +414,7 @@ class ButtonDemo extends StatelessWidget {
                   type: BtnType.primaryOutline,
                   size: BtnSize.s48,
                   text: '오른쪽 아이콘',
-                  rightIcon: AppIcons.arrowRight(),
+                  rightIcon: AppIcons.arrowRight(color: context.c.labelStrong),
                   onPressed: () {},
                 ),
                 Button(
@@ -405,7 +422,7 @@ class ButtonDemo extends StatelessWidget {
                   size: BtnSize.s36,
                   text: '양쪽',
                   leftIcon: const Icon(Icons.star),
-                  rightIcon: AppIcons.chevronRight(),
+                  rightIcon: AppIcons.chevronRight(color: context.c.labelStrong),
                   onPressed: () {},
                 ),
               ],
@@ -414,7 +431,7 @@ class ButtonDemo extends StatelessWidget {
             // disabled showcase (via flag, not type)
             Text(
               'disabled flag (any type → disabled palette)',
-              style: AppType.label2.sb.copyWith(color: AppColors.textSecondary),
+              style: AppType.label2.sb.copyWith(color: context.c.labelNormal),
             ),
             const SizedBox(height: 8),
             Wrap(

@@ -5,7 +5,7 @@ import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 
 /// Share profile — Figma `screen/mypage__share` (`2329:4893`). The
 /// [DialogShareProfile] card over a [Dim] scrim; tapping the scrim closes it.
@@ -17,7 +17,7 @@ class ShareScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Stack(
         children: [
           Positioned.fill(child: Dim(onTap: () => Navigator.pop(context))),

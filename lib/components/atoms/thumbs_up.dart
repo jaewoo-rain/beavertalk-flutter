@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 
 /// ThumbsUp — a large selectable "like" atom.
@@ -11,10 +11,10 @@ import '../icons/app_icons.dart';
 /// - Outer box 101×112, `borderRadius` 20, padding `28px 24px`, 1px stroke.
 /// - Inner circle 56×56 (padding 14, `borderRadius` 9999 / pill), holds a 24×24
 ///   thumbs-up icon (Figma `thumbs-up` icon → [Icons.thumb_up_outlined]).
-/// - `active`   → outer stroke + icon [AppColors.primary], inner fill
-///   `Primary/Primary-10` ([AppColors.primary10]).
+/// - `active`   → outer stroke + icon `Primary/Normal`, inner fill
+///   `Primary/Primary-10` (`Primary/Normal-10`).
 /// - `inactive` → outer stroke + inner fill `Line/Normal/Alternative`
-///   ([AppColors.borderSubtle]), icon [AppColors.textSecondary].
+///   (`Line/Alternative`), icon `Label/Normal`.
 ///
 /// Controlled atom: pass [active] and handle [onChanged]; [disabled] dims it.
 class ThumbsUp extends StatelessWidget {
@@ -43,11 +43,11 @@ class ThumbsUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Color outerStroke =
-        active ? AppColors.primary : AppColors.borderSubtle;
+        active ? context.c.primaryNormal : context.c.lineAlternative;
     final Color innerFill =
-        active ? AppColors.primary10 : AppColors.borderSubtle;
+        active ? context.c.primaryNormal10 : context.c.lineAlternative;
     final Color iconColor =
-        active ? AppColors.primary : AppColors.textSecondary;
+        active ? context.c.primaryNormal : context.c.labelNormal;
 
     final Widget content = Container(
       width: _width,
@@ -115,16 +115,16 @@ class _ThumbsUpDemoState extends State<ThumbsUpDemo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Interactive (tap to toggle)',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('Interactive (tap to toggle)',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           ThumbsUp(
             active: _active,
             onChanged: (v) => setState(() => _active = v),
           ),
           const SizedBox(height: 24),
-          const Text('States',
-              style: TextStyle(color: AppColors.textSecondary)),
+          Text('States',
+              style: TextStyle(color: context.c.labelNormal)),
           const SizedBox(height: 12),
           Row(
             mainAxisSize: MainAxisSize.min,

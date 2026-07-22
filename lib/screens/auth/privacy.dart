@@ -5,7 +5,7 @@ import '../../components/organisms/gnb.dart';
 import '../../features/legal/legal_body.dart';
 import '../../features/legal/legal_texts.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 
 /// Privacy-Policy article screen.
 ///
@@ -22,7 +22,7 @@ class PrivacyScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

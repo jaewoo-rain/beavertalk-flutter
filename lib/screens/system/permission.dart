@@ -6,7 +6,7 @@ import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/icons/app_icons.dart';
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -25,7 +25,7 @@ class PermissionScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       homeVariant: HomeIndicatorVariant.subTransparent,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -42,7 +42,7 @@ class PermissionScreen extends StatelessWidget {
                 Text(
                   l10n.permissionSubtitle,
                   style: AppType.label1.r
-                      .copyWith(color: AppColors.textSecondary),
+                      .copyWith(color: context.c.labelNormal),
                 ),
               ],
             ),
@@ -108,7 +108,7 @@ class _PermRow extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s16, vertical: 18),
       decoration: BoxDecoration(
-        color: AppColors.surfaceElevated,
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
       ),
       child: Row(
@@ -118,11 +118,11 @@ class _PermRow extends StatelessWidget {
             width: 56,
             height: 56,
             decoration: BoxDecoration(
-              color: AppColors.primary10,
+              color: context.c.primaryNormal10,
               borderRadius: BorderRadius.circular(28),
             ),
             alignment: Alignment.center,
-            child: icon(size: 28, color: AppColors.primary),
+            child: icon(size: 28, color: context.c.primaryNormal),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -135,7 +135,7 @@ class _PermRow extends StatelessWidget {
                 Text(
                   description,
                   style: AppType.label2.r
-                      .copyWith(color: AppColors.textSecondary),
+                      .copyWith(color: context.c.labelNormal),
                 ),
               ],
             ),

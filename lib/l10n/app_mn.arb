@@ -211,6 +211,8 @@
   "priceFree": "Үнэгүй",
   "loginGoogleTokenError": "Google нэвтрэх токен авч чадсангүй.",
   "loginGoogleSignInFailed": "Google нэвтрэлт амжилтгүй боллоо.",
+  "loginAppleSignInFailed": "Apple нэвтрэлт амжилтгүй боллоо.",
+  "loginKakaoSignInFailed": "Kakao нэвтрэлт амжилтгүй боллоо.",
   "loginContinueWithKakao": "Kakao-гаар үргэлжлүүлэх",
   "loginContinueWithGoogle": "Google-ээр үргэлжлүүлэх",
   "loginContinueWithApple": "Apple-ээр үргэлжлүүлэх",

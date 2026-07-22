@@ -1,39 +1,50 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
-import '../atoms/select_box.dart';
+import '../atoms/day_chip.dart';
 import '../atoms/toggle.dart';
 
 /// The on/off states of [CardAlarm].
 enum CardAlarmState {
-  /// Enabled alarm: time and user name in white, toggle on.
+  /// Enabled alarm: toggle on, card at full opacity.
   active,
 
-  /// Disabled alarm: time and user name in `textTertiary`, toggle off.
+  /// Disabled alarm: toggle off, the whole card at 40% opacity.
   inactive,
 }
 
 /// CardAlarm — an alarm card measured 1:1 from Figma (`Card-Alarm`
-/// set `176:20652`).
+/// set `176:20652`, as instanced in `screen/etc_alarm` `3665:11992`).
 ///
-/// Measured spec: `radius` 8 ([AppRadius.xs]), `20px` padding, the
-/// [AppColors.surface] (Background/Normal/Normal) fill and a 1px
-/// [AppColors.lineStrong] (Line/Normal/Normal) border. The inner content is a
-/// column with a `12px` gap holding three rows:
+/// Measured off the **variants** (`state=active` `3793:31193`, `state=state3`
+/// `3793:31202`) rather than the frame's instances, which carry overrides.
 ///
-/// 1. [time] (Heading 2 Medium) space-between an [AppToggle].
-/// 2. seven day chips ([SelectBox]) with a `4px` gap.
-/// 3. a user row: 24px user icon + [userName] (Label 1 SemiBold).
+/// Spec: 335×153, `radius` 8 ([AppRadius.xs]), the
+/// `Background/Elevated/Alternative` fill and no border, padding `16`
+/// horizontal / `20` vertical — a 303 content box. Three rows down a `12` gap:
 ///
-/// In [CardAlarmState.active] the time/name are white and the toggle is on; in
-/// [CardAlarmState.inactive] they are `textTertiary` and the toggle is off.
+/// 1. 28 high — [time] (`MO/Heading 2/Medium`) space-between an [AppToggle].
+/// 2. 34 high — seven [DayChip]s, 39 wide with a [kDayChipGap], which is
+///    exactly 303 across; they are [Expanded] here so the row keeps filling the
+///    card on any width.
+/// 3. 27 high — a 24 user glyph + [userName] (`MO/Label 1/Normal-Bold`) at a
+///    `10` gap.
 ///
-/// The chips are driven by [days] (length 7); tapping one calls [onDayChange]
-/// with its index and new value. A selected chip uses the SelectBox
-/// `selected, bold` styling; an unselected one uses `unselected, regular`.
+/// 20+28+12+34+12+27+20 = 153, which `skeleton_height_test` pins.
+///
+/// Both variants write the time, glyph and name in the same
+/// `Common/White & Dark`. [CardAlarmState.inactive] differs **only** by the
+/// toggle being off and 40% opacity over the whole card — that is what dims the
+/// chips too. It does not swap any colour, so do not "fix" this by fading the
+/// text: that would leave a switched-off alarm's green chips as bright as a
+/// live one's.
+///
+/// The chips are driven by [days] (length 7, **0=Sun … 6=Sat**) but display
+/// Monday-first; tapping one calls [onDayChange] with its **data** index and
+/// new value.
 class CardAlarm extends StatelessWidget {
   /// Creates an alarm card.
   const CardAlarm({
@@ -52,16 +63,29 @@ class CardAlarm extends StatelessWidget {
          'dayLabels must contain exactly 7 entries',
        );
 
-  /// Default single-character day labels (Sun..Sat).
+  /// Default day labels, **Monday-first** (`3665:11992`).
+  ///
+  /// These are *visual* order. [days] stays Sunday-indexed (0=Sun … 6=Sat) to
+  /// match [Alarm.days], the server's `days_of_week` codes and both schedulers,
+  /// so [_visualToDataIndex] bridges the two — the same bridge
+  /// `BottomSheetAlarmSettings` already uses. Feeding a Mon-first index straight
+  /// into a Sun-indexed array would shift every alarm by a day.
+  ///
+  /// Was `S M T W T F S` (Sunday-first, single letter), which disagreed with
+  /// both the frame and the add sheet.
   static const List<String> defaultDayLabels = [
-    'S',
-    'M',
-    'T',
-    'W',
-    'T',
-    'F',
-    'S',
+    'Mo',
+    'Tu',
+    'We',
+    'Th',
+    'Fr',
+    'Sa',
+    'Su',
   ];
+
+  /// Visual slot → index into [days]. Monday-first display over Sunday-first
+  /// data.
+  static const List<int> _visualToDataIndex = [1, 2, 3, 4, 5, 6, 0];
 
   /// Whether the alarm is active or inactive.
   final CardAlarmState state;
@@ -94,82 +118,104 @@ class CardAlarm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color fg = _active ? AppColors.text : AppColors.textTertiary;
+    final Color fg = context.c.commonWhiteAndDark;
 
     final card = DecoratedBox(
+      // `3793:31193` fills the card with Elevated/Alternative (#1F222A) and
+      // draws **no** border. It used to be `surface` (#181A20) + a 1px
+      // `lineStrong` hairline, i.e. a card that read as an outline on the
+      // background rather than a surface lifted off it.
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        border: Border.all(color: AppColors.lineStrong),
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    time,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppType.heading2.m.copyWith(color: fg),
+            SizedBox(
+              height: 28,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Text(
+                      time,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppType.heading2.m.copyWith(color: fg),
+                    ),
                   ),
-                ),
-                const SizedBox(width: 12),
-                AppToggle(value: _active, onChanged: onChanged),
-              ],
+                  const SizedBox(width: 12),
+                  AppToggle(value: _active, onChanged: onChanged),
+                ],
+              ),
             ),
             const SizedBox(height: 12),
             Row(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 for (var i = 0; i < 7; i++) ...[
-                  if (i > 0) const SizedBox(width: 4),
-                  SelectBox(
-                    label: dayLabels[i],
-                    selected: days[i],
-                    bold: days[i],
-                    onChanged: onDayChange == null
-                        ? null
-                        : (v) => onDayChange!(i, v),
+                  if (i > 0) const SizedBox(width: kDayChipGap),
+                  // `i` is the visual slot; the data index is a lookup away.
+                  // [onDayChange] still reports the **data** index, which is
+                  // what `toggleDay` sends the server.
+                  Expanded(
+                    child: DayChip(
+                      label: dayLabels[i],
+                      selected: days[_visualToDataIndex[i]],
+                      onTap: onDayChange == null
+                          ? null
+                          : () => onDayChange!(
+                                _visualToDataIndex[i],
+                                !days[_visualToDataIndex[i]],
+                              ),
+                    ),
                   ),
                 ],
               ],
             ),
             const SizedBox(height: 12),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                AppIcons.user(size: 24, color: fg),
-                const SizedBox(width: 10),
-                Flexible(
-                  child: Text(
-                    userName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.sb.copyWith(color: fg),
+            SizedBox(
+              height: 27,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  AppIcons.user(size: 24, color: fg),
+                  const SizedBox(width: 10),
+                  Flexible(
+                    child: Text(
+                      userName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppType.label1.sb.copyWith(color: fg),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ],
         ),
       ),
     );
 
-    if (onTap == null) return card;
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(AppRadius.xs),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, child: card),
-    );
+    final Widget interactive = onTap == null
+        ? card
+        : Material(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(AppRadius.xs),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(onTap: onTap, child: card),
+          );
+
+    // Outermost, so it dims the chips and toggle with everything else — and
+    // above the InkWell, since [Opacity] does not block hit testing: a
+    // switched-off alarm must still be tappable to switch back on.
+    if (_active) return interactive;
+    return Opacity(opacity: 0.4, child: interactive);
   }
 }
 
@@ -189,7 +235,7 @@ class _CardAlarmDemoState extends State<CardAlarmDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/checkbox.dart';
@@ -54,10 +54,10 @@ class SelectCard extends StatelessWidget {
     final Widget card = Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
-        color: AppColors.surface2,
+        color: context.c.backgroundNormalAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: checked
-            ? Border.all(color: AppColors.primary, width: 1)
+            ? Border.all(color: context.c.primaryNormal, width: 1)
             : null,
       ),
       child: Row(
@@ -75,7 +75,7 @@ class SelectCard extends StatelessWidget {
                   height: 44,
                   alignment: Alignment.center,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceElevated,
+                    color: context.c.backgroundElevatedAlternative,
                     borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                   child: icon,
@@ -89,14 +89,14 @@ class SelectCard extends StatelessWidget {
                       Text(
                         title,
                         overflow: TextOverflow.ellipsis,
-                        style: AppType.label1.m.copyWith(color: AppColors.text),
+                        style: AppType.label1.m.copyWith(color: context.c.labelStrong),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         description,
                         overflow: TextOverflow.ellipsis,
                         style: AppType.caption1.r
-                            .copyWith(color: AppColors.textSecondary),
+                            .copyWith(color: context.c.labelNormal),
                       ),
                     ],
                   ),
@@ -138,7 +138,7 @@ class _SelectCardDemoState extends State<SelectCardDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: SizedBox(

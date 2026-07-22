@@ -79,13 +79,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get scheduleManagement => 'Schedule';
+  String get scheduleManagement => 'Manage schedule';
 
   @override
   String get alarms => 'Alarms';
 
   @override
-  String get addSchedule => 'Add Schedule';
+  String get addSchedule => 'Add new schedule';
 
   @override
   String get editSchedule => 'Edit Schedule';
@@ -109,7 +109,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repeat => 'Repeat';
 
   @override
-  String get callPartner => 'Character';
+  String get callPartner => 'Call partner';
+
+  @override
+  String get quickStart => 'Quick start';
+
+  @override
+  String get presetMorning => 'Morning routine';
+
+  @override
+  String get presetMorningSub => 'Weekdays 8:00';
+
+  @override
+  String get presetEvening => 'Evening wind-down';
+
+  @override
+  String get presetEveningSub => 'Every day 21:00';
+
+  @override
+  String get presetCustom => 'Custom';
+
+  @override
+  String get presetCustomSub => 'Your own';
+
+  @override
+  String alarmSummary(int count, int monthly) {
+    return '$count× a week · $monthly calls a month';
+  }
+
+  @override
+  String get alarmSummaryNone => 'Pick at least one day';
+
+  @override
+  String get partnerInUse => 'In use';
+
+  @override
+  String get partnerOwned => 'Owned';
 
   @override
   String get am => 'AM';
@@ -162,31 +197,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => 'One thing to fix today';
-
-  @override
-  String streakBadge(int count) {
-    return '$count calls in a row';
-  }
-
-  @override
-  String get firstTimeTitle => 'A first this time';
-
-  @override
   String newExpressionsCount(int count) {
     return 'New expressions $count';
   }
-
-  @override
-  String expressionsTotal(int count) {
-    return '$count total';
-  }
-
-  @override
-  String get nextCallTitle => 'To try on your next call';
-
-  @override
-  String get nextCallFooter => 'Shown on your next call\'s start screen';
 
   @override
   String get analysisLoadError => 'Couldn\'t load the analysis result.';
@@ -366,6 +379,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get scoringPronunciation => 'Scoring your pronunciation…';
 
   @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
+  String get analyzingTakingLonger => 'This is taking a little longer';
+
+  @override
+  String get scanConnectionLost => 'Connection lost';
+
+  @override
   String get noRecordingToPlay => 'No recording to play.';
 
   @override
@@ -430,11 +452,11 @@ class AppLocalizationsEn extends AppLocalizations {
       'No saved sentences yet.\nBookmark sentences from your conversation records.';
 
   @override
-  String get noAlarms => 'No alarms yet';
+  String get noAlarms => 'No alarms registered';
 
   @override
   String get noAlarmsBody =>
-      'Add a learning reminder\nto build a consistent habit.';
+      'Add a learning reminder\nand you can build a consistent habit.';
 
   @override
   String get subscriptionManage => 'Manage Subscription';
@@ -719,6 +741,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google sign-in failed.';
 
   @override
+  String get loginAppleSignInFailed => 'Apple sign-in failed.';
+
+  @override
+  String get loginKakaoSignInFailed => 'Kakao sign-in failed.';
+
+  @override
   String get loginContinueWithKakao => 'Continue with Kakao';
 
   @override
@@ -935,4 +963,82 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => 'Payment';
+
+  @override
+  String learningPassed(int passed, int total) {
+    return '$passed of $total sentences passed';
+  }
+
+  @override
+  String get hardestSound => 'Hardest sound today';
+
+  @override
+  String get soundAccuracy => 'Accuracy by sound';
+
+  @override
+  String phonemeAttempts(int count) {
+    return 'Per phoneme · $count attempts';
+  }
+
+  @override
+  String get colSound => 'Sound';
+
+  @override
+  String get colAttempts => 'Tries';
+
+  @override
+  String get colCorrect => 'Right';
+
+  @override
+  String get colAccuracy => 'Accuracy';
+
+  @override
+  String get sentenceResults => 'Results by sentence';
+
+  @override
+  String viewAllSentences(int count) {
+    return 'See all $count';
+  }
+
+  @override
+  String get colSentence => 'Sentence';
+
+  @override
+  String get colPronunciation => 'Pron.';
+
+  @override
+  String get colFluency => 'Flu.';
+
+  @override
+  String get colRhythm => 'Rhy.';
+
+  @override
+  String recentSessions(int count) {
+    return 'Last $count sessions';
+  }
+
+  @override
+  String trendAverage(int score) {
+    return 'Avg $score';
+  }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get colDate => 'Date';
+
+  @override
+  String get colSentences => 'Sentences';
+
+  @override
+  String get colScore => 'Score';
+
+  @override
+  String get colChange => 'Change';
+
+  @override
+  String dateToday(String date) {
+    return '$date (today)';
+  }
 }

@@ -113,6 +113,41 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callPartner => 'Каарман';
 
   @override
+  String get quickStart => 'Quick start';
+
+  @override
+  String get presetMorning => 'Morning routine';
+
+  @override
+  String get presetMorningSub => 'Weekdays 8:00';
+
+  @override
+  String get presetEvening => 'Evening wind-down';
+
+  @override
+  String get presetEveningSub => 'Every day 21:00';
+
+  @override
+  String get presetCustom => 'Custom';
+
+  @override
+  String get presetCustomSub => 'Your own';
+
+  @override
+  String alarmSummary(int count, int monthly) {
+    return '$count× a week · $monthly calls a month';
+  }
+
+  @override
+  String get alarmSummaryNone => 'Pick at least one day';
+
+  @override
+  String get partnerInUse => 'In use';
+
+  @override
+  String get partnerOwned => 'Owned';
+
+  @override
   String get am => 'Түшкө чейин';
 
   @override
@@ -163,31 +198,9 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
-  String get oneFixTitle => 'One thing to fix today';
-
-  @override
-  String streakBadge(int count) {
-    return '$count calls in a row';
-  }
-
-  @override
-  String get firstTimeTitle => 'A first this time';
-
-  @override
   String newExpressionsCount(int count) {
     return 'New expressions $count';
   }
-
-  @override
-  String expressionsTotal(int count) {
-    return '$count total';
-  }
-
-  @override
-  String get nextCallTitle => 'To try on your next call';
-
-  @override
-  String get nextCallFooter => 'Shown on your next call\'s start screen';
 
   @override
   String get analysisLoadError => 'Анализ жыйынтыгын жүктөп болбоду.';
@@ -363,6 +376,15 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get scoringPronunciation => 'Айтылышыңыз бааланууда…';
+
+  @override
+  String get analyzingByWord => 'Checking your pronunciation word by word';
+
+  @override
+  String get analyzingTakingLonger => 'This is taking a little longer';
+
+  @override
+  String get scanConnectionLost => 'Connection lost';
 
   @override
   String get noRecordingToPlay => 'Ойнотуу үчүн жазуу жок.';
@@ -720,6 +742,12 @@ class AppLocalizationsKy extends AppLocalizations {
   String get loginGoogleSignInFailed => 'Google аркылуу кирүү ишке ашкан жок.';
 
   @override
+  String get loginAppleSignInFailed => 'Apple аркылуу кирүү ишке ашкан жок.';
+
+  @override
+  String get loginKakaoSignInFailed => 'Kakao аркылуу кирүү ишке ашкан жок.';
+
+  @override
   String get loginContinueWithKakao => 'Kakao аркылуу улантуу';
 
   @override
@@ -936,4 +964,82 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get paymentLabelFallback => 'Payment';
+
+  @override
+  String learningPassed(int passed, int total) {
+    return '$passed of $total sentences passed';
+  }
+
+  @override
+  String get hardestSound => 'Hardest sound today';
+
+  @override
+  String get soundAccuracy => 'Accuracy by sound';
+
+  @override
+  String phonemeAttempts(int count) {
+    return 'Per phoneme · $count attempts';
+  }
+
+  @override
+  String get colSound => 'Sound';
+
+  @override
+  String get colAttempts => 'Tries';
+
+  @override
+  String get colCorrect => 'Right';
+
+  @override
+  String get colAccuracy => 'Accuracy';
+
+  @override
+  String get sentenceResults => 'Results by sentence';
+
+  @override
+  String viewAllSentences(int count) {
+    return 'See all $count';
+  }
+
+  @override
+  String get colSentence => 'Sentence';
+
+  @override
+  String get colPronunciation => 'Pron.';
+
+  @override
+  String get colFluency => 'Flu.';
+
+  @override
+  String get colRhythm => 'Rhy.';
+
+  @override
+  String recentSessions(int count) {
+    return 'Last $count sessions';
+  }
+
+  @override
+  String trendAverage(int score) {
+    return 'Avg $score';
+  }
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get colDate => 'Date';
+
+  @override
+  String get colSentences => 'Sentences';
+
+  @override
+  String get colScore => 'Score';
+
+  @override
+  String get colChange => 'Change';
+
+  @override
+  String dateToday(String date) {
+    return '$date (today)';
+  }
 }

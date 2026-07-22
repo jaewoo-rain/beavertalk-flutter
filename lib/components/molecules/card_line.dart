@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/toggle.dart';
@@ -72,7 +72,7 @@ class CardLine extends StatelessWidget {
   final String? meta;
 
   /// Status text shown under [value] in [CardLineType.payment]
-  /// (e.g. `"완료"`), rendered in [AppColors.success].
+  /// (e.g. `"완료"`), rendered in `Status/Positive`.
   final String? status;
 
   /// Current toggle value for [CardLineType.defaultToggle].
@@ -84,9 +84,11 @@ class CardLine extends StatelessWidget {
 
   static const double _rowHeight = 56;
 
-  static const BoxDecoration _divider = BoxDecoration(
+  // A divider colour is mode-aware, so this can no longer be a static
+  // const — it is built per context instead.
+  static BoxDecoration _divider(BuildContext context) => BoxDecoration(
     border: Border(
-      bottom: BorderSide(color: AppColors.borderSubtle, width: 0.5),
+      bottom: BorderSide(color: context.c.lineAlternative, width: 0.5),
     ),
   );
 
@@ -94,17 +96,17 @@ class CardLine extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (type) {
       case CardLineType.payment:
-        return _buildPayment();
+        return _buildPayment(context);
       case CardLineType.defaultRow:
-        return _buildDefaultRow();
+        return _buildDefaultRow(context);
       case CardLineType.defaultToggle:
-        return _buildDefaultToggle();
+        return _buildDefaultToggle(context);
     }
   }
 
-  Widget _buildPayment() {
+  Widget _buildPayment(BuildContext context) {
     return DecoratedBox(
-      decoration: _divider,
+      decoration: _divider(context),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
@@ -127,7 +129,7 @@ class CardLine extends StatelessWidget {
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.r.copyWith(color: AppColors.text),
+                    style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   ),
                   if (meta != null) ...[
                     const SizedBox(height: 7),
@@ -147,7 +149,7 @@ class CardLine extends StatelessWidget {
                     value!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.sb.copyWith(color: AppColors.text),
+                    style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
                   ),
                 if (status != null) ...[
                   const SizedBox(height: 7),
@@ -155,7 +157,7 @@ class CardLine extends StatelessWidget {
                     status!,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.r.copyWith(color: AppColors.success),
+                    style: AppType.label1.r.copyWith(color: context.c.statusPositive),
                   ),
                 ],
               ],
@@ -166,9 +168,9 @@ class CardLine extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultRow() {
+  Widget _buildDefaultRow(BuildContext context) {
     return DecoratedBox(
-      decoration: showDivider ? _divider : const BoxDecoration(),
+      decoration: showDivider ? _divider(context) : const BoxDecoration(),
       child: SizedBox(
         height: _rowHeight,
         child: Padding(
@@ -189,7 +191,7 @@ class CardLine extends StatelessWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style:
-                            AppType.body1.r.copyWith(color: AppColors.text),
+                            AppType.body1.r.copyWith(color: context.c.labelStrong),
                       ),
                     ),
                     if (value != null) ...[
@@ -201,7 +203,7 @@ class CardLine extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.end,
                           style:
-                              AppType.body1.r.copyWith(color: AppColors.text),
+                              AppType.body1.r.copyWith(color: context.c.labelStrong),
                         ),
                       ),
                     ],
@@ -211,7 +213,7 @@ class CardLine extends StatelessWidget {
               const SizedBox(width: 10),
               AppIcons.chevronRight(
                 size: 24,
-                color: AppColors.text,
+                color: context.c.labelStrong,
               ),
             ],
           ),
@@ -220,9 +222,9 @@ class CardLine extends StatelessWidget {
     );
   }
 
-  Widget _buildDefaultToggle() {
+  Widget _buildDefaultToggle(BuildContext context) {
     return DecoratedBox(
-      decoration: showDivider ? _divider : const BoxDecoration(),
+      decoration: showDivider ? _divider(context) : const BoxDecoration(),
       child: SizedBox(
         height: _rowHeight,
         child: Padding(
@@ -235,7 +237,7 @@ class CardLine extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.body1.r.copyWith(color: AppColors.text),
+                  style: AppType.body1.r.copyWith(color: context.c.labelStrong),
                 ),
               ),
               const SizedBox(width: 10),
@@ -271,8 +273,8 @@ class _MetaRow extends StatelessWidget {
           Container(
             width: 2,
             height: 2,
-            decoration: const BoxDecoration(
-              color: AppColors.textTertiary,
+            decoration: BoxDecoration(
+              color: context.c.labelDisabled,
               shape: BoxShape.circle,
             ),
           ),
@@ -283,7 +285,7 @@ class _MetaRow extends StatelessWidget {
         segments[i],
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AppType.label1.r.copyWith(color: AppColors.textSecondary),
+        style: AppType.label1.r.copyWith(color: context.c.labelNormal),
       );
       // Only the last segment may shrink. Wrapping every segment in Flexible
       // split the row evenly between them, so "6월 3일 · 신한카드 1234" gave the
@@ -313,7 +315,7 @@ class _CardLineDemoState extends State<CardLineDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

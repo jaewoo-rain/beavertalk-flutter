@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -19,7 +19,7 @@ import '../atoms/dim.dart';
 ///   Free card (subtle border) and a Pro card (primary border, "이용 중" pill).
 ///   Footer = 구독 취소 + Pro 계속 사용하기.
 /// - [cancel] — `type=cancel` (title "구독 취소"): a note paragraph + a red-border
-///   ([AppColors.error]) "취소 시 잃게 되는 혜택" card. Footer = single 구독 취소.
+///   (`Accent/Foreground/Red`) "취소 시 잃게 되는 혜택" card. Footer = single 구독 취소.
 enum SubscriptionSheetType {
   /// Manage the active subscription.
   manage,
@@ -34,7 +34,7 @@ enum SubscriptionSheetType {
 /// A single plan benefit line (a colored bullet + label).
 ///
 /// Used by all three [SubscriptionSheetType]s; the bullet color is set by the
-/// host card (mint for active plans, [AppColors.error] for the cancel warning).
+/// host card (mint for active plans, `Accent/Foreground/Red` for the cancel warning).
 class SubscriptionBenefit {
   /// Creates a benefit line with the given [label].
   const SubscriptionBenefit(this.label);
@@ -63,7 +63,7 @@ class SubscriptionPlanInfo {
   /// "Next billing date" when null.
   final String? nextBillingLabel;
 
-  /// Next-billing date (e.g. "2026.06.20."), rendered in [AppColors.primary].
+  /// Next-billing date (e.g. "2026.06.20."), rendered in `Primary/Normal`.
   /// When null the row is omitted.
   final String? nextBillingDate;
 }
@@ -91,7 +91,7 @@ class SubscriptionPlanOption {
   /// Benefit lines for this plan.
   final List<SubscriptionBenefit> benefits;
 
-  /// Whether to draw the [AppColors.primary] (vs [AppColors.borderSubtle])
+  /// Whether to draw the `Primary/Normal` (vs `Line/Alternative`)
   /// border. The active/Pro card is highlighted.
   final bool highlighted;
 
@@ -102,7 +102,7 @@ class SubscriptionPlanOption {
 /// BottomSheetSubscription — subscription-management sheet, measured 1:1 from
 /// Figma `BottomSheet-Subscription` (`176:14577`).
 ///
-/// A bottom-anchored 375-wide sheet on [AppColors.surfaceElevated] with a top
+/// A bottom-anchored 375-wide sheet on `Background/Elevated/Alternative` with a top
 /// [AppRadius.lg] corner radius. Composition (top → bottom):
 /// 1. A header bar with a [_title] (Body 1 Bold white, centered) and a trailing
 ///    close (✕) wired to [onClose].
@@ -184,8 +184,8 @@ class BottomSheetSubscription extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
-      decoration: const BoxDecoration(
-        color: AppColors.surfaceElevated,
+      decoration: BoxDecoration(
+        color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.only(
           topLeft: Radius.circular(AppRadius.lg),
           topRight: Radius.circular(AppRadius.lg),
@@ -195,12 +195,12 @@ class BottomSheetSubscription extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _header(l10n),
+          _header(context, l10n),
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: _body(l10n),
+            child: _body(context, l10n),
           ),
-          _footer(l10n),
+          _footer(context, l10n),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces
           // the former embedded fake HomeIndicator).
           const SafeArea(
@@ -214,7 +214,7 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Header (GNB sub-2: centered title + trailing close) ──────────────────
-  Widget _header(AppLocalizations l10n) {
+  Widget _header(BuildContext context, AppLocalizations l10n) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -226,7 +226,7 @@ class BottomSheetSubscription extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           Semantics(
@@ -238,7 +238,7 @@ class BottomSheetSubscription extends StatelessWidget {
               child: SizedBox(
                 width: 28,
                 height: 28,
-                child: AppIcons.close(size: 24, color: AppColors.text),
+                child: AppIcons.close(size: 24, color: context.c.labelStrong),
               ),
             ),
           ),
@@ -248,46 +248,46 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Body per type ────────────────────────────────────────────────────────
-  Widget _body(AppLocalizations l10n) {
+  Widget _body(BuildContext context, AppLocalizations l10n) {
     switch (type) {
       case SubscriptionSheetType.manage:
-        return _manageBody(l10n);
+        return _manageBody(context, l10n);
       case SubscriptionSheetType.changePlan:
-        return _changePlanBody(l10n);
+        return _changePlanBody(context, l10n);
       case SubscriptionSheetType.cancel:
-        return _cancelBody(l10n);
+        return _cancelBody(context, l10n);
     }
   }
 
-  Widget _manageBody(AppLocalizations l10n) {
+  Widget _manageBody(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        if (plan != null) _planCard(plan!, l10n),
+        if (plan != null) _planCard(context, plan!, l10n),
         if (benefits.isNotEmpty) ...[
           const SizedBox(height: 16),
-          _section(l10n.benefitsInUse, [
+          _section(context, l10n.benefitsInUse, [
             for (final b in benefits)
-              _benefitLine(b.label, AppColors.primary24, AppColors.text),
+              _benefitLine(context, b.label, context.c.primaryNormal24, context.c.labelStrong),
           ]),
         ],
         if (paymentRows.isNotEmpty) ...[
           const SizedBox(height: 16),
-          _section(l10n.paymentInfo, [
-            for (final r in paymentRows) _kvRow(r.label, r.value),
+          _section(context, l10n.paymentInfo, [
+            for (final r in paymentRows) _kvRow(context, r.label, r.value),
           ]),
         ],
       ],
     );
   }
 
-  Widget _planCard(SubscriptionPlanInfo plan, AppLocalizations l10n) {
+  Widget _planCard(BuildContext context, SubscriptionPlanInfo plan, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.xs),
-        border: Border.all(color: AppColors.primary),
+        border: Border.all(color: context.c.primaryNormal),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -295,12 +295,12 @@ class BottomSheetSubscription extends StatelessWidget {
         children: [
           Text(
             plan.name,
-            style: AppType.heading2.sb.copyWith(color: AppColors.text),
+            style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
           ),
           const SizedBox(height: 4),
           Text(
             plan.priceLine,
-            style: AppType.body1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
           ),
           if (plan.nextBillingDate != null) ...[
             const SizedBox(height: 4),
@@ -316,7 +316,7 @@ class BottomSheetSubscription extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: AppType.body1.r
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ),
                 const SizedBox(width: AppSpacing.s8),
@@ -324,7 +324,7 @@ class BottomSheetSubscription extends StatelessWidget {
                   plan.nextBillingDate!,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: AppType.body1.r.copyWith(color: AppColors.primary),
+                  style: AppType.body1.r.copyWith(color: context.c.primaryNormal),
                 ),
               ],
             ),
@@ -334,7 +334,7 @@ class BottomSheetSubscription extends StatelessWidget {
     );
   }
 
-  Widget _changePlanBody(AppLocalizations l10n) {
+  Widget _changePlanBody(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -342,27 +342,27 @@ class BottomSheetSubscription extends StatelessWidget {
         if (note != null)
           Text(
             note!,
-            style: AppType.label1.r.copyWith(color: AppColors.text),
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         const SizedBox(height: 8),
         for (var i = 0; i < planOptions.length; i++) ...[
           if (i > 0) const SizedBox(height: 12),
-          _planOptionCard(planOptions[i], l10n),
+          _planOptionCard(context, planOptions[i], l10n),
         ],
       ],
     );
   }
 
-  Widget _planOptionCard(SubscriptionPlanOption option, AppLocalizations l10n) {
+  Widget _planOptionCard(BuildContext context, SubscriptionPlanOption option, AppLocalizations l10n) {
     final bulletColor =
-        option.highlighted ? AppColors.primary : AppColors.text;
+        option.highlighted ? context.c.primaryNormal : context.c.labelStrong;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.xs),
         border: Border.all(
           color:
-              option.highlighted ? AppColors.primary : AppColors.borderSubtle,
+              option.highlighted ? context.c.primaryNormal : context.c.lineAlternative,
         ),
       ),
       child: Column(
@@ -379,14 +379,14 @@ class BottomSheetSubscription extends StatelessWidget {
                   children: [
                     Text(
                       option.name,
-                      style: AppType.body1.sb.copyWith(color: AppColors.text),
+                      style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                     ),
                     if (option.priceLine != null) ...[
                       const SizedBox(height: 4),
                       Text(
                         option.priceLine!,
                         style: AppType.label1.r
-                            .copyWith(color: AppColors.textSecondary),
+                            .copyWith(color: context.c.labelNormal),
                       ),
                     ],
                   ],
@@ -395,13 +395,13 @@ class BottomSheetSubscription extends StatelessWidget {
               // Non-flex: the name Column is Expanded (absorbs slack), so the
               // pill stays hugged to the right. Wrapping it in Flexible made the
               // two split the row 50/50, floating the pill toward the middle.
-              if (option.active) _activePill(l10n),
+              if (option.active) _activePill(context, l10n),
             ],
           ),
           if (option.benefits.isNotEmpty) ...[
             const SizedBox(height: 8),
             for (final b in option.benefits)
-              _benefitLine(b.label, bulletColor, AppColors.text),
+              _benefitLine(context, b.label, bulletColor, context.c.labelStrong),
           ],
         ],
       ),
@@ -409,23 +409,23 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   /// "In use" pill — primary_outline size 36.
-  Widget _activePill(AppLocalizations l10n) {
+  Widget _activePill(BuildContext context, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(AppRadius.xs),
-        border: Border.all(color: AppColors.primary),
+        border: Border.all(color: context.c.primaryNormal),
       ),
       child: Text(
         l10n.inUse,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AppType.label2.sb.copyWith(color: AppColors.primary),
+        style: AppType.label2.sb.copyWith(color: context.c.primaryNormal),
       ),
     );
   }
 
-  Widget _cancelBody(AppLocalizations l10n) {
+  Widget _cancelBody(BuildContext context, AppLocalizations l10n) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -433,14 +433,14 @@ class BottomSheetSubscription extends StatelessWidget {
         if (note != null)
           Text(
             note!,
-            style: AppType.label1.r.copyWith(color: AppColors.text),
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         const SizedBox(height: 8),
         Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.xs),
-            border: Border.all(color: AppColors.error),
+            border: Border.all(color: context.c.accentForegroundRed),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -448,11 +448,11 @@ class BottomSheetSubscription extends StatelessWidget {
             children: [
               Text(
                 lostBenefitsTitle ?? l10n.lostBenefitsTitle,
-                style: AppType.label1.r.copyWith(color: AppColors.error),
+                style: AppType.label1.r.copyWith(color: context.c.accentForegroundRed),
               ),
               const SizedBox(height: 8),
               for (final b in lostBenefits)
-                _benefitLine(b.label, AppColors.error, AppColors.text,
+                _benefitLine(context, b.label, context.c.accentForegroundRed, context.c.labelStrong,
                     lost: true),
             ],
           ),
@@ -462,14 +462,14 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Shared bits ──────────────────────────────────────────────────────────
-  Widget _section(String title, List<Widget> children) {
+  Widget _section(BuildContext context, String title, List<Widget> children) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           title,
-          style: AppType.label1.sb.copyWith(color: AppColors.textSecondary),
+          style: AppType.label1.sb.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: 8),
         ...children,
@@ -483,6 +483,7 @@ class BottomSheetSubscription extends StatelessWidget {
   /// "취소 시 잃게 되는 혜택" — benefits you give up — so a check there read as
   /// "kept", the opposite of the intent. Figma `176:14575` marks those rows ×.
   Widget _benefitLine(
+    BuildContext context,
     String label,
     Color bulletColor,
     Color labelColor, {
@@ -508,7 +509,7 @@ class BottomSheetSubscription extends StatelessWidget {
     );
   }
 
-  Widget _kvRow(String label, String value) {
+  Widget _kvRow(BuildContext context, String label, String value) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
@@ -521,7 +522,7 @@ class BottomSheetSubscription extends StatelessWidget {
               label,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.label1.r.copyWith(color: AppColors.text),
+              style: AppType.label1.r.copyWith(color: context.c.labelStrong),
             ),
           ),
           const SizedBox(width: AppSpacing.s8),
@@ -529,7 +530,7 @@ class BottomSheetSubscription extends StatelessWidget {
             value,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: AppType.label1.r.copyWith(color: AppColors.text),
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         ],
       ),
@@ -537,12 +538,12 @@ class BottomSheetSubscription extends StatelessWidget {
   }
 
   // ── Footer per type ───────────────────────────────────────────────────────
-  Widget _footer(AppLocalizations l10n) {
+  Widget _footer(BuildContext context, AppLocalizations l10n) {
     switch (type) {
       case SubscriptionSheetType.manage:
-        return _stackedButtons(l10n.changePlan, l10n.viewBillingHistory);
+        return _stackedButtons(context, l10n.changePlan, l10n.viewBillingHistory);
       case SubscriptionSheetType.changePlan:
-        return _stackedButtons(l10n.cancelSubscription, l10n.keepUsingPro);
+        return _stackedButtons(context, l10n.cancelSubscription, l10n.keepUsingPro);
       case SubscriptionSheetType.cancel:
         return Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
@@ -563,7 +564,7 @@ class BottomSheetSubscription extends StatelessWidget {
 
   /// Two stacked secondary_fill buttons (each in its own 12-top-padded slot,
   /// matching the Figma `two-button-col` layout).
-  Widget _stackedButtons(String primary, String secondary) {
+  Widget _stackedButtons(BuildContext context, String primary, String secondary) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       // Without this the Column defaults to CrossAxisAlignment.center, which
@@ -691,7 +692,7 @@ class BottomSheetSubscriptionDemo extends StatelessWidget {
       ('cancel', SubscriptionSheetType.cancel, 560),
     ];
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(vertical: 24),
         child: Column(
@@ -705,7 +706,7 @@ class BottomSheetSubscriptionDemo extends StatelessWidget {
                   child: Text(
                     label,
                     style: AppType.label2.sb
-                        .copyWith(color: AppColors.textSecondary),
+                        .copyWith(color: context.c.labelNormal),
                   ),
                 ),
               ),
@@ -713,8 +714,8 @@ class BottomSheetSubscriptionDemo extends StatelessWidget {
                 height: h,
                 child: Stack(
                   children: [
-                    const Positioned.fill(
-                      child: ColoredBox(color: AppColors.scrim),
+                    Positioned.fill(
+                      child: ColoredBox(color: context.c.materialDim),
                     ),
                     Align(
                       alignment: Alignment.bottomCenter,

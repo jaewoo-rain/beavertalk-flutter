@@ -16,23 +16,32 @@ import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Web client id (public value) — must match the server's `GOOGLE_CLIENT_ID`.
+/// Web client id (public value) — the GCP `bt-dev-web-01` "Web application"
+/// OAuth client. Used as the web GIS `clientId` and, on mobile, as the
+/// `serverClientId` so the returned idToken's audience is this ID (which
+/// Supabase validates against its Google provider "Client IDs" list). Must
+/// stay identical here, in `web/index.html`, and in the Supabase dashboard.
 const _googleClientId =
-    '117133754675-ovpf9bvvm96e18d0089692k51bq75esk.apps.googleusercontent.com';
+    '333511894671-mfss7vgjb3nmgl16jpo2e56bp6ne770e.apps.googleusercontent.com';
 
 /// Auth — landing login screen. Figma `screen/auth_login` (`2117:19693`).
 ///
 /// Brand block + social sign-in buttons + "or" divider + email login +
 /// sign-up prompt.
 ///
-/// **Google is real on web**: the GIS [gis_web.renderButton] yields an idToken
-/// via [GoogleSignIn.onCurrentUserChanged], which we hand to
-/// `authController.socialLogin('google', idToken)`; the AuthGate then shows
-/// home. Kakao/Apple remain mocked for now.
+/// **Google is real (web + Android)**: mobile uses the native `google_sign_in`
+/// sheet, web uses GIS; either way we get an idToken (audience = the web client)
+/// and hand it to `authController.signInWithGoogle`, which exchanges it for a
+/// Supabase session via `signInWithIdToken`. The AuthGate then shows home (or
+/// onboarding for a first-time user).
+///
+/// **Kakao and Apple are real too** via Supabase OAuth (external browser → deep
+/// link `kOAuthRedirect` → `onAuthStateChange` → AuthGate). Apple uses the same
+/// browser-OAuth fallback on Android; its iOS-native path is future work.
 class LoginScreen extends ConsumerStatefulWidget {
   /// Creates the login landing screen.
   const LoginScreen({super.key});
@@ -42,14 +51,22 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
-  /// Web Google Sign-In. `clientId` matches index.html + the server.
+  /// Google Sign-In, configured per platform:
+  /// - **web** → `clientId` = the web client (matches index.html), GIS flow.
+  /// - **mobile** → `serverClientId` = the *web* client, so the returned
+  ///   idToken's audience is the client Supabase validates; the Android OAuth
+  ///   client (package + SHA-1) authorizes the request implicitly. (iOS will
+  ///   also need its own `clientId` once that provider is set up.)
   late final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: _googleClientId,
+    clientId: kIsWeb ? _googleClientId : null,
+    serverClientId: kIsWeb ? null : _googleClientId,
     scopes: const ['email', 'profile'],
   );
 
   StreamSubscription<GoogleSignInAccount?>? _googleSub;
   bool _googleBusy = false;
+  bool _kakaoBusy = false;
+  bool _appleBusy = false;
 
   @override
   void initState() {
@@ -86,28 +103,29 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       builder: (sheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            return SafeArea(
-              top: false,
-              child: BottomSheetCountrySelect(
-                items: items,
-                value: selected,
-                // Overlay over the login screen — omit the device chrome.
-                showHomeIndicator: false,
-                onChanged: (code) => setSheetState(() => selected = code),
-                onConfirm: selected == null
-                    ? null
-                    : () {
-                        ref
-                            .read(signupDraftProvider.notifier)
-                            .setLanguage(selected!);
-                        Navigator.of(sheetContext).pop();
-                      },
-                onClose: () => Navigator.of(sheetContext).pop(),
-              ),
+            // Flush bottom sheet — NO outer SafeArea (that lifts the whole
+            // sheet off the bottom, leaving a gap beneath it). The sheet's own
+            // footer puts the 24px floor + OS gesture inset INSIDE the surface
+            // via showHomeIndicator (default true), so the sheet stays anchored
+            // to the bottom and only the confirm button clears it. Matches the
+            // MyPage language picker.
+            return BottomSheetCountrySelect(
+              items: items,
+              value: selected,
+              onChanged: (code) => setSheetState(() => selected = code),
+              onConfirm: selected == null
+                  ? null
+                  : () {
+                      ref
+                          .read(signupDraftProvider.notifier)
+                          .setLanguage(selected!);
+                      Navigator.of(sheetContext).pop();
+                    },
+              onClose: () => Navigator.of(sheetContext).pop(),
             );
           },
         );
@@ -121,7 +139,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.dispose();
   }
 
-  /// Exchanges the Google idToken for our JWT via `POST /auth/social`.
+  /// Exchanges the Google idToken for a Supabase session via
+  /// `authController.signInWithGoogle` (→ `signInWithIdToken`).
   Future<void> _onGoogleUser(GoogleSignInAccount? account) async {
     if (account == null || _googleBusy) return;
     final l10n = AppLocalizations.of(context);
@@ -134,7 +153,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
       await ref
           .read(authControllerProvider.notifier)
-          .socialLogin(loginMethod: 'google', token: idToken);
+          .signInWithGoogle(idToken: idToken, accessToken: auth.accessToken);
       // Success → AuthGate is authenticated and shows home; pop the auth flow.
       if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
     } on AppException catch (e) {
@@ -152,8 +171,43 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Kakao/Apple stay mocked for now → straight to home.
-  void _socialLoginMock() => Navigator.pushNamed(context, Routes.home);
+  /// Kakao sign-in via Supabase OAuth (external browser). Supabase has no Kakao
+  /// native id_token path, so the session returns asynchronously through the
+  /// deep link → `onAuthStateChange` → AuthGate re-routes; there is no
+  /// navigation here. We only surface a launch failure.
+  Future<void> _kakaoLogin() async {
+    if (_kakaoBusy) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _kakaoBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithKakao();
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError(l10n.loginKakaoSignInFailed);
+    } finally {
+      if (mounted) setState(() => _kakaoBusy = false);
+    }
+  }
+
+  /// Apple sign-in via Supabase OAuth (external browser) — Android/web path. Like
+  /// Kakao, the session returns asynchronously through the deep link →
+  /// `onAuthStateChange` → AuthGate re-routes; no navigation here. (iOS native
+  /// Sign in with Apple is future work — needs a Mac/Xcode capability.)
+  Future<void> _appleLogin() async {
+    if (_appleBusy) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _appleBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithApple();
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError(l10n.loginAppleSignInFailed);
+    } finally {
+      if (mounted) setState(() => _appleBusy = false);
+    }
+  }
 
   /// Email login opens the dedicated email/password form.
   void _emailLogin() => Navigator.pushNamed(context, Routes.loginForm);
@@ -171,7 +225,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
-      background: AppColors.surface,
+      background: context.c.backgroundNormalNormal,
       // Figma horizontal screen padding is 40px (buttons are 295 wide,
       // centered in the 375 frame). The 76px top matches the design's
       // vertical position: the (empty/hidden) 56px GNB + 20px body inset,
@@ -195,7 +249,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               size: BtnSize.s60,
               text: l10n.loginContinueWithKakao,
               leftIcon: const KakaoIcon(size: 24),
-              onPressed: _socialLoginMock,
+              disabled: _kakaoBusy,
+              onPressed: _kakaoLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             // Google: custom button (matches Kakao/Apple) wired to the real
@@ -214,7 +269,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               size: BtnSize.s60,
               text: l10n.loginContinueWithApple,
               leftIcon: const AppleIcon(size: 24),
-              onPressed: _socialLoginMock,
+              disabled: _appleBusy,
+              onPressed: _appleLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             // ── "or" divider ────────────────────────────────────────────
@@ -225,7 +281,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               type: BtnType.primaryFill,
               size: BtnSize.s60,
               text: l10n.loginContinueWithEmail,
-              leftIcon: const MailIcon(size: 24, color: AppColors.onPrimary),
+              leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
               onPressed: _emailLogin,
             ),
             // Figma: email button → signup prompt = 16px.
@@ -252,7 +308,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (_googleBusy) return;
     final l10n = AppLocalizations.of(context);
     try {
-      await _googleSignIn.signIn();
+      final account = await _googleSignIn.signIn();
+      // Web delivers the signed-in user via `onCurrentUserChanged` (wired in
+      // initState); mobile returns it right here (null = the user cancelled).
+      if (!kIsWeb && account != null) {
+        await _onGoogleUser(account);
+      }
     } on AppException catch (e) {
       _showError(e.message);
     } catch (_) {
@@ -280,7 +341,7 @@ class _LogoBlock extends StatelessWidget {
         ),
         const SizedBox(height: AppSpacing.s8),
         // Figma wordmark is 179.663px wide → 180.
-        const BeaverTalkLogo(width: 180, color: AppColors.text),
+        BeaverTalkLogo(width: 180, color: context.c.labelStrong),
       ],
     );
   }
@@ -293,7 +354,7 @@ class _OrDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final line = Expanded(
-      child: Container(height: 1, color: AppColors.textTertiary),
+      child: Container(height: 1, color: context.c.labelDisabled),
     );
     return Row(
       children: [
@@ -302,7 +363,7 @@ class _OrDivider extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
           child: Text(
             AppLocalizations.of(context).loginOrDivider,
-            style: AppType.caption1.r.copyWith(color: AppColors.textSecondary),
+            style: AppType.caption1.r.copyWith(color: context.c.labelNormal),
           ),
         ),
         line,
@@ -343,13 +404,13 @@ class _SignupPrompt extends StatelessWidget {
             Text(
               l10n.loginNoAccount,
               style:
-                  AppType.label1.r.copyWith(color: AppColors.textSecondary),
+                  AppType.label1.r.copyWith(color: context.c.labelNormal),
             ),
             GestureDetector(
               onTap: onSignup,
               child: Text(
                 l10n.signUp,
-                style: AppType.label1.sb.copyWith(color: AppColors.primary),
+                style: AppType.label1.sb.copyWith(color: context.c.primaryNormal),
               ),
             ),
           ],
@@ -400,13 +461,13 @@ class _TermsNoticeState extends State<_TermsNotice> {
     final l10n = AppLocalizations.of(context);
     // 12pt caption keeps the notice compact so it fits without scrolling; the
     // login body stays in a SingleChildScrollView for longer localized text.
-    final base = AppType.caption1.r.copyWith(color: AppColors.textSecondary);
+    final base = AppType.caption1.r.copyWith(color: context.c.labelNormal);
     // Links read as links: brighter (white) + underlined, mirroring Figma's
     // underlined `서비스 약관` / `개인정보 보호정책` spans.
     final link = AppType.caption1.r.copyWith(
-      color: AppColors.text,
+      color: context.c.labelStrong,
       decoration: TextDecoration.underline,
-      decorationColor: AppColors.text,
+      decorationColor: context.c.labelStrong,
     );
     return Text.rich(
       TextSpan(

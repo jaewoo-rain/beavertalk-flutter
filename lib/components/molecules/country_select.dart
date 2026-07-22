@@ -1,7 +1,7 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -48,10 +48,10 @@ class CountrySelect extends StatelessWidget {
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: selected ? AppColors.primary10 : Colors.transparent,
+        color: selected ? context.c.primaryNormal10 : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.md),
         border: selected
-            ? Border.all(color: AppColors.primary, width: 1)
+            ? Border.all(color: context.c.primaryNormal, width: 1)
             : null,
       ),
       child: Row(
@@ -69,7 +69,7 @@ class CountrySelect extends StatelessWidget {
                   child: Text(
                     name,
                     overflow: TextOverflow.ellipsis,
-                    style: AppType.label1.m.copyWith(color: AppColors.text),
+                    style: AppType.label1.m.copyWith(color: context.c.labelStrong),
                   ),
                 ),
               ],
@@ -80,7 +80,7 @@ class CountrySelect extends StatelessWidget {
             width: 24,
             height: 24,
             child: selected
-                ? AppIcons.check(size: 24, color: AppColors.primary)
+                ? AppIcons.check(size: 24, color: context.c.primaryNormal)
                 : null,
           ),
         ],
@@ -122,7 +122,7 @@ class _CountrySelectDemoState extends State<CountrySelectDemo> {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: SizedBox(

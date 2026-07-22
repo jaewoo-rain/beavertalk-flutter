@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 
 /// Visual variant of [HomeIndicator].
@@ -56,12 +56,12 @@ class HomeIndicator extends StatelessWidget {
   static const double pillHeight = 5;
 
   /// Background fill, or `null` for the transparent variants.
-  Color? get _background {
+  Color? _background(BuildContext context) {
     switch (variant) {
       case HomeIndicatorVariant.whiteBg:
-        return AppColors.text; // #FFFFFF
+        return context.c.staticWhite;
       case HomeIndicatorVariant.blackBg:
-        return AppColors.onPrimary; // #111111
+        return context.c.commonDarkAndWhite;
       case HomeIndicatorVariant.blackTransparent:
       case HomeIndicatorVariant.whiteTransparent:
       case HomeIndicatorVariant.subTransparent:
@@ -70,22 +70,22 @@ class HomeIndicator extends StatelessWidget {
   }
 
   /// Pill color derived from the variant.
-  Color get _pillColor {
+  Color _pillColor(BuildContext context) {
     switch (variant) {
       case HomeIndicatorVariant.whiteBg:
       case HomeIndicatorVariant.blackTransparent:
-        return AppColors.onPrimary; // #111111 — dark pill
+        return context.c.commonDarkAndWhite; // dark pill
       case HomeIndicatorVariant.blackBg:
       case HomeIndicatorVariant.whiteTransparent:
-        return AppColors.text; // #FFFFFF — white pill
+        return context.c.staticWhite; // white pill
       case HomeIndicatorVariant.subTransparent:
-        return AppColors.textSecondary; // #9EA3B2
+        return context.c.labelNormal; // #9EA3B2
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final bg = _background;
+    final bg = _background(context);
     return ClipRRect(
       borderRadius: const BorderRadius.only(
         bottomLeft: Radius.circular(AppRadius.lg),
@@ -101,7 +101,7 @@ class HomeIndicator extends StatelessWidget {
               width: pillWidth,
               height: pillHeight,
               decoration: BoxDecoration(
-                color: _pillColor,
+                color: _pillColor(context),
                 borderRadius: BorderRadius.circular(AppRadius.pill),
               ),
             ),
@@ -127,7 +127,7 @@ class HomeIndicatorDemo extends StatelessWidget {
       ('sub-transparent', HomeIndicatorVariant.subTransparent),
     ];
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -135,13 +135,13 @@ class HomeIndicatorDemo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             for (final (label, variant) in items) ...[
-              Text(label, style: TextStyle(color: AppColors.textSecondary)),
+              Text(label, style: TextStyle(color: context.c.labelNormal)),
               const SizedBox(height: 6),
               // Surface backdrop so transparent variants are visible.
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  border: Border.all(color: AppColors.border),
+                  color: context.c.backgroundNormalNormal,
+                  border: Border.all(color: context.c.lineNeutral),
                 ),
                 child: HomeIndicator(variant: variant),
               ),

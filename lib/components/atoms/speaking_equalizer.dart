@@ -2,7 +2,10 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import '../../theme/app_colors.dart';
+/// Default equalizer bar fill (`cool-neutral/25`). A literal, not a token: the
+/// bars live only on the in-call screen, whose Light treatment isn't settled —
+/// when it is, this moves with the call screen's palette.
+const _kEqualizerBar = Color(0xFF37383C);
 
 /// The 5-bar "speaking" equalizer that replaces the caption when subtitles are
 /// off — Figma `speaking` (`3233:17875`): 5 bars, width 3, gap 4, radius 2,
@@ -13,7 +16,7 @@ import '../../theme/app_colors.dart';
 /// looping "breathing" animation around the resting heights so the indicator
 /// reads as active without needing real audio levels.
 class SpeakingEqualizer extends StatefulWidget {
-  const SpeakingEqualizer({super.key, this.color = AppColors.equalizerBar});
+  const SpeakingEqualizer({super.key, this.color = _kEqualizerBar});
 
   /// Bar color.
   final Color color;

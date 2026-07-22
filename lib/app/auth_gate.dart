@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/app_color_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/error/app_exception.dart';
@@ -7,7 +8,6 @@ import '../features/auth/presentation/providers/my_profile_provider.dart';
 import '../screens/auth/login.dart';
 import '../screens/home/home.dart';
 import '../screens/onboarding/onboarding_language.dart';
-import '../theme/app_colors.dart';
 
 /// App entry point. Watches [authControllerProvider] and routes:
 /// - [AuthStatus.unknown] → loading splash while the token is read,
@@ -88,10 +88,10 @@ class _Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.bg,
+    return Scaffold(
+      backgroundColor: context.c.backgroundNormalDeep,
       body: Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
+        child: CircularProgressIndicator(color: context.c.primaryNormal),
       ),
     );
   }
@@ -107,16 +107,16 @@ class _ProfileError extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bg,
+      backgroundColor: context.c.backgroundNormalDeep,
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.wifi_off, color: AppColors.textSecondary),
+            Icon(Icons.wifi_off, color: context.c.labelNormal),
             const SizedBox(height: 12),
-            const Text(
+            Text(
               '연결에 문제가 있어요',
-              style: TextStyle(color: AppColors.text),
+              style: TextStyle(color: context.c.labelStrong),
             ),
             const SizedBox(height: 12),
             TextButton(onPressed: onRetry, child: const Text('다시 시도')),

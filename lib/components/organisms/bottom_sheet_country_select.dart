@@ -2,7 +2,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
-import '../../theme/app_colors.dart';
+import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -65,7 +65,7 @@ class CountryItem {
 ///   ("Confirm" → [onConfirm]) above a reused [HomeIndicator].
 ///
 /// Sheet shell: 375 wide, top corners `AppRadius.lg` (24), fill
-/// [AppColors.surfaceElevated]. Controlled component: pass [value] (the
+/// `Background/Elevated/Alternative`. Controlled component: pass [value] (the
 /// selected [CountryItem.code]) and react to [onChanged]; the widget never
 /// mutates its own selection.
 class BottomSheetCountrySelect extends StatelessWidget {
@@ -128,7 +128,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
     final maxHeight =
         MediaQuery.of(context).size.height * _maxHeightFraction;
     return Material(
-      color: AppColors.surfaceElevated,
+      color: context.c.backgroundElevatedAlternative,
       borderRadius: const BorderRadius.vertical(
         top: Radius.circular(AppRadius.lg),
       ),
@@ -139,7 +139,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            _header(effectiveTitle),
+            _header(context, effectiveTitle),
             // Body — country list. Flexible + scroll so a list taller than the
             // capped sheet scrolls instead of overflowing; the header above and
             // footer below stay pinned.
@@ -170,7 +170,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
                 ),
               ),
             ),
-            _footer(effectiveConfirm),
+            _footer(context, effectiveConfirm),
           ],
         ),
       ),
@@ -178,7 +178,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
-  Widget _header(String title) {
+  Widget _header(BuildContext context, String title) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
@@ -191,7 +191,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
               textAlign: TextAlign.center,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: AppColors.text),
+              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
           SizedBox(
@@ -202,7 +202,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
               iconSize: 24,
               splashRadius: 20,
               onPressed: onClose,
-              icon: AppIcons.close(color: AppColors.text),
+              icon: AppIcons.close(color: context.c.labelStrong),
             ),
           ),
         ],
@@ -211,7 +211,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   }
 
   /// Footer: primary confirm button (335 wide) + home indicator.
-  Widget _footer(String confirmText) {
+  Widget _footer(BuildContext context, String confirmText) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -268,15 +268,15 @@ class _BottomSheetCountrySelectDemoState
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.bg,
+      color: context.c.backgroundNormalDeep,
       child: Stack(
         children: [
           // Faux content behind the dim.
-          const Positioned.fill(
+          Positioned.fill(
             child: Center(
               child: Text(
                 'Background',
-                style: TextStyle(color: AppColors.textTertiary),
+                style: TextStyle(color: context.c.labelDisabled),
               ),
             ),
           ),

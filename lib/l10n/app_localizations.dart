@@ -283,7 +283,7 @@ abstract class AppLocalizations {
   /// No description provided for @scheduleManagement.
   ///
   /// In en, this message translates to:
-  /// **'Schedule'**
+  /// **'Manage schedule'**
   String get scheduleManagement;
 
   /// No description provided for @alarms.
@@ -295,7 +295,7 @@ abstract class AppLocalizations {
   /// No description provided for @addSchedule.
   ///
   /// In en, this message translates to:
-  /// **'Add Schedule'**
+  /// **'Add new schedule'**
   String get addSchedule;
 
   /// No description provided for @editSchedule.
@@ -343,8 +343,74 @@ abstract class AppLocalizations {
   /// No description provided for @callPartner.
   ///
   /// In en, this message translates to:
-  /// **'Character'**
+  /// **'Call partner'**
   String get callPartner;
+
+  /// No description provided for @quickStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick start'**
+  String get quickStart;
+
+  /// No description provided for @presetMorning.
+  ///
+  /// In en, this message translates to:
+  /// **'Morning routine'**
+  String get presetMorning;
+
+  /// No description provided for @presetMorningSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays 8:00'**
+  String get presetMorningSub;
+
+  /// No description provided for @presetEvening.
+  ///
+  /// In en, this message translates to:
+  /// **'Evening wind-down'**
+  String get presetEvening;
+
+  /// No description provided for @presetEveningSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day 21:00'**
+  String get presetEveningSub;
+
+  /// No description provided for @presetCustom.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get presetCustom;
+
+  /// No description provided for @presetCustomSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Your own'**
+  String get presetCustomSub;
+
+  /// Summary under the alarm form. monthly = count × 4.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}× a week · {monthly} calls a month'**
+  String alarmSummary(int count, int monthly);
+
+  /// No description provided for @alarmSummaryNone.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick at least one day'**
+  String get alarmSummaryNone;
+
+  /// No description provided for @partnerInUse.
+  ///
+  /// In en, this message translates to:
+  /// **'In use'**
+  String get partnerInUse;
+
+  /// No description provided for @partnerOwned.
+  ///
+  /// In en, this message translates to:
+  /// **'Owned'**
+  String get partnerOwned;
 
   /// No description provided for @am.
   ///
@@ -430,47 +496,11 @@ abstract class AppLocalizations {
   /// **'Left by {name} right after the call'**
   String characterNoteFooter(String name);
 
-  /// No description provided for @oneFixTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'One thing to fix today'**
-  String get oneFixTitle;
-
-  /// Shown when the same fix has recurred across consecutive calls.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} calls in a row'**
-  String streakBadge(int count);
-
-  /// No description provided for @firstTimeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'A first this time'**
-  String get firstTimeTitle;
-
   /// No description provided for @newExpressionsCount.
   ///
   /// In en, this message translates to:
   /// **'New expressions {count}'**
   String newExpressionsCount(int count);
-
-  /// Lifetime count of learned expressions, not just this call.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} total'**
-  String expressionsTotal(int count);
-
-  /// No description provided for @nextCallTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'To try on your next call'**
-  String get nextCallTitle;
-
-  /// No description provided for @nextCallFooter.
-  ///
-  /// In en, this message translates to:
-  /// **'Shown on your next call\'s start screen'**
-  String get nextCallFooter;
 
   /// No description provided for @analysisLoadError.
   ///
@@ -808,6 +838,24 @@ abstract class AppLocalizations {
   /// **'Scoring your pronunciation…'**
   String get scoringPronunciation;
 
+  /// Caption under the scan cursor while a recording is scored (proto/2_scan_start AnalyzingCaption 3627:9708).
+  ///
+  /// In en, this message translates to:
+  /// **'Checking your pronunciation word by word'**
+  String get analyzingByWord;
+
+  /// Replaces analyzingByWord once scoring runs long (screen/learning_analysis__지연5s AnalyzingCaption 3745:27).
+  ///
+  /// In en, this message translates to:
+  /// **'This is taking a little longer'**
+  String get analyzingTakingLonger;
+
+  /// Caption on the scan-failed screen when the request never reached the server (proto/E_failed AnalyzingCaption 3627:9847).
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost'**
+  String get scanConnectionLost;
+
   /// No description provided for @noRecordingToPlay.
   ///
   /// In en, this message translates to:
@@ -931,13 +979,13 @@ abstract class AppLocalizations {
   /// No description provided for @noAlarms.
   ///
   /// In en, this message translates to:
-  /// **'No alarms yet'**
+  /// **'No alarms registered'**
   String get noAlarms;
 
   /// No description provided for @noAlarmsBody.
   ///
   /// In en, this message translates to:
-  /// **'Add a learning reminder\nto build a consistent habit.'**
+  /// **'Add a learning reminder\nand you can build a consistent habit.'**
   String get noAlarmsBody;
 
   /// No description provided for @subscriptionManage.
@@ -1480,6 +1528,18 @@ abstract class AppLocalizations {
   /// **'Google sign-in failed.'**
   String get loginGoogleSignInFailed;
 
+  /// No description provided for @loginAppleSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Apple sign-in failed.'**
+  String get loginAppleSignInFailed;
+
+  /// No description provided for @loginKakaoSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Kakao sign-in failed.'**
+  String get loginKakaoSignInFailed;
+
   /// No description provided for @loginContinueWithKakao.
   ///
   /// In en, this message translates to:
@@ -1899,6 +1959,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Payment'**
   String get paymentLabelFallback;
+
+  /// Headline of the learning summary screen.
+  ///
+  /// In en, this message translates to:
+  /// **'{passed} of {total} sentences passed'**
+  String learningPassed(int passed, int total);
+
+  /// No description provided for @hardestSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardest sound today'**
+  String get hardestSound;
+
+  /// No description provided for @soundAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy by sound'**
+  String get soundAccuracy;
+
+  /// No description provided for @phonemeAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Per phoneme · {count} attempts'**
+  String phonemeAttempts(int count);
+
+  /// No description provided for @colSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get colSound;
+
+  /// No description provided for @colAttempts.
+  ///
+  /// In en, this message translates to:
+  /// **'Tries'**
+  String get colAttempts;
+
+  /// No description provided for @colCorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Right'**
+  String get colCorrect;
+
+  /// No description provided for @colAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get colAccuracy;
+
+  /// No description provided for @sentenceResults.
+  ///
+  /// In en, this message translates to:
+  /// **'Results by sentence'**
+  String get sentenceResults;
+
+  /// No description provided for @viewAllSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'See all {count}'**
+  String viewAllSentences(int count);
+
+  /// No description provided for @colSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence'**
+  String get colSentence;
+
+  /// No description provided for @colPronunciation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pron.'**
+  String get colPronunciation;
+
+  /// No description provided for @colFluency.
+  ///
+  /// In en, this message translates to:
+  /// **'Flu.'**
+  String get colFluency;
+
+  /// No description provided for @colRhythm.
+  ///
+  /// In en, this message translates to:
+  /// **'Rhy.'**
+  String get colRhythm;
+
+  /// No description provided for @recentSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Last {count} sessions'**
+  String recentSessions(int count);
+
+  /// No description provided for @trendAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg {score}'**
+  String trendAverage(int score);
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @colDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get colDate;
+
+  /// No description provided for @colSentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentences'**
+  String get colSentences;
+
+  /// No description provided for @colScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get colScore;
+
+  /// No description provided for @colChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get colChange;
+
+  /// The most recent row of the trend table.
+  ///
+  /// In en, this message translates to:
+  /// **'{date} (today)'**
+  String dateToday(String date);
 }
 
 class _AppLocalizationsDelegate
