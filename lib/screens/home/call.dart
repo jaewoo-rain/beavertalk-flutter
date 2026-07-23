@@ -12,6 +12,7 @@ import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -129,6 +130,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
         ? NetworkImage(selectedCharUrl) as ImageProvider
         : characterImage(characterId);
+    // Characters with a generated talking-avatar sprite set get the live rigged
+    // avatar (lip-sync + expression); others fall back to their static portrait.
+    final callNotifier = ref.read(normalCallControllerProvider.notifier);
+    final avatarDir = avatarAssetDirFor(
+      characterId,
+      selectedChar?.name ?? characterName(characterId),
+    );
 
     // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
@@ -213,16 +221,29 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     color: _avatarRing, // ring (Figma dark teal)
                   ),
                   alignment: Alignment.center,
-                  child: Container(
-                    width: AppSpacing.s120,
-                    height: AppSpacing.s120,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: context.c.backgroundNormalAlternative,
-                      image: DecorationImage(
-                        image: partnerImage,
-                        fit: BoxFit.cover,
-                      ),
+                  child: ClipOval(
+                    child: SizedBox(
+                      width: AppSpacing.s120,
+                      height: AppSpacing.s120,
+                      // Live talking avatar for the beaver (mouth cross-fades to
+                      // the call audio; blinks + breathes). Static portrait for
+                      // other characters.
+                      child: avatarDir != null
+                          ? BeaverAvatar(
+                              assetDir: avatarDir,
+                              level: callNotifier.avatarLevel,
+                              speaking: callNotifier.avatarSpeaking,
+                              emotion: callNotifier.avatarEmotion,
+                            )
+                          : DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: context.c.backgroundNormalAlternative,
+                                image: DecorationImage(
+                                  image: partnerImage,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                 ),

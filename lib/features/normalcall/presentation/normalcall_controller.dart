@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, kIsWeb;
+import 'package:flutter/foundation.dart'
+    show ValueNotifier, debugPrint, kDebugMode, kIsWeb;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -151,6 +153,46 @@ final normalCallControllerProvider =
 
 /// Notifier implementing the normalcall socket + audio pipeline.
 class NormalCallController extends Notifier<CallState> {
+  // ── Avatar lip-sync signals (video-call avatar; see avatar_view.dart) ───────
+  // Gemini Live returns raw PCM with no viseme timing, so the mouth is driven
+  // from the audio envelope. These are published from the PCM *about to play*
+  // (in [_onFeed] via [_takeArray]) — NOT from arrival time — because the
+  // playback queue buffers seconds ahead, so arrival-time RMS would lead the
+  // sound. In-memory only; consumed by [BeaverAvatar]. Additive: the audio
+  // pipeline itself is unchanged.
+
+  /// Live mouth-open level, 0 (closed) .. 1 (wide), from the RMS of the audio
+  /// currently being fed to the player. ~10Hz; the widget smooths to 60fps.
+  final ValueNotifier<double> avatarLevel = ValueNotifier<double>(0.0);
+
+  /// True while the beaver is speaking (mirrors [_beaverSpeaking]).
+  final ValueNotifier<bool> avatarSpeaking = ValueNotifier<bool>(false);
+
+  /// Current avatar emotion code (0 neutral/smug, 1 happy, 2 surprised, 3 sad,
+  /// 4 angry), classified from the beaver's streamed line so the face reacts to
+  /// what it says. Reset to neutral each turn; set sticky within a turn.
+  final ValueNotifier<int> avatarEmotion = ValueNotifier<int>(0);
+
+  /// Keyword lexicon for the (heuristic) emotion classifier. Keyed by the same
+  /// codes as [avatarEmotion]. Korean + English; matched case-insensitively.
+  static const Map<int, List<String>> _emotionLexicon = {
+    1: ['하하', 'ㅋㅋ', 'ㅎㅎ', '좋아', '좋은', '좋네', '좋다', '최고', '굿', '짱', '잘했',
+      '대단', '훌륭', '기뻐', '신나', '행복', '사랑', 'good', 'great', 'awesome',
+      'nice', 'love', 'cool', 'haha', 'perfect', 'well done', 'yay'],
+    2: ['헐', '대박', '진짜?', '정말?', '뭐?', '우와', '와우', '놀라', '세상에', '믿기',
+      '오마이', 'wow', 'whoa', 'no way', 'oh my', 'really?', 'what?!'],
+    3: ['슬프', '슬퍼', '미안', '아쉽', '안타', '속상', '우울', 'ㅠ', 'ㅜ', '눈물',
+      'sorry', 'sad', 'unfortunately', 'poor'],
+    4: ['짜증', '뭐야', '바보', '멍청', '어이없', '그만', '답답', '흥', '쳇', '열받', '화나',
+      'ugh', 'stupid', 'annoying', 'stop it'],
+  };
+
+  /// RMS below this (near-silence) closes the mouth outright.
+  static const double _avatarRmsGate = 260;
+
+  /// RMS mapped to a fully-open mouth (tuned for Gemini 24k speech).
+  static const double _avatarRmsFull = 5200;
+
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _wsSub;
 
@@ -660,6 +702,8 @@ class NormalCallController extends Notifier<CallState> {
           // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
           // instant (no re-buffer gap).
           if (!_beaverSpeaking) _playing = false;
+          // Nothing playing → let the avatar mouth fall closed.
+          avatarLevel.value = _beaverSpeaking ? avatarLevel.value * 0.4 : 0.0;
           if (_lastFeedSilent != true) {
             _log('feed silence — queue empty'
                 '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
@@ -694,7 +738,53 @@ class NormalCallController extends Notifier<CallState> {
     out.setRange(0, byteCount, _pcmQueue, _pcmHead);
     _pcmHead += byteCount;
     _maybeCompact();
+    // Drive the avatar mouth from the samples about to play (matches what's
+    // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
+    _updateAvatarLevel(out, byteCount);
     return PcmArrayInt16(bytes: out.buffer.asByteData());
+  }
+
+  /// Computes the RMS of the PCM16 chunk about to play and publishes it as the
+  /// avatar mouth-open level (0..1), with a perceptual curve so quiet speech
+  /// still parts the mouth. Cheap (~a few thousand ops per ~10Hz feed).
+  void _updateAvatarLevel(Uint8List bytes, int len) {
+    final n = len ~/ 2;
+    if (n == 0) return;
+    final bd = bytes.buffer.asByteData();
+    var sumSq = 0.0;
+    for (var i = 0; i < n; i++) {
+      final s = bd.getInt16(i * 2, Endian.little);
+      sumSq += s * s;
+    }
+    final rms = math.sqrt(sumSq / n);
+    if (rms < _avatarRmsGate) {
+      avatarLevel.value = 0.0;
+      return;
+    }
+    var lvl = rms / _avatarRmsFull;
+    if (lvl > 1) lvl = 1;
+    avatarLevel.value = math.pow(lvl, 0.7).toDouble();
+  }
+
+  /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
+  /// counting lexicon hits. Cheap keyword scan; short lines. Ties/none → the
+  /// highest-count wins, 0 when nothing matches.
+  int _classifyEmotion(String line) {
+    if (line.isEmpty) return 0;
+    final t = line.toLowerCase();
+    var best = 0;
+    var bestCount = 0;
+    _emotionLexicon.forEach((code, words) {
+      var c = 0;
+      for (final w in words) {
+        if (t.contains(w)) c++;
+      }
+      if (c > bestCount) {
+        bestCount = c;
+        best = code;
+      }
+    });
+    return best;
   }
 
   /// Compacts [_pcmQueue] once the consumed prefix grows large, so the backing
@@ -716,6 +806,7 @@ class NormalCallController extends Notifier<CallState> {
     _micGateTimer = null;
     _turnEnded = false;
     _beaverSpeaking = true;
+    avatarSpeaking.value = true;
   }
 
   /// Attempts to clear the mic gate. Requires BOTH the turn to have ended AND
@@ -733,6 +824,8 @@ class NormalCallController extends Notifier<CallState> {
       _gateSafetyTimer?.cancel();
       _gateSafetyTimer = null;
       _beaverSpeaking = false;
+      avatarSpeaking.value = false;
+      avatarLevel.value = 0.0;
       _log('mic OPEN — your turn (turn_end + drained)');
     });
   }
@@ -752,6 +845,8 @@ class NormalCallController extends Notifier<CallState> {
         _micGateTimer?.cancel();
         _micGateTimer = null;
         _beaverSpeaking = false;
+        avatarSpeaking.value = false;
+        avatarLevel.value = 0.0;
         _log('mic OPEN — your turn (idle drained)');
       }
     });
@@ -780,6 +875,9 @@ class NormalCallController extends Notifier<CallState> {
         // Also clear any stale hint: a new turn means the prior question is
         // answered (matches the server "new question cancels previous").
         state = state.copyWith(beaverSubtitle: '', hint: null);
+        // New line → reset the avatar expression to neutral; it re-classifies as
+        // the line streams in below.
+        avatarEmotion.value = 0;
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -790,8 +888,12 @@ class NormalCallController extends Notifier<CallState> {
         {
           final delta = msg['text'] as String?;
           if (delta != null && delta.isNotEmpty) {
-            state =
-                state.copyWith(beaverSubtitle: state.beaverSubtitle + delta);
+            final line = state.beaverSubtitle + delta;
+            state = state.copyWith(beaverSubtitle: line);
+            // React to what the beaver says: a detected emotion sticks until the
+            // next turn resets it (avoids flicker on neutral tokens).
+            final emo = _classifyEmotion(line);
+            if (emo != 0) avatarEmotion.value = emo;
           }
         }
       case 'input_transcript':
@@ -1020,6 +1122,9 @@ class NormalCallController extends Notifier<CallState> {
     _gateSafetyTimer?.cancel();
     _gateSafetyTimer = null;
     _beaverSpeaking = false;
+    avatarSpeaking.value = false;
+    avatarLevel.value = 0.0;
+    avatarEmotion.value = 0;
     _turnEnded = false;
     _micFramesSent = 0;
 
