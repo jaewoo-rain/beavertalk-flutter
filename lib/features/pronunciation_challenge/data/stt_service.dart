@@ -128,6 +128,15 @@ class SttService {
   /// silence, final, max-age, socket close — don't spawn parallel reconnects).
   bool _reconnecting = false;
 
+  /// Whether the `config` frame has been sent on the CURRENT socket. Until it
+  /// has, [_onPcm] must not push binary PCM: on a mid-stream rollover the mic is
+  /// already running, so without this gate a PCM frame can be enqueued ahead of
+  /// `config` while `_openWs` awaits the handshake. The server would then read
+  /// that first (binary) frame as audio, fall back to its DEFAULT 48 kHz sample
+  /// rate, and Google STT — fed our 16 kHz audio under a 48 kHz config — returns
+  /// no transcript, silently killing every stream after the first.
+  bool _configSent = false;
+
   // ── per-stream state (reset on every (re)connect) ──────────────────
   /// Tokens that have already cleared a card in the CURRENT stream. Re-scanning
   /// the cumulative transcript would otherwise let a stale word clear a fresh
@@ -226,6 +235,7 @@ class SttService {
     _clearedThisStream.clear();
     _spokeThisStream = false;
     _lastVoiceMs = 0;
+    _configSent = false; // gate PCM until this stream's config frame is sent
     _streamStartMs = DateTime.now().millisecondsSinceEpoch;
 
     final ready = Completer<bool>();
@@ -253,6 +263,8 @@ class SttService {
           'sampleRate': sampleRate,
         }),
       );
+      // Config is now first in the sink's queue → PCM may flow.
+      _configSent = true;
 
       _wsSub = channel.stream.listen(
         (dynamic data) => _onWsMessage(data, settle),
@@ -403,6 +415,7 @@ class SttService {
   }
 
   Future<void> _teardownWs() async {
+    _configSent = false;
     await _wsSub?.cancel();
     _wsSub = null;
     try {
@@ -415,7 +428,9 @@ class SttService {
     final raw = _updateMicLevel(data);
     _maybeRolloverForSilence(raw);
     final ws = _ws;
-    if (ws == null) return;
+    // Don't push PCM before this stream's `config` frame (see [_configSent]) —
+    // a binary-first frame makes the server default to 48 kHz and drop the round.
+    if (ws == null || !_configSent) return;
     // `record` pcm16bits stream is already raw Int16 LE PCM — forward straight
     // to the server as a binary frame (no float→int conversion needed).
     try {
