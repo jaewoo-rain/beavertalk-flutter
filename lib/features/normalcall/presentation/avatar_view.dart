@@ -57,6 +57,7 @@ class BeaverAvatar extends StatefulWidget {
     required this.level,
     required this.speaking,
     required this.emotion,
+    required this.shape,
   });
 
   /// Sprite asset directory, e.g. `assets/avatar/baba` (see [avatarAssetDirFor]).
@@ -71,6 +72,10 @@ class BeaverAvatar extends StatefulWidget {
   /// Current emotion code (see the k* constants). Drives the expression overlay.
   final ValueListenable<int> emotion;
 
+  /// Mouth shape, −1 (round OO) .. 0 (AH) .. +1 (wide EE). Used only when the
+  /// character ships `v_oo`/`v_ee` sprites; otherwise ignored (open/close ramp).
+  final ValueListenable<double> shape;
+
   @override
   State<BeaverAvatar> createState() => _BeaverAvatarState();
 }
@@ -80,6 +85,21 @@ class _BeaverAvatarState extends State<BeaverAvatar>
   final List<ui.Image?> _mouth = List<ui.Image?>.filled(4, null);
   ui.Image? _blink;
   final Map<int, ui.Image> _emotion = {};
+  // Region masks (RGBA alpha): where the mouth moves / where expressions change.
+  // Drive region-only compositing so the mouth (lip-sync) and eyes (emotion)
+  // animate independently over a stable base face — no whole-frame ghosting.
+  ui.Image? _maskMouth;
+  ui.Image? _maskEyes;
+  // Optional vowel-shape sprites (round OO / wide EE). When present the mouth
+  // forms shapes; when absent it falls back to the open/close ramp (v0..v3).
+  ui.Image? _mouthOO;
+  ui.Image? _mouthEE;
+  // Dense RIFE-interpolated open ramp (m0 closed .. mN wide). When present the
+  // mouth plays as a smooth flipbook (true frame interpolation, no dissolve).
+  final List<ui.Image> _ramp = [];
+  // Body-idle loop frames (b0..bN, RIFE-interpolated). When present the base
+  // face animates a subtle body idle; the mouth/eyes overlays ride on top.
+  final List<ui.Image> _body = [];
   bool _loaded = false;
 
   late final Ticker _ticker;
@@ -110,6 +130,21 @@ class _BeaverAvatarState extends State<BeaverAvatar>
     for (final entry in _emotionStem.entries) {
       final img = await _tryDecode('$dir/${entry.value}.png');
       if (img != null) _emotion[entry.key] = img;
+    }
+    _maskMouth = await _tryDecode('$dir/mask_mouth.png');
+    _maskEyes = await _tryDecode('$dir/mask_eyes.png');
+    _mouthOO = await _tryDecode('$dir/v_oo.png');
+    _mouthEE = await _tryDecode('$dir/v_ee.png');
+    // Dense open ramp m0..mN (as many as ship); stop at the first gap.
+    for (var i = 0; i < 24; i++) {
+      final img = await _tryDecode('$dir/m$i.png');
+      if (img == null) break;
+      _ramp.add(img);
+    }
+    for (var i = 0; i < 48; i++) {
+      final img = await _tryDecode('$dir/b$i.png');
+      if (img == null) break;
+      _body.add(img);
     }
     if (mounted) setState(() => _loaded = _mouth[0] != null);
   }
@@ -161,6 +196,31 @@ class _BeaverAvatarState extends State<BeaverAvatar>
     // Gentle idle breathing.
     _painterState.breathe = math.sin(_elapsedSec * 1.6) * 0.012;
 
+    // Mouth vowel shape (OO..AH..EE), smoothed.
+    _painterState.shape +=
+        (widget.shape.value.clamp(-1.0, 1.0) - _painterState.shape) * 0.3;
+
+    // Head micro-motion: slow idle sway/tilt + a subtle nod on speech, so the
+    // avatar reads as alive, not a poster with a moving mouth.
+    _painterState.headRot = math.sin(_elapsedSec * 0.55) * 0.020 +
+        math.sin(_elapsedSec * 1.3) * 0.006;
+    _painterState.headDx = math.sin(_elapsedSec * 0.43) * 0.010;
+    _painterState.headDy =
+        math.sin(_elapsedSec * 0.9) * 0.006 + _painterState.level * 0.016;
+
+    // Subtle chest breathing (vertical scale, 1.0 → ~1.016 and back).
+    _painterState.bodyBreath = (math.sin(_elapsedSec * 0.85) * 0.5 + 0.5) * 0.016;
+
+    // Body-idle loop (when body frames ship): a slow ~6s ping-pong so the torso
+    // and arms drift subtly, appropriate for a video call.
+    if (_body.length >= 2) {
+      final phase = (_elapsedSec / 6.0) % 1.0;
+      final tri = phase < 0.5 ? phase * 2 : (1 - phase) * 2;
+      final pos = tri * (_body.length - 1);
+      _painterState.bodyFrame = pos.floor().clamp(0, _body.length - 2);
+      _painterState.bodyBlend = pos - _painterState.bodyFrame;
+    }
+
     _repaint.value++;
   }
 
@@ -175,6 +235,16 @@ class _BeaverAvatarState extends State<BeaverAvatar>
     for (final im in _emotion.values) {
       im.dispose();
     }
+    _maskMouth?.dispose();
+    _maskEyes?.dispose();
+    _mouthOO?.dispose();
+    _mouthEE?.dispose();
+    for (final im in _ramp) {
+      im.dispose();
+    }
+    for (final im in _body) {
+      im.dispose();
+    }
     super.dispose();
   }
 
@@ -187,6 +257,12 @@ class _BeaverAvatarState extends State<BeaverAvatar>
           mouth: _mouth,
           blink: _blink,
           emotion: _emotion,
+          maskMouth: _maskMouth,
+          maskEyes: _maskEyes,
+          mouthOO: _mouthOO,
+          mouthEE: _mouthEE,
+          ramp: _ramp,
+          body: _body,
           state: _painterState,
           repaint: _repaint,
         ),
@@ -204,6 +280,13 @@ class _PainterState {
   double breathe = 0; // small +/- scale
   int emotion = 0; // current emotion code
   double emoPresence = 0; // eased 0..1 presence of the emotion overlay
+  double shape = 0; // smoothed mouth shape −1 (OO) .. 0 (AH) .. +1 (EE)
+  double headRot = 0; // head tilt (radians)
+  double headDx = 0; // head sway x (fraction of size)
+  double headDy = 0; // head bob y (fraction of size)
+  double bodyBreath = 0; // subtle chest/body breathing (vertical scale delta)
+  int bodyFrame = 0; // current body-idle frame index (when body frames ship)
+  double bodyBlend = 0; // cross-fade fraction to bodyFrame+1
 }
 
 class _BeaverPainter extends CustomPainter {
@@ -211,6 +294,12 @@ class _BeaverPainter extends CustomPainter {
     required this.mouth,
     required this.blink,
     required this.emotion,
+    required this.maskMouth,
+    required this.maskEyes,
+    required this.mouthOO,
+    required this.mouthEE,
+    required this.ramp,
+    required this.body,
     required this.state,
     required Listenable repaint,
   }) : super(repaint: repaint);
@@ -218,49 +307,167 @@ class _BeaverPainter extends CustomPainter {
   final List<ui.Image?> mouth;
   final ui.Image? blink;
   final Map<int, ui.Image> emotion;
+  final ui.Image? maskMouth;
+  final ui.Image? maskEyes;
+  final ui.Image? mouthOO;
+  final ui.Image? mouthEE;
+  final List<ui.Image> ramp;
+  final List<ui.Image> body;
   final _PainterState state;
 
   @override
   void paint(Canvas canvas, Size size) {
+    final base = mouth[0];
+    if (base == null) return;
+    // Clip so cover-fit overflow (square sprite in a non-square band) is cropped.
+    canvas.clipRect(Offset.zero & size);
+
     final level = state.level.clamp(0.0, 1.0);
+    final sw = base.width.toDouble();
+    final sh = base.height.toDouble();
 
-    final scale = 1.0 + state.breathe;
+    // Cover-fit + idle breathing: map the sprite space (sw×sh) so it covers the
+    // box, centered, with a subtle breathing scale. Everything below is drawn in
+    // sprite coordinates; masks (same geometry) align exactly.
+    // Head micro-motion around a pivot near the neck (center-bottom): sway,
+    // tilt and a speech nod, applied before the cover-fit so the whole face
+    // moves together and reads as alive.
     canvas.save();
-    canvas.translate(size.width / 2, size.height / 2);
+    final px = size.width / 2 + state.headDx * size.width;
+    final py = size.height * 0.9;
+    canvas.translate(px, py + state.headDy * size.height);
+    canvas.rotate(state.headRot);
+    canvas.translate(-px, -py);
+
+    // Body breathing: subtle vertical expansion anchored near the belly, so the
+    // chest rises/falls. Applied to the whole composite → masks stay aligned.
+    final by = size.height * 0.80;
+    canvas.translate(0, by);
+    canvas.scale(1.0, 1.0 + state.bodyBreath);
+    canvas.translate(0, -by);
+
+    // Cover-fit + idle breathing.
+    final cover = math.max(size.width / sw, size.height / sh);
+    final scale = cover * (1.0 + state.breathe);
+    final dw = sw * scale;
+    final dh = sh * scale;
+    canvas.translate((size.width - dw) / 2, (size.height - dh) / 2);
     canvas.scale(scale, scale);
-    canvas.translate(-size.width / 2, -size.height / 2);
+    final rect = Rect.fromLTWH(0, 0, sw, sh);
 
-    // Mouth ramp cross-fade: pos in [0,3], blend frame i → i+1.
-    final pos = level * (mouth.length - 1);
-    final i = pos.floor().clamp(0, mouth.length - 2);
-    final frac = (pos - i).clamp(0.0, 1.0);
-    _draw(canvas, mouth[i], size, 1.0);
-    if (frac > 0) _draw(canvas, mouth[i + 1], size, frac);
-
-    // Emotion overlay: present between phrases, yields to the talking mouth as
-    // the level rises (so active speech shows the lip-synced ramp).
-    final emoImg = emotion[state.emotion];
-    if (emoImg != null && state.emoPresence > 0.01) {
-      final emoAlpha = state.emoPresence * (1.0 - level).clamp(0.0, 1.0);
-      if (emoAlpha > 0.01) _draw(canvas, emoImg, size, emoAlpha);
+    // 1) Base — the subtle body-idle loop (torso/arms drift) when body frames
+    //    ship, else the still closed face. Drawn once (never globally blended).
+    if (body.length >= 2) {
+      final bf = state.bodyFrame.clamp(0, body.length - 2);
+      _img(canvas, body[bf], rect, 1.0);
+      if (state.bodyBlend > 0) _img(canvas, body[bf + 1], rect, state.bodyBlend);
+    } else {
+      _img(canvas, base, rect, 1.0);
     }
 
-    // Blink on top.
-    if (state.blink > 0.01 && blink != null) {
-      _draw(canvas, blink, size, state.blink.clamp(0.0, 1.0));
+    // 2) Mouth region only (masked, so the rest of the face is untouched).
+    final mm = maskMouth;
+    final oo = mouthOO;
+    final ee = mouthEE;
+    if (mm != null && ramp.length >= 2) {
+      // Dense RIFE-interpolated flipbook: pick the two nearest frames and light
+      // cross-fade. Adjacent frames are true in-betweens (near-identical), so
+      // this is smooth, not a dissolve. Masked to the mouth region.
+      final pos = level * (ramp.length - 1);
+      final i = pos.floor().clamp(0, ramp.length - 2);
+      final frac = (pos - i).clamp(0.0, 1.0);
+      canvas.saveLayer(rect, Paint());
+      _img(canvas, ramp[i], rect, 1.0);
+      if (frac > 0) _img(canvas, ramp[i + 1], rect, frac);
+      _applyMask(canvas, mm, rect);
+      canvas.restore();
+    } else if (mm != null && oo != null && ee != null) {
+      // Vowel-shape model: base(closed) → an open-vowel frame at opacity=level.
+      // The open frame morphs AH → OO (round) / EE (wide) by [shape].
+      final ah = mouth[mouth.length - 1] ?? base;
+      final shape = state.shape.clamp(-1.0, 1.0);
+      canvas.saveLayer(rect, Paint());
+      _img(canvas, ah, rect, level);
+      if (shape < 0) {
+        _img(canvas, oo, rect, level * (-shape));
+      } else if (shape > 0) {
+        _img(canvas, ee, rect, level * shape);
+      }
+      _applyMask(canvas, mm, rect);
+      canvas.restore();
+    } else if (mm != null) {
+      // Open/close ramp (no shape sprites), masked.
+      final pos = level * (mouth.length - 1);
+      final i = pos.floor().clamp(0, mouth.length - 2);
+      final frac = (pos - i).clamp(0.0, 1.0);
+      canvas.saveLayer(rect, Paint());
+      _img(canvas, mouth[i], rect, 1.0);
+      if (frac > 0) _img(canvas, mouth[i + 1], rect, frac);
+      _applyMask(canvas, mm, rect);
+      canvas.restore();
+    } else {
+      // No mask → whole-frame ramp fallback.
+      final pos = level * (mouth.length - 1);
+      final i = pos.floor().clamp(0, mouth.length - 2);
+      final frac = (pos - i).clamp(0.0, 1.0);
+      _img(canvas, mouth[i], rect, 1.0);
+      if (frac > 0) _img(canvas, mouth[i + 1], rect, frac);
+    }
+
+    // 3) Eyes/brow region only: emotion + blink, masked so the mouth (lip-sync)
+    //    is untouched → the beaver talks AND emotes at the same time.
+    final me = maskEyes;
+    final emoImg = emotion[state.emotion];
+    if (me != null) {
+      if (emoImg != null && state.emoPresence > 0.01) {
+        canvas.saveLayer(rect, Paint());
+        _img(canvas, emoImg, rect, state.emoPresence.clamp(0.0, 1.0));
+        _applyMask(canvas, me, rect);
+        canvas.restore();
+      }
+      if (state.blink > 0.01 && blink != null) {
+        canvas.saveLayer(rect, Paint());
+        _img(canvas, blink!, rect, state.blink.clamp(0.0, 1.0));
+        _applyMask(canvas, me, rect);
+        canvas.restore();
+      }
+    } else {
+      // No mask → old whole-frame overlay (emotion yields to the talking mouth).
+      if (emoImg != null && state.emoPresence > 0.01) {
+        _img(canvas, emoImg, rect, state.emoPresence * (1.0 - level));
+      }
+      if (state.blink > 0.01 && blink != null) {
+        _img(canvas, blink!, rect, state.blink);
+      }
     }
 
     canvas.restore();
   }
 
-  void _draw(Canvas canvas, ui.Image? img, Size size, double opacity) {
+  /// Draws [img] into [dst] (sprite space) at [opacity].
+  void _img(Canvas canvas, ui.Image? img, Rect dst, double opacity) {
     if (img == null) return;
     final src = Rect.fromLTWH(0, 0, img.width.toDouble(), img.height.toDouble());
-    final dst = Rect.fromLTWH(0, 0, size.width, size.height);
-    final paint = Paint()
-      ..filterQuality = FilterQuality.medium
-      ..color = Color.fromRGBO(0, 0, 0, opacity.clamp(0.0, 1.0));
-    canvas.drawImageRect(img, src, dst, paint);
+    canvas.drawImageRect(
+      img,
+      src,
+      dst,
+      Paint()
+        ..filterQuality = FilterQuality.medium
+        ..color = Color.fromRGBO(0, 0, 0, opacity.clamp(0.0, 1.0)),
+    );
+  }
+
+  /// Keeps only the region where [mask]'s alpha is set (feathered), using
+  /// `dstIn` — call inside a `saveLayer` right after drawing the content.
+  void _applyMask(Canvas canvas, ui.Image mask, Rect dst) {
+    final src = Rect.fromLTWH(0, 0, mask.width.toDouble(), mask.height.toDouble());
+    canvas.drawImageRect(
+      mask,
+      src,
+      dst,
+      Paint()..blendMode = BlendMode.dstIn,
+    );
   }
 
   @override

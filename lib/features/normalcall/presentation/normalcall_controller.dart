@@ -173,6 +173,13 @@ class NormalCallController extends Notifier<CallState> {
   /// what it says. Reset to neutral each turn; set sticky within a turn.
   final ValueNotifier<int> avatarEmotion = ValueNotifier<int>(0);
 
+  /// Mouth SHAPE, −1 (round "OO") .. 0 ("AH") .. +1 (wide "EE"), from the
+  /// zero-crossing rate of the audio about to play (a cheap spectral-tilt proxy:
+  /// high ZCR = front/fricative → wide, low ZCR = back vowel → round). Lets the
+  /// mouth form vowel shapes instead of a generic open/close. The widget smooths
+  /// it. Characters without EE/OO sprites simply ignore this.
+  final ValueNotifier<double> avatarShape = ValueNotifier<double>(0.0);
+
   /// Keyword lexicon for the (heuristic) emotion classifier. Keyed by the same
   /// codes as [avatarEmotion]. Korean + English; matched case-insensitively.
   static const Map<int, List<String>> _emotionLexicon = {
@@ -752,9 +759,13 @@ class NormalCallController extends Notifier<CallState> {
     if (n == 0) return;
     final bd = bytes.buffer.asByteData();
     var sumSq = 0.0;
+    var zc = 0; // zero crossings
+    var prev = 0;
     for (var i = 0; i < n; i++) {
       final s = bd.getInt16(i * 2, Endian.little);
       sumSq += s * s;
+      if (i > 0 && (s >= 0) != (prev >= 0)) zc++;
+      prev = s;
     }
     final rms = math.sqrt(sumSq / n);
     if (rms < _avatarRmsGate) {
@@ -764,6 +775,10 @@ class NormalCallController extends Notifier<CallState> {
     var lvl = rms / _avatarRmsFull;
     if (lvl > 1) lvl = 1;
     avatarLevel.value = math.pow(lvl, 0.7).toDouble();
+    // Zero-crossing rate → vowel shape. ~0.045 ≈ neutral "AH"; lower → round
+    // "OO", higher → wide "EE". Scaled to −1..1 (widget smooths further).
+    final zcr = n > 1 ? zc / (n - 1) : 0.0;
+    avatarShape.value = ((zcr - 0.045) / 0.05).clamp(-1.0, 1.0);
   }
 
   /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
@@ -1125,6 +1140,7 @@ class NormalCallController extends Notifier<CallState> {
     avatarSpeaking.value = false;
     avatarLevel.value = 0.0;
     avatarEmotion.value = 0;
+    avatarShape.value = 0.0;
     _turnEnded = false;
     _micFramesSent = 0;
 

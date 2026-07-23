@@ -3,12 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/call_toggle_button.dart';
-import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
-import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
@@ -16,15 +13,15 @@ import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
-import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Live call — Figma `screen/call_main` (`2117:19932`, dialog `2117:19956`).
+/// Live call — Figma `workspace / call_main_facetime` (`3965:16099`).
 ///
-/// A dark full-screen call view bound to [normalCallControllerProvider]: the
-/// [beaverImage] avatar, the [mockPartnerName], the live `mm:ss` timer driven by
-/// `CallState.elapsedSec`, and an end-call button.
+/// A FaceTime-style full-screen call: a dark background, a status header
+/// (connected dot + character name + live `mm:ss` timer), a large full-width
+/// avatar feed (the live talking [BeaverAvatar] for rigged characters, else the
+/// static portrait), the beaver's live subtitle, and a red hang-up button.
 ///
 /// End paths all funnel through `NormalCallController.hangUp()` (plan §8-2):
 /// - the end-call dialog's "통화 종료",
@@ -40,19 +37,17 @@ class CallScreen extends ConsumerStatefulWidget {
 }
 
 class _CallScreenState extends ConsumerState<CallScreen> {
-  /// Avatar ring — the dark muted teal sampled from Figma `screen/call_main`
-  /// (`2296:26242`, ~`#143E38`). The brighter `green700` used before rendered
-  /// as an over-saturated green glow (QA: "아이콘 이상한 그라데이션").
-  static const Color _avatarRing = Color(0xFF163A33);
+  /// FaceTime call surface is always dark (Figma `#181A20`), independent of the
+  /// app light/dark theme — a call is an immersive, fixed-dark screen.
+  static const Color _bg = Color(0xFF181A20);
+
+  /// Connected-status dot (Figma Brand/Primary `#00FFB2`).
+  static const Color _connectedDot = Color(0xFF00FFB2);
+
+  /// Subtle text (Figma Text&Icons/Subtle `#B0B0B0`).
+  static const Color _subtle = Color(0xFFB0B0B0);
 
   bool _navigated = false;
-
-  /// turn_id of the hint the learner has revealed (peek → full). Ephemeral UI
-  /// state: a new hint carries a new turn_id, so the card auto-collapses.
-  String? _revealedTurnId;
-
-  /// Currently shown suggestion index in the revealed hint; reset per new hint.
-  int _suggestionIndex = 0;
 
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
   String _formatted(int seconds) {
@@ -110,21 +105,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final elapsed = ref.watch(
       normalCallControllerProvider.select((s) => s.elapsedSec),
     );
-    // Beaver's live line (real field). The translation line below has no server
-    // field yet — see the AI-line block (stub).
+    // Beaver's live line (server `output_transcript`, accumulated per turn).
     final beaverSubtitle = ref.watch(
       normalCallControllerProvider.select((s) => s.beaverSubtitle),
     );
-    final hint = ref.watch(normalCallControllerProvider.select((s) => s.hint));
-    final subtitleOn =
-        ref.watch(normalCallControllerProvider.select((s) => s.subtitleOn));
-    final hintOn =
-        ref.watch(normalCallControllerProvider.select((s) => s.hintOn));
-    // Selected character (member `character_id`) → partner name + avatar, so the
-    // call shows the avatar the user picked (resolved from the catalog, not a
-    // hardcoded id→name guess).
-    final characterId =
-        ref.watch(myProfileProvider).valueOrNull?.characterId;
+    // Selected character → name + avatar (resolved from the catalog).
+    final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
@@ -140,11 +126,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
     // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
-      // A new hint (different turn_id) resets the ephemeral suggestion index;
-      // the revealed flag auto-resets since _revealedTurnId won't match.
-      if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
-        setState(() => _suggestionIndex = 0);
-      }
       if (next.phase == CallPhase.ended) {
         _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
@@ -166,14 +147,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         ref.read(normalCallControllerProvider.notifier).hangUp();
       },
       child: AppScaffold(
-        background: context.c.backgroundNormalNormal,
+        background: _bg,
         statusVariant: StatusBarVariant.whiteTransparent,
         homeVariant: HomeIndicatorVariant.whiteTransparent,
         body: Column(
           children: [
             // Status header — connected dot + name + live timer (Figma top).
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: AppSpacing.s12),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 10, vertical: AppSpacing.s12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -183,141 +165,64 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       Container(
                         width: AppSpacing.s8,
                         height: AppSpacing.s8,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: context.c.primaryNormal,
+                          color: _connectedDot,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s12),
                       Text(
                         'Connected',
-                        style: AppType.label1.r
-                            .copyWith(color: context.c.labelNormal),
+                        style: AppType.label1.r.copyWith(color: _subtle),
                       ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
                     selectedChar?.name ?? characterName(characterId),
-                    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+                    style: AppType.body1.sb.copyWith(color: Colors.white),
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
                     _formatted(elapsed),
-                    style: AppType.label1.r
-                        .copyWith(color: context.c.labelNormal),
+                    style: AppType.label1.r.copyWith(color: _subtle),
                   ),
                 ],
               ),
             ),
-            // Avatar (120) inside a teal ring (140), centered.
+            // Large full-width avatar feed (FaceTime video area). The live
+            // talking avatar cover-fits the band; other characters show their
+            // static portrait cover-fitted.
             Expanded(
-              child: Center(
-                child: Container(
-                  width: AppSpacing.s140,
-                  height: AppSpacing.s140,
-                  decoration: const BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: _avatarRing, // ring (Figma dark teal)
-                  ),
-                  alignment: Alignment.center,
-                  child: ClipOval(
-                    child: SizedBox(
-                      width: AppSpacing.s120,
-                      height: AppSpacing.s120,
-                      // Live talking avatar for the beaver (mouth cross-fades to
-                      // the call audio; blinks + breathes). Static portrait for
-                      // other characters.
-                      child: avatarDir != null
-                          ? BeaverAvatar(
-                              assetDir: avatarDir,
-                              level: callNotifier.avatarLevel,
-                              speaking: callNotifier.avatarSpeaking,
-                              emotion: callNotifier.avatarEmotion,
-                            )
-                          : DecoratedBox(
-                              decoration: BoxDecoration(
-                                color: context.c.backgroundNormalAlternative,
-                                image: DecorationImage(
-                                  image: partnerImage,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                    ),
-                  ),
+              child: SizedBox(
+                width: double.infinity,
+                child: avatarDir != null
+                    ? BeaverAvatar(
+                        assetDir: avatarDir,
+                        level: callNotifier.avatarLevel,
+                        speaking: callNotifier.avatarSpeaking,
+                        emotion: callNotifier.avatarEmotion,
+                        shape: callNotifier.avatarShape,
+                      )
+                    : Image(image: partnerImage, fit: BoxFit.cover),
+              ),
+            ),
+            // Beaver's live subtitle (Figma bold white line). The translation
+            // line below it in the design has no server field yet, so only the
+            // real line is rendered (no fabricated text).
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.s24, AppSpacing.s16, AppSpacing.s24, AppSpacing.s8),
+              child: Text(
+                beaverSubtitle,
+                textAlign: TextAlign.center,
+                style: AppType.body1.sb.copyWith(
+                  color: Colors.white,
+                  height: 1.5,
                 ),
               ),
             ),
-            // Caption zone: the beaver's live subtitle (server `output_transcript`)
-            // when subtitles are on, else the speaking equalizer (Figma 자막on/off
-            // variants). The subtitle shows only when a real line has arrived — no
-            // hardcoded placeholder, so a fake line never appears mid-call
-            // (QA: "통화 시 beaver의 자막 오류"; the stub translation line was removed).
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s32, AppSpacing.s16, AppSpacing.s32, 0),
-              child: subtitleOn
-                  ? Text(
-                      beaverSubtitle,
-                      textAlign: TextAlign.center,
-                      style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
-                    )
-                  : const Center(child: SpeakingEqualizer()),
-            ),
-            // Hint card (Figma `card/hint`) — only when hints are enabled and a
-            // hint has arrived (question turns only; may never arrive → no card).
-            if (hintOn && hint != null)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s32, AppSpacing.s24, AppSpacing.s32, 0),
-                child: HintCard(
-                  examples: hint.examples,
-                  revealed: _revealedTurnId == hint.turnId,
-                  index: _suggestionIndex,
-                  onReveal: () {
-                    // First reveal only: mark it and signal the server exactly
-                    // once (it downgrades this turn's learning evidence).
-                    setState(() => _revealedTurnId = hint.turnId);
-                    ref
-                        .read(normalCallControllerProvider.notifier)
-                        .sendHintUsed(hint.turnId);
-                  },
-                  onCycle: () => setState(() => _suggestionIndex =
-                      (_suggestionIndex + 1) % hint.examples.length),
-                  // btn/speak deferred: no in-call TTS source wired yet.
-                ),
-              ),
-            // Hint / subtitle toggles (Figma `Frame 1707484597`, right-aligned).
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s32, AppSpacing.s24, AppSpacing.s32, 0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  CallToggleButton(
-                    icon: AppIcons.lightbulb,
-                    active: hintOn,
-                    activeFill: context.c.accentActive,
-                    semanticLabel: 'Hint',
-                    onChanged: (v) => ref
-                        .read(normalCallControllerProvider.notifier)
-                        .setHintOn(v),
-                  ),
-                  const SizedBox(width: AppSpacing.s8),
-                  CallToggleButton(
-                    icon: AppIcons.cc,
-                    active: subtitleOn,
-                    activeFill: context.c.backgroundNormalAlternative,
-                    semanticLabel: 'Subtitle',
-                    onChanged: (v) => ref
-                        .read(normalCallControllerProvider.notifier)
-                        .setSubtitleOn(v),
-                  ),
-                ],
-              ),
-            ),
-            // End-call button — red 60px circular hang-up (Figma `2296:26249`).
+            // End-call button — red 60px circular hang-up (Figma `#FA2838`).
             SizedBox(
               height: 96,
               child: Center(
@@ -325,7 +230,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   button: true,
                   label: l10n.endCall,
                   child: Material(
-                    color: context.c.accentBackgroundRed,
+                    color: const Color(0xFFFA2838),
                     shape: const CircleBorder(),
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
@@ -336,11 +241,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         height: AppSpacing.s60,
                         child: Center(
                           child: AppIcons.callEnd(
-                            // Always white on the red end-call button —
-                            // staticWhite, not labelStrong (which is #000 in
-                            // Light and would vanish on the red).
                             size: 32,
-                            color: context.c.staticWhite,
+                            color: Colors.white,
                           ),
                         ),
                       ),
