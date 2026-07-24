@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:record/record.dart';
-import 'package:vosk_flutter_2/vosk_flutter_2.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/network/ws_url.dart';
 import '../domain/speech_matcher.dart';
 import 'curated_word_source.dart';
 
@@ -14,64 +16,57 @@ enum SttStatus {
   /// Never initialized.
   idle,
 
-  /// Loading / downloading the Vosk model.
+  /// Preparing (checking platform/auth before the first capture).
   loading,
 
-  /// Model + recognizer ready, not yet capturing.
+  /// STT is usable but not capturing.
   ready,
 
-  /// Capturing mic PCM and feeding the recognizer.
+  /// Capturing mic PCM, streaming it to the server, feeding transcripts back.
   listening,
 
-  /// STT can't run here (web, iOS-unsupported plugin, no model, denied mic) —
+  /// STT can't run here (web, no auth token, denied mic, connection failure) —
   /// callers must fall back to tap input.
   unavailable,
 }
 
-/// On-device Korean speech recognition for the Pronunciation Challenge.
+/// Server-side Korean speech recognition for the Pronunciation Challenge.
 ///
-/// ## Single-mic-tap architecture (why Vosk, not `speech_to_text`)
-/// The platform speech recognizers (Android `SpeechRecognizer` / iOS
-/// `SFSpeechRecognizer`) own the microphone **exclusively**, so STT and audio
-/// recording cannot coexist. Vosk instead accepts raw PCM via
-/// [Recognizer.acceptWaveformBytes], so **one** mic capture can fan out:
+/// ## Server STT over a single mic PCM capture (was: on-device Vosk)
+/// Recognition runs on the backend: the app opens **one** mic capture
+/// (`FlutterSoundRecorder`, PCM16 mono 16 kHz — the exact pipeline the
+/// normalcall feature uses) and streams the raw PCM to the STT WebSocket. The
+/// server streams partial/final transcripts back, which drive the same
+/// [SpeechMatcher] token-consumption + card-matching logic as before. There is
+/// no model download and no iOS-unsupported plugin path.
 ///
 /// ```
-/// AudioRecorder.startStream (16 kHz mono PCM16)
-///    ├─→ Vosk recognizer.acceptWaveformBytes → partial/final → token match
-///    └─→ (future) audio track for video muxing  ← see ChallengeCameraService
+/// FlutterSoundRecorder.startRecorder(toStream, PCM16/16k)
+///    └─→ WebSocket(/api/v1/pron/stt/ws) → {partial|final}.text → token match
 /// ```
 ///
-/// Because *we* own the stream there is no 60-second session cut-off or re-arm
-/// dead-zone that the platform recognizers suffer (plan §D-1 / D-4.5).
+/// ## Protocol (see server `pron_stt.py` / `stt_session.py`)
+/// * connect: `wss://…/api/v1/pron/stt/ws?token=<Supabase access token>`
+/// * client → server: first text `{"type":"config","words":[…],"sampleRate":16000}`,
+///   then binary PCM16 frames, optional `{"type":"stop"}`.
+/// * server → client: `{"type":"ready"}` / `{"type":"partial","text":…}` /
+///   `{"type":"final","text":…}` / `{"type":"error","error":…}` (all text JSON).
 ///
 /// ## Graceful degradation
-/// Every failure path (web, unsupported platform, model download failure,
-/// denied mic) resolves to [SttStatus.unavailable] and returns `false` rather
-/// than throwing — the screen then keeps the tap-to-pass fallback. The game is
-/// always playable.
+/// Every failure path (web, missing auth token, denied mic, connection/socket
+/// error, server `error` event) resolves to [SttStatus.unavailable] and returns
+/// `false` rather than throwing — the screen then keeps the tap-to-pass
+/// fallback. The game is always playable, even offline or with the server down.
 class SttService {
   /// Creates the service. Inject a [matcher] for tests.
   SttService({SpeechMatcher? matcher}) : _matcher = matcher ?? SpeechMatcher();
 
-  /// Korean small model (~82 MB). Downloaded on first use and cached under the
-  /// app documents dir by [ModelLoader].
-  ///
-  /// TODO(device): consider bundling this as an asset and switching to
-  /// `ModelLoader().loadFromAssets(...)` to remove the first-run download; the
-  /// download path is used here because no device is available to verify a
-  /// bundled asset. The ~82 MB download must be verified on a real network.
-  static const String koModelUrl =
-      'https://alphacephei.com/vosk/models/vosk-model-small-ko-0.22.zip';
-
-  /// Recognizer sample rate — must match the [RecordConfig.sampleRate].
+  /// PCM sample rate sent to the recorder and advertised in the STT `config`
+  /// (server transcodes as needed). Matches normalcall's 16 kHz capture.
   static const int sampleRate = 16000;
 
-  /// Consecutive [_pump] failures (recognizer throwing on
-  /// `acceptWaveformBytes`/`getResult`) tolerated before we give up on STT
-  /// for this session and flip [status] to [SttStatus.unavailable] so the
-  /// screen re-arms tap input.
-  static const int _maxPumpFailures = 5;
+  /// How long to wait for the WebSocket handshake before giving up (→ tap).
+  static const Duration _connectTimeout = Duration(seconds: 6);
 
   final SpeechMatcher _matcher;
 
@@ -83,39 +78,34 @@ class SttService {
   /// Smoothed 0..1 mic level for the on-screen indicator.
   final ValueNotifier<double> micLevel = ValueNotifier<double>(0);
 
-  /// Wired to `ChallengeEngine.tryPassToken` by the controller: attempts to
-  /// pass a card for a normalized spoken token, returning `true` on a match.
+  /// Wired to `ChallengeEngine.tryPassToken` by the screen: attempts to pass a
+  /// card for a normalized spoken token, returning `true` on a match.
   bool Function(String token)? onToken;
 
-  VoskFlutterPlugin? _plugin;
-  Model? _model;
-  Recognizer? _recognizer;
-  AudioRecorder? _recorder;
-  StreamSubscription<Uint8List>? _sub;
-  final BytesBuilder _buffer = BytesBuilder(copy: false);
+  FlutterSoundRecorder? _recorder;
+  StreamController<Uint8List>? _micController;
+  StreamSubscription<Uint8List>? _micSub;
 
-  /// The currently in-flight [_pump] call, if any. `stopListening`/`dispose`/
-  /// `startListening` must await this before touching the shared
-  /// [_recognizer] — otherwise they race a pump that's mid-`await` on
-  /// `acceptWaveformBytes`.
-  Future<void>? _pumpFuture;
+  WebSocketChannel? _channel;
+  StreamSubscription<dynamic>? _wsSub;
 
-  /// Consecutive pump failures since the last success; reset on a clean pump
-  /// and on every [startListening]. See [_maxPumpFailures].
-  int _pumpFailures = 0;
+  /// True once we've asked the socket to close (stop/dispose), so its `onDone`
+  /// isn't mistaken for an unexpected mid-round drop.
+  bool _expectClose = false;
+
   bool _disposed = false;
 
-  /// Guards concurrent [init] calls (e.g. a fast double tap on Start) so we
-  /// never build two Models/Recognizers and leak one.
+  /// Guards concurrent [init] calls (e.g. a fast double tap on Start).
   Future<bool>? _initFuture;
 
-  /// Whether the recognizer is ready (or already listening).
+  /// Whether STT is ready (or already listening).
   bool get isAvailable =>
       status.value == SttStatus.ready || status.value == SttStatus.listening;
 
-  /// Loads the model and builds the recognizer. Returns `true` when STT is
-  /// usable; `false` (with [status] == [SttStatus.unavailable]) to signal the
-  /// caller to use tap input. Never throws.
+  /// Lightweight readiness check (no model to download anymore). Returns `true`
+  /// when STT can be attempted; `false` (with [status] == [SttStatus.unavailable])
+  /// to signal the caller to use tap input. Never throws. The actual socket +
+  /// mic are opened per round in [startListening].
   Future<bool> init() {
     final inFlight = _initFuture;
     if (inFlight != null) return inFlight;
@@ -127,201 +117,248 @@ class SttService {
 
   Future<bool> _initInternal() async {
     if (_disposed) return false;
-    // Web has no dart:io/FFI — Vosk can't run. (Web could use the Web Speech
-    // API, but that's out of scope; the screen falls back to tap.)
+    // Web: no flutter_sound recorder — the screen falls back to tap.
     if (kIsWeb) {
       status.value = SttStatus.unavailable;
       return false;
     }
-    if (_recognizer != null) {
-      status.value = SttStatus.ready;
-      return true;
-    }
     status.value = SttStatus.loading;
-    try {
-      final modelPath = await ModelLoader().loadFromNetwork(koModelUrl);
-      // NOTE: VoskFlutterPlugin supports Android (method channel) and
-      // Linux/Windows (FFI). iOS is NOT supported by vosk_flutter_2 and throws
-      // here → caught below → tap fallback. Must verify an iOS STT story.
-      _plugin = VoskFlutterPlugin.instance();
-      _model = await _plugin!.createModel(modelPath);
-      // Constrain recognition to the game vocabulary for much higher accuracy
-      // on isolated words. Falls back to open recognition if grammar is
-      // unsupported by the model.
-      try {
-        _recognizer = await _plugin!.createRecognizer(
-          model: _model!,
-          sampleRate: sampleRate,
-          grammar: <String>[...CuratedWordSource.words, '[unk]'],
-        );
-      } catch (_) {
-        _recognizer = await _plugin!.createRecognizer(
-          model: _model!,
-          sampleRate: sampleRate,
-        );
-      }
-      if (_disposed) return false;
-      status.value = SttStatus.ready;
-      return true;
-    } catch (e) {
-      debugPrint('SttService.init failed → tap fallback: $e');
+    // Need a Supabase session to authenticate the STT socket; without one the
+    // server closes with 1008, so degrade to tap up-front.
+    final token = _authToken();
+    if (token == null || token.isEmpty) {
+      debugPrint('SttService.init: no auth token → tap fallback');
       status.value = SttStatus.unavailable;
       return false;
     }
+    status.value = SttStatus.ready;
+    return true;
   }
 
-  /// Starts a single 16 kHz mono PCM capture feeding the recognizer. Returns
-  /// `false` (→ tap fallback) if unavailable or the mic is denied.
+  /// Opens the STT socket and a single 16 kHz mono PCM capture feeding it.
+  /// Returns `false` (→ tap fallback) if unavailable, the mic is denied, or the
+  /// socket can't be established. Never throws.
   Future<bool> startListening() async {
-    if (_disposed || _recognizer == null) return false;
-    // A previous session's pump may still be mid-flight (e.g. a fast
-    // stop→start); let it settle before touching the shared recognizer.
-    await _settlePump();
-    _pumpFailures = 0;
+    if (_disposed || kIsWeb) return false;
+    if (status.value == SttStatus.unavailable) return false;
+    // A previous round's socket/recorder may still be around (fast stop→start).
+    await _closePipeline();
     _matcher.reset();
+
+    final token = _authToken();
+    if (token == null || token.isEmpty) {
+      status.value = SttStatus.unavailable;
+      return false;
+    }
+
+    // Mic permission (same gate as normalcall). Denied → tap fallback.
     try {
-      await _recognizer!.reset();
-    } catch (_) {}
-    _recorder ??= AudioRecorder();
-    try {
-      if (!await _recorder!.hasPermission()) {
+      final micStatus = await Permission.microphone.request();
+      if (!micStatus.isGranted) {
         status.value = SttStatus.unavailable;
         return false;
       }
-      final stream = await _recorder!.startStream(
-        const RecordConfig(
-          encoder: AudioEncoder.pcm16bits,
-          sampleRate: sampleRate,
-          numChannels: 1,
-        ),
-      );
-      _buffer.clear();
-      _sub = stream.listen(
-        _onPcm,
-        onError: (Object e) => debugPrint('mic stream error: $e'),
-      );
-      status.value = SttStatus.listening;
-      return true;
     } catch (e) {
-      debugPrint('SttService.startListening failed → tap fallback: $e');
+      debugPrint('SttService: mic permission check failed → tap fallback: $e');
       status.value = SttStatus.unavailable;
       return false;
     }
-  }
+    if (_disposed) return false;
 
-  /// Stops the capture and flushes the recognizer. Idempotent.
-  Future<void> stopListening() async {
-    await _sub?.cancel();
-    _sub = null;
+    // Connect the STT WebSocket and wait for the handshake so a dead/unreachable
+    // server degrades to tap *before* the round starts (rather than mid-round).
+    _expectClose = false;
+    WebSocketChannel? channel;
     try {
-      await _recorder?.stop();
-    } catch (_) {}
-    // Cancelling the sub stops new pumps from being kicked off, but one may
-    // already be mid-`await` on acceptWaveformBytes — let it finish before
-    // calling getFinalResult()/reset() on the same recognizer.
-    await _settlePump();
-    _buffer.clear();
-    micLevel.value = 0;
-    if (_recognizer != null) {
+      channel = WebSocketChannel.connect(Uri.parse(pronSttWsUrl(token)));
+      await channel.ready.timeout(_connectTimeout);
+    } catch (e) {
+      debugPrint('SttService: STT connect failed → tap fallback: $e');
       try {
-        await _recognizer!.getFinalResult();
-        await _recognizer!.reset();
+        await channel?.sink.close();
       } catch (_) {}
-      if (!_disposed && status.value == SttStatus.listening) {
-        status.value = SttStatus.ready;
-      }
+      status.value = SttStatus.unavailable;
+      return false;
     }
-    _matcher.reset();
+    if (_disposed) {
+      try {
+        await channel.sink.close();
+      } catch (_) {}
+      return false;
+    }
+    _channel = channel;
+    _wsSub = channel.stream.listen(
+      _onWsData,
+      onError: _onWsError,
+      onDone: _onWsDone,
+      cancelOnError: false,
+    );
+
+    // First frame must be the config (words = game vocabulary as phrase hints).
+    _send(<String, dynamic>{
+      'type': 'config',
+      'words': CuratedWordSource.words,
+      'sampleRate': sampleRate,
+    });
+
+    // Start the mic capture (PCM16/16k) and stream it to the socket.
+    try {
+      await _startMic();
+    } catch (e) {
+      debugPrint('SttService.startListening: mic open failed → tap: $e');
+      await _closePipeline();
+      status.value = SttStatus.unavailable;
+      return false;
+    }
+    if (_disposed) {
+      await _closePipeline();
+      return false;
+    }
+    status.value = SttStatus.listening;
+    return true;
   }
 
+  /// Stops the capture and closes the socket. Idempotent. Leaves [status] at
+  /// [SttStatus.ready] (not [unavailable]) so a replay can re-arm STT.
+  Future<void> stopListening() async {
+    _expectClose = true;
+    // Ask the server to finalize, then tear the pipeline down.
+    _send(<String, dynamic>{'type': 'stop'});
+    await _closePipeline();
+    micLevel.value = 0;
+    _matcher.reset();
+    if (!_disposed && status.value == SttStatus.listening) {
+      status.value = SttStatus.ready;
+    }
+  }
+
+  /// Opens the recorder and pipes its PCM16/16k stream straight to the socket —
+  /// the same capture normalcall uses (`FlutterSoundRecorder` → `toStream`).
+  Future<void> _startMic() async {
+    final controller = StreamController<Uint8List>();
+    _micController = controller;
+    _micSub = controller.stream.listen(
+      _onPcm,
+      onError: (Object e) => debugPrint('mic stream error: $e'),
+    );
+    final recorder = FlutterSoundRecorder();
+    _recorder = recorder;
+    await recorder.openRecorder();
+    await recorder.startRecorder(
+      toStream: controller.sink,
+      codec: Codec.pcm16,
+      sampleRate: sampleRate,
+      numChannels: 1,
+      enableVoiceProcessing: true,
+      enableEchoCancellation: true,
+    );
+  }
+
+  /// Forwards a mic PCM chunk to the socket and updates the on-screen level.
   void _onPcm(Uint8List data) {
     _updateMicLevel(data);
-    _buffer.add(data);
-    // Only one _pump may be in flight at a time (ordering); track it so
-    // stop/dispose/start can wait for it instead of racing the recognizer.
-    _pumpFuture ??= _pump();
-  }
-
-  /// Awaits any in-flight [_pump] before the caller touches the shared
-  /// [_recognizer]. [_pump] never throws (it catches its own errors), but the
-  /// try/catch here is defensive.
-  Future<void> _settlePump() async {
-    final pending = _pumpFuture;
-    if (pending == null) return;
+    final ch = _channel;
+    if (ch == null) return;
     try {
-      await pending;
-    } catch (_) {}
-  }
-
-  /// Drains the PCM buffer through the recognizer sequentially (one in-flight
-  /// [Recognizer.acceptWaveformBytes] at a time to preserve ordering).
-  Future<void> _pump() async {
-    if (_recognizer == null) return;
-    try {
-      while (_buffer.length > 0 && !_disposed) {
-        final chunk = _buffer.takeBytes(); // returns + clears
-        final done = await _recognizer!.acceptWaveformBytes(chunk);
-        final json = done
-            ? await _recognizer!.getResult()
-            : await _recognizer!.getPartialResult();
-        final text = _extractText(json, isFinal: done);
-        if (text.isNotEmpty) {
-          _matcher.feed(
-            text,
-            isFinal: done,
-            attempt: (String t) => onToken?.call(t) ?? false,
-          );
-        } else if (done) {
-          // Reset per-utterance bookkeeping on an empty final.
-          _matcher.feed('', isFinal: true, attempt: (_) => false);
-        }
-      }
-      _pumpFailures = 0;
-    } catch (e) {
-      _pumpFailures++;
-      debugPrint(
-        'vosk feed error ($_pumpFailures/$_maxPumpFailures): $e',
-      );
-      if (_pumpFailures >= _maxPumpFailures) {
-        debugPrint(
-          'SttService: $_maxPumpFailures consecutive pump failures → '
-          'stopping STT, tap fallback re-arms',
-        );
-        unawaited(_failListening());
-      }
-    } finally {
-      _pumpFuture = null;
+      ch.sink.add(data);
+    } catch (_) {
+      // Socket already closing; ignore.
     }
   }
 
-  /// Watchdog trip: the recognizer is no longer usable mid-round. Stops
-  /// capture and flips [status] to [SttStatus.unavailable] — the same signal
-  /// used everywhere else in this class to mean "fall back to tap input" —
-  /// so the screen (listening to [status]) can re-arm the tap fallback.
-  Future<void> _failListening() async {
-    await _sub?.cancel();
-    _sub = null;
+  /// Handles inbound WS frames. The server only sends text JSON (control +
+  /// transcripts); any binary is ignored.
+  void _onWsData(dynamic data) {
+    if (data is String) _handleControl(data);
+  }
+
+  /// Parses and dispatches a server STT event.
+  void _handleControl(String text) {
+    Map<String, dynamic> msg;
     try {
-      await _recorder?.stop();
-    } catch (_) {}
-    _buffer.clear();
+      final decoded = jsonDecode(text);
+      if (decoded is! Map<String, dynamic>) return;
+      msg = decoded;
+    } catch (_) {
+      return;
+    }
+    switch (msg['type'] as String?) {
+      case 'ready':
+        // STT stream is up; audio already flowing. Nothing to do.
+        break;
+      case 'partial':
+        _onTranscript(msg['text'], isFinal: false);
+      case 'final':
+        _onTranscript(msg['text'], isFinal: true);
+      case 'error':
+        debugPrint('SttService: server error → tap fallback: ${msg['error']}');
+        unawaited(_failListening());
+      default:
+        break;
+    }
+  }
+
+  /// Feeds a partial/final transcript into the matcher (unchanged token logic).
+  void _onTranscript(Object? raw, {required bool isFinal}) {
+    final text = raw is String ? raw.trim() : '';
+    if (text.isNotEmpty) {
+      _matcher.feed(
+        text,
+        isFinal: isFinal,
+        attempt: (String t) => onToken?.call(t) ?? false,
+      );
+    } else if (isFinal) {
+      // Reset per-utterance bookkeeping on an empty final.
+      _matcher.feed('', isFinal: true, attempt: (_) => false);
+    }
+  }
+
+  /// Unexpected socket close mid-round → re-arm tap input.
+  void _onWsDone() {
+    if (_expectClose || _disposed) return;
+    debugPrint('SttService: STT socket closed mid-round → tap fallback');
+    unawaited(_failListening());
+  }
+
+  /// Transport error → re-arm tap input (unless we're already closing).
+  void _onWsError(Object error) {
+    if (_expectClose || _disposed) return;
+    debugPrint('SttService: STT socket error → tap fallback: $error');
+    unawaited(_failListening());
+  }
+
+  /// Watchdog trip: STT is no longer usable mid-round. Tears the pipeline down
+  /// and flips [status] to [SttStatus.unavailable] — the signal the screen
+  /// listens for to re-arm tap input.
+  Future<void> _failListening() async {
+    await _closePipeline();
     micLevel.value = 0;
     if (!_disposed) {
       status.value = SttStatus.unavailable;
     }
   }
 
-  /// Extracts the transcript from a Vosk result JSON (`{"partial":...}` for
-  /// partials, `{"text":...}` for finals).
-  String _extractText(String jsonStr, {required bool isFinal}) {
+  /// Closes the recorder + socket without disposing the notifiers, so a replay
+  /// (or the failure→tap path) leaves the service reusable.
+  Future<void> _closePipeline() async {
+    await _micSub?.cancel();
+    _micSub = null;
     try {
-      final decoded = jsonDecode(jsonStr);
-      if (decoded is Map) {
-        final v = isFinal ? decoded['text'] : decoded['partial'];
-        if (v is String) return v.trim();
-      }
+      await _recorder?.stopRecorder();
     } catch (_) {}
-    return '';
+    try {
+      await _recorder?.closeRecorder();
+    } catch (_) {}
+    _recorder = null;
+    await _micController?.close();
+    _micController = null;
+
+    await _wsSub?.cancel();
+    _wsSub = null;
+    try {
+      await _channel?.sink.close();
+    } catch (_) {}
+    _channel = null;
   }
 
   void _updateMicLevel(Uint8List data) {
@@ -338,22 +375,25 @@ class SttService {
     micLevel.value = micLevel.value * 0.6 + level * 0.4;
   }
 
-  /// Releases the recorder + recognizer + notifiers.
+  String? _authToken() =>
+      Supabase.instance.client.auth.currentSession?.accessToken;
+
+  /// Encodes and sends a control JSON frame if the socket is open.
+  void _send(Map<String, dynamic> msg) {
+    final ch = _channel;
+    if (ch == null) return;
+    try {
+      ch.sink.add(jsonEncode(msg));
+    } catch (_) {
+      // Socket already closing; ignore.
+    }
+  }
+
+  /// Releases the recorder + socket + notifiers.
   Future<void> dispose() async {
     _disposed = true;
-    await _sub?.cancel();
-    try {
-      await _recorder?.stop();
-    } catch (_) {}
-    // Let any in-flight pump finish its current acceptWaveformBytes/getResult
-    // call before disposing the recognizer out from under it.
-    await _settlePump();
-    try {
-      await _recorder?.dispose();
-    } catch (_) {}
-    try {
-      await _recognizer?.dispose();
-    } catch (_) {}
+    _expectClose = true;
+    await _closePipeline();
     status.dispose();
     micLevel.dispose();
   }

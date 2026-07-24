@@ -22,9 +22,10 @@ enum CameraStatus {
 /// ## Mic coexistence
 /// The controller is created with `enableAudio: false` **on purpose**: a
 /// preview-only camera must NOT open the microphone, otherwise it would contend
-/// with [SttService]'s PCM capture (Android `AudioRecord` / iOS `AVAudioSession`
-/// only cleanly allow one mic owner). With audio off, the camera preview and
-/// Vosk's mic stream coexist.
+/// with the STT service's PCM capture (Android `AudioRecord` / iOS
+/// `AVAudioSession` only cleanly allow one mic owner). The STT service now grabs
+/// the mic directly (`FlutterSoundRecorder` → server STT WebSocket), so keeping
+/// camera audio off lets the preview and that mic stream coexist.
 ///
 /// ## Video recording (deliberately NOT wired here — see the screen's TODO)
 /// True "record the composited gameplay canvas + selfie + voice to MP4" needs a
@@ -81,7 +82,7 @@ class ChallengeCameraService {
       final controller = CameraController(
         front,
         ResolutionPreset.medium,
-        enableAudio: false, // ← keep the mic free for Vosk (see class doc)
+        enableAudio: false, // ← keep the mic free for STT capture (see class doc)
       );
       await controller.initialize();
       if (_disposed) {

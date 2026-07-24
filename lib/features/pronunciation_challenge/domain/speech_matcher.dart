@@ -4,8 +4,9 @@ import 'matcher.dart';
 /// web game's `handleTranscript` + `tryPass` (`pronunciation-challenge.html`
 /// lines 305–350).
 ///
-/// Vosk (like the Web Speech API it replaces) emits a *growing* partial
-/// transcript many times per utterance (`"안녕"`, `"안녕 하세요"`, …). Without
+/// Server STT (like the Vosk / Web Speech recognizers it replaces) emits a
+/// *growing* partial transcript many times per utterance (`"안녕"`,
+/// `"안녕 하세요"`, …). Without
 /// bookkeeping, every partial would re-attempt already-spoken words and a
 /// single utterance could sweep several cards. This class tracks:
 ///

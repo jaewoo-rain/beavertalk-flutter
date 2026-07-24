@@ -30,9 +30,10 @@ enum _Phase { start, loading, countdown, playing, result }
 
 /// Pronunciation Challenge — a Ticker + CustomPainter mini-game.
 ///
-/// PHASE 2/3: live Korean STT (Vosk over a single mic PCM capture) is the
-/// primary input, with tap-to-pass kept as a fallback when STT is unavailable
-/// (web / iOS-unsupported plugin / model download failure / denied mic). A
+/// PHASE 2/3: live Korean STT (server STT over a single mic PCM capture streamed
+/// to the `/pron/stt/ws` WebSocket) is the primary input, with tap-to-pass kept
+/// as a fallback when STT is unavailable (web / no auth token / denied mic /
+/// connection failure). A
 /// front-camera selfie backdrop sits behind the canvas when available; the
 /// result panel shares a branded score-card image via `share_plus`.
 ///
