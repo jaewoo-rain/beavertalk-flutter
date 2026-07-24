@@ -11,7 +11,7 @@ import '../../theme/app_typography.dart';
 /// Payment success — Figma `screen/main_payment_result__success`
 /// (`2117:20454`).
 ///
-/// A centered success illustration (✅ stand-in for the Figma 3D asset — mock),
+/// A centered 100×100 3D success illustration (`assets/icons/3d/check_1.png`),
 /// a "결제가 완료되었어요" heading + sub copy, and a receipt card listing the
 /// 상품 / 결제 금액 / 결제 수단 / 결제 일시. The bottom is the Figma
 /// `two-button-row`: a secondary "홈으로" and a primary "보관함 보기"; both
@@ -46,7 +46,9 @@ class PaymentCompleteScreen extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          const _ResultIllustration(emoji: '✅'),
+                          const _ResultIllustration(
+                            asset: 'assets/icons/3d/check_1.png',
+                          ),
                           const SizedBox(height: 24),
                           Text(
                             l10n.paymentCompleteTitle,
@@ -170,26 +172,18 @@ class _ReceiptRow extends StatelessWidget {
   }
 }
 
-/// A 100×100 result illustration tile — emoji stand-in for the Figma 3D asset
-/// (mock; no asset bundled).
+/// The 100×100 result illustration (Figma `3D/location`, `281:20343`). Per v3
+/// the 3D object stands alone on the screen background — it has no tile behind
+/// it, so the asset is rendered bare at its designed 100×100 box.
 class _ResultIllustration extends StatelessWidget {
-  const _ResultIllustration({required this.emoji});
+  const _ResultIllustration({required this.asset});
 
-  final String emoji;
+  final String asset;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: context.c.backgroundNormalAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.lg),
-        ),
-        alignment: Alignment.center,
-        child: Text(emoji, style: const TextStyle(fontSize: 56)),
-      ),
+      child: Image.asset(asset, width: 100, height: 100, fit: BoxFit.contain),
     );
   }
 }
