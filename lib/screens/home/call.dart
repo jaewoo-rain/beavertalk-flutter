@@ -11,6 +11,7 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/normalcall/presentation/video_avatar.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_spacing.dart';
@@ -190,67 +191,67 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ],
               ),
             ),
-            // Large full-width avatar feed (FaceTime video area). The live
-            // talking avatar cover-fits the band; other characters show their
-            // static portrait cover-fitted.
-            Expanded(
-              child: SizedBox(
-                width: double.infinity,
-                child: avatarDir != null
-                    ? BeaverAvatar(
+            const Spacer(flex: 3),
+            // Avatar band — a full-width, contained "video feed" (Figma `image
+            // 1`: a bounded band with dark space above and below, not a
+            // full-height fill). The neural talking clips play here.
+            SizedBox(
+              width: double.infinity,
+              height: MediaQuery.of(context).size.height * 0.35,
+              child: avatarDir != null
+                  ? VideoAvatar(
+                      assetDir: avatarDir,
+                      speaking: callNotifier.avatarSpeaking,
+                      // Until the neural clips load (or for characters that ship
+                      // only sprites) fall back to the rigged avatar.
+                      fallback: BeaverAvatar(
                         assetDir: avatarDir,
                         level: callNotifier.avatarLevel,
                         speaking: callNotifier.avatarSpeaking,
                         emotion: callNotifier.avatarEmotion,
                         shape: callNotifier.avatarShape,
-                      )
-                    : Image(image: partnerImage, fit: BoxFit.cover),
-              ),
+                      ),
+                    )
+                  : Image(image: partnerImage, fit: BoxFit.cover),
             ),
-            // Beaver's live subtitle (Figma bold white line). The translation
+            const Spacer(flex: 1),
+            // Subtitle — beaver's live line (Figma bold white). The translation
             // line below it in the design has no server field yet, so only the
-            // real line is rendered (no fabricated text).
+            // real line renders (no fabricated text).
             Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s24, AppSpacing.s16, AppSpacing.s24, AppSpacing.s8),
+              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
               child: Text(
                 beaverSubtitle,
                 textAlign: TextAlign.center,
-                style: AppType.body1.sb.copyWith(
-                  color: Colors.white,
-                  height: 1.5,
-                ),
+                style:
+                    AppType.body1.sb.copyWith(color: Colors.white, height: 1.5),
               ),
             ),
+            const Spacer(flex: 3),
             // End-call button — red 60px circular hang-up (Figma `#FA2838`).
-            SizedBox(
-              height: 96,
-              child: Center(
-                child: Semantics(
-                  button: true,
-                  label: l10n.endCall,
-                  child: Material(
-                    color: const Color(0xFFFA2838),
-                    shape: const CircleBorder(),
-                    clipBehavior: Clip.antiAlias,
-                    child: InkWell(
-                      customBorder: const CircleBorder(),
-                      onTap: _confirmEnd,
-                      child: SizedBox(
-                        width: AppSpacing.s60,
-                        height: AppSpacing.s60,
-                        child: Center(
-                          child: AppIcons.callEnd(
-                            size: 32,
-                            color: Colors.white,
-                          ),
-                        ),
+            Center(
+              child: Semantics(
+                button: true,
+                label: l10n.endCall,
+                child: Material(
+                  color: const Color(0xFFFA2838),
+                  shape: const CircleBorder(),
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    customBorder: const CircleBorder(),
+                    onTap: _confirmEnd,
+                    child: SizedBox(
+                      width: AppSpacing.s60,
+                      height: AppSpacing.s60,
+                      child: Center(
+                        child: AppIcons.callEnd(size: 32, color: Colors.white),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
+            const SizedBox(height: AppSpacing.s24),
           ],
         ),
       ),

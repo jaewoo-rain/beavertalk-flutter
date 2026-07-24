@@ -94,6 +94,8 @@ dependencies:
   country_flags: ^4.1.2
   record: ^7.1.1
   camera: ^0.12.0+1
+  # 영상통화 아바타 — 뉴럴 생성 talking/idle 루프 재생(자연스러운 발화 모션).
+  video_player: ^2.9.2
   path_provider: ^2.1.6
   shared_preferences: ^2.5.5
 
