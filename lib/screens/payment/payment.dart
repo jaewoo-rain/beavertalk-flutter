@@ -93,8 +93,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       selected: _method == m,
                       onTap: () => setState(() => _method = m),
                     ),
+                    // 16, not 12 — v3's Body is a single column with a uniform
+                    // 16 gap between every child, so the method rows sit on the
+                    // same rhythm as the section labels and cards around them.
                     if (m != _PayMethod.values.last)
-                      const SizedBox(height: AppSpacing.s12),
+                      const SizedBox(height: AppSpacing.s16),
                   ],
                   const SizedBox(height: AppSpacing.s16),
                   // ── Amount summary ──
@@ -104,11 +107,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
             ),
           ),
           Padding(
+            // v3 `BottomSheet`: pt 12 / px 20 / pb 0 — the space below the CTA
+            // is the home-indicator inset, which AppScaffold's SafeArea already
+            // supplies. The old 24 stacked on top of it and pushed the button up.
             padding: const EdgeInsets.fromLTRB(
               AppSpacing.s20,
               AppSpacing.s12,
               AppSpacing.s20,
-              AppSpacing.s24,
+              0,
             ),
             child: Button(
               type: BtnType.primaryFill,
@@ -208,7 +214,9 @@ class _MethodRow extends StatelessWidget {
         child: Row(
           children: [
             _RadioMark(selected: selected),
-            const SizedBox(width: AppSpacing.s12),
+            // Figma `Checkbox`: the mark/label gap is 8 — the row's own 12 gap
+            // applies outside the checkbox group, not between its parts.
+            const SizedBox(width: AppSpacing.s8),
             Expanded(
               child: Text(
                 label,
