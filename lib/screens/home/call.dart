@@ -217,6 +217,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                   assetDir: avatarDir,
                                   level: callNotifier.avatarLevel,
                                   speaking: callNotifier.avatarSpeaking,
+                                  emotion: callNotifier.avatarEmotion,
                                   fallback: BeaverAvatar(
                                     assetDir: avatarDir,
                                     level: callNotifier.avatarLevel,

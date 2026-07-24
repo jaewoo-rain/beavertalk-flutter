@@ -1,263 +1,276 @@
-import 'dart:math' as math;
-import 'dart:ui' as ui;
+import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/scheduler.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter/widgets.dart';
+import 'package:video_player/video_player.dart';
 
-/// Lip-synced video-call avatar.
+import 'avatar_view.dart'
+    show kEmotionHappy, kEmotionSurprised, kEmotionSad, kEmotionAngry;
+
+/// Video-call avatar built from neural clips that are *designed* to interlock.
 ///
-/// Every frame comes from ONE neural clip shot with the head locked in place
-/// (measured: mouth-region σ≈18 vs σ≈1.6 everywhere else), so listening,
-/// speaking and blinking all share the exact same head — switching between them
-/// can never make the head jump.
+/// Every clip is generated with the head locked and with its **first and last
+/// frame pinned to the same base pose**, so any clip can follow any other with
+/// no visible seam. Measured on the shipped clips: head/body difference between
+/// clips 0.78/255, boundary frames 0.66–1.21/255 — i.e. the heads are the same
+/// picture, only the face animates.
 ///
-/// - **mouth** — `lip0…lipN` run closed → wide. The live audio envelope is the
-///   *target*; the mouth is moved there by a critically-damped spring with a
-///   speed limit, and the two nearest frames are blended. That is what keeps it
-///   continuous: the mouth travels through the in-between openings instead of
-///   teleporting to whichever frame matches the instantaneous loudness.
-/// - **response** — the spring tracks the envelope directly (no idle→talk mode
-///   cross-fade in the way), so the mouth starts moving the moment audio has
-///   energy, and closes as soon as it stops.
-/// - **blink** — `lipblink0…` composited through `lipmask.png` (the eye region
-///   only), so a blink never disturbs the mouth.
-/// - **life** — subtle sway / tilt / breathing on top, since the source head is
-///   deliberately static.
+/// - `idle.mp4`  — listening: mouth closed, blinks, breathing. Always playing.
+/// - `talk.mp4`  — speaking: mouth talking. Held **paused at frame 0** (mouth
+///   closed) while silent, so the instant the voice is audible it starts from
+///   the top with no seek latency, then loops seamlessly.
+/// - `emo_*.mp4` — speaking with an emotion; loaded on demand and layered above
+///   talk.
+///
+/// Switching is a short cross-fade. Because the heads match and `talk` always
+/// enters on a closed mouth, the fade has nothing visible to blend.
+///
+/// Timing: the trigger is the **audio envelope** (`level`), which the controller
+/// aligns to what is actually audible, so the talking clip starts when the voice
+/// is heard — not when the packet arrives.
 class SyncAvatar extends StatefulWidget {
-  /// Creates the lip-synced avatar for the frames under [assetDir].
+  /// Creates the video avatar for the clips under [assetDir].
   const SyncAvatar({
     super.key,
     required this.assetDir,
     required this.level,
     required this.speaking,
+    required this.emotion,
     this.fallback,
   });
 
-  /// Asset dir holding `lipN.png`, `lipblinkN.png` and `lipmask.png`.
+  /// Asset dir holding `idle.mp4`, `talk.mp4` and optional `emo_*.mp4`.
   final String assetDir;
 
-  /// Live mouth-open level, 0 (silent) .. 1 (loud) — the audio envelope.
+  /// Live audio envelope, 0 (silent) .. 1 (loud) — drives play/stop timing.
   final ValueListenable<double> level;
 
-  /// True while the character is speaking (only tunes blink cadence).
+  /// True while the character holds the turn (keeps talking through pauses).
   final ValueListenable<bool> speaking;
 
-  /// Shown until the frames are ready (and if they fail to load).
+  /// Emotion code (see avatar_view k* constants) → optional reacting clip.
+  final ValueListenable<int> emotion;
+
+  /// Shown until the clips are ready (and if they fail to load).
   final Widget? fallback;
 
   @override
   State<SyncAvatar> createState() => _SyncAvatarState();
 }
 
-class _SyncAvatarState extends State<SyncAvatar>
-    with SingleTickerProviderStateMixin {
-  final List<ui.Image> _lip = [];
-  final List<ui.Image> _blink = [];
-  ui.Image? _eyeMask;
+class _SyncAvatarState extends State<SyncAvatar> {
+  VideoPlayerController? _idle;
+  VideoPlayerController? _talk;
+  VideoPlayerController? _emo;
+  int _emoCode = 0;
+  bool _emoLoading = false;
+
   bool _ready = false;
+  bool _failed = false;
 
-  late final Ticker _ticker;
-  final _st = _AvatarFrame();
-  final _repaint = ValueNotifier<int>(0);
-  final _rng = math.Random();
+  /// Visible layers (cross-faded).
+  double _talkOpacity = 0;
+  double _emoOpacity = 0;
 
-  Duration _last = Duration.zero;
-  double _t = 0;
-  double _nextBlinkAt = 2.0;
-  double _blinkT = -1; // >=0 while a blink plays
+  /// True while the talking clip should be on screen.
+  bool _talking = false;
 
-  /// Mouth spring: ~45ms settle, critically damped, with a speed cap so a sudden
-  /// loud onset still opens fast but never snaps.
-  static const double _omega = 22.0;
-  static const double _maxVel = 130.0; // frame-index units / second
-  static const double _blinkDur = 0.22;
+  /// Debounce closing the mouth so short gaps between words don't flap it.
+  Timer? _stopTimer;
+
+  static const Duration _fadeIn = Duration(milliseconds: 80);
+  static const Duration _fadeOut = Duration(milliseconds: 220);
+
+  /// Envelope above this counts as audible voice. Deliberately low: speech
+  /// onsets ramp up, and waiting for a louder frame pushed the picture ~100ms
+  /// past the sound (perceptible — the tolerance for late video is ~125ms).
+  static const double _onThreshold = 0.004;
+
+  /// Silence this long ends the talking clip.
+  static const Duration _hangover = Duration(milliseconds: 180);
+
+  static const Map<int, String> _emoAsset = {
+    kEmotionHappy: 'emo_happy',
+    kEmotionSurprised: 'emo_surprised',
+    kEmotionSad: 'emo_sad',
+    kEmotionAngry: 'emo_angry',
+  };
 
   @override
   void initState() {
     super.initState();
+    widget.level.addListener(_onLevel);
+    widget.emotion.addListener(_onEmotion);
+    widget.speaking.addListener(_onLevel);
     _load();
-    _ticker = createTicker(_tick)..start();
   }
 
   Future<void> _load() async {
-    for (var i = 0; i < 64; i++) {
-      final img = await _tryDecode('${widget.assetDir}/lip$i.png');
-      if (img == null) break;
-      _lip.add(img);
-    }
-    for (var i = 0; i < 16; i++) {
-      final img = await _tryDecode('${widget.assetDir}/lipblink$i.png');
-      if (img == null) break;
-      _blink.add(img);
-    }
-    _eyeMask = await _tryDecode('${widget.assetDir}/lipmask.png');
-    if (mounted) setState(() => _ready = _lip.length >= 2);
+    // Both clips run continuously. Starting a paused decoder costs 100–300ms on
+    // Android, which is exactly the lag that made the picture switch late — so
+    // nothing is ever paused; only opacity changes.
+    _idle = await _open('idle', loop: true, play: true);
+    _talk = await _open('talk', loop: true, play: true);
+    if (!mounted) return;
+    setState(() {
+      _ready = _idle != null || _talk != null;
+      _failed = !_ready;
+      // Apply whatever state the voice already asked for while we were loading.
+      if (_ready && _talking) _talkOpacity = 1;
+    });
+    if (_ready && _talking) _syncEmotionLayer();
   }
 
-  Future<ui.Image?> _tryDecode(String asset) async {
+  Future<VideoPlayerController?> _open(String name,
+      {required bool loop, required bool play}) async {
+    final c = VideoPlayerController.asset('${widget.assetDir}/$name.mp4');
     try {
-      final data = await rootBundle.load(asset);
-      final codec = await ui.instantiateImageCodec(data.buffer.asUint8List());
-      return (await codec.getNextFrame()).image;
+      await c.initialize();
+      await c.setLooping(loop);
+      await c.setVolume(0);
+      if (play) await c.play();
+      return c;
     } catch (_) {
+      await c.dispose();
       return null;
     }
   }
 
-  void _tick(Duration elapsed) {
-    var dt = _last == Duration.zero
-        ? 0.016
-        : (elapsed - _last).inMicroseconds / 1e6;
-    _last = elapsed;
-    if (dt > 0.05) dt = 0.05; // guard after a stall
-    _t += dt;
+  /// Envelope changed → start/stop the talking clip in step with the voice.
+  ///
+  /// Runs even before the clips finish initializing: the beaver can start
+  /// speaking while the decoders are still warming up, and dropping those
+  /// signals is what made the picture arrive ~0.7s late on the first turn.
+  /// The desired state is tracked regardless and applied the moment we're ready.
+  void _onLevel() {
+    final audible = widget.level.value > _onThreshold;
+    final turnOpen = widget.speaking.value;
 
-    if (_lip.length >= 2) {
-      // Envelope → target frame index, reached by a damped spring so the mouth
-      // sweeps through the in-between openings (this is the anti-choppiness).
-      final target = widget.level.value.clamp(0.0, 1.0) * (_lip.length - 1);
-      final accel =
-          _omega * _omega * (target - _st.idx) - 2 * _omega * _st.vel;
-      _st.vel = (_st.vel + accel * dt).clamp(-_maxVel, _maxVel);
-      _st.idx = (_st.idx + _st.vel * dt).clamp(0.0, _lip.length - 1.0);
+    if (audible) {
+      // Onset: the voice is audible right now → show the talking clip. This is
+      // the precise trigger, aligned to what is actually being heard.
+      _stopTimer?.cancel();
+      _stopTimer = null;
+      if (!_talking) _startTalking();
+      return;
     }
-
-    // Blink scheduling (a touch rarer while talking).
-    if (_blinkT >= 0) {
-      _blinkT += dt;
-      if (_blinkT > _blinkDur) _blinkT = -1;
-    } else if (_t >= _nextBlinkAt) {
-      _blinkT = 0;
-      final talking = widget.speaking.value;
-      _nextBlinkAt =
-          _t + (talking ? 4.0 : 2.6) + _rng.nextDouble() * (talking ? 4.0 : 3.0);
+    if (_talking && turnOpen) {
+      // Mid-turn pause (between sentences). The beaver still holds the turn, so
+      // stay on the talking clip — dropping to idle here made the picture flap
+      // several times inside one utterance.
+      _stopTimer?.cancel();
+      _stopTimer = null;
+      return;
     }
-    _st.blinkPhase = _blinkT < 0 ? -1 : (_blinkT / _blinkDur).clamp(0.0, 1.0);
+    if (_talking && _stopTimer == null) {
+      // Turn is over (or never opened) and it has gone quiet → back to idle.
+      _stopTimer = Timer(_hangover, () {
+        _stopTimer = null;
+        if (widget.level.value <= _onThreshold && !widget.speaking.value) {
+          _stopTalking();
+        }
+      });
+    }
+  }
 
-    // Life on top of the deliberately static head.
-    _st.sway = math.sin(_t * 0.47) * 0.006 + math.sin(_t * 1.13) * 0.0018;
-    _st.bob = math.sin(_t * 0.83) * 0.004;
-    _st.tilt = math.sin(_t * 0.39) * 0.008;
-    _st.breathe = (math.sin(_t * 0.8) * 0.5 + 0.5) * 0.010;
+  void _startTalking() {
+    _talking = true;
+    if (kDebugMode) debugPrint('[avatar] TALK on (level ${widget.level.value})');
+    // The clip is already rolling — reveal it. No decoder start, no seek.
+    if (mounted) setState(() => _talkOpacity = 1);
+    _syncEmotionLayer();
+  }
 
-    _repaint.value++;
+  void _stopTalking() {
+    _talking = false;
+    if (kDebugMode) debugPrint('[avatar] TALK off');
+    if (mounted) {
+      setState(() {
+        _talkOpacity = 0;
+        _emoOpacity = 0;
+      });
+    }
+  }
+
+  void _onEmotion() {
+    if (!_ready) return;
+    _syncEmotionLayer();
+  }
+
+  /// Loads (once) and shows the clip for the current emotion while talking.
+  Future<void> _syncEmotionLayer() async {
+    if (!_ready) return; // don't contend with the idle/talk decoders warming up
+    final code = widget.emotion.value;
+    final name = _emoAsset[code];
+    if (!_talking || name == null) {
+      if (_emoOpacity != 0 && mounted) setState(() => _emoOpacity = 0);
+      return;
+    }
+    if (_emoCode != code || _emo == null) {
+      if (_emoLoading) return;
+      _emoLoading = true;
+      final old = _emo;
+      final next = await _open(name, loop: true, play: true);
+      _emoLoading = false;
+      if (!mounted) {
+        await next?.dispose();
+        return;
+      }
+      _emo = next;
+      _emoCode = code;
+      await old?.dispose();
+      if (next == null) return;
+    }
+    final e = _emo;
+    if (e == null) return;
+    if (mounted) setState(() => _emoOpacity = 1);
   }
 
   @override
   void dispose() {
-    _ticker.dispose();
-    _repaint.dispose();
-    for (final i in _lip) {
-      i.dispose();
-    }
-    for (final i in _blink) {
-      i.dispose();
-    }
-    _eyeMask?.dispose();
+    widget.level.removeListener(_onLevel);
+    widget.speaking.removeListener(_onLevel);
+    widget.emotion.removeListener(_onEmotion);
+    _stopTimer?.cancel();
+    _idle?.dispose();
+    _talk?.dispose();
+    _emo?.dispose();
     super.dispose();
+  }
+
+  Widget _cover(VideoPlayerController c) {
+    final s = c.value.size;
+    return FittedBox(
+      fit: BoxFit.cover,
+      clipBehavior: Clip.hardEdge,
+      child: SizedBox(width: s.width, height: s.height, child: VideoPlayer(c)),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_ready) return widget.fallback ?? const SizedBox.expand();
-    return RepaintBoundary(
-      child: CustomPaint(
-        painter: _AvatarPainter(
-          lip: _lip,
-          blink: _blink,
-          eyeMask: _eyeMask,
-          state: _st,
-          repaint: _repaint,
-        ),
-        size: Size.infinite,
+    if (_failed || !_ready) return widget.fallback ?? const SizedBox.expand();
+    return ClipRect(
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (_idle != null) _cover(_idle!),
+          if (_talk != null)
+            AnimatedOpacity(
+              opacity: _talkOpacity,
+              duration: _talkOpacity > 0 ? _fadeIn : _fadeOut,
+              curve: Curves.easeInOut,
+              child: _cover(_talk!),
+            ),
+          if (_emo != null)
+            AnimatedOpacity(
+              opacity: _emoOpacity,
+              duration: _talkOpacity > 0 ? _fadeIn : _fadeOut,
+              curve: Curves.easeInOut,
+              child: _cover(_emo!),
+            ),
+        ],
       ),
     );
   }
-}
-
-/// Mutable per-frame state shared with the painter (no 60fps widget rebuilds).
-class _AvatarFrame {
-  double idx = 0; // current mouth frame (fractional)
-  double vel = 0; // frame index velocity
-  double blinkPhase = -1; // -1 = not blinking, else 0..1 through the blink
-  double sway = 0;
-  double bob = 0;
-  double tilt = 0;
-  double breathe = 0;
-}
-
-class _AvatarPainter extends CustomPainter {
-  _AvatarPainter({
-    required this.lip,
-    required this.blink,
-    required this.eyeMask,
-    required this.state,
-    required Listenable repaint,
-  }) : super(repaint: repaint);
-
-  final List<ui.Image> lip;
-  final List<ui.Image> blink;
-  final ui.Image? eyeMask;
-  final _AvatarFrame state;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    if (lip.isEmpty) return;
-    canvas.save();
-    canvas.clipRect(Offset.zero & size);
-
-    // Subtle life: sway / bob / tilt / breathing around the lower centre.
-    final px = size.width / 2;
-    final py = size.height * 0.95;
-    canvas.translate(state.sway * size.width, state.bob * size.height);
-    canvas.translate(px, py);
-    canvas.rotate(state.tilt);
-    final s = 1.0 + state.breathe;
-    canvas.scale(s, s);
-    canvas.translate(-px, -py);
-
-    // Mouth: blend the two frames around the fractional index so the motion is
-    // continuous rather than stepping between discrete openings.
-    final i = state.idx.floor().clamp(0, lip.length - 1);
-    final j = math.min(i + 1, lip.length - 1);
-    final f = (state.idx - i).clamp(0.0, 1.0);
-    _draw(canvas, lip[i], size, 1.0);
-    if (j != i && f > 0) _draw(canvas, lip[j], size, f);
-
-    // Blink: composite only the eye region so the mouth is untouched.
-    final bp = state.blinkPhase;
-    if (bp >= 0 && blink.isNotEmpty && eyeMask != null) {
-      final k = (bp * (blink.length - 1)).round().clamp(0, blink.length - 1);
-      canvas.saveLayer(Offset.zero & size, Paint());
-      _draw(canvas, blink[k], size, 1.0);
-      _draw(canvas, eyeMask!, size, 1.0, blend: BlendMode.dstIn);
-      canvas.restore();
-    }
-
-    canvas.restore();
-  }
-
-  void _draw(Canvas canvas, ui.Image img, Size size, double opacity,
-      {BlendMode? blend}) {
-    final iw = img.width.toDouble();
-    final ih = img.height.toDouble();
-    final cover = math.max(size.width / iw, size.height / ih);
-    final dw = iw * cover;
-    final dh = ih * cover;
-    final paint = Paint()
-      ..filterQuality = FilterQuality.medium
-      ..color = Color.fromRGBO(0, 0, 0, opacity.clamp(0.0, 1.0));
-    if (blend != null) paint.blendMode = blend;
-    canvas.drawImageRect(
-      img,
-      Rect.fromLTWH(0, 0, iw, ih),
-      Rect.fromLTWH((size.width - dw) / 2, (size.height - dh) / 2, dw, dh),
-      paint,
-    );
-  }
-
-  @override
-  bool shouldRepaint(covariant _AvatarPainter oldDelegate) => false;
 }

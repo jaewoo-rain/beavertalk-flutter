@@ -203,8 +203,10 @@ class NormalCallController extends Notifier<CallState> {
   static const int _envStepMs = 25;
 
   /// The native player buffers a little ahead of what is audible, so hold the
-  /// envelope back by this much — otherwise the lips run ahead of the sound.
-  static const int _envLeadMs = 100;
+  /// envelope back by this much. Kept small: the avatar switches picture on this
+  /// signal, and a picture that arrives a hair early reads as in-sync while a
+  /// late one reads as broken.
+  static const int _envLeadMs = 25;
 
   /// RMS below this (near-silence) closes the mouth outright.
   static const double _avatarRmsGate = 260;
