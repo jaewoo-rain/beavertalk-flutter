@@ -23,6 +23,7 @@ class CallToggleButton extends StatelessWidget {
     required this.activeFill,
     required this.semanticLabel,
     this.onChanged,
+    this.activeGlyph,
   });
 
   /// Glyph builder (e.g. `AppIcons.lightbulb`, `AppIcons.cc`).
@@ -40,6 +41,12 @@ class CallToggleButton extends StatelessWidget {
   /// Called with the *toggled* value when tapped.
   final ValueChanged<bool>? onChanged;
 
+  /// Glyph colour while [active]. Defaults to `staticWhite`, which is right on a
+  /// saturated [activeFill] (hint → orange). Pass a theme-adaptive colour when
+  /// the fill itself flips with the theme (subtitle → `Background/Alternative`,
+  /// which is light in Light mode and would swallow a white glyph).
+  final Color? activeGlyph;
+
   static const double _size = 40;
   static const double _iconSize = 24;
 
@@ -49,7 +56,9 @@ class CallToggleButton extends StatelessWidget {
     // Active sits on the coloured [activeFill] and its glyph is always white
     // (staticWhite, not labelStrong — that flips to #000 in Light). Inactive is
     // a transparent chip, so the theme label colour is right there.
-    final Color glyph = active ? context.c.staticWhite : context.c.labelNormal;
+    final Color glyph = active
+        ? (activeGlyph ?? context.c.staticWhite)
+        : context.c.labelNormal;
 
     return Semantics(
       button: true,

@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/call_toggle_button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
+import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
@@ -14,21 +16,21 @@ import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/video_avatar.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
+import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Live call — Figma `workspace / call_main_facetime` (`3965:16099`).
+/// Live call — Figma `workspace / screen/call_main` (`3969:20656` and its
+/// 자막/힌트 on·off variants).
 ///
-/// A FaceTime-style full-screen call: a dark background, a status header
-/// (connected dot + character name + live `mm:ss` timer), a large full-width
-/// avatar feed (the live talking [BeaverAvatar] for rigged characters, else the
-/// static portrait), the beaver's live subtitle, and a red hang-up button.
+/// A video call: a themed (Dark/Light) surface, a status header (connected dot +
+/// character name + live timer), a full-width **16:9 avatar feed** (capped at
+/// [_avatarMaxWidth]) playing the neural talking clips, the beaver's subtitle
+/// (when subtitles are on), an in-call hint card (when hints are on and a hint
+/// arrived), the hint/subtitle toggles, and a red hang-up button.
 ///
 /// End paths all funnel through `NormalCallController.hangUp()` (plan §8-2):
-/// - the end-call dialog's "통화 종료",
-/// - the system back gesture, intercepted by [PopScope].
-/// When the controller reaches `ended` (via hangUp or the server's `call_ended`)
-/// the screen advances to [Routes.callFinish] with the `callId` as arguments.
+/// the end-call dialog and the system back gesture ([PopScope]).
 class CallScreen extends ConsumerStatefulWidget {
   /// Creates the live call screen.
   const CallScreen({super.key});
@@ -38,17 +40,18 @@ class CallScreen extends ConsumerStatefulWidget {
 }
 
 class _CallScreenState extends ConsumerState<CallScreen> {
-  /// FaceTime call surface is always dark (Figma `#181A20`), independent of the
-  /// app light/dark theme — a call is an immersive, fixed-dark screen.
-  static const Color _bg = Color(0xFF181A20);
-
-  /// Connected-status dot (Figma Brand/Primary `#00FFB2`).
-  static const Color _connectedDot = Color(0xFF00FFB2);
-
-  /// Subtle text (Figma Text&Icons/Subtle `#B0B0B0`).
-  static const Color _subtle = Color(0xFFB0B0B0);
+  /// Max width of the 16:9 avatar feed — full mobile width, capped on large
+  /// screens so the video doesn't stretch edge-to-edge on tablets.
+  static const double _avatarMaxWidth = 520;
 
   bool _navigated = false;
+
+  /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
+  /// new hint carries a new turn_id, so the card auto-collapses.
+  String? _revealedTurnId;
+
+  /// Currently shown suggestion index in the revealed hint; reset per new hint.
+  int _suggestionIndex = 0;
 
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
   String _formatted(int seconds) {
@@ -69,14 +72,14 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       primary: DialogAction(
         label: l10n.subscribe,
         onPressed: () {
-          Navigator.of(context).pop(); // close dialog
+          Navigator.of(context).pop();
           Navigator.pushNamed(context, Routes.payment);
         },
       ),
       secondary: DialogAction(
         label: l10n.endCall,
         onPressed: () {
-          Navigator.of(context).pop(); // close dialog
+          Navigator.of(context).pop();
           ref.read(normalCallControllerProvider.notifier).hangUp();
         },
       ),
@@ -84,8 +87,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   }
 
   /// Advances to the wrap-up screen, carrying the analyzable call id, the final
-  /// call duration (seconds), and the pre-call [baselineCallId] so a manually
-  /// ended call (no `call_ended`/id) can recover its id from `GET /calls`.
+  /// duration, and the pre-call baseline so a manual hang-up can recover its id.
   void _goFinish(String? callId, int elapsedSec, int? baselineCallId) {
     if (_navigated) return;
     _navigated = true;
@@ -106,27 +108,31 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final elapsed = ref.watch(
       normalCallControllerProvider.select((s) => s.elapsedSec),
     );
-    // Beaver's live line (server `output_transcript`, accumulated per turn).
     final beaverSubtitle = ref.watch(
       normalCallControllerProvider.select((s) => s.beaverSubtitle),
     );
-    // Selected character → name + avatar (resolved from the catalog).
+    final hint = ref.watch(normalCallControllerProvider.select((s) => s.hint));
+    final subtitleOn =
+        ref.watch(normalCallControllerProvider.select((s) => s.subtitleOn));
+    final hintOn =
+        ref.watch(normalCallControllerProvider.select((s) => s.hintOn));
     final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
         ? NetworkImage(selectedCharUrl) as ImageProvider
         : characterImage(characterId);
-    // Characters with a generated talking-avatar sprite set get the live rigged
-    // avatar (lip-sync + expression); others fall back to their static portrait.
     final callNotifier = ref.read(normalCallControllerProvider.notifier);
     final avatarDir = avatarAssetDirFor(
       characterId,
       selectedChar?.name ?? characterName(characterId),
     );
 
-    // Navigate to wrap-up when the call ends (hangUp or server call_ended).
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
+      // A new hint (different turn_id) resets the ephemeral suggestion index.
+      if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
+        setState(() => _suggestionIndex = 0);
+      }
       if (next.phase == CallPhase.ended) {
         _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
@@ -140,20 +146,22 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       }
     });
 
+    final showSubtitle = subtitleOn && beaverSubtitle.isNotEmpty;
+    final showHint = hintOn && hint != null;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
-        // §8-2: back gesture hangs up; navigation happens via the ended listener.
         ref.read(normalCallControllerProvider.notifier).hangUp();
       },
       child: AppScaffold(
-        background: _bg,
+        background: context.c.backgroundNormalNormal,
         statusVariant: StatusBarVariant.whiteTransparent,
         homeVariant: HomeIndicatorVariant.whiteTransparent,
         body: Column(
           children: [
-            // Status header — connected dot + name + live timer (Figma top).
+            // Header — connected dot + name + live timer.
             Padding(
               padding: const EdgeInsets.symmetric(
                   horizontal: 10, vertical: AppSpacing.s12),
@@ -166,92 +174,162 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       Container(
                         width: AppSpacing.s8,
                         height: AppSpacing.s8,
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: _connectedDot,
+                          color: context.c.primaryNormal,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s12),
-                      Text(
-                        'Connected',
-                        style: AppType.label1.r.copyWith(color: _subtle),
-                      ),
+                      Text('Connected',
+                          style:
+                              AppType.label1.r.copyWith(color: context.c.labelNormal)),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
                     selectedChar?.name ?? characterName(characterId),
-                    style: AppType.body1.sb.copyWith(color: Colors.white),
+                    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s4),
-                  Text(
-                    _formatted(elapsed),
-                    style: AppType.label1.r.copyWith(color: _subtle),
+                  Text(_formatted(elapsed),
+                      style:
+                          AppType.label1.r.copyWith(color: context.c.labelNormal)),
+                ],
+              ),
+            ),
+            // Body — 16:9 avatar feed at the top, subtitle + hint pushed to the
+            // bottom (Figma Body `justify-between`). The caption area is
+            // bottom-aligned and scrollable so a long line + hint card can never
+            // overflow the column on short screens.
+            Expanded(
+              child: Column(
+                children: [
+                  // 16:9 avatar feed — full width, capped at [_avatarMaxWidth].
+                  Center(
+                    child: ConstrainedBox(
+                      constraints:
+                          const BoxConstraints(maxWidth: _avatarMaxWidth),
+                      child: AspectRatio(
+                        aspectRatio: 16 / 9,
+                        child: ClipRect(
+                          child: avatarDir != null
+                              ? VideoAvatar(
+                                  assetDir: avatarDir,
+                                  speaking: callNotifier.avatarSpeaking,
+                                  emotion: callNotifier.avatarEmotion,
+                                  fallback: BeaverAvatar(
+                                    assetDir: avatarDir,
+                                    level: callNotifier.avatarLevel,
+                                    speaking: callNotifier.avatarSpeaking,
+                                    emotion: callNotifier.avatarEmotion,
+                                    shape: callNotifier.avatarShape,
+                                  ),
+                                )
+                              : Image(image: partnerImage, fit: BoxFit.cover),
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Subtitle + hint card — bottom-aligned, scrollable on
+                  // overflow.
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: SingleChildScrollView(
+                        padding: const EdgeInsets.fromLTRB(AppSpacing.s32,
+                            AppSpacing.s16, AppSpacing.s32, AppSpacing.s24),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                        if (showSubtitle)
+                          Text(
+                            beaverSubtitle,
+                            textAlign: TextAlign.center,
+                            style: AppType.body1.sb
+                                .copyWith(color: context.c.labelStrong),
+                          ),
+                        if (showSubtitle && showHint)
+                          const SizedBox(height: AppSpacing.s24),
+                        if (showHint)
+                          HintCard(
+                            examples: hint.examples,
+                            revealed: _revealedTurnId == hint.turnId,
+                            index: _suggestionIndex,
+                            onReveal: () {
+                              setState(() => _revealedTurnId = hint.turnId);
+                              ref
+                                  .read(normalCallControllerProvider.notifier)
+                                  .sendHintUsed(hint.turnId);
+                            },
+                            onCycle: () => setState(() => _suggestionIndex =
+                                (_suggestionIndex + 1) % hint.examples.length),
+                          ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
             ),
-            const Spacer(flex: 3),
-            // Avatar band — a full-width, contained "video feed" (Figma `image
-            // 1`: a bounded band with dark space above and below, not a
-            // full-height fill). The neural talking clips play here.
-            SizedBox(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height * 0.35,
-              child: avatarDir != null
-                  ? VideoAvatar(
-                      assetDir: avatarDir,
-                      speaking: callNotifier.avatarSpeaking,
-                      // Until the neural clips load (or for characters that ship
-                      // only sprites) fall back to the rigged avatar.
-                      fallback: BeaverAvatar(
-                        assetDir: avatarDir,
-                        level: callNotifier.avatarLevel,
-                        speaking: callNotifier.avatarSpeaking,
-                        emotion: callNotifier.avatarEmotion,
-                        shape: callNotifier.avatarShape,
-                      ),
-                    )
-                  : Image(image: partnerImage, fit: BoxFit.cover),
-            ),
-            const Spacer(flex: 1),
-            // Subtitle — beaver's live line (Figma bold white). The translation
-            // line below it in the design has no server field yet, so only the
-            // real line renders (no fabricated text).
+            // Footer — hint/subtitle toggles + hang-up.
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
-              child: Text(
-                beaverSubtitle,
-                textAlign: TextAlign.center,
-                style:
-                    AppType.body1.sb.copyWith(color: Colors.white, height: 1.5),
-              ),
-            ),
-            const Spacer(flex: 3),
-            // End-call button — red 60px circular hang-up (Figma `#FA2838`).
-            Center(
-              child: Semantics(
-                button: true,
-                label: l10n.endCall,
-                child: Material(
-                  color: const Color(0xFFFA2838),
-                  shape: const CircleBorder(),
-                  clipBehavior: Clip.antiAlias,
-                  child: InkWell(
-                    customBorder: const CircleBorder(),
-                    onTap: _confirmEnd,
-                    child: SizedBox(
-                      width: AppSpacing.s60,
-                      height: AppSpacing.s60,
-                      child: Center(
-                        child: AppIcons.callEnd(size: 32, color: Colors.white),
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.s32, vertical: AppSpacing.s12),
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      CallToggleButton(
+                        icon: AppIcons.lightbulb,
+                        active: hintOn,
+                        activeFill: context.c.accentActive,
+                        semanticLabel: 'Hint',
+                        onChanged: (v) => ref
+                            .read(normalCallControllerProvider.notifier)
+                            .setHintOn(v),
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      CallToggleButton(
+                        icon: AppIcons.cc,
+                        active: subtitleOn,
+                        activeFill: context.c.backgroundNormalAlternative,
+                        // The subtitle fill flips with the theme, so its glyph
+                        // must too (a white glyph vanishes on Light).
+                        activeGlyph: context.c.labelStrong,
+                        semanticLabel: 'Subtitle',
+                        onChanged: (v) => ref
+                            .read(normalCallControllerProvider.notifier)
+                            .setSubtitleOn(v),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.s32),
+                  Semantics(
+                    button: true,
+                    label: l10n.endCall,
+                    child: Material(
+                      color: context.c.accentBackgroundRed,
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: _confirmEnd,
+                        child: SizedBox(
+                          width: AppSpacing.s60,
+                          height: AppSpacing.s60,
+                          child: Center(
+                            child: AppIcons.callEnd(
+                                size: 32, color: context.c.staticWhite),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
             ),
-            const SizedBox(height: AppSpacing.s24),
           ],
         ),
       ),
