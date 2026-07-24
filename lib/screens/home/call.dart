@@ -13,7 +13,7 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
-import '../../features/normalcall/presentation/video_avatar.dart';
+import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
@@ -213,10 +213,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         aspectRatio: 16 / 9,
                         child: ClipRect(
                           child: avatarDir != null
-                              ? VideoAvatar(
+                              ? SyncAvatar(
                                   assetDir: avatarDir,
+                                  level: callNotifier.avatarLevel,
                                   speaking: callNotifier.avatarSpeaking,
-                                  emotion: callNotifier.avatarEmotion,
                                   fallback: BeaverAvatar(
                                     assetDir: avatarDir,
                                     level: callNotifier.avatarLevel,

@@ -194,6 +194,18 @@ class NormalCallController extends Notifier<CallState> {
       'ugh', 'stupid', 'annoying', 'stop it'],
   };
 
+  /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
+  /// audio is handed to the player and drained in real time. A single RMS per
+  /// ~200ms feed (≈5Hz) is far too coarse for syllables; this runs at 40Hz so
+  /// the mouth lands on the actual speech.
+  final List<double> _envQueue = <double>[];
+  Timer? _envTimer;
+  static const int _envStepMs = 25;
+
+  /// The native player buffers a little ahead of what is audible, so hold the
+  /// envelope back by this much — otherwise the lips run ahead of the sound.
+  static const int _envLeadMs = 100;
+
   /// RMS below this (near-silence) closes the mouth outright.
   static const double _avatarRmsGate = 260;
 
@@ -454,6 +466,8 @@ class NormalCallController extends Notifier<CallState> {
       FlutterPcmSound.setFeedCallback(_onFeed);
       _pcmActive = true;
       _lastFeedSilent = null;
+      _envQueue.clear();
+      _startEnvelope();
       // Kick the pull loop directly instead of FlutterPcmSound.start().
       // start() only kicks when the plugin's *static* `_needsStart` flag is true,
       // and that flag is NEVER reset by release()/setup(): the first call feeds
@@ -709,8 +723,6 @@ class NormalCallController extends Notifier<CallState> {
           // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
           // instant (no re-buffer gap).
           if (!_beaverSpeaking) _playing = false;
-          // Nothing playing → let the avatar mouth fall closed.
-          avatarLevel.value = _beaverSpeaking ? avatarLevel.value * 0.4 : 0.0;
           if (_lastFeedSilent != true) {
             _log('feed silence — queue empty'
                 '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
@@ -758,27 +770,65 @@ class NormalCallController extends Notifier<CallState> {
     final n = len ~/ 2;
     if (n == 0) return;
     final bd = bytes.buffer.asByteData();
-    var sumSq = 0.0;
-    var zc = 0; // zero crossings
+    // One envelope entry per _envStepMs of audio (24kHz mono PCM16).
+    final step = (_playbackSampleRate * _envStepMs) ~/ 1000; // samples
+    var sumSqAll = 0.0;
+    var zc = 0;
     var prev = 0;
-    for (var i = 0; i < n; i++) {
-      final s = bd.getInt16(i * 2, Endian.little);
-      sumSq += s * s;
-      if (i > 0 && (s >= 0) != (prev >= 0)) zc++;
-      prev = s;
+    var i = 0;
+    while (i < n) {
+      final end = math.min(i + step, n);
+      var sumSq = 0.0;
+      for (var k = i; k < end; k++) {
+        final s = bd.getInt16(k * 2, Endian.little);
+        sumSq += s * s;
+        sumSqAll += s * s;
+        if (k > 0 && (s >= 0) != (prev >= 0)) zc++;
+        prev = s;
+      }
+      final cnt = end - i;
+      final rms = cnt > 0 ? math.sqrt(sumSq / cnt) : 0.0;
+      _envQueue.add(_levelFromRms(rms));
+      i = end;
     }
-    final rms = math.sqrt(sumSq / n);
-    if (rms < _avatarRmsGate) {
-      avatarLevel.value = 0.0;
-      return;
+    // Runaway guard: never let the envelope outgrow ~3s of audio.
+    final cap = 3000 ~/ _envStepMs;
+    if (_envQueue.length > cap) {
+      _envQueue.removeRange(0, _envQueue.length - cap);
     }
-    var lvl = rms / _avatarRmsFull;
-    if (lvl > 1) lvl = 1;
-    avatarLevel.value = math.pow(lvl, 0.7).toDouble();
-    // Zero-crossing rate → vowel shape. ~0.045 ≈ neutral "AH"; lower → round
-    // "OO", higher → wide "EE". Scaled to −1..1 (widget smooths further).
+    // Zero-crossing rate → vowel shape (whole chunk is fine for this).
     final zcr = n > 1 ? zc / (n - 1) : 0.0;
     avatarShape.value = ((zcr - 0.045) / 0.05).clamp(-1.0, 1.0);
+    // Keep sumSqAll referenced (kept for future tuning/telemetry).
+    assert(sumSqAll >= 0);
+  }
+
+  /// Maps an RMS to a 0..1 mouth-open level (gate + perceptual curve).
+  double _levelFromRms(double rms) {
+    if (rms < _avatarRmsGate) return 0.0;
+    var lvl = rms / _avatarRmsFull;
+    if (lvl > 1) lvl = 1;
+    return math.pow(lvl, 0.7).toDouble();
+  }
+
+  /// Drains the sub-frame envelope in real time so the mouth tracks the audio.
+  /// Holds [_envLeadMs] of it back to offset the player's buffer.
+  void _startEnvelope() {
+    _envTimer?.cancel();
+    final lead = _envLeadMs ~/ _envStepMs;
+    _envTimer = Timer.periodic(
+      const Duration(milliseconds: _envStepMs),
+      (_) {
+        if (_envQueue.length > lead) {
+          avatarLevel.value = _envQueue.removeAt(0);
+        } else if (!_beaverSpeaking) {
+          avatarLevel.value = 0.0;
+        } else {
+          // Brief gap mid-turn: ease shut rather than snapping.
+          avatarLevel.value = avatarLevel.value * 0.6;
+        }
+      },
+    );
   }
 
   /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
@@ -1125,6 +1175,9 @@ class NormalCallController extends Notifier<CallState> {
     _elapsedTimer = null;
     _keepaliveTimer?.cancel();
     _keepaliveTimer = null;
+    _envTimer?.cancel();
+    _envTimer = null;
+    _envQueue.clear();
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
