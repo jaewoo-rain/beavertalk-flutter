@@ -99,6 +99,12 @@ dependencies:
   path_provider: ^2.1.6
   shared_preferences: ^2.5.5
 
+  # Apple Sign In. iOS uses the native sheet → id_token → Supabase
+  # signInWithIdToken; Android/web use the browser OAuth fallback. crypto hashes
+  # (SHA-256) the nonce Apple binds into the id_token for replay protection.
+  sign_in_with_apple: ^8.1.0
+  crypto: ^3.0.7
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
