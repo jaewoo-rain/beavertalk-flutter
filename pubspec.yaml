@@ -104,6 +104,7 @@ dependencies:
   # (SHA-256) the nonce Apple binds into the id_token for replay protection.
   sign_in_with_apple: ^8.1.0
   crypto: ^3.0.7
+  audio_session: ^0.2.4
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter_callkit_incoming/entities/entities.dart';
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/repositories/device_repository.dart';
@@ -32,10 +34,12 @@ class DeviceRegistrationController {
   /// FCM 토큰 조회/갱신 스트림 제공.
   final FcmService fcm;
 
-  /// 서버 계약상 Android 플랫폼 코드.
-  static const String _platform = 'android_fcm';
+  /// 서버 계약상 플랫폼 코드. iOS=VoIP(APNs PushKit), 그 외=Android FCM.
+  String get _platform =>
+      defaultTargetPlatform == TargetPlatform.iOS ? 'ios_voip' : 'android_fcm';
 
   StreamSubscription<String>? _tokenSub;
+  StreamSubscription<CallEvent?>? _voipSub;
   StreamSubscription<AuthState>? _authSub;
 
   /// 마지막으로 등록에 성공한 토큰(중복 POST 억제용).
@@ -46,12 +50,25 @@ class DeviceRegistrationController {
   /// 리스너를 붙이고, 이미 로그인돼 있으면 즉시 1회 등록한다. 멱등.
   Future<void> start() async {
     if (_started) return;
-    // FCM 토큰 등록은 Android 만. 그 외(iOS/데스크톱/web)는 no-op.
-    if (defaultTargetPlatform != TargetPlatform.android) return;
+    final platform = defaultTargetPlatform;
+    // Android=FCM, iOS=VoIP(APNs PushKit). 그 외(데스크톱/web)는 no-op.
+    if (platform != TargetPlatform.android && platform != TargetPlatform.iOS) {
+      return;
+    }
     _started = true;
 
-    // 토큰 갱신 → 재등록.
-    _tokenSub = fcm.onTokenRefresh.listen(_register);
+    if (platform == TargetPlatform.iOS) {
+      // iOS 토큰 소스는 FCM 이 아니라 PushKit VoIP 토큰이다. PushKit 이 준비되면
+      // getDevicePushTokenVoIP() 로 조회되고, 갱신 시 이 이벤트가 온다.
+      _voipSub = FlutterCallkitIncoming.onEvent.listen((event) {
+        if (event is CallEventActionDidUpdateDevicePushTokenVoip) {
+          _registerCurrent();
+        }
+      });
+    } else {
+      // 토큰 갱신 → 재등록.
+      _tokenSub = fcm.onTokenRefresh.listen(_register);
+    }
 
     // 로그인/로그아웃 반응. tokenRefreshed 도 등록 시도(같은 토큰이면 내부에서 스킵).
     _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((s) {
@@ -69,8 +86,15 @@ class DeviceRegistrationController {
     await _registerCurrent();
   }
 
-  /// 현재 FCM 토큰을 조회해 등록을 시도한다.
+  /// 현재 토큰을 조회해 등록을 시도한다(플랫폼별 소스).
   Future<void> _registerCurrent() async {
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      // PushKit VoIP 토큰. 아직 준비 전이면 null → 스킵(준비되면
+      // actionDidUpdateDevicePushTokenVoip 이벤트로 다시 시도된다).
+      final token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+      if (token != null && token.isNotEmpty) await _register(token);
+      return;
+    }
     final token = await fcm.getToken();
     if (token != null) await _register(token);
   }
@@ -106,8 +130,10 @@ class DeviceRegistrationController {
   /// 구독 해제(provider dispose).
   void dispose() {
     _tokenSub?.cancel();
+    _voipSub?.cancel();
     _authSub?.cancel();
     _tokenSub = null;
+    _voipSub = null;
     _authSub = null;
   }
 }

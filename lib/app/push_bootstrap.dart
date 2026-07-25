@@ -108,12 +108,18 @@ Future<void> _initFcm(ProviderContainer container) async {
       }
     });
 
-    // 토큰 확인: 디버그 로그로 확인(FCM 테스트용).
-    final token = await fcm.getToken();
-    if (kDebugMode) debugPrint('[fcm] token=$token');
-    fcm.onTokenRefresh.listen((t) {
-      if (kDebugMode) debugPrint('[fcm] token refreshed=$t');
-    });
+    // 토큰 확인: 디버그 로그로 확인(FCM 테스트용). iOS 는 APNs 미구성 시 getToken()이
+    // throw 할 수 있는데, 그게 아래 device 등록(iOS=VoIP 토큰 경로)까지 막으면 안 되므로
+    // 자체 try/catch 로 격리한다.
+    try {
+      final token = await fcm.getToken();
+      if (kDebugMode) debugPrint('[fcm] token=$token');
+      fcm.onTokenRefresh.listen((t) {
+        if (kDebugMode) debugPrint('[fcm] token refreshed=$t');
+      });
+    } catch (e) {
+      if (kDebugMode) debugPrint('[fcm] getToken 실패(무시): $e');
+    }
 
     // 서버 `POST /devices`로 토큰 자동 등록. 배선은 항상 준비돼 있고, 서버가 배포되면
     // kDeviceRegistrationEnabled=true 로 켜면 로그인/토큰갱신 시 자동 등록된다.

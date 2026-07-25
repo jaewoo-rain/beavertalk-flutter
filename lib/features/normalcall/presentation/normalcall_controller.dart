@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart'
     show ValueNotifier, debugPrint, kDebugMode, kIsWeb;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
@@ -448,6 +449,28 @@ class NormalCallController extends Notifier<CallState> {
               : '마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.',
         );
         return;
+      }
+      if (myGen != _gen) return _abortStart();
+
+      // Route call audio like a loud media/Bluetooth call, not the quiet earpiece.
+      // With no explicit session, the voice-processing recorder pins output to the
+      // receiver at call volume and never picks AirPods. playAndRecord +
+      // defaultToSpeaker + allowBluetooth(+A2DP) sends it to the speaker / BT
+      // headset; voiceChat keeps the echo canceller working. Best-effort: a
+      // failure here shouldn't abort the call, just leave default routing.
+      try {
+        final session = await AudioSession.instance;
+        await session.configure(AudioSessionConfiguration(
+          avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+          avAudioSessionCategoryOptions:
+              AVAudioSessionCategoryOptions.defaultToSpeaker |
+                  AVAudioSessionCategoryOptions.allowBluetooth |
+                  AVAudioSessionCategoryOptions.allowBluetoothA2dp,
+          avAudioSessionMode: AVAudioSessionMode.voiceChat,
+        ));
+        await session.setActive(true);
+      } catch (e) {
+        _log('audio session configure failed: $e');
       }
       if (myGen != _gen) return _abortStart();
 
@@ -1247,6 +1270,17 @@ class NormalCallController extends Notifier<CallState> {
       await _channel?.sink.close();
     } catch (_) {}
     _channel = null;
+
+    // Hand the audio session back so other apps' audio un-ducks and the next
+    // call reconfigures from a clean slate. Best-effort (cleanup path).
+    try {
+      final session = await AudioSession.instance;
+      await session.setActive(
+        false,
+        avAudioSessionSetActiveOptions:
+            AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+      );
+    } catch (_) {}
 
     if (!keepError) {
       // Preserve callId/ended state set by callers; only reset a live phase.
