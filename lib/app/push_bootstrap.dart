@@ -108,9 +108,16 @@ Future<void> _initFcm(ProviderContainer container) async {
       }
     });
 
+    // 서버 `POST /devices`로 토큰 자동 등록. **FCM getToken 앞에서** 시작한다:
+    // iOS 는 Firebase APNs 미구성 시 fcm.getToken()이 지연/블록될 수 있는데, 그게
+    // iOS VoIP 토큰 등록 경로까지 막으면 안 되기 때문(이게 ios_voip 토큰 0건의 원인
+    // 후보였음). start()는 내부가 fire-and-forget 성격이라 await 해도 빨리 반환한다.
+    if (kDeviceRegistrationEnabled) {
+      await container.read(deviceRegistrationControllerProvider).start();
+    }
+
     // 토큰 확인: 디버그 로그로 확인(FCM 테스트용). iOS 는 APNs 미구성 시 getToken()이
-    // throw 할 수 있는데, 그게 아래 device 등록(iOS=VoIP 토큰 경로)까지 막으면 안 되므로
-    // 자체 try/catch 로 격리한다.
+    // throw/지연 할 수 있어 자체 try/catch 로 격리하고, 위 등록 뒤에 둔다.
     try {
       final token = await fcm.getToken();
       if (kDebugMode) debugPrint('[fcm] token=$token');
@@ -119,12 +126,6 @@ Future<void> _initFcm(ProviderContainer container) async {
       });
     } catch (e) {
       if (kDebugMode) debugPrint('[fcm] getToken 실패(무시): $e');
-    }
-
-    // 서버 `POST /devices`로 토큰 자동 등록. 배선은 항상 준비돼 있고, 서버가 배포되면
-    // kDeviceRegistrationEnabled=true 로 켜면 로그인/토큰갱신 시 자동 등록된다.
-    if (kDeviceRegistrationEnabled) {
-      await container.read(deviceRegistrationControllerProvider).start();
     }
   } catch (e, s) {
     // FCM 배선 실패가 로컬 트리거/앱 부팅을 막지 않도록 삼킨다.

@@ -86,13 +86,31 @@ class DeviceRegistrationController {
     await _registerCurrent();
   }
 
+  /// 동시 폴링 방지(여러 트리거가 겹쳐도 폴 루프는 하나만).
+  bool _polling = false;
+
   /// 현재 토큰을 조회해 등록을 시도한다(플랫폼별 소스).
   Future<void> _registerCurrent() async {
     if (defaultTargetPlatform == TargetPlatform.iOS) {
-      // PushKit VoIP 토큰. 아직 준비 전이면 null → 스킵(준비되면
-      // actionDidUpdateDevicePushTokenVoip 이벤트로 다시 시도된다).
-      final token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
-      if (token != null && token.isNotEmpty) await _register(token);
+      // PushKit VoIP 토큰은 **비동기로 늦게** 도착한다(앱 시작/로그인 시점엔 아직
+      // null 인 경우가 많음). 1회만 조회하면 놓쳐서 등록이 영영 안 됐다(ios_voip
+      // 0건). 짧게 폴링해 토큰이 준비되는 즉시 등록한다. didUpdate 이벤트도 이걸
+      // 다시 부르므로 이중 안전. 이미 등록됐으면 _register 내부에서 스킵.
+      if (_polling) return;
+      _polling = true;
+      try {
+        for (var attempt = 0; attempt < 15; attempt++) {
+          if (Supabase.instance.client.auth.currentSession == null) return;
+          final token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+          if (token != null && token.isNotEmpty) {
+            await _register(token);
+            return;
+          }
+          await Future<void>.delayed(const Duration(seconds: 1));
+        }
+      } finally {
+        _polling = false;
+      }
       return;
     }
     final token = await fcm.getToken();
