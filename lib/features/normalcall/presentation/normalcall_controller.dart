@@ -552,6 +552,19 @@ class NormalCallController extends Notifier<CallState> {
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
 
+      // iOS: configure the session (playAndRecord + allowBluetooth + voiceChat)
+      // and select a Bluetooth headset input BEFORE opening the recorder. The
+      // voice-processing (VoiceProcessingIO) unit binds to whatever input is
+      // active at open time; if we only set the BT input AFTER _startMic (as the
+      // post-mic call below did), the unit is already pinned to the built-in mic
+      // and the user's voice over AirPods is never captured. Doing it first is
+      // what makes the Bluetooth mic work.
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+        } catch (_) {}
+      }
+
       // Start streaming the mic to the server.
       await _startMic();
       if (myGen != _gen) return _abortStart();
