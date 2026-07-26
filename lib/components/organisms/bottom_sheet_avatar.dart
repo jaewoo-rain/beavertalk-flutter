@@ -62,9 +62,15 @@ enum BottomSheetAvatarState {
 /// chip; owned → "보유" in light-blue `#3DC2FF` on a 10%-tint chip (this blue is
 /// `Atomic/Light Blue/60`, which has no semantic token — see [_ownedBadgeColor]).
 ///
-/// This widget renders only the sheet surface (no scrim). Use
-/// [BottomSheetAvatar.modal] to get the full overlay (Dim + sheet) for a
-/// [Stack].
+/// This widget renders only the sheet surface (no scrim); [asModal] wraps it in
+/// a [Dim] for use inside a [Stack].
+///
+/// **Retired — superseded by `AvatarDetailScreen`.** Figma replaced the
+/// `BottomSheet-Avatar` sheet with the full-page `Avatar-Detail` (`4024:1090`),
+/// which carries the same four `state` variants. `AvatarScreen` now pushes that
+/// screen instead of showing this sheet, so this widget has **no callers left**
+/// outside the component gallery. It is kept only while the old Figma master is
+/// still in the file; delete both together.
 class BottomSheetAvatar extends StatelessWidget {
   /// Creates the avatar sheet surface.
   const BottomSheetAvatar({

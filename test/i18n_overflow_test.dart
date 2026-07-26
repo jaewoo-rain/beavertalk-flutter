@@ -26,6 +26,7 @@ import 'package:beavertalk/screens/auth/password_method.dart';
 import 'package:beavertalk/screens/auth/password_new.dart';
 import 'package:beavertalk/screens/auth/signup.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
+import 'package:beavertalk/screens/mypage/avatar_detail.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/subscription_info.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
@@ -56,6 +57,25 @@ void main() {
     'PasswordNew': () => const PasswordNewScreen(),
     'Signup': () => const SignupScreen(),
     'CallFinish': () => const CallFinishScreen(),
+    // Worst case for the detail screen's name row: name + the long
+    // "Available to purchase" badge + a "-N%" marker, all on one line.
+    'AvatarDetailDiscount': () => const AvatarDetailScreen(
+          state: AvatarDetailState.unownedDiscount,
+          name: 'Baba',
+          tags: ['Savage', 'Blunt', 'Tsundere'],
+          summary: 'A sharp-tongued master.',
+          description: 'Baba, a beaver famous for his flawless dams.',
+          price: '₩4,900',
+          discountPrice: '₩2,450',
+          discountPercent: 50,
+        ),
+    'AvatarDetailOwned': () => const AvatarDetailScreen(
+          state: AvatarDetailState.ownedUnused,
+          name: 'Baba',
+          tags: ['Savage', 'Blunt', 'Tsundere'],
+          summary: 'A sharp-tongued master.',
+          description: 'Baba, a beaver famous for his flawless dams.',
+        ),
     'MyPage': () => const MyPageScreen(),
     'SubscriptionInfo': () => const SubscriptionInfoScreen(),
     'OnboardingDone': () => const OnboardingDoneScreen(),
