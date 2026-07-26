@@ -464,20 +464,24 @@ class NormalCallController extends Notifier<CallState> {
       }
       if (myGen != _gen) return _abortStart();
 
-      // Route call audio like a loud media/Bluetooth call, not the quiet earpiece.
+      // Route call audio like a loud media/Bluetooth CALL, not the quiet earpiece.
       // With no explicit session, the voice-processing recorder pins output to the
       // receiver at call volume and never picks AirPods. playAndRecord +
-      // defaultToSpeaker + allowBluetooth(+A2DP) sends it to the speaker / BT
-      // headset; voiceChat keeps the echo canceller working. Best-effort: a
-      // failure here shouldn't abort the call, just leave default routing.
+      // defaultToSpeaker + allowBluetooth sends it to the speaker / BT headset;
+      // voiceChat keeps the echo canceller working. Best-effort: a failure here
+      // shouldn't abort the call, just leave default routing.
+      //
+      // NO allowBluetoothA2DP: A2DP is an OUTPUT-only (music) profile with no mic.
+      // Allowing it lets iOS route call output over A2DP, which breaks the BT mic
+      // (HFP) path — the beaver is heard but the user's voice is not captured.
+      // HFP (allowBluetooth) carries both mic and speaker for a two-way call.
       try {
         final session = await AudioSession.instance;
         await session.configure(AudioSessionConfiguration(
           avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
           avAudioSessionCategoryOptions:
               AVAudioSessionCategoryOptions.defaultToSpeaker |
-                  AVAudioSessionCategoryOptions.allowBluetooth |
-                  AVAudioSessionCategoryOptions.allowBluetoothA2dp,
+                  AVAudioSessionCategoryOptions.allowBluetooth,
           avAudioSessionMode: AVAudioSessionMode.voiceChat,
         ));
         await session.setActive(true);

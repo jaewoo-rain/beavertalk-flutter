@@ -75,8 +75,11 @@ import flutter_callkit_incoming
         self, selector: #selector(handleAudioRouteChange(_:)),
         name: AVAudioSession.routeChangeNotification, object: session)
     }
+    // NO .allowBluetoothA2DP: A2DP is output-only (no mic), and allowing it lets
+    // iOS route call output over A2DP, breaking the BT mic (HFP) path — the user's
+    // voice stops being captured. `.allowBluetooth` = HFP carries mic + speaker.
     try? session.setCategory(.playAndRecord, mode: .voiceChat,
-        options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker])
+        options: [.allowBluetooth, .defaultToSpeaker])
     try? session.setActive(true)
     steerInputToHeadset()
   }
