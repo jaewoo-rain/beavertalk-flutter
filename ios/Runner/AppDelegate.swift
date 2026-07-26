@@ -22,15 +22,26 @@ import flutter_callkit_incoming
     // Register for VoIP push. This is the iOS counterpart of the Android FCM
     // path: a scheduled inbound call can wake the app — even when killed — and
     // ring through CallKit. Android uses FCM; iOS must use PushKit + APNs VoIP.
+    ensureVoipRegistry()
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  /// Idempotently create + retain the PKPushRegistry and request the VoIP token.
+  /// Called from BOTH didFinishLaunching and the implicit-engine init so the
+  /// registry is guaranteed to exist regardless of launch path.
+  private func ensureVoipRegistry() {
+    guard voipRegistry == nil else { return }
     let registry = PKPushRegistry(queue: DispatchQueue.main)
     registry.delegate = self
     registry.desiredPushTypes = [PKPushType.voIP]
-    self.voipRegistry = registry
-    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+    voipRegistry = registry
   }
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    // Belt-and-suspenders: guarantee the VoIP registry exists even if the
+    // didFinishLaunching path differs under the implicit-engine lifecycle.
+    ensureVoipRegistry()
     // Speakerphone routing for in-call audio. flutter_sound's voice-processing
     // pins the session output to the earpiece(receiver); Dart calls this after
     // the mic pipeline is up to force the loudspeaker — unless a headset/AirPods
