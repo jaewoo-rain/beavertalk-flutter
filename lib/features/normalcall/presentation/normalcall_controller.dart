@@ -792,7 +792,8 @@ class NormalCallController extends Notifier<CallState> {
     if (_dbgLastFeedMs != 0) {
       final gap = dbgNow - _dbgLastFeedMs;
       if (gap > _dbgMaxGap) _dbgMaxGap = gap;
-      if (gap > 250) _log('DBG STALL feed gap ${gap}ms (queue ${_queueLen}B)');
+      // 피드 청크가 ~500ms 라 정상 케이던스가 ~500ms → 700ms↑만 진짜 스톨로 본다.
+      if (gap > 700) _log('DBG STALL feed gap ${gap}ms (queue ${_queueLen}B)');
     }
     _dbgLastFeedMs = dbgNow;
     if (_dbgHeartbeatMs == 0) _dbgHeartbeatMs = dbgNow;

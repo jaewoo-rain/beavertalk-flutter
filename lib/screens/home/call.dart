@@ -47,7 +47,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
   //   버퍼 헤드룸↑ + 감정클립 캐싱으로 근본 수정했으므로 기본 false(아바타 ON). 그래도
   //   깨지면 true로 바꿔 아바타를 배제하고 베이스라인만 검증.
-  static const bool kDisableAvatarVideo = false;
+  static const bool kDisableAvatarVideo = true;
 
   bool _navigated = false;
 
