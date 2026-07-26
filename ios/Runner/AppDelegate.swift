@@ -1,6 +1,7 @@
 import Flutter
 import UIKit
 import PushKit
+import AVFoundation
 import flutter_callkit_incoming
 
 @main
@@ -20,6 +21,31 @@ import flutter_callkit_incoming
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+    // Speakerphone routing for in-call audio. flutter_sound's voice-processing
+    // pins the session output to the earpiece(receiver); Dart calls this after
+    // the mic pipeline is up to force the loudspeaker — unless a headset/AirPods
+    // is connected, in which case we clear the override and keep that route.
+    if let messenger = engineBridge.pluginRegistry
+      .registrar(forPlugin: "BeaverAudioRoute")?.messenger() {
+      let channel = FlutterMethodChannel(
+        name: "beavertalk/audio", binaryMessenger: messenger)
+      channel.setMethodCallHandler { call, result in
+        guard call.method == "routeToSpeaker" else {
+          result(FlutterMethodNotImplemented)
+          return
+        }
+        let session = AVAudioSession.sharedInstance()
+        let external: Set<AVAudioSession.Port> = [
+          .headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE,
+          .carAudio, .airPlay, .usbAudio,
+        ]
+        let onExternal = session.currentRoute.outputs.contains {
+          external.contains($0.portType)
+        }
+        try? session.overrideOutputAudioPort(onExternal ? .none : .speaker)
+        result(nil)
+      }
+    }
   }
 
   // VoIP token → hand to the plugin, which surfaces it to Flutter via

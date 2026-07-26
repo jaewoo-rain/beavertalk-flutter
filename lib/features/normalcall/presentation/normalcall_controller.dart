@@ -5,8 +5,15 @@ import 'dart:typed_data';
 
 import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart'
-    show ValueNotifier, debugPrint, kDebugMode, kIsWeb;
+    show
+        ValueNotifier,
+        debugPrint,
+        defaultTargetPlatform,
+        kDebugMode,
+        kIsWeb,
+        TargetPlatform;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -219,6 +226,11 @@ class NormalCallController extends Notifier<CallState> {
   StreamSubscription<dynamic>? _wsSub;
 
   FlutterSoundRecorder? _recorder;
+
+  /// Native channel to force loudspeaker (speakerphone) routing during a call —
+  /// see ios/Runner/AppDelegate.swift `beavertalk/audio`.
+  static const MethodChannel _audioRouteChannel =
+      MethodChannel('beavertalk/audio');
   StreamController<Uint8List>? _micController;
   StreamSubscription<Uint8List>? _micSub;
 
@@ -539,6 +551,17 @@ class NormalCallController extends Notifier<CallState> {
       // Start streaming the mic to the server.
       await _startMic();
       if (myGen != _gen) return _abortStart();
+
+      // Force the loudspeaker (speakerphone). flutter_sound's voice-processing
+      // recorder just re-pinned the session to the earpiece(receiver), undoing
+      // the defaultToSpeaker option; override to the speaker now that the mic is
+      // up. iOS-only, best-effort; the native side keeps a headset/AirPods route
+      // if one is connected. `audio_session` can't do this (no output override).
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+        } catch (_) {}
+      }
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
