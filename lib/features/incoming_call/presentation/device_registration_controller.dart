@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -41,6 +42,10 @@ class DeviceRegistrationController {
   StreamSubscription<String>? _tokenSub;
   StreamSubscription<CallEvent?>? _voipSub;
   StreamSubscription<AuthState>? _authSub;
+
+  /// Native channel (AppDelegate) for the authoritative PushKit VoIP token —
+  /// read straight from PKPushRegistry, bypassing the callkit plugin bridge.
+  static const MethodChannel _audioChannel = MethodChannel('beavertalk/audio');
 
   /// 마지막으로 등록에 성공한 토큰(중복 POST 억제용).
   String? _lastRegistered;
@@ -101,7 +106,7 @@ class DeviceRegistrationController {
       try {
         for (var attempt = 0; attempt < 15; attempt++) {
           if (Supabase.instance.client.auth.currentSession == null) return;
-          final token = await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+          final token = await _readVoipToken();
           if (token != null && token.isNotEmpty) {
             await _register(token);
             return;
@@ -115,6 +120,19 @@ class DeviceRegistrationController {
     }
     final token = await fcm.getToken();
     if (token != null) await _register(token);
+  }
+
+  /// iOS VoIP 토큰을 읽는다: 우선 native(PKPushRegistry 직접) → 실패 시 플러그인.
+  /// native 경로가 브릿지 타이밍/유실 문제를 우회한다.
+  Future<String?> _readVoipToken() async {
+    try {
+      final t = await _audioChannel.invokeMethod<String>('getVoipToken');
+      if (t != null && t.isNotEmpty) return t;
+    } catch (_) {}
+    try {
+      return await FlutterCallkitIncoming.getDevicePushTokenVoIP();
+    } catch (_) {}
+    return null;
   }
 
   /// [token] 을 서버에 등록한다(미인증/중복이면 스킵).

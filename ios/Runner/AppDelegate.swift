@@ -12,6 +12,8 @@ import flutter_callkit_incoming
   // VoIP token is never obtained — which is why `device_token` had ZERO ios_voip
   // rows and scheduled calls never rang on iOS.
   private var voipRegistry: PKPushRegistry?
+  // Captured in pushRegistry(didUpdate:) and exposed to Dart via getVoipToken.
+  private var voipTokenHex: String?
 
   override func application(
     _ application: UIApplication,
@@ -52,11 +54,25 @@ import flutter_callkit_incoming
           // Dart asks before opening the recorder so it can disable voice
           // processing when a headset is present (see below).
           result(self?.isHeadsetConnected() ?? false)
+        case "getVoipToken":
+          // Authoritative VoIP token straight from PKPushRegistry — bypasses the
+          // callkit plugin bridge (which can drop the token if didUpdate fires
+          // before the plugin's sharedInstance exists). Returns nil if PushKit
+          // has not issued a token yet.
+          result(self?.currentVoipTokenHex())
         default:
           result(FlutterMethodNotImplemented)
         }
       }
     }
+  }
+
+  /// Current PushKit VoIP token as a hex string, or nil if none yet. Prefers the
+  /// value captured in `didUpdate`, else queries the registry directly.
+  private func currentVoipTokenHex() -> String? {
+    if let t = voipTokenHex, !t.isEmpty { return t }
+    guard let data = voipRegistry?.pushToken(for: .voIP) else { return nil }
+    return data.map { String(format: "%02x", $0) }.joined()
   }
 
   // MARK: - In-call audio routing
@@ -167,6 +183,7 @@ import flutter_callkit_incoming
     for type: PKPushType
   ) {
     let token = credentials.token.map { String(format: "%02x", $0) }.joined()
+    voipTokenHex = token
     SwiftFlutterCallkitIncomingPlugin.sharedInstance?.setDevicePushTokenVoIP(token)
   }
 
