@@ -29,22 +29,87 @@ import flutter_callkit_incoming
       .registrar(forPlugin: "BeaverAudioRoute")?.messenger() {
       let channel = FlutterMethodChannel(
         name: "beavertalk/audio", binaryMessenger: messenger)
-      channel.setMethodCallHandler { call, result in
-        guard call.method == "routeToSpeaker" else {
+      channel.setMethodCallHandler { [weak self] call, result in
+        switch call.method {
+        case "routeToSpeaker":
+          // Start-of-call: evaluate once (accurate before any override) and
+          // observe route changes for the rest of the call.
+          self?.startCallAudioRouting()
+          result(nil)
+        case "stopCallAudioRouting":
+          // End-of-call: stop observing and clear the override.
+          self?.stopCallAudioRouting()
+          result(nil)
+        default:
           result(FlutterMethodNotImplemented)
-          return
         }
-        let session = AVAudioSession.sharedInstance()
-        let external: Set<AVAudioSession.Port> = [
-          .headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE,
-          .carAudio, .airPlay, .usbAudio,
-        ]
-        let onExternal = session.currentRoute.outputs.contains {
-          external.contains($0.portType)
-        }
-        try? session.overrideOutputAudioPort(onExternal ? .none : .speaker)
-        result(nil)
       }
+    }
+  }
+
+  // MARK: - In-call audio routing
+  //
+  // flutter_sound's voice-processing pins the session output to the receiver
+  // (earpiece). We want: any headset/AirPods connected → use it; nothing
+  // external → loudspeaker (not the earpiece). A single one-shot check races BT
+  // HFP negotiation — AirPods attach a beat AFTER the session activates, and
+  // once we force `.speaker` the current route reads as the speaker, hiding the
+  // AirPods entirely. So we observe route changes for the whole call: when a new
+  // device appears we drop the override so audio follows it; when it's removed
+  // we fall back to the speaker. This is what makes AirPods connect reliably.
+  private var callAudioRoutingActive = false
+
+  private func startCallAudioRouting() {
+    let session = AVAudioSession.sharedInstance()
+    if !callAudioRoutingActive {
+      callAudioRoutingActive = true
+      NotificationCenter.default.addObserver(
+        self, selector: #selector(handleAudioRouteChange(_:)),
+        name: AVAudioSession.routeChangeNotification, object: session)
+    }
+    applyCallAudioRoute()
+  }
+
+  private func stopCallAudioRouting() {
+    if callAudioRoutingActive {
+      callAudioRoutingActive = false
+      NotificationCenter.default.removeObserver(
+        self, name: AVAudioSession.routeChangeNotification, object: nil)
+    }
+    try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+  }
+
+  /// Evaluate the *current* route (accurate only before we force an override):
+  /// external device present → clear the override so it is used; otherwise push
+  /// to the loudspeaker.
+  private func applyCallAudioRoute() {
+    let session = AVAudioSession.sharedInstance()
+    let external: Set<AVAudioSession.Port> = [
+      .headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE,
+      .carAudio, .airPlay, .usbAudio,
+    ]
+    let onExternal = session.currentRoute.outputs.contains {
+      external.contains($0.portType)
+    }
+    try? session.overrideOutputAudioPort(onExternal ? .none : .speaker)
+  }
+
+  @objc private func handleAudioRouteChange(_ note: Notification) {
+    guard callAudioRoutingActive,
+          let info = note.userInfo,
+          let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
+          let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
+    else { return }
+    switch reason {
+    case .newDeviceAvailable:
+      // AirPods/headset just connected → drop any speaker override so audio
+      // follows the new device (the system default is now that device).
+      try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+    case .oldDeviceUnavailable:
+      // Headset/AirPods removed mid-call → back to the loudspeaker.
+      applyCallAudioRoute()
+    default:
+      break
     }
   }
 

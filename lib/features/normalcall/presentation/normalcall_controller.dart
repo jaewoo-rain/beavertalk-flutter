@@ -1258,6 +1258,15 @@ class NormalCallController extends Notifier<CallState> {
     await _micController?.close();
     _micController = null;
 
+    // Stop in-call audio routing: remove the native route-change observer and
+    // clear the speaker override so the session doesn't stay forced to the
+    // loudspeaker after the call. Pairs with 'routeToSpeaker' in [start].
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        await _audioRouteChannel.invokeMethod<void>('stopCallAudioRouting');
+      } catch (_) {}
+    }
+
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
     _pcmActive = false;
