@@ -52,21 +52,20 @@ import flutter_callkit_incoming
   // The goal: AirPods/headset connected → use it (both mic and output); nothing
   // external → loudspeaker (not the earpiece).
   //
-  // Earlier attempts used `overrideOutputAudioPort(.speaker)`. Two problems:
-  //   1. An override is NOT sticky — pulling Control Center / any interruption
-  //      resets it, dropping speaker back to the receiver.
-  //   2. flutter_sound's recorder re-sets the session CATEGORY when it starts,
-  //      often WITHOUT `.allowBluetooth`, so AirPods never appear in the route
-  //      and no amount of setPreferredInput can reach them.
+  // We OWN the category once, at call start (after flutter_sound's recorder has
+  // configured the session): `.playAndRecord` + `.voiceChat` +
+  // `[.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]`. iOS then routes
+  // to a connected BT headset when present (allowBluetooth) and otherwise
+  // DEFAULTS to the speaker (defaultToSpeaker). Both are category-level, so they
+  // survive Control Center WITHOUT any re-application — unlike an
+  // `overrideOutputAudioPort(.speaker)`, which Control Center resets.
   //
-  // The fix is to own the category, not an override: `.playAndRecord` +
-  // `.voiceChat` + `[.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]`.
-  // With these options iOS routes to a connected BT headset when present and
-  // otherwise DEFAULTS to the speaker — both behaviours are category-level and
-  // survive Control Center. We re-assert it on every route change / interruption
-  // (debounced against our own re-apply) so flutter_sound can't quietly drop it.
+  // CRITICAL: do NOT re-apply setCategory/setActive reactively (on interruptions
+  // or generic route changes). Doing so tears down flutter_sound's live audio
+  // units and drops the call (observed: Control Center killed the call). We only
+  // observe real headset connect/disconnect and steer the mic with the light
+  // `setPreferredInput` — which does not disturb an ongoing session.
   private var callAudioRoutingActive = false
-  private var lastRouteApply = Date(timeIntervalSince1970: 0)
 
   private func startCallAudioRouting() {
     let session = AVAudioSession.sharedInstance()
@@ -75,11 +74,11 @@ import flutter_callkit_incoming
       NotificationCenter.default.addObserver(
         self, selector: #selector(handleAudioRouteChange(_:)),
         name: AVAudioSession.routeChangeNotification, object: session)
-      NotificationCenter.default.addObserver(
-        self, selector: #selector(handleAudioInterruption(_:)),
-        name: AVAudioSession.interruptionNotification, object: session)
     }
-    applyCallAudioRoute()
+    try? session.setCategory(.playAndRecord, mode: .voiceChat,
+        options: [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker])
+    try? session.setActive(true)
+    steerInputToHeadset()
   }
 
   private func stopCallAudioRouting() {
@@ -87,44 +86,38 @@ import flutter_callkit_incoming
       callAudioRoutingActive = false
       NotificationCenter.default.removeObserver(
         self, name: AVAudioSession.routeChangeNotification, object: nil)
-      NotificationCenter.default.removeObserver(
-        self, name: AVAudioSession.interruptionNotification, object: nil)
     }
-    try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
+    try? AVAudioSession.sharedInstance().setPreferredInput(nil)
   }
 
-  /// Own the category so routing is sticky: BT headset when present, else the
-  /// loudspeaker. Idempotent — only re-applies when the live category/options
-  /// don't already match, so repeated calls don't glitch the audio or loop.
-  private func applyCallAudioRoute() {
+  /// Steer the mic to a Bluetooth/wired headset when one is connected; otherwise
+  /// leave the built-in mic (output already follows the category default). Light
+  /// touch — `setPreferredInput` only, no setCategory/setActive — so it does not
+  /// disrupt a live call.
+  private func steerInputToHeadset() {
     let session = AVAudioSession.sharedInstance()
-    let wanted: AVAudioSession.CategoryOptions =
-      [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]
-    lastRouteApply = Date()
-    if session.category != .playAndRecord ||
-       !session.categoryOptions.isSuperset(of: wanted) {
-      try? session.setCategory(.playAndRecord, mode: .voiceChat, options: wanted)
-    }
-    try? session.setActive(true)
+    let mic = session.availableInputs?.first(where: {
+      $0.portType == .bluetoothHFP || $0.portType == .headsetMic ||
+      $0.portType == .usbAudio || $0.portType == .carAudio
+    })
+    try? session.setPreferredInput(mic)  // nil → back to the built-in mic
   }
 
   @objc private func handleAudioRouteChange(_ note: Notification) {
-    guard callAudioRoutingActive else { return }
-    // Debounce: ignore the route change our own setCategory/setActive just fired,
-    // otherwise we'd re-apply in a loop.
-    if Date().timeIntervalSince(lastRouteApply) < 0.5 { return }
-    applyCallAudioRoute()
-  }
-
-  @objc private func handleAudioInterruption(_ note: Notification) {
     guard callAudioRoutingActive,
           let info = note.userInfo,
-          let raw = info[AVAudioSessionInterruptionTypeKey] as? UInt,
-          let type = AVAudioSession.InterruptionType(rawValue: raw)
+          let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
+          let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
     else { return }
-    // When an interruption (Control Center, a system sound, etc.) ends, the
-    // route/override may have been reset — re-assert our category.
-    if type == .ended { applyCallAudioRoute() }
+    // React ONLY to a headset being physically added/removed (AirPods connect/
+    // disconnect). Ignore Control Center / overrides / config changes — reacting
+    // there (re-activating the session) drops the live call.
+    switch reason {
+    case .newDeviceAvailable, .oldDeviceUnavailable:
+      steerInputToHeadset()
+    default:
+      break
+    }
   }
 
   // VoIP token → hand to the plugin, which surfaces it to Flutter via
