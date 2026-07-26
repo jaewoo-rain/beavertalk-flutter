@@ -79,19 +79,36 @@ import flutter_callkit_incoming
     try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
   }
 
-  /// Evaluate the *current* route (accurate only before we force an override):
-  /// external device present → clear the override so it is used; otherwise push
-  /// to the loudspeaker.
+  /// Route the in-call audio to the best target.
+  ///
+  /// Order: (1) a Bluetooth headset (AirPods) — route BOTH mic and output to it
+  /// via `setPreferredInput`, which is what actually makes AirPods work for a
+  /// two-way call. We look at `availableInputs` (NOT `currentRoute`) because once
+  /// a speaker override is forced the current route reads as the speaker and
+  /// hides the headset. (2) wired/AirPlay output → keep it. (3) nothing external
+  /// → loudspeaker instead of the receiver.
   private func applyCallAudioRoute() {
     let session = AVAudioSession.sharedInstance()
-    let external: Set<AVAudioSession.Port> = [
-      .headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE,
-      .carAudio, .airPlay, .usbAudio,
-    ]
-    let onExternal = session.currentRoute.outputs.contains {
-      external.contains($0.portType)
+    // (1) Bluetooth/USB/car headset with a mic → prefer it for input+output.
+    if let inputs = session.availableInputs,
+       let mic = inputs.first(where: {
+         $0.portType == .bluetoothHFP || $0.portType == .headsetMic ||
+         $0.portType == .usbAudio || $0.portType == .carAudio
+       }) {
+      try? session.overrideOutputAudioPort(.none)
+      try? session.setPreferredInput(mic)
+      return
     }
-    try? session.overrideOutputAudioPort(onExternal ? .none : .speaker)
+    // (2) Wired headphones / A2DP / AirPlay (output-only) → keep that route.
+    let wiredOut: Set<AVAudioSession.Port> = [.headphones, .bluetoothA2DP, .airPlay]
+    if session.currentRoute.outputs.contains(where: { wiredOut.contains($0.portType) }) {
+      try? session.setPreferredInput(nil)
+      try? session.overrideOutputAudioPort(.none)
+      return
+    }
+    // (3) Nothing external → loudspeaker.
+    try? session.setPreferredInput(nil)
+    try? session.overrideOutputAudioPort(.speaker)
   }
 
   @objc private func handleAudioRouteChange(_ note: Notification) {
@@ -100,13 +117,11 @@ import flutter_callkit_incoming
           let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
           let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
     else { return }
+    // Only react to a device being added/removed (AirPods connect/disconnect).
+    // Our own setPreferredInput/override fire .override/.routeConfigurationChange
+    // — reacting to those would loop, so they are ignored.
     switch reason {
-    case .newDeviceAvailable:
-      // AirPods/headset just connected → drop any speaker override so audio
-      // follows the new device (the system default is now that device).
-      try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
-    case .oldDeviceUnavailable:
-      // Headset/AirPods removed mid-call → back to the loudspeaker.
+    case .newDeviceAvailable, .oldDeviceUnavailable:
       applyCallAudioRoute()
     default:
       break
