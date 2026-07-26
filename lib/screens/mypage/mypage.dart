@@ -307,7 +307,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     final picked = await showModalBottomSheet<String>(
       context: context,
       backgroundColor: Colors.transparent,
-      barrierColor: AppColors.scrim,
+      barrierColor: context.c.materialDim,
       isScrollControlled: true,
       builder: (sheetCtx) => StatefulBuilder(
         builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
