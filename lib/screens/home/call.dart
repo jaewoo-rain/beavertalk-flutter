@@ -44,6 +44,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// screens so the video doesn't stretch edge-to-edge on tablets.
   static const double _avatarMaxWidth = 520;
 
+  // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만
+  //   표시 — 오디오 깨짐 원인이 아바타 코덱 경합인지 A/B 확인용(임시). false로 되돌리면 복구.
+  static const bool kDisableAvatarVideo = true;
+
   bool _navigated = false;
 
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
@@ -212,7 +216,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: ClipRect(
-                          child: avatarDir != null
+                          child: avatarDir != null && !kDisableAvatarVideo
                               ? SyncAvatar(
                                   assetDir: avatarDir,
                                   level: callNotifier.avatarLevel,
