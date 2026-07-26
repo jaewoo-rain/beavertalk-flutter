@@ -304,6 +304,15 @@ class NormalCallController extends Notifier<CallState> {
   /// must not race a feed running against the old (releasing) engine.
   bool _feeding = false;
 
+  // DEBUG(audio-glitch): 재생 깨짐 원인 계측(임시 — 확인 후 제거). 아바타 무관 코어 계측.
+  // _dbgLastFeedMs: 직전 _onFeed 벽시계(ms) — 콜백 간 간격이 크면 메인 아이솔레이트
+  //   멈칫(잼)이 오디오 피드를 굶긴 것. _dbgStarveCount: 비버 발화중 언더런 횟수.
+  // _dbgMaxGap: 5초 창 최대 피드 간격. _dbgHeartbeatMs: 마지막 요약(HB) 로그 시각.
+  int _dbgLastFeedMs = 0;
+  int _dbgStarveCount = 0;
+  int _dbgMaxGap = 0;
+  int _dbgHeartbeatMs = 0;
+
   /// True once the jitter prebuffer has filled and real audio is draining. Reset
   /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
   /// mid-turn starve, so resumed audio plays instantly without a re-buffer gap.
@@ -776,6 +785,21 @@ class NormalCallController extends Notifier<CallState> {
   /// starves into a stuck underflow (the fix for the ~1-min cutout).
   Future<void> _onFeed(int remainingFrames) async {
     if (!_pcmActive) return;
+    // DEBUG(audio-glitch): 피드 콜백 간 지연 = 메인스레드 멈칫. 250ms↑면 언더런 위험.
+    final dbgNow = DateTime.now().millisecondsSinceEpoch;
+    if (_dbgLastFeedMs != 0) {
+      final gap = dbgNow - _dbgLastFeedMs;
+      if (gap > _dbgMaxGap) _dbgMaxGap = gap;
+      if (gap > 250) _log('DBG STALL feed gap ${gap}ms (queue ${_queueLen}B)');
+    }
+    _dbgLastFeedMs = dbgNow;
+    if (_dbgHeartbeatMs == 0) _dbgHeartbeatMs = dbgNow;
+    if (dbgNow - _dbgHeartbeatMs >= 5000) {
+      // 5초마다 요약: 큐길이(60초=2,880,000B 근접하면 캡 원인), 굶음 누적, 최대 멈칫.
+      _log('DBG HB queue ${_queueLen}B / starve $_dbgStarveCount / maxGap ${_dbgMaxGap}ms(5s)');
+      _dbgHeartbeatMs = dbgNow;
+      _dbgMaxGap = 0;
+    }
     _feeding = true;
     try {
       final avail = _queueLen;
@@ -810,8 +834,9 @@ class NormalCallController extends Notifier<CallState> {
           // instant (no re-buffer gap).
           if (!_beaverSpeaking) _playing = false;
           if (_lastFeedSilent != true) {
+            if (_beaverSpeaking) _dbgStarveCount++; // DEBUG(audio-glitch)
             _log('feed silence — queue empty'
-                '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
+                '${_beaverSpeaking ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
             _lastFeedSilent = true;
           }
           // Idle-ungate countdown (covers a missed turn_end so the mic can't
