@@ -1,5 +1,4 @@
 import 'dart:math' as math;
-import 'dart:ui' as ui;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -60,8 +59,34 @@ class ChallengePainter extends CustomPainter {
   /// `Background/Normal/Normal` for the current mode — the game canvas fill.
   final Color _background;
 
-  /// Per-(word,colour) laid-out text cache — avoids re-layout every frame.
-  static final Map<String, TextPainter> _wordCache = <String, TextPainter>{};
+  /// Per-word cache of the (outline, fill) layers — avoids re-layout each frame.
+  static final Map<String, (TextPainter, TextPainter)> _wordCache =
+      <String, (TextPainter, TextPainter)>{};
+
+  /// In-plane twist about the Z axis (radians) — the diagonal slant of the
+  /// floating sentence. Negative = counter-clockwise (reads upward to the
+  /// right). Flat rotation only (no 3D fold), per the chosen design.
+  static const double _kTextTilt = -0.38;
+
+  /// Wrap width (design px): the sentence lays out across multiple lines at this
+  /// width instead of shrinking onto one line, so long text stays readable.
+  static const double _kWrapWidth = 360;
+
+  /// Caps on the wrapped text block; only if it exceeds these does it scale down
+  /// (a very long sentence with many lines), so it never overruns the belt.
+  static const double _kMaxTextWidth = 360;
+  static const double _kMaxTextHeight = 470;
+
+  /// Design-space font size of the floating card text.
+  static const double _kTextFontSize = 62;
+
+  /// Outline (stroke) width around the floating white text — keeps it legible
+  /// over the camera selfie / belt regardless of what's behind it.
+  static const double _kTextOutline = 11;
+
+  /// Fill + outline colours for the floating text (design A: white on dark).
+  static const Color _kTextFill = Color(0xFFFFFFFF);
+  static const Color _kTextOutlineColor = Color(0xFF0C0F14);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -191,7 +216,9 @@ class ChallengePainter extends CustomPainter {
     );
   }
 
-  // ── card (web game drawCard, 512–530) ───────────────────────────────
+  // ── card = floating outlined sentence (design A: white text + dark outline,
+  //    no plank; the word/sentence just floats on the belt, tilted on the Z
+  //    axis so it reads on a diagonal) ─────────────────────────────────────
   void _drawCard(Canvas canvas, ChallengeCard c) {
     final cy = c.state == CardState.live ? GameConfig.beltY : c.y;
     final a = c.alpha.clamp(0.0, 1.0);
@@ -199,86 +226,65 @@ class ChallengePainter extends CustomPainter {
     canvas.translate(c.x, cy);
     if (c.rot != 0) canvas.rotate(c.rot);
 
-    const halfW = GameConfig.cardW / 2;
-    const halfH = GameConfig.cardH / 2;
-
-    // Shadow.
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(-halfW + 8, -halfH + 14, GameConfig.cardW,
-            GameConfig.cardH),
-        const Radius.circular(22),
-      ),
-      Paint()..color = Color.fromRGBO(0, 0, 0, 0.35 * a),
-    );
-
-    // Wood plank.
-    final plank = RRect.fromRectAndRadius(
-      const Rect.fromLTWH(-halfW, -halfH, GameConfig.cardW, GameConfig.cardH),
-      const Radius.circular(22),
-    );
-    final grad = ui.Gradient.linear(
-      const Offset(0, -halfH),
-      const Offset(0, halfH),
-      <Color>[
-        Color.fromRGBO(0xC8, 0x94, 0x4E, a),
-        Color.fromRGBO(0xA9, 0x76, 0x2F, a),
-      ],
-    );
-    canvas.drawRRect(plank, Paint()..shader = grad);
-    canvas.drawRRect(
-      plank,
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 4
-        ..color = Color.fromRGBO(80, 50, 20, 0.5 * a),
-    );
-
-    // Grain.
-    final grain = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 2
-      ..color = Color.fromRGBO(120, 75, 30, 0.25 * a);
-    for (var i = -2; i <= 2; i++) {
-      final gy = i * 36.0;
-      final path = Path()
-        ..moveTo(-halfW + 16, gy)
-        ..cubicTo(-20, gy - 10, 20, gy + 10, halfW - 16, gy);
-      canvas.drawPath(path, grain);
-    }
-
-    // Word (cached layout; alpha via a save-layer when fading).
-    final tp = _wordPainter(c.word, c.colorIndex);
+    final (outline, fill) = _wordLayers(c.word);
+    // Fade via a save-layer when passing/missing. Bounds are generous (the
+    // rotated text has no card box to clip to).
     final needLayer = a < 0.999;
     if (needLayer) {
       canvas.saveLayer(
-        const Rect.fromLTWH(-halfW, -halfH, GameConfig.cardW, GameConfig.cardH),
+        Rect.fromCenter(center: Offset.zero, width: 460, height: 460),
         Paint()..color = Color.fromRGBO(255, 255, 255, a),
       );
     }
-    tp.paint(canvas, Offset(-tp.width / 2, -tp.height / 2 + 4));
+    canvas.save();
+    canvas.rotate(_kTextTilt); // twist the sentence onto its diagonal (Z axis)
+    // The text already wrapped to [_kWrapWidth]; only scale down if the wrapped
+    // block still overruns the width/height caps (a very long sentence).
+    final scale = math.min(
+      1.0,
+      math.min(
+        _kMaxTextWidth / outline.width,
+        _kMaxTextHeight / outline.height,
+      ),
+    );
+    if (scale < 1.0) canvas.scale(scale);
+    // Outline first (behind), then the white fill on top.
+    outline.paint(canvas, Offset(-outline.width / 2, -outline.height / 2));
+    fill.paint(canvas, Offset(-fill.width / 2, -fill.height / 2));
+    canvas.restore();
     if (needLayer) canvas.restore();
 
     canvas.restore();
   }
 
-  TextPainter _wordPainter(String word, int colorIndex) {
-    final key = '$word|$colorIndex';
-    return _wordCache.putIfAbsent(key, () {
-      final tp = TextPainter(
-        text: TextSpan(
-          text: word,
-          style: TextStyle(
-            fontFamily: kFontFamily,
-            fontSize: 62,
-            fontWeight: FontWeight.w800,
-            color: cardColors[colorIndex % cardColors.length],
-          ),
-        ),
-        textAlign: TextAlign.center,
-        textDirection: TextDirection.ltr,
-      )..layout();
-      return tp;
+  /// Builds (and caches) the two text layers for [word]: a thick dark outline
+  /// and the white fill on top, so the floating text stays legible over the
+  /// camera selfie / belt.
+  (TextPainter, TextPainter) _wordLayers(String word) {
+    return _wordCache.putIfAbsent(word, () {
+      TextPainter make(Paint paint) => TextPainter(
+            text: TextSpan(
+              text: word,
+              style: TextStyle(
+                fontFamily: kFontFamily,
+                fontSize: _kTextFontSize,
+                fontWeight: FontWeight.w900,
+                height: 1.15,
+                foreground: paint,
+              ),
+            ),
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.ltr,
+            // Wrap long sentences across lines (identical layout for both
+            // layers so the outline sits exactly under the fill).
+          )..layout(maxWidth: _kWrapWidth);
+      final outline = make(Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = _kTextOutline
+        ..strokeJoin = StrokeJoin.round
+        ..color = _kTextOutlineColor);
+      final fill = make(Paint()..color = _kTextFill);
+      return (outline, fill);
     });
   }
 

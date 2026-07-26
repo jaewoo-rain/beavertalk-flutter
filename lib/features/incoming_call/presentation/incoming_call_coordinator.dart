@@ -158,8 +158,24 @@ class IncomingCallCoordinator {
     // (방금 시작한 통화를 끊게 됨). 현재 ended 핸들러는 dedup 제거만 하므로 그대로 둔다.
     await callkit.endAllCalls();
 
+    // iOS 레이스 방지(P1의 후속): endAllCalls는 CallKit 콜을 끝내지만, iOS는
+    // 그에 따른 AVAudioSession 비활성화(provider didDeactivate)를 **1~3초 뒤에
+    // 비동기로** 수행한다. 그 사이 normalcall이 세션을 활성화·마이크를 열면,
+    // 뒤늦은 비활성화가 세션을 꺼서 마이크가 무음이 되고(서버 로그: USER 무음/
+    // 전사없음) 통화가 수 초 만에 끊긴다. CallKit이 세션을 완전히 relinquish할
+    // 시간을 준 뒤 통화를 시작한다. (홈에서 건 통화는 CallKit 미경유라 무관.)
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await Future<void>.delayed(_iosCallKitAudioReleaseDelay);
+    }
+
     await _navigateToCall(payload.characterId);
   }
+
+  /// endAllCalls 후 iOS가 CallKit 오디오 세션을 놓아줄 때까지의 정착 대기.
+  /// didDeactivate는 보통 ~1s 내지만 여유를 둔다. 이 사이 사용자는 CallKit 수락
+  /// 애니메이션을 보므로 체감 지연이 거의 없다.
+  static const Duration _iosCallKitAudioReleaseDelay =
+      Duration(milliseconds: 1400);
 
   /// 1분 미응답 처리: 부재중 배너 + dedup 정리.
   Future<void> _onTimeout({required String uuid, required String name}) async {

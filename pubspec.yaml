@@ -94,9 +94,17 @@ dependencies:
   country_flags: ^4.1.2
   record: ^7.1.1
   camera: ^0.12.0+1
-  vosk_flutter_2: ^1.0.5
+  # 영상통화 아바타 — 뉴럴 생성 talking/idle 루프 재생(자연스러운 발화 모션).
+  video_player: ^2.9.2
   path_provider: ^2.1.6
   shared_preferences: ^2.5.5
+
+  # Apple Sign In. iOS uses the native sheet → id_token → Supabase
+  # signInWithIdToken; Android/web use the browser OAuth fallback. crypto hashes
+  # (SHA-256) the nonce Apple binds into the id_token for replay protection.
+  sign_in_with_apple: ^8.1.0
+  crypto: ^3.0.7
+  audio_session: ^0.2.4
 
 dev_dependencies:
   flutter_test:
@@ -134,6 +142,12 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/3d/
+    # 영상통화 아바타 스프라이트(립싱크 크로스페이드 + 표정): 캐릭터별 입4단·눈감기·표정4.
+    - assets/avatar/baba/
+    - assets/avatar/bibi/
+    - assets/avatar/dudu/
+    - assets/avatar/popo/
+    - assets/avatar/rara/
     # API_BASE_URL override (bundled so web builds can read it; optional).
     - .env
 

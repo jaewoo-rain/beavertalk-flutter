@@ -132,6 +132,11 @@ class BeaverTalkApp extends ConsumerWidget {
     final base = ThemeData(brightness: brightness);
     return ThemeData(
       useMaterial3: true,
+      // Pin the platform so iOS renders the SAME Material design as Android —
+      // page transitions, scroll physics(글로우), text selection, etc. Without
+      // this, Material auto-adapts on iOS (Cupertino slide + bounce scroll) and
+      // the app diverges from the Android design it was built against.
+      platform: TargetPlatform.android,
       brightness: brightness,
       scaffoldBackgroundColor: tokens.backgroundNormalDeep,
       fontFamily: kFontFamily,

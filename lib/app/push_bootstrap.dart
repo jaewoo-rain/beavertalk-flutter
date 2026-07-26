@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +36,24 @@ Future<void> initIncomingCallLocal(ProviderContainer container) async {
     await container.read(incomingCallCoordinatorProvider).attach();
     // 저장된 알람 시각에 로컬로 전화를 띄우는 스케줄러 시작(앱 생존 중에만 동작).
     await container.read(inboundCallSchedulerProvider).start();
+
+    // 디바이스 토큰 등록을 **FCM 배선과 독립적으로, 그 前에** 시작한다.
+    // iOS VoIP 등록은 PushKit 경로라 Firebase 가 전혀 필요 없다. 이전에는 이 등록이
+    // _initFcm 깊숙이(FirebaseMessaging.onBackgroundMessage / requestPermission /
+    // onForegroundMessage 뒤)에 있어서, 그 Firebase 호출들이 iOS 에서 throw/hang 하면
+    // _initFcm 이 중단돼 등록까지 건너뛰었다 → member 의 device_token 이 0건이 되고
+    // 잠금화면 예약전화(VoIP)가 오지 않았다. fire-and-forget 로 띄워 requestPermission
+    // 권한 다이얼로그 대기 등이 등록을 막지 않게 한다(내부 폴링이 토큰을 기다린다).
+    if (kDeviceRegistrationEnabled) {
+      unawaited(
+        container
+            .read(deviceRegistrationControllerProvider)
+            .start()
+            .catchError((Object e, StackTrace s) {
+          if (kDebugMode) debugPrint('[push_bootstrap] device 등록 실패(무시): $e');
+        }),
+      );
+    }
 
     // ── 여기부터 FCM(밖에서 앱을 깨우는 트리거) 배선 ──
     // 위 로컬 트리거들과 동일한 CallKit 수신 화면을 재사용한다. Firebase.initializeApp은
@@ -108,17 +128,19 @@ Future<void> _initFcm(ProviderContainer container) async {
       }
     });
 
-    // 토큰 확인: 디버그 로그로 확인(FCM 테스트용).
-    final token = await fcm.getToken();
-    if (kDebugMode) debugPrint('[fcm] token=$token');
-    fcm.onTokenRefresh.listen((t) {
-      if (kDebugMode) debugPrint('[fcm] token refreshed=$t');
-    });
+    // (device 토큰 등록은 initIncomingCallLocal 로 이동 — FCM 배선 실패와 무관하게
+    //  실행되어야 iOS VoIP 등록이 보장된다.)
 
-    // 서버 `POST /devices`로 토큰 자동 등록. 배선은 항상 준비돼 있고, 서버가 배포되면
-    // kDeviceRegistrationEnabled=true 로 켜면 로그인/토큰갱신 시 자동 등록된다.
-    if (kDeviceRegistrationEnabled) {
-      await container.read(deviceRegistrationControllerProvider).start();
+    // 토큰 확인: 디버그 로그로 확인(FCM 테스트용). iOS 는 APNs 미구성 시 getToken()이
+    // throw/지연 할 수 있어 자체 try/catch 로 격리한다.
+    try {
+      final token = await fcm.getToken();
+      if (kDebugMode) debugPrint('[fcm] token=$token');
+      fcm.onTokenRefresh.listen((t) {
+        if (kDebugMode) debugPrint('[fcm] token refreshed=$t');
+      });
+    } catch (e) {
+      if (kDebugMode) debugPrint('[fcm] getToken 실패(무시): $e');
     }
   } catch (e, s) {
     // FCM 배선 실패가 로컬 트리거/앱 부팅을 막지 않도록 삼킨다.

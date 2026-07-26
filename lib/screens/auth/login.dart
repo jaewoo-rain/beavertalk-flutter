@@ -39,9 +39,10 @@ const _googleClientId =
 /// Supabase session via `signInWithIdToken`. The AuthGate then shows home (or
 /// onboarding for a first-time user).
 ///
-/// **Kakao and Apple are real too** via Supabase OAuth (external browser → deep
-/// link `kOAuthRedirect` → `onAuthStateChange` → AuthGate). Apple uses the same
-/// browser-OAuth fallback on Android; its iOS-native path is future work.
+/// **Kakao** is real via Supabase OAuth (external browser → deep link
+/// `kOAuthRedirect` → `onAuthStateChange` → AuthGate). **Apple** is native on
+/// iOS (Sign in with Apple → `signInWithIdToken`) and falls back to browser
+/// OAuth on Android/web; the controller picks the path per platform.
 class LoginScreen extends ConsumerStatefulWidget {
   /// Creates the login landing screen.
   const LoginScreen({super.key});
@@ -190,10 +191,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
-  /// Apple sign-in via Supabase OAuth (external browser) — Android/web path. Like
-  /// Kakao, the session returns asynchronously through the deep link →
-  /// `onAuthStateChange` → AuthGate re-routes; no navigation here. (iOS native
-  /// Sign in with Apple is future work — needs a Mac/Xcode capability.)
+  /// Apple sign-in. On iOS the controller runs the native Sign in with Apple
+  /// sheet and sets the session directly; on Android/web it opens Supabase
+  /// browser OAuth and the session returns asynchronously via the deep link →
+  /// `onAuthStateChange` → AuthGate. The controller branches per platform, so
+  /// this handler stays identical for both — it only surfaces a failure.
   Future<void> _appleLogin() async {
     if (_appleBusy) return;
     final l10n = AppLocalizations.of(context);

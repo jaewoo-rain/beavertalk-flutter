@@ -1,4 +1,10 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
@@ -259,11 +265,20 @@ class AuthController extends Notifier<AuthStatus> {
   ///
   /// Returns as soon as the browser is launched; the session arrives
   /// asynchronously. Throws [AppException] if the browser can't be launched.
+  ///
+  /// `scopes` is pinned to `account_email` on purpose: the Kakao app's consent
+  /// items (동의항목) expose email only. Supabase's default Kakao scope set also
+  /// requests `profile_nickname`/`profile_image`, which — not being configured
+  /// as consent items — makes Kakao reject the consent step. Requesting only the
+  /// scope the app actually consents to keeps login working. (`account_email`
+  /// for real users requires the Kakao app to be a 비즈 앱; that conversion is
+  /// done.) Add nickname/profile here only after enabling them as consent items.
   Future<void> signInWithKakao() async {
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.kakao,
         redirectTo: kOAuthRedirect,
+        scopes: 'account_email',
         authScreenLaunchMode: LaunchMode.externalApplication,
       );
     } on AuthException catch (e) {
@@ -271,21 +286,54 @@ class AuthController extends Notifier<AuthStatus> {
     }
   }
 
-  /// Apple sign-in via Supabase OAuth (external browser) — the Android/web path.
-  /// Apple has no Android native SDK, so this opens Apple's consent page in an
-  /// external browser (Services ID `im.beavertalk.beavertalk` + the .p8-signed
-  /// secret configured in Supabase); on success the deep link [kOAuthRedirect]
-  /// returns to the app and `onAuthStateChange` flips the gate — so, like Kakao,
-  /// this method does NOT set [state] and needs no post-login navigation.
+  /// Apple sign-in.
   ///
-  /// NOTE: the iOS *native* path (App ID `beavertalk.beavertalk.im` via
-  /// `sign_in_with_apple` → `signInWithIdToken(OAuthProvider.apple, nonce: …)`)
-  /// is future work — it needs an Xcode "Sign in with Apple" capability and a Mac
-  /// build, so every platform uses this browser OAuth fallback for now.
+  /// **iOS** uses the *native* Sign in with Apple sheet (`sign_in_with_apple`):
+  /// a random nonce is generated, its SHA-256 handed to Apple, and the returned
+  /// id_token (`aud` = the App ID `im.beavertalk.beavertalk`, which is in
+  /// Supabase's Apple "Client IDs") is exchanged for a Supabase session via
+  /// `signInWithIdToken` with the raw nonce. No browser, no Service ID web
+  /// config. On success this branch sets [state] itself.
   ///
-  /// Returns as soon as the browser is launched. Throws [AppException] if the
-  /// browser can't be launched.
+  /// **Android / web** fall back to Supabase browser OAuth against the Service ID
+  /// `beavertalk.beavertalk.im`; on success the deep link [kOAuthRedirect] returns
+  /// and `onAuthStateChange` flips the gate (so this branch does NOT set [state]).
+  /// That path only works once the Service ID's Sign in with Apple return URL is
+  /// configured; Android Apple wiring is finalized separately.
+  ///
+  /// Throws [AppException] on failure (caller shows it). A user cancel is a no-op.
   Future<void> signInWithApple() async {
+    final native = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    if (native) {
+      try {
+        final rawNonce = _generateNonce();
+        final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: const [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+          nonce: hashedNonce,
+        );
+        final idToken = credential.identityToken;
+        if (idToken == null || idToken.isEmpty) {
+          throw const UnknownFailure('애플 로그인 토큰을 받지 못했어요.');
+        }
+        await _client.auth.signInWithIdToken(
+          provider: OAuthProvider.apple,
+          idToken: idToken,
+          nonce: rawNonce,
+        );
+        state = AuthStatus.authenticated;
+      } on SignInWithAppleAuthorizationException catch (e) {
+        // User dismissed the sheet — not a failure worth surfacing.
+        if (e.code == AuthorizationErrorCode.canceled) return;
+        throw UnknownFailure(e.message);
+      } on AuthException catch (e) {
+        throw _mapAuthException(e, context: _AuthContext.login);
+      }
+      return;
+    }
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.apple,
@@ -295,6 +343,17 @@ class AuthController extends Notifier<AuthStatus> {
     } on AuthException catch (e) {
       throw _mapAuthException(e, context: _AuthContext.login);
     }
+  }
+
+  /// Cryptographically-random nonce for Sign in with Apple. Apple embeds its
+  /// SHA-256 in the returned id_token; Supabase re-hashes the raw value passed to
+  /// `signInWithIdToken` and checks the two match — which defeats id_token replay.
+  String _generateNonce([int length = 32]) {
+    const chars =
+        '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => chars[random.nextInt(chars.length)])
+        .join();
   }
 
   /// Explicit logout — signs out of Supabase, drops the cached profile, shows

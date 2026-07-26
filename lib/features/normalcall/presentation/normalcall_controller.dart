@@ -1,9 +1,19 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math' as math;
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, kIsWeb;
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart'
+    show
+        ValueNotifier,
+        debugPrint,
+        defaultTargetPlatform,
+        kDebugMode,
+        kIsWeb,
+        TargetPlatform;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -152,10 +162,76 @@ final normalCallControllerProvider =
 
 /// Notifier implementing the normalcall socket + audio pipeline.
 class NormalCallController extends Notifier<CallState> {
+  // ── Avatar lip-sync signals (video-call avatar; see avatar_view.dart) ───────
+  // Gemini Live returns raw PCM with no viseme timing, so the mouth is driven
+  // from the audio envelope. These are published from the PCM *about to play*
+  // (in [_onFeed] via [_takeArray]) — NOT from arrival time — because the
+  // playback queue buffers seconds ahead, so arrival-time RMS would lead the
+  // sound. In-memory only; consumed by [BeaverAvatar]. Additive: the audio
+  // pipeline itself is unchanged.
+
+  /// Live mouth-open level, 0 (closed) .. 1 (wide), from the RMS of the audio
+  /// currently being fed to the player. ~10Hz; the widget smooths to 60fps.
+  final ValueNotifier<double> avatarLevel = ValueNotifier<double>(0.0);
+
+  /// True while the beaver is speaking (mirrors [_beaverSpeaking]).
+  final ValueNotifier<bool> avatarSpeaking = ValueNotifier<bool>(false);
+
+  /// Current avatar emotion code (0 neutral/smug, 1 happy, 2 surprised, 3 sad,
+  /// 4 angry), classified from the beaver's streamed line so the face reacts to
+  /// what it says. Reset to neutral each turn; set sticky within a turn.
+  final ValueNotifier<int> avatarEmotion = ValueNotifier<int>(0);
+
+  /// Mouth SHAPE, −1 (round "OO") .. 0 ("AH") .. +1 (wide "EE"), from the
+  /// zero-crossing rate of the audio about to play (a cheap spectral-tilt proxy:
+  /// high ZCR = front/fricative → wide, low ZCR = back vowel → round). Lets the
+  /// mouth form vowel shapes instead of a generic open/close. The widget smooths
+  /// it. Characters without EE/OO sprites simply ignore this.
+  final ValueNotifier<double> avatarShape = ValueNotifier<double>(0.0);
+
+  /// Keyword lexicon for the (heuristic) emotion classifier. Keyed by the same
+  /// codes as [avatarEmotion]. Korean + English; matched case-insensitively.
+  static const Map<int, List<String>> _emotionLexicon = {
+    1: ['하하', 'ㅋㅋ', 'ㅎㅎ', '좋아', '좋은', '좋네', '좋다', '최고', '굿', '짱', '잘했',
+      '대단', '훌륭', '기뻐', '신나', '행복', '사랑', 'good', 'great', 'awesome',
+      'nice', 'love', 'cool', 'haha', 'perfect', 'well done', 'yay'],
+    2: ['헐', '대박', '진짜?', '정말?', '뭐?', '우와', '와우', '놀라', '세상에', '믿기',
+      '오마이', 'wow', 'whoa', 'no way', 'oh my', 'really?', 'what?!'],
+    3: ['슬프', '슬퍼', '미안', '아쉽', '안타', '속상', '우울', 'ㅠ', 'ㅜ', '눈물',
+      'sorry', 'sad', 'unfortunately', 'poor'],
+    4: ['짜증', '뭐야', '바보', '멍청', '어이없', '그만', '답답', '흥', '쳇', '열받', '화나',
+      'ugh', 'stupid', 'annoying', 'stop it'],
+  };
+
+  /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
+  /// audio is handed to the player and drained in real time. A single RMS per
+  /// ~200ms feed (≈5Hz) is far too coarse for syllables; this runs at 40Hz so
+  /// the mouth lands on the actual speech.
+  final List<double> _envQueue = <double>[];
+  Timer? _envTimer;
+  static const int _envStepMs = 25;
+
+  /// The native player buffers a little ahead of what is audible, so hold the
+  /// envelope back by this much. Kept small: the avatar switches picture on this
+  /// signal, and a picture that arrives a hair early reads as in-sync while a
+  /// late one reads as broken.
+  static const int _envLeadMs = 25;
+
+  /// RMS below this (near-silence) closes the mouth outright.
+  static const double _avatarRmsGate = 260;
+
+  /// RMS mapped to a fully-open mouth (tuned for Gemini 24k speech).
+  static const double _avatarRmsFull = 5200;
+
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _wsSub;
 
   FlutterSoundRecorder? _recorder;
+
+  /// Native channel to force loudspeaker (speakerphone) routing during a call —
+  /// see ios/Runner/AppDelegate.swift `beavertalk/audio`.
+  static const MethodChannel _audioRouteChannel =
+      MethodChannel('beavertalk/audio');
   StreamController<Uint8List>? _micController;
   StreamSubscription<Uint8List>? _micSub;
 
@@ -389,6 +465,32 @@ class NormalCallController extends Notifier<CallState> {
       }
       if (myGen != _gen) return _abortStart();
 
+      // Route call audio like a loud media/Bluetooth CALL, not the quiet earpiece.
+      // With no explicit session, the voice-processing recorder pins output to the
+      // receiver at call volume and never picks AirPods. playAndRecord +
+      // defaultToSpeaker + allowBluetooth sends it to the speaker / BT headset;
+      // voiceChat keeps the echo canceller working. Best-effort: a failure here
+      // shouldn't abort the call, just leave default routing.
+      //
+      // NO allowBluetoothA2DP: A2DP is an OUTPUT-only (music) profile with no mic.
+      // Allowing it lets iOS route call output over A2DP, which breaks the BT mic
+      // (HFP) path — the beaver is heard but the user's voice is not captured.
+      // HFP (allowBluetooth) carries both mic and speaker for a two-way call.
+      try {
+        final session = await AudioSession.instance;
+        await session.configure(AudioSessionConfiguration(
+          avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+          avAudioSessionCategoryOptions:
+              AVAudioSessionCategoryOptions.defaultToSpeaker |
+                  AVAudioSessionCategoryOptions.allowBluetooth,
+          avAudioSessionMode: AVAudioSessionMode.voiceChat,
+        ));
+        await session.setActive(true);
+      } catch (e) {
+        _log('audio session configure failed: $e');
+      }
+      if (myGen != _gen) return _abortStart();
+
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
       // underflow-churn stall that cut audio out after ~1 minute.
@@ -406,6 +508,8 @@ class NormalCallController extends Notifier<CallState> {
       FlutterPcmSound.setFeedCallback(_onFeed);
       _pcmActive = true;
       _lastFeedSilent = null;
+      _envQueue.clear();
+      _startEnvelope();
       // Kick the pull loop directly instead of FlutterPcmSound.start().
       // start() only kicks when the plugin's *static* `_needsStart` flag is true,
       // and that flag is NEVER reset by release()/setup(): the first call feeds
@@ -455,9 +559,33 @@ class NormalCallController extends Notifier<CallState> {
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
 
+      // iOS: configure the session (playAndRecord + allowBluetooth + voiceChat)
+      // and select a Bluetooth headset input BEFORE opening the recorder. The
+      // voice-processing (VoiceProcessingIO) unit binds to whatever input is
+      // active at open time; if we only set the BT input AFTER _startMic (as the
+      // post-mic call below did), the unit is already pinned to the built-in mic
+      // and the user's voice over AirPods is never captured. Doing it first is
+      // what makes the Bluetooth mic work.
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+        } catch (_) {}
+      }
+
       // Start streaming the mic to the server.
       await _startMic();
       if (myGen != _gen) return _abortStart();
+
+      // Force the loudspeaker (speakerphone). flutter_sound's voice-processing
+      // recorder just re-pinned the session to the earpiece(receiver), undoing
+      // the defaultToSpeaker option; override to the speaker now that the mic is
+      // up. iOS-only, best-effort; the native side keeps a headset/AirPods route
+      // if one is connected. `audio_session` can't do this (no output override).
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+        } catch (_) {}
+      }
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
@@ -529,6 +657,20 @@ class NormalCallController extends Notifier<CallState> {
     // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
     // ("AudioFlinger could not create record track, status: -1"). 잠깐 뒤 다시 열면 되는
     // 일시 실패라, 짧은 백오프로 재시도한다.
+    // iOS: with a headset (AirPods/BT/wired) connected, DISABLE voice processing.
+    // flutter_sound's voice processing (VoiceProcessingIO) refuses the Bluetooth
+    // HFP mic on iOS, so the user's voice was never captured over AirPods. A plain
+    // recorder follows the session route and uses the BT mic. Voice processing is
+    // only needed for the loudspeaker case (echo cancellation) — no headset there.
+    var useVoiceProcessing = true;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        final headset = await _audioRouteChannel
+            .invokeMethod<bool>('isHeadsetConnected');
+        if (headset == true) useVoiceProcessing = false;
+      } catch (_) {}
+    }
+
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
       final recorder = FlutterSoundRecorder();
@@ -540,7 +682,7 @@ class NormalCallController extends Notifier<CallState> {
           codec: Codec.pcm16,
           sampleRate: 16000,
           numChannels: 1,
-          enableVoiceProcessing: true,
+          enableVoiceProcessing: useVoiceProcessing,
           enableEchoCancellation: true,
         );
         if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
@@ -701,7 +843,99 @@ class NormalCallController extends Notifier<CallState> {
     out.setRange(0, byteCount, _pcmQueue, _pcmHead);
     _pcmHead += byteCount;
     _maybeCompact();
+    // Drive the avatar mouth from the samples about to play (matches what's
+    // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
+    _updateAvatarLevel(out, byteCount);
     return PcmArrayInt16(bytes: out.buffer.asByteData());
+  }
+
+  /// Computes the RMS of the PCM16 chunk about to play and publishes it as the
+  /// avatar mouth-open level (0..1), with a perceptual curve so quiet speech
+  /// still parts the mouth. Cheap (~a few thousand ops per ~10Hz feed).
+  void _updateAvatarLevel(Uint8List bytes, int len) {
+    final n = len ~/ 2;
+    if (n == 0) return;
+    final bd = bytes.buffer.asByteData();
+    // One envelope entry per _envStepMs of audio (24kHz mono PCM16).
+    final step = (_playbackSampleRate * _envStepMs) ~/ 1000; // samples
+    var sumSqAll = 0.0;
+    var zc = 0;
+    var prev = 0;
+    var i = 0;
+    while (i < n) {
+      final end = math.min(i + step, n);
+      var sumSq = 0.0;
+      for (var k = i; k < end; k++) {
+        final s = bd.getInt16(k * 2, Endian.little);
+        sumSq += s * s;
+        sumSqAll += s * s;
+        if (k > 0 && (s >= 0) != (prev >= 0)) zc++;
+        prev = s;
+      }
+      final cnt = end - i;
+      final rms = cnt > 0 ? math.sqrt(sumSq / cnt) : 0.0;
+      _envQueue.add(_levelFromRms(rms));
+      i = end;
+    }
+    // Runaway guard: never let the envelope outgrow ~3s of audio.
+    final cap = 3000 ~/ _envStepMs;
+    if (_envQueue.length > cap) {
+      _envQueue.removeRange(0, _envQueue.length - cap);
+    }
+    // Zero-crossing rate → vowel shape (whole chunk is fine for this).
+    final zcr = n > 1 ? zc / (n - 1) : 0.0;
+    avatarShape.value = ((zcr - 0.045) / 0.05).clamp(-1.0, 1.0);
+    // Keep sumSqAll referenced (kept for future tuning/telemetry).
+    assert(sumSqAll >= 0);
+  }
+
+  /// Maps an RMS to a 0..1 mouth-open level (gate + perceptual curve).
+  double _levelFromRms(double rms) {
+    if (rms < _avatarRmsGate) return 0.0;
+    var lvl = rms / _avatarRmsFull;
+    if (lvl > 1) lvl = 1;
+    return math.pow(lvl, 0.7).toDouble();
+  }
+
+  /// Drains the sub-frame envelope in real time so the mouth tracks the audio.
+  /// Holds [_envLeadMs] of it back to offset the player's buffer.
+  void _startEnvelope() {
+    _envTimer?.cancel();
+    final lead = _envLeadMs ~/ _envStepMs;
+    _envTimer = Timer.periodic(
+      const Duration(milliseconds: _envStepMs),
+      (_) {
+        if (_envQueue.length > lead) {
+          avatarLevel.value = _envQueue.removeAt(0);
+        } else if (!_beaverSpeaking) {
+          avatarLevel.value = 0.0;
+        } else {
+          // Brief gap mid-turn: ease shut rather than snapping.
+          avatarLevel.value = avatarLevel.value * 0.6;
+        }
+      },
+    );
+  }
+
+  /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
+  /// counting lexicon hits. Cheap keyword scan; short lines. Ties/none → the
+  /// highest-count wins, 0 when nothing matches.
+  int _classifyEmotion(String line) {
+    if (line.isEmpty) return 0;
+    final t = line.toLowerCase();
+    var best = 0;
+    var bestCount = 0;
+    _emotionLexicon.forEach((code, words) {
+      var c = 0;
+      for (final w in words) {
+        if (t.contains(w)) c++;
+      }
+      if (c > bestCount) {
+        bestCount = c;
+        best = code;
+      }
+    });
+    return best;
   }
 
   /// Compacts [_pcmQueue] once the consumed prefix grows large, so the backing
@@ -723,6 +957,7 @@ class NormalCallController extends Notifier<CallState> {
     _micGateTimer = null;
     _turnEnded = false;
     _beaverSpeaking = true;
+    avatarSpeaking.value = true;
   }
 
   /// Attempts to clear the mic gate. Requires BOTH the turn to have ended AND
@@ -740,6 +975,8 @@ class NormalCallController extends Notifier<CallState> {
       _gateSafetyTimer?.cancel();
       _gateSafetyTimer = null;
       _beaverSpeaking = false;
+      avatarSpeaking.value = false;
+      avatarLevel.value = 0.0;
       _log('mic OPEN — your turn (turn_end + drained)');
     });
   }
@@ -759,6 +996,8 @@ class NormalCallController extends Notifier<CallState> {
         _micGateTimer?.cancel();
         _micGateTimer = null;
         _beaverSpeaking = false;
+        avatarSpeaking.value = false;
+        avatarLevel.value = 0.0;
         _log('mic OPEN — your turn (idle drained)');
       }
     });
@@ -787,6 +1026,9 @@ class NormalCallController extends Notifier<CallState> {
         // Also clear any stale hint: a new turn means the prior question is
         // answered (matches the server "new question cancels previous").
         state = state.copyWith(beaverSubtitle: '', hint: null);
+        // New line → reset the avatar expression to neutral; it re-classifies as
+        // the line streams in below.
+        avatarEmotion.value = 0;
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -797,8 +1039,12 @@ class NormalCallController extends Notifier<CallState> {
         {
           final delta = msg['text'] as String?;
           if (delta != null && delta.isNotEmpty) {
-            state =
-                state.copyWith(beaverSubtitle: state.beaverSubtitle + delta);
+            final line = state.beaverSubtitle + delta;
+            state = state.copyWith(beaverSubtitle: line);
+            // React to what the beaver says: a detected emotion sticks until the
+            // next turn resets it (avoids flicker on neutral tokens).
+            final emo = _classifyEmotion(line);
+            if (emo != 0) avatarEmotion.value = emo;
           }
         }
       case 'input_transcript':
@@ -1015,6 +1261,9 @@ class NormalCallController extends Notifier<CallState> {
     _elapsedTimer = null;
     _keepaliveTimer?.cancel();
     _keepaliveTimer = null;
+    _envTimer?.cancel();
+    _envTimer = null;
+    _envQueue.clear();
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
@@ -1027,6 +1276,10 @@ class NormalCallController extends Notifier<CallState> {
     _gateSafetyTimer?.cancel();
     _gateSafetyTimer = null;
     _beaverSpeaking = false;
+    avatarSpeaking.value = false;
+    avatarLevel.value = 0.0;
+    avatarEmotion.value = 0;
+    avatarShape.value = 0.0;
     _turnEnded = false;
     _micFramesSent = 0;
 
@@ -1042,6 +1295,15 @@ class NormalCallController extends Notifier<CallState> {
     _recorder = null;
     await _micController?.close();
     _micController = null;
+
+    // Stop in-call audio routing: remove the native route-change observer and
+    // clear the speaker override so the session doesn't stay forced to the
+    // loudspeaker after the call. Pairs with 'routeToSpeaker' in [start].
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        await _audioRouteChannel.invokeMethod<void>('stopCallAudioRouting');
+      } catch (_) {}
+    }
 
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
@@ -1078,6 +1340,17 @@ class NormalCallController extends Notifier<CallState> {
       await _channel?.sink.close();
     } catch (_) {}
     _channel = null;
+
+    // Hand the audio session back so other apps' audio un-ducks and the next
+    // call reconfigures from a clean slate. Best-effort (cleanup path).
+    try {
+      final session = await AudioSession.instance;
+      await session.setActive(
+        false,
+        avAudioSessionSetActiveOptions:
+            AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+      );
+    } catch (_) {}
 
     if (!keepError) {
       // Preserve callId/ended state set by callers; only reset a live phase.

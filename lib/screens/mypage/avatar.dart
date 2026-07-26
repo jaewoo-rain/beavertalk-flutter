@@ -6,7 +6,6 @@ import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/avatar_card.dart';
 import '../../components/molecules/card_box.dart';
-import '../../components/organisms/bottom_sheet_avatar.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/domain/entities/member.dart';
@@ -18,6 +17,7 @@ import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
+import 'avatar_detail.dart';
 import 'avatar_loading.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -29,8 +29,10 @@ import '../../theme/app_typography.dart';
 /// [charactersProvider]). The representative (in-use) character comes from
 /// `members/me.character_id` ([myProfileProvider]).
 ///
-/// The sheet's actions are live: 구매하기 → `POST /characters/{id}/purchase`,
-/// 변경하기 → `PATCH /members/me {character_id}`.
+/// Tapping a card pushes [AvatarDetailScreen] (Figma `Avatar-Detail`
+/// `4024:1090`), which replaced the former `BottomSheetAvatar` modal. Its
+/// actions are live: 구매하기 → `POST /characters/{id}/purchase`,
+/// Use This → `PATCH /members/me {character_id}`.
 class AvatarScreen extends ConsumerWidget {
   /// Creates the avatar screen.
   const AvatarScreen({super.key});
@@ -162,11 +164,11 @@ class AvatarScreen extends ConsumerWidget {
                 statusLabel: isActive ? l10n.inUse : l10n.owned,
                 active: isActive,
                 imageProvider: image,
-                onTap: () => _openSheet(
+                onTap: () => _openDetail(
                   context,
                   isActive
-                      ? BottomSheetAvatarState.ownedUsed
-                      : BottomSheetAvatarState.ownedUnused,
+                      ? AvatarDetailState.ownedUsed
+                      : AvatarDetailState.ownedUnused,
                   c.name,
                   image,
                   characterId: c.id,
@@ -195,9 +197,9 @@ class AvatarScreen extends ConsumerWidget {
       subtitle: c.tags.isEmpty ? null : c.tags.join('·'),
       price: _priceLabel(context, c.price),
       discountPrice: _priceLabel(context, c.effectivePrice),
-      action: _buyButton(context, () => _openSheet(
+      action: _buyButton(context, () => _openDetail(
             context,
-            BottomSheetAvatarState.unownedDiscount,
+            AvatarDetailState.unownedDiscount,
             c.name,
             image,
             characterId: c.id,
@@ -236,9 +238,9 @@ class AvatarScreen extends ConsumerWidget {
       // omitted rather than rendering an empty strip.
       subtitle: c.tags.isEmpty ? null : c.tags.join('·'),
       price: _priceLabel(context, c.price),
-      action: _buyButton(context, () => _openSheet(
+      action: _buyButton(context, () => _openDetail(
             context,
-            BottomSheetAvatarState.unownedNormal,
+            AvatarDetailState.unownedNormal,
             c.name,
             image,
             characterId: c.id,
@@ -249,22 +251,27 @@ class AvatarScreen extends ConsumerWidget {
     );
   }
 
-  /// Opens the avatar sheet, wired to the server.
+  /// Pushes the avatar detail screen, wired to the server.
   ///
   /// The confirm button means different things per state:
   /// - `unownedNormal` / `unownedDiscount` → 구매하기 → `POST /characters/{id}/purchase`
-  /// - `ownedUnused` → 변경하기 → `PATCH /members/me {character_id}`
+  /// - `ownedUnused` → Use This → `PATCH /members/me {character_id}`
   /// - `ownedUsed` → 닫기 only (already in use)
   ///
   /// [description]/[tags] come straight from the list response. The server puts
   /// them on `CharacterSummary` (and `OwnedCharacterOut`) precisely so a card
   /// can render without a per-character detail fetch — its schema docstring
   /// calls out the N+1 this avoids. An earlier revision here fetched
-  /// `GET /characters/{id}` on every sheet open for a description it already
-  /// had; that request is gone.
-  void _openSheet(
+  /// `GET /characters/{id}` on every open for a description it already had;
+  /// that request is gone.
+  ///
+  /// This used to be a `showModalBottomSheet` holding `BottomSheetAvatar`
+  /// (375×487). Figma replaced that sheet with the full-page `Avatar-Detail`
+  /// (`4024:1090`), so it is now a pushed route — the hero image needs the whole
+  /// screen, which a bottom sheet cannot give it.
+  void _openDetail(
     BuildContext context,
-    BottomSheetAvatarState state,
+    AvatarDetailState state,
     String name,
     ImageProvider image, {
     required int characterId,
@@ -274,36 +281,38 @@ class AvatarScreen extends ConsumerWidget {
     String? discountPrice,
     int? discountPercent,
   }) {
-    showDialog<void>(
-      context: context,
-      barrierColor: Colors.transparent,
-      builder: (ctx) => Consumer(
-        builder: (ctx, ref, _) => BottomSheetAvatar(
-          state: state,
-          name: name,
-          imageProvider: image,
-          tags: tags,
-          description: description,
-          price: price,
-          discountPrice: discountPrice,
-          discountPercent: discountPercent,
-          onConfirm: switch (state) {
-            BottomSheetAvatarState.unownedNormal ||
-            BottomSheetAvatarState.unownedDiscount =>
-              () => _purchase(ctx, ref, characterId),
-            BottomSheetAvatarState.ownedUnused => () =>
-                _useCharacter(ctx, ref, characterId),
-            // Already in use — the sheet shows a single 닫기 footer.
-            BottomSheetAvatarState.ownedUsed => () => Navigator.pop(ctx),
-          },
-          onClose: () => Navigator.pop(ctx),
-        ).asModal(),
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (routeCtx) => Consumer(
+          builder: (routeCtx, ref, _) => AvatarDetailScreen(
+            state: state,
+            name: name,
+            imageProvider: image,
+            tags: tags,
+            // The server has no one-line catch-phrase field, so the summary
+            // slot stays empty and the story paragraph carries `description`.
+            description: description,
+            price: price,
+            discountPrice: discountPrice,
+            discountPercent: discountPercent,
+            onConfirm: switch (state) {
+              AvatarDetailState.unownedNormal ||
+              AvatarDetailState.unownedDiscount =>
+                () => _purchase(routeCtx, ref, characterId),
+              AvatarDetailState.ownedUnused => () =>
+                  _useCharacter(routeCtx, ref, characterId),
+              // Already in use — the screen shows a single 닫기 footer.
+              AvatarDetailState.ownedUsed => () => Navigator.pop(routeCtx),
+            },
+            onClose: () => Navigator.pop(routeCtx),
+          ),
+        ),
       ),
     );
   }
 
   /// `POST /characters/{id}/purchase`, then refresh what the purchase changed.
-  Future<void> _purchase(BuildContext sheetCtx, WidgetRef ref, int id) async {
+  Future<void> _purchase(BuildContext routeCtx, WidgetRef ref, int id) async {
     try {
       await ref.read(characterRepositoryProvider).purchase(id);
       // The catalog's `is_owned` flips, the owned list gains a row, and the
@@ -312,32 +321,32 @@ class AvatarScreen extends ConsumerWidget {
       ref.invalidate(charactersProvider);
       ref.invalidate(ownedCharactersProvider);
       ref.invalidate(paymentPageProvider);
-      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
+      if (routeCtx.mounted) Navigator.pop(routeCtx);
     } catch (e) {
-      if (sheetCtx.mounted) _reportSheetError(sheetCtx, e);
+      if (routeCtx.mounted) _reportDetailError(routeCtx, e);
     }
   }
 
   /// `PATCH /members/me {character_id}` — makes [id] the in-use partner.
   Future<void> _useCharacter(
-      BuildContext sheetCtx, WidgetRef ref, int id) async {
+      BuildContext routeCtx, WidgetRef ref, int id) async {
     try {
       await ref.read(authRepositoryProvider).updateCharacter(id);
       // The active id is read from the profile, which drives the 사용 중 badge
       // and the home hero.
       ref.invalidate(myProfileProvider);
-      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
+      if (routeCtx.mounted) Navigator.pop(routeCtx);
     } catch (e) {
-      if (sheetCtx.mounted) _reportSheetError(sheetCtx, e);
+      if (routeCtx.mounted) _reportDetailError(routeCtx, e);
     }
   }
 
-  /// Closes the sheet and surfaces [e] — the snackbar must be shown from the
-  /// screen's messenger, not the sheet's dead context.
-  void _reportSheetError(BuildContext sheetCtx, Object e) {
-    final messenger = ScaffoldMessenger.maybeOf(sheetCtx);
+  /// Pops the detail route and surfaces [e] — the messenger is captured before
+  /// the pop, because after it the route's own context is dead.
+  void _reportDetailError(BuildContext routeCtx, Object e) {
+    final messenger = ScaffoldMessenger.maybeOf(routeCtx);
     final message = e is AppException ? e.message : null;
-    if (sheetCtx.mounted) Navigator.pop(sheetCtx);
+    if (routeCtx.mounted) Navigator.pop(routeCtx);
     if (messenger == null) return;
     messenger.showSnackBar(
       SnackBar(content: Text(message ?? 'Something went wrong')),
