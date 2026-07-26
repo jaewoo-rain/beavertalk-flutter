@@ -48,6 +48,10 @@ import flutter_callkit_incoming
           // End-of-call: stop observing and clear the override.
           self?.stopCallAudioRouting()
           result(nil)
+        case "isHeadsetConnected":
+          // Dart asks before opening the recorder so it can disable voice
+          // processing when a headset is present (see below).
+          result(self?.isHeadsetConnected() ?? false)
         default:
           result(FlutterMethodNotImplemented)
         }
@@ -112,6 +116,29 @@ import flutter_callkit_incoming
       $0.portType == .usbAudio || $0.portType == .carAudio
     })
     try? session.setPreferredInput(mic)  // nil → back to the built-in mic
+  }
+
+  /// True when a Bluetooth/wired/USB/car headset is connected (as input or
+  /// output). Dart calls this before opening the recorder: with a headset we
+  /// disable flutter_sound's voice processing (VoiceProcessingIO), which on iOS
+  /// refuses to use the Bluetooth HFP mic — so the user's voice was never
+  /// captured over AirPods. A plain recorder follows the session route and uses
+  /// the BT mic. Voice processing is only needed for the loudspeaker case (echo
+  /// cancellation), where no headset is present.
+  private func isHeadsetConnected() -> Bool {
+    let session = AVAudioSession.sharedInstance()
+    let inPorts: Set<AVAudioSession.Port> = [
+      .bluetoothHFP, .headsetMic, .usbAudio, .carAudio,
+    ]
+    if let inputs = session.availableInputs,
+       inputs.contains(where: { inPorts.contains($0.portType) }) {
+      return true
+    }
+    let outPorts: Set<AVAudioSession.Port> = [
+      .headphones, .bluetoothA2DP, .bluetoothHFP, .bluetoothLE,
+      .airPlay, .usbAudio, .carAudio,
+    ]
+    return session.currentRoute.outputs.contains { outPorts.contains($0.portType) }
   }
 
   @objc private func handleAudioRouteChange(_ note: Notification) {

@@ -650,6 +650,20 @@ class NormalCallController extends Notifier<CallState> {
     // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
     // ("AudioFlinger could not create record track, status: -1"). 잠깐 뒤 다시 열면 되는
     // 일시 실패라, 짧은 백오프로 재시도한다.
+    // iOS: with a headset (AirPods/BT/wired) connected, DISABLE voice processing.
+    // flutter_sound's voice processing (VoiceProcessingIO) refuses the Bluetooth
+    // HFP mic on iOS, so the user's voice was never captured over AirPods. A plain
+    // recorder follows the session route and uses the BT mic. Voice processing is
+    // only needed for the loudspeaker case (echo cancellation) — no headset there.
+    var useVoiceProcessing = true;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        final headset = await _audioRouteChannel
+            .invokeMethod<bool>('isHeadsetConnected');
+        if (headset == true) useVoiceProcessing = false;
+      } catch (_) {}
+    }
+
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
       final recorder = FlutterSoundRecorder();
@@ -661,7 +675,7 @@ class NormalCallController extends Notifier<CallState> {
           codec: Codec.pcm16,
           sampleRate: 16000,
           numChannels: 1,
-          enableVoiceProcessing: true,
+          enableVoiceProcessing: useVoiceProcessing,
           enableEchoCancellation: true,
         );
         if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
