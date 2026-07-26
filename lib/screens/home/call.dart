@@ -45,9 +45,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   static const double _avatarMaxWidth = 520;
 
   // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
-  //   버퍼 헤드룸↑ + 감정클립 캐싱으로 근본 수정했으므로 기본 false(아바타 ON). 그래도
-  //   깨지면 true로 바꿔 아바타를 배제하고 베이스라인만 검증.
-  static const bool kDisableAvatarVideo = true;
+  //   기본은 false(아바타 ON) — 제품 그대로의 부하에서 재생이 버티는지가 판정 기준이다.
+  //   아바타 OFF 로 두면 실제로 출시되지 않는 구성을 측정하게 되므로 격리 실험 때만 true.
+  //   (재생 플러그인 로컬 패치본 적용 후 재검증: packages/flutter_pcm_sound)
+  static const bool kDisableAvatarVideo = false;
 
   bool _navigated = false;
 

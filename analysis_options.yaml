@@ -13,6 +13,10 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   plugins:
     - custom_lint
+  # 벤더링한 서드파티 패키지(packages/)는 우리 린트 대상이 아니다 — upstream 스타일
+  # 경고가 우리 코드 문제를 덮지 않도록 제외한다. 우리가 손댄 곳은 주석으로 표시돼 있다.
+  exclude:
+    - packages/**
 
 linter:
   # The lint rules applied to this project can be customized in the

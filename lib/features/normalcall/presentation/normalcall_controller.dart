@@ -317,11 +317,26 @@ class NormalCallController extends Notifier<CallState> {
   // DEBUG(audio-glitch): 재생 깨짐 원인 계측(임시 — 확인 후 제거). 아바타 무관 코어 계측.
   // _dbgLastFeedMs: 직전 _onFeed 벽시계(ms) — 콜백 간 간격이 크면 메인 아이솔레이트
   //   멈칫(잼)이 오디오 피드를 굶긴 것. _dbgStarveCount: 비버 발화중 언더런 횟수.
-  // _dbgMaxGap: 5초 창 최대 피드 간격. _dbgHeartbeatMs: 마지막 요약(HB) 로그 시각.
+  // _dbgMaxGap: 계측 창(5초) 최대 피드 간격 — [_startDiag] 가 읽고 리셋한다.
   int _dbgLastFeedMs = 0;
   int _dbgStarveCount = 0;
   int _dbgMaxGap = 0;
-  int _dbgHeartbeatMs = 0;
+
+  // ── DIAG(audio-glitch): "시간이 지날수록 버벅임이 심해진다" 계측 ──────────────
+  //
+  // 가설은 '무언가 단조증가한다'인데 후보가 여럿(네이티브 재생 백로그·Dart 큐·
+  // 메모리→GC·로그 백로그)이고 증상이 전부 같아서, 고치기 전에 어느 숫자가
+  // 우상향하는지부터 확정한다. 5초마다 한 줄씩 찍고 통화 뒤 추이를 본다.
+  //
+  // ⚠ release 빌드에서 재야 한다 — debug 는 debugPrint 백로그 자체가 시간이 갈수록
+  // 메인 아이솔레이트를 잡아먹어서, 그게 원인인지 진짜 원인인지 구분이 안 된다.
+  // 그래서 이 한 줄만 kDebugMode 가드 없이 print 로 내보낸다(logcat 태그 "flutter").
+  // 원인이 확정되면 이 블록과 [_startDiag]·호출부를 통째로 지운다.
+  static const bool kAudioDiag = true;
+  Timer? _diagTimer;
+  int _diagSeq = 0;
+  int _diagLastUnderruns = 0;
+  int _diagLastStarve = 0;
 
   /// True once the jitter prebuffer has filled and real audio is draining. Reset
   /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
@@ -530,6 +545,7 @@ class NormalCallController extends Notifier<CallState> {
       _lastFeedSilent = null;
       _envQueue.clear();
       _startEnvelope();
+      _startDiag(); // DIAG(audio-glitch) — 임시 계측
       // Kick the pull loop directly instead of FlutterPcmSound.start().
       // start() only kicks when the plugin's *static* `_needsStart` flag is true,
       // and that flag is NEVER reset by release()/setup(): the first call feeds
@@ -828,13 +844,8 @@ class NormalCallController extends Notifier<CallState> {
       if (gap > 700) _log('DBG STALL feed gap ${gap}ms (queue ${_queueLen}B)');
     }
     _dbgLastFeedMs = dbgNow;
-    if (_dbgHeartbeatMs == 0) _dbgHeartbeatMs = dbgNow;
-    if (dbgNow - _dbgHeartbeatMs >= 5000) {
-      // 5초마다 요약: 큐길이(60초=2,880,000B 근접하면 캡 원인), 굶음 누적, 최대 멈칫.
-      _log('DBG HB queue ${_queueLen}B / starve $_dbgStarveCount / maxGap ${_dbgMaxGap}ms(5s)');
-      _dbgHeartbeatMs = dbgNow;
-      _dbgMaxGap = 0;
-    }
+    // 5초 요약은 [_startDiag] 의 전용 타이머가 찍는다 — 피드 콜백에 얹어두면 정작
+    // 피드가 굶어 멈춘 구간(가장 알고 싶은 구간)에서 로그도 같이 멈춘다.
     _feeding = true;
     try {
       final avail = _queueLen;
@@ -988,6 +999,53 @@ class NormalCallController extends Notifier<CallState> {
         }
       },
     );
+  }
+
+  /// DIAG(audio-glitch): 5초마다 한 줄. 통화가 길어질수록 **어느 숫자가 자라는지**를
+  /// 보려는 것이므로, 절대값보다 t 에 따른 추이가 중요하다.
+  ///
+  /// ```
+  /// [DIAG] t=35s dart=48000B/3ch native=24000B/6ch underrun=+2/7 \
+  ///        gap=812ms starve=+1/3 env=41 mic=1750 feeds=71
+  /// ```
+  /// - `dart`  : Dart 큐(아직 네이티브로 안 넘긴 오디오). 우상향 → 피드가 못 따라감.
+  /// - `native`: 네이티브 백로그(AudioTrack 에 아직 안 넘긴 것). 우상향 → 재생부 적체.
+  /// - `underrun`: AudioTrack 이 실제로 굶은 횟수(+델타/누적). **깨짐의 직접 지표.**
+  /// - `gap`   : 5초 창 최대 피드 콜백 간격 = 메인 아이솔레이트 최대 멈칫.
+  /// - `starve`: 비버 발화중 큐가 빈 횟수(Dart 관점 굶음).
+  /// - `env`/`mic`: 립싱크 큐 길이·누적 마이크 프레임(다른 누적 누수 감지용).
+  void _startDiag() {
+    if (!kAudioDiag) return;
+    _diagTimer?.cancel();
+    _diagSeq = 0;
+    _diagLastUnderruns = 0;
+    _diagLastStarve = 0;
+    _diagTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      final t = ++_diagSeq * 5;
+      final gap = _dbgMaxGap;
+      _dbgMaxGap = 0;
+      final starve = _dbgStarveCount;
+      final starveDelta = starve - _diagLastStarve;
+      _diagLastStarve = starve;
+
+      // 네이티브 통계는 안드로이드 패치본에만 있다(그 외 플랫폼은 빈 맵).
+      final native = kIsWeb
+          ? const <String, int>{}
+          : await FlutterPcmSound.getStats();
+      final underruns = native['underruns'] ?? -1;
+      final underrunDelta =
+          underruns >= 0 ? underruns - _diagLastUnderruns : -1;
+      if (underruns >= 0) _diagLastUnderruns = underruns;
+
+      // ignore: avoid_print — release 빌드에서 보여야 하는 임시 계측(위 주석 참고).
+      print('[DIAG] t=${t}s '
+          'dart=${_pcmQueuedBytes}B/${_pcmQueue.length}ch '
+          'native=${native['queued_bytes'] ?? -1}B/${native['chunks'] ?? -1}ch '
+          'underrun=+$underrunDelta/$underruns '
+          'gap=${gap}ms starve=+$starveDelta/$starve '
+          'env=${_envQueue.length} mic=$_micFramesSent '
+          'feeds=${native['total_feeds'] ?? -1}');
+    });
   }
 
   /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
@@ -1329,6 +1387,15 @@ class NormalCallController extends Notifier<CallState> {
     _envTimer?.cancel();
     _envTimer = null;
     _envQueue.clear();
+    // DIAG(audio-glitch): 통화 끝나면 마지막 한 줄로 총계를 남기고 멈춘다.
+    if (_diagTimer != null) {
+      _diagTimer!.cancel();
+      _diagTimer = null;
+      // ignore: avoid_print — release 빌드에서 보여야 하는 임시 계측.
+      print('[DIAG] end t=${_diagSeq * 5}s '
+          'starveTotal=$_dbgStarveCount underrunTotal=$_diagLastUnderruns '
+          'dartQueue=${_pcmQueuedBytes}B mic=$_micFramesSent');
+    }
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
