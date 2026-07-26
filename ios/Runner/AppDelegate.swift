@@ -49,15 +49,24 @@ import flutter_callkit_incoming
 
   // MARK: - In-call audio routing
   //
-  // flutter_sound's voice-processing pins the session output to the receiver
-  // (earpiece). We want: any headset/AirPods connected → use it; nothing
-  // external → loudspeaker (not the earpiece). A single one-shot check races BT
-  // HFP negotiation — AirPods attach a beat AFTER the session activates, and
-  // once we force `.speaker` the current route reads as the speaker, hiding the
-  // AirPods entirely. So we observe route changes for the whole call: when a new
-  // device appears we drop the override so audio follows it; when it's removed
-  // we fall back to the speaker. This is what makes AirPods connect reliably.
+  // The goal: AirPods/headset connected → use it (both mic and output); nothing
+  // external → loudspeaker (not the earpiece).
+  //
+  // Earlier attempts used `overrideOutputAudioPort(.speaker)`. Two problems:
+  //   1. An override is NOT sticky — pulling Control Center / any interruption
+  //      resets it, dropping speaker back to the receiver.
+  //   2. flutter_sound's recorder re-sets the session CATEGORY when it starts,
+  //      often WITHOUT `.allowBluetooth`, so AirPods never appear in the route
+  //      and no amount of setPreferredInput can reach them.
+  //
+  // The fix is to own the category, not an override: `.playAndRecord` +
+  // `.voiceChat` + `[.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]`.
+  // With these options iOS routes to a connected BT headset when present and
+  // otherwise DEFAULTS to the speaker — both behaviours are category-level and
+  // survive Control Center. We re-assert it on every route change / interruption
+  // (debounced against our own re-apply) so flutter_sound can't quietly drop it.
   private var callAudioRoutingActive = false
+  private var lastRouteApply = Date(timeIntervalSince1970: 0)
 
   private func startCallAudioRouting() {
     let session = AVAudioSession.sharedInstance()
@@ -66,6 +75,9 @@ import flutter_callkit_incoming
       NotificationCenter.default.addObserver(
         self, selector: #selector(handleAudioRouteChange(_:)),
         name: AVAudioSession.routeChangeNotification, object: session)
+      NotificationCenter.default.addObserver(
+        self, selector: #selector(handleAudioInterruption(_:)),
+        name: AVAudioSession.interruptionNotification, object: session)
     }
     applyCallAudioRoute()
   }
@@ -75,57 +87,44 @@ import flutter_callkit_incoming
       callAudioRoutingActive = false
       NotificationCenter.default.removeObserver(
         self, name: AVAudioSession.routeChangeNotification, object: nil)
+      NotificationCenter.default.removeObserver(
+        self, name: AVAudioSession.interruptionNotification, object: nil)
     }
     try? AVAudioSession.sharedInstance().overrideOutputAudioPort(.none)
   }
 
-  /// Route the in-call audio to the best target.
-  ///
-  /// Order: (1) a Bluetooth headset (AirPods) — route BOTH mic and output to it
-  /// via `setPreferredInput`, which is what actually makes AirPods work for a
-  /// two-way call. We look at `availableInputs` (NOT `currentRoute`) because once
-  /// a speaker override is forced the current route reads as the speaker and
-  /// hides the headset. (2) wired/AirPlay output → keep it. (3) nothing external
-  /// → loudspeaker instead of the receiver.
+  /// Own the category so routing is sticky: BT headset when present, else the
+  /// loudspeaker. Idempotent — only re-applies when the live category/options
+  /// don't already match, so repeated calls don't glitch the audio or loop.
   private func applyCallAudioRoute() {
     let session = AVAudioSession.sharedInstance()
-    // (1) Bluetooth/USB/car headset with a mic → prefer it for input+output.
-    if let inputs = session.availableInputs,
-       let mic = inputs.first(where: {
-         $0.portType == .bluetoothHFP || $0.portType == .headsetMic ||
-         $0.portType == .usbAudio || $0.portType == .carAudio
-       }) {
-      try? session.overrideOutputAudioPort(.none)
-      try? session.setPreferredInput(mic)
-      return
+    let wanted: AVAudioSession.CategoryOptions =
+      [.allowBluetooth, .allowBluetoothA2DP, .defaultToSpeaker]
+    lastRouteApply = Date()
+    if session.category != .playAndRecord ||
+       !session.categoryOptions.isSuperset(of: wanted) {
+      try? session.setCategory(.playAndRecord, mode: .voiceChat, options: wanted)
     }
-    // (2) Wired headphones / A2DP / AirPlay (output-only) → keep that route.
-    let wiredOut: Set<AVAudioSession.Port> = [.headphones, .bluetoothA2DP, .airPlay]
-    if session.currentRoute.outputs.contains(where: { wiredOut.contains($0.portType) }) {
-      try? session.setPreferredInput(nil)
-      try? session.overrideOutputAudioPort(.none)
-      return
-    }
-    // (3) Nothing external → loudspeaker.
-    try? session.setPreferredInput(nil)
-    try? session.overrideOutputAudioPort(.speaker)
+    try? session.setActive(true)
   }
 
   @objc private func handleAudioRouteChange(_ note: Notification) {
+    guard callAudioRoutingActive else { return }
+    // Debounce: ignore the route change our own setCategory/setActive just fired,
+    // otherwise we'd re-apply in a loop.
+    if Date().timeIntervalSince(lastRouteApply) < 0.5 { return }
+    applyCallAudioRoute()
+  }
+
+  @objc private func handleAudioInterruption(_ note: Notification) {
     guard callAudioRoutingActive,
           let info = note.userInfo,
-          let raw = info[AVAudioSessionRouteChangeReasonKey] as? UInt,
-          let reason = AVAudioSession.RouteChangeReason(rawValue: raw)
+          let raw = info[AVAudioSessionInterruptionTypeKey] as? UInt,
+          let type = AVAudioSession.InterruptionType(rawValue: raw)
     else { return }
-    // Only react to a device being added/removed (AirPods connect/disconnect).
-    // Our own setPreferredInput/override fire .override/.routeConfigurationChange
-    // — reacting to those would loop, so they are ignored.
-    switch reason {
-    case .newDeviceAvailable, .oldDeviceUnavailable:
-      applyCallAudioRoute()
-    default:
-      break
-    }
+    // When an interruption (Control Center, a system sound, etc.) ends, the
+    // route/override may have been reset — re-assert our category.
+    if type == .ended { applyCallAudioRoute() }
   }
 
   // VoIP token → hand to the plugin, which surfaces it to Flutter via
