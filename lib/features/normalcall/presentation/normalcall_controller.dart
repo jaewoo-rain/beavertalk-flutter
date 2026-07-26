@@ -11,6 +11,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/i18n/learning_language_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
@@ -443,7 +444,13 @@ class NormalCallController extends Notifier<CallState> {
       );
 
       // §8-3: trigger the server's auto opening line (no button).
-      _send({'type': 'start', 'character_id': characterId});
+      // (멀티랭귀지) 마이페이지에서 고른 학습 언어를 target_language 로 실어 보낸다 —
+      // 서버가 그 언어의 코스(레벨테스트·체크판·레벨업)로 통화를 진행한다.
+      _send({
+        'type': 'start',
+        'character_id': characterId,
+        'target_language': ref.read(learningLanguageProvider),
+      });
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
