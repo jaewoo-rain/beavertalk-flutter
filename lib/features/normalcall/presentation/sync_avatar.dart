@@ -61,9 +61,14 @@ class SyncAvatar extends StatefulWidget {
 class _SyncAvatarState extends State<SyncAvatar> {
   VideoPlayerController? _idle;
   VideoPlayerController? _talk;
-  VideoPlayerController? _emo;
+  VideoPlayerController? _emo; // 현재 화면에 보이는 감정 컨트롤러(캐시를 가리킴)
   int _emoCode = 0;
   bool _emoLoading = false;
+
+  // 감정 클립 캐시: 코드→컨트롤러. 한 번 열면 유지하고 opacity로만 전환한다.
+  // (기존엔 감정이 바뀔 때마다 _open+dispose 해서 매 턴 ExoPlayer(H.264/AAC 디코더)를
+  //  생성/해제 → 메인 아이솔레이트 멈칫 → 오디오 피드 콜백 언더런 → 재생 깨짐. 캐싱으로 제거.)
+  final Map<int, VideoPlayerController> _emoCache = {};
 
   bool _ready = false;
   bool _failed = false;
@@ -207,19 +212,21 @@ class _SyncAvatarState extends State<SyncAvatar> {
       return;
     }
     if (_emoCode != code || _emo == null) {
-      if (_emoLoading) return;
-      _emoLoading = true;
-      final old = _emo;
-      final next = await _open(name, loop: true, play: true);
-      _emoLoading = false;
-      if (!mounted) {
-        await next?.dispose();
-        return;
+      var next = _emoCache[code];
+      if (next == null) {
+        if (_emoLoading) return;
+        _emoLoading = true;
+        next = await _open(name, loop: true, play: true);
+        _emoLoading = false;
+        if (!mounted) {
+          await next?.dispose();
+          return;
+        }
+        if (next == null) return;
+        _emoCache[code] = next; // 캐시 보관 — 재사용, dispose 하지 않는다(churn 제거)
       }
       _emo = next;
       _emoCode = code;
-      await old?.dispose();
-      if (next == null) return;
     }
     final e = _emo;
     if (e == null) return;
@@ -234,7 +241,9 @@ class _SyncAvatarState extends State<SyncAvatar> {
     _stopTimer?.cancel();
     _idle?.dispose();
     _talk?.dispose();
-    _emo?.dispose();
+    for (final c in _emoCache.values) {
+      c.dispose(); // _emo 는 캐시를 가리키므로 별도 dispose 하지 않는다(중복 방지)
+    }
     super.dispose();
   }
 

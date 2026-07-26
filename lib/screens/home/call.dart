@@ -44,9 +44,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// screens so the video doesn't stretch edge-to-edge on tablets.
   static const double _avatarMaxWidth = 520;
 
-  // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만
-  //   표시 — 오디오 깨짐 원인이 아바타 코덱 경합인지 A/B 확인용(임시). false로 되돌리면 복구.
-  static const bool kDisableAvatarVideo = true;
+  // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
+  //   버퍼 헤드룸↑ + 감정클립 캐싱으로 근본 수정했으므로 기본 false(아바타 ON). 그래도
+  //   깨지면 true로 바꿔 아바타를 배제하고 베이스라인만 검증.
+  static const bool kDisableAvatarVideo = false;
 
   bool _navigated = false;
 

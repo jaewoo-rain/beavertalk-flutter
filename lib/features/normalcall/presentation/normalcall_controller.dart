@@ -261,11 +261,13 @@ class NormalCallController extends Notifier<CallState> {
   static const int _playbackSampleRate = 24000;
   static const int _playbackChannels = 1;
 
-  /// Feed callback fires when buffered frames fall below this (~100ms).
-  static const int _feedThresholdFrames = 2400;
+  /// Feed callback fires when buffered frames fall below this (~500ms).
+  /// (audio-glitch 수정) 네이티브 엔진이 더 많이 물고 있게 해서, 메인 아이솔레이트가
+  /// ~수백 ms 멈칫(아바타 코덱 churn·GC·렌더 잼)해도 언더런(재생 깨짐)을 흡수한다.
+  static const int _feedThresholdFrames = 12000;
 
-  /// Bytes fed per callback when audio is available (~200ms of 24kHz PCM16).
-  static const int _feedChunkBytes = 9600;
+  /// Bytes fed per callback when audio is available (~500ms of 24kHz PCM16).
+  static const int _feedChunkBytes = 24000;
 
   /// Silence frames fed when the queue is empty (~50ms keep-alive).
   static const int _silenceFrames = 1200;
@@ -274,8 +276,8 @@ class NormalCallController extends Notifier<CallState> {
   /// audio (feed silence) until this much is queued, so brief network jitter can't
   /// starve the engine into an audible gap ("voice 씹힘"). Bounded by
   /// [_prebufferFlush] so a short utterance is never held back forever.
-  static const int _prebufferBytes = _playbackSampleRate * 2 * 120 ~/ 1000;
-  static const Duration _prebufferFlush = Duration(milliseconds: 90);
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 400 ~/ 1000;
+  static const Duration _prebufferFlush = Duration(milliseconds: 200);
 
   /// Settle after `release()` so the singleton native engine fully tears down
   /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
