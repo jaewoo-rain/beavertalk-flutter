@@ -118,6 +118,29 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('the single-button footer fills the gutter width', (tester) async {
+    // On device a bare Button hugged its label and floated centred (~260px)
+    // because BottomCtaBar passes a loose constraint. The footer must span the
+    // 20px gutters like Figma's 335-wide CTA.
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(host(AvatarDetailState.ownedUnused));
+    await tester.pump();
+
+    final button = tester.getSize(
+      find
+          .ancestor(
+            of: find.text('Use This'),
+            matching: find.byType(InkWell),
+          )
+          .first,
+    );
+    // 375 - 20 - 20 = 335.
+    expect(button.width, closeTo(335, 1));
+  });
+
   testWidgets('owned states drop the price row even when a price is passed',
       (tester) async {
     for (final state in [

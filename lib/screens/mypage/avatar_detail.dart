@@ -403,7 +403,21 @@ class AvatarDetailScreen extends StatelessWidget {
   }
 
   // ── Footer buttons (60-size), per state ──────────────────────────────────
+
+  /// Footer wrapper that forces full gutter width (335 on the 375 frame).
+  ///
+  /// [BottomCtaBar] passes a loose constraint, so a bare [Button] would hug its
+  /// label and float centred — verified on device, where "Use This" rendered
+  /// ~260px wide instead of spanning the gutters. The retired sheet only avoided
+  /// this because its parent [Column] stretched its children.
   Widget _footer(BuildContext context, AppLocalizations l10n) {
+    return SizedBox(
+      width: double.infinity,
+      child: _footerButtons(context, l10n),
+    );
+  }
+
+  Widget _footerButtons(BuildContext context, AppLocalizations l10n) {
     switch (state) {
       case AvatarDetailState.unownedNormal:
       case AvatarDetailState.unownedDiscount:
