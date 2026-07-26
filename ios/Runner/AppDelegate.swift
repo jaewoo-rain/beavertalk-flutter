@@ -6,6 +6,13 @@ import flutter_callkit_incoming
 
 @main
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate, PKPushRegistryDelegate {
+  // MUST be an instance property, not a local in didFinishLaunching: PKPushRegistry
+  // has to be retained for the app's lifetime. As a local it is deallocated the
+  // moment the method returns, so `pushRegistry(_:didUpdate:)` never fires and the
+  // VoIP token is never obtained — which is why `device_token` had ZERO ios_voip
+  // rows and scheduled calls never rang on iOS.
+  private var voipRegistry: PKPushRegistry?
+
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
@@ -13,9 +20,10 @@ import flutter_callkit_incoming
     // Register for VoIP push. This is the iOS counterpart of the Android FCM
     // path: a scheduled inbound call can wake the app — even when killed — and
     // ring through CallKit. Android uses FCM; iOS must use PushKit + APNs VoIP.
-    let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
-    voipRegistry.delegate = self
-    voipRegistry.desiredPushTypes = [PKPushType.voIP]
+    let registry = PKPushRegistry(queue: DispatchQueue.main)
+    registry.delegate = self
+    registry.desiredPushTypes = [PKPushType.voIP]
+    self.voipRegistry = registry
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
