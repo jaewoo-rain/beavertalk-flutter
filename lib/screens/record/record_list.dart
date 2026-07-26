@@ -403,7 +403,9 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   Future<void> _speak(BookmarkSentence sentence) async {
     try {
       var url = sentence.voiceUrl;
-      if (url == null || url.isEmpty) {
+      // voice_url 은 비공개 버킷 '키'로 올 수 있다(비-http). 그때도 /tts 로 재요청해
+      // 재생 가능한 signed URL 을 받는다(연습 화면 learning_intro 와 동일 처리).
+      if (url == null || !url.startsWith('http')) {
         url = await ref
             .read(reviewRepositoryProvider)
             .sentenceTtsUrl(sentence.sentenceId);
