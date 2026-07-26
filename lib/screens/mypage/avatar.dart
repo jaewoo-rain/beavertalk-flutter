@@ -274,9 +274,16 @@ class AvatarScreen extends ConsumerWidget {
     String? discountPrice,
     int? discountPercent,
   }) {
-    showDialog<void>(
+    // showModalBottomSheet(+bare sheet) — NOT showDialog + asModal(). asModal()'s
+    // [Dim] is rooted in a Positioned.fill, which is only valid inside a Stack;
+    // showDialog provides no Stack, so it threw a ParentDataWidget error and the
+    // sheet never appeared. This mirrors the subscription/language-picker sheets
+    // (mypage.dart), where the route supplies the dim + bottom anchoring.
+    showModalBottomSheet<void>(
       context: context,
-      barrierColor: Colors.transparent,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      isScrollControlled: true,
       builder: (ctx) => Consumer(
         builder: (ctx, ref, _) => BottomSheetAvatar(
           state: state,
@@ -297,7 +304,7 @@ class AvatarScreen extends ConsumerWidget {
             BottomSheetAvatarState.ownedUsed => () => Navigator.pop(ctx),
           },
           onClose: () => Navigator.pop(ctx),
-        ).asModal(),
+        ),
       ),
     );
   }
