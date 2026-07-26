@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -241,14 +242,21 @@ class NormalCallController extends Notifier<CallState> {
   // never starved into a stuck underflow churn — the root cause of the ~1-min
   // audio cutout with the old flutter_sound stream player.
 
-  /// Inbound PCM16 byte queue (little-endian samples). Consumed from [_pcmHead]
-  /// forward; an odd trailing byte simply stays until the next chunk completes
-  /// its Int16 sample, so samples never split across chunks.
-  List<int> _pcmQueue = <int>[];
+  /// Inbound PCM16 chunk ring buffer (each chunk is little-endian PCM16 bytes,
+  /// stored **by reference** — O(1) enqueue, no per-chunk copy, no 8x boxing of
+  /// a `List<int>`, minimal GC). Consumed from the front: [_pcmHeadOffset] marks
+  /// how many bytes of the head chunk are already fed. Enqueued whole from the
+  /// WS frame in [_feedPlayer]; drained byte-exact in [_takeArray].
+  final Queue<Uint8List> _pcmQueue = Queue<Uint8List>();
 
-  /// Read offset into [_pcmQueue]. Bytes before it are already fed; the list is
-  /// compacted (see [_maybeCompact]) once the offset grows large.
-  int _pcmHead = 0;
+  /// Byte offset into the *first* queued chunk — bytes before it are already
+  /// fed. When it reaches the head chunk's length the chunk is dropped.
+  int _pcmHeadOffset = 0;
+
+  /// Live unfed byte count across all queued chunks (O(1) [_queueLen]). Kept in
+  /// lockstep with enqueue/drain so the feed callback and resync never walk the
+  /// queue just to measure it.
+  int _pcmQueuedBytes = 0;
 
   /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
   bool _pcmSetup = false;
@@ -295,7 +303,7 @@ class NormalCallController extends Notifier<CallState> {
   static const int _targetQueueBytes = _playbackSampleRate * 2 * 45;
 
   /// Bytes currently queued (unfed).
-  int get _queueLen => _pcmQueue.length - _pcmHead;
+  int get _queueLen => _pcmQueuedBytes;
 
   /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
   /// only audio↔silence transitions instead of spamming every feed callback.
@@ -505,8 +513,9 @@ class NormalCallController extends Notifier<CallState> {
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
       // underflow-churn stall that cut audio out after ~1 minute.
-      _pcmQueue = <int>[];
-      _pcmHead = 0;
+      _pcmQueue.clear();
+      _pcmHeadOffset = 0;
+      _pcmQueuedBytes = 0;
       _pcmActive = false;
       _playing = false;
       await FlutterPcmSound.setLogLevel(LogLevel.error);
@@ -766,7 +775,11 @@ class NormalCallController extends Notifier<CallState> {
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
 
-    _pcmQueue.addAll(chunk);
+    // O(1): store the chunk by reference (no copy). Odd trailing bytes are fine
+    // — [_takeArray] always pulls an even byte count, so Int16 samples never
+    // split; a stray odd byte just waits in its chunk until the next take.
+    _pcmQueue.add(chunk);
+    _pcmQueuedBytes += chunk.length;
 
     // Resync: if the queue outgrows the cap (server bursts ahead / clock drift),
     // drop the oldest bytes down to the target so latency can't pile up and
@@ -775,10 +788,29 @@ class NormalCallController extends Notifier<CallState> {
     if (len > _maxQueueBytes) {
       var drop = len - _targetQueueBytes;
       if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
-      _pcmHead += drop;
+      _dropFront(drop);
       _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
-      _maybeCompact();
     }
+  }
+
+  /// Drops [byteCount] bytes off the front of the ring buffer (oldest audio),
+  /// advancing [_pcmHeadOffset] and popping whole consumed chunks. Used only by
+  /// resync; caller guarantees `byteCount <= _pcmQueuedBytes` and even.
+  void _dropFront(int byteCount) {
+    var remaining = byteCount;
+    while (remaining > 0 && _pcmQueue.isNotEmpty) {
+      final head = _pcmQueue.first;
+      final avail = head.length - _pcmHeadOffset;
+      if (avail <= remaining) {
+        remaining -= avail;
+        _pcmQueue.removeFirst();
+        _pcmHeadOffset = 0;
+      } else {
+        _pcmHeadOffset += remaining;
+        remaining = 0;
+      }
+    }
+    _pcmQueuedBytes -= (byteCount - remaining);
   }
 
   /// flutter_pcm_sound feed callback: invoked when buffered frames fall below
@@ -862,15 +894,28 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
-  /// Removes [byteCount] bytes from the front of [_pcmQueue] as a
-  /// [PcmArrayInt16]. The server's little-endian PCM16 passes straight through:
-  /// mobile targets are little-endian (host), which is what the native player
-  /// expects.
+  /// Removes [byteCount] bytes from the front of the ring buffer as a
+  /// [PcmArrayInt16], walking (and popping) queued chunks until exactly that
+  /// many bytes are assembled. The server's little-endian PCM16 passes straight
+  /// through: mobile targets are little-endian (host), which is what the native
+  /// player expects. Caller guarantees `byteCount <= _pcmQueuedBytes`.
   PcmArrayInt16 _takeArray(int byteCount) {
     final out = Uint8List(byteCount);
-    out.setRange(0, byteCount, _pcmQueue, _pcmHead);
-    _pcmHead += byteCount;
-    _maybeCompact();
+    var written = 0;
+    while (written < byteCount && _pcmQueue.isNotEmpty) {
+      final head = _pcmQueue.first;
+      final avail = head.length - _pcmHeadOffset;
+      final need = byteCount - written;
+      final n = avail <= need ? avail : need;
+      out.setRange(written, written + n, head, _pcmHeadOffset);
+      written += n;
+      _pcmHeadOffset += n;
+      if (_pcmHeadOffset >= head.length) {
+        _pcmQueue.removeFirst();
+        _pcmHeadOffset = 0;
+      }
+    }
+    _pcmQueuedBytes -= written;
     // Drive the avatar mouth from the samples about to play (matches what's
     // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
     _updateAvatarLevel(out, byteCount);
@@ -966,14 +1011,6 @@ class NormalCallController extends Notifier<CallState> {
     return best;
   }
 
-  /// Compacts [_pcmQueue] once the consumed prefix grows large, so the backing
-  /// list doesn't grow unbounded across a long call.
-  void _maybeCompact() {
-    if (_pcmHead > 65536 && _pcmHead * 2 > _pcmQueue.length) {
-      _pcmQueue = _pcmQueue.sublist(_pcmHead);
-      _pcmHead = 0;
-    }
-  }
 
   // ── Half-duplex mic gating helpers ─────────────────────────────────────────
 
@@ -1357,8 +1394,9 @@ class NormalCallController extends Notifier<CallState> {
     }
     _pcmSetup = false;
     _feeding = false;
-    _pcmQueue = <int>[];
-    _pcmHead = 0;
+    _pcmQueue.clear();
+    _pcmHeadOffset = 0;
+    _pcmQueuedBytes = 0;
     _lastFeedSilent = null;
 
     // Close the socket.
