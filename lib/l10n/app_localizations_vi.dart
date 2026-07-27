@@ -113,39 +113,39 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callPartner => 'Nhân vật';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'Bắt đầu nhanh';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => 'Thói quen buổi sáng';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => 'Ngày thường 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => 'Khép lại buổi tối';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => 'Mỗi ngày 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'Tùy chỉnh';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => 'Theo ý bạn';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return '$count lần/tuần · $monthly cuộc gọi mỗi tháng';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => 'Hãy chọn ít nhất một ngày';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => 'Đang dùng';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => 'Đã sở hữu';
 
   @override
   String get am => 'SA';
@@ -185,22 +185,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return 'Cuộc gọi thứ $count';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return 'Đôi lời từ $name';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return '$name để lại ngay sau cuộc gọi';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return 'Cách diễn đạt mới $count';
   }
 
   @override
@@ -380,13 +380,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get scoringPronunciation => 'Đang chấm điểm phát âm của bạn…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => 'Đang kiểm tra phát âm của bạn từng từ một';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'Việc này mất lâu hơn một chút';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => 'Mất kết nối';
 
   @override
   String get noRecordingToPlay => 'Không có bản ghi âm để phát.';
@@ -918,127 +918,127 @@ class AppLocalizationsVi extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => 'Thanh toán tháng này';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'Tất cả';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'Gói đăng ký';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'Nhân vật';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'Hoàn tất';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => 'Thanh toán gần nhất';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return 'Bạn có thể tiếp tục dùng quyền lợi Pro đến $date, sau đó gói của bạn sẽ tự động chuyển sang Miễn phí.';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => '1 cuộc gọi mỗi ngày · giới hạn 5 phút';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => 'Bao gồm nhân vật cơ bản';
 
   @override
   String get availableForPurchase => 'Có thể mua';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => 'Không tải được lịch sử thanh toán';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'Chưa có thanh toán nào';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => 'Các thanh toán cũ hơn chưa được hiển thị';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => 'Không có ngày';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => 'Thanh toán';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return 'Đạt $passed trên $total câu';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'Âm khó nhất hôm nay';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => 'Độ chính xác theo âm';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return 'Theo âm vị · $count lần thử';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => 'Âm';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => 'Lần';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => 'Đúng';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => 'Ch.xác';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => 'Kết quả theo câu';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return 'Xem tất cả $count';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => 'Câu';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => 'Ph.âm';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => 'Trôi';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'Nhịp';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return '$count phiên gần nhất';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return 'TB $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => 'Hôm nay';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => 'Ngày';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => 'Số câu';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'Điểm';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => 'Th.đổi';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date (hôm nay)';
   }
 }

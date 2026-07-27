@@ -113,39 +113,39 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callPartner => 'Каарман';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'Тез баштоо';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => 'Эртең мененки адат';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => 'Жумуш күндөрү 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => 'Кечки жыйынтык';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => 'Күн сайын 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'Өзүм тандайм';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => 'Каалагандай';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return 'Жумасына $count× · айына $monthly чалуу';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => 'Жок дегенде бир күн тандаңыз';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => 'Колдонулууда';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => 'Бар';
 
   @override
   String get am => 'Түшкө чейин';
@@ -184,22 +184,22 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return '$count-чалуу';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return '$name айткан бир ооз сөз';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return 'Чалуудан кийин дароо $name калтырды';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return 'Жаңы сөз айкаштары $count';
   }
 
   @override
@@ -378,13 +378,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get scoringPronunciation => 'Айтылышыңыз бааланууда…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => 'Айтылышыңызды сөзмө-сөз текшерип жатабыз';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'Бул бир аз узагыраак убакыт алууда';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => 'Байланыш үзүлдү';
 
   @override
   String get noRecordingToPlay => 'Ойнотуу үчүн жазуу жок.';
@@ -919,127 +919,127 @@ class AppLocalizationsKy extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => 'Ушул айдагы төлөм';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'Баары';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'Жазылуу';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'Каарман';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'Аяктады';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => 'Акыркы төлөм';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return 'Pro артыкчылыктарын $date чейин колдоно аласыз, андан кийин планыңыз автоматтык түрдө акысызга которулат.';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => 'Күнүнө 1 чалуу · 5 мүн чектөө';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => 'Негизги каармандар кирет';
 
   @override
   String get availableForPurchase => 'Сатып алууга болот';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => 'Төлөм тарыхын жүктөө мүмкүн болбоду';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'Азырынча төлөм жок';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => 'Эски төлөмдөр азырынча көрсөтүлбөйт';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => 'Күнү жок';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => 'Төлөм';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total сүйлөмдүн $passed өттү';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'Бүгүнкү эң кыйын үн';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => 'Үн боюнча тактык';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return 'Фонема боюнча · $count аракет';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => 'Үн';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => 'Арак.';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => 'Туура';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => 'Тактык';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => 'Сүйлөм боюнча жыйынтык';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return 'Бардыгын көрүү $count';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => 'Сүйлөм';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => 'Айтыл.';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => 'Эркин.';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'Ыргак';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return 'Акыркы $count сеанс';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return 'Орт. $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => 'Бүгүн';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => 'Күнү';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => 'Сүйлөм';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'Упай';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => 'Өзг.';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date (бүгүн)';
   }
 }

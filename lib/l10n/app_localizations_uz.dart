@@ -113,39 +113,39 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callPartner => 'Personaj';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'Tez boshlash';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => 'Ertalabki tartib';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => 'Ish kunlari 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => 'Kechki yakun';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => 'Har kuni 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'Ixtiyoriy';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => 'O\'zingizcha';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return 'Haftasiga $count× · oyiga $monthly qo\'ng\'iroq';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => 'Kamida bitta kun tanlang';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => 'Ishlatilmoqda';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => 'Mavjud';
 
   @override
   String get am => 'TO';
@@ -184,22 +184,22 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return '$count-qo\'ng\'iroq';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return '$name tomonidan bir og\'iz so\'z';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return 'Qo\'ng\'iroqdan so\'ng darhol $name qoldirdi';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return 'Yangi iboralar $count';
   }
 
   @override
@@ -382,13 +382,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get scoringPronunciation => 'Talaffuzingiz baholanmoqda…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => 'Talaffuzingiz so\'zma-so\'z tekshirilmoqda';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'Bu biroz ko\'proq vaqt olmoqda';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => 'Aloqa uzildi';
 
   @override
   String get noRecordingToPlay => 'Ijro etish uchun yozuv yoʻq.';
@@ -924,127 +924,127 @@ class AppLocalizationsUz extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => 'Shu oydagi to\'lov';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'Hammasi';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'Obuna';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'Qahramon';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'Yakunlandi';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => 'Oxirgi to\'lov';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return 'Pro imtiyozlaridan $date gacha foydalanishingiz mumkin, so\'ng tarifingiz avtomatik tarzda bepulga o\'tadi.';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => 'Kuniga 1 qo\'ng\'iroq · 5 daqiqa chegara';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => 'Asosiy qahramonlar kiritilgan';
 
   @override
   String get availableForPurchase => 'Sotib olish mumkin';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => 'To\'lovlar tarixini yuklab bo\'lmadi';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'Hozircha to\'lovlar yo\'q';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => 'Eski to\'lovlar hali ko\'rsatilmayapti';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => 'Sanasiz';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => 'To\'lov';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total gapdan $passed tasi o\'tdi';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'Bugungi eng qiyin tovush';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => 'Tovush bo\'yicha aniqlik';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return 'Fonema bo\'yicha · $count urinish';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => 'Tovush';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => 'Urin.';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => 'To\'g\'ri';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => 'Aniq.';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => 'Gap bo\'yicha natijalar';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return 'Barcha $count tasini ko\'rish';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => 'Gap';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => 'Talaf.';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => 'Ravon.';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'Ritm';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return 'Oxirgi $count mashg\'ulot';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return 'O\'rt. $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => 'Bugun';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => 'Sana';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => 'Gaplar';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'Ball';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => 'O\'zg.';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date (bugun)';
   }
 }

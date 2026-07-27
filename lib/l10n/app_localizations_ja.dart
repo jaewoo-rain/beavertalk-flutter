@@ -111,39 +111,39 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callPartner => 'キャラクター';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'クイックスタート';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => '朝のルーティン';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => '平日 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => '夜のまとめ';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => '毎日 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'カスタム';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => '自由に設定';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return '週$count回 · 月$monthly回の通話';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => '曜日を1つ以上選んでください';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => '使用中';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => '保有中';
 
   @override
   String get am => '午前';
@@ -182,22 +182,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return '$count回目の通話';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return '$nameからひとこと';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return '通話直後に$nameが残しました';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return '新しい表現 $count';
   }
 
   @override
@@ -370,13 +370,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get scoringPronunciation => '発音を採点しています…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => '発音を単語ごとに確認しています';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'もう少し時間がかかっています';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => '接続が切れました';
 
   @override
   String get noRecordingToPlay => '再生する録音がありません。';
@@ -892,127 +892,127 @@ class AppLocalizationsJa extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => '今月の決済金額';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'すべて';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'サブスク';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'キャラクター';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => '完了';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => '最近の決済';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return '$dateまでPro特典を引き続きご利用いただけます。その後は自動的に無料プランに切り替わります。';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => '1日1通話 · 5分制限';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => '基本キャラクター利用可';
 
   @override
   String get availableForPurchase => '購入可能';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => '決済履歴を読み込めませんでした';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'まだ決済履歴がありません';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => '以前の決済履歴はまだ表示されません';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => '日付なし';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => '決済';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total文中$passed文が合格';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => '今日いちばん難しかった音';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => '音別の正確度';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return '音素単位 · $count回の試行';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => '音';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => '試行';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => '正解';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => '正確度';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => '文ごとの結果';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return '$count件すべて見る';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => '文';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => '発音';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => '流暢';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'リズム';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return '直近$countセッション';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return '平均 $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => '今日';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => '日付';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => '文数';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'スコア';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => '変化';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date（今日）';
   }
 }

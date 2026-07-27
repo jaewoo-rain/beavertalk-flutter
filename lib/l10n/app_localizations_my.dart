@@ -113,39 +113,39 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callPartner => 'ဇာတ်ကောင်';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'အမြန်စတင်ရန်';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => 'မနက်ပိုင်း ပုံမှန်အလေ့အထ';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => 'အလုပ်ရက်များ 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => 'ညနေပိုင်း အဆုံးသတ်';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => 'နေ့တိုင်း 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'စိတ်ကြိုက်';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => 'လွတ်လပ်စွာ';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return 'တစ်ပတ် $count ကြိမ် · တစ်လ ခေါ်ဆိုမှု $monthly ကြိမ်';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => 'အနည်းဆုံး တစ်ရက် ရွေးပါ';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => 'အသုံးပြုနေသည်';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => 'ပိုင်ဆိုင်ပြီး';
 
   @override
   String get am => 'နံနက်';
@@ -184,22 +184,22 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return '$count ကြိမ်မြောက် ခေါ်ဆိုမှု';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return '$name ၏ စကားတစ်ခွန်း';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return 'ခေါ်ဆိုပြီးသည်နှင့် $name ချန်ထားခဲ့သည်';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return 'အသုံးအနှုန်းသစ် $count';
   }
 
   @override
@@ -382,13 +382,14 @@ class AppLocalizationsMy extends AppLocalizations {
   String get scoringPronunciation => 'သင့်အသံထွက်ကို အမှတ်ပေးနေသည်…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord =>
+      'သင့်အသံထွက်ကို စကားလုံးတစ်လုံးချင်း စစ်ဆေးနေသည်';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'အနည်းငယ် ကြာနေပါသည်';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => 'ချိတ်ဆက်မှု ပြတ်တောက်သွားသည်';
 
   @override
   String get noRecordingToPlay => 'ဖွင့်ရန် အသံဖမ်းချက် မရှိပါ။';
@@ -923,127 +924,127 @@ class AppLocalizationsMy extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => 'ဤလ ငွေပေးချေမှု';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'အားလုံး';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'စာရင်းသွင်းမှု';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'ဇာတ်ကောင်';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'ပြီးဆုံး';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => 'နောက်ဆုံး ငွေပေးချေမှု';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return '$date အထိ Pro အကျိုးခံစားခွင့်များကို ဆက်လက်သုံးနိုင်ပြီး ထို့နောက် အစီအစဉ်သည် အလိုအလျောက် အခမဲ့သို့ ပြောင်းသွားပါမည်။';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => 'တစ်ရက် ၁ ကြိမ် · ၅ မိနစ် ကန့်သတ်';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => 'အခြေခံ ဇာတ်ကောင်များ ပါဝင်သည်';
 
   @override
   String get availableForPurchase => 'ဝယ်ယူနိုင်သည်';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => 'ငွေပေးချေမှု မှတ်တမ်း ဖတ်၍မရပါ';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'ငွေပေးချေမှု မရှိသေးပါ';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => 'ယခင် ငွေပေးချေမှုများကို မပြသရသေးပါ';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => 'ရက်စွဲမရှိ';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => 'ငွေပေးချေမှု';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return 'ဝါကျ $total ခုအနက် $passed ခု အောင်မြင်';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'ယနေ့ အခက်ဆုံး အသံ';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => 'အသံအလိုက် တိကျမှု';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return 'အသံအစိတ်အပိုင်းအလိုက် · $count ကြိမ်';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => 'အသံ';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => 'ကြိမ်';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => 'မှန်';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => 'တိကျမှု';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => 'ဝါကျအလိုက် ရလဒ်';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return 'အားလုံး $count ကြည့်ရန်';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => 'ဝါကျ';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => 'အသံထွက်';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => 'ချောမွေ့';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'စည်းချက်';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return 'နောက်ဆုံး $count ကြိမ်';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return 'ပျမ်းမျှ $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => 'ယနေ့';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => 'ရက်စွဲ';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => 'ဝါကျ';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'ရမှတ်';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => 'ပြောင်းလဲ';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date (ယနေ့)';
   }
 }
