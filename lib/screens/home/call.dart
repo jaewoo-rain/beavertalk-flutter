@@ -11,6 +11,7 @@ import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
@@ -101,12 +102,34 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
+  /// 통화가 끝나 이 화면을 떠난다.
+  ///
+  /// 잠금화면 통화였고 아직 잠겨 있으면 앱을 뒤로 보내고 [inApp] 은 실행하지 않는다.
+  /// 그 상태에서 [inApp] 의 화면 전환을 하면 **잠금화면 위에 앱 화면이 남아 잠금 우회**가
+  /// 된다. 잠금 통화가 아니었거나 사용자가 통화 중 잠금을 풀었으면 평소 흐름을 탄다.
+  ///
+  /// 뒤로 보낸 뒤에도 **화면 스택은 홈으로 되돌린다.** 통화 화면을 그대로 두면 나중에
+  /// 사용자가 앱을 열었을 때 끝난 통화 화면이 멈춘 채로 남는다 — 타이머가 종료 시각에
+  /// 멈춰 있고, 종료 버튼을 눌러도 이미 `ended` 라 아무 일도 일어나지 않는다. 이 전환은
+  /// 앱이 이미 백그라운드라 사용자 눈에 보이지 않는다.
+  ///
+  /// 호출자가 `_navigated` 를 이미 세운 뒤에 부르므로 중복 진입은 여기서 다루지 않는다.
+  Future<void> _leave(VoidCallback inApp) async {
+    final backgrounded = await const LockscreenCallService().exitIfLocked();
+    if (!mounted) return;
+    if (backgrounded) {
+      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+      return;
+    }
+    inApp();
+  }
+
   /// Advances to the wrap-up screen, carrying the analyzable call id, the final
   /// duration, and the pre-call baseline so a manual hang-up can recover its id.
   void _goFinish(String? callId, int elapsedSec, int? baselineCallId) {
     if (_navigated) return;
     _navigated = true;
-    Navigator.pushReplacementNamed(
+    _leave(() => Navigator.pushReplacementNamed(
       context,
       Routes.callFinish,
       arguments: (
@@ -114,7 +137,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         elapsedSec: elapsedSec,
         baselineCallId: baselineCallId,
       ),
-    );
+    ));
   }
 
   @override
@@ -154,10 +177,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         if (_navigated) return;
         _navigated = true;
         final msg = next.errorMsg ?? l10n.callEnded;
-        ScaffoldMessenger.of(context)
-          ..clearSnackBars()
-          ..showSnackBar(SnackBar(content: Text(msg)));
-        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+        // 잠금화면 통화의 실패도 잠금화면으로 돌아가야 한다. 여기서 홈으로 보내면
+        // 키가드 위에 홈 화면이 남는다(스낵바도 볼 사람이 없다).
+        _leave(() {
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(content: Text(msg)));
+          Navigator.pushNamedAndRemoveUntil(
+              context, Routes.home, (r) => r.isFirst);
+        });
       }
     });
 
