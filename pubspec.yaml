@@ -98,6 +98,14 @@ dependencies:
   path_provider: ^2.1.6
   shared_preferences: ^2.5.5
 
+# 안드로이드 AudioTrack 언더런(비버 음성 1분 후 버벅임) 수정을 위해 로컬 벤더 사본으로
+# 오버라이드한다. packages/flutter_pcm_sound/ 의 native 버퍼를 getMinBufferSize 최소치에서
+# 넉넉한 배수로 키운 사본. 근거: docs/2026-07-26_1517_android-audiotrack-underrun-buffer-fix.md
+# 롤백: 이 블록 제거 후 flutter pub get.
+dependency_overrides:
+  flutter_pcm_sound:
+    path: packages/flutter_pcm_sound
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show File, IOSink; // TEMP DEBUG: 수신 PCM 덤프
 import 'dart:typed_data';
+
+import 'package:path_provider/path_provider.dart' // TEMP DEBUG
+    show getExternalStorageDirectory;
 
 import 'package:flutter/foundation.dart' show debugPrint, kDebugMode, kIsWeb;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
@@ -164,14 +168,38 @@ class NormalCallController extends Notifier<CallState> {
   // never starved into a stuck underflow churn — the root cause of the ~1-min
   // audio cutout with the old flutter_sound stream player.
 
-  /// Inbound PCM16 byte queue (little-endian samples). Consumed from [_pcmHead]
-  /// forward; an odd trailing byte simply stays until the next chunk completes
-  /// its Int16 sample, so samples never split across chunks.
-  List<int> _pcmQueue = <int>[];
+  /// Inbound PCM16 byte queue (little-endian samples). Live bytes are
+  /// `[_pcmHead, _pcmTail)`; an odd trailing byte simply stays until the next
+  /// chunk completes its Int16 sample, so samples never split across chunks.
+  ///
+  /// Deliberately a [Uint8List] with explicit indices rather than a `List<int>`
+  /// that gets `sublist`-compacted. The server bursts up to ~4.8s (≈230KB) at
+  /// once, and the old shape paid a word-per-byte store plus a full-buffer copy
+  /// **on the feed callback path** — the audio thread's deadline is the one place
+  /// that allocation must not happen. Here a steady call never copies at all:
+  /// indices reset to 0 whenever the queue drains.
+  Uint8List _pcmQueue = Uint8List(_pcmQueueInitialBytes);
 
-  /// Read offset into [_pcmQueue]. Bytes before it are already fed; the list is
-  /// compacted (see [_maybeCompact]) once the offset grows large.
+  /// Read offset — bytes before it are already fed.
   int _pcmHead = 0;
+
+  /// Write offset — bytes at/after it are unwritten capacity.
+  int _pcmTail = 0;
+
+  /// Initial queue capacity (~5.4s at 24kHz PCM16), so the common case never
+  /// grows. Growth doubles; the buffer is never shrunk during a call.
+  static const int _pcmQueueInitialBytes = 1 << 18; // 256KB
+
+  /// TEMP DEBUG — skip opening the mic recorder entirely.
+  ///
+  /// Isolates Android's voice-communication audio processing. The recorder is
+  /// normally held open for the whole call *on purpose* (see [_startMic]) so the
+  /// session/AEC stays stable, which also means the platform runs in
+  /// MODE_IN_COMMUNICATION with AEC/NS/AGC applied for the entire call. If the
+  /// beaver's voice stops breaking up with no recorder open, that processing —
+  /// not our buffering — is what's chopping it. The call still works one-way:
+  /// the server speaks first, we just can't answer.
+  static const bool _kDebugSkipMic = false;
 
   /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
   bool _pcmSetup = false;
@@ -184,21 +212,95 @@ class NormalCallController extends Notifier<CallState> {
   static const int _playbackSampleRate = 24000;
   static const int _playbackChannels = 1;
 
-  /// Feed callback fires when buffered frames fall below this (~100ms).
-  static const int _feedThresholdFrames = 2400;
+  /// Feed callback fires when buffered frames fall below this (~1.5s).
+  ///
+  /// This is the wall-clock budget the Dart side gets to answer a feed request
+  /// before the engine runs dry and the speech breaks up. At the original 100ms
+  /// a single scheduling hiccup on the platform thread was enough to underrun —
+  /// the "라디오 신호 안 좋을 때처럼 버벅임" report.
+  ///
+  /// Feeding is a strict ping-pong: the native playback thread posts a request
+  /// through `mainThreadHandler` and the method channel, and Dart answers over
+  /// the channel again. The cushion has to outlast that whole round trip, and at
+  /// 200ms it didn't — 2026-07-27 measurements caught the plugin injecting 20ms
+  /// of silence every time its queue ran dry mid-word, while seconds of real
+  /// audio sat unplayed in [_pcmQueue]. The AudioTrack itself never stalled
+  /// (played == elapsed, 0 underruns): the glitch was never a playback fault, we
+  /// were feeding it silence.
+  ///
+  /// Raised again 600ms → 1.5s because the round trip crosses the **Android main
+  /// thread**, so a busy frame can blow through any small budget. This costs no
+  /// added latency: it only moves buffered audio from [_pcmQueue] into the
+  /// engine's own queue, which the same bytes would have waited in anyway.
+  static const int _feedThresholdFrames = 36000;
 
-  /// Bytes fed per callback when audio is available (~200ms of 24kHz PCM16).
-  static const int _feedChunkBytes = 9600;
+  /// Bytes fed per callback when audio is available (~1.5s of 24kHz PCM16).
+  /// Matched to [_feedThresholdFrames] so one answered request refills the whole
+  /// cushion instead of leaving the engine to drain again immediately.
+  static const int _feedChunkBytes = 72000;
 
   /// Silence frames fed when the queue is empty (~50ms keep-alive).
   static const int _silenceFrames = 1200;
 
-  /// Jitter prebuffer (~120ms of PCM16): at the start of a beaver turn, hold real
-  /// audio (feed silence) until this much is queued, so brief network jitter can't
-  /// starve the engine into an audible gap ("voice 씹힘"). Bounded by
-  /// [_prebufferFlush] so a short utterance is never held back forever.
-  static const int _prebufferBytes = _playbackSampleRate * 2 * 120 ~/ 1000;
-  static const Duration _prebufferFlush = Duration(milliseconds: 90);
+  /// Jitter prebuffer (~900ms of PCM16): at the start of a beaver turn, hold real
+  /// audio (feed silence) until this much is queued, so a gap in the server's
+  /// delivery can't starve the engine into an audible gap ("voice 씹힘").
+  ///
+  /// Sized from a measured 5-minute call (19 dropouts, 5.63s of inserted silence).
+  /// Every large dropout had the same shape: the server opens a beaver turn with
+  /// one **471ms** chunk (`queue 22634B`, byte-identical across turns), then goes
+  /// quiet for 0.7–1.4s while it generates, then sends the bulk (up to 4.8s at
+  /// once). At the old 400ms the first chunk alone satisfied the gate, so playback
+  /// started and ran dry 471ms later — every single turn. The cushion has to be
+  /// bigger than that opening chunk or it buys nothing.
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+
+  /// Safety net for a *missed* `turn_end`: audio is queued, the cushion never
+  /// fills, and nothing more arrives. Normally unused — a completed short
+  /// utterance is released by the `_turnEnded` arm of the gate in [_onFeed], not
+  /// by this timer, so this can be generous without delaying short replies.
+  static const Duration _prebufferFlush = Duration(milliseconds: 1000);
+
+  /// Adaptive jitter cushion, in bytes. Starts at [_prebufferBytes] and grows
+  /// when a turn starves, shrinks back over turns that play clean.
+  ///
+  /// A fixed cushion cannot hold, because the server delivers a turn's audio at
+  /// roughly **90% of realtime** (measured 2026-07-27: 91.9s of audio across
+  /// 101.8s of beaver turns). A constant deficit means the cushion drains for as
+  /// long as the turn runs, so what's needed scales with turn length, not with
+  /// jitter — 900ms covers a 9s turn and nothing longer. Rather than tax every
+  /// reply with a cushion sized for the worst turn, this tracks the deficit the
+  /// call is actually showing.
+  int _cushionBytes = _prebufferBytes;
+
+  /// Growth per starved turn (~300ms), ceiling (~2.5s), and decay per clean turn
+  /// (~150ms). Growth outpaces decay so the cushion settles above the deficit
+  /// instead of oscillating through it.
+  static const int _cushionStepBytes = _playbackSampleRate * 2 * 300 ~/ 1000;
+  static const int _cushionMaxBytes = _playbackSampleRate * 2 * 2500 ~/ 1000;
+  static const int _cushionDecayBytes = _playbackSampleRate * 2 * 150 ~/ 1000;
+
+  /// True once the current turn has starved, so the cushion grows once per turn
+  /// rather than once per feed callback, and a starved turn can't also decay.
+  bool _turnStarved = false;
+
+  /// Cushion required to *resume* after the queue ran dry mid-utterance.
+  ///
+  /// Separate from the turn-start cushion, which only guards a turn's first
+  /// sample. Once [_playing] is set it short-circuits the gate in [_onFeed], so
+  /// a starve mid-word used to resume on whatever scrap had arrived — measured
+  /// at as little as 120ms — which starved again on the next jitter and again
+  /// after that. That loop is the "라디오 신호 안 좋을 때처럼" texture: logs caught
+  /// 10 of 27 playback starts below the cushion in a 2.5 minute call.
+  ///
+  /// Half the adaptive cushion, floored at 400ms (the holes measured were mostly
+  /// ≤400ms) and capped at 1.2s so [_prebufferFlush] stays the real bound.
+  int get _resumeCushionBytes {
+    const floor = _playbackSampleRate * 2 * 400 ~/ 1000;
+    const ceil = _playbackSampleRate * 2 * 1200 ~/ 1000;
+    final half = _cushionBytes ~/ 2;
+    return half < floor ? floor : (half > ceil ? ceil : half);
+  }
 
   /// Settle after `release()` so the singleton native engine fully tears down
   /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
@@ -216,7 +318,7 @@ class NormalCallController extends Notifier<CallState> {
   static const int _targetQueueBytes = _playbackSampleRate * 2 * 45;
 
   /// Bytes currently queued (unfed).
-  int get _queueLen => _pcmQueue.length - _pcmHead;
+  int get _queueLen => _pcmTail - _pcmHead;
 
   /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
   /// only audio↔silence transitions instead of spamming every feed callback.
@@ -228,17 +330,75 @@ class NormalCallController extends Notifier<CallState> {
   bool _feeding = false;
 
   /// True once the jitter prebuffer has filled and real audio is draining. Reset
-  /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
-  /// mid-turn starve, so resumed audio plays instantly without a re-buffer gap.
+  /// whenever the queue actually empties — including mid-utterance — so the
+  /// cushion is rebuilt rather than run down to nothing for the rest of the turn.
+  /// Resuming instantly on a starve (the previous behaviour) traded one gap for a
+  /// whole turn with no slack, which measured as repeated dropouts.
   bool _playing = false;
 
   /// Bounded flush for the prebuffer: if audio is queued but stays below
   /// [_prebufferBytes], start playing anyway so a short utterance never stalls.
   Timer? _prebufferFlushTimer;
 
+  /// Wall-clock anchor for [_log]'s elapsed prefix — set when playback opens, so
+  /// every line is stamped with "how far into this call". Without it the pipeline
+  /// log has no timestamps at all and a glitch can't be located in time (the whole
+  /// point of the "~76초에 음성이 튐" investigation).
+  int? _logAnchorMs;
+
+  /// When the queue went empty *while the beaver was still speaking* — i.e. the
+  /// server stopped feeding us mid-utterance. Cleared (and reported) when real
+  /// audio resumes, which yields the stall duration: the number that decides
+  /// whether a client-side buffer can cover it at all.
+  int? _starveAtMs;
+
+  /// Set when [_prebufferFlush] gives up waiting for [_resumeCushionBytes], so a
+  /// tail that never refills the cushion still plays instead of hanging.
+  bool _resumeFlushed = false;
+
+  /// Arrival time of the last inbound audio chunk, for the server-gap metric in
+  /// [_feedPlayer]. Independent of playback and of the mic gate.
+  int? _lastChunkAtMs;
+
+  /// TEMP DEBUG — raw sink for every inbound PCM chunk, byte-for-byte as it
+  /// arrived. Playing this back settles whether the choppiness is already in what
+  /// the server sent (nothing on the client can fix that) or is introduced by our
+  /// own playback. Debug builds only; remove once the question is answered.
+  IOSink? _dumpSink;
+
+  /// Off by default: the dump writes every received byte to external storage for
+  /// the whole call, which has no business running in a normal debug session.
+  /// Flip to true only while investigating what the server actually sent — and
+  /// note the trap it already set once: the file concatenates received bytes, so
+  /// timing holes vanish and it always sounds smooth. It answers "is the audio
+  /// content intact", never "did it arrive on time".
+  static const bool _kDebugDumpRxPcm = false;
+
+  /// TEMP DEBUG — opens the dump file for this call. Best-effort: a failure here
+  /// must never affect the call.
+  Future<void> _openDump() async {
+    if (!_kDebugDumpRxPcm) return;
+    if (!kDebugMode || kIsWeb) return;
+    try {
+      final dir = await getExternalStorageDirectory();
+      if (dir == null) return;
+      final file = File('${dir.path}/beaver_rx.pcm');
+      _dumpSink = file.openWrite();
+      _log('PCM DUMP → ${file.path}');
+    } catch (e) {
+      _log('PCM DUMP open failed: $e');
+    }
+  }
+
   /// Dev-only pipeline log (compiled out of release builds via [kDebugMode]).
+  /// Prefixed with elapsed seconds since playback opened (`--` before that).
   void _log(String msg) {
-    if (kDebugMode) debugPrint('[call] $msg');
+    if (!kDebugMode) return;
+    final anchor = _logAnchorMs;
+    final at = anchor == null
+        ? '--'
+        : '${((DateTime.now().millisecondsSinceEpoch - anchor) / 1000).toStringAsFixed(1)}s';
+    debugPrint('[call $at] $msg');
   }
 
   Timer? _elapsedTimer;
@@ -391,8 +551,9 @@ class NormalCallController extends Notifier<CallState> {
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
       // underflow-churn stall that cut audio out after ~1 minute.
-      _pcmQueue = <int>[];
+      _pcmQueue = Uint8List(_pcmQueueInitialBytes);
       _pcmHead = 0;
+      _pcmTail = 0;
       _pcmActive = false;
       _playing = false;
       await FlutterPcmSound.setLogLevel(LogLevel.error);
@@ -405,6 +566,8 @@ class NormalCallController extends Notifier<CallState> {
       FlutterPcmSound.setFeedCallback(_onFeed);
       _pcmActive = true;
       _lastFeedSilent = null;
+      _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
+      _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
       // Kick the pull loop directly instead of FlutterPcmSound.start().
       // start() only kicks when the plugin's *static* `_needsStart` flag is true,
       // and that flag is NEVER reset by release()/setup(): the first call feeds
@@ -413,6 +576,13 @@ class NormalCallController extends Notifier<CallState> {
       // feed callback ourselves (a silence frame starts the native OnFeedSamples
       // loop) is independent of that stale flag and works on every call.
       unawaited(_onFeed(0));
+      _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
+      _starveAtMs = null;
+      // The cushion is per-call state: a rough previous call must not tax this one.
+      _cushionBytes = _prebufferBytes;
+      _turnStarved = false;
+      _resumeFlushed = false;
+      await _openDump(); // TEMP DEBUG
       _log('playback started @ ${_playbackSampleRate}Hz (gapless PCM)');
 
       // Capture the baseline max call_id *before* the socket creates this call's
@@ -449,7 +619,11 @@ class NormalCallController extends Notifier<CallState> {
       _startKeepalive();
 
       // Start streaming the mic to the server.
-      await _startMic();
+      if (!_kDebugSkipMic) {
+        await _startMic();
+      } else {
+        _log('TEMP DEBUG: mic skipped — no recorder, no AEC/MODE_IN_COMMUNICATION');
+      }
       if (myGen != _gen) return _abortStart();
     } catch (e) {
       state = state.copyWith(
@@ -533,6 +707,8 @@ class NormalCallController extends Notifier<CallState> {
           codec: Codec.pcm16,
           sampleRate: 16000,
           numChannels: 1,
+          // Restored: turning these off made no difference to the break-up, so
+          // the platform's voice processing is not what chews up the output.
           enableVoiceProcessing: true,
           enableEchoCancellation: true,
         );
@@ -591,8 +767,120 @@ class NormalCallController extends Notifier<CallState> {
   /// Enqueues an inbound PCM24k chunk onto [_pcmQueue]. The plugin's feed
   /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
   /// closing-drain stability window, and cap the queue (resync).
+  // [계측] 수신 처리 시간이 통화가 갈수록 무거워지는지(1분 후 악화 원인) 측정.
+  int _fpLastUs = 0, _fpChunks = 0, _fpMicros = 0, _fpWinMs = 0, _fpMaxGapMs = 0;
+  // [계측] 창당 수신 바이트 — 서버가 "느려진" 것과 "같은 양을 뭉텅이로 보낸" 것을 가른다.
+  int _fpBytes = 0;
+
+  // [계측] 이벤트 루프 지연 프로브. 20ms 주기 타이머가 실제로 얼마나 늦게 실행되는지
+  // 재서, 청크 도착 갭(maxArrivalGap)의 원인을 가른다:
+  //   갭 큼 + 루프 정시  → 소켓에 데이터가 없었다 = 서버 전송 공백 (서버 사안)
+  //   갭 큼 + 루프도 밀림 → 이벤트 루프가 막혔다 = 클라 사안
+  // 이 구분이 없으면 두 원인이 로그상 완전히 똑같이 보인다.
+  static const int _elProbeMs = 20;
+  Timer? _elProbeTimer;
+  int _elLastMs = 0, _elLagMaxMs = 0, _elLagOver50 = 0;
+
+  // [계측] 스트림 인플레이션(Dart 측). native 20ms 무음과 별개로 여기서도 [_silenceFrames]
+  // (=50ms) 무음을 피드한다 — 주입기가 둘이다. 재생 스트림에 들어간 총량이 경과 시간을
+  // 넘으면(fed/elapsed > 100%) 그 초과분이 곧 백로그 증가분이고, 어느 분기가 넣었는지까지 가른다.
+  Timer? _inflateTimer;
+  int _callT0Ms = 0;
+  int _rxBytesTotal = 0; // 서버에서 받은 오디오(=재생돼야 할 진짜 양)
+  int _fedAudBytes = 0; // 플러그인에 넣은 진짜 오디오
+  int _fedSilFrames = 0; // 넣은 무음 전체
+  int _fedSilSpeakFrames = 0; // 그중 "비버 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilPrebufFrames = 0; // 그중 프리버퍼 대기로 넣은 것 = 의도된 지연
+
+  static String _sec(num bytes) => (bytes / 48000.0).toStringAsFixed(1);
+
+  void _startInflateLog() {
+    _inflateTimer?.cancel();
+    _callT0Ms = DateTime.now().millisecondsSinceEpoch;
+    _rxBytesTotal = 0;
+    _fedAudBytes = 0;
+    _fedSilFrames = 0;
+    _fedSilSpeakFrames = 0;
+    _fedSilPrebufFrames = 0;
+    // 타이머 기반(청크 도착 기반 아님) — 오디오가 안 올 때도 균일하게 찍혀야 비교가 된다.
+    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final elapsedMs = DateTime.now().millisecondsSinceEpoch - _callT0Ms;
+      final fedBytes = _fedAudBytes + _fedSilFrames * 2;
+      final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
+      _log('INFLATE: elapsed ${(elapsedMs / 1000).toStringAsFixed(1)}s, '
+          'rx ${_sec(_rxBytesTotal)}s, fedAud ${_sec(_fedAudBytes)}s, '
+          'fedSil ${_sec(_fedSilFrames * 2)}s '
+          '(speaking ${_sec(_fedSilSpeakFrames * 2)}s, prebuf ${_sec(_fedSilPrebufFrames * 2)}s), '
+          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
+    });
+  }
+
+  void _stopInflateLog() {
+    _inflateTimer?.cancel();
+    _inflateTimer = null;
+  }
+
+  void _startEventLoopProbe() {
+    _elProbeTimer?.cancel();
+    _elLastMs = DateTime.now().millisecondsSinceEpoch;
+    _elLagMaxMs = 0;
+    _elLagOver50 = 0;
+    _elProbeTimer =
+        Timer.periodic(const Duration(milliseconds: _elProbeMs), (_) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final lag = (now - _elLastMs) - _elProbeMs; // 예정보다 늦은 정도(ms)
+      _elLastMs = now;
+      if (lag > _elLagMaxMs) _elLagMaxMs = lag;
+      if (lag > 50) _elLagOver50++;
+    });
+  }
+
+  void _stopEventLoopProbe() {
+    _elProbeTimer?.cancel();
+    _elProbeTimer = null;
+  }
+
   void _feedPlayer(Uint8List chunk) {
     if (!_pcmActive) return;
+    final fpT0 = DateTime.now().microsecondsSinceEpoch;
+    final fpGap = _fpLastUs == 0 ? 0 : (fpT0 - _fpLastUs) ~/ 1000; // 청크 도착 간격(ms)
+    _fpLastUs = fpT0;
+    if (fpGap > _fpMaxGapMs) _fpMaxGapMs = fpGap;
+    _feedPlayerBody(chunk);
+    _fpChunks++;
+    _fpBytes += chunk.length;
+    _rxBytesTotal += chunk.length;
+    _fpMicros += DateTime.now().microsecondsSinceEpoch - fpT0;
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (_fpWinMs == 0) _fpWinMs = nowMs;
+    if (nowMs - _fpWinMs >= 5000) {
+      final avg = _fpChunks > 0 ? _fpMicros / _fpChunks / 1000 : 0;
+      // 24kHz mono Int16 → 48000 B/s. 5초 창이면 실시간은 240000B.
+      final secs = _fpBytes / 48000.0;
+      _log('FP-TIMING: $_fpChunks chunks/5s, avg ${avg.toStringAsFixed(2)}ms/chunk, '
+          'maxArrivalGap ${_fpMaxGapMs}ms, queue ${_queueLen}B, '
+          'rx ${_fpBytes}B (${secs.toStringAsFixed(2)}s audio), '
+          'elLagMax ${_elLagMaxMs}ms, elLagOver50 $_elLagOver50');
+      _fpChunks = 0; _fpMicros = 0; _fpMaxGapMs = 0; _fpWinMs = nowMs;
+      _fpBytes = 0; _elLagMaxMs = 0; _elLagOver50 = 0;
+    }
+  }
+
+  void _feedPlayerBody(Uint8List chunk) {
+    if (!_pcmActive) return;
+    // Ground truth for "did the server go quiet mid-utterance": the gap between
+    // inbound chunks. The playback-side starve clock can't answer that — a long
+    // enough hole trips the idle-ungate, `_beaverSpeaking` flips to false, and the
+    // resumption then looks like a brand-new turn. Measured here (before
+    // [_gateMic] clears `_turnEnded`) it survives all of that.
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final prevChunkMs = _lastChunkAtMs;
+    if (prevChunkMs != null && !_turnEnded && nowMs - prevChunkMs >= 250) {
+      _log('SERVER GAP ${nowMs - prevChunkMs}ms mid-utterance '
+          '(mic was ${_beaverSpeaking ? "closed" : "OPEN"})');
+    }
+    _lastChunkAtMs = nowMs;
+    _dumpSink?.add(chunk); // TEMP DEBUG: exactly what the server sent
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
     // before/without a turn_start).
     _gateMic();
@@ -606,7 +894,7 @@ class NormalCallController extends Notifier<CallState> {
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
 
-    _pcmQueue.addAll(chunk);
+    _appendToQueue(chunk);
 
     // Resync: if the queue outgrows the cap (server bursts ahead / clock drift),
     // drop the oldest bytes down to the target so latency can't pile up and
@@ -634,18 +922,44 @@ class NormalCallController extends Notifier<CallState> {
       // Jitter prebuffer: at a turn start, hold real audio (feed silence) until a
       // small cushion is buffered so brief jitter can't starve mid-word. Bypassed
       // once playing, while closing (must drain), or when the flush timer fires.
-      final ready = _playing || _drainScheduled || whole >= _prebufferBytes;
+      // `_turnEnded` matters as much as the cushion here: once the server has sent
+      // `turn_end` the whole utterance is already queued, so holding out for
+      // [_prebufferBytes] would only delay a short reply that will never reach it.
+      // Without this arm, raising the cushion to 900ms would stall every "네."
+      // until [_prebufferFlush] expired.
+      // Resuming from a mid-utterance starve is the one case [_playing] must not
+      // wave through: rebuild a small cushion first, or playback resumes on a
+      // scrap and starves straight back into the stutter loop. `_turnEnded` and
+      // `_drainScheduled` still bypass everything so short replies stay instant,
+      // and [_prebufferFlush] bounds the wait via [_resumeFlushed].
+      final resuming = _starveAtMs != null && !_resumeFlushed;
+      final ready = _turnEnded ||
+          _drainScheduled ||
+          (resuming
+              ? whole >= _resumeCushionBytes
+              : (_playing || whole >= _cushionBytes));
       if (whole >= 2 && ready) {
-        if (!_playing) {
-          _playing = true;
-          _prebufferFlushTimer?.cancel();
-          _prebufferFlushTimer = null;
+        _playing = true;
+        // Cancel unconditionally: a resume gate can arm this while [_playing] is
+        // already true, so keying the cancel off `!_playing` would leave it live.
+        _prebufferFlushTimer?.cancel();
+        _prebufferFlushTimer = null;
+        final starvedAt = _starveAtMs;
+        if (starvedAt != null) {
+          // The server had gone quiet mid-utterance and has now resumed. This gap
+          // IS the glitch the user hears — measure it, don't just note that it
+          // happened. Anything under [_prebufferFlush] would have been absorbed.
+          _starveAtMs = null;
+          _resumeFlushed = false;
+          _log('audio resumed after '
+              '${DateTime.now().millisecondsSinceEpoch - starvedAt}ms gap (starved)');
         }
         if (_lastFeedSilent != false) {
           _log('feed AUDIO (queue ${avail}B)');
           _lastFeedSilent = false;
         }
         final take = whole < _feedChunkBytes ? whole : _feedChunkBytes;
+        _fedAudBytes += take; // [계측]
         await FlutterPcmSound.feed(_takeArray(take));
       } else {
         if (whole >= 2) {
@@ -654,12 +968,46 @@ class NormalCallController extends Notifier<CallState> {
           _prebufferFlushTimer ??= Timer(_prebufferFlush, () {
             _prebufferFlushTimer = null;
             _playing = true; // next feed drains whatever is queued
+            // Releases the resume gate too, so a tail that never refills
+            // [_resumeCushionBytes] plays out instead of hanging on silence.
+            _resumeFlushed = true;
           });
         } else {
           // Queue genuinely drained. Between turns (beaver not speaking) require a
           // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
           // instant (no re-buffer gap).
+          // Reverted from an unconditional refill: rebuilding the 900ms cushion
+          // mid-utterance only added ~450ms of dead air per resumption without
+          // removing a single dropout, because the holes being ridden out are
+          // multi-second server gaps, not jitter a cushion can cover.
           if (!_beaverSpeaking) _playing = false;
+          // Only a mid-utterance drain is a glitch; a drained queue between turns
+          // is normal, so don't start the stall clock for it.
+          if (_beaverSpeaking) {
+            if (_starveAtMs == null) {
+              // First starve of this turn: the cushion was too small for the
+              // deficit this call is running, so widen it for the turns ahead.
+              _starveAtMs = DateTime.now().millisecondsSinceEpoch;
+              if (!_turnStarved) {
+                _turnStarved = true;
+                if (_cushionBytes < _cushionMaxBytes) {
+                  _cushionBytes += _cushionStepBytes;
+                  if (_cushionBytes > _cushionMaxBytes) {
+                    _cushionBytes = _cushionMaxBytes;
+                  }
+                  _log('cushion grew → ${_cushionBytes * 1000 ~/ 48000}ms '
+                      '(turn starved)');
+                }
+              }
+            }
+          } else {
+            // The gate has cleared — the beaver finished and it's the user's turn.
+            // Drop any clock started during the hangover, otherwise the *next*
+            // turn's first chunk reports the whole exchange (beaver→user→beaver)
+            // as one multi-second "gap" and buries the real glitches.
+            _starveAtMs = null;
+            _resumeFlushed = false;
+          }
           if (_lastFeedSilent != true) {
             _log('feed silence — queue empty'
                 '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
@@ -668,6 +1016,14 @@ class NormalCallController extends Notifier<CallState> {
           // Idle-ungate countdown (covers a missed turn_end so the mic can't
           // deadlock). Armed once per empty period; fresh audio cancels it.
           _armIdleUngate();
+        }
+        // [계측] 무음 주입을 분기별로 분리 집계: 프리버퍼 대기(의도된 지연)인지,
+        // 비버 발화 중 큐가 빈 것(진짜 구멍)인지가 원인 판정을 가른다.
+        _fedSilFrames += _silenceFrames;
+        if (whole >= 2) {
+          _fedSilPrebufFrames += _silenceFrames;
+        } else if (_beaverSpeaking) {
+          _fedSilSpeakFrames += _silenceFrames;
         }
         await FlutterPcmSound.feed(
           PcmArrayInt16.zeros(count: _silenceFrames),
@@ -697,21 +1053,63 @@ class NormalCallController extends Notifier<CallState> {
     return PcmArrayInt16(bytes: out.buffer.asByteData());
   }
 
-  /// Compacts [_pcmQueue] once the consumed prefix grows large, so the backing
-  /// list doesn't grow unbounded across a long call.
+  /// Rewinds the indices once the queue is fully consumed. That is the only
+  /// bookkeeping a steady call needs: between feeds the queue regularly hits
+  /// empty, so the window slides back to the front for free and [_appendToQueue]
+  /// never has to move live bytes.
   void _maybeCompact() {
-    if (_pcmHead > 65536 && _pcmHead * 2 > _pcmQueue.length) {
-      _pcmQueue = _pcmQueue.sublist(_pcmHead);
+    if (_pcmHead >= _pcmTail) {
       _pcmHead = 0;
+      _pcmTail = 0;
     }
+  }
+
+  /// Appends an inbound chunk, moving or growing the backing buffer only when it
+  /// genuinely cannot fit. Both paths are rare: the queue normally drains to
+  /// empty (see [_maybeCompact]) long before the write cursor reaches the end.
+  void _appendToQueue(Uint8List chunk) {
+    final live = _queueLen;
+    final needed = live + chunk.length;
+    if (needed > _pcmQueue.length) {
+      var capacity = _pcmQueue.length;
+      while (capacity < needed) {
+        capacity *= 2;
+      }
+      final grown = Uint8List(capacity);
+      grown.setRange(0, live, _pcmQueue, _pcmHead);
+      _pcmQueue = grown;
+      _pcmHead = 0;
+      _pcmTail = live;
+    } else if (_pcmTail + chunk.length > _pcmQueue.length) {
+      // Enough total room, just not at the end → slide the live window forward.
+      // `setRange` handles the self-overlapping copy correctly.
+      _pcmQueue.setRange(0, live, _pcmQueue, _pcmHead);
+      _pcmHead = 0;
+      _pcmTail = live;
+    }
+    _pcmQueue.setRange(_pcmTail, _pcmTail + chunk.length, chunk);
+    _pcmTail += chunk.length;
   }
 
   // ── Half-duplex mic gating helpers ─────────────────────────────────────────
 
   /// Engages the mic gate for a new/ongoing beaver turn. Cancels any pending
   /// ungate (hangover/safety) since the beaver is speaking again.
+  /// Walks the adaptive cushion back down after a turn that played clean, so a
+  /// single bad stretch doesn't leave every later reply paying its latency.
+  /// Never goes below [_prebufferBytes].
+  void _decayCushion() {
+    if (_turnStarved) return; // this turn starved — don't undo the growth
+    if (_cushionBytes <= _prebufferBytes) return;
+    _cushionBytes -= _cushionDecayBytes;
+    if (_cushionBytes < _prebufferBytes) _cushionBytes = _prebufferBytes;
+  }
+
   void _gateMic() {
-    if (!_beaverSpeaking) _log('mic GATED — beaver speaking (your mic paused)');
+    if (!_beaverSpeaking) {
+      _log('mic GATED — beaver speaking (your mic paused)');
+      _turnStarved = false; // fresh turn: it hasn't starved yet
+    }
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _turnEnded = false;
@@ -733,6 +1131,7 @@ class NormalCallController extends Notifier<CallState> {
       _gateSafetyTimer?.cancel();
       _gateSafetyTimer = null;
       _beaverSpeaking = false;
+      _decayCushion();
       _log('mic OPEN — your turn (turn_end + drained)');
     });
   }
@@ -752,6 +1151,7 @@ class NormalCallController extends Notifier<CallState> {
         _micGateTimer?.cancel();
         _micGateTimer = null;
         _beaverSpeaking = false;
+        _decayCushion();
         _log('mic OPEN — your turn (idle drained)');
       }
     });
@@ -1013,6 +1413,21 @@ class NormalCallController extends Notifier<CallState> {
     _closingStableTimer = null;
     _closingFallbackTimer?.cancel();
     _closingFallbackTimer = null;
+    // Diagnostics are per-call: a stall left open here would otherwise be
+    // reported against the *next* call's anchor as an absurd gap.
+    _starveAtMs = null;
+    _lastChunkAtMs = null;
+    _logAnchorMs = null;
+    // TEMP DEBUG: close the dump so the file is complete and pullable.
+    final dump = _dumpSink;
+    _dumpSink = null;
+    if (dump != null) {
+      try {
+        await dump.flush();
+        await dump.close();
+        _log('PCM DUMP closed');
+      } catch (_) {}
+    }
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
@@ -1039,6 +1454,8 @@ class NormalCallController extends Notifier<CallState> {
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
     _pcmActive = false;
+    _stopEventLoopProbe();
+    _stopInflateLog();
     _prebufferFlushTimer?.cancel();
     _prebufferFlushTimer = null;
     _playing = false;
@@ -1060,8 +1477,9 @@ class NormalCallController extends Notifier<CallState> {
     }
     _pcmSetup = false;
     _feeding = false;
-    _pcmQueue = <int>[];
+    _pcmQueue = Uint8List(_pcmQueueInitialBytes);
     _pcmHead = 0;
+    _pcmTail = 0;
     _lastFeedSilent = null;
 
     // Close the socket.
