@@ -104,6 +104,13 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
   /// uuid를 구분하지 않으면 **진행 중이던 통화를 끊어버린다**.
   String? _activeUuid;
 
+  /// [_activeUuid]가 활성 콜 목록에서 연속으로 안 보인 횟수(종료 재조정용).
+  int _endMisses = 0;
+
+  /// 종료로 확정하기 전 필요한 연속 미검출 횟수. accept 직후의 짧은 등록 레이스로
+  /// 멀쩡한 통화를 끊지 않도록 한 번은 흘려보낸다.
+  static const int _endMissesToConfirm = 2;
+
   /// 라이브 이벤트 구독 + 재조정 루프를 시작한다. 멱등.
   ///
   /// 라이브 이벤트 구독([_sub])은 즉시(동기적으로) 건다 — killed 상태에서 뒤늦게
@@ -238,6 +245,7 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
       return;
     }
     _activeUuid = null; // 같은 uuid로 ended가 두 번 와도 한 번만 처리
+    _endMisses = 0;
     await callkit.clearPendingAcceptedCall();
     _log('CallKit 콜 종료(uuid=$uuid) → 통화 정리');
     await ref.read(normalCallControllerProvider.notifier).hangUp();
@@ -290,8 +298,27 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
         if (!call.isAccepted) continue; // 표시/ringing 상태는 소비하지 않음.
         if (call.id.isNotEmpty && _handledUuids.contains(call.id)) continue;
         _log('활성 콜 목록에서 accept 회수(uuid=${call.id})');
+        _endMisses = 0;
         await _onAccept(_payloadFromParams(call));
         return true;
+      }
+
+      // 종료 재조정. `ended` 이벤트도 accept와 똑같이 버퍼가 없어 유실될 수 있으므로,
+      // "통화 중이라고 믿는 콜이 CallKit 목록에서 사라졌는가"를 상태로 확인한다.
+      // 유실되면 통화가 영원히 끝나지 않은 것처럼 남는다.
+      //
+      // 연속 [_endMissesToConfirm]회 확인 후에만 처리한다 — accept 직후 목록에
+      // 아직 안 잡히는 짧은 레이스로 멀쩡한 통화를 끊지 않기 위해.
+      final active = _activeUuid;
+      if (active != null && !calls.any((c) => c.id == active)) {
+        _endMisses++;
+        if (_endMisses >= _endMissesToConfirm) {
+          _log('활성 콜 소멸(uuid=$active) → 통화 종료 처리');
+          await _onEnded(active);
+          return true;
+        }
+      } else {
+        _endMisses = 0;
       }
       return false;
     } catch (e) {

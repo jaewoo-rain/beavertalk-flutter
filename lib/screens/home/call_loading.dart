@@ -46,41 +46,79 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _begin());
   }
 
-  /// Starts the call — unless a session is already running.
+  /// Decides what this screen is: the start of a call, or a late view of one.
   ///
-  /// A call answered through CallKit starts at the *accept* event, not here: this
-  /// screen is only a view of that session (the lock-screen flow may never render
-  /// it at all). So we start a call only when arriving from home, and otherwise
-  /// just catch up to whatever phase the session is already in.
+  /// A call answered through CallKit starts at the *accept* event, not here —
+  /// this screen is only a view of that session. On the lock-screen path it is
+  /// pushed while the app is in the background, where Flutter produces no
+  /// frames, so this callback does not run until the user actually opens the
+  /// app. By then the session may be anywhere in its lifecycle, including
+  /// already finished.
+  ///
+  /// Every phase must therefore be handled explicitly. Falling through to
+  /// `start()` on a phase that is not [CallPhase.idle] is what made a call the
+  /// user had already hung up look like it never ended: opening the app started
+  /// a BRAND NEW call instead of showing the wrap-up.
   void _begin() {
     if (!mounted) return;
-    final phase = ref.read(normalCallControllerProvider).phase;
-    if (phase == CallPhase.connecting ||
-        phase == CallPhase.inCall ||
-        phase == CallPhase.ending) {
-      _syncToPhase(phase);
-      return;
+    final s = ref.read(normalCallControllerProvider);
+    switch (s.phase) {
+      case CallPhase.connecting:
+      case CallPhase.ending:
+        break; // 진행 중 — 리스너가 다음 전이를 받는다.
+      case CallPhase.inCall:
+        _goCall();
+      case CallPhase.ended:
+        _goFinish(s);
+      case CallPhase.error:
+        _goHomeWithError(s.errorMsg);
+      case CallPhase.idle:
+        // 실제로 여기서 시작하는 유일한 경우 — 홈에서 진입.
+        final args = ModalRoute.of(context)?.settings.arguments;
+        final characterId = args is int ? args : 1;
+        ref.read(normalCallControllerProvider.notifier).start(characterId);
     }
-    final args = ModalRoute.of(context)?.settings.arguments;
-    final characterId = args is int ? args : 1;
-    ref.read(normalCallControllerProvider.notifier).start(characterId);
   }
 
-  /// Catches up on a transition that already happened before this screen mounted.
-  ///
-  /// `ref.listen` only fires on *change*: entering while the session is already
-  /// `inCall` (routine now that the socket opens at accept time) would leave this
-  /// screen spinning on "연결 중" forever with no callback ever arriving.
-  void _syncToPhase(CallPhase phase) {
+  /// 통화 화면으로 교체.
+  void _goCall() {
     if (_navigated || !mounted) return;
-    if (phase == CallPhase.inCall) {
-      _navigated = true;
-      Navigator.pushReplacementNamed(context, Routes.call);
-    }
+    _navigated = true;
+    Navigator.pushReplacementNamed(context, Routes.call);
+  }
+
+  /// 이미 끝난 통화 → 요약 화면으로. `call` 화면과 동일한 인자 형태를 쓴다.
+  void _goFinish(CallState s) {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+    Navigator.pushReplacementNamed(
+      context,
+      Routes.callFinish,
+      arguments: (
+        callId: s.callId,
+        elapsedSec: s.elapsedSec,
+        baselineCallId: s.baselineCallId,
+      ),
+    );
+  }
+
+  /// 실패 안내 후 홈으로.
+  void _goHomeWithError(String? msg) {
+    if (_navigated || !mounted) return;
+    _navigated = true;
+    final text = msg ?? AppLocalizations.of(context).callConnectFailed;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(text)));
+    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
   }
 
   /// Cancels connecting and returns home.
   Future<void> _cancel() async {
+    // 먼저 잠근다: hangUp이 phase를 ended로 바꾸면 아래 리스너가 요약 화면으로
+    // 보내려 하는데, 취소는 홈으로 가야 한다.
+    if (_navigated) return;
+    _navigated = true;
     await ref.read(normalCallControllerProvider.notifier).hangUp();
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
@@ -92,16 +130,19 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     // React to phase transitions.
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
       if (_navigated) return;
-      if (next.phase == CallPhase.inCall) {
-        _navigated = true;
-        Navigator.pushReplacementNamed(context, Routes.call);
-      } else if (next.phase == CallPhase.error) {
-        _navigated = true;
-        final msg = next.errorMsg ?? l10n.callConnectFailed;
-        ScaffoldMessenger.of(context)
-          ..clearSnackBars()
-          ..showSnackBar(SnackBar(content: Text(msg)));
-        Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+      switch (next.phase) {
+        case CallPhase.inCall:
+          _goCall();
+        // 연결 화면에 머무는 동안 통화가 끝날 수 있다(잠금화면 종료 버튼 등).
+        // 그때는 요약 화면으로 보낸다 — 여기 남아 계속 돌면 통화가 안 끝난 것처럼 보인다.
+        case CallPhase.ended:
+          _goFinish(next);
+        case CallPhase.error:
+          _goHomeWithError(next.errorMsg);
+        case CallPhase.idle:
+        case CallPhase.connecting:
+        case CallPhase.ending:
+          break;
       }
     });
 

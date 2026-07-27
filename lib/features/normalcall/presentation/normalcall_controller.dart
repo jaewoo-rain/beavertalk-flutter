@@ -273,8 +273,17 @@ class NormalCallController extends Notifier<CallState> {
   bool _callkitAudioReady = false;
 
   /// Bounded wait for CallKit's didActivate before starting audio anyway.
+  ///
+  /// Polled tightly: every 100ms of waiting here is 100ms before the beaver can
+  /// be heard, and the check is a cheap synchronous native flag read.
   static const Duration _callkitAudioTimeout = Duration(seconds: 10);
-  static const Duration _callkitAudioPollInterval = Duration(milliseconds: 200);
+  static const Duration _callkitAudioPollInterval = Duration(milliseconds: 50);
+
+  /// When this call's socket opened — used to attribute start-up latency.
+  DateTime? _sessionStartedAt;
+
+  /// True once the first inbound audio chunk of this call has arrived.
+  bool _gotFirstAudio = false;
   StreamController<Uint8List>? _micController;
   StreamSubscription<Uint8List>? _micSub;
 
@@ -526,6 +535,8 @@ class NormalCallController extends Notifier<CallState> {
       _callkitOwnedAudio = callkitOwnedAudio;
       _callUuid = callUuid;
       _callkitAudioReady = false;
+      _sessionStartedAt = DateTime.now();
+      _gotFirstAudio = false;
       state = const CallState(phase: CallPhase.connecting);
 
       // Every failure below tears down with keepError so the error phase SURVIVES
@@ -556,18 +567,14 @@ class NormalCallController extends Notifier<CallState> {
 
       // Capture the baseline max call_id *before* the socket creates this call's
       // row, so a manual hang-up (which gets no `call_ended`) can recover the new
-      // id later by polling for an id greater than this. Best-effort: a failure
-      // here must never block the call from starting.
-      try {
-        final base = await ref.read(normalcallRepositoryProvider).latestCallId();
-        state = state.copyWith(baselineCallId: base);
-      } catch (_) {
-        // Leave baselineCallId null; recovery degrades to "newest id".
-      }
-      if (myGen != _gen) {
-        await _abortStart();
-        return false;
-      }
+      // id later by polling for an id greater than this.
+      //
+      // NOT awaited. It is an HTTP round trip, and nothing until the wrap-up
+      // screen needs it — but awaiting it here delayed the `start` frame, and
+      // therefore the beaver's first word, by that request's entire latency.
+      // Fire it alongside the socket instead. A failure just leaves the baseline
+      // null and recovery degrades to "newest id".
+      unawaited(_captureBaselineCallId(myGen));
 
       // Connect the WebSocket.
       _expectClose = false;
@@ -587,6 +594,7 @@ class NormalCallController extends Notifier<CallState> {
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
       _log('socket connected (audio pending)');
+      unawaited(_logNativeAudio('connect/socket-open'));
       return true;
     } catch (e) {
       state = state.copyWith(
@@ -676,7 +684,7 @@ class NormalCallController extends Notifier<CallState> {
         }
         if (myGen != _gen) return _abortStart();
       }
-      await _logNativeAudio('startAudio/session-ready');
+      await _logNativeAudio('startAudio/session-ready +${_elapsedSinceStartMs}ms');
 
       // Open native gapless PCM playback at the server's 24kHz (no upsampling).
       // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
@@ -761,7 +769,7 @@ class NormalCallController extends Notifier<CallState> {
           _audioRoutingStarted = true;
         } catch (_) {}
       }
-      await _logNativeAudio('startAudio/mic-up');
+      await _logNativeAudio('startAudio/mic-up +${_elapsedSinceStartMs}ms');
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
@@ -770,6 +778,23 @@ class NormalCallController extends Notifier<CallState> {
       await _teardown(keepError: true);
     }
   }
+
+  /// Fetches the pre-call max `call_id` in the background (see [_connect]).
+  /// Applied only if this call is still the current one.
+  Future<void> _captureBaselineCallId(int myGen) async {
+    try {
+      final base = await ref.read(normalcallRepositoryProvider).latestCallId();
+      if (myGen != _gen) return;
+      state = state.copyWith(baselineCallId: base);
+    } catch (_) {
+      // Recovery degrades to "newest id".
+    }
+  }
+
+  /// Milliseconds since this call's socket was opened — for latency logging.
+  int get _elapsedSinceStartMs => _sessionStartedAt == null
+      ? -1
+      : DateTime.now().difference(_sessionStartedAt!).inMilliseconds;
 
   /// Asks the native side whether CallKit currently holds an ACTIVE call audio
   /// session (between didActivate and didDeactivate). False on non-iOS.
@@ -1033,6 +1058,14 @@ class NormalCallController extends Notifier<CallState> {
   /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
   /// closing-drain stability window, and cap the queue (resync).
   void _feedPlayer(Uint8List chunk) {
+    // First inbound audio of the call: the split between "server was still
+    // thinking" and "our pipeline was not ready yet" is exactly this timestamp
+    // against startAudio's. Logged natively so it survives release builds.
+    if (!_gotFirstAudio) {
+      _gotFirstAudio = true;
+      unawaited(_logNativeAudio('first-audio-in +${_elapsedSinceStartMs}ms '
+          '(playback ${_pcmActive ? "ready" : "NOT ready"})'));
+    }
     // Queue ALWAYS, even before playback is open. On the CallKit path the socket
     // is deliberately opened before the audio pipeline (see [startFromIncoming]),
     // so the server's opening line routinely arrives first — dropping it here,
