@@ -102,7 +102,11 @@ class AvatarDetailScreen extends StatelessWidget {
   /// One-line catch-phrase under the chips (Label 1 SemiBold).
   final String? summary;
 
-  /// Long-form story paragraph (Label 1 SemiBold). Omitted when null.
+  /// Long-form story paragraph (Label 1 Regular). Omitted when null.
+  ///
+  /// Deliberately lighter than [summary]: the catch-phrase is the one line that
+  /// should carry weight, and a whole paragraph set in SemiBold reads as one
+  /// long emphasis with nothing left to contrast against.
   final String? description;
 
   /// Price label (e.g. "$10"). For [AvatarDetailState.unownedDiscount] this
@@ -252,7 +256,9 @@ class AvatarDetailScreen extends StatelessWidget {
           const SizedBox(height: _gap),
           Text(
             description!,
-            style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
+            // Regular, not SemiBold: the story is body copy. Only [summary]
+            // above carries emphasis.
+            style: AppType.label1.r.copyWith(color: context.c.labelStrong),
           ),
         ],
       ],

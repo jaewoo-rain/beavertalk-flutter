@@ -11,6 +11,7 @@ import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
 import '../../features/auth/domain/entities/member.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/character/data/character_copy_overrides.dart';
 import '../../features/character/domain/entities/character.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
@@ -291,6 +292,9 @@ class AvatarScreen extends ConsumerWidget {
     String? discountPrice,
     int? discountPercent,
   }) {
+    // Read from the pushing context: the route's own context is not built yet,
+    // and the locale is the same either way.
+    final locale = Localizations.localeOf(context).toString();
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (routeCtx) => Consumer(
@@ -303,8 +307,14 @@ class AvatarScreen extends ConsumerWidget {
             // the one-line catch-phrase, `background_story` the story
             // paragraph. Both used to collapse into the story slot — the
             // catch-phrase rendered there and the story was never fetched.
-            summary: description,
-            description: backgroundStory,
+            //
+            // Both go through the localized-copy override first: the server
+            // stores these as Korean-only columns, so without this a German
+            // user reads Korean prose. The server value is the fallback, so an
+            // unmapped character still renders. Delete the override layer once
+            // the server serves `character_i18n`.
+            summary: characterSummaryFor(characterId, locale, description),
+            description: characterStoryFor(characterId, locale, backgroundStory),
             voiceUrl: voiceUrl,
             price: price,
             discountPrice: discountPrice,
