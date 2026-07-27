@@ -63,6 +63,21 @@ Future<void> initIncomingCallLocal(ProviderContainer container) async {
     await _step('inbound scheduler',
         () => container.read(inboundCallSchedulerProvider).start());
 
+    // Firebase 초기화. **디바이스 등록보다 반드시 앞**이어야 한다.
+    //
+    // 안드로이드의 토큰 소스는 FCM(`FirebaseMessaging.getToken()`)이라 Firebase 앱이
+    // 없으면 `[core/no-app]`으로 throw 한다. 등록이 _initFcm 앞으로 나온 뒤로 이
+    // 초기화만 뒤에 남아 안드로이드 등록이 매 부팅 실패하고 있었다 — 게다가
+    // `DeviceRegistrationController.start()`는 `_started = true`를 먼저 찍고 던져서
+    // 토큰 갱신·auth 리스너까지 못 붙는다(그 세션 동안 등록이 영구히 죽음).
+    // 서버가 토큰을 모르면 FCM 이 안 오고, 로컬 링을 끈 지금은 그게 곧 **전화 0회**다.
+    //
+    // 위치는 여기가 맞다: `attach()`(수신 콜 구독)는 이미 위에서 끝났으므로 "콜드스타트
+    // 에서 attach 를 Firebase 뒤로 밀지 않는다"는 원래 의도는 그대로 지켜진다.
+    // `_step`으로 격리해, iOS 에서 이 호출이 throw/hang 해도 PushKit 기반 iOS 등록은
+    // 계속 진행된다(iOS 는 Firebase 가 필요 없다).
+    await _step('firebase init', () => Firebase.initializeApp());
+
     // 디바이스 토큰 등록을 **FCM 배선과 독립적으로, 그 前에** 시작한다.
     // iOS VoIP 등록은 PushKit 경로라 Firebase 가 전혀 필요 없다. 이전에는 이 등록이
     // _initFcm 깊숙이(FirebaseMessaging.onBackgroundMessage / requestPermission /
@@ -109,6 +124,10 @@ Future<void> _initFcm(ProviderContainer container) async {
     // main()에서 여기로 옮겼다: 이건 FCM 트리거에만 필요한데, main에서 await 하면
     // 콜드스타트마다 그만큼 수신 콜 처리(attach)가 밀린다.
     // (백그라운드/종료 경로는 별도 isolate에서 다시 initializeApp을 호출한다.)
+    //
+    // 보통은 [initIncomingCallLocal]이 디바이스 등록 전에 이미 초기화를 끝낸 상태라
+    // 이 호출은 기존 기본 앱을 그대로 돌려주는 no-op 이다. 그쪽이 실패했을 때를 위한
+    // 안전망으로 남겨 둔다(_initFcm 이 단독으로도 성립해야 한다).
     await Firebase.initializeApp();
 
     final fcm = container.read(fcmServiceProvider);

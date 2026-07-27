@@ -5,12 +5,11 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 
 /// Payment failure — Figma `screen/main_payment_result__fail` (`2117:20478`).
 ///
-/// A centered failure illustration (❌ stand-in for the Figma 3D asset — mock),
+/// A centered 100×100 3D failure illustration (`assets/icons/3d/error.png`),
 /// a "결제에 실패했어요" heading + sub copy. The bottom is the Figma
 /// `two-button-row`: a secondary "홈으로" (returns to [Routes.home]) and a
 /// primary "다시 시도" (pops back to checkout to retry).
@@ -38,18 +37,15 @@ class PaymentFailedScreen extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // Failure illustration — emoji stand-in for the Figma
-                          // 3D asset (mock; no asset bundled).
-                          Container(
+                          // Failure illustration (Figma `3D/location`,
+                          // `281:20345`). Per v3 the 3D object stands alone on
+                          // the screen background — no tile behind it — so the
+                          // asset is rendered bare at its designed 100×100 box.
+                          Image.asset(
+                            'assets/icons/3d/error.png',
                             width: 100,
                             height: 100,
-                            decoration: BoxDecoration(
-                              color: context.c.backgroundNormalAlternative,
-                              borderRadius: BorderRadius.circular(AppRadius.lg),
-                            ),
-                            alignment: Alignment.center,
-                            child: const Text('❌',
-                                style: TextStyle(fontSize: 56)),
+                            fit: BoxFit.contain,
                           ),
                           const SizedBox(height: 24),
                           Text(

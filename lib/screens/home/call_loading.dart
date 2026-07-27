@@ -6,6 +6,7 @@ import '../../app/routes.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
+import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -87,11 +88,37 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     Navigator.pushReplacementNamed(context, Routes.call);
   }
 
+  /// 통화가 끝나 이 화면을 떠난다.
+  ///
+  /// 잠금화면 통화였고 아직 잠겨 있으면 앱을 뒤로 보내고 [inApp] 은 실행하지 않는다.
+  /// 그 상태에서 화면을 전환하면 **잠금화면 위에 앱 화면이 남아 잠금 우회**가 된다.
+  /// 이 화면은 잠금화면 경로에서 백그라운드 push 되므로(파일 상단 주석 참조) 사용자가
+  /// 통화를 끝낼 때까지 떠 있는 경우가 있어, 여기서도 종료 경로를 모두 막아야 한다.
+  ///
+  /// 뒤로 보낸 뒤에도 **화면 스택은 홈으로 되돌린다.** 통화 화면을 그대로 두면 나중에
+  /// 사용자가 앱을 열었을 때 끝난 통화 화면이 멈춘 채로 남는다(종료 버튼도 안 먹는다).
+  /// 앱이 이미 백그라운드라 이 전환은 눈에 보이지 않는다.
+  ///
+  /// 호출자가 `_navigated` 를 이미 세운 뒤에 부르므로 중복 진입은 여기서 다루지 않는다.
+  Future<void> _leave(VoidCallback inApp) async {
+    final backgrounded = await const LockscreenCallService().exitIfLocked();
+    if (!mounted) return;
+    // 끝난 통화의 상태를 소비 처리한다. 안 하면 phase 가 `ended` 로 남아, 다음에 통화를
+    // 걸어도 이 화면이 새 통화 대신 지난 통화의 요약 화면으로 보낸다([_begin] 참조).
+    // 화면 전환 **전에** 부른다 — 전환 뒤에는 이 위젯이 dispose 되어 ref 를 쓸 수 없다.
+    ref.read(normalCallControllerProvider.notifier).clearFinished();
+    if (backgrounded) {
+      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+      return;
+    }
+    inApp();
+  }
+
   /// 이미 끝난 통화 → 요약 화면으로. `call` 화면과 동일한 인자 형태를 쓴다.
   void _goFinish(CallState s) {
     if (_navigated || !mounted) return;
     _navigated = true;
-    Navigator.pushReplacementNamed(
+    _leave(() => Navigator.pushReplacementNamed(
       context,
       Routes.callFinish,
       arguments: (
@@ -99,7 +126,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         elapsedSec: s.elapsedSec,
         baselineCallId: s.baselineCallId,
       ),
-    );
+    ));
   }
 
   /// 실패 안내 후 홈으로.
@@ -107,10 +134,12 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     if (_navigated || !mounted) return;
     _navigated = true;
     final text = msg ?? AppLocalizations.of(context).callConnectFailed;
-    ScaffoldMessenger.of(context)
-      ..clearSnackBars()
-      ..showSnackBar(SnackBar(content: Text(text)));
-    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+    _leave(() {
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(text)));
+      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+    });
   }
 
   /// Cancels connecting and returns home.
@@ -121,7 +150,8 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     _navigated = true;
     await ref.read(normalCallControllerProvider.notifier).hangUp();
     if (!mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+    await _leave(() => Navigator.pushNamedAndRemoveUntil(
+        context, Routes.home, (r) => r.isFirst));
   }
 
   @override

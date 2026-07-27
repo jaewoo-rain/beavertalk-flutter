@@ -20,3 +20,24 @@ const bool kInboundCallEnabled = true;
 /// try/catch로 삼켜 앱에 무해하며(디버그 로그 `[devices] 등록 실패(무시)`), 서버가
 /// 배포되는 순간 코드 변경 없이 자동 연동된다. `kInboundCallEnabled`의 하위 스위치.
 const bool kDeviceRegistrationEnabled = true;
+
+/// 로컬 스케줄러(`InboundCallScheduler`)가 알람 시각에 **직접 수신 화면을 띄울지** 여부.
+///
+/// **현재 false — 수신 트리거를 FCM으로 일원화했다(재우님 결정).**
+/// 알람 하나에 로컬 스케줄러와 서버 FCM이 각자 전화를 띄워 **약 1.6초 간격으로 두 번**
+/// 울렸고, 두 번째 수신 화면이 첫 화면을 덮는 문제가 있었다. 두 경로 중 앱 종료 상태까지
+/// 커버하는 쪽은 FCM뿐이라 로컬 발사를 끄는 방향으로 정리했다.
+///
+/// 트레이드오프(알고 끄는 것):
+/// - 오프라인/푸시 미도달 시 대체 발사 경로가 없다(로컬 예약 알림도 미구현).
+/// - **푸시 등록이 곧 전화의 생명줄이 된다.** 로컬 발사가 없으므로 디바이스 토큰이
+///   서버에 등록되지 않으면 전화가 아예 오지 않는다(무음 실패). 실제로 Firebase
+///   초기화가 등록 뒤로 밀려 안드로이드 등록이 통째로 실패한 적이 있다 —
+///   `push_bootstrap.dart`의 초기화 순서를 바꾸지 말 것.
+///
+/// (iOS는 더 이상 미커버가 아니다: `DeviceRegistrationController`가 PushKit VoIP
+/// 토큰을 `ios_voip`로 등록한다.)
+///
+/// 되돌리려면 이 값을 true로 바꾸면 된다(스케줄러 코드는 그대로 살아 있다). 단, 서버
+/// FCM 발송이 계속 살아 있으면 중복 링이 다시 생긴다.
+const bool kLocalAlarmRingEnabled = false;
