@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart'
+    show defaultTargetPlatform, kIsWeb, TargetPlatform;
+import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
@@ -75,6 +78,12 @@ class CallkitService {
         handleType: 'generic',
         supportsVideo: false,
         ringtonePath: 'system_ringtone_default',
+        // 오디오 세션 카테고리는 AppDelegate(configureCallAudioCategory)가 소유한다.
+        // 이걸 켜 두면 플러그인이 accept 시점과 그 1200ms 뒤에 세션을
+        // `[.allowBluetoothA2DP, .duckOthers, .allowBluetooth]` + mode `.default`로
+        // 다시 구성한다. A2DP는 출력 전용(마이크 없음)이라 BT 마이크(HFP) 경로가
+        // 깨지고, 1200ms 재구성은 우리 마이크 기동 한복판에 떨어진다.
+        configureAudioSession: false,
       ),
     );
     await FlutterCallkitIncoming.showCallkitIncoming(params);
@@ -94,6 +103,55 @@ class CallkitService {
     try {
       await FlutterCallkitIncoming.endAllCalls();
     } catch (_) {}
+  }
+
+  // 참고: `setCallConnected`는 일부러 쓰지 않는다. 수락된 수신 콜은 CallKit이
+  // 이미 연결 상태로 두고(잠금화면 타이머가 그래서 흐른다), 플러그인의
+  // `didActivate` 처리는 `answerCall.hasConnected`가 true면 **조기 반환**해
+  // 오디오 세션 이벤트를 보내지 않는다. 굳이 호출해 그 경로를 밟을 이유가 없다.
+
+  // ── 네이티브 CallKit 상태 브릿지(iOS 전용) ──────────────────────────────
+  //
+  // 플러그인의 이벤트 전달은 버퍼가 없다(`eventSink?(data)`). Dart가 그 순간
+  // 구독 중이 아니면 accept 이벤트는 그대로 소멸하고, CallKit만 연결된 채
+  // 타이머가 도는 상태가 된다. 그래서 AppDelegate가 accept를 네이티브에
+  // 걸어두고(래치), Dart는 준비되는 대로 **당겨온다**. 이벤트는 빠른 경로일
+  // 뿐이고 진실은 여기에 있다.
+
+  static const MethodChannel _bridge = MethodChannel('beavertalk/callkit');
+
+  /// 네이티브에 걸려 있는 "수락된 콜"(없으면 null). 소비 후 반드시
+  /// [clearPendingAcceptedCall]로 지운다.
+  Future<Map<String, dynamic>?> pendingAcceptedCall() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return null;
+    try {
+      final res = await _bridge.invokeMapMethod<String, dynamic>(
+        'getPendingAcceptedCall',
+      );
+      return res;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// 소비한 래치를 지운다(같은 콜을 두 번 소비하지 않도록).
+  Future<void> clearPendingAcceptedCall() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    try {
+      await _bridge.invokeMethod<void>('clearPendingAcceptedCall');
+    } catch (_) {}
+  }
+
+  /// CallKit이 오디오 세션을 활성화한 상태인지(didActivate ~ didDeactivate).
+  /// 오디오 파이프라인을 언제 열지 판단하는 신호다. iOS 외에는 항상 false.
+  Future<bool> isCallAudioSessionActive() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return false;
+    try {
+      return await _bridge.invokeMethod<bool>('isCallAudioSessionActive') ??
+          false;
+    } catch (_) {
+      return false;
+    }
   }
 
   /// 현재 활성(표시/수락) 콜 목록을 반환한다. 콜드스타트에서 "이미 받은 콜"을

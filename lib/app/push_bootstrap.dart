@@ -30,10 +30,16 @@ final Set<String> _fcmSeenCalls = <String>{};
 Future<void> initIncomingCallLocal(ProviderContainer container) async {
   if (!kInboundCallEnabled || kIsWeb) return;
   try {
+    // CallKit 이벤트 구독 + 재조정 루프를 **가장 먼저** 건다.
+    //
+    // 이 구독은 Supabase·Firebase·알림 채널 초기화에 의존하지 않는데, 예전엔
+    // 그 뒤에 있었다. 플러그인의 이벤트 전달에는 버퍼가 없어서(`eventSink?(data)`),
+    // 구독이 붙기 전에 도착한 accept는 그대로 소멸한다 — VoIP 푸시로 깨어난
+    // 콜드스타트에서 정확히 그 창이 열려 있었다. 구독 공백을 최소화한다.
+    // (수락 콜 자체는 네이티브 래치 + 재조정으로 한 번 더 방어한다.)
+    await container.read(incomingCallCoordinatorProvider).attach();
     // 부재중 배너 채널/권한 준비.
     await container.read(missedCallNotifierProvider).init();
-    // CallKit 이벤트 구독 + 콜드스타트(이미 수락된 콜) 소비.
-    await container.read(incomingCallCoordinatorProvider).attach();
     // 저장된 알람 시각에 로컬로 전화를 띄우는 스케줄러 시작(앱 생존 중에만 동작).
     await container.read(inboundCallSchedulerProvider).start();
 

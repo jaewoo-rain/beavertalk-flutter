@@ -46,11 +46,37 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) => _begin());
   }
 
-  /// Reads the character id from route arguments and starts the call.
+  /// Starts the call — unless a session is already running.
+  ///
+  /// A call answered through CallKit starts at the *accept* event, not here: this
+  /// screen is only a view of that session (the lock-screen flow may never render
+  /// it at all). So we start a call only when arriving from home, and otherwise
+  /// just catch up to whatever phase the session is already in.
   void _begin() {
+    if (!mounted) return;
+    final phase = ref.read(normalCallControllerProvider).phase;
+    if (phase == CallPhase.connecting ||
+        phase == CallPhase.inCall ||
+        phase == CallPhase.ending) {
+      _syncToPhase(phase);
+      return;
+    }
     final args = ModalRoute.of(context)?.settings.arguments;
     final characterId = args is int ? args : 1;
     ref.read(normalCallControllerProvider.notifier).start(characterId);
+  }
+
+  /// Catches up on a transition that already happened before this screen mounted.
+  ///
+  /// `ref.listen` only fires on *change*: entering while the session is already
+  /// `inCall` (routine now that the socket opens at accept time) would leave this
+  /// screen spinning on "연결 중" forever with no callback ever arriving.
+  void _syncToPhase(CallPhase phase) {
+    if (_navigated || !mounted) return;
+    if (phase == CallPhase.inCall) {
+      _navigated = true;
+      Navigator.pushReplacementNamed(context, Routes.call);
+    }
   }
 
   /// Cancels connecting and returns home.

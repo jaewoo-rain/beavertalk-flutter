@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart'
+    show AppLifecycleState, WidgetsBinding, WidgetsBindingObserver;
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,21 +24,33 @@ const int kDefaultInboundCharacterId = 1;
 /// CallKit 수신 이벤트를 오케스트레이션하는 코디네이터(상태 없는 서비스 성격).
 ///
 /// 책임:
-/// - accept → extra.characterId 추출 → `appNavigatorKey`로 기존
-///   `Routes.callLoading`(arguments: **int** characterId) 네비게이트. 그 뒤 실시간
-///   통화는 normalcall 파이프라인이 그대로 처리(무변경 재사용).
-/// - decline → 콜 종료.
-/// - timeout(1분 미응답) → 부재중 배너.
-/// - ended → dedup 정리.
+/// - accept → **CallKit 콜은 유지한 채** normalcall 세션(WS)을 즉시 시작하고,
+///   통화 화면 진입은 병렬로 태운다.
+/// - CallKit이 오디오 세션을 활성화하면(didActivate) 오디오 파이프라인을 붙인다.
+/// - decline → 콜 종료. timeout(1분 미응답) → 부재중 배너.
+/// - ended → **사용자의 실제 종료**로 보고 통화를 함께 내린다.
+///
+/// ## accept 수신 보장
+///
+/// 플러그인의 이벤트 전달에는 버퍼가 없다(`eventSink?(data)` 한 줄). Dart가 그
+/// 순간 구독 중이 아니면 — 부팅 중이거나 프로세스가 얼어 있으면 — accept는 그대로
+/// 소멸하고, CallKit만 연결된 채 타이머가 도는 상태가 된다("네이티브 통화 화면에서
+/// 시간만 흐르고 앱은 아무것도 모름"). 그래서 수신 경로를 셋으로 둔다:
+///
+/// 1. **라이브 이벤트** — 빠른 경로.
+/// 2. **네이티브 래치** — AppDelegate가 `onAccept`에서 걸어둔 값을 Dart가 당겨온다.
+///    이벤트 유실과 무관하다.
+/// 3. **주기 재조정** — 라이프사이클 전환 + 주기 타이머로 1·2를 다시 확인한다.
+///
+/// 셋 다 [_onAccept]로 수렴하고, callUuid dedup이 중복 소비를 막는다.
 ///
 /// 안전장치:
-/// - **callUuid dedup**: 라이브 이벤트 + 콜드스타트 폴링 중복 진입 방지.
 /// - **미인증 보류**: Supabase 세션이 없으면 통화 진입을 막고 콜을 종료.
 /// - **이미 통화 중 가드**: normalcall phase가 진행 중이면 새 accept를 거절(endCall).
 ///
 /// 참고: `flutter_callkit_incoming` 3.1.x의 [CallEvent]는 sealed 클래스라 이벤트별
 /// 하위 타입(예: [CallEventActionCallAccept])으로 패턴 매칭한다.
-class IncomingCallCoordinator {
+class IncomingCallCoordinator with WidgetsBindingObserver {
   /// 코디네이터를 생성한다. [ref]로 normalcall phase를 읽는다.
   IncomingCallCoordinator({
     required this.ref,
@@ -44,13 +58,18 @@ class IncomingCallCoordinator {
     required this.missedCall,
   });
 
-  // ── 콜드스타트 복구 타이밍(무한 대기 금지: 모두 상한 있음) ──
+  // ── 재조정 타이밍(무한 대기 금지: 모두 상한 있음) ──
 
-  /// accepted 콜 재폴링 간격.
-  static const Duration _coldStartPollInterval = Duration(milliseconds: 250);
+  /// 부팅 직후 집중 재조정 간격.
+  static const Duration _coldStartPollInterval = Duration(milliseconds: 300);
 
-  /// accepted 콜 재폴링 최대 횟수(250ms × 10 = 최대 ~2.5s).
-  static const int _coldStartMaxPolls = 10;
+  /// 부팅 직후 집중 재조정 창. 사용자가 전화를 받기까지는 현실적으로 5~10초가
+  /// 걸리므로, 과거의 2.5초 창은 늘 그 전에 닫혀 있었다.
+  static const Duration _coldStartWindow = Duration(seconds: 20);
+
+  /// 상시 재조정 주기. 라이프사이클 전환만으로는 못 잡는 경우(잠금 상태에서 앱이
+  /// 계속 백그라운드인 채 accept가 들어오는 경우)를 덮는다.
+  static const Duration _reconcileInterval = Duration(seconds: 2);
 
   /// 준비 게이팅(세션 복원/navigator) 폴링 간격.
   static const Duration _readyPollInterval = Duration(milliseconds: 100);
@@ -68,24 +87,38 @@ class IncomingCallCoordinator {
   final MissedCallNotifier missedCall;
 
   StreamSubscription<CallEvent?>? _sub;
+  Timer? _reconcileTimer;
 
   /// 이미 처리한 callUuid 집합(중복 진입 방지).
   final Set<String> _handledUuids = <String>{};
 
   bool _attached = false;
 
-  /// 라이브 이벤트 구독을 시작하고 콜드스타트(이미 받은 콜)를 처리한다. 멱등.
+  /// 재조정 재진입 가드(폴링·라이프사이클·타이머가 겹칠 수 있다).
+  bool _reconciling = false;
+
+  /// 현재 통화를 떠받치는 CallKit 콜의 uuid(없으면 null).
+  ///
+  /// `ended` 이벤트가 **이 콜**의 것일 때만 통화를 내리기 위해 필요하다. 통화 중에
+  /// 두 번째 전화가 오면 그 콜을 endCall로 거절하는데, 그때도 `ended`가 오므로
+  /// uuid를 구분하지 않으면 **진행 중이던 통화를 끊어버린다**.
+  String? _activeUuid;
+
+  /// 라이브 이벤트 구독 + 재조정 루프를 시작한다. 멱등.
   ///
   /// 라이브 이벤트 구독([_sub])은 즉시(동기적으로) 건다 — killed 상태에서 뒤늦게
-  /// 오는 accept 이벤트를 놓치지 않기 위해.
-  /// 콜드스타트 복구([_handleColdStart])는 accepted 콜을 최대 ~2.5s 재폴링하고
-  /// 세션/네비게이터 준비를 최대 ~5s 대기하므로, 이를 **await 하면** 부트스트랩
-  /// (스케줄러/FCM 초기화)이 그만큼 지연된다. 따라서 **fire-and-forget**으로 띄운다.
+  /// 오는 accept 이벤트를 놓치지 않기 위해. 콜드스타트 재조정은 최대
+  /// [_coldStartWindow]까지 걸리므로 **fire-and-forget**으로 띄운다.
   Future<void> attach() async {
     if (_attached) return;
     _attached = true;
     _sub = callkit.onEvent.listen(_onEvent);
-    // 부트스트랩을 막지 않도록 콜드스타트 복구는 비차단으로 실행.
+    WidgetsBinding.instance.addObserver(this);
+    // 상시 재조정: 이벤트가 유실돼도 수락된 콜을 반드시 줍는다.
+    _reconcileTimer = Timer.periodic(
+      _reconcileInterval,
+      (_) => unawaited(_reconcile()),
+    );
     unawaited(_handleColdStart());
   }
 
@@ -93,6 +126,20 @@ class IncomingCallCoordinator {
   void dispose() {
     _sub?.cancel();
     _sub = null;
+    _reconcileTimer?.cancel();
+    _reconcileTimer = null;
+    if (_attached) WidgetsBinding.instance.removeObserver(this);
+    _attached = false;
+  }
+
+  /// 앱이 다시 살아나는 순간마다 수락된 콜이 있는지 확인한다. 잠금 해제·CallKit
+  /// 화면에서 앱으로 복귀 등 전이 시점이 유실된 accept를 줍기 가장 좋은 지점이다.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed ||
+        state == AppLifecycleState.inactive) {
+      unawaited(_reconcile());
+    }
   }
 
   /// 라이브 CallKit 이벤트 디스패처(sealed 타입 패턴 매칭).
@@ -108,18 +155,25 @@ class IncomingCallCoordinator {
         // 캐릭터명을 쓴다(없으면 '비버'로 폴백).
         await _onTimeout(uuid: id, name: callkit.nameFor(id) ?? '비버');
       case CallEventActionCallEnded(:final callKitParams):
-        // 세션 종료 → dedup에서 제거해 (동일 uuid의) 재수신 여지를 남긴다.
-        _handledUuids.remove(callKitParams.id);
+        await _onEnded(callKitParams.id);
+      case CallEventActionCallToggleAudioSession(:final isActive):
+        // CallKit이 통화 오디오 세션을 활성화했다 = 마이크/스피커를 열 시점.
+        // (네이티브 플래그가 진실이고 이건 지연 0의 빠른 경로다.)
+        _log('CallKit 오디오 세션 ${isActive ? "활성" : "비활성"}');
+        if (isActive) {
+          ref.read(normalCallControllerProvider.notifier).onCallKitAudioReady();
+        }
       default:
         break;
     }
   }
 
-  /// accept 처리: 미인증/통화중/중복 가드 후 통화 로딩 화면으로 네비게이트.
+  /// accept 처리: 미인증/통화중/중복 가드 후 **CallKit 콜을 유지한 채** 통화 세션을
+  /// 시작하고, 화면 진입은 병렬로 태운다.
   Future<void> _onAccept(IncomingCallPayload payload) async {
     final uuid = payload.callUuid.isEmpty ? null : payload.callUuid;
 
-    // 중복 진입 방지(라이브 이벤트 + 콜드스타트 폴링).
+    // 중복 진입 방지(라이브 이벤트 + 네이티브 래치 + 주기 재조정).
     if (uuid != null) {
       if (_handledUuids.contains(uuid)) return;
       if (_handledUuids.length > 200) _handledUuids.clear();
@@ -145,37 +199,52 @@ class IncomingCallCoordinator {
       return;
     }
 
-    _log('accept 수락 → callLoading(characterId=${payload.characterId})');
+    _log('accept 수락 → 세션 시작(characterId=${payload.characterId}, uuid=$uuid)');
+    _activeUuid = uuid;
 
-    // P1(오디오 무음 방지): 수락된 CallKit 콜을 즉시 종료해 OS 통화 오디오 세션
-    // (iOS AVAudioSession / Android MODE_IN_COMMUNICATION·AudioFocus) 점유를 푼다.
-    // 오디오는 normalcall 파이프라인이 온전히 소유해야 하는데, 수락 상태의 CallKit
-    // 콜이 세션을 붙잡고 있으면 녹음/재생이 무음이 된다. CallKit은 "벨/수신 UI
-    // 트리거 전용"으로 둔다. endAllCalls로 스케줄러+FCM 중복 전화의 잔여 링도 정리.
+    // CallKit 콜은 대화가 끝날 때까지 **유지한다**.
     //
-    // 주의: 이 endAllCalls는 곧이어 CallEventActionCallEnded를 유발한다. 그건
-    // **우리가 종료시킨 것**이므로 ended 핸들러에서 normalcall을 hangUp 하면 안 된다
-    // (방금 시작한 통화를 끊게 됨). 현재 ended 핸들러는 dedup 제거만 하므로 그대로 둔다.
-    await callkit.endAllCalls();
+    // 과거엔 여기서 곧바로 endAllCalls()로 끊었다("CallKit은 벨 트리거 전용"). 그러면
+    // 잠금화면 통화 UI가 사라지고, 백그라운드 프로세스를 붙잡아 둘 근거도, 통화
+    // 오디오 세션을 활성화해 줄 주체도 함께 사라진다. 콜을 살려 두면 그 셋을 OS가
+    // 보장하고, 오디오 세션 충돌(과거 P1의 원인으로 지목된 플러그인 자동 재구성)은
+    // `configureAudioSession: false` + 네이티브 카테고리 소유로 따로 막는다.
 
-    // iOS 레이스 방지(P1의 후속): endAllCalls는 CallKit 콜을 끝내지만, iOS는
-    // 그에 따른 AVAudioSession 비활성화(provider didDeactivate)를 **1~3초 뒤에
-    // 비동기로** 수행한다. 그 사이 normalcall이 세션을 활성화·마이크를 열면,
-    // 뒤늦은 비활성화가 세션을 꺼서 마이크가 무음이 되고(서버 로그: USER 무음/
-    // 전사없음) 통화가 수 초 만에 끊긴다. CallKit이 세션을 완전히 relinquish할
-    // 시간을 준 뒤 통화를 시작한다. (홈에서 건 통화는 CallKit 미경유라 무관.)
-    if (defaultTargetPlatform == TargetPlatform.iOS) {
-      await Future<void>.delayed(_iosCallKitAudioReleaseDelay);
-    }
+    // 1단계: WS를 즉시 연결한다. 화면·오디오와 무관하게 서버가 오프닝 멘트를
+    // 만들기 시작한다. 오디오는 CallKit의 didActivate 시점에 2단계로 붙는다.
+    unawaited(
+      ref
+          .read(normalCallControllerProvider.notifier)
+          .startFromIncoming(payload.characterId, callUuid: uuid),
+    );
 
-    await _navigateToCall(payload.characterId);
+    // 화면 진입은 병렬(비차단). 잠금 상태에선 그려지지 않지만, 사용자가 잠금을
+    // 풀면 통화 화면이 이미 떠 있다.
+    unawaited(_navigateToCall(payload.characterId));
   }
 
-  /// endAllCalls 후 iOS가 CallKit 오디오 세션을 놓아줄 때까지의 정착 대기.
-  /// didDeactivate는 보통 ~1s 내지만 여유를 둔다. 이 사이 사용자는 CallKit 수락
-  /// 애니메이션을 보므로 체감 지연이 거의 없다.
-  static const Duration _iosCallKitAudioReleaseDelay =
-      Duration(milliseconds: 1400);
+  /// CallKit 콜 종료. `endAllCalls()`를 걷어낸 뒤로 이 이벤트는 **사용자의 실제
+  /// 종료**(잠금화면 종료 버튼 등)를 뜻한다. 통화 파이프라인을 반드시 함께 내린다.
+  ///
+  /// 우리 쪽 [NormalCallController.hangUp]이 부른 endCall로도 이 이벤트가 오지만,
+  /// hangUp은 이미 종료된 통화에 대해 teardown만 하고 빠지므로 안전하다.
+  Future<void> _onEnded(String uuid) async {
+    // 통화 중 두 번째 수신을 거절했을 때도 ended가 온다. **현재 통화의 콜**이 아니면
+    // 건드리지 않는다 — 구분하지 않으면 진행 중이던 통화를 끊게 된다.
+    // (네이티브 래치도 여기서 지우면 안 된다. 아직 소비되지 않은 다른 콜의 래치를
+    //  날릴 수 있고, 네이티브는 이미 uuid가 맞을 때만 지운다.)
+    if (uuid.isEmpty || uuid != _activeUuid) {
+      _log('CallKit 콜 종료(uuid=$uuid) — 현재 통화 아님, 무시');
+      return;
+    }
+    _activeUuid = null; // 같은 uuid로 ended가 두 번 와도 한 번만 처리
+    await callkit.clearPendingAcceptedCall();
+    _log('CallKit 콜 종료(uuid=$uuid) → 통화 정리');
+    await ref.read(normalCallControllerProvider.notifier).hangUp();
+    // 주의: _handledUuids에서는 **지우지 않는다**. 종료 직후 activeCalls()가 이 콜을
+    // 아직 accepted로 들고 있으면 재조정 루프가 통화를 되살려 버린다. 콜 uuid는 통화마다
+    // 새로 발급되므로 남겨 둬도 다음 전화를 막지 않는다(200개 상한 있음).
+  }
 
   /// 1분 미응답 처리: 부재중 배너 + dedup 정리.
   Future<void> _onTimeout({required String uuid, required String name}) async {
@@ -187,8 +256,8 @@ class IncomingCallCoordinator {
   /// `appNavigatorKey`로 통화 로딩 화면에 진입한다(arguments = int characterId).
   ///
   /// navigator가 아직 준비 안 됐으면(콜드스타트 부팅 직후) **준비될 때까지 폴링**한다
-  /// (최대 [_readyTimeout]). 과거엔 postFrame 1회만 재시도해 그때도 null이면 조용히
-  /// 네비게이션이 유실됐다. 타임아웃까지 준비 안 되면 안전하게 no-op(로그만).
+  /// (최대 [_readyTimeout]). 타임아웃까지 준비 안 되면 안전하게 no-op(로그만) —
+  /// 세션 자체는 화면과 무관하게 이미 돌고 있다.
   Future<void> _navigateToCall(int characterId) async {
     final ready = await _awaitNavigatorReady();
     final nav = appNavigatorKey.currentState;
@@ -199,51 +268,53 @@ class IncomingCallCoordinator {
     nav.pushNamed(Routes.callLoading, arguments: characterId);
   }
 
-  /// 콜드스타트: 앱이 종료(killed)돼 있다가 accept로 켜진 경우, 라이브 accept 이벤트는
-  /// 구독([_sub])이 붙기 전에 발생해 **유실**될 수 있다(broadcast, 리플레이 없음).
-  /// 그래서 시작 시 `activeCalls()`를 조회해 **이미 수락된 콜을 소비**한다.
+  /// 수락된 콜이 있는지 확인하고 있으면 소비한다. 소비했으면 true.
   ///
-  /// 처리 순서:
-  /// 1. accepted 콜을 짧은 간격으로 **재폴링**(부팅 직후 아직 `isAccepted`가 안 찍힌
-  ///    레이스 흡수). 못 찾으면 조용히 종료(= 콜드스타트 대상 없음).
-  /// 2. 소비 전 **세션 복원 + navigator 준비**를 짧게 대기(게이팅). 세션 복원 전
-  ///    "미인증 오탐"과 navigator 미준비 네비 유실을 막는다.
-  /// 3. `_onAccept`로 소비(dedup·미인증·통화중 가드는 그 안에서 재확인).
-  Future<void> _handleColdStart() async {
-    // 1) accepted 콜 재폴링.
-    final accepted = await _pollForAcceptedCall();
-    if (accepted == null) return; // 콜드스타트로 소비할 pending accept 없음.
-
-    _log('콜드스타트: accepted 콜 발견(id=${accepted.id}) → 준비 대기 후 소비');
-
-    // 2) 준비 게이팅(각각 타임아웃 있음). 세션이 끝내 없으면 _onAccept가 안전하게
-    //    endCall 처리하므로 여기서는 대기만 하고 결과로 분기하지 않는다.
-    await _awaitSessionRestored();
-    await _awaitNavigatorReady();
-
-    // 3) 소비(라이브 경로와 동일하게 CallKitParams → 페이로드 변환).
-    await _onAccept(_payloadFromParams(accepted));
-  }
-
-  /// `activeCalls()`를 [_coldStartPollInterval] 간격으로 최대 [_coldStartMaxPolls]회
-  /// 재폴링해 **아직 dedup되지 않은 accepted 콜**을 찾는다. 없으면 null.
-  ///
-  /// 부팅 직후엔 콜이 등록/수락 표시되기까지 짧은 레이스가 있어 1회 조회로는 놓친다.
-  Future<CallKitParams?> _pollForAcceptedCall() async {
-    for (var attempt = 0; attempt < _coldStartMaxPolls; attempt++) {
+  /// 순서: (1) 네이티브 래치(iOS, 이벤트 유실과 무관) → (2) 활성 콜 목록의
+  /// `isAccepted`(플랫폼 공통 폴백). 재진입 가드가 있어 겹쳐 호출해도 안전하다.
+  Future<bool> _reconcile() async {
+    if (_reconciling) return false;
+    _reconciling = true;
+    try {
+      final pending = await callkit.pendingAcceptedCall();
+      if (pending != null) {
+        // 먼저 지우고 소비한다: 소비 중 예외가 나도 같은 래치를 무한 재시도하지
+        // 않게 한다(dedup이 이중 소비를 막으므로 순서를 바꿀 이유가 없다).
+        await callkit.clearPendingAcceptedCall();
+        _log('네이티브 래치에서 accept 회수(uuid=${pending['id']})');
+        await _onAccept(_payloadFromMap(pending));
+        return true;
+      }
       final calls = await callkit.activeCalls();
       for (final call in calls) {
         if (!call.isAccepted) continue; // 표시/ringing 상태는 소비하지 않음.
-        // 라이브 이벤트가 이미 처리한 콜이면 중복 진입 방지.
         if (call.id.isNotEmpty && _handledUuids.contains(call.id)) continue;
-        return call;
+        _log('활성 콜 목록에서 accept 회수(uuid=${call.id})');
+        await _onAccept(_payloadFromParams(call));
+        return true;
       }
-      // 마지막 시도 뒤에는 대기하지 않는다.
-      if (attempt < _coldStartMaxPolls - 1) {
-        await Future<void>.delayed(_coldStartPollInterval);
-      }
+      return false;
+    } catch (e) {
+      _log('재조정 실패(무시): $e');
+      return false;
+    } finally {
+      _reconciling = false;
     }
-    return null;
+  }
+
+  /// 콜드스타트: 앱이 종료(killed)돼 있다가 VoIP 푸시로 켜진 경우, 라이브 accept
+  /// 이벤트는 구독([_sub])이 붙기 전에 발생해 **유실**될 수 있다(broadcast,
+  /// 리플레이 없음). 부팅 직후 잠시 동안 집중적으로 재조정한다.
+  ///
+  /// 세션 복원만 기다리고 navigator는 기다리지 않는다 — 통화 세션의 시작은 화면과
+  /// 무관하고, 네비게이션은 [_navigateToCall]이 자체적으로 준비를 기다린다.
+  Future<void> _handleColdStart() async {
+    await _awaitSessionRestored();
+    final deadline = DateTime.now().add(_coldStartWindow);
+    while (DateTime.now().isBefore(deadline)) {
+      if (await _reconcile()) return;
+      await Future<void>.delayed(_coldStartPollInterval);
+    }
   }
 
   /// Supabase 세션 복원이 끝날 때까지(=`currentSession != null`) 최대 [_readyTimeout]
@@ -267,7 +338,7 @@ class IncomingCallCoordinator {
     }
   }
 
-  /// CallKit 콜 파라미터 → 도메인 페이로드(라이브 이벤트 경로).
+  /// CallKit 콜 파라미터 → 도메인 페이로드(라이브 이벤트 / 활성 콜 목록 경로).
   IncomingCallPayload _payloadFromParams(CallKitParams p) {
     final characterId =
         IncomingCallPayloadDto.asInt(p.extra?['characterId']) ??
@@ -280,6 +351,26 @@ class IncomingCallCoordinator {
           ? characterName(characterId)
           : name,
       imageUrl: p.avatar,
+    );
+  }
+
+  /// 네이티브 래치(`getPendingAcceptedCall`) → 도메인 페이로드.
+  ///
+  /// 플랫폼 채널이 돌려주는 map은 `Map<Object?, Object?>`로 중첩되므로 extra를
+  /// 느슨하게 읽는다.
+  IncomingCallPayload _payloadFromMap(Map<String, dynamic> m) {
+    final extra = m['extra'];
+    final rawCharacterId =
+        extra is Map ? extra['characterId'] : null;
+    final characterId = IncomingCallPayloadDto.asInt(rawCharacterId) ??
+        kDefaultInboundCharacterId;
+    final name = m['nameCaller'] as String?;
+    return IncomingCallPayload(
+      callUuid: (m['id'] as String?) ?? '',
+      characterId: characterId,
+      characterName: (name == null || name.isEmpty)
+          ? characterName(characterId)
+          : name,
     );
   }
 
