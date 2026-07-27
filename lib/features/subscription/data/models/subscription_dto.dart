@@ -1,4 +1,4 @@
-import '../../../character/data/models/character_dto.dart' show parseKrw;
+import '../../../../core/format/money.dart';
 import '../../domain/entities/subscription.dart';
 
 /// Wire model for the server's `SubscriptionOut`.
@@ -43,7 +43,7 @@ class SubscriptionDto {
             endDate == null ? null : DateTime.tryParse(endDate!)?.toLocal(),
         // `price` is Optional on the response even though it's required on the
         // request, so preserve null rather than collapsing it to 0.
-        price: price == null ? null : parseKrw(price),
+        price: price == null ? null : parseMoneyMinor(price),
         isActivate: isActivate,
       );
 }

@@ -29,6 +29,34 @@ import 'challenge_painter.dart';
 /// Screen phases (which overlay panel is shown over the live game canvas).
 enum _Phase { start, loading, countdown, playing, result }
 
+/// Background of the 9:16 game stage.
+///
+/// The challenge renders **light-on-dark in both themes**: the panel scrim is a
+/// fixed `0xD1080A0C`, and the painter's HUD, belt and card text are hard-coded
+/// white. So the stage cannot follow `backgroundNormalNormal` — in Light that
+/// resolves to `#F1F1F5`, and the white HUD vanished onto a white canvas
+/// whenever the camera was off (denied permission, web, or before consent).
+/// Pinned to the Dark token's value, so the dark appearance is unchanged.
+const Color _kStageBackground = Color(0xFF181A20);
+
+/// Ink for text drawn on the always-dark panel scrim.
+///
+/// Same root cause as [_kStageBackground]: these panels sit on a fixed dark
+/// scrim, so their text must be statically light. Bound to `labelStrong` /
+/// `labelNormal` / `labelDisabled` it turned near-black in Light and the whole
+/// start panel became unreadable. Opacities mirror those three label tiers.
+/// (Same reasoning as `CallToggleButton`, which already picks `staticWhite`
+/// over `labelStrong` for exactly this reason.)
+Color _stageInk(BuildContext context) => context.c.staticWhite;
+
+/// Secondary tier of [_stageInk] — stands in for `labelNormal`.
+Color _stageInkNormal(BuildContext context) =>
+    context.c.staticWhite.withValues(alpha: 0.72);
+
+/// Muted tier of [_stageInk] — stands in for `labelDisabled`.
+Color _stageInkMuted(BuildContext context) =>
+    context.c.staticWhite.withValues(alpha: 0.45);
+
 /// Pronunciation Challenge — a Ticker + CustomPainter mini-game.
 ///
 /// PHASE 2/3: live Korean STT (server Google Speech-to-Text over a single mic
@@ -39,8 +67,8 @@ enum _Phase { start, loading, countdown, playing, result }
 /// result panel shares a branded score-card image via `share_plus`.
 ///
 /// Everything degrades gracefully: with no mic, camera, model, or on web, the
-/// game is still fully playable via tap on the solid `context.c.backgroundNormalNormal`
-/// background and never crashes on missing hardware.
+/// game is still fully playable via tap on the solid [_kStageBackground] and
+/// never crashes on missing hardware.
 class PronunciationChallengeScreen extends ConsumerStatefulWidget {
   /// Creates the challenge screen.
   const PronunciationChallengeScreen({super.key});
@@ -294,7 +322,7 @@ class _PronunciationChallengeScreenState
                             CustomPaint(
                               painter: ChallengePainter(
                                 mint: context.c.primaryNormal,
-                                background: context.c.backgroundNormalNormal,
+                                background: _kStageBackground,
                                 engine: _controller.engine,
                                 repaint: _controller,
                                 cameraActive: _camera.isReady,
@@ -378,13 +406,13 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeTitle,
           textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: context.c.labelStrong),
+          style: AppType.title2.b.copyWith(color: _stageInk(context)),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
           l10n.challengeIntro,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
+          style: AppType.body2.r.copyWith(color: _stageInkNormal(context)),
         ),
         const SizedBox(height: AppSpacing.s24),
         _difficultyToggle(),
@@ -401,7 +429,7 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengePermissionNote,
           textAlign: TextAlign.center,
-          style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
+          style: AppType.label2.r.copyWith(color: _stageInkMuted(context)),
         ),
       ],
     );
@@ -421,12 +449,12 @@ class _PronunciationChallengeScreenState
             children: [
               Text(
                 l10n.challengeRecordToggle,
-                style: AppType.body2.sb.copyWith(color: context.c.labelStrong),
+                style: AppType.body2.sb.copyWith(color: _stageInk(context)),
               ),
               const SizedBox(height: 2),
               Text(
                 l10n.challengeRecordHint,
-                style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
+                style: AppType.label2.r.copyWith(color: _stageInkMuted(context)),
               ),
             ],
           ),
@@ -448,13 +476,13 @@ class _PronunciationChallengeScreenState
         Text(
           l10n.challengeLoadingTitle,
           textAlign: TextAlign.center,
-          style: AppType.title2.b.copyWith(color: context.c.labelStrong),
+          style: AppType.title2.b.copyWith(color: _stageInk(context)),
         ),
         const SizedBox(height: AppSpacing.s12),
         Text(
           l10n.challengeLoadingNote,
           textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
+          style: AppType.body2.r.copyWith(color: _stageInkNormal(context)),
         ),
         const SizedBox(height: AppSpacing.s24),
         CircularProgressIndicator(color: context.c.primaryNormal),
@@ -470,7 +498,7 @@ class _PronunciationChallengeScreenState
           child: Text(
             '$_countdown',
             style: AppType.display1.b.copyWith(
-              color: context.c.labelStrong,
+              color: _stageInk(context),
               fontSize: 120,
               height: 1,
             ),
@@ -649,7 +677,7 @@ class _PronunciationChallengeScreenState
       children: [
         Text(
           'Difficulty',
-          style: AppType.label2.b.copyWith(color: context.c.labelDisabled),
+          style: AppType.label2.b.copyWith(color: _stageInkMuted(context)),
         ),
         const SizedBox(height: AppSpacing.s8),
         Row(

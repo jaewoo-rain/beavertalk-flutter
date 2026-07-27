@@ -111,39 +111,39 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callPartner => '角色';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => '快速开始';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => '早晨习惯';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => '工作日 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => '晚间收尾';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => '每天 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => '自定义';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => '自由设置';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return '每周$count次 · 每月$monthly次通话';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => '请至少选择一天';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => '使用中';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => '已拥有';
 
   @override
   String get am => '上午';
@@ -182,22 +182,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return '第$count次通话';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return '$name想说的话';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return '通话结束后由$name留下';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return '新学表达 $count';
   }
 
   @override
@@ -369,13 +369,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get scoringPronunciation => '正在为你的发音评分…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => '正在逐词检查你的发音';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => '这需要稍微久一点';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => '连接已断开';
 
   @override
   String get noRecordingToPlay => '没有可播放的录音。';
@@ -889,127 +889,127 @@ class AppLocalizationsZh extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => '本月支付金额';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => '全部';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => '订阅';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => '角色';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => '已完成';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => '最近支付';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return '你可以在$date前继续使用 Pro 权益，之后套餐将自动切换为免费版。';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => '每天1次通话 · 限时5分钟';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => '可使用基础角色';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => '可购买';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => '无法加载支付记录';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => '还没有支付记录';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => '更早的支付记录暂未显示';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => '无日期';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => '支付';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total个句子中通过$passed个';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => '今天最难的音';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => '各音准确度';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return '按音素 · $count次尝试';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => '音';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => '尝试';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => '正确';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => '准确度';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => '各句结果';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return '查看全部$count个';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => '句子';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => '发音';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => '流利';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => '节奏';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return '最近$count次';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return '平均 $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => '今天';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => '日期';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => '句数';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => '分数';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => '变化';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date（今天）';
   }
 }

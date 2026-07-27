@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,7 +10,6 @@ import 'app/auth_gate.dart';
 import 'app/navigation.dart';
 import 'app/push_bootstrap.dart';
 import 'app/routes.dart';
-import 'core/config/feature_flags.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/network/supabase_config.dart';
 import 'l10n/app_localizations.dart';
@@ -48,18 +45,12 @@ Future<void> main() async {
     // non-deprecated `publishableKey` param (replaces `anonKey`).
     publishableKey: SupabaseConfig.anonKey,
   );
-  // FCM(밖에서 앱을 깨우는 트리거)의 **포그라운드 경로**를 위해 Firebase를 여기서
-  // 1회 초기화한다(옵션 없이 → android/app/google-services.json 자동 사용). 웹은
-  // 옵션 없는 initializeApp이 실패하므로 제외하고, 기능 플래그로도 가드한다.
-  // (백그라운드/종료 경로는 별도 isolate에서 다시 initializeApp을 호출한다.)
-  if (kInboundCallEnabled && !kIsWeb) {
-    try {
-      await Firebase.initializeApp();
-    } catch (e) {
-      // 초기화 실패가 앱 부팅을 막지 않게 삼킨다(푸시 트리거는 부가 기능).
-      if (kDebugMode) debugPrint('[fcm] Firebase.initializeApp 실패(무시): $e');
-    }
-  }
+  // Firebase 초기화는 여기서 하지 않는다 — `_initFcm` 안으로 옮겼다.
+  //
+  // Firebase는 **안드로이드의 FCM 트리거**에만 필요하고 iOS의 VoIP/CallKit 경로와는
+  // 무관한데, 여기서 await 하면 콜드스타트마다 그 시간만큼 `attach()`(수신 콜 처리)가
+  // 밀린다. VoIP 푸시로 깨어난 앱은 사용자가 이미 전화를 받고 있는 상태라 그 지연이
+  // 곧 "비버가 늦게 말하는" 시간이 된다. FCM 배선이 필요할 때 그 안에서 초기화한다.
   // Own the Riverpod container explicitly so the incoming-call bootstrap and the
   // widget tree share the SAME providers (the coordinator's "already in a call"
   // guard must read the same normalcall state the screens use).

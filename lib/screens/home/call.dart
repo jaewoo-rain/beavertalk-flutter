@@ -59,6 +59,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// Currently shown suggestion index in the revealed hint; reset per new hint.
   int _suggestionIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    // Catch up on a transition that landed before this screen mounted. `ref.listen`
+    // only fires on *change*, so a call that ended during the route push would
+    // otherwise strand the user on a frozen live-call screen.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final s = ref.read(normalCallControllerProvider);
+      if (s.phase == CallPhase.ended) {
+        _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
+      }
+    });
+  }
+
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
   String _formatted(int seconds) {
     final h = (seconds ~/ 3600).toString().padLeft(2, '0');

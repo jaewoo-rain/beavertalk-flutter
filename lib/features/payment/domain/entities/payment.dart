@@ -55,8 +55,8 @@ class Payment {
   /// Masked payment method, e.g. "신한카드 1234".
   final String? cardInfo;
 
-  /// Amount in whole currency units (server sends a Decimal; parsed via
-  /// `parseKrw`). Absent on the wire → 0.
+  /// Amount in USD cents (server sends a Decimal; parsed via
+  /// `parseMoneyMinor`). Absent on the wire → 0.
   final int price;
 
   final PaymentCategory category;

@@ -2,10 +2,12 @@ import Flutter
 import UIKit
 import PushKit
 import AVFoundation
+import CallKit
 import flutter_callkit_incoming
 
 @main
-@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate, PKPushRegistryDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate,
+  PKPushRegistryDelegate, CallkitIncomingAppDelegate {
   // MUST be an instance property, not a local in didFinishLaunching: PKPushRegistry
   // has to be retained for the app's lifetime. As a local it is deallocated the
   // moment the method returns, so `pushRegistry(_:didUpdate:)` never fires and the
@@ -14,6 +16,19 @@ import flutter_callkit_incoming
   private var voipRegistry: PKPushRegistry?
   // Captured in pushRegistry(didUpdate:) and exposed to Dart via getVoipToken.
   private var voipTokenHex: String?
+
+  // ── Accept delivery guarantee ─────────────────────────────────────────────
+  // The plugin ships accept/audio-session events over an EventChannel with NO
+  // buffering — `eventSink?(data)`, a single optional-chained call. If Dart is
+  // not subscribed at that exact instant (still booting, or the process was
+  // frozen), the event is gone for good: CallKit connects the call and runs its
+  // timer while the app never learns it was answered. That is exactly the
+  // "native call screen counts up but nothing happens" symptom.
+  //
+  // So we ALSO latch the state here, natively, and let Dart PULL it whenever it
+  // is ready. Events stay the fast path; these are the source of truth.
+  private var pendingAcceptedCall: [String: Any]?
+  private var callAudioSessionActive = false
 
   override func application(
     _ application: UIApplication,
@@ -65,6 +80,10 @@ import flutter_callkit_incoming
           // Dart asks before opening the recorder so it can disable voice
           // processing when a headset is present (see below).
           result(self?.isHeadsetConnected() ?? false)
+        case "logAudioState":
+          let tag = (call.arguments as? [String: Any])?["tag"] as? String ?? "?"
+          self?.logAudioState(tag)
+          result(nil)
         case "getVoipToken":
           // Authoritative VoIP token straight from PKPushRegistry — bypasses the
           // callkit plugin bridge (which can drop the token if didUpdate fires
@@ -75,6 +94,95 @@ import flutter_callkit_incoming
           result(FlutterMethodNotImplemented)
         }
       }
+    }
+    // CallKit state bridge — the pull side of the accept-delivery guarantee.
+    // `incoming_call_coordinator` polls these instead of trusting the plugin's
+    // unbuffered event stream.
+    if let messenger = engineBridge.pluginRegistry
+      .registrar(forPlugin: "BeaverCallkitBridge")?.messenger() {
+      let channel = FlutterMethodChannel(
+        name: "beavertalk/callkit", binaryMessenger: messenger)
+      channel.setMethodCallHandler { [weak self] call, result in
+        switch call.method {
+        case "getPendingAcceptedCall":
+          // The accepted call latched in onAccept, or nil. Dart consumes it and
+          // then calls clearPendingAcceptedCall.
+          result(self?.pendingAcceptedCall)
+        case "clearPendingAcceptedCall":
+          self?.pendingAcceptedCall = nil
+          result(nil)
+        case "isCallAudioSessionActive":
+          // True between CallKit's didActivate and didDeactivate. Dart starts the
+          // mic/playback on this rather than guessing with a fixed delay.
+          result(self?.callAudioSessionActive ?? false)
+        default:
+          result(FlutterMethodNotImplemented)
+        }
+      }
+    }
+  }
+
+  // MARK: - CallkitIncomingAppDelegate
+  //
+  // Adopting this protocol changes one contract: the plugin auto-fulfills the
+  // CallKit action ONLY when the app delegate does NOT adopt it (see
+  // SwiftFlutterCallkitIncomingPlugin `provider(_:perform:)`, the `else` branch).
+  // Now that we adopt it, fulfilling is OUR job — miss it and the answer action
+  // never completes, i.e. the call never connects at all.
+  // `onTimeOut` is the exception: the plugin fulfills that one itself.
+
+  func onAccept(_ call: Call, _ action: CXAnswerCallAction) {
+    // Put OUR category in place before CallKit activates the session. The plugin's
+    // own configureAudioSession is disabled (see `configureAudioSession: false`)
+    // because it forces `.allowBluetoothA2DP` — an output-only profile that breaks
+    // the Bluetooth HFP mic — plus mode `.default` instead of `.voiceChat`, and
+    // re-applies the whole thing 1200ms later, right on top of our mic startup.
+    configureCallAudioCategory()
+    pendingAcceptedCall = [
+      "id": call.data.uuid,
+      "nameCaller": call.data.nameCaller,
+      "extra": call.data.extra,
+    ]
+    NSLog("[callkit] onAccept latched id=%@", call.data.uuid)
+    logAudioState("callkit/onAccept")
+    action.fulfill()
+  }
+
+  func onDecline(_ call: Call, _ action: CXEndCallAction) {
+    clearPendingIfMatches(call.data.uuid)
+    action.fulfill()
+  }
+
+  func onEnd(_ call: Call, _ action: CXEndCallAction) {
+    clearPendingIfMatches(call.data.uuid)
+    callAudioSessionActive = false
+    action.fulfill()
+  }
+
+  func onTimeOut(_ call: Call) {
+    clearPendingIfMatches(call.data.uuid)
+  }
+
+  func didActivateAudioSession(_ audioSession: AVAudioSession) {
+    callAudioSessionActive = true
+    logAudioState("callkit/didActivate")
+  }
+
+  func didDeactivateAudioSession(_ audioSession: AVAudioSession) {
+    callAudioSessionActive = false
+    logAudioState("callkit/didDeactivate")
+  }
+
+  func providerDidReset() {
+    pendingAcceptedCall = nil
+    callAudioSessionActive = false
+  }
+
+  /// Drops the latched accept when it refers to the call being ended, so a stale
+  /// entry can never re-trigger a conversation after the user hung up.
+  private func clearPendingIfMatches(_ uuid: String) {
+    if (pendingAcceptedCall?["id"] as? String) == uuid {
+      pendingAcceptedCall = nil
     }
   }
 
@@ -114,13 +222,46 @@ import flutter_callkit_incoming
         self, selector: #selector(handleAudioRouteChange(_:)),
         name: AVAudioSession.routeChangeNotification, object: session)
     }
-    // NO .allowBluetoothA2DP: A2DP is output-only (no mic), and allowing it lets
-    // iOS route call output over A2DP, breaking the BT mic (HFP) path — the user's
-    // voice stops being captured. `.allowBluetooth` = HFP carries mic + speaker.
-    try? session.setCategory(.playAndRecord, mode: .voiceChat,
-        options: [.allowBluetooth, .defaultToSpeaker])
-    try? session.setActive(true)
+    configureCallAudioCategory()
+    // Activation has exactly one owner. On the CallKit path the system activates
+    // the session (didActivate) and re-activating underneath it disturbs the live
+    // call; only the home path — no CallKit call involved — activates it here.
+    if !callAudioSessionActive {
+      try? session.setActive(true)
+    }
     steerInputToHeadset()
+  }
+
+  /// Dumps the live audio-session state to the system log.
+  ///
+  /// Dart's own logging is compiled out of release builds, and the lock-screen
+  /// call flow can ONLY be exercised from a TestFlight (release) build — so
+  /// without this a failed call gives us nothing to go on. NSLog survives release
+  /// and is readable in Console.app / `idevicesyslog`, filtered on "[audio]".
+  private func logAudioState(_ tag: String) {
+    let s = AVAudioSession.sharedInstance()
+    let outs = s.currentRoute.outputs.map { $0.portType.rawValue }
+      .joined(separator: ",")
+    let ins = s.currentRoute.inputs.map { $0.portType.rawValue }
+      .joined(separator: ",")
+    let avail = (s.availableInputs ?? []).map { $0.portType.rawValue }
+      .joined(separator: ",")
+    NSLog(
+      "[audio] %@ | category=%@ mode=%@ opts=%lu | out=[%@] in=[%@] avail=[%@] | callkitSession=%@",
+      tag, s.category.rawValue, s.mode.rawValue,
+      UInt(s.categoryOptions.rawValue), outs, ins, avail,
+      callAudioSessionActive ? "ACTIVE" : "inactive")
+  }
+
+  /// Category/mode for a call. Never touches `setActive` — see startCallAudioRouting.
+  ///
+  /// NO .allowBluetoothA2DP: A2DP is output-only (no mic), and allowing it lets
+  /// iOS route call output over A2DP, breaking the BT mic (HFP) path — the user's
+  /// voice stops being captured. `.allowBluetooth` = HFP carries mic + speaker.
+  private func configureCallAudioCategory() {
+    try? AVAudioSession.sharedInstance().setCategory(
+      .playAndRecord, mode: .voiceChat,
+      options: [.allowBluetooth, .defaultToSpeaker])
   }
 
   private func stopCallAudioRouting() {
@@ -224,6 +365,10 @@ import flutter_callkit_incoming
     let isVideo = dict["isVideo"] as? Bool ?? false
     let data = flutter_callkit_incoming.Data(
       id: id, nameCaller: nameCaller, handle: handle, type: isVideo ? 1 : 0)
+    // We own the audio session category (configureCallAudioCategory). Leaving the
+    // plugin's own configuration on would re-add .allowBluetoothA2DP and mode
+    // .default, and re-apply them 1200ms after answer — on top of our mic startup.
+    data.configureAudioSession = false
     if let extra = dict["extra"] as? [String: Any] {
       data.extra = NSDictionary(dictionary: extra)
     }

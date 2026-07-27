@@ -1,11 +1,11 @@
-import '../../../character/data/models/character_dto.dart' show parseKrw;
+import '../../../../core/format/money.dart';
 import '../../domain/entities/payment.dart';
 
 /// Wire model for the server's `PaymentItem`.
 ///
 /// Field names are the server's snake_case keys verbatim
 /// (`domains/commerce/schemas/payment.py`). Prices arrive as Decimal and are
-/// normalised to integer currency units by [parseKrw], which already tolerates
+/// normalised to integer currency units by [parseMoneyMinor], which already tolerates
 /// the string / int / double forms Decimal can serialize to.
 class PaymentItemDto {
   const PaymentItemDto({
@@ -42,7 +42,7 @@ class PaymentItemDto {
         date: paymentDate == null ? null : DateTime.tryParse(paymentDate!)?.toLocal(),
         description: description,
         cardInfo: cardInfo,
-        price: parseKrw(price),
+        price: parseMoneyMinor(price),
         category: PaymentCategory.fromWire(category),
       );
 }
@@ -77,7 +77,7 @@ class PaymentPageDto {
   }
 
   PaymentPage toEntity() => PaymentPage(
-        monthTotal: parseKrw(monthTotal),
+        monthTotal: parseMoneyMinor(monthTotal),
         items: items.map((e) => e.toEntity()).toList(),
         page: page,
         size: size,

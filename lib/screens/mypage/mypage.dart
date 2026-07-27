@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
+import '../../core/format/money.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
@@ -72,17 +73,12 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
   String _dateLabel(DateTime d) =>
       '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}.';
 
-  /// Formats whole currency units as "₩4,900" (same convention as the avatar
-  /// and checkout screens).
-  String _money(int amount) {
-    final digits = amount.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
-      buf.write(digits[i]);
-    }
-    return '₩$buf';
-  }
+  /// Formats USD cents as "$10" (shared with the avatar and checkout screens).
+  ///
+  /// Locale-aware, like the dates above: separators and symbol placement differ
+  /// per locale across the 30 the app ships.
+  String _money(int minor) =>
+      formatUsd(minor, locale: Localizations.localeOf(context).toString());
 
   /// Opens the subscription sheet as a real bottom sheet over MyPage.
   ///

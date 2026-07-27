@@ -113,39 +113,39 @@ class AppLocalizationsId extends AppLocalizations {
   String get callPartner => 'Karakter';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'Mulai cepat';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => 'Rutinitas pagi';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => 'Hari kerja 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => 'Penutup malam';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => 'Setiap hari 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'Kustom';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => 'Sesukamu';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return '$count× seminggu · $monthly panggilan sebulan';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => 'Pilih setidaknya satu hari';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => 'Sedang dipakai';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => 'Dimiliki';
 
   @override
   String get am => 'AM';
@@ -184,22 +184,22 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return 'Panggilan ke-$count';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return 'Sepatah kata dari $name';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return 'Ditinggalkan $name tepat setelah panggilan';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return 'Ungkapan baru $count';
   }
 
   @override
@@ -379,13 +379,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get scoringPronunciation => 'Menilai pengucapanmu…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => 'Memeriksa pelafalanmu kata demi kata';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'Ini memakan waktu sedikit lebih lama';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => 'Koneksi terputus';
 
   @override
   String get noRecordingToPlay => 'Tidak ada rekaman untuk diputar.';
@@ -918,127 +918,127 @@ class AppLocalizationsId extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => 'Pembayaran bulan ini';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'Semua';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'Langganan';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'Karakter';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'Selesai';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => 'Pembayaran terakhir';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return 'Kamu bisa terus memakai manfaat Pro sampai $date, setelah itu paketmu otomatis beralih ke Gratis.';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => '1 panggilan per hari · batas 5 menit';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => 'Karakter dasar termasuk';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'Tersedia untuk dibeli';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError => 'Gagal memuat riwayat pembayaran';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'Belum ada pembayaran';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => 'Pembayaran lama belum ditampilkan';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => 'Tanpa tanggal';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => 'Pembayaran';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$passed dari $total kalimat lulus';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'Bunyi tersulit hari ini';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => 'Akurasi per bunyi';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return 'Per fonem · $count percobaan';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => 'Bunyi';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => 'Coba';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => 'Benar';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => 'Akur.';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => 'Hasil per kalimat';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return 'Lihat semua $count';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => 'Kalimat';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => 'Lafal';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => 'Lancar';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'Irama';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return '$count sesi terakhir';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return 'Rata2 $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => 'Hari ini';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => 'Tanggal';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => 'Kalimat';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'Skor';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => 'Ubah';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date (hari ini)';
   }
 }

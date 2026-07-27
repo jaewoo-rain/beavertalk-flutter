@@ -113,39 +113,39 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callPartner => 'Karakter';
 
   @override
-  String get quickStart => 'Quick start';
+  String get quickStart => 'Gyors indítás';
 
   @override
-  String get presetMorning => 'Morning routine';
+  String get presetMorning => 'Reggeli rutin';
 
   @override
-  String get presetMorningSub => 'Weekdays 8:00';
+  String get presetMorningSub => 'Hétköznap 8:00';
 
   @override
-  String get presetEvening => 'Evening wind-down';
+  String get presetEvening => 'Esti levezetés';
 
   @override
-  String get presetEveningSub => 'Every day 21:00';
+  String get presetEveningSub => 'Minden nap 21:00';
 
   @override
-  String get presetCustom => 'Custom';
+  String get presetCustom => 'Egyéni';
 
   @override
-  String get presetCustomSub => 'Your own';
+  String get presetCustomSub => 'Ahogy szeretnéd';
 
   @override
   String alarmSummary(int count, int monthly) {
-    return '$count× a week · $monthly calls a month';
+    return 'Hetente $count× · havi $monthly hívás';
   }
 
   @override
-  String get alarmSummaryNone => 'Pick at least one day';
+  String get alarmSummaryNone => 'Válassz legalább egy napot';
 
   @override
-  String get partnerInUse => 'In use';
+  String get partnerInUse => 'Használatban';
 
   @override
-  String get partnerOwned => 'Owned';
+  String get partnerOwned => 'Birtokolt';
 
   @override
   String get am => 'DE';
@@ -185,22 +185,22 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String callSequence(int count) {
-    return 'Call #$count';
+    return '$count. hívás';
   }
 
   @override
   String characterNoteTitle(String name) {
-    return 'A word from $name';
+    return 'Néhány szó $name részéről';
   }
 
   @override
   String characterNoteFooter(String name) {
-    return 'Left by $name right after the call';
+    return '$name hagyta közvetlenül a hívás után';
   }
 
   @override
   String newExpressionsCount(int count) {
-    return 'New expressions $count';
+    return 'Új kifejezések $count';
   }
 
   @override
@@ -385,13 +385,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get scoringPronunciation => 'A kiejtésed értékelése…';
 
   @override
-  String get analyzingByWord => 'Checking your pronunciation word by word';
+  String get analyzingByWord => 'Szóról szóra ellenőrizzük a kiejtésedet';
 
   @override
-  String get analyzingTakingLonger => 'This is taking a little longer';
+  String get analyzingTakingLonger => 'Ez egy kicsit tovább tart';
 
   @override
-  String get scanConnectionLost => 'Connection lost';
+  String get scanConnectionLost => 'Megszakadt a kapcsolat';
 
   @override
   String get noRecordingToPlay => 'Nincs lejátszható felvétel.';
@@ -928,127 +928,128 @@ class AppLocalizationsHu extends AppLocalizations {
   String get payMethodApple => 'Apple Pay';
 
   @override
-  String get thisMonthPayment => 'This month\'s payment';
+  String get thisMonthPayment => 'E havi fizetés';
 
   @override
-  String get filterAll => 'All';
+  String get filterAll => 'Összes';
 
   @override
-  String get filterSubscription => 'Subscription';
+  String get filterSubscription => 'Előfizetés';
 
   @override
-  String get filterCharacter => 'Character';
+  String get filterCharacter => 'Karakter';
 
   @override
-  String get statusCompleted => 'Completed';
+  String get statusCompleted => 'Befejezve';
 
   @override
-  String get lastPayment => 'Last payment';
+  String get lastPayment => 'Utolsó fizetés';
 
   @override
   String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
+    return 'A Pro előnyeit $date napjáig használhatod, utána a csomagod automatikusan Ingyenesre vált.';
   }
 
   @override
-  String get freePlanCallLimit => '1 call a day · 5 min limit';
+  String get freePlanCallLimit => 'Napi 1 hívás · 5 perces korlát';
 
   @override
-  String get freePlanBasicCharacters => 'Basic characters included';
+  String get freePlanBasicCharacters => 'Alapkarakterek benne vannak';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'Megvásárolható';
 
   @override
-  String get paymentsLoadError => 'Couldn\'t load payment history';
+  String get paymentsLoadError =>
+      'Nem sikerült betölteni a fizetési előzményeket';
 
   @override
-  String get noPayments => 'No payments yet';
+  String get noPayments => 'Még nincs fizetés';
 
   @override
-  String get morePaymentsExist => 'Older payments aren\'t shown yet';
+  String get morePaymentsExist => 'A régebbi fizetések még nem jelennek meg';
 
   @override
-  String get undatedPayments => 'Undated';
+  String get undatedPayments => 'Dátum nélkül';
 
   @override
-  String get paymentLabelFallback => 'Payment';
+  String get paymentLabelFallback => 'Fizetés';
 
   @override
   String learningPassed(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total mondatból $passed sikerült';
   }
 
   @override
-  String get hardestSound => 'Hardest sound today';
+  String get hardestSound => 'A mai legnehezebb hang';
 
   @override
-  String get soundAccuracy => 'Accuracy by sound';
+  String get soundAccuracy => 'Pontosság hangonként';
 
   @override
   String phonemeAttempts(int count) {
-    return 'Per phoneme · $count attempts';
+    return 'Fonémánként · $count próbálkozás';
   }
 
   @override
-  String get colSound => 'Sound';
+  String get colSound => 'Hang';
 
   @override
-  String get colAttempts => 'Tries';
+  String get colAttempts => 'Próba';
 
   @override
-  String get colCorrect => 'Right';
+  String get colCorrect => 'Helyes';
 
   @override
-  String get colAccuracy => 'Accuracy';
+  String get colAccuracy => 'Pont.';
 
   @override
-  String get sentenceResults => 'Results by sentence';
+  String get sentenceResults => 'Eredmények mondatonként';
 
   @override
   String viewAllSentences(int count) {
-    return 'See all $count';
+    return 'Mind a $count megtekintése';
   }
 
   @override
-  String get colSentence => 'Sentence';
+  String get colSentence => 'Mondat';
 
   @override
-  String get colPronunciation => 'Pron.';
+  String get colPronunciation => 'Kiejt.';
 
   @override
-  String get colFluency => 'Flu.';
+  String get colFluency => 'Foly.';
 
   @override
-  String get colRhythm => 'Rhy.';
+  String get colRhythm => 'Ritmus';
 
   @override
   String recentSessions(int count) {
-    return 'Last $count sessions';
+    return 'Utolsó $count alkalom';
   }
 
   @override
   String trendAverage(int score) {
-    return 'Avg $score';
+    return 'Átl. $score';
   }
 
   @override
-  String get today => 'Today';
+  String get today => 'Ma';
 
   @override
-  String get colDate => 'Date';
+  String get colDate => 'Dátum';
 
   @override
-  String get colSentences => 'Sentences';
+  String get colSentences => 'Mondat';
 
   @override
-  String get colScore => 'Score';
+  String get colScore => 'Pont';
 
   @override
-  String get colChange => 'Change';
+  String get colChange => 'Vált.';
 
   @override
   String dateToday(String date) {
-    return '$date (today)';
+    return '$date (ma)';
   }
 }
