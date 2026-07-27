@@ -117,6 +117,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   Future<void> _leave(VoidCallback inApp) async {
     final backgrounded = await const LockscreenCallService().exitIfLocked();
     if (!mounted) return;
+    // 끝난 통화의 상태를 소비 처리한다. 안 하면 phase 가 `ended` 로 남아, 다음에 통화를
+    // 걸어도 call_loading 이 새 통화 대신 지난 통화의 요약 화면으로 보낸다.
+    // 화면 전환 **전에** 부른다 — 전환 뒤에는 이 위젯이 dispose 되어 ref 를 쓸 수 없다.
+    ref.read(normalCallControllerProvider.notifier).clearFinished();
     if (backgrounded) {
       Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
       return;

@@ -866,6 +866,26 @@ class NormalCallController extends Notifier<CallState> {
   /// Re-entry guard for [hangUp] — see its doc.
   bool _hangingUp = false;
 
+  /// 끝난 통화의 결과를 **소비했다**고 표시하고 [CallPhase.idle] 로 되돌린다.
+  ///
+  /// [_teardown] 은 `ended` 를 일부러 보존한다 — 요약 화면이 callId·통화 시간을 읽어야
+  /// 하기 때문이다. 그런데 그 상태를 **아무도 되돌리지 않아서**, 한 번 통화가 끝나면
+  /// phase 가 `ended` 로 남았다. `call_loading` 은 진입 시 phase 를 보고 분기하므로
+  /// (`ended` → 요약 화면), 그 뒤로는 홈에서 전화하기를 눌러도 새 통화가 시작되지 않고
+  /// 지난 통화의 요약 화면만 떴다. 앱을 껐다 켜야(= ProviderContainer 가 새로 생겨야)
+  /// 다시 통화할 수 있었다.
+  ///
+  /// 그래서 결과를 다 쓴 화면이 떠날 때 이걸 호출한다. 요약 화면은 callId·통화 시간을
+  /// 라우트 인자로 따로 받으므로, 넘어간 뒤에 상태를 비워도 표시에는 영향이 없다.
+  ///
+  /// **끝난 통화에만 적용된다.** 이미 다음 통화가 시작된 상태(connecting/inCall 등)면
+  /// 아무 것도 하지 않는다 — 살아 있는 통화를 지워버리면 안 된다.
+  void clearFinished() {
+    if (state.phase == CallPhase.ended || state.phase == CallPhase.error) {
+      state = const CallState();
+    }
+  }
+
   Future<void> _hangUp() async {
     // Invalidate any in-flight start() so it can't re-establish the pipeline
     // after we tear it down here.
