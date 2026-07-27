@@ -63,13 +63,24 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
   /// 부팅 직후 집중 재조정 간격.
   static const Duration _coldStartPollInterval = Duration(milliseconds: 300);
 
-  /// 부팅 직후 집중 재조정 창. 사용자가 전화를 받기까지는 현실적으로 5~10초가
+  /// 부팅 직후 집중 재조정 창(iOS). 사용자가 전화를 받기까지는 현실적으로 5~10초가
   /// 걸리므로, 과거의 2.5초 창은 늘 그 전에 닫혀 있었다.
-  static const Duration _coldStartWindow = Duration(seconds: 20);
+  static const Duration _coldStartWindowIos = Duration(seconds: 20);
 
-  /// 상시 재조정 주기. 라이프사이클 전환만으로는 못 잡는 경우(잠금 상태에서 앱이
-  /// 계속 백그라운드인 채 accept가 들어오는 경우)를 덮는다.
+  /// 그 외 플랫폼의 콜드스타트 창(기존 수준 유지).
+  ///
+  /// 창을 넓히는 것은 **iOS VoIP 콜드스타트**를 위한 조치다. 안드로이드는 accept
+  /// 이벤트가 정상 전달되고, `activeCalls()`가 SharedPreferences 읽기 + JSON 파싱이라
+  /// 폴링이 공짜가 아니다. 멀쩡히 동작하는 경로에 비용을 늘리지 않는다.
+  static const Duration _coldStartWindowOther = Duration(seconds: 3);
+
+  /// 상시 재조정 주기(**iOS 전용**). 네이티브 래치를 당겨오기 위한 백스톱이다.
+  /// 안드로이드에는 래치 자체가 없고 위 이유로 상시 폴링을 걸지 않는다.
   static const Duration _reconcileInterval = Duration(seconds: 2);
+
+  /// 상시 재조정을 돌릴 플랫폼인지.
+  static bool get _usesNativeLatch =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
   /// 준비 게이팅(세션 복원/navigator) 폴링 간격.
   static const Duration _readyPollInterval = Duration(milliseconds: 100);
@@ -121,11 +132,13 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
     _attached = true;
     _sub = callkit.onEvent.listen(_onEvent);
     WidgetsBinding.instance.addObserver(this);
-    // 상시 재조정: 이벤트가 유실돼도 수락된 콜을 반드시 줍는다.
-    _reconcileTimer = Timer.periodic(
-      _reconcileInterval,
-      (_) => unawaited(_reconcile()),
-    );
+    // 상시 재조정: 이벤트가 유실돼도 수락된 콜을 반드시 줍는다(iOS 전용 — 위 참조).
+    if (_usesNativeLatch) {
+      _reconcileTimer = Timer.periodic(
+        _reconcileInterval,
+        (_) => unawaited(_reconcile()),
+      );
+    }
     unawaited(_handleColdStart());
   }
 
@@ -207,23 +220,28 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
     }
 
     _log('accept 수락 → 세션 시작(characterId=${payload.characterId}, uuid=$uuid)');
-    _activeUuid = uuid;
 
-    // CallKit 콜은 대화가 끝날 때까지 **유지한다**.
+    final notifier = ref.read(normalCallControllerProvider.notifier);
+
+    // ── 플랫폼별로 통화의 주인이 다르다 ──
     //
-    // 과거엔 여기서 곧바로 endAllCalls()로 끊었다("CallKit은 벨 트리거 전용"). 그러면
-    // 잠금화면 통화 UI가 사라지고, 백그라운드 프로세스를 붙잡아 둘 근거도, 통화
-    // 오디오 세션을 활성화해 줄 주체도 함께 사라진다. 콜을 살려 두면 그 셋을 OS가
-    // 보장하고, 오디오 세션 충돌(과거 P1의 원인으로 지목된 플러그인 자동 재구성)은
-    // `configureAudioSession: false` + 네이티브 카테고리 소유로 따로 막는다.
-
-    // 1단계: WS를 즉시 연결한다. 화면·오디오와 무관하게 서버가 오프닝 멘트를
-    // 만들기 시작한다. 오디오는 CallKit의 didActivate 시점에 2단계로 붙는다.
-    unawaited(
-      ref
-          .read(normalCallControllerProvider.notifier)
-          .startFromIncoming(payload.characterId, callUuid: uuid),
-    );
+    // iOS: CallKit 콜을 대화가 끝날 때까지 **유지한다**. 잠금화면 통화 UI, 백그라운드
+    //   프로세스 생존, 통화 오디오 세션 활성화가 전부 그 콜에 딸려 온다. 예전처럼
+    //   accept 직후 endAllCalls()로 끊으면 그 셋이 함께 사라진다.
+    //
+    // Android: **기존 동작을 그대로 둔다.** 이 경로는 VoIP/CallKit 세션이 아니라 FCM +
+    //   알림 기반이고, 수락된 콜을 즉시 종료하는 것이 통화 오디오 점유(AudioFocus /
+    //   MODE_IN_COMMUNICATION)를 푸는 방법이었다. iOS를 위한 이번 재설계를 여기까지
+    //   끌고 오면 멀쩡히 동작하던 안드로이드 통화를 건드리게 된다.
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      _activeUuid = uuid;
+      // 1단계: WS를 즉시 연결한다. 화면·오디오와 무관하게 서버가 오프닝 멘트를
+      // 만들기 시작한다. 오디오는 CallKit의 didActivate 시점에 2단계로 붙는다.
+      unawaited(notifier.startFromIncoming(payload.characterId, callUuid: uuid));
+    } else {
+      await callkit.endAllCalls();
+      unawaited(notifier.start(payload.characterId));
+    }
 
     // 화면 진입은 병렬(비차단). 잠금 상태에선 그려지지 않지만, 사용자가 잠금을
     // 풀면 통화 화면이 이미 떠 있다.
@@ -337,7 +355,9 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
   /// 무관하고, 네비게이션은 [_navigateToCall]이 자체적으로 준비를 기다린다.
   Future<void> _handleColdStart() async {
     await _awaitSessionRestored();
-    final deadline = DateTime.now().add(_coldStartWindow);
+    final deadline = DateTime.now().add(
+      _usesNativeLatch ? _coldStartWindowIos : _coldStartWindowOther,
+    );
     while (DateTime.now().isBefore(deadline)) {
       if (await _reconcile()) return;
       await Future<void>.delayed(_coldStartPollInterval);
