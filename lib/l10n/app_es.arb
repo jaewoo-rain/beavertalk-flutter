@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "¿Por qué estás aprendiendo un idioma?",
   "onboardingReasonSubtitle": "Adaptaremos tu aprendizaje a tus objetivos.",
   "savingLabel": "Guardando...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Disponible para comprar"
 }

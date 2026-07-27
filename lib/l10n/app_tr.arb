@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Neden bir dil öğreniyorsunuz?",
   "onboardingReasonSubtitle": "Öğrenmenizi hedeflerinize göre uyarlayacağız.",
   "savingLabel": "Kaydediliyor...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Satın alınabilir"
 }

@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Miért tanulsz nyelvet?",
   "onboardingReasonSubtitle": "A céljaidhoz igazítjuk a tanulásodat.",
   "savingLabel": "Mentés…",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Megvásárolható"
 }

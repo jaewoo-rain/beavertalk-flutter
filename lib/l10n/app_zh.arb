@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "你为什么要学习一门语言？",
   "onboardingReasonSubtitle": "我们会根据你的目标定制学习内容。",
   "savingLabel": "保存中...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "可购买"
 }

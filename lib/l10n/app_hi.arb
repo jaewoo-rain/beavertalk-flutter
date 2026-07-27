@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "आप भाषा क्यों सीख रहे हैं?",
   "onboardingReasonSubtitle": "हम आपके लक्ष्यों के अनुसार आपकी सीख को अनुकूलित करेंगे।",
   "savingLabel": "सहेजा जा रहा है...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "खरीद के लिए उपलब्ध"
 }

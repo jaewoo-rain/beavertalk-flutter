@@ -960,7 +960,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get freePlanBasicCharacters => 'Basic characters included';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'Zum Kauf verfügbar';
 
   @override
   String get paymentsLoadError => 'Couldn\'t load payment history';

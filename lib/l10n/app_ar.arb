@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "لماذا تتعلم لغة؟",
   "onboardingReasonSubtitle": "سنخصص تعلمك وفقًا لأهدافك.",
   "savingLabel": "جارٍ الحفظ...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "متاح للشراء"
 }

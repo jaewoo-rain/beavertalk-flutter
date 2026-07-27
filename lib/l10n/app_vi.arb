@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Tại sao bạn học ngôn ngữ?",
   "onboardingReasonSubtitle": "Chúng tôi sẽ điều chỉnh việc học theo mục tiêu của bạn.",
   "savingLabel": "Đang lưu...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Có thể mua"
 }

@@ -58,7 +58,11 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}.';
 
   /// Formats USD cents as "$10" (shared with the avatar and checkout screens).
-  String _money(int minor) => formatUsd(minor);
+  ///
+  /// Locale-aware, like the dates above: separators and symbol placement differ
+  /// per locale across the 30 the app ships.
+  String _money(int minor) =>
+      formatUsd(minor, locale: Localizations.localeOf(context).toString());
 
   /// Opens the subscription sheet as a real bottom sheet over MyPage.
   ///

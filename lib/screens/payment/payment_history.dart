@@ -81,7 +81,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
           const SizedBox(height: AppSpacing.s24),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-            child: _summaryCard(l10n, page.monthTotal),
+            child: _summaryCard(l10n, page.monthTotal, locale),
           ),
           const SizedBox(height: AppSpacing.s8),
           _filterRow(l10n),
@@ -125,7 +125,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
   }
 
   /// "이번 달 결제 금액" card (Figma `2117:20223`).
-  Widget _summaryCard(AppLocalizations l10n, int monthTotal) {
+  Widget _summaryCard(AppLocalizations l10n, int monthTotal, String locale) {
     return Container(
       padding: const EdgeInsets.fromLTRB(
         AppSpacing.s16,
@@ -143,7 +143,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
         children: [
           Text(l10n.thisMonthPayment, style: AppType.body1.r),
           const SizedBox(height: AppSpacing.s8),
-          Text(_money(l10n, monthTotal), style: AppType.title3.b),
+          Text(_money(monthTotal, locale), style: AppType.title3.b),
         ],
       ),
     );
@@ -259,7 +259,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
       type: CardLineType.payment,
       label: p.description ?? _categoryLabel(l10n, p.category),
       meta: meta.isEmpty ? null : meta,
-      value: _money(l10n, p.price),
+      value: _money(p.price, locale),
       status: l10n.statusCompleted,
       showDivider: showDivider,
     );
@@ -280,7 +280,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
   /// (`priceFree` on a character card). A month with no charges has a total of
   /// zero — calling it "Free" reads as if the plan itself were free. This is
   /// why the shared [formatUsd] never returns the "Free" wording itself.
-  String _money(AppLocalizations l10n, int minor) => formatUsd(minor);
+  String _money(int minor, String locale) => formatUsd(minor, locale: locale);
 }
 
 /// Load failure + retry, matching the avatar screen's error state.

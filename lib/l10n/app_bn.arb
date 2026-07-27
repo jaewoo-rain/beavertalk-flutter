@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "আপনি কেন একটি ভাষা শিখছেন?",
   "onboardingReasonSubtitle": "আমরা আপনার লক্ষ্য অনুযায়ী আপনার শেখা কাস্টমাইজ করব।",
   "savingLabel": "সংরক্ষণ করা হচ্ছে...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "কেনার জন্য উপলব্ধ"
 }

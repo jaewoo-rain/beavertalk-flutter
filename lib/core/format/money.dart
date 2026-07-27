@@ -13,6 +13,8 @@
 /// payment history) that each parsed to whole units and dropped the cents.
 library;
 
+import 'package:intl/intl.dart' as intl;
+
 /// Parses a server money value into **minor units (cents)**.
 ///
 /// Accepts the Decimal strings the API actually sends (`"10.00"`, `"0.00"`),
@@ -37,33 +39,42 @@ int parseMoneyMinor(Object? value) {
   return (parsed * 100).round();
 }
 
-/// Formats [minor] cents as a USD display string.
+/// Formats [minor] cents as a USD display string for [locale].
 ///
 /// Whole dollars drop the cents (`$10`, matching the Figma price label);
-/// anything with a remainder keeps two digits (`$9.99`). Thousands are grouped.
+/// anything with a remainder keeps two digits (`$9.99`).
+///
+/// **Locale-aware.** The app ships 30 locales and already localizes dates
+/// (`DateFormat.yMMMM(locale)` in the payment history). Money must follow the
+/// same rule: separators and symbol placement differ per locale, and a
+/// hardcoded `,`/`.` does not merely look foreign — it inverts the two in
+/// German, French, Spanish and Turkish, where `$12.345` reads as twelve
+/// thousand rather than twelve. Pass the locale wherever a `BuildContext` is
+/// in reach (`Localizations.localeOf(context).toString()`).
+///
+/// Omitting [locale] falls back to intl's ambient default. That is fine for
+/// tests and for call sites with no context, but not for anything on screen.
 ///
 /// ```
-/// formatUsd(1000)    == r'$10'
-/// formatUsd(999)     == r'$9.99'
-/// formatUsd(0)       == r'$0'
-/// formatUsd(1234567) == r'$12,345.67'
-/// formatUsd(-500)    == r'-$5'
+/// formatUsd(1000)                    == r'$10'
+/// formatUsd(999)                     == r'$9.99'
+/// formatUsd(0)                       == r'$0'
+/// formatUsd(1234567, locale: 'en')   == r'$12,345.67'
+/// formatUsd(1234567, locale: 'de')   == '12.345,67 $'
+/// formatUsd(-500,    locale: 'en')   == r'-$5'
 /// ```
-String formatUsd(int minor) {
+String formatUsd(int minor, {String? locale}) {
   final negative = minor < 0;
   final abs = minor.abs();
-  final dollars = abs ~/ 100;
-  final cents = abs % 100;
-
-  final digits = dollars.toString();
-  final buf = StringBuffer();
-  for (var i = 0; i < digits.length; i++) {
-    if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
-    buf.write(digits[i]);
-  }
-  if (cents != 0) {
-    buf.write('.');
-    buf.write(cents.toString().padLeft(2, '0'));
-  }
-  return '${negative ? '-' : ''}\$$buf';
+  // Whole dollars show no decimals; a remainder shows exactly two. Asking intl
+  // for 2 digits unconditionally would render every catalog price as "$10.00".
+  final decimalDigits = abs % 100 == 0 ? 0 : 2;
+  final formatted = intl.NumberFormat.currency(
+    locale: locale,
+    symbol: r'$',
+    decimalDigits: decimalDigits,
+  ).format(abs / 100);
+  // Sign is applied outside the formatter so it always leads, regardless of
+  // where the locale puts the currency symbol.
+  return negative ? '-$formatted' : formatted;
 }

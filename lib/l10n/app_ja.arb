@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "なぜ言語を学んでいますか?",
   "onboardingReasonSubtitle": "目標に合わせて学習をカスタマイズします。",
   "savingLabel": "保存中...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "購入可能"
 }

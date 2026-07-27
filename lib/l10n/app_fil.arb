@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Bakit ka natututo ng wika?",
   "onboardingReasonSubtitle": "Iaangkop namin ang iyong pagkatuto sa iyong mga layunin.",
   "savingLabel": "Sine-save...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Mabibili"
 }

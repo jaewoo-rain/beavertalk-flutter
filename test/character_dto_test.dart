@@ -55,6 +55,36 @@ void main() {
     });
   });
 
+  // The app ships 30 locales and already localizes dates. Money has to follow:
+  // German/French/Spanish/Turkish swap the grouping and decimal separators, so
+  // a hardcoded `,`/`.` does not just look foreign — "$12.345" reads as twelve
+  // thousand there instead of twelve. These lock the locale plumbing, not
+  // intl's exact glyphs, so they assert the separators rather than full strings.
+  group('formatUsd honours the locale', () {
+    test('en groups with commas and decimates with a period', () {
+      expect(formatUsd(1234567, locale: 'en'), r'$12,345.67');
+    });
+
+    test('de inverts both separators', () {
+      final formatted = formatUsd(1234567, locale: 'de');
+      expect(formatted, contains('12.345'));
+      expect(formatted, contains(',67'));
+      expect(formatted, isNot(contains(',345')));
+    });
+
+    test('fr decimates with a comma', () {
+      expect(formatUsd(1234567, locale: 'fr'), contains(',67'));
+    });
+
+    test('whole dollars drop the cents in every locale', () {
+      for (final locale in ['en', 'de', 'fr', 'ko', 'ja']) {
+        final formatted = formatUsd(1000, locale: locale);
+        expect(formatted, contains('10'), reason: 'locale $locale');
+        expect(formatted, isNot(contains('00')), reason: 'locale $locale');
+      }
+    });
+  });
+
   group('CharacterDto.fromJson', () {
     test('maps summary fields and parses prices, computes discount', () {
       final dto = CharacterDto.fromJson({

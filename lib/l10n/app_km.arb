@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "ហេតុអ្វីបានជាអ្នកកំពុងរៀនភាសា?",
   "onboardingReasonSubtitle": "យើងនឹងកែសម្រួលការសិក្សារបស់អ្នកឱ្យសមស្របតាមគោលដៅរបស់អ្នក។",
   "savingLabel": "កំពុងរក្សាទុក...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "អាចទិញបាន"
 }

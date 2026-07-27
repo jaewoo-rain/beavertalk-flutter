@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Miksi opiskelet kieltä?",
   "onboardingReasonSubtitle": "Räätälöimme oppimisesi tavoitteidesi mukaan.",
   "savingLabel": "Tallennetaan...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Ostettavissa"
 }

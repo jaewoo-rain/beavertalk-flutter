@@ -952,7 +952,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get freePlanBasicCharacters => 'Basic characters included';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'ဝယ်ယူနိုင်သည်';
 
   @override
   String get paymentsLoadError => 'Couldn\'t load payment history';

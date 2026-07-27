@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Та яагаад хэл сурч байна вэ?",
   "onboardingReasonSubtitle": "Бид таны зорилгод тохируулан сургалтыг тохируулна.",
   "savingLabel": "Хадгалж байна...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Худалдан авах боломжтой"
 }

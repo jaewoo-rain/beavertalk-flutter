@@ -947,7 +947,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get freePlanBasicCharacters => 'Basic characters included';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'কেনার জন্য উপলব্ধ';
 
   @override
   String get paymentsLoadError => 'Couldn\'t load payment history';

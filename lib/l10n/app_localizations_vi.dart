@@ -947,7 +947,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get freePlanBasicCharacters => 'Basic characters included';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'Có thể mua';
 
   @override
   String get paymentsLoadError => 'Couldn\'t load payment history';

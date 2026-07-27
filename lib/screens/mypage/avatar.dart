@@ -374,7 +374,7 @@ class AvatarScreen extends ConsumerWidget {
   /// like a month with no charges.
   String _priceLabel(BuildContext context, int minor) {
     if (minor <= 0) return AppLocalizations.of(context).priceFree;
-    return formatUsd(minor);
+    return formatUsd(minor, locale: Localizations.localeOf(context).toString());
   }
 
   /// Network avatar when available, else a static asset (alternating fallback).

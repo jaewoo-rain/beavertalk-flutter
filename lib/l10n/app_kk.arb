@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Сіз неге тіл үйреніп жатырсыз?",
   "onboardingReasonSubtitle": "Біз оқуыңызды мақсаттарыңызға сай бейімдейміз.",
   "savingLabel": "Сақталуда...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Сатып алуға болады"
 }

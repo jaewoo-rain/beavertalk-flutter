@@ -267,5 +267,6 @@
   "onboardingReasonTitle": "Почему вы изучаете язык?",
   "onboardingReasonSubtitle": "Мы адаптируем обучение под ваши цели.",
   "savingLabel": "Сохранение...",
-  "payMethodApple": "Apple Pay"
+  "payMethodApple": "Apple Pay",
+  "availableForPurchase": "Доступно для покупки"
 }

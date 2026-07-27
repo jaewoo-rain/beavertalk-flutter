@@ -947,7 +947,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get freePlanBasicCharacters => 'Basic characters included';
 
   @override
-  String get availableForPurchase => 'Available to purchase';
+  String get availableForPurchase => 'خریداری کے لیے دستیاب';
 
   @override
   String get paymentsLoadError => 'Couldn\'t load payment history';
