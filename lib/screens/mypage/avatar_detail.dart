@@ -105,7 +105,7 @@ class AvatarDetailScreen extends StatelessWidget {
   /// Long-form story paragraph (Label 1 SemiBold). Omitted when null.
   final String? description;
 
-  /// Price label (e.g. "₩4,900"). For [AvatarDetailState.unownedDiscount] this
+  /// Price label (e.g. "$10"). For [AvatarDetailState.unownedDiscount] this
   /// is the struck-through original price. Only shown for unowned states.
   final String? price;
 
@@ -527,9 +527,9 @@ class _AvatarDetailDemoState extends State<AvatarDetailDemo> {
                 'going with that pronunciation?" he snapped. His brutal '
                 'tutoring quickly became legendary, as every student he '
                 'scolded improved at lightning speed.',
-            price: '₩4,900',
+            price: r'$10',
             discountPrice:
-                state == AvatarDetailState.unownedDiscount ? '₩2,450' : null,
+                state == AvatarDetailState.unownedDiscount ? r'$5' : null,
             discountPercent:
                 state == AvatarDetailState.unownedDiscount ? 50 : null,
             onConfirm: () {},

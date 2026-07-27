@@ -12,8 +12,8 @@ import 'package:beavertalk/screens/mypage/avatar_detail.dart';
 /// unowned states only. That last one is the easiest to regress — the sheet
 /// rendered a price for every state, and the new design drops it once owned.
 void main() {
-  const listPrice = '₩4,900';
-  const salePrice = '₩2,450';
+  const listPrice = r'$10';
+  const salePrice = r'$5';
 
   Widget host(
     AvatarDetailState state, {

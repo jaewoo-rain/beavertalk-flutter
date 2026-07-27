@@ -156,7 +156,9 @@ class _ProductCard extends StatelessWidget {
           ),
           const SizedBox(width: 14),
           Text(
-            '₩4,900',
+            // Placeholder: this checkout screen is not yet server-bound. USD
+            // per the currency decision (see the 2026-07-27 server-request doc).
+            r'$10',
             style: AppType.body2.sb.copyWith(color: context.c.primaryNormal),
           ),
         ],
@@ -288,11 +290,12 @@ class _AmountSummary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _row(context, l10n.amountItemPrice, '₩4,900'),
+          // Placeholders — see the note on the product price above.
+          _row(context, l10n.amountItemPrice, r'$10'),
           const SizedBox(height: 8),
-          _row(context, l10n.amountDiscount, '-₩0'),
+          _row(context, l10n.amountDiscount, r'-$0'),
           const SizedBox(height: 8),
-          _row(context, l10n.amountTotal, '₩4,900', total: true),
+          _row(context, l10n.amountTotal, r'$10', total: true),
         ],
       ),
     );

@@ -1,5 +1,6 @@
 /// A purchasable call-partner character (catalog view). Pure Dart — no
-/// Flutter/dio/JSON knowledge. Prices are integer KRW.
+/// Flutter/dio/JSON knowledge. Prices are **USD cents** (see
+/// `core/format/money.dart`) — `$10.00` is 1000, never 10.
 class Character {
   const Character({
     required this.id,
@@ -9,6 +10,7 @@ class Character {
     required this.effectivePrice,
     required this.isOwned,
     this.description,
+    this.backgroundStory,
     this.voiceUrl,
     this.tags = const [],
   });
@@ -22,10 +24,10 @@ class Character {
   /// Optional avatar URL; UI falls back to a static asset when null.
   final String? imageUrl;
 
-  /// List price in KRW (0 means free).
+  /// List price in USD cents (0 means free).
   final int price;
 
-  /// Currently effective price in KRW (lower than [price] when discounted).
+  /// Currently effective price in USD cents (below [price] when discounted).
   final int effectivePrice;
 
   /// Whether the current member already owns this character.
@@ -38,6 +40,15 @@ class Character {
   /// description and voice sample from one `GET /characters` (its schema
   /// docstring calls this out as avoiding an N+1 of per-card detail fetches).
   final String? description;
+
+  /// Long-form background story (`background_story`).
+  ///
+  /// A **different column** from [description]: the server splits the one-line
+  /// catch-phrase ([description]) from the story paragraph, and the detail
+  /// screen has a slot for each. Keep them apart — rendering the catch-phrase
+  /// in the story slot leaves the story unread, which is what happened while
+  /// this field was missing from the DTO.
+  final String? backgroundStory;
 
   /// Preview voice sample URL (`voice_url`), for the "샘플 목소리 듣기" card.
   final String? voiceUrl;
@@ -90,6 +101,7 @@ class OwnedCharacter {
     required this.name,
     this.imageUrl,
     this.description,
+    this.backgroundStory,
     this.voiceUrl,
     this.tags = const [],
     this.purchasePrice,
@@ -108,13 +120,17 @@ class OwnedCharacter {
   /// Card description — `OwnedCharacterOut` carries it, same as the catalog.
   final String? description;
 
+  /// Long-form background story — `OwnedCharacterOut` carries it too. See
+  /// [Character.backgroundStory] for why it is separate from [description].
+  final String? backgroundStory;
+
   /// Preview voice sample URL (`voice_url`).
   final String? voiceUrl;
 
   /// Voice/personality tag chips; `[]` when the character has none.
   final List<String> tags;
 
-  /// Price paid in KRW, when recorded.
+  /// Price paid in USD cents, when recorded.
   final int? purchasePrice;
 
   /// When the character was acquired, when recorded.

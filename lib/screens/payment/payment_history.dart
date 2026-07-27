@@ -4,6 +4,7 @@ import 'package:intl/intl.dart' as intl;
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
+import '../../core/format/money.dart';
 import '../../components/atoms/pressable.dart';
 import '../../components/molecules/card_line.dart';
 import '../../components/organisms/gnb.dart';
@@ -272,21 +273,14 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
         PaymentCategory.unknown => l10n.paymentLabelFallback,
       };
 
-  /// Formats whole currency units as "₩4,900" — the same convention as the
-  /// avatar and checkout screens (`avatar.dart` `_priceLabel`).
+  /// Formats USD cents as "$10" — the same convention as the avatar and
+  /// checkout screens (`avatar.dart` `_priceLabel`).
   ///
-  /// Zero renders as "₩0", not "무료": that label belongs to a free *product*
+  /// Zero renders as "$0", not "Free": that label belongs to a free *product*
   /// (`priceFree` on a character card). A month with no charges has a total of
-  /// zero — calling it "무료" reads as if the plan itself were free.
-  String _money(AppLocalizations l10n, int amount) {
-    final digits = amount.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
-      buf.write(digits[i]);
-    }
-    return '₩$buf';
-  }
+  /// zero — calling it "Free" reads as if the plan itself were free. This is
+  /// why the shared [formatUsd] never returns the "Free" wording itself.
+  String _money(AppLocalizations l10n, int minor) => formatUsd(minor);
 }
 
 /// Load failure + retry, matching the avatar screen's error state.

@@ -119,7 +119,9 @@ class _Receipt extends StatelessWidget {
         children: [
           _ReceiptRow(label: l10n.receiptItem, value: l10n.productName),
           const SizedBox(height: 10),
-          _ReceiptRow(label: l10n.receiptAmount, value: '₩4,900'),
+          // Placeholder: the receipt is not yet server-bound. USD per the
+          // currency decision (see the 2026-07-27 server-request doc).
+          _ReceiptRow(label: l10n.receiptAmount, value: r'$10'),
           const SizedBox(height: 10),
           _ReceiptRow(label: l10n.receiptMethod, value: l10n.payMethodCard),
           const SizedBox(height: 10),

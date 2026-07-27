@@ -8,12 +8,14 @@ import '../../components/molecules/avatar_card.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/format/money.dart';
 import '../../features/auth/domain/entities/member.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/domain/entities/character.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
+import '../../features/review/data/audio_player.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
@@ -173,6 +175,8 @@ class AvatarScreen extends ConsumerWidget {
                   image,
                   characterId: c.id,
                   description: c.description,
+                  backgroundStory: c.backgroundStory,
+                  voiceUrl: c.voiceUrl,
                   tags: c.tags,
                 ),
               );
@@ -204,6 +208,8 @@ class AvatarScreen extends ConsumerWidget {
             image,
             characterId: c.id,
             description: c.description,
+            backgroundStory: c.backgroundStory,
+            voiceUrl: c.voiceUrl,
             tags: c.tags,
             price: _priceLabel(context, c.price),
             discountPrice: _priceLabel(context, c.effectivePrice),
@@ -212,10 +218,10 @@ class AvatarScreen extends ConsumerWidget {
     );
   }
 
-  /// Whole-percent discount off list price, e.g. 4900 → 2450 = 50.
+  /// Whole-percent discount off list price, e.g. 1000¢ → 500¢ = 50.
   ///
   /// The sheet cannot compute this itself — it receives prices as already
-  /// formatted strings — so it is derived here from the raw int KRW fields.
+  /// formatted strings — so it is derived here from the raw cent fields.
   /// Returns null when there is nothing sensible to show (no discount, or a
   /// zero list price), and the sheet then omits the badge.
   int? _discountPercent(Character c) {
@@ -245,6 +251,8 @@ class AvatarScreen extends ConsumerWidget {
             image,
             characterId: c.id,
             description: c.description,
+            backgroundStory: c.backgroundStory,
+            voiceUrl: c.voiceUrl,
             tags: c.tags,
             price: _priceLabel(context, c.price),
           )),
@@ -258,12 +266,12 @@ class AvatarScreen extends ConsumerWidget {
   /// - `ownedUnused` → Use This → `PATCH /members/me {character_id}`
   /// - `ownedUsed` → 닫기 only (already in use)
   ///
-  /// [description]/[tags] come straight from the list response. The server puts
-  /// them on `CharacterSummary` (and `OwnedCharacterOut`) precisely so a card
-  /// can render without a per-character detail fetch — its schema docstring
-  /// calls out the N+1 this avoids. An earlier revision here fetched
-  /// `GET /characters/{id}` on every open for a description it already had;
-  /// that request is gone.
+  /// [description]/[backgroundStory]/[voiceUrl]/[tags] come straight from the
+  /// list response. The server puts them on `CharacterSummary` (and
+  /// `OwnedCharacterOut`) precisely so a card can render without a
+  /// per-character detail fetch — its schema docstring calls out the N+1 this
+  /// avoids. An earlier revision here fetched `GET /characters/{id}` on every
+  /// open for a description it already had; that request is gone.
   ///
   /// This used to be a `showModalBottomSheet` holding `BottomSheetAvatar`
   /// (375×487). Figma replaced that sheet with the full-page `Avatar-Detail`
@@ -276,6 +284,8 @@ class AvatarScreen extends ConsumerWidget {
     ImageProvider image, {
     required int characterId,
     String? description,
+    String? backgroundStory,
+    String? voiceUrl,
     List<String> tags = const [],
     String? price,
     String? discountPrice,
@@ -284,14 +294,18 @@ class AvatarScreen extends ConsumerWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (routeCtx) => Consumer(
-          builder: (routeCtx, ref, _) => AvatarDetailScreen(
+          builder: (routeCtx, ref, _) => _AvatarDetailRoute(
             state: state,
             name: name,
             imageProvider: image,
             tags: tags,
-            // The server has no one-line catch-phrase field, so the summary
-            // slot stays empty and the story paragraph carries `description`.
-            description: description,
+            // Two distinct server columns, two distinct slots: `description` is
+            // the one-line catch-phrase, `background_story` the story
+            // paragraph. Both used to collapse into the story slot — the
+            // catch-phrase rendered there and the story was never fetched.
+            summary: description,
+            description: backgroundStory,
+            voiceUrl: voiceUrl,
             price: price,
             discountPrice: discountPrice,
             discountPercent: discountPercent,
@@ -353,16 +367,14 @@ class AvatarScreen extends ConsumerWidget {
     );
   }
 
-  /// Formats integer KRW as "₩4,900"; 0 → "Free".
-  String _priceLabel(BuildContext context, int krw) {
-    if (krw <= 0) return AppLocalizations.of(context).priceFree;
-    final digits = krw.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < digits.length; i++) {
-      if (i > 0 && (digits.length - i) % 3 == 0) buf.write(',');
-      buf.write(digits[i]);
-    }
-    return '₩$buf';
+  /// Formats USD cents as "$10"; 0 → "Free".
+  ///
+  /// "Free" is a *product* label, so it belongs here (a zero-priced character)
+  /// and not in the shared [formatUsd], which renders 0 as "$0" for amounts
+  /// like a month with no charges.
+  String _priceLabel(BuildContext context, int minor) {
+    if (minor <= 0) return AppLocalizations.of(context).priceFree;
+    return formatUsd(minor);
   }
 
   /// Network avatar when available, else a static asset (alternating fallback).
@@ -397,6 +409,97 @@ class AvatarScreen extends ConsumerWidget {
         text: AppLocalizations.of(context).buy,
         onPressed: onTap,
       );
+}
+
+/// Route host for [AvatarDetailScreen] that owns the sample-voice player.
+///
+/// [AvatarDetailScreen] is presentation-only (every action is a callback), so
+/// the player cannot live there — something has to outlive a single build and
+/// be disposed when the route pops. This widget is that owner: it holds one
+/// [ReviewAudioPlayer] for the life of the detail route and releases it in
+/// [dispose], the same pattern `analysis.dart` and `record_list.dart` use.
+///
+/// When [voiceUrl] is null or unplayable the sample card is left inert
+/// (`onPlaySample: null`) rather than showing a card that fails on tap.
+class _AvatarDetailRoute extends StatefulWidget {
+  const _AvatarDetailRoute({
+    required this.state,
+    required this.name,
+    required this.imageProvider,
+    required this.tags,
+    required this.summary,
+    required this.description,
+    required this.voiceUrl,
+    required this.price,
+    required this.discountPrice,
+    required this.discountPercent,
+    required this.onConfirm,
+    required this.onClose,
+  });
+
+  final AvatarDetailState state;
+  final String name;
+  final ImageProvider imageProvider;
+  final List<String> tags;
+  final String? summary;
+  final String? description;
+  final String? voiceUrl;
+  final String? price;
+  final String? discountPrice;
+  final int? discountPercent;
+  final VoidCallback onConfirm;
+  final VoidCallback onClose;
+
+  @override
+  State<_AvatarDetailRoute> createState() => _AvatarDetailRouteState();
+}
+
+class _AvatarDetailRouteState extends State<_AvatarDetailRoute> {
+  final ReviewAudioPlayer _player = ReviewAudioPlayer();
+
+  /// True only for a URL the player can actually open — the same guard
+  /// `analysis.dart` applies before handing a server string to the player.
+  bool get _playable {
+    final url = widget.voiceUrl;
+    return url != null && url.isNotEmpty && url.startsWith('http');
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _playSample() async {
+    try {
+      await _player.playUrl(widget.voiceUrl!);
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context).somethingWentWrong),
+        ),
+      );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AvatarDetailScreen(
+      state: widget.state,
+      name: widget.name,
+      imageProvider: widget.imageProvider,
+      tags: widget.tags,
+      summary: widget.summary,
+      description: widget.description,
+      price: widget.price,
+      discountPrice: widget.discountPrice,
+      discountPercent: widget.discountPercent,
+      onConfirm: widget.onConfirm,
+      onClose: widget.onClose,
+      onPlaySample: _playable ? _playSample : null,
+    );
+  }
 }
 
 /// Inline error with a retry action.
