@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../core/config/feature_flags.dart';
 import '../../alarm/domain/entities/alarm.dart';
 import '../../alarm/presentation/providers/alarm_list_controller.dart';
 import '../../../mock/mock_data.dart' show characterName;
@@ -13,6 +14,10 @@ import '../domain/entities/incoming_call_payload.dart';
 import '../services/callkit_service.dart';
 
 /// 저장된 **알람 시간**이 되면 로컬로 전화(수신 화면)를 띄우는 스케줄러.
+///
+/// > **현재 전화 띄우기는 꺼져 있다** — [kLocalAlarmRingEnabled]=false. 수신 트리거는
+/// > FCM으로 일원화했다(중복 링 제거). 권한 요청·타이머·틱은 그대로 살아 있고,
+/// > 발사만 [_ring] 진입부에서 멈춘다. 아래 설명은 플래그를 켰을 때의 동작이다.
 ///
 /// 서버 푸시(FCM/VoIP) 없이 동작하는 **로컬 단계**의 자동 트리거다. `simulateIncomingCall`
 /// (디버그 버튼)을 대체해, 알람의 요일·시각이 현재와 맞으면 그 알람의 캐릭터로
@@ -120,7 +125,13 @@ class InboundCallScheduler {
   }
 
   /// 알람의 캐릭터 정보로 수신 화면을 띄운다.
+  ///
+  /// [kLocalAlarmRingEnabled]가 false면 **여기서 멈춘다** — 수신 트리거는 FCM으로
+  /// 일원화했다(사유·트레이드오프는 플래그 선언부 참조). 가드를 `_tick`이 아니라 이
+  /// 진입부에 두는 이유는, 타이머·틱·중복키 로직을 그대로 살려 두어야 플래그를 다시
+  /// true로 돌리는 것만으로 원복되기 때문이다.
   Future<void> _ring(Alarm a) async {
+    if (!kLocalAlarmRingEnabled) return;
     if (kDebugMode) {
       debugPrint('[inbound_scheduler] 알람 발사 → '
           'characterId=${a.characterId} (${a.characterName ?? '?'})');
