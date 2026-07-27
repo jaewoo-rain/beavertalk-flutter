@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  수신 화면 레이아웃 — flutter_callkit_incoming 의 같은 이름 레이아웃을 **덮어쓴다**.
+
+  ## 이게 왜 동작하나
+  AGP 의 리소스 병합에서 **앱 모듈이 라이브러리를 이긴다.** 파일 이름이
+  `activity_callkit_incoming.xml` 로 같으므로, 플러그인의
+  `CallkitIncomingActivity.setContentView(R.layout.activity_callkit_incoming)` 가
+  이 파일을 그린다. 플러그인을 포크(vendoring)하지 않고 화면만 바꾸기 위한 것이다 —
+  포크하면 원본이 올라갈 때마다 팀이 재적용을 떠안는다.
+
+  ## 건드리면 안 되는 것 (매우 중요)
+  액티비티는 아래 **id 11개**를 `findViewById` 로 찾아 `lateinit` 필드에 담는다.
+  하나라도 빠지거나 타입이 안 맞으면 **런타임에 즉시 크래시**한다(레이아웃은 컴파일
+  타임에 검증되지 않는다). 안 쓰는 뷰도 지우지 말고 `visibility` 로만 숨길 것.
+
+    ivBackground(ImageView) · llBackgroundAnimation(RippleRelativeLayout)
+    ivLogo(ImageView) · ivAvatar(CircleImageView) · tvNameCaller(TextView)
+    tvNumber(TextView) · llAction(LinearLayout)
+    ivAcceptCall(ImageView 하위) · tvAccept(TextView)
+    ivDeclineCall(ImageView 하위) · tvDecline(TextView)
+
+  액티비티가 **런타임에 덮어쓰는 것들**(여기 XML 값은 미리보기용일 뿐이다):
+    - ivBackground 의 배경색/이미지 ← AndroidParams.backgroundColor
+    - ivAcceptCall/ivDeclineCall 의 background ← 원형 드로어블(actionColor 등)
+    - tvAccept/tvDecline 의 text ← AndroidParams.textAccept/textDecline
+    - tvNameCaller/tvNumber 의 text·색
+    - llBackgroundAnimation 의 **height** ← 화면폭 + 상태바 높이
+    - llAction 의 **margin** ← setMargins(0,0,0,네비바높이). 좌우 margin 이 0 으로
+      덮이므로 여백은 반드시 **padding** 으로 줄 것.
+
+  ## clipChildren="false" 가 필요한 이유
+  버튼을 끌면 부모 밖으로 나간다. 조상 중 하나라도 클리핑하면 손가락을 따라가던
+  버튼이 잘려 보인다. 루트부터 버튼까지 전 경로에 꺼 둔다.
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipChildren="false"
+    android:clipToPadding="false">
+
+    <ImageView
+        android:id="@+id/ivBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:scaleType="centerCrop"
+        tools:ignore="ContentDescription" />
+
+    <!-- 아바타 주변 물결. 액티비티가 height 를 덮어쓰고 startRippleAnimation() 을
+         호출하므로 타입(RippleRelativeLayout)과 id 를 반드시 유지한다. -->
+    <com.hiennv.flutter_callkit_incoming.widgets.RippleRelativeLayout
+        android:id="@+id/llBackgroundAnimation"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/base_margin_revert_x5"
+        android:clipChildren="false"
+        android:fitsSystemWindows="false">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/base_margin_x2_5"
+            android:layout_above="@id/ivAvatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="@dimen/base_margin_x5"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_logo"
+            android:visibility="invisible"
+            tools:ignore="ContentDescription" />
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="@dimen/size_avatar"
+            android:layout_height="@dimen/size_avatar"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_default_avatar"
+            android:visibility="invisible" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ivAvatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/base_margin_x2"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvNameCaller"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@android:color/white"
+                android:textSize="@dimen/size_text_name"
+                tools:text="BABA" />
+
+            <TextView
+                android:id="@+id/tvNumber"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="@color/action_text"
+                android:textSize="@dimen/size_text_action"
+                tools:text="한국어 통화" />
+
+        </LinearLayout>
+
+    </com.hiennv.flutter_callkit_incoming.widgets.RippleRelativeLayout>
+
+    <!-- 하단 액션. 여백은 padding 으로 준다(margin 은 액티비티가 덮어쓴다). -->
+    <LinearLayout
+        android:id="@+id/llAction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:clipChildren="false"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/base_margin_x3"
+        android:paddingEnd="@dimen/base_margin_x3"
+        android:paddingBottom="@dimen/base_margin_x4">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="@dimen/size_button_x2_5"
+                android:layout_height="@dimen/size_button_x2_5"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <!-- 파형은 버튼 **뒤**에 둔다. SwipeToActionView 가 같은 부모에서
+                     이 뷰를 찾아 끌기 진행도를 넘긴다. -->
+                <im.beavertalk.beavertalk.CallWaveView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:waveColor="#F44336" />
+
+                <im.beavertalk.beavertalk.SwipeToActionView
+                    android:id="@+id/ivDeclineCall"
+                    android:layout_width="@dimen/size_button"
+                    android:layout_height="@dimen/size_button"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_button_decline"
+                    android:padding="@dimen/base_margin_x1_5"
+                    android:src="@drawable/ic_decline"
+                    tools:ignore="ContentDescription" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvDecline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                android:gravity="center"
+                android:text="@string/text_decline"
+                android:textColor="@color/action_text"
+                android:textSize="@dimen/size_text_action" />
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:clipToPadding="false"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="@dimen/size_button_x2_5"
+                android:layout_height="@dimen/size_button_x2_5"
+                android:clipChildren="false"
+                android:clipToPadding="false">
+
+                <im.beavertalk.beavertalk.CallWaveView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    app:waveColor="#4CAF50" />
+
+                <im.beavertalk.beavertalk.SwipeToActionView
+                    android:id="@+id/ivAcceptCall"
+                    android:layout_width="@dimen/size_button"
+                    android:layout_height="@dimen/size_button"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_button_accept"
+                    android:padding="@dimen/base_margin_x1_5"
+                    android:src="@drawable/ic_accept"
+                    tools:ignore="ContentDescription" />
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/tvAccept"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/base_margin"
+                android:gravity="center"
+                android:text="@string/text_accept"
+                android:textColor="@color/action_text"
+                android:textSize="@dimen/size_text_action" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

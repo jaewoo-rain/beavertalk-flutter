@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 수신 화면 수락/거절 버튼 뒤에서 퍼지는 파형(CallWaveView). -->
+    <declare-styleable name="CallWaveView">
+        <!-- 파형 색. 수락=초록, 거절=빨강 처럼 버튼별로 다르게 준다. -->
+        <attr name="waveColor" format="color" />
+    </declare-styleable>
+</resources>
