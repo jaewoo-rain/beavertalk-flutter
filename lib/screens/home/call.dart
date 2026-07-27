@@ -239,13 +239,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                   level: callNotifier.avatarLevel,
                                   speaking: callNotifier.avatarSpeaking,
                                   emotion: callNotifier.avatarEmotion,
-                                  fallback: BeaverAvatar(
-                                    assetDir: avatarDir,
-                                    level: callNotifier.avatarLevel,
-                                    speaking: callNotifier.avatarSpeaking,
-                                    emotion: callNotifier.avatarEmotion,
-                                    shape: callNotifier.avatarShape,
-                                  ),
+                                  // A still image, NOT [BeaverAvatar].
+                                  //
+                                  // SyncAvatar shows this while its idle/talk
+                                  // clips initialize (~100–300ms on Android),
+                                  // and BeaverAvatar is the sprite lip-sync
+                                  // renderer that the video approach replaced.
+                                  // Handing it back as the fallback meant every
+                                  // call opened with a few hundred ms of the
+                                  // retired renderer before the video took
+                                  // over — visibly a different avatar.
+                                  //
+                                  // Same still the kDisableAvatarVideo path
+                                  // below uses, so the two agree.
+                                  fallback:
+                                      Image(image: partnerImage, fit: BoxFit.cover),
                                 )
                               : Image(image: partnerImage, fit: BoxFit.cover),
                         ),

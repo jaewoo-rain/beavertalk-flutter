@@ -624,12 +624,24 @@ class NormalCallController extends Notifier<CallState> {
       );
 
       // §8-3: trigger the server's auto opening line (no button).
-      // (멀티랭귀지) 마이페이지에서 고른 학습 언어를 target_language 로 실어 보낸다 —
-      // 서버가 그 언어의 코스(레벨테스트·체크판·레벨업)로 통화를 진행한다.
+      //
+      // (멀티랭귀지) 마이페이지에서 고른 학습 언어를 target_language 로 실어 보낸다.
+      //
+      // 단 기본 언어(한국어)면 키를 아예 빼고 보낸다. 서버의
+      // `_resolve_target_language` 는 **값이 있기만 하면** 데모 통화로 분류하고
+      // (한국어인지 보지 않는다), 데모로 분류되면 레벨테스트가 금지된다 —
+      // 명시해도 normal 로 강등되고 자동 라우팅도 normal 로 고정된다.
+      // 항상 'ko' 를 실어 보내던 탓에, ENV 가 prod 가 아닌 환경에서는 한국어
+      // 학습자조차 레벨테스트·레벨업이 영영 일어나지 않았다.
+      //
+      // 다국어는 사내 테스트 용도이고 실서비스 레벨테스트는 한국어로 가는 것이
+      // 맞으므로, 비기본 언어가 데모로 분류되는 것은 의도된 동작으로 둔다.
+      final learningLanguage = ref.read(learningLanguageProvider);
       _send({
         'type': 'start',
         'character_id': characterId,
-        'target_language': ref.read(learningLanguageProvider),
+        if (learningLanguage != LearningLanguageController.defaultCode)
+          'target_language': learningLanguage,
       });
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
