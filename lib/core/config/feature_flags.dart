@@ -30,8 +30,13 @@ const bool kDeviceRegistrationEnabled = true;
 ///
 /// 트레이드오프(알고 끄는 것):
 /// - 오프라인/푸시 미도달 시 대체 발사 경로가 없다(로컬 예약 알림도 미구현).
-/// - **iOS는 현재 미커버** — `DeviceRegistrationController`가 Android에서만 토큰을
-///   등록해 서버가 iOS로 보낼 주소가 없다. 추후 APNs VoIP로 별도 처리 예정.
+/// - **푸시 등록이 곧 전화의 생명줄이 된다.** 로컬 발사가 없으므로 디바이스 토큰이
+///   서버에 등록되지 않으면 전화가 아예 오지 않는다(무음 실패). 실제로 Firebase
+///   초기화가 등록 뒤로 밀려 안드로이드 등록이 통째로 실패한 적이 있다 —
+///   `push_bootstrap.dart`의 초기화 순서를 바꾸지 말 것.
+///
+/// (iOS는 더 이상 미커버가 아니다: `DeviceRegistrationController`가 PushKit VoIP
+/// 토큰을 `ios_voip`로 등록한다.)
 ///
 /// 되돌리려면 이 값을 true로 바꾸면 된다(스케줄러 코드는 그대로 살아 있다). 단, 서버
 /// FCM 발송이 계속 살아 있으면 중복 링이 다시 생긴다.
