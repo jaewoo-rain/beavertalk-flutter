@@ -203,7 +203,18 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
         ? NetworkImage(selectedCharUrl) as ImageProvider
         : characterImage(characterId);
-    return AppScaffold(
+    // Terminal call screen: it is reached via pushReplacement, so the route
+    // under it is whatever preceded the call (often a half-built AuthGate on a
+    // cold-start-for-call). A raw system/gesture back would pop into that and
+    // flash a black screen + throw. Intercept back and route home deterministically.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (didPop) return;
+        Navigator.pushNamedAndRemoveUntil(
+            context, Routes.home, (r) => r.isFirst);
+      },
+      child: AppScaffold(
       background: context.c.backgroundNormalNormal,
       statusVariant: StatusBarVariant.whiteTransparent,
       homeVariant: HomeIndicatorVariant.whiteTransparent,
@@ -293,6 +304,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

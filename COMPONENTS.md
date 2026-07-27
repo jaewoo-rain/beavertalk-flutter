@@ -53,7 +53,8 @@
 | DialogShareProfile | 2235:4652 | |
 | BottomSheet | 175:18138 | single/single-sub/two-col/two-row (Dim+시트+HomeIndicator) |
 | BottomSheetDocument | 175:18500 | min/normal/max |
-| BottomSheetAvatar | 176:13383 | unowned-normal/-discount/owned-unused/-used |
+| BottomSheetAvatar | 176:13383 | unowned-normal/-discount/owned-unused/-used — **은퇴. AvatarDetail로 대체됨** (호출부 0개, 갤러리 전용) |
+| AvatarDetail | 4024:1090 | unowned-normal/-discount/owned-unused/-used — 전면 화면(375×812). `AvatarScreen`이 push |
 | BottomSheetSubscription | 176:14577 | manage/change-plan/cancel |
 | BottomSheetCountrySelect | 176:12212 | |
 | BottomSheetAlarmSettings | 176:13983 | 타임피커+요일 |

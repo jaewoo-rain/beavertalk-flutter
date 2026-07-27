@@ -3,9 +3,18 @@ import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart'
-    show ValueNotifier, debugPrint, kDebugMode, kIsWeb;
+    show
+        ValueNotifier,
+        debugPrint,
+        defaultTargetPlatform,
+        kDebugMode,
+        kIsWeb,
+        TargetPlatform;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -218,6 +227,63 @@ class NormalCallController extends Notifier<CallState> {
   StreamSubscription<dynamic>? _wsSub;
 
   FlutterSoundRecorder? _recorder;
+
+  /// Native channel to force loudspeaker (speakerphone) routing during a call —
+  /// see ios/Runner/AppDelegate.swift `beavertalk/audio`.
+  static const MethodChannel _audioRouteChannel =
+      MethodChannel('beavertalk/audio');
+
+  /// Native CallKit state bridge — see ios/Runner/AppDelegate.swift
+  /// `beavertalk/callkit`. Used to learn when CallKit has activated the call's
+  /// audio session, without trusting the plugin's unbuffered event stream.
+  static const MethodChannel _callkitChannel =
+      MethodChannel('beavertalk/callkit');
+
+  // ── Audio session ownership ───────────────────────────────────────────────
+  // Two entry paths with different owners:
+  // - home ("전화하기"): no CallKit call exists, so this controller configures AND
+  //   activates the session itself.
+  // - CallKit (scheduled inbound call): the system owns the call and its audio
+  //   session. We must NOT setActive(true)/setActive(false) under it — the
+  //   category is set natively before activation and CallKit does the rest.
+
+  /// True while the current call's audio session belongs to CallKit.
+  bool _callkitOwnedAudio = false;
+
+  /// True when THIS controller called `setActive(true)` on the shared audio
+  /// session — the ONLY condition under which teardown may deactivate it.
+  ///
+  /// Inferring it from [_callkitOwnedAudio] was a real bug: [_connect] runs
+  /// teardown-before-connect BEFORE assigning that flag, so answering a CallKit
+  /// call deactivated the session the system had just activated for it. The
+  /// socket kept running (conversation visibly in progress) while playback and
+  /// mic were both dead. Track what we actually did instead of deducing it.
+  bool _weActivatedSession = false;
+
+  /// True once the native in-call route observer has been started, so teardown
+  /// only stops routing it actually started (same reasoning as above).
+  bool _audioRoutingStarted = false;
+
+  /// CallKit call UUID backing this session, when there is one. [hangUp] ends it
+  /// so the lock-screen call UI disappears together with the conversation.
+  String? _callUuid;
+
+  /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
+  /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
+  bool _callkitAudioReady = false;
+
+  /// Bounded wait for CallKit's didActivate before starting audio anyway.
+  ///
+  /// Polled tightly: every 100ms of waiting here is 100ms before the beaver can
+  /// be heard, and the check is a cheap synchronous native flag read.
+  static const Duration _callkitAudioTimeout = Duration(seconds: 10);
+  static const Duration _callkitAudioPollInterval = Duration(milliseconds: 50);
+
+  /// When this call's socket opened — used to attribute start-up latency.
+  DateTime? _sessionStartedAt;
+
+  /// True once the first inbound audio chunk of this call has arrived.
+  bool _gotFirstAudio = false;
   StreamController<Uint8List>? _micController;
   StreamSubscription<Uint8List>? _micSub;
 
@@ -277,6 +343,11 @@ class NormalCallController extends Notifier<CallState> {
   /// Resync target after a drop (~45s buffered). Still huge — a drop here means
   /// something is badly wrong; normal turns never reach it.
   static const int _targetQueueBytes = _playbackSampleRate * 2 * 45;
+
+  /// Cap for audio buffered BEFORE playback opens (~20s). The CallKit path opens
+  /// the socket first on purpose, so a short pre-roll is normal; a long one means
+  /// the audio stage is stuck and the oldest speech is no longer worth replaying.
+  static const int _prerollMaxBytes = _playbackSampleRate * 2 * 20;
 
   /// Bytes currently queued (unfed).
   int get _queueLen => _pcmQueue.length - _pcmHead;
@@ -385,7 +456,7 @@ class NormalCallController extends Notifier<CallState> {
     return const CallState();
   }
 
-  /// Starts a live call with the given [characterId].
+  /// Starts a live call with the given [characterId] from the home flow.
   ///
   /// Re-entry safe (§8-1): returns immediately when already starting or when the
   /// phase is connecting/inCall/ending; otherwise runs [_teardown] first so any
@@ -393,12 +464,66 @@ class NormalCallController extends Notifier<CallState> {
   /// After the socket opens it sends `{type:"start", character_id}` once, which
   /// triggers the server's automatic opening line (§8-3).
   Future<void> start(int characterId) async {
-    if (_starting) return;
+    final ok = await _connect(
+      characterId,
+      callUuid: null,
+      callkitOwnedAudio: false,
+    );
+    if (!ok) return;
+    await _startAudio();
+  }
+
+  /// Starts a call answered through CallKit (a scheduled inbound call).
+  ///
+  /// Two stages, deliberately decoupled — the socket has nothing to do with audio:
+  /// 1. [_connect] runs IMMEDIATELY at accept, so the server starts generating its
+  ///    opening line while the audio session is still being handed over. Inbound
+  ///    PCM queues up meanwhile (see [_feedPlayer]) instead of being dropped.
+  /// 2. [_startAudio] runs once CallKit has activated the call's audio session,
+  ///    then drains that queue. No fixed-delay guess.
+  ///
+  /// Coupling them is what made the lock-screen flow silent: the socket only
+  /// opened after the call SCREEN was built, and the screen waited on a
+  /// foreground state that never arrives while the device is locked.
+  ///
+  /// [callUuid] is the CallKit call this session belongs to; [hangUp] ends it so
+  /// the lock-screen call UI disappears together with the conversation.
+  Future<void> startFromIncoming(int characterId, {String? callUuid}) async {
+    final ok = await _connect(
+      characterId,
+      callUuid: callUuid,
+      callkitOwnedAudio: true,
+    );
+    if (!ok) return;
+    final myGen = _gen;
+    if (!await _awaitCallKitAudio()) {
+      // Bounded fallback: better to open audio against a session that may not be
+      // ready than to strand the user on a silent call forever.
+      _log('CallKit audio-session signal missing → starting audio anyway');
+    }
+    if (myGen != _gen) return; // hung up while waiting
+    await _startAudio();
+  }
+
+  /// The plugin's didActivate event (fast path). The native flag is the truth —
+  /// this only removes the polling latency. See [_awaitCallKitAudio].
+  void onCallKitAudioReady() => _callkitAudioReady = true;
+
+  /// Stage 1 — open the WebSocket and trigger the server's opening line.
+  ///
+  /// Returns true when the socket is up and the caller should proceed to
+  /// [_startAudio]. Never touches playback, the mic, or the audio session.
+  Future<bool> _connect(
+    int characterId, {
+    required String? callUuid,
+    required bool callkitOwnedAudio,
+  }) async {
+    if (_starting) return false;
     final phase = state.phase;
     if (phase == CallPhase.connecting ||
         phase == CallPhase.inCall ||
         phase == CallPhase.ending) {
-      return;
+      return false;
     }
     _starting = true;
     try {
@@ -407,16 +532,25 @@ class NormalCallController extends Notifier<CallState> {
       // Claim this start's generation AFTER the initial teardown. A hangUp() at
       // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
       final myGen = ++_gen;
+      _callkitOwnedAudio = callkitOwnedAudio;
+      _callUuid = callUuid;
+      _callkitAudioReady = false;
+      _sessionStartedAt = DateTime.now();
+      _gotFirstAudio = false;
       state = const CallState(phase: CallPhase.connecting);
 
-      final token =
-          Supabase.instance.client.auth.currentSession?.accessToken;
+      // Every failure below tears down with keepError so the error phase SURVIVES
+      // for the UI to react to. A plain _teardown() resets the state to idle,
+      // which silently swallows the message and leaves the loading screen
+      // spinning forever with no callback ever arriving.
+      final token = Supabase.instance.client.auth.currentSession?.accessToken;
       if (token == null || token.isEmpty) {
         state = state.copyWith(
           phase: CallPhase.error,
           errorMsg: '로그인이 필요합니다.',
         );
-        return;
+        await _teardown(keepError: true);
+        return false;
       }
 
       // Playback is device-only (flutter_pcm_sound has no web support). Guard so
@@ -427,73 +561,20 @@ class NormalCallController extends Notifier<CallState> {
           phase: CallPhase.error,
           errorMsg: '웹에서는 음성 통화를 지원하지 않습니다. 앱에서 이용해 주세요.',
         );
-        return;
+        await _teardown(keepError: true);
+        return false;
       }
-
-      // 잠금화면에서 예약전화를 받으면 accept 직후엔 아직 잠금 해제/화면 전환 전이라,
-      // 마이크·오디오가 제대로 잡히지 않는다. 앱이 실제로 포그라운드(통화 화면)로 올라온
-      // 뒤에 오디오 파이프라인을 시작한다. 일반 경로(홈→전화하기)는 이미 resumed라 즉시 통과.
-      await _awaitForeground();
-      if (myGen != _gen) return _abortStart();
-
-      // 마이크(음성) 권한 확인·요청. 전화가 올 때마다 통화는 이 start()를 타므로 매 통화
-      // 시작 시 항상 체크한다. 이미 허용돼 있으면 즉시 통과하고, 아니면 시스템 권한 팝업을
-      // 띄운다. 거부 상태면 마이크 없이는 대화가 불가하므로 통화를 시작하지 않고 안내한다.
-      final micStatus = await Permission.microphone.request();
-      if (!micStatus.isGranted) {
-        state = state.copyWith(
-          phase: CallPhase.error,
-          errorMsg: micStatus.isPermanentlyDenied
-              ? '마이크 권한이 꺼져 있어요. 설정 > 앱 권한에서 마이크를 허용해 주세요.'
-              : '마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.',
-        );
-        return;
-      }
-      if (myGen != _gen) return _abortStart();
-
-      // Open native gapless PCM playback at the server's 24kHz (no upsampling).
-      // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
-      // underflow-churn stall that cut audio out after ~1 minute.
-      _pcmQueue = <int>[];
-      _pcmHead = 0;
-      _pcmActive = false;
-      _playing = false;
-      await FlutterPcmSound.setLogLevel(LogLevel.error);
-      await FlutterPcmSound.setup(
-        sampleRate: _playbackSampleRate,
-        channelCount: _playbackChannels,
-      );
-      _pcmSetup = true;
-      await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
-      FlutterPcmSound.setFeedCallback(_onFeed);
-      _pcmActive = true;
-      _lastFeedSilent = null;
-      _envQueue.clear();
-      _startEnvelope();
-      // Kick the pull loop directly instead of FlutterPcmSound.start().
-      // start() only kicks when the plugin's *static* `_needsStart` flag is true,
-      // and that flag is NEVER reset by release()/setup(): the first call feeds
-      // audio → sets it false → it stays false, so on the 2nd call start() no-ops
-      // and playback never begins (the "재통화 시 음성 안 나옴" bug). Priming the
-      // feed callback ourselves (a silence frame starts the native OnFeedSamples
-      // loop) is independent of that stale flag and works on every call.
-      unawaited(_onFeed(0));
-      _log('playback started @ ${_playbackSampleRate}Hz (gapless PCM)');
 
       // Capture the baseline max call_id *before* the socket creates this call's
       // row, so a manual hang-up (which gets no `call_ended`) can recover the new
-      // id later by polling for an id greater than this. Best-effort: a failure
-      // here must never block the call from starting.
-      try {
-        final base = await ref.read(normalcallRepositoryProvider).latestCallId();
-        state = state.copyWith(baselineCallId: base);
-      } catch (_) {
-        // Leave baselineCallId null; recovery degrades to "newest id".
-      }
-
-      // Aborted while setting up playback / fetching the baseline id → don't open
-      // a socket or mic for a call the user already hung up.
-      if (myGen != _gen) return _abortStart();
+      // id later by polling for an id greater than this.
+      //
+      // NOT awaited. It is an HTTP round trip, and nothing until the wrap-up
+      // screen needs it — but awaiting it here delayed the `start` frame, and
+      // therefore the beaver's first word, by that request's entire latency.
+      // Fire it alongside the socket instead. A failure just leaves the baseline
+      // null and recovery degrades to "newest id".
+      unawaited(_captureBaselineCallId(myGen));
 
       // Connect the WebSocket.
       _expectClose = false;
@@ -512,19 +593,250 @@ class NormalCallController extends Notifier<CallState> {
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
-
-      // Start streaming the mic to the server.
-      await _startMic();
-      if (myGen != _gen) return _abortStart();
+      _log('socket connected (audio pending)');
+      unawaited(_logNativeAudio('connect/socket-open'));
+      return true;
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
         errorMsg: '통화를 시작할 수 없습니다.',
       );
-      await _teardown();
+      await _teardown(keepError: true);
+      return false;
     } finally {
       _starting = false;
     }
+  }
+
+  /// Stage 2 — open playback and the mic, then drain whatever the server already
+  /// sent while the audio session was being handed over.
+  Future<void> _startAudio() async {
+    final myGen = _gen;
+    try {
+      // 잠금화면에서 예약전화를 받으면 accept 직후엔 아직 잠금 해제/화면 전환 전이라,
+      // **안드로이드는** 마이크 접근을 막는다. iOS는 CallKit이 통화 오디오 세션을
+      // 소유하고 `audio` 백그라운드 모드가 있어 잠금 상태에서도 정상 동작하므로
+      // 기다리지 않는다 — 기다리면 잠금 중엔 resumed에 영영 도달하지 않아 통화가
+      // 통째로 멈춘다(잠금화면 무음의 직접 원인이었다).
+      if (defaultTargetPlatform != TargetPlatform.iOS) {
+        await _awaitForeground();
+        if (myGen != _gen) return _abortStart();
+      }
+
+      // 마이크(음성) 권한 확인·요청. 이미 허용돼 있으면 즉시 통과하고, 아니면 시스템
+      // 권한 팝업을 띄운다. 거부 상태면 마이크 없이는 대화가 불가하므로 안내하고 끝낸다
+      // (소켓은 이미 열려 있으므로 반드시 teardown 한다).
+      final micStatus = await Permission.microphone.request();
+      if (!micStatus.isGranted) {
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: micStatus.isPermanentlyDenied
+              ? '마이크 권한이 꺼져 있어요. 설정 > 앱 권한에서 마이크를 허용해 주세요.'
+              : '마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.',
+        );
+        await _teardown(keepError: true);
+        return;
+      }
+      if (myGen != _gen) return _abortStart();
+
+      // Route call audio like a loud media/Bluetooth CALL, not the quiet earpiece.
+      // With no explicit session, the voice-processing recorder pins output to the
+      // receiver at call volume and never picks AirPods. playAndRecord +
+      // defaultToSpeaker + allowBluetooth sends it to the speaker / BT headset;
+      // voiceChat keeps the echo canceller working. Best-effort: a failure here
+      // shouldn't abort the call, just leave default routing.
+      //
+      // NO allowBluetoothA2DP: A2DP is an OUTPUT-only (music) profile with no mic.
+      // Allowing it lets iOS route call output over A2DP, which breaks the BT mic
+      // (HFP) path — the beaver is heard but the user's voice is not captured.
+      // HFP (allowBluetooth) carries both mic and speaker for a two-way call.
+      //
+      // Activation has exactly ONE owner per call:
+      // - home path: this controller.
+      // - CallKit path: the system (didActivate) — the only way to get an active
+      //   call audio session while the device is locked. The category is already
+      //   set natively there (AppDelegate.configureCallAudioCategory), so we must
+      //   not re-configure or re-activate underneath a live call.
+      //
+      // But VERIFY rather than assume: if CallKit's activation never happened
+      // ([_awaitCallKitAudio] timed out), nobody has activated the session and it
+      // is silent in BOTH directions while the socket runs on regardless. In that
+      // case fall back to activating it ourselves.
+      final systemOwnsActiveSession =
+          _callkitOwnedAudio && await _isCallKitAudioActive();
+      if (!systemOwnsActiveSession) {
+        if (_callkitOwnedAudio) {
+          _log('CallKit never activated the session → activating it ourselves');
+        }
+        try {
+          final session = await AudioSession.instance;
+          await session.configure(AudioSessionConfiguration(
+            avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+            avAudioSessionCategoryOptions:
+                AVAudioSessionCategoryOptions.defaultToSpeaker |
+                    AVAudioSessionCategoryOptions.allowBluetooth,
+            avAudioSessionMode: AVAudioSessionMode.voiceChat,
+          ));
+          await session.setActive(true);
+          _weActivatedSession = true;
+        } catch (e) {
+          _log('audio session configure failed: $e');
+        }
+        if (myGen != _gen) return _abortStart();
+      }
+      await _logNativeAudio('startAudio/session-ready +${_elapsedSinceStartMs}ms');
+
+      // Open native gapless PCM playback at the server's 24kHz (no upsampling).
+      // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
+      // underflow-churn stall that cut audio out after ~1 minute.
+      //
+      // NOTE: _pcmQueue/_pcmHead are NOT reset here. [_connect]'s teardown already
+      // cleared them, and anything that arrived since is the server's opening line
+      // waiting to be played — clearing it would silence exactly what we buffered.
+      _pcmActive = false;
+      _playing = false;
+      await FlutterPcmSound.setLogLevel(LogLevel.error);
+      await FlutterPcmSound.setup(
+        sampleRate: _playbackSampleRate,
+        channelCount: _playbackChannels,
+        // MUST be passed — both defaults are wrong for a phone call:
+        //
+        // `iosAllowBackgroundAudio` defaults to FALSE, and the plugin's `feed`
+        // handler then does this whenever the app is not active:
+        //     if (!mIsAppActive && !mAllowBackgroundAudio) {
+        //         [self.mSamples setLength:0];   // discards the audio
+        //         result(@YES);                  // and reports SUCCESS
+        //     }
+        // i.e. every PCM chunk is silently thrown away the moment the screen
+        // locks, with no error for us to see — the beaver went mute on the lock
+        // screen and audio "came back" only when the app was reopened
+        // (mIsAppActive flips on UIApplicationDidBecomeActive).
+        //
+        // `iosAudioCategory` defaults to `playback`, and setup() applies it with
+        // setCategory: alone — no options, no mode — wiping playAndRecord +
+        // allowBluetooth + defaultToSpeaker + voiceChat. `playback` has no input
+        // at all. We re-assert the full category right after (routeToSpeaker),
+        // but ask for the closest one so the window is harmless.
+        iosAudioCategory: IosAudioCategory.playAndRecord,
+        iosAllowBackgroundAudio: true,
+      );
+      _pcmSetup = true;
+      await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
+      FlutterPcmSound.setFeedCallback(_onFeed);
+      _pcmActive = true;
+      _lastFeedSilent = null;
+      _envQueue.clear();
+      _startEnvelope();
+      // Kick the pull loop directly instead of FlutterPcmSound.start().
+      // start() only kicks when the plugin's *static* `_needsStart` flag is true,
+      // and that flag is NEVER reset by release()/setup(): the first call feeds
+      // audio → sets it false → it stays false, so on the 2nd call start() no-ops
+      // and playback never begins (the "재통화 시 음성 안 나옴" bug). Priming the
+      // feed callback ourselves (a silence frame starts the native OnFeedSamples
+      // loop) is independent of that stale flag and works on every call.
+      unawaited(_onFeed(0));
+      _log('playback started @ ${_playbackSampleRate}Hz '
+          '(queued ${_queueLen}B waiting)');
+      if (myGen != _gen) return _abortStart();
+
+      // iOS: settle the category and select a Bluetooth headset input BEFORE
+      // opening the recorder. The voice-processing (VoiceProcessingIO) unit binds
+      // to whatever input is active at open time; setting the BT input only AFTER
+      // _startMic leaves the unit pinned to the built-in mic and the user's voice
+      // over AirPods is never captured. Doing it first is what makes the BT mic work.
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+          _audioRoutingStarted = true;
+        } catch (_) {}
+      }
+
+      // Start streaming the mic to the server.
+      await _startMic();
+      if (myGen != _gen) return _abortStart();
+      // The recorder can open successfully and still capture nothing when the
+      // session/route was not settled yet — a silent failure with no exception.
+      // Watch for it and re-open once.
+      _armMicWatchdog();
+
+      // Force the loudspeaker (speakerphone). flutter_sound's voice-processing
+      // recorder just re-pinned the session to the earpiece(receiver), undoing
+      // the defaultToSpeaker option; re-assert now that the mic is up. iOS-only,
+      // best-effort; the native side keeps a headset/AirPods route if connected.
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+          _audioRoutingStarted = true;
+        } catch (_) {}
+      }
+      await _logNativeAudio('startAudio/mic-up +${_elapsedSinceStartMs}ms');
+    } catch (e) {
+      state = state.copyWith(
+        phase: CallPhase.error,
+        errorMsg: '통화를 시작할 수 없습니다.',
+      );
+      await _teardown(keepError: true);
+    }
+  }
+
+  /// Fetches the pre-call max `call_id` in the background (see [_connect]).
+  /// Applied only if this call is still the current one.
+  Future<void> _captureBaselineCallId(int myGen) async {
+    try {
+      final base = await ref.read(normalcallRepositoryProvider).latestCallId();
+      if (myGen != _gen) return;
+      state = state.copyWith(baselineCallId: base);
+    } catch (_) {
+      // Recovery degrades to "newest id".
+    }
+  }
+
+  /// Milliseconds since this call's socket was opened — for latency logging.
+  int get _elapsedSinceStartMs => _sessionStartedAt == null
+      ? -1
+      : DateTime.now().difference(_sessionStartedAt!).inMilliseconds;
+
+  /// Asks the native side whether CallKit currently holds an ACTIVE call audio
+  /// session (between didActivate and didDeactivate). False on non-iOS.
+  Future<bool> _isCallKitAudioActive() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return false;
+    if (_callkitAudioReady) return true;
+    try {
+      return await _callkitChannel
+              .invokeMethod<bool>('isCallAudioSessionActive') ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Dumps the live audio-session state to the NATIVE log.
+  ///
+  /// [_log] is compiled out of release builds (`kDebugMode`), so a TestFlight run
+  /// — the only place the lock-screen flow can be exercised — is otherwise
+  /// completely blind. NSLog survives release and shows up in Console.app.
+  Future<void> _logNativeAudio(String tag) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    try {
+      await _audioRouteChannel
+          .invokeMethod<void>('logAudioState', <String, dynamic>{'tag': tag});
+    } catch (_) {}
+  }
+
+  /// Waits for CallKit to activate the call's audio session (didActivate).
+  ///
+  /// The plugin's event for this is as unbuffered as the accept event, so the
+  /// NATIVE flag is the source of truth and [onCallKitAudioReady] merely removes
+  /// the polling latency. Bounded — returns false on timeout so the caller can
+  /// start audio anyway rather than waiting forever. Non-iOS returns immediately.
+  Future<bool> _awaitCallKitAudio() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return true;
+    final deadline = DateTime.now().add(_callkitAudioTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      if (await _isCallKitAudioActive()) return true;
+      await Future<void>.delayed(_callkitAudioPollInterval);
+    }
+    return false;
   }
 
   /// Aborts an in-flight [start] whose generation was superseded by a [hangUp]:
@@ -535,9 +847,26 @@ class NormalCallController extends Notifier<CallState> {
     await _teardown();
   }
 
-  /// User-initiated hang up: closes the socket (the server finalizes the call in
-  /// its `finally`) and tears the pipeline down (§8-2).
+  /// User-initiated hang up: ends the CallKit call (if this session has one),
+  /// closes the socket (the server finalizes the call in its `finally`) and tears
+  /// the pipeline down (§8-2).
+  ///
+  /// Re-entrant by design: ending the CallKit call fires `ACTION_CALL_ENDED`,
+  /// which the coordinator routes back here. [_hangingUp] absorbs that bounce.
   Future<void> hangUp() async {
+    if (_hangingUp) return;
+    _hangingUp = true;
+    try {
+      await _hangUp();
+    } finally {
+      _hangingUp = false;
+    }
+  }
+
+  /// Re-entry guard for [hangUp] — see its doc.
+  bool _hangingUp = false;
+
+  Future<void> _hangUp() async {
     // Invalidate any in-flight start() so it can't re-establish the pipeline
     // after we tear it down here.
     _gen++;
@@ -567,6 +896,10 @@ class NormalCallController extends Notifier<CallState> {
     final controller = StreamController<Uint8List>();
     _micController = controller;
     _micSub = controller.stream.listen((bytes) {
+      // Counted BEFORE the gate: this measures whether the recorder is capturing
+      // at all, which is a different failure from "gated because the beaver is
+      // speaking". [_armMicWatchdog] keys off it.
+      _micFramesReceived++;
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
@@ -587,6 +920,20 @@ class NormalCallController extends Notifier<CallState> {
     // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
     // ("AudioFlinger could not create record track, status: -1"). 잠깐 뒤 다시 열면 되는
     // 일시 실패라, 짧은 백오프로 재시도한다.
+    // iOS: with a headset (AirPods/BT/wired) connected, DISABLE voice processing.
+    // flutter_sound's voice processing (VoiceProcessingIO) refuses the Bluetooth
+    // HFP mic on iOS, so the user's voice was never captured over AirPods. A plain
+    // recorder follows the session route and uses the BT mic. Voice processing is
+    // only needed for the loudspeaker case (echo cancellation) — no headset there.
+    var useVoiceProcessing = true;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        final headset = await _audioRouteChannel
+            .invokeMethod<bool>('isHeadsetConnected');
+        if (headset == true) useVoiceProcessing = false;
+      } catch (_) {}
+    }
+
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
       final recorder = FlutterSoundRecorder();
@@ -598,7 +945,7 @@ class NormalCallController extends Notifier<CallState> {
           codec: Codec.pcm16,
           sampleRate: 16000,
           numChannels: 1,
-          enableVoiceProcessing: true,
+          enableVoiceProcessing: useVoiceProcessing,
           enableEchoCancellation: true,
         );
         if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
@@ -616,6 +963,60 @@ class NormalCallController extends Notifier<CallState> {
       }
     }
     throw Exception('마이크를 열 수 없습니다(재시도 $_micOpenMaxAttempts회 실패): $lastError');
+  }
+
+  // ── Mic capture watchdog ──────────────────────────────────────────────────
+  // openRecorder()/startRecorder() can both succeed against a session that is
+  // not actually usable yet and then deliver NOTHING — no exception, no retry,
+  // just a call where the user is never heard. Detect it by the absence of
+  // frames and re-open the recorder once.
+
+  /// Frames the recorder produced (counted before the half-duplex gate).
+  int _micFramesReceived = 0;
+  Timer? _micWatchdogTimer;
+  bool _micRestarted = false;
+
+  /// How long a live recorder may produce nothing before it is presumed broken.
+  /// Comfortably longer than the opening greeting's ramp-up.
+  static const Duration _micWatchdogDelay = Duration(seconds: 6);
+
+  /// Arms the one-shot capture watchdog (see [_micFramesReceived]).
+  void _armMicWatchdog() {
+    _micWatchdogTimer?.cancel();
+    _micWatchdogTimer = Timer(_micWatchdogDelay, () async {
+      _micWatchdogTimer = null;
+      if (_micFramesReceived > 0 || _micRestarted) return;
+      final phase = state.phase;
+      if (phase != CallPhase.inCall && phase != CallPhase.connecting) return;
+      _micRestarted = true; // one attempt only — never loop on a dead mic
+      _log('mic captured nothing in ${_micWatchdogDelay.inSeconds}s → reopening');
+      await _logNativeAudio('mic-watchdog/before-restart');
+      final myGen = _gen;
+      try {
+        await _restartMic();
+      } catch (e) {
+        _log('mic reopen failed: $e');
+        return;
+      }
+      if (myGen != _gen) return;
+      await _logNativeAudio('mic-watchdog/after-restart');
+    });
+  }
+
+  /// Closes the recorder and opens a fresh one, keeping the call otherwise live.
+  Future<void> _restartMic() async {
+    await _micSub?.cancel();
+    _micSub = null;
+    try {
+      await _recorder?.stopRecorder();
+    } catch (_) {}
+    try {
+      await _recorder?.closeRecorder();
+    } catch (_) {}
+    _recorder = null;
+    await _micController?.close();
+    _micController = null;
+    await _startMic();
   }
 
   /// 마이크 열기 최대 재시도 횟수(오디오 세션 해제 지연/포그라운드 전환 흡수).
@@ -657,7 +1058,20 @@ class NormalCallController extends Notifier<CallState> {
   /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
   /// closing-drain stability window, and cap the queue (resync).
   void _feedPlayer(Uint8List chunk) {
-    if (!_pcmActive) return;
+    // First inbound audio of the call: the split between "server was still
+    // thinking" and "our pipeline was not ready yet" is exactly this timestamp
+    // against startAudio's. Logged natively so it survives release builds.
+    if (!_gotFirstAudio) {
+      _gotFirstAudio = true;
+      unawaited(_logNativeAudio('first-audio-in +${_elapsedSinceStartMs}ms '
+          '(playback ${_pcmActive ? "ready" : "NOT ready"})'));
+    }
+    // Queue ALWAYS, even before playback is open. On the CallKit path the socket
+    // is deliberately opened before the audio pipeline (see [startFromIncoming]),
+    // so the server's opening line routinely arrives first — dropping it here,
+    // as this used to, silenced exactly the greeting the user is waiting for.
+    // Only the *consumption* side ([_onFeed]) is gated on [_pcmActive].
+    //
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
     // before/without a turn_start).
     _gateMic();
@@ -672,6 +1086,19 @@ class NormalCallController extends Notifier<CallState> {
     _closingStableTimer = null;
 
     _pcmQueue.addAll(chunk);
+
+    // Pre-roll cap: while playback isn't open yet, nothing drains the queue, so
+    // it needs its own (much tighter) bound. An opening line is a few seconds;
+    // anything beyond this means the audio stage is badly stuck, and holding
+    // minutes of stale speech to replay later would be worse than dropping it.
+    if (!_pcmActive && _queueLen > _prerollMaxBytes) {
+      var drop = _queueLen - _prerollMaxBytes;
+      if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
+      _pcmHead += drop;
+      _log('preroll cap: dropped ${drop}B (playback not open yet)');
+      _maybeCompact();
+      return;
+    }
 
     // Resync: if the queue outgrows the cap (server bursts ahead / clock drift),
     // drop the oldest bytes down to the target so latency can't pile up and
@@ -1173,6 +1600,25 @@ class NormalCallController extends Notifier<CallState> {
   /// When [keepError] is true the phase is left untouched (an error phase was
   /// already set by the caller); otherwise it resets to [CallPhase.idle].
   Future<void> _teardown({bool keepError = false}) async {
+    // End the CallKit call backing this session, first thing — every exit path
+    // funnels through here (hang-up, server `call_ended`, ws error, next call's
+    // teardown-before-connect), and the call is kept alive for the whole
+    // conversation on purpose. Miss this and the lock-screen call UI outlives the
+    // conversation, with its timer still counting.
+    //
+    // Safe on the [_connect] path too: _callUuid is still the PREVIOUS call's at
+    // that point (it is assigned after this teardown), so a stale call gets
+    // cleaned up rather than the new one.
+    final callUuid = _callUuid;
+    _callUuid = null; // cleared first: the ENDED event this triggers is a no-op
+    if (callUuid != null) {
+      try {
+        await FlutterCallkitIncoming.endCall(callUuid);
+      } catch (_) {
+        // Already gone (user pressed End on the lock screen) — nothing to do.
+      }
+    }
+
     _elapsedTimer?.cancel();
     _elapsedTimer = null;
     _keepaliveTimer?.cancel();
@@ -1198,6 +1644,10 @@ class NormalCallController extends Notifier<CallState> {
     avatarShape.value = 0.0;
     _turnEnded = false;
     _micFramesSent = 0;
+    _micWatchdogTimer?.cancel();
+    _micWatchdogTimer = null;
+    _micFramesReceived = 0;
+    _micRestarted = false;
 
     // Stop the mic first so no more bytes flow into a closing socket.
     await _micSub?.cancel();
@@ -1211,6 +1661,22 @@ class NormalCallController extends Notifier<CallState> {
     _recorder = null;
     await _micController?.close();
     _micController = null;
+
+    // Stop in-call audio routing: remove the native route-change observer and
+    // clear the speaker override so the session doesn't stay forced to the
+    // loudspeaker after the call. Pairs with 'routeToSpeaker' in [start].
+    //
+    // Guarded on [_audioRoutingStarted] for the same reason as the session
+    // deactivation below: the teardown that runs at the start of every call must
+    // not clear the preferred input of a call that is just coming up.
+    if (_audioRoutingStarted &&
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      _audioRoutingStarted = false;
+      try {
+        await _audioRouteChannel.invokeMethod<void>('stopCallAudioRouting');
+      } catch (_) {}
+    }
 
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
@@ -1247,6 +1713,28 @@ class NormalCallController extends Notifier<CallState> {
       await _channel?.sink.close();
     } catch (_) {}
     _channel = null;
+
+    // Hand the audio session back so other apps' audio un-ducks and the next
+    // call reconfigures from a clean slate. Best-effort (cleanup path).
+    //
+    // ONLY when we activated it. Never deactivate a session someone else owns:
+    // teardown-before-connect runs at the START of every call, and deducing
+    // ownership from [_callkitOwnedAudio] there read the PREVIOUS call's value —
+    // so answering a CallKit call deactivated the session the system had just
+    // activated for it. Socket alive, both audio directions dead. On the CallKit
+    // path the system deactivates its own session (didDeactivate) when the call
+    // ends, so there is nothing for us to do.
+    if (_weActivatedSession) {
+      _weActivatedSession = false;
+      try {
+        final session = await AudioSession.instance;
+        await session.setActive(
+          false,
+          avAudioSessionSetActiveOptions:
+              AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+        );
+      } catch (_) {}
+    }
 
     if (!keepError) {
       // Preserve callId/ended state set by callers; only reset a live phase.

@@ -96,12 +96,6 @@ class BottomNavBar extends StatelessWidget {
           decoration: BoxDecoration(
             color: context.c.backgroundNormalNormal,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-            boxShadow: [
-              BoxShadow(
-                color: Color(0x1A000000), // shadow/nav: rgba(0,0,0,0.1)
-                blurRadius: 8,
-              ),
-            ],
           ),
           // Top-aligned per Figma (inner row sits at y=13, height 60).
           child: SafeArea(
