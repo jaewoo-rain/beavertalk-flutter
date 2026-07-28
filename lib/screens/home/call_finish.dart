@@ -225,7 +225,22 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       // Figma `2296:26290`: 3 groups — avatar/name/duration (top), rating
       // (middle), actions (bottom) — distributed space-between so they adapt to
       // any device height (was fixed-y Positioned under the old 812 frame).
-      body: Padding(
+      //
+      // `spaceBetween` alone assumed the three groups always fit. On a 320×640
+      // handset they do not once the copy is translated: French and Burmese
+      // overflowed the column by 12–14px (caught by `i18n_overflow_test` after
+      // its viewport was lowered from a 1400-tall canvas to a real phone).
+      //
+      // Same shape `payment_complete` already uses: scroll when the content is
+      // taller than the viewport, and `minHeight` + `IntrinsicHeight` so that
+      // when it *does* fit, `spaceBetween` still distributes across the full
+      // height exactly as before. No visual change on roomy screens.
+      body: LayoutBuilder(
+        builder: (context, constraints) => SingleChildScrollView(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: IntrinsicHeight(
+              child: Padding(
         padding: const EdgeInsets.fromLTRB(
             AppSpacing.s20, AppSpacing.s48, AppSpacing.s20, AppSpacing.s24),
         child: Column(
@@ -309,6 +324,10 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               ],
             ),
           ],
+        ),
+              ),
+            ),
+          ),
         ),
       ),
       ),
