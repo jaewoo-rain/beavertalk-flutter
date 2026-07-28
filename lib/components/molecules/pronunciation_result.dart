@@ -170,7 +170,18 @@ class _MetricsFooter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s12, vertical: AppSpacing.s12),
       decoration: BoxDecoration(
-        color: context.c.backgroundNormalAlternative,
+        // `Background/Surface/Alternative`, which is what every
+        // `pronunciation_result` instance in Figma binds here (verified on
+        // 4085:30478 / 4080:24687 and the standalone component 3569:27508).
+        //
+        // It used to be `backgroundNormalAlternative`. The two are the same
+        // #252932 in Dark, so the mistake was invisible there — but in Light
+        // they diverge (#FFFFFF vs #F6F6F7), and the strip drew a grey box on
+        // screens where the design has none. Note the strip is *meant* to melt
+        // into its parent on surfaces that share this token (the MyPage card,
+        // screen/learning_main__pronunciation): there it reads as bare text
+        // with two dividers, exactly as Figma renders it.
+        color: context.c.backgroundSurfaceAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       child: IntrinsicHeight(
