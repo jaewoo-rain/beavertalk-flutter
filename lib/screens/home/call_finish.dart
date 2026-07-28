@@ -250,7 +250,9 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Text(
-                  selectedChar?.name ?? characterName(characterId),
+                  // Blank rather than a guessed name — see the same call in
+                  // `call.dart`.
+                  selectedChar?.name ?? characterName(characterId) ?? '',
                   style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s8),

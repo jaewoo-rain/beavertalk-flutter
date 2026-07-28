@@ -28,9 +28,24 @@ const Map<int, String> _emotionStem = {
 /// Currently only characters with a generated sprite set under
 /// `assets/avatar/<key>/` are listed here; add a key when its sprites ship.
 String? avatarAssetDirFor(int? characterId, String? name) {
+  // Id first, and keyed to the server's real ids (verified against
+  // `GET /characters`). This used to read `characterId == 2 → baba`, but 2 is
+  // BIBI — so a BIBI call could open **BABA's** clips. The id is the reliable
+  // key; the name match below is the backstop for payloads that carry a name
+  // and no id (alarm/CallKit).
+  const byId = <int, String>{
+    1: 'baba',
+    2: 'bibi',
+    9: 'popo',
+    10: 'rara',
+    11: 'dudu',
+  };
+  final key = byId[characterId];
+  if (key != null) return 'assets/avatar/$key';
+
   final n = (name ?? '').toLowerCase();
   bool has(String k) => n.contains(k);
-  if (characterId == 2 || has('baba') || has('비버')) return 'assets/avatar/baba';
+  if (has('baba') || has('비버')) return 'assets/avatar/baba';
   if (has('bibi') || has('비비')) return 'assets/avatar/bibi';
   if (has('dudu') || has('두두')) return 'assets/avatar/dudu';
   if (has('popo') || has('포포')) return 'assets/avatar/popo';

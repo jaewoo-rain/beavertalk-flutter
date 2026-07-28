@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 /// swap mock → real with minimal change.
 
 const beaverImage = AssetImage('assets/images/beaver.png');
-const judiImage = AssetImage('assets/images/judi.png');
 
 /// Onboarding — native language / nationality options.
 ///
@@ -176,17 +175,31 @@ void setBookmark(int id, bool saved) {
 /// member's `characterId` so calls show the avatar the user actually selected.
 const mockPartnerName = 'Annoying Beaver';
 
-/// Display name for a selected character [id] (member `character_id`).
+/// Display name for a selected character [id] (member `character_id`), or null
+/// when the id is not one we know.
 ///
-/// **Stale, and knowingly so.** It reads `1 → Bibi, 2 → Baba`, but the server's
-/// ids are the other way round (1 is BABA, 2 is BIBI — verified against
-/// `GET /characters`), and the catalog has since grown to Popo/Rara/Dudu. Every
-/// answer here is therefore a guess.
+/// Keyed to the server's real ids, verified against `GET /characters`. The
+/// previous map read `id == 2 ? 'Baba' : 'Bibi'` — reversed (1 is BABA, 2 is
+/// BIBI), missing Popo/Rara/Dudu entirely, and worst of all it answered
+/// **every** unknown id with a confident "Bibi".
 ///
-/// Callers should prefer the real catalog entry (`selectedCharacterProvider`)
-/// and show a skeleton until it lands, rather than print a wrong partner and
-/// then swap. This stays only for the paths that have no provider in reach.
-String characterName(int? id) => id == 2 ? 'Baba' : 'Bibi';
+/// Returning null for an unknown id is the point of this function's shape: a
+/// caller that cannot name the partner should say nothing, not invent one. The
+/// CallKit path relies on exactly that — `callkit_service` falls back to its own
+/// generic label when this is null.
+///
+/// Still a client-side mirror of server data: a character added server-side has
+/// no entry here until this map is updated. Prefer the catalog
+/// (`selectedCharacterProvider`) wherever a provider is in reach; this exists
+/// for the paths that have none (background CallKit, alarm payloads).
+String? characterName(int? id) => switch (id) {
+      1 => 'BABA',
+      2 => 'BIBI',
+      9 => 'Popo',
+      10 => 'Rara',
+      11 => 'Dudu',
+      _ => null,
+    };
 
 /// Neutral avatar placeholder for a character whose real image is not known yet.
 ///

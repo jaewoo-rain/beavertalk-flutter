@@ -223,7 +223,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
-                    selectedChar?.name ?? characterName(characterId),
+                    // Empty when neither the catalog nor the id map can name the
+                    // partner. The id map used to answer any unknown id with
+                    // "Bibi", so a Baba user watched the wrong name for the
+                    // whole call; a blank line is the honest version.
+                    selectedChar?.name ?? characterName(characterId) ?? '',
                     style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s4),
