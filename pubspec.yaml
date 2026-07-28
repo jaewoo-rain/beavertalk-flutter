@@ -67,6 +67,7 @@ dependencies:
   flutter_sound: ^9.2.13
   # normalcall — 서버 PCM24k gapless 재생(콜백-풀, 네이티브 레이트). 재생 언더플로우
   # 고착(1분 후 끊김) 방지용으로 flutter_sound player를 대체. web 미지원(런타임 가드).
+  # ⚠ dependency_overrides 로 packages/flutter_pcm_sound (로컬 패치본)을 쓴다 — 하단 참고.
   flutter_pcm_sound: ^3.1.4
   # normalcall — 마이크 권한 요청.
   permission_handler: ^11.3.1
@@ -105,6 +106,15 @@ dependencies:
   sign_in_with_apple: ^8.1.0
   crypto: ^3.0.7
   audio_session: ^0.2.4
+
+# 통화 음성 깨짐(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
+# pub 원본은 feed 1회를 200바이트 조각 ~120개로 쪼개고, 조각 하나 쓸 때마다 큐
+# 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은 락)해서, 언더런을 막으려고 버퍼를
+# 키울수록 오히려 부하가 커지는 구조였다. 패치본은 4KB 조각 + 러닝 카운터 +
+# AudioTrack 버퍼 250ms + getStats(계측)를 쓴다. 상세는 packages/ 안의 주석.
+dependency_overrides:
+  flutter_pcm_sound:
+    path: packages/flutter_pcm_sound
 
 dev_dependencies:
   flutter_test:

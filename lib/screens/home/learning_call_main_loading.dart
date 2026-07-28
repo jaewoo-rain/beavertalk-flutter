@@ -16,11 +16,8 @@ import '../../theme/app_typography.dart';
 /// reflow: the same head, gauge, 가장 어려웠던 소리 card, and the two tables,
 /// with every value a [Skeleton] and only the static labels rendered for real.
 ///
-/// **Not wired to anything.** [LearningCallMainScreen] reads a `const` mock and
-/// so never waits — there is nothing to show this *during* yet. It exists
-/// because the frame does and because it is the shape the screen will need the
-/// moment a real request sits behind it: build it into that screen's `loading:`
-/// branch then, and delete this note.
+/// Shown as [LearningCallMainScreen]'s `loading:` branch while
+/// `pronunciationReportProvider` fetches the report.
 ///
 /// **This frame is stale and is deliberately not followed in one place.** It
 /// still draws the head that `screen/learning_main` (`3569:15065`) has since

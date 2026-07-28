@@ -69,13 +69,25 @@ class HomeScreen extends ConsumerWidget {
     // Selected character (member `character_id`) drives the hero name + avatar.
     // Resolve the real catalog entry so the actual in-use character (e.g. Baba)
     // shows — never a hardcoded id→name guess.
-    final profile = ref.watch(myProfileProvider);
-    final characterId = profile.valueOrNull?.characterId;
     final selected = ref.watch(selectedCharacterProvider);
     final selectedUrl = selected?.imageUrl;
     final heroImage = (selectedUrl != null && selectedUrl.isNotEmpty)
         ? NetworkImage(selectedUrl) as ImageProvider
-        : characterImage(characterId);
+        : placeholderAvatar;
+    // Loading until the **catalog** entry lands — not merely until the profile
+    // does.
+    //
+    // The narrower `profile.isLoading && !profile.hasValue` left a real window
+    // open: the profile can return while the catalog is still in flight, and in
+    // that gap the screen fell back to the id-keyed mock — which showed a Baba
+    // user Judi's face, and the name "Bibi". Both were confidently wrong for a
+    // few hundred ms and then swapped. `selected == null` covers the whole
+    // window, because `selected` is exactly "we know who the partner is".
+    //
+    // On failure `selected` stays null and this shimmers rather than resolving.
+    // That is the intended trade: the previous behaviour asserted a partner the
+    // user does not have.
+    final heroLoading = selected == null;
     return Column(
       children: [
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
@@ -119,15 +131,23 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               children: [
                 const SizedBox(height: 37),
-                Pressable(
-                  onTap: () => Navigator.pushNamed(context, Routes.avatar),
-                  child: HeroAvatar(
-                    imageProvider: heroImage,
-                    size: _avatarSize,
-                    onEditTap: () =>
-                        Navigator.pushNamed(context, Routes.avatar),
+                if (heroLoading)
+                  // Same footprint as [HeroAvatar] so nothing shifts when the
+                  // real image lands. Not tappable: there is nothing to change
+                  // yet, and the avatar screen needs the profile anyway.
+                  const SkeletonShimmer(
+                    child: Skeleton.circle(size: _avatarSize),
+                  )
+                else
+                  Pressable(
+                    onTap: () => Navigator.pushNamed(context, Routes.avatar),
+                    child: HeroAvatar(
+                      imageProvider: heroImage,
+                      size: _avatarSize,
+                      onEditTap: () =>
+                          Navigator.pushNamed(context, Routes.avatar),
+                    ),
                   ),
-                ),
                 const SizedBox(height: AppSpacing.s16),
                 // `skeleton/Annoying Beaver` (`3489:3919`) — the name is a
                 // placeholder until the profile lands, because
@@ -137,14 +157,11 @@ class HomeScreen extends ConsumerWidget {
                 // keeps Title 3's 32 line-height so nothing shifts.
                 SizedBox(
                   height: 32,
-                  // `isLoading && !hasValue` = the first fetch only. On failure
-                  // both are false and the guessed name comes back, which is
-                  // the old behaviour and beats shimmering forever; on a
-                  // refresh `hasValue` holds, so the current name stays put
-                  // instead of flickering to a placeholder.
-                  child: (selected == null &&
-                          profile.isLoading &&
-                          !profile.hasValue)
+                  // Shares [heroLoading] with the avatar above so the two never
+                  // disagree. The old `isLoading && !hasValue` released this
+                  // the moment the profile returned, which is earlier than the
+                  // catalog — and in that gap it printed "Bibi" to a Baba user.
+                  child: heroLoading
                       ? const SkeletonShimmer(
                           child: Center(
                             child: Skeleton.bar(width: 170, height: 22),
@@ -152,7 +169,12 @@ class HomeScreen extends ConsumerWidget {
                         )
                       : Center(
                           child: Text(
-                            selected?.name ?? characterName(characterId),
+                            // Non-null here by construction: [heroLoading] IS
+                            // `selected == null`, so this branch only runs once
+                            // the catalog entry is known. The old
+                            // `?? characterName(id)` fallback is gone with it —
+                            // that was the guess that printed "Bibi".
+                            selected.name,
                             // Figma `2296:26390` — Title 3 / Bold (24px).
                             style:
                                 AppType.title3.b.copyWith(color: context.c.labelStrong),

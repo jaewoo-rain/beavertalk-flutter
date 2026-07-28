@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/call_toggle_button.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
@@ -45,6 +46,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// screens so the video doesn't stretch edge-to-edge on tablets.
   static const double _avatarMaxWidth = 520;
 
+  // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
+  //   기본은 false(아바타 ON) — 제품 그대로의 부하에서 재생이 버티는지가 판정 기준이다.
+  //   아바타 OFF 로 두면 실제로 출시되지 않는 구성을 측정하게 되므로 격리 실험 때만 true.
+  //   (재생 플러그인 로컬 패치본 적용 후 재검증: packages/flutter_pcm_sound)
+  static const bool kDisableAvatarVideo = false;
+
   bool _navigated = false;
 
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
@@ -67,6 +74,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
       }
     });
+  }
+
+  /// The partner's still image, or a skeleton while the catalog resolves.
+  ///
+  /// Fills the 16:9 avatar band either way, so the frame does not resize when
+  /// the real image arrives.
+  Widget _partnerStill(ImageProvider? image) {
+    if (image != null) return Image(image: image, fit: BoxFit.cover);
+    return const SkeletonShimmer(child: Skeleton.box(width: 1080, height: 607));
   }
 
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
@@ -161,9 +177,14 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
+    // Null until the catalog resolves. Deliberately NOT defaulted to
+    // [characterImage]: that map answers an unmatched id with **Judi's**
+    // picture (it predates the current server ids — 1 is Baba, not Bibi), so
+    // the call opened on a different character's face. A skeleton is shown
+    // instead until the real image is known.
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
         ? NetworkImage(selectedCharUrl) as ImageProvider
-        : characterImage(characterId);
+        : null;
     final callNotifier = ref.read(normalCallControllerProvider.notifier);
     final avatarDir = avatarAssetDirFor(
       characterId,
@@ -234,7 +255,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   ),
                   const SizedBox(height: AppSpacing.s4),
                   Text(
-                    selectedChar?.name ?? characterName(characterId),
+                    // Empty when neither the catalog nor the id map can name the
+                    // partner. The id map used to answer any unknown id with
+                    // "Bibi", so a Baba user watched the wrong name for the
+                    // whole call; a blank line is the honest version.
+                    selectedChar?.name ?? characterName(characterId) ?? '',
                     style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s4),
@@ -259,21 +284,28 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       child: AspectRatio(
                         aspectRatio: 16 / 9,
                         child: ClipRect(
-                          child: avatarDir != null
+                          child: avatarDir != null && !kDisableAvatarVideo
                               ? SyncAvatar(
                                   assetDir: avatarDir,
                                   level: callNotifier.avatarLevel,
                                   speaking: callNotifier.avatarSpeaking,
                                   emotion: callNotifier.avatarEmotion,
-                                  fallback: BeaverAvatar(
-                                    assetDir: avatarDir,
-                                    level: callNotifier.avatarLevel,
-                                    speaking: callNotifier.avatarSpeaking,
-                                    emotion: callNotifier.avatarEmotion,
-                                    shape: callNotifier.avatarShape,
-                                  ),
+                                  // A still image, NOT [BeaverAvatar].
+                                  //
+                                  // SyncAvatar shows this while its idle/talk
+                                  // clips initialize (~100–300ms on Android),
+                                  // and BeaverAvatar is the sprite lip-sync
+                                  // renderer that the video approach replaced.
+                                  // Handing it back as the fallback meant every
+                                  // call opened with a few hundred ms of the
+                                  // retired renderer before the video took
+                                  // over — visibly a different avatar.
+                                  //
+                                  // Same still the kDisableAvatarVideo path
+                                  // below uses, so the two agree.
+                                  fallback: _partnerStill(partnerImage),
                                 )
-                              : Image(image: partnerImage, fit: BoxFit.cover),
+                              : _partnerStill(partnerImage),
                         ),
                       ),
                     ),

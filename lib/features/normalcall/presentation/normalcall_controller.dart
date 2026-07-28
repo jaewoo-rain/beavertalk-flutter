@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -22,6 +23,7 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/i18n/learning_language_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
@@ -293,14 +295,21 @@ class NormalCallController extends Notifier<CallState> {
   // never starved into a stuck underflow churn — the root cause of the ~1-min
   // audio cutout with the old flutter_sound stream player.
 
-  /// Inbound PCM16 byte queue (little-endian samples). Consumed from [_pcmHead]
-  /// forward; an odd trailing byte simply stays until the next chunk completes
-  /// its Int16 sample, so samples never split across chunks.
-  List<int> _pcmQueue = <int>[];
+  /// Inbound PCM16 chunk ring buffer (each chunk is little-endian PCM16 bytes,
+  /// stored **by reference** — O(1) enqueue, no per-chunk copy, no 8x boxing of
+  /// a `List<int>`, minimal GC). Consumed from the front: [_pcmHeadOffset] marks
+  /// how many bytes of the head chunk are already fed. Enqueued whole from the
+  /// WS frame in [_feedPlayer]; drained byte-exact in [_takeArray].
+  final Queue<Uint8List> _pcmQueue = Queue<Uint8List>();
 
-  /// Read offset into [_pcmQueue]. Bytes before it are already fed; the list is
-  /// compacted (see [_maybeCompact]) once the offset grows large.
-  int _pcmHead = 0;
+  /// Byte offset into the *first* queued chunk — bytes before it are already
+  /// fed. When it reaches the head chunk's length the chunk is dropped.
+  int _pcmHeadOffset = 0;
+
+  /// Live unfed byte count across all queued chunks (O(1) [_queueLen]). Kept in
+  /// lockstep with enqueue/drain so the feed callback and resync never walk the
+  /// queue just to measure it.
+  int _pcmQueuedBytes = 0;
 
   /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
   bool _pcmSetup = false;
@@ -313,11 +322,13 @@ class NormalCallController extends Notifier<CallState> {
   static const int _playbackSampleRate = 24000;
   static const int _playbackChannels = 1;
 
-  /// Feed callback fires when buffered frames fall below this (~100ms).
-  static const int _feedThresholdFrames = 2400;
+  /// Feed callback fires when buffered frames fall below this (~500ms).
+  /// (audio-glitch 수정) 네이티브 엔진이 더 많이 물고 있게 해서, 메인 아이솔레이트가
+  /// ~수백 ms 멈칫(아바타 코덱 churn·GC·렌더 잼)해도 언더런(재생 깨짐)을 흡수한다.
+  static const int _feedThresholdFrames = 12000;
 
-  /// Bytes fed per callback when audio is available (~200ms of 24kHz PCM16).
-  static const int _feedChunkBytes = 9600;
+  /// Bytes fed per callback when audio is available (~500ms of 24kHz PCM16).
+  static const int _feedChunkBytes = 24000;
 
   /// Silence frames fed when the queue is empty (~50ms keep-alive).
   static const int _silenceFrames = 1200;
@@ -326,8 +337,8 @@ class NormalCallController extends Notifier<CallState> {
   /// audio (feed silence) until this much is queued, so brief network jitter can't
   /// starve the engine into an audible gap ("voice 씹힘"). Bounded by
   /// [_prebufferFlush] so a short utterance is never held back forever.
-  static const int _prebufferBytes = _playbackSampleRate * 2 * 120 ~/ 1000;
-  static const Duration _prebufferFlush = Duration(milliseconds: 90);
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 400 ~/ 1000;
+  static const Duration _prebufferFlush = Duration(milliseconds: 200);
 
   /// Settle after `release()` so the singleton native engine fully tears down
   /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
@@ -350,7 +361,7 @@ class NormalCallController extends Notifier<CallState> {
   static const int _prerollMaxBytes = _playbackSampleRate * 2 * 20;
 
   /// Bytes currently queued (unfed).
-  int get _queueLen => _pcmQueue.length - _pcmHead;
+  int get _queueLen => _pcmQueuedBytes;
 
   /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
   /// only audio↔silence transitions instead of spamming every feed callback.
@@ -360,6 +371,30 @@ class NormalCallController extends Notifier<CallState> {
   /// [_teardown] can wait for it before `release()` — a fresh call's `setup()`
   /// must not race a feed running against the old (releasing) engine.
   bool _feeding = false;
+
+  // DEBUG(audio-glitch): 재생 깨짐 원인 계측(임시 — 확인 후 제거). 아바타 무관 코어 계측.
+  // _dbgLastFeedMs: 직전 _onFeed 벽시계(ms) — 콜백 간 간격이 크면 메인 아이솔레이트
+  //   멈칫(잼)이 오디오 피드를 굶긴 것. _dbgStarveCount: 비버 발화중 언더런 횟수.
+  // _dbgMaxGap: 계측 창(5초) 최대 피드 간격 — [_startDiag] 가 읽고 리셋한다.
+  int _dbgLastFeedMs = 0;
+  int _dbgStarveCount = 0;
+  int _dbgMaxGap = 0;
+
+  // ── DIAG(audio-glitch): "시간이 지날수록 버벅임이 심해진다" 계측 ──────────────
+  //
+  // 가설은 '무언가 단조증가한다'인데 후보가 여럿(네이티브 재생 백로그·Dart 큐·
+  // 메모리→GC·로그 백로그)이고 증상이 전부 같아서, 고치기 전에 어느 숫자가
+  // 우상향하는지부터 확정한다. 5초마다 한 줄씩 찍고 통화 뒤 추이를 본다.
+  //
+  // ⚠ release 빌드에서 재야 한다 — debug 는 debugPrint 백로그 자체가 시간이 갈수록
+  // 메인 아이솔레이트를 잡아먹어서, 그게 원인인지 진짜 원인인지 구분이 안 된다.
+  // 그래서 이 한 줄만 kDebugMode 가드 없이 print 로 내보낸다(logcat 태그 "flutter").
+  // 원인이 확정되면 이 블록과 [_startDiag]·호출부를 통째로 지운다.
+  static const bool kAudioDiag = true;
+  Timer? _diagTimer;
+  int _diagSeq = 0;
+  int _diagLastUnderruns = 0;
+  int _diagLastStarve = 0;
 
   /// True once the jitter prebuffer has filled and real audio is draining. Reset
   /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
@@ -589,7 +624,25 @@ class NormalCallController extends Notifier<CallState> {
       );
 
       // §8-3: trigger the server's auto opening line (no button).
-      _send({'type': 'start', 'character_id': characterId});
+      //
+      // (멀티랭귀지) 마이페이지에서 고른 학습 언어를 target_language 로 실어 보낸다.
+      //
+      // 단 기본 언어(한국어)면 키를 아예 빼고 보낸다. 서버의
+      // `_resolve_target_language` 는 **값이 있기만 하면** 데모 통화로 분류하고
+      // (한국어인지 보지 않는다), 데모로 분류되면 레벨테스트가 금지된다 —
+      // 명시해도 normal 로 강등되고 자동 라우팅도 normal 로 고정된다.
+      // 항상 'ko' 를 실어 보내던 탓에, ENV 가 prod 가 아닌 환경에서는 한국어
+      // 학습자조차 레벨테스트·레벨업이 영영 일어나지 않았다.
+      //
+      // 다국어는 사내 테스트 용도이고 실서비스 레벨테스트는 한국어로 가는 것이
+      // 맞으므로, 비기본 언어가 데모로 분류되는 것은 의도된 동작으로 둔다.
+      final learningLanguage = ref.read(learningLanguageProvider);
+      _send({
+        'type': 'start',
+        'character_id': characterId,
+        if (learningLanguage != LearningLanguageController.defaultCode)
+          'target_language': learningLanguage,
+      });
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
@@ -727,6 +780,7 @@ class NormalCallController extends Notifier<CallState> {
       _lastFeedSilent = null;
       _envQueue.clear();
       _startEnvelope();
+      _startDiag(); // DIAG(audio-glitch) — 임시 계측
       // Kick the pull loop directly instead of FlutterPcmSound.start().
       // start() only kicks when the plugin's *static* `_needsStart` flag is true,
       // and that flag is NEVER reset by release()/setup(): the first call feeds
@@ -1105,7 +1159,11 @@ class NormalCallController extends Notifier<CallState> {
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
 
-    _pcmQueue.addAll(chunk);
+    // O(1): store the chunk by reference (no copy). Odd trailing bytes are fine
+    // — [_takeArray] always pulls an even byte count, so Int16 samples never
+    // split; a stray odd byte just waits in its chunk until the next take.
+    _pcmQueue.add(chunk);
+    _pcmQueuedBytes += chunk.length;
 
     // Pre-roll cap: while playback isn't open yet, nothing drains the queue, so
     // it needs its own (much tighter) bound. An opening line is a few seconds;
@@ -1114,9 +1172,14 @@ class NormalCallController extends Notifier<CallState> {
     if (!_pcmActive && _queueLen > _prerollMaxBytes) {
       var drop = _queueLen - _prerollMaxBytes;
       if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
-      _pcmHead += drop;
+      // Merge note: this cap arrived from feat/yungu written against the old
+      // flat `List<int>` queue (`_pcmHead += drop` + `_maybeCompact()`). This
+      // branch now carries the chunked `Uint8List` ring buffer, whose
+      // equivalent is [_dropFront] — it walks the chunk list, advances
+      // [_pcmHeadOffset] and keeps [_pcmQueuedBytes] in step, which raw
+      // pointer arithmetic on the old head index no longer can.
+      _dropFront(drop);
       _log('preroll cap: dropped ${drop}B (playback not open yet)');
-      _maybeCompact();
       return;
     }
 
@@ -1127,10 +1190,29 @@ class NormalCallController extends Notifier<CallState> {
     if (len > _maxQueueBytes) {
       var drop = len - _targetQueueBytes;
       if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
-      _pcmHead += drop;
+      _dropFront(drop);
       _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
-      _maybeCompact();
     }
+  }
+
+  /// Drops [byteCount] bytes off the front of the ring buffer (oldest audio),
+  /// advancing [_pcmHeadOffset] and popping whole consumed chunks. Used only by
+  /// resync; caller guarantees `byteCount <= _pcmQueuedBytes` and even.
+  void _dropFront(int byteCount) {
+    var remaining = byteCount;
+    while (remaining > 0 && _pcmQueue.isNotEmpty) {
+      final head = _pcmQueue.first;
+      final avail = head.length - _pcmHeadOffset;
+      if (avail <= remaining) {
+        remaining -= avail;
+        _pcmQueue.removeFirst();
+        _pcmHeadOffset = 0;
+      } else {
+        _pcmHeadOffset += remaining;
+        remaining = 0;
+      }
+    }
+    _pcmQueuedBytes -= (byteCount - remaining);
   }
 
   /// flutter_pcm_sound feed callback: invoked when buffered frames fall below
@@ -1139,6 +1221,17 @@ class NormalCallController extends Notifier<CallState> {
   /// starves into a stuck underflow (the fix for the ~1-min cutout).
   Future<void> _onFeed(int remainingFrames) async {
     if (!_pcmActive) return;
+    // DEBUG(audio-glitch): 피드 콜백 간 지연 = 메인스레드 멈칫. 250ms↑면 언더런 위험.
+    final dbgNow = DateTime.now().millisecondsSinceEpoch;
+    if (_dbgLastFeedMs != 0) {
+      final gap = dbgNow - _dbgLastFeedMs;
+      if (gap > _dbgMaxGap) _dbgMaxGap = gap;
+      // 피드 청크가 ~500ms 라 정상 케이던스가 ~500ms → 700ms↑만 진짜 스톨로 본다.
+      if (gap > 700) _log('DBG STALL feed gap ${gap}ms (queue ${_queueLen}B)');
+    }
+    _dbgLastFeedMs = dbgNow;
+    // 5초 요약은 [_startDiag] 의 전용 타이머가 찍는다 — 피드 콜백에 얹어두면 정작
+    // 피드가 굶어 멈춘 구간(가장 알고 싶은 구간)에서 로그도 같이 멈춘다.
     _feeding = true;
     try {
       final avail = _queueLen;
@@ -1173,8 +1266,9 @@ class NormalCallController extends Notifier<CallState> {
           // instant (no re-buffer gap).
           if (!_beaverSpeaking) _playing = false;
           if (_lastFeedSilent != true) {
+            if (_beaverSpeaking) _dbgStarveCount++; // DEBUG(audio-glitch)
             _log('feed silence — queue empty'
-                '${_beaverSpeaking ? ' WHILE beaver speaking (starved!)' : ''}');
+                '${_beaverSpeaking ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
             _lastFeedSilent = true;
           }
           // Idle-ungate countdown (covers a missed turn_end so the mic can't
@@ -1197,15 +1291,28 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
-  /// Removes [byteCount] bytes from the front of [_pcmQueue] as a
-  /// [PcmArrayInt16]. The server's little-endian PCM16 passes straight through:
-  /// mobile targets are little-endian (host), which is what the native player
-  /// expects.
+  /// Removes [byteCount] bytes from the front of the ring buffer as a
+  /// [PcmArrayInt16], walking (and popping) queued chunks until exactly that
+  /// many bytes are assembled. The server's little-endian PCM16 passes straight
+  /// through: mobile targets are little-endian (host), which is what the native
+  /// player expects. Caller guarantees `byteCount <= _pcmQueuedBytes`.
   PcmArrayInt16 _takeArray(int byteCount) {
     final out = Uint8List(byteCount);
-    out.setRange(0, byteCount, _pcmQueue, _pcmHead);
-    _pcmHead += byteCount;
-    _maybeCompact();
+    var written = 0;
+    while (written < byteCount && _pcmQueue.isNotEmpty) {
+      final head = _pcmQueue.first;
+      final avail = head.length - _pcmHeadOffset;
+      final need = byteCount - written;
+      final n = avail <= need ? avail : need;
+      out.setRange(written, written + n, head, _pcmHeadOffset);
+      written += n;
+      _pcmHeadOffset += n;
+      if (_pcmHeadOffset >= head.length) {
+        _pcmQueue.removeFirst();
+        _pcmHeadOffset = 0;
+      }
+    }
+    _pcmQueuedBytes -= written;
     // Drive the avatar mouth from the samples about to play (matches what's
     // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
     _updateAvatarLevel(out, byteCount);
@@ -1280,6 +1387,53 @@ class NormalCallController extends Notifier<CallState> {
     );
   }
 
+  /// DIAG(audio-glitch): 5초마다 한 줄. 통화가 길어질수록 **어느 숫자가 자라는지**를
+  /// 보려는 것이므로, 절대값보다 t 에 따른 추이가 중요하다.
+  ///
+  /// ```
+  /// [DIAG] t=35s dart=48000B/3ch native=24000B/6ch underrun=+2/7 \
+  ///        gap=812ms starve=+1/3 env=41 mic=1750 feeds=71
+  /// ```
+  /// - `dart`  : Dart 큐(아직 네이티브로 안 넘긴 오디오). 우상향 → 피드가 못 따라감.
+  /// - `native`: 네이티브 백로그(AudioTrack 에 아직 안 넘긴 것). 우상향 → 재생부 적체.
+  /// - `underrun`: AudioTrack 이 실제로 굶은 횟수(+델타/누적). **깨짐의 직접 지표.**
+  /// - `gap`   : 5초 창 최대 피드 콜백 간격 = 메인 아이솔레이트 최대 멈칫.
+  /// - `starve`: 비버 발화중 큐가 빈 횟수(Dart 관점 굶음).
+  /// - `env`/`mic`: 립싱크 큐 길이·누적 마이크 프레임(다른 누적 누수 감지용).
+  void _startDiag() {
+    if (!kAudioDiag) return;
+    _diagTimer?.cancel();
+    _diagSeq = 0;
+    _diagLastUnderruns = 0;
+    _diagLastStarve = 0;
+    _diagTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      final t = ++_diagSeq * 5;
+      final gap = _dbgMaxGap;
+      _dbgMaxGap = 0;
+      final starve = _dbgStarveCount;
+      final starveDelta = starve - _diagLastStarve;
+      _diagLastStarve = starve;
+
+      // 네이티브 통계는 안드로이드 패치본에만 있다(그 외 플랫폼은 빈 맵).
+      final native = kIsWeb
+          ? const <String, int>{}
+          : await FlutterPcmSound.getStats();
+      final underruns = native['underruns'] ?? -1;
+      final underrunDelta =
+          underruns >= 0 ? underruns - _diagLastUnderruns : -1;
+      if (underruns >= 0) _diagLastUnderruns = underruns;
+
+      // ignore: avoid_print — release 빌드에서 보여야 하는 임시 계측(위 주석 참고).
+      print('[DIAG] t=${t}s '
+          'dart=${_pcmQueuedBytes}B/${_pcmQueue.length}ch '
+          'native=${native['queued_bytes'] ?? -1}B/${native['chunks'] ?? -1}ch '
+          'underrun=+$underrunDelta/$underruns '
+          'gap=${gap}ms starve=+$starveDelta/$starve '
+          'env=${_envQueue.length} mic=$_micFramesSent '
+          'feeds=${native['total_feeds'] ?? -1}');
+    });
+  }
+
   /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
   /// counting lexicon hits. Cheap keyword scan; short lines. Ties/none → the
   /// highest-count wins, 0 when nothing matches.
@@ -1301,14 +1455,6 @@ class NormalCallController extends Notifier<CallState> {
     return best;
   }
 
-  /// Compacts [_pcmQueue] once the consumed prefix grows large, so the backing
-  /// list doesn't grow unbounded across a long call.
-  void _maybeCompact() {
-    if (_pcmHead > 65536 && _pcmHead * 2 > _pcmQueue.length) {
-      _pcmQueue = _pcmQueue.sublist(_pcmHead);
-      _pcmHead = 0;
-    }
-  }
 
   // ── Half-duplex mic gating helpers ─────────────────────────────────────────
 
@@ -1646,6 +1792,15 @@ class NormalCallController extends Notifier<CallState> {
     _envTimer?.cancel();
     _envTimer = null;
     _envQueue.clear();
+    // DIAG(audio-glitch): 통화 끝나면 마지막 한 줄로 총계를 남기고 멈춘다.
+    if (_diagTimer != null) {
+      _diagTimer!.cancel();
+      _diagTimer = null;
+      // ignore: avoid_print — release 빌드에서 보여야 하는 임시 계측.
+      print('[DIAG] end t=${_diagSeq * 5}s '
+          'starveTotal=$_dbgStarveCount underrunTotal=$_diagLastUnderruns '
+          'dartQueue=${_pcmQueuedBytes}B mic=$_micFramesSent');
+    }
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
@@ -1722,8 +1877,9 @@ class NormalCallController extends Notifier<CallState> {
     }
     _pcmSetup = false;
     _feeding = false;
-    _pcmQueue = <int>[];
-    _pcmHead = 0;
+    _pcmQueue.clear();
+    _pcmHeadOffset = 0;
+    _pcmQueuedBytes = 0;
     _lastFeedSilent = null;
 
     // Close the socket.

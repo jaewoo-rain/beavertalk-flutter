@@ -387,10 +387,16 @@ class AvatarScreen extends ConsumerWidget {
     return formatUsd(minor, locale: Localizations.localeOf(context).toString());
   }
 
-  /// Network avatar when available, else a static asset (alternating fallback).
+  /// Network avatar when available, else a neutral placeholder.
+  ///
+  /// The fallback used to alternate on `id.isEven` between the beaver and
+  /// **Judi** — a character the catalog no longer carries. On this screen that
+  /// is doubly wrong: it is a list of characters to buy, so a stand-in face
+  /// reads as "this is what BIBI looks like". One neutral image for all of them
+  /// at least does not misattribute.
   ImageProvider _imageFor(String? url, int id) {
     if (url != null && url.isNotEmpty) return NetworkImage(url);
-    return id.isEven ? judiImage : beaverImage;
+    return placeholderAvatar;
   }
 
   Widget _label(BuildContext context, String text, {String? trailing}) => Row(

@@ -13,6 +13,7 @@ import '../../../../mock/mock_data.dart' show clearBookmarks;
 import '../../../alarm/presentation/providers/alarm_list_controller.dart';
 import '../../../bookmark/presentation/providers/bookmark_providers.dart';
 import '../../../character/presentation/providers/character_providers.dart';
+import '../../../incoming_call/presentation/incoming_call_providers.dart';
 import 'auth_providers.dart';
 import 'my_profile_provider.dart';
 import 'signup_draft_provider.dart';
@@ -63,6 +64,12 @@ class AuthController extends Notifier<AuthStatus> {
 
   bool _subscribed = false;
 
+  /// 백엔드가 세션을 거부(401)해 만료 처리한 상태. 이때는 Supabase 의 백그라운드
+  /// 토큰 리프레시(tokenRefreshed/userUpdated) 로 다시 authenticated 로 되살리지
+  /// 않는다 — 그러면 AuthGate 가 myProfileProvider 를 계속 재조회해 /members/me 401 이
+  /// 폭주한다. 명시 로그인(signedIn/login) 시에만 해제한다.
+  bool _sessionRejected = false;
+
   /// Drops every piece of user-scoped state so nothing survives into the next
   /// session. Call from EVERY sign-out path (explicit logout, account deletion,
   /// 401 expiry, and the `signedOut` event) and on sign-in as a belt-and-braces
@@ -97,6 +104,8 @@ class AuthController extends Notifier<AuthStatus> {
     final sub = _client.auth.onAuthStateChange.listen((data) {
       switch (data.event) {
         case AuthChangeEvent.signedIn:
+          // 명시 로그인 — 거부 플래그 해제(정상 세션 시작).
+          _sessionRejected = false;
           // Clear anything cached before this session existed. The alarm list in
           // particular can hold a 401 AsyncError from boot (the scheduler used to
           // fetch it with no session), which the alarm screen would then render
@@ -107,6 +116,9 @@ class AuthController extends Notifier<AuthStatus> {
           }
         case AuthChangeEvent.tokenRefreshed:
         case AuthChangeEvent.userUpdated:
+          // 백엔드가 이미 거부한 세션이면 백그라운드 리프레시로 되살리지 않는다 —
+          // 명시 재로그인 전까지 미인증 유지(401 재조회 폭주 방지).
+          if (_sessionRejected) break;
           // Same session — keep caches; only the gate state matters here.
           if (state != AuthStatus.authenticated) {
             state = AuthStatus.authenticated;
@@ -348,6 +360,16 @@ class AuthController extends Notifier<AuthStatus> {
   /// login. The `onAuthStateChange` listener also flips the gate, but we set it
   /// here too for immediacy.
   Future<void> logout() async {
+    // Delete this device's FCM token BEFORE signOut, while the session is still
+    // valid — the `signedOut` listener also unregisters, but by then signOut()
+    // has cleared the session so its `DELETE /devices` is unauthenticated (401)
+    // and the token would survive: user A's alarm could then push to this device
+    // (now at login, or after user B signs in) until B's login reassigns it.
+    try {
+      await ref.read(deviceRegistrationControllerProvider).unregister();
+    } catch (_) {
+      // Best-effort: a failed delete must not block logout (login reassigns).
+    }
     // signOut() clears the local session first, then revokes over the network —
     // so an offline tap still logs you out locally but throws afterwards. Letting
     // that throw escape skipped _popToRoot(), stranding the user on MyPage while
@@ -397,12 +419,14 @@ class AuthController extends Notifier<AuthStatus> {
   /// cached profile, and marks the session expired so AuthGate shows login
   /// (prevents the next user briefly seeing stale member info).
   void onSessionExpired() {
+    // 이미 만료 처리(미인증)했으면 재실행 금지 — AuthGate 가 에러 프레임마다 이걸
+    // 스케줄해 생기는 signOut/무효화 churn 과 /members/me 401 재조회 폭주를 끊는다.
+    if (state == AuthStatus.unauthenticated) return;
+    _sessionRejected = true; // 명시 재로그인 전까지 백그라운드 리프레시로 되살리지 않음
     // Best-effort: don't await (interceptor callback is sync); errors ignored.
     _client.auth.signOut().ignore();
     _clearUserScopedState();
-    if (state != AuthStatus.unauthenticated) {
-      state = AuthStatus.unauthenticated;
-    }
+    state = AuthStatus.unauthenticated;
     _popToRoot();
   }
 

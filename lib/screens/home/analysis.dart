@@ -30,8 +30,9 @@ import 'learning_args.dart';
 /// - **Gauge** (`3583:34441`) — pinned by the design as `pronunciation_result
 ///   (고정)`. The average is **recomputed on the frontend** from
 ///   [reviewScoresProvider], the mean over sentences practiced this session.
-///   Before any practice the map is empty → inactive ("-%"); it updates live as
-///   the user records sentences and returns here. (`result.average` is unused.)
+///   When no in-session scores exist yet (fresh entry into a previously-scored
+///   call), it falls back to the saved backend [ScoreAverage] (`result.average`)
+///   so stored scores show instead of "-%"; it updates live as the user records.
 /// - **복습하기 / 발음 챌린지 도전하기** — the two `Footer/PrimaryAction`s
 ///   (`3583:34443`/`3583:34444`), right under the gauge. This is also the app's
 ///   only entry to the challenge: without them `Routes.pronunciationChallenge`
@@ -131,18 +132,22 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
 
   /// Pushes the learning flow for [sentences], starting at [index].
-  void _startLearning(List<MockSentence> sentences, {int index = 0}) {
+  void _startLearning(
+    List<MockSentence> sentences, {
+    int index = 0,
+    LearningOrigin origin = LearningOrigin.callReview,
+  }) {
     if (sentences.isEmpty) return;
     Navigator.pushNamed(
       context,
       Routes.learningIntro,
-      // This screen *is* the call record, so the session it starts is a call
-      // review and ends on `learning_main__pronunciation`, not on the
-      // single-sentence result.
+      // 복습하기(전체) 는 call review 라 발음 리포트(learning_call_main)로 끝나고,
+      // 표현 하나 "연습하기" 는 origin=sentence 로 단문장 결과(learning_sentence_main)로 끝난다.
       arguments: LearningArgs(
         sentences: sentences,
         index: index,
-        origin: LearningOrigin.callReview,
+        origin: origin,
+        callId: _result?.callId,
       ),
     );
   }
@@ -223,15 +228,18 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
 
   Widget _content(CallResult result) {
     final l10n = AppLocalizations.of(context);
-    // Recompute the gauge average from the per-sentence review scores. Until the
-    // deferred per-call reset has run, treat scores as empty so a fresh call
-    // never shows a previous call's leftover scores on the first frame.
+    // Gauge = this session's per-sentence review scores if the user has practiced
+    // here, else the saved backend average (result.average) so a previously-scored
+    // call shows its stored scores instead of "-%". Until the deferred per-call
+    // reset runs, treat in-session scores as empty (no stale leftovers).
     final scores =
         _scoresReset ? ref.watch(reviewScoresProvider) : const <int, PronScore>{};
-    final total = averageOf(scores, (s) => s.totalScore);
-    final pronunciation = averageOf(scores, (s) => s.pronunciation);
-    final fluency = averageOf(scores, (s) => s.fluency);
-    final rhythm = averageOf(scores, (s) => s.rhythm);
+    final avg = result.average;
+    final total = averageOf(scores, (s) => s.totalScore) ?? avg.totalScore?.toDouble();
+    final pronunciation =
+        averageOf(scores, (s) => s.pronunciation) ?? avg.pronunciation?.toDouble();
+    final fluency = averageOf(scores, (s) => s.fluency) ?? avg.fluency?.toDouble();
+    final rhythm = averageOf(scores, (s) => s.rhythm) ?? avg.rhythm?.toDouble();
 
     final title = (result.summary != null && result.summary!.trim().isNotEmpty)
         ? result.summary!
@@ -399,7 +407,10 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
                 onSpeakerTap: () => _playSentence(sentences[i]),
                 actionText: l10n.practice,
-                onAction: () => _startLearning([_learningSentences[i]]),
+                onAction: () => _startLearning(
+                  [_learningSentences[i]],
+                  origin: LearningOrigin.sentence,
+                ),
               ),
             ],
           ],

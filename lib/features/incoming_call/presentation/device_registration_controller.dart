@@ -151,9 +151,16 @@ class DeviceRegistrationController {
     }
   }
 
+  /// 로그아웃 **직전**(세션이 아직 유효할 때) 명시 호출용. `signedOut` 리스너가 세션
+  /// 소멸 **뒤** [_unregister] 를 부르면 `DELETE /devices` 가 401 로 실패하므로,
+  /// `logout()` 은 `signOut()` 전에 이걸 먼저 불러 토큰을 확실히 삭제한다(멱등).
+  Future<void> unregister() => _unregister();
+
   /// 로그아웃 시 마지막 토큰을 삭제한다.
   Future<void> _unregister() async {
-    final token = _lastRegistered;
+    // 이번 세션에 등록한 토큰(_lastRegistered)이 비어 있으면(등록 스킵/실패) 실시간 FCM
+    // 토큰을 조회해 삭제한다 — 로그아웃 시 이 기기 토큰이 확실히 서버에서 지워지도록.
+    final token = _lastRegistered ?? await fcm.getToken();
     _lastRegistered = null;
     if (token == null) return;
     try {

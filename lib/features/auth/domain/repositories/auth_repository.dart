@@ -1,3 +1,4 @@
+import '../entities/accent_breakdown.dart';
 import '../entities/member.dart';
 
 /// Member capabilities the app depends on. Implemented in the data layer.
@@ -19,6 +20,10 @@ abstract interface class AuthRepository {
 
   /// Fetches the currently authenticated member (`GET /members/me`).
   Future<Member> getMe();
+
+  /// Fetches the member's accent (nationality) breakdown from
+  /// `GET /members/me/profile` (`speak_country`). Empty when not yet analyzed.
+  Future<AccentBreakdown> getMyAccent();
 
   /// Deletes the current member's account (`DELETE /members/me`). Throws
   /// [AppException] on failure. The caller signs out of Supabase afterwards.

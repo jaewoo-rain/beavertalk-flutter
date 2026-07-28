@@ -282,8 +282,12 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       final wav = pcm16ToWav(pcm);
       // Start scoring and the minimum-scan floor together: total = max(scoring,
       // _kMinScan). A warm-server response still shows the scan for _kMinScan.
-      final scoring =
-          ref.read(reviewRepositoryProvider).submitAudio(sentence.id, wav);
+      // 복습(callReview)=공식점수 반영, 하나씩 연습(sentence)=미반영(데이터·채점은 저장).
+      final scoring = ref.read(reviewRepositoryProvider).submitAudio(
+            sentence.id,
+            wav,
+            applyScore: args.origin == LearningOrigin.callReview,
+          );
       await Future<void>.delayed(_kMinScan);
       final feedback = await scoring;
 
@@ -359,6 +363,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           feedback: _feedback,
           recordedWav: _recordedWav,
           origin: args.origin,
+          callId: args.callId,
         ),
       );
       return;

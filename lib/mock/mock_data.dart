@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 /// swap mock → real with minimal change.
 
 const beaverImage = AssetImage('assets/images/beaver.png');
-const judiImage = AssetImage('assets/images/judi.png');
 
 /// Onboarding — native language / nationality options.
 ///
@@ -176,15 +175,44 @@ void setBookmark(int id, bool saved) {
 /// member's `characterId` so calls show the avatar the user actually selected.
 const mockPartnerName = 'Annoying Beaver';
 
-/// Display name for a selected character [id] (member `character_id`).
-/// `1` → Bibi (비비), `2` → Baba (바바); unknown/null falls back to Bibi, which
-/// is the app's default character (see `home.dart`). The server is the source of
-/// truth for alarm-triggered calls (`AlarmDto.characterName`); this maps the
-/// profile's id for manual calls and fallbacks.
-String characterName(int? id) => id == 2 ? 'Baba' : 'Bibi';
+/// Display name for a selected character [id] (member `character_id`), or null
+/// when the id is not one we know.
+///
+/// Keyed to the server's real ids, verified against `GET /characters`. The
+/// previous map read `id == 2 ? 'Baba' : 'Bibi'` — reversed (1 is BABA, 2 is
+/// BIBI), missing Popo/Rara/Dudu entirely, and worst of all it answered
+/// **every** unknown id with a confident "Bibi".
+///
+/// Returning null for an unknown id is the point of this function's shape: a
+/// caller that cannot name the partner should say nothing, not invent one. The
+/// CallKit path relies on exactly that — `callkit_service` falls back to its own
+/// generic label when this is null.
+///
+/// Still a client-side mirror of server data: a character added server-side has
+/// no entry here until this map is updated. Prefer the catalog
+/// (`selectedCharacterProvider`) wherever a provider is in reach; this exists
+/// for the paths that have none (background CallKit, alarm payloads).
+String? characterName(int? id) => switch (id) {
+      1 => 'BABA',
+      2 => 'BIBI',
+      9 => 'Popo',
+      10 => 'Rara',
+      11 => 'Dudu',
+      _ => null,
+    };
 
-/// Avatar image for a selected character [id], paired with [characterName].
-ImageProvider characterImage(int? id) => id == 2 ? beaverImage : judiImage;
+/// Neutral avatar placeholder for a character whose real image is not known yet.
+///
+/// Takes no id on purpose. This used to be `characterImage(id)`, mapping
+/// `id == 2 ? beaver : judi` — which meant a BABA user (id 1) fell to the `else`
+/// branch and was shown **Judi's face**: a character that is not even in the
+/// catalog any more. Handing back one real character's portrait as a stand-in
+/// for another is worse than showing no face at all, so the id is gone and the
+/// generic beaver is used.
+///
+/// Prefer a skeleton where "still loading" is the honest state; use this only
+/// where a widget demands a non-null [ImageProvider].
+ImageProvider get placeholderAvatar => beaverImage;
 
 /// "새로 배운 표현" used in the analysis + learning flow.
 const mockSentences = <MockSentence>[
