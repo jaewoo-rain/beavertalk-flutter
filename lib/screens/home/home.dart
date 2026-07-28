@@ -76,6 +76,16 @@ class HomeScreen extends ConsumerWidget {
     final heroImage = (selectedUrl != null && selectedUrl.isNotEmpty)
         ? NetworkImage(selectedUrl) as ImageProvider
         : characterImage(characterId);
+    // First fetch only — same condition the partner name below already uses.
+    //
+    // Until the profile lands there is no real avatar to draw, and
+    // [characterImage] answers a null/unmatched id with **Judi's** picture (its
+    // map predates the current server ids: 1 is Baba, not Bibi). A Baba user
+    // therefore opened the app looking at a different character until the
+    // request returned. A skeleton says "loading" instead of asserting the
+    // wrong partner.
+    final heroLoading =
+        selected == null && profile.isLoading && !profile.hasValue;
     return Column(
       children: [
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
@@ -119,15 +129,23 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               children: [
                 const SizedBox(height: 37),
-                Pressable(
-                  onTap: () => Navigator.pushNamed(context, Routes.avatar),
-                  child: HeroAvatar(
-                    imageProvider: heroImage,
-                    size: _avatarSize,
-                    onEditTap: () =>
-                        Navigator.pushNamed(context, Routes.avatar),
+                if (heroLoading)
+                  // Same footprint as [HeroAvatar] so nothing shifts when the
+                  // real image lands. Not tappable: there is nothing to change
+                  // yet, and the avatar screen needs the profile anyway.
+                  const SkeletonShimmer(
+                    child: Skeleton.circle(size: _avatarSize),
+                  )
+                else
+                  Pressable(
+                    onTap: () => Navigator.pushNamed(context, Routes.avatar),
+                    child: HeroAvatar(
+                      imageProvider: heroImage,
+                      size: _avatarSize,
+                      onEditTap: () =>
+                          Navigator.pushNamed(context, Routes.avatar),
+                    ),
                   ),
-                ),
                 const SizedBox(height: AppSpacing.s16),
                 // `skeleton/Annoying Beaver` (`3489:3919`) — the name is a
                 // placeholder until the profile lands, because

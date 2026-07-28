@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/call_toggle_button.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
@@ -74,6 +75,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     });
   }
 
+  /// The partner's still image, or a skeleton while the catalog resolves.
+  ///
+  /// Fills the 16:9 avatar band either way, so the frame does not resize when
+  /// the real image arrives.
+  Widget _partnerStill(ImageProvider? image) {
+    if (image != null) return Image(image: image, fit: BoxFit.cover);
+    return const SkeletonShimmer(child: Skeleton.box(width: 1080, height: 607));
+  }
+
   /// Formats whole [seconds] as `hh:mm:ss` (Figma `00:00:01`).
   String _formatted(int seconds) {
     final h = (seconds ~/ 3600).toString().padLeft(2, '0');
@@ -140,9 +150,14 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
+    // Null until the catalog resolves. Deliberately NOT defaulted to
+    // [characterImage]: that map answers an unmatched id with **Judi's**
+    // picture (it predates the current server ids — 1 is Baba, not Bibi), so
+    // the call opened on a different character's face. A skeleton is shown
+    // instead until the real image is known.
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
         ? NetworkImage(selectedCharUrl) as ImageProvider
-        : characterImage(characterId);
+        : null;
     final callNotifier = ref.read(normalCallControllerProvider.notifier);
     final avatarDir = avatarAssetDirFor(
       characterId,
@@ -252,10 +267,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                   //
                                   // Same still the kDisableAvatarVideo path
                                   // below uses, so the two agree.
-                                  fallback:
-                                      Image(image: partnerImage, fit: BoxFit.cover),
+                                  fallback: _partnerStill(partnerImage),
                                 )
-                              : Image(image: partnerImage, fit: BoxFit.cover),
+                              : _partnerStill(partnerImage),
                         ),
                       ),
                     ),
