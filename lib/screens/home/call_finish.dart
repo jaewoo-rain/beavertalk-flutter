@@ -200,9 +200,13 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
+    // Was `characterImage(characterId)`, whose id map is stale: a BABA user
+    // (id 1) fell to its `else` branch and this screen closed the call with
+    // **Judi's** face — a character no longer in the catalog. Neutral
+    // placeholder until the real image resolves.
     final partnerImage = (selectedCharUrl != null && selectedCharUrl.isNotEmpty)
         ? NetworkImage(selectedCharUrl) as ImageProvider
-        : characterImage(characterId);
+        : placeholderAvatar;
     // Terminal call screen: it is reached via pushReplacement, so the route
     // under it is whatever preceded the call (often a half-built AuthGate on a
     // cold-start-for-call). A raw system/gesture back would pop into that and

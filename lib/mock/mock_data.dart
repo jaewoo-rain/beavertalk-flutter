@@ -177,14 +177,29 @@ void setBookmark(int id, bool saved) {
 const mockPartnerName = 'Annoying Beaver';
 
 /// Display name for a selected character [id] (member `character_id`).
-/// `1` → Bibi (비비), `2` → Baba (바바); unknown/null falls back to Bibi, which
-/// is the app's default character (see `home.dart`). The server is the source of
-/// truth for alarm-triggered calls (`AlarmDto.characterName`); this maps the
-/// profile's id for manual calls and fallbacks.
+///
+/// **Stale, and knowingly so.** It reads `1 → Bibi, 2 → Baba`, but the server's
+/// ids are the other way round (1 is BABA, 2 is BIBI — verified against
+/// `GET /characters`), and the catalog has since grown to Popo/Rara/Dudu. Every
+/// answer here is therefore a guess.
+///
+/// Callers should prefer the real catalog entry (`selectedCharacterProvider`)
+/// and show a skeleton until it lands, rather than print a wrong partner and
+/// then swap. This stays only for the paths that have no provider in reach.
 String characterName(int? id) => id == 2 ? 'Baba' : 'Bibi';
 
-/// Avatar image for a selected character [id], paired with [characterName].
-ImageProvider characterImage(int? id) => id == 2 ? beaverImage : judiImage;
+/// Neutral avatar placeholder for a character whose real image is not known yet.
+///
+/// Takes no id on purpose. This used to be `characterImage(id)`, mapping
+/// `id == 2 ? beaver : judi` — which meant a BABA user (id 1) fell to the `else`
+/// branch and was shown **Judi's face**: a character that is not even in the
+/// catalog any more. Handing back one real character's portrait as a stand-in
+/// for another is worse than showing no face at all, so the id is gone and the
+/// generic beaver is used.
+///
+/// Prefer a skeleton where "still loading" is the honest state; use this only
+/// where a widget demands a non-null [ImageProvider].
+ImageProvider get placeholderAvatar => beaverImage;
 
 /// "새로 배운 표현" used in the analysis + learning flow.
 const mockSentences = <MockSentence>[
