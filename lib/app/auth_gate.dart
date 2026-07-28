@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../theme/app_color_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../components/icons/brand_icons.dart';
 import '../core/error/app_exception.dart';
 import '../features/auth/presentation/providers/auth_controller.dart';
 import '../features/auth/presentation/providers/my_profile_provider.dart';
@@ -86,14 +85,18 @@ class _AuthGateState extends ConsumerState<AuthGate> {
 /// Splash background — Figma `Splash & logo` (160:58332). This is
 /// `Background/Normal/Normal` from the **dark** palette; the splash is dark in
 /// both themes (there is one splash design), so it is a literal here rather
-/// than a `context.c` lookup.
+/// than a `context.c` lookup. The Figma frame centres the wordmark; we show the
+/// mascot instead so the launch screen reads like the launcher icon.
 const Color _kSplashBackground = Color(0xFF181A20);
+
+/// Mascot diameter on the splash, matching the native launch image (160dp).
+const double _kSplashMascotSize = 160;
 
 /// Loading screen shown while the stored token / profile is read.
 ///
 /// Deliberately identical to the native launch screen — same colour, same
-/// wordmark at the same 204 width — so the hand-off from the OS splash to the
-/// first Flutter frame is invisible. Keep this in step with the
+/// circular mascot at the same 160 width — so the hand-off from the OS splash
+/// to the first Flutter frame is invisible. Keep this in step with the
 /// `flutter_native_splash` block in pubspec.yaml.
 class _Splash extends StatelessWidget {
   const _Splash();
@@ -102,7 +105,13 @@ class _Splash extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Scaffold(
       backgroundColor: _kSplashBackground,
-      body: Center(child: BeaverTalkLogo(color: Color(0xFFFFFFFF))),
+      body: Center(
+        child: Image(
+          image: AssetImage('assets/images/splash_mascot.png'),
+          width: _kSplashMascotSize,
+          height: _kSplashMascotSize,
+        ),
+      ),
     );
   }
 }

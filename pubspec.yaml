@@ -156,19 +156,20 @@ flutter_launcher_icons:
     background_color: "#181A20"
     theme_color: "#181A20"
 
-# 네이티브 스플래시 — Figma "Splash & logo" (160:58332) 기준.
-# 배경 #181A20 = Background/Normal/Normal(Dark), 중앙에 흰색 BeaverTalk 워드마크 204x84.
+# 네이티브 스플래시 — 배경은 Figma "Splash & logo"(160:58332)의 #181A20
+# (= Background/Normal/Normal, Dark), 가운데는 원형으로 딴 마스코트 160x160.
+# 피그마 원안은 워드마크였으나 마스코트로 바꿨다(런처 아이콘과 인상 통일).
 # 원본 이미지는 4x로 넣는다(패키지가 4로 나눠 mdpi를 만든다).
 # 재생성: `dart run flutter_native_splash:create`
 flutter_native_splash:
   color: "#181A20"
-  image: assets/branding/splash_logo.png
+  image: assets/branding/splash_mascot.png
   android: true
   ios: true
   web: true
   android_12:
-    # Android 12+ 는 워드마크를 아이콘 슬롯에 그린다 — 지름 768 안전원 안에 맞춘 별도 원본.
-    image: assets/branding/splash_logo_android12.png
+    # Android 12+ 는 이걸 아이콘 슬롯에 그린다 — 지름 768 안전원 안에 맞춘 별도 원본.
+    image: assets/branding/splash_mascot_android12.png
     color: "#181A20"
 
 # For information on the generic Dart part of this file, see the
