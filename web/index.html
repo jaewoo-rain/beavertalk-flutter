@@ -30,8 +30,11 @@
   <meta name="apple-mobile-web-app-title" content="beavertalk">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <!-- Favicon. 32x32, not the generator's 16x16 default — at 16px the mascot
+       is unreadable mush, and HiDPI tabs ask for 32 anyway. Browsers downscale
+       to 16 themselves. Re-running `dart run flutter_launcher_icons` rewrites
+       this file back to 16x16; regenerate at 32 afterwards. -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon.png"/>
 
   <title>beavertalk</title>
   <link rel="manifest" href="manifest.json">
