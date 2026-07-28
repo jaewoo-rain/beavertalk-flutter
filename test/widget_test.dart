@@ -1,8 +1,10 @@
 // Smoke test: the app boots into the AuthGate splash without throwing.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:beavertalk/components/icons/brand_icons.dart';
 import 'package:beavertalk/features/auth/presentation/providers/auth_controller.dart';
 import 'package:beavertalk/main.dart';
 
@@ -24,5 +26,12 @@ void main() {
     ));
     // First frame shows the splash (token read is async, fired post-frame).
     expect(find.byType(BeaverTalkApp), findsOneWidget);
+    // The splash mirrors the native launch screen: the wordmark on #181A20.
+    // If either drifts the hand-off from the OS splash starts to flicker.
+    expect(find.byType(BeaverTalkLogo), findsOneWidget);
+    expect(
+      tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
+      const Color(0xFF181A20),
+    );
   });
 }
