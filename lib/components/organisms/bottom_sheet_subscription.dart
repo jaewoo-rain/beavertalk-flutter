@@ -196,9 +196,28 @@ class BottomSheetSubscription extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _header(context, l10n),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-            child: _body(context, l10n),
+          // Body scrolls; header and footer stay pinned.
+          //
+          // The whole sheet was one unscrollable min-size Column, so it simply
+          // grew past whatever contained it. At 320×640 the translated benefit
+          // lines overflowed in 11 locales (my +74px, pt +38, it/km +34, …).
+          // That is not only the standalone screen's problem: MyPage opens this
+          // same widget through `showModalBottomSheet`, which caps the sheet at
+          // the screen height — so the live path had the same exposure, just
+          // needing a slightly longer translation to trip it.
+          //
+          // `Flexible` (loose) is what makes both cases work: when the content
+          // fits, the Column still hugs it exactly as before; when it does not,
+          // the body gives up height and scrolls instead of overflowing. The
+          // footer buttons stay reachable either way, which is the point — a
+          // scrolled-away 구독 취소 button is a dead end.
+          Flexible(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: _body(context, l10n),
+              ),
+            ),
           ),
           _footer(context, l10n),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces

@@ -29,6 +29,7 @@ import 'package:beavertalk/screens/home/call_finish.dart';
 import 'package:beavertalk/screens/mypage/avatar_detail.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
+import 'package:beavertalk/screens/mypage/subscription_info.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
@@ -78,18 +79,12 @@ void main() {
         ),
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
-    // 'SubscriptionInfo' — deliberately NOT audited.
-    //
-    // `Routes.subscription` is registered but nothing navigates to it: the whole
-    // app opens this sheet through `showModalBottomSheet(isScrollControlled:)`
-    // from MyPage instead. See the comment on `_openSubscriptionSheet` — the
-    // full-screen route "faked a sheet by bottom-anchoring the bare surface in
-    // an Align", with no scrim and no drag-to-dismiss, and was replaced.
-    //
-    // That leftover Align has no scroll, so at 320×640 it overflows in 11
-    // locales (my +74px, pt +38, it/km +34, …). Auditing a screen no user can
-    // reach would just keep this suite red. Delete the route and this comment
-    // together; until then the live path is covered by MyPage's own sheet.
+    // Nothing navigates to `Routes.subscription` today — MyPage opens the same
+    // sheet as a modal — but it is the screen the subscription flow will use
+    // once payment is wired, so it stays audited rather than being dropped as
+    // dead code. It overflowed in 11 locales until the sheet's body was made
+    // scrollable; keeping it here is what stops that from coming back.
+    'SubscriptionInfo': () => const SubscriptionInfoScreen(),
     'OnboardingDone': () => const OnboardingDoneScreen(),
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),
     'OnboardingName': () => const OnboardingNameScreen(),
