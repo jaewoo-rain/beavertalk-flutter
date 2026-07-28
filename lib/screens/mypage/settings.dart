@@ -13,7 +13,6 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
-import '../../core/i18n/learning_language_controller.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -67,6 +66,15 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     MockLanguage('fr', 'Français', 'FR'),
     MockLanguage('vi', 'Tiếng Việt', 'VN'),
   ];
+
+  /// First subtag of a language id, lowercased (`ko-KR` → `ko`).
+  ///
+  /// The server stores ISO 639-1 (`ko`) — it normalizes on write and backfilled
+  /// the old BCP-47 rows, because the prompt's mother-tongue table is keyed by
+  /// ISO 639-1 and `ko-KR` silently fell back to English. `mockLanguages` still
+  /// uses `ko-KR` for Korean (the only hyphenated id of the 32), so compare
+  /// heads rather than whole ids.
+  static String _langHead(String v) => v.split('-').first.toLowerCase();
 
   /// Display name for a learning-language code (falls back to the first entry).
   String _learningName(String code) => _learningLanguages
@@ -243,7 +251,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     // Switch the app UI immediately (persisted); the backend save follows.
     unawaited(ref.read(localeControllerProvider.notifier).setLanguage(picked));
     try {
-      await ref.read(authControllerProvider.notifier).updateLanguage(picked);
+      // 서버에는 ISO 639-1 로 보낸다 — UI 는 'ko-KR' 을 쓰지만 서버의 모국어 라벨 표는
+      // 'ko' 만 안다(서버도 정규화하지만 보내는 쪽에서 맞춘다).
+      await ref
+          .read(authControllerProvider.notifier)
+          .updateLanguage(_langHead(picked));
     } catch (e) {
       if (!mounted) return;
       final msg = e is AppException ? e.message : l10n.languageSaveFailed;
@@ -253,8 +265,13 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     }
   }
 
-  /// Opens the **learning-language** sheet, seeded with [currentCode]. The
-  /// normalcall socket sends the pick as `target_language` at call start.
+  /// Opens the **learning-language** sheet, seeded with [currentCode]. On
+  /// confirm saves to the server (`PATCH /members/me` `target_language`).
+  ///
+  /// 예전엔 SharedPreferences 에만 저장하고 통화 시작 시 소켓이 실어 보냈는데, 그 값의
+  /// 복원이 비동기라 **복원 전에 통화가 시작되면 기본 'ko' 가 나갔다**(잠금화면 수신통화가
+  /// 그 구간). 앱을 지우면 선택도 사라졌다. 이제 서버(member.target_language)가 단일
+  /// 소스이고 통화 소켓은 이 값을 보내지 않는다.
   Future<void> _pickLearningLanguage(String currentCode) async {
     var staged = currentCode;
     final picked = await showModalBottomSheet<String>(
@@ -277,7 +294,16 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       ),
     );
     if (picked == null || picked == currentCode || !mounted) return;
-    await ref.read(learningLanguageProvider.notifier).setLanguage(picked);
+    final l10n = AppLocalizations.of(context);
+    try {
+      await ref.read(authControllerProvider.notifier).updateTargetLanguage(picked);
+    } catch (e) {
+      if (!mounted) return;
+      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(msg)));
+    }
   }
 
   /// Confirms and performs account deletion (backend delete + sign-out).
@@ -315,8 +341,19 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     // Effective user (UI) language id: the local pick, else the member's saved
     // language when it maps to a known language, else English.
     final memberLang = member?.language;
-    final userLangId = _userLangId ??
-        (mockLanguages.any((l) => l.id == memberLang) ? memberLang! : 'en');
+    final matchedUiLang = mockLanguages.where(
+        (l) => memberLang != null && _langHead(l.id) == _langHead(memberLang));
+    final userLangId =
+        _userLangId ?? (matchedUiLang.isEmpty ? 'en' : matchedUiLang.first.id);
+
+    // Learning language comes straight from the server (member.target_language).
+    // No local copy: the call reads the same column, so what is shown here is
+    // exactly what the next call will teach. Falls back to 'ko' while loading or
+    // when the saved code is not one of the seeded languages.
+    final memberTarget = member?.targetLanguage;
+    final learningLangId = _learningLanguages.any((l) => l.id == memberTarget)
+        ? memberTarget!
+        : 'ko';
 
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -339,13 +376,13 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                     _langName(userLangId),
                     onTap: () => _pickUserLanguage(userLangId),
                   ),
-                  // Learning language — 시드된 언어 중 선택. 통화 시작 시
-                  // target_language 로 실려 그 언어 코스로 진행된다.
+                  // Learning language — 시드된 언어 중 선택. 값은 서버
+                  // (member.target_language)가 소유한다. 통화 시작 시 서버가 이
+                  // 컬럼을 읽어 그 언어 코스로 진행한다(소켓은 안 보낸다).
                   _navRow(
                     l10n.learningLanguage,
-                    _learningName(ref.watch(learningLanguageProvider)),
-                    onTap: () => _pickLearningLanguage(
-                        ref.read(learningLanguageProvider)),
+                    _learningName(learningLangId),
+                    onTap: () => _pickLearningLanguage(learningLangId),
                   ),
                   CardLine(
                     type: CardLineType.defaultToggle,

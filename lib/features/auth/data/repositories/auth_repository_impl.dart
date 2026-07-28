@@ -71,6 +71,16 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Member> updateTargetLanguage(String targetLanguage) async {
+    try {
+      final dto = await _remote.updateTargetLanguage(targetLanguage);
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<Member> updateCharacter(int characterId) async {
     try {
       final dto = await _remote.updateCharacter(characterId);

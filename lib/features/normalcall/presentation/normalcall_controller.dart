@@ -23,7 +23,6 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../../core/i18n/learning_language_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
@@ -625,23 +624,15 @@ class NormalCallController extends Notifier<CallState> {
 
       // §8-3: trigger the server's auto opening line (no button).
       //
-      // (멀티랭귀지) 마이페이지에서 고른 학습 언어를 target_language 로 실어 보낸다.
-      //
-      // 단 기본 언어(한국어)면 키를 아예 빼고 보낸다. 서버의
-      // `_resolve_target_language` 는 **값이 있기만 하면** 데모 통화로 분류하고
-      // (한국어인지 보지 않는다), 데모로 분류되면 레벨테스트가 금지된다 —
-      // 명시해도 normal 로 강등되고 자동 라우팅도 normal 로 고정된다.
-      // 항상 'ko' 를 실어 보내던 탓에, ENV 가 prod 가 아닌 환경에서는 한국어
-      // 학습자조차 레벨테스트·레벨업이 영영 일어나지 않았다.
-      //
-      // 다국어는 사내 테스트 용도이고 실서비스 레벨테스트는 한국어로 가는 것이
-      // 맞으므로, 비기본 언어가 데모로 분류되는 것은 의도된 동작으로 둔다.
-      final learningLanguage = ref.read(learningLanguageProvider);
+      // (멀티랭귀지) target_language 는 **보내지 않는다** — 서버가 member.target_language
+      // 를 읽어 그 언어의 코스(레벨테스트·체크판·레벨업)로 진행한다. 예전엔 여기서
+      // SharedPreferences 값을 실어 보냈는데, 그 복원이 비동기라 **복원 전에 통화가
+      // 시작되면 기본 'ko' 가 나갔다**(잠금화면 수신통화가 정확히 그 구간이다 —
+      // 콜드스타트 → accept → 즉시 connect). 앱을 지우면 선택도 리셋됐고, 서버가 거는
+      // 예약전화인데 언어는 클라가 정하는 모순도 있었다. 이제 DB 가 단일 소스다.
       _send({
         'type': 'start',
         'character_id': characterId,
-        if (learningLanguage != LearningLanguageController.defaultCode)
-          'target_language': learningLanguage,
       });
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.

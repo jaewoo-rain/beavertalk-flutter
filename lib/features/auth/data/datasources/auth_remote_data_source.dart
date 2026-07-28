@@ -78,6 +78,17 @@ class AuthRemoteDataSource {
     return MemberDto.fromJson(res.data!);
   }
 
+  /// `PATCH /members/me` (Bearer) — the language the member is **learning**
+  /// (server `target_language`). This is the single source for the call's
+  /// target language; the call socket no longer sends it.
+  Future<MemberDto> updateTargetLanguage(String targetLanguage) async {
+    final res = await _dio.patch<Map<String, dynamic>>(
+      ApiEndpoints.membersMe,
+      data: {'target_language': targetLanguage},
+    );
+    return MemberDto.fromJson(res.data!);
+  }
+
   /// `PATCH /members/me` (Bearer) — sets the in-use call partner.
   ///
   /// `MemberUpdate` accepts `language`, `character_id` and `is_auto_payment`,

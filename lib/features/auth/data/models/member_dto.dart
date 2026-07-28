@@ -7,6 +7,7 @@ class MemberDto {
     this.email,
     this.name,
     this.language,
+    this.targetLanguage,
     this.loginMethod,
     this.isAutoPayment,
     this.speakCountryId,
@@ -19,6 +20,7 @@ class MemberDto {
   final String? email;
   final String? name;
   final String? language;
+  final String? targetLanguage;
   final String? loginMethod;
   final bool? isAutoPayment;
   final int? speakCountryId;
@@ -33,6 +35,7 @@ class MemberDto {
       email: json['email'] as String?,
       name: json['name'] as String?,
       language: json['language'] as String?,
+      targetLanguage: json['target_language'] as String?,
       loginMethod: json['login_method'] as String?,
       isAutoPayment: json['is_auto_payment'] as bool?,
       speakCountryId: json['speak_country_id'] as int?,
@@ -50,6 +53,7 @@ class MemberDto {
         email: email,
         name: name,
         language: language,
+        targetLanguage: targetLanguage,
         loginMethod: loginMethod,
         isAutoPayment: isAutoPayment,
         speakCountryId: speakCountryId,

@@ -33,6 +33,14 @@ abstract interface class AuthRepository {
   /// the updated member. Throws [AppException] on failure.
   Future<Member> updateLanguage(String language);
 
+  /// Updates the language the member is **learning** (`PATCH /members/me`,
+  /// server `target_language`) and returns the updated member.
+  ///
+  /// The server owns this value: the call socket reads `member.target_language`
+  /// at call start instead of receiving it from the client, so this call is what
+  /// actually changes which language the next call teaches.
+  Future<Member> updateTargetLanguage(String targetLanguage);
+
   /// Sets the member's in-use call partner to [characterId]
   /// (`PATCH /members/me`) and returns the updated member.
   ///

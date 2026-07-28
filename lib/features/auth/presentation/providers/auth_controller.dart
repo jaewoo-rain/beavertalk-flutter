@@ -393,6 +393,17 @@ class AuthController extends Notifier<AuthStatus> {
     ref.invalidate(myProfileProvider);
   }
 
+  /// Persists the member's **learning** language (`PATCH /members/me`
+  /// `target_language`) and refreshes the cached profile.
+  ///
+  /// The call socket no longer sends `target_language` — the server reads this
+  /// column at call start. So this write is what switches the course; nothing
+  /// is kept on the device.
+  Future<void> updateTargetLanguage(String targetLanguage) async {
+    await ref.read(authRepositoryProvider).updateTargetLanguage(targetLanguage);
+    ref.invalidate(myProfileProvider);
+  }
+
   /// Deletes the account: asks the backend to delete the member (`DELETE
   /// /members/me`), then signs out of Supabase and returns to login. Throws
   /// [AppException] on failure (caller shows it) — sign-out only runs after the

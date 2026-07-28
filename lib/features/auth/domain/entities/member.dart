@@ -5,6 +5,7 @@ class Member {
     this.email,
     this.name,
     this.language,
+    this.targetLanguage,
     this.loginMethod,
     this.isAutoPayment,
     this.speakCountryId,
@@ -24,6 +25,12 @@ class Member {
 
   /// Preferred UI language code, e.g. `en`.
   final String? language;
+
+  /// The language the member is **learning** (server `target_language`, ISO
+  /// 639-1). The server owns this — the call socket no longer sends it, it reads
+  /// `member.target_language` at call start. Null only for pre-migration rows;
+  /// the server falls back to `ko`.
+  final String? targetLanguage;
 
   /// How the member signed in, e.g. `email`, `kakao`.
   final String? loginMethod;
