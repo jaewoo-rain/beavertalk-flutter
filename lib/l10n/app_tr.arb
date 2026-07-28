@@ -322,5 +322,16 @@
   "colSentences": "Cümle",
   "colScore": "Puan",
   "colChange": "Değ.",
-  "dateToday": "{date} (bugün)"
+  "dateToday": "{date} (bugün)",
+  "accentAnalysis": "Aksan analizi",
+  "overallLevel": "Genel seviye",
+  "overallLevelSubtitle": "Kelime · Dilbilgisi · İfadeler",
+  "pronunciationAnalysis": "Telaffuz analizi",
+  "recentSessionsAverage": "Son 10 oturum ort.",
+  "levelStage": "{stage}. seviye",
+  "topPercent": "İlk {percent}%",
+  "allLearnersBasis": "Tüm öğrenciler arasında",
+  "aheadOfLearners": "Öğrencilerin {percent}%'inden öndesin",
+  "retakeLevelTest": "Seviye testini tekrarla",
+  "practicePronunciation": "Telaffuz çalış"
 }

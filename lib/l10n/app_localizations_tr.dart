@@ -1042,4 +1042,43 @@ class AppLocalizationsTr extends AppLocalizations {
   String dateToday(String date) {
     return '$date (bugün)';
   }
+
+  @override
+  String get accentAnalysis => 'Aksan analizi';
+
+  @override
+  String get overallLevel => 'Genel seviye';
+
+  @override
+  String get overallLevelSubtitle => 'Kelime · Dilbilgisi · İfadeler';
+
+  @override
+  String get pronunciationAnalysis => 'Telaffuz analizi';
+
+  @override
+  String get recentSessionsAverage => 'Son 10 oturum ort.';
+
+  @override
+  String levelStage(int stage) {
+    return '$stage. seviye';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'İlk $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Tüm öğrenciler arasında';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Öğrencilerin $percent%\'inden öndesin';
+  }
+
+  @override
+  String get retakeLevelTest => 'Seviye testini tekrarla';
+
+  @override
+  String get practicePronunciation => 'Telaffuz çalış';
 }

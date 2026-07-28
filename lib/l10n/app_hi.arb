@@ -322,5 +322,16 @@
   "colSentences": "वाक्य",
   "colScore": "अंक",
   "colChange": "बदलाव",
-  "dateToday": "{date} (आज)"
+  "dateToday": "{date} (आज)",
+  "accentAnalysis": "उच्चारण-शैली विश्लेषण",
+  "overallLevel": "समग्र स्तर",
+  "overallLevelSubtitle": "शब्दावली · व्याकरण · अभिव्यक्ति",
+  "pronunciationAnalysis": "उच्चारण विश्लेषण",
+  "recentSessionsAverage": "पिछले 10 सत्रों का औसत",
+  "levelStage": "स्तर {stage}",
+  "topPercent": "शीर्ष {percent}%",
+  "allLearnersBasis": "सभी शिक्षार्थियों में",
+  "aheadOfLearners": "आप {percent}% शिक्षार्थियों से आगे हैं",
+  "retakeLevelTest": "स्तर परीक्षा दोबारा दें",
+  "practicePronunciation": "उच्चारण अभ्यास करें"
 }

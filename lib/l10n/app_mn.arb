@@ -322,5 +322,16 @@
   "colSentences": "Өгүүлбэр",
   "colScore": "Оноо",
   "colChange": "Өөрч.",
-  "dateToday": "{date} (өнөөдөр)"
+  "dateToday": "{date} (өнөөдөр)",
+  "accentAnalysis": "Аялгууны шинжилгээ",
+  "overallLevel": "Нийт түвшин",
+  "overallLevelSubtitle": "Үгсийн сан · Хэлзүй · Илэрхийлэл",
+  "pronunciationAnalysis": "Дуудлагын шинжилгээ",
+  "recentSessionsAverage": "Сүүлийн 10 хичээлийн дундаж",
+  "levelStage": "{stage}-р түвшин",
+  "topPercent": "Шилдэг {percent}%",
+  "allLearnersBasis": "Бүх суралцагчаас",
+  "aheadOfLearners": "Та суралцагчдын {percent}%-аас түрүүлж байна",
+  "retakeLevelTest": "Түвшин тогтоох шалгалтыг дахин өгөх",
+  "practicePronunciation": "Дуудлага дасгалжуулах"
 }

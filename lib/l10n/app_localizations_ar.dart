@@ -1033,4 +1033,43 @@ class AppLocalizationsAr extends AppLocalizations {
   String dateToday(String date) {
     return '$date (اليوم)';
   }
+
+  @override
+  String get accentAnalysis => 'تحليل اللكنة';
+
+  @override
+  String get overallLevel => 'المستوى العام';
+
+  @override
+  String get overallLevelSubtitle => 'المفردات · القواعد · التعبيرات';
+
+  @override
+  String get pronunciationAnalysis => 'تحليل النطق';
+
+  @override
+  String get recentSessionsAverage => 'متوسط آخر 10 جلسات';
+
+  @override
+  String levelStage(int stage) {
+    return 'المستوى $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'أفضل $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'بين جميع المتعلمين';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'أنت متقدم على $percent% من المتعلمين';
+  }
+
+  @override
+  String get retakeLevelTest => 'إعادة اختبار المستوى';
+
+  @override
+  String get practicePronunciation => 'تدرب على النطق';
 }

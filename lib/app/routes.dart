@@ -33,6 +33,7 @@ import '../screens/payment/payment_history.dart';
 import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
 import '../screens/mypage/mypage.dart';
+import '../screens/mypage/settings.dart';
 import '../screens/mypage/subscription_info.dart';
 import '../screens/mypage/avatar.dart';
 import '../screens/mypage/share.dart';
@@ -73,6 +74,10 @@ abstract final class Routes {
 
   // ── My page / subscription / avatar / share ──
   static const mypage = '/mypage';
+
+  /// Settings, split out of my page by the redesign (Figma
+  /// `screen/main_mypage_settings`).
+  static const mypageSettings = '/mypage/settings';
   static const subscription = '/mypage/subscription';
   static const avatar = '/mypage/avatar';
   static const share = '/mypage/share';
@@ -156,6 +161,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
+    Routes.mypageSettings: (_) => const MyPageSettingsScreen(),
     Routes.subscription: (_) => const SubscriptionInfoScreen(),
     Routes.avatar: (_) => const AvatarScreen(),
     Routes.share: (_) => const ShareScreen(),
@@ -195,6 +201,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.learningCallMainLoading: '학습 결과 로딩',
     Routes.pronunciationChallenge: '발음 챌린지',
     Routes.mypage: '마이페이지',
+    Routes.mypageSettings: '마이페이지 · 설정',
     Routes.alarms: '알림',
     Routes.payment: '결제',
     Routes.paymentHistory: '결제 내역',

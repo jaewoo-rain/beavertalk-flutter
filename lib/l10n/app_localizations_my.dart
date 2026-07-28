@@ -1047,4 +1047,43 @@ class AppLocalizationsMy extends AppLocalizations {
   String dateToday(String date) {
     return '$date (ယနေ့)';
   }
+
+  @override
+  String get accentAnalysis => 'လေယူလေသိမ်း ခွဲခြမ်းစိတ်ဖြာချက်';
+
+  @override
+  String get overallLevel => 'စုစုပေါင်း အဆင့်';
+
+  @override
+  String get overallLevelSubtitle => 'ဝေါဟာရ · သဒ္ဒါ · အသုံးအနှုန်း';
+
+  @override
+  String get pronunciationAnalysis => 'အသံထွက် ခွဲခြမ်းစိတ်ဖြာချက်';
+
+  @override
+  String get recentSessionsAverage => 'နောက်ဆုံး ၁၀ ကြိမ် ပျမ်းမျှ';
+
+  @override
+  String levelStage(int stage) {
+    return 'အဆင့် $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'ထိပ်ဆုံး $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'သင်ယူသူအားလုံးအနက်';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'သင်ယူသူ $percent% ထက် သင်ရှေ့ရောက်နေသည်';
+  }
+
+  @override
+  String get retakeLevelTest => 'အဆင့်စစ်ဆေးမှု ပြန်ဖြေရန်';
+
+  @override
+  String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
 }

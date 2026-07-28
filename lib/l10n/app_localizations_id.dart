@@ -1041,4 +1041,43 @@ class AppLocalizationsId extends AppLocalizations {
   String dateToday(String date) {
     return '$date (hari ini)';
   }
+
+  @override
+  String get accentAnalysis => 'Analisis aksen';
+
+  @override
+  String get overallLevel => 'Level keseluruhan';
+
+  @override
+  String get overallLevelSubtitle => 'Kosakata · Tata bahasa · Ekspresi';
+
+  @override
+  String get pronunciationAnalysis => 'Analisis pelafalan';
+
+  @override
+  String get recentSessionsAverage => 'Rata-rata 10 sesi';
+
+  @override
+  String levelStage(int stage) {
+    return 'Level $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Di antara semua pelajar';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Kamu unggul dari $percent% pelajar';
+  }
+
+  @override
+  String get retakeLevelTest => 'Ulangi tes level';
+
+  @override
+  String get practicePronunciation => 'Latih pelafalan';
 }

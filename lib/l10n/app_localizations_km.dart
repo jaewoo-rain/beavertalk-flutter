@@ -1043,4 +1043,43 @@ class AppLocalizationsKm extends AppLocalizations {
   String dateToday(String date) {
     return '$date (ថ្ងៃនេះ)';
   }
+
+  @override
+  String get accentAnalysis => 'ការវិភាគសំនៀង';
+
+  @override
+  String get overallLevel => 'កម្រិតរួម';
+
+  @override
+  String get overallLevelSubtitle => 'វាក្យសព្ទ · វេយ្យាករណ៍ · ការបញ្ចេញមតិ';
+
+  @override
+  String get pronunciationAnalysis => 'ការវិភាគការបញ្ចេញសំឡេង';
+
+  @override
+  String get recentSessionsAverage => 'មធ្យម ១០ វគ្គចុងក្រោយ';
+
+  @override
+  String levelStage(int stage) {
+    return 'កម្រិត $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'កំពូល $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'ក្នុងចំណោមអ្នកសិក្សាទាំងអស់';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'អ្នកនាំមុខ $percent% នៃអ្នកសិក្សា';
+  }
+
+  @override
+  String get retakeLevelTest => 'ធ្វើតេស្តកម្រិតម្តងទៀត';
+
+  @override
+  String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
 }

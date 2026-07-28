@@ -322,5 +322,16 @@
   "colSentences": "Pangus.",
   "colScore": "Iskor",
   "colChange": "Bago",
-  "dateToday": "{date} (ngayon)"
+  "dateToday": "{date} (ngayon)",
+  "accentAnalysis": "Pagsusuri ng punto",
+  "overallLevel": "Pangkalahatang antas",
+  "overallLevelSubtitle": "Bokabularyo · Gramatika · Pagpapahayag",
+  "pronunciationAnalysis": "Pagsusuri ng pagbigkas",
+  "recentSessionsAverage": "Average ng huling 10 sesyon",
+  "levelStage": "Antas {stage}",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Sa lahat ng mag-aaral",
+  "aheadOfLearners": "Nangunguna ka sa {percent}% ng mag-aaral",
+  "retakeLevelTest": "Ulitin ang level test",
+  "practicePronunciation": "Magsanay ng pagbigkas"
 }

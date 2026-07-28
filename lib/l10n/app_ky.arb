@@ -322,5 +322,16 @@
   "colSentences": "Сүйлөм",
   "colScore": "Упай",
   "colChange": "Өзг.",
-  "dateToday": "{date} (бүгүн)"
+  "dateToday": "{date} (бүгүн)",
+  "accentAnalysis": "Акцент талдоосу",
+  "overallLevel": "Жалпы деңгээл",
+  "overallLevelSubtitle": "Лексика · Грамматика · Сөз айкаштары",
+  "pronunciationAnalysis": "Айтылыш талдоосу",
+  "recentSessionsAverage": "Акыркы 10 сессиянын орточосу",
+  "levelStage": "{stage}-деңгээл",
+  "topPercent": "Мыкты {percent}%",
+  "allLearnersBasis": "Бардык окуучулардын арасында",
+  "aheadOfLearners": "Сиз окуучулардын {percent}%нан алдыдасыз",
+  "retakeLevelTest": "Деңгээл тестин кайра тапшыруу",
+  "practicePronunciation": "Айтылышты машыктыруу"
 }

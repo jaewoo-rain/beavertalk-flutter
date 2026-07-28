@@ -1016,4 +1016,43 @@ class AppLocalizationsKo extends AppLocalizations {
   String dateToday(String date) {
     return '$date (오늘)';
   }
+
+  @override
+  String get accentAnalysis => '억양 분석';
+
+  @override
+  String get overallLevel => '종합 레벨';
+
+  @override
+  String get overallLevelSubtitle => '어휘·문법·표현';
+
+  @override
+  String get pronunciationAnalysis => '발음 분석';
+
+  @override
+  String get recentSessionsAverage => '최근 10세션 평균';
+
+  @override
+  String levelStage(int stage) {
+    return '$stage단계';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return '상위 $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => '전체 학습자 기준';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return '전체 학습자의 $percent%보다 앞서 있어요';
+  }
+
+  @override
+  String get retakeLevelTest => '레벨 테스트 다시하기';
+
+  @override
+  String get practicePronunciation => '발음 학습하기';
 }

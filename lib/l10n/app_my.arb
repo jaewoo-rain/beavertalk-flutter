@@ -322,5 +322,16 @@
   "colSentences": "ဝါကျ",
   "colScore": "ရမှတ်",
   "colChange": "ပြောင်းလဲ",
-  "dateToday": "{date} (ယနေ့)"
+  "dateToday": "{date} (ယနေ့)",
+  "accentAnalysis": "လေယူလေသိမ်း ခွဲခြမ်းစိတ်ဖြာချက်",
+  "overallLevel": "စုစုပေါင်း အဆင့်",
+  "overallLevelSubtitle": "ဝေါဟာရ · သဒ္ဒါ · အသုံးအနှုန်း",
+  "pronunciationAnalysis": "အသံထွက် ခွဲခြမ်းစိတ်ဖြာချက်",
+  "recentSessionsAverage": "နောက်ဆုံး ၁၀ ကြိမ် ပျမ်းမျှ",
+  "levelStage": "အဆင့် {stage}",
+  "topPercent": "ထိပ်ဆုံး {percent}%",
+  "allLearnersBasis": "သင်ယူသူအားလုံးအနက်",
+  "aheadOfLearners": "သင်ယူသူ {percent}% ထက် သင်ရှေ့ရောက်နေသည်",
+  "retakeLevelTest": "အဆင့်စစ်ဆေးမှု ပြန်ဖြေရန်",
+  "practicePronunciation": "အသံထွက် လေ့ကျင့်ရန်"
 }

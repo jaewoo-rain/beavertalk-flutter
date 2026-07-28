@@ -1040,4 +1040,43 @@ class AppLocalizationsMn extends AppLocalizations {
   String dateToday(String date) {
     return '$date (өнөөдөр)';
   }
+
+  @override
+  String get accentAnalysis => 'Аялгууны шинжилгээ';
+
+  @override
+  String get overallLevel => 'Нийт түвшин';
+
+  @override
+  String get overallLevelSubtitle => 'Үгсийн сан · Хэлзүй · Илэрхийлэл';
+
+  @override
+  String get pronunciationAnalysis => 'Дуудлагын шинжилгээ';
+
+  @override
+  String get recentSessionsAverage => 'Сүүлийн 10 хичээлийн дундаж';
+
+  @override
+  String levelStage(int stage) {
+    return '$stage-р түвшин';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Шилдэг $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Бүх суралцагчаас';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Та суралцагчдын $percent%-аас түрүүлж байна';
+  }
+
+  @override
+  String get retakeLevelTest => 'Түвшин тогтоох шалгалтыг дахин өгөх';
+
+  @override
+  String get practicePronunciation => 'Дуудлага дасгалжуулах';
 }

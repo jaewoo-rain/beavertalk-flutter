@@ -1055,4 +1055,43 @@ class AppLocalizationsDe extends AppLocalizations {
   String dateToday(String date) {
     return '$date (heute)';
   }
+
+  @override
+  String get accentAnalysis => 'Akzentanalyse';
+
+  @override
+  String get overallLevel => 'Gesamtniveau';
+
+  @override
+  String get overallLevelSubtitle => 'Wortschatz · Grammatik · Ausdruck';
+
+  @override
+  String get pronunciationAnalysis => 'Ausspracheanalyse';
+
+  @override
+  String get recentSessionsAverage => 'Ø der letzten 10 Sitzungen';
+
+  @override
+  String levelStage(int stage) {
+    return 'Stufe $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Unter allen Lernenden';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Du liegst vor $percent% aller Lernenden';
+  }
+
+  @override
+  String get retakeLevelTest => 'Einstufungstest wiederholen';
+
+  @override
+  String get practicePronunciation => 'Aussprache üben';
 }

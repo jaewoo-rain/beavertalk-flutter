@@ -82,8 +82,12 @@
   "@alarmSummary": {
     "description": "Summary under the alarm form. monthly = count × 4.",
     "placeholders": {
-      "count": { "type": "int" },
-      "monthly": { "type": "int" }
+      "count": {
+        "type": "int"
+      },
+      "monthly": {
+        "type": "int"
+      }
     }
   },
   "alarmSummaryNone": "Pick at least one day",
@@ -467,13 +471,16 @@
   "@paymentLabelFallback": {
     "description": "Row label when the server sends no description and the category is unknown."
   },
-
   "learningPassed": "{passed} of {total} sentences passed",
   "@learningPassed": {
     "description": "Headline of the learning summary screen.",
     "placeholders": {
-      "passed": { "type": "int" },
-      "total": { "type": "int" }
+      "passed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "hardestSound": "Hardest sound today",
@@ -481,7 +488,9 @@
   "phonemeAttempts": "Per phoneme · {count} attempts",
   "@phonemeAttempts": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "colSound": "Sound",
@@ -492,7 +501,9 @@
   "viewAllSentences": "See all {count}",
   "@viewAllSentences": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "colSentence": "Sentence",
@@ -502,13 +513,17 @@
   "recentSessions": "Last {count} sessions",
   "@recentSessions": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": {
+        "type": "int"
+      }
     }
   },
   "trendAverage": "Avg {score}",
   "@trendAverage": {
     "placeholders": {
-      "score": { "type": "int" }
+      "score": {
+        "type": "int"
+      }
     }
   },
   "today": "Today",
@@ -520,7 +535,71 @@
   "@dateToday": {
     "description": "The most recent row of the trend table.",
     "placeholders": {
-      "date": { "type": "String" }
+      "date": {
+        "type": "String"
+      }
     }
+  },
+  "accentAnalysis": "Accent analysis",
+  "@accentAnalysis": {
+    "description": "Title of the accent-breakdown card on my page."
+  },
+  "overallLevel": "Overall level",
+  "@overallLevel": {
+    "description": "Title of the overall-level card on my page."
+  },
+  "overallLevelSubtitle": "Vocabulary · Grammar · Expressions",
+  "@overallLevelSubtitle": {
+    "description": "Subtitle listing what the overall level covers."
+  },
+  "pronunciationAnalysis": "Pronunciation analysis",
+  "@pronunciationAnalysis": {
+    "description": "Title of the pronunciation card on my page."
+  },
+  "recentSessionsAverage": "Last 10 sessions avg.",
+  "@recentSessionsAverage": {
+    "description": "Card subtitle: the figure is an average over the last 10 sessions."
+  },
+  "levelStage": "Stage {stage}",
+  "@levelStage": {
+    "description": "A proficiency stage, 1-13. Also used for the two ends of the level scale.",
+    "placeholders": {
+      "stage": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "topPercent": "Top {percent}%",
+  "@topPercent": {
+    "description": "Percentile rank, e.g. Top 45%.",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "45"
+      }
+    }
+  },
+  "allLearnersBasis": "Among all learners",
+  "@allLearnersBasis": {
+    "description": "Caption under the percentile: the rank is across all learners."
+  },
+  "aheadOfLearners": "You're ahead of {percent}% of all learners",
+  "@aheadOfLearners": {
+    "description": "Sentence under the level scale. The my-page card emphasises the '{percent}%' token in Label/Strong, so keep the number and the percent sign adjacent with no space.",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "55"
+      }
+    }
+  },
+  "retakeLevelTest": "Retake level test",
+  "@retakeLevelTest": {
+    "description": "CTA on the level card - start the level-test call again."
+  },
+  "practicePronunciation": "Practice pronunciation",
+  "@practicePronunciation": {
+    "description": "CTA on the pronunciation card - open the latest call analysis."
   }
 }

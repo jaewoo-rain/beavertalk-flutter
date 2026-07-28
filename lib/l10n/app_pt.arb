@@ -322,5 +322,16 @@
   "colSentences": "Frases",
   "colScore": "Pont.",
   "colChange": "Var.",
-  "dateToday": "{date} (hoje)"
+  "dateToday": "{date} (hoje)",
+  "accentAnalysis": "Análise de sotaque",
+  "overallLevel": "Nível geral",
+  "overallLevelSubtitle": "Vocabulário · Gramática · Expressões",
+  "pronunciationAnalysis": "Análise de pronúncia",
+  "recentSessionsAverage": "Média das 10 sessões",
+  "levelStage": "Nível {stage}",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Entre todos os alunos",
+  "aheadOfLearners": "Você está à frente de {percent}% dos alunos",
+  "retakeLevelTest": "Refazer teste de nível",
+  "practicePronunciation": "Praticar pronúncia"
 }

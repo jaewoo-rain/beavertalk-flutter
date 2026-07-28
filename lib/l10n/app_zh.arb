@@ -322,5 +322,16 @@
   "colSentences": "句数",
   "colScore": "分数",
   "colChange": "变化",
-  "dateToday": "{date}（今天）"
+  "dateToday": "{date}（今天）",
+  "accentAnalysis": "口音分析",
+  "overallLevel": "综合等级",
+  "overallLevelSubtitle": "词汇·语法·表达",
+  "pronunciationAnalysis": "发音分析",
+  "recentSessionsAverage": "最近10次平均",
+  "levelStage": "第{stage}级",
+  "topPercent": "前{percent}%",
+  "allLearnersBasis": "全体学习者中",
+  "aheadOfLearners": "你领先于{percent}%的学习者",
+  "retakeLevelTest": "重新测试等级",
+  "practicePronunciation": "练习发音"
 }

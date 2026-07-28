@@ -322,5 +322,16 @@
   "colSentences": "ประโยค",
   "colScore": "คะแนน",
   "colChange": "เปลี่ยน",
-  "dateToday": "{date} (วันนี้)"
+  "dateToday": "{date} (วันนี้)",
+  "accentAnalysis": "วิเคราะห์สำเนียง",
+  "overallLevel": "ระดับรวม",
+  "overallLevelSubtitle": "คำศัพท์ · ไวยากรณ์ · การแสดงออก",
+  "pronunciationAnalysis": "วิเคราะห์การออกเสียง",
+  "recentSessionsAverage": "เฉลี่ย 10 เซสชันล่าสุด",
+  "levelStage": "ระดับ {stage}",
+  "topPercent": "ท็อป {percent}%",
+  "allLearnersBasis": "จากผู้เรียนทั้งหมด",
+  "aheadOfLearners": "คุณนำหน้าผู้เรียน {percent}%",
+  "retakeLevelTest": "ทำแบบทดสอบระดับอีกครั้ง",
+  "practicePronunciation": "ฝึกการออกเสียง"
 }

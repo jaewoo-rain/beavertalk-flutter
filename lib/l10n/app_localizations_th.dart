@@ -1037,4 +1037,43 @@ class AppLocalizationsTh extends AppLocalizations {
   String dateToday(String date) {
     return '$date (วันนี้)';
   }
+
+  @override
+  String get accentAnalysis => 'วิเคราะห์สำเนียง';
+
+  @override
+  String get overallLevel => 'ระดับรวม';
+
+  @override
+  String get overallLevelSubtitle => 'คำศัพท์ · ไวยากรณ์ · การแสดงออก';
+
+  @override
+  String get pronunciationAnalysis => 'วิเคราะห์การออกเสียง';
+
+  @override
+  String get recentSessionsAverage => 'เฉลี่ย 10 เซสชันล่าสุด';
+
+  @override
+  String levelStage(int stage) {
+    return 'ระดับ $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'ท็อป $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'จากผู้เรียนทั้งหมด';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'คุณนำหน้าผู้เรียน $percent%';
+  }
+
+  @override
+  String get retakeLevelTest => 'ทำแบบทดสอบระดับอีกครั้ง';
+
+  @override
+  String get practicePronunciation => 'ฝึกการออกเสียง';
 }

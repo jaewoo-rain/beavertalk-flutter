@@ -301,7 +301,6 @@
   "morePaymentsExist": "이전 결제 내역은 아직 표시되지 않아요",
   "undatedPayments": "날짜 없음",
   "paymentLabelFallback": "결제",
-
   "learningPassed": "{total}문장 중 {passed}개 통과",
   "hardestSound": "가장 어려웠던 소리",
   "soundAccuracy": "소리별 정확도",
@@ -323,5 +322,16 @@
   "colSentences": "문장",
   "colScore": "점수",
   "colChange": "변화",
-  "dateToday": "{date} (오늘)"
+  "dateToday": "{date} (오늘)",
+  "accentAnalysis": "억양 분석",
+  "overallLevel": "종합 레벨",
+  "overallLevelSubtitle": "어휘·문법·표현",
+  "pronunciationAnalysis": "발음 분석",
+  "recentSessionsAverage": "최근 10세션 평균",
+  "levelStage": "{stage}단계",
+  "topPercent": "상위 {percent}%",
+  "allLearnersBasis": "전체 학습자 기준",
+  "aheadOfLearners": "전체 학습자의 {percent}%보다 앞서 있어요",
+  "retakeLevelTest": "레벨 테스트 다시하기",
+  "practicePronunciation": "발음 학습하기"
 }

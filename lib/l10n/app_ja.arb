@@ -322,5 +322,16 @@
   "colSentences": "文数",
   "colScore": "スコア",
   "colChange": "変化",
-  "dateToday": "{date}（今日）"
+  "dateToday": "{date}（今日）",
+  "accentAnalysis": "アクセント分析",
+  "overallLevel": "総合レベル",
+  "overallLevelSubtitle": "語彙・文法・表現",
+  "pronunciationAnalysis": "発音分析",
+  "recentSessionsAverage": "直近10セッション平均",
+  "levelStage": "レベル{stage}",
+  "topPercent": "上位{percent}%",
+  "allLearnersBasis": "全学習者基準",
+  "aheadOfLearners": "全学習者の{percent}%より進んでいます",
+  "retakeLevelTest": "レベルテストを再受験",
+  "practicePronunciation": "発音を学習する"
 }

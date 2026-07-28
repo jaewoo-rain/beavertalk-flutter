@@ -322,5 +322,16 @@
   "colSentences": "Предл.",
   "colScore": "Балл",
   "colChange": "Изм.",
-  "dateToday": "{date} (сегодня)"
+  "dateToday": "{date} (сегодня)",
+  "accentAnalysis": "Анализ акцента",
+  "overallLevel": "Общий уровень",
+  "overallLevelSubtitle": "Лексика · Грамматика · Выражения",
+  "pronunciationAnalysis": "Анализ произношения",
+  "recentSessionsAverage": "Среднее за 10 сессий",
+  "levelStage": "Уровень {stage}",
+  "topPercent": "Топ {percent}%",
+  "allLearnersBasis": "Среди всех учащихся",
+  "aheadOfLearners": "Вы опережаете {percent}% учащихся",
+  "retakeLevelTest": "Пройти тест уровня заново",
+  "practicePronunciation": "Тренировать произношение"
 }

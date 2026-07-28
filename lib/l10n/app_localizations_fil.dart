@@ -1049,4 +1049,43 @@ class AppLocalizationsFil extends AppLocalizations {
   String dateToday(String date) {
     return '$date (ngayon)';
   }
+
+  @override
+  String get accentAnalysis => 'Pagsusuri ng punto';
+
+  @override
+  String get overallLevel => 'Pangkalahatang antas';
+
+  @override
+  String get overallLevelSubtitle => 'Bokabularyo · Gramatika · Pagpapahayag';
+
+  @override
+  String get pronunciationAnalysis => 'Pagsusuri ng pagbigkas';
+
+  @override
+  String get recentSessionsAverage => 'Average ng huling 10 sesyon';
+
+  @override
+  String levelStage(int stage) {
+    return 'Antas $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Sa lahat ng mag-aaral';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Nangunguna ka sa $percent% ng mag-aaral';
+  }
+
+  @override
+  String get retakeLevelTest => 'Ulitin ang level test';
+
+  @override
+  String get practicePronunciation => 'Magsanay ng pagbigkas';
 }

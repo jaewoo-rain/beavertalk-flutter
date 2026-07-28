@@ -322,5 +322,16 @@
   "colSentences": "Lauseet",
   "colScore": "Pisteet",
   "colChange": "Muutos",
-  "dateToday": "{date} (tänään)"
+  "dateToday": "{date} (tänään)",
+  "accentAnalysis": "Aksenttianalyysi",
+  "overallLevel": "Kokonaistaso",
+  "overallLevelSubtitle": "Sanasto · Kielioppi · Ilmaisut",
+  "pronunciationAnalysis": "Ääntämisanalyysi",
+  "recentSessionsAverage": "10 istunnon keskiarvo",
+  "levelStage": "Taso {stage}",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Kaikista oppijoista",
+  "aheadOfLearners": "Olet {percent}% oppijaa edellä",
+  "retakeLevelTest": "Uusi tasotesti",
+  "practicePronunciation": "Harjoittele ääntämistä"
 }

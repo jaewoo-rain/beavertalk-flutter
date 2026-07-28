@@ -1052,4 +1052,43 @@ class AppLocalizationsHu extends AppLocalizations {
   String dateToday(String date) {
     return '$date (ma)';
   }
+
+  @override
+  String get accentAnalysis => 'Akcentuselemzés';
+
+  @override
+  String get overallLevel => 'Összesített szint';
+
+  @override
+  String get overallLevelSubtitle => 'Szókincs · Nyelvtan · Kifejezések';
+
+  @override
+  String get pronunciationAnalysis => 'Kiejtéselemzés';
+
+  @override
+  String get recentSessionsAverage => 'Utolsó 10 alkalom átlaga';
+
+  @override
+  String levelStage(int stage) {
+    return '$stage. szint';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Az összes tanuló közül';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'A tanulók $percent%-át megelőzöd';
+  }
+
+  @override
+  String get retakeLevelTest => 'Szintfelmérő újra';
+
+  @override
+  String get practicePronunciation => 'Kiejtés gyakorlása';
 }

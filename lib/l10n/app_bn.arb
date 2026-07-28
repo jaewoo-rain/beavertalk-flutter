@@ -322,5 +322,16 @@
   "colSentences": "বাক্য",
   "colScore": "স্কোর",
   "colChange": "পরিবর্তন",
-  "dateToday": "{date} (আজ)"
+  "dateToday": "{date} (আজ)",
+  "accentAnalysis": "উচ্চারণভঙ্গি বিশ্লেষণ",
+  "overallLevel": "সামগ্রিক স্তর",
+  "overallLevelSubtitle": "শব্দভাণ্ডার · ব্যাকরণ · প্রকাশভঙ্গি",
+  "pronunciationAnalysis": "উচ্চারণ বিশ্লেষণ",
+  "recentSessionsAverage": "সাম্প্রতিক ১০ সেশনের গড়",
+  "levelStage": "স্তর {stage}",
+  "topPercent": "শীর্ষ {percent}%",
+  "allLearnersBasis": "সব শিক্ষার্থীর মধ্যে",
+  "aheadOfLearners": "আপনি {percent}% শিক্ষার্থীর চেয়ে এগিয়ে",
+  "retakeLevelTest": "স্তর পরীক্ষা আবার দিন",
+  "practicePronunciation": "উচ্চারণ অনুশীলন করুন"
 }

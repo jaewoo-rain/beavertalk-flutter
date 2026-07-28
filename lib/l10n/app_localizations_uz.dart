@@ -1047,4 +1047,43 @@ class AppLocalizationsUz extends AppLocalizations {
   String dateToday(String date) {
     return '$date (bugun)';
   }
+
+  @override
+  String get accentAnalysis => 'Talaffuz uslubi tahlili';
+
+  @override
+  String get overallLevel => 'Umumiy daraja';
+
+  @override
+  String get overallLevelSubtitle => 'Lug\'at · Grammatika · Ifodalar';
+
+  @override
+  String get pronunciationAnalysis => 'Talaffuz tahlili';
+
+  @override
+  String get recentSessionsAverage => 'Oxirgi 10 mashg\'ulot o\'rtachasi';
+
+  @override
+  String levelStage(int stage) {
+    return '$stage-daraja';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Barcha oʻquvchilar orasida';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Siz oʻquvchilarning $percent% dan oldindasiz';
+  }
+
+  @override
+  String get retakeLevelTest => 'Daraja testini qayta topshirish';
+
+  @override
+  String get practicePronunciation => 'Talaffuzni mashq qilish';
 }

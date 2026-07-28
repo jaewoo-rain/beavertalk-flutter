@@ -1012,4 +1012,43 @@ class AppLocalizationsZh extends AppLocalizations {
   String dateToday(String date) {
     return '$date（今天）';
   }
+
+  @override
+  String get accentAnalysis => '口音分析';
+
+  @override
+  String get overallLevel => '综合等级';
+
+  @override
+  String get overallLevelSubtitle => '词汇·语法·表达';
+
+  @override
+  String get pronunciationAnalysis => '发音分析';
+
+  @override
+  String get recentSessionsAverage => '最近10次平均';
+
+  @override
+  String levelStage(int stage) {
+    return '第$stage级';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return '前$percent%';
+  }
+
+  @override
+  String get allLearnersBasis => '全体学习者中';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return '你领先于$percent%的学习者';
+  }
+
+  @override
+  String get retakeLevelTest => '重新测试等级';
+
+  @override
+  String get practicePronunciation => '练习发音';
 }

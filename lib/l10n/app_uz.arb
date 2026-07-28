@@ -322,5 +322,16 @@
   "colSentences": "Gaplar",
   "colScore": "Ball",
   "colChange": "O'zg.",
-  "dateToday": "{date} (bugun)"
+  "dateToday": "{date} (bugun)",
+  "accentAnalysis": "Talaffuz uslubi tahlili",
+  "overallLevel": "Umumiy daraja",
+  "overallLevelSubtitle": "Lug'at · Grammatika · Ifodalar",
+  "pronunciationAnalysis": "Talaffuz tahlili",
+  "recentSessionsAverage": "Oxirgi 10 mashg'ulot o'rtachasi",
+  "levelStage": "{stage}-daraja",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Barcha oʻquvchilar orasida",
+  "aheadOfLearners": "Siz oʻquvchilarning {percent}% dan oldindasiz",
+  "retakeLevelTest": "Daraja testini qayta topshirish",
+  "practicePronunciation": "Talaffuzni mashq qilish"
 }

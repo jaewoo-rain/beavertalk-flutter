@@ -322,5 +322,16 @@
   "colSentences": "Mondat",
   "colScore": "Pont",
   "colChange": "Vált.",
-  "dateToday": "{date} (ma)"
+  "dateToday": "{date} (ma)",
+  "accentAnalysis": "Akcentuselemzés",
+  "overallLevel": "Összesített szint",
+  "overallLevelSubtitle": "Szókincs · Nyelvtan · Kifejezések",
+  "pronunciationAnalysis": "Kiejtéselemzés",
+  "recentSessionsAverage": "Utolsó 10 alkalom átlaga",
+  "levelStage": "{stage}. szint",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Az összes tanuló közül",
+  "aheadOfLearners": "A tanulók {percent}%-át megelőzöd",
+  "retakeLevelTest": "Szintfelmérő újra",
+  "practicePronunciation": "Kiejtés gyakorlása"
 }

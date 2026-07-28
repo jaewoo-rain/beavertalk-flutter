@@ -1038,4 +1038,43 @@ class AppLocalizationsNe extends AppLocalizations {
   String dateToday(String date) {
     return '$date (आज)';
   }
+
+  @override
+  String get accentAnalysis => 'उच्चारण शैली विश्लेषण';
+
+  @override
+  String get overallLevel => 'समग्र स्तर';
+
+  @override
+  String get overallLevelSubtitle => 'शब्दभण्डार · व्याकरण · अभिव्यक्ति';
+
+  @override
+  String get pronunciationAnalysis => 'उच्चारण विश्लेषण';
+
+  @override
+  String get recentSessionsAverage => 'पछिल्लो १० सत्रको औसत';
+
+  @override
+  String levelStage(int stage) {
+    return 'स्तर $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'शीर्ष $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'सबै सिकारुमध्ये';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'तपाईं $percent% सिकारुभन्दा अगाडि हुनुहुन्छ';
+  }
+
+  @override
+  String get retakeLevelTest => 'स्तर परीक्षा दोहोर्‍याउनुहोस्';
+
+  @override
+  String get practicePronunciation => 'उच्चारण अभ्यास गर्नुहोस्';
 }

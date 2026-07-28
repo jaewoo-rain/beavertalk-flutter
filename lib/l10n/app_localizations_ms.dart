@@ -1051,4 +1051,43 @@ class AppLocalizationsMs extends AppLocalizations {
   String dateToday(String date) {
     return '$date (hari ini)';
   }
+
+  @override
+  String get accentAnalysis => 'Analisis loghat';
+
+  @override
+  String get overallLevel => 'Tahap keseluruhan';
+
+  @override
+  String get overallLevelSubtitle => 'Kosa kata · Tatabahasa · Ungkapan';
+
+  @override
+  String get pronunciationAnalysis => 'Analisis sebutan';
+
+  @override
+  String get recentSessionsAverage => 'Purata 10 sesi';
+
+  @override
+  String levelStage(int stage) {
+    return 'Tahap $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Antara semua pelajar';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Anda mendahului $percent% pelajar';
+  }
+
+  @override
+  String get retakeLevelTest => 'Ulang ujian tahap';
+
+  @override
+  String get practicePronunciation => 'Latih sebutan';
 }

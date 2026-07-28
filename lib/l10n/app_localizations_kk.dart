@@ -1036,4 +1036,43 @@ class AppLocalizationsKk extends AppLocalizations {
   String dateToday(String date) {
     return '$date (бүгін)';
   }
+
+  @override
+  String get accentAnalysis => 'Екпін талдауы';
+
+  @override
+  String get overallLevel => 'Жалпы деңгей';
+
+  @override
+  String get overallLevelSubtitle => 'Лексика · Грамматика · Тіркестер';
+
+  @override
+  String get pronunciationAnalysis => 'Айтылым талдауы';
+
+  @override
+  String get recentSessionsAverage => 'Соңғы 10 сессия орташасы';
+
+  @override
+  String levelStage(int stage) {
+    return '$stage-деңгей';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Үздік $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Барлық оқушы ішінде';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Сіз оқушылардың $percent%-нан оздыңыз';
+  }
+
+  @override
+  String get retakeLevelTest => 'Деңгей тестін қайта тапсыру';
+
+  @override
+  String get practicePronunciation => 'Айтылымды жаттықтыру';
 }

@@ -1041,4 +1041,43 @@ class AppLocalizationsBn extends AppLocalizations {
   String dateToday(String date) {
     return '$date (আজ)';
   }
+
+  @override
+  String get accentAnalysis => 'উচ্চারণভঙ্গি বিশ্লেষণ';
+
+  @override
+  String get overallLevel => 'সামগ্রিক স্তর';
+
+  @override
+  String get overallLevelSubtitle => 'শব্দভাণ্ডার · ব্যাকরণ · প্রকাশভঙ্গি';
+
+  @override
+  String get pronunciationAnalysis => 'উচ্চারণ বিশ্লেষণ';
+
+  @override
+  String get recentSessionsAverage => 'সাম্প্রতিক ১০ সেশনের গড়';
+
+  @override
+  String levelStage(int stage) {
+    return 'স্তর $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'শীর্ষ $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'সব শিক্ষার্থীর মধ্যে';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'আপনি $percent% শিক্ষার্থীর চেয়ে এগিয়ে';
+  }
+
+  @override
+  String get retakeLevelTest => 'স্তর পরীক্ষা আবার দিন';
+
+  @override
+  String get practicePronunciation => 'উচ্চারণ অনুশীলন করুন';
 }

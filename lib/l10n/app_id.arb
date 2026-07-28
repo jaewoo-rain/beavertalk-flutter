@@ -322,5 +322,16 @@
   "colSentences": "Kalimat",
   "colScore": "Skor",
   "colChange": "Ubah",
-  "dateToday": "{date} (hari ini)"
+  "dateToday": "{date} (hari ini)",
+  "accentAnalysis": "Analisis aksen",
+  "overallLevel": "Level keseluruhan",
+  "overallLevelSubtitle": "Kosakata · Tata bahasa · Ekspresi",
+  "pronunciationAnalysis": "Analisis pelafalan",
+  "recentSessionsAverage": "Rata-rata 10 sesi",
+  "levelStage": "Level {stage}",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Di antara semua pelajar",
+  "aheadOfLearners": "Kamu unggul dari {percent}% pelajar",
+  "retakeLevelTest": "Ulangi tes level",
+  "practicePronunciation": "Latih pelafalan"
 }

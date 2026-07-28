@@ -322,5 +322,16 @@
   "colSentences": "Ayat",
   "colScore": "Skor",
   "colChange": "Ubah",
-  "dateToday": "{date} (hari ini)"
+  "dateToday": "{date} (hari ini)",
+  "accentAnalysis": "Analisis loghat",
+  "overallLevel": "Tahap keseluruhan",
+  "overallLevelSubtitle": "Kosa kata · Tatabahasa · Ungkapan",
+  "pronunciationAnalysis": "Analisis sebutan",
+  "recentSessionsAverage": "Purata 10 sesi",
+  "levelStage": "Tahap {stage}",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Antara semua pelajar",
+  "aheadOfLearners": "Anda mendahului {percent}% pelajar",
+  "retakeLevelTest": "Ulang ujian tahap",
+  "practicePronunciation": "Latih sebutan"
 }

@@ -1043,4 +1043,43 @@ class AppLocalizationsFi extends AppLocalizations {
   String dateToday(String date) {
     return '$date (tänään)';
   }
+
+  @override
+  String get accentAnalysis => 'Aksenttianalyysi';
+
+  @override
+  String get overallLevel => 'Kokonaistaso';
+
+  @override
+  String get overallLevelSubtitle => 'Sanasto · Kielioppi · Ilmaisut';
+
+  @override
+  String get pronunciationAnalysis => 'Ääntämisanalyysi';
+
+  @override
+  String get recentSessionsAverage => '10 istunnon keskiarvo';
+
+  @override
+  String levelStage(int stage) {
+    return 'Taso $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Kaikista oppijoista';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Olet $percent% oppijaa edellä';
+  }
+
+  @override
+  String get retakeLevelTest => 'Uusi tasotesti';
+
+  @override
+  String get practicePronunciation => 'Harjoittele ääntämistä';
 }

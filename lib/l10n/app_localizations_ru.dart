@@ -1043,4 +1043,43 @@ class AppLocalizationsRu extends AppLocalizations {
   String dateToday(String date) {
     return '$date (сегодня)';
   }
+
+  @override
+  String get accentAnalysis => 'Анализ акцента';
+
+  @override
+  String get overallLevel => 'Общий уровень';
+
+  @override
+  String get overallLevelSubtitle => 'Лексика · Грамматика · Выражения';
+
+  @override
+  String get pronunciationAnalysis => 'Анализ произношения';
+
+  @override
+  String get recentSessionsAverage => 'Среднее за 10 сессий';
+
+  @override
+  String levelStage(int stage) {
+    return 'Уровень $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Топ $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Среди всех учащихся';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Вы опережаете $percent% учащихся';
+  }
+
+  @override
+  String get retakeLevelTest => 'Пройти тест уровня заново';
+
+  @override
+  String get practicePronunciation => 'Тренировать произношение';
 }

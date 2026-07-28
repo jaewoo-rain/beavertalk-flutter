@@ -58,6 +58,14 @@ abstract final class AppIcons {
   static Widget share({double size = 24, required Color color}) =>
       _glyph('share', size, color);
 
+  /// Gear — the my-page header entry into settings (Figma `4080:8345`).
+  ///
+  /// Exported at a 28 viewBox (the Figma component's own size) unlike most
+  /// glyphs here, which are 24. `_glyph` uses `BoxFit.contain`, so it still
+  /// renders exactly [size] wide.
+  static Widget settings({double size = 24, required Color color}) =>
+      _glyph('settings', size, color);
+
   // ── Status / feedback ────────────────────────────────────────
   static Widget check({double size = 24, required Color color}) =>
       _glyph('check', size, color);

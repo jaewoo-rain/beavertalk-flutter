@@ -322,5 +322,16 @@
   "colSentences": "الجمل",
   "colScore": "النتيجة",
   "colChange": "التغير",
-  "dateToday": "{date} (اليوم)"
+  "dateToday": "{date} (اليوم)",
+  "accentAnalysis": "تحليل اللكنة",
+  "overallLevel": "المستوى العام",
+  "overallLevelSubtitle": "المفردات · القواعد · التعبيرات",
+  "pronunciationAnalysis": "تحليل النطق",
+  "recentSessionsAverage": "متوسط آخر 10 جلسات",
+  "levelStage": "المستوى {stage}",
+  "topPercent": "أفضل {percent}%",
+  "allLearnersBasis": "بين جميع المتعلمين",
+  "aheadOfLearners": "أنت متقدم على {percent}% من المتعلمين",
+  "retakeLevelTest": "إعادة اختبار المستوى",
+  "practicePronunciation": "تدرب على النطق"
 }

@@ -1040,4 +1040,43 @@ class AppLocalizationsSi extends AppLocalizations {
   String dateToday(String date) {
     return '$date (අද)';
   }
+
+  @override
+  String get accentAnalysis => 'උච්චාරණ රටාව විශ්ලේෂණය';
+
+  @override
+  String get overallLevel => 'සමස්ත මට්ටම';
+
+  @override
+  String get overallLevelSubtitle => 'වචන මාලාව · ව්‍යාකරණ · ප්‍රකාශන';
+
+  @override
+  String get pronunciationAnalysis => 'උච්චාරණ විශ්ලේෂණය';
+
+  @override
+  String get recentSessionsAverage => 'පසුගිය සැසි 10 සාමාන්‍යය';
+
+  @override
+  String levelStage(int stage) {
+    return 'මට්ටම $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'ඉහළම $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'සියලු ඉගෙනුම්කරුවන් අතර';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'ඔබ ඉගෙනුම්කරුවන්ගෙන් $percent% ට වඩා ඉදිරියෙන්';
+  }
+
+  @override
+  String get retakeLevelTest => 'මට්ටම් පරීක්ෂණය නැවත කරන්න';
+
+  @override
+  String get practicePronunciation => 'උච්චාරණය පුහුණු වන්න';
 }

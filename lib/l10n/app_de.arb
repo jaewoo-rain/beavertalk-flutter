@@ -322,5 +322,16 @@
   "colSentences": "Sätze",
   "colScore": "Punkte",
   "colChange": "Änd.",
-  "dateToday": "{date} (heute)"
+  "dateToday": "{date} (heute)",
+  "accentAnalysis": "Akzentanalyse",
+  "overallLevel": "Gesamtniveau",
+  "overallLevelSubtitle": "Wortschatz · Grammatik · Ausdruck",
+  "pronunciationAnalysis": "Ausspracheanalyse",
+  "recentSessionsAverage": "Ø der letzten 10 Sitzungen",
+  "levelStage": "Stufe {stage}",
+  "topPercent": "Top {percent}%",
+  "allLearnersBasis": "Unter allen Lernenden",
+  "aheadOfLearners": "Du liegst vor {percent}% aller Lernenden",
+  "retakeLevelTest": "Einstufungstest wiederholen",
+  "practicePronunciation": "Aussprache üben"
 }

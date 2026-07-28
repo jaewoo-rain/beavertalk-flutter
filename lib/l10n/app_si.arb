@@ -322,5 +322,16 @@
   "colSentences": "වාක්‍ය",
   "colScore": "ලකුණු",
   "colChange": "වෙනස",
-  "dateToday": "{date} (අද)"
+  "dateToday": "{date} (අද)",
+  "accentAnalysis": "උච්චාරණ රටාව විශ්ලේෂණය",
+  "overallLevel": "සමස්ත මට්ටම",
+  "overallLevelSubtitle": "වචන මාලාව · ව්‍යාකරණ · ප්‍රකාශන",
+  "pronunciationAnalysis": "උච්චාරණ විශ්ලේෂණය",
+  "recentSessionsAverage": "පසුගිය සැසි 10 සාමාන්‍යය",
+  "levelStage": "මට්ටම {stage}",
+  "topPercent": "ඉහළම {percent}%",
+  "allLearnersBasis": "සියලු ඉගෙනුම්කරුවන් අතර",
+  "aheadOfLearners": "ඔබ ඉගෙනුම්කරුවන්ගෙන් {percent}% ට වඩා ඉදිරියෙන්",
+  "retakeLevelTest": "මට්ටම් පරීක්ෂණය නැවත කරන්න",
+  "practicePronunciation": "උච්චාරණය පුහුණු වන්න"
 }

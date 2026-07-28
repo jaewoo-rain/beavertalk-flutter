@@ -1015,4 +1015,43 @@ class AppLocalizationsJa extends AppLocalizations {
   String dateToday(String date) {
     return '$date（今日）';
   }
+
+  @override
+  String get accentAnalysis => 'アクセント分析';
+
+  @override
+  String get overallLevel => '総合レベル';
+
+  @override
+  String get overallLevelSubtitle => '語彙・文法・表現';
+
+  @override
+  String get pronunciationAnalysis => '発音分析';
+
+  @override
+  String get recentSessionsAverage => '直近10セッション平均';
+
+  @override
+  String levelStage(int stage) {
+    return 'レベル$stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return '上位$percent%';
+  }
+
+  @override
+  String get allLearnersBasis => '全学習者基準';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return '全学習者の$percent%より進んでいます';
+  }
+
+  @override
+  String get retakeLevelTest => 'レベルテストを再受験';
+
+  @override
+  String get practicePronunciation => '発音を学習する';
 }

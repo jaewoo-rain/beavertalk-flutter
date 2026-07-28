@@ -2091,6 +2091,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{date} (today)'**
   String dateToday(String date);
+
+  /// Title of the accent-breakdown card on my page.
+  ///
+  /// In en, this message translates to:
+  /// **'Accent analysis'**
+  String get accentAnalysis;
+
+  /// Title of the overall-level card on my page.
+  ///
+  /// In en, this message translates to:
+  /// **'Overall level'**
+  String get overallLevel;
+
+  /// Subtitle listing what the overall level covers.
+  ///
+  /// In en, this message translates to:
+  /// **'Vocabulary · Grammar · Expressions'**
+  String get overallLevelSubtitle;
+
+  /// Title of the pronunciation card on my page.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation analysis'**
+  String get pronunciationAnalysis;
+
+  /// Card subtitle: the figure is an average over the last 10 sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 10 sessions avg.'**
+  String get recentSessionsAverage;
+
+  /// A proficiency stage, 1-13. Also used for the two ends of the level scale.
+  ///
+  /// In en, this message translates to:
+  /// **'Stage {stage}'**
+  String levelStage(int stage);
+
+  /// Percentile rank, e.g. Top 45%.
+  ///
+  /// In en, this message translates to:
+  /// **'Top {percent}%'**
+  String topPercent(int percent);
+
+  /// Caption under the percentile: the rank is across all learners.
+  ///
+  /// In en, this message translates to:
+  /// **'Among all learners'**
+  String get allLearnersBasis;
+
+  /// Sentence under the level scale. The my-page card emphasises the '{percent}%' token in Label/Strong, so keep the number and the percent sign adjacent with no space.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re ahead of {percent}% of all learners'**
+  String aheadOfLearners(int percent);
+
+  /// CTA on the level card - start the level-test call again.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake level test'**
+  String get retakeLevelTest;
+
+  /// CTA on the pronunciation card - open the latest call analysis.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice pronunciation'**
+  String get practicePronunciation;
 }
 
 class _AppLocalizationsDelegate

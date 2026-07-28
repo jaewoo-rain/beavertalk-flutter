@@ -1040,4 +1040,43 @@ class AppLocalizationsHi extends AppLocalizations {
   String dateToday(String date) {
     return '$date (आज)';
   }
+
+  @override
+  String get accentAnalysis => 'उच्चारण-शैली विश्लेषण';
+
+  @override
+  String get overallLevel => 'समग्र स्तर';
+
+  @override
+  String get overallLevelSubtitle => 'शब्दावली · व्याकरण · अभिव्यक्ति';
+
+  @override
+  String get pronunciationAnalysis => 'उच्चारण विश्लेषण';
+
+  @override
+  String get recentSessionsAverage => 'पिछले 10 सत्रों का औसत';
+
+  @override
+  String levelStage(int stage) {
+    return 'स्तर $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'शीर्ष $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'सभी शिक्षार्थियों में';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'आप $percent% शिक्षार्थियों से आगे हैं';
+  }
+
+  @override
+  String get retakeLevelTest => 'स्तर परीक्षा दोबारा दें';
+
+  @override
+  String get practicePronunciation => 'उच्चारण अभ्यास करें';
 }

@@ -1041,4 +1041,43 @@ class AppLocalizationsVi extends AppLocalizations {
   String dateToday(String date) {
     return '$date (hôm nay)';
   }
+
+  @override
+  String get accentAnalysis => 'Phân tích giọng';
+
+  @override
+  String get overallLevel => 'Cấp độ tổng thể';
+
+  @override
+  String get overallLevelSubtitle => 'Từ vựng · Ngữ pháp · Diễn đạt';
+
+  @override
+  String get pronunciationAnalysis => 'Phân tích phát âm';
+
+  @override
+  String get recentSessionsAverage => 'TB 10 phiên gần nhất';
+
+  @override
+  String levelStage(int stage) {
+    return 'Cấp $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'Top $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'Trong tất cả người học';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'Bạn vượt $percent% người học';
+  }
+
+  @override
+  String get retakeLevelTest => 'Làm lại bài kiểm tra cấp độ';
+
+  @override
+  String get practicePronunciation => 'Luyện phát âm';
 }

@@ -322,5 +322,16 @@
   "colSentences": "جملے",
   "colScore": "اسکور",
   "colChange": "تبدیلی",
-  "dateToday": "{date} (آج)"
+  "dateToday": "{date} (آج)",
+  "accentAnalysis": "لہجے کا تجزیہ",
+  "overallLevel": "مجموعی سطح",
+  "overallLevelSubtitle": "الفاظ · گرامر · اظہار",
+  "pronunciationAnalysis": "تلفظ کا تجزیہ",
+  "recentSessionsAverage": "پچھلے 10 سیشنز کا اوسط",
+  "levelStage": "سطح {stage}",
+  "topPercent": "ٹاپ {percent}%",
+  "allLearnersBasis": "تمام سیکھنے والوں میں",
+  "aheadOfLearners": "آپ {percent}% سیکھنے والوں سے آگے ہیں",
+  "retakeLevelTest": "لیول ٹیسٹ دوبارہ دیں",
+  "practicePronunciation": "تلفظ کی مشق کریں"
 }

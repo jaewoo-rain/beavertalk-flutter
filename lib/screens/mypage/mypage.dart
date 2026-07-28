@@ -1,327 +1,63 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
-import '../../core/format/money.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
-import '../../components/molecules/card_line.dart';
-import '../../components/organisms/bottom_sheet_country_select.dart';
-import '../../components/organisms/bottom_sheet_subscription.dart';
-import '../../components/organisms/dialog_basic.dart';
+import '../../components/molecules/level_progress.dart';
+import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
-import '../../core/error/app_exception.dart';
-import '../../core/i18n/learning_language_controller.dart';
-import '../../core/i18n/locale_controller.dart';
-import '../../l10n/app_localizations.dart';
-import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/domain/entities/accent_breakdown.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
-import '../../features/subscription/presentation/providers/subscription_providers.dart';
+import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// My page — Figma `screen/main_mypage` (`2296:26071`). A profile card (avatar +
-/// accent breakdown), then Settings / Payment / Support sections whose rows are
-/// grouped in elevated cards, then a log-out button + delete / version footer.
-class MyPageScreen extends ConsumerStatefulWidget {
-  /// Creates the my-page screen.
-  const MyPageScreen({super.key});
-
-  @override
-  ConsumerState<MyPageScreen> createState() => _MyPageScreenState();
+/// Design-time values for the two cards the server has no source for yet.
+///
+/// **These are Figma numbers, not live data.** The redesign added a 종합 레벨
+/// card and a 발음 분석 card; the backend exposes neither a level percentile nor
+/// a recent-sessions score aggregate today, and this pass is UI-only by
+/// instruction. Wiring them later means replacing exactly this block:
+///
+/// - level → `GET /members/me`.`korean_level` (already exists server-side,
+///   1–13; the Flutter `Member` entity does not parse it yet).
+/// - percentile → no server field exists; needs a new one.
+/// - the pronunciation gauge → a recent-sessions aggregate endpoint, or a
+///   client fold over `GET /calls/{id}/result`.`score_average`.
+abstract final class _DesignSample {
+  static const int level = 7;
+  static const int levelMax = 13;
+  static const int topPercent = 45;
+  static const int aheadOfPercent = 55;
+  static const double pronunciationScore = 98;
+  static const double pronunciation = 96;
+  static const double fluency = 91;
+  static const double rhythm = 91;
 }
 
-class _MyPageScreenState extends ConsumerState<MyPageScreen> {
-  bool _notification = true;
-
-  /// User (UI) language id the user has picked locally, or null before any pick
-  /// (then the member's saved language is shown). The two rows are:
-  /// User Language (UI locale, editable) / Learning Language (call target, editable).
-  String? _userLangId;
-
-  /// Display name for a language id (falls back to the first entry).
-  String _langName(String id) => mockLanguages
-      .firstWhere((l) => l.id == id, orElse: () => mockLanguages.first)
-      .name;
-
-  /// (멀티랭귀지 도그푸딩) 학습 언어 선택지 — 서버 target_language **코드**(커리큘럼
-  /// 시드된 것만). 지금은 ko·ja. 다른 언어가 시드되면 여기 한 줄 추가하면 된다.
-  static const _learningLanguages = <MockLanguage>[
-    MockLanguage('ko', '한국어', 'KR'),
-    MockLanguage('ja', '日本語', 'JP'),
-    MockLanguage('en', 'English', 'US'),
-    MockLanguage('zh', '中文', 'CN'),
-    MockLanguage('fr', 'Français', 'FR'),
-    MockLanguage('vi', 'Tiếng Việt', 'VN'),
-  ];
-
-  /// Display name for a learning-language code (falls back to the first entry).
-  String _learningName(String code) => _learningLanguages
-      .firstWhere((l) => l.id == code, orElse: () => _learningLanguages.first)
-      .name;
-
-  /// Formats a date the way the sheets show it: `2026.06.20.`
-  String _dateLabel(DateTime d) =>
-      '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}.';
-
-  /// Formats USD cents as "$10" (shared with the avatar and checkout screens).
-  ///
-  /// Locale-aware, like the dates above: separators and symbol placement differ
-  /// per locale across the 30 the app ships.
-  String _money(int minor) =>
-      formatUsd(minor, locale: Localizations.localeOf(context).toString());
-
-  /// Opens the subscription sheet as a real bottom sheet over MyPage.
-  ///
-  /// Figma v2 `screen/mypage__sub_manage` (`3360:20267`) shows exactly this:
-  /// MyPage still visible and dimmed, the sheet resting on top of it.
-  ///
-  /// It used to push [Routes.subscription] — a full-screen route that faked a
-  /// sheet by bottom-anchoring the bare surface in an `Align`. That gave no
-  /// scrim, no slide-up, no drag/tap-outside dismiss, and dead space above;
-  /// and since every handler there was `Navigator.pop`, tapping 플랜 변경 or
-  /// 결제내역 보기 just looked like going back.
-  ///
-  /// Uses [showModalBottomSheet] — the same call the language picker below
-  /// makes — rather than `showDialog` + `asModal()`. Both overlay, but only the
-  /// modal-sheet route slides up and drags to dismiss. It supplies the scrim
-  /// itself, so the sheet widget is passed bare (no `asModal()`, which would
-  /// paint a second [Dim] on top of the route's own barrier).
-  ///
-  /// The three types are one flow, matching the Figma frames:
-  /// manage (`3360:20267`) → 요금제 변경 → change-plan (`3360:20312`) →
-  /// 구독 취소 → cancel (`3360:20357`). The sheet rebuilds in place via
-  /// [StatefulBuilder] rather than stacking routes, so the surface stays put and
-  /// only its contents swap.
-  ///
-  /// ## Data
-  /// Price and dates come from `GET /subscriptions` via
-  /// [currentSubscriptionProvider]; 구독 취소 calls
-  /// `POST /subscriptions/{id}/cancel`. Benefit copy is static product text, and
-  /// the card line is still a placeholder — the server records `card_info` on
-  /// payments, but exposes no "current payment method" to read it back from.
-  Future<void> _openSubscriptionSheet(AppLocalizations l10n) {
-    var type = SubscriptionSheetType.manage;
-    return showModalBottomSheet<void>(
-      context: context,
-      // The sheet paints its own surface + rounded top; the route must not add
-      // a Material behind it.
-      backgroundColor: Colors.transparent,
-      // Flutter defaults the barrier to black @ 54%; pin it to the app scrim so
-      // every dim in the product is the same black @ 50%.
-      barrierColor: context.c.materialDim,
-      // The sheets are tall — without this they are capped at half the screen
-      // and their footer buttons fall off.
-      isScrollControlled: true,
-      builder: (sheetCtx) => Consumer(
-        builder: (sheetCtx, ref, _) => StatefulBuilder(
-          builder: (sheetCtx, setSheetState) {
-          void show(SubscriptionSheetType next) =>
-              setSheetState(() => type = next);
-          final sub = ref.watch(currentSubscriptionProvider);
-          final end = sub?.endDate;
-          // The note names the date Pro access lapses. With no end_date the
-          // subscription is open-ended and the sentence has nothing to say, so
-          // it is dropped rather than printed with a blank or invented date.
-          final note = end == null
-              ? null
-              : l10n.subscriptionSwitchNote(_dateLabel(end));
-          final price = sub?.price;
-          return BottomSheetSubscription(
-            type: type,
-            plan: SubscriptionPlanInfo(
-              name: l10n.proMembership,
-              priceLine: price == null ? l10n.pricePerMonth : _money(price),
-              nextBillingDate: end == null ? null : _dateLabel(end),
-            ),
-            benefits: [
-              SubscriptionBenefit(l10n.benefitUnlimitedCalls),
-              SubscriptionBenefit(l10n.benefitDetailedAnalysis),
-              SubscriptionBenefit(l10n.benefitAllCharacters),
-              SubscriptionBenefit(l10n.benefitNoAds),
-            ],
-            // Figma `176:14577` type=manage carries a 결제 정보 section. The sheet
-            // hides it when this list is empty (`bottom_sheet_subscription.dart:275`)
-            // and the old screen passed nothing, so it never rendered at all.
-            //
-            // 최근 결제 is the subscription's start date — the charge that
-            // created it (`SubscriptionService.start` writes a Payment in the
-            // same transaction). 결제 수단 has no server source: `card_info` is
-            // written onto payments but never exposed as a "current method", so
-            // that row is omitted rather than faked.
-            paymentRows: [
-              if (sub?.startDate != null)
-                (label: l10n.lastPayment, value: _dateLabel(sub!.startDate!)),
-            ],
-            // Shown by change-plan and cancel only; the sheet ignores it for manage.
-            note: note,
-            planOptions: [
-              SubscriptionPlanOption(
-                name: 'Free',
-                benefits: [
-                  SubscriptionBenefit(l10n.freePlanCallLimit),
-                  SubscriptionBenefit(l10n.freePlanBasicCharacters),
-                ],
-              ),
-              SubscriptionPlanOption(
-                name: 'Pro',
-                priceLine: l10n.pricePerMonth,
-                highlighted: true,
-                active: true,
-                benefits: [
-                  SubscriptionBenefit(l10n.benefitUnlimitedCalls),
-                  SubscriptionBenefit(l10n.benefitDetailedAnalysis),
-                  SubscriptionBenefit(l10n.benefitAllCharacters),
-                  SubscriptionBenefit(l10n.benefitNoAds),
-                ],
-              ),
-            ],
-            lostBenefits: [
-              SubscriptionBenefit(l10n.benefitUnlimitedCalls),
-              SubscriptionBenefit(l10n.benefitDetailedAnalysis),
-              SubscriptionBenefit(l10n.benefitAllCharacters),
-            ],
-            onPrimary: switch (type) {
-              // 요금제 변경 → the change-plan step.
-              SubscriptionSheetType.manage => () =>
-                  show(SubscriptionSheetType.changePlan),
-              // 구독 취소 → the confirm step.
-              SubscriptionSheetType.changePlan => () =>
-                  show(SubscriptionSheetType.cancel),
-              // Final 구독 취소 → POST /subscriptions/{id}/cancel. Disabled when
-              // there is nothing active to cancel, so the button can't no-op.
-              SubscriptionSheetType.cancel =>
-                sub == null ? null : () => _cancelSubscription(sheetCtx, sub.id),
-            },
-            onSecondary: switch (type) {
-              // 결제내역 보기 → the history screen. Close the sheet first, then
-              // push from the screen's own context (sheetCtx dies on pop).
-              SubscriptionSheetType.manage => () {
-                  Navigator.pop(sheetCtx);
-                  Navigator.pushNamed(context, Routes.paymentHistory);
-                },
-              // Pro 계속 사용하기 → back to manage.
-              SubscriptionSheetType.changePlan => () =>
-                  show(SubscriptionSheetType.manage),
-              // cancel has a single-button footer.
-              SubscriptionSheetType.cancel => null,
-            },
-            onClose: () => Navigator.pop(sheetCtx),
-          );
-          },
-        ),
-      ),
-    );
-  }
-
-  /// Cancels [subscribeId] (`POST /subscriptions/{id}/cancel`), closes the sheet
-  /// and refreshes the subscription list.
-  ///
-  /// The cancel is a soft flag server-side — the row stays and keeps appearing
-  /// in `GET /subscriptions` with `is_activate: false`, which is why the list is
-  /// invalidated rather than mutated locally.
-  Future<void> _cancelSubscription(BuildContext sheetCtx, int subscribeId) async {
-    try {
-      await ref
-          .read(subscriptionRepositoryProvider)
-          .cancel(subscribeId);
-      ref.invalidate(subscriptionsProvider);
-      // The cancel wrote no payment row, but the plan state the rest of the
-      // screen shows is derived from this list.
-      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
-    } catch (e) {
-      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e is AppException
-              ? e.message
-              : AppLocalizations.of(context).somethingWentWrong),
-        ),
-      );
-    }
-  }
-
-  /// Opens the language bottom sheet for the **user (UI) language**, seeded with
-  /// [currentId]; on confirm stores the pick locally and persists it to the
-  /// backend (`PATCH /members/me`). Staged until "확인" so cancelling keeps the
-  /// old value; a failed save is surfaced via a snackbar (local pick stays).
-  Future<void> _pickUserLanguage(String currentId) async {
-    var staged = currentId;
-    final picked = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.c.materialDim,
-      isScrollControlled: true,
-      builder: (sheetCtx) => StatefulBuilder(
-        builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
-          title: AppLocalizations.of(sheetCtx).selectYourLanguage,
-          items: [
-            for (final l in mockLanguages)
-              CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
-          ],
-          value: staged,
-          onChanged: (code) => setSheetState(() => staged = code),
-          onConfirm: () => Navigator.of(sheetCtx).pop(staged),
-          onClose: () => Navigator.of(sheetCtx).pop(),
-        ),
-      ),
-    );
-    if (picked == null || picked == currentId || !mounted) return;
-    final l10n = AppLocalizations.of(context);
-    setState(() => _userLangId = picked);
-    // Switch the app UI to the chosen language immediately (persisted); the
-    // backend save follows.
-    unawaited(ref.read(localeControllerProvider.notifier).setLanguage(picked));
-    try {
-      await ref.read(authControllerProvider.notifier).updateLanguage(picked);
-    } catch (e) {
-      if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(content: Text(msg)));
-    }
-  }
-
-  /// Opens the **learning-language** bottom sheet (도그푸딩 시드된 언어), seeded with
-  /// [currentCode]. On confirm persists the pick via [learningLanguageProvider] —
-  /// the normalcall socket then sends it as `target_language` at call start.
-  /// Local-only(백엔드 PATCH 없음): 서버가 통화마다 그 언어 코스를 잡고
-  /// member_language_level 을 자동 생성한다.
-  Future<void> _pickLearningLanguage(String currentCode) async {
-    var staged = currentCode;
-    final picked = await showModalBottomSheet<String>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.c.materialDim,
-      isScrollControlled: true,
-      builder: (sheetCtx) => StatefulBuilder(
-        builder: (sheetCtx, setSheetState) => BottomSheetCountrySelect(
-          title: AppLocalizations.of(sheetCtx).learningLanguage,
-          items: [
-            for (final l in _learningLanguages)
-              CountryItem(code: l.id, name: l.name, countryCode: l.countryCode),
-          ],
-          value: staged,
-          onChanged: (code) => setSheetState(() => staged = code),
-          onConfirm: () => Navigator.of(sheetCtx).pop(staged),
-          onClose: () => Navigator.of(sheetCtx).pop(),
-        ),
-      ),
-    );
-    if (picked == null || picked == currentCode || !mounted) return;
-    await ref.read(learningLanguageProvider.notifier).setLanguage(picked);
-  }
+/// My page — Figma `screen/main_mypage` (Dark `3360:20181`, Light `3703:46474`).
+///
+/// The redesign turned this screen into an **analysis dashboard**: three cards
+/// (억양 분석 · 종합 레벨 · 발음 분석) and nothing else. Everything that used to
+/// live below them — Settings / Payment / Support, log out, delete account,
+/// version — moved to [Routes.mypageSettings], reached from the gear that
+/// replaced the old share icon in the header.
+///
+/// Sharing did not disappear with that icon: it moved *into* the accent card,
+/// whose header now carries its own share button (Figma component
+/// `Dialog-ShareProfile-new`, state=mypage → state=share).
+class MyPageScreen extends ConsumerWidget {
+  /// Creates the my-page screen.
+  const MyPageScreen({super.key});
 
   /// Caption shared alongside the accent-card image (see [DialogShareProfile]).
   static const String _inviteText =
@@ -329,50 +65,18 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
       'American! 🦫 Come find your accent and learn with me: '
       'https://beavertalk.im';
 
-  /// Confirms and performs account deletion. Shows a [DialogBasic] first; on
-  /// confirm calls [AuthController.deleteAccount] (backend delete + sign-out).
-  Future<void> _confirmDeleteAccount() async {
-    final l10n = AppLocalizations.of(context);
-    final confirmed = await showDialogBasic<bool>(
-      context,
-      title: l10n.deleteAccountTitle,
-      description: l10n.deleteAccountBody,
-      variant: DialogBasicVariant.twoHorizontal,
-      primary: DialogAction(
-          label: l10n.cancel,
-          onPressed: () => Navigator.of(context).pop(false)),
-      secondary: DialogAction(
-          label: l10n.delete,
-          onPressed: () => Navigator.of(context).pop(true)),
-    );
-    if (confirmed != true || !mounted) return;
-    try {
-      await ref.read(authControllerProvider.notifier).deleteAccount();
-    } catch (e) {
-      if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.accountDeleteFailed;
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(content: Text(msg)));
-    }
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
-    // Languages come from the real member (GET /members/me); show sensible
-    // defaults until it loads.
-    final member = ref.watch(myProfileProvider).valueOrNull;
     // Accent (nationality) breakdown from GET /members/me/profile. Empty until
     // it loads or when the member has no classification yet.
     final accentStats =
         ref.watch(myAccentProvider).valueOrNull?.stats ?? const <AccentStat>[];
-
-    // Effective user (UI) language id: the local pick, else the member's saved
-    // language when it maps to a known language, else English.
-    final memberLang = member?.language;
-    final userLangId = _userLangId ??
-        (mockLanguages.any((l) => l.id == memberLang) ? memberLang! : 'en');
+    // Watched, not read on tap: `callListProvider` is autoDispose, so a bare
+    // `ref.read` inside the button handler would find it uninitialised and the
+    // 발음 학습하기 CTA would always take the records fallback. Watching it here
+    // starts the fetch while the screen is open so the newest call id is ready.
+    final recentCalls = ref.watch(callListProvider).valueOrNull?.items;
 
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -382,113 +86,22 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
             title: '',
             onBack: () => Navigator.pop(context),
             trailing: IconButton(
-              onPressed: () => showDialogShareProfile(
-                context,
-                imageProvider: beaverImage,
-                caption: l10n.accentSoundsLike,
-                title: accentStats.isEmpty ? '—' : accentStats.first.label,
-                stats: [
-                  for (var i = 0; i < accentStats.length; i++)
-                    ProfileStat(
-                      label: accentStats[i].label,
-                      value: accentStats[i].percent.toDouble(),
-                      active: i == 0,
-                    ),
-                ],
-                // The dialog rasterizes the accent card and shares it as a PNG;
-                // this text rides along as the caption.
-                shareText: _inviteText,
-                onShared: () {
-                  if (mounted) Navigator.of(context).maybePop();
-                },
-              ),
-              icon: AppIcons.share(color: context.c.labelStrong),
-              tooltip: l10n.share,
+              onPressed: () =>
+                  Navigator.pushNamed(context, Routes.mypageSettings),
+              icon: AppIcons.settings(color: context.c.labelStrong),
+              tooltip: l10n.settingsSection,
             ),
           ),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
+              padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
+                  AppSpacing.s20, AppSpacing.s24),
               children: [
-                _profileCard(accentStats),
+                _accentCard(context, l10n, accentStats),
                 const SizedBox(height: AppSpacing.s24),
-
-                _section(l10n.settingsSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  // User (UI) language — editable.
-                  _navRow(
-                    l10n.userLanguage,
-                    _langName(userLangId),
-                    onTap: () => _pickUserLanguage(userLangId),
-                  ),
-                  // Learning language — (도그푸딩) 시드된 언어(ko·ja) 중 선택.
-                  // 통화 시작 시 target_language 로 실려 그 언어 코스로 진행된다.
-                  _navRow(
-                    l10n.learningLanguage,
-                    _learningName(ref.watch(learningLanguageProvider)),
-                    onTap: () => _pickLearningLanguage(
-                        ref.read(learningLanguageProvider)),
-                  ),
-                  CardLine(
-                    type: CardLineType.defaultToggle,
-                    label: l10n.notificationLabel,
-                    checked: _notification,
-                    onChanged: (v) => setState(() => _notification = v),
-                    showDivider: false,
-                  ),
-                ]),
+                _levelCard(context, l10n),
                 const SizedBox(height: AppSpacing.s24),
-
-                _section(l10n.paymentSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  _navRow(l10n.currentPlan, 'Pro',
-                      onTap: () => _openSubscriptionSheet(l10n)),
-                  // Was pointed at the subscription sheet — the same
-                  // destination as 현재 요금제 — because the history screen
-                  // didn't exist. It does now (Figma `2117:20206`).
-                  _navRow(l10n.paymentHistory, '',
-                      route: Routes.paymentHistory, divider: false),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
-
-                _section(l10n.supportSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  _navRow(l10n.contactUs, ''),
-                  _navRow(l10n.termsOfService, '', route: Routes.terms),
-                  _navRow(l10n.privacyPolicy, '',
-                      route: Routes.privacy, divider: false),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
-
-                // log out — design-system secondary-fill Button (60).
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.logOut,
-                  onPressed: () =>
-                      ref.read(authControllerProvider.notifier).logout(),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                Center(
-                  child: InkWell(
-                    onTap: _confirmDeleteAccount,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
-                      child: Text(
-                        l10n.deleteAccount,
-                        style: AppType.body1.r
-                            .copyWith(color: context.c.labelNormal),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                _version(),
+                _pronunciationCard(context, l10n, recentCalls),
               ],
             ),
           ),
@@ -497,19 +110,46 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
     );
   }
 
-  /// Profile card: 80px avatar, accent label, and the accent ProgressBars from
-  /// the real [stats] (`speak_country`). Empty until analyzed → shows a dash.
-  Widget _profileCard(List<AccentStat> stats) {
-    final l10n = AppLocalizations.of(context);
-    return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s12, AppSpacing.s16, AppSpacing.s12, AppSpacing.s24),
-      decoration: BoxDecoration(
-        color: context.c.backgroundNormalAlternative,
-        borderRadius: BorderRadius.circular(AppRadius.xs), // 8
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+  // ── Cards ──────────────────────────────────────────────────────────────
+
+  /// 억양 분석 — the accent breakdown, with the share action in its header.
+  ///
+  /// The body (avatar → caption → top accent → one [ProgressBar] per stat) is
+  /// the old profile card unchanged; the redesign only wrapped it in a titled
+  /// header and moved sharing here from the app bar.
+  Widget _accentCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<AccentStat> stats,
+  ) =>
+      _card(
+        context,
+        header: _cardHeader(
+          context,
+          title: l10n.accentAnalysis,
+          subtitle: l10n.recentSessionsAverage,
+          action: InkWell(
+            onTap: () => showDialogShareProfile(
+              context,
+              imageProvider: beaverImage,
+              caption: l10n.accentSoundsLike,
+              title: stats.isEmpty ? '—' : stats.first.label,
+              stats: [
+                for (var i = 0; i < stats.length; i++)
+                  ProfileStat(
+                    label: stats[i].label,
+                    value: stats[i].percent.toDouble(),
+                    active: i == 0,
+                  ),
+              ],
+              // The dialog rasterizes the accent card and shares it as a PNG;
+              // this text rides along as the caption.
+              shareText: _inviteText,
+              onShared: () => Navigator.of(context).maybePop(),
+            ),
+            child: AppIcons.share(color: context.c.labelNormal),
+          ),
+        ),
         children: [
           Center(
             child: Container(
@@ -522,90 +162,269 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
               ),
             ),
           ),
-          const SizedBox(height: AppSpacing.s16),
           Text(
             l10n.accentSoundsLike,
             textAlign: TextAlign.center,
             style: AppType.body1.r.copyWith(color: context.c.labelNormal),
           ),
-          const SizedBox(height: AppSpacing.s8),
           Text(
             stats.isEmpty ? '—' : stats.first.label,
             textAlign: TextAlign.center,
             style: AppType.title3.b.copyWith(color: context.c.labelStrong),
           ),
-          const SizedBox(height: AppSpacing.s16),
-          for (var i = 0; i < stats.length; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.s16),
+          for (var i = 0; i < stats.length; i++)
             ProgressBar(
               label: stats[i].label,
               value: stats[i].percent.toDouble(),
               active: i == 0,
             ),
+        ],
+      );
+
+  /// 종합 레벨 — stage, percentile and the 1→13 gradient scale.
+  Widget _levelCard(BuildContext context, AppLocalizations l10n) => _card(
+        context,
+        header: _cardHeader(
+          context,
+          title: l10n.overallLevel,
+          subtitle: l10n.overallLevelSubtitle,
+        ),
+        children: [
+          // Both sides are flexible: at 320dp "Stage 7" + "Among all learners"
+          // exceeds the 240pt card interior in the wordier locales. The stage
+          // ellipsizes (it is short and numeric) and the caption wraps rather
+          // than being cut, so no locale loses the sentence.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Flexible(
+                child: Text(
+                  l10n.levelStage(_DesignSample.level),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      AppType.title2.b.copyWith(color: context.c.labelStrong),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s8),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.topPercent(_DesignSample.topPercent),
+                      textAlign: TextAlign.end,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: AppType.title3.b
+                          .copyWith(color: context.c.primaryNormal),
+                    ),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(
+                      l10n.allLearnersBasis,
+                      textAlign: TextAlign.end,
+                      style: AppType.body1.r
+                          .copyWith(color: context.c.labelNormal),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          LevelProgress(
+            level: _DesignSample.level,
+            maxLevel: _DesignSample.levelMax,
+            startLabel: l10n.levelStage(1),
+            endLabel: l10n.levelStage(_DesignSample.levelMax),
+          ),
+          _aheadLine(context, l10n, _DesignSample.aheadOfPercent),
+          Button(
+            type: BtnType.secondaryFill,
+            size: BtnSize.s60,
+            text: l10n.retakeLevelTest,
+            onPressed: () => _startLevelTest(context),
+          ),
+        ],
+      );
+
+  /// 발음 분석 — the existing gauge component under a titled header.
+  Widget _pronunciationCard(
+    BuildContext context,
+    AppLocalizations l10n,
+    List<CallSummary>? recentCalls,
+  ) =>
+      _card(
+        context,
+        header: _cardHeader(
+          context,
+          title: l10n.pronunciationAnalysis,
+          subtitle: l10n.recentSessionsAverage,
+        ),
+        children: [
+          PronunciationResult(
+            score: _DesignSample.pronunciationScore,
+            metrics: [
+              PronunciationMetric(
+                  label: l10n.pronunciation,
+                  value: '${_DesignSample.pronunciation.round()}%'),
+              PronunciationMetric(
+                  label: l10n.fluency,
+                  value: '${_DesignSample.fluency.round()}%'),
+              PronunciationMetric(
+                  label: l10n.rhythm,
+                  value: '${_DesignSample.rhythm.round()}%'),
+            ],
+          ),
+          Button(
+            type: BtnType.secondaryFill,
+            size: BtnSize.s60,
+            text: l10n.practicePronunciation,
+            onPressed: () => _openRecentAnalysis(context, recentCalls),
+          ),
+        ],
+      );
+
+  // ── Card chrome ────────────────────────────────────────────────────────
+
+  /// The analysis-card shell — Figma `Dialog-ShareProfile` frame: radius 8,
+  /// padding 20/20/24/20, `Background/Surface/Alternative`, 16 between rows.
+  Widget _card(
+    BuildContext context, {
+    required Widget header,
+    required List<Widget> children,
+  }) =>
+      Container(
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.s20, AppSpacing.s20, AppSpacing.s20, AppSpacing.s24),
+        decoration: BoxDecoration(
+          color: context.c.backgroundSurfaceAlternative,
+          borderRadius: BorderRadius.circular(AppRadius.xs), // 8
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            header,
+            for (final child in children) ...[
+              const SizedBox(height: AppSpacing.s16),
+              child,
+            ],
           ],
+        ),
+      );
+
+  /// Card header: `title` in `Primary/Heavy` SemiBold, `subtitle` in
+  /// `Label/Normal` Regular, and an optional trailing [action] pushed to the
+  /// far end (only the accent card has one).
+  Widget _cardHeader(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    Widget? action,
+  }) =>
+      Row(
+        children: [
+          // Expanded (not Flexible + Spacer): with both the text group and a
+          // Spacer flexible, each would only get half the free width and the
+          // titles would overflow at 320dp in the wordier locales.
+          Expanded(
+            child: Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppType.body1.sb
+                        .copyWith(color: context.c.primaryHeavy),
+                  ),
+                ),
+                const SizedBox(width: AppSpacing.s8),
+                Flexible(
+                  child: Text(
+                    subtitle,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        AppType.body1.r.copyWith(color: context.c.labelNormal),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (action != null) ...[
+            const SizedBox(width: AppSpacing.s8),
+            action,
+          ],
+        ],
+      );
+
+  /// "전체 학습자의 **55%**보다 앞서 있어요" — the percentage is emphasised in
+  /// `Label/Strong` inside an otherwise `Label/Normal` sentence.
+  ///
+  /// The emphasis is applied by locating the formatted `NN%` token in the
+  /// localized sentence; if a translation words it differently and the token is
+  /// absent, the line renders flat rather than mis-splitting.
+  Widget _aheadLine(BuildContext context, AppLocalizations l10n, int percent) {
+    final sentence = l10n.aheadOfLearners(percent);
+    final token = '$percent%';
+    final base = AppType.label1.r.copyWith(color: context.c.labelNormal);
+    final index = sentence.indexOf(token);
+    if (index < 0) return Text(sentence, style: base);
+    return Text.rich(
+      TextSpan(
+        style: base,
+        children: [
+          TextSpan(text: sentence.substring(0, index)),
+          TextSpan(
+            text: token,
+            style: base.copyWith(color: context.c.labelStrong),
+          ),
+          TextSpan(text: sentence.substring(index + token.length)),
         ],
       ),
     );
   }
 
-  /// Section header (Body 1 SemiBold, white).
-  Widget _section(String title) => Text(
-        title,
-        style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
-      );
+  // ── Actions ────────────────────────────────────────────────────────────
 
-  /// Wraps a section's rows in an elevated grouping card.
-  Widget _group(List<Widget> rows) => Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.s12, vertical: AppSpacing.s8),
-        decoration: BoxDecoration(
-          color: context.c.backgroundNormalAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.sm), // 12
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: rows),
-      );
-
-  /// A tappable label/value row with a trailing chevron.
+  /// 레벨 테스트 다시하기 → the call flow.
   ///
-  /// Provide either a named [route] (pushed on tap) or a custom [onTap]; [onTap]
-  /// takes precedence. With neither, the row is inert.
-  Widget _navRow(String label, String value,
-          {String? route, VoidCallback? onTap, bool divider = true}) =>
-      InkWell(
-        onTap: onTap ??
-            (route == null
-                ? null
-                : () => Navigator.pushNamed(context, route)),
-        child: CardLine(
-          type: CardLineType.defaultRow,
-          label: label,
-          value: value.isEmpty ? null : value,
-          showDivider: divider,
-        ),
-      );
+  /// There is no dedicated level-test screen: the app has one call entry point
+  /// ([Routes.callLoading]) and the server decides whether a call counts as a
+  /// level test. Onboarding's 바로 통화하기 goes to the same place.
+  void _startLevelTest(BuildContext context) =>
+      Navigator.pushNamed(context, Routes.callLoading);
 
-  /// "Beavertalk • v1.0.0" footer.
-  Widget _version() => Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Beavertalk',
-                style:
-                    AppType.body1.r.copyWith(color: context.c.labelNormal)),
-            const SizedBox(width: AppSpacing.s4),
-            Container(
-              width: AppSpacing.s4,
-              height: AppSpacing.s4,
-              decoration: BoxDecoration(
-                color: context.c.labelNormal,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.s4),
-            Text('v1.0.0',
-                style:
-                    AppType.body1.r.copyWith(color: context.c.labelNormal)),
-          ],
-        ),
-      );
+  /// 발음 학습하기 → the most recent call's analysis.
+  ///
+  /// Figma points at `screen/analysis`, which in the app cannot be entered
+  /// directly — it renders a `CallResult` handed to it by
+  /// [Routes.analysisLoading], which in turn needs a `callId`. The id comes
+  /// from [recentCalls]; with no calls yet (or the list still loading) this
+  /// falls back to the records screen, where the same analysis is one tap away.
+  ///
+  /// **Not simply the newest call.** A call that was cut before anyone spoke
+  /// lands in the list with `totalTime` 0 and never gets analysed, so aiming at
+  /// `first` blindly drops the user on "분석 결과를 불러오지 못했어요" — observed on
+  /// device. The newest call with a non-zero duration is the newest one that
+  /// can actually have a result.
+  void _openRecentAnalysis(
+      BuildContext context, List<CallSummary>? recentCalls) {
+    if (recentCalls == null || recentCalls.isEmpty) {
+      Navigator.pushNamed(context, Routes.records);
+      return;
+    }
+    final analysable = recentCalls
+        .where((c) => (c.totalTime ?? 0) > 0)
+        .firstOrNull;
+    if (analysable == null) {
+      Navigator.pushNamed(context, Routes.records);
+      return;
+    }
+    Navigator.pushNamed(context, Routes.analysisLoading,
+        arguments: analysable.callId);
+  }
 }

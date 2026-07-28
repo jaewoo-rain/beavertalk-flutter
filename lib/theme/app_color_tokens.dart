@@ -40,8 +40,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.backgroundNormalDeep,
     required this.backgroundElevatedNormal,
     required this.backgroundElevatedAlternative,
+    required this.backgroundSurfaceAlternative,
     required this.backgroundTransparentNormal,
     required this.backgroundTransparentAlternative,
+    required this.gradientLevelStart,
+    required this.gradientLevelMid,
+    required this.gradientLevelEnd,
     required this.lineNormal,
     required this.lineNeutral,
     required this.lineAlternative,
@@ -139,7 +143,24 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// `Background/Elevated/Alternative` — **the card/sheet/dialog surface**.
   final Color backgroundElevatedAlternative;
 
+  /// `Background/Surface/Alternative` — the my-page analysis cards.
+  ///
+  /// Identical to [backgroundNormalAlternative] in Dark (#252932) but **white**
+  /// in Light, where `Background/Normal/Alternative` is a grey (#DBDCE2). The
+  /// cards sit on the page background and must read as raised paper, so they
+  /// need this token rather than the sunken-control one.
+  final Color backgroundSurfaceAlternative;
+
   final Color backgroundTransparentNormal, backgroundTransparentAlternative;
+
+  // ── Gradient ───────────────────────────────────────────────
+  /// `Gradient/Level/Start` · `Mid` · `End` — the 1단계→13단계 level bar,
+  /// laid out at stops 0.15 / 0.50 / 0.85 (Figma `4083:3-5`).
+  ///
+  /// Dark runs Brand/90 → Brand/50 → Light Blue/45 (light mint to blue); Light
+  /// darkens the whole ramp (Brand/35 → Brand/20 → Light Blue/30) so it holds
+  /// contrast on a white card.
+  final Color gradientLevelStart, gradientLevelMid, gradientLevelEnd;
 
   // ── Line (strokes) ─────────────────────────────────────────
   final Color lineNormal, lineNeutral, lineAlternative;
@@ -218,6 +239,10 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundNormalDeep: Color(0xFF121217),
     backgroundElevatedNormal: Color(0xFF2F3340),
     backgroundElevatedAlternative: Color(0xFF1F222A),
+    backgroundSurfaceAlternative: Color(0xFF252932),
+    gradientLevelStart: Color(0xFFB0FFE7),
+    gradientLevelMid: Color(0xFF00FFB2),
+    gradientLevelEnd: Color(0xFF22A0D0),
     backgroundTransparentNormal: Color(0x9C212225),
     backgroundTransparentAlternative: Color(0x9C212225),
     lineNormal: Color(0xFF70737C),
@@ -292,6 +317,10 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundNormalDeep: Color(0xFFE1E2E4),
     backgroundElevatedNormal: Color(0xFFF7F7FB),
     backgroundElevatedAlternative: Color(0xFFFFFFFF),
+    backgroundSurfaceAlternative: Color(0xFFFFFFFF),
+    gradientLevelStart: Color(0xFF00C88A),
+    gradientLevelMid: Color(0xFF008C62),
+    gradientLevelEnd: Color(0xFF006796),
     backgroundTransparentNormal: Color(0x14FFFFFF),
     backgroundTransparentAlternative: Color(0xFFF7F7F7),
     lineNormal: Color(0x5270737C),
@@ -366,6 +395,10 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? backgroundNormalDeep,
     Color? backgroundElevatedNormal,
     Color? backgroundElevatedAlternative,
+    Color? backgroundSurfaceAlternative,
+    Color? gradientLevelStart,
+    Color? gradientLevelMid,
+    Color? gradientLevelEnd,
     Color? backgroundTransparentNormal,
     Color? backgroundTransparentAlternative,
     Color? lineNormal,
@@ -442,6 +475,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
             backgroundElevatedNormal ?? this.backgroundElevatedNormal,
         backgroundElevatedAlternative:
             backgroundElevatedAlternative ?? this.backgroundElevatedAlternative,
+        backgroundSurfaceAlternative:
+            backgroundSurfaceAlternative ?? this.backgroundSurfaceAlternative,
+        gradientLevelStart: gradientLevelStart ?? this.gradientLevelStart,
+        gradientLevelMid: gradientLevelMid ?? this.gradientLevelMid,
+        gradientLevelEnd: gradientLevelEnd ?? this.gradientLevelEnd,
         backgroundTransparentNormal:
             backgroundTransparentNormal ?? this.backgroundTransparentNormal,
         backgroundTransparentAlternative: backgroundTransparentAlternative ??
@@ -537,6 +575,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
           c(backgroundElevatedNormal, other.backgroundElevatedNormal),
       backgroundElevatedAlternative:
           c(backgroundElevatedAlternative, other.backgroundElevatedAlternative),
+      backgroundSurfaceAlternative:
+          c(backgroundSurfaceAlternative, other.backgroundSurfaceAlternative),
+      gradientLevelStart: c(gradientLevelStart, other.gradientLevelStart),
+      gradientLevelMid: c(gradientLevelMid, other.gradientLevelMid),
+      gradientLevelEnd: c(gradientLevelEnd, other.gradientLevelEnd),
       backgroundTransparentNormal:
           c(backgroundTransparentNormal, other.backgroundTransparentNormal),
       backgroundTransparentAlternative: c(backgroundTransparentAlternative,

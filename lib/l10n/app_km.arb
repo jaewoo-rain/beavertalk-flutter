@@ -322,5 +322,16 @@
   "colSentences": "ប្រយោគ",
   "colScore": "ពិន្ទុ",
   "colChange": "ប្តូរ",
-  "dateToday": "{date} (ថ្ងៃនេះ)"
+  "dateToday": "{date} (ថ្ងៃនេះ)",
+  "accentAnalysis": "ការវិភាគសំនៀង",
+  "overallLevel": "កម្រិតរួម",
+  "overallLevelSubtitle": "វាក្យសព្ទ · វេយ្យាករណ៍ · ការបញ្ចេញមតិ",
+  "pronunciationAnalysis": "ការវិភាគការបញ្ចេញសំឡេង",
+  "recentSessionsAverage": "មធ្យម ១០ វគ្គចុងក្រោយ",
+  "levelStage": "កម្រិត {stage}",
+  "topPercent": "កំពូល {percent}%",
+  "allLearnersBasis": "ក្នុងចំណោមអ្នកសិក្សាទាំងអស់",
+  "aheadOfLearners": "អ្នកនាំមុខ {percent}% នៃអ្នកសិក្សា",
+  "retakeLevelTest": "ធ្វើតេស្តកម្រិតម្តងទៀត",
+  "practicePronunciation": "អនុវត្តការបញ្ចេញសំឡេង"
 }

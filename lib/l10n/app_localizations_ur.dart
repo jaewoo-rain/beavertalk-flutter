@@ -1041,4 +1041,43 @@ class AppLocalizationsUr extends AppLocalizations {
   String dateToday(String date) {
     return '$date (آج)';
   }
+
+  @override
+  String get accentAnalysis => 'لہجے کا تجزیہ';
+
+  @override
+  String get overallLevel => 'مجموعی سطح';
+
+  @override
+  String get overallLevelSubtitle => 'الفاظ · گرامر · اظہار';
+
+  @override
+  String get pronunciationAnalysis => 'تلفظ کا تجزیہ';
+
+  @override
+  String get recentSessionsAverage => 'پچھلے 10 سیشنز کا اوسط';
+
+  @override
+  String levelStage(int stage) {
+    return 'سطح $stage';
+  }
+
+  @override
+  String topPercent(int percent) {
+    return 'ٹاپ $percent%';
+  }
+
+  @override
+  String get allLearnersBasis => 'تمام سیکھنے والوں میں';
+
+  @override
+  String aheadOfLearners(int percent) {
+    return 'آپ $percent% سیکھنے والوں سے آگے ہیں';
+  }
+
+  @override
+  String get retakeLevelTest => 'لیول ٹیسٹ دوبارہ دیں';
+
+  @override
+  String get practicePronunciation => 'تلفظ کی مشق کریں';
 }
