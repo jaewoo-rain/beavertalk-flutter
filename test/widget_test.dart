@@ -1,5 +1,6 @@
 // Smoke test: the app boots into the AuthGate splash without throwing.
 
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -24,5 +25,18 @@ void main() {
     ));
     // First frame shows the splash (token read is async, fired post-frame).
     expect(find.byType(BeaverTalkApp), findsOneWidget);
+    // The splash mirrors the native launch screen: the mascot on #181A20.
+    // If either drifts the hand-off from the OS splash starts to flicker.
+    expect(
+      tester.widget<Image>(find.byType(Image)).image,
+      const AssetImage('assets/images/splash_mascot.png'),
+    );
+    expect(
+      tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
+      const Color(0xFF181A20),
+    );
+    // The ring is what tells the user a slow members/me is still working — the
+    // native splash it hands off from cannot animate.
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }

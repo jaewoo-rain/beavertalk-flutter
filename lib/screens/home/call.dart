@@ -5,6 +5,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/call_toggle_button.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
@@ -45,6 +46,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// Max width of the 16:9 avatar feed — full mobile width, capped on large
   /// screens so the video doesn't stretch edge-to-edge on tablets.
   static const double _avatarMaxWidth = 520;
+
+  /// Clearance between the avatar feed and the caption slot below it.
+  ///
+  /// Measured across all four Figma variants (`3969:20583`/`20610`/`20634`/
+  /// `20656`), where it holds at ~70 whether the slot carries the subtitle or
+  /// the equalizer. Not an [AppSpacing] step — the design uses the gap to park
+  /// the feed at a fixed distance above the caption, so rounding it to s60/s72
+  /// visibly moves the feed.
+  static const double _feedToCaptionGap = 70;
 
   // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
   //   기본은 false(아바타 ON) — 제품 그대로의 부하에서 재생이 버티는지가 판정 기준이다.
@@ -149,15 +159,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   void _goFinish(String? callId, int elapsedSec, int? baselineCallId) {
     if (_navigated) return;
     _navigated = true;
-    _leave(() => Navigator.pushReplacementNamed(
-      context,
-      Routes.callFinish,
-      arguments: (
-        callId: callId,
-        elapsedSec: elapsedSec,
-        baselineCallId: baselineCallId,
+    _leave(
+      () => Navigator.pushReplacementNamed(
+        context,
+        Routes.callFinish,
+        arguments: (
+          callId: callId,
+          elapsedSec: elapsedSec,
+          baselineCallId: baselineCallId,
+        ),
       ),
-    ));
+    );
   }
 
   @override
@@ -170,10 +182,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       normalCallControllerProvider.select((s) => s.beaverSubtitle),
     );
     final hint = ref.watch(normalCallControllerProvider.select((s) => s.hint));
-    final subtitleOn =
-        ref.watch(normalCallControllerProvider.select((s) => s.subtitleOn));
-    final hintOn =
-        ref.watch(normalCallControllerProvider.select((s) => s.hintOn));
+    final subtitleOn = ref.watch(
+      normalCallControllerProvider.select((s) => s.subtitleOn),
+    );
+    final hintOn = ref.watch(
+      normalCallControllerProvider.select((s) => s.hintOn),
+    );
     final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
@@ -209,7 +223,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             ..clearSnackBars()
             ..showSnackBar(SnackBar(content: Text(msg)));
           Navigator.pushNamedAndRemoveUntil(
-              context, Routes.home, (r) => r.isFirst);
+            context,
+            Routes.home,
+            (r) => r.isFirst,
+          );
         });
       }
     });
@@ -232,7 +249,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
             // Header — connected dot + name + live timer.
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 10, vertical: AppSpacing.s12),
+                horizontal: 10,
+                vertical: AppSpacing.s12,
+              ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -248,9 +267,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s12),
-                      Text('Connected',
-                          style:
-                              AppType.label1.r.copyWith(color: context.c.labelNormal)),
+                      Text(
+                        'Connected',
+                        style: AppType.label1.r.copyWith(
+                          color: context.c.labelNormal,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s4),
@@ -260,102 +282,134 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     // "Bibi", so a Baba user watched the wrong name for the
                     // whole call; a blank line is the honest version.
                     selectedChar?.name ?? characterName(characterId) ?? '',
-                    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+                    style: AppType.body1.sb.copyWith(
+                      color: context.c.labelStrong,
+                    ),
                   ),
                   const SizedBox(height: AppSpacing.s4),
-                  Text(_formatted(elapsed),
-                      style:
-                          AppType.label1.r.copyWith(color: context.c.labelNormal)),
+                  Text(
+                    _formatted(elapsed),
+                    style: AppType.label1.r.copyWith(
+                      color: context.c.labelNormal,
+                    ),
+                  ),
                 ],
               ),
             ),
-            // Body — 16:9 avatar feed at the top, subtitle + hint pushed to the
-            // bottom (Figma Body `justify-between`). The caption area is
-            // bottom-aligned and scrollable so a long line + hint card can never
-            // overflow the column on short screens.
+            // Body — the feed, the caption slot and the hint card are ONE
+            // bottom-anchored block, not a feed pinned to the top with the rest
+            // hanging below it.
+            //
+            // That is what the four Figma variants encode: the feed starts at
+            // y=279 with hints off and y=140 with them on, i.e. the hint card
+            // pushes the feed *up* by its own height rather than opening a gap
+            // under a fixed feed. Scrollable so a long subtitle plus a card can
+            // never overflow on a short screen.
             Expanded(
-              child: Column(
-                children: [
-                  // 16:9 avatar feed — full width, capped at [_avatarMaxWidth].
-                  Center(
-                    child: ConstrainedBox(
-                      constraints:
-                          const BoxConstraints(maxWidth: _avatarMaxWidth),
-                      child: AspectRatio(
-                        aspectRatio: 16 / 9,
-                        child: ClipRect(
-                          child: avatarDir != null && !kDisableAvatarVideo
-                              ? SyncAvatar(
-                                  assetDir: avatarDir,
-                                  level: callNotifier.avatarLevel,
-                                  speaking: callNotifier.avatarSpeaking,
-                                  emotion: callNotifier.avatarEmotion,
-                                  // A still image, NOT [BeaverAvatar].
-                                  //
-                                  // SyncAvatar shows this while its idle/talk
-                                  // clips initialize (~100–300ms on Android),
-                                  // and BeaverAvatar is the sprite lip-sync
-                                  // renderer that the video approach replaced.
-                                  // Handing it back as the fallback meant every
-                                  // call opened with a few hundred ms of the
-                                  // retired renderer before the video took
-                                  // over — visibly a different avatar.
-                                  //
-                                  // Same still the kDisableAvatarVideo path
-                                  // below uses, so the two agree.
-                                  fallback: _partnerStill(partnerImage),
-                                )
-                              : _partnerStill(partnerImage),
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: SingleChildScrollView(
+                  // No horizontal padding here — the feed is full-bleed; only
+                  // the caption block below is inset.
+                  padding: const EdgeInsets.only(bottom: AppSpacing.s24),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // 16:9 avatar feed — full width, capped at [_avatarMaxWidth].
+                      Center(
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(
+                            maxWidth: _avatarMaxWidth,
+                          ),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: ClipRect(
+                              child: avatarDir != null && !kDisableAvatarVideo
+                                  ? SyncAvatar(
+                                      assetDir: avatarDir,
+                                      level: callNotifier.avatarLevel,
+                                      speaking: callNotifier.avatarSpeaking,
+                                      emotion: callNotifier.avatarEmotion,
+                                      // A still image, NOT [BeaverAvatar].
+                                      //
+                                      // SyncAvatar shows this while its idle/talk
+                                      // clips initialize (~100–300ms on Android),
+                                      // and BeaverAvatar is the sprite lip-sync
+                                      // renderer that the video approach replaced.
+                                      // Handing it back as the fallback meant every
+                                      // call opened with a few hundred ms of the
+                                      // retired renderer before the video took
+                                      // over — visibly a different avatar.
+                                      //
+                                      // Same still the kDisableAvatarVideo path
+                                      // below uses, so the two agree.
+                                      fallback: _partnerStill(partnerImage),
+                                    )
+                                  : _partnerStill(partnerImage),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  // Subtitle + hint card — bottom-aligned, scrollable on
-                  // overflow.
-                  Expanded(
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.fromLTRB(AppSpacing.s32,
-                            AppSpacing.s16, AppSpacing.s32, AppSpacing.s24),
+                      const SizedBox(height: _feedToCaptionGap),
+                      // Caption slot + hint card.
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s32,
+                        ),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                        if (showSubtitle)
-                          Text(
-                            beaverSubtitle,
-                            textAlign: TextAlign.center,
-                            style: AppType.body1.sb
-                                .copyWith(color: context.c.labelStrong),
-                          ),
-                        if (showSubtitle && showHint)
-                          const SizedBox(height: AppSpacing.s24),
-                        if (showHint)
-                          HintCard(
-                            examples: hint.examples,
-                            revealed: _revealedTurnId == hint.turnId,
-                            index: _suggestionIndex,
-                            onReveal: () {
-                              setState(() => _revealedTurnId = hint.turnId);
-                              ref
-                                  .read(normalCallControllerProvider.notifier)
-                                  .sendHintUsed(hint.turnId);
-                            },
-                            onCycle: () => setState(() => _suggestionIndex =
-                                (_suggestionIndex + 1) % hint.examples.length),
-                          ),
+                            // The slot carries the subtitle when subtitles are on
+                            // and the 5-bar equalizer when they are off — the two
+                            // never coexist in any Figma variant. Without the
+                            // equalizer a subtitles-off call showed nothing at all
+                            // here, so a silent beaver was indistinguishable from a
+                            // stalled one.
+                            if (showSubtitle)
+                              Text(
+                                beaverSubtitle,
+                                textAlign: TextAlign.center,
+                                style: AppType.body1.sb.copyWith(
+                                  color: context.c.labelStrong,
+                                ),
+                              )
+                            else
+                              const SpeakingEqualizer(),
+                            if (showHint) ...[
+                              const SizedBox(height: AppSpacing.s24),
+                              HintCard(
+                                examples: hint.examples,
+                                revealed: _revealedTurnId == hint.turnId,
+                                index: _suggestionIndex,
+                                onReveal: () {
+                                  setState(() => _revealedTurnId = hint.turnId);
+                                  ref
+                                      .read(
+                                        normalCallControllerProvider.notifier,
+                                      )
+                                      .sendHintUsed(hint.turnId);
+                                },
+                                onCycle: () => setState(
+                                  () => _suggestionIndex =
+                                      (_suggestionIndex + 1) %
+                                      hint.examples.length,
+                                ),
+                              ),
+                            ],
                           ],
                         ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             // Footer — hint/subtitle toggles + hang-up.
             Padding(
               padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.s32, vertical: AppSpacing.s12),
+                horizontal: AppSpacing.s32,
+                vertical: AppSpacing.s12,
+              ),
               child: Column(
                 children: [
                   Row(
@@ -401,7 +455,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           height: AppSpacing.s60,
                           child: Center(
                             child: AppIcons.callEnd(
-                                size: 32, color: context.c.staticWhite),
+                              size: 32,
+                              color: context.c.staticWhite,
+                            ),
                           ),
                         ),
                       ),
