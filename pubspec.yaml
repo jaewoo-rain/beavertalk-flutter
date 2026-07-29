@@ -156,13 +156,23 @@ flutter_launcher_icons:
     background_color: "#181A20"
     theme_color: "#181A20"
 
-# 네이티브 스플래시 — 배경은 Figma "Splash & logo"(160:58332)의 #181A20
-# (= Background/Normal/Normal, Dark), 가운데는 원형으로 딴 마스코트 160x160.
+# 네이티브 스플래시 — 가운데는 원형으로 딴 마스코트 160x160.
 # 피그마 원안은 워드마크였으나 마스코트로 바꿨다(런처 아이콘과 인상 통일).
 # 원본 이미지는 4x로 넣는다(패키지가 4로 나눠 mdpi를 만든다).
+#
+# 배경은 모드를 따라간다. 두 값 모두 `Background/Normal/Normal`이며
+# Figma "Splash & logo"(160:58332)는 다크 프레임 하나뿐이라 라이트 값은
+# 팔레트에서 가져온다. `auth_gate.dart`의 _Splash 가 같은 토큰을 읽으므로
+# 여기 색을 바꾸면 거기도 따라온다 — 어긋나면 OS 스플래시에서 첫 프레임으로
+# 넘어갈 때 화면이 번쩍인다.
+#
+# 마스코트는 한 장으로 양쪽을 쓴다. 원형 안쪽에 밝은 배경이 구워져 있어
+# 다크에서는 동전처럼 떠 보이고, 라이트에서는 배경에 묻혀 마스코트만 남는다.
+#
 # 재생성: `dart run flutter_native_splash:create`
 flutter_native_splash:
-  color: "#181A20"
+  color: "#F1F1F5"
+  color_dark: "#181A20"
   image: assets/branding/splash_mascot.png
   android: true
   ios: true
@@ -170,7 +180,8 @@ flutter_native_splash:
   android_12:
     # Android 12+ 는 이걸 아이콘 슬롯에 그린다 — 지름 768 안전원 안에 맞춘 별도 원본.
     image: assets/branding/splash_mascot_android12.png
-    color: "#181A20"
+    color: "#F1F1F5"
+    color_dark: "#181A20"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

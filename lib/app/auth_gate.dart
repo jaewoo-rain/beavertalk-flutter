@@ -82,13 +82,6 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   }
 }
 
-/// Splash background — Figma `Splash & logo` (160:58332). This is
-/// `Background/Normal/Normal` from the **dark** palette; the splash is dark in
-/// both themes (there is one splash design), so it is a literal here rather
-/// than a `context.c` lookup. The Figma frame centres the wordmark; we show the
-/// mascot instead so the launch screen reads like the launcher icon.
-const Color _kSplashBackground = Color(0xFF181A20);
-
 /// Mascot diameter on the splash, matching the native launch image (160dp).
 const double _kSplashMascotSize = 160;
 
@@ -98,17 +91,24 @@ const double _kSplashRingGap = 10;
 /// Loading-ring stroke width.
 const double _kSplashRingStroke = 3;
 
-/// Loading-ring colour — `Primary/Normal` from the **dark** palette, a literal
-/// for the same reason as [_kSplashBackground]. The light palette's primary
-/// (#007A55) would all but vanish against #181A20.
-const Color _kSplashRing = Color(0xFF00FFB2);
-
 /// Loading screen shown while the stored token / profile is read.
 ///
 /// The mascot and background match the native launch screen exactly — same
 /// colour, same 160 diameter — so the hand-off from the OS splash to the first
 /// Flutter frame is invisible. Keep that pair in step with the
-/// `flutter_native_splash` block in pubspec.yaml.
+/// `flutter_native_splash` block in pubspec.yaml: `color` there must equal the
+/// light `Background/Normal/Normal`, `color_dark` the dark one.
+///
+/// Both colours come from `context.c` rather than literals. They used to be
+/// hard-coded to the dark palette because there was one splash design, but the
+/// native launch screen now follows the system appearance, and a Flutter frame
+/// that stayed dark would flash against a light launch screen at exactly the
+/// hand-off this widget exists to hide.
+///
+/// The ring has to travel with the background, not just the mascot: dark's
+/// `Primary/Normal` (#00FFB2) on light's #F1F1F5 is barely legible, and light's
+/// (#007A55) all but vanishes on #181A20. Reading both from the same token set
+/// keeps them paired.
 ///
 /// What the native splash *cannot* do is move: on Android 11 and below the OS
 /// paints a still bitmap, so a slow `members/me` reads as a frozen screen. The
@@ -119,8 +119,8 @@ class _Splash extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: _kSplashBackground,
+    return Scaffold(
+      backgroundColor: context.c.backgroundNormalNormal,
       body: Center(
         child: SizedBox.square(
           dimension: _kSplashMascotSize + _kSplashRingGap * 2,
@@ -131,9 +131,9 @@ class _Splash extends StatelessWidget {
               // mascot on every side.
               CircularProgressIndicator(
                 strokeWidth: _kSplashRingStroke,
-                color: _kSplashRing,
+                color: context.c.primaryNormal,
               ),
-              Image(
+              const Image(
                 image: AssetImage('assets/images/splash_mascot.png'),
                 width: _kSplashMascotSize,
                 height: _kSplashMascotSize,
