@@ -51,9 +51,15 @@ class FlutterPcmSound {
   }
 
   /// queue 16-bit samples (little endian)
-  static Future<void> feed(PcmArrayInt16 buffer) async {
+  ///
+  /// Returns the engine's queued frame count *after* this feed, so a caller can
+  /// drive playback by pushing on its own clock instead of waiting to be asked.
+  /// Only the Android side reports it; elsewhere (iOS/macOS/web) this is null and
+  /// the caller has to fall back to its own estimate.
+  static Future<int?> feed(PcmArrayInt16 buffer) async {
     if (_needsStart && buffer.count != 0) _needsStart = false;
-    return await _invokeMethod('feed', {'buffer': buffer.bytes.buffer.asUint8List()});
+    final result = await _invokeMethod('feed', {'buffer': buffer.bytes.buffer.asUint8List()});
+    return result is int ? result : null;
   }
 
   /// set the threshold at which we call the

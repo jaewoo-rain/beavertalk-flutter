@@ -212,35 +212,51 @@ class NormalCallController extends Notifier<CallState> {
   static const int _playbackSampleRate = 24000;
   static const int _playbackChannels = 1;
 
-  /// Feed callback fires when buffered frames fall below this (~1.5s).
+  /// Backstop threshold for the plugin's feed callback (~400ms).
   ///
-  /// This is the wall-clock budget the Dart side gets to answer a feed request
-  /// before the engine runs dry and the speech breaks up. At the original 100ms
-  /// a single scheduling hiccup on the platform thread was enough to underrun —
-  /// the "라디오 신호 안 좋을 때처럼 버벅임" report.
+  /// Playback is no longer driven by this callback — [_startPushFeed] pushes on
+  /// Dart's own clock (see [_pump]). The callback stays wired for two reasons:
+  /// it re-anchors the engine-level estimate with a ground-truth number, and it
+  /// recovers playback if the push timer ever falls behind. Kept low precisely
+  /// so it *doesn't* fire in normal operation: with the push loop holding the
+  /// engine at 1.2–2.5s, a callback at 400ms means something went wrong.
   ///
-  /// Feeding is a strict ping-pong: the native playback thread posts a request
-  /// through `mainThreadHandler` and the method channel, and Dart answers over
-  /// the channel again. The cushion has to outlast that whole round trip, and at
-  /// 200ms it didn't — 2026-07-27 measurements caught the plugin injecting 20ms
-  /// of silence every time its queue ran dry mid-word, while seconds of real
-  /// audio sat unplayed in [_pcmQueue]. The AudioTrack itself never stalled
-  /// (played == elapsed, 0 underruns): the glitch was never a playback fault, we
-  /// were feeding it silence.
-  ///
-  /// Raised again 600ms → 1.5s because the round trip crosses the **Android main
-  /// thread**, so a busy frame can blow through any small budget. This costs no
-  /// added latency: it only moves buffered audio from [_pcmQueue] into the
-  /// engine's own queue, which the same bytes would have waited in anyway.
-  static const int _feedThresholdFrames = 36000;
+  /// Why the ping-pong had to go: the native playback thread posted its request
+  /// through `mainThreadHandler` and the method channel, so the heartbeat of the
+  /// playback path ran through the **Android main thread**. Every cushion this
+  /// file has grown (200ms → 600ms → 1.5s) was buying time against a busy UI
+  /// frame. Pushing from Dart takes the main thread out of the loop instead.
+  static const int _feedThresholdFrames = 9600;
 
-  /// Bytes fed per callback when audio is available (~1.5s of 24kHz PCM16).
-  /// Matched to [_feedThresholdFrames] so one answered request refills the whole
-  /// cushion instead of leaving the engine to drain again immediately.
+  /// How often [_pump] tops the engine up. Short enough that a missed tick is
+  /// invisible against the 1.2s low-water mark below.
+  static const Duration _pushInterval = Duration(milliseconds: 40);
+
+  /// Engine low-water / target for **real audio**, in frames (~1.2s / ~2.5s).
+  ///
+  /// Below the low mark, [_pump] refills to the target; above it, the tick does
+  /// nothing at all (no channel traffic). The gap between them is the budget for
+  /// everything that can go wrong upstream — a stalled main thread, a slow tick,
+  /// a Dart GC — and at 1.2s nothing measured on this project comes close.
+  ///
+  /// Costs no added latency: these bytes would have waited in [_pcmQueue]
+  /// anyway; they just wait inside the engine instead.
+  static const int _engineLowFrames = _playbackSampleRate * 1200 ~/ 1000;
+  static const int _engineTargetFrames = _playbackSampleRate * 2500 ~/ 1000;
+
+  /// Engine low-water / target for **silence**, in frames (~120ms / ~300ms).
+  ///
+  /// Deliberately far below the audio target: queued silence sits *in front of*
+  /// the next real audio, so filling to 2.5s of it would add 2.5s to every reply.
+  /// This only has to keep the AudioTrack out of the idle path (AudioFlinger
+  /// `BUFFER TIMEOUT` → ~130ms to reactivate) and cover the platform round trip
+  /// so the plugin never has to inject its own 20ms silence mid-stream.
+  static const int _silenceLowFrames = _playbackSampleRate * 120 ~/ 1000;
+  static const int _silenceTargetFrames = _playbackSampleRate * 300 ~/ 1000;
+
+  /// Upper bound on one push (~1.5s of 24kHz PCM16), so a single feed can't
+  /// hand the platform channel an unbounded array after a long buffering pause.
   static const int _feedChunkBytes = 72000;
-
-  /// Silence frames fed when the queue is empty (~50ms keep-alive).
-  static const int _silenceFrames = 1200;
 
   /// Jitter prebuffer (~900ms of PCM16): at the start of a beaver turn, hold real
   /// audio (feed silence) until this much is queued, so a gap in the server's
@@ -324,10 +340,54 @@ class NormalCallController extends Notifier<CallState> {
   /// only audio↔silence transitions instead of spamming every feed callback.
   bool? _lastFeedSilent;
 
-  /// True while a feed callback is mid-flight (awaiting the native `feed`), so
+  /// True while a feed is mid-flight (awaiting the native `feed`), so
   /// [_teardown] can wait for it before `release()` — a fresh call's `setup()`
-  /// must not race a feed running against the old (releasing) engine.
+  /// must not race a feed running against the old (releasing) engine. It is also
+  /// the re-entrancy guard for [_pump]: the push timer and the backstop callback
+  /// both call it, and two feeds in flight would double-count the engine level.
   bool _feeding = false;
+
+  /// Drives [_pump] on Dart's own clock instead of waiting to be asked.
+  Timer? _pushTimer;
+
+  /// Last known engine queue depth (frames) and when it was known.
+  ///
+  /// The Android `feed` returns the depth after enqueue, and the backstop
+  /// callback carries it too, so both re-anchor this with ground truth. Between
+  /// those points [_engineLevelFrames] extrapolates: the engine consumes at
+  /// exactly [_playbackSampleRate] (a blocking AudioTrack write never runs fast
+  /// or slow), so elapsed time *is* the amount drained.
+  int _engineAnchorFrames = 0;
+  int _engineAnchorMs = 0;
+
+  /// Estimated frames still queued inside the native engine.
+  ///
+  /// Floored at zero: once it hits bottom the engine pads with its own silence,
+  /// so time past that point doesn't accumulate a debt to be paid back.
+  int get _engineLevelFrames {
+    final anchorMs = _engineAnchorMs;
+    if (anchorMs == 0) return 0;
+    final drained = (DateTime.now().millisecondsSinceEpoch - anchorMs) *
+        _playbackSampleRate ~/
+        1000;
+    final level = _engineAnchorFrames - drained;
+    return level > 0 ? level : 0;
+  }
+
+  /// Re-anchors the estimate after a feed. [atMs] is the time the feed was
+  /// *sent*, not when the reply landed: the platform measured its depth
+  /// somewhere in between, so anchoring at send time under-reports slightly,
+  /// which errs toward feeding more rather than less.
+  void _anchorEngine(int frames, int atMs) {
+    _engineAnchorFrames = frames;
+    _engineAnchorMs = atMs;
+    if (frames < _engineMinFrames) _engineMinFrames = frames;
+  }
+
+  /// [계측] Lowest engine depth seen this call — the one number that says whether
+  /// the push loop is holding. If this stays near [_engineLowFrames] the engine
+  /// never came close to drying out, and any remaining glitch is upstream of us.
+  int _engineMinFrames = 1 << 30;
 
   /// True once the jitter prebuffer has filled and real audio is draining. Reset
   /// whenever the queue actually empties — including mid-utterance — so the
@@ -568,14 +628,14 @@ class NormalCallController extends Notifier<CallState> {
       _lastFeedSilent = null;
       _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
       _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
-      // Kick the pull loop directly instead of FlutterPcmSound.start().
-      // start() only kicks when the plugin's *static* `_needsStart` flag is true,
-      // and that flag is NEVER reset by release()/setup(): the first call feeds
-      // audio → sets it false → it stays false, so on the 2nd call start() no-ops
-      // and playback never begins (the "재통화 시 음성 안 나옴" bug). Priming the
-      // feed callback ourselves (a silence frame starts the native OnFeedSamples
-      // loop) is independent of that stale flag and works on every call.
-      unawaited(_onFeed(0));
+      // Drive playback from Dart's own clock. Note this also sidesteps
+      // FlutterPcmSound.start(), which only kicks when the plugin's *static*
+      // `_needsStart` flag is true — and that flag is NEVER reset by
+      // release()/setup(): the first call feeds audio → sets it false → it stays
+      // false, so on the 2nd call start() no-ops and playback never begins (the
+      // "재통화 시 음성 안 나옴" bug). Pumping ourselves is independent of it.
+      _startPushFeed();
+      unawaited(_pump()); // don't wait a tick to open the stream
       _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
       _starveAtMs = null;
       // The cushion is per-call state: a rough previous call must not tax this one.
@@ -812,6 +872,15 @@ class NormalCallController extends Notifier<CallState> {
           'fedSil ${_sec(_fedSilFrames * 2)}s '
           '(speaking ${_sec(_fedSilSpeakFrames * 2)}s, prebuf ${_sec(_fedSilPrebufFrames * 2)}s), '
           'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
+      // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
+      // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
+      final minMs = _engineMinFrames == 1 << 30
+          ? -1
+          : _engineMinFrames * 1000 ~/ _playbackSampleRate;
+      _log('PUMP: engine now ${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms, '
+          'min ${minMs}ms (low ${_engineLowFrames * 1000 ~/ _playbackSampleRate}ms / '
+          'target ${_engineTargetFrames * 1000 ~/ _playbackSampleRate}ms)');
+      _engineMinFrames = 1 << 30; // 창마다 리셋 — 통화 전체 최저가 아니라 추세를 본다
     });
   }
 
@@ -909,12 +978,40 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
-  /// flutter_pcm_sound feed callback: invoked when buffered frames fall below
-  /// the threshold (or hit zero). Pulls up to [_feedChunkBytes] of real audio
-  /// from [_pcmQueue]; when empty, feeds a short silence so the engine never
-  /// starves into a stuck underflow (the fix for the ~1-min cutout).
+  /// Starts the push loop. From here on Dart decides when the engine gets fed;
+  /// the plugin's callback is only a backstop (see [_feedThresholdFrames]).
+  void _startPushFeed() {
+    _pushTimer?.cancel();
+    _engineAnchorFrames = 0;
+    _engineAnchorMs = 0;
+    _engineMinFrames = 1 << 30;
+    _pushTimer = Timer.periodic(_pushInterval, (_) => unawaited(_pump()));
+  }
+
+  void _stopPushFeed() {
+    _pushTimer?.cancel();
+    _pushTimer = null;
+  }
+
+  /// Backstop path: the plugin noticed its queue fell below
+  /// [_feedThresholdFrames]. Its `remainingFrames` is ground truth, so use it to
+  /// re-anchor the estimate, then pump. In a healthy call this never fires.
   Future<void> _onFeed(int remainingFrames) async {
     if (!_pcmActive) return;
+    _anchorEngine(remainingFrames, DateTime.now().millisecondsSinceEpoch);
+    await _pump();
+  }
+
+  /// Tops the native engine up. Called every [_pushInterval] (and by the
+  /// backstop callback); does nothing at all unless the engine has drained past
+  /// its low-water mark, so a healthy call spends most ticks returning here.
+  ///
+  /// Pulls up to [_feedChunkBytes] of real audio from [_pcmQueue]; when there's
+  /// nothing to play it feeds silence instead, which keeps the AudioTrack out of
+  /// AudioFlinger's idle path (the ~130ms reactivation stall).
+  Future<void> _pump() async {
+    if (!_pcmActive) return;
+    if (_feeding) return; // a feed is already in flight — don't double-count
     _feeding = true;
     try {
       final avail = _queueLen;
@@ -955,12 +1052,25 @@ class NormalCallController extends Notifier<CallState> {
               '${DateTime.now().millisecondsSinceEpoch - starvedAt}ms gap (starved)');
         }
         if (_lastFeedSilent != false) {
-          _log('feed AUDIO (queue ${avail}B)');
+          _log('feed AUDIO (queue ${avail}B, engine '
+              '${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms)');
           _lastFeedSilent = false;
         }
-        final take = whole < _feedChunkBytes ? whole : _feedChunkBytes;
-        _fedAudBytes += take; // [계측]
-        await FlutterPcmSound.feed(_takeArray(take));
+        // Only push once the engine has drained past its low-water mark. Above
+        // it the tick does nothing — the bookkeeping above still had to run, but
+        // there is no reason to hand the platform channel more bytes.
+        final level = _engineLevelFrames;
+        if (level < _engineLowFrames) {
+          var take = (_engineTargetFrames - level) * 2;
+          if (take > _feedChunkBytes) take = _feedChunkBytes;
+          if (take > whole) take = whole;
+          _fedAudBytes += take; // [계측]
+          final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final reported = await FlutterPcmSound.feed(_takeArray(take));
+          // Android reports its depth; elsewhere fall back to our own arithmetic
+          // so iOS/web keep working unchanged.
+          _anchorEngine(reported ?? (level + take ~/ 2), sentAtMs);
+        }
       } else {
         if (whole >= 2) {
           // Buffering the prebuffer cushion → arm a bounded flush so a short
@@ -1017,17 +1127,26 @@ class NormalCallController extends Notifier<CallState> {
           // deadlock). Armed once per empty period; fresh audio cancels it.
           _armIdleUngate();
         }
-        // [계측] 무음 주입을 분기별로 분리 집계: 프리버퍼 대기(의도된 지연)인지,
-        // 비버 발화 중 큐가 빈 것(진짜 구멍)인지가 원인 판정을 가른다.
-        _fedSilFrames += _silenceFrames;
-        if (whole >= 2) {
-          _fedSilPrebufFrames += _silenceFrames;
-        } else if (_beaverSpeaking) {
-          _fedSilSpeakFrames += _silenceFrames;
+        // Keep only a shallow floor of silence queued. It exists to hold the
+        // AudioTrack in AudioFlinger's active list and to cover the platform
+        // round trip; anything deeper is dead air queued ahead of the next reply.
+        final level = _engineLevelFrames;
+        if (level < _silenceLowFrames) {
+          final silFrames = _silenceTargetFrames - level;
+          // [계측] 무음 주입을 분기별로 분리 집계: 프리버퍼 대기(의도된 지연)인지,
+          // 비버 발화 중 큐가 빈 것(진짜 구멍)인지가 원인 판정을 가른다.
+          _fedSilFrames += silFrames;
+          if (whole >= 2) {
+            _fedSilPrebufFrames += silFrames;
+          } else if (_beaverSpeaking) {
+            _fedSilSpeakFrames += silFrames;
+          }
+          final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final reported = await FlutterPcmSound.feed(
+            PcmArrayInt16.zeros(count: silFrames),
+          );
+          _anchorEngine(reported ?? (level + silFrames), sentAtMs);
         }
-        await FlutterPcmSound.feed(
-          PcmArrayInt16.zeros(count: _silenceFrames),
-        );
       }
     } catch (_) {
       // Engine released mid-feed (teardown) → ignore.
@@ -1123,9 +1242,13 @@ class NormalCallController extends Notifier<CallState> {
     if (!_beaverSpeaking) return;
     if (!_turnEnded) return;
     if (_queueLen >= 2) return;
-    // Start (or restart) the hangover; if a new turn_start/audio arrives first,
-    // [_gateMic] cancels this timer and keeps the gate closed.
-    _micGateTimer?.cancel();
+    // Arm the hangover once. Restarting it on every call was a real bug: [_pump]
+    // calls this on every tick that finds the queue empty, so the countdown was
+    // reset before it could ever expire and the mic never opened by this path —
+    // it fell through to the slow `idle drained` safety net instead (measured 13
+    // of 22 openings). New audio still cancels it via [_gateMic], which is what
+    // the restart was there for.
+    if (_micGateTimer != null) return;
     _micGateTimer = Timer(_micHangover, () {
       _micGateTimer = null;
       _gateSafetyTimer?.cancel();
@@ -1454,6 +1577,7 @@ class NormalCallController extends Notifier<CallState> {
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
     _pcmActive = false;
+    _stopPushFeed();
     _stopEventLoopProbe();
     _stopInflateLog();
     _prebufferFlushTimer?.cancel();

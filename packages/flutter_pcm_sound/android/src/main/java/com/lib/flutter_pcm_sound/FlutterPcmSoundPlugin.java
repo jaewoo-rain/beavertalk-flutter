@@ -268,7 +268,11 @@ public class FlutterPcmSoundPlugin implements
                     mQueuedBytes.addAndGet(buffer.length); // 청크 remaining 합 == buffer.length
                     mTotalFeeds.incrementAndGet();
 
-                    result.success(true);
+                    // [BeaverTalk fix] enqueue 직후 잔량(frames)을 돌려준다.
+                    // Dart 가 콜백(핑퐁)을 기다리지 않고 능동적으로 채우려면 native 큐가 지금
+                    // 얼마나 남았는지 알아야 한다. 이미 오가는 메서드 채널 응답에 값만 실으므로
+                    // 추가 홉/추가 메인스레드 왕복이 없다. 예전엔 그냥 true 였다.
+                    result.success(mQueuedBytes.get() / (2 * mNumChannels));
                     break;
                 }
                 case "setFeedThreshold": {
