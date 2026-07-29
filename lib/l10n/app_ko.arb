@@ -333,5 +333,14 @@
   "allLearnersBasis": "전체 학습자 기준",
   "aheadOfLearners": "전체 학습자의 {percent}%보다 앞서 있어요",
   "retakeLevelTest": "레벨 테스트 다시하기",
-  "practicePronunciation": "발음 학습하기"
+  "practicePronunciation": "발음 학습하기",
+  "priceChangedTitle": "가격이 변경되었어요",
+  "priceChangedBody": "지금은 {price}예요. 계속할까요?",
+  "@priceChangedBody": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  }
 }

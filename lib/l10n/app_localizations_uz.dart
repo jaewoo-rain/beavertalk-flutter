@@ -1086,4 +1086,12 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Talaffuzni mashq qilish';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

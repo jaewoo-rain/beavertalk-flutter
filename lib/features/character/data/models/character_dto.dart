@@ -15,6 +15,7 @@ class CharacterDto {
     this.backgroundStory,
     this.voiceUrl,
     this.tags = const [],
+    this.discountEndsAt,
   });
 
   final int characterId;
@@ -27,6 +28,10 @@ class CharacterDto {
   final String? backgroundStory;
   final String? voiceUrl;
   final List<String> tags;
+
+  /// When the active discount ends (`active_discount.end_time`), or null when
+  /// nothing is on sale. Drives the limited-time countdown.
+  final DateTime? discountEndsAt;
 
   factory CharacterDto.fromJson(Map<String, dynamic> json) {
     return CharacterDto(
@@ -50,7 +55,19 @@ class CharacterDto {
               ?.map((e) => e.toString())
               .toList() ??
           const [],
+      // 서버가 목록 응답(CharacterSummary)에도 active_discount 를 실어 준다 — 상세
+      // 화면은 목록에서 눌러 들어가고 추가 조회를 하지 않으므로(N+1 회피), 카운트다운
+      // 마감 시각이 여기 있어야 그릴 수 있다.
+      discountEndsAt: _endsAt(json['active_discount']),
     );
+  }
+
+  /// `active_discount.end_time` → 로컬 DateTime. 형태가 어긋나면 null(카운트다운 생략).
+  static DateTime? _endsAt(Object? v) {
+    if (v is! Map) return null;
+    final raw = v['end_time'];
+    if (raw is! String || raw.isEmpty) return null;
+    return DateTime.tryParse(raw)?.toLocal();
   }
 
   /// Converts to the domain entity.
@@ -65,6 +82,7 @@ class CharacterDto {
         backgroundStory: backgroundStory,
         voiceUrl: voiceUrl,
         tags: tags,
+        discountEndsAt: discountEndsAt,
       );
 }
 

@@ -1077,4 +1077,12 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'उच्चारण अभ्यास गर्नुहोस्';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

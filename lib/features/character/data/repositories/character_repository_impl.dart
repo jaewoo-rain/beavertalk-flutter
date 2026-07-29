@@ -34,9 +34,14 @@ class CharacterRepositoryImpl implements CharacterRepository {
   }
 
   @override
-  Future<PurchaseResult> purchase(int id, {String? cardInfo}) async {
+  Future<PurchaseResult> purchase(
+    int id, {
+    String? cardInfo,
+    int? expectedPriceMinor,
+  }) async {
     try {
-      final dto = await _remote.purchase(id, cardInfo: cardInfo);
+      final dto = await _remote.purchase(
+        id, cardInfo: cardInfo, expectedPriceMinor: expectedPriceMinor);
       return dto.toEntity();
     } on DioException catch (e) {
       throw mapDioException(e);

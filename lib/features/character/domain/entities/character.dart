@@ -13,6 +13,7 @@ class Character {
     this.backgroundStory,
     this.voiceUrl,
     this.tags = const [],
+    this.discountEndsAt,
   });
 
   /// Server primary key (`character_id`).
@@ -57,8 +58,27 @@ class Character {
   /// rather than null when a character has none.
   final List<String> tags;
 
+  /// When the active discount ends (`active_discount.end_time`, local time), or
+  /// null when nothing is on sale. Drives the limited-time countdown.
+  ///
+  /// The server puts `active_discount` on the **list** response as well, for the
+  /// same N+1 reason as [description] — the avatar screen must not fetch detail
+  /// per card just to know a deadline.
+  final DateTime? discountEndsAt;
+
   /// True when a discount is active ([effectivePrice] below [price]).
   bool get hasDiscount => effectivePrice < price;
+
+  /// Discount rate in whole percent (e.g. 50 for `$10 → $5`), or null when not
+  /// discounted / free. Rounded — the server sends prices, not a rate.
+  int? get discountPercent {
+    if (!hasDiscount || price <= 0) return null;
+    return ((price - effectivePrice) / price * 100).round();
+  }
+
+  /// Time left on the discount, or null when there is no deadline. Negative
+  /// durations are clamped away by the caller (an expired sale should not show).
+  Duration? remainingDiscount(DateTime now) => discountEndsAt?.difference(now);
 
   /// True when the character is free (list price 0).
   bool get isFree => price <= 0;

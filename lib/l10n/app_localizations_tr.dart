@@ -1081,4 +1081,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Telaffuz çalış';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

@@ -601,5 +601,14 @@
   "practicePronunciation": "Practice pronunciation",
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."
+  },
+  "priceChangedTitle": "Price changed",
+  "priceChangedBody": "This item is now {price}. Would you like to continue?",
+  "@priceChangedBody": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
   }
 }

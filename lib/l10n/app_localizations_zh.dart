@@ -1051,4 +1051,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get practicePronunciation => '练习发音';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

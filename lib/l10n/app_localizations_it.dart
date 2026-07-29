@@ -1091,4 +1091,12 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Esercita la pronuncia';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

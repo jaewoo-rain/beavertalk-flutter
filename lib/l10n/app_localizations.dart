@@ -2157,6 +2157,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Practice pronunciation'**
   String get practicePronunciation;
+
+  /// No description provided for @priceChangedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Price changed'**
+  String get priceChangedTitle;
+
+  /// No description provided for @priceChangedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is now {price}. Would you like to continue?'**
+  String priceChangedBody(String price);
 }
 
 class _AppLocalizationsDelegate

@@ -1082,4 +1082,12 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

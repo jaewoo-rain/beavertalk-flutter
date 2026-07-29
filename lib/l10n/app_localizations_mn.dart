@@ -1079,4 +1079,12 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }

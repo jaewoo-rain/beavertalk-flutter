@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../format/money.dart';
 import 'app_exception.dart';
 
 /// Converts a [DioException] into a typed [AppException].
@@ -38,6 +39,16 @@ AppException mapDioException(DioException e) {
     case 404:
       return NotFoundFailure(detail.message ?? '대상을 찾을 수 없어요');
     case 409:
+      // 할인이 탭하는 사이 끝나면 서버가 결제를 거절하고 실제 가격을 함께 준다.
+      // 일반 409(중복 보유 등)와 달리 앱이 새 가격으로 재확인을 받아야 하므로
+      // 전용 타입으로 올린다.
+      if (detail.code == 'PRICE_CHANGED') {
+        return PriceChangedFailure(
+          detail.message ?? '가격이 변경되었어요',
+          expectedPrice: parseMoneyMinor(detail.extra['expected_price']),
+          actualPrice: parseMoneyMinor(detail.extra['actual_price']),
+        );
+      }
       return ConflictFailure(detail.message ?? '이미 존재하는 정보예요');
     case 422:
       return ValidationFailure(
@@ -55,10 +66,22 @@ AppException mapDioException(DioException e) {
 
 /// Result of defensively parsing the `detail` field of an error body.
 class _ParsedDetail {
-  const _ParsedDetail({this.message, this.fieldErrors = const {}});
+  const _ParsedDetail({
+    this.message,
+    this.fieldErrors = const {},
+    this.code,
+    this.extra = const {},
+  });
 
   final String? message;
   final Map<String, String> fieldErrors;
+
+  /// Machine-readable `detail.code` (e.g. `PRICE_CHANGED`, `ALREADY_OWNED`).
+  /// The message is for humans; branch on this.
+  final String? code;
+
+  /// Remaining `detail` keys, for errors that carry data (e.g. `actual_price`).
+  final Map<String, Object?> extra;
 
   /// Reads `data['detail']`, tolerating a String, a `{code, message}` Map, or a
   /// list of `{loc, msg, type}` validation entries.
@@ -69,10 +92,18 @@ class _ParsedDetail {
     // Plain string detail.
     if (detail is String) return _ParsedDetail(message: detail);
 
-    // `{code, message}` shape.
+    // `{code, message, ...}` shape.
     if (detail is Map) {
       final msg = detail['message'];
-      return _ParsedDetail(message: msg is String ? msg : null);
+      final code = detail['code'];
+      return _ParsedDetail(
+        message: msg is String ? msg : null,
+        code: code is String ? code : null,
+        extra: {
+          for (final e in detail.entries)
+            if (e.key != 'code' && e.key != 'message') '${e.key}': e.value,
+        },
+      );
     }
 
     // FastAPI 422 list of validation errors.

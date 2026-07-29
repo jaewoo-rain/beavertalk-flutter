@@ -24,5 +24,11 @@ abstract interface class CharacterRepository {
   /// server's only semantic error code), `NotFoundFailure` for an unknown id.
   /// There is no insufficient-funds case: the server has no wallet and calls no
   /// payment gateway, so a purchase never fails for lack of money.
-  Future<PurchaseResult> purchase(int id, {String? cardInfo});
+  /// [expectedPriceMinor] 는 화면에 보여준 가격(센트). 서버 계산가와 다르면
+  /// [PriceChangedFailure] 가 난다 — 할인 종료 직후의 금액 불일치 방지.
+  Future<PurchaseResult> purchase(
+    int id, {
+    String? cardInfo,
+    int? expectedPriceMinor,
+  });
 }

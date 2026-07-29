@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -6,6 +8,7 @@ import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/avatar_card.dart';
 import '../../components/molecules/card_box.dart';
+import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
@@ -98,7 +101,17 @@ class AvatarScreen extends ConsumerWidget {
                       const SizedBox(height: AppSpacing.s28),
                     ],
                     if (discounted.isNotEmpty) ...[
-                      _label(context, l10n.limitedDiscount),
+                      // Figma: 섹션 헤더 우측에 마감 카운트다운(🕐 16:54:23).
+                      // 할인이 여러 건이면 **가장 먼저 끝나는** 것을 보여준다 — 섹션 전체가
+                      // "한정"인 이유가 그 마감이기 때문.
+                      _label(
+                        context,
+                        l10n.limitedDiscount,
+                        trailingWidget: _earliestDeadline(discounted) == null
+                            ? null
+                            : _DiscountCountdown(
+                                endsAt: _earliestDeadline(discounted)!),
+                      ),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in discounted) ...[
                         _discountCard(context, c),
@@ -215,8 +228,21 @@ class AvatarScreen extends ConsumerWidget {
             price: _priceLabel(context, c.price),
             discountPrice: _priceLabel(context, c.effectivePrice),
             discountPercent: _discountPercent(c),
+            effectivePriceMinor: c.effectivePrice,
           )),
     );
+  }
+
+  /// 할인 중인 캐릭터들 중 **가장 먼저 끝나는** 마감 시각. 마감이 하나도 없으면 null
+  /// (= 서버가 active_discount 를 안 내려준 경우 — 카운트다운을 생략한다).
+  DateTime? _earliestDeadline(List<Character> discounted) {
+    DateTime? best;
+    for (final c in discounted) {
+      final e = c.discountEndsAt;
+      if (e == null) continue;
+      if (best == null || e.isBefore(best)) best = e;
+    }
+    return best;
   }
 
   /// Whole-percent discount off list price, e.g. 1000¢ → 500¢ = 50.
@@ -256,6 +282,7 @@ class AvatarScreen extends ConsumerWidget {
             voiceUrl: c.voiceUrl,
             tags: c.tags,
             price: _priceLabel(context, c.price),
+            effectivePriceMinor: c.effectivePrice,
           )),
     );
   }
@@ -291,6 +318,8 @@ class AvatarScreen extends ConsumerWidget {
     String? price,
     String? discountPrice,
     int? discountPercent,
+    // 화면에 실제로 보여준 가격(센트). 구매 시 서버에 신고해 금액 불일치를 막는다.
+    int? effectivePriceMinor,
   }) {
     // Read from the pushing context: the route's own context is not built yet,
     // and the locale is the same either way.
@@ -322,7 +351,7 @@ class AvatarScreen extends ConsumerWidget {
             onConfirm: switch (state) {
               AvatarDetailState.unownedNormal ||
               AvatarDetailState.unownedDiscount =>
-                () => _purchase(routeCtx, ref, characterId),
+                () => _purchase(routeCtx, ref, characterId, effectivePriceMinor),
               AvatarDetailState.ownedUnused => () =>
                   _useCharacter(routeCtx, ref, characterId),
               // Already in use — the screen shows a single 닫기 footer.
@@ -336,9 +365,16 @@ class AvatarScreen extends ConsumerWidget {
   }
 
   /// `POST /characters/{id}/purchase`, then refresh what the purchase changed.
-  Future<void> _purchase(BuildContext routeCtx, WidgetRef ref, int id) async {
+  ///
+  /// [expectedMinor] 는 화면이 보여준 가격(센트)이다. 한정 할인이 탭과 서버 처리 사이에
+  /// 끝나면 서버가 [PriceChangedFailure] 로 거절하므로, 사용자가 동의하지 않은 금액이
+  /// 결제되는 일이 없다. 그때는 새 가격으로 다시 확인을 받는다.
+  Future<void> _purchase(BuildContext routeCtx, WidgetRef ref, int id,
+      [int? expectedMinor]) async {
     try {
-      await ref.read(characterRepositoryProvider).purchase(id);
+      await ref
+          .read(characterRepositoryProvider)
+          .purchase(id, expectedPriceMinor: expectedMinor);
       // The catalog's `is_owned` flips, the owned list gains a row, and the
       // server writes a payment in the same transaction — so the history is
       // stale too.
@@ -346,6 +382,28 @@ class AvatarScreen extends ConsumerWidget {
       ref.invalidate(ownedCharactersProvider);
       ref.invalidate(paymentPageProvider);
       if (routeCtx.mounted) Navigator.pop(routeCtx);
+    } on PriceChangedFailure catch (e) {
+      // 가격이 바뀌었다 — 목록을 새로 받아 화면을 실제 가격으로 되돌리고, 사용자에게
+      // 새 가격으로 살지 다시 묻는다. 확인하면 그 가격으로 재요청한다.
+      ref.invalidate(charactersProvider);
+      if (!routeCtx.mounted) return;
+      final l10n = AppLocalizations.of(routeCtx);
+      final ok = await showDialogBasic<bool>(
+        routeCtx,
+        title: l10n.priceChangedTitle,
+        description: l10n.priceChangedBody(_priceLabel(routeCtx, e.actualPrice)),
+        primary: DialogAction(
+          label: l10n.buy,
+          onPressed: () => Navigator.pop(routeCtx, true),
+        ),
+        secondary: DialogAction(
+          label: l10n.cancel,
+          onPressed: () => Navigator.pop(routeCtx, false),
+        ),
+      );
+      if (ok == true && routeCtx.mounted) {
+        await _purchase(routeCtx, ref, id, e.actualPrice);
+      }
     } catch (e) {
       if (routeCtx.mounted) _reportDetailError(routeCtx, e);
     }
@@ -399,7 +457,9 @@ class AvatarScreen extends ConsumerWidget {
     return placeholderAvatar;
   }
 
-  Widget _label(BuildContext context, String text, {String? trailing}) => Row(
+  Widget _label(BuildContext context, String text,
+          {String? trailing, Widget? trailingWidget}) =>
+      Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
@@ -409,7 +469,9 @@ class AvatarScreen extends ConsumerWidget {
                 style:
                     AppType.label1.m.copyWith(color: context.c.labelNormal)),
           ),
-          if (trailing != null)
+          if (trailingWidget != null)
+            trailingWidget
+          else if (trailing != null)
             Flexible(
               child: Text(trailing,
                   overflow: TextOverflow.ellipsis,
@@ -540,6 +602,87 @@ class _ErrorState extends StatelessWidget {
               child: Text(AppLocalizations.of(context).retry)),
         ],
       ),
+    );
+  }
+}
+
+/// 한정 할인 마감까지 남은 시간 — 섹션 헤더 우측에 `🕐 16:54:23` 로 초 단위 표시.
+///
+/// 자체 [Timer] 로 1초마다 자기만 다시 그린다(화면 전체 rebuild 아님). 마감에 닿으면
+/// [charactersProvider] 를 무효화해 목록을 다시 받는다 — 서버가 그때부터
+/// `effective_price == price` 를 주므로 할인 섹션이 스스로 사라진다. 클라가 가격을
+/// 자체 판단하지 않고 **서버 응답만 믿는** 구조를 유지하려는 것.
+class _DiscountCountdown extends ConsumerStatefulWidget {
+  const _DiscountCountdown({required this.endsAt});
+
+  final DateTime endsAt;
+
+  @override
+  ConsumerState<_DiscountCountdown> createState() => _DiscountCountdownState();
+}
+
+class _DiscountCountdownState extends ConsumerState<_DiscountCountdown> {
+  Timer? _timer;
+  late Duration _left;
+  bool _expiredHandled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _left = widget.endsAt.difference(DateTime.now());
+    _timer = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+  }
+
+  @override
+  void didUpdateWidget(covariant _DiscountCountdown old) {
+    super.didUpdateWidget(old);
+    if (old.endsAt != widget.endsAt) {
+      _expiredHandled = false;
+      _tick();
+    }
+  }
+
+  void _tick() {
+    if (!mounted) return;
+    final left = widget.endsAt.difference(DateTime.now());
+    setState(() => _left = left);
+    if (left.isNegative && !_expiredHandled) {
+      _expiredHandled = true;
+      _timer?.cancel();
+      // 마감 순간 목록을 다시 받는다. 만료 판정은 서버가 한다(활성 조건 = 기간 내).
+      ref.invalidate(charactersProvider);
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  /// `16:54:23`, 하루가 넘으면 `3일 05:12:44`.
+  static String _fmt(Duration d) {
+    String two(int n) => n.toString().padLeft(2, '0');
+    final h = d.inHours % 24, m = d.inMinutes % 60, s = d.inSeconds % 60;
+    final hhmmss = '${two(h)}:${two(m)}:${two(s)}';
+    return d.inDays > 0 ? '${d.inDays}일 $hhmmss' : hhmmss;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_left.isNegative) return const SizedBox.shrink();
+    final color = context.c.accentForegroundRed;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.access_time, size: 16, color: color),
+        const SizedBox(width: 4),
+        Text(_fmt(_left),
+            style: AppType.label1.m.copyWith(
+              color: color,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            )),
+      ],
     );
   }
 }

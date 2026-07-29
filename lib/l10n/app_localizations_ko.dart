@@ -1055,4 +1055,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get practicePronunciation => '발음 학습하기';
+
+  @override
+  String get priceChangedTitle => '가격이 변경되었어요';
+
+  @override
+  String priceChangedBody(String price) {
+    return '지금은 $price예요. 계속할까요?';
+  }
 }

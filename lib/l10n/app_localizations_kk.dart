@@ -1075,4 +1075,12 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Айтылымды жаттықтыру';
+
+  @override
+  String get priceChangedTitle => 'Price changed';
+
+  @override
+  String priceChangedBody(String price) {
+    return 'This item is now $price. Would you like to continue?';
+  }
 }
