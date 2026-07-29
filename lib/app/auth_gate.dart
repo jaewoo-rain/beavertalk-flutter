@@ -92,12 +92,28 @@ const Color _kSplashBackground = Color(0xFF181A20);
 /// Mascot diameter on the splash, matching the native launch image (160dp).
 const double _kSplashMascotSize = 160;
 
+/// Clearance between the mascot's edge and the loading ring.
+const double _kSplashRingGap = 10;
+
+/// Loading-ring stroke width.
+const double _kSplashRingStroke = 3;
+
+/// Loading-ring colour — `Primary/Normal` from the **dark** palette, a literal
+/// for the same reason as [_kSplashBackground]. The light palette's primary
+/// (#007A55) would all but vanish against #181A20.
+const Color _kSplashRing = Color(0xFF00FFB2);
+
 /// Loading screen shown while the stored token / profile is read.
 ///
-/// Deliberately identical to the native launch screen — same colour, same
-/// circular mascot at the same 160 width — so the hand-off from the OS splash
-/// to the first Flutter frame is invisible. Keep this in step with the
+/// The mascot and background match the native launch screen exactly — same
+/// colour, same 160 diameter — so the hand-off from the OS splash to the first
+/// Flutter frame is invisible. Keep that pair in step with the
 /// `flutter_native_splash` block in pubspec.yaml.
+///
+/// What the native splash *cannot* do is move: on Android 11 and below the OS
+/// paints a still bitmap, so a slow `members/me` reads as a frozen screen. The
+/// ring only spins once Flutter is up, which is exactly the stretch where the
+/// wait is ours and worth signalling.
 class _Splash extends StatelessWidget {
   const _Splash();
 
@@ -106,10 +122,24 @@ class _Splash extends StatelessWidget {
     return const Scaffold(
       backgroundColor: _kSplashBackground,
       body: Center(
-        child: Image(
-          image: AssetImage('assets/images/splash_mascot.png'),
-          width: _kSplashMascotSize,
-          height: _kSplashMascotSize,
+        child: SizedBox.square(
+          dimension: _kSplashMascotSize + _kSplashRingGap * 2,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              // Fills the square, so the ring sits _kSplashRingGap outside the
+              // mascot on every side.
+              CircularProgressIndicator(
+                strokeWidth: _kSplashRingStroke,
+                color: _kSplashRing,
+              ),
+              Image(
+                image: AssetImage('assets/images/splash_mascot.png'),
+                width: _kSplashMascotSize,
+                height: _kSplashMascotSize,
+              ),
+            ],
+          ),
         ),
       ),
     );

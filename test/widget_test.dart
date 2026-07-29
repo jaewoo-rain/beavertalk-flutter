@@ -35,5 +35,8 @@ void main() {
       tester.widget<Scaffold>(find.byType(Scaffold)).backgroundColor,
       const Color(0xFF181A20),
     );
+    // The ring is what tells the user a slow members/me is still working — the
+    // native splash it hands off from cannot animate.
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
