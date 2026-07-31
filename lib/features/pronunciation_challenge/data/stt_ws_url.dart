@@ -9,10 +9,17 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// resolves from its own origin constant, mirroring the web game's
 /// `STT_PROD_WS_ORIGIN` (`app/public/pronunciation-challenge.html`).
 ///
+/// **`API_BASE_URL` 의 스킴만 https→wss 로 바꿔 쓰면 안 된다.** 그 호스트(app 백엔드)에
+/// 같은 경로로 WS 핸드셰이크를 걸면 403 이 돌아온다 — 그 라우트가 없다. web 백엔드는
+/// 같은 요청에 101(Switching Protocols)을 준다. 두 서비스는 별개다.
+///
 /// Resolution order for the origin (host + scheme, no path):
 /// 1. `--dart-define=PRON_STT_WS_ORIGIN=…` build-time override,
 /// 2. `.env`'s `PRON_STT_WS_ORIGIN` (loaded in `main`),
 /// 3. the production web backend (default below).
+///
+/// `.env` 는 gitignore 라 새로 클론한 환경·CI 는 3번(아래 상수)으로 떨어진다. 그래서
+/// 상수도 항상 실제 주소와 맞춰 둔다 — 둘 중 하나만 고치면 "내 기기에선 되는데" 가 된다.
 ///
 /// The value may use any of `wss://h`, `ws://h`, `https://h`, `http://h`, or a
 /// bare `host:port`; it is normalized to a `ws`/`wss` scheme. For local device
@@ -31,8 +38,14 @@ const String _wsPath = '/api/v1/pron/stt/ws';
 /// Production web backend (Cloud Run). STT deployment there is gated on the
 /// service having `stt_key.json` + `STT_GCP_KEY_PATH`; until then the app
 /// connect fails and the screen degrades to tap input.
+///
+/// ⚠ **리전이 틀려 있었다** — `us-central1` 로 박혀 있었는데 서비스는
+/// `asia-northeast3` 에 있다. 그 주소는 Cloud Run 이 아니라 구글의 404 페이지를
+/// 돌려주는(= 그런 서비스 없음) 죽은 호스트였고, [SttService] 는 연결 실패를 절대
+/// 던지지 않고 탭 입력으로 조용히 폴백하므로 **게임은 도는데 말해도 반응이 없는**
+/// 상태가 오래 안 드러났다. 주소를 바꿀 땐 실제로 WS 핸드셰이크가 101 인지 확인할 것.
 const String _prodOrigin =
-    'wss://beavertalk-web-api-333511894671.us-central1.run.app';
+    'wss://beavertalk-web-api-333511894671.asia-northeast3.run.app';
 
 const String _defineOrigin =
     String.fromEnvironment('PRON_STT_WS_ORIGIN', defaultValue: '');
