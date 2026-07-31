@@ -3,11 +3,12 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:record/record.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/network/ws_url.dart';
 import '../domain/matcher.dart';
 import 'curated_word_source.dart';
-import 'stt_ws_url.dart';
 
 /// Lifecycle of the [SttService].
 enum SttStatus {
@@ -37,7 +38,13 @@ enum SttStatus {
 /// recording cannot coexist. Server STT keeps a single mic capture and fans its
 /// PCM out over a WebSocket, so recording can coexist and there's no on-device
 /// model download. Mirrors the web game (`app/public/pronunciation-challenge
-/// .html`). The endpoint lives on the **web backend** (see [pronSttWsUrl]).
+/// .html`).
+///
+/// 엔드포인트는 **앱 백엔드**의 `/api/v1/pron/stt/ws` 다(웹 서버 구현을 그대로 이식했다).
+/// 웹 판과 한 가지가 다르다 — **Supabase 토큰이 필수**다. STT 는 과금이 있어 서버가
+/// 인증된 사용자만 받고, 토큰이 없거나 무효면 1008 로 즉시 닫는다. 웹 서버 쪽은 인증이
+/// 없어(origin 헤더만 확인) 토큰 없이도 붙었는데, 그 주소를 앱이 오래 들고 있었다.
+/// 주소는 [pronSttWsUrl] 이 `API_BASE_URL` 에서 유도한다 — 호스트를 따로 박지 않는다.
 ///
 /// ## Protocol (`services/stt/stt_session.py`)
 /// * client→server: first text `{"type":"config","words":[…],"sampleRate":N}`,
@@ -252,7 +259,14 @@ class SttService {
     }
 
     try {
-      final channel = WebSocketChannel.connect(Uri.parse(pronSttWsUrl()));
+      // STT WS 는 **인증 필수**다(서버: 토큰 없음/무효 → 1008 즉시 close).
+      // 과금이 있어 인증된 사용자만 허용한다 — 통화 WS 와 같은 규약.
+      final token = Supabase.instance.client.auth.currentSession?.accessToken;
+      if (token == null || token.isEmpty) {
+        debugPrint('SttService: 세션 토큰 없음 → tap fallback');
+        return false;
+      }
+      final channel = WebSocketChannel.connect(Uri.parse(pronSttWsUrl(token)));
       _ws = channel;
       await channel.ready.timeout(_connectTimeout);
 

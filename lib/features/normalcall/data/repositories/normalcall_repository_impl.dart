@@ -3,6 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../../core/error/dio_error_mapper.dart';
 import '../../../../screens/home/learning_summary.dart';
 import '../../domain/entities/call_result.dart';
+import '../../domain/entities/pron_summary.dart';
 import '../../domain/repositories/normalcall_repository.dart';
 import '../datasources/normalcall_remote_data_source.dart';
 
@@ -59,6 +60,15 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
   Future<LearningSummary> getPronunciationReport(int callId) async {
     try {
       return await _remote.getPronunciationReport(callId);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<PronSummary> getPronunciationSummary({int sessions = 10}) async {
+    try {
+      return await _remote.getPronunciationSummary(sessions: sessions);
     } on DioException catch (e) {
       throw mapDioException(e);
     }

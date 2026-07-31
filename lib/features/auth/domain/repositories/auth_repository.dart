@@ -1,4 +1,5 @@
 import '../entities/accent_breakdown.dart';
+import '../entities/level_summary.dart';
 import '../entities/member.dart';
 
 /// Member capabilities the app depends on. Implemented in the data layer.
@@ -24,6 +25,12 @@ abstract interface class AuthRepository {
   /// Fetches the member's accent (nationality) breakdown from
   /// `GET /members/me/profile` (`speak_country`). Empty when not yet analyzed.
   Future<AccentBreakdown> getMyAccent();
+
+  /// 종합 레벨 카드 데이터(`GET /members/me/profile`).
+  Future<LevelSummary> getMyLevel();
+
+  /// 레벨테스트 다시 받기 — 레벨 배정만 지운다(체크판 보존).
+  Future<void> retakeLevelTest();
 
   /// Deletes the current member's account (`DELETE /members/me`). Throws
   /// [AppException] on failure. The caller signs out of Supabase afterwards.

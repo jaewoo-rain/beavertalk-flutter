@@ -1,6 +1,8 @@
 import 'package:dio/dio.dart';
 
+import '../../../../core/network/api_endpoints.dart';
 import '../../../../screens/home/learning_summary.dart';
+import '../../domain/entities/pron_summary.dart';
 import '../models/call_result_dto.dart';
 
 /// Talks to the call status/result endpoints over dio. Returns DTOs / raw
@@ -38,6 +40,18 @@ class NormalcallRemoteDataSource {
       '/calls/$callId/pronunciation-report',
     );
     return LearningSummary.fromJson(res.data!);
+  }
+
+  /// `GET /calls/pronunciation-summary?sessions=` — 최근 N세션 발음 평균.
+  ///
+  /// 정적 경로라 서버가 `/{call_id}` 보다 먼저 선언한다. 여기서도 문자열을 직접
+  /// 조립하지 말고 [ApiEndpoints] 상수를 쓴다.
+  Future<PronSummary> getPronunciationSummary({int sessions = 10}) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      ApiEndpoints.callsPronunciationSummary,
+      queryParameters: {'sessions': sessions},
+    );
+    return PronSummary.fromJson(res.data ?? const {});
   }
 
   /// `GET /calls/{call_id}` — call detail. The `/result` endpoint omits

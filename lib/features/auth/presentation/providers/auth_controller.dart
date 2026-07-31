@@ -402,6 +402,10 @@ class AuthController extends Notifier<AuthStatus> {
   Future<void> updateTargetLanguage(String targetLanguage) async {
     await ref.read(authRepositoryProvider).updateTargetLanguage(targetLanguage);
     ref.invalidate(myProfileProvider);
+    // ⚠ 레벨은 **언어마다 다르다**(서버가 target_language 스코프로 계산한다).
+    //   이걸 무효화하지 않으면 마이페이지 종합 레벨 카드에 **직전 언어의 레벨**이
+    //   그대로 남는다 — 일본어로 바꿨는데 한국어 레벨 7단계가 계속 보였다.
+    ref.invalidate(myLevelProvider);
   }
 
   /// Deletes the account: asks the backend to delete the member (`DELETE
