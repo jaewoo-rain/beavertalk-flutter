@@ -21,8 +21,13 @@ final myAccentProvider = FutureProvider<AccentBreakdown>((ref) async {
 
 /// 종합 레벨 카드 데이터(`GET /members/me/profile`).
 ///
-/// 레벨테스트를 다시 받은 뒤에는 `ref.invalidate(myLevelProvider)` 로 새로 읽어야
-/// 카드가 "레벨테스트 필요" 상태로 돌아간다.
-final myLevelProvider = FutureProvider<LevelSummary>((ref) async {
+/// **autoDispose 다** — 마이페이지를 벗어나면 버리고, 들어올 때마다 서버에서 새로
+/// 읽는다. 레벨은 통화(레벨테스트·자동 레벨업) 결과로 **앱 밖에서** 바뀌는 값이라,
+/// 한 번 받아 캐시해 두면 앱을 껐다 켤 때까지 옛 레벨이 남는다(실제로 그랬다).
+///
+/// 통화 종료 시점에 무효화하지 않는 이유: 판정이 서버 백그라운드에서 **13~21초** 걸린다
+/// (실측). 끝나자마자 다시 읽으면 아직 옛 값이라 헛수고다. 화면에 들어올 때 읽는 편이
+/// 타이밍을 맞출 필요가 없어 확실하다 — 너무 빨리 들어왔으면 한 번 더 들어오면 된다.
+final myLevelProvider = FutureProvider.autoDispose<LevelSummary>((ref) async {
   return ref.watch(authRepositoryProvider).getMyLevel();
 });
