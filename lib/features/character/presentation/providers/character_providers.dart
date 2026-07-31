@@ -56,11 +56,21 @@ final characterDetailProvider =
 /// call partner name + avatar (never a hardcoded id→name guess).
 final selectedCharacterProvider = Provider<Character?>((ref) {
   final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
-  if (characterId == null) return null;
+  return ref.watch(characterByIdProvider(characterId));
+});
+
+/// 카탈로그에서 [characterId] 를 찾는다. 못 찾거나(아직 로딩 중) id 가 null 이면
+/// null — 호출부는 정적 기본값으로 폴백한다.
+///
+/// [selectedCharacterProvider] 와 갈라놓은 이유: **통화 상대가 대표 캐릭터가 아닐
+/// 수 있다.** 예약전화는 알람마다 캐릭터를 따로 고르므로, 서버가 `call_started` 로
+/// 알려준 캐릭터로 화면을 그려야 대화 상대와 얼굴이 맞는다.
+final characterByIdProvider = Provider.family<Character?, int?>((ref, id) {
+  if (id == null) return null;
   final catalog = ref.watch(charactersProvider).valueOrNull;
   if (catalog == null) return null;
   for (final c in catalog) {
-    if (c.id == characterId) return c;
+    if (c.id == id) return c;
   }
   return null;
 });

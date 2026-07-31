@@ -10,7 +10,6 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/navigation.dart';
 import '../../../app/routes.dart';
-import '../../../mock/mock_data.dart' show characterName;
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../data/models/incoming_call_payload_dto.dart';
 import '../domain/entities/incoming_call_payload.dart';
@@ -237,15 +236,17 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
       _activeUuid = uuid;
       // 1단계: WS를 즉시 연결한다. 화면·오디오와 무관하게 서버가 오프닝 멘트를
       // 만들기 시작한다. 오디오는 CallKit의 didActivate 시점에 2단계로 붙는다.
-      unawaited(notifier.startFromIncoming(payload.characterId, callUuid: uuid));
+      unawaited(notifier.startFromIncoming(callUuid: uuid));
     } else {
       await callkit.endAllCalls();
-      unawaited(notifier.start(payload.characterId));
+      // CallKit 은 방금 정리했지만 서버는 어느 알람의 전화인지 알아야 한다 —
+      // 그 알람의 캐릭터로 통화를 열기 위해 통화 id 만 넘긴다.
+      unawaited(notifier.start(inboundCallId: uuid));
     }
 
     // 화면 진입은 병렬(비차단). 잠금 상태에선 그려지지 않지만, 사용자가 잠금을
     // 풀면 통화 화면이 이미 떠 있다.
-    unawaited(_navigateToCall(payload.characterId));
+    unawaited(_navigateToCall());
   }
 
   /// CallKit 콜 종료. `endAllCalls()`를 걷어낸 뒤로 이 이벤트는 **사용자의 실제
@@ -284,14 +285,15 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
   /// navigator가 아직 준비 안 됐으면(콜드스타트 부팅 직후) **준비될 때까지 폴링**한다
   /// (최대 [_readyTimeout]). 타임아웃까지 준비 안 되면 안전하게 no-op(로그만) —
   /// 세션 자체는 화면과 무관하게 이미 돌고 있다.
-  Future<void> _navigateToCall(int characterId) async {
+  Future<void> _navigateToCall() async {
     final ready = await _awaitNavigatorReady();
     final nav = appNavigatorKey.currentState;
     if (!ready || nav == null) {
       _log('네비게이션 실패: navigator 미준비(타임아웃 ${_readyTimeout.inSeconds}s)');
       return;
     }
-    nav.pushNamed(Routes.callLoading, arguments: characterId);
+    // 캐릭터 인자 없음 — 서버가 정한다(call_started 로 화면에 알려준다).
+    nav.pushNamed(Routes.callLoading);
   }
 
   /// 수락된 콜이 있는지 확인하고 있으면 소비한다. 소비했으면 true.
@@ -394,9 +396,9 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
     return IncomingCallPayload(
       callUuid: p.id,
       characterId: characterId,
-      characterName: (name == null || name.isEmpty)
-          ? characterName(characterId)
-          : name,
+      // 서버가 이름을 항상 실어 보낸다 — 비어 있으면 지어내지 말고 null.
+      // (CallKit 이 자체 일반 라벨로 폴백한다)
+      characterName: (name == null || name.isEmpty) ? null : name,
       imageUrl: p.avatar,
     );
   }
@@ -415,9 +417,9 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
     return IncomingCallPayload(
       callUuid: (m['id'] as String?) ?? '',
       characterId: characterId,
-      characterName: (name == null || name.isEmpty)
-          ? characterName(characterId)
-          : name,
+      // 서버가 이름을 항상 실어 보낸다 — 비어 있으면 지어내지 말고 null.
+      // (CallKit 이 자체 일반 라벨로 폴백한다)
+      characterName: (name == null || name.isEmpty) ? null : name,
     );
   }
 
@@ -435,8 +437,8 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
     final payload = IncomingCallPayload(
       callUuid: const Uuid().v4(),
       characterId: characterId,
-      // Show the selected avatar's name (Bibi/Baba) instead of a fixed label.
-      characterName: nameOverride ?? characterName(characterId),
+      // 디버그 트리거. 이름을 주지 않으면 비워 둔다(id 로 추측하지 않는다).
+      characterName: nameOverride,
     );
     await callkit.showIncoming(payload);
   }

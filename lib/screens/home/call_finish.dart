@@ -8,7 +8,6 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
-import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -196,8 +195,6 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final characterId =
-        ref.watch(myProfileProvider).valueOrNull?.characterId;
     final selectedChar = ref.watch(selectedCharacterProvider);
     final selectedCharUrl = selectedChar?.imageUrl;
     // Was `characterImage(characterId)`, whose id map is stale: a BABA user
@@ -267,7 +264,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                 Text(
                   // Blank rather than a guessed name — see the same call in
                   // `call.dart`.
-                  selectedChar?.name ?? characterName(characterId) ?? '',
+                  selectedChar?.name ?? '',
                   style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s8),

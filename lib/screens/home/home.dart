@@ -9,7 +9,6 @@ import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
-import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -45,14 +44,9 @@ class HomeScreen extends ConsumerWidget {
       Navigator.pushNamed(context, Routes.permissionMicDenied);
       return;
     }
-    final characterId =
-        ref.read(myProfileProvider).valueOrNull?.characterId ?? 1;
     if (!context.mounted) return;
-    Navigator.pushNamed(
-      context,
-      Routes.callLoading,
-      arguments: characterId,
-    );
+    // 캐릭터는 서버가 정한다(member.character_id) — 인자를 싣지 않는다.
+    Navigator.pushNamed(context, Routes.callLoading);
   }
 
   @override

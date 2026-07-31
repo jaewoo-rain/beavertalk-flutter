@@ -175,31 +175,22 @@ void setBookmark(int id, bool saved) {
 /// member's `characterId` so calls show the avatar the user actually selected.
 const mockPartnerName = 'Annoying Beaver';
 
-/// Display name for a selected character [id] (member `character_id`), or null
-/// when the id is not one we know.
+/// 캐릭터 이름은 **서버만 안다** — 클라이언트에 id→이름 표를 두지 않는다.
 ///
-/// Keyed to the server's real ids, verified against `GET /characters`. The
-/// previous map read `id == 2 ? 'Baba' : 'Bibi'` — reversed (1 is BABA, 2 is
-/// BIBI), missing Popo/Rara/Dudu entirely, and worst of all it answered
-/// **every** unknown id with a confident "Bibi".
+/// 예전엔 `characterName(int? id)` 가 여기 있었다. 서버 id 가 환경마다 다르다는 게
+/// 문제였다:
+///     prod: 1 BABA · 2 BIBI ·  9 Popo · 10 Rara · 11 Dudu
+///     dev : 1 BABA · 2 BIBI ·  3 Popo ·  4 Rara ·  5 Dudu
+/// prod 기준 표를 dev 에서 돌리면 아는 이름이 하나도 안 잡히고, 서버가 id 를
+/// 재배치하면 **다른 캐릭터 이름**을 자신 있게 답한다.
 ///
-/// Returning null for an unknown id is the point of this function's shape: a
-/// caller that cannot name the partner should say nothing, not invent one. The
-/// CallKit path relies on exactly that — `callkit_service` falls back to its own
-/// generic label when this is null.
-///
-/// Still a client-side mirror of server data: a character added server-side has
-/// no entry here until this map is updated. Prefer the catalog
-/// (`selectedCharacterProvider`) wherever a provider is in reach; this exists
-/// for the paths that have none (background CallKit, alarm payloads).
-String? characterName(int? id) => switch (id) {
-      1 => 'BABA',
-      2 => 'BIBI',
-      9 => 'Popo',
-      10 => 'Rara',
-      11 => 'Dudu',
-      _ => null,
-    };
+/// 이제 이름은 항상 서버에서 온다:
+///   - 카탈로그: `selectedCharacterProvider` (`GET /characters`)
+///   - 알람    : `AlarmOut.character.name` (NOT NULL)
+///   - 수신푸시: FCM `name` / APNs `nameCaller` — 서버가 비워 보내지 않는다
+///               (캐릭터를 못 찾으면 `core/push_defaults.DEFAULT_CALLER_NAME`)
+/// 셋 다 없는 순간(카탈로그 로딩 중)에는 **이름을 지어내지 말고 비워 둔다** —
+/// 같은 순간 이미지도 스켈레톤이므로 그게 정직한 상태다.
 
 /// Neutral avatar placeholder for a character whose real image is not known yet.
 ///

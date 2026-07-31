@@ -8,7 +8,6 @@ import 'package:uuid/uuid.dart';
 import '../../../core/config/feature_flags.dart';
 import '../../alarm/domain/entities/alarm.dart';
 import '../../alarm/presentation/providers/alarm_list_controller.dart';
-import '../../../mock/mock_data.dart' show characterName;
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../domain/entities/incoming_call_payload.dart';
 import '../services/callkit_service.dart';
@@ -140,7 +139,7 @@ class InboundCallScheduler {
       callUuid: const Uuid().v4(),
       characterId: a.characterId,
       // Server name when present, else the selected avatar's name (Bibi/Baba).
-      characterName: a.characterName ?? characterName(a.characterId),
+      characterName: a.characterName,
       imageUrl: a.imageUrl,
     );
     await callkit.showIncoming(payload);

@@ -18,7 +18,6 @@ import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../l10n/app_localizations.dart';
-import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -188,8 +187,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final hintOn = ref.watch(
       normalCallControllerProvider.select((s) => s.hintOn),
     );
-    final characterId = ref.watch(myProfileProvider).valueOrNull?.characterId;
-    final selectedChar = ref.watch(selectedCharacterProvider);
+    // 이 통화의 상대는 **서버가 정한다**(`call_started`). 예약전화는 알람마다
+    // 캐릭터가 달라서, 대표 캐릭터로 그리면 대화 상대와 화면 얼굴이 어긋난다.
+    // 도착 전(연결 중)·구버전 서버에서는 null 이라 대표 캐릭터로 폴백한다.
+    final serverCharacterId = ref.watch(
+      normalCallControllerProvider.select((s) => s.characterId),
+    );
+    final characterId = serverCharacterId ??
+        ref.watch(myProfileProvider).valueOrNull?.characterId;
+    final selectedChar = ref.watch(characterByIdProvider(characterId));
     final selectedCharUrl = selectedChar?.imageUrl;
     // Null until the catalog resolves. Deliberately NOT defaulted to
     // [characterImage]: that map answers an unmatched id with **Judi's**
@@ -202,7 +208,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final callNotifier = ref.read(normalCallControllerProvider.notifier);
     final avatarDir = avatarAssetDirFor(
       characterId,
-      selectedChar?.name ?? characterName(characterId),
+      selectedChar?.name,
     );
 
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
@@ -281,7 +287,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                     // partner. The id map used to answer any unknown id with
                     // "Bibi", so a Baba user watched the wrong name for the
                     // whole call; a blank line is the honest version.
-                    selectedChar?.name ?? characterName(characterId) ?? '',
+                    selectedChar?.name ?? '',
                     style: AppType.body1.sb.copyWith(
                       color: context.c.labelStrong,
                     ),

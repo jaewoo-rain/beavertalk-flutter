@@ -28,28 +28,38 @@ const Map<int, String> _emotionStem = {
 /// Currently only characters with a generated sprite set under
 /// `assets/avatar/<key>/` are listed here; add a key when its sprites ship.
 String? avatarAssetDirFor(int? characterId, String? name) {
-  // Id first, and keyed to the server's real ids (verified against
-  // `GET /characters`). This used to read `characterId == 2 → baba`, but 2 is
-  // BIBI — so a BIBI call could open **BABA's** clips. The id is the reliable
-  // key; the name match below is the backstop for payloads that carry a name
-  // and no id (alarm/CallKit).
-  const byId = <int, String>{
-    1: 'baba',
-    2: 'bibi',
-    9: 'popo',
-    10: 'rara',
-    11: 'dudu',
+  // ⭐ **이름으로 매핑한다. id 는 쓰지 않는다.**
+  //
+  // 옛 코드는 `characterId` 를 1순위로 썼는데, 서버의 캐릭터 id 가 **환경마다 다르다**:
+  //     prod: 1 BABA · 2 BIBI ·  9 Popo · 10 Rara · 11 Dudu
+  //     dev : 1 BABA · 2 BIBI ·  3 Popo ·  4 Rara ·  5 Dudu
+  // prod 기준으로 하드코딩하면 dev 에서 Popo 가 Rara 영상을 연다. 서버에 캐릭터가
+  // 추가·재배치돼도 앱이 조용히 틀린 얼굴을 고른다.
+  //
+  // 이름은 그 캐릭터의 정체성이라 환경이 바뀌어도 안 흔들린다. 서버 IAP 상품 매핑도
+  // 같은 이유로 id 대신 이름으로 조회한다(iap_catalog.resolve).
+  //
+  // 서버 표기가 'BABA'/'Baba' 로 섞여 있어 **대소문자 무시**로 맞춘다. 한국어 표기는
+  // CallKit·알람 페이로드가 현지화된 이름을 실어 보낼 때를 위한 보조.
+  const byName = <String, String>{
+    'baba': 'baba', '바바': 'baba',
+    'bibi': 'bibi', '비비': 'bibi',
+    'popo': 'popo', '포포': 'popo',
+    'rara': 'rara', '라라': 'rara',
+    'dudu': 'dudu', '두두': 'dudu',
   };
-  final key = byId[characterId];
-  if (key != null) return 'assets/avatar/$key';
 
-  final n = (name ?? '').toLowerCase();
-  bool has(String k) => n.contains(k);
-  if (has('baba') || has('비버')) return 'assets/avatar/baba';
-  if (has('bibi') || has('비비')) return 'assets/avatar/bibi';
-  if (has('dudu') || has('두두')) return 'assets/avatar/dudu';
-  if (has('popo') || has('포포')) return 'assets/avatar/popo';
-  if (has('rara') || has('라라')) return 'assets/avatar/rara';
+  final n = (name ?? '').trim().toLowerCase();
+  if (n.isEmpty) return null;   // 이름을 모르면 정적 이미지 폴백(틀린 얼굴보다 낫다)
+
+  // 정확히 일치 먼저 — 부분 일치는 다른 이름을 잘못 삼킬 수 있다.
+  final exact = byName[n];
+  if (exact != null) return 'assets/avatar/$exact';
+
+  // "비비 선생님" 처럼 수식어가 붙은 경우를 위한 부분 일치.
+  for (final e in byName.entries) {
+    if (n.contains(e.key)) return 'assets/avatar/${e.value}';
+  }
   return null;
 }
 

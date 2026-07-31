@@ -55,6 +55,7 @@ class CallState {
     this.phase = CallPhase.idle,
     this.elapsedSec = 0,
     this.callId,
+    this.characterId,
     this.baselineCallId,
     this.beaverSubtitle = '',
     this.userSubtitle = '',
@@ -74,6 +75,12 @@ class CallState {
 
   /// Server call id, available once `call_ended` arrives. Pass to analysis.
   final String? callId;
+
+  /// 서버가 정한 이 통화의 캐릭터(`call_started`). 통화 화면 아바타는 이걸 우선
+  /// 쓴다 — 수신통화는 알람마다 캐릭터가 달라서 대표 캐릭터로 그리면 **대화 상대와
+  /// 화면 얼굴이 어긋난다**. 도착 전(연결 중)이나 구버전 서버에서는 null 이고,
+  /// 그때는 화면이 대표 캐릭터로 폴백한다.
+  final int? characterId;
 
   /// Max existing `call_id` captured at call start, before the server creates
   /// this call's row. On a manual hang-up (no `call_ended`/[callId]), the
@@ -119,6 +126,7 @@ class CallState {
     CallPhase? phase,
     int? elapsedSec,
     String? callId,
+    int? characterId,
     int? baselineCallId,
     String? beaverSubtitle,
     String? userSubtitle,
@@ -132,6 +140,7 @@ class CallState {
       phase: phase ?? this.phase,
       elapsedSec: elapsedSec ?? this.elapsedSec,
       callId: callId ?? this.callId,
+        characterId: characterId ?? this.characterId,
       baselineCallId: baselineCallId ?? this.baselineCallId,
       beaverSubtitle: beaverSubtitle ?? this.beaverSubtitle,
       userSubtitle: userSubtitle ?? this.userSubtitle,
@@ -490,17 +499,26 @@ class NormalCallController extends Notifier<CallState> {
     return const CallState();
   }
 
-  /// Starts a live call with the given [characterId] from the home flow.
+  /// Starts a live call from the home flow.
+  ///
+  /// **캐릭터를 넘기지 않는다** — 서버가 `member.character_id`(사용자가 고른 대표
+  /// 캐릭터)로 정한다. 예전엔 여기로 id 를 받아 보냈는데, 호출부가 인자를 안 주면
+  /// `call_loading` 이 1(BABA)로 폴백해 마이페이지·기록·온보딩완료에서 건 전화가
+  /// 전부 BABA 로 갔다(prod 통화 701 건 중 421 건이 고른 캐릭터와 불일치).
   ///
   /// Re-entry safe (§8-1): returns immediately when already starting or when the
   /// phase is connecting/inCall/ending; otherwise runs [_teardown] first so any
   /// stale socket/recorder/player is closed before a fresh connection opens.
-  /// After the socket opens it sends `{type:"start", character_id}` once, which
-  /// triggers the server's automatic opening line (§8-3).
-  Future<void> start(int characterId) async {
+  /// After the socket opens it sends `{type:"start"}` once, which triggers the
+  /// server's automatic opening line (§8-3).
+  /// [inboundCallId] 는 **안드로이드 수신통화 전용**이다. 안드로이드는 accept 직후
+  /// `endAllCalls()` 로 CallKit 을 정리하고 이 경로로 들어오므로 [startFromIncoming]
+  /// 을 타지 않는데, 그래도 서버는 어느 알람의 전화인지 알아야 그 알람의 캐릭터로
+  /// 연결한다. CallKit 세션은 이미 없으므로 callUuid(끊기용)와는 분리한다.
+  Future<void> start({String? inboundCallId}) async {
     final ok = await _connect(
-      characterId,
       callUuid: null,
+      inboundCallId: inboundCallId,
       callkitOwnedAudio: false,
     );
     if (!ok) return;
@@ -522,10 +540,16 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// [callUuid] is the CallKit call this session belongs to; [hangUp] ends it so
   /// the lock-screen call UI disappears together with the conversation.
-  Future<void> startFromIncoming(int characterId, {String? callUuid}) async {
+  ///
+  /// 그 [callUuid] 는 **서버가 푸시로 내려준 통화 id** 이기도 하다. `start` 에
+  /// `inbound_call_id` 로 되돌려주면 서버가 발송 로그로 알람을 되짚어 **그 알람의
+  /// 캐릭터**로 통화를 연다 — 알람마다 캐릭터가 다를 수 있는데 대표 캐릭터 하나로는
+  /// 표현할 수 없기 때문이다. 앱이 캐릭터를 고르는 게 아니라, 서버가 준 불투명한
+  /// uuid 를 그대로 돌려줄 뿐이다.
+  Future<void> startFromIncoming({String? callUuid}) async {
     final ok = await _connect(
-      characterId,
       callUuid: callUuid,
+      inboundCallId: callUuid,
       callkitOwnedAudio: true,
     );
     if (!ok) return;
@@ -547,9 +571,9 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// Returns true when the socket is up and the caller should proceed to
   /// [_startAudio]. Never touches playback, the mic, or the audio session.
-  Future<bool> _connect(
-    int characterId, {
+  Future<bool> _connect({
     required String? callUuid,
+    required String? inboundCallId,
     required bool callkitOwnedAudio,
   }) async {
     if (_starting) return false;
@@ -630,9 +654,14 @@ class NormalCallController extends Notifier<CallState> {
       // 시작되면 기본 'ko' 가 나갔다**(잠금화면 수신통화가 정확히 그 구간이다 —
       // 콜드스타트 → accept → 즉시 connect). 앱을 지우면 선택도 리셋됐고, 서버가 거는
       // 예약전화인데 언어는 클라가 정하는 모순도 있었다. 이제 DB 가 단일 소스다.
+      //
+      // (캐릭터) character_id 도 **보내지 않는다** — 같은 이유로 서버가 정한다.
+      // 수신통화만 서버가 준 통화 id 를 `inbound_call_id` 로 되돌려주고, 서버가
+      // 그걸로 알람을 되짚어 그 알람의 캐릭터를 쓴다. 홈에서 건 전화는 이 필드가
+      // 없어 서버가 member.character_id 를 쓴다.
       _send({
         'type': 'start',
-        'character_id': characterId,
+        'inbound_call_id': ?inboundCallId,
       });
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
@@ -1515,6 +1544,12 @@ class NormalCallController extends Notifier<CallState> {
     }
 
     switch (msg['type'] as String?) {
+      // 서버가 이 통화의 캐릭터를 정했다 — 화면 아바타를 대화 상대와 맞춘다.
+      case 'call_started':
+        final cid = msg['character_id'];
+        if (cid is int) state = state.copyWith(characterId: cid);
+        break;
+
       case 'turn_start':
         if (state.phase == CallPhase.connecting) {
           state = state.copyWith(phase: CallPhase.inCall);

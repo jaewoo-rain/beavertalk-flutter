@@ -19,11 +19,13 @@ import '../../theme/app_typography.dart';
 /// the server prepares its automatic opening line. It renders the [beaverImage]
 /// avatar, a spinner, and a status line, with a top-left close button.
 ///
-/// On [initState] it calls `NormalCallController.start(characterId)` (no button —
-/// the opening line is server-triggered, plan §8-3). The `characterId` arrives
-/// as the route's `arguments` (set by home), defaulting to `1`. It then listens
-/// to the controller: `inCall` → `pushReplacement(Routes.call)`; `error` →
-/// guidance + back home. The close (X) hangs up and returns home (§8-2).
+/// On [initState] it calls `NormalCallController.start()` (no button — the
+/// opening line is server-triggered, plan §8-3). **캐릭터를 넘기지 않는다** —
+/// 서버가 `member.character_id` 로 정한다. 예전엔 라우트 `arguments` 로 받아
+/// 기본값 `1` 로 폴백했는데, 인자를 안 주는 진입점(마이페이지·기록·온보딩완료)에서
+/// 건 전화가 전부 BABA 로 갔다. It then listens to the controller:
+/// `inCall` → `pushReplacement(Routes.call)`; `error` → guidance + back home.
+/// The close (X) hangs up and returns home (§8-2).
 class CallLoadingScreen extends ConsumerStatefulWidget {
   /// Creates the call-connecting screen.
   const CallLoadingScreen({super.key});
@@ -75,9 +77,10 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         _goHomeWithError(s.errorMsg);
       case CallPhase.idle:
         // 실제로 여기서 시작하는 유일한 경우 — 홈에서 진입.
-        final args = ModalRoute.of(context)?.settings.arguments;
-        final characterId = args is int ? args : 1;
-        ref.read(normalCallControllerProvider.notifier).start(characterId);
+        // 캐릭터를 넘기지 않는다 — 서버가 member.character_id 로 정한다.
+        // 예전엔 `args is int ? args : 1` 로 폴백해, 인자를 안 주는 진입점
+        // (마이페이지·기록·온보딩완료)에서 건 전화가 전부 1(BABA)로 갔다.
+        ref.read(normalCallControllerProvider.notifier).start();
     }
   }
 
