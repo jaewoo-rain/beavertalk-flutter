@@ -10,9 +10,14 @@ import '../../components/molecules/level_progress.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
 import '../../features/auth/domain/entities/accent_breakdown.dart';
+import '../../features/auth/domain/entities/level_summary.dart';
+import '../../features/auth/presentation/providers/auth_providers.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/normalcall/domain/entities/pron_summary.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -33,15 +38,14 @@ import '../../theme/app_typography.dart';
 /// - percentile → no server field exists; needs a new one.
 /// - the pronunciation gauge → a recent-sessions aggregate endpoint, or a
 ///   client fold over `GET /calls/{id}/result`.`score_average`.
-abstract final class _DesignSample {
-  static const int level = 7;
+/// 서버가 값을 못 줄 때 쓰는 표시 기본값.
+///
+/// 예전엔 여기 레벨 7·상위 45%·발음 98점 같은 **디자인 목업 숫자**가 들어 있었고
+/// 화면이 그걸 그대로 그렸다 — 누구에게나 같은 가짜 수치가 보였다. 이제 값은 전부
+/// 서버에서 오고, 여기 남은 건 서버가 굳이 내려줄 필요 없는 스케일 상한뿐이다.
+/// (서버가 level_max 를 주면 그 값이 이긴다.)
+abstract final class _Fallback {
   static const int levelMax = 13;
-  static const int topPercent = 45;
-  static const int aheadOfPercent = 55;
-  static const double pronunciationScore = 98;
-  static const double pronunciation = 96;
-  static const double fluency = 91;
-  static const double rhythm = 91;
 }
 
 /// My page — Figma `screen/main_mypage` (Dark `3360:20181`, Light `3703:46474`).
@@ -77,6 +81,18 @@ class MyPageScreen extends ConsumerWidget {
     // 발음 학습하기 CTA would always take the records fallback. Watching it here
     // starts the fetch while the screen is open so the newest call id is ready.
     final recentCalls = ref.watch(callListProvider).valueOrNull?.items;
+    // 종합 레벨(GET /members/me/profile) — 로딩 중/실패면 빈 카드로 그린다.
+    // 여기서 에러 화면을 띄우지 않는 이유: 카드 3개가 각자 독립이라 하나가 실패해도
+    // 나머지는 보여주는 편이 낫다.
+    final level = ref.watch(myLevelProvider).valueOrNull;
+    // 발음 최근 10세션 평균(GET /calls/pronunciation-summary).
+    final pron = ref.watch(pronunciationSummaryProvider).valueOrNull;
+    // 사용자가 고른 캐릭터의 실제 이미지. 카탈로그가 아직 안 왔거나 image_url 이
+    // 비어 있으면 정적 비버로 폴백한다 — id→이미지 추측 매핑은 쓰지 않는다
+    // (환경마다 character_id 가 달라 남의 얼굴이 뜬 전례가 있다).
+    final charUrl = ref.watch(selectedCharacterProvider)?.imageUrl;
+    final ImageProvider avatar =
+        (charUrl != null && charUrl.isNotEmpty) ? NetworkImage(charUrl) : beaverImage;
 
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -97,11 +113,11 @@ class MyPageScreen extends ConsumerWidget {
               padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
                   AppSpacing.s20, AppSpacing.s24),
               children: [
-                _accentCard(context, l10n, accentStats),
+                _accentCard(context, l10n, accentStats, avatar),
                 const SizedBox(height: AppSpacing.s24),
-                _levelCard(context, l10n),
+                _levelCard(context, ref, l10n, level),
                 const SizedBox(height: AppSpacing.s24),
-                _pronunciationCard(context, l10n, recentCalls),
+                _pronunciationCard(context, l10n, pron, recentCalls),
               ],
             ),
           ),
@@ -121,6 +137,7 @@ class MyPageScreen extends ConsumerWidget {
     BuildContext context,
     AppLocalizations l10n,
     List<AccentStat> stats,
+    ImageProvider avatar,
   ) =>
       _card(
         context,
@@ -131,7 +148,7 @@ class MyPageScreen extends ConsumerWidget {
           action: InkWell(
             onTap: () => showDialogShareProfile(
               context,
-              imageProvider: beaverImage,
+              imageProvider: avatar,
               caption: l10n.accentSoundsLike,
               title: stats.isEmpty ? '—' : stats.first.label,
               stats: [
@@ -158,7 +175,7 @@ class MyPageScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: context.c.backgroundElevatedAlternative,
-                image: DecorationImage(image: beaverImage, fit: BoxFit.cover),
+                image: DecorationImage(image: avatar, fit: BoxFit.cover),
               ),
             ),
           ),
@@ -182,7 +199,13 @@ class MyPageScreen extends ConsumerWidget {
       );
 
   /// 종합 레벨 — stage, percentile and the 1→13 gradient scale.
-  Widget _levelCard(BuildContext context, AppLocalizations l10n) => _card(
+  Widget _levelCard(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    LevelSummary? level,
+  ) =>
+      _card(
         context,
         header: _cardHeader(
           context,
@@ -199,8 +222,13 @@ class MyPageScreen extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Flexible(
+                // 레벨 미확정(레벨테스트 전)이면 숫자를 지어내지 않고 "—" 를 둔다.
+                // 예전엔 목업 값 7 이 그대로 떠서 테스트도 안 본 사용자에게
+                // "7단계" 가 보였다.
                 child: Text(
-                  l10n.levelStage(_DesignSample.level),
+                  level?.level == null
+                      ? '—'
+                      : l10n.levelStage(level!.level!),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style:
@@ -208,38 +236,42 @@ class MyPageScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(width: AppSpacing.s8),
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.topPercent(_DesignSample.topPercent),
-                      textAlign: TextAlign.end,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppType.title3.b
-                          .copyWith(color: context.c.primaryNormal),
-                    ),
-                    const SizedBox(height: AppSpacing.s4),
-                    Text(
-                      l10n.allLearnersBasis,
-                      textAlign: TextAlign.end,
-                      style: AppType.body1.r
-                          .copyWith(color: context.c.labelNormal),
-                    ),
-                  ],
+              // 상위 % 는 값이 있을 때만 — 없는 백분위를 0% 로 그리면 거짓이 된다.
+              if (level?.topPercent != null)
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l10n.topPercent(level!.topPercent!),
+                        textAlign: TextAlign.end,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: AppType.title3.b
+                            .copyWith(color: context.c.primaryNormal),
+                      ),
+                      const SizedBox(height: AppSpacing.s4),
+                      Text(
+                        l10n.allLearnersBasis,
+                        textAlign: TextAlign.end,
+                        style: AppType.body1.r
+                            .copyWith(color: context.c.labelNormal),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
           LevelProgress(
-            level: _DesignSample.level,
-            maxLevel: _DesignSample.levelMax,
+            // level=null 이면 마커를 숨긴다(컴포넌트 계약) — 레일만 보인다.
+            level: level?.level,
+            maxLevel: level?.maxLevel ?? _Fallback.levelMax,
             startLabel: l10n.levelStage(1),
-            endLabel: l10n.levelStage(_DesignSample.levelMax),
+            endLabel: l10n.levelStage(level?.maxLevel ?? _Fallback.levelMax),
           ),
-          _aheadLine(context, l10n, _DesignSample.aheadOfPercent),
+          if (level?.aheadOfPercent != null)
+            _aheadLine(context, l10n, level!.aheadOfPercent!),
           Button(
             // Elevated, not Fill: the card is `Background/Surface/Alternative`,
             // which in Dark is the same #252932 that `secondaryFill` paints —
@@ -249,7 +281,7 @@ class MyPageScreen extends ConsumerWidget {
             type: BtnType.secondaryElevated,
             size: BtnSize.s60,
             text: l10n.retakeLevelTest,
-            onPressed: () => _startLevelTest(context),
+            onPressed: () => _startLevelTest(context, ref),
           ),
         ],
       );
@@ -258,6 +290,7 @@ class MyPageScreen extends ConsumerWidget {
   Widget _pronunciationCard(
     BuildContext context,
     AppLocalizations l10n,
+    PronSummary? pron,
     List<CallSummary>? recentCalls,
   ) =>
       _card(
@@ -268,18 +301,21 @@ class MyPageScreen extends ConsumerWidget {
           subtitle: l10n.recentSessionsAverage,
         ),
         children: [
+          // 최근 10세션 평균. 점수가 없으면(발음 챌린지를 아직 안 했거나 통화가
+          // 없으면) inactive 상태로 게이지가 `-%` 를 그린다 — 0% 로 그리면
+          // "0점을 받았다"로 읽혀서 없는 것과 나쁜 것이 구별되지 않는다.
           PronunciationResult(
-            score: _DesignSample.pronunciationScore,
+            state: (pron?.hasData ?? false)
+                ? PronunciationState.active
+                : PronunciationState.inactive,
+            score: pron?.totalScore ?? 0,
             metrics: [
               PronunciationMetric(
-                  label: l10n.pronunciation,
-                  value: '${_DesignSample.pronunciation.round()}%'),
+                  label: l10n.pronunciation, value: _pct(pron?.pronunciation)),
               PronunciationMetric(
-                  label: l10n.fluency,
-                  value: '${_DesignSample.fluency.round()}%'),
+                  label: l10n.fluency, value: _pct(pron?.fluency)),
               PronunciationMetric(
-                  label: l10n.rhythm,
-                  value: '${_DesignSample.rhythm.round()}%'),
+                  label: l10n.rhythm, value: _pct(pron?.rhythm)),
             ],
           ),
           Button(
@@ -401,8 +437,38 @@ class MyPageScreen extends ConsumerWidget {
   /// There is no dedicated level-test screen: the app has one call entry point
   /// ([Routes.callLoading]) and the server decides whether a call counts as a
   /// level test. Onboarding's 바로 통화하기 goes to the same place.
-  void _startLevelTest(BuildContext context) =>
-      Navigator.pushNamed(context, Routes.callLoading);
+  /// 레벨테스트 다시하기 — **서버에 요청한 뒤에** 통화 화면으로 넘어간다.
+  ///
+  /// 예전엔 그냥 통화 화면으로 밀기만 해서 일반 통화가 열렸다. 레벨 배정을 다시
+  /// 받으려면 서버가 레벨을 비워야 다음 통화가 레벨테스트로 라우팅된다(D11).
+  /// 학습 기록(체크판)은 지워지지 않는다 — 레벨만 다시 받는 것이다.
+  ///
+  /// 하루 1회 제한은 통화 시작 시점에 서버가 검사한다. 즉 이 요청이 성공해도
+  /// 오늘 이미 레벨테스트를 했다면 통화 화면에서 DAILY_LIMIT 로 막힌다.
+  /// ⚠ **실패하면 통화로 넘어가지 않는다.** 예전엔 예외를 삼키고 그대로 이동했는데,
+  /// 서버에 이 API 가 아직 없던 동안(404) 레벨이 안 지워진 채 **일반 통화**가 열렸다.
+  /// 사용자 눈에는 "레벨테스트를 눌렀는데 그냥 대화가 시작됨" 으로 보였고 원인이
+  /// 드러나지 않았다. 조용한 폴백보다 명확한 실패가 낫다.
+  Future<void> _startLevelTest(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    try {
+      await ref.read(authRepositoryProvider).retakeLevelTest();
+    } catch (e) {
+      if (!context.mounted) return;
+      final msg = e is AppException ? e.message : l10n.tryAgainLater;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(msg)));
+      return; // 레벨이 안 지워졌으므로 통화를 열면 일반 통화가 된다
+    }
+    // 카드가 "레벨 미확정" 으로 돌아가도록 다시 읽는다.
+    ref.invalidate(myLevelProvider);
+    if (!context.mounted) return;
+    Navigator.pushNamed(context, Routes.callLoading);
+  }
+
+  /// 0~100 점수 → "96%". 값이 없으면 "-%" (0% 로 그리면 0점으로 읽힌다).
+  static String _pct(double? v) => v == null ? '-%' : '${v.round()}%';
 
   /// 발음 학습하기 → the most recent call's analysis.
   ///

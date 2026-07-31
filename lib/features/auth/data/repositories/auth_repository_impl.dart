@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/error/dio_error_mapper.dart';
 import '../../domain/entities/accent_breakdown.dart';
+import '../../domain/entities/level_summary.dart';
 import '../../domain/entities/member.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
@@ -46,6 +47,24 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<AccentBreakdown> getMyAccent() async {
     try {
       return await _remote.getMyAccent();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<LevelSummary> getMyLevel() async {
+    try {
+      return await _remote.getMyLevel();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<void> retakeLevelTest() async {
+    try {
+      await _remote.retakeLevelTest();
     } on DioException catch (e) {
       throw mapDioException(e);
     }

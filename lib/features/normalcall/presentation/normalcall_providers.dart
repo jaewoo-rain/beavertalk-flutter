@@ -5,6 +5,7 @@ import '../../../screens/home/learning_summary.dart';
 import '../data/datasources/normalcall_remote_data_source.dart';
 import '../data/repositories/normalcall_repository_impl.dart';
 import '../domain/entities/call_result.dart';
+import '../domain/entities/pron_summary.dart';
 import '../domain/repositories/normalcall_repository.dart';
 
 /// Remote data source bound to the configured [dioProvider].
@@ -98,4 +99,13 @@ final callListProvider =
 final pronunciationReportProvider =
     FutureProvider.autoDispose.family<LearningSummary, int>((ref, callId) async {
   return ref.watch(normalcallRepositoryProvider).getPronunciationReport(callId);
+});
+
+/// 마이페이지 발음 카드 — 최근 10세션 발음 4지표 평균.
+///
+/// autoDispose: 마이페이지를 벗어나면 버리고 재진입 시 다시 읽는다(통화 후 값이
+/// 바뀌므로 캐시를 오래 들고 있을 이유가 없다).
+final pronunciationSummaryProvider =
+    FutureProvider.autoDispose<PronSummary>((ref) async {
+  return ref.watch(normalcallRepositoryProvider).getPronunciationSummary();
 });
