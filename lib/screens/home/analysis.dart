@@ -86,6 +86,13 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// first is still landing would toggle the server back and desync the store.
   final Set<int> _bookmarkInFlight = <int>{};
 
+  /// `sentenceId → voice URL` fetched on demand because the result arrived
+  /// before the server's TTS step finished (see [_playSentence]).
+  final Map<int, String> _ttsUrls = <int, String>{};
+
+  /// Sentence ids with an on-demand TTS request in flight.
+  final Set<int> _ttsInFlight = <int>{};
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -161,15 +168,56 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
     super.dispose();
   }
 
-  /// Plays a learned sentence's standard pronunciation when the server provides
-  /// a playable URL ([LearnedSentence.voiceUrl]); otherwise says so.
+  /// Plays a learned sentence's standard pronunciation.
+  ///
+  /// [LearnedSentence.voiceUrl] is usually **null on this screen**, and that is
+  /// not an error: the server flips `call.status = "done"` in the same commit as
+  /// the summary and expressions so the result opens immediately, and synthesizes
+  /// the sentence TTS *after* that. `analysis_loading` polls every 1.5s, so it
+  /// navigates here within a second or so of `done` — before the audio exists.
+  /// This screen holds the snapshot it arrived with and never refetches, so the
+  /// speaker used to answer "isn't ready yet" forever even though the URL had
+  /// landed in the DB seconds later.
+  ///
+  /// So a missing URL means "ask for it", not "give up": `POST /sentences/{id}/tts`
+  /// is idempotent — it returns the existing `voice_url` without re-synthesizing
+  /// when one is already there, and synthesizes on the spot when the pipeline's
+  /// TTS step failed. One round trip, cached here so re-tapping the same card
+  /// doesn't ask again.
   Future<void> _playSentence(LearnedSentence sentence) async {
     final l10n = AppLocalizations.of(context);
-    final url = sentence.voiceUrl;
-    if (url == null || url.isEmpty || !url.startsWith('http')) {
+    final known = _playable(sentence.voiceUrl) ?? _ttsUrls[sentence.sentenceId];
+    if (known != null) {
+      await _play(known, l10n);
+      return;
+    }
+    // Second tap while the first request is still out would double-charge the
+    // round trip and race the cache write.
+    if (!_ttsInFlight.add(sentence.sentenceId)) return;
+    String? fetched;
+    try {
+      fetched = _playable(
+        await ref.read(reviewRepositoryProvider).sentenceTtsUrl(sentence.sentenceId),
+      );
+    } catch (_) {
+      fetched = null; // transport/5xx — reported as "not ready" below.
+    } finally {
+      _ttsInFlight.remove(sentence.sentenceId);
+    }
+    if (!mounted) return;
+    if (fetched == null) {
       _snack(l10n.standardAudioNotReady);
       return;
     }
+    _ttsUrls[sentence.sentenceId] = fetched;
+    await _play(fetched, l10n);
+  }
+
+  /// The URL if it's actually playable, else null.
+  String? _playable(String? url) =>
+      (url == null || url.isEmpty || !url.startsWith('http')) ? null : url;
+
+  Future<void> _play(String url, AppLocalizations l10n) async {
     try {
       await _player.playUrl(url);
     } catch (_) {
