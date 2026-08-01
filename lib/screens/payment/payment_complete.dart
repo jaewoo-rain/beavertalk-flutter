@@ -21,8 +21,7 @@ class PaymentCompleteScreen extends StatelessWidget {
   const PaymentCompleteScreen({super.key});
 
   void _goHome(BuildContext context) {
-    Navigator.of(context)
-        .pushNamedAndRemoveUntil(Routes.home, (route) => route.isFirst);
+    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override

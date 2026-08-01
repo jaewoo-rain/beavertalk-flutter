@@ -171,8 +171,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     });
   }
 
-  void _goHome() =>
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+  /// 홈으로. 첫 라우트(AuthGate)가 이미 홈을 그리므로 **pop** 이지 push 가 아니다
+  /// — `pushNamedAndRemoveUntil(Routes.home, isFirst)` 는 홈 위에 홈을 또 얹어
+  /// 뒤로가기하면 홈이 한 번 더 나온다.
+  void _goHome() => Navigator.of(context).popUntil((r) => r.isFirst);
 
   @override
   Widget build(BuildContext context) {

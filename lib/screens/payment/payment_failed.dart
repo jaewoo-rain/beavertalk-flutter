@@ -77,8 +77,8 @@ class PaymentFailedScreen extends StatelessWidget {
                     type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
                     text: l10n.goHome,
-                    onPressed: () => Navigator.of(context)
-                        .pushNamedAndRemoveUntil(Routes.home, (r) => r.isFirst),
+                    onPressed: () =>
+                        Navigator.of(context).popUntil((r) => r.isFirst),
                   ),
                 ),
                 const SizedBox(width: 10),

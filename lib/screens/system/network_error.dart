@@ -78,12 +78,15 @@ class NetworkErrorScreen extends StatelessWidget {
                     type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
                     text: l10n.goHome,
-                    // Keep the AuthGate root ((r) => r.isFirst, not => false):
-                    // AuthGate is what swaps to login/home on auth changes, so
-                    // removing it would strand a later session-expiry with no
-                    // redirect. Consistent with every other "go home" in the app.
-                    onPressed: () => Navigator.of(context)
-                        .pushNamedAndRemoveUntil(Routes.home, (r) => r.isFirst),
+                    // Keep the AuthGate root (popUntil isFirst, not a push that
+                    // removes it): AuthGate is what swaps to login/home on auth
+                    // changes, so removing it would strand a later session-expiry
+                    // with no redirect. And popping is what "go home" *means*
+                    // here — AuthGate already renders HomeScreen, so pushing
+                    // Routes.home on top of it stacked two homes and left a back
+                    // press showing home again.
+                    onPressed: () =>
+                        Navigator.of(context).popUntil((r) => r.isFirst),
                   ),
                 ),
                 const SizedBox(width: 10),
