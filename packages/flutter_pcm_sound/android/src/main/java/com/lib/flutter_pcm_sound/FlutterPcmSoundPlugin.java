@@ -66,6 +66,37 @@ public class FlutterPcmSoundPlugin implements
     private long mLastLowBufferFeed = 0; // 재생 스레드 전용
     private long mLastZeroFeed = 0;      // 재생 스레드 전용
 
+    // [BeaverTalk fix] AudioTrack 에 이미 넘긴(=아직 스피커에서 안 나온) 출력 프레임 수.
+    //
+    // ⚠ 이게 없으면 remainingFrames 가 **mSamples 큐만** 세어, AudioTrack 버퍼
+    //   (minBufferSize × BUFFER_MULTIPLIER — 기기에 따라 최대 800ms 넘는다) 만큼을
+    //   통째로 빠뜨린다. Dart 는 그 값으로 "재생이 끝났나"를 판단해 마이크를 여는데
+    //   (_audioDrained), 실제로는 스피커가 아직 울리는 중이라 비버 목소리를 그대로
+    //   되먹는다 → 그게 user 발화로 전사되고 → 모델이 자기 말에 답하고 → 무한 루프.
+    //   실측 call_id=855(2026-08-01): 유저 턴의 절반이 비버 대사였다.
+    private final AtomicLong mWrittenOutFrames = new AtomicLong(0);
+
+    /** 실제 잔여 재생량(입력 레이트 프레임) = 대기 큐 + AudioTrack 미방출분. */
+    private long remainingInputFrames() {
+        // setup 전이면 mNumChannels/mUpsample 이 0 이라 나눗셈이 터진다(호출 경로상
+        // 일어나면 안 되지만, 여기서 죽으면 재생 스레드가 통째로 멈춘다).
+        if (mNumChannels <= 0 || mUpsample <= 0) return 0;
+        long queued = mQueuedBytes.get() / (2 * mNumChannels);
+        AudioTrack track = mAudioTrack;
+        if (track == null) return queued;
+        long inFlightOut;
+        try {
+            // getPlaybackHeadPosition 은 32bit 랩어라운드 카운터라 부호 없는 값으로 읽는다.
+            long head = track.getPlaybackHeadPosition() & 0xFFFFFFFFL;
+            inFlightOut = mWrittenOutFrames.get() - head;
+        } catch (Throwable ignored) {
+            return queued; // 트랙 해제 경합 → 큐만으로 폴백(예전 동작)
+        }
+        if (inFlightOut < 0) inFlightOut = 0; // 랩어라운드/flush 직후 방어
+        // 출력은 업샘플된 레이트라 입력 프레임으로 되돌린다(Dart 는 24k 기준으로 센다).
+        return queued + inFlightOut / mUpsample;
+    }
+
     // [BeaverTalk fix] 작은 8ms write 를 모아 큰 덩어리로 write(코얼레싱)하기 위한 상태.
     private byte[] mScratch;            // 청크 결합용 재사용 버퍼(입력 레이트, 재생 스레드 전용)
     private int mMaxChunkBytes;         // 한 청크 최대 바이트(오버플로 가드)
@@ -237,6 +268,9 @@ public class FlutterPcmSoundPlugin implements
                     // reset
                     mSamples.clear();
                     mQueuedBytes.set(0); // [BeaverTalk fix] 큐 잔량 카운터도 리셋
+                    // 새 트랙이라 playbackHead 도 0 부터 — 누적 write 카운터를 같이 리셋해야
+                    // in-flight 계산이 어긋나지 않는다(안 하면 직전 통화분만큼 과대계상).
+                    mWrittenOutFrames.set(0);
                     mShouldCleanup = false;
 
                     // start playback thread
@@ -274,7 +308,7 @@ public class FlutterPcmSoundPlugin implements
                     // Dart 가 콜백(핑퐁)을 기다리지 않고 능동적으로 채우려면 native 큐가 지금
                     // 얼마나 남았는지 알아야 한다. 이미 오가는 메서드 채널 응답에 값만 실으므로
                     // 추가 홉/추가 메인스레드 왕복이 없다. 예전엔 그냥 true 였다.
-                    result.success(mQueuedBytes.get() / (2 * mNumChannels));
+                    result.success(remainingInputFrames());
                     break;
                 }
                 // (beavertalk patch) O(1) diagnostics snapshot: how much audio is
@@ -384,6 +418,9 @@ public class FlutterPcmSoundPlugin implements
             // 이러면 AudioFlinger 가 트랙을 빼지 않아(BUFFER TIMEOUT 방지) 재활성화 130ms 정지가 안 난다.
             if (data == null) {
                 mAudioTrack.write(mSilence, 0, mSilence.length, AudioTrack.WRITE_BLOCKING);
+                // 무음도 스피커에서 나가는 실제 시간을 차지한다 — 실오디오가 이 뒤에
+                // 붙으면 그만큼 늦게 들린다. in-flight 에 반드시 포함해야 한다.
+                mWrittenOutFrames.addAndGet(mSilence.length / (2 * mNumChannels));
                 lastEnd = SystemClock.elapsedRealtime();
                 // [BeaverTalk 계측] 무음 주입 1회. 런 길이로 "발화 중 구멍" vs "턴 사이"를 가른다.
                 mSilFills++;
@@ -430,6 +467,7 @@ public class FlutterPcmSoundPlugin implements
                 }
             }
             mAudioTrack.write(mScratchOut, 0, outLen, AudioTrack.WRITE_BLOCKING);
+            mWrittenOutFrames.addAndGet(outLen / (2 * mNumChannels));
             mWroteAudioBytes += outLen; // [BeaverTalk 계측]
             maybeLogStats(mSampleRate * mUpsample);
 
@@ -468,7 +506,7 @@ public class FlutterPcmSoundPlugin implements
             // [BeaverTalk fix] 예전엔 여기서 synchronized(mSamples) 로 큐 전체를 O(n) 스캔했고,
             // feed() 도 같은 락을 잡아 재생 스레드가 피드 순간마다 블록 → underrun 이었다.
             // 이제 락 없이 O(1) 카운터로 잔량을 읽는다.
-            long remainingFrames = mQueuedBytes.get() / (2 * mNumChannels);
+            long remainingFrames = remainingInputFrames();
             long totalFeeds = mTotalFeeds.get();
             long feedThreshold = mFeedThreshold;
 
