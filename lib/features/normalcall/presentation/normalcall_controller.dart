@@ -423,7 +423,7 @@ class NormalCallController extends Notifier<CallState> {
   /// call is actually showing.
   int _cushionBytes = _prebufferBytes;
 
-  /// Growth per starved turn (~150ms), ceiling (~1.8s), and decay per clean turn
+  /// Growth per starved turn (~150ms), ceiling (~1.2s), and decay per clean turn
   /// (~300ms).
   ///
   /// ⚠ 감쇠가 성장의 **2배**여야 한다. 처음엔 반대(+300/−150)로 뒀는데, 그러면
@@ -432,8 +432,15 @@ class NormalCallController extends Notifier<CallState> {
   /// 2026-08-02). 나쁜 구간이 지나면 되돌아오게 하려면 감쇠가 더 커야 한다.
   /// 시작값 [_prebufferBytes](900ms)는 건드리지 마라 — 그건 재생 안정화의 핵심이라
   /// 낮추면 끊김이 돌아온다.
+  ///
+  /// 상한 1.8s → 1.2s (2026-08-02 실측). 턴 계측으로 지연을 분해해 보니 재생 시작
+  /// 지연 777ms 중 **684ms(88%)가 첫 오디오를 이미 받아둔 뒤 쿠션을 채우느라 기다린
+  /// 시간**이었다(서버가 첫 청크를 주기까지는 중앙값 61ms 뿐). 그리고 같은 통화의
+  /// 후반 225초는 쿠션이 1050~1200 으로 내려간 상태에서 **끊김 0건**이었다 —
+  /// 끊김 5건은 전부 첫 66초에 몰렸고 그때 쿠션은 오히려 1050~1800 이었다.
+  /// 즉 1.8s 까지 차오르는 구간은 지연만 더하고 끊김은 못 막았다.
   static const int _cushionStepBytes = _playbackSampleRate * 2 * 150 ~/ 1000;
-  static const int _cushionMaxBytes = _playbackSampleRate * 2 * 1800 ~/ 1000;
+  static const int _cushionMaxBytes = _playbackSampleRate * 2 * 1200 ~/ 1000;
   static const int _cushionDecayBytes = _playbackSampleRate * 2 * 300 ~/ 1000;
 
   /// True once the current turn has starved, so the cushion grows once per turn
@@ -1596,7 +1603,8 @@ class NormalCallController extends Notifier<CallState> {
         }
         if (_lastFeedSilent != false) {
           _log('feed AUDIO (queue ${avail}B, engine '
-              '${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms)');
+              '${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms, '
+              '쿠션 ${_cushionBytes ~/ 48}ms)');
           _lastFeedSilent = false;
         }
         // Only push once the engine has drained past its low-water mark. Above
@@ -1640,7 +1648,14 @@ class NormalCallController extends Notifier<CallState> {
           if (!_beaverSpeaking) _playing = false;
           // Only a mid-utterance drain is a glitch; a drained queue between turns
           // is normal, so don't start the stall clock for it.
-          if (_beaverSpeaking) {
+          // ⚠ `_beaverSpeaking` 만으로 판정하면 안 된다 — [_audioDrained] 여야 한다.
+          //   푸시 모델에서는 [_pump] 가 매 틱 Dart 큐를 통째로 엔진에 밀어넣으므로
+          //   **큐가 비어 있는 게 정상 상태**다(측정: INFLATE 창 대부분이 queue 0B).
+          //   큐 빔만 보고 세면 엔진이 1.8초를 물고 멀쩡히 재생 중인데도 굶었다고
+          //   집계돼, 쿠션이 상한까지 못 박히고 감쇠가 영영 안 걸린다.
+          //   실측(5분 통화, 2026-08-02): 판정 26회 중 실제로 들린 끊김은 8회.
+          //   나머지 18회가 가짜였고 쿠션은 72초 만에 1800ms 상한에 고정됐다.
+          if (_beaverSpeaking && _audioDrained) {
             if (_starveAtMs == null) {
               // First starve of this turn: the cushion was too small for the
               // deficit this call is running, so widen it for the turns ahead.
