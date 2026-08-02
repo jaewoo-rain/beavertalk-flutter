@@ -13,6 +13,7 @@ import '../../components/icons/brand_icons.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/language_sheet_provider.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -74,10 +75,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     // First entry with no language captured yet → prompt with the country/
     // language bottom sheet over this screen (Figma `auth_login__sheet`).
+    //
+    // `languageSheetShownProvider` is the second half of that "first entry"
+    // test, and it is not optional: logging out invalidates the signup draft, so
+    // the draft alone reads as a first entry on EVERY logout. This screen would
+    // then open the sheet just as `logout()`'s `_popToRoot()` popped it — the
+    // sheet that grew and vanished mid-logout.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && ref.read(signupDraftProvider).language == null) {
-        _showLanguageSheet();
-      }
+      if (!mounted) return;
+      if (ref.read(signupDraftProvider).language != null) return;
+      if (ref.read(languageSheetShownProvider)) return;
+      ref.read(languageSheetShownProvider.notifier).markShown();
+      _showLanguageSheet();
     });
     if (kIsWeb) {
       // A signed-in user (idToken populated) arrives on this stream after the
