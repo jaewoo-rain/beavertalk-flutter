@@ -9,6 +9,46 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
+  String get loginRequired => 'Bạn cần đăng nhập.';
+
+  @override
+  String get callWebNotSupported =>
+      'Cuộc gọi thoại không được hỗ trợ trên web. Vui lòng dùng ứng dụng.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Cần quyền micrô. Hãy cho phép micrô để gọi.';
+
+  @override
+  String get callErrorGeneric => 'Đã xảy ra lỗi trong cuộc gọi.';
+
+  @override
+  String get callNetworkError => 'Đã xảy ra lỗi mạng.';
+
+  @override
+  String get authInvalidCredentials => 'Email hoặc mật khẩu không đúng.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Email này đã được đăng ký.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Vui lòng hoàn tất xác minh đã gửi đến email của bạn.';
+
+  @override
+  String get authResetCodeSent =>
+      'Chúng tôi đã gửi mã xác minh đến email của bạn.';
+
+  @override
+  String get authResetCodeInvalid => 'Mã không đúng hoặc đã hết hạn.';
+
+  @override
+  String get authPasswordUpdated => 'Mật khẩu của bạn đã được đặt lại.';
+
+  @override
+  String get authAppleTokenMissing => 'Không lấy được mã đăng nhập Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Đã kết thúc cuộc gọi $duration';
   }

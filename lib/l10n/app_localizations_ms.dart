@@ -9,6 +9,47 @@ class AppLocalizationsMs extends AppLocalizations {
   AppLocalizationsMs([String locale = 'ms']) : super(locale);
 
   @override
+  String get loginRequired => 'Anda perlu log masuk.';
+
+  @override
+  String get callWebNotSupported =>
+      'Panggilan suara tidak disokong di web. Sila gunakan apl.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Kebenaran mikrofon diperlukan. Benarkan mikrofon untuk membuat panggilan.';
+
+  @override
+  String get callErrorGeneric => 'Ralat berlaku semasa panggilan.';
+
+  @override
+  String get callNetworkError => 'Ralat rangkaian berlaku.';
+
+  @override
+  String get authInvalidCredentials => 'E-mel atau kata laluan tidak betul.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'E-mel ini sudah didaftarkan.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Sila lengkapkan pengesahan yang dihantar ke e-mel anda.';
+
+  @override
+  String get authResetCodeSent =>
+      'Kami telah menghantar kod pengesahan ke e-mel anda.';
+
+  @override
+  String get authResetCodeInvalid => 'Kod tidak betul atau telah tamat tempoh.';
+
+  @override
+  String get authPasswordUpdated => 'Kata laluan anda telah ditetapkan semula.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Tidak dapat memperoleh token log masuk Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Panggilan berakhir $duration';
   }

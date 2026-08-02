@@ -9,6 +9,48 @@ class AppLocalizationsEs extends AppLocalizations {
   AppLocalizationsEs([String locale = 'es']) : super(locale);
 
   @override
+  String get loginRequired => 'Necesitas iniciar sesión.';
+
+  @override
+  String get callWebNotSupported =>
+      'Las llamadas de voz no funcionan en la web. Usa la app.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Se necesita acceso al micrófono. Permite el micrófono para llamar.';
+
+  @override
+  String get callErrorGeneric => 'Se produjo un error durante la llamada.';
+
+  @override
+  String get callNetworkError => 'Se produjo un error de red.';
+
+  @override
+  String get authInvalidCredentials =>
+      'El correo o la contraseña no son correctos.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Este correo ya está registrado.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Completa la verificación enviada a tu correo.';
+
+  @override
+  String get authResetCodeSent =>
+      'Te enviamos un código de verificación por correo.';
+
+  @override
+  String get authResetCodeInvalid => 'El código no es correcto o ha caducado.';
+
+  @override
+  String get authPasswordUpdated => 'Tu contraseña se ha restablecido.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'No se pudo obtener el token de inicio de sesión de Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Llamada finalizada $duration';
   }

@@ -23,7 +23,9 @@ import 'package:flutter_sound/flutter_sound.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
+import '../../../l10n/app_localizations.dart';
 import '../domain/entities/call_hint.dart';
 import 'normalcall_providers.dart';
 
@@ -172,6 +174,16 @@ final normalCallControllerProvider =
 
 /// Notifier implementing the normalcall socket + audio pipeline.
 class NormalCallController extends Notifier<CallState> {
+  /// Translated strings for the user-facing failures this controller reports.
+  ///
+  /// There is no `BuildContext` here, so `AppLocalizations.of` is unavailable —
+  /// which is why every `errorMsg` below used to be a Korean literal, shown to
+  /// every user regardless of their language. gen-l10n emits a **synchronous**
+  /// `lookupAppLocalizations(Locale)`, and the active locale already lives in
+  /// [localeControllerProvider].
+  AppLocalizations get _l10n =>
+      lookupAppLocalizations(ref.read(localeControllerProvider));
+
   // ── Avatar lip-sync signals (video-call avatar; see avatar_view.dart) ───────
   // Gemini Live returns raw PCM with no viseme timing, so the mouth is driven
   // from the audio envelope. These are published from the PCM *about to play*
@@ -605,7 +617,7 @@ class NormalCallController extends Notifier<CallState> {
       if (token == null || token.isEmpty) {
         state = state.copyWith(
           phase: CallPhase.error,
-          errorMsg: '로그인이 필요합니다.',
+          errorMsg: _l10n.loginRequired,
         );
         await _teardown(keepError: true);
         return false;
@@ -617,7 +629,7 @@ class NormalCallController extends Notifier<CallState> {
       if (kIsWeb) {
         state = state.copyWith(
           phase: CallPhase.error,
-          errorMsg: '웹에서는 음성 통화를 지원하지 않습니다. 앱에서 이용해 주세요.',
+          errorMsg: _l10n.callWebNotSupported,
         );
         await _teardown(keepError: true);
         return false;
@@ -672,7 +684,7 @@ class NormalCallController extends Notifier<CallState> {
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
-        errorMsg: '통화를 시작할 수 없습니다.',
+        errorMsg: _l10n.callConnectFailed,
       );
       await _teardown(keepError: true);
       return false;
@@ -704,8 +716,8 @@ class NormalCallController extends Notifier<CallState> {
         state = state.copyWith(
           phase: CallPhase.error,
           errorMsg: micStatus.isPermanentlyDenied
-              ? '마이크 권한이 꺼져 있어요. 설정 > 앱 권한에서 마이크를 허용해 주세요.'
-              : '마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.',
+              ? _l10n.micPermissionNeededBody
+              : _l10n.micPermissionRequiredForCall,
         );
         await _teardown(keepError: true);
         return;
@@ -847,7 +859,7 @@ class NormalCallController extends Notifier<CallState> {
     } catch (e) {
       state = state.copyWith(
         phase: CallPhase.error,
-        errorMsg: '통화를 시작할 수 없습니다.',
+        errorMsg: _l10n.callConnectFailed,
       );
       await _teardown(keepError: true);
     }
@@ -1615,7 +1627,7 @@ class NormalCallController extends Notifier<CallState> {
       case 'error':
         state = state.copyWith(
           phase: CallPhase.error,
-          errorMsg: (msg['message'] as String?) ?? '통화 중 오류가 발생했습니다.',
+          errorMsg: (msg['message'] as String?) ?? _l10n.callErrorGeneric,
         );
         unawaited(_teardown(keepError: true));
       case 'hint':
@@ -1708,7 +1720,7 @@ class NormalCallController extends Notifier<CallState> {
       // Closed before we ever went live → treat as auth/connection error.
       state = state.copyWith(
         phase: CallPhase.error,
-        errorMsg: '연결에 실패했습니다. 다시 시도해 주세요.',
+        errorMsg: _l10n.connectionFailedTitle,
       );
       unawaited(_teardown(keepError: true));
       return;
@@ -1740,7 +1752,7 @@ class NormalCallController extends Notifier<CallState> {
     }
     state = state.copyWith(
       phase: CallPhase.error,
-      errorMsg: '네트워크 오류가 발생했습니다.',
+      errorMsg: _l10n.callNetworkError,
     );
     unawaited(_teardown(keepError: true));
   }

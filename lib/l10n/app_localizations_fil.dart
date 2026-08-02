@@ -9,6 +9,46 @@ class AppLocalizationsFil extends AppLocalizations {
   AppLocalizationsFil([String locale = 'fil']) : super(locale);
 
   @override
+  String get loginRequired => 'Kailangan mong mag-sign in.';
+
+  @override
+  String get callWebNotSupported =>
+      'Hindi suportado ang voice call sa web. Gamitin ang app.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Kailangan ng access sa mikropono. Payagan ang mikropono para makatawag.';
+
+  @override
+  String get callErrorGeneric => 'May naganap na problema habang tumatawag.';
+
+  @override
+  String get callNetworkError => 'May network error na naganap.';
+
+  @override
+  String get authInvalidCredentials => 'Mali ang email o password.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Nakarehistro na ang email na ito.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Kumpletuhin ang beripikasyong ipinadala sa iyong email.';
+
+  @override
+  String get authResetCodeSent =>
+      'Nagpadala kami ng verification code sa iyong email.';
+
+  @override
+  String get authResetCodeInvalid => 'Mali o expired na ang code.';
+
+  @override
+  String get authPasswordUpdated => 'Na-reset na ang iyong password.';
+
+  @override
+  String get authAppleTokenMissing => 'Hindi makuha ang Apple sign-in token.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Natapos ang tawag $duration';
   }

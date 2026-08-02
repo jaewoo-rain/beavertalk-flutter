@@ -9,6 +9,43 @@ class AppLocalizationsKo extends AppLocalizations {
   AppLocalizationsKo([String locale = 'ko']) : super(locale);
 
   @override
+  String get loginRequired => '로그인이 필요해요.';
+
+  @override
+  String get callWebNotSupported => '웹에서는 음성 통화를 지원하지 않아요. 앱에서 이용해 주세요.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      '마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.';
+
+  @override
+  String get callErrorGeneric => '통화 중 오류가 발생했어요.';
+
+  @override
+  String get callNetworkError => '네트워크 오류가 발생했어요.';
+
+  @override
+  String get authInvalidCredentials => '이메일 또는 비밀번호가 올바르지 않아요.';
+
+  @override
+  String get authEmailAlreadyRegistered => '이미 가입된 이메일입니다.';
+
+  @override
+  String get authConfirmEmailRequired => '이메일로 전송된 인증을 완료해주세요.';
+
+  @override
+  String get authResetCodeSent => '인증 코드를 이메일로 전송했어요.';
+
+  @override
+  String get authResetCodeInvalid => '인증 코드가 올바르지 않거나 만료되었어요.';
+
+  @override
+  String get authPasswordUpdated => '비밀번호가 재설정되었어요.';
+
+  @override
+  String get authAppleTokenMissing => '애플 로그인 토큰을 받지 못했어요.';
+
+  @override
   String callEndedDuration(String duration) {
     return '통화 종료 $duration';
   }

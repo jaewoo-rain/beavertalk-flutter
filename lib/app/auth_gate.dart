@@ -6,6 +6,7 @@ import '../core/error/app_exception.dart';
 import '../features/auth/domain/entities/member.dart';
 import '../features/auth/presentation/providers/auth_controller.dart';
 import '../features/auth/presentation/providers/my_profile_provider.dart';
+import '../l10n/app_localizations.dart';
 import '../screens/auth/login.dart';
 import '../screens/home/home.dart';
 import '../screens/onboarding/onboarding_language.dart';
@@ -189,11 +190,14 @@ class _ProfileError extends StatelessWidget {
             Icon(Icons.wifi_off, color: context.c.labelNormal),
             const SizedBox(height: 12),
             Text(
-              '연결에 문제가 있어요',
+              AppLocalizations.of(context).connectionFailedTitle,
               style: TextStyle(color: context.c.labelStrong),
             ),
             const SizedBox(height: 12),
-            TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context).retry),
+            ),
           ],
         ),
       ),

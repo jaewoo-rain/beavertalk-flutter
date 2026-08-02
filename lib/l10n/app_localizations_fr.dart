@@ -9,6 +9,49 @@ class AppLocalizationsFr extends AppLocalizations {
   AppLocalizationsFr([String locale = 'fr']) : super(locale);
 
   @override
+  String get loginRequired => 'Vous devez vous connecter.';
+
+  @override
+  String get callWebNotSupported =>
+      'Les appels vocaux ne sont pas pris en charge sur le web. Utilisez l\'application.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'L\'accès au micro est requis. Autorisez le micro pour appeler.';
+
+  @override
+  String get callErrorGeneric => 'Une erreur est survenue pendant l\'appel.';
+
+  @override
+  String get callNetworkError => 'Une erreur réseau est survenue.';
+
+  @override
+  String get authInvalidCredentials =>
+      'L\'e-mail ou le mot de passe est incorrect.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'Cette adresse e-mail est déjà utilisée.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Veuillez terminer la vérification envoyée à votre e-mail.';
+
+  @override
+  String get authResetCodeSent =>
+      'Nous avons envoyé un code de vérification à votre e-mail.';
+
+  @override
+  String get authResetCodeInvalid => 'Ce code est incorrect ou a expiré.';
+
+  @override
+  String get authPasswordUpdated => 'Votre mot de passe a été réinitialisé.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Impossible d\'obtenir le jeton de connexion Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Appel terminé $duration';
   }

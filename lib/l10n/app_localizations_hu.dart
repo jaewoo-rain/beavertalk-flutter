@@ -9,6 +9,48 @@ class AppLocalizationsHu extends AppLocalizations {
   AppLocalizationsHu([String locale = 'hu']) : super(locale);
 
   @override
+  String get loginRequired => 'Be kell jelentkezned.';
+
+  @override
+  String get callWebNotSupported =>
+      'A hanghívás nem támogatott a weben. Használd az alkalmazást.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Mikrofon-hozzáférés szükséges. Engedélyezd a mikrofont a híváshoz.';
+
+  @override
+  String get callErrorGeneric => 'Hiba történt a hívás közben.';
+
+  @override
+  String get callNetworkError => 'Hálózati hiba történt.';
+
+  @override
+  String get authInvalidCredentials => 'Az e-mail-cím vagy a jelszó hibás.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'Ez az e-mail-cím már regisztrálva van.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Fejezd be az e-mailben küldött megerősítést.';
+
+  @override
+  String get authResetCodeSent =>
+      'Elküldtük az ellenőrző kódot az e-mail-címedre.';
+
+  @override
+  String get authResetCodeInvalid => 'A kód hibás vagy lejárt.';
+
+  @override
+  String get authPasswordUpdated => 'A jelszavad visszaállt.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Nem sikerült megszerezni az Apple bejelentkezési tokent.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'A hívás véget ért $duration';
   }

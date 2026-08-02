@@ -9,6 +9,47 @@ class AppLocalizationsFi extends AppLocalizations {
   AppLocalizationsFi([String locale = 'fi']) : super(locale);
 
   @override
+  String get loginRequired => 'Sinun täytyy kirjautua sisään.';
+
+  @override
+  String get callWebNotSupported =>
+      'Äänipuhelut eivät toimi verkossa. Käytä sovellusta.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Mikrofonin käyttöoikeus vaaditaan. Salli mikrofoni aloittaaksesi puhelun.';
+
+  @override
+  String get callErrorGeneric => 'Puhelun aikana tapahtui virhe.';
+
+  @override
+  String get callNetworkError => 'Tapahtui verkkovirhe.';
+
+  @override
+  String get authInvalidCredentials =>
+      'Sähköposti tai salasana on virheellinen.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'Tämä sähköposti on jo rekisteröity.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Viimeistele sähköpostiisi lähetetty vahvistus.';
+
+  @override
+  String get authResetCodeSent => 'Lähetimme vahvistuskoodin sähköpostiisi.';
+
+  @override
+  String get authResetCodeInvalid => 'Koodi on virheellinen tai vanhentunut.';
+
+  @override
+  String get authPasswordUpdated => 'Salasanasi on nollattu.';
+
+  @override
+  String get authAppleTokenMissing => 'Applen kirjautumistunnusta ei saatu.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Puhelu päättyi $duration';
   }

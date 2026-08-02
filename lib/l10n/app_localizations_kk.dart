@@ -9,6 +9,46 @@ class AppLocalizationsKk extends AppLocalizations {
   AppLocalizationsKk([String locale = 'kk']) : super(locale);
 
   @override
+  String get loginRequired => 'Жүйеге кіру қажет.';
+
+  @override
+  String get callWebNotSupported =>
+      'Веб-нұсқада дауыстық қоңырау жұмыс істемейді. Қолданбаны пайдаланыңыз.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Микрофонға рұқсат қажет. Қоңырау шалу үшін микрофонға рұқсат беріңіз.';
+
+  @override
+  String get callErrorGeneric => 'Қоңырау кезінде қате шықты.';
+
+  @override
+  String get callNetworkError => 'Желі қатесі шықты.';
+
+  @override
+  String get authInvalidCredentials =>
+      'Электрондық пошта немесе құпия сөз дұрыс емес.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Бұл электрондық пошта тіркелген.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Поштаңызға жіберілген растауды аяқтаңыз.';
+
+  @override
+  String get authResetCodeSent => 'Растау кодын поштаңызға жібердік.';
+
+  @override
+  String get authResetCodeInvalid => 'Код дұрыс емес немесе мерзімі өткен.';
+
+  @override
+  String get authPasswordUpdated => 'Құпия сөз қалпына келтірілді.';
+
+  @override
+  String get authAppleTokenMissing => 'Apple кіру токенін алу мүмкін болмады.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Қоңырау аяқталды $duration';
   }

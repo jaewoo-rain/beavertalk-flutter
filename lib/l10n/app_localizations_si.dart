@@ -9,6 +9,47 @@ class AppLocalizationsSi extends AppLocalizations {
   AppLocalizationsSi([String locale = 'si']) : super(locale);
 
   @override
+  String get loginRequired => 'ඔබ පිවිසිය යුතුයි.';
+
+  @override
+  String get callWebNotSupported =>
+      'වෙබයේ හඬ ඇමතුම් සහාය නොදක්වයි. යෙදුම භාවිත කරන්න.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'මයික්‍රොෆෝන අවසරය අවශ්‍යයි. ඇමතුමක් ගැනීමට මයික්‍රොෆෝනයට අවසර දෙන්න.';
+
+  @override
+  String get callErrorGeneric => 'ඇමතුම අතරතුර දෝෂයක් ඇති විය.';
+
+  @override
+  String get callNetworkError => 'ජාල දෝෂයක් ඇති විය.';
+
+  @override
+  String get authInvalidCredentials => 'විද්‍යුත් තැපෑල හෝ මුරපදය වැරදියි.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'මෙම විද්‍යුත් තැපෑල දැනටමත් ලියාපදිංචි වී ඇත.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'ඔබේ විද්‍යුත් තැපෑලට එවූ තහවුරු කිරීම සම්පූර්ණ කරන්න.';
+
+  @override
+  String get authResetCodeSent =>
+      'තහවුරු කිරීමේ කේතය ඔබේ විද්‍යුත් තැපෑලට එවා ඇත.';
+
+  @override
+  String get authResetCodeInvalid => 'කේතය වැරදියි හෝ කල් ඉකුත් වී ඇත.';
+
+  @override
+  String get authPasswordUpdated => 'ඔබේ මුරපදය නැවත සකසා ඇත.';
+
+  @override
+  String get authAppleTokenMissing => 'Apple පිවිසුම් ටෝකනය ලබා ගත නොහැකි විය.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'ඇමතුම අවසන් විය $duration';
   }

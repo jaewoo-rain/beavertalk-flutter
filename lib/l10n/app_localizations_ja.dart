@@ -9,6 +9,42 @@ class AppLocalizationsJa extends AppLocalizations {
   AppLocalizationsJa([String locale = 'ja']) : super(locale);
 
   @override
+  String get loginRequired => 'ログインが必要です。';
+
+  @override
+  String get callWebNotSupported => 'ウェブでは音声通話をご利用いただけません。アプリからご利用ください。';
+
+  @override
+  String get micPermissionRequiredForCall => 'マイクの許可が必要です。通話するにはマイクを許可してください。';
+
+  @override
+  String get callErrorGeneric => '通話中にエラーが発生しました。';
+
+  @override
+  String get callNetworkError => 'ネットワークエラーが発生しました。';
+
+  @override
+  String get authInvalidCredentials => 'メールアドレスまたはパスワードが正しくありません。';
+
+  @override
+  String get authEmailAlreadyRegistered => 'このメールアドレスは既に登録されています。';
+
+  @override
+  String get authConfirmEmailRequired => 'メールに送信された認証を完了してください。';
+
+  @override
+  String get authResetCodeSent => '認証コードをメールに送信しました。';
+
+  @override
+  String get authResetCodeInvalid => '認証コードが正しくないか、有効期限が切れています。';
+
+  @override
+  String get authPasswordUpdated => 'パスワードを再設定しました。';
+
+  @override
+  String get authAppleTokenMissing => 'Appleサインインのトークンを取得できませんでした。';
+
+  @override
   String callEndedDuration(String duration) {
     return '通話終了 $duration';
   }

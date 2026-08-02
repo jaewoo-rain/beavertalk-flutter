@@ -9,6 +9,46 @@ class AppLocalizationsKm extends AppLocalizations {
   AppLocalizationsKm([String locale = 'km']) : super(locale);
 
   @override
+  String get loginRequired => 'អ្នកត្រូវចូលគណនីជាមុនសិន។';
+
+  @override
+  String get callWebNotSupported =>
+      'ការហៅជាសំឡេងមិនអាចប្រើលើគេហទំព័របានទេ។ សូមប្រើកម្មវិធី។';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'ត្រូវការការអនុញ្ញាតមីក្រូហ្វូន។ សូមអនុញ្ញាតមីក្រូហ្វូនដើម្បីហៅ។';
+
+  @override
+  String get callErrorGeneric => 'មានបញ្ហាកើតឡើងកំឡុងពេលហៅ។';
+
+  @override
+  String get callNetworkError => 'មានបញ្ហាបណ្តាញ។';
+
+  @override
+  String get authInvalidCredentials => 'អ៊ីមែល ឬពាក្យសម្ងាត់មិនត្រឹមត្រូវទេ។';
+
+  @override
+  String get authEmailAlreadyRegistered => 'អ៊ីមែលនេះបានចុះឈ្មោះរួចហើយ។';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'សូមបញ្ចប់ការផ្ទៀងផ្ទាត់ដែលបានផ្ញើទៅអ៊ីមែលរបស់អ្នក។';
+
+  @override
+  String get authResetCodeSent =>
+      'យើងបានផ្ញើលេខកូដផ្ទៀងផ្ទាត់ទៅអ៊ីមែលរបស់អ្នក។';
+
+  @override
+  String get authResetCodeInvalid => 'លេខកូដមិនត្រឹមត្រូវ ឬផុតកំណត់។';
+
+  @override
+  String get authPasswordUpdated => 'ពាក្យសម្ងាត់របស់អ្នកត្រូវបានកំណត់ឡើងវិញ។';
+
+  @override
+  String get authAppleTokenMissing => 'មិនអាចទទួលបានថូខឹនចូល Apple ទេ។';
+
+  @override
   String callEndedDuration(String duration) {
     return 'ការហៅបានបញ្ចប់ $duration';
   }
