@@ -107,11 +107,15 @@ dependencies:
   crypto: ^3.0.7
   audio_session: ^0.2.4
 
-# 통화 음성 깨짐(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
-# pub 원본은 feed 1회를 200바이트 조각 ~120개로 쪼개고, 조각 하나 쓸 때마다 큐
-# 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은 락)해서, 언더런을 막으려고 버퍼를
-# 키울수록 오히려 부하가 커지는 구조였다. 패치본은 4KB 조각 + 러닝 카운터 +
-# AudioTrack 버퍼 250ms + getStats(계측)를 쓴다. 상세는 packages/ 안의 주석.
+# 통화 음성 깨짐/버벅임(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
+# pub 원본은 조각 하나 쓸 때마다 큐 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은
+# 락)해서, 언더런을 막으려고 버퍼를 키울수록 오히려 부하가 커지는 구조였다.
+# 패치본은 (1) 락프리 러닝 카운터, (2) 큐가 비면 무음을 채워 AudioTrack 을 active 로
+# 유지(재활성화 130ms 정지 방지), (3) feed 가 남은 잔량을 돌려줘 Dart 가 콜백 핑퐁
+# 없이 능동 피드, (4) getStats 계측을 쓴다. 상세는 packages/ 안의 주석.
+# 근거: docs/2026-07-26_1517_android-audiotrack-underrun-buffer-fix.md,
+#       docs/2026-07-29_1710_zero-dropout-push-feed-plan.md
+# 롤백: 이 블록 제거 후 flutter pub get.
 dependency_overrides:
   flutter_pcm_sound:
     path: packages/flutter_pcm_sound
