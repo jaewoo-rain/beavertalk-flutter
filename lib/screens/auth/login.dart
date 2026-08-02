@@ -12,6 +12,7 @@ import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/i18n/locale_controller.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/language_sheet_provider.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
@@ -100,8 +101,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   /// Country/language picker shown as a modal bottom sheet over the login
   /// screen (Figma `auth_login__sheet` / `BottomSheet-CountrySelect`). It is a
   /// pure overlay — no status bar / progress bar / home indicator, just the
-  /// country list + confirm button over a dim. On confirm the chosen language
-  /// is stored in the signup draft.
+  /// country list + confirm button over a dim.
+  ///
+  /// On confirm the pick goes to two places: the signup draft (so onboarding
+  /// submits it) **and** the UI locale (so the app switches language on the
+  /// spot). It used to set only the draft, which meant picking 日本語 changed
+  /// nothing visible — the sheet closed and the login screen stayed English.
+  /// The sheet asks "모국어를 선택하세요"; answering it has to do something.
+  /// Onboarding 1/3 and the MyPage picker already set both; this was the one
+  /// language picker in the app that did not.
   Future<void> _showLanguageSheet() async {
     final items = <CountryItem>[
       for (final l in mockLanguages)
@@ -130,9 +138,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onConfirm: selected == null
                   ? null
                   : () {
+                      final picked = selected!;
                       ref
                           .read(signupDraftProvider.notifier)
-                          .setLanguage(selected!);
+                          .setLanguage(picked);
+                      // Switch the app UI immediately; the write to prefs is
+                      // fire-and-forget (the in-memory locale flips first, so
+                      // the screen behind the sheet rebuilds translated right
+                      // away). Same call the MyPage picker makes.
+                      unawaited(
+                        ref
+                            .read(localeControllerProvider.notifier)
+                            .setLanguage(picked),
+                      );
                       Navigator.of(sheetContext).pop();
                     },
               onClose: () => Navigator.of(sheetContext).pop(),
