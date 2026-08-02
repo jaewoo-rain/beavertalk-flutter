@@ -61,7 +61,7 @@
   "analysisLoadError": "Анализ жыйынтыгын жүктөп болбоду.",
   "standardAudioNotReady": "Үлгү айтылыш аудиосу дагы даяр эмес.",
   "standardAudioPlayError": "Үлгү айтылыш аудиосун ойнотуп болбоду.",
-  "selectACountry": "Өлкөнү тандаңыз",
+  "selectNativeLanguage": "Эне тилиңизди тандаңыз",
   "selectYourLanguage": "Тилиңизди тандаңыз",
   "confirm": "Ырастоо",
   "cancel": "Жокко чыгаруу",

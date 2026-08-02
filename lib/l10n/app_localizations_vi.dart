@@ -213,7 +213,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get standardAudioPlayError => 'Không thể phát âm thanh phát âm chuẩn.';
 
   @override
-  String get selectACountry => 'Chọn quốc gia';
+  String get selectNativeLanguage => 'Chọn tiếng mẹ đẻ của bạn';
 
   @override
   String get selectYourLanguage => 'Chọn ngôn ngữ của bạn';

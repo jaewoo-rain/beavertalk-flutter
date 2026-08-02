@@ -61,7 +61,7 @@
   "analysisLoadError": "Analyysin tulosta ei voitu ladata.",
   "standardAudioNotReady": "Mallilausunnan äänite ei ole vielä valmis.",
   "standardAudioPlayError": "Mallilausunnan äänitettä ei voitu toistaa.",
-  "selectACountry": "Valitse maa",
+  "selectNativeLanguage": "Valitse äidinkielesi",
   "selectYourLanguage": "Valitse kielesi",
   "confirm": "Vahvista",
   "cancel": "Peruuta",

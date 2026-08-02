@@ -213,7 +213,7 @@ class AppLocalizationsKk extends AppLocalizations {
       'Үлгі айтылым дыбысын ойнату мүмкін болмады.';
 
   @override
-  String get selectACountry => 'Елді таңдаңыз';
+  String get selectNativeLanguage => 'Ана тіліңізді таңдаңыз';
 
   @override
   String get selectYourLanguage => 'Тіліңізді таңдаңыз';

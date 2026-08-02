@@ -210,7 +210,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get standardAudioPlayError => '표준 발음 음성을 재생하지 못했어요.';
 
   @override
-  String get selectACountry => '국가 선택';
+  String get selectNativeLanguage => '모국어를 선택하세요';
 
   @override
   String get selectYourLanguage => '언어 선택';

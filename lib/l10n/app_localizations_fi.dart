@@ -215,7 +215,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Mallilausunnan äänitettä ei voitu toistaa.';
 
   @override
-  String get selectACountry => 'Valitse maa';
+  String get selectNativeLanguage => 'Valitse äidinkielesi';
 
   @override
   String get selectYourLanguage => 'Valitse kielesi';

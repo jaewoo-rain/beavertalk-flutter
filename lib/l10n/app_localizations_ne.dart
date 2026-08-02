@@ -211,7 +211,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get standardAudioPlayError => 'मानक उच्चारण अडियो बजाउन सकिएन।';
 
   @override
-  String get selectACountry => 'देश छान्नुहोस्';
+  String get selectNativeLanguage => 'आफ्नो मातृभाषा छान्नुहोस्';
 
   @override
   String get selectYourLanguage => 'तपाईंको भाषा छान्नुहोस्';

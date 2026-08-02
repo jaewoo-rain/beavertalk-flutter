@@ -212,7 +212,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get standardAudioPlayError => 'Үлгү айтылыш аудиосун ойнотуп болбоду.';
 
   @override
-  String get selectACountry => 'Өлкөнү тандаңыз';
+  String get selectNativeLanguage => 'Эне тилиңизди тандаңыз';
 
   @override
   String get selectYourLanguage => 'Тилиңизди тандаңыз';

@@ -61,7 +61,7 @@
   "analysisLoadError": "Tahlil natijasini yuklab boʻlmadi.",
   "standardAudioNotReady": "Andoza talaffuz audiosi hali tayyor emas.",
   "standardAudioPlayError": "Andoza talaffuz audiosini ijro etib boʻlmadi.",
-  "selectACountry": "Davlatni tanlang",
+  "selectNativeLanguage": "Ona tilingizni tanlang",
   "selectYourLanguage": "Tilingizni tanlang",
   "confirm": "Tasdiqlash",
   "cancel": "Bekor qilish",

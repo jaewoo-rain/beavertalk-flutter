@@ -61,7 +61,7 @@
   "analysisLoadError": "Дүн шинжилгээний үр дүнг ачаалж чадсангүй.",
   "standardAudioNotReady": "Стандарт дуудлагын аудио бэлэн болоогүй байна.",
   "standardAudioPlayError": "Стандарт дуудлагын аудиог тоглуулж чадсангүй.",
-  "selectACountry": "Улс сонгох",
+  "selectNativeLanguage": "Эх хэлээ сонгоно уу",
   "selectYourLanguage": "Хэлээ сонгоно уу",
   "confirm": "Баталгаажуулах",
   "cancel": "Цуцлах",

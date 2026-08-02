@@ -213,7 +213,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Tidak dapat memutar audio pengucapan standar.';
 
   @override
-  String get selectACountry => 'Pilih negara';
+  String get selectNativeLanguage => 'Pilih bahasa ibu Anda';
 
   @override
   String get selectYourLanguage => 'Pilih bahasamu';

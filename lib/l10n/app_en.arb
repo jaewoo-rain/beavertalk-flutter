@@ -148,9 +148,9 @@
   "analysisLoadError": "Couldn't load the analysis result.",
   "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
   "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",
-  "selectACountry": "Select a country",
-  "@selectACountry": {
-    "description": "Default title of the country/language select bottom sheet."
+  "selectNativeLanguage": "Select your native language",
+  "@selectNativeLanguage": {
+    "description": "Default title of the language-select bottom sheet shown over the login screen. Asks for the user's native language, not a country."
   },
   "selectYourLanguage": "Select your language",
   "@selectYourLanguage": {

@@ -61,7 +61,7 @@
   "analysisLoadError": "تعذّر تحميل نتيجة التحليل.",
   "standardAudioNotReady": "الصوت المعياري للنطق غير جاهز بعد.",
   "standardAudioPlayError": "تعذّر تشغيل الصوت المعياري للنطق.",
-  "selectACountry": "اختر دولة",
+  "selectNativeLanguage": "اختر لغتك الأم",
   "selectYourLanguage": "اختر لغتك",
   "confirm": "تأكيد",
   "cancel": "إلغاء",

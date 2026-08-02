@@ -61,7 +61,7 @@
   "analysisLoadError": "分析結果を読み込めませんでした。",
   "standardAudioNotReady": "お手本の発音音声はまだ準備できていません。",
   "standardAudioPlayError": "お手本の発音音声を再生できませんでした。",
-  "selectACountry": "国を選択",
+  "selectNativeLanguage": "母国語を選択してください",
   "selectYourLanguage": "言語を選択",
   "confirm": "確定",
   "cancel": "キャンセル",

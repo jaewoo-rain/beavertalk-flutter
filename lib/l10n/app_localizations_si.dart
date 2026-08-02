@@ -213,7 +213,7 @@ class AppLocalizationsSi extends AppLocalizations {
       'සම්මත උච්චාරණ ශබ්දය වාදනය කළ නොහැකි විය.';
 
   @override
-  String get selectACountry => 'රටක් තෝරන්න';
+  String get selectNativeLanguage => 'ඔබේ මව් භාෂාව තෝරන්න';
 
   @override
   String get selectYourLanguage => 'ඔබේ භාෂාව තෝරන්න';

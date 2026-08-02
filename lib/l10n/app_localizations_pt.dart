@@ -215,7 +215,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não foi possível reproduzir o áudio da pronúncia padrão.';
 
   @override
-  String get selectACountry => 'Selecione um país';
+  String get selectNativeLanguage => 'Selecione o seu idioma nativo';
 
   @override
   String get selectYourLanguage => 'Selecione seu idioma';

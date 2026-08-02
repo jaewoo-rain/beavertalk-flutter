@@ -61,7 +61,7 @@
   "analysisLoadError": "Не удалось загрузить результат анализа.",
   "standardAudioNotReady": "Эталонное произношение ещё не готово.",
   "standardAudioPlayError": "Не удалось воспроизвести эталонное произношение.",
-  "selectACountry": "Выберите страну",
+  "selectNativeLanguage": "Выберите ваш родной язык",
   "selectYourLanguage": "Выберите ваш язык",
   "confirm": "Подтвердить",
   "cancel": "Отмена",

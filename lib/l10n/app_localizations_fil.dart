@@ -215,7 +215,7 @@ class AppLocalizationsFil extends AppLocalizations {
       'Hindi ma-play ang audio ng standard na bigkas.';
 
   @override
-  String get selectACountry => 'Pumili ng bansa';
+  String get selectNativeLanguage => 'Piliin ang katutubong wika mo';
 
   @override
   String get selectYourLanguage => 'Piliin ang iyong wika';

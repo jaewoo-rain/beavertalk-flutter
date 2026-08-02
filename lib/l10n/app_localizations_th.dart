@@ -211,7 +211,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get standardAudioPlayError => 'เล่นเสียงออกเสียงมาตรฐานไม่สำเร็จ';
 
   @override
-  String get selectACountry => 'เลือกประเทศ';
+  String get selectNativeLanguage => 'เลือกภาษาแม่ของคุณ';
 
   @override
   String get selectYourLanguage => 'เลือกภาษาของคุณ';

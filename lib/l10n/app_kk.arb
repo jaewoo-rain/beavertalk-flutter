@@ -61,7 +61,7 @@
   "analysisLoadError": "Талдау нәтижесін жүктеу мүмкін болмады.",
   "standardAudioNotReady": "Үлгі айтылым дыбысы әлі дайын емес.",
   "standardAudioPlayError": "Үлгі айтылым дыбысын ойнату мүмкін болмады.",
-  "selectACountry": "Елді таңдаңыз",
+  "selectNativeLanguage": "Ана тіліңізді таңдаңыз",
   "selectYourLanguage": "Тіліңізді таңдаңыз",
   "confirm": "Растау",
   "cancel": "Бас тарту",

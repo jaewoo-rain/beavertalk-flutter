@@ -61,7 +61,7 @@
   "analysisLoadError": "Hindi ma-load ang resulta ng analysis.",
   "standardAudioNotReady": "Hindi pa handa ang audio ng standard na bigkas.",
   "standardAudioPlayError": "Hindi ma-play ang audio ng standard na bigkas.",
-  "selectACountry": "Pumili ng bansa",
+  "selectNativeLanguage": "Piliin ang katutubong wika mo",
   "selectYourLanguage": "Piliin ang iyong wika",
   "confirm": "Kumpirmahin",
   "cancel": "Kanselahin",

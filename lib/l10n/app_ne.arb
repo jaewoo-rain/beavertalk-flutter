@@ -61,7 +61,7 @@
   "analysisLoadError": "विश्लेषण नतिजा लोड गर्न सकिएन।",
   "standardAudioNotReady": "मानक उच्चारण अडियो अझै तयार छैन।",
   "standardAudioPlayError": "मानक उच्चारण अडियो बजाउन सकिएन।",
-  "selectACountry": "देश छान्नुहोस्",
+  "selectNativeLanguage": "आफ्नो मातृभाषा छान्नुहोस्",
   "selectYourLanguage": "तपाईंको भाषा छान्नुहोस्",
   "confirm": "पुष्टि गर्नुहोस्",
   "cancel": "रद्द गर्नुहोस्",

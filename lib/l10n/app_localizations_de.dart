@@ -215,7 +215,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Standardaussprache konnte nicht abgespielt werden.';
 
   @override
-  String get selectACountry => 'Land auswählen';
+  String get selectNativeLanguage => 'Wähle deine Muttersprache';
 
   @override
   String get selectYourLanguage => 'Wähle deine Sprache';

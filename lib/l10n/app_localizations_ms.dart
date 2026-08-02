@@ -214,7 +214,7 @@ class AppLocalizationsMs extends AppLocalizations {
       'Tidak dapat memainkan audio sebutan piawai.';
 
   @override
-  String get selectACountry => 'Pilih negara';
+  String get selectNativeLanguage => 'Pilih bahasa ibunda anda';
 
   @override
   String get selectYourLanguage => 'Pilih bahasa anda';

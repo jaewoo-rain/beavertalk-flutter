@@ -61,7 +61,7 @@
   "analysisLoadError": "ဆန်းစစ်ချက် ရလဒ် ဖွင့်၍မရပါ။",
   "standardAudioNotReady": "စံအသံထွက် အသံဖိုင် မပြင်ဆင်ရသေးပါ။",
   "standardAudioPlayError": "စံအသံထွက် အသံဖိုင် ဖွင့်၍မရပါ။",
-  "selectACountry": "နိုင်ငံ ရွေးချယ်ပါ",
+  "selectNativeLanguage": "သင့်မိခင်ဘာသာစကားကို ရွေးချယ်ပါ",
   "selectYourLanguage": "သင့်ဘာသာစကား ရွေးချယ်ပါ",
   "confirm": "အတည်ပြုရန်",
   "cancel": "မလုပ်တော့ပါ",

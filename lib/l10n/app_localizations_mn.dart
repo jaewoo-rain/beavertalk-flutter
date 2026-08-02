@@ -214,7 +214,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Стандарт дуудлагын аудиог тоглуулж чадсангүй.';
 
   @override
-  String get selectACountry => 'Улс сонгох';
+  String get selectNativeLanguage => 'Эх хэлээ сонгоно уу';
 
   @override
   String get selectYourLanguage => 'Хэлээ сонгоно уу';

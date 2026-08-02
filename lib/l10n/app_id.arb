@@ -61,7 +61,7 @@
   "analysisLoadError": "Tidak dapat memuat hasil analisis.",
   "standardAudioNotReady": "Audio pengucapan standar belum siap.",
   "standardAudioPlayError": "Tidak dapat memutar audio pengucapan standar.",
-  "selectACountry": "Pilih negara",
+  "selectNativeLanguage": "Pilih bahasa ibu Anda",
   "selectYourLanguage": "Pilih bahasamu",
   "confirm": "Konfirmasi",
   "cancel": "Batal",

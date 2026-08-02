@@ -212,7 +212,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get standardAudioPlayError => 'معیاری تلفظ کی آڈیو چلائی نہیں جا سکی۔';
 
   @override
-  String get selectACountry => 'ملک منتخب کریں';
+  String get selectNativeLanguage => 'اپنی مادری زبان منتخب کریں';
 
   @override
   String get selectYourLanguage => 'اپنی زبان منتخب کریں';

@@ -61,7 +61,7 @@
   "analysisLoadError": "Das Analyseergebnis konnte nicht geladen werden.",
   "standardAudioNotReady": "Die Standardaussprache ist noch nicht bereit.",
   "standardAudioPlayError": "Die Standardaussprache konnte nicht abgespielt werden.",
-  "selectACountry": "Land auswählen",
+  "selectNativeLanguage": "Wähle deine Muttersprache",
   "selectYourLanguage": "Wähle deine Sprache",
   "confirm": "Bestätigen",
   "cancel": "Abbrechen",

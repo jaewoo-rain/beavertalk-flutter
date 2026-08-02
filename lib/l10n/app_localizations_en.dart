@@ -213,7 +213,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'Couldn\'t play the standard pronunciation audio.';
 
   @override
-  String get selectACountry => 'Select a country';
+  String get selectNativeLanguage => 'Select your native language';
 
   @override
   String get selectYourLanguage => 'Select your language';

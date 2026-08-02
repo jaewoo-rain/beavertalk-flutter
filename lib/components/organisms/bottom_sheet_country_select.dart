@@ -82,8 +82,11 @@ class BottomSheetCountrySelect extends StatelessWidget {
     this.showHomeIndicator = true,
   });
 
-  /// Header title. When null, falls back to the localized "Select a country"
-  /// (`AppLocalizations.selectACountry`).
+  /// Header title. When null, falls back to the localized "Select your native
+  /// language" (`AppLocalizations.selectNativeLanguage`) — the sheet's only
+  /// caller that takes the default is the login screen, where what is being
+  /// asked for is a language, not a country. "국가 선택" read as if the user were
+  /// picking a nationality. MyPage passes its own titles.
   final String? title;
 
   /// The countries to list, rendered top-to-bottom as [CountrySelect] rows.
@@ -123,7 +126,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final effectiveTitle = title ?? l10n.selectACountry;
+    final effectiveTitle = title ?? l10n.selectNativeLanguage;
     final effectiveConfirm = confirmText ?? l10n.confirm;
     final maxHeight =
         MediaQuery.of(context).size.height * _maxHeightFraction;

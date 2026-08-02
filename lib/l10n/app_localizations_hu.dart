@@ -216,7 +216,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem sikerült lejátszani a standard kiejtésű hanganyagot.';
 
   @override
-  String get selectACountry => 'Válassz egy országot';
+  String get selectNativeLanguage => 'Válaszd ki az anyanyelved';
 
   @override
   String get selectYourLanguage => 'Válaszd ki a nyelvedet';

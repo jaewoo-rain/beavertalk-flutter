@@ -61,7 +61,7 @@
   "analysisLoadError": "Không thể tải kết quả phân tích.",
   "standardAudioNotReady": "Âm thanh phát âm chuẩn chưa sẵn sàng.",
   "standardAudioPlayError": "Không thể phát âm thanh phát âm chuẩn.",
-  "selectACountry": "Chọn quốc gia",
+  "selectNativeLanguage": "Chọn tiếng mẹ đẻ của bạn",
   "selectYourLanguage": "Chọn ngôn ngữ của bạn",
   "confirm": "Xác nhận",
   "cancel": "Hủy",

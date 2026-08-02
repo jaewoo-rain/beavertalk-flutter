@@ -520,11 +520,11 @@ abstract class AppLocalizations {
   /// **'Couldn\'t play the standard pronunciation audio.'**
   String get standardAudioPlayError;
 
-  /// Default title of the country/language select bottom sheet.
+  /// Default title of the language-select bottom sheet shown over the login screen. Asks for the user's native language, not a country.
   ///
   /// In en, this message translates to:
-  /// **'Select a country'**
-  String get selectACountry;
+  /// **'Select your native language'**
+  String get selectNativeLanguage;
 
   /// Title of the language select sheet opened from My Page.
   ///

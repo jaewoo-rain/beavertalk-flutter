@@ -61,7 +61,7 @@
   "analysisLoadError": "Tidak dapat memuatkan keputusan analisis.",
   "standardAudioNotReady": "Audio sebutan piawai belum sedia lagi.",
   "standardAudioPlayError": "Tidak dapat memainkan audio sebutan piawai.",
-  "selectACountry": "Pilih negara",
+  "selectNativeLanguage": "Pilih bahasa ibunda anda",
   "selectYourLanguage": "Pilih bahasa anda",
   "confirm": "Sahkan",
   "cancel": "Batal",

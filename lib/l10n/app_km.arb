@@ -61,7 +61,7 @@
   "analysisLoadError": "មិនអាចផ្ទុកលទ្ធផលវិភាគបានទេ។",
   "standardAudioNotReady": "សំឡេងបញ្ចេញស្តង់ដារមិនទាន់រួចរាល់ទេ។",
   "standardAudioPlayError": "មិនអាចចាក់សំឡេងបញ្ចេញស្តង់ដារបានទេ។",
-  "selectACountry": "ជ្រើសរើសប្រទេស",
+  "selectNativeLanguage": "ជ្រើសរើសភាសាកំណើតរបស់អ្នក",
   "selectYourLanguage": "ជ្រើសរើសភាសារបស់អ្នក",
   "confirm": "បញ្ជាក់",
   "cancel": "បោះបង់",

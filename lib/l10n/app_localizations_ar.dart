@@ -212,7 +212,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get standardAudioPlayError => 'تعذّر تشغيل الصوت المعياري للنطق.';
 
   @override
-  String get selectACountry => 'اختر دولة';
+  String get selectNativeLanguage => 'اختر لغتك الأم';
 
   @override
   String get selectYourLanguage => 'اختر لغتك';

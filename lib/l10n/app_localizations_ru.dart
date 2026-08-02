@@ -213,7 +213,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось воспроизвести эталонное произношение.';
 
   @override
-  String get selectACountry => 'Выберите страну';
+  String get selectNativeLanguage => 'Выберите ваш родной язык';
 
   @override
   String get selectYourLanguage => 'Выберите ваш язык';

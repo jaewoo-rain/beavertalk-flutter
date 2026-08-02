@@ -61,7 +61,7 @@
   "analysisLoadError": "Nem sikerült betölteni az elemzés eredményét.",
   "standardAudioNotReady": "A standard kiejtésű hanganyag még nem áll készen.",
   "standardAudioPlayError": "Nem sikerült lejátszani a standard kiejtésű hanganyagot.",
-  "selectACountry": "Válassz egy országot",
+  "selectNativeLanguage": "Válaszd ki az anyanyelved",
   "selectYourLanguage": "Válaszd ki a nyelvedet",
   "confirm": "Megerősítés",
   "cancel": "Mégse",

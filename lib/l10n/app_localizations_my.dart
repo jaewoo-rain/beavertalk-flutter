@@ -212,7 +212,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get standardAudioPlayError => 'စံအသံထွက် အသံဖိုင် ဖွင့်၍မရပါ။';
 
   @override
-  String get selectACountry => 'နိုင်ငံ ရွေးချယ်ပါ';
+  String get selectNativeLanguage => 'သင့်မိခင်ဘာသာစကားကို ရွေးချယ်ပါ';
 
   @override
   String get selectYourLanguage => 'သင့်ဘာသာစကား ရွေးချယ်ပါ';

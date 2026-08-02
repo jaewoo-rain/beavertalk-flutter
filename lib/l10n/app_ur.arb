@@ -61,7 +61,7 @@
   "analysisLoadError": "تجزیہ کا نتیجہ لوڈ نہیں ہو سکا۔",
   "standardAudioNotReady": "معیاری تلفظ کی آڈیو ابھی تیار نہیں ہے۔",
   "standardAudioPlayError": "معیاری تلفظ کی آڈیو چلائی نہیں جا سکی۔",
-  "selectACountry": "ملک منتخب کریں",
+  "selectNativeLanguage": "اپنی مادری زبان منتخب کریں",
   "selectYourLanguage": "اپنی زبان منتخب کریں",
   "confirm": "تصدیق کریں",
   "cancel": "منسوخ کریں",

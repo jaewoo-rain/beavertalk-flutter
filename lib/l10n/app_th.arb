@@ -61,7 +61,7 @@
   "analysisLoadError": "โหลดผลการวิเคราะห์ไม่สำเร็จ",
   "standardAudioNotReady": "เสียงออกเสียงมาตรฐานยังไม่พร้อม",
   "standardAudioPlayError": "เล่นเสียงออกเสียงมาตรฐานไม่สำเร็จ",
-  "selectACountry": "เลือกประเทศ",
+  "selectNativeLanguage": "เลือกภาษาแม่ของคุณ",
   "selectYourLanguage": "เลือกภาษาของคุณ",
   "confirm": "ยืนยัน",
   "cancel": "ยกเลิก",

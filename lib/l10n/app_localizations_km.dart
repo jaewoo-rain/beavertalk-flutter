@@ -212,7 +212,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get standardAudioPlayError => 'មិនអាចចាក់សំឡេងបញ្ចេញស្តង់ដារបានទេ។';
 
   @override
-  String get selectACountry => 'ជ្រើសរើសប្រទេស';
+  String get selectNativeLanguage => 'ជ្រើសរើសភាសាកំណើតរបស់អ្នក';
 
   @override
   String get selectYourLanguage => 'ជ្រើសរើសភាសារបស់អ្នក';

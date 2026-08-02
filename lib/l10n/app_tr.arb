@@ -61,7 +61,7 @@
   "analysisLoadError": "Analiz sonucu yüklenemedi.",
   "standardAudioNotReady": "Standart telaffuz sesi henüz hazır değil.",
   "standardAudioPlayError": "Standart telaffuz sesi oynatılamadı.",
-  "selectACountry": "Bir ülke seçin",
+  "selectNativeLanguage": "Ana dilinizi seçin",
   "selectYourLanguage": "Dilinizi seçin",
   "confirm": "Onayla",
   "cancel": "İptal",

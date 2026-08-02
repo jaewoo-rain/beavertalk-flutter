@@ -61,7 +61,7 @@
   "analysisLoadError": "Não foi possível carregar o resultado da análise.",
   "standardAudioNotReady": "O áudio da pronúncia padrão ainda não está pronto.",
   "standardAudioPlayError": "Não foi possível reproduzir o áudio da pronúncia padrão.",
-  "selectACountry": "Selecione um país",
+  "selectNativeLanguage": "Selecione o seu idioma nativo",
   "selectYourLanguage": "Selecione seu idioma",
   "confirm": "Confirmar",
   "cancel": "Cancelar",

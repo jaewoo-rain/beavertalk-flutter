@@ -214,7 +214,7 @@ class AppLocalizationsBn extends AppLocalizations {
       'স্ট্যান্ডার্ড উচ্চারণের অডিও চালানো যায়নি।';
 
   @override
-  String get selectACountry => 'একটি দেশ নির্বাচন করুন';
+  String get selectNativeLanguage => 'আপনার মাতৃভাষা নির্বাচন করুন';
 
   @override
   String get selectYourLanguage => 'আপনার ভাষা নির্বাচন করুন';

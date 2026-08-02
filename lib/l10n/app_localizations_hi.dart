@@ -212,7 +212,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get standardAudioPlayError => 'मानक उच्चारण ऑडियो नहीं चल सका।';
 
   @override
-  String get selectACountry => 'एक देश चुनें';
+  String get selectNativeLanguage => 'अपनी मातृभाषा चुनें';
 
   @override
   String get selectYourLanguage => 'अपनी भाषा चुनें';

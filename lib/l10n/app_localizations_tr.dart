@@ -212,7 +212,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get standardAudioPlayError => 'Standart telaffuz sesi oynatılamadı.';
 
   @override
-  String get selectACountry => 'Bir ülke seçin';
+  String get selectNativeLanguage => 'Ana dilinizi seçin';
 
   @override
   String get selectYourLanguage => 'Dilinizi seçin';

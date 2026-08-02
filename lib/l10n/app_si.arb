@@ -61,7 +61,7 @@
   "analysisLoadError": "විශ්ලේෂණ ප්‍රතිඵලය පූරණය කළ නොහැකි විය.",
   "standardAudioNotReady": "සම්මත උච්චාරණ ශබ්දය තවම සූදානම් නැත.",
   "standardAudioPlayError": "සම්මත උච්චාරණ ශබ්දය වාදනය කළ නොහැකි විය.",
-  "selectACountry": "රටක් තෝරන්න",
+  "selectNativeLanguage": "ඔබේ මව් භාෂාව තෝරන්න",
   "selectYourLanguage": "ඔබේ භාෂාව තෝරන්න",
   "confirm": "තහවුරු කරන්න",
   "cancel": "අවලංගු කරන්න",

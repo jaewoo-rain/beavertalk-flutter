@@ -210,7 +210,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get standardAudioPlayError => 'お手本の発音音声を再生できませんでした。';
 
   @override
-  String get selectACountry => '国を選択';
+  String get selectNativeLanguage => '母国語を選択してください';
 
   @override
   String get selectYourLanguage => '言語を選択';

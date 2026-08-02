@@ -210,7 +210,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get standardAudioPlayError => '无法播放标准发音音频。';
 
   @override
-  String get selectACountry => '选择国家';
+  String get selectNativeLanguage => '选择你的母语';
 
   @override
   String get selectYourLanguage => '选择你的语言';

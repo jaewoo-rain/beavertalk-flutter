@@ -61,7 +61,7 @@
   "analysisLoadError": "无法加载分析结果。",
   "standardAudioNotReady": "标准发音音频尚未准备好。",
   "standardAudioPlayError": "无法播放标准发音音频。",
-  "selectACountry": "选择国家",
+  "selectNativeLanguage": "选择你的母语",
   "selectYourLanguage": "选择你的语言",
   "confirm": "确定",
   "cancel": "取消",

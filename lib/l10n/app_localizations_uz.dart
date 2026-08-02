@@ -214,7 +214,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Andoza talaffuz audiosini ijro etib boʻlmadi.';
 
   @override
-  String get selectACountry => 'Davlatni tanlang';
+  String get selectNativeLanguage => 'Ona tilingizni tanlang';
 
   @override
   String get selectYourLanguage => 'Tilingizni tanlang';
