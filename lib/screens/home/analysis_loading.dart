@@ -368,6 +368,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        // 액션 버튼은 HUG 가 아니라 Fill 이다 — 화면의 24 좌우 여백 안에서 폭을 꽉
+        // 채우고 세로로 쌓인다(다시 시도 → 홈). stretch 를 쓰면 아이콘/문구는 각자
+        // 가운데 정렬을 유지한 채 버튼만 폭을 받는다.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Icon(
             Icons.error_outline,
