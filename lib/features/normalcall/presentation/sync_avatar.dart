@@ -111,9 +111,8 @@ class _SyncAvatarState extends State<SyncAvatar> {
   }
 
   Future<void> _load() async {
-    // Both clips run continuously. Starting a paused decoder costs 100–300ms on
-    // Android, which is exactly the lag that made the picture switch late — so
-    // nothing is ever paused; only opacity changes.
+    // 컨트롤러는 둘 다 열어 둔다(초기화 유지 = 전환이 즉시다). 다만 **재생은 보이는
+    // 쪽만** 한다 — 아래 _applyPlayback 참조.
     _idle = await _open('idle', loop: true, play: true);
     _talk = await _open('talk', loop: true, play: true);
     if (!mounted) return;
@@ -124,6 +123,35 @@ class _SyncAvatarState extends State<SyncAvatar> {
       if (_ready && _talking) _talkOpacity = 1;
     });
     if (_ready && _talking) _syncEmotionLayer();
+    await _applyPlayback();
+  }
+
+  /// 화면에 보이는 클립만 재생한다.
+  ///
+  /// 이 기기의 하드웨어 H.264 디코더는 동시 2~3개가 한계다. idle·talk·감정을 전부
+  /// 돌리면 서로를 굶겨 그림이 얼어붙는다(2026-08-02 S8 실기기에서 재현).
+  /// 컨트롤러 자체는 살려 두므로 전환은 opacity + play() 한 번으로 끝난다.
+  Future<void> _applyPlayback() async {
+    final showEmo = _talking && _emoOpacity > 0 && _emo != null;
+    final showTalk = _talking && !showEmo;
+    await _setPlaying(_idle, !_talking);
+    await _setPlaying(_talk, showTalk);
+    for (final c in _emoCache.values) {
+      await _setPlaying(c, showEmo && identical(c, _emo));
+    }
+  }
+
+  Future<void> _setPlaying(VideoPlayerController? c, bool on) async {
+    if (c == null || !c.value.isInitialized) return;
+    try {
+      if (on && !c.value.isPlaying) {
+        await c.play();
+      } else if (!on && c.value.isPlaying) {
+        await c.pause();
+      }
+    } catch (_) {
+      // 이미 정리된 컨트롤러 — 조용히 넘어간다.
+    }
   }
 
   Future<VideoPlayerController?> _open(String name,
@@ -181,8 +209,9 @@ class _SyncAvatarState extends State<SyncAvatar> {
   void _startTalking() {
     _talking = true;
     if (kDebugMode) debugPrint('[avatar] TALK on (level ${widget.level.value})');
-    // The clip is already rolling — reveal it. No decoder start, no seek.
+    // 컨트롤러는 이미 열려 있다 — 보이게 하고 재생만 켠다. 새 디코더도 seek도 없다.
     if (mounted) setState(() => _talkOpacity = 1);
+    _applyPlayback();
     _syncEmotionLayer();
   }
 
@@ -195,6 +224,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _emoOpacity = 0;
       });
     }
+    _applyPlayback();
   }
 
   void _onEmotion() {
@@ -223,7 +253,33 @@ class _SyncAvatarState extends State<SyncAvatar> {
           return;
         }
         if (next == null) return;
-        _emoCache[code] = next; // 캐시 보관 — 재사용, dispose 하지 않는다(churn 제거)
+        // ★감정은 **한 개만** 살려 둔다. 캐시를 계속 쌓으면 idle·talk 까지 더해
+        // 디코더가 최대 6개가 되고, 하드웨어 한계(2~3개)를 넘어 화면이 얼었다
+        // (2026-08-02 S8 실기기). 이제 최대 3개 = idle + talk + 감정 1.
+        //
+        // ⛔ 여기서 바로 해제하면 안 된다. 지금 이 순간 `_emo`(그리고 위젯 트리)가
+        // 옛 컨트롤러를 가리키고 있어서, 먼저 해제하면 **해제된 텍스처를 그리다 화면이
+        // 굳는다**(2026-08-02 실기기에서 "말하다 멈춤"으로 나타남).
+        // 새 컨트롤러로 갈아끼우고 페이드가 끝난 뒤에 해제한다.
+        final stale = _emoCache.entries
+            .where((e) => e.key != code)
+            .map((e) => e.value)
+            .toList();
+        _emoCache
+          ..clear()
+          ..[code] = next;
+        _emo = next;
+        _emoCode = code;
+        if (mounted) setState(() => _emoOpacity = 1);
+        await _applyPlayback();
+        if (stale.isNotEmpty) {
+          Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
+            for (final c in stale) {
+              await c.dispose();
+            }
+          });
+        }
+        return;
       }
       _emo = next;
       _emoCode = code;
@@ -231,6 +287,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
     final e = _emo;
     if (e == null) return;
     if (mounted) setState(() => _emoOpacity = 1);
+    await _applyPlayback();
   }
 
   @override

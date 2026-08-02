@@ -197,13 +197,19 @@ class NormalCallController extends Notifier<CallState> {
     1: ['하하', 'ㅋㅋ', 'ㅎㅎ', '좋아', '좋은', '좋네', '좋다', '최고', '굿', '짱', '잘했',
       '대단', '훌륭', '기뻐', '신나', '행복', '사랑', 'good', 'great', 'awesome',
       'nice', 'love', 'cool', 'haha', 'perfect', 'well done', 'yay'],
-    2: ['헐', '대박', '진짜?', '정말?', '뭐?', '우와', '와우', '놀라', '세상에', '믿기',
-      '오마이', 'wow', 'whoa', 'no way', 'oh my', 'really?', 'what?!'],
-    3: ['슬프', '슬퍼', '미안', '아쉽', '안타', '속상', '우울', 'ㅠ', 'ㅜ', '눈물',
-      'sorry', 'sad', 'unfortunately', 'poor'],
-    4: ['짜증', '뭐야', '바보', '멍청', '어이없', '그만', '답답', '흥', '쳇', '열받', '화나',
-      'ugh', 'stupid', 'annoying', 'stop it'],
+    2: ['헐', '대박', '우와', '와우', '놀라', '세상에', '믿기',
+      '오마이', 'wow', 'whoa', 'no way', 'oh my'],
+    3: ['슬프', '슬퍼', '아쉽', '안타', '속상', '우울', 'ㅠ', 'ㅜ', '눈물',
+      'sad', 'unfortunately'],
+    4: ['짜증', '바보', '멍청', '어이없', '답답', '열받', '화나',
+      'ugh', 'stupid', 'annoying'],
   };
+
+  // ⛔ 아래 표현들은 **일부러 뺐다**(2026-08-02). 한국어 구어에서 감정과 무관하게
+  // 너무 자주 나와 표정을 오탐시킨다 — 실기기에서 "표정이 대사와 안 맞는" 주된 원인:
+  //   surprised: '진짜?' '정말?' '뭐?' 'really?' 'what?!'  (되묻기·맞장구)
+  //   angry:     '뭐야' '그만' '흥' '쳇' 'stop it'          (필러·구두 습관)
+  //   sad:       '미안' 'sorry' 'poor'                      (예의 표현이 대부분)
 
   /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
   /// audio is handed to the player and drained in real time. A single RMS per
@@ -1437,6 +1443,25 @@ class NormalCallController extends Notifier<CallState> {
   /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
   /// counting lexicon hits. Cheap keyword scan; short lines. Ties/none → the
   /// highest-count wins, 0 when nothing matches.
+  /// 아직 문장이 안 끝난 조각. 표정 분류의 입력 단위를 문장으로 만들기 위한 버퍼.
+  String _emoPending = '';
+
+  /// [s] 안에서 **마지막으로 완결된 문장**이 끝나는 위치(없으면 0).
+  /// 종결부호 뒤에 오는 공백까지 포함해 잘라낸다.
+  int _lastSentenceEnd(String s) {
+    const marks = '.!?…~\n';
+    var idx = -1;
+    for (var i = 0; i < s.length; i++) {
+      if (marks.contains(s[i])) idx = i;
+    }
+    if (idx < 0) return 0;
+    var end = idx + 1;
+    while (end < s.length && s[end] == ' ') {
+      end++;
+    }
+    return end;
+  }
+
   int _classifyEmotion(String line) {
     if (line.isEmpty) return 0;
     final t = line.toLowerCase();
@@ -1536,8 +1561,10 @@ class NormalCallController extends Notifier<CallState> {
         // answered (matches the server "new question cancels previous").
         state = state.copyWith(beaverSubtitle: '', hint: null);
         // New line → reset the avatar expression to neutral; it re-classifies as
-        // the line streams in below.
+        // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
+        // 다음 턴 첫 문장에 섞이면 엉뚱한 표정이 나온다).
         avatarEmotion.value = 0;
+        _emoPending = '';
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -1550,10 +1577,19 @@ class NormalCallController extends Notifier<CallState> {
           if (delta != null && delta.isNotEmpty) {
             final line = state.beaverSubtitle + delta;
             state = state.copyWith(beaverSubtitle: line);
-            // React to what the beaver says: a detected emotion sticks until the
-            // next turn resets it (avoids flicker on neutral tokens).
-            final emo = _classifyEmotion(line);
-            if (emo != 0) avatarEmotion.value = emo;
+            // 표정은 **문장이 끝날 때 그 문장만** 보고 정한다.
+            //
+            // 이전 구현은 토큰마다 **누적 문자열 전체**를 재검사하고, 한 번 잡힌 값을
+            // 턴이 끝날 때까지 고정했다. 그래서 문장 첫머리의 우연한 단어 하나가 턴
+            // 전체의 표정을 결정했고, 실기기에서 "표정이 대사와 전혀 안 맞는다"로
+            // 나타났다(2026-08-02). 립싱크 플랜 §6의 「턴 단위 갱신」 규약 위반이다.
+            _emoPending += delta;
+            final cut = _lastSentenceEnd(_emoPending);
+            if (cut > 0) {
+              final sentence = _emoPending.substring(0, cut);
+              _emoPending = _emoPending.substring(cut);
+              avatarEmotion.value = _classifyEmotion(sentence);
+            }
           }
         }
       case 'input_transcript':
@@ -1817,6 +1853,7 @@ class NormalCallController extends Notifier<CallState> {
     avatarLevel.value = 0.0;
     avatarEmotion.value = 0;
     avatarShape.value = 0.0;
+    _emoPending = '';
     _turnEnded = false;
     _micFramesSent = 0;
     _micWatchdogTimer?.cancel();
