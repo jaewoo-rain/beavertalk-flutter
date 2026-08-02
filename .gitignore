@@ -56,3 +56,5 @@ docs
 tools/service-account.json
 service-account.json
 google-services.json
+# 벤더링한 flutter_pcm_sound 의 로컬 Gradle 캐시 (빌드 산출물)
+packages/**/.gradle/

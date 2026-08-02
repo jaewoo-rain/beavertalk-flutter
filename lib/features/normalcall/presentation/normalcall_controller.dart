@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -221,10 +220,16 @@ class NormalCallController extends Notifier<CallState> {
   Timer? _envTimer;
   static const int _envStepMs = 25;
 
-  /// The native player buffers a little ahead of what is audible, so hold the
-  /// envelope back by this much. Kept small: the avatar switches picture on this
-  /// signal, and a picture that arrives a hair early reads as in-sync while a
-  /// late one reads as broken.
+  /// Extra holdback on top of the engine's own depth, to cover the platform
+  /// channel hop. Small on purpose: the avatar switches picture on this signal,
+  /// and a picture that arrives a hair early reads as in-sync while a late one
+  /// reads as broken.
+  ///
+  /// ⚠ 이것만으로 버티던 시절이 있었는데(고정 25ms), 그 전제는 "네이티브가 아주
+  ///   조금만 앞서 문다" 였다. [_pump] 가 그 조금을 **1.2~2.5초**로 만들었으므로
+  ///   이제 홀드백의 본체는 [_engineLevelFrames] 이고 이건 그 위의 여유분이다.
+  ///   고정값으로 되돌리면 입이 소리보다 최대 2.5초 먼저 움직인다 — 로그엔 안 보이고
+  ///   실기기에서 눈으로만 보인다.
   static const int _envLeadMs = 25;
 
   /// RMS below this (near-silence) closes the mouth outright.
@@ -303,21 +308,32 @@ class NormalCallController extends Notifier<CallState> {
   // never starved into a stuck underflow churn — the root cause of the ~1-min
   // audio cutout with the old flutter_sound stream player.
 
-  /// Inbound PCM16 chunk ring buffer (each chunk is little-endian PCM16 bytes,
-  /// stored **by reference** — O(1) enqueue, no per-chunk copy, no 8x boxing of
-  /// a `List<int>`, minimal GC). Consumed from the front: [_pcmHeadOffset] marks
-  /// how many bytes of the head chunk are already fed. Enqueued whole from the
-  /// WS frame in [_feedPlayer]; drained byte-exact in [_takeArray].
-  final Queue<Uint8List> _pcmQueue = Queue<Uint8List>();
+  /// Inbound PCM16 byte queue (little-endian samples). Live bytes are
+  /// `[_pcmHead, _pcmTail)`; an odd trailing byte simply stays until the next
+  /// chunk completes its Int16 sample, so samples never split across chunks.
+  ///
+  /// Deliberately a [Uint8List] with explicit indices rather than a `List<int>`
+  /// that gets `sublist`-compacted. The server bursts up to ~4.8s (≈230KB) at
+  /// once, and the old shape paid a word-per-byte store plus a full-buffer copy
+  /// **on the feed callback path** — the audio thread's deadline is the one place
+  /// that allocation must not happen. Here a steady call never copies at all:
+  /// indices reset to 0 whenever the queue drains.
+  Uint8List _pcmQueue = Uint8List(_pcmQueueInitialBytes);
 
-  /// Byte offset into the *first* queued chunk — bytes before it are already
-  /// fed. When it reaches the head chunk's length the chunk is dropped.
-  int _pcmHeadOffset = 0;
+  /// Read offset — bytes before it are already fed.
+  int _pcmHead = 0;
 
-  /// Live unfed byte count across all queued chunks (O(1) [_queueLen]). Kept in
-  /// lockstep with enqueue/drain so the feed callback and resync never walk the
-  /// queue just to measure it.
-  int _pcmQueuedBytes = 0;
+  /// Write offset — bytes at/after it are unwritten capacity.
+  int _pcmTail = 0;
+
+  /// Initial queue capacity (~5.4s at 24kHz PCM16), so the common case never
+  /// grows. Growth doubles; the buffer is never shrunk during a call.
+  static const int _pcmQueueInitialBytes = 1 << 18; // 256KB
+
+  /// Times the queue ran dry while the beaver was still speaking — the Dart-side
+  /// starve count. Debug logging only (see [_pump]); the authoritative view of
+  /// whether the push loop is holding is the `PUMP:` line in [_startInflateLog].
+  int _dbgStarveCount = 0;
 
   /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
   bool _pcmSetup = false;
@@ -330,23 +346,117 @@ class NormalCallController extends Notifier<CallState> {
   static const int _playbackSampleRate = 24000;
   static const int _playbackChannels = 1;
 
-  /// Feed callback fires when buffered frames fall below this (~500ms).
-  /// (audio-glitch 수정) 네이티브 엔진이 더 많이 물고 있게 해서, 메인 아이솔레이트가
-  /// ~수백 ms 멈칫(아바타 코덱 churn·GC·렌더 잼)해도 언더런(재생 깨짐)을 흡수한다.
-  static const int _feedThresholdFrames = 12000;
+  /// Backstop threshold for the plugin's feed callback (~400ms).
+  ///
+  /// Playback is no longer driven by this callback — [_startPushFeed] pushes on
+  /// Dart's own clock (see [_pump]). The callback stays wired for two reasons:
+  /// it re-anchors the engine-level estimate with a ground-truth number, and it
+  /// recovers playback if the push timer ever falls behind. Kept low precisely
+  /// so it *doesn't* fire in normal operation: with the push loop holding the
+  /// engine at 1.2–2.5s, a callback at 400ms means something went wrong.
+  ///
+  /// Why the ping-pong had to go: the native playback thread posted its request
+  /// through `mainThreadHandler` and the method channel, so the heartbeat of the
+  /// playback path ran through the **Android main thread**. Every cushion this
+  /// file has grown (200ms → 600ms → 1.5s) was buying time against a busy UI
+  /// frame. Pushing from Dart takes the main thread out of the loop instead.
+  static const int _feedThresholdFrames = 9600;
 
-  /// Bytes fed per callback when audio is available (~500ms of 24kHz PCM16).
-  static const int _feedChunkBytes = 24000;
+  /// How often [_pump] tops the engine up. Short enough that a missed tick is
+  /// invisible against the 1.2s low-water mark below.
+  static const Duration _pushInterval = Duration(milliseconds: 40);
 
-  /// Silence frames fed when the queue is empty (~50ms keep-alive).
-  static const int _silenceFrames = 1200;
+  /// Engine low-water / target for **real audio**, in frames (~1.2s / ~2.5s).
+  ///
+  /// Below the low mark, [_pump] refills to the target; above it, the tick does
+  /// nothing at all (no channel traffic). The gap between them is the budget for
+  /// everything that can go wrong upstream — a stalled main thread, a slow tick,
+  /// a Dart GC — and at 1.2s nothing measured on this project comes close.
+  ///
+  /// Costs no added latency: these bytes would have waited in [_pcmQueue]
+  /// anyway; they just wait inside the engine instead.
+  static const int _engineLowFrames = _playbackSampleRate * 1200 ~/ 1000;
+  static const int _engineTargetFrames = _playbackSampleRate * 2500 ~/ 1000;
 
-  /// Jitter prebuffer (~120ms of PCM16): at the start of a beaver turn, hold real
-  /// audio (feed silence) until this much is queued, so brief network jitter can't
-  /// starve the engine into an audible gap ("voice 씹힘"). Bounded by
-  /// [_prebufferFlush] so a short utterance is never held back forever.
-  static const int _prebufferBytes = _playbackSampleRate * 2 * 400 ~/ 1000;
-  static const Duration _prebufferFlush = Duration(milliseconds: 200);
+  /// Engine low-water / target for **silence**, in frames (~120ms / ~300ms).
+  ///
+  /// Deliberately far below the audio target: queued silence sits *in front of*
+  /// the next real audio, so filling to 2.5s of it would add 2.5s to every reply.
+  /// This only has to keep the AudioTrack out of the idle path (AudioFlinger
+  /// `BUFFER TIMEOUT` → ~130ms to reactivate) and cover the platform round trip
+  /// so the plugin never has to inject its own 20ms silence mid-stream.
+  static const int _silenceLowFrames = _playbackSampleRate * 120 ~/ 1000;
+  static const int _silenceTargetFrames = _playbackSampleRate * 300 ~/ 1000;
+
+  /// Upper bound on one push (~1.5s of 24kHz PCM16), so a single feed can't
+  /// hand the platform channel an unbounded array after a long buffering pause.
+  static const int _feedChunkBytes = 72000;
+
+  /// Jitter prebuffer (~900ms of PCM16): at the start of a beaver turn, hold real
+  /// audio (feed silence) until this much is queued, so a gap in the server's
+  /// delivery can't starve the engine into an audible gap ("voice 씹힘").
+  ///
+  /// Sized from a measured 5-minute call (19 dropouts, 5.63s of inserted silence).
+  /// Every large dropout had the same shape: the server opens a beaver turn with
+  /// one **471ms** chunk (`queue 22634B`, byte-identical across turns), then goes
+  /// quiet for 0.7–1.4s while it generates, then sends the bulk (up to 4.8s at
+  /// once). At the old 400ms the first chunk alone satisfied the gate, so playback
+  /// started and ran dry 471ms later — every single turn. The cushion has to be
+  /// bigger than that opening chunk or it buys nothing.
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+
+  /// Safety net for a *missed* `turn_end`: audio is queued, the cushion never
+  /// fills, and nothing more arrives. Normally unused — a completed short
+  /// utterance is released by the `_turnEnded` arm of the gate in [_onFeed], not
+  /// by this timer, so this can be generous without delaying short replies.
+  static const Duration _prebufferFlush = Duration(milliseconds: 1000);
+
+  /// Adaptive jitter cushion, in bytes. Starts at [_prebufferBytes] and grows
+  /// when a turn starves, shrinks back over turns that play clean.
+  ///
+  /// A fixed cushion cannot hold, because the server delivers a turn's audio at
+  /// roughly **90% of realtime** (measured 2026-07-27: 91.9s of audio across
+  /// 101.8s of beaver turns). A constant deficit means the cushion drains for as
+  /// long as the turn runs, so what's needed scales with turn length, not with
+  /// jitter — 900ms covers a 9s turn and nothing longer. Rather than tax every
+  /// reply with a cushion sized for the worst turn, this tracks the deficit the
+  /// call is actually showing.
+  int _cushionBytes = _prebufferBytes;
+
+  /// Growth per starved turn (~150ms), ceiling (~1.8s), and decay per clean turn
+  /// (~300ms).
+  ///
+  /// ⚠ 감쇠가 성장의 **2배**여야 한다. 처음엔 반대(+300/−150)로 뒀는데, 그러면
+  /// 값이 통화 내내 단조 증가한다 — 이 쿠션은 모든 응답의 시작 지연에 그대로
+  /// 더해지므로 5분 통화의 4분 지점에서 초반보다 눈에 띄게 굼떠진다(실기기 확인,
+  /// 2026-08-02). 나쁜 구간이 지나면 되돌아오게 하려면 감쇠가 더 커야 한다.
+  /// 시작값 [_prebufferBytes](900ms)는 건드리지 마라 — 그건 재생 안정화의 핵심이라
+  /// 낮추면 끊김이 돌아온다.
+  static const int _cushionStepBytes = _playbackSampleRate * 2 * 150 ~/ 1000;
+  static const int _cushionMaxBytes = _playbackSampleRate * 2 * 1800 ~/ 1000;
+  static const int _cushionDecayBytes = _playbackSampleRate * 2 * 300 ~/ 1000;
+
+  /// True once the current turn has starved, so the cushion grows once per turn
+  /// rather than once per feed callback, and a starved turn can't also decay.
+  bool _turnStarved = false;
+
+  /// Cushion required to *resume* after the queue ran dry mid-utterance.
+  ///
+  /// Separate from the turn-start cushion, which only guards a turn's first
+  /// sample. Once [_playing] is set it short-circuits the gate in [_onFeed], so
+  /// a starve mid-word used to resume on whatever scrap had arrived — measured
+  /// at as little as 120ms — which starved again on the next jitter and again
+  /// after that. That loop is the "라디오 신호 안 좋을 때처럼" texture: logs caught
+  /// 10 of 27 playback starts below the cushion in a 2.5 minute call.
+  ///
+  /// Half the adaptive cushion, floored at 400ms (the holes measured were mostly
+  /// ≤400ms) and capped at 1.2s so [_prebufferFlush] stays the real bound.
+  int get _resumeCushionBytes {
+    const floor = _playbackSampleRate * 2 * 400 ~/ 1000;
+    const ceil = _playbackSampleRate * 2 * 1200 ~/ 1000;
+    final half = _cushionBytes ~/ 2;
+    return half < floor ? floor : (half > ceil ? ceil : half);
+  }
 
   /// Settle after `release()` so the singleton native engine fully tears down
   /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
@@ -369,53 +479,125 @@ class NormalCallController extends Notifier<CallState> {
   static const int _prerollMaxBytes = _playbackSampleRate * 2 * 20;
 
   /// Bytes currently queued (unfed).
-  int get _queueLen => _pcmQueuedBytes;
+  int get _queueLen => _pcmTail - _pcmHead;
 
   /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
   /// only audio↔silence transitions instead of spamming every feed callback.
   bool? _lastFeedSilent;
 
-  /// True while a feed callback is mid-flight (awaiting the native `feed`), so
+  /// True while a feed is mid-flight (awaiting the native `feed`), so
   /// [_teardown] can wait for it before `release()` — a fresh call's `setup()`
-  /// must not race a feed running against the old (releasing) engine.
+  /// must not race a feed running against the old (releasing) engine. It is also
+  /// the re-entrancy guard for [_pump]: the push timer and the backstop callback
+  /// both call it, and two feeds in flight would double-count the engine level.
   bool _feeding = false;
 
-  // DEBUG(audio-glitch): 재생 깨짐 원인 계측(임시 — 확인 후 제거). 아바타 무관 코어 계측.
-  // _dbgLastFeedMs: 직전 _onFeed 벽시계(ms) — 콜백 간 간격이 크면 메인 아이솔레이트
-  //   멈칫(잼)이 오디오 피드를 굶긴 것. _dbgStarveCount: 비버 발화중 언더런 횟수.
-  // _dbgMaxGap: 계측 창(5초) 최대 피드 간격 — [_startDiag] 가 읽고 리셋한다.
-  int _dbgLastFeedMs = 0;
-  int _dbgStarveCount = 0;
-  int _dbgMaxGap = 0;
+  /// Drives [_pump] on Dart's own clock instead of waiting to be asked.
+  Timer? _pushTimer;
 
-  // ── DIAG(audio-glitch): "시간이 지날수록 버벅임이 심해진다" 계측 ──────────────
-  //
-  // 가설은 '무언가 단조증가한다'인데 후보가 여럿(네이티브 재생 백로그·Dart 큐·
-  // 메모리→GC·로그 백로그)이고 증상이 전부 같아서, 고치기 전에 어느 숫자가
-  // 우상향하는지부터 확정한다. 5초마다 한 줄씩 찍고 통화 뒤 추이를 본다.
-  //
-  // ⚠ release 빌드에서 재야 한다 — debug 는 debugPrint 백로그 자체가 시간이 갈수록
-  // 메인 아이솔레이트를 잡아먹어서, 그게 원인인지 진짜 원인인지 구분이 안 된다.
-  // 그래서 이 한 줄만 kDebugMode 가드 없이 print 로 내보낸다(logcat 태그 "flutter").
-  // 원인이 확정되면 이 블록과 [_startDiag]·호출부를 통째로 지운다.
-  static const bool kAudioDiag = true;
-  Timer? _diagTimer;
-  int _diagSeq = 0;
-  int _diagLastUnderruns = 0;
-  int _diagLastStarve = 0;
+  /// Last known engine queue depth (frames) and when it was known.
+  ///
+  /// The Android `feed` returns the depth after enqueue, and the backstop
+  /// callback carries it too, so both re-anchor this with ground truth. Between
+  /// those points [_engineLevelFrames] extrapolates: the engine consumes at
+  /// exactly [_playbackSampleRate] (a blocking AudioTrack write never runs fast
+  /// or slow), so elapsed time *is* the amount drained.
+  int _engineAnchorFrames = 0;
+  int _engineAnchorMs = 0;
+
+  /// Estimated frames still queued inside the native engine.
+  ///
+  /// Floored at zero: once it hits bottom the engine pads with its own silence,
+  /// so time past that point doesn't accumulate a debt to be paid back.
+  int get _engineLevelFrames {
+    final anchorMs = _engineAnchorMs;
+    if (anchorMs == 0) return 0;
+    final drained = (DateTime.now().millisecondsSinceEpoch - anchorMs) *
+        _playbackSampleRate ~/
+        1000;
+    final level = _engineAnchorFrames - drained;
+    return level > 0 ? level : 0;
+  }
+
+  /// Re-anchors the estimate after a feed. [atMs] is the time the feed was
+  /// *sent*, not when the reply landed: the platform measured its depth
+  /// somewhere in between, so anchoring at send time under-reports slightly,
+  /// which errs toward feeding more rather than less.
+  void _anchorEngine(int frames, int atMs) {
+    _engineAnchorFrames = frames;
+    _engineAnchorMs = atMs;
+    if (frames < _engineMinFrames) _engineMinFrames = frames;
+  }
+
+  /// [계측] Lowest engine depth seen this call — the one number that says whether
+  /// the push loop is holding. If this stays near [_engineLowFrames] the engine
+  /// never came close to drying out, and any remaining glitch is upstream of us.
+  int _engineMinFrames = 1 << 30;
 
   /// True once the jitter prebuffer has filled and real audio is draining. Reset
-  /// between beaver turns (so each turn re-buffers a small cushion), but NOT on a
-  /// mid-turn starve, so resumed audio plays instantly without a re-buffer gap.
+  /// whenever the queue actually empties — including mid-utterance — so the
+  /// cushion is rebuilt rather than run down to nothing for the rest of the turn.
+  /// Resuming instantly on a starve (the previous behaviour) traded one gap for a
+  /// whole turn with no slack, which measured as repeated dropouts.
   bool _playing = false;
 
   /// Bounded flush for the prebuffer: if audio is queued but stays below
   /// [_prebufferBytes], start playing anyway so a short utterance never stalls.
   Timer? _prebufferFlushTimer;
 
+  /// Wall-clock anchor for [_log]'s elapsed prefix — set when playback opens, so
+  /// every line is stamped with "how far into this call". Without it the pipeline
+  /// log has no timestamps at all and a glitch can't be located in time (the whole
+  /// point of the "~76초에 음성이 튐" investigation).
+  int? _logAnchorMs;
+
+  /// When the queue went empty *while the beaver was still speaking* — i.e. the
+  /// server stopped feeding us mid-utterance. Cleared (and reported) when real
+  /// audio resumes, which yields the stall duration: the number that decides
+  /// whether a client-side buffer can cover it at all.
+  int? _starveAtMs;
+
+  /// Set when [_prebufferFlush] gives up waiting for [_resumeCushionBytes], so a
+  /// tail that never refills the cushion still plays instead of hanging.
+  bool _resumeFlushed = false;
+
+  /// Arrival time of the last inbound audio chunk, for the server-gap metric in
+  /// [_feedPlayer]. Independent of playback and of the mic gate.
+  int? _lastChunkAtMs;
+
+  /// 마지막 **실오디오**가 스피커에서 끝날 것으로 보는 시각(벽시계 ms).
+  ///
+  /// [_pump] 가 실오디오를 밀 때마다 갱신한다. 무음 피드는 갱신하지 않는다.
+  int _audioTailUntilMs = 0;
+
+  /// 비버 음성이 **정말로** 다 나왔는가 — Dart 큐가 빈 것만으로는 알 수 없다.
+  ///
+  /// [_pump] 가 Dart 큐를 엔진으로 최대 2.5초 앞당겨 옮기므로, 큐가 비어도 스피커에서는
+  /// 아직 나오는 중일 수 있다. 이걸 안 보면 세 가지가 깨진다:
+  ///   ① 마이크가 비버 발화 중에 열려 스피커 소리를 되먹는다(반이중 게이트 무력화)
+  ///   ② 작별 인사가 release() 에 잘린다(엔진 잔량이 통째로 버려진다)
+  ///   ③ 위 둘이 겹쳐 "가끔 뚝 끊긴다"로만 보인다
+  ///
+  /// ⛔ `_engineLevelFrames <= 임계` 로 판정하지 마라 — 함정이다. [_pump] 의 무음
+  ///   분기가 엔진을 **항상** 120~300ms 로 유지하므로, 임계를 300ms 이상 잡으면 무음을
+  ///   오디오로 오판하고 300ms 미만으로 잡으면 게이트가 영영 안 열린다. 무음은 실오디오
+  ///   *뒤에* 쌓이기 때문에 깊이로는 둘을 가를 수 없다 — 그래서 벽시계를 쓴다.
+  ///
+  /// 추정치다: 엔진 레벨 자체가 외삽이고 잔량 실측은 안드로이드만 준다. 게이트 판정에만
+  /// 쓰고(±수백 ms 허용) 재생 타이밍에는 쓰지 않는다.
+  bool get _audioDrained =>
+      _queueLen < 2 &&
+      DateTime.now().millisecondsSinceEpoch >= _audioTailUntilMs;
+
   /// Dev-only pipeline log (compiled out of release builds via [kDebugMode]).
+  /// Prefixed with elapsed seconds since playback opened (`--` before that).
   void _log(String msg) {
-    if (kDebugMode) debugPrint('[call] $msg');
+    if (!kDebugMode) return;
+    final anchor = _logAnchorMs;
+    final at = anchor == null
+        ? '--'
+        : '${((DateTime.now().millisecondsSinceEpoch - anchor) / 1000).toStringAsFixed(1)}s';
+    debugPrint('[call $at] $msg');
   }
 
   Timer? _elapsedTimer;
@@ -800,15 +982,26 @@ class NormalCallController extends Notifier<CallState> {
       _lastFeedSilent = null;
       _envQueue.clear();
       _startEnvelope();
-      _startDiag(); // DIAG(audio-glitch) — 임시 계측
-      // Kick the pull loop directly instead of FlutterPcmSound.start().
-      // start() only kicks when the plugin's *static* `_needsStart` flag is true,
-      // and that flag is NEVER reset by release()/setup(): the first call feeds
-      // audio → sets it false → it stays false, so on the 2nd call start() no-ops
-      // and playback never begins (the "재통화 시 음성 안 나옴" bug). Priming the
-      // feed callback ourselves (a silence frame starts the native OnFeedSamples
-      // loop) is independent of that stale flag and works on every call.
-      unawaited(_onFeed(0));
+      _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
+      _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
+
+      // Per-call playback state. The cushion in particular must not carry over:
+      // a rough previous call must not tax this one.
+      _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
+      _starveAtMs = null;
+      _cushionBytes = _prebufferBytes;
+      _turnStarved = false;
+      _resumeFlushed = false;
+
+      // Drive playback from Dart's own clock instead of the plugin's feed
+      // callback. Note this also sidesteps FlutterPcmSound.start(), which only
+      // kicks when the plugin's *static* `_needsStart` flag is true — and that
+      // flag is NEVER reset by release()/setup(): the first call feeds audio →
+      // sets it false → it stays false, so on the 2nd call start() no-ops and
+      // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
+      // is independent of that stale flag and works on every call.
+      _startPushFeed();
+      unawaited(_pump()); // don't wait a tick to open the stream
       _log('playback started @ ${_playbackSampleRate}Hz '
           '(queued ${_queueLen}B waiting)');
       if (myGen != _gen) return _abortStart();
@@ -1151,6 +1344,88 @@ class NormalCallController extends Notifier<CallState> {
   /// Enqueues an inbound PCM24k chunk onto [_pcmQueue]. The plugin's feed
   /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
   /// closing-drain stability window, and cap the queue (resync).
+  // [계측] 수신 처리 시간이 통화가 갈수록 무거워지는지(1분 후 악화 원인) 측정.
+  int _fpLastUs = 0, _fpChunks = 0, _fpMicros = 0, _fpWinMs = 0, _fpMaxGapMs = 0;
+  // [계측] 창당 수신 바이트 — 서버가 "느려진" 것과 "같은 양을 뭉텅이로 보낸" 것을 가른다.
+  int _fpBytes = 0;
+
+  // [계측] 이벤트 루프 지연 프로브. 20ms 주기 타이머가 실제로 얼마나 늦게 실행되는지
+  // 재서, 청크 도착 갭(maxArrivalGap)의 원인을 가른다:
+  //   갭 큼 + 루프 정시  → 소켓에 데이터가 없었다 = 서버 전송 공백 (서버 사안)
+  //   갭 큼 + 루프도 밀림 → 이벤트 루프가 막혔다 = 클라 사안
+  // 이 구분이 없으면 두 원인이 로그상 완전히 똑같이 보인다.
+  static const int _elProbeMs = 20;
+  Timer? _elProbeTimer;
+  int _elLastMs = 0, _elLagMaxMs = 0, _elLagOver50 = 0;
+
+  // [계측] 스트림 인플레이션(Dart 측). native 20ms 무음과 별개로 여기서도 [_silenceFrames]
+  // (=50ms) 무음을 피드한다 — 주입기가 둘이다. 재생 스트림에 들어간 총량이 경과 시간을
+  // 넘으면(fed/elapsed > 100%) 그 초과분이 곧 백로그 증가분이고, 어느 분기가 넣었는지까지 가른다.
+  Timer? _inflateTimer;
+  int _callT0Ms = 0;
+  int _rxBytesTotal = 0; // 서버에서 받은 오디오(=재생돼야 할 진짜 양)
+  int _fedAudBytes = 0; // 플러그인에 넣은 진짜 오디오
+  int _fedSilFrames = 0; // 넣은 무음 전체
+  int _fedSilSpeakFrames = 0; // 그중 "비버 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilPrebufFrames = 0; // 그중 프리버퍼 대기로 넣은 것 = 의도된 지연
+
+  static String _sec(num bytes) => (bytes / 48000.0).toStringAsFixed(1);
+
+  void _startInflateLog() {
+    _inflateTimer?.cancel();
+    _callT0Ms = DateTime.now().millisecondsSinceEpoch;
+    _rxBytesTotal = 0;
+    _fedAudBytes = 0;
+    _fedSilFrames = 0;
+    _fedSilSpeakFrames = 0;
+    _fedSilPrebufFrames = 0;
+    // 타이머 기반(청크 도착 기반 아님) — 오디오가 안 올 때도 균일하게 찍혀야 비교가 된다.
+    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final elapsedMs = DateTime.now().millisecondsSinceEpoch - _callT0Ms;
+      final fedBytes = _fedAudBytes + _fedSilFrames * 2;
+      final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
+      _log('INFLATE: elapsed ${(elapsedMs / 1000).toStringAsFixed(1)}s, '
+          'rx ${_sec(_rxBytesTotal)}s, fedAud ${_sec(_fedAudBytes)}s, '
+          'fedSil ${_sec(_fedSilFrames * 2)}s '
+          '(speaking ${_sec(_fedSilSpeakFrames * 2)}s, prebuf ${_sec(_fedSilPrebufFrames * 2)}s), '
+          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
+      // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
+      // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
+      final minMs = _engineMinFrames == 1 << 30
+          ? -1
+          : _engineMinFrames * 1000 ~/ _playbackSampleRate;
+      _log('PUMP: engine now ${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms, '
+          'min ${minMs}ms (low ${_engineLowFrames * 1000 ~/ _playbackSampleRate}ms / '
+          'target ${_engineTargetFrames * 1000 ~/ _playbackSampleRate}ms)');
+      _engineMinFrames = 1 << 30; // 창마다 리셋 — 통화 전체 최저가 아니라 추세를 본다
+    });
+  }
+
+  void _stopInflateLog() {
+    _inflateTimer?.cancel();
+    _inflateTimer = null;
+  }
+
+  void _startEventLoopProbe() {
+    _elProbeTimer?.cancel();
+    _elLastMs = DateTime.now().millisecondsSinceEpoch;
+    _elLagMaxMs = 0;
+    _elLagOver50 = 0;
+    _elProbeTimer =
+        Timer.periodic(const Duration(milliseconds: _elProbeMs), (_) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final lag = (now - _elLastMs) - _elProbeMs; // 예정보다 늦은 정도(ms)
+      _elLastMs = now;
+      if (lag > _elLagMaxMs) _elLagMaxMs = lag;
+      if (lag > 50) _elLagOver50++;
+    });
+  }
+
+  void _stopEventLoopProbe() {
+    _elProbeTimer?.cancel();
+    _elProbeTimer = null;
+  }
+
   void _feedPlayer(Uint8List chunk) {
     // First inbound audio of the call: the split between "server was still
     // thinking" and "our pipeline was not ready yet" is exactly this timestamp
@@ -1160,12 +1435,48 @@ class NormalCallController extends Notifier<CallState> {
       unawaited(_logNativeAudio('first-audio-in +${_elapsedSinceStartMs}ms '
           '(playback ${_pcmActive ? "ready" : "NOT ready"})'));
     }
-    // Queue ALWAYS, even before playback is open. On the CallKit path the socket
-    // is deliberately opened before the audio pipeline (see [startFromIncoming]),
-    // so the server's opening line routinely arrives first — dropping it here,
-    // as this used to, silenced exactly the greeting the user is waiting for.
-    // Only the *consumption* side ([_onFeed]) is gated on [_pcmActive].
-    //
+    final fpT0 = DateTime.now().microsecondsSinceEpoch;
+    final fpGap = _fpLastUs == 0 ? 0 : (fpT0 - _fpLastUs) ~/ 1000; // 청크 도착 간격(ms)
+    _fpLastUs = fpT0;
+    if (fpGap > _fpMaxGapMs) _fpMaxGapMs = fpGap;
+    _feedPlayerBody(chunk);
+    _fpChunks++;
+    _fpBytes += chunk.length;
+    _rxBytesTotal += chunk.length;
+    _fpMicros += DateTime.now().microsecondsSinceEpoch - fpT0;
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (_fpWinMs == 0) _fpWinMs = nowMs;
+    if (nowMs - _fpWinMs >= 5000) {
+      final avg = _fpChunks > 0 ? _fpMicros / _fpChunks / 1000 : 0;
+      // 24kHz mono Int16 → 48000 B/s. 5초 창이면 실시간은 240000B.
+      final secs = _fpBytes / 48000.0;
+      _log('FP-TIMING: $_fpChunks chunks/5s, avg ${avg.toStringAsFixed(2)}ms/chunk, '
+          'maxArrivalGap ${_fpMaxGapMs}ms, queue ${_queueLen}B, '
+          'rx ${_fpBytes}B (${secs.toStringAsFixed(2)}s audio), '
+          'elLagMax ${_elLagMaxMs}ms, elLagOver50 $_elLagOver50');
+      _fpChunks = 0; _fpMicros = 0; _fpMaxGapMs = 0; _fpWinMs = nowMs;
+      _fpBytes = 0; _elLagMaxMs = 0; _elLagOver50 = 0;
+    }
+  }
+
+  /// MERGE(v3→multilang) 주의: 재생이 아직 안 열렸어도 **항상** 큐에 쌓는다. CallKit
+  /// 경로에서는 소켓이 오디오 파이프라인보다 먼저 열리므로(see [startFromIncoming])
+  /// 서버의 첫 인사가 재생보다 먼저 도착하는 게 정상이고, 여기서 [_pcmActive] 로
+  /// 막으면 사용자가 기다리는 인사말이 그대로 잘린다. 소비 측([_pump])만 게이트한다.
+  /// 대신 재생 전 무한 적재는 아래 pre-roll cap 이 막는다.
+  void _feedPlayerBody(Uint8List chunk) {
+    // Ground truth for "did the server go quiet mid-utterance": the gap between
+    // inbound chunks. The playback-side starve clock can't answer that — a long
+    // enough hole trips the idle-ungate, `_beaverSpeaking` flips to false, and the
+    // resumption then looks like a brand-new turn. Measured here (before
+    // [_gateMic] clears `_turnEnded`) it survives all of that.
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final prevChunkMs = _lastChunkAtMs;
+    if (prevChunkMs != null && !_turnEnded && nowMs - prevChunkMs >= 250) {
+      _log('SERVER GAP ${nowMs - prevChunkMs}ms mid-utterance '
+          '(mic was ${_beaverSpeaking ? "closed" : "OPEN"})');
+    }
+    _lastChunkAtMs = nowMs;
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
     // before/without a turn_start).
     _gateMic();
@@ -1179,26 +1490,20 @@ class NormalCallController extends Notifier<CallState> {
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
 
-    // O(1): store the chunk by reference (no copy). Odd trailing bytes are fine
-    // — [_takeArray] always pulls an even byte count, so Int16 samples never
-    // split; a stray odd byte just waits in its chunk until the next take.
-    _pcmQueue.add(chunk);
-    _pcmQueuedBytes += chunk.length;
+    _appendToQueue(chunk);
 
     // Pre-roll cap: while playback isn't open yet, nothing drains the queue, so
     // it needs its own (much tighter) bound. An opening line is a few seconds;
     // anything beyond this means the audio stage is badly stuck, and holding
     // minutes of stale speech to replay later would be worse than dropping it.
+    //
+    // MERGE(v3→multilang): 이 상한은 청크 참조 큐(_dropFront) 기준으로 들어왔었다.
+    // 이 브랜치는 v3 의 평면 링버퍼를 쓰므로 등가 연산은 head 전진 + 압축이다.
     if (!_pcmActive && _queueLen > _prerollMaxBytes) {
       var drop = _queueLen - _prerollMaxBytes;
       if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
-      // Merge note: this cap arrived from feat/yungu written against the old
-      // flat `List<int>` queue (`_pcmHead += drop` + `_maybeCompact()`). This
-      // branch now carries the chunked `Uint8List` ring buffer, whose
-      // equivalent is [_dropFront] — it walks the chunk list, advances
-      // [_pcmHeadOffset] and keeps [_pcmQueuedBytes] in step, which raw
-      // pointer arithmetic on the old head index no longer can.
-      _dropFront(drop);
+      _pcmHead += drop;
+      _maybeCompact();
       _log('preroll cap: dropped ${drop}B (playback not open yet)');
       return;
     }
@@ -1210,48 +1515,46 @@ class NormalCallController extends Notifier<CallState> {
     if (len > _maxQueueBytes) {
       var drop = len - _targetQueueBytes;
       if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
-      _dropFront(drop);
+      _pcmHead += drop;
       _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
+      _maybeCompact();
     }
   }
 
-  /// Drops [byteCount] bytes off the front of the ring buffer (oldest audio),
-  /// advancing [_pcmHeadOffset] and popping whole consumed chunks. Used only by
-  /// resync; caller guarantees `byteCount <= _pcmQueuedBytes` and even.
-  void _dropFront(int byteCount) {
-    var remaining = byteCount;
-    while (remaining > 0 && _pcmQueue.isNotEmpty) {
-      final head = _pcmQueue.first;
-      final avail = head.length - _pcmHeadOffset;
-      if (avail <= remaining) {
-        remaining -= avail;
-        _pcmQueue.removeFirst();
-        _pcmHeadOffset = 0;
-      } else {
-        _pcmHeadOffset += remaining;
-        remaining = 0;
-      }
-    }
-    _pcmQueuedBytes -= (byteCount - remaining);
+  /// Starts the push loop. From here on Dart decides when the engine gets fed;
+  /// the plugin's callback is only a backstop (see [_feedThresholdFrames]).
+  void _startPushFeed() {
+    _pushTimer?.cancel();
+    _engineAnchorFrames = 0;
+    _engineAnchorMs = 0;
+    _engineMinFrames = 1 << 30;
+    _pushTimer = Timer.periodic(_pushInterval, (_) => unawaited(_pump()));
   }
 
-  /// flutter_pcm_sound feed callback: invoked when buffered frames fall below
-  /// the threshold (or hit zero). Pulls up to [_feedChunkBytes] of real audio
-  /// from [_pcmQueue]; when empty, feeds a short silence so the engine never
-  /// starves into a stuck underflow (the fix for the ~1-min cutout).
+  void _stopPushFeed() {
+    _pushTimer?.cancel();
+    _pushTimer = null;
+  }
+
+  /// Backstop path: the plugin noticed its queue fell below
+  /// [_feedThresholdFrames]. Its `remainingFrames` is ground truth, so use it to
+  /// re-anchor the estimate, then pump. In a healthy call this never fires.
   Future<void> _onFeed(int remainingFrames) async {
     if (!_pcmActive) return;
-    // DEBUG(audio-glitch): 피드 콜백 간 지연 = 메인스레드 멈칫. 250ms↑면 언더런 위험.
-    final dbgNow = DateTime.now().millisecondsSinceEpoch;
-    if (_dbgLastFeedMs != 0) {
-      final gap = dbgNow - _dbgLastFeedMs;
-      if (gap > _dbgMaxGap) _dbgMaxGap = gap;
-      // 피드 청크가 ~500ms 라 정상 케이던스가 ~500ms → 700ms↑만 진짜 스톨로 본다.
-      if (gap > 700) _log('DBG STALL feed gap ${gap}ms (queue ${_queueLen}B)');
-    }
-    _dbgLastFeedMs = dbgNow;
-    // 5초 요약은 [_startDiag] 의 전용 타이머가 찍는다 — 피드 콜백에 얹어두면 정작
-    // 피드가 굶어 멈춘 구간(가장 알고 싶은 구간)에서 로그도 같이 멈춘다.
+    _anchorEngine(remainingFrames, DateTime.now().millisecondsSinceEpoch);
+    await _pump();
+  }
+
+  /// Tops the native engine up. Called every [_pushInterval] (and by the
+  /// backstop callback); does nothing at all unless the engine has drained past
+  /// its low-water mark, so a healthy call spends most ticks returning here.
+  ///
+  /// Pulls up to [_feedChunkBytes] of real audio from [_pcmQueue]; when there's
+  /// nothing to play it feeds silence instead, which keeps the AudioTrack out of
+  /// AudioFlinger's idle path (the ~130ms reactivation stall).
+  Future<void> _pump() async {
+    if (!_pcmActive) return;
+    if (_feeding) return; // a feed is already in flight — don't double-count
     _feeding = true;
     try {
       final avail = _queueLen;
@@ -1259,19 +1562,62 @@ class NormalCallController extends Notifier<CallState> {
       // Jitter prebuffer: at a turn start, hold real audio (feed silence) until a
       // small cushion is buffered so brief jitter can't starve mid-word. Bypassed
       // once playing, while closing (must drain), or when the flush timer fires.
-      final ready = _playing || _drainScheduled || whole >= _prebufferBytes;
+      // `_turnEnded` matters as much as the cushion here: once the server has sent
+      // `turn_end` the whole utterance is already queued, so holding out for
+      // [_prebufferBytes] would only delay a short reply that will never reach it.
+      // Without this arm, raising the cushion to 900ms would stall every "네."
+      // until [_prebufferFlush] expired.
+      // Resuming from a mid-utterance starve is the one case [_playing] must not
+      // wave through: rebuild a small cushion first, or playback resumes on a
+      // scrap and starves straight back into the stutter loop. `_turnEnded` and
+      // `_drainScheduled` still bypass everything so short replies stay instant,
+      // and [_prebufferFlush] bounds the wait via [_resumeFlushed].
+      final resuming = _starveAtMs != null && !_resumeFlushed;
+      final ready = _turnEnded ||
+          _drainScheduled ||
+          (resuming
+              ? whole >= _resumeCushionBytes
+              : (_playing || whole >= _cushionBytes));
       if (whole >= 2 && ready) {
-        if (!_playing) {
-          _playing = true;
-          _prebufferFlushTimer?.cancel();
-          _prebufferFlushTimer = null;
+        _playing = true;
+        // Cancel unconditionally: a resume gate can arm this while [_playing] is
+        // already true, so keying the cancel off `!_playing` would leave it live.
+        _prebufferFlushTimer?.cancel();
+        _prebufferFlushTimer = null;
+        final starvedAt = _starveAtMs;
+        if (starvedAt != null) {
+          // The server had gone quiet mid-utterance and has now resumed. This gap
+          // IS the glitch the user hears — measure it, don't just note that it
+          // happened. Anything under [_prebufferFlush] would have been absorbed.
+          _starveAtMs = null;
+          _resumeFlushed = false;
+          _log('audio resumed after '
+              '${DateTime.now().millisecondsSinceEpoch - starvedAt}ms gap (starved)');
         }
         if (_lastFeedSilent != false) {
-          _log('feed AUDIO (queue ${avail}B)');
+          _log('feed AUDIO (queue ${avail}B, engine '
+              '${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms)');
           _lastFeedSilent = false;
         }
-        final take = whole < _feedChunkBytes ? whole : _feedChunkBytes;
-        await FlutterPcmSound.feed(_takeArray(take));
+        // Only push once the engine has drained past its low-water mark. Above
+        // it the tick does nothing — the bookkeeping above still had to run, but
+        // there is no reason to hand the platform channel more bytes.
+        final level = _engineLevelFrames;
+        if (level < _engineLowFrames) {
+          var take = (_engineTargetFrames - level) * 2;
+          if (take > _feedChunkBytes) take = _feedChunkBytes;
+          if (take > whole) take = whole;
+          _fedAudBytes += take; // [계측]
+          final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final reported = await FlutterPcmSound.feed(_takeArray(take));
+          // Android reports its depth; elsewhere fall back to our own arithmetic
+          // so iOS/web keep working unchanged.
+          _anchorEngine(reported ?? (level + take ~/ 2), sentAtMs);
+          // 이 실오디오가 스피커에서 끝날 시각. 무음 피드는 갱신하지 않는다 —
+          // 무음까지 세면 턴 사이에도 꼬리가 계속 밀려 마이크가 안 열린다.
+          _audioTailUntilMs = sentAtMs +
+              (level + take ~/ 2) * 1000 ~/ _playbackSampleRate;
+        }
       } else {
         if (whole >= 2) {
           // Buffering the prebuffer cushion → arm a bounded flush so a short
@@ -1279,12 +1625,46 @@ class NormalCallController extends Notifier<CallState> {
           _prebufferFlushTimer ??= Timer(_prebufferFlush, () {
             _prebufferFlushTimer = null;
             _playing = true; // next feed drains whatever is queued
+            // Releases the resume gate too, so a tail that never refills
+            // [_resumeCushionBytes] plays out instead of hanging on silence.
+            _resumeFlushed = true;
           });
         } else {
           // Queue genuinely drained. Between turns (beaver not speaking) require a
           // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
           // instant (no re-buffer gap).
+          // Reverted from an unconditional refill: rebuilding the 900ms cushion
+          // mid-utterance only added ~450ms of dead air per resumption without
+          // removing a single dropout, because the holes being ridden out are
+          // multi-second server gaps, not jitter a cushion can cover.
           if (!_beaverSpeaking) _playing = false;
+          // Only a mid-utterance drain is a glitch; a drained queue between turns
+          // is normal, so don't start the stall clock for it.
+          if (_beaverSpeaking) {
+            if (_starveAtMs == null) {
+              // First starve of this turn: the cushion was too small for the
+              // deficit this call is running, so widen it for the turns ahead.
+              _starveAtMs = DateTime.now().millisecondsSinceEpoch;
+              if (!_turnStarved) {
+                _turnStarved = true;
+                if (_cushionBytes < _cushionMaxBytes) {
+                  _cushionBytes += _cushionStepBytes;
+                  if (_cushionBytes > _cushionMaxBytes) {
+                    _cushionBytes = _cushionMaxBytes;
+                  }
+                  _log('cushion grew → ${_cushionBytes * 1000 ~/ 48000}ms '
+                      '(turn starved)');
+                }
+              }
+            }
+          } else {
+            // The gate has cleared — the beaver finished and it's the user's turn.
+            // Drop any clock started during the hangover, otherwise the *next*
+            // turn's first chunk reports the whole exchange (beaver→user→beaver)
+            // as one multi-second "gap" and buries the real glitches.
+            _starveAtMs = null;
+            _resumeFlushed = false;
+          }
           if (_lastFeedSilent != true) {
             if (_beaverSpeaking) _dbgStarveCount++; // DEBUG(audio-glitch)
             _log('feed silence — queue empty'
@@ -1295,9 +1675,26 @@ class NormalCallController extends Notifier<CallState> {
           // deadlock). Armed once per empty period; fresh audio cancels it.
           _armIdleUngate();
         }
-        await FlutterPcmSound.feed(
-          PcmArrayInt16.zeros(count: _silenceFrames),
-        );
+        // Keep only a shallow floor of silence queued. It exists to hold the
+        // AudioTrack in AudioFlinger's active list and to cover the platform
+        // round trip; anything deeper is dead air queued ahead of the next reply.
+        final level = _engineLevelFrames;
+        if (level < _silenceLowFrames) {
+          final silFrames = _silenceTargetFrames - level;
+          // [계측] 무음 주입을 분기별로 분리 집계: 프리버퍼 대기(의도된 지연)인지,
+          // 비버 발화 중 큐가 빈 것(진짜 구멍)인지가 원인 판정을 가른다.
+          _fedSilFrames += silFrames;
+          if (whole >= 2) {
+            _fedSilPrebufFrames += silFrames;
+          } else if (_beaverSpeaking) {
+            _fedSilSpeakFrames += silFrames;
+          }
+          final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final reported = await FlutterPcmSound.feed(
+            PcmArrayInt16.zeros(count: silFrames),
+          );
+          _anchorEngine(reported ?? (level + silFrames), sentAtMs);
+        }
       }
     } catch (_) {
       // Engine released mid-feed (teardown) → ignore.
@@ -1305,38 +1702,37 @@ class NormalCallController extends Notifier<CallState> {
       _feeding = false;
     }
     // Real audio drained → maybe re-open the mic / finish the closing drain.
-    if (_queueLen < 2) {
+    // ⚠ Dart 큐가 아니라 [_audioDrained] 다 — 엔진에 남은 것까지 봐야 한다.
+    if (_audioDrained) {
       _tryUngateMic();
       _maybeFinishClosing();
     }
   }
 
-  /// Removes [byteCount] bytes from the front of the ring buffer as a
-  /// [PcmArrayInt16], walking (and popping) queued chunks until exactly that
-  /// many bytes are assembled. The server's little-endian PCM16 passes straight
-  /// through: mobile targets are little-endian (host), which is what the native
-  /// player expects. Caller guarantees `byteCount <= _pcmQueuedBytes`.
+  /// Removes [byteCount] bytes from the front of the queue as a [PcmArrayInt16].
+  /// The server's little-endian PCM16 passes straight through: mobile targets
+  /// are little-endian (host), which is what the native player expects.
+  /// Caller guarantees `byteCount <= _queueLen`.
   PcmArrayInt16 _takeArray(int byteCount) {
     final out = Uint8List(byteCount);
-    var written = 0;
-    while (written < byteCount && _pcmQueue.isNotEmpty) {
-      final head = _pcmQueue.first;
-      final avail = head.length - _pcmHeadOffset;
-      final need = byteCount - written;
-      final n = avail <= need ? avail : need;
-      out.setRange(written, written + n, head, _pcmHeadOffset);
-      written += n;
-      _pcmHeadOffset += n;
-      if (_pcmHeadOffset >= head.length) {
-        _pcmQueue.removeFirst();
-        _pcmHeadOffset = 0;
-      }
-    }
-    _pcmQueuedBytes -= written;
+    out.setRange(0, byteCount, _pcmQueue, _pcmHead);
+    _pcmHead += byteCount;
+    _maybeCompact();
     // Drive the avatar mouth from the samples about to play (matches what's
     // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
     _updateAvatarLevel(out, byteCount);
     return PcmArrayInt16(bytes: out.buffer.asByteData());
+  }
+
+  /// Rewinds the indices once the queue is fully consumed. That is the only
+  /// bookkeeping a steady call needs: between feeds the queue regularly hits
+  /// empty, so the window slides back to the front for free and [_appendToQueue]
+  /// never has to move live bytes.
+  void _maybeCompact() {
+    if (_pcmHead >= _pcmTail) {
+      _pcmHead = 0;
+      _pcmTail = 0;
+    }
   }
 
   /// Computes the RMS of the PCM16 chunk about to play and publishes it as the
@@ -1367,8 +1763,10 @@ class NormalCallController extends Notifier<CallState> {
       _envQueue.add(_levelFromRms(rms));
       i = end;
     }
-    // Runaway guard: never let the envelope outgrow ~3s of audio.
-    final cap = 3000 ~/ _envStepMs;
+    // Runaway guard. ⚠ 홀드백 자체가 최대 2.5초(엔진 목표)라 3초 캡은 여유가
+    // 0.5초뿐이었다 — 한 번의 take(최대 1.5초)가 얹히면 캡이 큐 앞머리를 잘라
+    // 립싱크가 **조용히** 어긋난다. 엔진 목표 + take 상한 위로 잡는다.
+    final cap = 4000 ~/ _envStepMs;
     if (_envQueue.length > cap) {
       _envQueue.removeRange(0, _envQueue.length - cap);
     }
@@ -1388,13 +1786,20 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   /// Drains the sub-frame envelope in real time so the mouth tracks the audio.
-  /// Holds [_envLeadMs] of it back to offset the player's buffer.
+  ///
+  /// 홀드백 = **지금 네이티브가 물고 있는 양** + [_envLeadMs]. [_takeArray] 는 재생
+  /// 직전이 아니라 "엔진이 저수위로 내려갔을 때" 불리므로, 거기서 뽑은 RMS 는 지금
+  /// 들리는 소리가 아니라 **엔진 깊이만큼 뒤에 들릴** 소리다. 그만큼 붙잡아 둬야
+  /// 입과 소리가 맞는다(sync_avatar 의 "aligns level to what is actually audible"
+  /// 계약이 이걸 전제한다). 매 틱 계산하므로 쿠션이 적응적으로 커져도 따라간다.
   void _startEnvelope() {
     _envTimer?.cancel();
-    final lead = _envLeadMs ~/ _envStepMs;
     _envTimer = Timer.periodic(
       const Duration(milliseconds: _envStepMs),
       (_) {
+        final holdMs =
+            _engineLevelFrames * 1000 ~/ _playbackSampleRate + _envLeadMs;
+        final lead = holdMs ~/ _envStepMs;
         if (_envQueue.length > lead) {
           avatarLevel.value = _envQueue.removeAt(0);
         } else if (!_beaverSpeaking) {
@@ -1405,53 +1810,6 @@ class NormalCallController extends Notifier<CallState> {
         }
       },
     );
-  }
-
-  /// DIAG(audio-glitch): 5초마다 한 줄. 통화가 길어질수록 **어느 숫자가 자라는지**를
-  /// 보려는 것이므로, 절대값보다 t 에 따른 추이가 중요하다.
-  ///
-  /// ```
-  /// [DIAG] t=35s dart=48000B/3ch native=24000B/6ch underrun=+2/7 \
-  ///        gap=812ms starve=+1/3 env=41 mic=1750 feeds=71
-  /// ```
-  /// - `dart`  : Dart 큐(아직 네이티브로 안 넘긴 오디오). 우상향 → 피드가 못 따라감.
-  /// - `native`: 네이티브 백로그(AudioTrack 에 아직 안 넘긴 것). 우상향 → 재생부 적체.
-  /// - `underrun`: AudioTrack 이 실제로 굶은 횟수(+델타/누적). **깨짐의 직접 지표.**
-  /// - `gap`   : 5초 창 최대 피드 콜백 간격 = 메인 아이솔레이트 최대 멈칫.
-  /// - `starve`: 비버 발화중 큐가 빈 횟수(Dart 관점 굶음).
-  /// - `env`/`mic`: 립싱크 큐 길이·누적 마이크 프레임(다른 누적 누수 감지용).
-  void _startDiag() {
-    if (!kAudioDiag) return;
-    _diagTimer?.cancel();
-    _diagSeq = 0;
-    _diagLastUnderruns = 0;
-    _diagLastStarve = 0;
-    _diagTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
-      final t = ++_diagSeq * 5;
-      final gap = _dbgMaxGap;
-      _dbgMaxGap = 0;
-      final starve = _dbgStarveCount;
-      final starveDelta = starve - _diagLastStarve;
-      _diagLastStarve = starve;
-
-      // 네이티브 통계는 안드로이드 패치본에만 있다(그 외 플랫폼은 빈 맵).
-      final native = kIsWeb
-          ? const <String, int>{}
-          : await FlutterPcmSound.getStats();
-      final underruns = native['underruns'] ?? -1;
-      final underrunDelta =
-          underruns >= 0 ? underruns - _diagLastUnderruns : -1;
-      if (underruns >= 0) _diagLastUnderruns = underruns;
-
-      // ignore: avoid_print — release 빌드에서 보여야 하는 임시 계측(위 주석 참고).
-      print('[DIAG] t=${t}s '
-          'dart=${_pcmQueuedBytes}B/${_pcmQueue.length}ch '
-          'native=${native['queued_bytes'] ?? -1}B/${native['chunks'] ?? -1}ch '
-          'underrun=+$underrunDelta/$underruns '
-          'gap=${gap}ms starve=+$starveDelta/$starve '
-          'env=${_envQueue.length} mic=$_micFramesSent '
-          'feeds=${native['total_feeds'] ?? -1}');
-    });
   }
 
   /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
@@ -1475,13 +1833,52 @@ class NormalCallController extends Notifier<CallState> {
     return best;
   }
 
+  /// Appends an inbound chunk, moving or growing the backing buffer only when it
+  /// genuinely cannot fit. Both paths are rare: the queue normally drains to
+  /// empty (see [_maybeCompact]) long before the write cursor reaches the end.
+  void _appendToQueue(Uint8List chunk) {
+    final live = _queueLen;
+    final needed = live + chunk.length;
+    if (needed > _pcmQueue.length) {
+      var capacity = _pcmQueue.length;
+      while (capacity < needed) {
+        capacity *= 2;
+      }
+      final grown = Uint8List(capacity);
+      grown.setRange(0, live, _pcmQueue, _pcmHead);
+      _pcmQueue = grown;
+      _pcmHead = 0;
+      _pcmTail = live;
+    } else if (_pcmTail + chunk.length > _pcmQueue.length) {
+      // Enough total room, just not at the end → slide the live window forward.
+      // `setRange` handles the self-overlapping copy correctly.
+      _pcmQueue.setRange(0, live, _pcmQueue, _pcmHead);
+      _pcmHead = 0;
+      _pcmTail = live;
+    }
+    _pcmQueue.setRange(_pcmTail, _pcmTail + chunk.length, chunk);
+    _pcmTail += chunk.length;
+  }
 
   // ── Half-duplex mic gating helpers ─────────────────────────────────────────
 
   /// Engages the mic gate for a new/ongoing beaver turn. Cancels any pending
   /// ungate (hangover/safety) since the beaver is speaking again.
+  /// Walks the adaptive cushion back down after a turn that played clean, so a
+  /// single bad stretch doesn't leave every later reply paying its latency.
+  /// Never goes below [_prebufferBytes].
+  void _decayCushion() {
+    if (_turnStarved) return; // this turn starved — don't undo the growth
+    if (_cushionBytes <= _prebufferBytes) return;
+    _cushionBytes -= _cushionDecayBytes;
+    if (_cushionBytes < _prebufferBytes) _cushionBytes = _prebufferBytes;
+  }
+
   void _gateMic() {
-    if (!_beaverSpeaking) _log('mic GATED — beaver speaking (your mic paused)');
+    if (!_beaverSpeaking) {
+      _log('mic GATED — beaver speaking (your mic paused)');
+      _turnStarved = false; // fresh turn: it hasn't starved yet
+    }
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _turnEnded = false;
@@ -1495,10 +1892,16 @@ class NormalCallController extends Notifier<CallState> {
   void _tryUngateMic() {
     if (!_beaverSpeaking) return;
     if (!_turnEnded) return;
-    if (_queueLen >= 2) return;
-    // Start (or restart) the hangover; if a new turn_start/audio arrives first,
-    // [_gateMic] cancels this timer and keeps the gate closed.
-    _micGateTimer?.cancel();
+    // ⚠ Dart 큐가 아니라 [_audioDrained]. 큐가 비어도 엔진에 최대 2.5초가 남아 있고,
+    //   그때 마이크를 열면 스피커에서 나오는 비버 목소리를 그대로 되먹는다.
+    if (!_audioDrained) return;
+    // Arm the hangover once. Restarting it on every call was a real bug: [_pump]
+    // calls this on every tick that finds the queue empty, so the countdown was
+    // reset before it could ever expire and the mic never opened by this path —
+    // it fell through to the slow `idle drained` safety net instead (measured 13
+    // of 22 openings). New audio still cancels it via [_gateMic], which is what
+    // the restart was there for.
+    if (_micGateTimer != null) return;
     _micGateTimer = Timer(_micHangover, () {
       _micGateTimer = null;
       _gateSafetyTimer?.cancel();
@@ -1506,6 +1909,7 @@ class NormalCallController extends Notifier<CallState> {
       _beaverSpeaking = false;
       avatarSpeaking.value = false;
       avatarLevel.value = 0.0;
+      _decayCushion();
       _log('mic OPEN — your turn (turn_end + drained)');
     });
   }
@@ -1521,12 +1925,13 @@ class NormalCallController extends Notifier<CallState> {
     if (_gateSafetyTimer != null) return; // already counting this empty period
     _gateSafetyTimer = Timer(_gateSafetyWindow, () {
       _gateSafetyTimer = null;
-      if (_beaverSpeaking && _queueLen < 2) {
+      if (_beaverSpeaking && _audioDrained) {
         _micGateTimer?.cancel();
         _micGateTimer = null;
         _beaverSpeaking = false;
         avatarSpeaking.value = false;
         avatarLevel.value = 0.0;
+        _decayCushion();
         _log('mic OPEN — your turn (idle drained)');
       }
     });
@@ -1649,12 +2054,18 @@ class NormalCallController extends Notifier<CallState> {
     _drainScheduled = true;
     // The queue may already be empty by now; start the stability check.
     _maybeFinishClosing();
-    // Fallback: finish after a short delay regardless (e.g. no trailing audio).
+    // Fallback: finish after a delay regardless (e.g. no trailing audio).
     // Stored + cancelled in [_teardown]/[_finishClosing] so a stray timer from a
     // finished call can't fire against a *later* call and end it early.
+    //
+    // ⚠ 3초였는데 **클라가 서버보다 조급했다.** 서버는 작별 오디오를 전부 흘려보낸
+    //   뒤에 call_ended 를 보내고, playback_done 을 PLAYBACK_DONE_WAIT_S = 7.0 초까지
+    //   기다린다(call_session.py). 즉 3초는 서버가 준 예산의 43% 만 쓰고 끊는 것이고,
+    //   엔진이 최대 2.5초를 물고 있는 지금은 그 차이가 그대로 인사 절단이 된다.
+    //   6초 = 서버 7초 안쪽에서 최대한 쓰는 값(넘기면 서버가 먼저 닫는다).
     _closingFallbackTimer?.cancel();
     _closingFallbackTimer = Timer(
-      const Duration(seconds: 3),
+      const Duration(seconds: 6),
       _forceFinishClosing,
     );
   }
@@ -1664,12 +2075,14 @@ class NormalCallController extends Notifier<CallState> {
   /// still-arriving closing line is never cut off.
   void _maybeFinishClosing() {
     if (!_drainScheduled) return;
-    if (_queueLen >= 2) return; // still real audio queued
+    // ⚠ 엔진 잔량까지 봐야 한다 — 여기서 조기 확정하면 _teardown 의 release() 가
+    //   엔진에 남은 작별 인사(최대 2.5초)를 통째로 버린다.
+    if (!_audioDrained) return; // still real audio queued/playing
     if (_closingStableTimer != null) return; // already waiting out the tail
     _closingStableTimer = Timer(_closingStableDelay, () {
       _closingStableTimer = null;
       if (!_drainScheduled) return;
-      if (_queueLen >= 2) return; // audio came back; a later drain retries
+      if (!_audioDrained) return; // audio came back; a later drain retries
       _forceFinishClosing();
     });
   }
@@ -1818,20 +2231,17 @@ class NormalCallController extends Notifier<CallState> {
     _envTimer?.cancel();
     _envTimer = null;
     _envQueue.clear();
-    // DIAG(audio-glitch): 통화 끝나면 마지막 한 줄로 총계를 남기고 멈춘다.
-    if (_diagTimer != null) {
-      _diagTimer!.cancel();
-      _diagTimer = null;
-      // ignore: avoid_print — release 빌드에서 보여야 하는 임시 계측.
-      print('[DIAG] end t=${_diagSeq * 5}s '
-          'starveTotal=$_dbgStarveCount underrunTotal=$_diagLastUnderruns '
-          'dartQueue=${_pcmQueuedBytes}B mic=$_micFramesSent');
-    }
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
     _closingFallbackTimer?.cancel();
     _closingFallbackTimer = null;
+    // Diagnostics are per-call: a stall left open here would otherwise be
+    // reported against the *next* call's anchor as an absurd gap.
+    _starveAtMs = null;
+    _lastChunkAtMs = null;
+    _logAnchorMs = null;
+    _audioTailUntilMs = 0;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
@@ -1882,6 +2292,9 @@ class NormalCallController extends Notifier<CallState> {
     // Stop native PCM playback: disable the feed callback first so no feed runs
     // against a released engine, then release and clear the queue.
     _pcmActive = false;
+    _stopPushFeed();
+    _stopEventLoopProbe();
+    _stopInflateLog();
     _prebufferFlushTimer?.cancel();
     _prebufferFlushTimer = null;
     _playing = false;
@@ -1903,9 +2316,9 @@ class NormalCallController extends Notifier<CallState> {
     }
     _pcmSetup = false;
     _feeding = false;
-    _pcmQueue.clear();
-    _pcmHeadOffset = 0;
-    _pcmQueuedBytes = 0;
+    _pcmQueue = Uint8List(_pcmQueueInitialBytes);
+    _pcmHead = 0;
+    _pcmTail = 0;
     _lastFeedSilent = null;
 
     // Close the socket.
