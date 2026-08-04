@@ -182,7 +182,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         ..showSnackBar(
           SnackBar(content: Text(AppLocalizations.of(context).callInfoNotFound)),
         );
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+      Navigator.of(context).popUntil((r) => r.isFirst);
       return;
     }
     Navigator.pushReplacementNamed(
@@ -212,8 +212,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        Navigator.pushNamedAndRemoveUntil(
-            context, Routes.home, (r) => r.isFirst);
+        Navigator.of(context).popUntil((r) => r.isFirst);
       },
       child: AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -304,11 +303,8 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                   type: BtnType.secondaryFill,
                   size: BtnSize.s60,
                   text: l10n.goHome,
-                  onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    Routes.home,
-                    (route) => route.isFirst,
-                  ),
+                  onPressed: () =>
+                      Navigator.of(context).popUntil((r) => r.isFirst),
                 ),
                 const SizedBox(height: AppSpacing.s16),
                 Button(

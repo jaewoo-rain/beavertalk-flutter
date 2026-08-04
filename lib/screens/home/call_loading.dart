@@ -111,7 +111,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     // 화면 전환 **전에** 부른다 — 전환 뒤에는 이 위젯이 dispose 되어 ref 를 쓸 수 없다.
     ref.read(normalCallControllerProvider.notifier).clearFinished();
     if (backgrounded) {
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+      Navigator.of(context).popUntil((r) => r.isFirst);
       return;
     }
     inApp();
@@ -141,7 +141,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(text)));
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
+      Navigator.of(context).popUntil((r) => r.isFirst);
     });
   }
 
@@ -153,8 +153,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
     _navigated = true;
     await ref.read(normalCallControllerProvider.notifier).hangUp();
     if (!mounted) return;
-    await _leave(() => Navigator.pushNamedAndRemoveUntil(
-        context, Routes.home, (r) => r.isFirst));
+    await _leave(() => Navigator.of(context).popUntil((r) => r.isFirst));
   }
 
   @override
