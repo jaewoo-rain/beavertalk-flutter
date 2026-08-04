@@ -26,15 +26,18 @@ import '../features/pronunciation_challenge/presentation/pronunciation_challenge
 import '../screens/home/learning_call_main.dart';
 import '../screens/home/learning_call_main_loading.dart';
 import '../screens/home/learning_sentence_main.dart';
-import '../screens/payment/payment.dart';
-import '../screens/payment/payment_complete.dart';
-import '../screens/payment/payment_failed.dart';
 import '../screens/payment/payment_history.dart';
 import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
 import '../screens/mypage/mypage.dart';
+import '../screens/mypage/edit_nickname.dart';
 import '../screens/mypage/settings.dart';
-import '../screens/mypage/subscription_info.dart';
+import '../screens/mypage/subscription_manage.dart';
+import '../screens/plans/paywall.dart';
+import '../screens/plans/plan_change.dart';
+import '../screens/plans/plans_compare.dart';
+import '../screens/plans/purchase_flow.dart';
+import '../features/subscription/domain/entities/subscription_state.dart';
 import '../screens/mypage/avatar.dart';
 import '../screens/mypage/share.dart';
 import '../screens/alarm/alarm_list.dart';
@@ -78,6 +81,10 @@ abstract final class Routes {
   /// Settings, split out of my page by the redesign (Figma
   /// `screen/main_mypage_settings`).
   static const mypageSettings = '/mypage/settings';
+
+  /// Nickname editor behind the Account card's Nickname row (Figma
+  /// `depth/edit_nickname_depth3`).
+  static const editNickname = '/mypage/settings/nickname';
   static const subscription = '/mypage/subscription';
   static const avatar = '/mypage/avatar';
   static const share = '/mypage/share';
@@ -92,10 +99,24 @@ abstract final class Routes {
   static const recordsArchive = '/records/archive';
   static const recordsEmpty = '/records/empty';
 
+  // ── Subscription redesign (P3) ──
+  static const plansCompare = '/plans/compare';
+  static const planChangeUpgrade = '/plans/change-upgrade';
+  static const planChangeDowngrade = '/plans/change-downgrade';
+  static const paywallPro = '/paywall/pro';
+  static const paywallProLimit = '/paywall/pro-limit';
+  static const paywallMax = '/paywall/max';
+  static const purchaseProcessing = '/purchase/processing';
+  static const purchaseSuccessPro = '/purchase/success-pro';
+  static const purchaseSuccessMax = '/purchase/success-max';
+  static const plansError = '/plans/error';
+  static const winbackSurvey = '/winback-survey';
+
   // ── Payment / permission / error ──
-  static const payment = '/payment';
-  static const paymentComplete = '/payment/complete';
-  static const paymentFailed = '/payment/failed';
+  //
+  // The in-house checkout trio (`/payment`, `/complete`, `/failed`) is gone —
+  // v2 §2-3: IAP is the only rail, the OS sheet is the checkout. History
+  // stays: it lists both product types (§6-5).
   static const paymentHistory = '/payment/history';
   static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
@@ -154,15 +175,31 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         const LearningCallMainLoadingScreen(),
     Routes.pronunciationChallenge: (_) =>
         const PronunciationChallengeScreen(),
-    Routes.payment: (_) => const PaymentScreen(),
-    Routes.paymentComplete: (_) => const PaymentCompleteScreen(),
-    Routes.paymentFailed: (_) => const PaymentFailedScreen(),
     Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
     Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
     Routes.mypageSettings: (_) => const MyPageSettingsScreen(),
-    Routes.subscription: (_) => const SubscriptionInfoScreen(),
+    Routes.editNickname: (_) => const EditNicknameScreen(),
+    Routes.subscription: (_) => const SubscriptionManageScreen(),
+    Routes.plansCompare: (_) => const PlansCompareScreen(),
+    Routes.paywallPro: (_) =>
+        const PaywallScreen(variant: PaywallVariant.pro),
+    Routes.paywallProLimit: (_) =>
+        const PaywallScreen(variant: PaywallVariant.proLimit),
+    Routes.paywallMax: (_) =>
+        const PaywallScreen(variant: PaywallVariant.max),
+    Routes.planChangeUpgrade: (_) =>
+        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
+    Routes.planChangeDowngrade: (_) =>
+        const PlanChangeScreen(direction: PlanChangeDirection.downgrade),
+    Routes.purchaseProcessing: (_) => const PurchaseProcessingScreen(),
+    Routes.purchaseSuccessPro: (_) =>
+        const PurchaseSuccessScreen(tier: SubscriptionTier.pro),
+    Routes.purchaseSuccessMax: (_) =>
+        const PurchaseSuccessScreen(tier: SubscriptionTier.max),
+    Routes.plansError: (_) => const PlansErrorScreen(),
+    Routes.winbackSurvey: (_) => const WinbackSurveyScreen(),
     Routes.avatar: (_) => const AvatarScreen(),
     Routes.share: (_) => const ShareScreen(),
     Routes.alarms: (_) => const AlarmListScreen(),
@@ -203,7 +240,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.mypage: '마이페이지',
     Routes.mypageSettings: '마이페이지 · 설정',
     Routes.alarms: '알림',
-    Routes.payment: '결제',
     Routes.paymentHistory: '결제 내역',
   };
 

@@ -2241,6 +2241,1620 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This item is now {price}. Would you like to continue?'**
   String priceChangedBody(String price);
+
+  /// Billing list group title - in-app rail rows (spec section 5). English copy is final; do not localize away from the confirmed wording.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan & purchases'**
+  String get billingGroupPlanPurchases;
+
+  /// Billing list group title - rows that leave the app for the store.
+  ///
+  /// In en, this message translates to:
+  /// **'In the store'**
+  String get billingGroupInTheStore;
+
+  /// Billing slot 1 label on a paid plan.
+  ///
+  /// In en, this message translates to:
+  /// **'Change plan'**
+  String get billingChangePlan;
+
+  /// Billing slot 1 label on every non-paid state.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare all plans'**
+  String get billingCompareAllPlans;
+
+  /// Billing slot 2 - character one-off purchase (in-house PG rail).
+  ///
+  /// In en, this message translates to:
+  /// **'Buy a character'**
+  String get billingBuyACharacter;
+
+  /// Billing slot 3.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore purchases'**
+  String get billingRestorePurchases;
+
+  /// Billing slot 4.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment history'**
+  String get billingPaymentHistory;
+
+  /// Billing slot 5 - deep link to the platform store. 'the store' is deliberately neutral; store names never appear in copy (work order section 1-3).
+  ///
+  /// In en, this message translates to:
+  /// **'Manage in the store'**
+  String get billingManageInTheStore;
+
+  /// Billing slot 6 - external, refunds are delegated to the store.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund help'**
+  String get billingRefundHelp;
+
+  /// Billing slot 7 in every state but ENDING.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel subscription'**
+  String get billingCancelSubscription;
+
+  /// Billing slot 7 on ENDING - the cancellation is reversible until expiry.
+  ///
+  /// In en, this message translates to:
+  /// **'Resubscribe'**
+  String get billingResubscribe;
+
+  /// Status pill - Free plan in force.
+  ///
+  /// In en, this message translates to:
+  /// **'Current'**
+  String get badgeCurrent;
+
+  /// Status pill - inside the Max trial. Not 'Renewing' (spec section 16-4 fixed that defect).
+  ///
+  /// In en, this message translates to:
+  /// **'Trial'**
+  String get badgeTrial;
+
+  /// Status pill - paid plan with auto-renew on.
+  ///
+  /// In en, this message translates to:
+  /// **'Renewing'**
+  String get badgeRenewing;
+
+  /// Status pill - renewal failed, store retrying (GRACE).
+  ///
+  /// In en, this message translates to:
+  /// **'Past due'**
+  String get badgePastDue;
+
+  /// Status pill - account hold (ON_HOLD).
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get badgePaused;
+
+  /// Status pill - cancelled, running out the paid term (ENDING).
+  ///
+  /// In en, this message translates to:
+  /// **'Canceling'**
+  String get badgeCanceling;
+
+  /// GNB title of every manage-state screen (measured off 4514:4739 etc).
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get subscriptionTitle;
+
+  /// GNB title of the trial-expired notice screen (4514:5179).
+  ///
+  /// In en, this message translates to:
+  /// **'Plans'**
+  String get plansTitle;
+
+  /// No description provided for @planFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Free'**
+  String get planFree;
+
+  /// No description provided for @planPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro'**
+  String get planPro;
+
+  /// No description provided for @planMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Max'**
+  String get planMax;
+
+  /// Plan-card title while inside the Max trial.
+  ///
+  /// In en, this message translates to:
+  /// **'Max trial'**
+  String get planMaxTrial;
+
+  /// Plan-card subtitle on the Free state. Confirmed copy; do not reword.
+  ///
+  /// In en, this message translates to:
+  /// **'\$0.00 — one call a day'**
+  String get freePlanPriceLine;
+
+  /// Plan-card subtitle for a monthly paid plan. 'per month' is mandated wording (spec 6-4 forbids 'a month').
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} per month'**
+  String pricePerMonthLine(String amount);
+
+  /// No description provided for @freeUntilDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Free until {date}'**
+  String freeUntilDate(String date);
+
+  /// No description provided for @todaysCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s calls'**
+  String get todaysCalls;
+
+  /// No description provided for @callsUsedOfLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {limit} used'**
+  String callsUsedOfLimit(int used, int limit);
+
+  /// No description provided for @firstPaymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'First payment'**
+  String get firstPaymentLabel;
+
+  /// No description provided for @nextPaymentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Next payment'**
+  String get nextPaymentLabel;
+
+  /// Grace plan-card row label. The date value is a server value (spec 11-3).
+  ///
+  /// In en, this message translates to:
+  /// **'Retrying until'**
+  String get retryingUntilLabel;
+
+  /// No description provided for @pausedSinceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused since'**
+  String get pausedSinceLabel;
+
+  /// Ending plan-card row label; design shows 'Pro ends'.
+  ///
+  /// In en, this message translates to:
+  /// **'{plan} ends'**
+  String planEndsLabel(String plan);
+
+  /// No description provided for @bannerGoUnlimitedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Go unlimited with Pro'**
+  String get bannerGoUnlimitedTitle;
+
+  /// No description provided for @bannerGoUnlimitedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited calls · 15 minutes each · \$12.90 per month'**
+  String get bannerGoUnlimitedSub;
+
+  /// No description provided for @bannerMaxUpsellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on video with Max'**
+  String get bannerMaxUpsellTitle;
+
+  /// No description provided for @bannerMaxUpsellSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Face-to-face calls · \$19.90 per month'**
+  String get bannerMaxUpsellSub;
+
+  /// No description provided for @bannerAnnualSwitchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to annual'**
+  String get bannerAnnualSwitchTitle;
+
+  /// No description provided for @bannerAnnualSwitchSub.
+  ///
+  /// In en, this message translates to:
+  /// **'\$159 per year · \$13.25 per month'**
+  String get bannerAnnualSwitchSub;
+
+  /// No description provided for @bannerPaymentFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t take the payment'**
+  String get bannerPaymentFailedTitle;
+
+  /// No description provided for @bannerPaymentFailedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Update payment in the store to keep Pro'**
+  String get bannerPaymentFailedSub;
+
+  /// No description provided for @bannerPausedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan is paused'**
+  String get bannerPausedTitle;
+
+  /// No description provided for @bannerPausedSub.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment never went through'**
+  String get bannerPausedSub;
+
+  /// No description provided for @noteRestoreHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Already subscribed on another device? Restore brings it back on this one.'**
+  String get noteRestoreHint;
+
+  /// No description provided for @noteStoreHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment method, plan changes, and cancellation are handled by the store.'**
+  String get noteStoreHandled;
+
+  /// No description provided for @noteFairUse.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited use is subject to our fair use policy.'**
+  String get noteFairUse;
+
+  /// No description provided for @noteTrialEnds.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trial ends {date}. Cancel in the store before then and nothing is charged.'**
+  String noteTrialEnds(String date);
+
+  /// No description provided for @noteGrace.
+  ///
+  /// In en, this message translates to:
+  /// **'Benefits keep running through the grace period. Cancellation is never intercepted in the app.'**
+  String get noteGrace;
+
+  /// No description provided for @noteHold.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro is paused until the payment goes through. Your characters and progress are safe.'**
+  String get noteHold;
+
+  /// No description provided for @noteEnding.
+  ///
+  /// In en, this message translates to:
+  /// **'Your plan is set to end. Benefits run until {date}, then you move to Free. You can resubscribe any time.'**
+  String noteEnding(String date);
+
+  /// No description provided for @trialExpiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Max trial ended'**
+  String get trialExpiredTitle;
+
+  /// No description provided for @trialExpiredSub.
+  ///
+  /// In en, this message translates to:
+  /// **'You are on Free now'**
+  String get trialExpiredSub;
+
+  /// No description provided for @seePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'See plans'**
+  String get seePlans;
+
+  /// GNB title of plans_compare (4514:5226).
+  ///
+  /// In en, this message translates to:
+  /// **'Current Plan'**
+  String get currentPlanTitle;
+
+  /// No description provided for @badgeRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get badgeRecommended;
+
+  /// No description provided for @perMonthUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'per month'**
+  String get perMonthUnit;
+
+  /// No description provided for @planTaglinePro.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited calls. 15 minutes each.'**
+  String get planTaglinePro;
+
+  /// No description provided for @planTaglineMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Now you can see them.'**
+  String get planTaglineMax;
+
+  /// No description provided for @planTaglineFree.
+  ///
+  /// In en, this message translates to:
+  /// **'One call a day. On the house.'**
+  String get planTaglineFree;
+
+  /// No description provided for @bulletProCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice calls, as often as you want'**
+  String get bulletProCalls;
+
+  /// No description provided for @bulletProLength.
+  ///
+  /// In en, this message translates to:
+  /// **'15 minutes a call'**
+  String get bulletProLength;
+
+  /// No description provided for @bulletProScoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation scored letter by letter'**
+  String get bulletProScoring;
+
+  /// No description provided for @bulletProCorrections.
+  ///
+  /// In en, this message translates to:
+  /// **'Corrections aimed at your native language'**
+  String get bulletProCorrections;
+
+  /// No description provided for @bulletProBeaverCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Beaver calls you first'**
+  String get bulletProBeaverCalls;
+
+  /// No description provided for @bulletMaxVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Face-to-face video calls'**
+  String get bulletMaxVideo;
+
+  /// No description provided for @bulletMaxEverything.
+  ///
+  /// In en, this message translates to:
+  /// **'Everything in Pro'**
+  String get bulletMaxEverything;
+
+  /// No description provided for @bulletMaxCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Every character, unlimited'**
+  String get bulletMaxCharacters;
+
+  /// No description provided for @bulletMaxStudyBook.
+  ///
+  /// In en, this message translates to:
+  /// **'A study book matched to where you are'**
+  String get bulletMaxStudyBook;
+
+  /// No description provided for @bulletMaxWeeklyReport.
+  ///
+  /// In en, this message translates to:
+  /// **'A weekly report on how your sound is changing'**
+  String get bulletMaxWeeklyReport;
+
+  /// No description provided for @bulletFreeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'One 5-minute voice call a day'**
+  String get bulletFreeCall;
+
+  /// No description provided for @bulletFreeCheck.
+  ///
+  /// In en, this message translates to:
+  /// **'One pronunciation check a day'**
+  String get bulletFreeCheck;
+
+  /// No description provided for @bulletFreeAccent.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited accent checks'**
+  String get bulletFreeAccent;
+
+  /// No description provided for @bulletFreeCharacter.
+  ///
+  /// In en, this message translates to:
+  /// **'One character to start'**
+  String get bulletFreeCharacter;
+
+  /// No description provided for @ctaGoUnlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Go unlimited'**
+  String get ctaGoUnlimited;
+
+  /// No description provided for @ctaTurnOnVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on video'**
+  String get ctaTurnOnVideo;
+
+  /// No description provided for @noteCallLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls are 15 minutes each.'**
+  String get noteCallLength;
+
+  /// No description provided for @paywallProTitle1.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Korean friend'**
+  String get paywallProTitle1;
+
+  /// No description provided for @paywallProTitle2.
+  ///
+  /// In en, this message translates to:
+  /// **'who\'s up at 3 a.m.'**
+  String get paywallProTitle2;
+
+  /// No description provided for @paywallProSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited calls. 15 minutes each. All year.'**
+  String get paywallProSub;
+
+  /// Hot-entry paywall headline - one line, no story (spec 8-1).
+  ///
+  /// In en, this message translates to:
+  /// **'Pro removes the limit.'**
+  String get paywallLimitHeadline;
+
+  /// No description provided for @limitBannerCallTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'That was today\'s call'**
+  String get limitBannerCallTitle;
+
+  /// No description provided for @limitBannerCallSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Free gives you one call a day'**
+  String get limitBannerCallSub;
+
+  /// No description provided for @limitBannerCheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'That was today\'s check'**
+  String get limitBannerCheckTitle;
+
+  /// No description provided for @limitBannerCheckSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Free gives you one check a day'**
+  String get limitBannerCheckSub;
+
+  /// No description provided for @bulletProCharactersForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters you buy stay yours forever'**
+  String get bulletProCharactersForever;
+
+  /// No description provided for @paywallMaxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Now you can see them.'**
+  String get paywallMaxTitle;
+
+  /// No description provided for @paywallMaxSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Video calls, every character, and a study book made for where you are.'**
+  String get paywallMaxSub;
+
+  /// No description provided for @planMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get planMonthly;
+
+  /// No description provided for @planAnnual.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual'**
+  String get planAnnual;
+
+  /// No description provided for @proMonthlyPriceLine.
+  ///
+  /// In en, this message translates to:
+  /// **'\$12.90 per month'**
+  String get proMonthlyPriceLine;
+
+  /// No description provided for @proAnnualPriceLine.
+  ///
+  /// In en, this message translates to:
+  /// **'\$100.00 · \$8.33 per month'**
+  String get proAnnualPriceLine;
+
+  /// No description provided for @maxMonthlyPriceLine.
+  ///
+  /// In en, this message translates to:
+  /// **'\$19.90 per month'**
+  String get maxMonthlyPriceLine;
+
+  /// No description provided for @maxAnnualPriceLine.
+  ///
+  /// In en, this message translates to:
+  /// **'\$159.00 per year · \$13.25 per month'**
+  String get maxAnnualPriceLine;
+
+  /// No description provided for @ctaCaptionPro.
+  ///
+  /// In en, this message translates to:
+  /// **'\$12.90 per month · cancel anytime in the store'**
+  String get ctaCaptionPro;
+
+  /// No description provided for @ctaCaptionMax.
+  ///
+  /// In en, this message translates to:
+  /// **'\$19.90 per month · cancel anytime in the store'**
+  String get ctaCaptionMax;
+
+  /// No description provided for @footerTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get footerTerms;
+
+  /// No description provided for @footerPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get footerPrivacy;
+
+  /// No description provided for @noteMaxCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.'**
+  String get noteMaxCharacters;
+
+  /// No description provided for @processingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirming your purchase'**
+  String get processingTitle;
+
+  /// No description provided for @processingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'This usually takes a few seconds.'**
+  String get processingSub;
+
+  /// No description provided for @successProTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on Pro.'**
+  String get successProTitle;
+
+  /// No description provided for @successProSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited calls, starting right now.'**
+  String get successProSub;
+
+  /// No description provided for @successProBenefit1.
+  ///
+  /// In en, this message translates to:
+  /// **'Call as often as you want — 15 minutes a call'**
+  String get successProBenefit1;
+
+  /// No description provided for @successProBenefit2.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pronunciation checks'**
+  String get successProBenefit2;
+
+  /// No description provided for @successProBenefit3.
+  ///
+  /// In en, this message translates to:
+  /// **'Every character, plus one-off purchases'**
+  String get successProBenefit3;
+
+  /// No description provided for @successMaxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You can see them now.'**
+  String get successMaxTitle;
+
+  /// No description provided for @successMaxSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Video calls are on. Tap the video button in any call.'**
+  String get successMaxSub;
+
+  /// No description provided for @successMaxBenefit1.
+  ///
+  /// In en, this message translates to:
+  /// **'Face-to-face video calls'**
+  String get successMaxBenefit1;
+
+  /// No description provided for @successMaxBenefit2.
+  ///
+  /// In en, this message translates to:
+  /// **'Every character, unlimited and new ones first'**
+  String get successMaxBenefit2;
+
+  /// No description provided for @successMaxBenefit3.
+  ///
+  /// In en, this message translates to:
+  /// **'A study book matched to where you are'**
+  String get successMaxBenefit3;
+
+  /// No description provided for @ctaStartACall.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a call'**
+  String get ctaStartACall;
+
+  /// No description provided for @ctaStartAVideoCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a video call'**
+  String get ctaStartAVideoCall;
+
+  /// No description provided for @ctaSeeYourSubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'See your subscription'**
+  String get ctaSeeYourSubscription;
+
+  /// No description provided for @successProCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'\$12.90 is charged monthly until you cancel. Manage or cancel anytime in the store.'**
+  String get successProCaption;
+
+  /// No description provided for @successMaxCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'\$19.90 is charged monthly until you cancel. Manage or cancel anytime in the store.'**
+  String get successMaxCaption;
+
+  /// No description provided for @plansErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t load the plans'**
+  String get plansErrorTitle;
+
+  /// No description provided for @plansErrorSub.
+  ///
+  /// In en, this message translates to:
+  /// **'The store didn\'t answer.'**
+  String get plansErrorSub;
+
+  /// No description provided for @ctaTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get ctaTryAgain;
+
+  /// No description provided for @plansErrorCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing was charged.'**
+  String get plansErrorCaption;
+
+  /// No description provided for @changePlanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Plan'**
+  String get changePlanTitle;
+
+  /// No description provided for @moveToMaxTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to Max'**
+  String get moveToMaxTitle;
+
+  /// No description provided for @maxPriceShort.
+  ///
+  /// In en, this message translates to:
+  /// **'\$19.90 / mo'**
+  String get maxPriceShort;
+
+  /// No description provided for @moveToMaxCardSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Face-to-face video calls · every character · a study book made for you'**
+  String get moveToMaxCardSub;
+
+  /// No description provided for @whatHappensNow.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens now'**
+  String get whatHappensNow;
+
+  /// No description provided for @maxStartsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max starts'**
+  String get maxStartsLabel;
+
+  /// No description provided for @immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Immediately'**
+  String get immediately;
+
+  /// No description provided for @unusedProTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Unused Pro time'**
+  String get unusedProTime;
+
+  /// No description provided for @creditedTowardMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Credited toward Max'**
+  String get creditedTowardMax;
+
+  /// No description provided for @nextPaymentMaxValue.
+  ///
+  /// In en, this message translates to:
+  /// **'\$19.90 · {date}'**
+  String nextPaymentMaxValue(String date);
+
+  /// No description provided for @nextPaymentProValue.
+  ///
+  /// In en, this message translates to:
+  /// **'\$12.90 · {date}'**
+  String nextPaymentProValue(String date);
+
+  /// No description provided for @ctaSwitchToMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Max'**
+  String get ctaSwitchToMax;
+
+  /// No description provided for @upgradeCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Your new plan starts right away. Unused Pro time is credited, never charged twice.'**
+  String get upgradeCaption;
+
+  /// No description provided for @moveToProTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move to Pro'**
+  String get moveToProTitle;
+
+  /// No description provided for @moveToProSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing changes today. Max runs to the end of the month you already paid for.'**
+  String get moveToProSub;
+
+  /// No description provided for @maxRunsUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Max runs until'**
+  String get maxRunsUntil;
+
+  /// No description provided for @proStarts.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro starts'**
+  String get proStarts;
+
+  /// No description provided for @whatYouKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'What you keep'**
+  String get whatYouKeep;
+
+  /// No description provided for @keepBenefitCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited voice calls, 15 minutes each'**
+  String get keepBenefitCalls;
+
+  /// No description provided for @keepBenefitCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters you bought stay yours forever'**
+  String get keepBenefitCharacters;
+
+  /// No description provided for @downgradeWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Video calls and Max-only characters turn off on {date}.'**
+  String downgradeWarning(String date);
+
+  /// No description provided for @ctaSwitchToPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Pro'**
+  String get ctaSwitchToPro;
+
+  /// No description provided for @ctaKeepMax.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Max'**
+  String get ctaKeepMax;
+
+  /// No description provided for @winbackSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get winbackSkip;
+
+  /// No description provided for @winbackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Pro plan ended'**
+  String get winbackTitle;
+
+  /// No description provided for @winbackSub.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on Free now — one call a day.'**
+  String get winbackSub;
+
+  /// No description provided for @winbackQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Mind telling us why you left?'**
+  String get winbackQuestion;
+
+  /// No description provided for @winbackReasonExpensive.
+  ///
+  /// In en, this message translates to:
+  /// **'Too expensive'**
+  String get winbackReasonExpensive;
+
+  /// No description provided for @winbackReasonUnused.
+  ///
+  /// In en, this message translates to:
+  /// **'I wasn\'t using it enough'**
+  String get winbackReasonUnused;
+
+  /// No description provided for @winbackReasonMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing a feature I needed'**
+  String get winbackReasonMissing;
+
+  /// No description provided for @winbackReasonOtherApp.
+  ///
+  /// In en, this message translates to:
+  /// **'I found another app'**
+  String get winbackReasonOtherApp;
+
+  /// No description provided for @winbackReasonElse.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get winbackReasonElse;
+
+  /// No description provided for @ctaSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get ctaSend;
+
+  /// No description provided for @ctaNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get ctaNotNow;
+
+  /// No description provided for @winbackCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'This doesn\'t restore your plan. Resubscribe in the store.'**
+  String get winbackCaption;
+
+  /// No description provided for @ctaContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get ctaContinue;
+
+  /// No description provided for @ctaClose.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get ctaClose;
+
+  /// No description provided for @ovRestoreSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro is back'**
+  String get ovRestoreSuccessTitle;
+
+  /// No description provided for @ovRestoreSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We found your subscription and turned it back on for this device.'**
+  String get ovRestoreSuccessBody;
+
+  /// No description provided for @ovRestoreEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to restore'**
+  String get ovRestoreEmptyTitle;
+
+  /// No description provided for @ovRestoreEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No active subscription is linked to this store account.'**
+  String get ovRestoreEmptyBody;
+
+  /// No description provided for @ovRestoreOtherTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'That plan belongs to another account'**
+  String get ovRestoreOtherTitle;
+
+  /// No description provided for @ovRestoreOtherBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This subscription is already active on a different BeaverTalk account.'**
+  String get ovRestoreOtherBody;
+
+  /// No description provided for @ctaSignInThatAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to that account'**
+  String get ctaSignInThatAccount;
+
+  /// No description provided for @ctaGetHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Get help'**
+  String get ctaGetHelp;
+
+  /// No description provided for @ovCharacterOfferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not ready for Pro?'**
+  String get ovCharacterOfferTitle;
+
+  /// No description provided for @ovCharacterOfferBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick one character and keep them. A one-off purchase — no subscription, no renewal.'**
+  String get ovCharacterOfferBody;
+
+  /// No description provided for @rowOneCharacter.
+  ///
+  /// In en, this message translates to:
+  /// **'One character'**
+  String get rowOneCharacter;
+
+  /// No description provided for @rowFromPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'from \$5.00'**
+  String get rowFromPrice;
+
+  /// No description provided for @rowYoursForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Yours forever'**
+  String get rowYoursForever;
+
+  /// No description provided for @rowNoRenewal.
+  ///
+  /// In en, this message translates to:
+  /// **'No renewal'**
+  String get rowNoRenewal;
+
+  /// No description provided for @rowWorksOnFree.
+  ///
+  /// In en, this message translates to:
+  /// **'Works on Free'**
+  String get rowWorksOnFree;
+
+  /// No description provided for @rowYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes'**
+  String get rowYes;
+
+  /// No description provided for @ctaSeeCharacters.
+  ///
+  /// In en, this message translates to:
+  /// **'See characters'**
+  String get ctaSeeCharacters;
+
+  /// No description provided for @ovNotEligibleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing to cancel'**
+  String get ovNotEligibleTitle;
+
+  /// No description provided for @ovNotEligibleBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re on Free. There is no active subscription on this account.'**
+  String get ovNotEligibleBody;
+
+  /// No description provided for @ovCancelDownsellTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Before you go'**
+  String get ovCancelDownsellTitle;
+
+  /// No description provided for @ovCancelDownsellBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceling happens in the store. Two things worth knowing.'**
+  String get ovCancelDownsellBody;
+
+  /// No description provided for @rowPayYearlyInstead.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay yearly instead'**
+  String get rowPayYearlyInstead;
+
+  /// No description provided for @rowYearlyMonthEquiv.
+  ///
+  /// In en, this message translates to:
+  /// **'\$8.33 per month'**
+  String get rowYearlyMonthEquiv;
+
+  /// No description provided for @rowCharactersYouBought.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters you bought'**
+  String get rowCharactersYouBought;
+
+  /// No description provided for @rowProRunsUntil.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro runs until'**
+  String get rowProRunsUntil;
+
+  /// No description provided for @ctaSwitchToYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to yearly'**
+  String get ctaSwitchToYearly;
+
+  /// No description provided for @ctaContinueToStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue to the store'**
+  String get ctaContinueToStore;
+
+  /// No description provided for @ovAnnualSwitchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay yearly, save \$54.80'**
+  String get ovAnnualSwitchTitle;
+
+  /// No description provided for @ovAnnualSwitchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve been on Pro for two months. The yearly plan works out cheaper.'**
+  String get ovAnnualSwitchBody;
+
+  /// No description provided for @rowYouSave.
+  ///
+  /// In en, this message translates to:
+  /// **'You save'**
+  String get rowYouSave;
+
+  /// No description provided for @amountSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'\$54.80'**
+  String get amountSaved;
+
+  /// No description provided for @rowYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get rowYearly;
+
+  /// No description provided for @amountYearly.
+  ///
+  /// In en, this message translates to:
+  /// **'\$100.00'**
+  String get amountYearly;
+
+  /// No description provided for @rowMonthlyForYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly, for a year'**
+  String get rowMonthlyForYear;
+
+  /// No description provided for @amountMonthlyForYear.
+  ///
+  /// In en, this message translates to:
+  /// **'\$154.80'**
+  String get amountMonthlyForYear;
+
+  /// No description provided for @ovMonthlySwitchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to monthly'**
+  String get ovMonthlySwitchTitle;
+
+  /// No description provided for @ovMonthlySwitchBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your yearly plan runs until {date}. Monthly billing starts the day after.'**
+  String ovMonthlySwitchBody(String date);
+
+  /// No description provided for @rowMonthlyBillingStarts.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly billing starts'**
+  String get rowMonthlyBillingStarts;
+
+  /// No description provided for @rowMonthlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get rowMonthlyLabel;
+
+  /// No description provided for @rowYearlyWorkedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly worked out at'**
+  String get rowYearlyWorkedOut;
+
+  /// No description provided for @ctaSwitchToMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to monthly'**
+  String get ctaSwitchToMonthly;
+
+  /// No description provided for @ovRefundHelpTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunds are handled by the store'**
+  String get ovRefundHelpTitle;
+
+  /// No description provided for @ovRefundHelpBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We cannot issue refunds ourselves. Every request is reviewed by the store.'**
+  String get ovRefundHelpBody;
+
+  /// No description provided for @ctaGoToStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to the store'**
+  String get ctaGoToStore;
+
+  /// No description provided for @ovTrialEndingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your trial ends tomorrow'**
+  String get ovTrialEndingTitle;
+
+  /// No description provided for @ovTrialEndingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Max keeps running unless you cancel. Here is what happens.'**
+  String get ovTrialEndingBody;
+
+  /// No description provided for @rowTrialEnds.
+  ///
+  /// In en, this message translates to:
+  /// **'Trial ends'**
+  String get rowTrialEnds;
+
+  /// No description provided for @rowFirstCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'First charge'**
+  String get rowFirstCharge;
+
+  /// No description provided for @rowThenMonthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Then monthly'**
+  String get rowThenMonthly;
+
+  /// No description provided for @ctaCancelInStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel in the store'**
+  String get ctaCancelInStore;
+
+  /// No description provided for @ovTrialStartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days of Max, free'**
+  String get ovTrialStartTitle;
+
+  /// No description provided for @ovTrialStartBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Free until {date}. Then \$19.90 per month, unless you cancel in the store.'**
+  String ovTrialStartBody(String date);
+
+  /// No description provided for @ctaStart7Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Start 7 days free'**
+  String get ctaStart7Days;
+
+  /// No description provided for @ovOtoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'One more thing before you start'**
+  String get ovOtoTitle;
+
+  /// No description provided for @ovOtoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.'**
+  String get ovOtoBody;
+
+  /// No description provided for @ovFailedDeclinedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your card was declined'**
+  String get ovFailedDeclinedTitle;
+
+  /// No description provided for @ovFailedDeclinedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The store couldn\'t take the payment. Nothing was charged.'**
+  String get ovFailedDeclinedBody;
+
+  /// No description provided for @ctaUpdatePaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Update payment method'**
+  String get ctaUpdatePaymentMethod;
+
+  /// No description provided for @ovFailedCanceledTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment canceled'**
+  String get ovFailedCanceledTitle;
+
+  /// No description provided for @ovFailedCanceledBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re still on Free. Nothing was charged.'**
+  String get ovFailedCanceledBody;
+
+  /// No description provided for @ovFailedStoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong'**
+  String get ovFailedStoreTitle;
+
+  /// No description provided for @ovFailedStoreBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t reach the store. Nothing was charged.'**
+  String get ovFailedStoreBody;
+
+  /// No description provided for @ovAlreadyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already on Pro'**
+  String get ovAlreadyTitle;
+
+  /// No description provided for @ovAlreadyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This store account has an active plan. There\'s nothing to buy.'**
+  String get ovAlreadyBody;
+
+  /// No description provided for @ctaSeeMySubscription.
+  ///
+  /// In en, this message translates to:
+  /// **'See my subscription'**
+  String get ctaSeeMySubscription;
+
+  /// No description provided for @subCancelTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel subscription'**
+  String get subCancelTitle;
+
+  /// No description provided for @subCancelBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro runs until {date}. After that you move to Free.'**
+  String subCancelBody(String date);
+
+  /// No description provided for @subWhatYouLose.
+  ///
+  /// In en, this message translates to:
+  /// **'What you lose'**
+  String get subWhatYouLose;
+
+  /// No description provided for @benefitCalls15.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited calls, 15 minutes each'**
+  String get benefitCalls15;
+
+  /// No description provided for @benefitScoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation scored letter by letter'**
+  String get benefitScoring;
+
+  /// No description provided for @benefitEveryCharacter.
+  ///
+  /// In en, this message translates to:
+  /// **'Every character, unlimited'**
+  String get benefitEveryCharacter;
+
+  /// No description provided for @ctaKeepPro.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep Pro'**
+  String get ctaKeepPro;
+
+  /// No description provided for @subPaymentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update payment'**
+  String get subPaymentTitle;
+
+  /// No description provided for @subPaymentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We could not take the payment. Pro keeps running during the grace period.'**
+  String get subPaymentBody;
+
+  /// No description provided for @subHowToFix.
+  ///
+  /// In en, this message translates to:
+  /// **'How to fix it'**
+  String get subHowToFix;
+
+  /// No description provided for @fixStep1.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the store and update your payment method'**
+  String get fixStep1;
+
+  /// No description provided for @fixStep2.
+  ///
+  /// In en, this message translates to:
+  /// **'Come back — your plan resumes automatically'**
+  String get fixStep2;
+
+  /// No description provided for @fixStep3.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing is charged twice'**
+  String get fixStep3;
+
+  /// No description provided for @subResubTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Resubscribe'**
+  String get subResubTitle;
+
+  /// No description provided for @subResubBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pro ends on {date}. Turn auto-renew back on and nothing changes.'**
+  String subResubBody(String date);
+
+  /// No description provided for @subWhatYouKeep.
+  ///
+  /// In en, this message translates to:
+  /// **'What you keep'**
+  String get subWhatYouKeep;
+
+  /// No description provided for @ctaTurnItBackOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn it back on'**
+  String get ctaTurnItBackOn;
+
+  /// free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa).
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s today\'s call'**
+  String get flTodayTitle;
+
+  /// No description provided for @flTodayBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick up where you left off — right now.'**
+  String get flTodayBody;
+
+  /// No description provided for @flCheckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'That\'s today\'s check'**
+  String get flCheckTitle;
+
+  /// No description provided for @flCheckBody.
+  ///
+  /// In en, this message translates to:
+  /// **'One check a day on Free. Pro makes it unlimited.'**
+  String get flCheckBody;
+
+  /// No description provided for @flBenefitCalls.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited calls with Pro · 15 minutes each'**
+  String get flBenefitCalls;
+
+  /// No description provided for @flBenefitChecks.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited pronunciation checks with Pro'**
+  String get flBenefitChecks;
+
+  /// No description provided for @flCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'\$12.90 per month · cancel anytime'**
+  String get flCaption;
+
+  /// No description provided for @flUsage.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {limit} used'**
+  String flUsage(String used, String limit);
+
+  /// No description provided for @ctaMaybeTomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe tomorrow'**
+  String get ctaMaybeTomorrow;
+
+  /// No description provided for @accountSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get accountSection;
+
+  /// No description provided for @nicknameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Nickname'**
+  String get nicknameLabel;
+
+  /// No description provided for @emailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get emailLabel;
+
+  /// No description provided for @loginMethodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Login Method'**
+  String get loginMethodLabel;
+
+  /// No description provided for @joinedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get joinedLabel;
+
+  /// No description provided for @editNicknameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Nickname'**
+  String get editNicknameTitle;
+
+  /// No description provided for @nicknameRule.
+  ///
+  /// In en, this message translates to:
+  /// **'2–12 characters. Letters and numbers. English Only'**
+  String get nicknameRule;
+
+  /// No description provided for @ctaSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get ctaSave;
+
+  /// No description provided for @subscriptionRow.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription'**
+  String get subscriptionRow;
+
+  /// Character IAP result sheet (4713:28243). Korean is the confirmed original; this is its translation.
+  ///
+  /// In en, this message translates to:
+  /// **'Purchase complete'**
+  String get iapSuccessTitle;
+
+  /// No description provided for @iapSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The {name} avatar is yours forever.\nApplied as soon as the receipt clears.'**
+  String iapSuccessBody(String name);
+
+  /// No description provided for @ctaGoHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get ctaGoHome;
+
+  /// No description provided for @ctaUseNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Use it now'**
+  String get ctaUseNow;
+
+  /// No description provided for @iapFailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The payment didn\'t go through'**
+  String get iapFailTitle;
+
+  /// No description provided for @iapFailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can try again'**
+  String get iapFailBody;
+
+  /// No description provided for @paywallLeaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave now, you won\'t be subscribed'**
+  String get paywallLeaveTitle;
+
+  /// No description provided for @paywallLeaveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your benefits unlock right after checkout. You can come back anytime from My Page.'**
+  String get paywallLeaveBody;
+
+  /// No description provided for @ctaKeepLooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep looking'**
+  String get ctaKeepLooking;
+
+  /// No description provided for @ctaLeaveAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave anyway'**
+  String get ctaLeaveAnyway;
+
+  /// No description provided for @iapCharacterSuccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A new friend joins you!'**
+  String get iapCharacterSuccessTitle;
+
+  /// No description provided for @iapCharacterSuccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This character is yours forever - it stays even if your plan changes, and Restore purchases brings it back on any device.'**
+  String get iapCharacterSuccessBody;
+
+  /// No description provided for @iapCharacterFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase didn\'t go through. Nothing was charged - please try again.'**
+  String get iapCharacterFailedBody;
 }
 
 class _AppLocalizationsDelegate

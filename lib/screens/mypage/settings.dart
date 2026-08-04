@@ -1,22 +1,25 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_line.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
-import '../../components/organisms/bottom_sheet_subscription.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
-import '../../core/format/money.dart';
+import '../../core/format/dates.dart';
 import '../../core/i18n/locale_controller.dart';
+import '../../features/auth/domain/entities/member.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
-import '../../features/subscription/presentation/providers/subscription_providers.dart';
+import '../../features/subscription/domain/entities/subscription_state.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
@@ -81,145 +84,12 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       .firstWhere((l) => l.id == code, orElse: () => _learningLanguages.first)
       .name;
 
-  /// Formats a date the way the sheets show it: `2026.06.20.`
-  String _dateLabel(DateTime d) =>
-      '${d.year}.${d.month.toString().padLeft(2, '0')}.${d.day.toString().padLeft(2, '0')}.';
-
-  /// Formats USD cents as "$10" (shared with the avatar and checkout screens).
-  String _money(int minor) =>
-      formatUsd(minor, locale: Localizations.localeOf(context).toString());
-
-  /// Opens the subscription sheet as a real bottom sheet over the screen.
-  ///
-  /// The three types are one flow, matching the Figma frames:
-  /// manage (`3360:20267`) → 요금제 변경 → change-plan (`3360:20312`) →
-  /// 구독 취소 → cancel (`3360:20357`). The sheet rebuilds in place via
-  /// [StatefulBuilder] rather than stacking routes.
-  ///
-  /// Price and dates come from `GET /subscriptions` via
-  /// [currentSubscriptionProvider]; 구독 취소 calls
-  /// `POST /subscriptions/{id}/cancel`.
-  Future<void> _openSubscriptionSheet(AppLocalizations l10n) {
-    var type = SubscriptionSheetType.manage;
-    return showModalBottomSheet<void>(
-      context: context,
-      // The sheet paints its own surface + rounded top; the route must not add
-      // a Material behind it.
-      backgroundColor: Colors.transparent,
-      // Flutter defaults the barrier to black @ 54%; pin it to the app scrim.
-      barrierColor: context.c.materialDim,
-      // The sheets are tall — without this their footer buttons fall off.
-      isScrollControlled: true,
-      builder: (sheetCtx) => Consumer(
-        builder: (sheetCtx, ref, _) => StatefulBuilder(
-          builder: (sheetCtx, setSheetState) {
-            void show(SubscriptionSheetType next) =>
-                setSheetState(() => type = next);
-            final sub = ref.watch(currentSubscriptionProvider);
-            final end = sub?.endDate;
-            // With no end_date the subscription is open-ended and the sentence
-            // has nothing to say, so it is dropped rather than invented.
-            final note = end == null
-                ? null
-                : l10n.subscriptionSwitchNote(_dateLabel(end));
-            final price = sub?.price;
-            return BottomSheetSubscription(
-              type: type,
-              plan: SubscriptionPlanInfo(
-                name: l10n.proMembership,
-                priceLine: price == null ? l10n.pricePerMonth : _money(price),
-                nextBillingDate: end == null ? null : _dateLabel(end),
-              ),
-              benefits: [
-                SubscriptionBenefit(l10n.benefitUnlimitedCalls),
-                SubscriptionBenefit(l10n.benefitDetailedAnalysis),
-                SubscriptionBenefit(l10n.benefitAllCharacters),
-                SubscriptionBenefit(l10n.benefitNoAds),
-              ],
-              // 최근 결제 is the subscription's start date. 결제 수단 has no
-              // server source, so that row is omitted rather than faked.
-              paymentRows: [
-                if (sub?.startDate != null)
-                  (label: l10n.lastPayment, value: _dateLabel(sub!.startDate!)),
-              ],
-              note: note,
-              planOptions: [
-                SubscriptionPlanOption(
-                  name: 'Free',
-                  benefits: [
-                    SubscriptionBenefit(l10n.freePlanCallLimit),
-                    SubscriptionBenefit(l10n.freePlanBasicCharacters),
-                  ],
-                ),
-                SubscriptionPlanOption(
-                  name: 'Pro',
-                  priceLine: l10n.pricePerMonth,
-                  highlighted: true,
-                  active: true,
-                  benefits: [
-                    SubscriptionBenefit(l10n.benefitUnlimitedCalls),
-                    SubscriptionBenefit(l10n.benefitDetailedAnalysis),
-                    SubscriptionBenefit(l10n.benefitAllCharacters),
-                    SubscriptionBenefit(l10n.benefitNoAds),
-                  ],
-                ),
-              ],
-              lostBenefits: [
-                SubscriptionBenefit(l10n.benefitUnlimitedCalls),
-                SubscriptionBenefit(l10n.benefitDetailedAnalysis),
-                SubscriptionBenefit(l10n.benefitAllCharacters),
-              ],
-              onPrimary: switch (type) {
-                SubscriptionSheetType.manage => () =>
-                    show(SubscriptionSheetType.changePlan),
-                SubscriptionSheetType.changePlan => () =>
-                    show(SubscriptionSheetType.cancel),
-                // Disabled when there is nothing active to cancel.
-                SubscriptionSheetType.cancel => sub == null
-                    ? null
-                    : () => _cancelSubscription(sheetCtx, sub.id),
-              },
-              onSecondary: switch (type) {
-                // Close the sheet first, then push from the screen's own
-                // context (sheetCtx dies on pop).
-                SubscriptionSheetType.manage => () {
-                    Navigator.pop(sheetCtx);
-                    Navigator.pushNamed(context, Routes.paymentHistory);
-                  },
-                SubscriptionSheetType.changePlan => () =>
-                    show(SubscriptionSheetType.manage),
-                SubscriptionSheetType.cancel => null,
-              },
-              onClose: () => Navigator.pop(sheetCtx),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  /// Cancels [subscribeId] (`POST /subscriptions/{id}/cancel`), closes the sheet
-  /// and refreshes the subscription list.
-  Future<void> _cancelSubscription(
-      BuildContext sheetCtx, int subscribeId) async {
-    try {
-      await ref.read(subscriptionRepositoryProvider).cancel(subscribeId);
-      // The cancel is a soft flag server-side, so the list is invalidated
-      // rather than mutated locally.
-      ref.invalidate(subscriptionsProvider);
-      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
-    } catch (e) {
-      if (sheetCtx.mounted) Navigator.pop(sheetCtx);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e is AppException
-              ? e.message
-              : AppLocalizations.of(context).somethingWentWrong),
-        ),
-      );
-    }
-  }
+  // The legacy modal subscription sheet (manage → change-plan → cancel, the
+  // old Figma `3360:20267…` flow) lived here until the P2 redesign. The row
+  // now navigates to `Routes.subscription` — the state-driven manage screen —
+  // and cancellation moves to the store per work order v2. The legacy
+  // `BottomSheetSubscription` organism was deleted once its last (gallery)
+  // usage went.
 
   /// Opens the language sheet for the **user (UI) language**, seeded with
   /// [currentId]; on confirm stores the pick locally and persists it
@@ -367,6 +237,14 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
               padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
                   AppSpacing.s20, AppSpacing.s24),
               children: [
+                // Account — Figma `section/Account` (4514:4691), all four
+                // rows: Nickname (chevron → editor), Email, Login Method
+                // badge, Joined.
+                _section(l10n.accountSection),
+                const SizedBox(height: AppSpacing.s16),
+                _group(_accountRows(l10n, member)),
+                const SizedBox(height: AppSpacing.s24),
+
                 _section(l10n.settingsSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
@@ -397,8 +275,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                 _section(l10n.paymentSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow(l10n.currentPlan, 'Pro',
-                      onTap: () => _openSubscriptionSheet(l10n)),
+                  _navRow(l10n.currentPlan, _planLabel(l10n),
+                      // P2 redesign: the manage screen replaced the legacy
+                      // modal sheet as the subscription entry point.
+                      onTap: () =>
+                          Navigator.pushNamed(context, Routes.subscription)),
                   _navRow(l10n.paymentHistory, '',
                       route: Routes.paymentHistory, divider: false),
                 ]),
@@ -442,6 +323,124 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// The Current-plan value, derived from the resolved status — never
+  /// hardcoded. This is where "bought Max, still says Pro" showed up: the row
+  /// used to carry a literal `'Pro'`.
+  String _planLabel(AppLocalizations l10n) {
+    final status = ref.watch(subscriptionStatusProvider);
+    if (!status.grantsPaidAccess) return l10n.planFree;
+    return status.tier == SubscriptionTier.max ? l10n.planMax : l10n.planPro;
+  }
+
+  /// The Account card's rows, in Figma order, with the divider rule the
+  /// design uses: **between rows only — the last one has none.**
+  ///
+  /// Rows are built as a list first so that rule survives a row dropping out.
+  /// It did drop out: with Login Method and Joined both missing, Email became
+  /// the last row and kept a dangling stroke under it.
+  List<Widget> _accountRows(AppLocalizations l10n, Member? member) {
+    // The sign-in provider is a Supabase fact, not a server column — the API's
+    // `MemberRead` has no `login_method`, which is why this row never showed.
+    final provider = ref.watch(signInProviderProvider);
+    final joined = member?.createdAt;
+
+    final rows = <Widget Function(bool last)>[
+      (last) => _navRow(
+            l10n.nicknameLabel,
+            member?.name ?? '',
+            route: Routes.editNickname,
+            divider: !last,
+          ),
+      (last) => _infoRow(l10n.fieldEmailLabel, member?.email ?? '—',
+          divider: !last),
+      if (provider != null && provider.isNotEmpty)
+        (last) => _loginMethodRow(l10n, provider, divider: !last),
+      if (joined != null)
+        (last) => _infoRow(l10n.joinedLabel, localizedFullDate(context, joined),
+            divider: !last),
+    ];
+    return [
+      for (var i = 0; i < rows.length; i++) rows[i](i == rows.length - 1),
+    ];
+  }
+
+  /// A read-only label/value row — the Account card's Email row has no
+  /// chevron, which [CardLine] always draws, hence this local twin with the
+  /// same metrics (56 row, 12/8 padding, 0.5 divider).
+  Widget _infoRow(String label, String value, {bool divider = true}) =>
+      Container(
+        height: 56,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: divider
+            ? BoxDecoration(
+                border: Border(
+                    bottom: BorderSide(
+                        color: context.c.lineAlternative, width: 0.5)))
+            : null,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // 2:3, not 1:1 — an even split truncated `device2026@te…` while
+            // the short label sat on dead space. Both stay flexible so a long
+            // label (es `Fecha de registro`) shrinks instead of overflowing;
+            // an unbounded label is what blew the 320px sweep open.
+            Flexible(
+              flex: 2,
+              child: Text(label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      AppType.body1.r.copyWith(color: context.c.labelStrong)),
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              flex: 3,
+              child: Text(value,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style:
+                      AppType.body1.r.copyWith(color: context.c.labelNormal)),
+            ),
+          ],
+        ),
+      );
+
+  /// Login-method row — label + positive Badge, per the Account card design.
+  Widget _loginMethodRow(AppLocalizations l10n, String method,
+      {bool divider = true}) {
+    final label = switch (method.toLowerCase()) {
+      'google' => 'Google',
+      'kakao' => 'Kakao',
+      'apple' => 'Apple',
+      'email' => l10n.fieldEmailLabel,
+      _ => method,
+    };
+    return Container(
+      height: 56,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: divider
+          ? BoxDecoration(
+              border: Border(
+                  bottom: BorderSide(
+                      color: context.c.lineAlternative, width: 0.5)))
+          : null,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Flexible(
+            child: Text(l10n.loginMethodLabel,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.body1.r.copyWith(color: context.c.labelStrong)),
+          ),
+          const SizedBox(width: 8),
+          Badge(tone: BadgeTone.positive, label: label),
         ],
       ),
     );

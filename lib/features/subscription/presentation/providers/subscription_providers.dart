@@ -27,16 +27,10 @@ final subscriptionsProvider =
   return ref.watch(subscriptionRepositoryProvider).listSubscriptions();
 });
 
-/// The subscription to treat as current, or null when none is active.
-///
-/// The server has no "active subscription" endpoint and nothing prevents
-/// several concurrently-active rows (`start` never checks for an existing one),
-/// so this takes the newest active row rather than assuming uniqueness. Expiry
-/// is evaluated client-side — see [Subscription.isCurrentlyActive].
-final currentSubscriptionProvider = Provider.autoDispose<Subscription?>((ref) {
-  final subs = ref.watch(subscriptionsProvider).valueOrNull ?? const [];
-  for (final s in subs) {
-    if (s.isCurrentlyActive) return s;
-  }
-  return null;
-});
+// `currentSubscriptionProvider` now lives in `subscription_state_providers.dart`.
+//
+// What counts as "active" is decided in exactly one place —
+// `SubscriptionStatusResolver` — because 42 subscription screens are about to
+// read it, and each one keeping its own expiry check is how they drift apart
+// (work order §4-1-2). Importing it back here would make the two provider files
+// circular, so the status file owns it and this one stays plumbing.

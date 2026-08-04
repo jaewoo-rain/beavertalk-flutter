@@ -14,6 +14,7 @@ class MemberDto {
     this.characterId,
     this.onboardingCompleted = false,
     this.reasons,
+    this.createdAt,
   });
 
   final int memberId;
@@ -27,6 +28,9 @@ class MemberDto {
   final int? characterId;
   final bool onboardingCompleted;
   final List<String>? reasons;
+
+  /// `MemberRead.created_at` — present since the endpoint shipped.
+  final DateTime? createdAt;
 
   factory MemberDto.fromJson(Map<String, dynamic> json) {
     final rawReasons = json['reasons'];
@@ -44,6 +48,8 @@ class MemberDto {
       reasons: rawReasons is List
           ? rawReasons.map((e) => e.toString()).toList()
           : null,
+      createdAt: DateTime.tryParse(json['created_at'] as String? ?? '')
+          ?.toLocal(),
     );
   }
 
@@ -60,5 +66,6 @@ class MemberDto {
         characterId: characterId,
         onboardingCompleted: onboardingCompleted,
         reasons: reasons,
+        createdAt: createdAt,
       );
 }

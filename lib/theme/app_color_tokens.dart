@@ -26,6 +26,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.primaryStrong,
     required this.primaryHeavy,
     required this.primaryNormal24,
+    required this.primaryNormal14,
     required this.primaryNormal10,
     required this.primaryNormal4,
     required this.primaryOnPrimary,
@@ -62,6 +63,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.fillSkeletonEdge,
     required this.fillSkeletonPeak,
     required this.statusPositive,
+    required this.statusPositive4,
     required this.statusNegative,
     required this.statusNegative20,
     required this.statusNegative6,
@@ -108,10 +110,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// `Primary/Heavy`.
   final Color primaryHeavy;
 
-  /// `Primary/Normal-24` / `-10` / `-4` — the only primary alphas the
+  /// `Primary/Normal-24` / `-14` / `-10` / `-4` — the only primary alphas the
   /// collection ships. If a design asks for another percentage, it is a paint
   /// opacity and will drift; ask for a token.
-  final Color primaryNormal24, primaryNormal10, primaryNormal4;
+  ///
+  /// `-14` arrived with the subscription components (2026-08-03, measured off
+  /// `Badge` `4204:551` / `Mark` `4365:31487` with `get_variable_defs`).
+  final Color primaryNormal24, primaryNormal14, primaryNormal10, primaryNormal4;
 
   /// `Primary/On-Primary` — text/glyphs **on** a primary fill.
   /// Dark #111111 / Light #FFFFFF.
@@ -185,6 +190,10 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   // ── Status ─────────────────────────────────────────────────
   final Color statusPositive, statusNegative, statusNegative20, statusNegative6;
 
+  /// `Status/Positive-4` — the positive badge's face. Arrived with the
+  /// subscription components (`Badge` `4204:551`, measured 2026-08-03).
+  final Color statusPositive4;
+
   /// `Status/Cautionary` — ⚠️ the one status colour that does **not** darken in
   /// Light (#FFA938 → #FFAA00). Design set that value deliberately; do not
   /// "fix" it.
@@ -225,6 +234,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     primaryStrong: Color(0xFF00E8A2),
     primaryHeavy: Color(0xFF00B57E),
     primaryNormal24: Color(0x3D00FFB2),
+    primaryNormal14: Color(0x2400FFB2),
     primaryNormal10: Color(0x1A00FFB2),
     primaryNormal4: Color(0x0A00FFB2),
     primaryOnPrimary: Color(0xFF111111),
@@ -261,6 +271,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     fillSkeletonEdge: Color(0x0FFFFFFF),
     fillSkeletonPeak: Color(0x24FFFFFF),
     statusPositive: Color(0xFF1ED45A),
+    statusPositive4: Color(0x0A1ED45A),
     statusNegative: Color(0xFFFF7070),
     statusNegative20: Color(0x33FF7070),
     statusNegative6: Color(0x0FFF7070),
@@ -303,6 +314,12 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     primaryStrong: Color(0xFF007A55),
     primaryHeavy: Color(0xFF006B4B),
     primaryNormal24: Color(0x3D008C62),
+    // Light values for -14 / positive-4 follow the collection's own pattern —
+    // same alpha byte, the light-mode base colour (as -24/-10/-4 and
+    // negative-6 already do). The Dark file is the design's source of truth
+    // and get_variable_defs cannot read the Light mode; re-measure if the
+    // Light chips ever say otherwise.
+    primaryNormal14: Color(0x24008C62),
     primaryNormal10: Color(0x1A008C62),
     primaryNormal4: Color(0x0A008C62),
     primaryOnPrimary: Color(0xFFFFFFFF),
@@ -339,6 +356,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     fillSkeletonEdge: Color(0x2470737C),
     fillSkeletonPeak: Color(0x3D70737C),
     statusPositive: Color(0xFF04B014),
+    statusPositive4: Color(0x0A04B014),
     statusNegative: Color(0xFFDC0000),
     statusNegative20: Color(0x33DC0000),
     statusNegative6: Color(0x0FDC0000),
@@ -381,6 +399,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? primaryStrong,
     Color? primaryHeavy,
     Color? primaryNormal24,
+    Color? primaryNormal14,
     Color? primaryNormal10,
     Color? primaryNormal4,
     Color? primaryOnPrimary,
@@ -417,6 +436,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? fillSkeletonEdge,
     Color? fillSkeletonPeak,
     Color? statusPositive,
+    Color? statusPositive4,
     Color? statusNegative,
     Color? statusNegative20,
     Color? statusNegative6,
@@ -457,6 +477,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
         primaryStrong: primaryStrong ?? this.primaryStrong,
         primaryHeavy: primaryHeavy ?? this.primaryHeavy,
         primaryNormal24: primaryNormal24 ?? this.primaryNormal24,
+        primaryNormal14: primaryNormal14 ?? this.primaryNormal14,
         primaryNormal10: primaryNormal10 ?? this.primaryNormal10,
         primaryNormal4: primaryNormal4 ?? this.primaryNormal4,
         primaryOnPrimary: primaryOnPrimary ?? this.primaryOnPrimary,
@@ -500,6 +521,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
         fillSkeletonEdge: fillSkeletonEdge ?? this.fillSkeletonEdge,
         fillSkeletonPeak: fillSkeletonPeak ?? this.fillSkeletonPeak,
         statusPositive: statusPositive ?? this.statusPositive,
+        statusPositive4: statusPositive4 ?? this.statusPositive4,
         statusNegative: statusNegative ?? this.statusNegative,
         statusNegative20: statusNegative20 ?? this.statusNegative20,
         statusNegative6: statusNegative6 ?? this.statusNegative6,
@@ -557,6 +579,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       primaryStrong: c(primaryStrong, other.primaryStrong),
       primaryHeavy: c(primaryHeavy, other.primaryHeavy),
       primaryNormal24: c(primaryNormal24, other.primaryNormal24),
+      primaryNormal14: c(primaryNormal14, other.primaryNormal14),
       primaryNormal10: c(primaryNormal10, other.primaryNormal10),
       primaryNormal4: c(primaryNormal4, other.primaryNormal4),
       primaryOnPrimary: c(primaryOnPrimary, other.primaryOnPrimary),
@@ -600,6 +623,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       fillSkeletonEdge: c(fillSkeletonEdge, other.fillSkeletonEdge),
       fillSkeletonPeak: c(fillSkeletonPeak, other.fillSkeletonPeak),
       statusPositive: c(statusPositive, other.statusPositive),
+      statusPositive4: c(statusPositive4, other.statusPositive4),
       statusNegative: c(statusNegative, other.statusNegative),
       statusNegative20: c(statusNegative20, other.statusNegative20),
       statusNegative6: c(statusNegative6, other.statusNegative6),

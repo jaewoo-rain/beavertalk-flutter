@@ -1122,10 +1122,887 @@ class AppLocalizationsTr extends AppLocalizations {
   String get practicePronunciation => 'Telaffuz çalış';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Fiyat değişti';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Bu ürün artık $price. Devam etmek ister misin?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Plan ve satın alımlar';
+
+  @override
+  String get billingGroupInTheStore => 'Mağazada';
+
+  @override
+  String get billingChangePlan => 'Planı değiştir';
+
+  @override
+  String get billingCompareAllPlans => 'Tüm planları karşılaştır';
+
+  @override
+  String get billingBuyACharacter => 'Karakter satın al';
+
+  @override
+  String get billingRestorePurchases => 'Satın alımları geri yükle';
+
+  @override
+  String get billingPaymentHistory => 'Ödeme geçmişi';
+
+  @override
+  String get billingManageInTheStore => 'Mağazada yönet';
+
+  @override
+  String get billingRefundHelp => 'İade yardımı';
+
+  @override
+  String get billingCancelSubscription => 'Aboneliği iptal et';
+
+  @override
+  String get billingResubscribe => 'Yeniden abone ol';
+
+  @override
+  String get badgeCurrent => 'Mevcut';
+
+  @override
+  String get badgeTrial => 'Deneme';
+
+  @override
+  String get badgeRenewing => 'Yenileniyor';
+
+  @override
+  String get badgePastDue => 'Ödeme gecikti';
+
+  @override
+  String get badgePaused => 'Duraklatıldı';
+
+  @override
+  String get badgeCanceling => 'İptal ediliyor';
+
+  @override
+  String get subscriptionTitle => 'Abonelik';
+
+  @override
+  String get plansTitle => 'Planlar';
+
+  @override
+  String get planFree => 'Free';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max deneme';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — günde bir arama';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return 'Aylık $amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$date tarihine kadar ücretsiz';
+  }
+
+  @override
+  String get todaysCalls => 'Bugünkü aramalar';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$used/$limit kullanıldı';
+  }
+
+  @override
+  String get firstPaymentLabel => 'İlk ödeme';
+
+  @override
+  String get nextPaymentLabel => 'Sonraki ödeme';
+
+  @override
+  String get retryingUntilLabel => 'Şu tarihe kadar yeniden denenecek';
+
+  @override
+  String get pausedSinceLabel => 'Duraklatılma tarihi';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan sona eriyor';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Pro ile sınırsıza geç';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Sınırsız arama · her biri 15 dakika · aylık \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Max ile videoyu aç';
+
+  @override
+  String get bannerMaxUpsellSub => 'Yüz yüze aramalar · aylık \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Yıllık plana geç';
+
+  @override
+  String get bannerAnnualSwitchSub => 'Yılda \$159 · aylık \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Ödemeyi alamadık';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Pro\'yu korumak için mağazadan ödeme yöntemini güncelle';
+
+  @override
+  String get bannerPausedTitle => 'Planın duraklatıldı';
+
+  @override
+  String get bannerPausedSub => 'Ödeme gerçekleşmedi';
+
+  @override
+  String get noteRestoreHint =>
+      'Başka bir cihazda zaten abone misin? Geri yükleme aboneliği bu cihaza getirir.';
+
+  @override
+  String get noteStoreHandled =>
+      'Ödeme yöntemi, plan değişiklikleri ve iptal işlemleri mağaza üzerinden yapılır.';
+
+  @override
+  String get noteFairUse =>
+      'Sınırsız kullanım, adil kullanım politikamıza tabidir.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Denemen $date tarihinde bitiyor. Öncesinde mağazadan iptal edersen hiçbir ücret alınmaz.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Ek süre boyunca avantajların devam eder. İptal, uygulama içinde asla engellenmez.';
+
+  @override
+  String get noteHold =>
+      'Ödeme gerçekleşene kadar Pro duraklatıldı. Karakterlerin ve ilerlemen güvende.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Planın sona erecek şekilde ayarlandı. Avantajların $date tarihine kadar sürer, sonra Free\'ye geçersin. İstediğin zaman yeniden abone olabilirsin.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Max denemen sona erdi';
+
+  @override
+  String get trialExpiredSub => 'Artık Free plandasın';
+
+  @override
+  String get seePlans => 'Planları gör';
+
+  @override
+  String get currentPlanTitle => 'Mevcut Plan';
+
+  @override
+  String get badgeRecommended => 'Önerilen';
+
+  @override
+  String get perMonthUnit => 'aylık';
+
+  @override
+  String get planTaglinePro => 'Sınırsız arama. Her biri 15 dakika.';
+
+  @override
+  String get planTaglineMax => 'Artık onları görebilirsin.';
+
+  @override
+  String get planTaglineFree => 'Günde bir arama. Bizden.';
+
+  @override
+  String get bulletProCalls => 'İstediğin kadar sesli arama';
+
+  @override
+  String get bulletProLength => 'Arama başına 15 dakika';
+
+  @override
+  String get bulletProScoring => 'Harf harf puanlanan telaffuz';
+
+  @override
+  String get bulletProCorrections => 'Ana diline göre düzeltmeler';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver seni önce arar';
+
+  @override
+  String get bulletMaxVideo => 'Yüz yüze görüntülü aramalar';
+
+  @override
+  String get bulletMaxEverything => 'Pro\'daki her şey';
+
+  @override
+  String get bulletMaxCharacters => 'Tüm karakterler, sınırsız';
+
+  @override
+  String get bulletMaxStudyBook => 'Seviyene uygun bir çalışma kitabı';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'Telaffuzunun nasıl değiştiğine dair haftalık rapor';
+
+  @override
+  String get bulletFreeCall => 'Günde bir 5 dakikalık sesli arama';
+
+  @override
+  String get bulletFreeCheck => 'Günde bir telaffuz kontrolü';
+
+  @override
+  String get bulletFreeAccent => 'Sınırsız aksan kontrolü';
+
+  @override
+  String get bulletFreeCharacter => 'Başlangıç için bir karakter';
+
+  @override
+  String get ctaGoUnlimited => 'Sınırsıza geç';
+
+  @override
+  String get ctaTurnOnVideo => 'Videoyu aç';
+
+  @override
+  String get noteCallLength => 'Aramalar her biri 15 dakikadır.';
+
+  @override
+  String get paywallProTitle1 => 'Gece 3\'te bile ayakta olan';
+
+  @override
+  String get paywallProTitle2 => 'Koreli arkadaşın';
+
+  @override
+  String get paywallProSub => 'Sınırsız arama. Her biri 15 dakika. Yıl boyu.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro sınırı kaldırır.';
+
+  @override
+  String get limitBannerCallTitle => 'Bugünkü araman buydu';
+
+  @override
+  String get limitBannerCallSub => 'Free günde bir arama verir';
+
+  @override
+  String get limitBannerCheckTitle => 'Bugünkü kontrolün buydu';
+
+  @override
+  String get limitBannerCheckSub => 'Free günde bir kontrol verir';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Satın aldığın karakterler sonsuza dek senin';
+
+  @override
+  String get paywallMaxTitle => 'Artık onları görebilirsin.';
+
+  @override
+  String get paywallMaxSub =>
+      'Görüntülü aramalar, tüm karakterler ve seviyene göre hazırlanmış bir çalışma kitabı.';
+
+  @override
+  String get planMonthly => 'Aylık';
+
+  @override
+  String get planAnnual => 'Yıllık';
+
+  @override
+  String get proMonthlyPriceLine => 'Aylık \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · aylık \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => 'Aylık \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => 'Yılda \$159.00 · aylık \$13.25';
+
+  @override
+  String get ctaCaptionPro =>
+      'Aylık \$12.90 · istediğin zaman mağazadan iptal et';
+
+  @override
+  String get ctaCaptionMax =>
+      'Aylık \$19.90 · istediğin zaman mağazadan iptal et';
+
+  @override
+  String get footerTerms => 'Koşullar';
+
+  @override
+  String get footerPrivacy => 'Gizlilik';
+
+  @override
+  String get noteMaxCharacters =>
+      'Max ile açılan karakterler aboneliğin aktif olduğu sürece kullanılabilir. Satın aldığın karakterler senin kalır.';
+
+  @override
+  String get processingTitle => 'Satın alma onaylanıyor';
+
+  @override
+  String get processingSub => 'Bu genellikle birkaç saniye sürer.';
+
+  @override
+  String get successProTitle => 'Artık Pro\'dasın.';
+
+  @override
+  String get successProSub => 'Sınırsız aramalar şu andan itibaren başladı.';
+
+  @override
+  String get successProBenefit1 =>
+      'İstediğin kadar ara — arama başına 15 dakika';
+
+  @override
+  String get successProBenefit2 => 'Sınırsız telaffuz kontrolü';
+
+  @override
+  String get successProBenefit3 =>
+      'Tüm karakterler, ayrıca tek seferlik satın alımlar';
+
+  @override
+  String get successMaxTitle => 'Artık onları görebilirsin.';
+
+  @override
+  String get successMaxSub =>
+      'Görüntülü aramalar açık. Herhangi bir aramada video düğmesine dokun.';
+
+  @override
+  String get successMaxBenefit1 => 'Yüz yüze görüntülü aramalar';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Tüm karakterler sınırsız, yeniler önce sende';
+
+  @override
+  String get successMaxBenefit3 => 'Seviyene uygun bir çalışma kitabı';
+
+  @override
+  String get ctaStartACall => 'Arama başlat';
+
+  @override
+  String get ctaStartAVideoCall => 'Görüntülü arama başlat';
+
+  @override
+  String get ctaSeeYourSubscription => 'Aboneliğini gör';
+
+  @override
+  String get successProCaption =>
+      'İptal edene kadar aylık \$12.90 tahsil edilir. İstediğin zaman mağazadan yönet veya iptal et.';
+
+  @override
+  String get successMaxCaption =>
+      'İptal edene kadar aylık \$19.90 tahsil edilir. İstediğin zaman mağazadan yönet veya iptal et.';
+
+  @override
+  String get plansErrorTitle => 'Planları yükleyemedik';
+
+  @override
+  String get plansErrorSub => 'Mağaza yanıt vermedi.';
+
+  @override
+  String get ctaTryAgain => 'Tekrar dene';
+
+  @override
+  String get plansErrorCaption => 'Hiçbir ücret alınmadı.';
+
+  @override
+  String get changePlanTitle => 'Planı Değiştir';
+
+  @override
+  String get moveToMaxTitle => 'Max\'e Geç';
+
+  @override
+  String get maxPriceShort => '\$19.90 / ay';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Yüz yüze görüntülü aramalar · tüm karakterler · senin için hazırlanmış çalışma kitabı';
+
+  @override
+  String get whatHappensNow => 'Şimdi ne olacak';
+
+  @override
+  String get maxStartsLabel => 'Max başlar';
+
+  @override
+  String get immediately => 'Hemen';
+
+  @override
+  String get unusedProTime => 'Kullanılmayan Pro süresi';
+
+  @override
+  String get creditedTowardMax => 'Max\'e sayılır';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Max\'e geç';
+
+  @override
+  String get upgradeCaption =>
+      'Yeni planın hemen başlar. Kullanılmayan Pro süresi hesaba sayılır, asla iki kez ücret alınmaz.';
+
+  @override
+  String get moveToProTitle => 'Pro\'ya Geç';
+
+  @override
+  String get moveToProSub =>
+      'Bugün hiçbir şey değişmez. Max, zaten ödediğin ayın sonuna kadar devam eder.';
+
+  @override
+  String get maxRunsUntil => 'Max şu tarihe kadar sürer';
+
+  @override
+  String get proStarts => 'Pro başlar';
+
+  @override
+  String get whatYouKeep => 'Sende kalanlar';
+
+  @override
+  String get keepBenefitCalls => 'Sınırsız sesli arama, her biri 15 dakika';
+
+  @override
+  String get keepBenefitCharacters =>
+      'Satın aldığın karakterler sonsuza dek senin';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Görüntülü aramalar ve yalnızca Max\'e özel karakterler $date tarihinde kapanır.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Pro\'ya geç';
+
+  @override
+  String get ctaKeepMax => 'Max\'te kal';
+
+  @override
+  String get winbackSkip => 'Atla';
+
+  @override
+  String get winbackTitle => 'Pro planın sona erdi';
+
+  @override
+  String get winbackSub => 'Artık Free\'desin — günde bir arama.';
+
+  @override
+  String get winbackQuestion => 'Neden ayrıldığını söyler misin?';
+
+  @override
+  String get winbackReasonExpensive => 'Çok pahalı';
+
+  @override
+  String get winbackReasonUnused => 'Yeterince kullanmıyordum';
+
+  @override
+  String get winbackReasonMissing => 'İhtiyacım olan bir özellik eksikti';
+
+  @override
+  String get winbackReasonOtherApp => 'Başka bir uygulama buldum';
+
+  @override
+  String get winbackReasonElse => 'Başka bir neden';
+
+  @override
+  String get ctaSend => 'Gönder';
+
+  @override
+  String get ctaNotNow => 'Şimdi değil';
+
+  @override
+  String get winbackCaption =>
+      'Bu, planını geri getirmez. Mağazadan yeniden abone olabilirsin.';
+
+  @override
+  String get ctaContinue => 'Devam et';
+
+  @override
+  String get ctaClose => 'Kapat';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro geri döndü';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Aboneliğini bulduk ve bu cihazda yeniden etkinleştirdik.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Geri yüklenecek bir şey yok';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Bu mağaza hesabına bağlı etkin bir abonelik yok.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Bu plan başka bir hesaba ait';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Bu abonelik zaten farklı bir BeaverTalk hesabında etkin.';
+
+  @override
+  String get ctaSignInThatAccount => 'O hesapla giriş yap';
+
+  @override
+  String get ctaGetHelp => 'Yardım al';
+
+  @override
+  String get ovCharacterOfferTitle => 'Pro için hazır değil misin?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Bir karakter seç, senin olsun. Tek seferlik satın alma — abonelik yok, yenileme yok.';
+
+  @override
+  String get rowOneCharacter => 'Bir karakter';
+
+  @override
+  String get rowFromPrice => '\$5.00\'dan başlayan';
+
+  @override
+  String get rowYoursForever => 'Sonsuza dek senin';
+
+  @override
+  String get rowNoRenewal => 'Yenileme yok';
+
+  @override
+  String get rowWorksOnFree => 'Free\'de çalışır';
+
+  @override
+  String get rowYes => 'Evet';
+
+  @override
+  String get ctaSeeCharacters => 'Karakterleri gör';
+
+  @override
+  String get ovNotEligibleTitle => 'İptal edilecek bir şey yok';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Free plandasın. Bu hesapta etkin bir abonelik yok.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Gitmeden önce';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'İptal mağazada yapılır. Bilmen gereken iki şey var.';
+
+  @override
+  String get rowPayYearlyInstead => 'Bunun yerine yıllık öde';
+
+  @override
+  String get rowYearlyMonthEquiv => 'Aylık \$8.33';
+
+  @override
+  String get rowCharactersYouBought => 'Satın aldığın karakterler';
+
+  @override
+  String get rowProRunsUntil => 'Pro şu tarihe kadar sürer';
+
+  @override
+  String get ctaSwitchToYearly => 'Yıllığa geç';
+
+  @override
+  String get ctaContinueToStore => 'Mağazaya devam et';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Yıllık öde, \$54.80 kazan';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'İki aydır Pro\'dasın. Yıllık plan daha ucuza geliyor.';
+
+  @override
+  String get rowYouSave => 'Tasarrufun';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Yıllık';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Bir yıl boyunca aylık';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Aylığa geç';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Yıllık planın $date tarihine kadar sürüyor. Aylık faturalandırma ertesi gün başlar.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Aylık faturalandırma başlar';
+
+  @override
+  String get rowMonthlyLabel => 'Aylık';
+
+  @override
+  String get rowYearlyWorkedOut => 'Yıllık plan şuna denk geliyordu';
+
+  @override
+  String get ctaSwitchToMonthly => 'Aylığa geç';
+
+  @override
+  String get ovRefundHelpTitle => 'İadeler mağaza tarafından yapılır';
+
+  @override
+  String get ovRefundHelpBody =>
+      'İadeleri kendimiz yapamayız. Her talep mağaza tarafından incelenir.';
+
+  @override
+  String get ctaGoToStore => 'Mağazaya git';
+
+  @override
+  String get ovTrialEndingTitle => 'Denemen yarın bitiyor';
+
+  @override
+  String get ovTrialEndingBody =>
+      'İptal etmezsen Max devam eder. Olacaklar şöyle.';
+
+  @override
+  String get rowTrialEnds => 'Deneme bitişi';
+
+  @override
+  String get rowFirstCharge => 'İlk ücret';
+
+  @override
+  String get rowThenMonthly => 'Sonrasında aylık';
+
+  @override
+  String get ctaCancelInStore => 'Mağazadan iptal et';
+
+  @override
+  String get ovTrialStartTitle => '7 gün Max, ücretsiz';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$date tarihine kadar ücretsiz. Sonrasında mağazadan iptal etmezsen aylık \$19.90.';
+  }
+
+  @override
+  String get ctaStart7Days => '7 gün ücretsiz başla';
+
+  @override
+  String get ovOtoTitle => 'Başlamadan önce son bir şey';
+
+  @override
+  String get ovOtoBody =>
+      'İyi seçim — sınırsız aramalar şu anda açık. Aynı Pro, yıllık ödersen daha ucuz.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Kartın reddedildi';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Mağaza ödemeyi alamadı. Hiçbir ücret alınmadı.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Ödeme yöntemini güncelle';
+
+  @override
+  String get ovFailedCanceledTitle => 'Ödeme iptal edildi';
+
+  @override
+  String get ovFailedCanceledBody => 'Hâlâ Free\'desin. Hiçbir ücret alınmadı.';
+
+  @override
+  String get ovFailedStoreTitle => 'Bir şeyler ters gitti';
+
+  @override
+  String get ovFailedStoreBody => 'Mağazaya ulaşamadık. Hiçbir ücret alınmadı.';
+
+  @override
+  String get ovAlreadyTitle => 'Zaten Pro\'dasın';
+
+  @override
+  String get ovAlreadyBody =>
+      'Bu mağaza hesabının etkin bir planı var. Satın alınacak bir şey yok.';
+
+  @override
+  String get ctaSeeMySubscription => 'Aboneliğimi gör';
+
+  @override
+  String get subCancelTitle => 'Aboneliği iptal et';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro $date tarihine kadar sürer. Sonrasında Free\'ye geçersin.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Kaybedeceklerin';
+
+  @override
+  String get benefitCalls15 => 'Sınırsız arama, her biri 15 dakika';
+
+  @override
+  String get benefitScoring => 'Harf harf puanlanan telaffuz';
+
+  @override
+  String get benefitEveryCharacter => 'Tüm karakterler, sınırsız';
+
+  @override
+  String get ctaKeepPro => 'Pro\'da kal';
+
+  @override
+  String get subPaymentTitle => 'Ödemeyi güncelle';
+
+  @override
+  String get subPaymentBody =>
+      'Ödemeyi alamadık. Ek süre boyunca Pro çalışmaya devam eder.';
+
+  @override
+  String get subHowToFix => 'Nasıl düzeltilir';
+
+  @override
+  String get fixStep1 => 'Mağazayı aç ve ödeme yöntemini güncelle';
+
+  @override
+  String get fixStep2 => 'Geri dön — planın otomatik olarak devam eder';
+
+  @override
+  String get fixStep3 => 'Hiçbir ücret iki kez alınmaz';
+
+  @override
+  String get subResubTitle => 'Yeniden abone ol';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro $date tarihinde bitiyor. Otomatik yenilemeyi tekrar aç, hiçbir şey değişmesin.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Sende kalanlar';
+
+  @override
+  String get ctaTurnItBackOn => 'Yeniden aç';
+
+  @override
+  String get flTodayTitle => 'Bugünkü araman buydu';
+
+  @override
+  String get flTodayBody => 'Kaldığın yerden devam et — hemen şimdi.';
+
+  @override
+  String get flCheckTitle => 'Bugünkü kontrolün buydu';
+
+  @override
+  String get flCheckBody => 'Free\'de günde bir kontrol. Pro sınırsız yapar.';
+
+  @override
+  String get flBenefitCalls => 'Pro ile sınırsız arama · her biri 15 dakika';
+
+  @override
+  String get flBenefitChecks => 'Pro ile sınırsız telaffuz kontrolü';
+
+  @override
+  String get flCaption => 'Aylık \$12.90 · istediğin zaman iptal et';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$used/$limit kullanıldı';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Belki yarın';
+
+  @override
+  String get accountSection => 'Hesap';
+
+  @override
+  String get nicknameLabel => 'Takma ad';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Giriş yöntemi';
+
+  @override
+  String get joinedLabel => 'Katılma tarihi';
+
+  @override
+  String get editNicknameTitle => 'Takma Adı Düzenle';
+
+  @override
+  String get nicknameRule => '2–12 karakter. Harf ve rakam. Yalnızca İngilizce';
+
+  @override
+  String get ctaSave => 'Kaydet';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'Şimdi çıkarsan abone olamazsın';
+
+  @override
+  String get paywallLeaveBody =>
+      'Avantajların ödemeden hemen sonra açılır. Sayfam üzerinden istediğin zaman geri dönebilirsin.';
+
+  @override
+  String get ctaKeepLooking => 'Bakmaya devam et';
+
+  @override
+  String get ctaLeaveAnyway => 'Yine de çık';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Yeni bir arkadaş katıldı!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Bu karakter sonsuza dek senin — plan değişse bile kalır ve Satın alımları geri yükle ile her cihazda geri gelir.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Satın alma tamamlanamadı. Ücret alınmadı — lütfen tekrar dene.';
 }

@@ -34,6 +34,11 @@ enum BtnType {
   /// own #1F222A, where `secondaryFill` would be only one step lighter than the
   /// card and read as flat.
   secondaryElevated,
+
+  /// Gold fill (`Status/Cautionary`) with a `Static/Black` label — the Max
+  /// context's CTA (work order §3-3; measured off `plans_compare`
+  /// `4514:5263`). Same rule as every label on a gold face.
+  gold,
   disabled,
 }
 
@@ -203,6 +208,8 @@ class Button extends StatelessWidget {
         return c.backgroundElevatedAlternative;
       case BtnType.secondaryElevated:
         return c.backgroundElevatedNormal;
+      case BtnType.gold:
+        return c.statusCautionary;
     }
   }
 
@@ -221,6 +228,8 @@ class Button extends StatelessWidget {
         return c.backgroundNormalAlternative;
       case BtnType.secondaryWhite:
         return c.backgroundNormalAlternative;
+      case BtnType.gold:
+        return c.statusCautionary;
       case BtnType.disabled:
         return c.lineAlternative;
     }
@@ -242,6 +251,8 @@ class Button extends StatelessWidget {
         return c.labelNormal;
       case BtnType.secondaryWhite:
         return c.labelStrong; // white
+      case BtnType.gold:
+        return c.staticBlack; // every label on a gold face is Static/Black
       case BtnType.disabled:
         return c.labelDisabled;
     }

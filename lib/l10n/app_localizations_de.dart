@@ -1139,10 +1139,894 @@ class AppLocalizationsDe extends AppLocalizations {
   String get practicePronunciation => 'Aussprache üben';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Preis geändert';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Dieser Artikel kostet jetzt $price. Möchtest du fortfahren?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Plan & Käufe';
+
+  @override
+  String get billingGroupInTheStore => 'Im Store';
+
+  @override
+  String get billingChangePlan => 'Plan ändern';
+
+  @override
+  String get billingCompareAllPlans => 'Alle Pläne vergleichen';
+
+  @override
+  String get billingBuyACharacter => 'Charakter kaufen';
+
+  @override
+  String get billingRestorePurchases => 'Käufe wiederherstellen';
+
+  @override
+  String get billingPaymentHistory => 'Zahlungsverlauf';
+
+  @override
+  String get billingManageInTheStore => 'Im Store verwalten';
+
+  @override
+  String get billingRefundHelp => 'Hilfe bei Rückerstattungen';
+
+  @override
+  String get billingCancelSubscription => 'Abo kündigen';
+
+  @override
+  String get billingResubscribe => 'Erneut abonnieren';
+
+  @override
+  String get badgeCurrent => 'Aktuell';
+
+  @override
+  String get badgeTrial => 'Testphase';
+
+  @override
+  String get badgeRenewing => 'Verlängert sich';
+
+  @override
+  String get badgePastDue => 'Zahlung überfällig';
+
+  @override
+  String get badgePaused => 'Pausiert';
+
+  @override
+  String get badgeCanceling => 'Läuft aus';
+
+  @override
+  String get subscriptionTitle => 'Abo';
+
+  @override
+  String get plansTitle => 'Pläne';
+
+  @override
+  String get planFree => 'Kostenlos';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max-Testphase';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — ein Anruf pro Tag';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return '$amount pro Monat';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return 'Kostenlos bis $date';
+  }
+
+  @override
+  String get todaysCalls => 'Heutige Anrufe';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$used von $limit genutzt';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Erste Zahlung';
+
+  @override
+  String get nextPaymentLabel => 'Nächste Zahlung';
+
+  @override
+  String get retryingUntilLabel => 'Neuer Versuch bis';
+
+  @override
+  String get pausedSinceLabel => 'Pausiert seit';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan endet';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Unbegrenzt mit Pro';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Unbegrenzte Anrufe · je 15 Minuten · \$12.90 pro Monat';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Video aktivieren mit Max';
+
+  @override
+  String get bannerMaxUpsellSub =>
+      'Anrufe von Angesicht zu Angesicht · \$19.90 pro Monat';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Zum Jahresabo wechseln';
+
+  @override
+  String get bannerAnnualSwitchSub => '\$159 pro Jahr · \$13.25 pro Monat';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Die Zahlung hat nicht geklappt';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Aktualisiere die Zahlung im Store, um Pro zu behalten';
+
+  @override
+  String get bannerPausedTitle => 'Dein Plan ist pausiert';
+
+  @override
+  String get bannerPausedSub => 'Die Zahlung ist nicht durchgegangen';
+
+  @override
+  String get noteRestoreHint =>
+      'Schon auf einem anderen Gerät abonniert? Mit Wiederherstellen holst du es auf dieses Gerät.';
+
+  @override
+  String get noteStoreHandled =>
+      'Zahlungsmethode, Planwechsel und Kündigung laufen über den Store.';
+
+  @override
+  String get noteFairUse =>
+      'Unbegrenzte Nutzung unterliegt unserer Fair-Use-Richtlinie.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Deine Testphase endet am $date. Kündige vorher im Store und es wird nichts berechnet.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Deine Vorteile laufen während der Kulanzfrist weiter. Die Kündigung wird in der App nie abgefangen.';
+
+  @override
+  String get noteHold =>
+      'Pro ist pausiert, bis die Zahlung durchgeht. Deine Charaktere und Fortschritte bleiben erhalten.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Dein Plan läuft aus. Die Vorteile gelten bis $date, danach wechselst du zu Kostenlos. Du kannst jederzeit erneut abonnieren.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Deine Max-Testphase ist vorbei';
+
+  @override
+  String get trialExpiredSub => 'Du bist jetzt auf Kostenlos';
+
+  @override
+  String get seePlans => 'Pläne ansehen';
+
+  @override
+  String get currentPlanTitle => 'Aktueller Plan';
+
+  @override
+  String get badgeRecommended => 'Empfohlen';
+
+  @override
+  String get perMonthUnit => 'pro Monat';
+
+  @override
+  String get planTaglinePro => 'Unbegrenzte Anrufe. Je 15 Minuten.';
+
+  @override
+  String get planTaglineMax => 'Jetzt kannst du sie sehen.';
+
+  @override
+  String get planTaglineFree => 'Ein Anruf pro Tag. Aufs Haus.';
+
+  @override
+  String get bulletProCalls => 'Sprachanrufe, so oft du willst';
+
+  @override
+  String get bulletProLength => '15 Minuten pro Anruf';
+
+  @override
+  String get bulletProScoring => 'Aussprache Buchstabe für Buchstabe bewertet';
+
+  @override
+  String get bulletProCorrections =>
+      'Korrekturen, abgestimmt auf deine Muttersprache';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver ruft dich zuerst an';
+
+  @override
+  String get bulletMaxVideo => 'Videoanrufe von Angesicht zu Angesicht';
+
+  @override
+  String get bulletMaxEverything => 'Alles aus Pro';
+
+  @override
+  String get bulletMaxCharacters => 'Alle Charaktere, unbegrenzt';
+
+  @override
+  String get bulletMaxStudyBook => 'Ein Lernbuch, das zu deinem Stand passt';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'Ein Wochenbericht darüber, wie sich dein Klang verändert';
+
+  @override
+  String get bulletFreeCall => 'Ein 5-Minuten-Sprachanruf pro Tag';
+
+  @override
+  String get bulletFreeCheck => 'Ein Aussprache-Check pro Tag';
+
+  @override
+  String get bulletFreeAccent => 'Unbegrenzte Akzent-Checks';
+
+  @override
+  String get bulletFreeCharacter => 'Ein Charakter zum Start';
+
+  @override
+  String get ctaGoUnlimited => 'Unbegrenzt loslegen';
+
+  @override
+  String get ctaTurnOnVideo => 'Video aktivieren';
+
+  @override
+  String get noteCallLength => 'Anrufe dauern je 15 Minuten.';
+
+  @override
+  String get paywallProTitle1 => 'Dein koreanischer Freund';
+
+  @override
+  String get paywallProTitle2 => 'der um 3 Uhr nachts wach ist';
+
+  @override
+  String get paywallProSub =>
+      'Unbegrenzte Anrufe. Je 15 Minuten. Das ganze Jahr.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro hebt das Limit auf.';
+
+  @override
+  String get limitBannerCallTitle => 'Das war der Anruf für heute';
+
+  @override
+  String get limitBannerCallSub => 'Kostenlos gibt dir einen Anruf pro Tag';
+
+  @override
+  String get limitBannerCheckTitle => 'Das war der Check für heute';
+
+  @override
+  String get limitBannerCheckSub => 'Kostenlos gibt dir einen Check pro Tag';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Gekaufte Charaktere gehören dir für immer';
+
+  @override
+  String get paywallMaxTitle => 'Jetzt kannst du sie sehen.';
+
+  @override
+  String get paywallMaxSub =>
+      'Videoanrufe, alle Charaktere und ein Lernbuch, das zu deinem Stand passt.';
+
+  @override
+  String get planMonthly => 'Monatlich';
+
+  @override
+  String get planAnnual => 'Jährlich';
+
+  @override
+  String get proMonthlyPriceLine => '\$12.90 pro Monat';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · \$8.33 pro Monat';
+
+  @override
+  String get maxMonthlyPriceLine => '\$19.90 pro Monat';
+
+  @override
+  String get maxAnnualPriceLine => '\$159.00 pro Jahr · \$13.25 pro Monat';
+
+  @override
+  String get ctaCaptionPro => '\$12.90 pro Monat · jederzeit im Store kündbar';
+
+  @override
+  String get ctaCaptionMax => '\$19.90 pro Monat · jederzeit im Store kündbar';
+
+  @override
+  String get footerTerms => 'AGB';
+
+  @override
+  String get footerPrivacy => 'Datenschutz';
+
+  @override
+  String get noteMaxCharacters =>
+      'Durch Max freigeschaltete Charaktere sind verfügbar, solange dein Abo aktiv ist. Gekaufte Charaktere gehören dir dauerhaft.';
+
+  @override
+  String get processingTitle => 'Dein Kauf wird bestätigt';
+
+  @override
+  String get processingSub => 'Das dauert normalerweise nur ein paar Sekunden.';
+
+  @override
+  String get successProTitle => 'Du bist auf Pro.';
+
+  @override
+  String get successProSub => 'Unbegrenzte Anrufe, ab sofort.';
+
+  @override
+  String get successProBenefit1 =>
+      'Rufe an, so oft du willst — 15 Minuten pro Anruf';
+
+  @override
+  String get successProBenefit2 => 'Unbegrenzte Aussprache-Checks';
+
+  @override
+  String get successProBenefit3 => 'Alle Charaktere, plus Einzelkäufe';
+
+  @override
+  String get successMaxTitle => 'Jetzt kannst du sie sehen.';
+
+  @override
+  String get successMaxSub =>
+      'Videoanrufe sind aktiv. Tippe in einem Anruf auf die Video-Taste.';
+
+  @override
+  String get successMaxBenefit1 => 'Videoanrufe von Angesicht zu Angesicht';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Alle Charaktere, unbegrenzt und neue zuerst';
+
+  @override
+  String get successMaxBenefit3 => 'Ein Lernbuch, das zu deinem Stand passt';
+
+  @override
+  String get ctaStartACall => 'Anruf starten';
+
+  @override
+  String get ctaStartAVideoCall => 'Videoanruf starten';
+
+  @override
+  String get ctaSeeYourSubscription => 'Dein Abo ansehen';
+
+  @override
+  String get successProCaption =>
+      '\$12.90 werden monatlich berechnet, bis du kündigst. Verwalten oder kündigen kannst du jederzeit im Store.';
+
+  @override
+  String get successMaxCaption =>
+      '\$19.90 werden monatlich berechnet, bis du kündigst. Verwalten oder kündigen kannst du jederzeit im Store.';
+
+  @override
+  String get plansErrorTitle => 'Die Pläne konnten nicht geladen werden';
+
+  @override
+  String get plansErrorSub => 'Der Store hat nicht geantwortet.';
+
+  @override
+  String get ctaTryAgain => 'Erneut versuchen';
+
+  @override
+  String get plansErrorCaption => 'Es wurde nichts berechnet.';
+
+  @override
+  String get changePlanTitle => 'Plan ändern';
+
+  @override
+  String get moveToMaxTitle => 'Zu Max wechseln';
+
+  @override
+  String get maxPriceShort => '\$19.90/Monat';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Videoanrufe von Angesicht zu Angesicht · alle Charaktere · ein Lernbuch für dich';
+
+  @override
+  String get whatHappensNow => 'Was jetzt passiert';
+
+  @override
+  String get maxStartsLabel => 'Max startet';
+
+  @override
+  String get immediately => 'Sofort';
+
+  @override
+  String get unusedProTime => 'Ungenutzte Pro-Zeit';
+
+  @override
+  String get creditedTowardMax => 'Wird auf Max angerechnet';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Zu Max wechseln';
+
+  @override
+  String get upgradeCaption =>
+      'Dein neuer Plan startet sofort. Ungenutzte Pro-Zeit wird angerechnet, nie doppelt berechnet.';
+
+  @override
+  String get moveToProTitle => 'Zu Pro wechseln';
+
+  @override
+  String get moveToProSub =>
+      'Heute ändert sich nichts. Max läuft bis zum Ende des bereits bezahlten Monats.';
+
+  @override
+  String get maxRunsUntil => 'Max läuft bis';
+
+  @override
+  String get proStarts => 'Pro startet';
+
+  @override
+  String get whatYouKeep => 'Was du behältst';
+
+  @override
+  String get keepBenefitCalls => 'Unbegrenzte Sprachanrufe, je 15 Minuten';
+
+  @override
+  String get keepBenefitCharacters =>
+      'Gekaufte Charaktere gehören dir für immer';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Videoanrufe und Max-exklusive Charaktere werden am $date deaktiviert.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Zu Pro wechseln';
+
+  @override
+  String get ctaKeepMax => 'Max behalten';
+
+  @override
+  String get winbackSkip => 'Überspringen';
+
+  @override
+  String get winbackTitle => 'Dein Pro-Plan ist beendet';
+
+  @override
+  String get winbackSub => 'Du bist jetzt auf Kostenlos — ein Anruf pro Tag.';
+
+  @override
+  String get winbackQuestion => 'Magst du uns sagen, warum du gegangen bist?';
+
+  @override
+  String get winbackReasonExpensive => 'Zu teuer';
+
+  @override
+  String get winbackReasonUnused => 'Ich habe es zu wenig genutzt';
+
+  @override
+  String get winbackReasonMissing => 'Eine Funktion hat mir gefehlt';
+
+  @override
+  String get winbackReasonOtherApp => 'Ich habe eine andere App gefunden';
+
+  @override
+  String get winbackReasonElse => 'Etwas anderes';
+
+  @override
+  String get ctaSend => 'Senden';
+
+  @override
+  String get ctaNotNow => 'Jetzt nicht';
+
+  @override
+  String get winbackCaption =>
+      'Das stellt deinen Plan nicht wieder her. Abonniere erneut im Store.';
+
+  @override
+  String get ctaContinue => 'Weiter';
+
+  @override
+  String get ctaClose => 'Schließen';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro ist zurück';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Wir haben dein Abo gefunden und für dieses Gerät wieder aktiviert.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Nichts wiederherzustellen';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Mit diesem Store-Konto ist kein aktives Abo verknüpft.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Dieser Plan gehört zu einem anderen Konto';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Dieses Abo ist bereits auf einem anderen BeaverTalk-Konto aktiv.';
+
+  @override
+  String get ctaSignInThatAccount => 'Mit diesem Konto anmelden';
+
+  @override
+  String get ctaGetHelp => 'Hilfe holen';
+
+  @override
+  String get ovCharacterOfferTitle => 'Noch nicht bereit für Pro?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Such dir einen Charakter aus und behalte ihn. Ein Einzelkauf — kein Abo, keine Verlängerung.';
+
+  @override
+  String get rowOneCharacter => 'Ein Charakter';
+
+  @override
+  String get rowFromPrice => 'ab \$5.00';
+
+  @override
+  String get rowYoursForever => 'Für immer deiner';
+
+  @override
+  String get rowNoRenewal => 'Keine Verlängerung';
+
+  @override
+  String get rowWorksOnFree => 'Funktioniert mit Kostenlos';
+
+  @override
+  String get rowYes => 'Ja';
+
+  @override
+  String get ctaSeeCharacters => 'Charaktere ansehen';
+
+  @override
+  String get ovNotEligibleTitle => 'Nichts zu kündigen';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Du bist auf Kostenlos. Auf diesem Konto gibt es kein aktives Abo.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Bevor du gehst';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'Gekündigt wird im Store. Zwei Dinge, die du wissen solltest.';
+
+  @override
+  String get rowPayYearlyInstead => 'Zahl lieber jährlich';
+
+  @override
+  String get rowYearlyMonthEquiv => '\$8.33 pro Monat';
+
+  @override
+  String get rowCharactersYouBought => 'Gekaufte Charaktere';
+
+  @override
+  String get rowProRunsUntil => 'Pro läuft bis';
+
+  @override
+  String get ctaSwitchToYearly => 'Zu jährlich wechseln';
+
+  @override
+  String get ctaContinueToStore => 'Weiter zum Store';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Zahl jährlich und spare \$54.80';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Du bist seit zwei Monaten auf Pro. Der Jahresplan ist unterm Strich günstiger.';
+
+  @override
+  String get rowYouSave => 'Du sparst';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Jährlich';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Monatlich, ein Jahr lang';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Zu monatlich wechseln';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Dein Jahresplan läuft bis $date. Die monatliche Abrechnung startet am Tag danach.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Monatliche Abrechnung startet';
+
+  @override
+  String get rowMonthlyLabel => 'Monatlich';
+
+  @override
+  String get rowYearlyWorkedOut => 'Jährlich entsprach';
+
+  @override
+  String get ctaSwitchToMonthly => 'Zu monatlich wechseln';
+
+  @override
+  String get ovRefundHelpTitle => 'Rückerstattungen laufen über den Store';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Wir können selbst keine Rückerstattungen ausstellen. Jede Anfrage wird vom Store geprüft.';
+
+  @override
+  String get ctaGoToStore => 'Zum Store';
+
+  @override
+  String get ovTrialEndingTitle => 'Deine Testphase endet morgen';
+
+  @override
+  String get ovTrialEndingBody =>
+      'Max läuft weiter, wenn du nicht kündigst. Das passiert als Nächstes.';
+
+  @override
+  String get rowTrialEnds => 'Testphase endet';
+
+  @override
+  String get rowFirstCharge => 'Erste Abbuchung';
+
+  @override
+  String get rowThenMonthly => 'Danach monatlich';
+
+  @override
+  String get ctaCancelInStore => 'Im Store kündigen';
+
+  @override
+  String get ovTrialStartTitle => '7 Tage Max, kostenlos';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return 'Kostenlos bis $date. Danach \$19.90 pro Monat, außer du kündigst im Store.';
+  }
+
+  @override
+  String get ctaStart7Days => '7 Tage kostenlos starten';
+
+  @override
+  String get ovOtoTitle => 'Noch eine Sache, bevor du loslegst';
+
+  @override
+  String get ovOtoBody =>
+      'Gute Wahl — unbegrenzte Anrufe sind ab sofort aktiv. Dasselbe Pro kostet weniger, wenn du jährlich zahlst.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Deine Karte wurde abgelehnt';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Der Store konnte die Zahlung nicht durchführen. Es wurde nichts berechnet.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Zahlungsmethode aktualisieren';
+
+  @override
+  String get ovFailedCanceledTitle => 'Zahlung abgebrochen';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'Du bist weiterhin auf Kostenlos. Es wurde nichts berechnet.';
+
+  @override
+  String get ovFailedStoreTitle => 'Etwas ist schiefgelaufen';
+
+  @override
+  String get ovFailedStoreBody =>
+      'Wir konnten den Store nicht erreichen. Es wurde nichts berechnet.';
+
+  @override
+  String get ovAlreadyTitle => 'Du bist bereits auf Pro';
+
+  @override
+  String get ovAlreadyBody =>
+      'Dieses Store-Konto hat einen aktiven Plan. Es gibt nichts zu kaufen.';
+
+  @override
+  String get ctaSeeMySubscription => 'Mein Abo ansehen';
+
+  @override
+  String get subCancelTitle => 'Abo kündigen';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro läuft bis $date. Danach wechselst du zu Kostenlos.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Was du verlierst';
+
+  @override
+  String get benefitCalls15 => 'Unbegrenzte Anrufe, je 15 Minuten';
+
+  @override
+  String get benefitScoring => 'Aussprache Buchstabe für Buchstabe bewertet';
+
+  @override
+  String get benefitEveryCharacter => 'Alle Charaktere, unbegrenzt';
+
+  @override
+  String get ctaKeepPro => 'Pro behalten';
+
+  @override
+  String get subPaymentTitle => 'Zahlung aktualisieren';
+
+  @override
+  String get subPaymentBody =>
+      'Wir konnten die Zahlung nicht durchführen. Pro läuft während der Kulanzfrist weiter.';
+
+  @override
+  String get subHowToFix => 'So behebst du es';
+
+  @override
+  String get fixStep1 =>
+      'Öffne den Store und aktualisiere deine Zahlungsmethode';
+
+  @override
+  String get fixStep2 => 'Komm zurück — dein Plan läuft automatisch weiter';
+
+  @override
+  String get fixStep3 => 'Nichts wird doppelt berechnet';
+
+  @override
+  String get subResubTitle => 'Erneut abonnieren';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro endet am $date. Aktiviere die automatische Verlängerung wieder und nichts ändert sich.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Was du behältst';
+
+  @override
+  String get ctaTurnItBackOn => 'Wieder aktivieren';
+
+  @override
+  String get flTodayTitle => 'Das war der Anruf für heute';
+
+  @override
+  String get flTodayBody =>
+      'Mach genau da weiter, wo du aufgehört hast — sofort.';
+
+  @override
+  String get flCheckTitle => 'Das war der Check für heute';
+
+  @override
+  String get flCheckBody =>
+      'Ein Check pro Tag mit Kostenlos. Mit Pro unbegrenzt.';
+
+  @override
+  String get flBenefitCalls => 'Unbegrenzte Anrufe mit Pro · je 15 Minuten';
+
+  @override
+  String get flBenefitChecks => 'Unbegrenzte Aussprache-Checks mit Pro';
+
+  @override
+  String get flCaption => '\$12.90 pro Monat · jederzeit kündbar';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$used von $limit genutzt';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Vielleicht morgen';
+
+  @override
+  String get accountSection => 'Konto';
+
+  @override
+  String get nicknameLabel => 'Spitzname';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Anmeldemethode';
+
+  @override
+  String get joinedLabel => 'Beigetreten';
+
+  @override
+  String get editNicknameTitle => 'Spitznamen bearbeiten';
+
+  @override
+  String get nicknameRule =>
+      '2–12 Zeichen. Buchstaben und Zahlen. Nur Englisch';
+
+  @override
+  String get ctaSave => 'Speichern';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle =>
+      'Wenn du jetzt gehst, bist du nicht abonniert';
+
+  @override
+  String get paywallLeaveBody =>
+      'Deine Vorteile werden direkt nach dem Kauf freigeschaltet. Du kannst jederzeit über Meine Seite zurückkommen.';
+
+  @override
+  String get ctaKeepLooking => 'Weiter ansehen';
+
+  @override
+  String get ctaLeaveAnyway => 'Trotzdem gehen';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Ein neuer Freund ist dabei!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Dieser Charakter gehört dir für immer — er bleibt auch bei Planwechsel, und Käufe wiederherstellen holt ihn auf jedes Gerät zurück.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Der Kauf wurde nicht abgeschlossen. Es wurde nichts abgebucht — bitte versuche es erneut.';
 }

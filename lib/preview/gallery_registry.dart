@@ -30,7 +30,6 @@ import '../components/organisms/dialog_share_profile.dart';
 import '../components/organisms/bottom_sheet.dart';
 import '../components/organisms/bottom_sheet_document.dart';
 import '../components/organisms/bottom_sheet_avatar.dart';
-import '../components/organisms/bottom_sheet_subscription.dart';
 import '../components/organisms/bottom_sheet_country_select.dart';
 import '../components/organisms/bottom_sheet_alarm_settings.dart';
 import '../components/organisms/bottom_sheet_feedback.dart';
@@ -86,7 +85,6 @@ const List<GalleryEntry> galleryEntries = <GalleryEntry>[
   // Figma master is still in the file. No screen calls it any more.
   GalleryEntry(group: 'organisms', title: 'BottomSheetAvatar (retired)', node: '176:13383', builder: _bsAvatar),
   GalleryEntry(group: 'organisms', title: 'AvatarDetail', node: '4024:1090', builder: _avatarDetail),
-  GalleryEntry(group: 'organisms', title: 'BottomSheetSubscription', node: '176:14577', builder: _bsSubscription),
   GalleryEntry(group: 'organisms', title: 'BottomSheetCountrySelect', node: '176:12212', builder: _bsCountry),
   GalleryEntry(group: 'organisms', title: 'BottomSheetAlarmSettings', node: '176:13983', builder: _bsAlarm),
   GalleryEntry(group: 'organisms', title: 'BottomSheetFeedback', node: '176:15420', builder: _bsFeedback),
@@ -123,7 +121,6 @@ Widget _bottomSheet(BuildContext _) => const BottomSheetDemo();
 Widget _bsDocument(BuildContext _) => const BottomSheetDocumentDemo();
 Widget _bsAvatar(BuildContext _) => const BottomSheetAvatarDemo();
 Widget _avatarDetail(BuildContext _) => const AvatarDetailDemo();
-Widget _bsSubscription(BuildContext _) => const BottomSheetSubscriptionDemo();
 Widget _bsCountry(BuildContext _) => const BottomSheetCountrySelectDemo();
 Widget _bsAlarm(BuildContext _) => const BottomSheetAlarmSettingsDemo();
 Widget _bsFeedback(BuildContext _) => const BottomSheetFeedbackDemo();

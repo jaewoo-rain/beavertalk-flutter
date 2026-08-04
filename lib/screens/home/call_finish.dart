@@ -227,7 +227,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       // overflowed the column by 12–14px (caught by `i18n_overflow_test` after
       // its viewport was lowered from a 1400-tall canvas to a real phone).
       //
-      // Same shape `payment_complete` already uses: scroll when the content is
+      // Same shape the old `payment_complete` screen used: scroll when the content is
       // taller than the viewport, and `minHeight` + `IntrinsicHeight` so that
       // when it *does* fit, `spaceBetween` still distributes across the full
       // height exactly as before. No visual change on roomy screens.

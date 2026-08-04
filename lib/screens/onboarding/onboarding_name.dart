@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
@@ -30,6 +31,11 @@ class OnboardingNameScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
+  /// Length bounds, kept identical to `edit_nickname` — the same value is
+  /// edited there, so the two screens must agree.
+  static const _maxLength = 12;
+  static const _minLength = 2;
+
   /// The current name text (controlled value for the [InputField]).
   String _name = '';
 
@@ -42,7 +48,9 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final bool canContinue = _name.trim().isNotEmpty;
+    // 2 자 하한은 `edit_nickname` 과 같다 — 여기서 1 자를 허용하면 나중에
+    // 수정 화면에서 저장이 막히는 덫이 된다.
+    final bool canContinue = _name.trim().length >= _minLength;
 
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -82,9 +90,23 @@ class _OnboardingNameScreenState extends ConsumerState<OnboardingNameScreen> {
                     value: _name,
                     onChanged: (v) => setState(() => _name = v),
                     hintText: l10n.nameHint,
+                    // Same rule the nickname editor states and enforces
+                    // (`edit_nickname`): English letters + digits, 2–12. This
+                    // screen used to accept anything, so a member could set a
+                    // name here that the editor would then refuse to save.
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9]')),
+                    ],
+                    maxLength: _maxLength,
                     onSubmitted: (_) {
-                      if (_name.trim().isNotEmpty) _next();
+                      if (canContinue) _next();
                     },
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    l10n.nicknameRule,
+                    style: AppType.body1.r
+                        .copyWith(color: context.c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Text(

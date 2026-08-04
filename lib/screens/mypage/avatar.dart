@@ -8,6 +8,8 @@ import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/avatar_card.dart';
 import '../../components/molecules/card_box.dart';
+import '../../components/organisms/bottom_sheet.dart';
+import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -19,6 +21,8 @@ import '../../features/character/domain/entities/character.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
+import '../../features/subscription/domain/iap_service.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -364,13 +368,53 @@ class AvatarScreen extends ConsumerWidget {
     );
   }
 
-  /// `POST /characters/{id}/purchase`, then refresh what the purchase changed.
+  /// Character purchase — IAP rail first, then server delivery.
+  ///
+  /// v2 §2-3: characters are **non-consumable IAP**. The (mock) store sheet
+  /// decides the outcome on the [IapService] purchase stream; only a
+  /// `purchased`/`restored` verdict reaches the server call below, which
+  /// stands in for receipt validation until the real SDK lands (R1 — the
+  /// server side travels by proposal). Outcome feedback, previously missing:
+  /// success = result sheet, store failure = snackbar, user cancel = silence.
   ///
   /// [expectedMinor] 는 화면이 보여준 가격(센트)이다. 한정 할인이 탭과 서버 처리 사이에
   /// 끝나면 서버가 [PriceChangedFailure] 로 거절하므로, 사용자가 동의하지 않은 금액이
   /// 결제되는 일이 없다. 그때는 새 가격으로 다시 확인을 받는다.
   Future<void> _purchase(BuildContext routeCtx, WidgetRef ref, int id,
       [int? expectedMinor]) async {
+    final l10n = AppLocalizations.of(routeCtx);
+    final iap = ref.read(iapServiceProvider);
+    final product = IapProduct(
+      id: IapProductIds.character('$id'),
+      type: IapProductType.nonConsumable,
+      // Store-localized in production (v2 §6-4: the store is the price
+      // authority); until then the server-fed screen price stands in.
+      localizedPrice:
+          expectedMinor == null ? '' : _priceLabel(routeCtx, expectedMinor),
+    );
+    // Subscribe before firing — the mock resolves synchronously and a late
+    // listener would miss the verdict.
+    final verdictFuture = iap.purchases.firstWhere((p) =>
+        p.productId == product.id && p.state != IapPurchaseState.pending);
+    await iap.purchase(product);
+    final verdict = await verdictFuture;
+    switch (verdict.state) {
+      case IapPurchaseState.canceled:
+        // The member closed the store sheet — their call, no lecture.
+        return;
+      case IapPurchaseState.failed:
+        if (routeCtx.mounted) {
+          ScaffoldMessenger.of(routeCtx)
+            ..clearSnackBars()
+            ..showSnackBar(
+                SnackBar(content: Text(l10n.iapCharacterFailedBody)));
+        }
+        return;
+      case IapPurchaseState.pending:
+      case IapPurchaseState.purchased:
+      case IapPurchaseState.restored:
+        break; // paid — deliver below.
+    }
     try {
       await ref
           .read(characterRepositoryProvider)
@@ -381,7 +425,11 @@ class AvatarScreen extends ConsumerWidget {
       ref.invalidate(charactersProvider);
       ref.invalidate(ownedCharactersProvider);
       ref.invalidate(paymentPageProvider);
-      if (routeCtx.mounted) Navigator.pop(routeCtx);
+      if (!routeCtx.mounted) return;
+      // The detail route is about to pop — grab a context that survives it.
+      final navCtx = Navigator.of(routeCtx, rootNavigator: true).context;
+      Navigator.pop(routeCtx);
+      _showPurchaseSuccessSheet(navCtx);
     } on PriceChangedFailure catch (e) {
       // 가격이 바뀌었다 — 목록을 새로 받아 화면을 실제 가격으로 되돌리고, 사용자에게
       // 새 가격으로 살지 다시 묻는다. 확인하면 그 가격으로 재요청한다.
@@ -407,6 +455,28 @@ class AvatarScreen extends ConsumerWidget {
     } catch (e) {
       if (routeCtx.mounted) _reportDetailError(routeCtx, e);
     }
+  }
+
+  /// `iap_result` success sheet, shown over the character list after the
+  /// detail route pops (v2 §4-4: character purchase feedback rides the
+  /// existing screen — a sheet, not a dedicated result screen).
+  void _showPurchaseSuccessSheet(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      isScrollControlled: true,
+      builder: (sheetCtx) => BottomSheetContent(
+        title: l10n.iapCharacterSuccessTitle,
+        body: l10n.iapCharacterSuccessBody,
+        mark: SheetMarkTone.success,
+        primaryAction: SheetAction(
+          label: l10n.ctaContinue,
+          onPressed: () => Navigator.pop(sheetCtx),
+        ),
+      ),
+    );
   }
 
   /// `PATCH /members/me {character_id}` — makes [id] the in-use partner.

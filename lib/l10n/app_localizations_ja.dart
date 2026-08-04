@@ -1092,10 +1092,850 @@ class AppLocalizationsJa extends AppLocalizations {
   String get practicePronunciation => '発音を学習する';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => '価格が変更されました';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'この商品は現在$priceです。続けますか?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'プランと購入';
+
+  @override
+  String get billingGroupInTheStore => 'ストアで';
+
+  @override
+  String get billingChangePlan => 'プランを変更';
+
+  @override
+  String get billingCompareAllPlans => '全プランを比較';
+
+  @override
+  String get billingBuyACharacter => 'キャラクターを購入';
+
+  @override
+  String get billingRestorePurchases => '購入を復元';
+
+  @override
+  String get billingPaymentHistory => '支払い履歴';
+
+  @override
+  String get billingManageInTheStore => 'ストアで管理';
+
+  @override
+  String get billingRefundHelp => '返金について';
+
+  @override
+  String get billingCancelSubscription => 'サブスクリプションを解約';
+
+  @override
+  String get billingResubscribe => '再登録する';
+
+  @override
+  String get badgeCurrent => '利用中';
+
+  @override
+  String get badgeTrial => '体験中';
+
+  @override
+  String get badgeRenewing => '更新予定';
+
+  @override
+  String get badgePastDue => '支払い遅延';
+
+  @override
+  String get badgePaused => '一時停止中';
+
+  @override
+  String get badgeCanceling => '解約予定';
+
+  @override
+  String get subscriptionTitle => 'サブスクリプション';
+
+  @override
+  String get plansTitle => 'プラン';
+
+  @override
+  String get planFree => '無料';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max体験';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — 1日1回の通話';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return '月額$amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$dateまで無料';
+  }
+
+  @override
+  String get todaysCalls => '今日の通話';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$limit回中$used回使用';
+  }
+
+  @override
+  String get firstPaymentLabel => '初回の支払い';
+
+  @override
+  String get nextPaymentLabel => '次回の支払い';
+
+  @override
+  String get retryingUntilLabel => '再試行期限';
+
+  @override
+  String get pausedSinceLabel => '一時停止の開始日';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan終了';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Proで無制限に';
+
+  @override
+  String get bannerGoUnlimitedSub => '通話無制限 · 1回15分 · 月額\$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Maxでビデオ通話を';
+
+  @override
+  String get bannerMaxUpsellSub => '顔を見ながら通話 · 月額\$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => '年間プランに切り替え';
+
+  @override
+  String get bannerAnnualSwitchSub => '年額\$159 · 月あたり\$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'お支払いができませんでした';
+
+  @override
+  String get bannerPaymentFailedSub => 'ストアで支払い方法を更新するとProを継続できます';
+
+  @override
+  String get bannerPausedTitle => 'プランが一時停止中です';
+
+  @override
+  String get bannerPausedSub => 'お支払いが完了しませんでした';
+
+  @override
+  String get noteRestoreHint => '別の端末で登録済みですか？復元するとこの端末でも利用できます。';
+
+  @override
+  String get noteStoreHandled => '支払い方法・プラン変更・解約はストアで行われます。';
+
+  @override
+  String get noteFairUse => '無制限のご利用にはフェアユースポリシーが適用されます。';
+
+  @override
+  String noteTrialEnds(String date) {
+    return '体験は$dateに終了します。それまでにストアで解約すれば料金はかかりません。';
+  }
+
+  @override
+  String get noteGrace => '猶予期間中も特典は継続します。解約をアプリが妨げることはありません。';
+
+  @override
+  String get noteHold => 'お支払いが完了するまでProは一時停止されます。キャラクターと学習記録は安全に保管されます。';
+
+  @override
+  String noteEnding(String date) {
+    return 'プランの終了が予定されています。特典は$dateまで有効で、その後は無料プランに移行します。いつでも再登録できます。';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Max体験が終了しました';
+
+  @override
+  String get trialExpiredSub => '現在は無料プランです';
+
+  @override
+  String get seePlans => 'プランを見る';
+
+  @override
+  String get currentPlanTitle => '現在のプラン';
+
+  @override
+  String get badgeRecommended => 'おすすめ';
+
+  @override
+  String get perMonthUnit => '/月';
+
+  @override
+  String get planTaglinePro => '通話無制限。1回15分。';
+
+  @override
+  String get planTaglineMax => '顔を見ながら話せます。';
+
+  @override
+  String get planTaglineFree => '1日1回、無料で通話。';
+
+  @override
+  String get bulletProCalls => '音声通話が使い放題';
+
+  @override
+  String get bulletProLength => '1回の通話は15分';
+
+  @override
+  String get bulletProScoring => '一文字ずつ発音を採点';
+
+  @override
+  String get bulletProCorrections => '母語に合わせた添削';
+
+  @override
+  String get bulletProBeaverCalls => 'ビーバーから電話がかかってくる';
+
+  @override
+  String get bulletMaxVideo => '顔を見ながらビデオ通話';
+
+  @override
+  String get bulletMaxEverything => 'Proの全機能を含む';
+
+  @override
+  String get bulletMaxCharacters => '全キャラクター使い放題';
+
+  @override
+  String get bulletMaxStudyBook => 'レベルに合わせたスタディブック';
+
+  @override
+  String get bulletMaxWeeklyReport => '発音の変化がわかる週間レポート';
+
+  @override
+  String get bulletFreeCall => '1日1回、5分の音声通話';
+
+  @override
+  String get bulletFreeCheck => '1日1回の発音チェック';
+
+  @override
+  String get bulletFreeAccent => 'アクセントチェック無制限';
+
+  @override
+  String get bulletFreeCharacter => 'スタートキャラクター1体';
+
+  @override
+  String get ctaGoUnlimited => '無制限にする';
+
+  @override
+  String get ctaTurnOnVideo => 'ビデオ通話を始める';
+
+  @override
+  String get noteCallLength => '通話は1回15分です。';
+
+  @override
+  String get paywallProTitle1 => '深夜3時でも起きている';
+
+  @override
+  String get paywallProTitle2 => 'あなたの韓国人の友だち';
+
+  @override
+  String get paywallProSub => '通話無制限。1回15分。一年中いつでも。';
+
+  @override
+  String get paywallLimitHeadline => 'Proなら制限がなくなります。';
+
+  @override
+  String get limitBannerCallTitle => '今日の通話は終わりました';
+
+  @override
+  String get limitBannerCallSub => '無料プランは1日1回の通話です';
+
+  @override
+  String get limitBannerCheckTitle => '今日のチェックは終わりました';
+
+  @override
+  String get limitBannerCheckSub => '無料プランは1日1回のチェックです';
+
+  @override
+  String get bulletProCharactersForever => '購入したキャラクターはずっとあなたのもの';
+
+  @override
+  String get paywallMaxTitle => '顔を見ながら話せます。';
+
+  @override
+  String get paywallMaxSub => 'ビデオ通話、全キャラクター、そしてレベルに合わせたスタディブックまで。';
+
+  @override
+  String get planMonthly => '月間';
+
+  @override
+  String get planAnnual => '年間';
+
+  @override
+  String get proMonthlyPriceLine => '月額\$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · 月あたり\$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => '月額\$19.90';
+
+  @override
+  String get maxAnnualPriceLine => '年額\$159.00 · 月あたり\$13.25';
+
+  @override
+  String get ctaCaptionPro => '月額\$12.90 · ストアでいつでも解約できます';
+
+  @override
+  String get ctaCaptionMax => '月額\$19.90 · ストアでいつでも解約できます';
+
+  @override
+  String get footerTerms => '利用規約';
+
+  @override
+  String get footerPrivacy => 'プライバシー';
+
+  @override
+  String get noteMaxCharacters =>
+      'Maxで解放されたキャラクターはサブスクリプション中に利用できます。購入したキャラクターはずっとあなたのものです。';
+
+  @override
+  String get processingTitle => '購入を確認しています';
+
+  @override
+  String get processingSub => '通常は数秒で完了します。';
+
+  @override
+  String get successProTitle => 'Proが始まりました。';
+
+  @override
+  String get successProSub => '今から通話が無制限です。';
+
+  @override
+  String get successProBenefit1 => '好きなだけ通話 — 1回15分';
+
+  @override
+  String get successProBenefit2 => '発音チェック無制限';
+
+  @override
+  String get successProBenefit3 => '全キャラクターと単品購入';
+
+  @override
+  String get successMaxTitle => '顔が見えるようになりました。';
+
+  @override
+  String get successMaxSub => 'ビデオ通話が有効になりました。通話中にビデオボタンをタップしてください。';
+
+  @override
+  String get successMaxBenefit1 => '顔を見ながらビデオ通話';
+
+  @override
+  String get successMaxBenefit2 => '全キャラクター無制限、新キャラクターは先行提供';
+
+  @override
+  String get successMaxBenefit3 => 'レベルに合わせたスタディブック';
+
+  @override
+  String get ctaStartACall => '通話を始める';
+
+  @override
+  String get ctaStartAVideoCall => 'ビデオ通話を始める';
+
+  @override
+  String get ctaSeeYourSubscription => 'サブスクリプションを見る';
+
+  @override
+  String get successProCaption => '解約するまで毎月\$12.90が請求されます。管理・解約はいつでもストアで行えます。';
+
+  @override
+  String get successMaxCaption => '解約するまで毎月\$19.90が請求されます。管理・解約はいつでもストアで行えます。';
+
+  @override
+  String get plansErrorTitle => 'プランを読み込めませんでした';
+
+  @override
+  String get plansErrorSub => 'ストアから応答がありませんでした。';
+
+  @override
+  String get ctaTryAgain => 'もう一度試す';
+
+  @override
+  String get plansErrorCaption => '料金は請求されていません。';
+
+  @override
+  String get changePlanTitle => 'プラン変更';
+
+  @override
+  String get moveToMaxTitle => 'Maxへ移行';
+
+  @override
+  String get maxPriceShort => '月額\$19.90';
+
+  @override
+  String get moveToMaxCardSub => '顔を見ながらビデオ通話 · 全キャラクター · あなた専用のスタディブック';
+
+  @override
+  String get whatHappensNow => 'この後の流れ';
+
+  @override
+  String get maxStartsLabel => 'Max開始';
+
+  @override
+  String get immediately => 'すぐに';
+
+  @override
+  String get unusedProTime => '未使用のPro期間';
+
+  @override
+  String get creditedTowardMax => 'Max料金に充当';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Maxに切り替える';
+
+  @override
+  String get upgradeCaption => '新しいプランはすぐに始まります。未使用のPro期間は充当され、二重請求はありません。';
+
+  @override
+  String get moveToProTitle => 'Proへ移行';
+
+  @override
+  String get moveToProSub => '今日は何も変わりません。お支払い済みの月末までMaxが継続します。';
+
+  @override
+  String get maxRunsUntil => 'Maxの有効期限';
+
+  @override
+  String get proStarts => 'Pro開始';
+
+  @override
+  String get whatYouKeep => '引き続き使えるもの';
+
+  @override
+  String get keepBenefitCalls => '音声通話無制限、1回15分';
+
+  @override
+  String get keepBenefitCharacters => '購入したキャラクターはずっとあなたのもの';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'ビデオ通話とMax限定キャラクターは$dateに無効になります。';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Proに切り替える';
+
+  @override
+  String get ctaKeepMax => 'Maxを続ける';
+
+  @override
+  String get winbackSkip => 'スキップ';
+
+  @override
+  String get winbackTitle => 'Proプランが終了しました';
+
+  @override
+  String get winbackSub => '現在は無料プラン — 1日1回の通話です。';
+
+  @override
+  String get winbackQuestion => 'よろしければ、やめた理由を教えてください。';
+
+  @override
+  String get winbackReasonExpensive => '料金が高い';
+
+  @override
+  String get winbackReasonUnused => 'あまり使っていなかった';
+
+  @override
+  String get winbackReasonMissing => '必要な機能がなかった';
+
+  @override
+  String get winbackReasonOtherApp => '他のアプリを見つけた';
+
+  @override
+  String get winbackReasonElse => 'その他';
+
+  @override
+  String get ctaSend => '送信';
+
+  @override
+  String get ctaNotNow => '今はしない';
+
+  @override
+  String get winbackCaption => 'この回答でプランは復元されません。再登録はストアで行えます。';
+
+  @override
+  String get ctaContinue => '続ける';
+
+  @override
+  String get ctaClose => '閉じる';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Proが戻りました';
+
+  @override
+  String get ovRestoreSuccessBody => 'サブスクリプションが見つかり、この端末で再び有効にしました。';
+
+  @override
+  String get ovRestoreEmptyTitle => '復元するものがありません';
+
+  @override
+  String get ovRestoreEmptyBody => 'このストアアカウントに有効なサブスクリプションはありません。';
+
+  @override
+  String get ovRestoreOtherTitle => '別のアカウントのプランです';
+
+  @override
+  String get ovRestoreOtherBody => 'このサブスクリプションは別のBeaverTalkアカウントで有効になっています。';
+
+  @override
+  String get ctaSignInThatAccount => 'そのアカウントでログイン';
+
+  @override
+  String get ctaGetHelp => 'ヘルプを見る';
+
+  @override
+  String get ovCharacterOfferTitle => 'Proはまだ迷っていますか？';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'キャラクターを1体選んでずっと使えます。サブスクリプションも更新もない単品購入です。';
+
+  @override
+  String get rowOneCharacter => 'キャラクター1体';
+
+  @override
+  String get rowFromPrice => '\$5.00から';
+
+  @override
+  String get rowYoursForever => 'ずっとあなたのもの';
+
+  @override
+  String get rowNoRenewal => '更新なし';
+
+  @override
+  String get rowWorksOnFree => '無料プランでも使える';
+
+  @override
+  String get rowYes => 'はい';
+
+  @override
+  String get ctaSeeCharacters => 'キャラクターを見る';
+
+  @override
+  String get ovNotEligibleTitle => '解約するものがありません';
+
+  @override
+  String get ovNotEligibleBody => '現在は無料プランです。このアカウントに有効なサブスクリプションはありません。';
+
+  @override
+  String get ovCancelDownsellTitle => '解約の前に';
+
+  @override
+  String get ovCancelDownsellBody => '解約はストアで行います。知っておきたいことが2つあります。';
+
+  @override
+  String get rowPayYearlyInstead => '年払いに変えると';
+
+  @override
+  String get rowYearlyMonthEquiv => '月あたり\$8.33';
+
+  @override
+  String get rowCharactersYouBought => '購入したキャラクター';
+
+  @override
+  String get rowProRunsUntil => 'Proの有効期限';
+
+  @override
+  String get ctaSwitchToYearly => '年払いに切り替える';
+
+  @override
+  String get ctaContinueToStore => 'ストアへ進む';
+
+  @override
+  String get ovAnnualSwitchTitle => '年払いで\$54.80お得に';
+
+  @override
+  String get ovAnnualSwitchBody => 'Proを2か月ご利用中ですね。年間プランのほうが割安です。';
+
+  @override
+  String get rowYouSave => '節約額';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => '年間';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => '月払いで1年';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => '月払いに切り替え';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return '年間プランは$dateまで有効です。月払いはその翌日から始まります。';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => '月払い開始';
+
+  @override
+  String get rowMonthlyLabel => '月間';
+
+  @override
+  String get rowYearlyWorkedOut => '年間プランの月換算';
+
+  @override
+  String get ctaSwitchToMonthly => '月払いに切り替える';
+
+  @override
+  String get ovRefundHelpTitle => '返金はストアが対応します';
+
+  @override
+  String get ovRefundHelpBody => '当社が直接返金することはできません。すべてのリクエストはストアが審査します。';
+
+  @override
+  String get ctaGoToStore => 'ストアへ行く';
+
+  @override
+  String get ovTrialEndingTitle => '体験は明日終了します';
+
+  @override
+  String get ovTrialEndingBody => '解約しない限りMaxは継続します。この後の流れです。';
+
+  @override
+  String get rowTrialEnds => '体験終了';
+
+  @override
+  String get rowFirstCharge => '初回請求';
+
+  @override
+  String get rowThenMonthly => '以降は毎月';
+
+  @override
+  String get ctaCancelInStore => 'ストアで解約';
+
+  @override
+  String get ovTrialStartTitle => 'Maxを7日間無料で';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$dateまで無料です。その後はストアで解約しない限り月額\$19.90です。';
+  }
+
+  @override
+  String get ctaStart7Days => '7日間無料で始める';
+
+  @override
+  String get ovOtoTitle => '始める前にもうひとつ';
+
+  @override
+  String get ovOtoBody => 'いい選択です — 通話無制限が今有効になりました。同じProでも年払いのほうが割安です。';
+
+  @override
+  String get ovFailedDeclinedTitle => 'カードが拒否されました';
+
+  @override
+  String get ovFailedDeclinedBody => 'ストアで支払いができませんでした。料金は請求されていません。';
+
+  @override
+  String get ctaUpdatePaymentMethod => '支払い方法を更新';
+
+  @override
+  String get ovFailedCanceledTitle => '支払いがキャンセルされました';
+
+  @override
+  String get ovFailedCanceledBody => '無料プランのままです。料金は請求されていません。';
+
+  @override
+  String get ovFailedStoreTitle => '問題が発生しました';
+
+  @override
+  String get ovFailedStoreBody => 'ストアに接続できませんでした。料金は請求されていません。';
+
+  @override
+  String get ovAlreadyTitle => 'すでにProをご利用中です';
+
+  @override
+  String get ovAlreadyBody => 'このストアアカウントには有効なプランがあります。新たに購入するものはありません。';
+
+  @override
+  String get ctaSeeMySubscription => 'サブスクリプションを見る';
+
+  @override
+  String get subCancelTitle => 'サブスクリプションを解約';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Proは$dateまで有効です。その後は無料プランに移行します。';
+  }
+
+  @override
+  String get subWhatYouLose => '失うもの';
+
+  @override
+  String get benefitCalls15 => '通話無制限、1回15分';
+
+  @override
+  String get benefitScoring => '一文字ずつ発音を採点';
+
+  @override
+  String get benefitEveryCharacter => '全キャラクター使い放題';
+
+  @override
+  String get ctaKeepPro => 'Proを続ける';
+
+  @override
+  String get subPaymentTitle => '支払いを更新';
+
+  @override
+  String get subPaymentBody => 'お支払いができませんでした。猶予期間中はProが継続します。';
+
+  @override
+  String get subHowToFix => '解決方法';
+
+  @override
+  String get fixStep1 => 'ストアを開いて支払い方法を更新する';
+
+  @override
+  String get fixStep2 => '戻ってくると、プランは自動的に再開します';
+
+  @override
+  String get fixStep3 => '二重請求はありません';
+
+  @override
+  String get subResubTitle => '再登録する';
+
+  @override
+  String subResubBody(String date) {
+    return 'Proは$dateに終了します。自動更新を再びオンにすれば、そのまま続きます。';
+  }
+
+  @override
+  String get subWhatYouKeep => '引き続き使えるもの';
+
+  @override
+  String get ctaTurnItBackOn => '再びオンにする';
+
+  @override
+  String get flTodayTitle => '今日の通話は終わりました';
+
+  @override
+  String get flTodayBody => '続きから、今すぐ再開しましょう。';
+
+  @override
+  String get flCheckTitle => '今日のチェックは終わりました';
+
+  @override
+  String get flCheckBody => '無料プランは1日1回のチェックです。Proなら無制限です。';
+
+  @override
+  String get flBenefitCalls => 'Proで通話無制限 · 1回15分';
+
+  @override
+  String get flBenefitChecks => 'Proで発音チェック無制限';
+
+  @override
+  String get flCaption => '月額\$12.90 · いつでも解約できます';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$limit中$used使用';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'また明日にします';
+
+  @override
+  String get accountSection => 'アカウント';
+
+  @override
+  String get nicknameLabel => 'ニックネーム';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'ログイン方法';
+
+  @override
+  String get joinedLabel => '登録日';
+
+  @override
+  String get editNicknameTitle => 'ニックネームを編集';
+
+  @override
+  String get nicknameRule => '2〜12文字 · 英字と数字のみ使えます';
+
+  @override
+  String get ctaSave => '保存';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => '今離れると、購読は開始されません';
+
+  @override
+  String get paywallLeaveBody => '特典は決済直後に利用できます。マイページからいつでも戻れます。';
+
+  @override
+  String get ctaKeepLooking => '続けて見る';
+
+  @override
+  String get ctaLeaveAnyway => 'それでも離れる';
+
+  @override
+  String get iapCharacterSuccessTitle => '新しい友だちが仲間入り!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'このキャラクターはずっとあなたのもの。プランが変わっても残り、購入の復元でどの端末でも戻せます。';
+
+  @override
+  String get iapCharacterFailedBody => '購入が完了しませんでした。請求は発生していません。もう一度お試しください。';
 }

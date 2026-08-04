@@ -1123,10 +1123,892 @@ class AppLocalizationsId extends AppLocalizations {
   String get practicePronunciation => 'Latih pelafalan';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Harga berubah';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Item ini sekarang $price. Lanjutkan?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Paket & pembelian';
+
+  @override
+  String get billingGroupInTheStore => 'Di toko';
+
+  @override
+  String get billingChangePlan => 'Ubah paket';
+
+  @override
+  String get billingCompareAllPlans => 'Bandingkan semua paket';
+
+  @override
+  String get billingBuyACharacter => 'Beli karakter';
+
+  @override
+  String get billingRestorePurchases => 'Pulihkan pembelian';
+
+  @override
+  String get billingPaymentHistory => 'Riwayat pembayaran';
+
+  @override
+  String get billingManageInTheStore => 'Kelola di toko';
+
+  @override
+  String get billingRefundHelp => 'Bantuan refund';
+
+  @override
+  String get billingCancelSubscription => 'Batalkan langganan';
+
+  @override
+  String get billingResubscribe => 'Berlangganan lagi';
+
+  @override
+  String get badgeCurrent => 'Saat ini';
+
+  @override
+  String get badgeTrial => 'Uji coba';
+
+  @override
+  String get badgeRenewing => 'Diperpanjang';
+
+  @override
+  String get badgePastDue => 'Tertunggak';
+
+  @override
+  String get badgePaused => 'Dijeda';
+
+  @override
+  String get badgeCanceling => 'Dibatalkan';
+
+  @override
+  String get subscriptionTitle => 'Langganan';
+
+  @override
+  String get plansTitle => 'Paket';
+
+  @override
+  String get planFree => 'Gratis';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Uji coba Max';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — satu panggilan per hari';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return '$amount per bulan';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return 'Gratis sampai $date';
+  }
+
+  @override
+  String get todaysCalls => 'Panggilan hari ini';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$used dari $limit terpakai';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Pembayaran pertama';
+
+  @override
+  String get nextPaymentLabel => 'Pembayaran berikutnya';
+
+  @override
+  String get retryingUntilLabel => 'Dicoba lagi sampai';
+
+  @override
+  String get pausedSinceLabel => 'Dijeda sejak';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan berakhir';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Tanpa batas dengan Pro';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Panggilan tanpa batas · 15 menit per panggilan · \$12.90 per bulan';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Aktifkan video dengan Max';
+
+  @override
+  String get bannerMaxUpsellSub => 'Panggilan tatap muka · \$19.90 per bulan';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Beralih ke tahunan';
+
+  @override
+  String get bannerAnnualSwitchSub => '\$159 per tahun · \$13.25 per bulan';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Pembayaranmu tidak berhasil';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Perbarui pembayaran di toko agar Pro tetap aktif';
+
+  @override
+  String get bannerPausedTitle => 'Paketmu dijeda';
+
+  @override
+  String get bannerPausedSub => 'Pembayaran tidak pernah berhasil';
+
+  @override
+  String get noteRestoreHint =>
+      'Sudah berlangganan di perangkat lain? Pulihkan untuk mengaktifkannya di perangkat ini.';
+
+  @override
+  String get noteStoreHandled =>
+      'Metode pembayaran, perubahan paket, dan pembatalan ditangani oleh toko.';
+
+  @override
+  String get noteFairUse =>
+      'Penggunaan tanpa batas tunduk pada kebijakan penggunaan wajar kami.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Uji cobamu berakhir $date. Batalkan di toko sebelum itu dan tidak ada tagihan.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Manfaat tetap berjalan selama masa tenggang. Pembatalan tidak pernah dihalangi di aplikasi.';
+
+  @override
+  String get noteHold =>
+      'Pro dijeda sampai pembayaran berhasil. Karakter dan progresmu aman.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Paketmu akan berakhir. Manfaat berjalan sampai $date, lalu kamu beralih ke Gratis. Kamu bisa berlangganan lagi kapan saja.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Uji coba Max-mu berakhir';
+
+  @override
+  String get trialExpiredSub => 'Sekarang kamu di paket Gratis';
+
+  @override
+  String get seePlans => 'Lihat paket';
+
+  @override
+  String get currentPlanTitle => 'Paket Saat Ini';
+
+  @override
+  String get badgeRecommended => 'Direkomendasikan';
+
+  @override
+  String get perMonthUnit => 'per bulan';
+
+  @override
+  String get planTaglinePro => 'Panggilan tanpa batas. 15 menit per panggilan.';
+
+  @override
+  String get planTaglineMax => 'Sekarang kamu bisa melihat mereka.';
+
+  @override
+  String get planTaglineFree => 'Satu panggilan per hari. Gratis.';
+
+  @override
+  String get bulletProCalls => 'Panggilan suara sesering yang kamu mau';
+
+  @override
+  String get bulletProLength => '15 menit per panggilan';
+
+  @override
+  String get bulletProScoring => 'Pengucapan dinilai huruf demi huruf';
+
+  @override
+  String get bulletProCorrections =>
+      'Koreksi yang disesuaikan dengan bahasa ibumu';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver meneleponmu lebih dulu';
+
+  @override
+  String get bulletMaxVideo => 'Panggilan video tatap muka';
+
+  @override
+  String get bulletMaxEverything => 'Semua yang ada di Pro';
+
+  @override
+  String get bulletMaxCharacters => 'Semua karakter, tanpa batas';
+
+  @override
+  String get bulletMaxStudyBook => 'Buku belajar yang sesuai dengan levelmu';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'Laporan mingguan tentang perkembangan pengucapanmu';
+
+  @override
+  String get bulletFreeCall => 'Satu panggilan suara 5 menit per hari';
+
+  @override
+  String get bulletFreeCheck => 'Satu cek pengucapan per hari';
+
+  @override
+  String get bulletFreeAccent => 'Cek aksen tanpa batas';
+
+  @override
+  String get bulletFreeCharacter => 'Satu karakter untuk memulai';
+
+  @override
+  String get ctaGoUnlimited => 'Tanpa batas sekarang';
+
+  @override
+  String get ctaTurnOnVideo => 'Aktifkan video';
+
+  @override
+  String get noteCallLength => 'Setiap panggilan berdurasi 15 menit.';
+
+  @override
+  String get paywallProTitle1 => 'Teman Koreamu';
+
+  @override
+  String get paywallProTitle2 => 'yang bangun jam 3 pagi';
+
+  @override
+  String get paywallProSub =>
+      'Panggilan tanpa batas. 15 menit per panggilan. Sepanjang tahun.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro menghapus batasnya.';
+
+  @override
+  String get limitBannerCallTitle => 'Itu panggilan hari ini';
+
+  @override
+  String get limitBannerCallSub => 'Gratis memberi satu panggilan per hari';
+
+  @override
+  String get limitBannerCheckTitle => 'Itu cek hari ini';
+
+  @override
+  String get limitBannerCheckSub => 'Gratis memberi satu cek per hari';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Karakter yang kamu beli jadi milikmu selamanya';
+
+  @override
+  String get paywallMaxTitle => 'Sekarang kamu bisa melihat mereka.';
+
+  @override
+  String get paywallMaxSub =>
+      'Panggilan video, semua karakter, dan buku belajar yang dibuat sesuai levelmu.';
+
+  @override
+  String get planMonthly => 'Bulanan';
+
+  @override
+  String get planAnnual => 'Tahunan';
+
+  @override
+  String get proMonthlyPriceLine => '\$12.90 per bulan';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · \$8.33 per bulan';
+
+  @override
+  String get maxMonthlyPriceLine => '\$19.90 per bulan';
+
+  @override
+  String get maxAnnualPriceLine => '\$159.00 per tahun · \$13.25 per bulan';
+
+  @override
+  String get ctaCaptionPro => '\$12.90 per bulan · batalkan kapan saja di toko';
+
+  @override
+  String get ctaCaptionMax => '\$19.90 per bulan · batalkan kapan saja di toko';
+
+  @override
+  String get footerTerms => 'Ketentuan';
+
+  @override
+  String get footerPrivacy => 'Privasi';
+
+  @override
+  String get noteMaxCharacters =>
+      'Karakter yang dibuka Max tersedia selama langgananmu aktif. Karakter yang kamu beli tetap milikmu.';
+
+  @override
+  String get processingTitle => 'Mengonfirmasi pembelianmu';
+
+  @override
+  String get processingSub => 'Biasanya hanya butuh beberapa detik.';
+
+  @override
+  String get successProTitle => 'Kamu sudah di Pro.';
+
+  @override
+  String get successProSub => 'Panggilan tanpa batas, mulai sekarang.';
+
+  @override
+  String get successProBenefit1 =>
+      'Telepon sesering yang kamu mau — 15 menit per panggilan';
+
+  @override
+  String get successProBenefit2 => 'Cek pengucapan tanpa batas';
+
+  @override
+  String get successProBenefit3 => 'Semua karakter, plus pembelian satuan';
+
+  @override
+  String get successMaxTitle => 'Sekarang kamu bisa melihat mereka.';
+
+  @override
+  String get successMaxSub =>
+      'Panggilan video aktif. Ketuk tombol video di panggilan mana pun.';
+
+  @override
+  String get successMaxBenefit1 => 'Panggilan video tatap muka';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Semua karakter, tanpa batas, dan yang baru lebih dulu';
+
+  @override
+  String get successMaxBenefit3 => 'Buku belajar yang sesuai dengan levelmu';
+
+  @override
+  String get ctaStartACall => 'Mulai panggilan';
+
+  @override
+  String get ctaStartAVideoCall => 'Mulai panggilan video';
+
+  @override
+  String get ctaSeeYourSubscription => 'Lihat langgananmu';
+
+  @override
+  String get successProCaption =>
+      '\$12.90 ditagih setiap bulan sampai kamu batalkan. Kelola atau batalkan kapan saja di toko.';
+
+  @override
+  String get successMaxCaption =>
+      '\$19.90 ditagih setiap bulan sampai kamu batalkan. Kelola atau batalkan kapan saja di toko.';
+
+  @override
+  String get plansErrorTitle => 'Tidak dapat memuat paket';
+
+  @override
+  String get plansErrorSub => 'Toko tidak merespons.';
+
+  @override
+  String get ctaTryAgain => 'Coba lagi';
+
+  @override
+  String get plansErrorCaption => 'Tidak ada tagihan.';
+
+  @override
+  String get changePlanTitle => 'Ubah Paket';
+
+  @override
+  String get moveToMaxTitle => 'Pindah ke Max';
+
+  @override
+  String get maxPriceShort => '\$19.90 / bln';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Panggilan video tatap muka · semua karakter · buku belajar khusus untukmu';
+
+  @override
+  String get whatHappensNow => 'Apa yang terjadi sekarang';
+
+  @override
+  String get maxStartsLabel => 'Max dimulai';
+
+  @override
+  String get immediately => 'Segera';
+
+  @override
+  String get unusedProTime => 'Sisa waktu Pro';
+
+  @override
+  String get creditedTowardMax => 'Dikreditkan ke Max';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Beralih ke Max';
+
+  @override
+  String get upgradeCaption =>
+      'Paket barumu langsung aktif. Sisa waktu Pro dikreditkan, tidak pernah ditagih dua kali.';
+
+  @override
+  String get moveToProTitle => 'Pindah ke Pro';
+
+  @override
+  String get moveToProSub =>
+      'Tidak ada yang berubah hari ini. Max berjalan sampai akhir bulan yang sudah kamu bayar.';
+
+  @override
+  String get maxRunsUntil => 'Max berjalan sampai';
+
+  @override
+  String get proStarts => 'Pro dimulai';
+
+  @override
+  String get whatYouKeep => 'Yang tetap kamu miliki';
+
+  @override
+  String get keepBenefitCalls =>
+      'Panggilan suara tanpa batas, 15 menit per panggilan';
+
+  @override
+  String get keepBenefitCharacters =>
+      'Karakter yang kamu beli jadi milikmu selamanya';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Panggilan video dan karakter khusus Max nonaktif pada $date.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Beralih ke Pro';
+
+  @override
+  String get ctaKeepMax => 'Pertahankan Max';
+
+  @override
+  String get winbackSkip => 'Lewati';
+
+  @override
+  String get winbackTitle => 'Paket Pro-mu berakhir';
+
+  @override
+  String get winbackSub => 'Sekarang kamu di Gratis — satu panggilan per hari.';
+
+  @override
+  String get winbackQuestion => 'Boleh tahu kenapa kamu berhenti?';
+
+  @override
+  String get winbackReasonExpensive => 'Terlalu mahal';
+
+  @override
+  String get winbackReasonUnused => 'Jarang kupakai';
+
+  @override
+  String get winbackReasonMissing => 'Fitur yang kubutuhkan tidak ada';
+
+  @override
+  String get winbackReasonOtherApp => 'Aku menemukan aplikasi lain';
+
+  @override
+  String get winbackReasonElse => 'Alasan lain';
+
+  @override
+  String get ctaSend => 'Kirim';
+
+  @override
+  String get ctaNotNow => 'Nanti saja';
+
+  @override
+  String get winbackCaption =>
+      'Ini tidak memulihkan paketmu. Berlangganan lagi di toko.';
+
+  @override
+  String get ctaContinue => 'Lanjutkan';
+
+  @override
+  String get ctaClose => 'Tutup';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro kembali';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Kami menemukan langgananmu dan mengaktifkannya lagi di perangkat ini.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Tidak ada yang dipulihkan';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Tidak ada langganan aktif yang tertaut ke akun toko ini.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Paket itu milik akun lain';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Langganan ini sudah aktif di akun BeaverTalk yang berbeda.';
+
+  @override
+  String get ctaSignInThatAccount => 'Masuk ke akun itu';
+
+  @override
+  String get ctaGetHelp => 'Minta bantuan';
+
+  @override
+  String get ovCharacterOfferTitle => 'Belum siap untuk Pro?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Pilih satu karakter dan miliki selamanya. Pembelian satu kali — tanpa langganan, tanpa perpanjangan.';
+
+  @override
+  String get rowOneCharacter => 'Satu karakter';
+
+  @override
+  String get rowFromPrice => 'mulai \$5.00';
+
+  @override
+  String get rowYoursForever => 'Milikmu selamanya';
+
+  @override
+  String get rowNoRenewal => 'Tanpa perpanjangan';
+
+  @override
+  String get rowWorksOnFree => 'Berlaku di Gratis';
+
+  @override
+  String get rowYes => 'Ya';
+
+  @override
+  String get ctaSeeCharacters => 'Lihat karakter';
+
+  @override
+  String get ovNotEligibleTitle => 'Tidak ada yang dibatalkan';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Kamu di paket Gratis. Tidak ada langganan aktif di akun ini.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Sebelum kamu pergi';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'Pembatalan dilakukan di toko. Dua hal yang perlu kamu tahu.';
+
+  @override
+  String get rowPayYearlyInstead => 'Bayar tahunan saja';
+
+  @override
+  String get rowYearlyMonthEquiv => '\$8.33 per bulan';
+
+  @override
+  String get rowCharactersYouBought => 'Karakter yang kamu beli';
+
+  @override
+  String get rowProRunsUntil => 'Pro berjalan sampai';
+
+  @override
+  String get ctaSwitchToYearly => 'Beralih ke tahunan';
+
+  @override
+  String get ctaContinueToStore => 'Lanjutkan ke toko';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Bayar tahunan, hemat \$54.80';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Kamu sudah dua bulan di Pro. Paket tahunan jatuhnya lebih murah.';
+
+  @override
+  String get rowYouSave => 'Kamu hemat';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Tahunan';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Bulanan, selama setahun';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Beralih ke bulanan';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Paket tahunanmu berjalan sampai $date. Tagihan bulanan dimulai sehari setelahnya.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Tagihan bulanan dimulai';
+
+  @override
+  String get rowMonthlyLabel => 'Bulanan';
+
+  @override
+  String get rowYearlyWorkedOut => 'Tahunan setara dengan';
+
+  @override
+  String get ctaSwitchToMonthly => 'Beralih ke bulanan';
+
+  @override
+  String get ovRefundHelpTitle => 'Refund ditangani oleh toko';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Kami tidak bisa memberikan refund sendiri. Setiap permintaan ditinjau oleh toko.';
+
+  @override
+  String get ctaGoToStore => 'Buka toko';
+
+  @override
+  String get ovTrialEndingTitle => 'Uji cobamu berakhir besok';
+
+  @override
+  String get ovTrialEndingBody =>
+      'Max tetap berjalan kecuali kamu batalkan. Ini yang akan terjadi.';
+
+  @override
+  String get rowTrialEnds => 'Uji coba berakhir';
+
+  @override
+  String get rowFirstCharge => 'Tagihan pertama';
+
+  @override
+  String get rowThenMonthly => 'Lalu setiap bulan';
+
+  @override
+  String get ctaCancelInStore => 'Batalkan di toko';
+
+  @override
+  String get ovTrialStartTitle => '7 hari Max, gratis';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return 'Gratis sampai $date. Setelah itu \$19.90 per bulan, kecuali kamu batalkan di toko.';
+  }
+
+  @override
+  String get ctaStart7Days => 'Mulai 7 hari gratis';
+
+  @override
+  String get ovOtoTitle => 'Satu hal lagi sebelum kamu mulai';
+
+  @override
+  String get ovOtoBody =>
+      'Pilihan tepat — panggilan tanpa batas sudah aktif. Pro yang sama lebih murah jika bayar tahunan.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Kartumu ditolak';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Toko tidak dapat memproses pembayaran. Tidak ada tagihan.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Perbarui metode pembayaran';
+
+  @override
+  String get ovFailedCanceledTitle => 'Pembayaran dibatalkan';
+
+  @override
+  String get ovFailedCanceledBody => 'Kamu masih di Gratis. Tidak ada tagihan.';
+
+  @override
+  String get ovFailedStoreTitle => 'Terjadi kesalahan';
+
+  @override
+  String get ovFailedStoreBody =>
+      'Kami tidak dapat menghubungi toko. Tidak ada tagihan.';
+
+  @override
+  String get ovAlreadyTitle => 'Kamu sudah di Pro';
+
+  @override
+  String get ovAlreadyBody =>
+      'Akun toko ini punya paket aktif. Tidak ada yang perlu dibeli.';
+
+  @override
+  String get ctaSeeMySubscription => 'Lihat langgananku';
+
+  @override
+  String get subCancelTitle => 'Batalkan langganan';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro berjalan sampai $date. Setelah itu kamu beralih ke Gratis.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Yang akan hilang';
+
+  @override
+  String get benefitCalls15 => 'Panggilan tanpa batas, 15 menit per panggilan';
+
+  @override
+  String get benefitScoring => 'Pengucapan dinilai huruf demi huruf';
+
+  @override
+  String get benefitEveryCharacter => 'Semua karakter, tanpa batas';
+
+  @override
+  String get ctaKeepPro => 'Pertahankan Pro';
+
+  @override
+  String get subPaymentTitle => 'Perbarui pembayaran';
+
+  @override
+  String get subPaymentBody =>
+      'Kami tidak dapat memproses pembayaran. Pro tetap berjalan selama masa tenggang.';
+
+  @override
+  String get subHowToFix => 'Cara memperbaikinya';
+
+  @override
+  String get fixStep1 => 'Buka toko dan perbarui metode pembayaranmu';
+
+  @override
+  String get fixStep2 => 'Kembali lagi — paketmu otomatis berlanjut';
+
+  @override
+  String get fixStep3 => 'Tidak ada tagihan ganda';
+
+  @override
+  String get subResubTitle => 'Berlangganan lagi';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro berakhir pada $date. Aktifkan lagi perpanjangan otomatis dan tidak ada yang berubah.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Yang tetap kamu miliki';
+
+  @override
+  String get ctaTurnItBackOn => 'Aktifkan lagi';
+
+  @override
+  String get flTodayTitle => 'Itu panggilan hari ini';
+
+  @override
+  String get flTodayBody => 'Lanjutkan dari terakhir kali — sekarang juga.';
+
+  @override
+  String get flCheckTitle => 'Itu cek hari ini';
+
+  @override
+  String get flCheckBody =>
+      'Satu cek per hari di Gratis. Pro membuatnya tanpa batas.';
+
+  @override
+  String get flBenefitCalls =>
+      'Panggilan tanpa batas dengan Pro · 15 menit per panggilan';
+
+  @override
+  String get flBenefitChecks => 'Cek pengucapan tanpa batas dengan Pro';
+
+  @override
+  String get flCaption => '\$12.90 per bulan · batalkan kapan saja';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$used dari $limit terpakai';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Mungkin besok';
+
+  @override
+  String get accountSection => 'Akun';
+
+  @override
+  String get nicknameLabel => 'Nama panggilan';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Metode masuk';
+
+  @override
+  String get joinedLabel => 'Bergabung';
+
+  @override
+  String get editNicknameTitle => 'Ubah Nama Panggilan';
+
+  @override
+  String get nicknameRule =>
+      '2–12 karakter. Huruf dan angka. Hanya bahasa Inggris';
+
+  @override
+  String get ctaSave => 'Simpan';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle =>
+      'Kalau keluar sekarang, kamu belum berlangganan';
+
+  @override
+  String get paywallLeaveBody =>
+      'Manfaatmu terbuka langsung setelah pembayaran. Kamu bisa kembali kapan saja dari Halaman saya.';
+
+  @override
+  String get ctaKeepLooking => 'Lanjut lihat';
+
+  @override
+  String get ctaLeaveAnyway => 'Tetap keluar';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Teman baru bergabung!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Karakter ini milikmu selamanya — tetap ada meski paket berubah, dan Pulihkan pembelian mengembalikannya di perangkat mana pun.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Pembelian tidak berhasil. Tidak ada tagihan — silakan coba lagi.';
 }

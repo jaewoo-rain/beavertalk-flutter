@@ -1089,10 +1089,848 @@ class AppLocalizationsZh extends AppLocalizations {
   String get practicePronunciation => '练习发音';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => '价格已变更';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return '此商品现价为$price。要继续吗?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => '套餐与购买';
+
+  @override
+  String get billingGroupInTheStore => '在商店中';
+
+  @override
+  String get billingChangePlan => '更换套餐';
+
+  @override
+  String get billingCompareAllPlans => '对比全部套餐';
+
+  @override
+  String get billingBuyACharacter => '购买角色';
+
+  @override
+  String get billingRestorePurchases => '恢复购买';
+
+  @override
+  String get billingPaymentHistory => '付款记录';
+
+  @override
+  String get billingManageInTheStore => '在商店中管理';
+
+  @override
+  String get billingRefundHelp => '退款帮助';
+
+  @override
+  String get billingCancelSubscription => '取消订阅';
+
+  @override
+  String get billingResubscribe => '重新订阅';
+
+  @override
+  String get badgeCurrent => '当前';
+
+  @override
+  String get badgeTrial => '试用中';
+
+  @override
+  String get badgeRenewing => '自动续订';
+
+  @override
+  String get badgePastDue => '扣款失败';
+
+  @override
+  String get badgePaused => '已暂停';
+
+  @override
+  String get badgeCanceling => '即将取消';
+
+  @override
+  String get subscriptionTitle => '订阅';
+
+  @override
+  String get plansTitle => '套餐';
+
+  @override
+  String get planFree => '免费';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max 试用';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — 每天一次通话';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return '每月 $amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$date前免费';
+  }
+
+  @override
+  String get todaysCalls => '今日通话';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '已用 $used/$limit 次';
+  }
+
+  @override
+  String get firstPaymentLabel => '首次付款';
+
+  @override
+  String get nextPaymentLabel => '下次付款';
+
+  @override
+  String get retryingUntilLabel => '重试截止';
+
+  @override
+  String get pausedSinceLabel => '暂停开始于';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan 到期';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => '用 Pro 解锁无限通话';
+
+  @override
+  String get bannerGoUnlimitedSub => '通话不限次 · 每次 15 分钟 · 每月 \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => '用 Max 开启视频通话';
+
+  @override
+  String get bannerMaxUpsellSub => '面对面通话 · 每月 \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => '换成年付';
+
+  @override
+  String get bannerAnnualSwitchSub => '每年 \$159 · 折合每月 \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => '扣款没有成功';
+
+  @override
+  String get bannerPaymentFailedSub => '在商店中更新付款方式即可保住 Pro';
+
+  @override
+  String get bannerPausedTitle => '你的套餐已暂停';
+
+  @override
+  String get bannerPausedSub => '付款一直没有完成';
+
+  @override
+  String get noteRestoreHint => '已在其他设备上订阅？恢复购买即可在这台设备上继续使用。';
+
+  @override
+  String get noteStoreHandled => '付款方式、套餐变更和取消都由商店处理。';
+
+  @override
+  String get noteFairUse => '无限使用需遵守我们的合理使用政策。';
+
+  @override
+  String noteTrialEnds(String date) {
+    return '试用将于$date结束。在此之前在商店中取消，就不会产生任何费用。';
+  }
+
+  @override
+  String get noteGrace => '宽限期内权益照常可用。应用绝不会拦截你的取消操作。';
+
+  @override
+  String get noteHold => '付款完成前 Pro 会暂停。你的角色和学习进度都安然无恙。';
+
+  @override
+  String noteEnding(String date) {
+    return '你的套餐即将结束。权益保留至$date，之后转为免费套餐。你随时可以重新订阅。';
+  }
+
+  @override
+  String get trialExpiredTitle => '你的 Max 试用已结束';
+
+  @override
+  String get trialExpiredSub => '你现在是免费套餐';
+
+  @override
+  String get seePlans => '查看套餐';
+
+  @override
+  String get currentPlanTitle => '当前套餐';
+
+  @override
+  String get badgeRecommended => '推荐';
+
+  @override
+  String get perMonthUnit => '/月';
+
+  @override
+  String get planTaglinePro => '通话不限次。每次 15 分钟。';
+
+  @override
+  String get planTaglineMax => '现在可以看见对方了。';
+
+  @override
+  String get planTaglineFree => '每天一次通话，完全免费。';
+
+  @override
+  String get bulletProCalls => '语音通话，想打就打';
+
+  @override
+  String get bulletProLength => '每次通话 15 分钟';
+
+  @override
+  String get bulletProScoring => '逐字打分的发音评测';
+
+  @override
+  String get bulletProCorrections => '针对你母语的纠正';
+
+  @override
+  String get bulletProBeaverCalls => '海狸会主动给你打电话';
+
+  @override
+  String get bulletMaxVideo => '面对面视频通话';
+
+  @override
+  String get bulletMaxEverything => '包含 Pro 的全部功能';
+
+  @override
+  String get bulletMaxCharacters => '所有角色，不限使用';
+
+  @override
+  String get bulletMaxStudyBook => '匹配你水平的学习手册';
+
+  @override
+  String get bulletMaxWeeklyReport => '记录发音变化的每周报告';
+
+  @override
+  String get bulletFreeCall => '每天一次 5 分钟语音通话';
+
+  @override
+  String get bulletFreeCheck => '每天一次发音检测';
+
+  @override
+  String get bulletFreeAccent => '口音检测不限次';
+
+  @override
+  String get bulletFreeCharacter => '一个起步角色';
+
+  @override
+  String get ctaGoUnlimited => '解锁无限通话';
+
+  @override
+  String get ctaTurnOnVideo => '开启视频通话';
+
+  @override
+  String get noteCallLength => '每次通话 15 分钟。';
+
+  @override
+  String get paywallProTitle1 => '凌晨 3 点也在线的';
+
+  @override
+  String get paywallProTitle2 => '你的韩国朋友';
+
+  @override
+  String get paywallProSub => '通话不限次。每次 15 分钟。全年无休。';
+
+  @override
+  String get paywallLimitHeadline => 'Pro 帮你解除限制。';
+
+  @override
+  String get limitBannerCallTitle => '今天的通话用完了';
+
+  @override
+  String get limitBannerCallSub => '免费套餐每天可通话一次';
+
+  @override
+  String get limitBannerCheckTitle => '今天的检测用完了';
+
+  @override
+  String get limitBannerCheckSub => '免费套餐每天可检测一次';
+
+  @override
+  String get bulletProCharactersForever => '买下的角色永远属于你';
+
+  @override
+  String get paywallMaxTitle => '现在可以看见对方了。';
+
+  @override
+  String get paywallMaxSub => '视频通话、所有角色，还有专为你水平定制的学习手册。';
+
+  @override
+  String get planMonthly => '月付';
+
+  @override
+  String get planAnnual => '年付';
+
+  @override
+  String get proMonthlyPriceLine => '每月 \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · 折合每月 \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => '每月 \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => '每年 \$159.00 · 折合每月 \$13.25';
+
+  @override
+  String get ctaCaptionPro => '每月 \$12.90 · 随时可在商店中取消';
+
+  @override
+  String get ctaCaptionMax => '每月 \$19.90 · 随时可在商店中取消';
+
+  @override
+  String get footerTerms => '条款';
+
+  @override
+  String get footerPrivacy => '隐私';
+
+  @override
+  String get noteMaxCharacters => 'Max 解锁的角色在订阅有效期内可用。你买下的角色永远属于你。';
+
+  @override
+  String get processingTitle => '正在确认购买';
+
+  @override
+  String get processingSub => '通常只需几秒钟。';
+
+  @override
+  String get successProTitle => 'Pro 已开通。';
+
+  @override
+  String get successProSub => '从现在起，通话不限次。';
+
+  @override
+  String get successProBenefit1 => '想打就打 — 每次 15 分钟';
+
+  @override
+  String get successProBenefit2 => '发音检测不限次';
+
+  @override
+  String get successProBenefit3 => '所有角色，还可单独购买';
+
+  @override
+  String get successMaxTitle => '现在可以看见对方了。';
+
+  @override
+  String get successMaxSub => '视频通话已开启。在任意通话中点击视频按钮即可。';
+
+  @override
+  String get successMaxBenefit1 => '面对面视频通话';
+
+  @override
+  String get successMaxBenefit2 => '所有角色不限用，新角色抢先体验';
+
+  @override
+  String get successMaxBenefit3 => '匹配你水平的学习手册';
+
+  @override
+  String get ctaStartACall => '开始通话';
+
+  @override
+  String get ctaStartAVideoCall => '开始视频通话';
+
+  @override
+  String get ctaSeeYourSubscription => '查看我的订阅';
+
+  @override
+  String get successProCaption => '每月收取 \$12.90，直到你取消为止。可随时在商店中管理或取消。';
+
+  @override
+  String get successMaxCaption => '每月收取 \$19.90，直到你取消为止。可随时在商店中管理或取消。';
+
+  @override
+  String get plansErrorTitle => '套餐加载失败';
+
+  @override
+  String get plansErrorSub => '商店没有响应。';
+
+  @override
+  String get ctaTryAgain => '重试';
+
+  @override
+  String get plansErrorCaption => '没有产生任何扣款。';
+
+  @override
+  String get changePlanTitle => '更换套餐';
+
+  @override
+  String get moveToMaxTitle => '升级到 Max';
+
+  @override
+  String get maxPriceShort => '\$19.90/月';
+
+  @override
+  String get moveToMaxCardSub => '面对面视频通话 · 所有角色 · 为你定制的学习手册';
+
+  @override
+  String get whatHappensNow => '接下来会怎样';
+
+  @override
+  String get maxStartsLabel => 'Max 生效';
+
+  @override
+  String get immediately => '立即';
+
+  @override
+  String get unusedProTime => 'Pro 剩余时长';
+
+  @override
+  String get creditedTowardMax => '折抵 Max 费用';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => '切换到 Max';
+
+  @override
+  String get upgradeCaption => '新套餐立即生效。Pro 剩余时长会折抵费用，绝不重复扣款。';
+
+  @override
+  String get moveToProTitle => '换到 Pro';
+
+  @override
+  String get moveToProSub => '今天不会有任何变化。Max 会持续到你已付费的当月结束。';
+
+  @override
+  String get maxRunsUntil => 'Max 有效期至';
+
+  @override
+  String get proStarts => 'Pro 开始';
+
+  @override
+  String get whatYouKeep => '你保留的权益';
+
+  @override
+  String get keepBenefitCalls => '语音通话不限次，每次 15 分钟';
+
+  @override
+  String get keepBenefitCharacters => '买下的角色永远属于你';
+
+  @override
+  String downgradeWarning(String date) {
+    return '视频通话和 Max 专属角色将于$date关闭。';
+  }
+
+  @override
+  String get ctaSwitchToPro => '切换到 Pro';
+
+  @override
+  String get ctaKeepMax => '保留 Max';
+
+  @override
+  String get winbackSkip => '跳过';
+
+  @override
+  String get winbackTitle => '你的 Pro 套餐已结束';
+
+  @override
+  String get winbackSub => '你现在是免费套餐 — 每天一次通话。';
+
+  @override
+  String get winbackQuestion => '愿意告诉我们离开的原因吗？';
+
+  @override
+  String get winbackReasonExpensive => '价格太贵';
+
+  @override
+  String get winbackReasonUnused => '用得不够多';
+
+  @override
+  String get winbackReasonMissing => '缺少我需要的功能';
+
+  @override
+  String get winbackReasonOtherApp => '找到了别的应用';
+
+  @override
+  String get winbackReasonElse => '其他原因';
+
+  @override
+  String get ctaSend => '发送';
+
+  @override
+  String get ctaNotNow => '暂不';
+
+  @override
+  String get winbackCaption => '此问卷不会恢复你的套餐。请在商店中重新订阅。';
+
+  @override
+  String get ctaContinue => '继续';
+
+  @override
+  String get ctaClose => '关闭';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro 回来了';
+
+  @override
+  String get ovRestoreSuccessBody => '我们找到了你的订阅，已在这台设备上重新开启。';
+
+  @override
+  String get ovRestoreEmptyTitle => '没有可恢复的内容';
+
+  @override
+  String get ovRestoreEmptyBody => '此商店账号下没有关联的有效订阅。';
+
+  @override
+  String get ovRestoreOtherTitle => '该套餐属于另一个账号';
+
+  @override
+  String get ovRestoreOtherBody => '此订阅已在另一个 BeaverTalk 账号上生效。';
+
+  @override
+  String get ctaSignInThatAccount => '登录那个账号';
+
+  @override
+  String get ctaGetHelp => '获取帮助';
+
+  @override
+  String get ovCharacterOfferTitle => '还没准备好订 Pro？';
+
+  @override
+  String get ovCharacterOfferBody => '挑一个角色永久拥有。一次性购买 — 没有订阅，也不会续费。';
+
+  @override
+  String get rowOneCharacter => '一个角色';
+
+  @override
+  String get rowFromPrice => '\$5.00 起';
+
+  @override
+  String get rowYoursForever => '永久拥有';
+
+  @override
+  String get rowNoRenewal => '无续费';
+
+  @override
+  String get rowWorksOnFree => '免费套餐可用';
+
+  @override
+  String get rowYes => '是';
+
+  @override
+  String get ctaSeeCharacters => '查看角色';
+
+  @override
+  String get ovNotEligibleTitle => '没有可取消的订阅';
+
+  @override
+  String get ovNotEligibleBody => '你目前是免费套餐。该账号下没有有效订阅。';
+
+  @override
+  String get ovCancelDownsellTitle => '在你离开之前';
+
+  @override
+  String get ovCancelDownsellBody => '取消需在商店中进行。有两件事值得了解。';
+
+  @override
+  String get rowPayYearlyInstead => '改为年付';
+
+  @override
+  String get rowYearlyMonthEquiv => '折合每月 \$8.33';
+
+  @override
+  String get rowCharactersYouBought => '你买下的角色';
+
+  @override
+  String get rowProRunsUntil => 'Pro 有效期至';
+
+  @override
+  String get ctaSwitchToYearly => '换成年付';
+
+  @override
+  String get ctaContinueToStore => '继续前往商店';
+
+  @override
+  String get ovAnnualSwitchTitle => '改年付，省 \$54.80';
+
+  @override
+  String get ovAnnualSwitchBody => '你已经用了两个月 Pro。年付套餐算下来更划算。';
+
+  @override
+  String get rowYouSave => '你省下';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => '年付';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => '月付满一年';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => '换成月付';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return '你的年付套餐有效期至$date。月付账单从次日开始。';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => '月付账单开始';
+
+  @override
+  String get rowMonthlyLabel => '月付';
+
+  @override
+  String get rowYearlyWorkedOut => '年付折合';
+
+  @override
+  String get ctaSwitchToMonthly => '换成月付';
+
+  @override
+  String get ovRefundHelpTitle => '退款由商店处理';
+
+  @override
+  String get ovRefundHelpBody => '我们无法自行退款。每一笔申请都由商店审核。';
+
+  @override
+  String get ctaGoToStore => '前往商店';
+
+  @override
+  String get ovTrialEndingTitle => '你的试用明天结束';
+
+  @override
+  String get ovTrialEndingBody => '不取消的话 Max 会继续。接下来是这样的。';
+
+  @override
+  String get rowTrialEnds => '试用结束';
+
+  @override
+  String get rowFirstCharge => '首次扣款';
+
+  @override
+  String get rowThenMonthly => '之后每月';
+
+  @override
+  String get ctaCancelInStore => '在商店中取消';
+
+  @override
+  String get ovTrialStartTitle => '免费体验 Max 7 天';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$date前免费。之后每月 \$19.90，除非你在商店中取消。';
+  }
+
+  @override
+  String get ctaStart7Days => '免费试用 7 天';
+
+  @override
+  String get ovOtoTitle => '开始前还有一件事';
+
+  @override
+  String get ovOtoBody => '好选择 — 无限通话已经开启。同样的 Pro，年付更便宜。';
+
+  @override
+  String get ovFailedDeclinedTitle => '你的卡被拒绝了';
+
+  @override
+  String get ovFailedDeclinedBody => '商店没能完成扣款。没有产生任何费用。';
+
+  @override
+  String get ctaUpdatePaymentMethod => '更新付款方式';
+
+  @override
+  String get ovFailedCanceledTitle => '付款已取消';
+
+  @override
+  String get ovFailedCanceledBody => '你仍是免费套餐。没有产生任何费用。';
+
+  @override
+  String get ovFailedStoreTitle => '出了点问题';
+
+  @override
+  String get ovFailedStoreBody => '无法连接到商店。没有产生任何费用。';
+
+  @override
+  String get ovAlreadyTitle => '你已经在用 Pro 了';
+
+  @override
+  String get ovAlreadyBody => '此商店账号已有生效中的套餐，无需再购买。';
+
+  @override
+  String get ctaSeeMySubscription => '查看我的订阅';
+
+  @override
+  String get subCancelTitle => '取消订阅';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro 有效期至$date。之后你将转为免费套餐。';
+  }
+
+  @override
+  String get subWhatYouLose => '你将失去';
+
+  @override
+  String get benefitCalls15 => '通话不限次，每次 15 分钟';
+
+  @override
+  String get benefitScoring => '逐字打分的发音评测';
+
+  @override
+  String get benefitEveryCharacter => '所有角色，不限使用';
+
+  @override
+  String get ctaKeepPro => '保留 Pro';
+
+  @override
+  String get subPaymentTitle => '更新付款';
+
+  @override
+  String get subPaymentBody => '扣款没有成功。宽限期内 Pro 会继续有效。';
+
+  @override
+  String get subHowToFix => '解决方法';
+
+  @override
+  String get fixStep1 => '打开商店，更新你的付款方式';
+
+  @override
+  String get fixStep2 => '回来后套餐会自动恢复';
+
+  @override
+  String get fixStep3 => '绝不重复扣款';
+
+  @override
+  String get subResubTitle => '重新订阅';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro 将于$date结束。重新打开自动续订，一切照旧。';
+  }
+
+  @override
+  String get subWhatYouKeep => '你保留的权益';
+
+  @override
+  String get ctaTurnItBackOn => '重新开启';
+
+  @override
+  String get flTodayTitle => '今天的通话用完了';
+
+  @override
+  String get flTodayBody => '从上次中断的地方，现在就继续。';
+
+  @override
+  String get flCheckTitle => '今天的检测用完了';
+
+  @override
+  String get flCheckBody => '免费套餐每天检测一次。Pro 则不限次。';
+
+  @override
+  String get flBenefitCalls => 'Pro 通话不限次 · 每次 15 分钟';
+
+  @override
+  String get flBenefitChecks => 'Pro 发音检测不限次';
+
+  @override
+  String get flCaption => '每月 \$12.90 · 随时可取消';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '已用 $used/$limit';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => '明天再说';
+
+  @override
+  String get accountSection => '账户';
+
+  @override
+  String get nicknameLabel => '昵称';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => '登录方式';
+
+  @override
+  String get joinedLabel => '注册日期';
+
+  @override
+  String get editNicknameTitle => '编辑昵称';
+
+  @override
+  String get nicknameRule => '2–12 个字符 · 仅限英文字母和数字';
+
+  @override
+  String get ctaSave => '保存';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => '现在离开将无法完成订阅';
+
+  @override
+  String get paywallLeaveBody => '权益在付款后立即解锁。你随时可以从我的页面回来。';
+
+  @override
+  String get ctaKeepLooking => '继续查看';
+
+  @override
+  String get ctaLeaveAnyway => '仍然离开';
+
+  @override
+  String get iapCharacterSuccessTitle => '新伙伴加入了!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      '这个角色永远属于你——即使套餐变更也会保留,并可通过恢复购买在任何设备找回。';
+
+  @override
+  String get iapCharacterFailedBody => '购买未完成。没有产生任何扣款,请重试。';
 }
