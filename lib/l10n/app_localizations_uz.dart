@@ -1927,7 +1927,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get editNicknameTitle => 'Taxallusni tahrirlash';
 
   @override
-  String get nicknameRule => '2–12 belgi. Faqat harflar va raqamlar.';
+  String get nicknameRule => '2–12 belgi. Harflar va raqamlar. Faqat inglizcha';
 
   @override
   String get ctaSave => 'Saqlash';

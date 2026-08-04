@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Peut-être demain",
   "nicknameLabel": "Pseudo",
   "editNicknameTitle": "Modifier le pseudo",
-  "nicknameRule": "2–12 caractères. Lettres et chiffres uniquement.",
+  "nicknameRule": "2–12 caractères. Lettres et chiffres. Anglais uniquement",
   "ctaSave": "Enregistrer",
   "accountSection": "Compte",
   "loginMethodLabel": "Méthode de connexion",

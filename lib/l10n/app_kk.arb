@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Мүмкін ертең",
   "nicknameLabel": "Лақап ат",
   "editNicknameTitle": "Лақап атты өзгерту",
-  "nicknameRule": "2–12 таңба. Тек әріптер мен сандар.",
+  "nicknameRule": "2–12 таңба. Әріптер мен сандар. Тек ағылшынша",
   "ctaSave": "Сақтау",
   "accountSection": "Тіркелгі",
   "loginMethodLabel": "Кіру әдісі",

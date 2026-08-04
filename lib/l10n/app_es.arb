@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Quizá mañana",
   "nicknameLabel": "Apodo",
   "editNicknameTitle": "Editar apodo",
-  "nicknameRule": "2–12 caracteres. Solo letras y números.",
+  "nicknameRule": "2–12 caracteres. Letras y números. Solo inglés",
   "ctaSave": "Guardar",
   "accountSection": "Cuenta",
   "loginMethodLabel": "Método de inicio de sesión",

@@ -1908,7 +1908,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get editNicknameTitle => 'ডাকনাম সম্পাদনা';
 
   @override
-  String get nicknameRule => '২–১২ অক্ষর। শুধু অক্ষর ও সংখ্যা।';
+  String get nicknameRule => '২–১২ অক্ষর। শুধুই ইংরেজি অক্ষর ও সংখ্যা।';
 
   @override
   String get ctaSave => 'সংরক্ষণ';

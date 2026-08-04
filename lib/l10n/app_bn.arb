@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "কাল দেখা যাবে",
   "nicknameLabel": "ডাকনাম",
   "editNicknameTitle": "ডাকনাম সম্পাদনা",
-  "nicknameRule": "২–১২ অক্ষর। শুধু অক্ষর ও সংখ্যা।",
+  "nicknameRule": "২–১২ অক্ষর। শুধুই ইংরেজি অক্ষর ও সংখ্যা।",
   "ctaSave": "সংরক্ষণ",
   "accountSection": "অ্যাকাউন্ট",
   "loginMethodLabel": "লগইন পদ্ধতি",

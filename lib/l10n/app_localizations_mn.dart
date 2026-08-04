@@ -1915,7 +1915,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get editNicknameTitle => 'Хоч нэр засах';
 
   @override
-  String get nicknameRule => '2–12 тэмдэгт. Зөвхөн үсэг ба тоо.';
+  String get nicknameRule => '2–12 тэмдэгт. Үсэг ба тоо. Зөвхөн англи хэлээр';
 
   @override
   String get ctaSave => 'Хадгалах';

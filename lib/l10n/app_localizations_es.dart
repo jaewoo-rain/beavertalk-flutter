@@ -1929,7 +1929,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get editNicknameTitle => 'Editar apodo';
 
   @override
-  String get nicknameRule => '2–12 caracteres. Solo letras y números.';
+  String get nicknameRule => '2–12 caracteres. Letras y números. Solo inglés';
 
   @override
   String get ctaSave => 'Guardar';

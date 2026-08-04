@@ -1930,7 +1930,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get editNicknameTitle => 'Ubah Nama Panggilan';
 
   @override
-  String get nicknameRule => '2–12 aksara. Huruf dan nombor sahaja.';
+  String get nicknameRule =>
+      '2–12 aksara. Huruf dan nombor. Bahasa Inggeris sahaja';
 
   @override
   String get ctaSave => 'Simpan';

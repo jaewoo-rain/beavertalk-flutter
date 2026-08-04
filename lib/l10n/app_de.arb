@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Vielleicht morgen",
   "nicknameLabel": "Spitzname",
   "editNicknameTitle": "Spitznamen bearbeiten",
-  "nicknameRule": "2–12 Zeichen. Nur Buchstaben und Zahlen.",
+  "nicknameRule": "2–12 Zeichen. Buchstaben und Zahlen. Nur Englisch",
   "ctaSave": "Speichern",
   "accountSection": "Konto",
   "loginMethodLabel": "Anmeldemethode",

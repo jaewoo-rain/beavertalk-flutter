@@ -1917,7 +1917,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get editNicknameTitle => 'Ылакап атты түзөтүү';
 
   @override
-  String get nicknameRule => '2–12 белги. Тамгалар жана сандар гана.';
+  String get nicknameRule => '2–12 белги. Тамгалар жана сандар. Англисче гана';
 
   @override
   String get ctaSave => 'Сактоо';

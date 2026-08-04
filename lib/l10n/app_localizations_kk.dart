@@ -1913,7 +1913,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get editNicknameTitle => 'Лақап атты өзгерту';
 
   @override
-  String get nicknameRule => '2–12 таңба. Тек әріптер мен сандар.';
+  String get nicknameRule => '2–12 таңба. Әріптер мен сандар. Тек ағылшынша';
 
   @override
   String get ctaSave => 'Сақтау';

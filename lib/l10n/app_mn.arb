@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Магадгүй маргааш",
   "nicknameLabel": "Хоч нэр",
   "editNicknameTitle": "Хоч нэр засах",
-  "nicknameRule": "2–12 тэмдэгт. Зөвхөн үсэг ба тоо.",
+  "nicknameRule": "2–12 тэмдэгт. Үсэг ба тоо. Зөвхөн англи хэлээр",
   "ctaSave": "Хадгалах",
   "accountSection": "Данс",
   "loginMethodLabel": "Нэвтрэх арга",

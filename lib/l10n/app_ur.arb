@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "شاید کل",
   "nicknameLabel": "عرفی نام",
   "editNicknameTitle": "عرفی نام میں ترمیم کریں",
-  "nicknameRule": "2 سے 12 حروف۔ صرف حروف اور اعداد۔",
+  "nicknameRule": "2–12 حروف۔ حروف اور اعداد۔ صرف انگریزی",
   "ctaSave": "محفوظ کریں",
   "accountSection": "اکاؤنٹ",
   "loginMethodLabel": "لاگ ان کا طریقہ",

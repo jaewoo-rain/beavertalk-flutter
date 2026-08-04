@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Magari domani",
   "nicknameLabel": "Nickname",
   "editNicknameTitle": "Modifica nickname",
-  "nicknameRule": "2–12 caratteri. Solo lettere e numeri.",
+  "nicknameRule": "2–12 caratteri. Lettere e numeri. Solo inglese",
   "ctaSave": "Salva",
   "accountSection": "Account",
   "loginMethodLabel": "Metodo di accesso",

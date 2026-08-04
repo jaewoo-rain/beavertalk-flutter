@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
@@ -91,6 +92,8 @@ class InputField extends StatefulWidget {
     this.obscureText = false,
     this.onSubmitted,
     this.focusNode,
+    this.inputFormatters,
+    this.maxLength,
   }) : assert(
           controller == null || value == null,
           'Provide either `controller` or `value`, not both.',
@@ -123,6 +126,14 @@ class InputField extends StatefulWidget {
 
   /// Keyboard type forwarded to the inner [TextField].
   final TextInputType? keyboardType;
+
+  /// Character-level input rules, e.g. an allow-list for the nickname's
+  /// English-only policy. Passed straight to the inner [TextField].
+  final List<TextInputFormatter>? inputFormatters;
+
+  /// Hard cap on entered characters. No counter is drawn — screens that show
+  /// one (the nickname editor) render it themselves.
+  final int? maxLength;
 
   /// Whether to obscure the text (e.g. passwords).
   final bool obscureText;
@@ -278,6 +289,13 @@ class _InputFieldState extends State<InputField> {
       cursorColor: context.c.primaryNormal,
       keyboardType: widget.keyboardType,
       obscureText: widget.obscureText,
+      inputFormatters: widget.inputFormatters,
+      maxLength: widget.maxLength,
+      // The screen owns the counter (Figma puts it outside the field).
+      buildCounter: widget.maxLength == null
+          ? null
+          : (_, {required currentLength, required isFocused, maxLength}) =>
+              null,
       onChanged: widget.onChanged == null
           ? (_) => setState(() {})
           : (v) {

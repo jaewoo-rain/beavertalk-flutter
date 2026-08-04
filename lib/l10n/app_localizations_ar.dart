@@ -1902,7 +1902,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get editNicknameTitle => 'تعديل الاسم المستعار';
 
   @override
-  String get nicknameRule => 'من 2 إلى 12 حرفًا. حروف وأرقام فقط.';
+  String get nicknameRule => 'من 2 إلى 12 حرفًا. أحرف وأرقام. بالإنجليزية فقط';
 
   @override
   String get ctaSave => 'حفظ';

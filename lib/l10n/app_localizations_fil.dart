@@ -1925,7 +1925,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get editNicknameTitle => 'I-edit ang Palayaw';
 
   @override
-  String get nicknameRule => '2–12 karakter. Mga letra at numero lang.';
+  String get nicknameRule => '2–12 karakter. Mga letra at numero. English lang';
 
   @override
   String get ctaSave => 'I-save';

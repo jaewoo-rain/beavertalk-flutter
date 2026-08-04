@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Baka bukas na lang",
   "nicknameLabel": "Palayaw",
   "editNicknameTitle": "I-edit ang Palayaw",
-  "nicknameRule": "2–12 karakter. Mga letra at numero lang.",
+  "nicknameRule": "2–12 karakter. Mga letra at numero. English lang",
   "ctaSave": "I-save",
   "accountSection": "Account",
   "loginMethodLabel": "Paraan ng pag-login",

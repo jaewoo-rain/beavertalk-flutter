@@ -1853,7 +1853,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editNicknameTitle => 'ニックネームを編集';
 
   @override
-  String get nicknameRule => '2〜12文字。文字と数字のみ使えます。';
+  String get nicknameRule => '2〜12文字 · 英字と数字のみ使えます';
 
   @override
   String get ctaSave => '保存';

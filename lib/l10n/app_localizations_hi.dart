@@ -1909,7 +1909,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get editNicknameTitle => 'निकनेम बदलें';
 
   @override
-  String get nicknameRule => '2–12 वर्ण। केवल अक्षर और अंक।';
+  String get nicknameRule => '2–12 अक्षर। अक्षर और अंक। केवल अंग्रेज़ी';
 
   @override
   String get ctaSave => 'सेव करें';

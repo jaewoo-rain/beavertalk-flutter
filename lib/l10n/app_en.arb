@@ -1059,7 +1059,7 @@
   "loginMethodLabel": "Login Method",
   "joinedLabel": "Joined",
   "editNicknameTitle": "Edit Nickname",
-  "nicknameRule": "2–12 characters. Letters and numbers.",
+  "nicknameRule": "2–12 characters. Letters and numbers. English Only",
   "ctaSave": "Save",
   "subscriptionRow": "Subscription",
   "iapSuccessTitle": "Purchase complete",

@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Может, завтра",
   "nicknameLabel": "Никнейм",
   "editNicknameTitle": "Изменить никнейм",
-  "nicknameRule": "2–12 символов. Только буквы и цифры.",
+  "nicknameRule": "2–12 символов. Буквы и цифры. Только английские",
   "ctaSave": "Сохранить",
   "accountSection": "Аккаунт",
   "loginMethodLabel": "Способ входа",

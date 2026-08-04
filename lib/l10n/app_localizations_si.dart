@@ -1908,7 +1908,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get editNicknameTitle => 'අන්වර්ථ නාමය සංස්කරණය';
 
   @override
-  String get nicknameRule => 'අකුරු 2–12ක්. අකුරු සහ ඉලක්කම් පමණි.';
+  String get nicknameRule => 'අකුරු 2–12. ඉංග්‍රීසි අකුරු සහ ඉලක්කම් පමණි.';
 
   @override
   String get ctaSave => 'සුරකින්න';

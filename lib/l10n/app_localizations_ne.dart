@@ -1905,7 +1905,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get editNicknameTitle => 'उपनाम सम्पादन';
 
   @override
-  String get nicknameRule => '२–१२ वर्ण। अक्षर र अंक मात्र।';
+  String get nicknameRule => '२–१२ अक्षर। अंग्रेजी अक्षर र अंक मात्र।';
 
   @override
   String get ctaSave => 'सुरक्षित गर्नुहोस्';

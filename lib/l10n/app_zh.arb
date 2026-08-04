@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "明天再说",
   "nicknameLabel": "昵称",
   "editNicknameTitle": "编辑昵称",
-  "nicknameRule": "2–12个字符。仅限字母和数字。",
+  "nicknameRule": "2–12 个字符 · 仅限英文字母和数字",
   "ctaSave": "保存",
   "accountSection": "账户",
   "loginMethodLabel": "登录方式",

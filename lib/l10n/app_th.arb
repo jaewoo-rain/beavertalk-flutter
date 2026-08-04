@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "ไว้พรุ่งนี้",
   "nicknameLabel": "ชื่อเล่น",
   "editNicknameTitle": "แก้ไขชื่อเล่น",
-  "nicknameRule": "2–12 ตัวอักษร ใช้ได้เฉพาะตัวอักษรและตัวเลข",
+  "nicknameRule": "2–12 ตัวอักษร · ใช้ได้เฉพาะตัวอักษรภาษาอังกฤษและตัวเลข",
   "ctaSave": "บันทึก",
   "accountSection": "บัญชี",
   "loginMethodLabel": "วิธีเข้าสู่ระบบ",

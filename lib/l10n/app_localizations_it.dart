@@ -1934,7 +1934,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get editNicknameTitle => 'Modifica nickname';
 
   @override
-  String get nicknameRule => '2–12 caratteri. Solo lettere e numeri.';
+  String get nicknameRule => '2–12 caratteri. Lettere e numeri. Solo inglese';
 
   @override
   String get ctaSave => 'Salva';

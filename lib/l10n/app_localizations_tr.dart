@@ -1915,7 +1915,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get editNicknameTitle => 'Takma Adı Düzenle';
 
   @override
-  String get nicknameRule => '2–12 karakter. Yalnızca harf ve rakam.';
+  String get nicknameRule => '2–12 karakter. Harf ve rakam. Yalnızca İngilizce';
 
   @override
   String get ctaSave => 'Kaydet';

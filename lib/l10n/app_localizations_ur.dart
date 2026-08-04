@@ -1912,7 +1912,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get editNicknameTitle => 'عرفی نام میں ترمیم کریں';
 
   @override
-  String get nicknameRule => '2 سے 12 حروف۔ صرف حروف اور اعداد۔';
+  String get nicknameRule => '2–12 حروف۔ حروف اور اعداد۔ صرف انگریزی';
 
   @override
   String get ctaSave => 'محفوظ کریں';

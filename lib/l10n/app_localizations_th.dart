@@ -1905,7 +1905,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get editNicknameTitle => 'แก้ไขชื่อเล่น';
 
   @override
-  String get nicknameRule => '2–12 ตัวอักษร ใช้ได้เฉพาะตัวอักษรและตัวเลข';
+  String get nicknameRule =>
+      '2–12 ตัวอักษร · ใช้ได้เฉพาะตัวอักษรภาษาอังกฤษและตัวเลข';
 
   @override
   String get ctaSave => 'บันทึก';

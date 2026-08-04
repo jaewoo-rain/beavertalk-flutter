@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Mungkin besok",
   "nicknameLabel": "Nama panggilan",
   "editNicknameTitle": "Ubah Nama Panggilan",
-  "nicknameRule": "2–12 karakter. Hanya huruf dan angka.",
+  "nicknameRule": "2–12 karakter. Huruf dan angka. Hanya bahasa Inggris",
   "ctaSave": "Simpan",
   "accountSection": "Akun",
   "loginMethodLabel": "Metode masuk",

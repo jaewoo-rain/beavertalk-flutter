@@ -1916,7 +1916,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get editNicknameTitle => 'Sửa biệt danh';
 
   @override
-  String get nicknameRule => '2–12 ký tự. Chỉ chữ và số.';
+  String get nicknameRule => '2–12 ký tự · chỉ chữ cái tiếng Anh và số';
 
   @override
   String get ctaSave => 'Lưu';

@@ -1917,7 +1917,8 @@ class AppLocalizationsId extends AppLocalizations {
   String get editNicknameTitle => 'Ubah Nama Panggilan';
 
   @override
-  String get nicknameRule => '2–12 karakter. Hanya huruf dan angka.';
+  String get nicknameRule =>
+      '2–12 karakter. Huruf dan angka. Hanya bahasa Inggris';
 
   @override
   String get ctaSave => 'Simpan';

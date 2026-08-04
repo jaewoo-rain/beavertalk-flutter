@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "भोलि हेरौँला",
   "nicknameLabel": "उपनाम",
   "editNicknameTitle": "उपनाम सम्पादन",
-  "nicknameRule": "२–१२ वर्ण। अक्षर र अंक मात्र।",
+  "nicknameRule": "२–१२ अक्षर। अंग्रेजी अक्षर र अंक मात्र।",
   "ctaSave": "सुरक्षित गर्नुहोस्",
   "accountSection": "खाता",
   "loginMethodLabel": "लगइन विधि",

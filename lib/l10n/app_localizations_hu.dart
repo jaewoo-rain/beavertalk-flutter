@@ -1927,7 +1927,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get editNicknameTitle => 'Becenév szerkesztése';
 
   @override
-  String get nicknameRule => '2–12 karakter. Csak betűk és számok.';
+  String get nicknameRule => '2–12 karakter. Betűk és számok. Csak angolul';
 
   @override
   String get ctaSave => 'Mentés';

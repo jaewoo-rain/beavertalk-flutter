@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Để mai vậy",
   "nicknameLabel": "Biệt danh",
   "editNicknameTitle": "Sửa biệt danh",
-  "nicknameRule": "2–12 ký tự. Chỉ chữ và số.",
+  "nicknameRule": "2–12 ký tự · chỉ chữ cái tiếng Anh và số",
   "ctaSave": "Lưu",
   "accountSection": "Tài khoản",
   "loginMethodLabel": "Phương thức đăng nhập",

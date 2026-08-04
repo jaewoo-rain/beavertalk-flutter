@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "また明日にします",
   "nicknameLabel": "ニックネーム",
   "editNicknameTitle": "ニックネームを編集",
-  "nicknameRule": "2〜12文字。文字と数字のみ使えます。",
+  "nicknameRule": "2〜12文字 · 英字と数字のみ使えます",
   "ctaSave": "保存",
   "accountSection": "アカウント",
   "loginMethodLabel": "ログイン方法",

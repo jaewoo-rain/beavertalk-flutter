@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Ehkä huomenna",
   "nicknameLabel": "Nimimerkki",
   "editNicknameTitle": "Muokkaa nimimerkkiä",
-  "nicknameRule": "2–12 merkkiä. Vain kirjaimia ja numeroita.",
+  "nicknameRule": "2–12 merkkiä. Kirjaimia ja numeroita. Vain englanniksi",
   "ctaSave": "Tallenna",
   "accountSection": "Tili",
   "loginMethodLabel": "Kirjautumistapa",

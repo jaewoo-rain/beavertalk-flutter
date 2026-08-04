@@ -1915,7 +1915,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get editNicknameTitle => 'Muokkaa nimimerkkiä';
 
   @override
-  String get nicknameRule => '2–12 merkkiä. Vain kirjaimia ja numeroita.';
+  String get nicknameRule =>
+      '2–12 merkkiä. Kirjaimia ja numeroita. Vain englanniksi';
 
   @override
   String get ctaSave => 'Tallenna';

@@ -1946,7 +1946,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get editNicknameTitle => 'Modifier le pseudo';
 
   @override
-  String get nicknameRule => '2–12 caractères. Lettres et chiffres uniquement.';
+  String get nicknameRule =>
+      '2–12 caractères. Lettres et chiffres. Anglais uniquement';
 
   @override
   String get ctaSave => 'Enregistrer';

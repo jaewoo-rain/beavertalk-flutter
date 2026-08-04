@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Belki yarın",
   "nicknameLabel": "Takma ad",
   "editNicknameTitle": "Takma Adı Düzenle",
-  "nicknameRule": "2–12 karakter. Yalnızca harf ve rakam.",
+  "nicknameRule": "2–12 karakter. Harf ve rakam. Yalnızca İngilizce",
   "ctaSave": "Kaydet",
   "accountSection": "Hesap",
   "loginMethodLabel": "Giriş yöntemi",

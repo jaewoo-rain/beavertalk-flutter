@@ -1856,7 +1856,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get editNicknameTitle => '닉네임 수정';
 
   @override
-  String get nicknameRule => '2~12자. 문자와 숫자만 쓸 수 있어요.';
+  String get nicknameRule => '2–12자 · 영문과 숫자만 가능해요';
 
   @override
   String get ctaSave => '저장';

@@ -1933,7 +1933,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get editNicknameTitle => 'Spitznamen bearbeiten';
 
   @override
-  String get nicknameRule => '2–12 Zeichen. Nur Buchstaben und Zahlen.';
+  String get nicknameRule =>
+      '2–12 Zeichen. Buchstaben und Zahlen. Nur Englisch';
 
   @override
   String get ctaSave => 'Speichern';

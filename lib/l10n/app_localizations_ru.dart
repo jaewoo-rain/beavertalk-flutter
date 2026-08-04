@@ -1919,7 +1919,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get editNicknameTitle => 'Изменить никнейм';
 
   @override
-  String get nicknameRule => '2–12 символов. Только буквы и цифры.';
+  String get nicknameRule => '2–12 символов. Буквы и цифры. Только английские';
 
   @override
   String get ctaSave => 'Сохранить';

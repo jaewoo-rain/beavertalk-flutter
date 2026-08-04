@@ -9,7 +9,9 @@ import 'package:beavertalk/features/subscription/domain/iap_service.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
+import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
 import 'package:beavertalk/screens/plans/purchase_flow.dart';
 import 'package:flutter/material.dart';
@@ -305,6 +307,41 @@ void main() {
       await pumpSettings(tester, SubscriptionStatus.none);
       final l10n = await l10nOf(tester, MyPageSettingsScreen);
       expect(find.text(l10n.planFree), findsOneWidget);
+    });
+  });
+
+  // ── nickname policy — the two screens that write the same value ─────────
+
+  group('nickname is English-only on both screens', () {
+    Future<void> pumpAndType(WidgetTester tester, Widget screen) async {
+      await tester.binding.setSurfaceSize(const Size(375, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en'),
+            home: screen,
+          ),
+        ),
+      );
+      await tester.pump();
+      await tester.enterText(find.byType(TextField).first, '김지민Kim12');
+      await tester.pump();
+    }
+
+    testWidgets('the editor drops non-Latin characters', (tester) async {
+      await pumpAndType(tester, const EditNicknameScreen());
+      expect(find.text('Kim12'), findsOneWidget);
+      expect(find.text('김지민Kim12'), findsNothing);
+    });
+
+    testWidgets('onboarding drops them too — it used to accept anything',
+        (tester) async {
+      await pumpAndType(tester, const OnboardingNameScreen());
+      expect(find.text('Kim12'), findsOneWidget);
+      expect(find.text('김지민Kim12'), findsNothing);
     });
   });
 

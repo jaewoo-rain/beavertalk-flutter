@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Балким эртең",
   "nicknameLabel": "Ылакап ат",
   "editNicknameTitle": "Ылакап атты түзөтүү",
-  "nicknameRule": "2–12 белги. Тамгалар жана сандар гана.",
+  "nicknameRule": "2–12 белги. Тамгалар жана сандар. Англисче гана",
   "ctaSave": "Сактоо",
   "accountSection": "Аккаунт",
   "loginMethodLabel": "Кирүү ыкмасы",

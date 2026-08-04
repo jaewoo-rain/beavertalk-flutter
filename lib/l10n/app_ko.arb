@@ -592,7 +592,7 @@
   "ctaMaybeTomorrow": "내일 다시 할게요",
   "nicknameLabel": "닉네임",
   "editNicknameTitle": "닉네임 수정",
-  "nicknameRule": "2~12자. 문자와 숫자만 쓸 수 있어요.",
+  "nicknameRule": "2–12자 · 영문과 숫자만 가능해요",
   "ctaSave": "저장",
   "accountSection": "계정",
   "loginMethodLabel": "로그인 방식",

@@ -3691,7 +3691,7 @@ abstract class AppLocalizations {
   /// No description provided for @nicknameRule.
   ///
   /// In en, this message translates to:
-  /// **'2–12 characters. Letters and numbers.'**
+  /// **'2–12 characters. Letters and numbers. English Only'**
   String get nicknameRule;
 
   /// No description provided for @ctaSave.

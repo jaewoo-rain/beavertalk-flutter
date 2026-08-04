@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Balki ertaga",
   "nicknameLabel": "Taxallus",
   "editNicknameTitle": "Taxallusni tahrirlash",
-  "nicknameRule": "2–12 belgi. Faqat harflar va raqamlar.",
+  "nicknameRule": "2–12 belgi. Harflar va raqamlar. Faqat inglizcha",
   "ctaSave": "Saqlash",
   "accountSection": "Hisob",
   "loginMethodLabel": "Kirish usuli",
