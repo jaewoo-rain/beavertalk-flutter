@@ -1,4 +1,5 @@
 import '../entities/subscription.dart';
+import '../subscription_status_resolver.dart';
 
 /// The member's subscriptions.
 ///
@@ -11,6 +12,14 @@ abstract class SubscriptionRepository {
   ///
   /// Throws `AppException` on failure.
   Future<List<Subscription>> listSubscriptions();
+
+  /// The member-level status from `GET /subscriptions/status`, or **null when
+  /// the server predates the endpoint** — callers then fall back to inferring
+  /// from [listSubscriptions] via `SubscriptionStatusResolver`.
+  ///
+  /// Throws `AppException` on failure other than the 404 that means "old
+  /// server".
+  Future<SubscriptionStatus?> fetchStatus();
 
   /// Soft-cancels [subscribeId] and returns the updated record.
   ///

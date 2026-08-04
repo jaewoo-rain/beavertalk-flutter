@@ -1079,10 +1079,881 @@ class AppLocalizationsNe extends AppLocalizations {
   String get practicePronunciation => 'उच्चारण अभ्यास गर्नुहोस्';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'मूल्य परिवर्तन भयो';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'यो वस्तुको मूल्य अब $price छ। जारी राख्ने?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'योजना र खरिदहरू';
+
+  @override
+  String get billingGroupInTheStore => 'स्टोरमा';
+
+  @override
+  String get billingChangePlan => 'योजना परिवर्तन';
+
+  @override
+  String get billingCompareAllPlans => 'सबै योजना तुलना गर्नुहोस्';
+
+  @override
+  String get billingBuyACharacter => 'क्यारेक्टर किन्नुहोस्';
+
+  @override
+  String get billingRestorePurchases => 'खरिदहरू पुनर्स्थापना';
+
+  @override
+  String get billingPaymentHistory => 'भुक्तानी इतिहास';
+
+  @override
+  String get billingManageInTheStore => 'स्टोरमा व्यवस्थापन गर्नुहोस्';
+
+  @override
+  String get billingRefundHelp => 'रिफन्ड सहायता';
+
+  @override
+  String get billingCancelSubscription => 'सदस्यता रद्द गर्नुहोस्';
+
+  @override
+  String get billingResubscribe => 'फेरि सदस्यता लिनुहोस्';
+
+  @override
+  String get badgeCurrent => 'हालको';
+
+  @override
+  String get badgeTrial => 'परीक्षण';
+
+  @override
+  String get badgeRenewing => 'नवीकरण हुँदै';
+
+  @override
+  String get badgePastDue => 'भुक्तानी बाँकी';
+
+  @override
+  String get badgePaused => 'रोकिएको';
+
+  @override
+  String get badgeCanceling => 'रद्द हुँदै';
+
+  @override
+  String get subscriptionTitle => 'सदस्यता';
+
+  @override
+  String get plansTitle => 'योजनाहरू';
+
+  @override
+  String get planFree => 'Free';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max परीक्षण';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — दिनमा एक कल';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return 'प्रति महिना $amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$date सम्म निःशुल्क';
+  }
+
+  @override
+  String get todaysCalls => 'आजका कलहरू';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$limit मध्ये $used प्रयोग भयो';
+  }
+
+  @override
+  String get firstPaymentLabel => 'पहिलो भुक्तानी';
+
+  @override
+  String get nextPaymentLabel => 'अर्को भुक्तानी';
+
+  @override
+  String get retryingUntilLabel => 'पुनःप्रयास हुनेसम्म';
+
+  @override
+  String get pausedSinceLabel => 'रोकिएको मिति';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan समाप्त हुने';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Pro सँग असीमित बन्नुहोस्';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'असीमित कल · प्रत्येक १५ मिनेट · प्रति महिना \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Max सँग भिडियो खोल्नुहोस्';
+
+  @override
+  String get bannerMaxUpsellSub => 'आमनेसामने कल · प्रति महिना \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'वार्षिक योजनामा जानुहोस्';
+
+  @override
+  String get bannerAnnualSwitchSub => 'प्रति वर्ष \$159 · प्रति महिना \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'भुक्तानी लिन सकिएन';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Pro राख्न स्टोरमा भुक्तानी अपडेट गर्नुहोस्';
+
+  @override
+  String get bannerPausedTitle => 'तपाईंको योजना रोकिएको छ';
+
+  @override
+  String get bannerPausedSub => 'भुक्तानी पूरा भएन';
+
+  @override
+  String get noteRestoreHint =>
+      'अर्को डिभाइसमा सदस्यता लिनुभएको छ? पुनर्स्थापनाले यही डिभाइसमा फर्काउँछ।';
+
+  @override
+  String get noteStoreHandled =>
+      'भुक्तानी विधि, योजना परिवर्तन र रद्द — सबै स्टोरले व्यवस्थापन गर्छ।';
+
+  @override
+  String get noteFairUse =>
+      'असीमित प्रयोग हाम्रो उचित प्रयोग नीति अनुसार हुन्छ।';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'तपाईंको परीक्षण $date मा सकिन्छ। त्यसअघि स्टोरमा रद्द गरे केही शुल्क लाग्दैन।';
+  }
+
+  @override
+  String get noteGrace =>
+      'ग्रेस अवधिभर सुविधा चालु रहन्छ। एपमा रद्द कहिल्यै रोकिँदैन।';
+
+  @override
+  String get noteHold =>
+      'भुक्तानी नभएसम्म Pro रोकिन्छ। तपाईंका क्यारेक्टर र प्रगति सुरक्षित छन्।';
+
+  @override
+  String noteEnding(String date) {
+    return 'तपाईंको योजना समाप्त हुँदैछ। $date सम्म सुविधा चल्छ, त्यसपछि Free मा जानुहुन्छ। जुनसुकै बेला फेरि सदस्यता लिन सकिन्छ।';
+  }
+
+  @override
+  String get trialExpiredTitle => 'तपाईंको Max परीक्षण सकियो';
+
+  @override
+  String get trialExpiredSub => 'तपाईं अहिले Free मा हुनुहुन्छ';
+
+  @override
+  String get seePlans => 'योजनाहरू हेर्नुहोस्';
+
+  @override
+  String get currentPlanTitle => 'हालको योजना';
+
+  @override
+  String get badgeRecommended => 'सिफारिस गरिएको';
+
+  @override
+  String get perMonthUnit => 'प्रति महिना';
+
+  @override
+  String get planTaglinePro => 'असीमित कल। प्रत्येक १५ मिनेट।';
+
+  @override
+  String get planTaglineMax => 'अब उनीहरूलाई देख्न सक्नुहुन्छ।';
+
+  @override
+  String get planTaglineFree => 'दिनमा एक कल। निःशुल्क।';
+
+  @override
+  String get bulletProCalls => 'जति चाह्यो त्यति भ्वाइस कल';
+
+  @override
+  String get bulletProLength => 'प्रति कल १५ मिनेट';
+
+  @override
+  String get bulletProScoring => 'अक्षर-अक्षर उच्चारण स्कोर';
+
+  @override
+  String get bulletProCorrections => 'तपाईंको मातृभाषा अनुसार सुधार';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver ले पहिले तपाईंलाई कल गर्छ';
+
+  @override
+  String get bulletMaxVideo => 'आमनेसामने भिडियो कल';
+
+  @override
+  String get bulletMaxEverything => 'Pro का सबै सुविधा';
+
+  @override
+  String get bulletMaxCharacters => 'सबै क्यारेक्टर, असीमित';
+
+  @override
+  String get bulletMaxStudyBook => 'तपाईंको स्तर अनुसारको अध्ययन पुस्तक';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'उच्चारण कसरी बदलिँदैछ भन्ने साप्ताहिक रिपोर्ट';
+
+  @override
+  String get bulletFreeCall => 'दिनमा एक ५-मिनेटको भ्वाइस कल';
+
+  @override
+  String get bulletFreeCheck => 'दिनमा एक उच्चारण जाँच';
+
+  @override
+  String get bulletFreeAccent => 'असीमित एक्सेन्ट जाँच';
+
+  @override
+  String get bulletFreeCharacter => 'सुरु गर्न एउटा क्यारेक्टर';
+
+  @override
+  String get ctaGoUnlimited => 'असीमित बन्नुहोस्';
+
+  @override
+  String get ctaTurnOnVideo => 'भिडियो खोल्नुहोस्';
+
+  @override
+  String get noteCallLength => 'प्रत्येक कल १५ मिनेटको हुन्छ।';
+
+  @override
+  String get paywallProTitle1 => 'तपाईंको कोरियन साथी';
+
+  @override
+  String get paywallProTitle2 => 'राति ३ बजे पनि जागै';
+
+  @override
+  String get paywallProSub => 'असीमित कल। प्रत्येक १५ मिनेट। वर्षभरि।';
+
+  @override
+  String get paywallLimitHeadline => 'Pro ले सीमा हटाउँछ।';
+
+  @override
+  String get limitBannerCallTitle => 'आजको कल सकियो';
+
+  @override
+  String get limitBannerCallSub => 'Free मा दिनमा एक कल';
+
+  @override
+  String get limitBannerCheckTitle => 'आजको जाँच सकियो';
+
+  @override
+  String get limitBannerCheckSub => 'Free मा दिनमा एक जाँच';
+
+  @override
+  String get bulletProCharactersForever => 'किनेका क्यारेक्टर सधैँ तपाईंकै';
+
+  @override
+  String get paywallMaxTitle => 'अब उनीहरूलाई देख्न सक्नुहुन्छ।';
+
+  @override
+  String get paywallMaxSub =>
+      'भिडियो कल, सबै क्यारेक्टर, र तपाईंको स्तरका लागि बनेको अध्ययन पुस्तक।';
+
+  @override
+  String get planMonthly => 'मासिक';
+
+  @override
+  String get planAnnual => 'वार्षिक';
+
+  @override
+  String get proMonthlyPriceLine => 'प्रति महिना \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · प्रति महिना \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => 'प्रति महिना \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => 'प्रति वर्ष \$159.00 · प्रति महिना \$13.25';
+
+  @override
+  String get ctaCaptionPro => 'प्रति महिना \$12.90 · स्टोरमा जुनसुकै बेला रद्द';
+
+  @override
+  String get ctaCaptionMax => 'प्रति महिना \$19.90 · स्टोरमा जुनसुकै बेला रद्द';
+
+  @override
+  String get footerTerms => 'सर्तहरू';
+
+  @override
+  String get footerPrivacy => 'गोपनीयता';
+
+  @override
+  String get noteMaxCharacters =>
+      'Max ले खोलेका क्यारेक्टर सदस्यता चालु रहेसम्म उपलब्ध हुन्छन्। किनेका क्यारेक्टर तपाईंकै रहन्छन्।';
+
+  @override
+  String get processingTitle => 'तपाईंको खरिद पुष्टि हुँदैछ';
+
+  @override
+  String get processingSub => 'सामान्यतया केही सेकेन्ड लाग्छ।';
+
+  @override
+  String get successProTitle => 'तपाईं अब Pro मा हुनुहुन्छ।';
+
+  @override
+  String get successProSub => 'असीमित कल, अहिलेदेखि नै।';
+
+  @override
+  String get successProBenefit1 =>
+      'जति चाह्यो त्यति कल गर्नुहोस् — प्रति कल १५ मिनेट';
+
+  @override
+  String get successProBenefit2 => 'असीमित उच्चारण जाँच';
+
+  @override
+  String get successProBenefit3 => 'सबै क्यारेक्टर, साथै एकपटकको खरिद';
+
+  @override
+  String get successMaxTitle => 'अब उनीहरूलाई देख्न सक्नुहुन्छ।';
+
+  @override
+  String get successMaxSub =>
+      'भिडियो कल खुल्यो। जुनसुकै कलमा भिडियो बटन थिच्नुहोस्।';
+
+  @override
+  String get successMaxBenefit1 => 'आमनेसामने भिडियो कल';
+
+  @override
+  String get successMaxBenefit2 =>
+      'सबै क्यारेक्टर, असीमित — नयाँ सबैभन्दा पहिले';
+
+  @override
+  String get successMaxBenefit3 => 'तपाईंको स्तर अनुसारको अध्ययन पुस्तक';
+
+  @override
+  String get ctaStartACall => 'कल सुरु गर्नुहोस्';
+
+  @override
+  String get ctaStartAVideoCall => 'भिडियो कल सुरु गर्नुहोस्';
+
+  @override
+  String get ctaSeeYourSubscription => 'आफ्नो सदस्यता हेर्नुहोस्';
+
+  @override
+  String get successProCaption =>
+      'रद्द नगरेसम्म प्रति महिना \$12.90 शुल्क लाग्छ। स्टोरमा जुनसुकै बेला व्यवस्थापन वा रद्द गर्नुहोस्।';
+
+  @override
+  String get successMaxCaption =>
+      'रद्द नगरेसम्म प्रति महिना \$19.90 शुल्क लाग्छ। स्टोरमा जुनसुकै बेला व्यवस्थापन वा रद्द गर्नुहोस्।';
+
+  @override
+  String get plansErrorTitle => 'योजनाहरू लोड गर्न सकिएन';
+
+  @override
+  String get plansErrorSub => 'स्टोरबाट जवाफ आएन।';
+
+  @override
+  String get ctaTryAgain => 'फेरि प्रयास गर्नुहोस्';
+
+  @override
+  String get plansErrorCaption => 'कुनै शुल्क लागेन।';
+
+  @override
+  String get changePlanTitle => 'योजना परिवर्तन';
+
+  @override
+  String get moveToMaxTitle => 'Max मा जानुहोस्';
+
+  @override
+  String get maxPriceShort => '\$19.90 / महिना';
+
+  @override
+  String get moveToMaxCardSub =>
+      'आमनेसामने भिडियो कल · सबै क्यारेक्टर · तपाईंका लागि बनेको अध्ययन पुस्तक';
+
+  @override
+  String get whatHappensNow => 'अब के हुन्छ';
+
+  @override
+  String get maxStartsLabel => 'Max सुरु';
+
+  @override
+  String get immediately => 'तुरुन्तै';
+
+  @override
+  String get unusedProTime => 'Pro को बाँकी समय';
+
+  @override
+  String get creditedTowardMax => 'Max मा मिलान हुन्छ';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Max मा जानुहोस्';
+
+  @override
+  String get upgradeCaption =>
+      'नयाँ योजना तुरुन्तै सुरु हुन्छ। Pro को बाँकी समय मिलान हुन्छ, दुईपटक शुल्क लाग्दैन।';
+
+  @override
+  String get moveToProTitle => 'Pro मा जानुहोस्';
+
+  @override
+  String get moveToProSub =>
+      'आज केही बदलिँदैन। भुक्तानी गरिसकेको महिनाको अन्त्यसम्म Max चल्छ।';
+
+  @override
+  String get maxRunsUntil => 'Max चल्ने अवधि';
+
+  @override
+  String get proStarts => 'Pro सुरु';
+
+  @override
+  String get whatYouKeep => 'के रहन्छ';
+
+  @override
+  String get keepBenefitCalls => 'असीमित भ्वाइस कल, प्रत्येक १५ मिनेट';
+
+  @override
+  String get keepBenefitCharacters => 'किनेका क्यारेक्टर सधैँ तपाईंकै';
+
+  @override
+  String downgradeWarning(String date) {
+    return '$date मा भिडियो कल र Max-मात्र क्यारेक्टर बन्द हुन्छन्।';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Pro मा जानुहोस्';
+
+  @override
+  String get ctaKeepMax => 'Max राख्नुहोस्';
+
+  @override
+  String get winbackSkip => 'छोड्नुहोस्';
+
+  @override
+  String get winbackTitle => 'तपाईंको Pro योजना सकियो';
+
+  @override
+  String get winbackSub => 'तपाईं अहिले Free मा — दिनमा एक कल।';
+
+  @override
+  String get winbackQuestion => 'किन छोड्नुभयो, भनिदिनुहुन्छ?';
+
+  @override
+  String get winbackReasonExpensive => 'धेरै महँगो';
+
+  @override
+  String get winbackReasonUnused => 'पर्याप्त प्रयोग गरिनँ';
+
+  @override
+  String get winbackReasonMissing => 'चाहिएको सुविधा छैन';
+
+  @override
+  String get winbackReasonOtherApp => 'अर्को एप भेटेँ';
+
+  @override
+  String get winbackReasonElse => 'अरू नै कारण';
+
+  @override
+  String get ctaSend => 'पठाउनुहोस्';
+
+  @override
+  String get ctaNotNow => 'अहिले होइन';
+
+  @override
+  String get winbackCaption =>
+      'यसले योजना फर्काउँदैन। स्टोरमा फेरि सदस्यता लिनुहोस्।';
+
+  @override
+  String get ctaContinue => 'जारी राख्नुहोस्';
+
+  @override
+  String get ctaClose => 'बन्द गर्नुहोस्';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro फर्कियो';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'तपाईंको सदस्यता भेटियो र यो डिभाइसमा फेरि चालु गरियो।';
+
+  @override
+  String get ovRestoreEmptyTitle => 'पुनर्स्थापना गर्ने केही छैन';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'यो स्टोर खातासँग कुनै सक्रिय सदस्यता जोडिएको छैन।';
+
+  @override
+  String get ovRestoreOtherTitle => 'यो योजना अर्को खाताको हो';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'यो सदस्यता अर्कै BeaverTalk खातामा पहिले नै सक्रिय छ।';
+
+  @override
+  String get ctaSignInThatAccount => 'त्यो खातामा साइन इन गर्नुहोस्';
+
+  @override
+  String get ctaGetHelp => 'सहायता लिनुहोस्';
+
+  @override
+  String get ovCharacterOfferTitle => 'Pro का लागि तयार हुनुहुन्न?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'एउटा क्यारेक्टर रोज्नुहोस्, सधैँका लागि। एकपटकको खरिद — न सदस्यता, न नवीकरण।';
+
+  @override
+  String get rowOneCharacter => 'एउटा क्यारेक्टर';
+
+  @override
+  String get rowFromPrice => '\$5.00 देखि';
+
+  @override
+  String get rowYoursForever => 'सधैँ तपाईंकै';
+
+  @override
+  String get rowNoRenewal => 'नवीकरण छैन';
+
+  @override
+  String get rowWorksOnFree => 'Free मा पनि चल्छ';
+
+  @override
+  String get rowYes => 'हो';
+
+  @override
+  String get ctaSeeCharacters => 'क्यारेक्टरहरू हेर्नुहोस्';
+
+  @override
+  String get ovNotEligibleTitle => 'रद्द गर्ने केही छैन';
+
+  @override
+  String get ovNotEligibleBody =>
+      'तपाईं Free मा हुनुहुन्छ। यो खातामा कुनै सक्रिय सदस्यता छैन।';
+
+  @override
+  String get ovCancelDownsellTitle => 'जानुअघि';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'रद्द स्टोरमा हुन्छ। जान्नैपर्ने दुई कुरा।';
+
+  @override
+  String get rowPayYearlyInstead => 'बरु वार्षिक तिर्नुहोस्';
+
+  @override
+  String get rowYearlyMonthEquiv => 'प्रति महिना \$8.33';
+
+  @override
+  String get rowCharactersYouBought => 'किनेका क्यारेक्टर';
+
+  @override
+  String get rowProRunsUntil => 'Pro चल्ने अवधि';
+
+  @override
+  String get ctaSwitchToYearly => 'वार्षिकमा जानुहोस्';
+
+  @override
+  String get ctaContinueToStore => 'स्टोरतर्फ जारी राख्नुहोस्';
+
+  @override
+  String get ovAnnualSwitchTitle => 'वार्षिक तिर्नुहोस्, \$54.80 बचाउनुहोस्';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'तपाईं दुई महिनादेखि Pro मा हुनुहुन्छ। वार्षिक योजना सस्तो पर्छ।';
+
+  @override
+  String get rowYouSave => 'तपाईंको बचत';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'वार्षिक';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'मासिक, एक वर्षभरि';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'मासिकमा जानुहोस्';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'तपाईंको वार्षिक योजना $date सम्म चल्छ। भोलिपल्टदेखि मासिक बिलिङ सुरु हुन्छ।';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'मासिक बिलिङ सुरु';
+
+  @override
+  String get rowMonthlyLabel => 'मासिक';
+
+  @override
+  String get rowYearlyWorkedOut => 'वार्षिकको हिसाबले';
+
+  @override
+  String get ctaSwitchToMonthly => 'मासिकमा जानुहोस्';
+
+  @override
+  String get ovRefundHelpTitle => 'रिफन्ड स्टोरले हेर्छ';
+
+  @override
+  String get ovRefundHelpBody =>
+      'हामी आफैँ रिफन्ड दिन सक्दैनौँ। हरेक अनुरोध स्टोरले समीक्षा गर्छ।';
+
+  @override
+  String get ctaGoToStore => 'स्टोरमा जानुहोस्';
+
+  @override
+  String get ovTrialEndingTitle => 'तपाईंको परीक्षण भोलि सकिन्छ';
+
+  @override
+  String get ovTrialEndingBody => 'रद्द नगरे Max चलिरहन्छ। के हुन्छ, यहाँ छ।';
+
+  @override
+  String get rowTrialEnds => 'परीक्षण सकिने';
+
+  @override
+  String get rowFirstCharge => 'पहिलो शुल्क';
+
+  @override
+  String get rowThenMonthly => 'त्यसपछि मासिक';
+
+  @override
+  String get ctaCancelInStore => 'स्टोरमा रद्द गर्नुहोस्';
+
+  @override
+  String get ovTrialStartTitle => '७ दिन Max, निःशुल्क';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$date सम्म निःशुल्क। त्यसपछि प्रति महिना \$19.90, स्टोरमा रद्द नगरेसम्म।';
+  }
+
+  @override
+  String get ctaStart7Days => '७ दिन निःशुल्क सुरु गर्नुहोस्';
+
+  @override
+  String get ovOtoTitle => 'सुरु गर्नुअघि एउटा कुरा';
+
+  @override
+  String get ovOtoBody =>
+      'राम्रो निर्णय — असीमित कल अहिल्यै चालु छ। वार्षिक तिरे उही Pro सस्तो पर्छ।';
+
+  @override
+  String get ovFailedDeclinedTitle => 'तपाईंको कार्ड अस्वीकृत भयो';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'स्टोरले भुक्तानी लिन सकेन। कुनै शुल्क लागेन।';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'भुक्तानी विधि अपडेट गर्नुहोस्';
+
+  @override
+  String get ovFailedCanceledTitle => 'भुक्तानी रद्द भयो';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'तपाईं अझै Free मा हुनुहुन्छ। कुनै शुल्क लागेन।';
+
+  @override
+  String get ovFailedStoreTitle => 'केही गडबड भयो';
+
+  @override
+  String get ovFailedStoreBody => 'स्टोरसम्म पुग्न सकिएन। कुनै शुल्क लागेन।';
+
+  @override
+  String get ovAlreadyTitle => 'तपाईं पहिल्यै Pro मा हुनुहुन्छ';
+
+  @override
+  String get ovAlreadyBody =>
+      'यो स्टोर खातामा सक्रिय योजना छ। किन्नुपर्ने केही छैन।';
+
+  @override
+  String get ctaSeeMySubscription => 'मेरो सदस्यता हेर्नुहोस्';
+
+  @override
+  String get subCancelTitle => 'सदस्यता रद्द गर्नुहोस्';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro $date सम्म चल्छ। त्यसपछि Free मा जानुहुन्छ।';
+  }
+
+  @override
+  String get subWhatYouLose => 'के गुमाउनुहुन्छ';
+
+  @override
+  String get benefitCalls15 => 'असीमित कल, प्रत्येक १५ मिनेट';
+
+  @override
+  String get benefitScoring => 'अक्षर-अक्षर उच्चारण स्कोर';
+
+  @override
+  String get benefitEveryCharacter => 'सबै क्यारेक्टर, असीमित';
+
+  @override
+  String get ctaKeepPro => 'Pro राख्नुहोस्';
+
+  @override
+  String get subPaymentTitle => 'भुक्तानी अपडेट गर्नुहोस्';
+
+  @override
+  String get subPaymentBody => 'भुक्तानी लिन सकिएन। ग्रेस अवधिमा Pro चलिरहन्छ।';
+
+  @override
+  String get subHowToFix => 'कसरी मिलाउने';
+
+  @override
+  String get fixStep1 => 'स्टोर खोलेर भुक्तानी विधि अपडेट गर्नुहोस्';
+
+  @override
+  String get fixStep2 => 'फर्केर आउनुहोस् — योजना आफैँ सुचारु हुन्छ';
+
+  @override
+  String get fixStep3 => 'केही पनि दुईपटक शुल्क लाग्दैन';
+
+  @override
+  String get subResubTitle => 'फेरि सदस्यता लिनुहोस्';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro $date मा सकिन्छ। स्वतः नवीकरण फेरि खोल्नुहोस्, केही बदलिँदैन।';
+  }
+
+  @override
+  String get subWhatYouKeep => 'के रहन्छ';
+
+  @override
+  String get ctaTurnItBackOn => 'फेरि खोल्नुहोस्';
+
+  @override
+  String get flTodayTitle => 'आजको कल यही थियो';
+
+  @override
+  String get flTodayBody => 'जहाँ छोड्नुभयो, त्यहीँबाट — अहिल्यै।';
+
+  @override
+  String get flCheckTitle => 'आजको जाँच यही थियो';
+
+  @override
+  String get flCheckBody => 'Free मा दिनमा एक जाँच। Pro ले असीमित बनाउँछ।';
+
+  @override
+  String get flBenefitCalls => 'Pro सँग असीमित कल · प्रत्येक १५ मिनेट';
+
+  @override
+  String get flBenefitChecks => 'Pro सँग असीमित उच्चारण जाँच';
+
+  @override
+  String get flCaption => 'प्रति महिना \$12.90 · जुनसुकै बेला रद्द';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$limit मध्ये $used प्रयोग भयो';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'भोलि हेरौँला';
+
+  @override
+  String get accountSection => 'खाता';
+
+  @override
+  String get nicknameLabel => 'उपनाम';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'लगइन विधि';
+
+  @override
+  String get joinedLabel => 'Joined';
+
+  @override
+  String get editNicknameTitle => 'उपनाम सम्पादन';
+
+  @override
+  String get nicknameRule => '२–१२ अक्षर। अंग्रेजी अक्षर र अंक मात्र।';
+
+  @override
+  String get ctaSave => 'सुरक्षित गर्नुहोस्';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'अहिले छोड्नुभयो भने सदस्यता हुँदैन';
+
+  @override
+  String get paywallLeaveBody =>
+      'भुक्तानीपछि तुरुन्तै तपाईंका सुविधा खुल्छन्। मेरो पृष्ठबाट जहिले पनि फर्कन सक्नुहुन्छ।';
+
+  @override
+  String get ctaKeepLooking => 'हेर्दै गर्नुहोस्';
+
+  @override
+  String get ctaLeaveAnyway => 'जे होस् छोड्ने';
+
+  @override
+  String get iapCharacterSuccessTitle => 'नयाँ साथी जोडियो!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'यो पात्र सधैँका लागि तपाईंको हो — योजना फेरिए पनि रहन्छ, र खरिद पुनर्स्थापना गरेर जुनसुकै डिभाइसमा फर्काउन सकिन्छ।';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'खरिद पूरा भएन। कुनै रकम काटिएको छैन — फेरि प्रयास गर्नुहोस्।';
 }

@@ -26,10 +26,16 @@ import 'package:beavertalk/screens/auth/password_method.dart';
 import 'package:beavertalk/screens/auth/password_new.dart';
 import 'package:beavertalk/screens/auth/signup.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
+import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/screens/mypage/avatar_detail.dart';
+import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
-import 'package:beavertalk/screens/mypage/subscription_info.dart';
+import 'package:beavertalk/screens/mypage/subscription_manage.dart';
+import 'package:beavertalk/screens/plans/paywall.dart';
+import 'package:beavertalk/screens/plans/plan_change.dart';
+import 'package:beavertalk/screens/plans/plans_compare.dart';
+import 'package:beavertalk/screens/plans/purchase_flow.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
@@ -79,12 +85,29 @@ void main() {
         ),
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
-    // Nothing navigates to `Routes.subscription` today — MyPage opens the same
-    // sheet as a modal — but it is the screen the subscription flow will use
-    // once payment is wired, so it stays audited rather than being dropped as
-    // dead code. It overflowed in 11 locales until the sheet's body was made
-    // scrollable; keeping it here is what stops that from coming back.
-    'SubscriptionInfo': () => const SubscriptionInfoScreen(),
+    // The subscription manage screen (P2 redesign). With no server data in
+    // the harness it renders the Free state; its copy is confirmed-English in
+    // every locale, but the layout still gets audited at 320×640.
+    'SubscriptionManage': () => const SubscriptionManageScreen(),
+    // P3 conversion screens (this run's l10n pass). PurchaseProcessing is
+    // excluded (it fires the mock purchase and navigates by named route);
+    // the Pro success screen is excluded too — its one-time-offer timer
+    // (Future.delayed 800ms) is exactly the timer-heavy case the scope note
+    // rules out, and the Max variant covers the identical layout.
+    'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
+    'PaywallProLimit': () =>
+        const PaywallScreen(variant: PaywallVariant.proLimit),
+    'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),
+    'PlansCompare': () => const PlansCompareScreen(),
+    'PlanChangeUpgrade': () =>
+        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
+    'PlanChangeDowngrade': () =>
+        const PlanChangeScreen(direction: PlanChangeDirection.downgrade),
+    'PurchaseSuccessMax': () =>
+        const PurchaseSuccessScreen(tier: SubscriptionTier.max),
+    'PlansError': () => const PlansErrorScreen(),
+    'WinbackSurvey': () => const WinbackSurveyScreen(),
+    'EditNickname': () => const EditNicknameScreen(),
     'OnboardingDone': () => const OnboardingDoneScreen(),
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),
     'OnboardingName': () => const OnboardingNameScreen(),

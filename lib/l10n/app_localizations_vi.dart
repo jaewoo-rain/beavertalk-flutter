@@ -1082,10 +1082,889 @@ class AppLocalizationsVi extends AppLocalizations {
   String get practicePronunciation => 'Luyện phát âm';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Giá đã thay đổi';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Mặt hàng này hiện là $price. Bạn có muốn tiếp tục?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Gói & mua hàng';
+
+  @override
+  String get billingGroupInTheStore => 'Trong cửa hàng';
+
+  @override
+  String get billingChangePlan => 'Đổi gói';
+
+  @override
+  String get billingCompareAllPlans => 'So sánh tất cả các gói';
+
+  @override
+  String get billingBuyACharacter => 'Mua nhân vật';
+
+  @override
+  String get billingRestorePurchases => 'Khôi phục mua hàng';
+
+  @override
+  String get billingPaymentHistory => 'Lịch sử thanh toán';
+
+  @override
+  String get billingManageInTheStore => 'Quản lý trong cửa hàng';
+
+  @override
+  String get billingRefundHelp => 'Hỗ trợ hoàn tiền';
+
+  @override
+  String get billingCancelSubscription => 'Hủy gói đăng ký';
+
+  @override
+  String get billingResubscribe => 'Đăng ký lại';
+
+  @override
+  String get badgeCurrent => 'Hiện tại';
+
+  @override
+  String get badgeTrial => 'Dùng thử';
+
+  @override
+  String get badgeRenewing => 'Sẽ gia hạn';
+
+  @override
+  String get badgePastDue => 'Trễ thanh toán';
+
+  @override
+  String get badgePaused => 'Tạm dừng';
+
+  @override
+  String get badgeCanceling => 'Sắp hủy';
+
+  @override
+  String get subscriptionTitle => 'Gói đăng ký';
+
+  @override
+  String get plansTitle => 'Các gói';
+
+  @override
+  String get planFree => 'Miễn phí';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Dùng thử Max';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — mỗi ngày một cuộc gọi';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return '$amount mỗi tháng';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return 'Miễn phí đến $date';
+  }
+
+  @override
+  String get todaysCalls => 'Cuộc gọi hôm nay';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return 'Đã dùng $used/$limit';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Thanh toán đầu tiên';
+
+  @override
+  String get nextPaymentLabel => 'Thanh toán tiếp theo';
+
+  @override
+  String get retryingUntilLabel => 'Thử lại đến';
+
+  @override
+  String get pausedSinceLabel => 'Tạm dừng từ';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan kết thúc';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Gọi không giới hạn với Pro';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Gọi không giới hạn · 15 phút mỗi cuộc · \$12.90 mỗi tháng';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Bật gọi video với Max';
+
+  @override
+  String get bannerMaxUpsellSub => 'Gọi mặt đối mặt · \$19.90 mỗi tháng';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Chuyển sang gói năm';
+
+  @override
+  String get bannerAnnualSwitchSub => '\$159 mỗi năm · \$13.25 mỗi tháng';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Chúng tôi không thể thu tiền';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Cập nhật thanh toán trong cửa hàng để giữ Pro';
+
+  @override
+  String get bannerPausedTitle => 'Gói của bạn đang tạm dừng';
+
+  @override
+  String get bannerPausedSub => 'Thanh toán chưa được thực hiện';
+
+  @override
+  String get noteRestoreHint =>
+      'Đã đăng ký trên thiết bị khác? Khôi phục sẽ đưa gói về thiết bị này.';
+
+  @override
+  String get noteStoreHandled =>
+      'Phương thức thanh toán, đổi gói và hủy gói đều do cửa hàng xử lý.';
+
+  @override
+  String get noteFairUse =>
+      'Việc dùng không giới hạn tuân theo chính sách sử dụng hợp lý của chúng tôi.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Bản dùng thử kết thúc $date. Hủy trong cửa hàng trước đó và bạn sẽ không bị tính phí.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Quyền lợi vẫn hoạt động trong thời gian gia hạn. Ứng dụng không bao giờ cản trở việc hủy.';
+
+  @override
+  String get noteHold =>
+      'Pro tạm dừng cho đến khi thanh toán thành công. Nhân vật và tiến trình của bạn vẫn an toàn.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Gói của bạn sẽ kết thúc. Quyền lợi kéo dài đến $date, sau đó bạn chuyển về gói Miễn phí. Bạn có thể đăng ký lại bất cứ lúc nào.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Bản dùng thử Max đã kết thúc';
+
+  @override
+  String get trialExpiredSub => 'Bạn đang ở gói Miễn phí';
+
+  @override
+  String get seePlans => 'Xem các gói';
+
+  @override
+  String get currentPlanTitle => 'Gói hiện tại';
+
+  @override
+  String get badgeRecommended => 'Đề xuất';
+
+  @override
+  String get perMonthUnit => 'mỗi tháng';
+
+  @override
+  String get planTaglinePro => 'Gọi không giới hạn. 15 phút mỗi cuộc.';
+
+  @override
+  String get planTaglineMax => 'Giờ bạn có thể nhìn thấy họ.';
+
+  @override
+  String get planTaglineFree => 'Mỗi ngày một cuộc gọi. Hoàn toàn miễn phí.';
+
+  @override
+  String get bulletProCalls => 'Gọi thoại thoải mái, bao nhiêu tùy thích';
+
+  @override
+  String get bulletProLength => '15 phút mỗi cuộc gọi';
+
+  @override
+  String get bulletProScoring => 'Chấm điểm phát âm từng chữ cái';
+
+  @override
+  String get bulletProCorrections => 'Sửa lỗi theo tiếng mẹ đẻ của bạn';
+
+  @override
+  String get bulletProBeaverCalls => 'Hải ly gọi cho bạn trước';
+
+  @override
+  String get bulletMaxVideo => 'Gọi video mặt đối mặt';
+
+  @override
+  String get bulletMaxEverything => 'Mọi thứ trong Pro';
+
+  @override
+  String get bulletMaxCharacters => 'Mọi nhân vật, không giới hạn';
+
+  @override
+  String get bulletMaxStudyBook => 'Sổ tay học tập đúng trình độ của bạn';
+
+  @override
+  String get bulletMaxWeeklyReport => 'Báo cáo hằng tuần về tiến bộ phát âm';
+
+  @override
+  String get bulletFreeCall => 'Mỗi ngày một cuộc gọi thoại 5 phút';
+
+  @override
+  String get bulletFreeCheck => 'Mỗi ngày một lần kiểm tra phát âm';
+
+  @override
+  String get bulletFreeAccent => 'Kiểm tra ngữ điệu không giới hạn';
+
+  @override
+  String get bulletFreeCharacter => 'Một nhân vật khởi đầu';
+
+  @override
+  String get ctaGoUnlimited => 'Gọi không giới hạn';
+
+  @override
+  String get ctaTurnOnVideo => 'Bật gọi video';
+
+  @override
+  String get noteCallLength => 'Mỗi cuộc gọi kéo dài 15 phút.';
+
+  @override
+  String get paywallProTitle1 => 'Người bạn Hàn Quốc';
+
+  @override
+  String get paywallProTitle2 => 'thức cùng bạn lúc 3 giờ sáng';
+
+  @override
+  String get paywallProSub =>
+      'Gọi không giới hạn. 15 phút mỗi cuộc. Quanh năm.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro xóa bỏ giới hạn.';
+
+  @override
+  String get limitBannerCallTitle => 'Đó là cuộc gọi hôm nay';
+
+  @override
+  String get limitBannerCallSub => 'Gói Miễn phí cho bạn một cuộc gọi mỗi ngày';
+
+  @override
+  String get limitBannerCheckTitle => 'Đó là lần kiểm tra hôm nay';
+
+  @override
+  String get limitBannerCheckSub =>
+      'Gói Miễn phí cho bạn một lần kiểm tra mỗi ngày';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Nhân vật bạn mua là của bạn mãi mãi';
+
+  @override
+  String get paywallMaxTitle => 'Giờ bạn có thể nhìn thấy họ.';
+
+  @override
+  String get paywallMaxSub =>
+      'Gọi video, mọi nhân vật, và sổ tay học tập dành riêng cho trình độ của bạn.';
+
+  @override
+  String get planMonthly => 'Hằng tháng';
+
+  @override
+  String get planAnnual => 'Hằng năm';
+
+  @override
+  String get proMonthlyPriceLine => '\$12.90 mỗi tháng';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · \$8.33 mỗi tháng';
+
+  @override
+  String get maxMonthlyPriceLine => '\$19.90 mỗi tháng';
+
+  @override
+  String get maxAnnualPriceLine => '\$159.00 mỗi năm · \$13.25 mỗi tháng';
+
+  @override
+  String get ctaCaptionPro =>
+      '\$12.90 mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+
+  @override
+  String get ctaCaptionMax =>
+      '\$19.90 mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+
+  @override
+  String get footerTerms => 'Điều khoản';
+
+  @override
+  String get footerPrivacy => 'Quyền riêng tư';
+
+  @override
+  String get noteMaxCharacters =>
+      'Nhân vật mở khóa bằng Max dùng được khi gói còn hiệu lực. Nhân vật bạn đã mua vẫn là của bạn.';
+
+  @override
+  String get processingTitle => 'Đang xác nhận giao dịch';
+
+  @override
+  String get processingSub => 'Thường chỉ mất vài giây.';
+
+  @override
+  String get successProTitle => 'Bạn đã có Pro.';
+
+  @override
+  String get successProSub => 'Gọi không giới hạn, bắt đầu ngay bây giờ.';
+
+  @override
+  String get successProBenefit1 => 'Gọi bao nhiêu tùy thích — 15 phút mỗi cuộc';
+
+  @override
+  String get successProBenefit2 => 'Kiểm tra phát âm không giới hạn';
+
+  @override
+  String get successProBenefit3 => 'Mọi nhân vật, cùng tùy chọn mua lẻ';
+
+  @override
+  String get successMaxTitle => 'Giờ bạn đã nhìn thấy họ.';
+
+  @override
+  String get successMaxSub =>
+      'Gọi video đã bật. Nhấn nút video trong bất kỳ cuộc gọi nào.';
+
+  @override
+  String get successMaxBenefit1 => 'Gọi video mặt đối mặt';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Mọi nhân vật không giới hạn, nhân vật mới dùng trước';
+
+  @override
+  String get successMaxBenefit3 => 'Sổ tay học tập đúng trình độ của bạn';
+
+  @override
+  String get ctaStartACall => 'Bắt đầu cuộc gọi';
+
+  @override
+  String get ctaStartAVideoCall => 'Bắt đầu gọi video';
+
+  @override
+  String get ctaSeeYourSubscription => 'Xem gói đăng ký của bạn';
+
+  @override
+  String get successProCaption =>
+      '\$12.90 được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
+
+  @override
+  String get successMaxCaption =>
+      '\$19.90 được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
+
+  @override
+  String get plansErrorTitle => 'Không tải được các gói';
+
+  @override
+  String get plansErrorSub => 'Cửa hàng không phản hồi.';
+
+  @override
+  String get ctaTryAgain => 'Thử lại';
+
+  @override
+  String get plansErrorCaption => 'Bạn chưa bị tính phí.';
+
+  @override
+  String get changePlanTitle => 'Đổi gói';
+
+  @override
+  String get moveToMaxTitle => 'Chuyển lên Max';
+
+  @override
+  String get maxPriceShort => '\$19.90/tháng';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Gọi video mặt đối mặt · mọi nhân vật · sổ tay học tập dành riêng cho bạn';
+
+  @override
+  String get whatHappensNow => 'Điều gì xảy ra tiếp theo';
+
+  @override
+  String get maxStartsLabel => 'Max bắt đầu';
+
+  @override
+  String get immediately => 'Ngay lập tức';
+
+  @override
+  String get unusedProTime => 'Thời gian Pro chưa dùng';
+
+  @override
+  String get creditedTowardMax => 'Được trừ vào phí Max';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Chuyển sang Max';
+
+  @override
+  String get upgradeCaption =>
+      'Gói mới bắt đầu ngay. Thời gian Pro chưa dùng được trừ vào phí, không bao giờ tính hai lần.';
+
+  @override
+  String get moveToProTitle => 'Chuyển xuống Pro';
+
+  @override
+  String get moveToProSub =>
+      'Hôm nay không có gì thay đổi. Max chạy đến hết tháng bạn đã thanh toán.';
+
+  @override
+  String get maxRunsUntil => 'Max hiệu lực đến';
+
+  @override
+  String get proStarts => 'Pro bắt đầu';
+
+  @override
+  String get whatYouKeep => 'Những gì bạn giữ lại';
+
+  @override
+  String get keepBenefitCalls => 'Gọi thoại không giới hạn, 15 phút mỗi cuộc';
+
+  @override
+  String get keepBenefitCharacters => 'Nhân vật bạn mua là của bạn mãi mãi';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Gọi video và nhân vật riêng của Max sẽ tắt vào $date.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Chuyển sang Pro';
+
+  @override
+  String get ctaKeepMax => 'Giữ Max';
+
+  @override
+  String get winbackSkip => 'Bỏ qua';
+
+  @override
+  String get winbackTitle => 'Gói Pro của bạn đã kết thúc';
+
+  @override
+  String get winbackSub => 'Bạn đang ở gói Miễn phí — mỗi ngày một cuộc gọi.';
+
+  @override
+  String get winbackQuestion =>
+      'Bạn có thể cho chúng tôi biết lý do rời đi không?';
+
+  @override
+  String get winbackReasonExpensive => 'Giá quá cao';
+
+  @override
+  String get winbackReasonUnused => 'Tôi không dùng đủ nhiều';
+
+  @override
+  String get winbackReasonMissing => 'Thiếu tính năng tôi cần';
+
+  @override
+  String get winbackReasonOtherApp => 'Tôi tìm được ứng dụng khác';
+
+  @override
+  String get winbackReasonElse => 'Lý do khác';
+
+  @override
+  String get ctaSend => 'Gửi';
+
+  @override
+  String get ctaNotNow => 'Để sau';
+
+  @override
+  String get winbackCaption =>
+      'Việc này không khôi phục gói của bạn. Hãy đăng ký lại trong cửa hàng.';
+
+  @override
+  String get ctaContinue => 'Tiếp tục';
+
+  @override
+  String get ctaClose => 'Đóng';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro đã trở lại';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Chúng tôi đã tìm thấy gói đăng ký của bạn và bật lại trên thiết bị này.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Không có gì để khôi phục';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Không có gói đăng ký nào đang hoạt động gắn với tài khoản cửa hàng này.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Gói này thuộc về tài khoản khác';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Gói đăng ký này đang hoạt động trên một tài khoản BeaverTalk khác.';
+
+  @override
+  String get ctaSignInThatAccount => 'Đăng nhập tài khoản đó';
+
+  @override
+  String get ctaGetHelp => 'Nhận trợ giúp';
+
+  @override
+  String get ovCharacterOfferTitle => 'Chưa sẵn sàng cho Pro?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Chọn một nhân vật và giữ mãi. Mua một lần — không đăng ký, không gia hạn.';
+
+  @override
+  String get rowOneCharacter => 'Một nhân vật';
+
+  @override
+  String get rowFromPrice => 'từ \$5.00';
+
+  @override
+  String get rowYoursForever => 'Của bạn mãi mãi';
+
+  @override
+  String get rowNoRenewal => 'Không gia hạn';
+
+  @override
+  String get rowWorksOnFree => 'Dùng được trên gói Miễn phí';
+
+  @override
+  String get rowYes => 'Có';
+
+  @override
+  String get ctaSeeCharacters => 'Xem nhân vật';
+
+  @override
+  String get ovNotEligibleTitle => 'Không có gì để hủy';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Bạn đang ở gói Miễn phí. Tài khoản này không có gói đăng ký đang hoạt động.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Trước khi bạn rời đi';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'Việc hủy diễn ra trong cửa hàng. Có hai điều đáng biết.';
+
+  @override
+  String get rowPayYearlyInstead => 'Trả theo năm thay vì';
+
+  @override
+  String get rowYearlyMonthEquiv => '\$8.33 mỗi tháng';
+
+  @override
+  String get rowCharactersYouBought => 'Nhân vật bạn đã mua';
+
+  @override
+  String get rowProRunsUntil => 'Pro hiệu lực đến';
+
+  @override
+  String get ctaSwitchToYearly => 'Chuyển sang gói năm';
+
+  @override
+  String get ctaContinueToStore => 'Tiếp tục đến cửa hàng';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Trả theo năm, tiết kiệm \$54.80';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Bạn đã dùng Pro được hai tháng. Gói năm tính ra rẻ hơn.';
+
+  @override
+  String get rowYouSave => 'Bạn tiết kiệm';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Theo năm';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Theo tháng, trong một năm';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Chuyển sang gói tháng';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Gói năm của bạn hiệu lực đến $date. Thanh toán theo tháng bắt đầu từ ngày hôm sau.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Thanh toán theo tháng bắt đầu';
+
+  @override
+  String get rowMonthlyLabel => 'Theo tháng';
+
+  @override
+  String get rowYearlyWorkedOut => 'Gói năm tính ra là';
+
+  @override
+  String get ctaSwitchToMonthly => 'Chuyển sang gói tháng';
+
+  @override
+  String get ovRefundHelpTitle => 'Hoàn tiền do cửa hàng xử lý';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Chúng tôi không thể tự hoàn tiền. Mọi yêu cầu đều do cửa hàng xét duyệt.';
+
+  @override
+  String get ctaGoToStore => 'Đến cửa hàng';
+
+  @override
+  String get ovTrialEndingTitle => 'Bản dùng thử kết thúc vào ngày mai';
+
+  @override
+  String get ovTrialEndingBody =>
+      'Max sẽ tiếp tục trừ khi bạn hủy. Đây là những gì sẽ diễn ra.';
+
+  @override
+  String get rowTrialEnds => 'Dùng thử kết thúc';
+
+  @override
+  String get rowFirstCharge => 'Lần thu phí đầu tiên';
+
+  @override
+  String get rowThenMonthly => 'Sau đó hằng tháng';
+
+  @override
+  String get ctaCancelInStore => 'Hủy trong cửa hàng';
+
+  @override
+  String get ovTrialStartTitle => '7 ngày dùng Max, miễn phí';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return 'Miễn phí đến $date. Sau đó \$19.90 mỗi tháng, trừ khi bạn hủy trong cửa hàng.';
+  }
+
+  @override
+  String get ctaStart7Days => 'Bắt đầu 7 ngày miễn phí';
+
+  @override
+  String get ovOtoTitle => 'Một điều nữa trước khi bắt đầu';
+
+  @override
+  String get ovOtoBody =>
+      'Lựa chọn tốt — gọi không giới hạn đã bật ngay bây giờ. Cùng gói Pro nhưng trả theo năm sẽ rẻ hơn.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Thẻ của bạn bị từ chối';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Cửa hàng không thể thu tiền. Bạn chưa bị tính phí.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Cập nhật phương thức thanh toán';
+
+  @override
+  String get ovFailedCanceledTitle => 'Thanh toán đã bị hủy';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'Bạn vẫn ở gói Miễn phí. Bạn chưa bị tính phí.';
+
+  @override
+  String get ovFailedStoreTitle => 'Đã có lỗi xảy ra';
+
+  @override
+  String get ovFailedStoreBody =>
+      'Không kết nối được với cửa hàng. Bạn chưa bị tính phí.';
+
+  @override
+  String get ovAlreadyTitle => 'Bạn đã có Pro rồi';
+
+  @override
+  String get ovAlreadyBody =>
+      'Tài khoản cửa hàng này đã có gói đang hoạt động. Không có gì cần mua thêm.';
+
+  @override
+  String get ctaSeeMySubscription => 'Xem gói đăng ký của tôi';
+
+  @override
+  String get subCancelTitle => 'Hủy gói đăng ký';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro hiệu lực đến $date. Sau đó bạn chuyển về gói Miễn phí.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Những gì bạn mất';
+
+  @override
+  String get benefitCalls15 => 'Gọi không giới hạn, 15 phút mỗi cuộc';
+
+  @override
+  String get benefitScoring => 'Chấm điểm phát âm từng chữ cái';
+
+  @override
+  String get benefitEveryCharacter => 'Mọi nhân vật, không giới hạn';
+
+  @override
+  String get ctaKeepPro => 'Giữ Pro';
+
+  @override
+  String get subPaymentTitle => 'Cập nhật thanh toán';
+
+  @override
+  String get subPaymentBody =>
+      'Chúng tôi không thể thu tiền. Pro vẫn hoạt động trong thời gian gia hạn.';
+
+  @override
+  String get subHowToFix => 'Cách khắc phục';
+
+  @override
+  String get fixStep1 => 'Mở cửa hàng và cập nhật phương thức thanh toán';
+
+  @override
+  String get fixStep2 => 'Quay lại — gói của bạn tự động tiếp tục';
+
+  @override
+  String get fixStep3 => 'Không bao giờ bị tính phí hai lần';
+
+  @override
+  String get subResubTitle => 'Đăng ký lại';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro kết thúc vào $date. Bật lại gia hạn tự động và mọi thứ giữ nguyên.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Những gì bạn giữ lại';
+
+  @override
+  String get ctaTurnItBackOn => 'Bật lại';
+
+  @override
+  String get flTodayTitle => 'Đó là cuộc gọi hôm nay';
+
+  @override
+  String get flTodayBody => 'Tiếp tục từ chỗ bạn dừng lại — ngay bây giờ.';
+
+  @override
+  String get flCheckTitle => 'Đó là lần kiểm tra hôm nay';
+
+  @override
+  String get flCheckBody =>
+      'Gói Miễn phí kiểm tra một lần mỗi ngày. Pro thì không giới hạn.';
+
+  @override
+  String get flBenefitCalls => 'Gọi không giới hạn với Pro · 15 phút mỗi cuộc';
+
+  @override
+  String get flBenefitChecks => 'Kiểm tra phát âm không giới hạn với Pro';
+
+  @override
+  String get flCaption => '\$12.90 mỗi tháng · hủy bất cứ lúc nào';
+
+  @override
+  String flUsage(String used, String limit) {
+    return 'Đã dùng $used/$limit';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Để mai vậy';
+
+  @override
+  String get accountSection => 'Tài khoản';
+
+  @override
+  String get nicknameLabel => 'Biệt danh';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Phương thức đăng nhập';
+
+  @override
+  String get joinedLabel => 'Joined';
+
+  @override
+  String get editNicknameTitle => 'Sửa biệt danh';
+
+  @override
+  String get nicknameRule => '2–12 ký tự · chỉ chữ cái tiếng Anh và số';
+
+  @override
+  String get ctaSave => 'Lưu';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'Nếu rời đi bây giờ, bạn sẽ chưa đăng ký';
+
+  @override
+  String get paywallLeaveBody =>
+      'Quyền lợi mở khóa ngay sau khi thanh toán. Bạn có thể quay lại bất cứ lúc nào từ Trang của tôi.';
+
+  @override
+  String get ctaKeepLooking => 'Xem tiếp';
+
+  @override
+  String get ctaLeaveAnyway => 'Vẫn rời đi';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Một người bạn mới đã tham gia!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Nhân vật này là của bạn mãi mãi — vẫn còn dù gói thay đổi, và Khôi phục mua hàng sẽ đưa nó trở lại trên mọi thiết bị.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Giao dịch chưa hoàn tất. Chưa bị trừ tiền — vui lòng thử lại.';
 }

@@ -1077,10 +1077,891 @@ class AppLocalizationsKk extends AppLocalizations {
   String get practicePronunciation => 'Айтылымды жаттықтыру';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Баға өзгерді';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Бұл тауар енді $price тұрады. Жалғастырасыз ба?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Жоспар және сатып алулар';
+
+  @override
+  String get billingGroupInTheStore => 'Дүкенде';
+
+  @override
+  String get billingChangePlan => 'Жоспарды өзгерту';
+
+  @override
+  String get billingCompareAllPlans => 'Барлық жоспарды салыстыру';
+
+  @override
+  String get billingBuyACharacter => 'Кейіпкер сатып алу';
+
+  @override
+  String get billingRestorePurchases => 'Сатып алуларды қалпына келтіру';
+
+  @override
+  String get billingPaymentHistory => 'Төлем тарихы';
+
+  @override
+  String get billingManageInTheStore => 'Дүкенде басқару';
+
+  @override
+  String get billingRefundHelp => 'Қайтарым бойынша көмек';
+
+  @override
+  String get billingCancelSubscription => 'Жазылымнан бас тарту';
+
+  @override
+  String get billingResubscribe => 'Қайта жазылу';
+
+  @override
+  String get badgeCurrent => 'Ағымдағы';
+
+  @override
+  String get badgeTrial => 'Сынақ';
+
+  @override
+  String get badgeRenewing => 'Жаңартылады';
+
+  @override
+  String get badgePastDue => 'Төлем кешікті';
+
+  @override
+  String get badgePaused => 'Кідіртілді';
+
+  @override
+  String get badgeCanceling => 'Тоқтатылуда';
+
+  @override
+  String get subscriptionTitle => 'Жазылым';
+
+  @override
+  String get plansTitle => 'Жоспарлар';
+
+  @override
+  String get planFree => 'Тегін';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max сынағы';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — күніне бір қоңырау';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return 'Айына $amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$date дейін тегін';
+  }
+
+  @override
+  String get todaysCalls => 'Бүгінгі қоңыраулар';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$limit ішінен $used пайдаланылды';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Алғашқы төлем';
+
+  @override
+  String get nextPaymentLabel => 'Келесі төлем';
+
+  @override
+  String get retryingUntilLabel => 'Қайталау мерзімі';
+
+  @override
+  String get pausedSinceLabel => 'Кідіртілген күні';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan аяқталады';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Pro-мен шексіз болыңыз';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Шексіз қоңырау · әрқайсысы 15 минут · айына \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Max-пен бейнені қосыңыз';
+
+  @override
+  String get bannerMaxUpsellSub => 'Бетпе-бет қоңыраулар · айына \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Жылдық жоспарға өту';
+
+  @override
+  String get bannerAnnualSwitchSub => 'Жылына \$159 · айына \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Төлемді алу мүмкін болмады';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Pro-ны сақтау үшін дүкенде төлемді жаңартыңыз';
+
+  @override
+  String get bannerPausedTitle => 'Жоспарыңыз кідіртілді';
+
+  @override
+  String get bannerPausedSub => 'Төлем өтпеді';
+
+  @override
+  String get noteRestoreHint =>
+      'Басқа құрылғыда жазылып қойдыңыз ба? Қалпына келтіру оны осы құрылғыға қайтарады.';
+
+  @override
+  String get noteStoreHandled =>
+      'Төлем әдісі, жоспар өзгерту және бас тарту дүкен арқылы жүзеге асады.';
+
+  @override
+  String get noteFairUse =>
+      'Шексіз пайдалану біздің әділ пайдалану саясатына бағынады.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Сынағыңыз $date аяқталады. Оған дейін дүкенде бас тартсаңыз, ештеңе алынбайды.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Жеңілдік кезеңінде артықшылықтар жалғаса береді. Бас тарту қолданбада ешқашан бөгелмейді.';
+
+  @override
+  String get noteHold =>
+      'Төлем өткенше Pro кідіртіледі. Кейіпкерлеріңіз бен үлгеріміңіз аман.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Жоспарыңыз аяқталуға қойылған. Артықшылықтар $date дейін жалғасады, содан кейін Тегінге өтесіз. Кез келген уақытта қайта жазыла аласыз.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Max сынағыңыз аяқталды';
+
+  @override
+  String get trialExpiredSub => 'Сіз қазір Тегін жоспардасыз';
+
+  @override
+  String get seePlans => 'Жоспарларды көру';
+
+  @override
+  String get currentPlanTitle => 'Ағымдағы жоспар';
+
+  @override
+  String get badgeRecommended => 'Ұсынылады';
+
+  @override
+  String get perMonthUnit => 'айына';
+
+  @override
+  String get planTaglinePro => 'Шексіз қоңырау. Әрқайсысы 15 минут.';
+
+  @override
+  String get planTaglineMax => 'Енді оларды көре аласыз.';
+
+  @override
+  String get planTaglineFree => 'Күніне бір қоңырау. Тегін.';
+
+  @override
+  String get bulletProCalls => 'Қалағаныңызша дауыстық қоңыраулар';
+
+  @override
+  String get bulletProLength => 'Әр қоңырау 15 минут';
+
+  @override
+  String get bulletProScoring => 'Айтылым әріп бойынша бағаланады';
+
+  @override
+  String get bulletProCorrections => 'Ана тіліңізге бейімделген түзетулер';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver сізге бірінші қоңырау шалады';
+
+  @override
+  String get bulletMaxVideo => 'Бетпе-бет бейне қоңыраулар';
+
+  @override
+  String get bulletMaxEverything => 'Pro-дағы барлық мүмкіндік';
+
+  @override
+  String get bulletMaxCharacters => 'Барлық кейіпкер, шексіз';
+
+  @override
+  String get bulletMaxStudyBook => 'Деңгейіңізге сай оқу кітабы';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'Айтылымыңыздың өзгерісі туралы апталық есеп';
+
+  @override
+  String get bulletFreeCall => 'Күніне бір 5 минуттық дауыстық қоңырау';
+
+  @override
+  String get bulletFreeCheck => 'Күніне бір айтылым тексерісі';
+
+  @override
+  String get bulletFreeAccent => 'Шексіз акцент тексерісі';
+
+  @override
+  String get bulletFreeCharacter => 'Бастауға бір кейіпкер';
+
+  @override
+  String get ctaGoUnlimited => 'Шексіз болу';
+
+  @override
+  String get ctaTurnOnVideo => 'Бейнені қосу';
+
+  @override
+  String get noteCallLength => 'Әр қоңырау 15 минутқа созылады.';
+
+  @override
+  String get paywallProTitle1 => 'Түнгі 3-те де ояу жүретін';
+
+  @override
+  String get paywallProTitle2 => 'кәріс досыңыз';
+
+  @override
+  String get paywallProSub => 'Шексіз қоңырау. Әрқайсысы 15 минут. Жыл бойы.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro шектеуді алып тастайды.';
+
+  @override
+  String get limitBannerCallTitle => 'Бұл бүгінгі қоңырау еді';
+
+  @override
+  String get limitBannerCallSub => 'Тегін жоспар күніне бір қоңырау береді';
+
+  @override
+  String get limitBannerCheckTitle => 'Бұл бүгінгі тексеріс еді';
+
+  @override
+  String get limitBannerCheckSub => 'Тегін жоспар күніне бір тексеріс береді';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Сатып алған кейіпкерлеріңіз мәңгі сіздікі';
+
+  @override
+  String get paywallMaxTitle => 'Енді оларды көре аласыз.';
+
+  @override
+  String get paywallMaxSub =>
+      'Бейне қоңыраулар, барлық кейіпкер және деңгейіңізге арнап жасалған оқу кітабы.';
+
+  @override
+  String get planMonthly => 'Айлық';
+
+  @override
+  String get planAnnual => 'Жылдық';
+
+  @override
+  String get proMonthlyPriceLine => 'Айына \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · айына \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => 'Айына \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => 'Жылына \$159.00 · айына \$13.25';
+
+  @override
+  String get ctaCaptionPro =>
+      'Айына \$12.90 · дүкенде кез келген уақытта бас тартуға болады';
+
+  @override
+  String get ctaCaptionMax =>
+      'Айына \$19.90 · дүкенде кез келген уақытта бас тартуға болады';
+
+  @override
+  String get footerTerms => 'Шарттар';
+
+  @override
+  String get footerPrivacy => 'Құпиялылық';
+
+  @override
+  String get noteMaxCharacters =>
+      'Max ашқан кейіпкерлер жазылымыңыз белсенді кезде қолжетімді. Сатып алған кейіпкерлеріңіз сіздікі болып қалады.';
+
+  @override
+  String get processingTitle => 'Сатып алуыңыз расталуда';
+
+  @override
+  String get processingSub => 'Бұл әдетте бірнеше секунд алады.';
+
+  @override
+  String get successProTitle => 'Сіз енді Pro-дасыз.';
+
+  @override
+  String get successProSub => 'Шексіз қоңыраулар, дәл қазірден бастап.';
+
+  @override
+  String get successProBenefit1 =>
+      'Қалағаныңызша қоңырау шалыңыз — әр қоңырау 15 минут';
+
+  @override
+  String get successProBenefit2 => 'Шексіз айтылым тексерісі';
+
+  @override
+  String get successProBenefit3 => 'Барлық кейіпкер және жеке сатып алулар';
+
+  @override
+  String get successMaxTitle => 'Енді оларды көре аласыз.';
+
+  @override
+  String get successMaxSub =>
+      'Бейне қоңыраулар қосылды. Кез келген қоңырауда бейне түймесін басыңыз.';
+
+  @override
+  String get successMaxBenefit1 => 'Бетпе-бет бейне қоңыраулар';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Барлық кейіпкер, шексіз және жаңалары бірінші';
+
+  @override
+  String get successMaxBenefit3 => 'Деңгейіңізге сай оқу кітабы';
+
+  @override
+  String get ctaStartACall => 'Қоңырау бастау';
+
+  @override
+  String get ctaStartAVideoCall => 'Бейне қоңырау бастау';
+
+  @override
+  String get ctaSeeYourSubscription => 'Жазылымыңызды көру';
+
+  @override
+  String get successProCaption =>
+      'Бас тартқанша ай сайын \$12.90 алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
+
+  @override
+  String get successMaxCaption =>
+      'Бас тартқанша ай сайын \$19.90 алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
+
+  @override
+  String get plansErrorTitle => 'Жоспарларды жүктеу мүмкін болмады';
+
+  @override
+  String get plansErrorSub => 'Дүкен жауап бермеді.';
+
+  @override
+  String get ctaTryAgain => 'Қайта көру';
+
+  @override
+  String get plansErrorCaption => 'Ештеңе алынған жоқ.';
+
+  @override
+  String get changePlanTitle => 'Жоспарды өзгерту';
+
+  @override
+  String get moveToMaxTitle => 'Max-қа өту';
+
+  @override
+  String get maxPriceShort => '\$19.90 / ай';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Бетпе-бет бейне қоңыраулар · барлық кейіпкер · сізге арналған оқу кітабы';
+
+  @override
+  String get whatHappensNow => 'Енді не болады';
+
+  @override
+  String get maxStartsLabel => 'Max басталады';
+
+  @override
+  String get immediately => 'Дереу';
+
+  @override
+  String get unusedProTime => 'Пайдаланылмаған Pro уақыты';
+
+  @override
+  String get creditedTowardMax => 'Max есебіне саналады';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Max-қа ауысу';
+
+  @override
+  String get upgradeCaption =>
+      'Жаңа жоспарыңыз бірден басталады. Пайдаланылмаған Pro уақыты есепке алынады, ешқашан екі рет алынбайды.';
+
+  @override
+  String get moveToProTitle => 'Pro-ға өту';
+
+  @override
+  String get moveToProSub =>
+      'Бүгін ештеңе өзгермейді. Max сіз төлеген айдың соңына дейін жұмыс істейді.';
+
+  @override
+  String get maxRunsUntil => 'Max жұмыс істейтін мерзім';
+
+  @override
+  String get proStarts => 'Pro басталады';
+
+  @override
+  String get whatYouKeep => 'Сізде қалатыны';
+
+  @override
+  String get keepBenefitCalls =>
+      'Шексіз дауыстық қоңыраулар, әрқайсысы 15 минут';
+
+  @override
+  String get keepBenefitCharacters =>
+      'Сатып алған кейіпкерлеріңіз мәңгі сіздікі';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Бейне қоңыраулар мен тек Max кейіпкерлері $date өшіріледі.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Pro-ға ауысу';
+
+  @override
+  String get ctaKeepMax => 'Max-ты сақтау';
+
+  @override
+  String get winbackSkip => 'Өткізіп жіберу';
+
+  @override
+  String get winbackTitle => 'Pro жоспарыңыз аяқталды';
+
+  @override
+  String get winbackSub => 'Сіз қазір Тегіндесіз — күніне бір қоңырау.';
+
+  @override
+  String get winbackQuestion => 'Неге кеткеніңізді айта аласыз ба?';
+
+  @override
+  String get winbackReasonExpensive => 'Тым қымбат';
+
+  @override
+  String get winbackReasonUnused => 'Жеткілікті пайдаланбадым';
+
+  @override
+  String get winbackReasonMissing => 'Маған керек мүмкіндік жоқ';
+
+  @override
+  String get winbackReasonOtherApp => 'Басқа қолданба таптым';
+
+  @override
+  String get winbackReasonElse => 'Басқа себеп';
+
+  @override
+  String get ctaSend => 'Жіберу';
+
+  @override
+  String get ctaNotNow => 'Қазір емес';
+
+  @override
+  String get winbackCaption =>
+      'Бұл жоспарыңызды қайтармайды. Дүкенде қайта жазылыңыз.';
+
+  @override
+  String get ctaContinue => 'Жалғастыру';
+
+  @override
+  String get ctaClose => 'Жабу';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro оралды';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Жазылымыңызды тауып, осы құрылғыда қайта қостық.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Қалпына келтіретін ештеңе жоқ';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Бұл дүкен есептік жазбасына байланған белсенді жазылым жоқ.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Бұл жоспар басқа есептік жазбаға тиесілі';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Бұл жазылым басқа BeaverTalk есептік жазбасында әлдеқашан белсенді.';
+
+  @override
+  String get ctaSignInThatAccount => 'Сол есептік жазбамен кіру';
+
+  @override
+  String get ctaGetHelp => 'Көмек алу';
+
+  @override
+  String get ovCharacterOfferTitle => 'Pro-ға дайын емессіз бе?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Бір кейіпкер таңдап, өзіңізге қалдырыңыз. Бір реттік сатып алу — жазылымсыз, жаңартусыз.';
+
+  @override
+  String get rowOneCharacter => 'Бір кейіпкер';
+
+  @override
+  String get rowFromPrice => '\$5.00 бастап';
+
+  @override
+  String get rowYoursForever => 'Мәңгі сіздікі';
+
+  @override
+  String get rowNoRenewal => 'Жаңарту жоқ';
+
+  @override
+  String get rowWorksOnFree => 'Тегін жоспарда жұмыс істейді';
+
+  @override
+  String get rowYes => 'Иә';
+
+  @override
+  String get ctaSeeCharacters => 'Кейіпкерлерді көру';
+
+  @override
+  String get ovNotEligibleTitle => 'Тоқтататын ештеңе жоқ';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Сіз Тегін жоспардасыз. Бұл есептік жазбада белсенді жазылым жоқ.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Кетер алдында';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'Бас тарту дүкенде жасалады. Білуге тұрарлық екі нәрсе.';
+
+  @override
+  String get rowPayYearlyInstead => 'Орнына жылдық төлеңіз';
+
+  @override
+  String get rowYearlyMonthEquiv => 'Айына \$8.33';
+
+  @override
+  String get rowCharactersYouBought => 'Сатып алған кейіпкерлеріңіз';
+
+  @override
+  String get rowProRunsUntil => 'Pro жұмыс істейтін мерзім';
+
+  @override
+  String get ctaSwitchToYearly => 'Жылдыққа ауысу';
+
+  @override
+  String get ctaContinueToStore => 'Дүкенге өту';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Жылдық төлеп, \$54.80 үнемдеңіз';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Pro-да екі ай болдыңыз. Жылдық жоспар есептегенде арзанырақ шығады.';
+
+  @override
+  String get rowYouSave => 'Үнемдейсіз';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Жылдық';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Айлық, бір жыл бойы';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Айлыққа ауысу';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Жылдық жоспарыңыз $date дейін жұмыс істейді. Айлық төлем келесі күні басталады.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Айлық төлем басталады';
+
+  @override
+  String get rowMonthlyLabel => 'Айлық';
+
+  @override
+  String get rowYearlyWorkedOut => 'Жылдықтың есебі';
+
+  @override
+  String get ctaSwitchToMonthly => 'Айлыққа ауысу';
+
+  @override
+  String get ovRefundHelpTitle => 'Қайтарымды дүкен жүзеге асырады';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Біз өзіміз ақша қайтара алмаймыз. Әр сұранысты дүкен қарайды.';
+
+  @override
+  String get ctaGoToStore => 'Дүкенге бару';
+
+  @override
+  String get ovTrialEndingTitle => 'Сынағыңыз ертең аяқталады';
+
+  @override
+  String get ovTrialEndingBody =>
+      'Бас тартпасаңыз, Max жалғаса береді. Не болатыны мынадай.';
+
+  @override
+  String get rowTrialEnds => 'Сынақ аяқталады';
+
+  @override
+  String get rowFirstCharge => 'Алғашқы төлем';
+
+  @override
+  String get rowThenMonthly => 'Содан кейін ай сайын';
+
+  @override
+  String get ctaCancelInStore => 'Дүкенде бас тарту';
+
+  @override
+  String get ovTrialStartTitle => 'Max-тың 7 күні, тегін';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$date дейін тегін. Одан кейін дүкенде бас тартпасаңыз, айына \$19.90.';
+  }
+
+  @override
+  String get ctaStart7Days => '7 күн тегін бастау';
+
+  @override
+  String get ovOtoTitle => 'Бастамас бұрын тағы бір нәрсе';
+
+  @override
+  String get ovOtoBody =>
+      'Дұрыс шешім — шексіз қоңыраулар қазір қосулы. Дәл сол Pro жылдық төлесеңіз арзанырақ.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Картаңыз қабылданбады';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Дүкен төлемді ала алмады. Ештеңе алынған жоқ.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Төлем әдісін жаңарту';
+
+  @override
+  String get ovFailedCanceledTitle => 'Төлемнен бас тартылды';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'Сіз әлі Тегін жоспардасыз. Ештеңе алынған жоқ.';
+
+  @override
+  String get ovFailedStoreTitle => 'Бір қателік болды';
+
+  @override
+  String get ovFailedStoreBody => 'Дүкенге қосыла алмадық. Ештеңе алынған жоқ.';
+
+  @override
+  String get ovAlreadyTitle => 'Сіз әлдеқашан Pro-дасыз';
+
+  @override
+  String get ovAlreadyBody =>
+      'Бұл дүкен есептік жазбасында белсенді жоспар бар. Сатып алатын ештеңе жоқ.';
+
+  @override
+  String get ctaSeeMySubscription => 'Менің жазылымымды көру';
+
+  @override
+  String get subCancelTitle => 'Жазылымнан бас тарту';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro $date дейін жұмыс істейді. Одан кейін Тегінге өтесіз.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Нені жоғалтасыз';
+
+  @override
+  String get benefitCalls15 => 'Шексіз қоңыраулар, әрқайсысы 15 минут';
+
+  @override
+  String get benefitScoring => 'Айтылым әріп бойынша бағаланады';
+
+  @override
+  String get benefitEveryCharacter => 'Барлық кейіпкер, шексіз';
+
+  @override
+  String get ctaKeepPro => 'Pro-ны сақтау';
+
+  @override
+  String get subPaymentTitle => 'Төлемді жаңарту';
+
+  @override
+  String get subPaymentBody =>
+      'Төлемді алу мүмкін болмады. Жеңілдік кезеңінде Pro жұмыс істей береді.';
+
+  @override
+  String get subHowToFix => 'Қалай түзетуге болады';
+
+  @override
+  String get fixStep1 => 'Дүкенді ашып, төлем әдісіңізді жаңартыңыз';
+
+  @override
+  String get fixStep2 =>
+      'Қайта оралыңыз — жоспарыңыз автоматты түрде жалғасады';
+
+  @override
+  String get fixStep3 => 'Ештеңе екі рет алынбайды';
+
+  @override
+  String get subResubTitle => 'Қайта жазылу';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro $date аяқталады. Автожаңартуды қайта қоссаңыз, ештеңе өзгермейді.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Сізде қалатыны';
+
+  @override
+  String get ctaTurnItBackOn => 'Қайта қосу';
+
+  @override
+  String get flTodayTitle => 'Бұл бүгінгі қоңырау еді';
+
+  @override
+  String get flTodayBody => 'Тоқтаған жерден жалғастырыңыз — дәл қазір.';
+
+  @override
+  String get flCheckTitle => 'Бұл бүгінгі тексеріс еді';
+
+  @override
+  String get flCheckBody =>
+      'Тегін жоспарда күніне бір тексеріс. Pro оны шексіз етеді.';
+
+  @override
+  String get flBenefitCalls => 'Pro-мен шексіз қоңыраулар · әрқайсысы 15 минут';
+
+  @override
+  String get flBenefitChecks => 'Pro-мен шексіз айтылым тексерісі';
+
+  @override
+  String get flCaption =>
+      'Айына \$12.90 · кез келген уақытта бас тартуға болады';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$limit ішінен $used пайдаланылды';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Мүмкін ертең';
+
+  @override
+  String get accountSection => 'Тіркелгі';
+
+  @override
+  String get nicknameLabel => 'Лақап ат';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Кіру әдісі';
+
+  @override
+  String get joinedLabel => 'Joined';
+
+  @override
+  String get editNicknameTitle => 'Лақап атты өзгерту';
+
+  @override
+  String get nicknameRule => '2–12 таңба. Әріптер мен сандар. Тек ағылшынша';
+
+  @override
+  String get ctaSave => 'Сақтау';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'Қазір шықсаңыз, жазылым рәсімделмейді';
+
+  @override
+  String get paywallLeaveBody =>
+      'Артықшылықтар төлемнен кейін бірден ашылады. Менің бетім арқылы кез келген уақытта орала аласыз.';
+
+  @override
+  String get ctaKeepLooking => 'Қарауды жалғастыру';
+
+  @override
+  String get ctaLeaveAnyway => 'Бәрібір шығу';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Жаңа дос қосылды!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Бұл кейіпкер мәңгі сіздікі — жоспар өзгерсе де қалады, ал Сатып алуларды қалпына келтіру оны кез келген құрылғыда қайтарады.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.';
 }

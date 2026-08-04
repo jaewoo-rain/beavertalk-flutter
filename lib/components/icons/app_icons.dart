@@ -69,6 +69,17 @@ abstract final class AppIcons {
   // ── Status / feedback ────────────────────────────────────────
   static Widget check({double size = 24, required Color color}) =>
       _glyph('check', size, color);
+
+  /// `external-link` (`4409:1402`) — the ↗ mark on rows that leave the app for
+  /// the store. Created for the subscription redesign; `share` is a node-share
+  /// glyph and is not a substitute.
+  static Widget externalLink({double size = 24, required Color color}) =>
+      _glyph('external-link', size, color);
+
+  /// `alert` (`4395:1387`) — the exclamation used by error marks. Colour is
+  /// the caller's decision, per the icon's own Figma note.
+  static Widget alert({double size = 24, required Color color}) =>
+      _glyph('alert', size, color);
   static Widget thumbsUp({double size = 24, required Color color}) =>
       _glyph('thumbs-up', size, color);
   static Widget thumbsDown({double size = 24, required Color color}) =>

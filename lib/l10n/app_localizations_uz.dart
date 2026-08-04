@@ -1088,10 +1088,894 @@ class AppLocalizationsUz extends AppLocalizations {
   String get practicePronunciation => 'Talaffuzni mashq qilish';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Narx oʻzgardi';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Bu mahsulot endi $price. Davom etasizmi?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Tarif va xaridlar';
+
+  @override
+  String get billingGroupInTheStore => 'Doʻkonda';
+
+  @override
+  String get billingChangePlan => 'Tarifni oʻzgartirish';
+
+  @override
+  String get billingCompareAllPlans => 'Barcha tariflarni solishtirish';
+
+  @override
+  String get billingBuyACharacter => 'Personaj sotib olish';
+
+  @override
+  String get billingRestorePurchases => 'Xaridlarni tiklash';
+
+  @override
+  String get billingPaymentHistory => 'Toʻlovlar tarixi';
+
+  @override
+  String get billingManageInTheStore => 'Doʻkonda boshqarish';
+
+  @override
+  String get billingRefundHelp => 'Pulni qaytarish boʻyicha yordam';
+
+  @override
+  String get billingCancelSubscription => 'Obunani bekor qilish';
+
+  @override
+  String get billingResubscribe => 'Qayta obuna boʻlish';
+
+  @override
+  String get badgeCurrent => 'Joriy';
+
+  @override
+  String get badgeTrial => 'Sinov';
+
+  @override
+  String get badgeRenewing => 'Yangilanadi';
+
+  @override
+  String get badgePastDue => 'Toʻlov kechikkan';
+
+  @override
+  String get badgePaused => 'Toʻxtatilgan';
+
+  @override
+  String get badgeCanceling => 'Bekor qilinmoqda';
+
+  @override
+  String get subscriptionTitle => 'Obuna';
+
+  @override
+  String get plansTitle => 'Tariflar';
+
+  @override
+  String get planFree => 'Bepul';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max sinovi';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — kuniga bitta qoʻngʻiroq';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return 'Oyiga $amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$date gacha bepul';
+  }
+
+  @override
+  String get todaysCalls => 'Bugungi qoʻngʻiroqlar';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$limit tadan $used tasi ishlatildi';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Birinchi toʻlov';
+
+  @override
+  String get nextPaymentLabel => 'Keyingi toʻlov';
+
+  @override
+  String get retryingUntilLabel => 'Qayta urinish muddati';
+
+  @override
+  String get pausedSinceLabel => 'Toʻxtatilgan sana';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan tugaydi';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Pro bilan cheksiz boʻling';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Cheksiz qoʻngʻiroqlar · har biri 15 daqiqa · oyiga \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Max bilan videoni yoqing';
+
+  @override
+  String get bannerMaxUpsellSub => 'Yuzma-yuz qoʻngʻiroqlar · oyiga \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Yillik tarifga oʻting';
+
+  @override
+  String get bannerAnnualSwitchSub => 'Yiliga \$159 · oyiga \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Toʻlovni olib boʻlmadi';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Pro saqlanishi uchun doʻkonda toʻlovni yangilang';
+
+  @override
+  String get bannerPausedTitle => 'Tarifingiz toʻxtatildi';
+
+  @override
+  String get bannerPausedSub => 'Toʻlov amalga oshmadi';
+
+  @override
+  String get noteRestoreHint =>
+      'Boshqa qurilmada obuna boʻlganmisiz? Tiklash uni bu qurilmaga qaytaradi.';
+
+  @override
+  String get noteStoreHandled =>
+      'Toʻlov usuli, tarifni oʻzgartirish va bekor qilish doʻkon orqali amalga oshiriladi.';
+
+  @override
+  String get noteFairUse =>
+      'Cheksiz foydalanish adolatli foydalanish siyosatiga boʻysunadi.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Sinov muddatingiz $date tugaydi. Ungacha doʻkonda bekor qilsangiz, hech narsa olinmaydi.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Imtiyozli davr mobaynida imkoniyatlar ishlashda davom etadi. Bekor qilish ilovada hech qachon toʻsilmaydi.';
+
+  @override
+  String get noteHold =>
+      'Toʻlov oʻtguncha Pro toʻxtatib turiladi. Personajlaringiz va natijalaringiz saqlanadi.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Tarifingiz tugashi belgilangan. Imkoniyatlar $date gacha ishlaydi, soʻng Bepulga oʻtasiz. Istalgan vaqtda qayta obuna boʻlishingiz mumkin.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Max sinov muddatingiz tugadi';
+
+  @override
+  String get trialExpiredSub => 'Endi Bepul tarifdasiz';
+
+  @override
+  String get seePlans => 'Tariflarni koʻrish';
+
+  @override
+  String get currentPlanTitle => 'Joriy tarif';
+
+  @override
+  String get badgeRecommended => 'Tavsiya etiladi';
+
+  @override
+  String get perMonthUnit => 'oyiga';
+
+  @override
+  String get planTaglinePro => 'Cheksiz qoʻngʻiroqlar. Har biri 15 daqiqa.';
+
+  @override
+  String get planTaglineMax => 'Endi ularni koʻra olasiz.';
+
+  @override
+  String get planTaglineFree => 'Kuniga bitta qoʻngʻiroq. Mutlaqo bepul.';
+
+  @override
+  String get bulletProCalls => 'Istalgancha ovozli qoʻngʻiroqlar';
+
+  @override
+  String get bulletProLength => 'Har bir qoʻngʻiroq 15 daqiqa';
+
+  @override
+  String get bulletProScoring => 'Talaffuz harfma-harf baholanadi';
+
+  @override
+  String get bulletProCorrections => 'Ona tilingizga moslangan tuzatishlar';
+
+  @override
+  String get bulletProBeaverCalls =>
+      'Beaver sizga birinchi boʻlib qoʻngʻiroq qiladi';
+
+  @override
+  String get bulletMaxVideo => 'Yuzma-yuz videoqoʻngʻiroqlar';
+
+  @override
+  String get bulletMaxEverything => 'Pro tarifidagi hamma narsa';
+
+  @override
+  String get bulletMaxCharacters => 'Barcha personajlar, cheksiz';
+
+  @override
+  String get bulletMaxStudyBook => 'Darajangizga mos oʻquv kitobi';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'Talaffuzingiz qanday oʻzgarayotgani haqida haftalik hisobot';
+
+  @override
+  String get bulletFreeCall => 'Kuniga bitta 5 daqiqalik ovozli qoʻngʻiroq';
+
+  @override
+  String get bulletFreeCheck => 'Kuniga bitta talaffuz tekshiruvi';
+
+  @override
+  String get bulletFreeAccent => 'Cheksiz aksent tekshiruvlari';
+
+  @override
+  String get bulletFreeCharacter => 'Boshlash uchun bitta personaj';
+
+  @override
+  String get ctaGoUnlimited => 'Cheksizga oʻtish';
+
+  @override
+  String get ctaTurnOnVideo => 'Videoni yoqish';
+
+  @override
+  String get noteCallLength => 'Har bir qoʻngʻiroq 15 daqiqa.';
+
+  @override
+  String get paywallProTitle1 => 'Tungi soat 3da ham uygʻoq';
+
+  @override
+  String get paywallProTitle2 => 'koreys doʻstingiz';
+
+  @override
+  String get paywallProSub =>
+      'Cheksiz qoʻngʻiroqlar. Har biri 15 daqiqa. Yil davomida.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro cheklovni olib tashlaydi.';
+
+  @override
+  String get limitBannerCallTitle => 'Bu bugungi qoʻngʻiroq edi';
+
+  @override
+  String get limitBannerCallSub => 'Bepul tarifda kuniga bitta qoʻngʻiroq';
+
+  @override
+  String get limitBannerCheckTitle => 'Bu bugungi tekshiruv edi';
+
+  @override
+  String get limitBannerCheckSub => 'Bepul tarifda kuniga bitta tekshiruv';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Sotib olgan personajlaringiz abadiy sizniki';
+
+  @override
+  String get paywallMaxTitle => 'Endi ularni koʻra olasiz.';
+
+  @override
+  String get paywallMaxSub =>
+      'Videoqoʻngʻiroqlar, barcha personajlar va darajangizga mos oʻquv kitobi.';
+
+  @override
+  String get planMonthly => 'Oylik';
+
+  @override
+  String get planAnnual => 'Yillik';
+
+  @override
+  String get proMonthlyPriceLine => 'Oyiga \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · oyiga \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => 'Oyiga \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => 'Yiliga \$159.00 · oyiga \$13.25';
+
+  @override
+  String get ctaCaptionPro =>
+      'Oyiga \$12.90 · doʻkonda istalgan vaqtda bekor qilish mumkin';
+
+  @override
+  String get ctaCaptionMax =>
+      'Oyiga \$19.90 · doʻkonda istalgan vaqtda bekor qilish mumkin';
+
+  @override
+  String get footerTerms => 'Shartlar';
+
+  @override
+  String get footerPrivacy => 'Maxfiylik';
+
+  @override
+  String get noteMaxCharacters =>
+      'Max ochgan personajlar obunangiz faol boʻlganda mavjud. Sotib olgan personajlaringiz sizniki boʻlib qoladi.';
+
+  @override
+  String get processingTitle => 'Xaridingiz tasdiqlanmoqda';
+
+  @override
+  String get processingSub => 'Bu odatda bir necha soniya davom etadi.';
+
+  @override
+  String get successProTitle => 'Siz Pro tarifdasiz.';
+
+  @override
+  String get successProSub => 'Cheksiz qoʻngʻiroqlar hoziroq boshlanadi.';
+
+  @override
+  String get successProBenefit1 =>
+      'Istalgancha qoʻngʻiroq qiling — har biri 15 daqiqa';
+
+  @override
+  String get successProBenefit2 => 'Cheksiz talaffuz tekshiruvlari';
+
+  @override
+  String get successProBenefit3 =>
+      'Barcha personajlar, qoʻshimcha bir martalik xaridlar';
+
+  @override
+  String get successMaxTitle => 'Endi ularni koʻra olasiz.';
+
+  @override
+  String get successMaxSub =>
+      'Videoqoʻngʻiroqlar yoqildi. Istalgan qoʻngʻiroqda video tugmasini bosing.';
+
+  @override
+  String get successMaxBenefit1 => 'Yuzma-yuz videoqoʻngʻiroqlar';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Barcha personajlar, cheksiz va yangilari birinchi';
+
+  @override
+  String get successMaxBenefit3 => 'Darajangizga mos oʻquv kitobi';
+
+  @override
+  String get ctaStartACall => 'Qoʻngʻiroqni boshlash';
+
+  @override
+  String get ctaStartAVideoCall => 'Videoqoʻngʻiroqni boshlash';
+
+  @override
+  String get ctaSeeYourSubscription => 'Obunangizni koʻrish';
+
+  @override
+  String get successProCaption =>
+      'Bekor qilguningizcha har oy \$12.90 olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
+
+  @override
+  String get successMaxCaption =>
+      'Bekor qilguningizcha har oy \$19.90 olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
+
+  @override
+  String get plansErrorTitle => 'Tariflarni yuklab boʻlmadi';
+
+  @override
+  String get plansErrorSub => 'Doʻkondan javob kelmadi.';
+
+  @override
+  String get ctaTryAgain => 'Qayta urinish';
+
+  @override
+  String get plansErrorCaption => 'Hech narsa olinmadi.';
+
+  @override
+  String get changePlanTitle => 'Tarifni oʻzgartirish';
+
+  @override
+  String get moveToMaxTitle => 'Max tarifiga oʻtish';
+
+  @override
+  String get maxPriceShort => '\$19.90 / oy';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Yuzma-yuz videoqoʻngʻiroqlar · barcha personajlar · sizga mos oʻquv kitobi';
+
+  @override
+  String get whatHappensNow => 'Endi nima boʻladi';
+
+  @override
+  String get maxStartsLabel => 'Max boshlanadi';
+
+  @override
+  String get immediately => 'Darhol';
+
+  @override
+  String get unusedProTime => 'Ishlatilmagan Pro vaqti';
+
+  @override
+  String get creditedTowardMax => 'Max hisobiga oʻtkaziladi';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Max tarifiga oʻtish';
+
+  @override
+  String get upgradeCaption =>
+      'Yangi tarifingiz darhol boshlanadi. Ishlatilmagan Pro vaqti hisobga olinadi, ikki marta toʻlov olinmaydi.';
+
+  @override
+  String get moveToProTitle => 'Pro tarifiga oʻtish';
+
+  @override
+  String get moveToProSub =>
+      'Bugun hech narsa oʻzgarmaydi. Max siz toʻlagan oy oxirigacha ishlaydi.';
+
+  @override
+  String get maxRunsUntil => 'Max muddati';
+
+  @override
+  String get proStarts => 'Pro boshlanadi';
+
+  @override
+  String get whatYouKeep => 'Nima saqlanadi';
+
+  @override
+  String get keepBenefitCalls =>
+      'Cheksiz ovozli qoʻngʻiroqlar, har biri 15 daqiqa';
+
+  @override
+  String get keepBenefitCharacters =>
+      'Sotib olgan personajlaringiz abadiy sizniki';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Videoqoʻngʻiroqlar va faqat Max personajlari $date kuni oʻchiriladi.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Pro tarifiga oʻtish';
+
+  @override
+  String get ctaKeepMax => 'Max qolsin';
+
+  @override
+  String get winbackSkip => 'Oʻtkazib yuborish';
+
+  @override
+  String get winbackTitle => 'Pro tarifingiz tugadi';
+
+  @override
+  String get winbackSub => 'Endi Bepul tarifdasiz — kuniga bitta qoʻngʻiroq.';
+
+  @override
+  String get winbackQuestion => 'Nega ketganingizni aytib berasizmi?';
+
+  @override
+  String get winbackReasonExpensive => 'Juda qimmat';
+
+  @override
+  String get winbackReasonUnused => 'Yetarlicha foydalanmadim';
+
+  @override
+  String get winbackReasonMissing => 'Kerakli funksiya yoʻq edi';
+
+  @override
+  String get winbackReasonOtherApp => 'Boshqa ilova topdim';
+
+  @override
+  String get winbackReasonElse => 'Boshqa sabab';
+
+  @override
+  String get ctaSend => 'Yuborish';
+
+  @override
+  String get ctaNotNow => 'Hozir emas';
+
+  @override
+  String get winbackCaption =>
+      'Bu tarifingizni tiklamaydi. Doʻkonda qayta obuna boʻling.';
+
+  @override
+  String get ctaContinue => 'Davom etish';
+
+  @override
+  String get ctaClose => 'Yopish';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro qaytdi';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Obunangizni topdik va uni bu qurilmada qayta yoqdik.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Tiklaydigan narsa yoʻq';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Bu doʻkon hisobiga faol obuna bogʻlanmagan.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Bu tarif boshqa hisobga tegishli';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Bu obuna boshqa BeaverTalk hisobida allaqachon faol.';
+
+  @override
+  String get ctaSignInThatAccount => 'Oʻsha hisobga kirish';
+
+  @override
+  String get ctaGetHelp => 'Yordam olish';
+
+  @override
+  String get ovCharacterOfferTitle => 'Pro uchun hali tayyor emasmisiz?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Bitta personajni tanlang va oʻzingizda qoldiring. Bir martalik xarid — obunasiz, yangilanishsiz.';
+
+  @override
+  String get rowOneCharacter => 'Bitta personaj';
+
+  @override
+  String get rowFromPrice => '\$5.00 dan boshlab';
+
+  @override
+  String get rowYoursForever => 'Abadiy sizniki';
+
+  @override
+  String get rowNoRenewal => 'Yangilanish yoʻq';
+
+  @override
+  String get rowWorksOnFree => 'Bepul tarifda ishlaydi';
+
+  @override
+  String get rowYes => 'Ha';
+
+  @override
+  String get ctaSeeCharacters => 'Personajlarni koʻrish';
+
+  @override
+  String get ovNotEligibleTitle => 'Bekor qiladigan narsa yoʻq';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Siz Bepul tarifdasiz. Bu hisobda faol obuna yoʻq.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Ketishdan oldin';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'Bekor qilish doʻkonda amalga oshiriladi. Bilib qoʻyishga arziydigan ikki narsa.';
+
+  @override
+  String get rowPayYearlyInstead => 'Buning oʻrniga yillik toʻlang';
+
+  @override
+  String get rowYearlyMonthEquiv => 'Oyiga \$8.33';
+
+  @override
+  String get rowCharactersYouBought => 'Sotib olgan personajlaringiz';
+
+  @override
+  String get rowProRunsUntil => 'Pro muddati';
+
+  @override
+  String get ctaSwitchToYearly => 'Yillikka oʻtish';
+
+  @override
+  String get ctaContinueToStore => 'Doʻkonga oʻtish';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Yillik toʻlab, \$54.80 tejang';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Ikki oydan beri Pro tarifdasiz. Yillik tarif arzonroq chiqadi.';
+
+  @override
+  String get rowYouSave => 'Tejaysiz';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Yillik';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Oylik, bir yil davomida';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Oylikka oʻtish';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Yillik tarifingiz $date gacha ishlaydi. Oylik toʻlov ertasi kuni boshlanadi.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Oylik toʻlov boshlanadi';
+
+  @override
+  String get rowMonthlyLabel => 'Oylik';
+
+  @override
+  String get rowYearlyWorkedOut => 'Yillik hisobda';
+
+  @override
+  String get ctaSwitchToMonthly => 'Oylikka oʻtish';
+
+  @override
+  String get ovRefundHelpTitle => 'Pulni qaytarishni doʻkon amalga oshiradi';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Biz oʻzimiz pul qaytara olmaymiz. Har bir soʻrovni doʻkon koʻrib chiqadi.';
+
+  @override
+  String get ctaGoToStore => 'Doʻkonga oʻtish';
+
+  @override
+  String get ovTrialEndingTitle => 'Sinov muddatingiz ertaga tugaydi';
+
+  @override
+  String get ovTrialEndingBody =>
+      'Bekor qilmasangiz, Max ishlashda davom etadi. Nima boʻlishini koʻring.';
+
+  @override
+  String get rowTrialEnds => 'Sinov tugaydi';
+
+  @override
+  String get rowFirstCharge => 'Birinchi toʻlov';
+
+  @override
+  String get rowThenMonthly => 'Soʻng har oy';
+
+  @override
+  String get ctaCancelInStore => 'Doʻkonda bekor qilish';
+
+  @override
+  String get ovTrialStartTitle => '7 kun Max, bepul';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$date gacha bepul. Soʻng oyiga \$19.90, agar doʻkonda bekor qilmasangiz.';
+  }
+
+  @override
+  String get ctaStart7Days => '7 kunni bepul boshlash';
+
+  @override
+  String get ovOtoTitle => 'Boshlashdan oldin yana bir narsa';
+
+  @override
+  String get ovOtoBody =>
+      'Toʻgʻri qaror — cheksiz qoʻngʻiroqlar hoziroq yoniq. Yillik toʻlasangiz, xuddi shu Pro arzonroq boʻladi.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Kartangiz rad etildi';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Doʻkon toʻlovni ola olmadi. Hech narsa olinmadi.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Toʻlov usulini yangilash';
+
+  @override
+  String get ovFailedCanceledTitle => 'Toʻlov bekor qilindi';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'Siz hali ham Bepul tarifdasiz. Hech narsa olinmadi.';
+
+  @override
+  String get ovFailedStoreTitle => 'Xatolik yuz berdi';
+
+  @override
+  String get ovFailedStoreBody =>
+      'Doʻkonga ulanib boʻlmadi. Hech narsa olinmadi.';
+
+  @override
+  String get ovAlreadyTitle => 'Siz allaqachon Pro tarifdasiz';
+
+  @override
+  String get ovAlreadyBody =>
+      'Bu doʻkon hisobida faol tarif bor. Sotib oladigan narsa yoʻq.';
+
+  @override
+  String get ctaSeeMySubscription => 'Obunamni koʻrish';
+
+  @override
+  String get subCancelTitle => 'Obunani bekor qilish';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro $date gacha ishlaydi. Soʻng Bepulga oʻtasiz.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Nimani yoʻqotasiz';
+
+  @override
+  String get benefitCalls15 => 'Cheksiz qoʻngʻiroqlar, har biri 15 daqiqa';
+
+  @override
+  String get benefitScoring => 'Talaffuz harfma-harf baholanadi';
+
+  @override
+  String get benefitEveryCharacter => 'Barcha personajlar, cheksiz';
+
+  @override
+  String get ctaKeepPro => 'Pro qolsin';
+
+  @override
+  String get subPaymentTitle => 'Toʻlovni yangilash';
+
+  @override
+  String get subPaymentBody =>
+      'Toʻlovni ola olmadik. Imtiyozli davrda Pro ishlashda davom etadi.';
+
+  @override
+  String get subHowToFix => 'Qanday tuzatish mumkin';
+
+  @override
+  String get fixStep1 => 'Doʻkonni oching va toʻlov usulingizni yangilang';
+
+  @override
+  String get fixStep2 => 'Qaytib keling — tarifingiz avtomatik davom etadi';
+
+  @override
+  String get fixStep3 => 'Hech narsa ikki marta olinmaydi';
+
+  @override
+  String get subResubTitle => 'Qayta obuna boʻlish';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro $date kuni tugaydi. Avto-yangilanishni qayta yoqsangiz, hech narsa oʻzgarmaydi.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Nima saqlanadi';
+
+  @override
+  String get ctaTurnItBackOn => 'Qayta yoqish';
+
+  @override
+  String get flTodayTitle => 'Bu bugungi qoʻngʻiroq';
+
+  @override
+  String get flTodayBody => 'Toʻxtagan joyingizdan davom eting — hoziroq.';
+
+  @override
+  String get flCheckTitle => 'Bu bugungi tekshiruv';
+
+  @override
+  String get flCheckBody =>
+      'Bepul tarifda kuniga bitta tekshiruv. Pro uni cheksiz qiladi.';
+
+  @override
+  String get flBenefitCalls =>
+      'Pro bilan cheksiz qoʻngʻiroqlar · har biri 15 daqiqa';
+
+  @override
+  String get flBenefitChecks => 'Pro bilan cheksiz talaffuz tekshiruvlari';
+
+  @override
+  String get flCaption => 'Oyiga \$12.90 · istalgan vaqtda bekor qilish mumkin';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$limit dan $used ishlatildi';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Balki ertaga';
+
+  @override
+  String get accountSection => 'Hisob';
+
+  @override
+  String get nicknameLabel => 'Taxallus';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Kirish usuli';
+
+  @override
+  String get joinedLabel => 'Joined';
+
+  @override
+  String get editNicknameTitle => 'Taxallusni tahrirlash';
+
+  @override
+  String get nicknameRule => '2–12 belgi. Harflar va raqamlar. Faqat inglizcha';
+
+  @override
+  String get ctaSave => 'Saqlash';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'Hozir chiqsangiz, obuna boʻlmaysiz';
+
+  @override
+  String get paywallLeaveBody =>
+      'Imkoniyatlar toʻlovdan soʻng darhol ochiladi. Mening sahifam orqali istalgan vaqtda qaytishingiz mumkin.';
+
+  @override
+  String get ctaKeepLooking => 'Koʻrishda davom etish';
+
+  @override
+  String get ctaLeaveAnyway => 'Baribir chiqish';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Yangi doʻst qoʻshildi!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Bu personaj abadiy sizniki — tarif oʻzgarsa ham qoladi, Xaridlarni tiklash esa uni istalgan qurilmada qaytaradi.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.';
 }

@@ -1,0 +1,8 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- Figma `alert` (4395:1387), Size=24 variant, coordinates rebased from the
+     component sheet export (origin 76,24) - geometry unchanged. -->
+<g id="alert">
+<path id="bar" d="M12 5.04V13.92" stroke="#1A1A1A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle id="dot" cx="12" cy="18.96" r="1" fill="#1A1A1A"/>
+</g>
+</svg>

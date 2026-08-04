@@ -106,6 +106,7 @@ dependencies:
   sign_in_with_apple: ^8.1.0
   crypto: ^3.0.7
   audio_session: ^0.2.4
+  url_launcher: ^6.3.2
 
 # 통화 음성 깨짐/버벅임(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
 # pub 원본은 조각 하나 쓸 때마다 큐 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은

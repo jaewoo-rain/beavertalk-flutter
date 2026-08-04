@@ -1093,10 +1093,889 @@ class AppLocalizationsHu extends AppLocalizations {
   String get practicePronunciation => 'Kiejtés gyakorlása';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Megváltozott az ár';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Ez a tétel most $price. Folytatod?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Csomag és vásárlások';
+
+  @override
+  String get billingGroupInTheStore => 'Az áruházban';
+
+  @override
+  String get billingChangePlan => 'Csomagváltás';
+
+  @override
+  String get billingCompareAllPlans => 'Összes csomag összehasonlítása';
+
+  @override
+  String get billingBuyACharacter => 'Karakter vásárlása';
+
+  @override
+  String get billingRestorePurchases => 'Vásárlások visszaállítása';
+
+  @override
+  String get billingPaymentHistory => 'Fizetési előzmények';
+
+  @override
+  String get billingManageInTheStore => 'Kezelés az áruházban';
+
+  @override
+  String get billingRefundHelp => 'Segítség a visszatérítéshez';
+
+  @override
+  String get billingCancelSubscription => 'Előfizetés lemondása';
+
+  @override
+  String get billingResubscribe => 'Újra-előfizetés';
+
+  @override
+  String get badgeCurrent => 'Jelenlegi';
+
+  @override
+  String get badgeTrial => 'Próba';
+
+  @override
+  String get badgeRenewing => 'Megújul';
+
+  @override
+  String get badgePastDue => 'Fizetési késedelem';
+
+  @override
+  String get badgePaused => 'Szüneteltetve';
+
+  @override
+  String get badgeCanceling => 'Lemondva';
+
+  @override
+  String get subscriptionTitle => 'Előfizetés';
+
+  @override
+  String get plansTitle => 'Csomagok';
+
+  @override
+  String get planFree => 'Ingyenes';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max próba';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — napi egy hívás';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return '$amount havonta';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return 'Ingyenes eddig: $date';
+  }
+
+  @override
+  String get todaysCalls => 'Mai hívások';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$used / $limit felhasználva';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Első fizetés';
+
+  @override
+  String get nextPaymentLabel => 'Következő fizetés';
+
+  @override
+  String get retryingUntilLabel => 'Újrapróbálkozás eddig';
+
+  @override
+  String get pausedSinceLabel => 'Szünetel ettől';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan vége';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Korlátlan hívások a Pro csomaggal';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Korlátlan hívások · egyenként 15 perc · havi \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Kapcsold be a videót a Max csomaggal';
+
+  @override
+  String get bannerMaxUpsellSub => 'Szemtől szembeni hívások · havi \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Válts évesre';
+
+  @override
+  String get bannerAnnualSwitchSub => 'Évi \$159 · havi \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Nem sikerült levonni a díjat';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Frissítsd a fizetést az áruházban, hogy a Pro megmaradjon';
+
+  @override
+  String get bannerPausedTitle => 'A csomagod szünetel';
+
+  @override
+  String get bannerPausedSub => 'A fizetés nem ment át';
+
+  @override
+  String get noteRestoreHint =>
+      'Másik eszközön már előfizettél? A visszaállítás visszahozza erre az eszközre.';
+
+  @override
+  String get noteStoreHandled =>
+      'A fizetési módot, a csomagváltást és a lemondást az áruház kezeli.';
+
+  @override
+  String get noteFairUse =>
+      'A korlátlan használatra méltányos használati szabályzatunk vonatkozik.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'A próbaidőszakod $date napján ér véget. Ha előtte lemondod az áruházban, semmit nem vonunk le.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Az előnyök a türelmi időszak alatt is működnek. A lemondást az alkalmazás soha nem akadályozza.';
+
+  @override
+  String get noteHold =>
+      'A Pro szünetel, amíg a fizetés át nem megy. A karaktereid és a haladásod biztonságban vannak.';
+
+  @override
+  String noteEnding(String date) {
+    return 'A csomagod hamarosan véget ér. Az előnyök $date napjáig működnek, utána Ingyenesre váltasz. Bármikor újra előfizethetsz.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'A Max próbád véget ért';
+
+  @override
+  String get trialExpiredSub => 'Most az Ingyenes csomagon vagy';
+
+  @override
+  String get seePlans => 'Csomagok megtekintése';
+
+  @override
+  String get currentPlanTitle => 'Jelenlegi csomag';
+
+  @override
+  String get badgeRecommended => 'Ajánlott';
+
+  @override
+  String get perMonthUnit => 'havonta';
+
+  @override
+  String get planTaglinePro => 'Korlátlan hívások. Egyenként 15 perc.';
+
+  @override
+  String get planTaglineMax => 'Most már láthatod őket.';
+
+  @override
+  String get planTaglineFree => 'Napi egy hívás. Ajándékba.';
+
+  @override
+  String get bulletProCalls => 'Hanghívások, amennyit csak szeretnél';
+
+  @override
+  String get bulletProLength => '15 perc hívásonként';
+
+  @override
+  String get bulletProScoring => 'Betűnként értékelt kiejtés';
+
+  @override
+  String get bulletProCorrections => 'Az anyanyelvedre szabott javítások';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver hív fel először';
+
+  @override
+  String get bulletMaxVideo => 'Szemtől szembeni videóhívások';
+
+  @override
+  String get bulletMaxEverything => 'Minden, ami a Pro csomagban van';
+
+  @override
+  String get bulletMaxCharacters => 'Minden karakter, korlátlanul';
+
+  @override
+  String get bulletMaxStudyBook => 'A szintedhez igazított tankönyv';
+
+  @override
+  String get bulletMaxWeeklyReport => 'Heti jelentés a kiejtésed változásáról';
+
+  @override
+  String get bulletFreeCall => 'Napi egy 5 perces hanghívás';
+
+  @override
+  String get bulletFreeCheck => 'Napi egy kiejtésellenőrzés';
+
+  @override
+  String get bulletFreeAccent => 'Korlátlan akcentusellenőrzés';
+
+  @override
+  String get bulletFreeCharacter => 'Egy karakter kezdésnek';
+
+  @override
+  String get ctaGoUnlimited => 'Váltás korlátlanra';
+
+  @override
+  String get ctaTurnOnVideo => 'Videó bekapcsolása';
+
+  @override
+  String get noteCallLength => 'A hívások egyenként 15 percesek.';
+
+  @override
+  String get paywallProTitle1 => 'A koreai barátod,';
+
+  @override
+  String get paywallProTitle2 => 'aki hajnali 3-kor is fent van';
+
+  @override
+  String get paywallProSub =>
+      'Korlátlan hívások. Egyenként 15 perc. Egész évben.';
+
+  @override
+  String get paywallLimitHeadline => 'A Pro eltörli a korlátot.';
+
+  @override
+  String get limitBannerCallTitle => 'Ez volt a mai hívás';
+
+  @override
+  String get limitBannerCallSub => 'Az Ingyenes csomag napi egy hívást ad';
+
+  @override
+  String get limitBannerCheckTitle => 'Ez volt a mai ellenőrzés';
+
+  @override
+  String get limitBannerCheckSub =>
+      'Az Ingyenes csomag napi egy ellenőrzést ad';
+
+  @override
+  String get bulletProCharactersForever =>
+      'A megvásárolt karakterek örökre a tieid';
+
+  @override
+  String get paywallMaxTitle => 'Most már láthatod őket.';
+
+  @override
+  String get paywallMaxSub =>
+      'Videóhívások, minden karakter és a szintedhez készült tankönyv.';
+
+  @override
+  String get planMonthly => 'Havi';
+
+  @override
+  String get planAnnual => 'Éves';
+
+  @override
+  String get proMonthlyPriceLine => 'Havi \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · havi \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => 'Havi \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => 'Évi \$159.00 · havi \$13.25';
+
+  @override
+  String get ctaCaptionPro => 'Havi \$12.90 · bármikor lemondható az áruházban';
+
+  @override
+  String get ctaCaptionMax => 'Havi \$19.90 · bármikor lemondható az áruházban';
+
+  @override
+  String get footerTerms => 'Feltételek';
+
+  @override
+  String get footerPrivacy => 'Adatvédelem';
+
+  @override
+  String get noteMaxCharacters =>
+      'A Max által feloldott karakterek az előfizetésed ideje alatt érhetők el. A megvásárolt karakterek a tieid maradnak.';
+
+  @override
+  String get processingTitle => 'Vásárlás megerősítése';
+
+  @override
+  String get processingSub => 'Ez általában néhány másodpercet vesz igénybe.';
+
+  @override
+  String get successProTitle => 'Pro csomagon vagy.';
+
+  @override
+  String get successProSub => 'Korlátlan hívások, mostantól azonnal.';
+
+  @override
+  String get successProBenefit1 =>
+      'Hívj, amennyiszer csak szeretnél — 15 perc hívásonként';
+
+  @override
+  String get successProBenefit2 => 'Korlátlan kiejtésellenőrzés';
+
+  @override
+  String get successProBenefit3 => 'Minden karakter, plusz egyszeri vásárlások';
+
+  @override
+  String get successMaxTitle => 'Most már láthatod őket.';
+
+  @override
+  String get successMaxSub =>
+      'A videóhívások bekapcsolva. Koppints a videó gombra bármelyik hívásban.';
+
+  @override
+  String get successMaxBenefit1 => 'Szemtől szembeni videóhívások';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Minden karakter korlátlanul, az újak elsőként';
+
+  @override
+  String get successMaxBenefit3 => 'A szintedhez igazított tankönyv';
+
+  @override
+  String get ctaStartACall => 'Hívás indítása';
+
+  @override
+  String get ctaStartAVideoCall => 'Videóhívás indítása';
+
+  @override
+  String get ctaSeeYourSubscription => 'Előfizetésed megtekintése';
+
+  @override
+  String get successProCaption =>
+      'Havonta \$12.90 kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
+
+  @override
+  String get successMaxCaption =>
+      'Havonta \$19.90 kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
+
+  @override
+  String get plansErrorTitle => 'Nem sikerült betölteni a csomagokat';
+
+  @override
+  String get plansErrorSub => 'Az áruház nem válaszolt.';
+
+  @override
+  String get ctaTryAgain => 'Újra';
+
+  @override
+  String get plansErrorCaption => 'Semmit nem vontunk le.';
+
+  @override
+  String get changePlanTitle => 'Csomagváltás';
+
+  @override
+  String get moveToMaxTitle => 'Váltás Max csomagra';
+
+  @override
+  String get maxPriceShort => '\$19.90 / hó';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Szemtől szembeni videóhívások · minden karakter · neked készült tankönyv';
+
+  @override
+  String get whatHappensNow => 'Mi történik most';
+
+  @override
+  String get maxStartsLabel => 'Max indul';
+
+  @override
+  String get immediately => 'Azonnal';
+
+  @override
+  String get unusedProTime => 'Fel nem használt Pro idő';
+
+  @override
+  String get creditedTowardMax => 'Beszámítjuk a Max árába';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Váltás Max csomagra';
+
+  @override
+  String get upgradeCaption =>
+      'Az új csomagod azonnal indul. A fel nem használt Pro időt beszámítjuk, kétszer sosem vonunk le.';
+
+  @override
+  String get moveToProTitle => 'Váltás Pro csomagra';
+
+  @override
+  String get moveToProSub =>
+      'Ma semmi nem változik. A Max a már kifizetett hónap végéig működik.';
+
+  @override
+  String get maxRunsUntil => 'Max érvényes eddig';
+
+  @override
+  String get proStarts => 'Pro indul';
+
+  @override
+  String get whatYouKeep => 'Amit megtartasz';
+
+  @override
+  String get keepBenefitCalls => 'Korlátlan hanghívások, egyenként 15 perc';
+
+  @override
+  String get keepBenefitCharacters => 'A megvásárolt karakterek örökre a tieid';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'A videóhívások és a csak Max karakterek $date napján kikapcsolnak.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Váltás Pro csomagra';
+
+  @override
+  String get ctaKeepMax => 'Maradjon a Max';
+
+  @override
+  String get winbackSkip => 'Kihagyás';
+
+  @override
+  String get winbackTitle => 'A Pro csomagod véget ért';
+
+  @override
+  String get winbackSub => 'Most az Ingyenes csomagon vagy — napi egy hívás.';
+
+  @override
+  String get winbackQuestion => 'Elárulod, miért mentél el?';
+
+  @override
+  String get winbackReasonExpensive => 'Túl drága';
+
+  @override
+  String get winbackReasonUnused => 'Nem használtam eleget';
+
+  @override
+  String get winbackReasonMissing => 'Hiányzott egy funkció';
+
+  @override
+  String get winbackReasonOtherApp => 'Találtam egy másik alkalmazást';
+
+  @override
+  String get winbackReasonElse => 'Valami más';
+
+  @override
+  String get ctaSend => 'Küldés';
+
+  @override
+  String get ctaNotNow => 'Most nem';
+
+  @override
+  String get winbackCaption =>
+      'Ez nem állítja vissza a csomagodat. Az áruházban fizethetsz elő újra.';
+
+  @override
+  String get ctaContinue => 'Folytatás';
+
+  @override
+  String get ctaClose => 'Bezárás';
+
+  @override
+  String get ovRestoreSuccessTitle => 'A Pro visszatért';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Megtaláltuk az előfizetésedet, és újra bekapcsoltuk ezen az eszközön.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Nincs mit visszaállítani';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Ehhez az áruházi fiókhoz nem tartozik aktív előfizetés.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Ez a csomag másik fiókhoz tartozik';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Ez az előfizetés már aktív egy másik BeaverTalk-fiókon.';
+
+  @override
+  String get ctaSignInThatAccount => 'Bejelentkezés azzal a fiókkal';
+
+  @override
+  String get ctaGetHelp => 'Segítségkérés';
+
+  @override
+  String get ovCharacterOfferTitle => 'Még nem állsz készen a Pro csomagra?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Válassz egy karaktert, és tartsd meg. Egyszeri vásárlás — nincs előfizetés, nincs megújulás.';
+
+  @override
+  String get rowOneCharacter => 'Egy karakter';
+
+  @override
+  String get rowFromPrice => 'már \$5.00-tól';
+
+  @override
+  String get rowYoursForever => 'Örökre a tiéd';
+
+  @override
+  String get rowNoRenewal => 'Nincs megújulás';
+
+  @override
+  String get rowWorksOnFree => 'Ingyenes csomagon is működik';
+
+  @override
+  String get rowYes => 'Igen';
+
+  @override
+  String get ctaSeeCharacters => 'Karakterek megtekintése';
+
+  @override
+  String get ovNotEligibleTitle => 'Nincs mit lemondani';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Ingyenes csomagon vagy. Ezen a fiókon nincs aktív előfizetés.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Mielőtt elmész';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'A lemondás az áruházban történik. Két dolog, amit érdemes tudni.';
+
+  @override
+  String get rowPayYearlyInstead => 'Fizess inkább évente';
+
+  @override
+  String get rowYearlyMonthEquiv => 'Havi \$8.33';
+
+  @override
+  String get rowCharactersYouBought => 'A megvásárolt karaktereid';
+
+  @override
+  String get rowProRunsUntil => 'Pro érvényes eddig';
+
+  @override
+  String get ctaSwitchToYearly => 'Váltás évesre';
+
+  @override
+  String get ctaContinueToStore => 'Tovább az áruházba';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Éves fizetéssel \$54.80 megtakarítás';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Két hónapja vagy Pro csomagon. Az éves csomag olcsóbban jön ki.';
+
+  @override
+  String get rowYouSave => 'Megtakarításod';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Éves';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Havi, egy évig';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Váltás havira';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Az éves csomagod $date napjáig érvényes. A havi számlázás a következő napon indul.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Havi számlázás indul';
+
+  @override
+  String get rowMonthlyLabel => 'Havi';
+
+  @override
+  String get rowYearlyWorkedOut => 'Az éves így jött ki';
+
+  @override
+  String get ctaSwitchToMonthly => 'Váltás havira';
+
+  @override
+  String get ovRefundHelpTitle => 'A visszatérítéseket az áruház kezeli';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Mi magunk nem tudunk visszatéríteni. Minden kérelmet az áruház bírál el.';
+
+  @override
+  String get ctaGoToStore => 'Ugrás az áruházba';
+
+  @override
+  String get ovTrialEndingTitle => 'A próbaidőszakod holnap véget ér';
+
+  @override
+  String get ovTrialEndingBody =>
+      'A Max tovább fut, hacsak le nem mondod. Íme, mi történik.';
+
+  @override
+  String get rowTrialEnds => 'Próba vége';
+
+  @override
+  String get rowFirstCharge => 'Első levonás';
+
+  @override
+  String get rowThenMonthly => 'Utána havonta';
+
+  @override
+  String get ctaCancelInStore => 'Lemondás az áruházban';
+
+  @override
+  String get ovTrialStartTitle => '7 nap Max, ingyen';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return 'Ingyenes $date napjáig. Utána havi \$19.90, hacsak le nem mondod az áruházban.';
+  }
+
+  @override
+  String get ctaStart7Days => '7 nap ingyen indítása';
+
+  @override
+  String get ovOtoTitle => 'Még egy dolog, mielőtt elkezded';
+
+  @override
+  String get ovOtoBody =>
+      'Jó döntés — a korlátlan hívások már működnek. Ugyanez a Pro éves fizetéssel olcsóbb.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'A kártyádat elutasították';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Az áruház nem tudta levonni az összeget. Semmit nem vontunk le.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Fizetési mód frissítése';
+
+  @override
+  String get ovFailedCanceledTitle => 'Fizetés megszakítva';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'Továbbra is az Ingyenes csomagon vagy. Semmit nem vontunk le.';
+
+  @override
+  String get ovFailedStoreTitle => 'Valami hiba történt';
+
+  @override
+  String get ovFailedStoreBody =>
+      'Nem értük el az áruházat. Semmit nem vontunk le.';
+
+  @override
+  String get ovAlreadyTitle => 'Már Pro csomagon vagy';
+
+  @override
+  String get ovAlreadyBody =>
+      'Ehhez az áruházi fiókhoz aktív csomag tartozik. Nincs mit megvenni.';
+
+  @override
+  String get ctaSeeMySubscription => 'Előfizetésem megtekintése';
+
+  @override
+  String get subCancelTitle => 'Előfizetés lemondása';
+
+  @override
+  String subCancelBody(String date) {
+    return 'A Pro $date napjáig érvényes. Utána Ingyenesre váltasz.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Amit elveszítesz';
+
+  @override
+  String get benefitCalls15 => 'Korlátlan hívások, egyenként 15 perc';
+
+  @override
+  String get benefitScoring => 'Betűnként értékelt kiejtés';
+
+  @override
+  String get benefitEveryCharacter => 'Minden karakter, korlátlanul';
+
+  @override
+  String get ctaKeepPro => 'Maradjon a Pro';
+
+  @override
+  String get subPaymentTitle => 'Fizetés frissítése';
+
+  @override
+  String get subPaymentBody =>
+      'Nem sikerült levonni a díjat. A Pro a türelmi időszak alatt tovább működik.';
+
+  @override
+  String get subHowToFix => 'Így javíthatod';
+
+  @override
+  String get fixStep1 =>
+      'Nyisd meg az áruházat, és frissítsd a fizetési módodat';
+
+  @override
+  String get fixStep2 => 'Gyere vissza — a csomagod automatikusan folytatódik';
+
+  @override
+  String get fixStep3 => 'Semmit nem vonunk le kétszer';
+
+  @override
+  String get subResubTitle => 'Újra-előfizetés';
+
+  @override
+  String subResubBody(String date) {
+    return 'A Pro $date napján ér véget. Kapcsold vissza az automatikus megújítást, és semmi sem változik.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Amit megtartasz';
+
+  @override
+  String get ctaTurnItBackOn => 'Visszakapcsolás';
+
+  @override
+  String get flTodayTitle => 'Ez a mai hívás';
+
+  @override
+  String get flTodayBody => 'Folytasd ott, ahol abbahagytad — most azonnal.';
+
+  @override
+  String get flCheckTitle => 'Ez a mai ellenőrzés';
+
+  @override
+  String get flCheckBody =>
+      'Az Ingyenes csomagon napi egy ellenőrzés jár. A Pro korlátlanná teszi.';
+
+  @override
+  String get flBenefitCalls =>
+      'Korlátlan hívások a Pro csomaggal · egyenként 15 perc';
+
+  @override
+  String get flBenefitChecks => 'Korlátlan kiejtésellenőrzés a Pro csomaggal';
+
+  @override
+  String get flCaption => 'Havi \$12.90 · bármikor lemondható';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$used / $limit felhasználva';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Talán holnap';
+
+  @override
+  String get accountSection => 'Fiók';
+
+  @override
+  String get nicknameLabel => 'Becenév';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Bejelentkezési mód';
+
+  @override
+  String get joinedLabel => 'Joined';
+
+  @override
+  String get editNicknameTitle => 'Becenév szerkesztése';
+
+  @override
+  String get nicknameRule => '2–12 karakter. Betűk és számok. Csak angolul';
+
+  @override
+  String get ctaSave => 'Mentés';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'Ha most kilépsz, nem lesz előfizetésed';
+
+  @override
+  String get paywallLeaveBody =>
+      'Az előnyök közvetlenül a fizetés után nyílnak meg. Bármikor visszatérhetsz a Saját oldalról.';
+
+  @override
+  String get ctaKeepLooking => 'Nézem tovább';
+
+  @override
+  String get ctaLeaveAnyway => 'Kilépek mégis';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Új barát csatlakozott!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Ez a karakter örökre a tiéd — csomagváltásnál is megmarad, a Vásárlások visszaállítása pedig bármely eszközön visszahozza.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.';
 }

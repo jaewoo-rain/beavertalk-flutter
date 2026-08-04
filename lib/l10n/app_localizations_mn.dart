@@ -1081,10 +1081,889 @@ class AppLocalizationsMn extends AppLocalizations {
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
 
   @override
-  String get priceChangedTitle => 'Price changed';
+  String get priceChangedTitle => 'Үнэ өөрчлөгдлөө';
 
   @override
   String priceChangedBody(String price) {
-    return 'This item is now $price. Would you like to continue?';
+    return 'Энэ бараа одоо $price болсон. Үргэлжлүүлэх үү?';
   }
+
+  @override
+  String get billingGroupPlanPurchases => 'Багц ба худалдан авалт';
+
+  @override
+  String get billingGroupInTheStore => 'Дэлгүүрт';
+
+  @override
+  String get billingChangePlan => 'Багц солих';
+
+  @override
+  String get billingCompareAllPlans => 'Бүх багцыг харьцуулах';
+
+  @override
+  String get billingBuyACharacter => 'Дүр худалдаж авах';
+
+  @override
+  String get billingRestorePurchases => 'Худалдан авалт сэргээх';
+
+  @override
+  String get billingPaymentHistory => 'Төлбөрийн түүх';
+
+  @override
+  String get billingManageInTheStore => 'Дэлгүүрт удирдах';
+
+  @override
+  String get billingRefundHelp => 'Буцаан олголтын тусламж';
+
+  @override
+  String get billingCancelSubscription => 'Захиалга цуцлах';
+
+  @override
+  String get billingResubscribe => 'Дахин захиалах';
+
+  @override
+  String get badgeCurrent => 'Одоогийн';
+
+  @override
+  String get badgeTrial => 'Туршилт';
+
+  @override
+  String get badgeRenewing => 'Сунгагдана';
+
+  @override
+  String get badgePastDue => 'Төлбөр хоцорсон';
+
+  @override
+  String get badgePaused => 'Түр зогссон';
+
+  @override
+  String get badgeCanceling => 'Цуцлагдаж байна';
+
+  @override
+  String get subscriptionTitle => 'Захиалга';
+
+  @override
+  String get plansTitle => 'Багцууд';
+
+  @override
+  String get planFree => 'Үнэгүй';
+
+  @override
+  String get planPro => 'Pro';
+
+  @override
+  String get planMax => 'Max';
+
+  @override
+  String get planMaxTrial => 'Max туршилт';
+
+  @override
+  String get freePlanPriceLine => '\$0.00 — өдөрт нэг дуудлага';
+
+  @override
+  String pricePerMonthLine(String amount) {
+    return 'Сард $amount';
+  }
+
+  @override
+  String freeUntilDate(String date) {
+    return '$date хүртэл үнэгүй';
+  }
+
+  @override
+  String get todaysCalls => 'Өнөөдрийн дуудлага';
+
+  @override
+  String callsUsedOfLimit(int used, int limit) {
+    return '$limit-с $used ашигласан';
+  }
+
+  @override
+  String get firstPaymentLabel => 'Эхний төлбөр';
+
+  @override
+  String get nextPaymentLabel => 'Дараагийн төлбөр';
+
+  @override
+  String get retryingUntilLabel => 'Дахин оролдох хугацаа';
+
+  @override
+  String get pausedSinceLabel => 'Түр зогссон огноо';
+
+  @override
+  String planEndsLabel(String plan) {
+    return '$plan дуусах';
+  }
+
+  @override
+  String get bannerGoUnlimitedTitle => 'Pro-гоор хязгааргүй болоорой';
+
+  @override
+  String get bannerGoUnlimitedSub =>
+      'Хязгааргүй дуудлага · тус бүр 15 минут · сард \$12.90';
+
+  @override
+  String get bannerMaxUpsellTitle => 'Max-аар видеог асаагаарай';
+
+  @override
+  String get bannerMaxUpsellSub => 'Нүүр тулсан дуудлага · сард \$19.90';
+
+  @override
+  String get bannerAnnualSwitchTitle => 'Жилийн багцад шилжих';
+
+  @override
+  String get bannerAnnualSwitchSub => 'Жилд \$159 · сард \$13.25';
+
+  @override
+  String get bannerPaymentFailedTitle => 'Төлбөрийг авч чадсангүй';
+
+  @override
+  String get bannerPaymentFailedSub =>
+      'Pro-г хадгалахын тулд дэлгүүрт төлбөрөө шинэчилнэ үү';
+
+  @override
+  String get bannerPausedTitle => 'Таны багц түр зогссон';
+
+  @override
+  String get bannerPausedSub => 'Төлбөр хийгдээгүй';
+
+  @override
+  String get noteRestoreHint =>
+      'Өөр төхөөрөмж дээр захиалсан уу? Сэргээх нь энэ төхөөрөмж дээр буцааж идэвхжүүлнэ.';
+
+  @override
+  String get noteStoreHandled =>
+      'Төлбөрийн хэрэгсэл, багц солих, цуцлалтыг дэлгүүр хариуцна.';
+
+  @override
+  String get noteFairUse =>
+      'Хязгааргүй хэрэглээ нь манай шударга хэрэглээний бодлогод захирагдана.';
+
+  @override
+  String noteTrialEnds(String date) {
+    return 'Таны туршилт $date-нд дуусна. Түүнээс өмнө дэлгүүрт цуцалбал ямар ч төлбөр гарахгүй.';
+  }
+
+  @override
+  String get noteGrace =>
+      'Хүлээлгийн хугацаанд давуу тал үргэлжилнэ. Цуцлалтыг апп дотор хэзээ ч саатуулахгүй.';
+
+  @override
+  String get noteHold =>
+      'Төлбөр хийгдэх хүртэл Pro түр зогсоно. Таны дүрүүд болон ахиц аюулгүй.';
+
+  @override
+  String noteEnding(String date) {
+    return 'Таны багц дуусахаар тохируулагдсан. Давуу тал $date хүртэл үргэлжилж, дараа нь та Үнэгүй багцад шилжинэ. Хүссэн үедээ дахин захиалж болно.';
+  }
+
+  @override
+  String get trialExpiredTitle => 'Таны Max туршилт дууслаа';
+
+  @override
+  String get trialExpiredSub => 'Та одоо Үнэгүй багцад байна';
+
+  @override
+  String get seePlans => 'Багцуудыг үзэх';
+
+  @override
+  String get currentPlanTitle => 'Одоогийн багц';
+
+  @override
+  String get badgeRecommended => 'Санал болгож буй';
+
+  @override
+  String get perMonthUnit => 'сард';
+
+  @override
+  String get planTaglinePro => 'Хязгааргүй дуудлага. Тус бүр 15 минут.';
+
+  @override
+  String get planTaglineMax => 'Одоо та тэднийг харах боломжтой.';
+
+  @override
+  String get planTaglineFree => 'Өдөрт нэг дуудлага. Үнэгүй.';
+
+  @override
+  String get bulletProCalls => 'Хүссэн хэмжээгээрээ дуут дуудлага';
+
+  @override
+  String get bulletProLength => 'Дуудлага бүр 15 минут';
+
+  @override
+  String get bulletProScoring => 'Дуудлагыг үсэг үсгээр нь дүгнэнэ';
+
+  @override
+  String get bulletProCorrections => 'Таны төрөлх хэлэнд тохирсон засварууд';
+
+  @override
+  String get bulletProBeaverCalls => 'Beaver танд түрүүлж залгана';
+
+  @override
+  String get bulletMaxVideo => 'Нүүр тулсан видео дуудлага';
+
+  @override
+  String get bulletMaxEverything => 'Pro-гийн бүх зүйл';
+
+  @override
+  String get bulletMaxCharacters => 'Бүх дүр, хязгааргүй';
+
+  @override
+  String get bulletMaxStudyBook => 'Таны түвшинд тохирсон сурах бичиг';
+
+  @override
+  String get bulletMaxWeeklyReport =>
+      'Таны дуудлага хэрхэн өөрчлөгдөж буй долоо хоногийн тайлан';
+
+  @override
+  String get bulletFreeCall => 'Өдөрт нэг 5 минутын дуут дуудлага';
+
+  @override
+  String get bulletFreeCheck => 'Өдөрт нэг дуудлагын шалгалт';
+
+  @override
+  String get bulletFreeAccent => 'Хязгааргүй аялгууны шалгалт';
+
+  @override
+  String get bulletFreeCharacter => 'Эхлэхэд нэг дүр';
+
+  @override
+  String get ctaGoUnlimited => 'Хязгааргүй болох';
+
+  @override
+  String get ctaTurnOnVideo => 'Видео асаах';
+
+  @override
+  String get noteCallLength => 'Дуудлага бүр 15 минут үргэлжилнэ.';
+
+  @override
+  String get paywallProTitle1 => 'Шөнийн 3 цагт ч сэрүүн байдаг';
+
+  @override
+  String get paywallProTitle2 => 'таны солонгос найз';
+
+  @override
+  String get paywallProSub =>
+      'Хязгааргүй дуудлага. Тус бүр 15 минут. Жилийн турш.';
+
+  @override
+  String get paywallLimitHeadline => 'Pro хязгаарыг арилгана.';
+
+  @override
+  String get limitBannerCallTitle => 'Энэ өнөөдрийн дуудлага байлаа';
+
+  @override
+  String get limitBannerCallSub => 'Үнэгүй багц өдөрт нэг дуудлага олгоно';
+
+  @override
+  String get limitBannerCheckTitle => 'Энэ өнөөдрийн шалгалт байлаа';
+
+  @override
+  String get limitBannerCheckSub => 'Үнэгүй багц өдөрт нэг шалгалт олгоно';
+
+  @override
+  String get bulletProCharactersForever =>
+      'Худалдаж авсан дүрүүд тань үүрд таных';
+
+  @override
+  String get paywallMaxTitle => 'Одоо та тэднийг харах боломжтой.';
+
+  @override
+  String get paywallMaxSub =>
+      'Видео дуудлага, бүх дүр, таны түвшинд зориулж бүтээсэн сурах бичиг.';
+
+  @override
+  String get planMonthly => 'Сарын';
+
+  @override
+  String get planAnnual => 'Жилийн';
+
+  @override
+  String get proMonthlyPriceLine => 'Сард \$12.90';
+
+  @override
+  String get proAnnualPriceLine => '\$100.00 · сард \$8.33';
+
+  @override
+  String get maxMonthlyPriceLine => 'Сард \$19.90';
+
+  @override
+  String get maxAnnualPriceLine => 'Жилд \$159.00 · сард \$13.25';
+
+  @override
+  String get ctaCaptionPro => 'Сард \$12.90 · дэлгүүрт хүссэн үедээ цуцална';
+
+  @override
+  String get ctaCaptionMax => 'Сард \$19.90 · дэлгүүрт хүссэн үедээ цуцална';
+
+  @override
+  String get footerTerms => 'Үйлчилгээний нөхцөл';
+
+  @override
+  String get footerPrivacy => 'Нууцлал';
+
+  @override
+  String get noteMaxCharacters =>
+      'Max-аар нээгдсэн дүрүүд захиалга идэвхтэй үед ашиглагдана. Худалдаж авсан дүрүүд тань таных хэвээр үлдэнэ.';
+
+  @override
+  String get processingTitle => 'Худалдан авалтыг баталгаажуулж байна';
+
+  @override
+  String get processingSub => 'Энэ ихэвчлэн хэдхэн секунд болно.';
+
+  @override
+  String get successProTitle => 'Та Pro боллоо.';
+
+  @override
+  String get successProSub => 'Хязгааргүй дуудлага, яг одооноос.';
+
+  @override
+  String get successProBenefit1 =>
+      'Хүссэн хэмжээгээрээ залгаарай — дуудлага бүр 15 минут';
+
+  @override
+  String get successProBenefit2 => 'Хязгааргүй дуудлагын шалгалт';
+
+  @override
+  String get successProBenefit3 =>
+      'Бүх дүр, дээр нь нэг удаагийн худалдан авалт';
+
+  @override
+  String get successMaxTitle => 'Одоо та тэднийг харж чадна.';
+
+  @override
+  String get successMaxSub =>
+      'Видео дуудлага идэвхжлээ. Аль ч дуудлагад видео товчийг дарна уу.';
+
+  @override
+  String get successMaxBenefit1 => 'Нүүр тулсан видео дуудлага';
+
+  @override
+  String get successMaxBenefit2 =>
+      'Бүх дүр, хязгааргүй, шинийг нь түрүүлж авна';
+
+  @override
+  String get successMaxBenefit3 => 'Таны түвшинд тохирсон сурах бичиг';
+
+  @override
+  String get ctaStartACall => 'Дуудлага эхлүүлэх';
+
+  @override
+  String get ctaStartAVideoCall => 'Видео дуудлага эхлүүлэх';
+
+  @override
+  String get ctaSeeYourSubscription => 'Захиалгаа үзэх';
+
+  @override
+  String get successProCaption =>
+      'Цуцлах хүртэл сар бүр \$12.90 төлөгдөнө. Дэлгүүрт хүссэн үедээ удирдах эсвэл цуцлаарай.';
+
+  @override
+  String get successMaxCaption =>
+      'Цуцлах хүртэл сар бүр \$19.90 төлөгдөнө. Дэлгүүрт хүссэн үедээ удирдах эсвэл цуцлаарай.';
+
+  @override
+  String get plansErrorTitle => 'Багцуудыг ачаалж чадсангүй';
+
+  @override
+  String get plansErrorSub => 'Дэлгүүр хариу өгсөнгүй.';
+
+  @override
+  String get ctaTryAgain => 'Дахин оролдох';
+
+  @override
+  String get plansErrorCaption => 'Ямар ч төлбөр гараагүй.';
+
+  @override
+  String get changePlanTitle => 'Багц солих';
+
+  @override
+  String get moveToMaxTitle => 'Max руу шилжих';
+
+  @override
+  String get maxPriceShort => '\$19.90 / сар';
+
+  @override
+  String get moveToMaxCardSub =>
+      'Нүүр тулсан видео дуудлага · бүх дүр · танд зориулсан сурах бичиг';
+
+  @override
+  String get whatHappensNow => 'Одоо юу болох вэ';
+
+  @override
+  String get maxStartsLabel => 'Max эхлэх';
+
+  @override
+  String get immediately => 'Шууд';
+
+  @override
+  String get unusedProTime => 'Ашиглаагүй Pro хугацаа';
+
+  @override
+  String get creditedTowardMax => 'Max-д тооцогдоно';
+
+  @override
+  String nextPaymentMaxValue(String date) {
+    return '\$19.90 · $date';
+  }
+
+  @override
+  String nextPaymentProValue(String date) {
+    return '\$12.90 · $date';
+  }
+
+  @override
+  String get ctaSwitchToMax => 'Max руу шилжих';
+
+  @override
+  String get upgradeCaption =>
+      'Шинэ багц тань шууд эхэлнэ. Ашиглаагүй Pro хугацаа тооцогдох бөгөөд хэзээ ч давхар төлбөр гарахгүй.';
+
+  @override
+  String get moveToProTitle => 'Pro руу шилжих';
+
+  @override
+  String get moveToProSub =>
+      'Өнөөдөр юу ч өөрчлөгдөхгүй. Max таны төлсөн сарын эцэс хүртэл үргэлжилнэ.';
+
+  @override
+  String get maxRunsUntil => 'Max үргэлжлэх хугацаа';
+
+  @override
+  String get proStarts => 'Pro эхлэх';
+
+  @override
+  String get whatYouKeep => 'Танд үлдэх зүйлс';
+
+  @override
+  String get keepBenefitCalls => 'Хязгааргүй дуут дуудлага, тус бүр 15 минут';
+
+  @override
+  String get keepBenefitCharacters => 'Худалдаж авсан дүрүүд тань үүрд таных';
+
+  @override
+  String downgradeWarning(String date) {
+    return 'Видео дуудлага болон зөвхөн Max-ын дүрүүд $date-нд унтарна.';
+  }
+
+  @override
+  String get ctaSwitchToPro => 'Pro руу шилжих';
+
+  @override
+  String get ctaKeepMax => 'Max-аа хадгалах';
+
+  @override
+  String get winbackSkip => 'Алгасах';
+
+  @override
+  String get winbackTitle => 'Таны Pro багц дууслаа';
+
+  @override
+  String get winbackSub => 'Та одоо Үнэгүй багцад байна — өдөрт нэг дуудлага.';
+
+  @override
+  String get winbackQuestion => 'Яагаад гарсан шалтгаанаа хэлж өгөх үү?';
+
+  @override
+  String get winbackReasonExpensive => 'Хэтэрхий үнэтэй';
+
+  @override
+  String get winbackReasonUnused => 'Хангалттай ашигладаггүй байсан';
+
+  @override
+  String get winbackReasonMissing => 'Надад хэрэгтэй функц байгаагүй';
+
+  @override
+  String get winbackReasonOtherApp => 'Өөр апп олсон';
+
+  @override
+  String get winbackReasonElse => 'Өөр шалтгаан';
+
+  @override
+  String get ctaSend => 'Илгээх';
+
+  @override
+  String get ctaNotNow => 'Одоохондоо үгүй';
+
+  @override
+  String get winbackCaption =>
+      'Энэ таны багцыг сэргээхгүй. Дэлгүүрт дахин захиална уу.';
+
+  @override
+  String get ctaContinue => 'Үргэлжлүүлэх';
+
+  @override
+  String get ctaClose => 'Хаах';
+
+  @override
+  String get ovRestoreSuccessTitle => 'Pro эргэн ирлээ';
+
+  @override
+  String get ovRestoreSuccessBody =>
+      'Бид таны захиалгыг олж, энэ төхөөрөмж дээр буцааж идэвхжүүллээ.';
+
+  @override
+  String get ovRestoreEmptyTitle => 'Сэргээх зүйл алга';
+
+  @override
+  String get ovRestoreEmptyBody =>
+      'Энэ дэлгүүрийн бүртгэлд холбогдсон идэвхтэй захиалга алга.';
+
+  @override
+  String get ovRestoreOtherTitle => 'Энэ багц өөр бүртгэлийнх байна';
+
+  @override
+  String get ovRestoreOtherBody =>
+      'Энэ захиалга өөр BeaverTalk бүртгэл дээр аль хэдийн идэвхтэй байна.';
+
+  @override
+  String get ctaSignInThatAccount => 'Тэр бүртгэлээр нэвтрэх';
+
+  @override
+  String get ctaGetHelp => 'Тусламж авах';
+
+  @override
+  String get ovCharacterOfferTitle => 'Pro-д бэлэн биш үү?';
+
+  @override
+  String get ovCharacterOfferBody =>
+      'Нэг дүр сонгоод үүрд аваарай. Нэг удаагийн худалдан авалт — захиалгагүй, сунгалтгүй.';
+
+  @override
+  String get rowOneCharacter => 'Нэг дүр';
+
+  @override
+  String get rowFromPrice => '\$5.00-с эхлэн';
+
+  @override
+  String get rowYoursForever => 'Үүрд таных';
+
+  @override
+  String get rowNoRenewal => 'Сунгалтгүй';
+
+  @override
+  String get rowWorksOnFree => 'Үнэгүй багц дээр ажиллана';
+
+  @override
+  String get rowYes => 'Тийм';
+
+  @override
+  String get ctaSeeCharacters => 'Дүрүүдийг үзэх';
+
+  @override
+  String get ovNotEligibleTitle => 'Цуцлах зүйл алга';
+
+  @override
+  String get ovNotEligibleBody =>
+      'Та Үнэгүй багцад байна. Энэ бүртгэлд идэвхтэй захиалга алга.';
+
+  @override
+  String get ovCancelDownsellTitle => 'Явахаасаа өмнө';
+
+  @override
+  String get ovCancelDownsellBody =>
+      'Цуцлалт дэлгүүрт хийгдэнэ. Мэдэх ёстой хоёр зүйл.';
+
+  @override
+  String get rowPayYearlyInstead => 'Оронд нь жилээр төлөх';
+
+  @override
+  String get rowYearlyMonthEquiv => 'Сард \$8.33';
+
+  @override
+  String get rowCharactersYouBought => 'Худалдаж авсан дүрүүд';
+
+  @override
+  String get rowProRunsUntil => 'Pro үргэлжлэх хугацаа';
+
+  @override
+  String get ctaSwitchToYearly => 'Жилийн багцад шилжих';
+
+  @override
+  String get ctaContinueToStore => 'Дэлгүүр рүү үргэлжлүүлэх';
+
+  @override
+  String get ovAnnualSwitchTitle => 'Жилээр төлж, \$54.80 хэмнээрэй';
+
+  @override
+  String get ovAnnualSwitchBody =>
+      'Та Pro-г хоёр сар ашиглалаа. Жилийн багц тооцоод үзэхэд хямд.';
+
+  @override
+  String get rowYouSave => 'Таны хэмнэлт';
+
+  @override
+  String get amountSaved => '\$54.80';
+
+  @override
+  String get rowYearly => 'Жилийн';
+
+  @override
+  String get amountYearly => '\$100.00';
+
+  @override
+  String get rowMonthlyForYear => 'Сараар, жилийн турш';
+
+  @override
+  String get amountMonthlyForYear => '\$154.80';
+
+  @override
+  String get ovMonthlySwitchTitle => 'Сарын багцад шилжих';
+
+  @override
+  String ovMonthlySwitchBody(String date) {
+    return 'Таны жилийн багц $date хүртэл үргэлжилнэ. Сарын төлбөр дараагийн өдрөөс эхэлнэ.';
+  }
+
+  @override
+  String get rowMonthlyBillingStarts => 'Сарын төлбөр эхлэх';
+
+  @override
+  String get rowMonthlyLabel => 'Сарын';
+
+  @override
+  String get rowYearlyWorkedOut => 'Жилийнх тооцоход';
+
+  @override
+  String get ctaSwitchToMonthly => 'Сарын багцад шилжих';
+
+  @override
+  String get ovRefundHelpTitle => 'Буцаан олголтыг дэлгүүр хариуцна';
+
+  @override
+  String get ovRefundHelpBody =>
+      'Бид өөрсдөө буцаан олголт хийх боломжгүй. Хүсэлт бүрийг дэлгүүр хянана.';
+
+  @override
+  String get ctaGoToStore => 'Дэлгүүр рүү очих';
+
+  @override
+  String get ovTrialEndingTitle => 'Таны туршилт маргааш дуусна';
+
+  @override
+  String get ovTrialEndingBody =>
+      'Цуцлахгүй бол Max үргэлжилнэ. Юу болохыг эндээс харна уу.';
+
+  @override
+  String get rowTrialEnds => 'Туршилт дуусах';
+
+  @override
+  String get rowFirstCharge => 'Эхний төлбөр';
+
+  @override
+  String get rowThenMonthly => 'Дараа нь сар бүр';
+
+  @override
+  String get ctaCancelInStore => 'Дэлгүүрт цуцлах';
+
+  @override
+  String get ovTrialStartTitle => 'Max-ын 7 хоног, үнэгүй';
+
+  @override
+  String ovTrialStartBody(String date) {
+    return '$date хүртэл үнэгүй. Дараа нь дэлгүүрт цуцлахгүй бол сард \$19.90.';
+  }
+
+  @override
+  String get ctaStart7Days => '7 хоног үнэгүй эхлүүлэх';
+
+  @override
+  String get ovOtoTitle => 'Эхлэхээсээ өмнө бас нэг зүйл';
+
+  @override
+  String get ovOtoBody =>
+      'Сайн сонголт — хязгааргүй дуудлага одоо идэвхтэй. Яг ижил Pro жилээр төлбөл хямд.';
+
+  @override
+  String get ovFailedDeclinedTitle => 'Таны карт татгалзагдлаа';
+
+  @override
+  String get ovFailedDeclinedBody =>
+      'Дэлгүүр төлбөрийг авч чадсангүй. Ямар ч төлбөр гараагүй.';
+
+  @override
+  String get ctaUpdatePaymentMethod => 'Төлбөрийн хэрэгсэл шинэчлэх';
+
+  @override
+  String get ovFailedCanceledTitle => 'Төлбөр цуцлагдлаа';
+
+  @override
+  String get ovFailedCanceledBody =>
+      'Та Үнэгүй багцад хэвээр байна. Ямар ч төлбөр гараагүй.';
+
+  @override
+  String get ovFailedStoreTitle => 'Алдаа гарлаа';
+
+  @override
+  String get ovFailedStoreBody =>
+      'Дэлгүүртэй холбогдож чадсангүй. Ямар ч төлбөр гараагүй.';
+
+  @override
+  String get ovAlreadyTitle => 'Та аль хэдийн Pro байна';
+
+  @override
+  String get ovAlreadyBody =>
+      'Энэ дэлгүүрийн бүртгэлд идэвхтэй багц байна. Худалдаж авах зүйл алга.';
+
+  @override
+  String get ctaSeeMySubscription => 'Миний захиалгыг үзэх';
+
+  @override
+  String get subCancelTitle => 'Захиалга цуцлах';
+
+  @override
+  String subCancelBody(String date) {
+    return 'Pro $date хүртэл үргэлжилнэ. Дараа нь та Үнэгүй багцад шилжинэ.';
+  }
+
+  @override
+  String get subWhatYouLose => 'Таны алдах зүйлс';
+
+  @override
+  String get benefitCalls15 => 'Хязгааргүй дуудлага, тус бүр 15 минут';
+
+  @override
+  String get benefitScoring => 'Дуудлагыг үсэг үсгээр нь дүгнэнэ';
+
+  @override
+  String get benefitEveryCharacter => 'Бүх дүр, хязгааргүй';
+
+  @override
+  String get ctaKeepPro => 'Pro-гоо хадгалах';
+
+  @override
+  String get subPaymentTitle => 'Төлбөр шинэчлэх';
+
+  @override
+  String get subPaymentBody =>
+      'Төлбөрийг авч чадсангүй. Хүлээлгийн хугацаанд Pro үргэлжилнэ.';
+
+  @override
+  String get subHowToFix => 'Хэрхэн засах вэ';
+
+  @override
+  String get fixStep1 => 'Дэлгүүрээ нээж, төлбөрийн хэрэгслээ шинэчилнэ үү';
+
+  @override
+  String get fixStep2 => 'Буцаж ирээрэй — багц тань автоматаар сэргэнэ';
+
+  @override
+  String get fixStep3 => 'Ямар ч давхар төлбөр гарахгүй';
+
+  @override
+  String get subResubTitle => 'Дахин захиалах';
+
+  @override
+  String subResubBody(String date) {
+    return 'Pro $date-нд дуусна. Автомат сунгалтыг буцааж асаавал юу ч өөрчлөгдөхгүй.';
+  }
+
+  @override
+  String get subWhatYouKeep => 'Танд үлдэх зүйлс';
+
+  @override
+  String get ctaTurnItBackOn => 'Буцааж асаах';
+
+  @override
+  String get flTodayTitle => 'Энэ өнөөдрийн дуудлага байлаа';
+
+  @override
+  String get flTodayBody => 'Орхисон газраасаа үргэлжлүүлээрэй — яг одоо.';
+
+  @override
+  String get flCheckTitle => 'Энэ өнөөдрийн шалгалт байлаа';
+
+  @override
+  String get flCheckBody =>
+      'Үнэгүй багцад өдөрт нэг шалгалт. Pro хязгааргүй болгоно.';
+
+  @override
+  String get flBenefitCalls =>
+      'Pro-гоор хязгааргүй дуудлага · тус бүр 15 минут';
+
+  @override
+  String get flBenefitChecks => 'Pro-гоор хязгааргүй дуудлагын шалгалт';
+
+  @override
+  String get flCaption => 'Сард \$12.90 · хүссэн үедээ цуцална';
+
+  @override
+  String flUsage(String used, String limit) {
+    return '$limit-с $used ашигласан';
+  }
+
+  @override
+  String get ctaMaybeTomorrow => 'Магадгүй маргааш';
+
+  @override
+  String get accountSection => 'Данс';
+
+  @override
+  String get nicknameLabel => 'Хоч нэр';
+
+  @override
+  String get emailLabel => 'Email';
+
+  @override
+  String get loginMethodLabel => 'Нэвтрэх арга';
+
+  @override
+  String get joinedLabel => 'Joined';
+
+  @override
+  String get editNicknameTitle => 'Хоч нэр засах';
+
+  @override
+  String get nicknameRule => '2–12 тэмдэгт. Үсэг ба тоо. Зөвхөн англи хэлээр';
+
+  @override
+  String get ctaSave => 'Хадгалах';
+
+  @override
+  String get subscriptionRow => 'Subscription';
+
+  @override
+  String get iapSuccessTitle => 'Purchase complete';
+
+  @override
+  String iapSuccessBody(String name) {
+    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+  }
+
+  @override
+  String get ctaGoHome => 'Home';
+
+  @override
+  String get ctaUseNow => 'Use it now';
+
+  @override
+  String get iapFailTitle => 'The payment didn\'t go through';
+
+  @override
+  String get iapFailBody => 'You can try again';
+
+  @override
+  String get paywallLeaveTitle => 'Одоо гарвал захиалга хийгдэхгүй';
+
+  @override
+  String get paywallLeaveBody =>
+      'Төлбөрийн дараа шууд давуу тал нээгдэнэ. Миний хуудаснаас хүссэн үедээ буцаж болно.';
+
+  @override
+  String get ctaKeepLooking => 'Үргэлжлүүлэн үзэх';
+
+  @override
+  String get ctaLeaveAnyway => 'Гарах';
+
+  @override
+  String get iapCharacterSuccessTitle => 'Шинэ найз нэгдлээ!';
+
+  @override
+  String get iapCharacterSuccessBody =>
+      'Энэ дүр үүрд таных — багц өөрчлөгдсөн ч хадгалагдана, Худалдан авалт сэргээх нь ямар ч төхөөрөмж дээр буцааж өгнө.';
+
+  @override
+  String get iapCharacterFailedBody =>
+      'Худалдан авалт амжилтгүй боллоо. Төлбөр гараагүй — дахин оролдоно уу.';
 }

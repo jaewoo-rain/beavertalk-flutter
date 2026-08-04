@@ -14,6 +14,7 @@ import '../../../alarm/presentation/providers/alarm_list_controller.dart';
 import '../../../bookmark/presentation/providers/bookmark_providers.dart';
 import '../../../character/presentation/providers/character_providers.dart';
 import '../../../incoming_call/presentation/incoming_call_providers.dart';
+import '../../../subscription/presentation/providers/subscription_state_providers.dart';
 import 'auth_providers.dart';
 import 'my_profile_provider.dart';
 import 'signup_draft_provider.dart';
@@ -89,6 +90,8 @@ class AuthController extends Notifier<AuthStatus> {
     ref.invalidate(bookmarkListProvider);
     // A's owned characters would show in B's avatar screen.
     ref.invalidate(ownedCharactersProvider);
+    // A's in-session plan purchase would upgrade B's subscription screens.
+    ref.invalidate(sessionEntitlementProvider);
     // A's language/name/reasons would prefill B's onboarding — the login screen
     // skips the language sheet when `language != null`, and the reason step
     // would open with A's answers already checked and Continue enabled.
@@ -384,6 +387,19 @@ class AuthController extends Notifier<AuthStatus> {
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
+  }
+
+  /// Persists the member's display [name] and refreshes the cached profile.
+  ///
+  /// Rides `POST /members/me/onboarding` — the one endpoint that accepts
+  /// `name` (`MemberUpdate` behind `PATCH /members/me` takes only `language`
+  /// / `character_id` / `is_auto_payment`). The endpoint writes only the
+  /// fields it is sent, and re-marking `onboarding_completed` on an already
+  /// onboarded member changes nothing. A dedicated `name` field on the PATCH
+  /// travels as a server proposal (R1), not as code here.
+  Future<void> updateName(String name) async {
+    await ref.read(authRepositoryProvider).submitOnboarding(name: name);
+    ref.invalidate(myProfileProvider);
   }
 
   /// Persists the member's UI [language] (`PATCH /members/me`) and refreshes the
