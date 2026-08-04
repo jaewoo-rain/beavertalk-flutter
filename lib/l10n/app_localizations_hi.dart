@@ -1903,13 +1903,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get loginMethodLabel => 'लॉगिन विधि';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'शामिल हुए';
 
   @override
   String get editNicknameTitle => 'निकनेम बदलें';
 
   @override
-  String get nicknameRule => '2–12 अक्षर। अक्षर और अंक। केवल अंग्रेज़ी';
+  String get nicknameRule => '2–12 वर्ण। केवल अक्षर और अंक।';
 
   @override
   String get ctaSave => 'सेव करें';

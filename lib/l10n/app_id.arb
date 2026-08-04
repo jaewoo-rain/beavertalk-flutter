@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Mungkin besok",
   "nicknameLabel": "Nama panggilan",
   "editNicknameTitle": "Ubah Nama Panggilan",
-  "nicknameRule": "2–12 karakter. Huruf dan angka. Hanya bahasa Inggris",
+  "nicknameRule": "2–12 karakter. Hanya huruf dan angka.",
   "ctaSave": "Simpan",
   "accountSection": "Akun",
   "loginMethodLabel": "Metode masuk",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Karakter ini milikmu selamanya — tetap ada meski paket berubah, dan Pulihkan pembelian mengembalikannya di perangkat mana pun.",
   "iapCharacterFailedBody": "Pembelian tidak berhasil. Tidak ada tagihan — silakan coba lagi.",
   "priceChangedTitle": "Harga berubah",
-  "priceChangedBody": "Item ini sekarang {price}. Lanjutkan?"
+  "priceChangedBody": "Item ini sekarang {price}. Lanjutkan?",
+  "joinedLabel": "Bergabung"
 }

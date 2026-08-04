@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Может, завтра",
   "nicknameLabel": "Никнейм",
   "editNicknameTitle": "Изменить никнейм",
-  "nicknameRule": "2–12 символов. Буквы и цифры. Только английские",
+  "nicknameRule": "2–12 символов. Только буквы и цифры.",
   "ctaSave": "Сохранить",
   "accountSection": "Аккаунт",
   "loginMethodLabel": "Способ входа",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Этот персонаж ваш навсегда — он останется даже при смене плана, а «Восстановить покупки» вернёт его на любом устройстве.",
   "iapCharacterFailedBody": "Покупка не прошла. Деньги не списаны — попробуйте ещё раз.",
   "priceChangedTitle": "Цена изменилась",
-  "priceChangedBody": "Теперь этот товар стоит {price}. Продолжить?"
+  "priceChangedBody": "Теперь этот товар стоит {price}. Продолжить?",
+  "joinedLabel": "Дата регистрации"
 }

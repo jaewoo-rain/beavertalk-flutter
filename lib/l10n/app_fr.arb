@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Peut-être demain",
   "nicknameLabel": "Pseudo",
   "editNicknameTitle": "Modifier le pseudo",
-  "nicknameRule": "2–12 caractères. Lettres et chiffres. Anglais uniquement",
+  "nicknameRule": "2–12 caractères. Lettres et chiffres uniquement.",
   "ctaSave": "Enregistrer",
   "accountSection": "Compte",
   "loginMethodLabel": "Méthode de connexion",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Ce personnage est à vous pour toujours — il reste même si votre forfait change, et Restaurer les achats le ramène sur tout appareil.",
   "iapCharacterFailedBody": "L'achat n'a pas abouti. Rien n'a été débité — veuillez réessayer.",
   "priceChangedTitle": "Le prix a changé",
-  "priceChangedBody": "Cet article coûte désormais {price}. Voulez-vous continuer ?"
+  "priceChangedBody": "Cet article coûte désormais {price}. Voulez-vous continuer ?",
+  "joinedLabel": "Inscription"
 }

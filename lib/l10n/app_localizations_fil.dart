@@ -1919,13 +1919,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get loginMethodLabel => 'Paraan ng pag-login';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Sumali noong';
 
   @override
   String get editNicknameTitle => 'I-edit ang Palayaw';
 
   @override
-  String get nicknameRule => '2–12 karakter. Mga letra at numero. English lang';
+  String get nicknameRule => '2–12 karakter. Mga letra at numero lang.';
 
   @override
   String get ctaSave => 'I-save';

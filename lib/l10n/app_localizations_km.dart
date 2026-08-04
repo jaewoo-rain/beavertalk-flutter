@@ -1911,13 +1911,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get loginMethodLabel => 'របៀបចូល';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'ថ្ងៃចូលរួម';
 
   @override
   String get editNicknameTitle => 'កែឈ្មោះហៅក្រៅ';
 
   @override
-  String get nicknameRule => 'អក្សរ ២–១២ តួ។ អក្សរ និងលេខអង់គ្លេសប៉ុណ្ណោះ។';
+  String get nicknameRule => '២–១២ តួអក្សរ។ អក្សរ និងលេខប៉ុណ្ណោះ។';
 
   @override
   String get ctaSave => 'រក្សាទុក';

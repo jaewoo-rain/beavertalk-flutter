@@ -1924,14 +1924,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get loginMethodLabel => 'Kaedah log masuk';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Menyertai';
 
   @override
   String get editNicknameTitle => 'Ubah Nama Panggilan';
 
   @override
-  String get nicknameRule =>
-      '2–12 aksara. Huruf dan nombor. Bahasa Inggeris sahaja';
+  String get nicknameRule => '2–12 aksara. Huruf dan nombor sahaja.';
 
   @override
   String get ctaSave => 'Simpan';

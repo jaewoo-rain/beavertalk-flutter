@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Mungkin esok",
   "nicknameLabel": "Nama panggilan",
   "editNicknameTitle": "Ubah Nama Panggilan",
-  "nicknameRule": "2–12 aksara. Huruf dan nombor. Bahasa Inggeris sahaja",
+  "nicknameRule": "2–12 aksara. Huruf dan nombor sahaja.",
   "ctaSave": "Simpan",
   "accountSection": "Akaun",
   "loginMethodLabel": "Kaedah log masuk",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Watak ini milik anda selamanya — kekal walaupun pelan berubah, dan Pulihkan pembelian membawanya kembali pada mana-mana peranti.",
   "iapCharacterFailedBody": "Pembelian tidak selesai. Tiada caj dikenakan — sila cuba lagi.",
   "priceChangedTitle": "Harga berubah",
-  "priceChangedBody": "Item ini kini {price}. Teruskan?"
+  "priceChangedBody": "Item ini kini {price}. Teruskan?",
+  "joinedLabel": "Menyertai"
 }

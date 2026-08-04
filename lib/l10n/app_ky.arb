@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Балким эртең",
   "nicknameLabel": "Ылакап ат",
   "editNicknameTitle": "Ылакап атты түзөтүү",
-  "nicknameRule": "2–12 белги. Тамгалар жана сандар. Англисче гана",
+  "nicknameRule": "2–12 белги. Тамгалар жана сандар гана.",
   "ctaSave": "Сактоо",
   "accountSection": "Аккаунт",
   "loginMethodLabel": "Кирүү ыкмасы",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Бул каарман түбөлүккө сиздики — план өзгөрсө да калат, ал эми Сатып алууларды калыбына келтирүү аны каалаган түзмөктө кайтарат.",
   "iapCharacterFailedBody": "Сатып алуу ишке ашкан жок. Акча алынган жок — кайра аракет кылыңыз.",
   "priceChangedTitle": "Баа өзгөрдү",
-  "priceChangedBody": "Бул товар эми {price} турат. Улантасызбы?"
+  "priceChangedBody": "Бул товар эми {price} турат. Улантасызбы?",
+  "joinedLabel": "Катталган күнү"
 }

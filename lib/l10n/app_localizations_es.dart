@@ -1923,13 +1923,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get loginMethodLabel => 'Método de inicio de sesión';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Fecha de registro';
 
   @override
   String get editNicknameTitle => 'Editar apodo';
 
   @override
-  String get nicknameRule => '2–12 caracteres. Letras y números. Solo inglés';
+  String get nicknameRule => '2–12 caracteres. Solo letras y números.';
 
   @override
   String get ctaSave => 'Guardar';

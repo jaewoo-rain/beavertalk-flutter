@@ -12,6 +12,7 @@ class Member {
     this.characterId,
     this.onboardingCompleted = false,
     this.reasons,
+    this.createdAt,
   });
 
   /// Server primary key.
@@ -49,4 +50,10 @@ class Member {
 
   /// Learning reasons chosen during onboarding (e.g. `["travel"]`).
   final List<String>? reasons;
+
+  /// When the account was created — the Account card's `Joined` row.
+  ///
+  /// The server has always sent this (`MemberRead.created_at`); the client
+  /// simply never read it, which is why that row was missing.
+  final DateTime? createdAt;
 }

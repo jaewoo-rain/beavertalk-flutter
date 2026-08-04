@@ -1928,13 +1928,13 @@ class AppLocalizationsIt extends AppLocalizations {
   String get loginMethodLabel => 'Metodo di accesso';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Iscrizione';
 
   @override
   String get editNicknameTitle => 'Modifica nickname';
 
   @override
-  String get nicknameRule => '2–12 caratteri. Lettere e numeri. Solo inglese';
+  String get nicknameRule => '2–12 caratteri. Solo lettere e numeri.';
 
   @override
   String get ctaSave => 'Salva';

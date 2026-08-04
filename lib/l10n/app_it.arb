@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Magari domani",
   "nicknameLabel": "Nickname",
   "editNicknameTitle": "Modifica nickname",
-  "nicknameRule": "2–12 caratteri. Lettere e numeri. Solo inglese",
+  "nicknameRule": "2–12 caratteri. Solo lettere e numeri.",
   "ctaSave": "Salva",
   "accountSection": "Account",
   "loginMethodLabel": "Metodo di accesso",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Questo personaggio è tuo per sempre: resta anche se cambi piano, e Ripristina acquisti lo riporta su qualsiasi dispositivo.",
   "iapCharacterFailedBody": "L'acquisto non è andato a buon fine. Non è stato addebitato nulla: riprova.",
   "priceChangedTitle": "Il prezzo è cambiato",
-  "priceChangedBody": "Questo articolo ora costa {price}. Vuoi continuare?"
+  "priceChangedBody": "Questo articolo ora costa {price}. Vuoi continuare?",
+  "joinedLabel": "Iscrizione"
 }

@@ -1911,13 +1911,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get loginMethodLabel => 'Кирүү ыкмасы';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Катталган күнү';
 
   @override
   String get editNicknameTitle => 'Ылакап атты түзөтүү';
 
   @override
-  String get nicknameRule => '2–12 белги. Тамгалар жана сандар. Англисче гана';
+  String get nicknameRule => '2–12 белги. Тамгалар жана сандар гана.';
 
   @override
   String get ctaSave => 'Сактоо';

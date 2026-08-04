@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "また明日にします",
   "nicknameLabel": "ニックネーム",
   "editNicknameTitle": "ニックネームを編集",
-  "nicknameRule": "2〜12文字 · 英字と数字のみ使えます",
+  "nicknameRule": "2〜12文字。文字と数字のみ使えます。",
   "ctaSave": "保存",
   "accountSection": "アカウント",
   "loginMethodLabel": "ログイン方法",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "このキャラクターはずっとあなたのもの。プランが変わっても残り、購入の復元でどの端末でも戻せます。",
   "iapCharacterFailedBody": "購入が完了しませんでした。請求は発生していません。もう一度お試しください。",
   "priceChangedTitle": "価格が変更されました",
-  "priceChangedBody": "この商品は現在{price}です。続けますか?"
+  "priceChangedBody": "この商品は現在{price}です。続けますか?",
+  "joinedLabel": "登録日"
 }

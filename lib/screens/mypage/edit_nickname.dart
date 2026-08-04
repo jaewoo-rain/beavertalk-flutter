@@ -112,8 +112,13 @@ class _EditNicknameScreenState extends ConsumerState<EditNicknameScreen> {
                     autofocus: true,
                     maxLength: _maxLength,
                     inputFormatters: [
+                      // Letters in **any** script plus digits — not `a-zA-Z`.
+                      // Onboarding sets this same name with no filter at all,
+                      // so an English-only rule here locked out every member
+                      // whose name isn't Latin (the app ships 30 locales) and
+                      // contradicted the name they had already saved.
                       FilteringTextInputFormatter.allow(
-                          RegExp(r'[a-zA-Z0-9]')),
+                          RegExp(r'[\p{L}\p{N}]', unicode: true)),
                     ],
                     style: AppType.body1.r
                         .copyWith(color: c.commonWhiteAndDark),

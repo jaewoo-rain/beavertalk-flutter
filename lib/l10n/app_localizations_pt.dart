@@ -1924,14 +1924,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get loginMethodLabel => 'Método de login';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Cadastro';
 
   @override
   String get editNicknameTitle => 'Editar apelido';
 
   @override
-  String get nicknameRule =>
-      '2–12 caracteres. Letras e números. Somente inglês';
+  String get nicknameRule => '2–12 caracteres. Apenas letras e números.';
 
   @override
   String get ctaSave => 'Salvar';

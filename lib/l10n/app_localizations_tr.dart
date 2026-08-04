@@ -1909,13 +1909,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get loginMethodLabel => 'Giriş yöntemi';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Katılma tarihi';
 
   @override
   String get editNicknameTitle => 'Takma Adı Düzenle';
 
   @override
-  String get nicknameRule => '2–12 karakter. Harf ve rakam. Yalnızca İngilizce';
+  String get nicknameRule => '2–12 karakter. Yalnızca harf ve rakam.';
 
   @override
   String get ctaSave => 'Kaydet';

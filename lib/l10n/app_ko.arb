@@ -592,7 +592,7 @@
   "ctaMaybeTomorrow": "내일 다시 할게요",
   "nicknameLabel": "닉네임",
   "editNicknameTitle": "닉네임 수정",
-  "nicknameRule": "2–12자 · 영문과 숫자만 가능해요",
+  "nicknameRule": "2~12자. 문자와 숫자만 쓸 수 있어요.",
   "ctaSave": "저장",
   "accountSection": "계정",
   "loginMethodLabel": "로그인 방식",
@@ -602,5 +602,6 @@
   "ctaLeaveAnyway": "그래도 나갈래요",
   "iapCharacterSuccessTitle": "새 친구가 함께해요!",
   "iapCharacterSuccessBody": "이 캐릭터는 영원히 내 거예요. 플랜이 바뀌어도 그대로이고, 구매 복원으로 어떤 기기에서든 되찾을 수 있어요.",
-  "iapCharacterFailedBody": "구매가 완료되지 않았어요. 결제된 금액은 없으니 다시 시도해 주세요."
+  "iapCharacterFailedBody": "구매가 완료되지 않았어요. 결제된 금액은 없으니 다시 시도해 주세요.",
+  "joinedLabel": "가입일"
 }

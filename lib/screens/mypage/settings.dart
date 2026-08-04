@@ -12,8 +12,11 @@ import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/format/dates.dart';
 import '../../core/i18n/locale_controller.dart';
+import '../../features/auth/domain/entities/member.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -234,22 +237,12 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
               padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
                   AppSpacing.s20, AppSpacing.s24),
               children: [
-                // Account — Figma `section/Account` (4514:4691): Nickname
-                // (chevron → editor), Email, Login Method badge. The design's
-                // fourth row (Joined) has no server source — Member carries no
-                // join date — so it is omitted rather than faked; it appears
-                // the day the server sends one.
+                // Account — Figma `section/Account` (4514:4691), all four
+                // rows: Nickname (chevron → editor), Email, Login Method
+                // badge, Joined.
                 _section(l10n.accountSection),
                 const SizedBox(height: AppSpacing.s16),
-                _group([
-                  _navRow(
-                    l10n.nicknameLabel,
-                    member?.name ?? '',
-                    route: Routes.editNickname,
-                  ),
-                  _infoRow(l10n.fieldEmailLabel, member?.email ?? '—'),
-                  _loginMethodRow(l10n, member?.loginMethod, divider: false),
-                ]),
+                _group(_accountRows(l10n, member)),
                 const SizedBox(height: AppSpacing.s24),
 
                 _section(l10n.settingsSection),
@@ -344,6 +337,38 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     return status.tier == SubscriptionTier.max ? l10n.planMax : l10n.planPro;
   }
 
+  /// The Account card's rows, in Figma order, with the divider rule the
+  /// design uses: **between rows only — the last one has none.**
+  ///
+  /// Rows are built as a list first so that rule survives a row dropping out.
+  /// It did drop out: with Login Method and Joined both missing, Email became
+  /// the last row and kept a dangling stroke under it.
+  List<Widget> _accountRows(AppLocalizations l10n, Member? member) {
+    // The sign-in provider is a Supabase fact, not a server column — the API's
+    // `MemberRead` has no `login_method`, which is why this row never showed.
+    final provider = ref.watch(signInProviderProvider);
+    final joined = member?.createdAt;
+
+    final rows = <Widget Function(bool last)>[
+      (last) => _navRow(
+            l10n.nicknameLabel,
+            member?.name ?? '',
+            route: Routes.editNickname,
+            divider: !last,
+          ),
+      (last) => _infoRow(l10n.fieldEmailLabel, member?.email ?? '—',
+          divider: !last),
+      if (provider != null && provider.isNotEmpty)
+        (last) => _loginMethodRow(l10n, provider, divider: !last),
+      if (joined != null)
+        (last) => _infoRow(l10n.joinedLabel, localizedFullDate(context, joined),
+            divider: !last),
+    ];
+    return [
+      for (var i = 0; i < rows.length; i++) rows[i](i == rows.length - 1),
+    ];
+  }
+
   /// A read-only label/value row — the Account card's Email row has no
   /// chevron, which [CardLine] always draws, hence this local twin with the
   /// same metrics (56 row, 12/8 padding, 0.5 divider).
@@ -360,7 +385,12 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            // 2:3, not 1:1 — an even split truncated `device2026@te…` while
+            // the short label sat on dead space. Both stay flexible so a long
+            // label (es `Fecha de registro`) shrinks instead of overflowing;
+            // an unbounded label is what blew the 320px sweep open.
             Flexible(
+              flex: 2,
               child: Text(label,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -369,6 +399,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
             ),
             const SizedBox(width: 8),
             Flexible(
+              flex: 3,
               child: Text(value,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
@@ -380,12 +411,9 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
         ),
       );
 
-  /// Login-method row — label + positive [AppBadge], per the Account card
-  /// design. Hidden when the server has not said how the member signed in:
-  /// an empty badge would read as a bug, not as data.
-  Widget _loginMethodRow(AppLocalizations l10n, String? method,
+  /// Login-method row — label + positive Badge, per the Account card design.
+  Widget _loginMethodRow(AppLocalizations l10n, String method,
       {bool divider = true}) {
-    if (method == null || method.isEmpty) return const SizedBox.shrink();
     final label = switch (method.toLowerCase()) {
       'google' => 'Google',
       'kakao' => 'Kakao',

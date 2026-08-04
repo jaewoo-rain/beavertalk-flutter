@@ -1842,13 +1842,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginMethodLabel => '登录方式';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => '注册日期';
 
   @override
   String get editNicknameTitle => '编辑昵称';
 
   @override
-  String get nicknameRule => '2–12 个字符 · 仅限英文字母和数字';
+  String get nicknameRule => '2–12个字符。仅限字母和数字。';
 
   @override
   String get ctaSave => '保存';

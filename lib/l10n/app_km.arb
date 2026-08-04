@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "ប្រហែលថ្ងៃស្អែក",
   "nicknameLabel": "ឈ្មោះហៅក្រៅ",
   "editNicknameTitle": "កែឈ្មោះហៅក្រៅ",
-  "nicknameRule": "អក្សរ ២–១២ តួ។ អក្សរ និងលេខអង់គ្លេសប៉ុណ្ណោះ។",
+  "nicknameRule": "២–១២ តួអក្សរ។ អក្សរ និងលេខប៉ុណ្ណោះ។",
   "ctaSave": "រក្សាទុក",
   "accountSection": "គណនី",
   "loginMethodLabel": "របៀបចូល",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "តួអង្គនេះជារបស់អ្នកជារៀងរហូត — នៅដដែលទោះគម្រោងផ្លាស់ប្ដូរ ហើយស្ដារការទិញអាចយកមកវិញនៅគ្រប់ឧបករណ៍។",
   "iapCharacterFailedBody": "ការទិញមិនបានសម្រេចទេ។ មិនមានការគិតប្រាក់ទេ — សូមព្យាយាមម្ដងទៀត។",
   "priceChangedTitle": "តម្លៃបានផ្លាស់ប្ដូរ",
-  "priceChangedBody": "ទំនិញនេះឥឡូវតម្លៃ {price}។ បន្តទេ?"
+  "priceChangedBody": "ទំនិញនេះឥឡូវតម្លៃ {price}។ បន្តទេ?",
+  "joinedLabel": "ថ្ងៃចូលរួម"
 }

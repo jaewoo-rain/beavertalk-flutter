@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Магадгүй маргааш",
   "nicknameLabel": "Хоч нэр",
   "editNicknameTitle": "Хоч нэр засах",
-  "nicknameRule": "2–12 тэмдэгт. Үсэг ба тоо. Зөвхөн англи хэлээр",
+  "nicknameRule": "2–12 тэмдэгт. Зөвхөн үсэг ба тоо.",
   "ctaSave": "Хадгалах",
   "accountSection": "Данс",
   "loginMethodLabel": "Нэвтрэх арга",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Энэ дүр үүрд таных — багц өөрчлөгдсөн ч хадгалагдана, Худалдан авалт сэргээх нь ямар ч төхөөрөмж дээр буцааж өгнө.",
   "iapCharacterFailedBody": "Худалдан авалт амжилтгүй боллоо. Төлбөр гараагүй — дахин оролдоно уу.",
   "priceChangedTitle": "Үнэ өөрчлөгдлөө",
-  "priceChangedBody": "Энэ бараа одоо {price} болсон. Үргэлжлүүлэх үү?"
+  "priceChangedBody": "Энэ бараа одоо {price} болсон. Үргэлжлүүлэх үү?",
+  "joinedLabel": "Бүртгүүлсэн"
 }

@@ -1909,13 +1909,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get loginMethodLabel => 'Нэвтрэх арга';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Бүртгүүлсэн';
 
   @override
   String get editNicknameTitle => 'Хоч нэр засах';
 
   @override
-  String get nicknameRule => '2–12 тэмдэгт. Үсэг ба тоо. Зөвхөн англи хэлээр';
+  String get nicknameRule => '2–12 тэмдэгт. Зөвхөн үсэг ба тоо.';
 
   @override
   String get ctaSave => 'Хадгалах';

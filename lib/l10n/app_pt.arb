@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Talvez amanhã",
   "nicknameLabel": "Apelido",
   "editNicknameTitle": "Editar apelido",
-  "nicknameRule": "2–12 caracteres. Letras e números. Somente inglês",
+  "nicknameRule": "2–12 caracteres. Apenas letras e números.",
   "ctaSave": "Salvar",
   "accountSection": "Conta",
   "loginMethodLabel": "Método de login",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Este personagem é seu para sempre — permanece mesmo se o plano mudar, e Restaurar compras o traz de volta em qualquer aparelho.",
   "iapCharacterFailedBody": "A compra não foi concluída. Nada foi cobrado — tente novamente.",
   "priceChangedTitle": "O preço mudou",
-  "priceChangedBody": "Este item agora custa {price}. Deseja continuar?"
+  "priceChangedBody": "Este item agora custa {price}. Deseja continuar?",
+  "joinedLabel": "Cadastro"
 }

@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Talán holnap",
   "nicknameLabel": "Becenév",
   "editNicknameTitle": "Becenév szerkesztése",
-  "nicknameRule": "2–12 karakter. Betűk és számok. Csak angolul",
+  "nicknameRule": "2–12 karakter. Csak betűk és számok.",
   "ctaSave": "Mentés",
   "accountSection": "Fiók",
   "loginMethodLabel": "Bejelentkezési mód",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Ez a karakter örökre a tiéd — csomagváltásnál is megmarad, a Vásárlások visszaállítása pedig bármely eszközön visszahozza.",
   "iapCharacterFailedBody": "A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.",
   "priceChangedTitle": "Megváltozott az ár",
-  "priceChangedBody": "Ez a tétel most {price}. Folytatod?"
+  "priceChangedBody": "Ez a tétel most {price}. Folytatod?",
+  "joinedLabel": "Csatlakozott"
 }

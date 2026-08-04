@@ -1906,13 +1906,13 @@ class AppLocalizationsUr extends AppLocalizations {
   String get loginMethodLabel => 'لاگ ان کا طریقہ';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'شمولیت کی تاریخ';
 
   @override
   String get editNicknameTitle => 'عرفی نام میں ترمیم کریں';
 
   @override
-  String get nicknameRule => '2–12 حروف۔ حروف اور اعداد۔ صرف انگریزی';
+  String get nicknameRule => '2 سے 12 حروف۔ صرف حروف اور اعداد۔';
 
   @override
   String get ctaSave => 'محفوظ کریں';

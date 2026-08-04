@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "शायद कल",
   "nicknameLabel": "निकनेम",
   "editNicknameTitle": "निकनेम बदलें",
-  "nicknameRule": "2–12 अक्षर। अक्षर और अंक। केवल अंग्रेज़ी",
+  "nicknameRule": "2–12 वर्ण। केवल अक्षर और अंक।",
   "ctaSave": "सेव करें",
   "accountSection": "खाता",
   "loginMethodLabel": "लॉगिन विधि",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "यह कैरेक्टर हमेशा के लिए आपका है — प्लान बदलने पर भी रहता है, और खरीदारी बहाल करें से किसी भी डिवाइस पर वापस आ जाता है।",
   "iapCharacterFailedBody": "खरीदारी पूरी नहीं हुई। कोई राशि नहीं कटी — कृपया फिर से कोशिश करें।",
   "priceChangedTitle": "कीमत बदल गई",
-  "priceChangedBody": "इस आइटम की कीमत अब {price} है। क्या जारी रखें?"
+  "priceChangedBody": "इस आइटम की कीमत अब {price} है। क्या जारी रखें?",
+  "joinedLabel": "शामिल हुए"
 }

@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Мүмкін ертең",
   "nicknameLabel": "Лақап ат",
   "editNicknameTitle": "Лақап атты өзгерту",
-  "nicknameRule": "2–12 таңба. Әріптер мен сандар. Тек ағылшынша",
+  "nicknameRule": "2–12 таңба. Тек әріптер мен сандар.",
   "ctaSave": "Сақтау",
   "accountSection": "Тіркелгі",
   "loginMethodLabel": "Кіру әдісі",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Бұл кейіпкер мәңгі сіздікі — жоспар өзгерсе де қалады, ал Сатып алуларды қалпына келтіру оны кез келген құрылғыда қайтарады.",
   "iapCharacterFailedBody": "Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.",
   "priceChangedTitle": "Баға өзгерді",
-  "priceChangedBody": "Бұл тауар енді {price} тұрады. Жалғастырасыз ба?"
+  "priceChangedBody": "Бұл тауар енді {price} тұрады. Жалғастырасыз ба?",
+  "joinedLabel": "Тіркелген күні"
 }

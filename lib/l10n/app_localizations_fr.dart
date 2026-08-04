@@ -1940,14 +1940,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loginMethodLabel => 'Méthode de connexion';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Inscription';
 
   @override
   String get editNicknameTitle => 'Modifier le pseudo';
 
   @override
-  String get nicknameRule =>
-      '2–12 caractères. Lettres et chiffres. Anglais uniquement';
+  String get nicknameRule => '2–12 caractères. Lettres et chiffres uniquement.';
 
   @override
   String get ctaSave => 'Enregistrer';

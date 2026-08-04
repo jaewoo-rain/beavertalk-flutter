@@ -1911,14 +1911,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginMethodLabel => 'Metode masuk';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Bergabung';
 
   @override
   String get editNicknameTitle => 'Ubah Nama Panggilan';
 
   @override
-  String get nicknameRule =>
-      '2–12 karakter. Huruf dan angka. Hanya bahasa Inggris';
+  String get nicknameRule => '2–12 karakter. Hanya huruf dan angka.';
 
   @override
   String get ctaSave => 'Simpan';

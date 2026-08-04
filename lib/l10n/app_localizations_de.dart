@@ -1927,14 +1927,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get loginMethodLabel => 'Anmeldemethode';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Beigetreten';
 
   @override
   String get editNicknameTitle => 'Spitznamen bearbeiten';
 
   @override
-  String get nicknameRule =>
-      '2–12 Zeichen. Buchstaben und Zahlen. Nur Englisch';
+  String get nicknameRule => '2–12 Zeichen. Nur Buchstaben und Zahlen.';
 
   @override
   String get ctaSave => 'Speichern';

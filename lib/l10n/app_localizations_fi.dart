@@ -1909,14 +1909,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get loginMethodLabel => 'Kirjautumistapa';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Liittynyt';
 
   @override
   String get editNicknameTitle => 'Muokkaa nimimerkkiä';
 
   @override
-  String get nicknameRule =>
-      '2–12 merkkiä. Kirjaimia ja numeroita. Vain englanniksi';
+  String get nicknameRule => '2–12 merkkiä. Vain kirjaimia ja numeroita.';
 
   @override
   String get ctaSave => 'Tallenna';

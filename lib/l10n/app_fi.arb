@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Ehkä huomenna",
   "nicknameLabel": "Nimimerkki",
   "editNicknameTitle": "Muokkaa nimimerkkiä",
-  "nicknameRule": "2–12 merkkiä. Kirjaimia ja numeroita. Vain englanniksi",
+  "nicknameRule": "2–12 merkkiä. Vain kirjaimia ja numeroita.",
   "ctaSave": "Tallenna",
   "accountSection": "Tili",
   "loginMethodLabel": "Kirjautumistapa",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Tämä hahmo on sinun ikuisesti — se säilyy vaikka paketti vaihtuisi, ja Palauta ostot tuo sen takaisin millä tahansa laitteella.",
   "iapCharacterFailedBody": "Ostos ei onnistunut. Mitään ei veloitettu — yritä uudelleen.",
   "priceChangedTitle": "Hinta muuttui",
-  "priceChangedBody": "Tämä tuote maksaa nyt {price}. Haluatko jatkaa?"
+  "priceChangedBody": "Tämä tuote maksaa nyt {price}. Haluatko jatkaa?",
+  "joinedLabel": "Liittynyt"
 }

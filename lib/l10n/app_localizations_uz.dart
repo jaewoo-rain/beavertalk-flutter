@@ -1921,13 +1921,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get loginMethodLabel => 'Kirish usuli';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Roʻyxatdan oʻtgan sana';
 
   @override
   String get editNicknameTitle => 'Taxallusni tahrirlash';
 
   @override
-  String get nicknameRule => '2–12 belgi. Harflar va raqamlar. Faqat inglizcha';
+  String get nicknameRule => '2–12 belgi. Faqat harflar va raqamlar.';
 
   @override
   String get ctaSave => 'Saqlash';

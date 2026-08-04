@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "ربما غدًا",
   "nicknameLabel": "الاسم المستعار",
   "editNicknameTitle": "تعديل الاسم المستعار",
-  "nicknameRule": "من 2 إلى 12 حرفًا. أحرف وأرقام. بالإنجليزية فقط",
+  "nicknameRule": "من 2 إلى 12 حرفًا. حروف وأرقام فقط.",
   "ctaSave": "حفظ",
   "accountSection": "الحساب",
   "loginMethodLabel": "طريقة تسجيل الدخول",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "هذه الشخصية ملكك للأبد — تبقى حتى لو تغيّرت خطتك، ويمكن استعادتها على أي جهاز عبر استعادة المشتريات.",
   "iapCharacterFailedBody": "لم تكتمل عملية الشراء. لم يتم خصم أي مبلغ — يرجى المحاولة مرة أخرى.",
   "priceChangedTitle": "تغيّر السعر",
-  "priceChangedBody": "أصبح سعر هذا العنصر {price}. هل تريد المتابعة؟"
+  "priceChangedBody": "أصبح سعر هذا العنصر {price}. هل تريد المتابعة؟",
+  "joinedLabel": "تاريخ الانضمام"
 }

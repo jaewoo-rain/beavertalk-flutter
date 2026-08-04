@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Belki yarın",
   "nicknameLabel": "Takma ad",
   "editNicknameTitle": "Takma Adı Düzenle",
-  "nicknameRule": "2–12 karakter. Harf ve rakam. Yalnızca İngilizce",
+  "nicknameRule": "2–12 karakter. Yalnızca harf ve rakam.",
   "ctaSave": "Kaydet",
   "accountSection": "Hesap",
   "loginMethodLabel": "Giriş yöntemi",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Bu karakter sonsuza dek senin — plan değişse bile kalır ve Satın alımları geri yükle ile her cihazda geri gelir.",
   "iapCharacterFailedBody": "Satın alma tamamlanamadı. Ücret alınmadı — lütfen tekrar dene.",
   "priceChangedTitle": "Fiyat değişti",
-  "priceChangedBody": "Bu ürün artık {price}. Devam etmek ister misin?"
+  "priceChangedBody": "Bu ürün artık {price}. Devam etmek ister misin?",
+  "joinedLabel": "Katılma tarihi"
 }

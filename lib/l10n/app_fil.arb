@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Baka bukas na lang",
   "nicknameLabel": "Palayaw",
   "editNicknameTitle": "I-edit ang Palayaw",
-  "nicknameRule": "2–12 karakter. Mga letra at numero. English lang",
+  "nicknameRule": "2–12 karakter. Mga letra at numero lang.",
   "ctaSave": "I-save",
   "accountSection": "Account",
   "loginMethodLabel": "Paraan ng pag-login",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Sa iyo na ang character na ito habambuhay — mananatili kahit magpalit ka ng plan, at maibabalik ito sa kahit anong device gamit ang Restore purchases.",
   "iapCharacterFailedBody": "Hindi natuloy ang pagbili. Walang na-charge — pakisubukan ulit.",
   "priceChangedTitle": "Nagbago ang presyo",
-  "priceChangedBody": "Ang item na ito ay {price} na ngayon. Magpapatuloy ka ba?"
+  "priceChangedBody": "Ang item na ito ay {price} na ngayon. Magpapatuloy ka ba?",
+  "joinedLabel": "Sumali noong"
 }

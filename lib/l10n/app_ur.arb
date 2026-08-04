@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "شاید کل",
   "nicknameLabel": "عرفی نام",
   "editNicknameTitle": "عرفی نام میں ترمیم کریں",
-  "nicknameRule": "2–12 حروف۔ حروف اور اعداد۔ صرف انگریزی",
+  "nicknameRule": "2 سے 12 حروف۔ صرف حروف اور اعداد۔",
   "ctaSave": "محفوظ کریں",
   "accountSection": "اکاؤنٹ",
   "loginMethodLabel": "لاگ ان کا طریقہ",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "یہ کردار ہمیشہ کے لیے آپ کا ہے — پلان بدلنے پر بھی رہتا ہے، اور خریداریاں بحال کریں سے کسی بھی ڈیوائس پر واپس آ جاتا ہے۔",
   "iapCharacterFailedBody": "خریداری مکمل نہیں ہوئی۔ کوئی رقم نہیں کٹی — دوبارہ کوشش کریں۔",
   "priceChangedTitle": "قیمت تبدیل ہو گئی",
-  "priceChangedBody": "اس آئٹم کی قیمت اب {price} ہے۔ کیا جاری رکھیں؟"
+  "priceChangedBody": "اس آئٹم کی قیمت اب {price} ہے۔ کیا جاری رکھیں؟",
+  "joinedLabel": "شمولیت کی تاریخ"
 }

@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "কাল দেখা যাবে",
   "nicknameLabel": "ডাকনাম",
   "editNicknameTitle": "ডাকনাম সম্পাদনা",
-  "nicknameRule": "২–১২ অক্ষর। শুধুই ইংরেজি অক্ষর ও সংখ্যা।",
+  "nicknameRule": "২–১২ অক্ষর। শুধু অক্ষর ও সংখ্যা।",
   "ctaSave": "সংরক্ষণ",
   "accountSection": "অ্যাকাউন্ট",
   "loginMethodLabel": "লগইন পদ্ধতি",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "এই চরিত্র চিরদিনের জন্য আপনার — প্ল্যান বদলালেও থাকে, আর কেনাকাটা পুনরুদ্ধার দিয়ে যেকোনো ডিভাইসে ফিরে পাবেন।",
   "iapCharacterFailedBody": "কেনা সম্পন্ন হয়নি। কোনো টাকা কাটা হয়নি — আবার চেষ্টা করুন।",
   "priceChangedTitle": "দাম বদলে গেছে",
-  "priceChangedBody": "এই আইটেমের দাম এখন {price}। চালিয়ে যেতে চান?"
+  "priceChangedBody": "এই আইটেমের দাম এখন {price}। চালিয়ে যেতে চান?",
+  "joinedLabel": "যোগদানের তারিখ"
 }

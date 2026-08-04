@@ -1918,13 +1918,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get loginMethodLabel => 'လော့ဂ်အင်နည်းလမ်း';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'စတင်ဝင်ရောက်သည့်ရက်';
 
   @override
   String get editNicknameTitle => 'အမည်ပြောင် ပြင်ရန်';
 
   @override
-  String get nicknameRule => 'စာလုံး ၂–၁၂။ အင်္ဂလိပ် စာလုံးနှင့် ဂဏန်းများသာ။';
+  String get nicknameRule => 'စာလုံး ၂–၁၂ လုံး။ စာလုံးနှင့် ဂဏန်းသာ။';
 
   @override
   String get ctaSave => 'သိမ်းရန်';

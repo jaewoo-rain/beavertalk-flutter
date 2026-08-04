@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "明天再说",
   "nicknameLabel": "昵称",
   "editNicknameTitle": "编辑昵称",
-  "nicknameRule": "2–12 个字符 · 仅限英文字母和数字",
+  "nicknameRule": "2–12个字符。仅限字母和数字。",
   "ctaSave": "保存",
   "accountSection": "账户",
   "loginMethodLabel": "登录方式",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "这个角色永远属于你——即使套餐变更也会保留,并可通过恢复购买在任何设备找回。",
   "iapCharacterFailedBody": "购买未完成。没有产生任何扣款,请重试。",
   "priceChangedTitle": "价格已变更",
-  "priceChangedBody": "此商品现价为{price}。要继续吗?"
+  "priceChangedBody": "此商品现价为{price}。要继续吗?",
+  "joinedLabel": "注册日期"
 }

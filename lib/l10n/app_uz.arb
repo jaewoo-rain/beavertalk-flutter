@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Balki ertaga",
   "nicknameLabel": "Taxallus",
   "editNicknameTitle": "Taxallusni tahrirlash",
-  "nicknameRule": "2–12 belgi. Harflar va raqamlar. Faqat inglizcha",
+  "nicknameRule": "2–12 belgi. Faqat harflar va raqamlar.",
   "ctaSave": "Saqlash",
   "accountSection": "Hisob",
   "loginMethodLabel": "Kirish usuli",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Bu personaj abadiy sizniki — tarif oʻzgarsa ham qoladi, Xaridlarni tiklash esa uni istalgan qurilmada qaytaradi.",
   "iapCharacterFailedBody": "Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.",
   "priceChangedTitle": "Narx oʻzgardi",
-  "priceChangedBody": "Bu mahsulot endi {price}. Davom etasizmi?"
+  "priceChangedBody": "Bu mahsulot endi {price}. Davom etasizmi?",
+  "joinedLabel": "Roʻyxatdan oʻtgan sana"
 }

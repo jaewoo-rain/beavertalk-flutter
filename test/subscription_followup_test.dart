@@ -1,6 +1,9 @@
 import 'dart:async';
 
 import 'package:beavertalk/app/routes.dart';
+import 'package:beavertalk/features/auth/domain/entities/member.dart';
+import 'package:beavertalk/features/auth/presentation/providers/auth_providers.dart';
+import 'package:beavertalk/features/auth/presentation/providers/my_profile_provider.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/iap_service.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
@@ -225,12 +228,21 @@ void main() {
 
   group('settings account card', () {
     Future<void> pumpSettings(
-        WidgetTester tester, SubscriptionStatus status) async {
+      WidgetTester tester,
+      SubscriptionStatus status, {
+      String? provider,
+      Member? member,
+    }) async {
       await tester.binding.setSurfaceSize(const Size(375, 1600));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [subscriptionStatusProvider.overrideWithValue(status)],
+          overrides: [
+            subscriptionStatusProvider.overrideWithValue(status),
+            signInProviderProvider.overrideWithValue(provider),
+            if (member != null)
+              myProfileProvider.overrideWith((ref) async => member),
+          ],
           child: const MaterialApp(
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             supportedLocales: AppLocalizations.supportedLocales,
@@ -242,12 +254,37 @@ void main() {
       await tester.pump();
     }
 
-    testWidgets('Account section renders with its rows', (tester) async {
-      await pumpSettings(tester, SubscriptionStatus.none);
+    testWidgets('Account card renders all four Figma rows', (tester) async {
+      await pumpSettings(
+        tester,
+        SubscriptionStatus.none,
+        provider: 'google',
+        member: Member(
+          memberId: 1,
+          email: 'a@b.com',
+          name: 'Tester',
+          createdAt: DateTime(2025, 3, 14),
+        ),
+      );
+      await tester.pump();
       final l10n = await l10nOf(tester, MyPageSettingsScreen);
       expect(find.text(l10n.accountSection), findsOneWidget);
       expect(find.text(l10n.nicknameLabel), findsOneWidget);
       expect(find.text(l10n.fieldEmailLabel), findsOneWidget);
+      // These two were missing entirely: no `login_method` on the wire, and
+      // `created_at` was never parsed.
+      expect(find.text(l10n.loginMethodLabel), findsOneWidget);
+      expect(find.text('Google'), findsOneWidget);
+      expect(find.text(l10n.joinedLabel), findsOneWidget);
+    });
+
+    testWidgets('rows that have no data drop out', (tester) async {
+      await pumpSettings(tester, SubscriptionStatus.none);
+      final l10n = await l10nOf(tester, MyPageSettingsScreen);
+      expect(find.text(l10n.nicknameLabel), findsOneWidget);
+      expect(find.text(l10n.fieldEmailLabel), findsOneWidget);
+      expect(find.text(l10n.loginMethodLabel), findsNothing);
+      expect(find.text(l10n.joinedLabel), findsNothing);
     });
 
     testWidgets('Current plan reads the status — Max says Max',

@@ -1902,13 +1902,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get loginMethodLabel => 'লগইন পদ্ধতি';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'যোগদানের তারিখ';
 
   @override
   String get editNicknameTitle => 'ডাকনাম সম্পাদনা';
 
   @override
-  String get nicknameRule => '২–১২ অক্ষর। শুধুই ইংরেজি অক্ষর ও সংখ্যা।';
+  String get nicknameRule => '২–১২ অক্ষর। শুধু অক্ষর ও সংখ্যা।';
 
   @override
   String get ctaSave => 'সংরক্ষণ';

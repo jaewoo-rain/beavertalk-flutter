@@ -1899,14 +1899,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get loginMethodLabel => 'วิธีเข้าสู่ระบบ';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'วันที่เข้าร่วม';
 
   @override
   String get editNicknameTitle => 'แก้ไขชื่อเล่น';
 
   @override
-  String get nicknameRule =>
-      '2–12 ตัวอักษร · ใช้ได้เฉพาะตัวอักษรภาษาอังกฤษและตัวเลข';
+  String get nicknameRule => '2–12 ตัวอักษร ใช้ได้เฉพาะตัวอักษรและตัวเลข';
 
   @override
   String get ctaSave => 'บันทึก';

@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "හෙට බලමු",
   "nicknameLabel": "අන්වර්ථ නාමය",
   "editNicknameTitle": "අන්වර්ථ නාමය සංස්කරණය",
-  "nicknameRule": "අකුරු 2–12. ඉංග්‍රීසි අකුරු සහ ඉලක්කම් පමණි.",
+  "nicknameRule": "අකුරු 2–12ක්. අකුරු සහ ඉලක්කම් පමණි.",
   "ctaSave": "සුරකින්න",
   "accountSection": "ගිණුම",
   "loginMethodLabel": "පිවිසුම් ක්‍රමය",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "මෙම චරිතය සදහටම ඔබේ ය — සැලැස්ම වෙනස් වුවත් රැඳේ, මිලදී ගැනීම් ප්‍රතිසාධනයෙන් ඕනෑම උපාංගයක නැවත ලැබේ.",
   "iapCharacterFailedBody": "මිලදී ගැනීම සම්පූර්ණ නොවීය. මුදල් අය නොවුණි — නැවත උත්සාහ කරන්න.",
   "priceChangedTitle": "මිල වෙනස් වුණා",
-  "priceChangedBody": "මෙම අයිතමය දැන් {price} යි. දිගටම යන්නද?"
+  "priceChangedBody": "මෙම අයිතමය දැන් {price} යි. දිගටම යන්නද?",
+  "joinedLabel": "එක් වූ දිනය"
 }

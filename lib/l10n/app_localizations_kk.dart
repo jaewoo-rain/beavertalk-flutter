@@ -1907,13 +1907,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get loginMethodLabel => 'Кіру әдісі';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Тіркелген күні';
 
   @override
   String get editNicknameTitle => 'Лақап атты өзгерту';
 
   @override
-  String get nicknameRule => '2–12 таңба. Әріптер мен сандар. Тек ағылшынша';
+  String get nicknameRule => '2–12 таңба. Тек әріптер мен сандар.';
 
   @override
   String get ctaSave => 'Сақтау';

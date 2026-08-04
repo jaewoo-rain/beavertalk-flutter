@@ -1910,13 +1910,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginMethodLabel => 'Phương thức đăng nhập';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Ngày tham gia';
 
   @override
   String get editNicknameTitle => 'Sửa biệt danh';
 
   @override
-  String get nicknameRule => '2–12 ký tự · chỉ chữ cái tiếng Anh và số';
+  String get nicknameRule => '2–12 ký tự. Chỉ chữ và số.';
 
   @override
   String get ctaSave => 'Lưu';

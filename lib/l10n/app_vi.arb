@@ -583,7 +583,7 @@
   "ctaMaybeTomorrow": "Để mai vậy",
   "nicknameLabel": "Biệt danh",
   "editNicknameTitle": "Sửa biệt danh",
-  "nicknameRule": "2–12 ký tự · chỉ chữ cái tiếng Anh và số",
+  "nicknameRule": "2–12 ký tự. Chỉ chữ và số.",
   "ctaSave": "Lưu",
   "accountSection": "Tài khoản",
   "loginMethodLabel": "Phương thức đăng nhập",
@@ -595,5 +595,6 @@
   "iapCharacterSuccessBody": "Nhân vật này là của bạn mãi mãi — vẫn còn dù gói thay đổi, và Khôi phục mua hàng sẽ đưa nó trở lại trên mọi thiết bị.",
   "iapCharacterFailedBody": "Giao dịch chưa hoàn tất. Chưa bị trừ tiền — vui lòng thử lại.",
   "priceChangedTitle": "Giá đã thay đổi",
-  "priceChangedBody": "Mặt hàng này hiện là {price}. Bạn có muốn tiếp tục?"
+  "priceChangedBody": "Mặt hàng này hiện là {price}. Bạn có muốn tiếp tục?",
+  "joinedLabel": "Ngày tham gia"
 }

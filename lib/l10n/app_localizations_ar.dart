@@ -1896,13 +1896,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginMethodLabel => 'طريقة تسجيل الدخول';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'تاريخ الانضمام';
 
   @override
   String get editNicknameTitle => 'تعديل الاسم المستعار';
 
   @override
-  String get nicknameRule => 'من 2 إلى 12 حرفًا. أحرف وأرقام. بالإنجليزية فقط';
+  String get nicknameRule => 'من 2 إلى 12 حرفًا. حروف وأرقام فقط.';
 
   @override
   String get ctaSave => 'حفظ';

@@ -1913,8 +1913,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editNicknameTitle => 'Edit Nickname';
 
   @override
-  String get nicknameRule =>
-      '2–12 characters. Letters and numbers. English Only';
+  String get nicknameRule => '2–12 characters. Letters and numbers.';
 
   @override
   String get ctaSave => 'Save';

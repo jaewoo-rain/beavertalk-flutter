@@ -1921,13 +1921,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get loginMethodLabel => 'Bejelentkezési mód';
 
   @override
-  String get joinedLabel => 'Joined';
+  String get joinedLabel => 'Csatlakozott';
 
   @override
   String get editNicknameTitle => 'Becenév szerkesztése';
 
   @override
-  String get nicknameRule => '2–12 karakter. Betűk és számok. Csak angolul';
+  String get nicknameRule => '2–12 karakter. Csak betűk és számok.';
 
   @override
   String get ctaSave => 'Mentés';
