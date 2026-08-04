@@ -98,6 +98,7 @@ Future<void> showSubscriptionOverlay(
   SubscriptionOverlay overlay, {
   DateTime? expiresAt,
   SubscriptionTier retryTier = SubscriptionTier.pro,
+  bool retryAnnual = false,
   ({String used, String limit})? usage,
   Widget? avatar,
   String? characterName,
@@ -114,6 +115,7 @@ Future<void> showSubscriptionOverlay(
       overlay: overlay,
       expiresAt: expiresAt,
       retryTier: retryTier,
+      retryAnnual: retryAnnual,
       usage: usage,
       avatar: avatar,
       characterName: characterName,
@@ -128,6 +130,7 @@ class _OverlaySheet extends StatelessWidget {
     required this.overlay,
     this.expiresAt,
     this.retryTier = SubscriptionTier.pro,
+    this.retryAnnual = false,
     this.usage,
     this.avatar,
     this.characterName,
@@ -141,6 +144,10 @@ class _OverlaySheet extends StatelessWidget {
   /// Which tier a `Try again` re-fires — the failed sheets keep the context
   /// of what was being bought.
   final SubscriptionTier retryTier;
+
+  /// Whether the failed purchase was annual, so the retry rebuys the same
+  /// product instead of quietly falling back to monthly.
+  final bool retryAnnual;
   final ({String used, String limit})? usage;
   final Widget? avatar;
   final String? characterName;
@@ -463,7 +470,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: retryTier))),
+                      arguments: (tier: retryTier, annual: retryAnnual)))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
@@ -477,7 +484,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: retryTier))),
+                      arguments: (tier: retryTier, annual: retryAnnual)))),
           secondaryAction: SheetAction(
               label: l10n.billingRestorePurchases,
               onPressed: () => _then(context, () {

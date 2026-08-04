@@ -79,9 +79,7 @@ class _PurchaseProcessingScreenState
           );
         case IapPurchaseState.canceled:
         case IapPurchaseState.failed:
-          // TODO(P4): show the matching `purchase_failed` sheet over the
-          // paywall instead of a silent return.
-          Navigator.pop(context);
+          _onFailed(p.state, request);
         case IapPurchaseState.pending:
           break;
       }
@@ -99,6 +97,19 @@ class _PurchaseProcessingScreenState
       final product = products.where((p) => p.id == id).firstOrNull;
       if (product != null) return iap.purchase(product);
     }));
+  }
+
+  /// Back to the paywall beneath, then the matching `purchase_failed` sheet
+  /// over it (P4). The retry CTA rebuys the same tier AND cycle.
+  void _onFailed(IapPurchaseState state, PurchaseRequest request) {
+    if (!mounted) return;
+    final navCtx = Navigator.of(context, rootNavigator: true).context;
+    final overlay = state == IapPurchaseState.canceled
+        ? SubscriptionOverlay.purchaseFailedCanceled
+        : SubscriptionOverlay.purchaseFailedDeclined;
+    Navigator.pop(context);
+    showSubscriptionOverlay(navCtx, overlay,
+        retryTier: request.tier, retryAnnual: request.annual);
   }
 
   @override

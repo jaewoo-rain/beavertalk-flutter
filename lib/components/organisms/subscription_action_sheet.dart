@@ -11,8 +11,9 @@ import 'bottom_sheet.dart' show SheetAction;
 /// `BottomSheet-Subscription` variants the redesign added (spec §3-2, measured
 /// off `4648:27262` / `4649:27076` / `4652:27523`).
 ///
-/// The legacy `BottomSheetSubscription` organism keeps the pre-redesign
-/// manage/change-plan/cancel sheets (Korean copy, old node structure). These
+/// The legacy `BottomSheetSubscription` organism kept the pre-redesign
+/// manage/change-plan/cancel sheets (Korean copy, old node structure; deleted
+/// with the P4 cleanup). These
 /// three are structurally different — a centred note plus one framed block —
 /// so they live in their own organism rather than being grafted onto the old
 /// one. That is a deliberate departure from work order §3-3's "extend the

@@ -114,7 +114,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         label: l10n.subscribe,
         onPressed: () {
           Navigator.of(context).pop();
-          Navigator.pushNamed(context, Routes.payment);
+          // v2 §2-3 ④: the in-house checkout is gone — selling happens on
+          // the paywall, buying on the OS payment sheet.
+          Navigator.pushNamed(context, Routes.paywallPro);
         },
       ),
       secondary: DialogAction(

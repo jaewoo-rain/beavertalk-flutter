@@ -26,9 +26,6 @@ import '../features/pronunciation_challenge/presentation/pronunciation_challenge
 import '../screens/home/learning_call_main.dart';
 import '../screens/home/learning_call_main_loading.dart';
 import '../screens/home/learning_sentence_main.dart';
-import '../screens/payment/payment.dart';
-import '../screens/payment/payment_complete.dart';
-import '../screens/payment/payment_failed.dart';
 import '../screens/payment/payment_history.dart';
 import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
@@ -116,9 +113,10 @@ abstract final class Routes {
   static const winbackSurvey = '/winback-survey';
 
   // ── Payment / permission / error ──
-  static const payment = '/payment';
-  static const paymentComplete = '/payment/complete';
-  static const paymentFailed = '/payment/failed';
+  //
+  // The in-house checkout trio (`/payment`, `/complete`, `/failed`) is gone —
+  // v2 §2-3: IAP is the only rail, the OS sheet is the checkout. History
+  // stays: it lists both product types (§6-5).
   static const paymentHistory = '/payment/history';
   static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
@@ -177,9 +175,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         const LearningCallMainLoadingScreen(),
     Routes.pronunciationChallenge: (_) =>
         const PronunciationChallengeScreen(),
-    Routes.payment: (_) => const PaymentScreen(),
-    Routes.paymentComplete: (_) => const PaymentCompleteScreen(),
-    Routes.paymentFailed: (_) => const PaymentFailedScreen(),
     Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
     Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
@@ -245,7 +240,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.mypage: '마이페이지',
     Routes.mypageSettings: '마이페이지 · 설정',
     Routes.alarms: '알림',
-    Routes.payment: '결제',
     Routes.paymentHistory: '결제 내역',
   };
 

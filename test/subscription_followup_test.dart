@@ -189,6 +189,36 @@ void main() {
       expect(boughtIds, [IapProductIds.proMonthly]);
       expect(find.text('success-pro'), findsOneWidget);
     });
+
+    testWidgets('a canceled purchase pops back and shows the canceled sheet',
+        (tester) async {
+      boughtIds = [];
+      iap = _RecordingIapService(boughtIds)
+        ..scriptedOutcome = IapPurchaseState.canceled;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [iapServiceProvider.overrideWithValue(iap)],
+          child: MaterialApp(
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('en'),
+            home: const Scaffold(body: SizedBox()),
+            routes: {
+              '/processing': (_) => const PurchaseProcessingScreen(),
+            },
+          ),
+        ),
+      );
+      final nav = tester.state<NavigatorState>(find.byType(Navigator));
+      unawaited(nav.pushNamed('/processing',
+          arguments: (tier: SubscriptionTier.pro, annual: true)));
+      await tester.pumpAndSettle();
+      // Processing is gone; the purchase_failed(canceled) sheet sits on top.
+      expect(find.byType(PurchaseProcessingScreen), findsNothing);
+      final l10n =
+          AppLocalizations.of(tester.element(find.byType(Scaffold).first));
+      expect(find.text(l10n.ovFailedCanceledTitle), findsOneWidget);
+    });
   });
 
   // ── round 3 — settings: Account card + status-derived plan label ────────

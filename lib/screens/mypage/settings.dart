@@ -84,8 +84,9 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   // The legacy modal subscription sheet (manage → change-plan → cancel, the
   // old Figma `3360:20267…` flow) lived here until the P2 redesign. The row
   // now navigates to `Routes.subscription` — the state-driven manage screen —
-  // and cancellation moves to the store per work order v2. The
-  // `BottomSheetSubscription` organism itself survives for the P4 overlays.
+  // and cancellation moves to the store per work order v2. The legacy
+  // `BottomSheetSubscription` organism was deleted once its last (gallery)
+  // usage went.
 
   /// Opens the language sheet for the **user (UI) language**, seeded with
   /// [currentId]; on confirm stores the pick locally and persists it

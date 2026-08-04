@@ -40,9 +40,6 @@ import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
-import 'package:beavertalk/screens/payment/payment.dart';
-import 'package:beavertalk/screens/payment/payment_complete.dart';
-import 'package:beavertalk/screens/payment/payment_failed.dart';
 import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
 import 'package:beavertalk/screens/home/learning_call_main_loading.dart';
@@ -112,9 +109,6 @@ void main() {
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),
     'OnboardingName': () => const OnboardingNameScreen(),
     'OnboardingReason': () => const OnboardingReasonScreen(),
-    'Payment': () => const PaymentScreen(),
-    'PaymentComplete': () => const PaymentCompleteScreen(),
-    'PaymentFailed': () => const PaymentFailedScreen(),
     'RecordEmpty': () => const RecordEmptyScreen(),
     'RecordList': () => const RecordListScreen(),
     'RecordArchiveTab': () => const RecordListScreen(initialTab: 1),
