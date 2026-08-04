@@ -28,8 +28,15 @@ abstract final class IapProductIds {
   static const maxMonthly = 'bt_max_monthly';
   static const maxYearly = 'bt_max_yearly';
 
-  /// Character products carry the character id as a suffix.
-  static String character(String characterId) => 'bt_character_$characterId';
+  /// Character products carry the character's **immutable slug** as a suffix
+  /// (`character.product_key` on the server), never the database id.
+  ///
+  /// A store product id can never be changed once registered. `character_id`
+  /// differs between dev and prod (prod 2·9·10·11 / dev 2·3·4·5), so a receipt
+  /// bought in one environment would resolve to a different character in the
+  /// other; the display name is a marketing asset and may be rewritten. The
+  /// slug is decoupled from both.
+  static String character(String productKey) => 'bt_character_$productKey';
 
   static const subscriptions = {proMonthly, proYearly, maxMonthly, maxYearly};
 }
@@ -85,6 +92,8 @@ class IapPurchase {
     required this.type,
     required this.state,
     this.error,
+    this.transactionId,
+    this.purchaseToken,
   });
 
   /// Which product.
@@ -98,6 +107,29 @@ class IapPurchase {
 
   /// Store error payload on [IapPurchaseState.failed].
   final Object? error;
+
+  /// iOS `originalTransactionId` / Android `orderId`.
+  ///
+  /// The server's idempotency key: the same receipt legitimately arrives more
+  /// than once (network retry, app relaunch, restore), and this is what lets
+  /// the server answer "already granted" instead of granting twice.
+  final String? transactionId;
+
+  /// iOS StoreKit2 `Transaction.jwsRepresentation` / Android `purchaseToken`.
+  ///
+  /// The part the **server** hands to Apple/Google. Without it the app's claim
+  /// of "I paid" cannot be checked, which is exactly how store purchases get
+  /// bypassed.
+  final String? purchaseToken;
+
+  /// Whether this carries enough to ask the server to verify.
+  ///
+  /// False on the mock rail, where no store transaction exists. Callers fall
+  /// back to the legacy delivery path in that case rather than posting a
+  /// receipt the server would (correctly) reject.
+  bool get hasReceipt =>
+      (transactionId?.isNotEmpty ?? false) &&
+      (purchaseToken?.isNotEmpty ?? false);
 }
 
 /// The store billing seam every purchase UI talks to.

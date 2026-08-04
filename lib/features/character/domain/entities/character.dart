@@ -4,6 +4,7 @@
 class Character {
   const Character({
     required this.id,
+    required this.productKey,
     required this.name,
     this.imageUrl,
     required this.price,
@@ -17,7 +18,20 @@ class Character {
   });
 
   /// Server primary key (`character_id`).
+  ///
+  /// **Never build a store product id from this.** It differs between dev and
+  /// prod (prod 2·9·10·11 / dev 2·3·4·5), so a receipt bought in one
+  /// environment would resolve to a different character in the other. Use
+  /// [productKey].
   final int id;
+
+  /// Immutable slug behind the store product id (`bt_character_{productKey}`).
+  ///
+  /// A store product id can never be changed once registered, so it cannot
+  /// hang off anything mutable. [name] is a marketing asset and may be
+  /// rewritten; [id] is environment-specific. This field exists precisely so
+  /// neither of those leaks into a permanent identifier.
+  final String productKey;
 
   /// Display name.
   final String name;

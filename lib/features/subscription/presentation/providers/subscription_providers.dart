@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/di/providers.dart';
+import '../../data/datasources/purchases_remote_data_source.dart';
 import '../../data/datasources/subscription_remote_data_source.dart';
 import '../../data/repositories/subscription_repository_impl.dart';
 import '../../domain/entities/subscription.dart';
@@ -9,6 +10,16 @@ import '../../domain/repositories/subscription_repository.dart';
 final subscriptionRemoteDataSourceProvider =
     Provider<SubscriptionRemoteDataSource>((ref) {
   return SubscriptionRemoteDataSource(ref.watch(dioProvider));
+});
+
+/// Server-side receipt validation (`/purchases/verify` · `/restore`).
+///
+/// Separate from [subscriptionRemoteDataSourceProvider] because it serves both
+/// rails: subscriptions **and** character non-consumables run through the same
+/// store receipts.
+final purchasesRemoteDataSourceProvider =
+    Provider<PurchasesRemoteDataSource>((ref) {
+  return PurchasesRemoteDataSource(ref.watch(dioProvider));
 });
 
 final subscriptionRepositoryProvider = Provider<SubscriptionRepository>((ref) {

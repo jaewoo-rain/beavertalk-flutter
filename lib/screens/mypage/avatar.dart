@@ -22,6 +22,7 @@ import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../features/subscription/domain/iap_service.dart';
+import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../l10n/app_localizations.dart';
@@ -225,6 +226,7 @@ class AvatarScreen extends ConsumerWidget {
             c.name,
             image,
             characterId: c.id,
+            productKey: c.productKey,
             description: c.description,
             backgroundStory: c.backgroundStory,
             voiceUrl: c.voiceUrl,
@@ -281,6 +283,7 @@ class AvatarScreen extends ConsumerWidget {
             c.name,
             image,
             characterId: c.id,
+            productKey: c.productKey,
             description: c.description,
             backgroundStory: c.backgroundStory,
             voiceUrl: c.voiceUrl,
@@ -315,6 +318,10 @@ class AvatarScreen extends ConsumerWidget {
     String name,
     ImageProvider image, {
     required int characterId,
+    // 스토어 상품 ID 슬러그. character_id 는 dev/prod 가 달라 결제에 쓸 수 없다.
+    // 이미 보유한 캐릭터는 구매 경로(_purchase)를 타지 않으므로 넘기지 않는다 —
+    // 그 화면의 액션은 '사용하기'뿐이다. 빈 값이 결제로 새면 _purchase 가 막는다.
+    String productKey = '',
     String? description,
     String? backgroundStory,
     String? voiceUrl,
@@ -355,7 +362,8 @@ class AvatarScreen extends ConsumerWidget {
             onConfirm: switch (state) {
               AvatarDetailState.unownedNormal ||
               AvatarDetailState.unownedDiscount =>
-                () => _purchase(routeCtx, ref, characterId, effectivePriceMinor),
+                () => _purchase(
+                    routeCtx, ref, characterId, productKey, effectivePriceMinor),
               AvatarDetailState.ownedUnused => () =>
                   _useCharacter(routeCtx, ref, characterId),
               // Already in use — the screen shows a single 닫기 footer.
@@ -381,11 +389,21 @@ class AvatarScreen extends ConsumerWidget {
   /// 끝나면 서버가 [PriceChangedFailure] 로 거절하므로, 사용자가 동의하지 않은 금액이
   /// 결제되는 일이 없다. 그때는 새 가격으로 다시 확인을 받는다.
   Future<void> _purchase(BuildContext routeCtx, WidgetRef ref, int id,
-      [int? expectedMinor]) async {
+      String productKey, [int? expectedMinor]) async {
     final l10n = AppLocalizations.of(routeCtx);
     final iap = ref.read(iapServiceProvider);
+    if (productKey.isEmpty) {
+      // 서버가 product_key 를 안 준다(구버전). `bt_character_` 만 보내면 스토어에서
+      // 알 수 없는 상품이 되므로, 잘못된 결제를 띄우느니 여기서 멈춘다.
+      if (routeCtx.mounted) {
+        ScaffoldMessenger.of(routeCtx)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(l10n.iapCharacterFailedBody)));
+      }
+      return;
+    }
     final product = IapProduct(
-      id: IapProductIds.character('$id'),
+      id: IapProductIds.character(productKey),
       type: IapProductType.nonConsumable,
       // Store-localized in production (v2 §6-4: the store is the price
       // authority); until then the server-fed screen price stands in.
@@ -416,9 +434,18 @@ class AvatarScreen extends ConsumerWidget {
         break; // paid — deliver below.
     }
     try {
-      await ref
-          .read(characterRepositoryProvider)
-          .purchase(id, expectedPriceMinor: expectedMinor);
+      if (verdict.hasReceipt) {
+        // 실영수증이 있다 → **서버가 스토어에 확인**하고 소유권을 준다. 앱 말만 믿고
+        // 지급하면 "샀다"고 주장하는 요청으로 결제를 우회할 수 있다.
+        // 같은 영수증이 여러 번 와도 서버가 멱등 처리한다(already_granted 도 성공).
+        await ref.read(purchasesRemoteDataSourceProvider).verify(verdict);
+      } else {
+        // 목 레일 — 스토어 거래가 없어 검증할 영수증이 없다. 실 SDK 가 붙기 전까지는
+        // 기존 전달 경로를 그대로 쓴다(가격 확인 포함).
+        await ref
+            .read(characterRepositoryProvider)
+            .purchase(id, expectedPriceMinor: expectedMinor);
+      }
       // The catalog's `is_owned` flips, the owned list gains a row, and the
       // server writes a payment in the same transaction — so the history is
       // stale too.
@@ -450,7 +477,7 @@ class AvatarScreen extends ConsumerWidget {
         ),
       );
       if (ok == true && routeCtx.mounted) {
-        await _purchase(routeCtx, ref, id, e.actualPrice);
+        await _purchase(routeCtx, ref, id, productKey, e.actualPrice);
       }
     } catch (e) {
       if (routeCtx.mounted) _reportDetailError(routeCtx, e);

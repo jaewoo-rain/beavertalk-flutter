@@ -6,6 +6,7 @@ import '../../domain/entities/character.dart';
 class CharacterDto {
   const CharacterDto({
     required this.characterId,
+    required this.productKey,
     required this.name,
     this.imageUrl,
     required this.price,
@@ -19,6 +20,14 @@ class CharacterDto {
   });
 
   final int characterId;
+
+  /// `product_key` — the immutable slug behind `bt_character_{key}`.
+  ///
+  /// Empty string on servers that predate the field; the purchase path checks
+  /// for that rather than sending `bt_character_` to the store, which would be
+  /// an unknown product.
+  final String productKey;
+
   final String name;
   final String? imageUrl;
   final int price;
@@ -36,6 +45,7 @@ class CharacterDto {
   factory CharacterDto.fromJson(Map<String, dynamic> json) {
     return CharacterDto(
       characterId: json['character_id'] as int,
+      productKey: json['product_key'] as String? ?? '',
       name: json['name'] as String? ?? '',
       imageUrl: json['image_url'] as String?,
       price: parseMoneyMinor(json['price']),
@@ -73,6 +83,7 @@ class CharacterDto {
   /// Converts to the domain entity.
   Character toEntity() => Character(
         id: characterId,
+        productKey: productKey,
         name: name,
         imageUrl: imageUrl,
         price: price,
