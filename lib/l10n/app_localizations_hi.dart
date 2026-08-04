@@ -9,6 +9,45 @@ class AppLocalizationsHi extends AppLocalizations {
   AppLocalizationsHi([String locale = 'hi']) : super(locale);
 
   @override
+  String get loginRequired => 'आपको साइन इन करना होगा।';
+
+  @override
+  String get callWebNotSupported =>
+      'वेब पर वॉइस कॉल समर्थित नहीं है। ऐप का उपयोग करें।';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'माइक्रोफ़ोन अनुमति आवश्यक है। कॉल करने के लिए माइक्रोफ़ोन की अनुमति दें।';
+
+  @override
+  String get callErrorGeneric => 'कॉल के दौरान एक त्रुटि हुई।';
+
+  @override
+  String get callNetworkError => 'नेटवर्क त्रुटि हुई।';
+
+  @override
+  String get authInvalidCredentials => 'ईमेल या पासवर्ड सही नहीं है।';
+
+  @override
+  String get authEmailAlreadyRegistered => 'यह ईमेल पहले से पंजीकृत है।';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'अपने ईमेल पर भेजा गया सत्यापन पूरा करें।';
+
+  @override
+  String get authResetCodeSent => 'हमने आपके ईमेल पर सत्यापन कोड भेजा है।';
+
+  @override
+  String get authResetCodeInvalid => 'कोड गलत है या समाप्त हो चुका है।';
+
+  @override
+  String get authPasswordUpdated => 'आपका पासवर्ड रीसेट कर दिया गया है।';
+
+  @override
+  String get authAppleTokenMissing => 'Apple साइन-इन टोकन नहीं मिला।';
+
+  @override
   String callEndedDuration(String duration) {
     return 'कॉल समाप्त $duration';
   }
@@ -212,7 +251,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get standardAudioPlayError => 'मानक उच्चारण ऑडियो नहीं चल सका।';
 
   @override
-  String get selectACountry => 'एक देश चुनें';
+  String get selectNativeLanguage => 'अपनी मातृभाषा चुनें';
 
   @override
   String get selectYourLanguage => 'अपनी भाषा चुनें';

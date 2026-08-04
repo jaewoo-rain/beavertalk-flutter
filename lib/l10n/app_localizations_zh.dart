@@ -9,6 +9,42 @@ class AppLocalizationsZh extends AppLocalizations {
   AppLocalizationsZh([String locale = 'zh']) : super(locale);
 
   @override
+  String get loginRequired => '需要先登录。';
+
+  @override
+  String get callWebNotSupported => '网页版不支持语音通话，请使用应用。';
+
+  @override
+  String get micPermissionRequiredForCall => '需要麦克风权限。请允许麦克风后再通话。';
+
+  @override
+  String get callErrorGeneric => '通话过程中出现错误。';
+
+  @override
+  String get callNetworkError => '网络出现错误。';
+
+  @override
+  String get authInvalidCredentials => '邮箱或密码不正确。';
+
+  @override
+  String get authEmailAlreadyRegistered => '该邮箱已注册。';
+
+  @override
+  String get authConfirmEmailRequired => '请完成发送到你邮箱的验证。';
+
+  @override
+  String get authResetCodeSent => '验证码已发送到你的邮箱。';
+
+  @override
+  String get authResetCodeInvalid => '验证码不正确或已过期。';
+
+  @override
+  String get authPasswordUpdated => '密码已重置。';
+
+  @override
+  String get authAppleTokenMissing => '无法获取 Apple 登录令牌。';
+
+  @override
   String callEndedDuration(String duration) {
     return '通话结束 $duration';
   }
@@ -210,7 +246,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get standardAudioPlayError => '无法播放标准发音音频。';
 
   @override
-  String get selectACountry => '选择国家';
+  String get selectNativeLanguage => '选择你的母语';
 
   @override
   String get selectYourLanguage => '选择你的语言';

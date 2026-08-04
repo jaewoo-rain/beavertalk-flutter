@@ -9,6 +9,47 @@ class AppLocalizationsPt extends AppLocalizations {
   AppLocalizationsPt([String locale = 'pt']) : super(locale);
 
   @override
+  String get loginRequired => 'Você precisa entrar.';
+
+  @override
+  String get callWebNotSupported =>
+      'Chamadas de voz não são suportadas na web. Use o app.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'É necessário acesso ao microfone. Permita o microfone para ligar.';
+
+  @override
+  String get callErrorGeneric => 'Ocorreu um erro durante a chamada.';
+
+  @override
+  String get callNetworkError => 'Ocorreu um erro de rede.';
+
+  @override
+  String get authInvalidCredentials => 'E-mail ou senha incorretos.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Este e-mail já está cadastrado.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Conclua a verificação enviada para o seu e-mail.';
+
+  @override
+  String get authResetCodeSent =>
+      'Enviamos um código de verificação para o seu e-mail.';
+
+  @override
+  String get authResetCodeInvalid => 'O código está incorreto ou expirou.';
+
+  @override
+  String get authPasswordUpdated => 'Sua senha foi redefinida.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Não foi possível obter o token de login da Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Ligação encerrada em $duration';
   }
@@ -215,7 +256,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não foi possível reproduzir o áudio da pronúncia padrão.';
 
   @override
-  String get selectACountry => 'Selecione um país';
+  String get selectNativeLanguage => 'Selecione o seu idioma nativo';
 
   @override
   String get selectYourLanguage => 'Selecione seu idioma';

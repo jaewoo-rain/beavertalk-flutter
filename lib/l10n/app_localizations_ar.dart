@@ -9,6 +9,48 @@ class AppLocalizationsAr extends AppLocalizations {
   AppLocalizationsAr([String locale = 'ar']) : super(locale);
 
   @override
+  String get loginRequired => 'تحتاج إلى تسجيل الدخول.';
+
+  @override
+  String get callWebNotSupported =>
+      'المكالمات الصوتية غير مدعومة على الويب. يرجى استخدام التطبيق.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'إذن الميكروفون مطلوب. اسمح بالميكروفون لبدء المكالمة.';
+
+  @override
+  String get callErrorGeneric => 'حدث خطأ أثناء المكالمة.';
+
+  @override
+  String get callNetworkError => 'حدث خطأ في الشبكة.';
+
+  @override
+  String get authInvalidCredentials =>
+      'البريد الإلكتروني أو كلمة المرور غير صحيحة.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'هذا البريد الإلكتروني مسجَّل بالفعل.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'يرجى إكمال التحقق المُرسَل إلى بريدك الإلكتروني.';
+
+  @override
+  String get authResetCodeSent => 'أرسلنا رمز التحقق إلى بريدك الإلكتروني.';
+
+  @override
+  String get authResetCodeInvalid => 'الرمز غير صحيح أو منتهي الصلاحية.';
+
+  @override
+  String get authPasswordUpdated => 'تم إعادة تعيين كلمة المرور.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'تعذّر الحصول على رمز تسجيل الدخول عبر Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'انتهت المكالمة $duration';
   }
@@ -212,7 +254,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get standardAudioPlayError => 'تعذّر تشغيل الصوت المعياري للنطق.';
 
   @override
-  String get selectACountry => 'اختر دولة';
+  String get selectNativeLanguage => 'اختر لغتك الأم';
 
   @override
   String get selectYourLanguage => 'اختر لغتك';

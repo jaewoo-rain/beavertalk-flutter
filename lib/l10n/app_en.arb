@@ -1,5 +1,17 @@
 {
   "@@locale": "en",
+  "loginRequired": "You need to sign in.",
+  "callWebNotSupported": "Voice calls aren't supported on the web. Please use the app.",
+  "micPermissionRequiredForCall": "Microphone access is required. Allow the microphone to start a call.",
+  "callErrorGeneric": "Something went wrong during the call.",
+  "callNetworkError": "A network error occurred.",
+  "authInvalidCredentials": "Your email or password is incorrect.",
+  "authEmailAlreadyRegistered": "This email is already registered.",
+  "authConfirmEmailRequired": "Please complete the verification sent to your email.",
+  "authResetCodeSent": "We've sent a verification code to your email.",
+  "authResetCodeInvalid": "That code is incorrect or has expired.",
+  "authPasswordUpdated": "Your password has been reset.",
+  "authAppleTokenMissing": "Couldn't get your Apple sign-in token.",
   "callEndedDuration": "Call ended {duration}",
   "@callEndedDuration": {
     "description": "Sub-label on the call-finished screen showing the elapsed call time.",
@@ -148,9 +160,9 @@
   "analysisLoadError": "Couldn't load the analysis result.",
   "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
   "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",
-  "selectACountry": "Select a country",
-  "@selectACountry": {
-    "description": "Default title of the country/language select bottom sheet."
+  "selectNativeLanguage": "Select your native language",
+  "@selectNativeLanguage": {
+    "description": "Default title of the language-select bottom sheet shown over the login screen. Asks for the user's native language, not a country."
   },
   "selectYourLanguage": "Select your language",
   "@selectYourLanguage": {

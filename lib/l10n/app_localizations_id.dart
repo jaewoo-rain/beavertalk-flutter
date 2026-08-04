@@ -9,6 +9,47 @@ class AppLocalizationsId extends AppLocalizations {
   AppLocalizationsId([String locale = 'id']) : super(locale);
 
   @override
+  String get loginRequired => 'Anda perlu masuk.';
+
+  @override
+  String get callWebNotSupported =>
+      'Panggilan suara tidak didukung di web. Gunakan aplikasi.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Izin mikrofon diperlukan. Izinkan mikrofon untuk memulai panggilan.';
+
+  @override
+  String get callErrorGeneric => 'Terjadi kesalahan saat panggilan.';
+
+  @override
+  String get callNetworkError => 'Terjadi kesalahan jaringan.';
+
+  @override
+  String get authInvalidCredentials => 'Email atau kata sandi salah.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Email ini sudah terdaftar.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Selesaikan verifikasi yang dikirim ke email Anda.';
+
+  @override
+  String get authResetCodeSent =>
+      'Kami telah mengirim kode verifikasi ke email Anda.';
+
+  @override
+  String get authResetCodeInvalid => 'Kode salah atau sudah kedaluwarsa.';
+
+  @override
+  String get authPasswordUpdated => 'Kata sandi Anda telah direset.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Tidak bisa mendapatkan token masuk Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Panggilan berakhir $duration';
   }
@@ -213,7 +254,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Tidak dapat memutar audio pengucapan standar.';
 
   @override
-  String get selectACountry => 'Pilih negara';
+  String get selectNativeLanguage => 'Pilih bahasa ibu Anda';
 
   @override
   String get selectYourLanguage => 'Pilih bahasamu';

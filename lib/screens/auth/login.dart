@@ -12,7 +12,9 @@ import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/i18n/locale_controller.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
+import '../../features/auth/presentation/providers/language_sheet_provider.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -74,10 +76,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     super.initState();
     // First entry with no language captured yet → prompt with the country/
     // language bottom sheet over this screen (Figma `auth_login__sheet`).
+    //
+    // `languageSheetShownProvider` is the second half of that "first entry"
+    // test, and it is not optional: logging out invalidates the signup draft, so
+    // the draft alone reads as a first entry on EVERY logout. This screen would
+    // then open the sheet just as `logout()`'s `_popToRoot()` popped it — the
+    // sheet that grew and vanished mid-logout.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && ref.read(signupDraftProvider).language == null) {
-        _showLanguageSheet();
-      }
+      if (!mounted) return;
+      if (ref.read(signupDraftProvider).language != null) return;
+      if (ref.read(languageSheetShownProvider)) return;
+      ref.read(languageSheetShownProvider.notifier).markShown();
+      _showLanguageSheet();
     });
     if (kIsWeb) {
       // A signed-in user (idToken populated) arrives on this stream after the
@@ -91,8 +101,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   /// Country/language picker shown as a modal bottom sheet over the login
   /// screen (Figma `auth_login__sheet` / `BottomSheet-CountrySelect`). It is a
   /// pure overlay — no status bar / progress bar / home indicator, just the
-  /// country list + confirm button over a dim. On confirm the chosen language
-  /// is stored in the signup draft.
+  /// country list + confirm button over a dim.
+  ///
+  /// On confirm the pick goes to two places: the signup draft (so onboarding
+  /// submits it) **and** the UI locale (so the app switches language on the
+  /// spot). It used to set only the draft, which meant picking 日本語 changed
+  /// nothing visible — the sheet closed and the login screen stayed English.
+  /// The sheet asks "모국어를 선택하세요"; answering it has to do something.
+  /// Onboarding 1/3 and the MyPage picker already set both; this was the one
+  /// language picker in the app that did not.
   Future<void> _showLanguageSheet() async {
     final items = <CountryItem>[
       for (final l in mockLanguages)
@@ -121,9 +138,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               onConfirm: selected == null
                   ? null
                   : () {
+                      final picked = selected!;
                       ref
                           .read(signupDraftProvider.notifier)
-                          .setLanguage(selected!);
+                          .setLanguage(picked);
+                      // Switch the app UI immediately; the write to prefs is
+                      // fire-and-forget (the in-memory locale flips first, so
+                      // the screen behind the sheet rebuilds translated right
+                      // away). Same call the MyPage picker makes.
+                      unawaited(
+                        ref
+                            .read(localeControllerProvider.notifier)
+                            .setLanguage(picked),
+                      );
                       Navigator.of(sheetContext).pop();
                     },
               onClose: () => Navigator.of(sheetContext).pop(),

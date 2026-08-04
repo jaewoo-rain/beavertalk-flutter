@@ -9,6 +9,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
 import '../../../../core/error/app_exception.dart';
+import '../../../../core/i18n/locale_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 import '../../../../mock/mock_data.dart' show clearBookmarks;
 import '../../../alarm/presentation/providers/alarm_list_controller.dart';
 import '../../../bookmark/presentation/providers/bookmark_providers.dart';
@@ -48,6 +50,16 @@ final authControllerProvider =
 
 class AuthController extends Notifier<AuthStatus> {
   SupabaseClient get _client => Supabase.instance.client;
+
+  /// Translated strings for the messages this controller throws/returns.
+  ///
+  /// There is no `BuildContext` here, so `AppLocalizations.of` is unavailable —
+  /// which is why every message below used to be a hard-coded Korean literal,
+  /// shown to Japanese and Arabic users alike. gen-l10n emits a **synchronous**
+  /// `lookupAppLocalizations(Locale)`, and the active locale already lives in
+  /// [localeControllerProvider], so the lookup needs nothing else.
+  AppLocalizations get _l10n =>
+      lookupAppLocalizations(ref.read(localeControllerProvider));
 
   @override
   AuthStatus build() => AuthStatus.unknown;
@@ -167,7 +179,7 @@ class AuthController extends Notifier<AuthStatus> {
         return;
       }
       // No session → email confirmation is required by the project settings.
-      throw const UnauthorizedFailure('이메일로 전송된 인증을 완료해주세요.');
+      throw UnauthorizedFailure(_l10n.authConfirmEmailRequired);
     } on AuthException catch (e) {
       throw _mapAuthException(e, context: _AuthContext.signup);
     }
@@ -192,7 +204,7 @@ class AuthController extends Notifier<AuthStatus> {
   Future<String> requestPasswordReset(String email) async {
     try {
       await _client.auth.resetPasswordForEmail(email);
-      return '인증 코드를 이메일로 전송했어요.';
+      return _l10n.authResetCodeSent;
     } on AuthException catch (e) {
       throw _mapAuthException(e, context: _AuthContext.reset);
     }
@@ -224,7 +236,7 @@ class AuthController extends Notifier<AuthStatus> {
   Future<String> updatePassword({required String newPassword}) async {
     try {
       await _client.auth.updateUser(UserAttributes(password: newPassword));
-      return '비밀번호가 재설정되었어요.';
+      return _l10n.authPasswordUpdated;
     } on AuthException catch (e) {
       throw _mapAuthException(e, context: _AuthContext.reset);
     }
@@ -317,7 +329,7 @@ class AuthController extends Notifier<AuthStatus> {
         );
         final idToken = credential.identityToken;
         if (idToken == null || idToken.isEmpty) {
-          throw const UnknownFailure('애플 로그인 토큰을 받지 못했어요.');
+          throw UnknownFailure(_l10n.authAppleTokenMissing);
         }
         await _client.auth.signInWithIdToken(
           provider: OAuthProvider.apple,
@@ -464,21 +476,21 @@ class AuthController extends Notifier<AuthStatus> {
             raw.contains('already been registered') ||
             raw.contains('user already') ||
             e.code == 'user_already_exists')) {
-      return const ConflictFailure('이미 가입된 이메일입니다.');
+      return ConflictFailure(_l10n.authEmailAlreadyRegistered);
     }
     // Wrong credentials on login.
     if (context == _AuthContext.login &&
         (raw.contains('invalid login') ||
             raw.contains('invalid credentials') ||
             e.code == 'invalid_credentials')) {
-      return const UnauthorizedFailure('이메일 또는 비밀번호가 올바르지 않아요.');
+      return UnauthorizedFailure(_l10n.authInvalidCredentials);
     }
     // Wrong/expired recovery code.
     if (context == _AuthContext.reset &&
         (raw.contains('token has expired') ||
             raw.contains('invalid') ||
             e.code == 'otp_expired')) {
-      return const ValidationFailure('인증 코드가 올바르지 않거나 만료되었어요.');
+      return ValidationFailure(_l10n.authResetCodeInvalid);
     }
     // Fallback: surface Supabase's message.
     return UnknownFailure(e.message);

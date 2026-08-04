@@ -9,6 +9,46 @@ class AppLocalizationsMn extends AppLocalizations {
   AppLocalizationsMn([String locale = 'mn']) : super(locale);
 
   @override
+  String get loginRequired => 'Нэвтрэх шаардлагатай.';
+
+  @override
+  String get callWebNotSupported =>
+      'Вэб дээр дуут дуудлага дэмжигдэхгүй. Аппыг ашиглана уу.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Микрофоны зөвшөөрөл шаардлагатай. Дуудлага хийхийн тулд микрофоныг зөвшөөрнө үү.';
+
+  @override
+  String get callErrorGeneric => 'Дуудлагын үеэр алдаа гарлаа.';
+
+  @override
+  String get callNetworkError => 'Сүлжээний алдаа гарлаа.';
+
+  @override
+  String get authInvalidCredentials => 'И-мэйл эсвэл нууц үг буруу байна.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Энэ и-мэйл бүртгэлтэй байна.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'И-мэйлд илгээсэн баталгаажуулалтыг гүйцэтгэнэ үү.';
+
+  @override
+  String get authResetCodeSent => 'Баталгаажуулах кодыг и-мэйлд илгээлээ.';
+
+  @override
+  String get authResetCodeInvalid =>
+      'Код буруу эсвэл хугацаа нь дууссан байна.';
+
+  @override
+  String get authPasswordUpdated => 'Нууц үг сэргээгдлээ.';
+
+  @override
+  String get authAppleTokenMissing => 'Apple нэвтрэх токен авч чадсангүй.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Дуудлага дуусав $duration';
   }
@@ -214,7 +254,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Стандарт дуудлагын аудиог тоглуулж чадсангүй.';
 
   @override
-  String get selectACountry => 'Улс сонгох';
+  String get selectNativeLanguage => 'Эх хэлээ сонгоно уу';
 
   @override
   String get selectYourLanguage => 'Хэлээ сонгоно уу';

@@ -3,8 +3,10 @@ import '../theme/app_color_tokens.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/error/app_exception.dart';
+import '../features/auth/domain/entities/member.dart';
 import '../features/auth/presentation/providers/auth_controller.dart';
 import '../features/auth/presentation/providers/my_profile_provider.dart';
+import '../l10n/app_localizations.dart';
 import '../screens/auth/login.dart';
 import '../screens/home/home.dart';
 import '../screens/onboarding/onboarding_language.dart';
@@ -56,30 +58,54 @@ class _AuthGateState extends ConsumerState<AuthGate> {
   }
 
   /// Authenticated: gate on `members/me.onboardingCompleted`.
+  ///
+  /// Deliberately NOT written with `AsyncValue.when`. `when` defaults to
+  /// `skipLoadingOnRefresh: true`, which means that while a *refresh* is in
+  /// flight it reports the PREVIOUS state — and a previous state can be the 401
+  /// from the session we just signed out of. `_clearUserScopedState()`
+  /// invalidates this provider on sign-out while the gate is still watching it,
+  /// so a `GET /members/me` fires with the session already gone; the resulting
+  /// `AsyncError(UnauthorizedFailure)` sticks around because this provider is
+  /// not autoDispose. On the NEXT login `when` handed that stale error to the
+  /// error branch below, which called `onSessionExpired()` — from `authenticated`
+  /// state, so its guard didn't stop it — and signed the fresh session straight
+  /// back out. Re-login was impossible until the app was killed.
+  ///
+  /// So: while loading (refresh included) we never draw a conclusion from the
+  /// previous state. Previous *data* still renders (no splash flash when e.g.
+  /// MyPage changes the language and invalidates this); a previous *error* is
+  /// treated as "not known yet".
   Widget _authenticatedView() {
     final profile = ref.watch(myProfileProvider);
-    return profile.when(
-      loading: () => const _Splash(),
-      error: (error, stack) {
-        // Only a genuine auth failure should clear the session. A transient
-        // NetworkFailure/ServerFailure (offline, backend 500) must NOT sign the
-        // user out — otherwise reopening the app offline destroys a valid
-        // session. For non-auth errors, show a retry instead of bouncing.
-        if (error is UnauthorizedFailure) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            ref.read(authControllerProvider.notifier).onSessionExpired();
-          });
-          return const _Splash();
-        }
-        return _ProfileError(onRetry: () => ref.invalidate(myProfileProvider));
-      },
-      // Onboarding starts at the native-language step (1/3); it then pushes
-      // name (2/3) → reason (3/3) → done.
-      data: (member) => member.onboardingCompleted
-          ? const HomeScreen()
-          : const OnboardingLanguageScreen(),
-    );
+
+    if (profile.isLoading) {
+      final previous = profile.valueOrNull;
+      return previous != null ? _routeFor(previous) : const _Splash();
+    }
+
+    if (profile.hasError) {
+      final error = profile.error!;
+      // Only a genuine auth failure should clear the session. A transient
+      // NetworkFailure/ServerFailure (offline, backend 500) must NOT sign the
+      // user out — otherwise reopening the app offline destroys a valid
+      // session. For non-auth errors, show a retry instead of bouncing.
+      if (error is UnauthorizedFailure) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(authControllerProvider.notifier).onSessionExpired();
+        });
+        return const _Splash();
+      }
+      return _ProfileError(onRetry: () => ref.invalidate(myProfileProvider));
+    }
+
+    return _routeFor(profile.requireValue);
   }
+
+  /// Onboarding starts at the native-language step (1/3); it then pushes
+  /// name (2/3) → reason (3/3) → done.
+  Widget _routeFor(Member member) => member.onboardingCompleted
+      ? const HomeScreen()
+      : const OnboardingLanguageScreen();
 }
 
 /// Mascot diameter on the splash, matching the native launch image (160dp).
@@ -164,11 +190,14 @@ class _ProfileError extends StatelessWidget {
             Icon(Icons.wifi_off, color: context.c.labelNormal),
             const SizedBox(height: 12),
             Text(
-              '연결에 문제가 있어요',
+              AppLocalizations.of(context).connectionFailedTitle,
               style: TextStyle(color: context.c.labelStrong),
             ),
             const SizedBox(height: 12),
-            TextButton(onPressed: onRetry, child: const Text('다시 시도')),
+            TextButton(
+              onPressed: onRetry,
+              child: Text(AppLocalizations.of(context).retry),
+            ),
           ],
         ),
       ),

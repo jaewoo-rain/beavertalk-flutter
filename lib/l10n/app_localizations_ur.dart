@@ -9,6 +9,47 @@ class AppLocalizationsUr extends AppLocalizations {
   AppLocalizationsUr([String locale = 'ur']) : super(locale);
 
   @override
+  String get loginRequired => 'آپ کو سائن ان کرنا ہوگا۔';
+
+  @override
+  String get callWebNotSupported =>
+      'ویب پر وائس کال دستیاب نہیں ہے۔ ایپ استعمال کریں۔';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'مائیکروفون کی اجازت درکار ہے۔ کال کرنے کے لیے مائیکروفون کی اجازت دیں۔';
+
+  @override
+  String get callErrorGeneric => 'کال کے دوران خرابی پیش آئی۔';
+
+  @override
+  String get callNetworkError => 'نیٹ ورک کی خرابی پیش آئی۔';
+
+  @override
+  String get authInvalidCredentials => 'ای میل یا پاس ورڈ درست نہیں ہے۔';
+
+  @override
+  String get authEmailAlreadyRegistered => 'یہ ای میل پہلے سے رجسٹرڈ ہے۔';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'اپنے ای میل پر بھیجی گئی تصدیق مکمل کریں۔';
+
+  @override
+  String get authResetCodeSent =>
+      'ہم نے آپ کے ای میل پر تصدیقی کوڈ بھیج دیا ہے۔';
+
+  @override
+  String get authResetCodeInvalid =>
+      'کوڈ درست نہیں ہے یا اس کی میعاد ختم ہو چکی ہے۔';
+
+  @override
+  String get authPasswordUpdated => 'آپ کا پاس ورڈ ری سیٹ ہو گیا ہے۔';
+
+  @override
+  String get authAppleTokenMissing => 'Apple سائن ان ٹوکن حاصل نہیں ہو سکا۔';
+
+  @override
   String callEndedDuration(String duration) {
     return 'کال ختم ہوئی $duration';
   }
@@ -212,7 +253,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get standardAudioPlayError => 'معیاری تلفظ کی آڈیو چلائی نہیں جا سکی۔';
 
   @override
-  String get selectACountry => 'ملک منتخب کریں';
+  String get selectNativeLanguage => 'اپنی مادری زبان منتخب کریں';
 
   @override
   String get selectYourLanguage => 'اپنی زبان منتخب کریں';

@@ -1,13 +1,24 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/error/app_exception.dart';
 import '../../domain/entities/accent_breakdown.dart';
 import '../../domain/entities/level_summary.dart';
 import '../../domain/entities/member.dart';
 import 'auth_providers.dart';
 
-/// The current member (`GET /members/me`). Consume with `AsyncValue.when` to
-/// render loading/error/data. `ref.invalidate(myProfileProvider)` to refetch.
+/// The current member (`GET /members/me`). Consume with `AsyncValue` to render
+/// loading/error/data. `ref.invalidate(myProfileProvider)` to refetch.
 final myProfileProvider = FutureProvider<Member>((ref) async {
+  // 세션이 없으면 **네트워크를 타지 않는다.** 로그아웃 경로가
+  // `_clearUserScopedState()` 에서 이 provider 를 invalidate 하는데, 그 시점엔
+  // Supabase 세션이 이미 지워진 뒤라 AuthGate 가 아직 붙어 있는 동안 토큰 없는
+  // `GET /members/me` 가 나가 401 을 받아 왔다. autoDispose 가 아니라 그 401 이
+  // 앱 전역에 캐시로 남고, 인터셉터는 실패할 게 뻔한 `refreshSession()` 까지
+  // 왕복했다. 여기서 끊는다 — alarm_list_controller 의 동일한 가드와 같은 이유다.
+  if (Supabase.instance.client.auth.currentSession == null) {
+    throw const UnauthorizedFailure('로그인이 필요해요');
+  }
   final repo = ref.watch(authRepositoryProvider);
   return repo.getMe();
 });

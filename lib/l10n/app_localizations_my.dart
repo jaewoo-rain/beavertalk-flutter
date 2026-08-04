@@ -9,6 +9,48 @@ class AppLocalizationsMy extends AppLocalizations {
   AppLocalizationsMy([String locale = 'my']) : super(locale);
 
   @override
+  String get loginRequired => 'အကောင့်ဝင်ရန် လိုအပ်ပါသည်။';
+
+  @override
+  String get callWebNotSupported =>
+      'ဝဘ်တွင် အသံခေါ်ဆိုမှုကို မပံ့ပိုးပါ။ အက်ပ်ကို အသုံးပြုပါ။';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'မိုက်ခရိုဖုန်း ခွင့်ပြုချက် လိုအပ်ပါသည်။ ခေါ်ဆိုရန် မိုက်ခရိုဖုန်းကို ခွင့်ပြုပါ။';
+
+  @override
+  String get callErrorGeneric => 'ခေါ်ဆိုနေစဉ် အမှားတစ်ခု ဖြစ်ပွားခဲ့သည်။';
+
+  @override
+  String get callNetworkError => 'ကွန်ရက် အမှား ဖြစ်ပွားခဲ့သည်။';
+
+  @override
+  String get authInvalidCredentials => 'အီးမေးလ် သို့မဟုတ် စကားဝှက် မမှန်ပါ။';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'ဤအီးမေးလ်ကို မှတ်ပုံတင်ပြီးဖြစ်သည်။';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'သင့်အီးမေးလ်သို့ ပို့ထားသော အတည်ပြုချက်ကို ပြီးမြောက်အောင်လုပ်ပါ။';
+
+  @override
+  String get authResetCodeSent =>
+      'အတည်ပြုကုဒ်ကို သင့်အီးမေးလ်သို့ ပို့လိုက်ပါပြီ။';
+
+  @override
+  String get authResetCodeInvalid =>
+      'ကုဒ်မမှန်ပါ သို့မဟုတ် သက်တမ်းကုန်သွားပါပြီ။';
+
+  @override
+  String get authPasswordUpdated => 'သင့်စကားဝှက်ကို ပြန်လည်သတ်မှတ်ပြီးပါပြီ။';
+
+  @override
+  String get authAppleTokenMissing => 'Apple ဝင်ရောက်မှု တိုကင်ကို မရရှိပါ။';
+
+  @override
   String callEndedDuration(String duration) {
     return 'ခေါ်ဆိုမှု $duration ဖြင့် ပြီးဆုံးပါပြီ';
   }
@@ -212,7 +254,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get standardAudioPlayError => 'စံအသံထွက် အသံဖိုင် ဖွင့်၍မရပါ။';
 
   @override
-  String get selectACountry => 'နိုင်ငံ ရွေးချယ်ပါ';
+  String get selectNativeLanguage => 'သင့်မိခင်ဘာသာစကားကို ရွေးချယ်ပါ';
 
   @override
   String get selectYourLanguage => 'သင့်ဘာသာစကား ရွေးချယ်ပါ';

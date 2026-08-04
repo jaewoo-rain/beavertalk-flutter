@@ -9,6 +9,45 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
+  String get loginRequired => 'Giriş yapmanız gerekiyor.';
+
+  @override
+  String get callWebNotSupported =>
+      'Sesli aramalar web\'de desteklenmiyor. Lütfen uygulamayı kullanın.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Mikrofon izni gerekiyor. Arama yapmak için mikrofona izin verin.';
+
+  @override
+  String get callErrorGeneric => 'Arama sırasında bir hata oluştu.';
+
+  @override
+  String get callNetworkError => 'Ağ hatası oluştu.';
+
+  @override
+  String get authInvalidCredentials => 'E-posta veya şifre hatalı.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Bu e-posta zaten kayıtlı.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'E-postanıza gönderilen doğrulamayı tamamlayın.';
+
+  @override
+  String get authResetCodeSent => 'Doğrulama kodunu e-postanıza gönderdik.';
+
+  @override
+  String get authResetCodeInvalid => 'Kod hatalı veya süresi dolmuş.';
+
+  @override
+  String get authPasswordUpdated => 'Şifreniz sıfırlandı.';
+
+  @override
+  String get authAppleTokenMissing => 'Apple giriş jetonu alınamadı.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Arama sona erdi $duration';
   }
@@ -212,7 +251,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get standardAudioPlayError => 'Standart telaffuz sesi oynatılamadı.';
 
   @override
-  String get selectACountry => 'Bir ülke seçin';
+  String get selectNativeLanguage => 'Ana dilinizi seçin';
 
   @override
   String get selectYourLanguage => 'Dilinizi seçin';

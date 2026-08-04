@@ -9,6 +9,47 @@ class AppLocalizationsRu extends AppLocalizations {
   AppLocalizationsRu([String locale = 'ru']) : super(locale);
 
   @override
+  String get loginRequired => 'Необходимо войти в аккаунт.';
+
+  @override
+  String get callWebNotSupported =>
+      'Голосовые звонки не поддерживаются в вебе. Используйте приложение.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Требуется доступ к микрофону. Разрешите микрофон, чтобы позвонить.';
+
+  @override
+  String get callErrorGeneric => 'Во время звонка произошла ошибка.';
+
+  @override
+  String get callNetworkError => 'Произошла сетевая ошибка.';
+
+  @override
+  String get authInvalidCredentials =>
+      'Неверный адрес электронной почты или пароль.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Эта почта уже зарегистрирована.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Завершите подтверждение, отправленное на вашу почту.';
+
+  @override
+  String get authResetCodeSent =>
+      'Мы отправили код подтверждения на вашу почту.';
+
+  @override
+  String get authResetCodeInvalid => 'Код неверен или истёк.';
+
+  @override
+  String get authPasswordUpdated => 'Пароль сброшен.';
+
+  @override
+  String get authAppleTokenMissing => 'Не удалось получить токен входа Apple.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Звонок завершён $duration';
   }
@@ -213,7 +254,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось воспроизвести эталонное произношение.';
 
   @override
-  String get selectACountry => 'Выберите страну';
+  String get selectNativeLanguage => 'Выберите ваш родной язык';
 
   @override
   String get selectYourLanguage => 'Выберите ваш язык';

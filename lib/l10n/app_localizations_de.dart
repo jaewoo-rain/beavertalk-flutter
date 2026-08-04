@@ -9,6 +9,49 @@ class AppLocalizationsDe extends AppLocalizations {
   AppLocalizationsDe([String locale = 'de']) : super(locale);
 
   @override
+  String get loginRequired => 'Du musst dich anmelden.';
+
+  @override
+  String get callWebNotSupported =>
+      'Sprachanrufe werden im Web nicht unterstützt. Bitte nutze die App.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Mikrofonzugriff ist erforderlich. Erlaube das Mikrofon, um anzurufen.';
+
+  @override
+  String get callErrorGeneric =>
+      'Während des Anrufs ist ein Fehler aufgetreten.';
+
+  @override
+  String get callNetworkError => 'Es ist ein Netzwerkfehler aufgetreten.';
+
+  @override
+  String get authInvalidCredentials => 'E-Mail oder Passwort ist falsch.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'Diese E-Mail-Adresse ist bereits registriert.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Bitte schließe die Verifizierung in deiner E-Mail ab.';
+
+  @override
+  String get authResetCodeSent =>
+      'Wir haben dir einen Bestätigungscode per E-Mail geschickt.';
+
+  @override
+  String get authResetCodeInvalid => 'Der Code ist falsch oder abgelaufen.';
+
+  @override
+  String get authPasswordUpdated => 'Dein Passwort wurde zurückgesetzt.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Apple-Anmeldetoken konnte nicht abgerufen werden.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Anruf beendet $duration';
   }
@@ -215,7 +258,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Die Standardaussprache konnte nicht abgespielt werden.';
 
   @override
-  String get selectACountry => 'Land auswählen';
+  String get selectNativeLanguage => 'Wähle deine Muttersprache';
 
   @override
   String get selectYourLanguage => 'Wähle deine Sprache';

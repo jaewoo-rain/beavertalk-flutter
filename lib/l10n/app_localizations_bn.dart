@@ -9,6 +9,45 @@ class AppLocalizationsBn extends AppLocalizations {
   AppLocalizationsBn([String locale = 'bn']) : super(locale);
 
   @override
+  String get loginRequired => 'আপনাকে সাইন ইন করতে হবে।';
+
+  @override
+  String get callWebNotSupported =>
+      'ওয়েবে ভয়েস কল সমর্থিত নয়। অ্যাপ ব্যবহার করুন।';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'মাইক্রোফোন অনুমতি প্রয়োজন। কল শুরু করতে মাইক্রোফোন অনুমতি দিন।';
+
+  @override
+  String get callErrorGeneric => 'কল চলাকালীন একটি সমস্যা হয়েছে।';
+
+  @override
+  String get callNetworkError => 'নেটওয়ার্ক ত্রুটি হয়েছে।';
+
+  @override
+  String get authInvalidCredentials => 'ইমেইল বা পাসওয়ার্ড সঠিক নয়।';
+
+  @override
+  String get authEmailAlreadyRegistered => 'এই ইমেইলটি ইতিমধ্যে নিবন্ধিত।';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'আপনার ইমেইলে পাঠানো যাচাইকরণ সম্পূর্ণ করুন।';
+
+  @override
+  String get authResetCodeSent => 'আপনার ইমেইলে যাচাইকরণ কোড পাঠানো হয়েছে।';
+
+  @override
+  String get authResetCodeInvalid => 'কোডটি সঠিক নয় বা মেয়াদ শেষ হয়ে গেছে।';
+
+  @override
+  String get authPasswordUpdated => 'পাসওয়ার্ড রিসেট করা হয়েছে।';
+
+  @override
+  String get authAppleTokenMissing => 'Apple সাইন-ইন টোকেন পাওয়া যায়নি।';
+
+  @override
   String callEndedDuration(String duration) {
     return 'কল শেষ হয়েছে $duration';
   }
@@ -214,7 +253,7 @@ class AppLocalizationsBn extends AppLocalizations {
       'স্ট্যান্ডার্ড উচ্চারণের অডিও চালানো যায়নি।';
 
   @override
-  String get selectACountry => 'একটি দেশ নির্বাচন করুন';
+  String get selectNativeLanguage => 'আপনার মাতৃভাষা নির্বাচন করুন';
 
   @override
   String get selectYourLanguage => 'আপনার ভাষা নির্বাচন করুন';

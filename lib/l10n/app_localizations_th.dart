@@ -9,6 +9,44 @@ class AppLocalizationsTh extends AppLocalizations {
   AppLocalizationsTh([String locale = 'th']) : super(locale);
 
   @override
+  String get loginRequired => 'คุณต้องเข้าสู่ระบบก่อน';
+
+  @override
+  String get callWebNotSupported => 'เว็บไม่รองรับการโทรด้วยเสียง โปรดใช้แอป';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'ต้องอนุญาตไมโครโฟน โปรดอนุญาตไมโครโฟนเพื่อโทร';
+
+  @override
+  String get callErrorGeneric => 'เกิดข้อผิดพลาดระหว่างการโทร';
+
+  @override
+  String get callNetworkError => 'เกิดข้อผิดพลาดของเครือข่าย';
+
+  @override
+  String get authInvalidCredentials => 'อีเมลหรือรหัสผ่านไม่ถูกต้อง';
+
+  @override
+  String get authEmailAlreadyRegistered => 'อีเมลนี้ลงทะเบียนไว้แล้ว';
+
+  @override
+  String get authConfirmEmailRequired => 'โปรดยืนยันตามที่ส่งไปยังอีเมลของคุณ';
+
+  @override
+  String get authResetCodeSent => 'เราส่งรหัสยืนยันไปยังอีเมลของคุณแล้ว';
+
+  @override
+  String get authResetCodeInvalid => 'รหัสไม่ถูกต้องหรือหมดอายุแล้ว';
+
+  @override
+  String get authPasswordUpdated => 'รีเซ็ตรหัสผ่านเรียบร้อยแล้ว';
+
+  @override
+  String get authAppleTokenMissing =>
+      'ไม่สามารถรับโทเค็นการเข้าสู่ระบบ Apple ได้';
+
+  @override
   String callEndedDuration(String duration) {
     return 'จบการโทรแล้ว $duration';
   }
@@ -211,7 +249,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get standardAudioPlayError => 'เล่นเสียงออกเสียงมาตรฐานไม่สำเร็จ';
 
   @override
-  String get selectACountry => 'เลือกประเทศ';
+  String get selectNativeLanguage => 'เลือกภาษาแม่ของคุณ';
 
   @override
   String get selectYourLanguage => 'เลือกภาษาของคุณ';

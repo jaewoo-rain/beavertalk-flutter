@@ -9,6 +9,46 @@ class AppLocalizationsUz extends AppLocalizations {
   AppLocalizationsUz([String locale = 'uz']) : super(locale);
 
   @override
+  String get loginRequired => 'Tizimga kirishingiz kerak.';
+
+  @override
+  String get callWebNotSupported =>
+      'Vebda ovozli qoʻngʻiroq ishlamaydi. Ilovadan foydalaning.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Mikrofonga ruxsat kerak. Qoʻngʻiroq qilish uchun mikrofonga ruxsat bering.';
+
+  @override
+  String get callErrorGeneric => 'Qoʻngʻiroq paytida xatolik yuz berdi.';
+
+  @override
+  String get callNetworkError => 'Tarmoq xatosi yuz berdi.';
+
+  @override
+  String get authInvalidCredentials => 'Email yoki parol notoʻgʻri.';
+
+  @override
+  String get authEmailAlreadyRegistered =>
+      'Bu email allaqachon roʻyxatdan oʻtgan.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Emailingizga yuborilgan tasdiqlashni yakunlang.';
+
+  @override
+  String get authResetCodeSent => 'Tasdiqlash kodini emailingizga yubordik.';
+
+  @override
+  String get authResetCodeInvalid => 'Kod notoʻgʻri yoki muddati oʻtgan.';
+
+  @override
+  String get authPasswordUpdated => 'Parolingiz tiklandi.';
+
+  @override
+  String get authAppleTokenMissing => 'Apple kirish tokenini olib boʻlmadi.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Qoʻngʻiroq tugadi $duration';
   }
@@ -214,7 +254,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Andoza talaffuz audiosini ijro etib boʻlmadi.';
 
   @override
-  String get selectACountry => 'Davlatni tanlang';
+  String get selectNativeLanguage => 'Ona tilingizni tanlang';
 
   @override
   String get selectYourLanguage => 'Tilingizni tanlang';

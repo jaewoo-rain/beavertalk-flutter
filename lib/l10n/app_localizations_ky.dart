@@ -9,6 +9,47 @@ class AppLocalizationsKy extends AppLocalizations {
   AppLocalizationsKy([String locale = 'ky']) : super(locale);
 
   @override
+  String get loginRequired => 'Тиркемеге кириңиз.';
+
+  @override
+  String get callWebNotSupported =>
+      'Вебде үн чалуу колдоолбойт. Колдонмону пайдаланыңыз.';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'Микрофонго уруксат керек. Чалуу үчүн микрофонго уруксат бериңиз.';
+
+  @override
+  String get callErrorGeneric => 'Чалуу учурунда ката кетти.';
+
+  @override
+  String get callNetworkError => 'Тармак катасы кетти.';
+
+  @override
+  String get authInvalidCredentials =>
+      'Электрондук почта же сырсөз туура эмес.';
+
+  @override
+  String get authEmailAlreadyRegistered => 'Бул электрондук почта катталган.';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'Почтаңызга жөнөтүлгөн ырастоону аягына чыгарыңыз.';
+
+  @override
+  String get authResetCodeSent => 'Ырастоо кодун почтаңызга жөнөттүк.';
+
+  @override
+  String get authResetCodeInvalid => 'Код туура эмес же мөөнөтү бүткөн.';
+
+  @override
+  String get authPasswordUpdated => 'Сырсөзүңүз калыбына келтирилди.';
+
+  @override
+  String get authAppleTokenMissing =>
+      'Apple кирүү токенин алуу мүмкүн болгон жок.';
+
+  @override
   String callEndedDuration(String duration) {
     return 'Чалуу $duration аяктады';
   }
@@ -212,7 +253,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get standardAudioPlayError => 'Үлгү айтылыш аудиосун ойнотуп болбоду.';
 
   @override
-  String get selectACountry => 'Өлкөнү тандаңыз';
+  String get selectNativeLanguage => 'Эне тилиңизди тандаңыз';
 
   @override
   String get selectYourLanguage => 'Тилиңизди тандаңыз';

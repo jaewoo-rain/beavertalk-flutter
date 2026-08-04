@@ -9,6 +9,46 @@ class AppLocalizationsNe extends AppLocalizations {
   AppLocalizationsNe([String locale = 'ne']) : super(locale);
 
   @override
+  String get loginRequired => 'साइन इन गर्नुपर्छ।';
+
+  @override
+  String get callWebNotSupported =>
+      'वेबमा भ्वाइस कल समर्थित छैन। एप प्रयोग गर्नुहोस्।';
+
+  @override
+  String get micPermissionRequiredForCall =>
+      'माइक्रोफोन अनुमति आवश्यक छ। कल गर्न माइक्रोफोन अनुमति दिनुहोस्।';
+
+  @override
+  String get callErrorGeneric => 'कलको क्रममा त्रुटि भयो।';
+
+  @override
+  String get callNetworkError => 'नेटवर्क त्रुटि भयो।';
+
+  @override
+  String get authInvalidCredentials => 'इमेल वा पासवर्ड मिलेन।';
+
+  @override
+  String get authEmailAlreadyRegistered => 'यो इमेल पहिले नै दर्ता भइसकेको छ।';
+
+  @override
+  String get authConfirmEmailRequired =>
+      'तपाईंको इमेलमा पठाइएको प्रमाणीकरण पूरा गर्नुहोस्।';
+
+  @override
+  String get authResetCodeSent =>
+      'हामीले तपाईंको इमेलमा प्रमाणीकरण कोड पठायौं।';
+
+  @override
+  String get authResetCodeInvalid => 'कोड मिलेन वा म्याद सकियो।';
+
+  @override
+  String get authPasswordUpdated => 'तपाईंको पासवर्ड रिसेट भयो।';
+
+  @override
+  String get authAppleTokenMissing => 'Apple साइन-इन टोकन प्राप्त भएन।';
+
+  @override
   String callEndedDuration(String duration) {
     return 'कल $duration मा समाप्त भयो';
   }
@@ -211,7 +251,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get standardAudioPlayError => 'मानक उच्चारण अडियो बजाउन सकिएन।';
 
   @override
-  String get selectACountry => 'देश छान्नुहोस्';
+  String get selectNativeLanguage => 'आफ्नो मातृभाषा छान्नुहोस्';
 
   @override
   String get selectYourLanguage => 'तपाईंको भाषा छान्नुहोस्';

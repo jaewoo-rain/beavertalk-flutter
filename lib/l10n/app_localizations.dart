@@ -154,6 +154,78 @@ abstract class AppLocalizations {
     Locale('zh'),
   ];
 
+  /// No description provided for @loginRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'You need to sign in.'**
+  String get loginRequired;
+
+  /// No description provided for @callWebNotSupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice calls aren\'t supported on the web. Please use the app.'**
+  String get callWebNotSupported;
+
+  /// No description provided for @micPermissionRequiredForCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access is required. Allow the microphone to start a call.'**
+  String get micPermissionRequiredForCall;
+
+  /// No description provided for @callErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong during the call.'**
+  String get callErrorGeneric;
+
+  /// No description provided for @callNetworkError.
+  ///
+  /// In en, this message translates to:
+  /// **'A network error occurred.'**
+  String get callNetworkError;
+
+  /// No description provided for @authInvalidCredentials.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email or password is incorrect.'**
+  String get authInvalidCredentials;
+
+  /// No description provided for @authEmailAlreadyRegistered.
+  ///
+  /// In en, this message translates to:
+  /// **'This email is already registered.'**
+  String get authEmailAlreadyRegistered;
+
+  /// No description provided for @authConfirmEmailRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please complete the verification sent to your email.'**
+  String get authConfirmEmailRequired;
+
+  /// No description provided for @authResetCodeSent.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve sent a verification code to your email.'**
+  String get authResetCodeSent;
+
+  /// No description provided for @authResetCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That code is incorrect or has expired.'**
+  String get authResetCodeInvalid;
+
+  /// No description provided for @authPasswordUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your password has been reset.'**
+  String get authPasswordUpdated;
+
+  /// No description provided for @authAppleTokenMissing.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t get your Apple sign-in token.'**
+  String get authAppleTokenMissing;
+
   /// Sub-label on the call-finished screen showing the elapsed call time.
   ///
   /// In en, this message translates to:
@@ -520,11 +592,11 @@ abstract class AppLocalizations {
   /// **'Couldn\'t play the standard pronunciation audio.'**
   String get standardAudioPlayError;
 
-  /// Default title of the country/language select bottom sheet.
+  /// Default title of the language-select bottom sheet shown over the login screen. Asks for the user's native language, not a country.
   ///
   /// In en, this message translates to:
-  /// **'Select a country'**
-  String get selectACountry;
+  /// **'Select your native language'**
+  String get selectNativeLanguage;
 
   /// Title of the language select sheet opened from My Page.
   ///
