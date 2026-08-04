@@ -40,7 +40,9 @@ void main() {
     await tester.pump();
 
     // Localized defaults render (English).
-    expect(find.text('Select a country'), findsOneWidget);
+    // 시트는 나라가 아니라 모국어를 묻는다 — 문구·키가 selectNativeLanguage 로 바뀌었다
+    // (ead4283, 30개 로케일 전부). 이 단언만 옛 문자열에 남아 있어 그때부터 빨간 상태였다.
+    expect(find.text('Select your native language'), findsOneWidget);
     expect(find.text('Confirm'), findsOneWidget);
 
     // Flags render via the country_flags SVG widget (one per row), not emoji.
