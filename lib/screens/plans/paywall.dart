@@ -5,6 +5,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart' show BadgeTone;
 import '../../components/atoms/button.dart';
+import '../../components/atoms/looping_video.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/banner.dart';
 import '../../components/molecules/bullet_row.dart';
@@ -171,14 +172,17 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 _planCard(l10n, c),
                 if (_isMax) ...[
                   const SizedBox(height: AppSpacing.s24),
+                  // Hero is a **video**, not a still. The file is a
+                  // placeholder to be swapped later, so [LoopingVideo] falls
+                  // back to a plain box rather than failing when the asset
+                  // is missing — dropping in a new mp4 at the same path is
+                  // the whole handover.
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: AspectRatio(
+                    child: LoopingVideo(
+                      asset: 'assets/videos/paywall_max_hero.mp4',
                       aspectRatio: 375 / 210.9375,
-                      child: Image.asset(
-                        'assets/images/paywall_max_hero.png',
-                        fit: BoxFit.cover,
-                      ),
+                      placeholderColor: c.backgroundSurfaceAlternative,
                     ),
                   ),
                 ],
