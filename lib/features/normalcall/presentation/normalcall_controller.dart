@@ -25,7 +25,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
+import '../data/datasources/pcm_playback_control.dart';
 import '../domain/entities/call_hint.dart';
+import '../domain/entities/playback_ledger.dart';
 import 'normalcall_providers.dart';
 
 /// Lifecycle phases of a live normalcall session.
@@ -195,7 +197,7 @@ class NormalCallController extends Notifier<CallState> {
   /// currently being fed to the player. ~10Hz; the widget smooths to 60fps.
   final ValueNotifier<double> avatarLevel = ValueNotifier<double>(0.0);
 
-  /// True while the beaver is speaking (mirrors [_beaverSpeaking]).
+  /// True while the beaver is speaking (mirrors [_beaverAudioActive]).
   final ValueNotifier<bool> avatarSpeaking = ValueNotifier<bool>(false);
 
   /// Current avatar emotion code (0 neutral/smug, 1 happy, 2 surprised, 3 sad,
@@ -665,13 +667,77 @@ class NormalCallController extends Notifier<CallState> {
   // DROP mic frames instead of forwarding them. This is intentionally
   // half-duplex: the user cannot barge-in / interrupt the AI mid-sentence — an
   // accepted tradeoff to kill the self-talk loop.
+  //
+  // ── 캐스케이드 barge-in (STT→LLM→TTS 경로) ─────────────────────────────────
+  // barge-in 은 "사용자가 아무 때나 말할 수 있다"는 뜻이고, 그러려면 마이크가 항상
+  // 열려 있어야 한다. 게이팅은 barge-in 이 없던 시절의 장치다. 끼어들기 판정은 전부
+  // 서버가 한다(STT 활동 + 서버 타이머 + 에코 2차 방어).
+  //
+  // ⚠ 그래도 기본값은 **게이팅 유지**다. Android 재생 트랙이 아직 `USAGE_MEDIA` 라
+  //   플랫폼 AEC 가 실질적으로 안 걸리는 상태이고(docs/2026-08-05_1720 §2-1A),
+  //   그 상태로 게이팅을 빼면 비버 목소리가 무방비로 업링크에 실린다 —
+  //   실측 전례가 있다(call_id=855, 2026-08-01: 유저 턴의 절반이 비버 대사였다).
+  //   AEC 정비 + 실기기 에코 측정이 끝난 뒤에 이 스위치를 켠다.
+  static const bool _cascadeBargeIn =
+      bool.fromEnvironment('CASCADE_BARGE_IN');
 
   /// Count of mic frames actually forwarded to the socket (dev-log heartbeat).
   int _micFramesSent = 0;
 
-  /// True while the beaver is speaking (turn open and/or audio still playing).
-  /// While true, mic PCM is dropped (not sent to the socket).
-  bool _beaverSpeaking = false;
+  /// 비버 오디오가 살아 있는가 — 턴이 열려 있거나 아직 스피커에서 나오는 중.
+  ///
+  /// ⚠ 이 플래그는 원래 세 가지를 겸직했다: ①마이크 게이트 ②재생 회계 ③아바타 UI.
+  ///   barge-in 을 켜면 ①이 사라지는데, ②③은 그대로 필요하다. 그래서 **저장 필드는
+  ///   하나로 두고 해석만 나눈다** — 마이크는 [_micGated] 를 보고, 재생 회계와 아바타는
+  ///   이 필드를 직접 본다. 전이 지점을 복제해 두 플래그로 나누면 둘이 어긋나는 새 버그가
+  ///   생긴다(전이 지점이 4곳: [_gateMic] / 행오버 / idle-ungate / [_teardown]).
+  bool _beaverAudioActive = false;
+
+  /// 마이크 프레임을 버릴 것인가 — 반이중 게이트의 **유일한** 판정.
+  ///
+  /// 캐스케이드 경로에서는 항상 false(상시 개방)다. 그 외에는 종전대로
+  /// [_beaverAudioActive] 를 따라가므로, 스위치가 꺼져 있으면 동작이 현행과 같다.
+  bool get _micGated => _cascadeBargeIn ? false : _beaverAudioActive;
+
+  // ── barge-in: 취소(audio_cancel) 처리 상태 ─────────────────────────────────
+
+  /// `audio_cancel` 을 받은 뒤 **다음 `turn_start` 까지** 도착하는 바이너리를 버릴지.
+  ///
+  /// 서버 불변식이 이걸 안전하게 만든다: *서버는 비버 턴 밖에서 오디오를 보내지 않고,
+  /// 모든 비버 턴은 반드시 `turn_start` 로 시작한다.* 따라서 이 구간에 도착하는
+  /// 바이너리는 정의상 **취소된 턴의 잔여**뿐이다(WS 가 한 연결 내 순서를 보장한다).
+  ///
+  /// ⚠ 폐기는 [_onWsData] 에서 해야 한다. [_feedPlayerBody] 는 청크마다 [_gateMic] 을
+  ///   부르므로, 거기까지 들여보내면 잔여 바이트가 게이트를 되닫고 턴 상태를 되살린다.
+  bool _cancelledResidual = false;
+
+  /// 서버가 알려준 현재 비버 턴 id. 진행도 회신에 실어 어느 턴인지 밝힌다.
+  /// 비동기라 서버가 이미 다음 턴을 시작했을 수 있어, 없으면 아예 싣지 않는다.
+  String? _currentTurnId;
+
+  /// 엔진에 넣은 오디오의 출처 원장 — `played_server_bytes` 산출의 근거.
+  /// 서버발 오디오와 **우리가 만든 무음 필러**를 갈라야 "실제로 들은 양"이 나온다.
+  final PlaybackLedger _ledger = PlaybackLedger();
+
+  /// [_clearPlayback] 이 돌 때마다 증가. **비동기 경합 차단용**이다.
+  ///
+  /// [_pump] 은 `await FlutterPcmSound.feed(...)` 로 플랫폼채널을 다녀오는데, 그 사이
+  /// barge-in 이 들어와 재생을 비울 수 있다. 그때 피드가 돌아와 앵커와
+  /// `_audioTailUntilMs` 를 갱신하면 **방금 리셋한 값을 취소된 턴의 값으로 되살린다.**
+  /// [_pump] 은 await 전후로 이 값을 비교해 그 갱신을 건너뛴다.
+  int _clearGen = 0;
+
+  /// [계측] 직전 비버 턴이 열릴 때의 잔류 백로그(ms). 첫 턴은 -1.
+  int _prevTurnBacklogMs = -1;
+
+  /// [계측] 턴 경계 백로그가 연속으로 커진 횟수.
+  ///
+  /// 정상 버스트 백로그는 **턴 경계에서 반드시 0 으로 돌아온다** — 마이크 재개방 조건
+  /// 자체가 오디오 배수 완료([_audioDrained])라서 그렇다. 반면 서버 송출량이 실시간
+  /// 레이트를 넘으면(스트림 인플레이션) 백로그가 **턴 경계를 넘어 잔류하고 턴마다 커진다.**
+  /// 그래서 이 연속 증가 횟수가 둘을 가르는 지표다. 60초 폭주 가드([_maxQueueBytes])는
+  /// 이 구간을 표현하지 못한다 — 10초, 20초로 자라도 아무 말이 없다.
+  int _backlogRiseStreak = 0;
 
   /// True once `turn_end` for the current beaver turn has arrived; the gate
   /// only clears after this *and* the playback queue has drained.
@@ -1211,7 +1277,10 @@ class NormalCallController extends Notifier<CallState> {
       // is never echoed back to the server's STT (which caused the self-talk
       // loop on speakerphone). The recorder keeps running so the audio
       // session / AEC stays stable; we only skip forwarding.
-      if (_beaverSpeaking) return;
+      //
+      // 캐스케이드 barge-in 에서는 [_micGated] 가 항상 false 라 이 줄이 통과된다 —
+      // 마이크 상시 개방. 끼어들기 판정은 서버가 한다.
+      if (_micGated) return;
       final ch = _channel;
       if (ch != null) {
         ch.sink.add(bytes);
@@ -1486,14 +1555,14 @@ class NormalCallController extends Notifier<CallState> {
   void _feedPlayerBody(Uint8List chunk) {
     // Ground truth for "did the server go quiet mid-utterance": the gap between
     // inbound chunks. The playback-side starve clock can't answer that — a long
-    // enough hole trips the idle-ungate, `_beaverSpeaking` flips to false, and the
+    // enough hole trips the idle-ungate, `_beaverAudioActive` flips to false, and the
     // resumption then looks like a brand-new turn. Measured here (before
     // [_gateMic] clears `_turnEnded`) it survives all of that.
     final nowMs = DateTime.now().millisecondsSinceEpoch;
     final prevChunkMs = _lastChunkAtMs;
     if (prevChunkMs != null && !_turnEnded && nowMs - prevChunkMs >= 250) {
       _log('SERVER GAP ${nowMs - prevChunkMs}ms mid-utterance '
-          '(mic was ${_beaverSpeaking ? "closed" : "OPEN"})');
+          '(mic was ${_micGated ? "closed" : "OPEN"})');
     }
     _lastChunkAtMs = nowMs;
     // Beaver audio is arriving → gate the mic (covers the opening greeting even
@@ -1657,17 +1726,17 @@ class NormalCallController extends Notifier<CallState> {
           // mid-utterance only added ~450ms of dead air per resumption without
           // removing a single dropout, because the holes being ridden out are
           // multi-second server gaps, not jitter a cushion can cover.
-          if (!_beaverSpeaking) _playing = false;
+          if (!_beaverAudioActive) _playing = false;
           // Only a mid-utterance drain is a glitch; a drained queue between turns
           // is normal, so don't start the stall clock for it.
-          // ⚠ `_beaverSpeaking` 만으로 판정하면 안 된다 — [_audioDrained] 여야 한다.
+          // ⚠ `_beaverAudioActive` 만으로 판정하면 안 된다 — [_audioDrained] 여야 한다.
           //   푸시 모델에서는 [_pump] 가 매 틱 Dart 큐를 통째로 엔진에 밀어넣으므로
           //   **큐가 비어 있는 게 정상 상태**다(측정: INFLATE 창 대부분이 queue 0B).
           //   큐 빔만 보고 세면 엔진이 1.8초를 물고 멀쩡히 재생 중인데도 굶었다고
           //   집계돼, 쿠션이 상한까지 못 박히고 감쇠가 영영 안 걸린다.
           //   실측(5분 통화, 2026-08-02): 판정 26회 중 실제로 들린 끊김은 8회.
           //   나머지 18회가 가짜였고 쿠션은 72초 만에 1800ms 상한에 고정됐다.
-          if (_beaverSpeaking && _audioDrained) {
+          if (_beaverAudioActive && _audioDrained) {
             if (_starveAtMs == null) {
               // First starve of this turn: the cushion was too small for the
               // deficit this call is running, so widen it for the turns ahead.
@@ -1693,9 +1762,9 @@ class NormalCallController extends Notifier<CallState> {
             _resumeFlushed = false;
           }
           if (_lastFeedSilent != true) {
-            if (_beaverSpeaking) _dbgStarveCount++; // DEBUG(audio-glitch)
+            if (_beaverAudioActive) _dbgStarveCount++; // DEBUG(audio-glitch)
             _log('feed silence — queue empty'
-                '${_beaverSpeaking ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
+                '${_beaverAudioActive ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
             _lastFeedSilent = true;
           }
           // Idle-ungate countdown (covers a missed turn_end so the mic can't
@@ -1829,7 +1898,7 @@ class NormalCallController extends Notifier<CallState> {
         final lead = holdMs ~/ _envStepMs;
         if (_envQueue.length > lead) {
           avatarLevel.value = _envQueue.removeAt(0);
-        } else if (!_beaverSpeaking) {
+        } else if (!_beaverAudioActive) {
           avatarLevel.value = 0.0;
         } else {
           // Brief gap mid-turn: ease shut rather than snapping.
@@ -1902,14 +1971,20 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   void _gateMic() {
-    if (!_beaverSpeaking) {
-      _log('mic GATED — beaver speaking (your mic paused)');
+    if (!_beaverAudioActive) {
+      _log(_cascadeBargeIn
+          ? 'beaver turn OPEN — mic stays open (barge-in)'
+          : 'mic GATED — beaver speaking (your mic paused)');
       _turnStarved = false; // fresh turn: it hasn't starved yet
+      // 새 턴 = 진행도 원장의 기준선. 턴 경계에서는 엔진이 비어 있는 게 계약이라
+      // (재개방 조건이 [_audioDrained]) 여기서 비우면 이후 산출값이 곧
+      // **이번 턴의** 재생량이 된다.
+      _ledger.reset();
     }
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _turnEnded = false;
-    _beaverSpeaking = true;
+    _beaverAudioActive = true;
     avatarSpeaking.value = true;
   }
 
@@ -1917,7 +1992,7 @@ class NormalCallController extends Notifier<CallState> {
   /// the playback queue to be empty, then waits a [_micHangover] tail (so the
   /// speaker's decaying audio isn't recaptured) before actually ungating.
   void _tryUngateMic() {
-    if (!_beaverSpeaking) return;
+    if (!_beaverAudioActive) return;
     if (!_turnEnded) return;
     // ⚠ Dart 큐가 아니라 [_audioDrained]. 큐가 비어도 엔진에 최대 2.5초가 남아 있고,
     //   그때 마이크를 열면 스피커에서 나오는 비버 목소리를 그대로 되먹는다.
@@ -1933,7 +2008,7 @@ class NormalCallController extends Notifier<CallState> {
       _micGateTimer = null;
       _gateSafetyTimer?.cancel();
       _gateSafetyTimer = null;
-      _beaverSpeaking = false;
+      _beaverAudioActive = false;
       avatarSpeaking.value = false;
       avatarLevel.value = 0.0;
       _decayCushion();
@@ -1948,14 +2023,14 @@ class NormalCallController extends Notifier<CallState> {
   /// most once per empty period (the `!= null` guard stops re-arming every
   /// silence callback); a fresh inbound chunk in [_feedPlayer] cancels it.
   void _armIdleUngate() {
-    if (!_beaverSpeaking) return;
+    if (!_beaverAudioActive) return;
     if (_gateSafetyTimer != null) return; // already counting this empty period
     _gateSafetyTimer = Timer(_gateSafetyWindow, () {
       _gateSafetyTimer = null;
-      if (_beaverSpeaking && _audioDrained) {
+      if (_beaverAudioActive && _audioDrained) {
         _micGateTimer?.cancel();
         _micGateTimer = null;
-        _beaverSpeaking = false;
+        _beaverAudioActive = false;
         avatarSpeaking.value = false;
         avatarLevel.value = 0.0;
         _decayCushion();
