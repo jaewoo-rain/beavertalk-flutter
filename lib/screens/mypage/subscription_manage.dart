@@ -60,9 +60,16 @@ String _shortDate(BuildContext context, DateTime d) =>
 /// The plan-card monthly price line: server value when present, otherwise the
 /// plan's list price (the design's `$15.99` / `$23.99`).
 String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
-  final minor = status.source?.price ??
-      (status.tier == SubscriptionTier.max ? 1990 : 1290);
-  return l10n.pricePerMonthLine(formatUsd(minor));
+  final minor = status.source?.price;
+  // The fallback used to carry its own copy of the price in minor units, and
+  // it went stale twice while the list prices moved — it was still quoting
+  // $19.90/$12.90 two rounds later. Route it through the one place instead.
+  final price = minor != null
+      ? formatUsd(minor)
+      : (status.tier == SubscriptionTier.max
+          ? PlanPrices.maxMonthly
+          : PlanPrices.proMonthly);
+  return l10n.pricePerMonthLine(price);
 }
 
 /// The manage layout shared by the seven non-expired states.
