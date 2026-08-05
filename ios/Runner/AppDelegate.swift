@@ -76,6 +76,12 @@ import flutter_callkit_incoming
           // End-of-call: stop observing and clear the override.
           self?.stopCallAudioRouting()
           result(nil)
+        case "getAudioRoute":
+          // barge-in 진행도 보고에 "비버 오디오가 어느 출력으로 나가던 중이었나"를 싣는다.
+          // isHeadsetConnected 는 bool 이라 스피커/유선/BT/USB 를 못 가른다 — 서버가
+          // 해석하려면 분류가 필요하다. 기존 bool 은 VPIO 활성화 판단에 계속 쓰이므로
+          // 그대로 두고 여기에 별도로 낸다.
+          result(self?.currentAudioRoute() ?? "")
         case "isHeadsetConnected":
           // Dart asks before opening the recorder so it can disable voice
           // processing when a headset is present (see below).
@@ -293,6 +299,30 @@ import flutter_callkit_incoming
   /// captured over AirPods. A plain recorder follows the session route and uses
   /// the BT mic. Voice processing is only needed for the loudspeaker case (echo
   /// cancellation), where no headset is present.
+  /// 지금 실제로 소리가 나가는 출력의 종류. 서버 계약 문자열로 낸다.
+  ///
+  /// ⚠ 모르면 빈 문자열이다. "speaker" 로 떨어뜨리면 서버가 "못 읽음"과 "스피커였음"을
+  ///   구분하지 못해, 측정 못 한 기기가 전부 스피커폰 통계에 섞인다.
+  private func currentAudioRoute() -> String {
+    let outputs = AVAudioSession.sharedInstance().currentRoute.outputs
+    guard let port = outputs.first else { return "" }
+    // speaker / headset 두 값만. 서버는 이 값을 분류표가 아니라 **그룹 키**로 쓴다 —
+    // 같은 라우트엔 항상 같은 문자열이면 되고, 세분화하면 오히려 "라우트가 바뀌었다"는
+    // 신호가 희석된다. (A2DP/HFP 구분은 나중 단계에서 AEC 정책 때문에 필요해진다.)
+    //
+    // ⚠ builtInReceiver(리시버)는 "receiver" 라는 **제3의 값**이다. 스피커폰도 헤드셋도
+    //   아니라 둘 중 아무 데나 넣으면 틀린 값이 되고, 그렇다고 빈 문자열도 아니다 —
+    //   빈 값은 서버가 "라우트 불명"으로 읽어 "이어폰을 꽂았다 빼며 재측정하라"는 처방을
+    //   낸다. 아는데 모른다고 하면 측정하는 사람이 헛수고한다.
+    switch port.portType {
+    case .builtInSpeaker: return "speaker"
+    case .builtInReceiver: return "receiver"
+    case .headphones, .headsetMic, .bluetoothA2DP, .bluetoothLE,
+         .bluetoothHFP, .usbAudio, .carAudio: return "headset"
+    default: return ""
+    }
+  }
+
   private func isHeadsetConnected() -> Bool {
     let session = AVAudioSession.sharedInstance()
     let inPorts: Set<AVAudioSession.Port> = [

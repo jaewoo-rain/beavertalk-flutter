@@ -6,6 +6,9 @@ import android.content.Context
 import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
+import android.media.AudioAttributes
+import android.media.AudioDeviceInfo
+import android.media.AudioManager
 import android.media.MediaRecorder
 import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
@@ -36,6 +39,17 @@ import java.io.File
 class MainActivity : FlutterActivity() {
     private val channelName = "beavertalk/challenge_recorder"
     private val lockscreenChannelName = "beavertalk/lockscreen"
+
+    /**
+     * iOS 는 이 채널로 라우팅 제어(routeToSpeaker 등)를 받지만 Android 에는 핸들러가
+     * 아예 없었다. barge-in 진행도 보고가 "어느 출력으로 나가던 중이었나"를 실어야
+     * 해서 여기에 신설한다.
+     *
+     * ⚠ Android 에서는 `getAudioRoute` 하나만 구현한다. 기존 iOS 전용 메서드들
+     * (routeToSpeaker / stopCallAudioRouting / isHeadsetConnected / logAudioState)은
+     * Dart 쪽에서 `defaultTargetPlatform == iOS` 로 막혀 있어 여기로 오지 않는다.
+     */
+    private val audioChannelName = "beavertalk/audio"
     private val screenCaptureRequest = 0xB3A7
 
     /**
@@ -165,6 +179,103 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, audioChannelName)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "getAudioRoute" -> result.success(currentAudioRoute())
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    /**
+     * 비버 오디오가 **지금 실제로 나가고 있는 출력**의 종류.
+     *
+     * 서버가 barge-in 측정을 해석할 때 쓴다 — 같은 결과라도 스피커폰이냐 이어폰이냐에
+     * 따라 의미가 정반대가 된다(스피커폰은 에코 최악 조건, 이어폰은 음향 결합이 거의 없다).
+     *
+     * ⚠ **모르면 빈 문자열이다. "speaker" 로 떨어뜨리지 마라.** 서버가 "못 읽음"과
+     *   "스피커였음"을 구분해야 하는데, 기본값을 speaker 로 두면 그 구분이 사라지고
+     *   측정 못 한 기기가 전부 스피커폰 통계에 섞인다.
+     */
+    private fun currentAudioRoute(): String {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return ""
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // API 31+ 만 "이 속성으로 재생하면 어디로 나가는가"를 직접 답해준다.
+                //
+                // ⚠ 속성은 재생 트랙과 **같아야** 한다. flutter_pcm_sound 의 AudioTrack 이
+                //   지금 USAGE_MEDIA/CONTENT_TYPE_MUSIC 이라 여기도 그렇게 묻는다. 통화
+                //   경로(USAGE_VOICE_COMMUNICATION)로 물으면 라우팅이 달라질 수 있어
+                //   (예: 미디어는 스피커, 통화는 리시버) 실제와 다른 답이 나온다.
+                //   AEC 정비로 트랙 속성을 바꾸면 **여기도 같이 바꿔야 한다.**
+                val attrs = AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build()
+                val type = am.getAudioDevicesForAttributes(attrs).firstOrNull()?.type
+                if (type != null) return mapDeviceType(type)
+            }
+            // API 26~30 폴백: "지금 활성 라우트"를 직접 묻는 API 가 없어 우선순위로 좁힌다.
+            // Android 라우팅 우선순위(SCO > A2DP > 유선 > 스피커)를 따른다.
+            //
+            // 마지막 분기가 추측이 아닌 이유: 헤드셋·BT 가 하나도 안 붙어 있고 스피커폰도
+            // 꺼져 있으면 USAGE_MEDIA 오디오는 **내장 스피커로 간다**. 리시버로는 안 간다
+            // (그건 통화 usage 의 경로다). 그래서 내장 스피커 존재만 확인해 speaker 로
+            // 답하고, 없으면 빈 문자열로 떨어진다.
+            @Suppress("DEPRECATION")
+            return when {
+                am.isBluetoothScoOn || am.isBluetoothA2dpOn || am.isWiredHeadsetOn -> "headset"
+                am.isSpeakerphoneOn -> "speaker"
+                else -> hasOutput(am, AudioDeviceInfo.TYPE_BUILTIN_SPEAKER)
+            }
+        } catch (_: Throwable) {
+            // 진단이 통화를 죽이면 안 된다. 모르면 모른다고 답한다.
+            return ""
+        }
+    }
+
+    private fun hasOutput(am: AudioManager, type: Int): String {
+        val found = am.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { it.type == type }
+        return if (found) mapDeviceType(type) else ""
+    }
+
+    /**
+     * AudioDeviceInfo 타입 → 서버 계약 문자열. **speaker / headset 두 값만** 낸다.
+     *
+     * 서버는 이 값을 분류표가 아니라 **그룹 키**로 쓴다 — "이 라우트에서 hal_drained 가
+     * 한 번이라도 나왔나", "라우트가 바뀌었는데도 계속 0건인가" 를 보는 용도다. 그래서
+     * 요구되는 성질은 정확한 분류명이 아니라 **같은 라우트엔 항상 같은 문자열**이다.
+     * 세분화하면 오히려 해롭다: 같은 헤드셋이 SCO 를 물었다 놨다 하면서 두 키로 쪼개지면
+     * "라우트가 바뀌었다"는 신호가 희석된다.
+     *
+     * ⚠ 모르는 타입은 빈 문자열이다. speaker 로 떨어뜨리면 서버가 "못 읽음"과
+     *   "스피커였음"을 구분하지 못해, 못 읽은 기기가 전부 스피커폰 통계에 섞인다.
+     *
+     * ⚠ 리시버(귀에 대는 통화 스피커)는 **"receiver" 라는 제3의 값**이다. 스피커폰도
+     *   헤드셋도 아니고(음향 결합이 스피커폰보다 훨씬 약하다), 그렇다고 빈 문자열도 아니다.
+     *   빈 문자열은 서버가 "라우트 불명"으로 읽어 판정을 보류하고 "이어폰을 꽂았다 빼며
+     *   재측정하라"는 처방을 낸다 — 우리가 **아는데** 모른다고 하면 측정하는 사람이
+     *   헛수고한다. "모르면 빈 문자열"은 *추측으로 채우지 마라*는 뜻이지 *아는 것도
+     *   숨겨라*가 아니다. 서버는 라우트를 그룹 키로만 쓰므로 새 값이 들어와도 동작한다.
+     *   우리 재생은 USAGE_MEDIA 라 안드로이드에서는 리시버로 안 가지만, iOS 에서
+     *   defaultToSpeaker 가 안 먹으면 나올 수 있다.
+     *
+     * 블루투스 A2DP/HFP 구분은 **일부러 하지 않는다**(나중 단계). 다만 그때 필요해진다 —
+     * A2DP 는 출력만 블루투스이고 마이크는 폰 본체라 스피커폰과 같은 결합이 생기는데,
+     * HFP 는 마이크도 헤드셋이라 결합이 없다. "블루투스 = 안전"이 아니다.
+     */
+    private fun mapDeviceType(type: Int): String = when (type) {
+        AudioDeviceInfo.TYPE_BUILTIN_SPEAKER -> "speaker"
+        AudioDeviceInfo.TYPE_BUILTIN_EARPIECE -> "receiver"
+        AudioDeviceInfo.TYPE_WIRED_HEADSET,
+        AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+        AudioDeviceInfo.TYPE_BLUETOOTH_A2DP,
+        AudioDeviceInfo.TYPE_BLUETOOTH_SCO,
+        AudioDeviceInfo.TYPE_USB_HEADSET,
+        AudioDeviceInfo.TYPE_USB_DEVICE,
+        AudioDeviceInfo.TYPE_USB_ACCESSORY -> "headset"
+        else -> ""
     }
 
     private fun onStart(result: MethodChannel.Result) {
