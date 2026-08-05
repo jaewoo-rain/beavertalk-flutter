@@ -76,12 +76,62 @@ public class FlutterPcmSoundPlugin implements
     //   실측 call_id=855(2026-08-01): 유저 턴의 절반이 비버 대사였다.
     private final AtomicLong mWrittenOutFrames = new AtomicLong(0);
 
-    /** 실제 잔여 재생량(입력 레이트 프레임) = 대기 큐 + AudioTrack 미방출분. */
+    // [BeaverTalk barge-in] clear() 세대 카운터.
+    //
+    // ⚠ 큐를 비우고 AudioTrack 을 flush 하는 것만으로는 부족하다. 재생 스레드는 이미
+    //   mSamples 에서 청크를 **꺼내 들고**(mScratch 로 복사한 뒤) write 로 향하는 중일 수
+    //   있는데, 그건 큐에도 트랙에도 없어서 어느 쪽을 지워도 안 지워진다. 그대로 두면
+    //   취소된 턴의 마지막 조각이 flush 직후에 스피커로 나간다 —
+    //   "끊었는데 비버가 한 마디 더 하는" 증상이 정확히 이것이다.
+    //
+    //   그래서 재생 스레드는 poll 직후 이 값을 읽어 두고, write 직전에 다시 비교한다.
+    //   달라져 있으면 그 버퍼를 **버린다**. 이미 write 안으로 들어간 것만 남고, 그건
+    //   write 한 번의 소요(수십 ms)로 상한이 잡힌다.
+    private final AtomicLong mClearGen = new AtomicLong(0);
+
+    // [BeaverTalk barge-in] 큐에서 꺼냈지만 아직 write 하지 않은 입력 바이트.
+    //
+    // ⚠ 이게 없으면 잔량 계산에 **구멍**이 생긴다. 재생 스레드는 큐에서 꺼내는 즉시
+    //   mQueuedBytes 를 감산하는데, 그 오디오가 mWrittenOutFrames 에 잡히는 건 write 가
+    //   끝난 뒤다. 그 사이(업샘플 루프 + write, 실측 STALL 로그 기준 수 ms~60ms) 그 바이트는
+    //   **어느 쪽에도 안 세어진다.** 평소엔 무해하지만 clear() 가 하필 그때 들어오면
+    //   frames_discarded 가 그만큼 적게 나가고, Dart 원장이 "그만큼 더 들었다"로 계산해
+    //   서버 대화 이력에 사용자가 듣지도 않은 문장이 들은 것으로 박힌다.
+    private final AtomicLong mPolledNotWrittenBytes = new AtomicLong(0);
+
+    /**
+     * 트랙 버퍼를 지금 비운다(트랙은 살려 둔다).
+     *
+     * flush() 는 재생 중에는 no-op 이라 pause → flush → play 순서가 필수다.
+     * 재생 헤드가 0 으로 돌아가므로 mWrittenOutFrames 도 같이 맞춘다 — 안 맞추면
+     * in-flight(= written − head) 가 영구히 부풀어 마이크가 다시는 안 열린다.
+     *
+     * clear() 핸들러(플랫폼 스레드)와 재생 스레드 양쪽에서 부른다. 둘이 겹쳐도
+     * 각 호출은 pause/flush/play 를 온전히 수행하고, 잘못된 상태는
+     * IllegalStateException 으로 떨어져 여기서 흡수된다.
+     */
+    private void flushTrackNow(String why) {
+        AudioTrack track = mAudioTrack;
+        if (track == null) return;
+        try {
+            track.pause();
+            track.flush();
+            track.play();
+            mWrittenOutFrames.set(0);
+            Log.w("BeaverTalkPCM", "flushTrackNow: " + why);
+        } catch (IllegalStateException e) {
+            // 트랙 해제 경합 — 어차피 소리는 안 난다.
+            Log.w("BeaverTalkPCM", "flushTrackNow skipped — " + e);
+        }
+    }
+
+    /** 실제 잔여 재생량(입력 레이트 프레임) = 대기 큐 + 꺼내둔 것 + AudioTrack 미방출분. */
     private long remainingInputFrames() {
         // setup 전이면 mNumChannels/mUpsample 이 0 이라 나눗셈이 터진다(호출 경로상
         // 일어나면 안 되지만, 여기서 죽으면 재생 스레드가 통째로 멈춘다).
         if (mNumChannels <= 0 || mUpsample <= 0) return 0;
-        long queued = mQueuedBytes.get() / (2 * mNumChannels);
+        long queued =
+            (mQueuedBytes.get() + mPolledNotWrittenBytes.get()) / (2 * mNumChannels);
         AudioTrack track = mAudioTrack;
         if (track == null) return queued;
         long inFlightOut;
@@ -268,6 +318,7 @@ public class FlutterPcmSoundPlugin implements
                     // reset
                     mSamples.clear();
                     mQueuedBytes.set(0); // [BeaverTalk fix] 큐 잔량 카운터도 리셋
+                    mPolledNotWrittenBytes.set(0); // [BeaverTalk barge-in] 직전 통화의 이월분 제거
                     // 새 트랙이라 playbackHead 도 0 부터 — 누적 write 카운터를 같이 리셋해야
                     // in-flight 계산이 어긋나지 않는다(안 하면 직전 통화분만큼 과대계상).
                     mWrittenOutFrames.set(0);
@@ -333,6 +384,70 @@ public class FlutterPcmSoundPlugin implements
                     mFeedThreshold = feedThreshold; // [BeaverTalk fix] volatile, 락 불필요
 
                     result.success(true);
+                    break;
+                }
+                // [BeaverTalk barge-in] 트랙을 죽이지 않고 대기 중인 재생을 즉시 버린다.
+                //
+                // release() 는 스레드까지 내려서 재기동에 setup() + 정착 대기가 붙는다.
+                // barge-in 은 턴마다 일어나므로 그 비용을 낼 수 없다. 여기서는 트랙을
+                // 살려둔 채 큐와 트랙 버퍼만 비운다 — 무음 keep-alive 도 그대로 돌아
+                // AudioFlinger 가 트랙을 유휴로 빼는(재활성화 ~130ms) 일이 없다.
+                //
+                // 반환값 frames_discarded = **입력 프레임**(PCM24k 기준) 이다. 출력 프레임이
+                // 아니다. 대기 큐 + 트랙 미방출분을 모두 포함하며, 비우기 **직전** 값이다.
+                // 이 숫자가 "사용자가 실제로 어디까지 들었는가"의 근거가 되므로 추정이면
+                // 안 된다 — 큐만 세면 트랙 버퍼(기기에 따라 800ms 초과)를 통째로 빠뜨려
+                // call_id=855 자기-대화 루프와 같은 종류의 오차가 난다.
+                case "clear": {
+                    Map<String, Object> res = new HashMap<>();
+                    AudioTrack track = mAudioTrack;
+                    if (!mDidSetup || track == null) {
+                        // setup 전이면 버릴 것도 없다. 에러가 아니다 — barge-in 이 통화
+                        // 시작 직후에 들어올 수 있고, 그때 예외를 던지면 호출부가 폴백으로
+                        // 떨어져 정확도만 잃는다.
+                        res.put("frames_discarded", 0);
+                        result.success(res);
+                        break;
+                    }
+
+                    // ① 비우기 전에 잰다. 순서가 뒤바뀌면 항상 0 이 나온다.
+                    long discarded = remainingInputFrames();
+
+                    // ② 재생 스레드가 이미 꺼내 든 청크를 무효화한다(위 mClearGen 주석).
+                    mClearGen.incrementAndGet();
+
+                    // ③ 대기 큐 + 재생 스레드가 꺼내 들고 있던 것.
+                    mSamples.clear();
+                    mQueuedBytes.set(0);
+                    mPolledNotWrittenBytes.set(0);
+
+                    // ④ 트랙 내부 버퍼.
+                    //    근거(AudioTrack javadoc, android-36.1 SDK 소스 실물 확인):
+                    //      flush() — "Flushes the audio data currently queued for playback.
+                    //      Any data that has been written but not yet presented will be
+                    //      discarded. **No-op if not stopped or paused**, or if the track's
+                    //      creation mode is not MODE_STREAM."
+                    //      → 재생 중에 그냥 부르면 아무 일도 안 일어난다. pause 가 필수다.
+                    //      우리 트랙은 MODE_STREAM 이다(setup 의 setTransferMode).
+                    //      pause() — "Data that has not been played back will not be discarded."
+                    //      → pause 만으로는 안 지워지고, 그래서 flush 가 따로 필요하다.
+                    //      stop() 이 아니라 pause() 인 이유는 stop() 이 스트리밍 모드에서
+                    //      남은 버퍼를 끝까지 내보내고 멈추기 때문이다 — 그러면 끊는 의미가 없다.
+                    //
+                    //    ⑤ flush() 는 재생 헤드를 0 으로 되돌리므로 mWrittenOutFrames 도 같이
+                    //       맞춰야 한다. 근거(getPlaybackHeadPosition javadoc, 같은 SDK 소스):
+                    //       "It is reset to zero by flush(), reloadStaticData(), and stop()."
+                    //       안 맞추면 in-flight(= written − head) 가 영구히 부풀어
+                    //       remainingInputFrames() 가 0 으로 안 내려간다 → 마이크가 다시는
+                    //       안 열리고 통화 종료 배수도 막힌다.
+                    //       ⚠ 여기서 0 으로 놓는 것만으로는 부족하다 — 재생 스레드가 write()
+                    //         안에 있을 때 여기를 지나가면 스레드가 깨어나 다시 부풀린다.
+                    //         그쪽 증가에도 세대 가드가 걸려 있다(playbackThreadLoop 참조).
+                    //    ④⑤ 를 한 곳에 모아 둔다 — 재생 스레드도 같은 절차를 쓰므로
+                    //       두 경로가 갈라지면 한쪽만 헤드 리셋을 빠뜨리게 된다.
+                    flushTrackNow("clear: discarded=" + discarded + " inFrames");
+                    res.put("frames_discarded", discarded);
+                    result.success(res);
                     break;
                 }
                 case "release": {
