@@ -532,10 +532,15 @@ public class FlutterPcmSoundPlugin implements
             // [BeaverTalk fix] 큐가 비었다 → 무음을 채워 AudioTrack 을 계속 active 로 유지.
             // 이러면 AudioFlinger 가 트랙을 빼지 않아(BUFFER TIMEOUT 방지) 재활성화 130ms 정지가 안 난다.
             if (data == null) {
+                // 오디오 분기와 같은 이유로 write 전후의 세대를 비교한다(아래 write 뒤 주석).
+                final long genBeforeSilence = mClearGen.get();
                 mAudioTrack.write(mSilence, 0, mSilence.length, AudioTrack.WRITE_BLOCKING);
                 // 무음도 스피커에서 나가는 실제 시간을 차지한다 — 실오디오가 이 뒤에
                 // 붙으면 그만큼 늦게 들린다. in-flight 에 반드시 포함해야 한다.
-                mWrittenOutFrames.addAndGet(mSilence.length / (2 * mNumChannels));
+                // 단 write 중에 clear() 가 돌았으면 이 무음도 flush 로 사라졌다.
+                if (genBeforeSilence == mClearGen.get()) {
+                    mWrittenOutFrames.addAndGet(mSilence.length / (2 * mNumChannels));
+                }
                 lastEnd = SystemClock.elapsedRealtime();
                 // [BeaverTalk 계측] 무음 주입 1회. 런 길이로 "발화 중 구멍" vs "턴 사이"를 가른다.
                 mSilFills++;
@@ -550,6 +555,10 @@ public class FlutterPcmSoundPlugin implements
             // [BeaverTalk 계측] 오디오가 다시 나왔다 → 직전 무음 런을 히스토그램에 확정.
             closeSilenceRun();
 
+            // [BeaverTalk barge-in] 이 버퍼가 "언제 큐를 떠났는지"를 표시해 둔다.
+            // write 직전에 다시 비교해, 그 사이 clear() 가 돌았으면 버린다.
+            final long genAtPoll = mClearGen.get();
+
             // [BeaverTalk fix] 코얼레싱: 방금 꺼낸 청크에 이어, 지금 큐에 바로 있는 청크들을
             // (블록 없이 poll) scratch 에 모아 목표(~300ms)까지 채운 뒤 "한 번에" write 한다.
             // write 호출당 붙는 HAL 지연(~130ms)을 청크 수백 개가 아니라 write 한 번에만 물리게 해
@@ -563,7 +572,23 @@ public class FlutterPcmSoundPlugin implements
                 more.get(mScratch, total, r);
                 total += r;
             }
-            mQueuedBytes.addAndGet(-total); // 꺼낸 만큼 잔량 감산 (O(1))
+            // [BeaverTalk barge-in] poll 이후 clear() 가 돌았나. 돌았으면 이 버퍼는
+            // 취소된 턴의 잔여다 — 잔량 감산도 write 도 하지 않고 버린다.
+            // ⚠ 감산까지 건너뛰어야 한다. clear() 가 mQueuedBytes 를 0 으로 놓은 뒤
+            //   여기서 또 빼면 음수로 내려가 remainingInputFrames() 가 영구히 틀어진다.
+            if (genAtPoll != mClearGen.get()) {
+                Log.w("BeaverTalkPCM", "clear raced playback — 꺼내둔 " + total + "B 폐기");
+                lastEnd = SystemClock.elapsedRealtime();
+                continue;
+            }
+
+            long qLeft = mQueuedBytes.addAndGet(-total); // 꺼낸 만큼 잔량 감산 (O(1))
+            // clear() 와의 경합으로 음수가 되면 0 으로 되돌린다(위 가드가 대부분 막지만,
+            // 감산 직전에 clear 가 끼어드는 창이 남는다). 음수를 두면 잔량이 과소 보고돼
+            // 마이크가 너무 일찍 열린다.
+            if (qLeft < 0) mQueuedBytes.compareAndSet(qLeft, 0);
+            // 큐에서는 뺐지만 아직 스피커로 가지 않았다 — write 가 끝날 때까지 여기서 센다.
+            mPolledNotWrittenBytes.addAndGet(total);
 
             // [BeaverTalk fix] 입력(24k) → 출력(48k) 업샘플: 각 프레임을 mUpsample 번 복제.
             // 트랙이 네이티브 레이트라 fast track → write() 지연이 거의 없어진다.
@@ -582,7 +607,34 @@ public class FlutterPcmSoundPlugin implements
                 }
             }
             mAudioTrack.write(mScratchOut, 0, outLen, AudioTrack.WRITE_BLOCKING);
-            mWrittenOutFrames.addAndGet(outLen / (2 * mNumChannels));
+            // ⛔ 이 증가를 무방비로 두면 **마이크가 영영 안 열린다.**
+            //   write() 는 WRITE_BLOCKING 이라 수십 ms 를 잡아먹는데, 그 안에 clear() 가
+            //   돌면 이 데이터는 flush 로 사라지고 재생 헤드는 0 으로 리셋된다. 그런데
+            //   여기서 그대로 더하면 written 만 outLen 만큼 남아
+            //   inFlight = written − head 가 **영구히** 그만큼 부풀어 오른 채 고정된다.
+            //   remainingInputFrames() 가 0 으로 안 내려가니 Dart 의 _audioDrained 가
+            //   영원히 false 고, 마이크 재개방도 통화 종료 배수도 다시는 안 걸린다.
+            //   (clear() 가 mWrittenOutFrames.set(0) 을 한 **뒤에** 이 줄이 실행되는 게
+            //    핵심이다 — set(0) 은 이 경합을 막아주지 못한다.)
+            //
+            //   세대가 바뀌었으면 이 write 의 결과는 이미 flush 된 것이므로 안 센다.
+            //   반대 방향의 오차(약간 과소 보고)는 마이크가 조금 일찍 열리는 정도라
+            //   락업보다 훨씬 가볍다.
+            if (genAtPoll == mClearGen.get()) {
+                mWrittenOutFrames.addAndGet(outLen / (2 * mNumChannels));
+                long pLeft = mPolledNotWrittenBytes.addAndGet(-total);
+                if (pLeft < 0) mPolledNotWrittenBytes.compareAndSet(pLeft, 0);
+            } else {
+                // write() 가 도는 중에 clear() 가 들어왔다. 이게 gen 가드로 못 막는
+                // 유일한 창이다 — write 는 WRITE_BLOCKING 이라 트랙 버퍼가 가득 차면
+                // 자리가 날 때까지 기다리는데, 그 사이 clear 의 flush() 가 자리를 비워주면
+                // **취소된 턴의 오디오가 그 빈 자리로 들어가 그대로 재생된다.**
+                // "끊었는데 비버가 한 마디 더 하는" 증상이 여기서 되살아난다.
+                //
+                // 그래서 우리가 방금 넣은 것을 우리가 지운다. 폐기 실효지연이 이 write 의
+                // 길이(코얼레싱 목표 ~300ms)가 아니라 **감지 + flush 한 번**으로 묶인다.
+                flushTrackNow("clear raced write — 방금 쓴 " + outLen + "B 회수");
+            }
             mWroteAudioBytes += outLen; // [BeaverTalk 계측]
             maybeLogStats(mSampleRate * mUpsample);
 
