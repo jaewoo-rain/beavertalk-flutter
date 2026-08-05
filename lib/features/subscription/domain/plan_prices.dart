@@ -21,32 +21,32 @@
 /// of them is wrong for a member shopping from another country.
 abstract final class PlanPrices {
   /// Pro, billed monthly.
-  static const proMonthly = r'$12.99';
+  static const proMonthly = r'$15.99';
 
   /// Pro, billed yearly.
-  static const proYearly = r'$99.99';
+  static const proYearly = r'$117.99';
 
   /// Max, billed monthly.
-  static const maxMonthly = r'$19.99';
+  static const maxMonthly = r'$23.99';
 
   /// Max, billed yearly.
-  static const maxYearly = r'$159.99';
+  static const maxYearly = r'$188.99';
 
   /// Twelve months of Pro at the monthly rate — the struck anchor next to the
   /// annual price. **Derived**: [proMonthly] × 12.
-  static const proYearlyAnchor = r'$155.88';
+  static const proYearlyAnchor = r'$191.88';
 
   /// What the annual plan saves against [proYearlyAnchor].
-  static const proYearlySaved = r'$55.89';
+  static const proYearlySaved = r'$73.89';
 
   /// Pro annual, expressed per month. **Derived**: [proYearly] ÷ 12.
-  static const proYearlyPerMonth = r'$8.33';
+  static const proYearlyPerMonth = r'$9.83';
 
   /// Max annual, expressed per month. **Derived**: [maxYearly] ÷ 12.
-  static const maxYearlyPerMonth = r'$13.33';
+  static const maxYearlyPerMonth = r'$15.75';
 
   /// The struck anchor shown beside Max monthly.
-  static const maxMonthlyAnchor = r'$24.99';
+  static const maxMonthlyAnchor = r'$29.99';
 
   /// Cheapest a character ever costs — the discounted price (설계서 §3-2).
   static const characterFrom = r'$5.99';

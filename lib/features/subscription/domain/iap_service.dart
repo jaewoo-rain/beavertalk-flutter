@@ -145,7 +145,7 @@ class IapProduct {
   /// Subscription or non-consumable.
   final IapProductType type;
 
-  /// The store's localized display price (`$12.99`). **Always displayed
+  /// The store's localized display price (`$15.99`). **Always displayed
   /// verbatim** — v2 §6-4 forbids hardcoding character prices; the store is
   /// the price authority. Mock values stand in until the catalog exists.
   final String localizedPrice;

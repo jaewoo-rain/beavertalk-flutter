@@ -58,7 +58,7 @@ String _shortDate(BuildContext context, DateTime d) =>
     localizedShortDate(context, d);
 
 /// The plan-card monthly price line: server value when present, otherwise the
-/// plan's list price (the design's `$12.99` / `$19.99`).
+/// plan's list price (the design's `$15.99` / `$23.99`).
 String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
   final minor = status.source?.price ??
       (status.tier == SubscriptionTier.max ? 1990 : 1290);

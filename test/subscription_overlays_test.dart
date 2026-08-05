@@ -79,7 +79,7 @@ void main() {
       SubscriptionOverlay.characterOffer: 'Not ready for Pro?',
       SubscriptionOverlay.notEligible: 'Nothing to cancel',
       SubscriptionOverlay.cancelDownsell: 'Before you go',
-      SubscriptionOverlay.annualSwitch: r'Pay yearly, save $55.89',
+      SubscriptionOverlay.annualSwitch: r'Pay yearly, save $73.89',
       SubscriptionOverlay.monthlySwitch: 'Switch to monthly',
       SubscriptionOverlay.refundHelp: 'Refunds are handled by the store',
       SubscriptionOverlay.cancelSubscription: 'Cancel subscription',
@@ -191,7 +191,7 @@ void main() {
       await pumpHost(tester, SubscriptionOverlay.freeLimitCall);
       expect(find.text('Baba'), findsOneWidget);
       expect(find.text('4:58 of 5:00 used'), findsOneWidget);
-      expect(find.text(r'$12.99 per month · cancel anytime'), findsOneWidget);
+      expect(find.text(r'$15.99 per month · cancel anytime'), findsOneWidget);
       expect(find.text('Maybe tomorrow'), findsOneWidget);
     });
   });

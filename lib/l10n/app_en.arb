@@ -711,7 +711,7 @@
     "placeholders": {
       "amount": {
         "type": "String",
-        "example": "$12.99"
+        "example": "$15.99"
       }
     }
   },

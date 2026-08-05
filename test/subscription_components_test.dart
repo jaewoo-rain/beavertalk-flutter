@@ -117,7 +117,7 @@ void main() {
         tier: PlanRowTier.pro,
         selected: true,
         title: 'Monthly',
-        price: r'$12.99 per month',
+        price: r'$15.99 per month',
       )));
       final box = tester
           .widgetList<Container>(find.byType(Container))
@@ -134,7 +134,7 @@ void main() {
         tier: PlanRowTier.max,
         selected: true,
         title: 'Yearly',
-        price: r'$159.99 per year',
+        price: r'$188.99 per year',
       )));
       final box = tester
           .widgetList<Container>(find.byType(Container))
@@ -151,7 +151,7 @@ void main() {
           tier: tier,
           selected: false,
           title: 'Monthly',
-          price: r'$12.99 per month',
+          price: r'$15.99 per month',
         )));
         expect(faceOf(tester, find.byType(PlanRow)),
             c.backgroundSurfaceAlternative,
@@ -172,8 +172,8 @@ void main() {
         tier: PlanRowTier.pro,
         selected: true,
         title: 'Yearly',
-        price: r'$99.99 · $8.33 per month',
-        priceOriginal: r'$155.88',
+        price: r'$117.99 · $9.83 per month',
+        priceOriginal: r'$191.88',
       )));
       final rich = tester.widget<Text>(find.byWidgetPredicate(
           (w) => w is Text && w.textSpan != null));
@@ -190,7 +190,7 @@ void main() {
         tier: PlanRowTier.pro,
         selected: false,
         title: 'Monthly',
-        price: r'$12.99 per month',
+        price: r'$15.99 per month',
         onTap: () => taps++,
       )));
       await tester.tap(find.byType(PlanRow));
@@ -290,8 +290,8 @@ void main() {
               SheetStreakDay(label: 'Wed', done: false),
             ],
             streakNote: "You're using it every day. The cap isn't.",
-            videoPrice: r'$19.99 per month',
-            videoPriceOriginal: r'$24.99',
+            videoPrice: r'$23.99 per month',
+            videoPriceOriginal: r'$29.99',
             benefitLabel: benefitLabel,
             caption: caption,
             primaryAction: SheetAction(label: 'Go unlimited', onPressed: () {}),
@@ -354,14 +354,14 @@ void main() {
       await tester.pumpWidget(sheet(
         mark: SheetMarkTone.success,
         benefitLabel: 'Unlimited calls with Pro · 15 minutes each',
-        caption: r'$12.99 per month · cancel anytime',
+        caption: r'$15.99 per month · cancel anytime',
       ));
       expect(find.byType(BenefitRow), findsOneWidget);
-      expect(find.text(r'$12.99 per month · cancel anytime'), findsOneWidget);
+      expect(find.text(r'$15.99 per month · cancel anytime'), findsOneWidget);
 
       await tester.pumpWidget(sheet());
       expect(find.byType(BenefitRow), findsNothing);
-      expect(find.text(r'$12.99 per month · cancel anytime'), findsNothing);
+      expect(find.text(r'$15.99 per month · cancel anytime'), findsNothing);
     });
 
     testWidgets('secondary CTA renders below the primary when present',
