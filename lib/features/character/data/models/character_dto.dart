@@ -12,6 +12,8 @@ class CharacterDto {
     required this.price,
     required this.effectivePrice,
     required this.isOwned,
+    required this.isUnlocked,
+    this.unlockSource,
     this.description,
     this.backgroundStory,
     this.voiceUrl,
@@ -32,7 +34,17 @@ class CharacterDto {
   final String? imageUrl;
   final int price;
   final int effectivePrice;
+
+  /// `is_owned` — 영구 구매 여부. 지금 쓸 수 있는지는 [isUnlocked] 다.
   final bool isOwned;
+
+  /// `is_unlocked` — 지금 쓸 수 있는가. 이 키를 안 보내는 서버(현 prod)에서는
+  /// [isOwned] 로 폴백한다.
+  final bool isUnlocked;
+
+  /// `unlock_source` — 무엇이 열어줬나. 잠겼거나 모르면 null.
+  final CharacterUnlockSource? unlockSource;
+
   final String? description;
   final String? backgroundStory;
   final String? voiceUrl;
@@ -43,6 +55,14 @@ class CharacterDto {
   final DateTime? discountEndsAt;
 
   factory CharacterDto.fromJson(Map<String, dynamic> json) {
+    final owned = json['is_owned'] as bool? ?? false;
+    // 소유(is_owned)와 접근(is_unlocked)은 **다른 축**이다. 서버는 Max 회원에게
+    // member_character 행을 만들지 않는다 — 만들면 해지 후에도 영구 소유가 되어
+    // 되돌릴 수 없기 때문. 그래서 "지금 쓸 수 있나"는 별도 필드로 온다.
+    //
+    // 키가 없으면 소유값으로 폴백한다: 이 필드를 모르는 구버전 서버(현 prod)에서는
+    // 종전 동작(구매한 것만 열림)이 그대로 유지되고, 크래시하지 않는다.
+    final unlocked = json['is_unlocked'] as bool? ?? owned;
     return CharacterDto(
       characterId: json['character_id'] as int,
       productKey: json['product_key'] as String? ?? '',
@@ -50,7 +70,10 @@ class CharacterDto {
       imageUrl: json['image_url'] as String?,
       price: parseMoneyMinor(json['price']),
       effectivePrice: parseMoneyMinor(json['effective_price']),
-      isOwned: json['is_owned'] as bool? ?? false,
+      isOwned: owned,
+      isUnlocked: unlocked,
+      unlockSource:
+          _unlockSource(json['unlock_source'], owned: owned, unlocked: unlocked),
       description: json['description'] as String?,
       // `description` is a one-line catch-phrase; `background_story` is the
       // long-form story paragraph. They are separate server columns and the
@@ -72,6 +95,28 @@ class CharacterDto {
     );
   }
 
+  /// `unlock_source` 문자열 → [CharacterUnlockSource]. 잠겼으면 null.
+  ///
+  /// 키가 없거나(구버전 서버) 모르는 값이면 아는 두 축에서 **파생**한다. 파생 규칙은
+  /// 서버와 동일하게 **소유가 구독보다 우선**이다 — 뒤집으면 이미 산 캐릭터가 "해지하면
+  /// 사라짐"으로 표시된다.
+  static CharacterUnlockSource? _unlockSource(
+    Object? raw, {
+    required bool owned,
+    required bool unlocked,
+  }) {
+    switch (raw) {
+      case 'owned':
+        return CharacterUnlockSource.owned;
+      case 'subscription':
+        return CharacterUnlockSource.subscription;
+    }
+    if (!unlocked) return null;
+    return owned
+        ? CharacterUnlockSource.owned
+        : CharacterUnlockSource.subscription;
+  }
+
   /// `active_discount.end_time` → 로컬 DateTime. 형태가 어긋나면 null(카운트다운 생략).
   static DateTime? _endsAt(Object? v) {
     if (v is! Map) return null;
@@ -89,6 +134,8 @@ class CharacterDto {
         price: price,
         effectivePrice: effectivePrice,
         isOwned: isOwned,
+        isUnlocked: isUnlocked,
+        unlockSource: unlockSource,
         description: description,
         backgroundStory: backgroundStory,
         voiceUrl: voiceUrl,
