@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../preview/echo_rig_screen.dart';
 import '../preview/gallery_screen.dart';
 import '../theme/app_motion.dart';
 import 'placeholder_screen.dart';
@@ -122,6 +123,11 @@ abstract final class Routes {
   static const permissionMicDenied = '/permission/mic-denied';
 
   static const gallery = '/gallery';
+
+  /// 개발자 전용 계측 도구. 서버 에코 게이트 상수를 정하기 위한 실측 리그다.
+  /// [gallery] 와 같은 부류(제품 플로우에서 도달하지 않는 진입점)라 여기 둔다 —
+  /// 컴포넌트 갤러리에 끼워 넣지 않은 건 그쪽이 컴포넌트 미리보기 전용이기 때문이다.
+  static const echoRig = '/dev/echo-rig';
 }
 
 /// Central route table. Screens are swapped for real ones flow-by-flow; until
@@ -149,6 +155,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
 
   final builders = <String, WidgetBuilder>{
     Routes.gallery: (_) => const GalleryScreen(),
+    Routes.echoRig: (_) => const EchoRigScreen(),
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
     Routes.onboardingName: (_) => const OnboardingNameScreen(),
     Routes.onboardingReason: (_) => const OnboardingReasonScreen(),
