@@ -3,6 +3,7 @@ package com.lib.flutter_pcm_sound;
 import android.os.Build;
 import android.media.AudioFormat;
 import android.media.AudioManager;
+import android.media.AudioTimestamp;
 import android.media.AudioTrack;
 import android.media.AudioAttributes;
 import android.os.Handler;
@@ -98,6 +99,24 @@ public class FlutterPcmSoundPlugin implements
     //   frames_discarded 가 그만큼 적게 나가고, Dart 원장이 "그만큼 더 들었다"로 계산해
     //   서버 대화 이력에 사용자가 듣지도 않은 문장이 들은 것으로 박힌다.
     private final AtomicLong mPolledNotWrittenBytes = new AtomicLong(0);
+
+    // [BeaverTalk barge-in] 재생 스레드가 실오디오를 **쓰기로 확정했는가**
+    // (= gen 재검사를 통과할 참이거나, 이미 write() 안에 있다).
+    //
+    // clear() 가 "실제로 조용해진 시각"을 보고할 수 있는지를 가른다. 이 구간에 걸리면
+    // 그 데이터는 우리 flush **뒤에** 트랙으로 들어가고(=잠깐 소리가 남고), 재생 스레드가
+    // 세대 변화를 보고 스스로 회수(flushTrackNow)할 때까지 기다려야 진짜 무음이 된다.
+    // 그 회수는 clear() 가 반환한 뒤에 일어나므로 반환값에 담을 수 없다 — 대신 "지금
+    // 그 창에 있다"는 사실을 알려서, 호출부가 측정 지점을 hal_drained 가 아니라
+    // clear_returned(하한)로 낮추게 한다.
+    //
+    // ⚠ 이름이 "write 중"이 아니라 "쓰기로 확정"인 것이 중요하다. gen 재검사 **이전에**
+    //   세워야 clear() 와 Dekker 짝이 되어 창이 닫힌다(설정 위치의 주석 참조).
+    //   write() 진입 직전으로 늦추면 그 사이에 끼어든 clear 가 false 를 읽고 hal_drained
+    //   로 잘못 보고한다.
+    //
+    // 무음 write 는 일부러 표시하지 않는다. 무음이 flush 뒤에 새어도 들리지 않는다.
+    private volatile boolean mAudioWritePending = false;
 
     /**
      * 트랙 버퍼를 지금 비운다(트랙은 살려 둔다).
@@ -413,6 +432,40 @@ public class FlutterPcmSoundPlugin implements
                     // ① 비우기 전에 잰다. 순서가 뒤바뀌면 항상 0 이 나온다.
                     long discarded = remainingInputFrames();
 
+                    // ①-b HAL 잔량 — "취소 수신 → 실제 무음"을 재려면 이게 필요하다.
+                    //
+                    // flush() 는 **AudioTrack 버퍼**만 비운다. 이미 믹서/HAL 로 넘어간
+                    // 오디오는 못 지우고 그대로 스피커에서 울린다. 그래서 flush 가 끝난
+                    // 시점 = 무음 시점이 아니다. 그 차이를 안 세면 실효지연이 실제보다
+                    // 낙관적으로 보고된다 — 목표(50~120ms) 판정이 걸려 있는 값이라
+                    // 추정으로 두면 안 된다.
+                    //
+                    // getPlaybackHeadPosition = 트랙 버퍼에서 소비된 프레임,
+                    // getTimestamp().framePosition = 실제로 제시됐거나 제시가 확정된 프레임.
+                    // 둘의 차이가 곧 HAL 파이프라인에 남아 있는 양이다.
+                    //
+                    // ⚠ javadoc: "A timestamp may be temporarily unavailable while the audio
+                    //   clock is stabilizing, or during and immediately after a route change.
+                    //   A timestamp is permanently unavailable for a given route if the route
+                    //   does not support timestamps." → 못 받을 수 있다. 그때는 0 을 주되
+                    //   **모른다는 사실(hal_residual_known=0)을 같이 보고**한다. 0 을 조용히
+                    //   섞으면 지연이 실제보다 좋아 보인다.
+                    long halResidualMs = 0;
+                    boolean halKnown = false;
+                    try {
+                        AudioTimestamp ts = new AudioTimestamp();
+                        if (track.getTimestamp(ts)) {
+                            long head = track.getPlaybackHeadPosition() & 0xFFFFFFFFL;
+                            long behind = head - ts.framePosition;
+                            if (behind < 0) behind = 0;
+                            int outRate = mSampleRate * mUpsample;
+                            if (outRate > 0) halResidualMs = behind * 1000L / outRate;
+                            halKnown = true;
+                        }
+                    } catch (Throwable ignored) {
+                        // 진단이 취소를 막으면 안 된다.
+                    }
+
                     // ② 재생 스레드가 이미 꺼내 든 청크를 무효화한다(위 mClearGen 주석).
                     mClearGen.incrementAndGet();
 
@@ -447,6 +500,13 @@ public class FlutterPcmSoundPlugin implements
                     //       두 경로가 갈라지면 한쪽만 헤드 리셋을 빠뜨리게 된다.
                     flushTrackNow("clear: discarded=" + discarded + " inFrames");
                     res.put("frames_discarded", discarded);
+                    // 호출부가 "실제 무음" 시각을 계산하는 데 쓴다. known=0 이면 값이 아니라
+                    // **모른다**는 뜻이므로, 호출부는 그걸 리포트에 드러내야 한다.
+                    res.put("hal_residual_ms", halResidualMs);
+                    // 이 창에 걸렸으면 실제 무음은 flush 완료보다 늦다(위 mAudioWritePending 주석).
+                    // ⚠ gen 증가 **뒤에** 읽어야 Dekker 짝이 성립한다. 순서를 바꾸지 마라.
+                    res.put("write_in_flight", mAudioWritePending ? 1 : 0);
+                    res.put("hal_residual_known", halKnown ? 1 : 0);
                     result.success(res);
                     break;
                 }
@@ -576,7 +636,27 @@ public class FlutterPcmSoundPlugin implements
             // 취소된 턴의 잔여다 — 잔량 감산도 write 도 하지 않고 버린다.
             // ⚠ 감산까지 건너뛰어야 한다. clear() 가 mQueuedBytes 를 0 으로 놓은 뒤
             //   여기서 또 빼면 음수로 내려가 remainingInputFrames() 가 영구히 틀어진다.
+            //
+            // ⚠ 플래그를 **가드보다 먼저** 세운다. 순서가 뒤바뀌면 창이 열린다:
+            //   가드를 통과한 스레드는 다시 검사받지 않으므로, 통과 직후 플래그를 세우기
+            //   전에 clear() 가 끼어들면 clear 는 플래그를 false 로 읽고 hal_drained 로
+            //   보고하는데, 스레드는 곧 write 로 가서 방금 비운 트랙에 취소된 오디오를
+            //   밀어넣는다. 실제 무음은 보고값보다 늦은데 서버는 합격 판정에 그대로 쓴다.
+            //
+            //   먼저 세우면 Dekker 배치가 되어 그 창이 닫힌다. 양쪽이 각자 자기 것을 쓴 뒤
+            //   상대 것을 읽으므로(둘 다 volatile/Atomic = 순차일관), **둘 다 상대의 예전
+            //   값을 읽는 일은 불가능**하다:
+            //     - clear 가 플래그를 false 로 읽었다 → 이 스레드는 아직 플래그를 안 썼다
+            //       → 아래 gen 재검사에서 clear 의 증가를 **반드시** 본다 → write 없이 버림
+            //     - 이 스레드가 옛 gen 을 읽어 통과했다 → clear 는 플래그를 true 로 읽는다
+            //       → clear_returned 로 강등
+            //   즉 "플래그 false" 와 "가드 통과"가 상호배타가 된다.
+            //
+            //   대가는 가드에 걸려 버려질 버퍼도 잠깐 true 로 보인다는 것뿐이다. 그건
+            //   소리가 안 나는데 하한으로 강등되는 쪽이라 안전한 방향의 오차다.
+            mAudioWritePending = true;
             if (genAtPoll != mClearGen.get()) {
+                mAudioWritePending = false;
                 Log.w("BeaverTalkPCM", "clear raced playback — 꺼내둔 " + total + "B 폐기");
                 lastEnd = SystemClock.elapsedRealtime();
                 continue;
@@ -606,7 +686,11 @@ public class FlutterPcmSoundPlugin implements
                     }
                 }
             }
-            mAudioTrack.write(mScratchOut, 0, outLen, AudioTrack.WRITE_BLOCKING);
+            try {
+                mAudioTrack.write(mScratchOut, 0, outLen, AudioTrack.WRITE_BLOCKING);
+            } finally {
+                mAudioWritePending = false;
+            }
             // ⛔ 이 증가를 무방비로 두면 **마이크가 영영 안 열린다.**
             //   write() 는 WRITE_BLOCKING 이라 수십 ms 를 잡아먹는데, 그 안에 clear() 가
             //   돌면 이 데이터는 flush 로 사라지고 재생 헤드는 0 으로 리셋된다. 그런데

@@ -31,8 +31,14 @@ class PcmPlaybackControl {
   /// 를 null 로 둬서 **호출부가 폴백을 쓴다는 사실을 알 수 있게** 한다.
   static Future<ClearResult> clear() async {
     try {
-      final frames = await FlutterPcmSound.clear();
-      return ClearResult(ok: true, framesDiscarded: frames);
+      final raw = await FlutterPcmSound.clearDetailed();
+      return ClearResult(
+        ok: true,
+        framesDiscarded: raw.framesDiscarded,
+        halResidualMs: raw.halResidualMs,
+        halResidualKnown: raw.halResidualKnown,
+        writeInFlight: raw.writeInFlight,
+      );
     } on MissingPluginException {
       return ClearResult.unsupported;
     } on PlatformException {
@@ -46,7 +52,13 @@ class PcmPlaybackControl {
 
 /// [PcmPlaybackControl.clear] 의 결과.
 class ClearResult {
-  const ClearResult({required this.ok, required this.framesDiscarded});
+  const ClearResult({
+    required this.ok,
+    required this.framesDiscarded,
+    this.halResidualMs = 0,
+    this.halResidualKnown = false,
+    this.writeInFlight = false,
+  });
 
   /// 네이티브가 실제로 큐를 비웠는가. false 면 Dart 링버퍼만 비워진 상태이므로
   /// 스피커에서는 남은 오디오가 계속 나온다 — 호출부가 로그로 드러내야 한다.
@@ -54,6 +66,24 @@ class ClearResult {
 
   /// 폐기한 입력 프레임 수. null 이면 네이티브가 알려주지 않은 것.
   final int? framesDiscarded;
+
+  /// flush 이후에도 **HAL/믹서에 남아 스피커에서 계속 울리는** 잔량(ms).
+  ///
+  /// `flush()` 는 AudioTrack 버퍼만 비운다. 이미 하드웨어 파이프라인으로 넘어간 오디오는
+  /// 못 지운다. 그래서 "flush 완료 = 무음"이 아니고, 이 값을 더해야 실제 정지 시각이 된다.
+  final int halResidualMs;
+
+  /// 위 값이 **측정된 것인지**. false 면 0 은 "잔량 없음"이 아니라 **모름**이다.
+  /// 호출부는 이 구분을 리포트에 그대로 실어야 한다 — 모름을 0 으로 섞으면 지연이
+  /// 실제보다 좋아 보인다.
+  final bool halResidualKnown;
+
+  /// 폐기 시점에 재생 스레드가 실오디오 `write()` 안에 있었는가.
+  ///
+  /// true 면 그 데이터가 우리 flush **뒤에** 트랙으로 들어가 잠깐 더 울리고, 재생
+  /// 스레드가 스스로 회수할 때까지 진짜 무음이 아니다. 그 회수는 이 호출이 반환한
+  /// 뒤에 일어나므로 여기서 기다릴 수 없다 — 대신 보고값을 **하한**으로 표시해야 한다.
+  final bool writeInFlight;
 
   static const ClearResult unsupported =
       ClearResult(ok: false, framesDiscarded: null);
