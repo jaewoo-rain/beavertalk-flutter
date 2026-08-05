@@ -25,6 +25,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
+import '../data/datasources/audio_route_probe.dart';
 import '../data/datasources/pcm_playback_control.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
@@ -2123,6 +2124,11 @@ class NormalCallController extends Notifier<CallState> {
     // 타입이 다르거나 빠진 프레임에 죽지 않는다([_handleControl] 전반의 스타일).
     // ⚠ `as String?` 는 방어가 아니다: 값이 int 면 그대로 TypeError 를 던져 WS 스트림
     //   핸들러까지 올라간다. 타입 검사로 받아야 한다.
+    // ⏱ "취소 수신 → 실제 무음" 의 시작점. **핸들러 첫 줄**이다(WS 프레임 수신 직후).
+    //    단조 시계를 쓴다 — 벽시계는 통화 중 시각 동기화로 튈 수 있고, 그러면 지연이
+    //    음수로 나오거나 수백 ms 뛴다.
+    final stopWatch = Stopwatch()..start();
+
     final rawTurnId = msg['turn_id'];
     final turnId = (rawTurnId is String ? rawTurnId : null) ?? _currentTurnId;
 
@@ -2142,10 +2148,22 @@ class NormalCallController extends Notifier<CallState> {
 
     // ③ 재생 폐기 + 진행도 확정 (폐기 프레임 수가 진행도 계산의 ground truth 다).
     //    Dart 측 상태 리셋은 [_clearPlayback] 안에서 **await 이전에** 끝난다.
-    final played = await _clearPlayback();
+    final outcome = await _clearPlayback();
+
+    // ⏱ 끝점. 여기서 네이티브 폐기가 끝났고, 거기에 **HAL 잔량**을 더해야 스피커가
+    //    실제로 조용해지는 시점이 된다 — flush 는 AudioTrack 버퍼만 비우고, 이미
+    //    믹서/HAL 로 넘어간 오디오는 그대로 울린다.
+    stopWatch.stop();
+    final clientStopMs = stopWatch.elapsedMilliseconds + outcome.halResidualMs;
 
     _tryUngateMic();
     _maybeFinishClosing();
+
+    // 라우트는 **측정마다** 읽는다. 통화 중에도 바뀌므로(이어폰을 뽑으면) 세션 값으로는
+    // 그 턴의 맥락을 못 말한다.
+    // ⚠ stopWatch 를 멈춘 **뒤에** 읽는다 — 이 왕복이 client_stop_ms 에 섞이면
+    //   측정하려던 지연이 오염된다. 대신 이 왕복만큼 서버가 보는 rtt_ms 가 늘어난다.
+    final route = await AudioRouteProbe.currentRoute();
 
     // ④ 회신. 서버가 패딩 원장을 갖고 있고 24kHz PCM16 = 48000B/s 고정이라,
     //    바이트 → ms 와 "대사냐 패딩이냐"의 판정은 서버 몫이다.
@@ -2154,12 +2172,31 @@ class NormalCallController extends Notifier<CallState> {
       // 반드시 드러낸다.
       _log('⚠ audio_cancel 에 turn_id 가 없다 — 상관 불가');
     }
+    // `source` 를 항상 'native' 로 박으면 안 된다. 네이티브 폐기량을 못 받아 추정치로
+    // 떨어졌는데 'native' 라고 하면, 서버는 ±50~150ms 짜리 외삽값을 실측으로 믿고
+    // 대화 이력에 박는다. 서버가 'estimate' 를 거부하고 사유를 찍게 설계돼 있으니,
+    // 정직하게 보내고 거부당하는 쪽이 맞다.
     _send({
       'type': 'playback_progress',
       'turn_id': ?turnId,
-      'played_server_bytes': played,
+      'played_server_bytes': outcome.playedServerBytes,
+      'source': outcome.fromNative ? 'native' : 'estimate',
+      'sampled_at': 'stop',
+      'client_stop_ms': clientStopMs,
+      'stop_measure': outcome.stopMeasure,
+      'platform': AudioRouteProbe.platformName,
+      // 빈 문자열 = **못 읽음**. 'speaker' 로 추측해 채우지 않는다 — 그러면 서버가
+      // 측정 실패와 스피커폰을 구분하지 못한다.
+      'audio_route': route,
     });
-    _log('audio_cancel → cleared, played_server_bytes=$played turn=$turnId');
+    _log('audio_cancel → cleared, played_server_bytes=${outcome.playedServerBytes} '
+        'turn=$turnId source=${outcome.fromNative ? 'native' : 'estimate'} '
+        'client_stop=${clientStopMs}ms '
+        'stop_measure=${outcome.stopMeasure} '
+        'route=${route.isEmpty ? '(못 읽음)' : route} '
+        '(폐기 ${stopWatch.elapsedMilliseconds}ms + HAL 잔량 ${outcome.halResidualMs}ms'
+        '${outcome.halResidualKnown ? '' : ' ⚠미측정'}'
+        '${outcome.writeInFlight ? ' ⚠write 진행 중 — 회수 대기분 있음' : ''})');
   }
 
   /// 재생 파이프라인을 즉시 비우고, **이번 턴에 실제로 스피커로 나간 서버발 바이트**를
@@ -2169,7 +2206,7 @@ class NormalCallController extends Notifier<CallState> {
   /// ②③은 네이티브 `clear()` 가 지운다. 트랙 자체는 살려 둔다: `release()` 로 죽이면
   /// 재기동에 120ms 정착 대기가 붙고, 무음 keep-alive 가 끊겨 AudioFlinger 가 트랙을
   /// idle 로 빼면 재활성화에 ~130ms 가 더 든다.
-  Future<int> _clearPlayback() async {
+  Future<_ClearOutcome> _clearPlayback() async {
     // ⚠ Dart 측 리셋은 **전부 await 이전에** 끝낸다. 뒤로 미루면 플랫폼채널 왕복
     //   (5~15ms) 동안 [_pump] 가 한두 틱 돌아 방금 지운 값을 되살린다.
     //   [_clearGen] 은 그래도 남는 창(피드가 이미 날아가 있는 경우)을 막는다 —
@@ -2239,7 +2276,13 @@ class NormalCallController extends Notifier<CallState> {
     // 수 있다).
     _ledger.reset();
 
-    return playedFrames * 2; // 입력 프레임(PCM16 mono) → 바이트
+    return _ClearOutcome(
+      playedServerBytes: playedFrames * 2, // 입력 프레임(PCM16 mono) → 바이트
+      fromNative: res.framesDiscarded != null,
+      halResidualMs: res.halResidualMs,
+      halResidualKnown: res.halResidualKnown,
+      writeInFlight: res.writeInFlight,
+    );
   }
 
   /// Parses and dispatches a control JSON frame from the server.
@@ -2695,4 +2738,52 @@ class NormalCallController extends Notifier<CallState> {
       }
     }
   }
+}
+
+/// [NormalCallController._clearPlayback] 의 결과 — `playback_progress` 페이로드의 재료.
+///
+/// 값 하나가 아니라 묶음인 이유는 **출처와 한계를 같이 실어야** 하기 때문이다.
+/// 서버는 이 보고로 대화 이력의 절단 지점을 정하는데, 추정치를 실측으로 착각하면
+/// 사용자가 듣지도 않은 문장이 "들은 것"으로 박힌다.
+class _ClearOutcome {
+  const _ClearOutcome({
+    required this.playedServerBytes,
+    required this.fromNative,
+    required this.halResidualMs,
+    required this.halResidualKnown,
+    required this.writeInFlight,
+  });
+
+  /// 이번 턴에 실제로 스피커로 나간 **서버발** 바이트(클라 필러 무음 제외).
+  final int playedServerBytes;
+
+  /// 위 값이 네이티브 실측 잔량으로 계산됐는가. false 면 Dart 외삽 폴백이라
+  /// `source: 'estimate'` 로 보고해야 한다.
+  final bool fromNative;
+
+  /// flush 이후에도 HAL/믹서에 남아 계속 울리는 잔량(ms).
+  final int halResidualMs;
+
+  /// 위 값이 측정된 것인가. false 면 0 은 "없음"이 아니라 **모름**이다.
+  final bool halResidualKnown;
+
+  /// 폐기 시점에 재생 스레드가 실오디오 write() 안에 있었는가 — 그 데이터는 우리 flush
+  /// 뒤에 트랙으로 들어가 잠깐 더 울린다.
+  final bool writeInFlight;
+
+  /// `client_stop_ms` 가 **무엇을 잰 값인지** 와이어에 명시한다.
+  ///
+  /// - `hal_drained` — 하드웨어 잔량까지 빠져 **실제로 조용해진 시각**. 서버가 합격
+  ///   판정(50~120ms)에 그대로 쓴다
+  /// - `clear_returned` — flush 반환까지만. 실제 무음은 이보다 **늦으므로 하한**이다
+  ///
+  /// 둘을 가르는 조건이 두 개인 이유:
+  ///   ① HAL 잔량을 못 쟀으면(getTimestamp 미가용·iOS) 애초에 하드웨어 구간이 빠져 있다
+  ///   ② 쟀더라도 그 순간 실오디오 write 가 진행 중이었으면, 그 데이터가 flush 뒤에
+  ///      들어가 재생 스레드가 회수할 때까지 소리가 남는다. 회수는 clear() 반환 뒤라
+  ///      값에 못 담는다 — 그래서 하한으로 낮춘다
+  ///
+  /// ⚠ `hal_drained` 로 보내면 서버가 합격 판정에 그대로 쓴다. 애매하면 낮추는 쪽이 맞다.
+  String get stopMeasure =>
+      (halResidualKnown && !writeInFlight) ? 'hal_drained' : 'clear_returned';
 }
