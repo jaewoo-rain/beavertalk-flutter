@@ -102,6 +102,12 @@ class AuthController extends Notifier<AuthStatus> {
     ref.invalidate(bookmarkListProvider);
     // A's owned characters would show in B's avatar screen.
     ref.invalidate(ownedCharactersProvider);
+    // ⚠ 카탈로그도 **회원별 데이터다.** 캐릭터 목록 자체는 공용이지만 각 행에 붙어 오는
+    // is_owned / is_unlocked / unlock_source 는 조회한 회원 기준으로 계산된 값이다
+    // (서버가 구독 상태를 읽어 매긴다). 이걸 안 지우면 B 가 A 의 소유·잠금해제 상태를
+    // 그대로 본다 — 아바타 화면의 목록 구성과 알람의 통화 상대 목록이 둘 다 이 값으로
+    // 갈린다. 바로 위 보유 목록만 지우고 여기를 빠뜨린 게 원래 상태였다.
+    ref.invalidate(charactersProvider);
     // A's in-session plan purchase would upgrade B's subscription screens.
     ref.invalidate(sessionEntitlementProvider);
     // A's language/name/reasons would prefill B's onboarding — the login screen
