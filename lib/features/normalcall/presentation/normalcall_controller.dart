@@ -1077,6 +1077,14 @@ class NormalCallController extends Notifier<CallState> {
       _cushionBytes = _prebufferBytes;
       _turnStarved = false;
       _resumeFlushed = false;
+      // barge-in 상태도 통화 스코프다: 이전 통화의 취소 구간이 살아 있으면 새 통화의
+      // 첫 인사가 통째로 폐기된다.
+      _cancelledResidual = false;
+      _cancelledResidualBytes = 0;
+      _currentTurnId = null;
+      _ledger.reset();
+      _prevTurnBacklogMs = -1;
+      _backlogRiseStreak = 0;
 
       // Drive playback from Dart's own clock instead of the plugin's feed
       // callback. Note this also sidesteps FlutterPcmSound.start(), which only
@@ -1423,11 +1431,28 @@ class NormalCallController extends Notifier<CallState> {
     if (data is String) {
       _handleControl(data);
     } else if (data is Uint8List) {
-      _feedPlayer(data);
+      _onWsAudio(data);
     } else if (data is List<int>) {
-      _feedPlayer(Uint8List.fromList(data));
+      _onWsAudio(Uint8List.fromList(data));
     }
   }
+
+  /// 인바운드 오디오의 첫 관문 — **취소된 턴의 잔여를 여기서 버린다.**
+  ///
+  /// [_feedPlayer] 안쪽이 아니라 이 자리인 이유: [_feedPlayerBody] 는 청크마다
+  /// [_gateMic] 을 호출해 턴을 "다시 연다"(`_beaverAudioActive=true`, `_turnEnded=false`).
+  /// 큐를 비우는 것만으로는 그 뒤 도착분을 막지 못하므로, 진입 자체를 차단해야 한다.
+  void _onWsAudio(Uint8List chunk) {
+    if (_cancelledResidual) {
+      _cancelledResidualBytes += chunk.length;
+      return;
+    }
+    _feedPlayer(chunk);
+  }
+
+  /// [계측] 취소 후 버린 잔여 바이트. 서버 페이서가 취소에 얼마나 빨리 반응하는지가
+  /// 이 숫자로 드러난다(클수록 서버가 늦게 멈춘 것).
+  int _cancelledResidualBytes = 0;
 
   /// Enqueues an inbound PCM24k chunk onto [_pcmQueue]. The plugin's feed
   /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
@@ -1492,6 +1517,38 @@ class NormalCallController extends Notifier<CallState> {
   void _stopInflateLog() {
     _inflateTimer?.cancel();
     _inflateTimer = null;
+  }
+
+  /// [계측] 비버 턴이 열리는 순간의 **잔류 백로그**. 스트림 인플레이션 판별용.
+  ///
+  /// 왜 하필 턴 경계인가 — 정상 동작에서 버스트로 도착한 오디오는 그 턴 안에 다 재생되고,
+  /// 다음 턴이 열릴 땐 큐도 엔진도 비어 있다(마이크 재개방 조건 자체가 [_audioDrained]
+  /// 라서 구조적으로 보장된다). 그러니 이 시점의 잔류는 **정의상 이전 턴이 못 따라간 양**
+  /// 이다. 서버 누적 송출량이 실시간 레이트를 넘으면 이 값이 턴마다 커진다.
+  ///
+  /// 60초 폭주 가드([_maxQueueBytes])는 이걸 못 잡는다 — 백로그가 10초, 20초로 자라도
+  /// 아무 말 없이 있다가 60초에 가서 15초치를 통째로 버린다. 여기서는 **드롭하지 않고
+  /// 드러내기만 한다**(2단계 방어는 실측 후 별도 판단).
+  void _logTurnBoundaryBacklog() {
+    final queueMs = _queueLen * 1000 ~/ (_playbackSampleRate * 2);
+    final engineMs = _engineLevelFrames * 1000 ~/ _playbackSampleRate;
+    final backlogMs = queueMs + engineMs;
+
+    if (_prevTurnBacklogMs >= 0 && backlogMs > _prevTurnBacklogMs) {
+      _backlogRiseStreak++;
+    } else {
+      _backlogRiseStreak = 0;
+    }
+    _prevTurnBacklogMs = backlogMs;
+
+    // 연속 증가가 이어지면 버스트가 아니라 인플레이션이다. 임계는 낮게 잡아도 된다 —
+    // 로그일 뿐이고, 놓치는 것보다 시끄러운 게 낫다.
+    final verdict = _backlogRiseStreak >= 3
+        ? ' ⚠ INFLATION? $_backlogRiseStreak턴 연속 증가 '
+            '— 서버 누적 송출량 > 실시간 레이트 의심'
+        : '';
+    _log('TURN-BACKLOG: ${backlogMs}ms '
+        '(queue ${queueMs}ms + engine ${engineMs}ms)$verdict');
   }
 
   void _startEventLoopProbe() {
@@ -1697,8 +1754,19 @@ class NormalCallController extends Notifier<CallState> {
           if (take > _feedChunkBytes) take = _feedChunkBytes;
           if (take > whole) take = whole;
           _fedAudBytes += take; // [계측]
+          // 원장: 이건 **서버발** 오디오다. 진행도 보고가 이 기록에 걸려 있다.
+          _ledger.recordFeed(frames: take ~/ 2, server: true);
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final gen = _clearGen; // ⚠ 아래 await 동안 barge-in 이 끼어들 수 있다
           final reported = await FlutterPcmSound.feed(_takeArray(take));
+          if (gen != _clearGen) {
+            // 이 피드가 날아가 있는 사이 [_clearPlayback] 이 돌았다. 여기서 앵커와
+            // 꼬리를 쓰면 방금 리셋한 값을 **취소된 턴의 값으로 되살린다** —
+            // `_audioTailUntilMs` 가 부활하면 [_audioDrained] 가 최대 2.5초 막히고
+            // (C-3 재발), 앵커가 부활하면 다음 턴 첫 오디오가 늦는다(C-5 재발).
+            _log('feed raced clear — 앵커/꼬리 갱신 건너뜀');
+            return;
+          }
           // Android reports its depth; elsewhere fall back to our own arithmetic
           // so iOS/web keep working unchanged.
           _anchorEngine(reported ?? (level + take ~/ 2), sentAtMs);
@@ -1782,13 +1850,17 @@ class NormalCallController extends Notifier<CallState> {
           _fedSilFrames += silFrames;
           if (whole >= 2) {
             _fedSilPrebufFrames += silFrames;
-          } else if (_beaverSpeaking) {
+          } else if (_beaverAudioActive) {
             _fedSilSpeakFrames += silFrames;
           }
+          // 원장: 이건 **우리가 만든 필러**다. 서버는 이걸 "들은 양"으로 세면 안 된다.
+          _ledger.recordFeed(frames: silFrames, server: false);
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final gen = _clearGen; // 오디오 분기와 같은 이유 — 위 주석 참조
           final reported = await FlutterPcmSound.feed(
             PcmArrayInt16.zeros(count: silFrames),
           );
+          if (gen != _clearGen) return;
           _anchorEngine(reported ?? (level + silFrames), sentAtMs);
         }
       }
@@ -2039,6 +2111,137 @@ class NormalCallController extends Notifier<CallState> {
     });
   }
 
+  // ── barge-in: 취소 처리 ────────────────────────────────────────────────────
+
+  /// 서버가 비버 턴을 끊었다(`audio_cancel`). 재생을 즉시 죽이고, 어디까지 들렸는지
+  /// 회신한다.
+  ///
+  /// **순서가 곧 정확도다.** 진행도를 먼저 확정하고 나서 버려야 한다 — 큐와 엔진을
+  /// 비운 뒤에 읽으면 "남아 있던 양"을 알 수 없어 재생량이 부풀려진다.
+  Future<void> _onAudioCancel(Map<String, dynamic> msg) async {
+    // 서버가 `audio_cancel` 에 turn_id 를 필수로 싣는다. 그래도 파싱은 방어적으로 —
+    // 타입이 다르거나 빠진 프레임에 죽지 않는다([_handleControl] 전반의 스타일).
+    // ⚠ `as String?` 는 방어가 아니다: 값이 int 면 그대로 TypeError 를 던져 WS 스트림
+    //   핸들러까지 올라간다. 타입 검사로 받아야 한다.
+    final rawTurnId = msg['turn_id'];
+    final turnId = (rawTurnId is String ? rawTurnId : null) ?? _currentTurnId;
+
+    // ① 잔여 바이너리 차단을 먼저 세운다. clear() 를 await 하는 동안에도 소켓은
+    //    계속 들어오므로, 여기서 안 막으면 그 사이 도착분이 큐에 다시 쌓인다.
+    _cancelledResidual = true;
+    _cancelledResidualBytes = 0;
+
+    // ② `audio_cancel` 은 **그 턴의 종결을 겸한다** — 서버는 별도 `turn_end` 를
+    //    보내지 않는다. 그러니 `turn_end` 를 훅하는 자리에 이것도 같이 건다.
+    //    안 걸면 [_tryUngateMic] 과 [_maybeFinishClosing] 이 둘 다 막힌다.
+    //
+    //    ⚠ await **전**에 세운다. 뒤로 미루면 그 사이 도착한 다음 턴의 [_gateMic] 이
+    //      `_turnEnded=false` 로 돌려놓은 것을 다시 true 로 덮어써서, 새 턴이
+    //      "이미 끝난 턴"으로 취급된다(쿠션 우회 + 조기 ungate).
+    _turnEnded = true;
+
+    // ③ 재생 폐기 + 진행도 확정 (폐기 프레임 수가 진행도 계산의 ground truth 다).
+    //    Dart 측 상태 리셋은 [_clearPlayback] 안에서 **await 이전에** 끝난다.
+    final played = await _clearPlayback();
+
+    _tryUngateMic();
+    _maybeFinishClosing();
+
+    // ④ 회신. 서버가 패딩 원장을 갖고 있고 24kHz PCM16 = 48000B/s 고정이라,
+    //    바이트 → ms 와 "대사냐 패딩이냐"의 판정은 서버 몫이다.
+    if (turnId == null) {
+      // 서버 계약상 올 수 없는 경우. 조용히 빠뜨리면 서버가 어느 턴인지 못 맞추므로
+      // 반드시 드러낸다.
+      _log('⚠ audio_cancel 에 turn_id 가 없다 — 상관 불가');
+    }
+    _send({
+      'type': 'playback_progress',
+      'turn_id': ?turnId,
+      'played_server_bytes': played,
+    });
+    _log('audio_cancel → cleared, played_server_bytes=$played turn=$turnId');
+  }
+
+  /// 재생 파이프라인을 즉시 비우고, **이번 턴에 실제로 스피커로 나간 서버발 바이트**를
+  /// 돌려준다.
+  ///
+  /// 버퍼는 3단이다 — ①Dart 링버퍼 ②네이티브 대기 큐 ③오디오 트랙 내부. ①은 여기서,
+  /// ②③은 네이티브 `clear()` 가 지운다. 트랙 자체는 살려 둔다: `release()` 로 죽이면
+  /// 재기동에 120ms 정착 대기가 붙고, 무음 keep-alive 가 끊겨 AudioFlinger 가 트랙을
+  /// idle 로 빼면 재활성화에 ~130ms 가 더 든다.
+  Future<int> _clearPlayback() async {
+    // ⚠ Dart 측 리셋은 **전부 await 이전에** 끝낸다. 뒤로 미루면 플랫폼채널 왕복
+    //   (5~15ms) 동안 [_pump] 가 한두 틱 돌아 방금 지운 값을 되살린다.
+    //   [_clearGen] 은 그래도 남는 창(피드가 이미 날아가 있는 경우)을 막는다 —
+    //   [_pump] 가 await 후 이 값을 비교해 앵커/꼬리 갱신을 건너뛴다.
+    _clearGen++;
+
+    // ① Dart 링버퍼.
+    _pcmHead = 0;
+    _pcmTail = 0;
+
+    // 상태 리셋 — 여기를 빠뜨리면 barge-in 이 다음 턴을 망가뜨린다.
+    //
+    // ⚠ `_audioTailUntilMs`: 마지막 실오디오가 스피커에서 끝날 **미래 시각**이 박혀
+    //   있다. 폐기했는데 이 값이 남으면 [_audioDrained] 가 최대 엔진 깊이(~2.5초)
+    //   동안 false 라, 통화 종료 배수([_maybeFinishClosing])가 그만큼 멈춘다.
+    _audioTailUntilMs = 0;
+    // ⚠ starve 오집계 차단: 큐를 인위적으로 비운 것이라 "굶주림"이 아니다. 그냥 두면
+    //   [_pump] 다음 틱이 이걸 starve 로 세서 쿠션을 +150ms 올리고, `_turnStarved` 가
+    //   서면 그 턴은 감쇠도 못 받는다 → barge-in 이 잦을수록 쿠션이 상한(1.2s)에 머물러
+    //   **모든 턴 시작이 느려진다.**
+    _turnStarved = false;
+    _starveAtMs = null;
+    _resumeFlushed = false;
+    // 다음 턴은 쿠션을 다시 쌓아야 한다(취소로 끊긴 재생을 이어가는 게 아니다).
+    _playing = false;
+    _prebufferFlushTimer?.cancel();
+    _prebufferFlushTimer = null;
+    // ⚠ 엔진 앵커: 네이티브는 비었는데 앵커가 취소 직전 값을 물고 있으면
+    //   [_engineLevelFrames] 가 과대 보고돼 [_pump] 가 "아직 충분하다"고 판단하고
+    //   다음 턴 첫 오디오를 안 밀어 넣는다.
+    //   [_anchorEngine] 을 쓰지 않고 직접 넣는 이유: 그쪽은 `_engineMinFrames` 도 같이
+    //   깎는데, 인위적으로 비운 0 이 "엔진이 말랐다"는 진단 지표로 잡히면 안 된다.
+    _engineAnchorFrames = 0;
+    _engineAnchorMs = DateTime.now().millisecondsSinceEpoch;
+    // 취소된 오디오의 입모양이 다음 턴에 남으면 안 된다.
+    _envQueue.clear();
+    _lastFeedSilent = null;
+
+    // 쿠션(`_cushionBytes`)은 건드리지 않는다 — 통화가 실제로 겪은 지터의 추정치라
+    // 취소와 무관하다.
+
+    // ② ③ 네이티브. 반환된 폐기 프레임 수가 "아직 안 나간 양"의 실측값이다.
+    final res = await PcmPlaybackControl.clear();
+
+    final int remainingFrames;
+    if (res.framesDiscarded != null) {
+      remainingFrames = res.framesDiscarded!;
+    } else {
+      // 폴백: 네이티브가 아직 폐기량을 안 준다(iOS 카운터 이전 / clear 미구현).
+      // [_engineLevelFrames] 는 **외삽**이라 정확도가 떨어진다 — 숨기지 않고 찍는다.
+      remainingFrames = _engineLevelFrames;
+      _log('⚠ clear(): 네이티브 폐기량 없음 '
+          '(ok=${res.ok}) → 엔진 추정치 $remainingFrames 프레임으로 폴백. '
+          '진행도 정확도 하락(±50~150ms)');
+    }
+    if (!res.ok) {
+      // Dart 큐만 비워진 상태 = 스피커에서는 계속 나온다. 조용히 넘어가면
+      // "끊었는데 안 끊긴다"로만 보이므로 반드시 드러낸다.
+      _log('⚠ clear(): 네이티브 미지원 — 엔진 잔량이 그대로 재생된다 '
+          '(플러그인 clear() 구현 전)');
+    }
+
+    final playedFrames = _ledger.playedServerFrames(remainingFrames);
+
+    // 원장은 진행도를 뽑은 **뒤에** 연다. 엔진이 비었다고 확신할 수 있는 지점이라야
+    // 꼬리 계산이 맞다 — `turn_start` 는 그런 지점이 아니다(이전 턴 잔량이 남아 있을
+    // 수 있다).
+    _ledger.reset();
+
+    return playedFrames * 2; // 입력 프레임(PCM16 mono) → 바이트
+  }
+
   /// Parses and dispatches a control JSON frame from the server.
   void _handleControl(String text) {
     Map<String, dynamic> msg;
@@ -2058,6 +2261,20 @@ class NormalCallController extends Notifier<CallState> {
         break;
 
       case 'turn_start':
+        // 새 비버 턴이 열렸다 = 취소 잔여 구간의 끝. 서버 불변식상 여기부터 도착하는
+        // 오디오는 이 턴의 것이다.
+        if (_cancelledResidual) {
+          _log('turn_start → 잔여 폐기 종료 (버린 양 ${_cancelledResidualBytes}B '
+              '= ${(_cancelledResidualBytes / 48000).toStringAsFixed(2)}s)');
+          _cancelledResidual = false;
+          _cancelledResidualBytes = 0;
+        }
+        // 서버는 `turn_start`/`turn_end`/`output_transcript` 에 turn_id 를 예전부터
+        // 필수로 싣고 있었다(protocol.py). 클라가 안 읽고 있었을 뿐이다.
+        // 진행도 회신([_onAudioCancel])이 이 값을 쓴다.
+        final rawTurnId = msg['turn_id'];
+        _currentTurnId = rawTurnId is String ? rawTurnId : null;
+        _logTurnBoundaryBacklog();
         if (state.phase == CallPhase.connecting) {
           state = state.copyWith(phase: CallPhase.inCall);
           _startElapsedTimer();
@@ -2107,6 +2324,17 @@ class NormalCallController extends Notifier<CallState> {
         // subtitle line so their next utterance accumulates from empty.
         state = state.copyWith(userSubtitle: '');
         _tryUngateMic();
+      case 'audio_cancel':
+        // barge-in: 사용자가 끼어들어 서버가 이 턴을 끊었다. 별도 `turn_end` 는 오지
+        // 않는다 — 이 메시지가 턴 종결을 겸한다.
+        unawaited(_onAudioCancel(msg));
+      case 'user_turn_start':
+        // ⚠ 서버→클라 **통지**다(UI 표시용). 클라에 VAD 는 없고 턴 판정은 전적으로
+        //   서버가 한다. 그러니 재생·마이크 로직을 여기에 걸지 않는다 — 자막만 만진다.
+        state = state.copyWith(userSubtitle: '');
+      case 'user_turn_end':
+        // 통지만. 자막 라인은 다음 `user_turn_start` 에서 새로 연다.
+        break;
       case 'call_ended':
         final id = msg['call_id'];
         // Server-initiated close is expected; the socket's onDone must not be
@@ -2344,13 +2572,20 @@ class NormalCallController extends Notifier<CallState> {
     _lastChunkAtMs = null;
     _logAnchorMs = null;
     _audioTailUntilMs = 0;
+    // barge-in 상태 — 다음 통화로 새어 나가면 첫 인사가 폐기된다.
+    _cancelledResidual = false;
+    _cancelledResidualBytes = 0;
+    _currentTurnId = null;
+    _ledger.reset();
+    _prevTurnBacklogMs = -1;
+    _backlogRiseStreak = 0;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
     _micGateTimer = null;
     _gateSafetyTimer?.cancel();
     _gateSafetyTimer = null;
-    _beaverSpeaking = false;
+    _beaverAudioActive = false;
     avatarSpeaking.value = false;
     avatarLevel.value = 0.0;
     avatarEmotion.value = 0;
