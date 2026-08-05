@@ -47,3 +47,14 @@ app.*.map.json
 .packages
 build/
 .flutter-plugins
+
+.claude
+.mcp.json
+docs
+.env
+# FCM 테스트용 서비스 계정 키 (절대 커밋 금지)
+tools/service-account.json
+service-account.json
+google-services.json
+# 벤더링한 flutter_pcm_sound 의 로컬 Gradle 캐시 (빌드 산출물)
+packages/**/.gradle/

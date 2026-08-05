@@ -1,0 +1,518 @@
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../../app/navigation.dart';
+import '../../../../core/error/app_exception.dart';
+import '../../../../core/i18n/locale_controller.dart';
+import '../../../../l10n/app_localizations.dart';
+import '../../../../mock/mock_data.dart' show clearBookmarks;
+import '../../../alarm/presentation/providers/alarm_list_controller.dart';
+import '../../../bookmark/presentation/providers/bookmark_providers.dart';
+import '../../../character/presentation/providers/character_providers.dart';
+import '../../../incoming_call/presentation/incoming_call_providers.dart';
+import '../../../subscription/presentation/providers/subscription_state_providers.dart';
+import 'auth_providers.dart';
+import 'my_profile_provider.dart';
+import 'signup_draft_provider.dart';
+
+/// Deep link Supabase OAuth (Kakao, and the Apple/Android fallback) redirects
+/// back to after the browser consent step. Must be registered in three places:
+/// `AndroidManifest.xml` (intent-filter), iOS `Info.plist` (CFBundleURLTypes),
+/// and the Supabase dashboard → Authentication → URL Configuration → Redirect
+/// URLs.
+const kOAuthRedirect = 'im.beavertalk.beavertalk://login-callback';
+
+/// High-level auth state the UI (AuthGate) switches on.
+enum AuthStatus {
+  /// Boot in progress — we don't yet know if a session exists.
+  unknown,
+
+  /// A Supabase session is present; the user is treated as logged in.
+  authenticated,
+
+  /// No valid session — show the login flow.
+  unauthenticated,
+}
+
+/// Owns the [AuthStatus] and exposes auth actions backed by Supabase Auth.
+///
+/// The Supabase SDK persists + auto-refreshes the session; this controller
+/// mirrors that into [AuthStatus] (via [bootstrap] + an `onAuthStateChange`
+/// subscription) so the AuthGate routes correctly. A 401 anywhere routes back
+/// here via [onSessionExpired].
+final authControllerProvider =
+    NotifierProvider<AuthController, AuthStatus>(AuthController.new);
+
+class AuthController extends Notifier<AuthStatus> {
+  SupabaseClient get _client => Supabase.instance.client;
+
+  /// Translated strings for the messages this controller throws/returns.
+  ///
+  /// There is no `BuildContext` here, so `AppLocalizations.of` is unavailable —
+  /// which is why every message below used to be a hard-coded Korean literal,
+  /// shown to Japanese and Arabic users alike. gen-l10n emits a **synchronous**
+  /// `lookupAppLocalizations(Locale)`, and the active locale already lives in
+  /// [localeControllerProvider], so the lookup needs nothing else.
+  AppLocalizations get _l10n =>
+      lookupAppLocalizations(ref.read(localeControllerProvider));
+
+  @override
+  AuthStatus build() => AuthStatus.unknown;
+
+  /// On app start: reflect the persisted Supabase session into the gate, and
+  /// subscribe once to auth-state changes so session expiry/refresh-failure or
+  /// a refresh-restored session flips the gate automatically.
+  Future<void> bootstrap() async {
+    _subscribeOnce();
+    state = _client.auth.currentSession != null
+        ? AuthStatus.authenticated
+        : AuthStatus.unauthenticated;
+  }
+
+  bool _subscribed = false;
+
+  /// 백엔드가 세션을 거부(401)해 만료 처리한 상태. 이때는 Supabase 의 백그라운드
+  /// 토큰 리프레시(tokenRefreshed/userUpdated) 로 다시 authenticated 로 되살리지
+  /// 않는다 — 그러면 AuthGate 가 myProfileProvider 를 계속 재조회해 /members/me 401 이
+  /// 폭주한다. 명시 로그인(signedIn/login) 시에만 해제한다.
+  bool _sessionRejected = false;
+
+  /// Drops every piece of user-scoped state so nothing survives into the next
+  /// session. Call from EVERY sign-out path (explicit logout, account deletion,
+  /// 401 expiry, and the `signedOut` event) and on sign-in as a belt-and-braces
+  /// guard against state cached before the session existed.
+  ///
+  /// Only [myProfileProvider] used to be invalidated here. The rest of these are
+  /// plain (non-autoDispose) providers, so their cached values outlived sign-out
+  /// entirely — user A's alarms would still be in memory when user B signed in
+  /// on the same device, and [InboundCallScheduler] reads that cache on a timer,
+  /// so B's phone would ring with A's alarm and A's character.
+  /// [callListProvider] is `.autoDispose` and needs no entry here.
+  void _clearUserScopedState() {
+    ref.invalidate(myProfileProvider);
+    // A's alarms → B's ring (see above). Also clears a 401 cached pre-login.
+    ref.invalidate(alarmListControllerProvider);
+    // A's saved sentences would show in B's 보관 tab.
+    ref.invalidate(bookmarkListProvider);
+    // A's owned characters would show in B's avatar screen.
+    ref.invalidate(ownedCharactersProvider);
+    // A's in-session plan purchase would upgrade B's subscription screens.
+    ref.invalidate(sessionEntitlementProvider);
+    // A's language/name/reasons would prefill B's onboarding — the login screen
+    // skips the language sheet when `language != null`, and the reason step
+    // would open with A's answers already checked and Continue enabled.
+    ref.invalidate(signupDraftProvider);
+    // Top-level global, outside Riverpod — must be cleared by hand.
+    clearBookmarks();
+  }
+
+  /// Wires the Supabase auth stream to [AuthStatus] (idempotent).
+  void _subscribeOnce() {
+    if (_subscribed) return;
+    _subscribed = true;
+    final sub = _client.auth.onAuthStateChange.listen((data) {
+      switch (data.event) {
+        case AuthChangeEvent.signedIn:
+          // 명시 로그인 — 거부 플래그 해제(정상 세션 시작).
+          _sessionRejected = false;
+          // Clear anything cached before this session existed. The alarm list in
+          // particular can hold a 401 AsyncError from boot (the scheduler used to
+          // fetch it with no session), which the alarm screen would then render
+          // with no network call at all — leaving Retry as the only way out.
+          _clearUserScopedState();
+          if (state != AuthStatus.authenticated) {
+            state = AuthStatus.authenticated;
+          }
+        case AuthChangeEvent.tokenRefreshed:
+        case AuthChangeEvent.userUpdated:
+          // 백엔드가 이미 거부한 세션이면 백그라운드 리프레시로 되살리지 않는다 —
+          // 명시 재로그인 전까지 미인증 유지(401 재조회 폭주 방지).
+          if (_sessionRejected) break;
+          // Same session — keep caches; only the gate state matters here.
+          if (state != AuthStatus.authenticated) {
+            state = AuthStatus.authenticated;
+          }
+        case AuthChangeEvent.signedOut:
+          _clearUserScopedState();
+          if (state != AuthStatus.unauthenticated) {
+            state = AuthStatus.unauthenticated;
+          }
+        default:
+          break;
+      }
+    });
+    ref.onDispose(sub.cancel);
+  }
+
+  /// Email/password login via Supabase. Throws [AppException] on failure
+  /// (caller shows it); on success flips state to authenticated.
+  Future<void> login({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      await _client.auth.signInWithPassword(email: email, password: password);
+      state = AuthStatus.authenticated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// Creates an account via Supabase.
+  ///
+  /// - If a session is returned (dev path with "Confirm email" OFF) → flips to
+  ///   authenticated and the AuthGate routes into onboarding.
+  /// - If no session is returned (email confirmation required) → throws an
+  ///   [UnauthorizedFailure] telling the user to confirm their email; the gate
+  ///   stays on the login flow.
+  Future<void> signup({
+    required String email,
+    required String password,
+  }) async {
+    try {
+      final res = await _client.auth.signUp(email: email, password: password);
+      if (res.session != null) {
+        state = AuthStatus.authenticated;
+        return;
+      }
+      // No session → email confirmation is required by the project settings.
+      throw UnauthorizedFailure(_l10n.authConfirmEmailRequired);
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.signup);
+    }
+  }
+
+  /// Saves onboarding data (`POST /members/me/onboarding`). Throws on failure.
+  /// The caller invalidates [myProfileProvider] so the AuthGate re-routes.
+  Future<void> submitOnboarding({
+    String? name,
+    String? language,
+    List<String>? reasons,
+  }) async {
+    await ref.read(authRepositoryProvider).submitOnboarding(
+          name: name,
+          language: language,
+          reasons: reasons,
+        );
+  }
+
+  /// Requests a password-recovery code email (Supabase recovery OTP — a 6-digit
+  /// code, not a link). Returns a user-facing confirmation message.
+  Future<String> requestPasswordReset(String email) async {
+    try {
+      await _client.auth.resetPasswordForEmail(email);
+      return _l10n.authResetCodeSent;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.reset);
+    }
+  }
+
+  /// Step 1 of the two-step reset: verifies the emailed 6-digit recovery [code]
+  /// (Supabase recovery OTP). On success Supabase establishes a temporary
+  /// recovery session on the client, which [updatePassword] then uses to set
+  /// the new password (no token needs threading between screens). Throws on a
+  /// wrong/expired code.
+  Future<void> verifyRecoveryCode({
+    required String email,
+    required String code,
+  }) async {
+    try {
+      await _client.auth.verifyOTP(
+        email: email,
+        token: code,
+        type: OtpType.recovery,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.reset);
+    }
+  }
+
+  /// Step 2 of the two-step reset: sets [newPassword] for the user signed in by
+  /// [verifyRecoveryCode]'s recovery session. Returns a user-facing
+  /// confirmation message. Throws if the recovery session is missing/expired.
+  Future<String> updatePassword({required String newPassword}) async {
+    try {
+      await _client.auth.updateUser(UserAttributes(password: newPassword));
+      return _l10n.authPasswordUpdated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.reset);
+    }
+  }
+
+  /// Google sign-in: exchanges a Google [idToken] (plus the optional
+  /// [accessToken], which lets Supabase fetch the provider profile) for a
+  /// Supabase session via `signInWithIdToken`.
+  ///
+  /// The token is obtained natively on mobile (`google_sign_in`, audience = the
+  /// web `serverClientId`) or via GIS on web. No backend change is needed:
+  /// Supabase issues the same JWT it does for email login, so `/members/me`
+  /// and every other authed call keep working. A first-time social user lands
+  /// with `onboardingCompleted == false`, so the AuthGate routes to onboarding.
+  /// Throws [AppException] on failure (caller shows it).
+  Future<void> signInWithGoogle({
+    required String idToken,
+    String? accessToken,
+  }) async {
+    try {
+      await _client.auth.signInWithIdToken(
+        provider: OAuthProvider.google,
+        idToken: idToken,
+        accessToken: accessToken,
+      );
+      state = AuthStatus.authenticated;
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// Kakao sign-in via Supabase OAuth. Supabase has no Kakao *native* id_token
+  /// path, so this opens Kakao's consent page in an external browser; on success
+  /// the deep link [kOAuthRedirect] returns to the app and `onAuthStateChange`
+  /// (wired in [_subscribeOnce]) flips the gate to authenticated — so, unlike the
+  /// email/Google paths, this method does NOT set [state] itself and the caller
+  /// needs no post-login navigation (the AuthGate re-routes on the event).
+  ///
+  /// Returns as soon as the browser is launched; the session arrives
+  /// asynchronously. Throws [AppException] if the browser can't be launched.
+  ///
+  /// `scopes` is pinned to `account_email` on purpose: the Kakao app's consent
+  /// items (동의항목) expose email only. Supabase's default Kakao scope set also
+  /// requests `profile_nickname`/`profile_image`, which — not being configured
+  /// as consent items — makes Kakao reject the consent step. Requesting only the
+  /// scope the app actually consents to keeps login working. (`account_email`
+  /// for real users requires the Kakao app to be a 비즈 앱; that conversion is
+  /// done.) Add nickname/profile here only after enabling them as consent items.
+  Future<void> signInWithKakao() async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.kakao,
+        redirectTo: kOAuthRedirect,
+        scopes: 'account_email',
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// Apple sign-in.
+  ///
+  /// **iOS** uses the *native* Sign in with Apple sheet (`sign_in_with_apple`):
+  /// a random nonce is generated, its SHA-256 handed to Apple, and the returned
+  /// id_token (`aud` = the App ID `im.beavertalk.beavertalk`, which is in
+  /// Supabase's Apple "Client IDs") is exchanged for a Supabase session via
+  /// `signInWithIdToken` with the raw nonce. No browser, no Service ID web
+  /// config. On success this branch sets [state] itself.
+  ///
+  /// **Android / web** fall back to Supabase browser OAuth against the Service ID
+  /// `beavertalk.beavertalk.im`; on success the deep link [kOAuthRedirect] returns
+  /// and `onAuthStateChange` flips the gate (so this branch does NOT set [state]).
+  /// That path only works once the Service ID's Sign in with Apple return URL is
+  /// configured; Android Apple wiring is finalized separately.
+  ///
+  /// Throws [AppException] on failure (caller shows it). A user cancel is a no-op.
+  Future<void> signInWithApple() async {
+    final native = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    if (native) {
+      try {
+        final rawNonce = _generateNonce();
+        final hashedNonce = sha256.convert(utf8.encode(rawNonce)).toString();
+        final credential = await SignInWithApple.getAppleIDCredential(
+          scopes: const [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ],
+          nonce: hashedNonce,
+        );
+        final idToken = credential.identityToken;
+        if (idToken == null || idToken.isEmpty) {
+          throw UnknownFailure(_l10n.authAppleTokenMissing);
+        }
+        await _client.auth.signInWithIdToken(
+          provider: OAuthProvider.apple,
+          idToken: idToken,
+          nonce: rawNonce,
+        );
+        state = AuthStatus.authenticated;
+      } on SignInWithAppleAuthorizationException catch (e) {
+        // User dismissed the sheet — not a failure worth surfacing.
+        if (e.code == AuthorizationErrorCode.canceled) return;
+        throw UnknownFailure(e.message);
+      } on AuthException catch (e) {
+        throw _mapAuthException(e, context: _AuthContext.login);
+      }
+      return;
+    }
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.apple,
+        redirectTo: kOAuthRedirect,
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
+  /// Cryptographically-random nonce for Sign in with Apple. Apple embeds its
+  /// SHA-256 in the returned id_token; Supabase re-hashes the raw value passed to
+  /// `signInWithIdToken` and checks the two match — which defeats id_token replay.
+  String _generateNonce([int length = 32]) {
+    const chars =
+        '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-._';
+    final random = Random.secure();
+    return List.generate(length, (_) => chars[random.nextInt(chars.length)])
+        .join();
+  }
+
+  /// Explicit logout — signs out of Supabase, drops the cached profile, shows
+  /// login. The `onAuthStateChange` listener also flips the gate, but we set it
+  /// here too for immediacy.
+  Future<void> logout() async {
+    // Delete this device's FCM token BEFORE signOut, while the session is still
+    // valid — the `signedOut` listener also unregisters, but by then signOut()
+    // has cleared the session so its `DELETE /devices` is unauthenticated (401)
+    // and the token would survive: user A's alarm could then push to this device
+    // (now at login, or after user B signs in) until B's login reassigns it.
+    try {
+      await ref.read(deviceRegistrationControllerProvider).unregister();
+    } catch (_) {
+      // Best-effort: a failed delete must not block logout (login reassigns).
+    }
+    // signOut() clears the local session first, then revokes over the network —
+    // so an offline tap still logs you out locally but throws afterwards. Letting
+    // that throw escape skipped _popToRoot(), stranding the user on MyPage while
+    // the root had already swapped to login: nothing appeared to happen, and the
+    // un-awaited call surfaced as an unhandled async error. Local sign-out is
+    // what the UI depends on, so a failed revoke must not abort the rest.
+    try {
+      await _client.auth.signOut();
+    } catch (_) {
+      // Ignored on purpose: the local session is gone either way.
+    }
+    _clearUserScopedState();
+    state = AuthStatus.unauthenticated;
+    _popToRoot();
+  }
+
+  /// Persists the member's display [name] and refreshes the cached profile.
+  ///
+  /// Rides `POST /members/me/onboarding` — the one endpoint that accepts
+  /// `name` (`MemberUpdate` behind `PATCH /members/me` takes only `language`
+  /// / `character_id` / `is_auto_payment`). The endpoint writes only the
+  /// fields it is sent, and re-marking `onboarding_completed` on an already
+  /// onboarded member changes nothing. A dedicated `name` field on the PATCH
+  /// travels as a server proposal (R1), not as code here.
+  Future<void> updateName(String name) async {
+    await ref.read(authRepositoryProvider).submitOnboarding(name: name);
+    ref.invalidate(myProfileProvider);
+  }
+
+  /// Persists the member's UI [language] (`PATCH /members/me`) and refreshes the
+  /// cached profile so the new value is reflected app-wide. Throws on failure.
+  Future<void> updateLanguage(String language) async {
+    await ref.read(authRepositoryProvider).updateLanguage(language);
+    ref.invalidate(myProfileProvider);
+  }
+
+  /// Persists the member's **learning** language (`PATCH /members/me`
+  /// `target_language`) and refreshes the cached profile.
+  ///
+  /// The call socket no longer sends `target_language` — the server reads this
+  /// column at call start. So this write is what switches the course; nothing
+  /// is kept on the device.
+  Future<void> updateTargetLanguage(String targetLanguage) async {
+    await ref.read(authRepositoryProvider).updateTargetLanguage(targetLanguage);
+    ref.invalidate(myProfileProvider);
+    // ⚠ 레벨은 **언어마다 다르다**(서버가 target_language 스코프로 계산한다).
+    //   이걸 무효화하지 않으면 마이페이지 종합 레벨 카드에 **직전 언어의 레벨**이
+    //   그대로 남는다 — 일본어로 바꿨는데 한국어 레벨 7단계가 계속 보였다.
+    ref.invalidate(myLevelProvider);
+  }
+
+  /// Deletes the account: asks the backend to delete the member (`DELETE
+  /// /members/me`), then signs out of Supabase and returns to login. Throws
+  /// [AppException] on failure (caller shows it) — sign-out only runs after the
+  /// backend delete succeeds, so a failed delete leaves the user logged in.
+  ///
+  /// NOTE(server): the backend must also delete the Supabase auth user (needs
+  /// the admin/service key) — the client SDK cannot delete its own auth user.
+  /// Without that, the same email can sign back in and be find-or-created again.
+  Future<void> deleteAccount() async {
+    await ref.read(authRepositoryProvider).deleteAccount();
+    // The backend delete already succeeded — a failed network revoke must not
+    // leave the user staring at a deleted account's UI. Same reasoning as logout().
+    try {
+      await _client.auth.signOut();
+    } catch (_) {
+      // Ignored on purpose: the local session is gone either way.
+    }
+    _clearUserScopedState();
+    state = AuthStatus.unauthenticated;
+    _popToRoot();
+  }
+
+  /// Called by the auth interceptor on a 401. Best-effort sign-out, drops the
+  /// cached profile, and marks the session expired so AuthGate shows login
+  /// (prevents the next user briefly seeing stale member info).
+  void onSessionExpired() {
+    // 이미 만료 처리(미인증)했으면 재실행 금지 — AuthGate 가 에러 프레임마다 이걸
+    // 스케줄해 생기는 signOut/무효화 churn 과 /members/me 401 재조회 폭주를 끊는다.
+    if (state == AuthStatus.unauthenticated) return;
+    _sessionRejected = true; // 명시 재로그인 전까지 백그라운드 리프레시로 되살리지 않음
+    // Best-effort: don't await (interceptor callback is sync); errors ignored.
+    _client.auth.signOut().ignore();
+    _clearUserScopedState();
+    state = AuthStatus.unauthenticated;
+    _popToRoot();
+  }
+
+  /// Clears any pushed routes so the (now unauthenticated) AuthGate root —
+  /// which sits at the bottom of the stack — becomes visible immediately.
+  void _popToRoot() {
+    appNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+  }
+
+  /// Maps a Supabase [AuthException] to the app's typed [AppException] with a
+  /// Korean message, matching the previous backend error semantics.
+  AppException _mapAuthException(
+    AuthException e, {
+    required _AuthContext context,
+  }) {
+    final raw = e.message.toLowerCase();
+    // Already-registered email on signup → conflict.
+    if (context == _AuthContext.signup &&
+        (raw.contains('already registered') ||
+            raw.contains('already been registered') ||
+            raw.contains('user already') ||
+            e.code == 'user_already_exists')) {
+      return ConflictFailure(_l10n.authEmailAlreadyRegistered);
+    }
+    // Wrong credentials on login.
+    if (context == _AuthContext.login &&
+        (raw.contains('invalid login') ||
+            raw.contains('invalid credentials') ||
+            e.code == 'invalid_credentials')) {
+      return UnauthorizedFailure(_l10n.authInvalidCredentials);
+    }
+    // Wrong/expired recovery code.
+    if (context == _AuthContext.reset &&
+        (raw.contains('token has expired') ||
+            raw.contains('invalid') ||
+            e.code == 'otp_expired')) {
+      return ValidationFailure(_l10n.authResetCodeInvalid);
+    }
+    // Fallback: surface Supabase's message.
+    return UnknownFailure(e.message);
+  }
+}
+
+/// Discriminates which call produced an [AuthException] so the mapper can pick
+/// the right Korean message.
+enum _AuthContext { login, signup, reset }

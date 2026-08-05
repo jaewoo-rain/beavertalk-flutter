@@ -1,13 +1,42 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- INTERNET is required by the Pronunciation Challenge server STT (streams
+         mic PCM to the web backend's /api/v1/pron/stt/ws over a WebSocket). -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- 발음 챌린지 — 전면 카메라 셀피 배경 (camera 플러그인) -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
+    <!-- 인바운드 콜(로컬 트리거) — flutter_callkit_incoming 수신 화면/부재중 알림용 -->
+    <!-- Android 13+ 알림 표시 권한(부재중 배너 + 수신 알림) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- 잠금화면 위 전체화면 수신 표시(Android 14+는 런타임 승인도 필요) -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <!-- 수신 시 화면/CPU 깨우기 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <!-- 통화 진행 중 포그라운드 서비스(마이크) -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
     <application
         android:label="beavertalk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- taskAffinity는 **지정하지 않는다**(기본값 = 패키지명). 과거 여기 있던
+             android:taskAffinity="" 는 의도 없이 들어간 것으로 확인됐고(재우님), CallKit
+             수락 경로를 깨뜨렸다: 빈 어피니티는 MainActivity를 다른 액티비티와 다른 태스크에
+             가둔다. 수신 화면(CallkitIncomingActivity, launchMode=singleInstance)이
+             TransparentActivity를 띄우고, 그 액티비티가 AppUtils.getAppIntent
+             (CLEAR_TOP|SINGLE_TOP, NEW_TASK 없음)로 MainActivity를 시작하는데,
+             TransparentActivity는 기본 어피니티(패키지명)라 빈 어피니티 태스크와 매칭되지
+             않아 새 태스크가 생겼다. CLEAR_TOP/SINGLE_TOP은 같은 태스크 안에서만 기존
+             인스턴스를 찾으므로 MainActivity가 새로 생성됐다 → 앱 인스턴스 2개
+             (FlutterEngine·isolate·ProviderContainer도 각각 2개), 수락 후 통화 화면 대신
+             홈 화면, End call 미동작. 기본 어피니티로 두면 두 액티비티가 같은 태스크에 놓여
+             CLEAR_TOP|SINGLE_TOP이 기존 인스턴스를 재사용한다. -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
-            android:taskAffinity=""
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
@@ -24,12 +53,33 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- Supabase OAuth (Kakao, and the Apple/Android fallback) deep-link
+                 redirect. After browser consent the external browser returns to
+                 the app via this scheme/host; supabase_flutter then completes the
+                 session. Must match kOAuthRedirect in auth_controller.dart and the
+                 Supabase dashboard's Redirect URLs. -->
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="im.beavertalk.beavertalk" android:host="login-callback"/>
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        <!-- Disable Flutter's built-in deep-link routing so the Supabase OAuth
+             callback (im.beavertalk.beavertalk://login-callback?code=…) is NOT
+             pushed onto the Navigator as an unknown route (which showed the
+             "화면 준비 중" placeholder). With this off, supabase_flutter's own
+             app_links listener receives the link and completes the PKCE code
+             exchange → session → AuthGate. In-app Navigator.pushNamed is
+             unaffected (this only governs OS-delivered links). -->
+        <meta-data
+            android:name="flutter_deeplinking_enabled"
+            android:value="false" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

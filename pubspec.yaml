@@ -35,9 +35,105 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
 
+  # Renders the brand/SVG icons in assets/icons/ (Kakao/Google/Apple/Mail/logo).
+  flutter_svg: ^2.0.17
+
+  # State management + dependency injection (clean architecture wiring).
+  flutter_riverpod: ^2.6.1
+  # HTTP client for the FastAPI backend (interceptors, form/json bodies).
+  dio: ^5.7.0
+  # MediaType for multipart uploads (review audio); transitive via dio, but
+  # declared directly since we import it in the review data source.
+  http_parser: ^4.1.0
+  # Secure JWT storage (Keychain / EncryptedSharedPreferences).
+  flutter_secure_storage: ^9.2.4
+  # Google Sign-In. On web (6.2.x) renderButton() yields a reliable idToken
+  # via onCurrentUserChanged; we send that to POST /auth/social.
+  google_sign_in: ^6.2.2
+  # web_only.dart (renderButton) is imported directly in login.dart, so the
+  # web implementation package is declared explicitly.
+  google_sign_in_web: ^0.12.4
+  # Loads API_BASE_URL from a project-root .env (overrides the platform
+  # fallback). Bundled as an asset so web builds can read it.
+  flutter_dotenv: ^5.1.0
+
+  # Supabase Auth — the app's identity provider. Persists + auto-refreshes the
+  # session; the backend verifies the Supabase access token (ES256 JWT).
+  supabase_flutter: ^2.15.0
+
+  # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
+  web_socket_channel: ^3.0.1
+  # normalcall — 마이크 PCM16k 스트림 녹음(FlutterSoundRecorder만 사용).
+  flutter_sound: ^9.2.13
+  # normalcall — 서버 PCM24k gapless 재생(콜백-풀, 네이티브 레이트). 재생 언더플로우
+  # 고착(1분 후 끊김) 방지용으로 flutter_sound player를 대체. web 미지원(런타임 가드).
+  # ⚠ dependency_overrides 로 packages/flutter_pcm_sound (로컬 패치본)을 쓴다 — 하단 참고.
+  flutter_pcm_sound: ^3.1.4
+  # normalcall — 마이크 권한 요청.
+  permission_handler: ^11.3.1
+  flutter_markdown: ^0.7.7+1
+
+  # 예약 인바운드 콜(비버가 거는 전화) — 로컬 트리거 단계.
+  # CallKit 수신 화면(전화 오는 UI) + accept/decline/timeout 이벤트. 이번 단계는
+  # 로컬 showCallkitIncoming만 사용(FCM/VoIP 없음). Android 우선.
+  flutter_callkit_incoming: ^3.1.3
+  # 1분 미응답 시 상단바 "부재중 전화" 배너.
+  flutter_local_notifications: ^18.0.1
+  # CallKit 세션 식별용 UUID(callUuid) 생성.
+  uuid: ^4.5.1
+
+  # 밖에서 앱을 깨우는 트리거 = FCM(Android). 서버 푸시가 오면 위 CallKit 수신
+  # 화면을 그대로 띄운다. Firebase 초기화는 옵션 없이 google-services.json 자동
+  # 사용 방식(firebase_options.dart 미사용 → 계정 바꿔도 json만 교체). 웹은 옵션이
+  # 필요해 제외(kInboundCallEnabled && !kIsWeb 가드 안에서만 초기화).
+  firebase_core: ^4.11.0
+  firebase_messaging: ^16.4.1
+  share_plus: ^12.0.2
+  flutter_localizations:
+    sdk: flutter
+  intl: ^0.20.2
+  country_flags: ^4.1.2
+  record: ^7.1.1
+  camera: ^0.12.0+1
+  # 영상통화 아바타 — 뉴럴 생성 talking/idle 루프 재생(자연스러운 발화 모션).
+  video_player: ^2.9.2
+  path_provider: ^2.1.6
+  shared_preferences: ^2.5.5
+
+  # Apple Sign In. iOS uses the native sheet → id_token → Supabase
+  # signInWithIdToken; Android/web use the browser OAuth fallback. crypto hashes
+  # (SHA-256) the nonce Apple binds into the id_token for replay protection.
+  sign_in_with_apple: ^8.1.0
+  crypto: ^3.0.7
+  audio_session: ^0.2.4
+  url_launcher: ^6.3.2
+
+# 통화 음성 깨짐/버벅임(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
+# pub 원본은 조각 하나 쓸 때마다 큐 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은
+# 락)해서, 언더런을 막으려고 버퍼를 키울수록 오히려 부하가 커지는 구조였다.
+# 패치본은 (1) 락프리 러닝 카운터, (2) 큐가 비면 무음을 채워 AudioTrack 을 active 로
+# 유지(재활성화 130ms 정지 방지), (3) feed 가 남은 잔량을 돌려줘 Dart 가 콜백 핑퐁
+# 없이 능동 피드, (4) getStats 계측을 쓴다. 상세는 packages/ 안의 주석.
+# 근거: docs/2026-07-26_1517_android-audiotrack-underrun-buffer-fix.md,
+#       docs/2026-07-29_1710_zero-dropout-push-feed-plan.md
+# 롤백: 이 블록 제거 후 flutter pub get.
+dependency_overrides:
+  flutter_pcm_sound:
+    path: packages/flutter_pcm_sound
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  # Catches common Riverpod mistakes at analyze time (beginner-friendly).
+  riverpod_lint: ^2.6.1
+  # Required peer for riverpod_lint's custom_lint plugin.
+  custom_lint: ^0.7.0
+
+  # 런처 아이콘(Android/iOS/web) 생성기. `dart run flutter_launcher_icons`.
+  flutter_launcher_icons: ^0.14.4
+  # 네이티브 스플래시(Android/iOS/web) 생성기. `dart run flutter_native_splash:create`.
+  flutter_native_splash: ^2.4.6
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -45,6 +141,52 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+
+# 런처 아이콘 — 원본은 assets/branding/(번들되지 않는 생성 원본).
+# 재생성: `dart run flutter_launcher_icons`
+# 마스코트 아트의 배경이 이미 흰색이라 adaptive 배경도 #FFFFFF로 맞춘다.
+# foreground 도 같은 원본을 그대로 쓴다 — 생성기가 16% inset(안전영역)을 씌우므로
+# 여기서 여백을 더 주면 아이콘이 두 번 줄어든다.
+flutter_launcher_icons:
+  image_path: "assets/branding/app_icon.png"
+  android: "ic_launcher"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/branding/app_icon.png"
+  ios: true
+  # iOS 아이콘은 알파 채널을 허용하지 않는다.
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: "assets/branding/app_icon.png"
+    background_color: "#181A20"
+    theme_color: "#181A20"
+
+# 네이티브 스플래시 — 가운데는 원형으로 딴 마스코트 160x160.
+# 피그마 원안은 워드마크였으나 마스코트로 바꿨다(런처 아이콘과 인상 통일).
+# 원본 이미지는 4x로 넣는다(패키지가 4로 나눠 mdpi를 만든다).
+#
+# 배경은 모드를 따라간다. 두 값 모두 `Background/Normal/Normal`이며
+# Figma "Splash & logo"(160:58332)는 다크 프레임 하나뿐이라 라이트 값은
+# 팔레트에서 가져온다. `auth_gate.dart`의 _Splash 가 같은 토큰을 읽으므로
+# 여기 색을 바꾸면 거기도 따라온다 — 어긋나면 OS 스플래시에서 첫 프레임으로
+# 넘어갈 때 화면이 번쩍인다.
+#
+# 마스코트는 한 장으로 양쪽을 쓴다. 원형 안쪽에 밝은 배경이 구워져 있어
+# 다크에서는 동전처럼 떠 보이고, 라이트에서는 배경에 묻혀 마스코트만 남는다.
+#
+# 재생성: `dart run flutter_native_splash:create`
+flutter_native_splash:
+  color: "#F1F1F5"
+  color_dark: "#181A20"
+  image: assets/branding/splash_mascot.png
+  android: true
+  ios: true
+  web: true
+  android_12:
+    # Android 12+ 는 이걸 아이콘 슬롯에 그린다 — 지름 768 안전원 안에 맞춘 별도 원본.
+    image: assets/branding/splash_mascot_android12.png
+    color: "#F1F1F5"
+    color_dark: "#181A20"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -56,6 +198,37 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Generate the gen-l10n localizations (AppLocalizations) from lib/l10n/*.arb
+  # per l10n.yaml. Output lands in the source tree (Flutter 3.44: no synthetic
+  # package).
+  generate: true
+
+  assets:
+    - assets/images/
+    - assets/videos/
+    - assets/icons/
+    - assets/icons/3d/
+    # 영상통화 아바타 스프라이트(립싱크 크로스페이드 + 표정): 캐릭터별 입4단·눈감기·표정4.
+    - assets/avatar/baba/
+    - assets/avatar/bibi/
+    - assets/avatar/dudu/
+    - assets/avatar/popo/
+    - assets/avatar/rara/
+    # API_BASE_URL override (bundled so web builds can read it; optional).
+    - .env
+
+  fonts:
+    - family: Pretendard
+      fonts:
+        - asset: assets/fonts/Pretendard-Regular.otf
+          weight: 400
+        - asset: assets/fonts/Pretendard-Medium.otf
+          weight: 500
+        - asset: assets/fonts/Pretendard-SemiBold.otf
+          weight: 600
+        - asset: assets/fonts/Pretendard-Bold.otf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:

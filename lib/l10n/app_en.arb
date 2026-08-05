@@ -1,0 +1,1101 @@
+{
+  "@@locale": "en",
+  "loginRequired": "You need to sign in.",
+  "callWebNotSupported": "Voice calls aren't supported on the web. Please use the app.",
+  "micPermissionRequiredForCall": "Microphone access is required. Allow the microphone to start a call.",
+  "callErrorGeneric": "Something went wrong during the call.",
+  "callNetworkError": "A network error occurred.",
+  "authInvalidCredentials": "Your email or password is incorrect.",
+  "authEmailAlreadyRegistered": "This email is already registered.",
+  "authConfirmEmailRequired": "Please complete the verification sent to your email.",
+  "authResetCodeSent": "We've sent a verification code to your email.",
+  "authResetCodeInvalid": "That code is incorrect or has expired.",
+  "authPasswordUpdated": "Your password has been reset.",
+  "authAppleTokenMissing": "Couldn't get your Apple sign-in token.",
+  "callEndedDuration": "Call ended {duration}",
+  "@callEndedDuration": {
+    "description": "Sub-label on the call-finished screen showing the elapsed call time.",
+    "placeholders": {
+      "duration": {
+        "type": "String",
+        "example": "05:12"
+      }
+    }
+  },
+  "callRatingPrompt": "How was your call?",
+  "@callRatingPrompt": {
+    "description": "Heading asking the user to rate the call just ended."
+  },
+  "ratingBad": "Not great",
+  "@ratingBad": {
+    "description": "Lowest call rating choice (thumbs-down)."
+  },
+  "ratingOkay": "Okay",
+  "@ratingOkay": {
+    "description": "Middle call rating choice (single thumbs-up)."
+  },
+  "ratingGood": "Good",
+  "@ratingGood": {
+    "description": "Highest call rating choice (double thumbs-up)."
+  },
+  "goHome": "Home",
+  "viewAnalysis": "View Analysis",
+  "loadingShort": "Loading…",
+  "ratingSubmitFailed": "Failed to submit rating: {message}",
+  "@ratingSubmitFailed": {
+    "placeholders": {
+      "message": {
+        "type": "String"
+      }
+    }
+  },
+  "callInfoNotFound": "Call info not found, skipping analysis.",
+  "tabRecords": "Records",
+  "tabArchive": "Archive",
+  "callHistory": "Call History",
+  "conversationRecord": "Conversation record",
+  "noCallRecords": "No call records yet",
+  "noCallRecordsBody": "Once you finish your first call with AI,\nyour records will appear here.",
+  "startCall": "Start a Call",
+  "recordsLoadError": "Couldn't load records",
+  "tryAgainLater": "Please try again later.",
+  "retry": "Retry",
+  "durationMinSec": "{minutes} min {seconds} sec",
+  "@durationMinSec": {
+    "description": "A duration formatted as minutes and seconds.",
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "scheduleManagement": "Manage schedule",
+  "alarms": "Alarms",
+  "addSchedule": "Add new schedule",
+  "editSchedule": "Edit Schedule",
+  "somethingWentWrong": "Something went wrong",
+  "alarmsLoadError": "Couldn't load alarms",
+  "charactersLoadError": "Couldn't load characters",
+  "noCharacters": "No characters available",
+  "close": "Close",
+  "repeat": "Repeat",
+  "callPartner": "Call partner",
+  "quickStart": "Quick start",
+  "presetMorning": "Morning routine",
+  "presetMorningSub": "Weekdays 8:00",
+  "presetEvening": "Evening wind-down",
+  "presetEveningSub": "Every day 21:00",
+  "presetCustom": "Custom",
+  "presetCustomSub": "Your own",
+  "alarmSummary": "{count}× a week · {monthly} calls a month",
+  "@alarmSummary": {
+    "description": "Summary under the alarm form. monthly = count × 4.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "monthly": {
+        "type": "int"
+      }
+    }
+  },
+  "alarmSummaryNone": "Pick at least one day",
+  "partnerInUse": "In use",
+  "partnerOwned": "Owned",
+  "am": "AM",
+  "pm": "PM",
+  "save": "Save",
+  "conversation": "Conversation",
+  "review": "Review",
+  "pronunciationChallenge": "Pronunciation Challenge",
+  "newExpressions": "New Expressions",
+  "analysisResult": "Analysis Result",
+  "noNewExpressions": "No new expressions from this conversation.",
+  "practice": "Practice",
+  "recentScore": "Recent score {score}%",
+  "@recentScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "callSequence": "Call #{count}",
+  "@callSequence": {
+    "description": "Which call this is with the same partner, shown in the analysis meta line.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "characterNoteTitle": "A word from {name}",
+  "@characterNoteTitle": {
+    "description": "Section title for the partner's post-call remark.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "characterNoteFooter": "Left by {name} right after the call",
+  "@characterNoteFooter": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "newExpressionsCount": "New expressions {count}",
+  "@newExpressionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "analysisLoadError": "Couldn't load the analysis result.",
+  "standardAudioNotReady": "Standard pronunciation audio isn't ready yet.",
+  "standardAudioPlayError": "Couldn't play the standard pronunciation audio.",
+  "selectNativeLanguage": "Select your native language",
+  "@selectNativeLanguage": {
+    "description": "Default title of the language-select bottom sheet shown over the login screen. Asks for the user's native language, not a country."
+  },
+  "selectYourLanguage": "Select your language",
+  "@selectYourLanguage": {
+    "description": "Title of the language select sheet opened from My Page."
+  },
+  "confirm": "Confirm",
+  "@confirm": {
+    "description": "Confirm button in the country/language select bottom sheet."
+  },
+  "cancel": "Cancel",
+  "selectTime": "Select time",
+  "getStarted": "Get Started",
+  "permissionTitle": "Allow permissions\nfor a smooth experience",
+  "permissionSubtitle": "Required permissions are essential to use the service.",
+  "permissionMicTitle": "Microphone (required)",
+  "permissionMicDesc": "Needed to talk with the AI in English.",
+  "permissionNotifTitle": "Notifications (optional)",
+  "permissionNotifDesc": "We'll send learning reminders and call schedules.",
+  "micPermissionNeededTitle": "Microphone access needed",
+  "micPermissionNeededBody": "To talk with the AI, you need to allow microphone access. Please enable it in Settings.",
+  "openSettings": "Open Settings",
+  "connectionFailedTitle": "Connection failed",
+  "connectionFailedBody": "Check your network connection\nand try again.",
+  "checkout": "Checkout",
+  "pay": "Pay",
+  "orderSummary": "Order Summary",
+  "paymentMethod": "Payment Method",
+  "payMethodCard": "Credit / Debit Card",
+  "payMethodKakao": "KakaoPay",
+  "productName": "Annoying Beaver Avatar",
+  "productTrait": "Premium character · Yours forever",
+  "amountItemPrice": "Item price",
+  "amountDiscount": "Discount",
+  "amountTotal": "Total",
+  "paymentCompleteTitle": "Payment complete",
+  "paymentCompleteBody": "The avatar has been added to your collection.",
+  "viewCollection": "View Collection",
+  "receiptItem": "Item",
+  "receiptAmount": "Amount",
+  "receiptMethod": "Payment method",
+  "receiptDate": "Date",
+  "paymentFailedTitle": "Payment failed",
+  "paymentFailedBody": "Your payment couldn't be processed.\nPlease try again.",
+  "freeCallEndingTitle": "Your free call is ending",
+  "freeCallEndingBody": "Subscribe to talk with Beaver for longer.",
+  "subscribe": "Subscribe",
+  "endCall": "End Call",
+  "callEnded": "The call has ended.",
+  "connecting": "Connecting…",
+  "connectingHint": "This usually takes less than 5 seconds",
+  "callConnectFailed": "Couldn't connect the call.",
+  "saveSentenceFailed": "Couldn't save the sentence.",
+  "recordStartFailed": "Couldn't start recording.",
+  "recordTooShort": "That recording was too short. Please try again.",
+  "gradingFailed": "Scoring failed. Please try again.",
+  "listenStandard": "Listen to standard pronunciation",
+  "saveSentence": "Save sentence",
+  "unsaveSentence": "Remove saved sentence",
+  "scoringPronunciation": "Scoring your pronunciation…",
+  "analyzingByWord": "Checking your pronunciation word by word",
+  "@analyzingByWord": {
+    "description": "Caption under the scan cursor while a recording is scored (proto/2_scan_start AnalyzingCaption 3627:9708)."
+  },
+  "analyzingTakingLonger": "This is taking a little longer",
+  "@analyzingTakingLonger": {
+    "description": "Replaces analyzingByWord once scoring runs long (screen/learning_analysis__지연5s AnalyzingCaption 3745:27)."
+  },
+  "scanConnectionLost": "Connection lost",
+  "@scanConnectionLost": {
+    "description": "Caption on the scan-failed screen when the request never reached the server (proto/E_failed AnalyzingCaption 3627:9847)."
+  },
+  "noRecordingToPlay": "No recording to play.",
+  "myRecordingPlayError": "Couldn't play your recording.",
+  "next": "Next",
+  "endLearning": "End Session",
+  "navCalendar": "Calendar",
+  "navCall": "Call",
+  "navStats": "Stats",
+  "myPage": "My Page",
+  "languageSaveFailed": "Couldn't save your language.",
+  "accountDeleteFailed": "Couldn't delete your account.",
+  "changeAvatar": "Change Avatar",
+  "avatarIntro": "Voice and difficulty vary by call partner.\nSome partners may require payment.",
+  "myPartnersOwned": "My Partners · {count} owned",
+  "@myPartnersOwned": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "limitedDiscount": "Limited-time discount",
+  "available": "Available",
+  "inUse": "In use",
+  "owned": "Owned",
+  "noCharactersToShow": "No characters to show",
+  "buy": "Buy",
+  "noSavedSentences": "No saved sentences yet.\nBookmark sentences from your conversation records.",
+  "noAlarms": "No alarms registered",
+  "noAlarmsBody": "Add a learning reminder\nand you can build a consistent habit.",
+  "subscriptionManage": "Manage Subscription",
+  "changePlan": "Change Plan",
+  "cancelSubscription": "Cancel Subscription",
+  "benefitsInUse": "Your benefits",
+  "paymentInfo": "Payment info",
+  "nextBillingDate": "Next billing date",
+  "lostBenefitsTitle": "Benefits you'll lose if you cancel",
+  "viewBillingHistory": "View Billing History",
+  "keepUsingPro": "Keep Using Pro",
+  "proMembership": "Pro Membership",
+  "pricePerMonth": "$12.9 / mo",
+  "benefitUnlimitedCalls": "Unlimited calls",
+  "benefitDetailedAnalysis": "Detailed pronunciation & grammar analysis",
+  "benefitAllCharacters": "Access to all characters",
+  "benefitNoAds": "No ads",
+  "playSampleVoice": "Play sample voice",
+  "useThisAvatar": "Use This",
+  "challengeTitle": "Pronunciation Challenge",
+  "challengeIntro": "Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.",
+  "challengeStart": "Start Camera & Mic",
+  "challengePermissionNote": "Front camera and mic access is required (optional).",
+  "challengeLoadingTitle": "Loading…",
+  "challengeLoadingNote": "Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.",
+  "challengeSttFallback": "Speech recognition wasn't available, so you played with tap input.",
+  "reasonTravelTitle": "Speaking while traveling",
+  "reasonTravelDesc": "Chat confidently with locals",
+  "reasonCareerTitle": "Work & career",
+  "reasonCareerDesc": "Business conversation",
+  "reasonExamTitle": "Test prep",
+  "reasonExamDesc": "Prepare for speaking tests",
+  "reasonDailyTitle": "Everyday conversation",
+  "reasonDailyDesc": "Expressions you use daily",
+  "reasonFriendsTitle": "Making foreign friends",
+  "reasonFriendsDesc": "Natural conversation",
+  "reasonBrainTitle": "Brain stimulation",
+  "reasonBrainDesc": "Boost memory & focus",
+  "challengeRecordToggle": "Record this run",
+  "challengeRecordHint": "Saves a video of your gameplay to share (silent).",
+  "settingsSection": "Settings",
+  "paymentSection": "Payment",
+  "supportSection": "Support",
+  "userLanguage": "User Language",
+  "learningLanguage": "Learning Language",
+  "learningLanguageKorean": "Korean",
+  "notificationLabel": "Notification",
+  "currentPlan": "Current Plan",
+  "paymentHistory": "Payment History",
+  "contactUs": "Contact Us",
+  "termsOfService": "Terms of service",
+  "privacyPolicy": "Privacy policy",
+  "logOut": "Log out",
+  "deleteAccount": "Delete account",
+  "deleteAccountTitle": "Delete account?",
+  "deleteAccountBody": "This permanently deletes your account and data and cannot be undone.",
+  "delete": "Delete",
+  "share": "Share",
+  "accentSoundsLike": "Your Korean accent sounds",
+  "hintLabel": "Hint",
+  "nextHint": "Next hint",
+  "translateLabel": "Translate",
+  "startRecording": "Start recording",
+  "stopRecording": "Stop recording",
+  "back": "Back",
+  "onboardingNameTitle": "What should we call you?",
+  "onboardingNameSubtitle": "Your AI tutor will remember your name.",
+  "nameLabel": "Your name",
+  "nameHint": "Enter your name",
+  "nameHelper": "It doesn't have to be your real name — a nickname works too.",
+  "continueLabel": "Continue",
+  "onboardingDoneTitle": "Beaver is waiting for your call",
+  "onboardingDoneSubtitle": "Start a call right now",
+  "home": "Home",
+  "callNow": "Call now",
+  "pronunciation": "Pronunciation",
+  "fluency": "Fluency",
+  "rhythm": "Rhythm",
+  "analysisTimeout": "This is taking longer than expected. Please try again in a moment.",
+  "analysisFailed": "We couldn't analyze the conversation. Please try again.",
+  "analyzingConversation": "Analyzing your conversation…",
+  "analyzingSubtitle": "This will only take a moment",
+  "tryAgain": "Try again",
+  "nativeLabel": "Native",
+  "meLabel": "Me",
+  "pronunciationPlayError": "Couldn't play the pronunciation audio.",
+  "savedExpressionsLoadError": "Couldn't load your saved expressions.",
+  "mySavedExpressions": "My Saved Expressions",
+  "avatarTraits": "Warm · Calm · Soft",
+  "priceFree": "Free",
+  "loginGoogleTokenError": "Couldn't get a Google sign-in token.",
+  "loginGoogleSignInFailed": "Google sign-in failed.",
+  "loginAppleSignInFailed": "Apple sign-in failed.",
+  "loginKakaoSignInFailed": "Kakao sign-in failed.",
+  "loginContinueWithKakao": "Continue with Kakao",
+  "loginContinueWithGoogle": "Continue with Google",
+  "loginContinueWithApple": "Continue with Apple",
+  "loginContinueWithEmail": "Continue with email",
+  "loginOrDivider": "or",
+  "loginNoAccount": "Don't have an account?",
+  "signUp": "Sign up",
+  "loginTermsNoticePrefix": "By continuing, you agree to our ",
+  "loginTermsNoticeAnd": " and ",
+  "loginTermsNoticeSuffix": ".",
+  "loginLogIn": "Log in",
+  "fieldEmailLabel": "Email",
+  "emailHint": "Enter your email",
+  "fieldPasswordLabel": "Password",
+  "passwordHint": "Enter your password",
+  "loginRememberMe": "Remember me",
+  "loginForgotPassword": "Forgot password?",
+  "loginLoggingIn": "Logging in...",
+  "passwordLengthError": "Password must be 8–16 characters.",
+  "passwordsDoNotMatch": "Passwords don't match.",
+  "signupCheckInput": "Please check your input.",
+  "fieldConfirmPasswordLabel": "Confirm password",
+  "confirmPasswordHint": "Re-enter your password",
+  "signupSigningUp": "Signing up...",
+  "signupHaveAccount": "Already have an account?",
+  "passwordMethodEmailRequired": "Enter your email",
+  "passwordResetTitle": "Reset password",
+  "passwordMethodDescription": "Enter the email address where you'd like to receive the password reset code.",
+  "emailAddressHint": "Email address",
+  "passwordMethodSending": "Sending...",
+  "passwordMethodSendEmail": "Send email",
+  "passwordCodeTitle": "Enter code",
+  "passwordCodeDescription": "We've sent a recovery code to your email. Enter it to continue.",
+  "passwordCodeNoCode": "Didn't get the code?",
+  "passwordCodeResend": "Resend code",
+  "passwordCodeVerifying": "Verifying...",
+  "passwordNewTitle": "New password",
+  "passwordNewDescription": "Set a new password for your account.",
+  "fieldNewPasswordLabel": "New password",
+  "newPasswordHint": "Enter your new password",
+  "fieldConfirmNewPasswordLabel": "Confirm new password",
+  "confirmNewPasswordHint": "Re-enter your new password",
+  "passwordNewSubmitting": "Submitting...",
+  "passwordNewSubmit": "Submit",
+  "passwordCompleteTitle": "Password reset complete",
+  "passwordCompleteBody": "Your password has been reset. Log in with your new password to continue.",
+  "termsTitle": "Terms of service",
+  "privacyTitle": "Privacy policy",
+  "passwordNewDescriptionEmail": "Set a new password for {email}.",
+  "@passwordNewDescriptionEmail": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "selectComplete": "Done",
+  "onboardingLanguageTitle": "What is your native language?",
+  "onboardingReasonTitle": "Why are you learning a language?",
+  "onboardingReasonSubtitle": "We'll tailor your learning to your goals.",
+  "savingLabel": "Saving...",
+  "payMethodApple": "Apple Pay",
+  "thisMonthPayment": "This month's payment",
+  "@thisMonthPayment": {
+    "description": "Header of the summary card on the payment-history screen."
+  },
+  "filterAll": "All",
+  "@filterAll": {
+    "description": "Payment-history filter chip: show every transaction."
+  },
+  "filterSubscription": "Subscription",
+  "@filterSubscription": {
+    "description": "Payment-history filter chip: subscription charges only."
+  },
+  "filterCharacter": "Character",
+  "@filterCharacter": {
+    "description": "Payment-history filter chip: character purchases only."
+  },
+  "statusCompleted": "Completed",
+  "@statusCompleted": {
+    "description": "Payment-history row status: the charge went through."
+  },
+  "lastPayment": "Last payment",
+  "@lastPayment": {
+    "description": "Label of the most-recent-charge row in the subscription sheet's 결제 정보 section."
+  },
+  "subscriptionSwitchNote": "You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.",
+  "@subscriptionSwitchNote": {
+    "description": "Note paragraph on the change-plan and cancel subscription sheets.",
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "June 20, 2026"
+      }
+    }
+  },
+  "freePlanCallLimit": "1 call a day · 5 min limit",
+  "@freePlanCallLimit": {
+    "description": "Free plan benefit line on the change-plan sheet."
+  },
+  "freePlanBasicCharacters": "Basic characters included",
+  "@freePlanBasicCharacters": {
+    "description": "Free plan benefit line on the change-plan sheet."
+  },
+  "availableForPurchase": "Available to purchase",
+  "@availableForPurchase": {
+    "description": "Section heading on the change-avatar screen listing characters the user does not own yet and can buy. Distinct from the sheet's 'Available' status chip."
+  },
+  "paymentsLoadError": "Couldn't load payment history",
+  "@paymentsLoadError": {
+    "description": "Error state on the payment-history screen when GET /payments fails."
+  },
+  "noPayments": "No payments yet",
+  "@noPayments": {
+    "description": "Empty state on the payment-history screen."
+  },
+  "morePaymentsExist": "Older payments aren't shown yet",
+  "@morePaymentsExist": {
+    "description": "Shown when the server reports has_more but load-more isn't wired."
+  },
+  "undatedPayments": "Undated",
+  "@undatedPayments": {
+    "description": "Month-group heading for payments whose payment_date is null."
+  },
+  "paymentLabelFallback": "Payment",
+  "@paymentLabelFallback": {
+    "description": "Row label when the server sends no description and the category is unknown."
+  },
+  "learningPassed": "{passed} of {total} sentences passed",
+  "@learningPassed": {
+    "description": "Headline of the learning summary screen.",
+    "placeholders": {
+      "passed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "hardestSound": "Hardest sound today",
+  "soundAccuracy": "Accuracy by sound",
+  "phonemeAttempts": "Per phoneme · {count} attempts",
+  "@phonemeAttempts": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "colSound": "Sound",
+  "colAttempts": "Tries",
+  "colCorrect": "Right",
+  "colAccuracy": "Accuracy",
+  "sentenceResults": "Results by sentence",
+  "viewAllSentences": "See all {count}",
+  "@viewAllSentences": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "colSentence": "Sentence",
+  "colPronunciation": "Pron.",
+  "colFluency": "Flu.",
+  "colRhythm": "Rhy.",
+  "recentSessions": "Last {count} sessions",
+  "@recentSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendAverage": "Avg {score}",
+  "@trendAverage": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "today": "Today",
+  "colDate": "Date",
+  "colSentences": "Sentences",
+  "colScore": "Score",
+  "colChange": "Change",
+  "dateToday": "{date} (today)",
+  "@dateToday": {
+    "description": "The most recent row of the trend table.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "accentAnalysis": "Accent analysis",
+  "@accentAnalysis": {
+    "description": "Title of the accent-breakdown card on my page."
+  },
+  "overallLevel": "Overall level",
+  "@overallLevel": {
+    "description": "Title of the overall-level card on my page."
+  },
+  "overallLevelSubtitle": "Vocabulary · Grammar · Expressions",
+  "@overallLevelSubtitle": {
+    "description": "Subtitle listing what the overall level covers."
+  },
+  "pronunciationAnalysis": "Pronunciation analysis",
+  "@pronunciationAnalysis": {
+    "description": "Title of the pronunciation card on my page."
+  },
+  "recentSessionsAverage": "Last 10 sessions avg.",
+  "@recentSessionsAverage": {
+    "description": "Card subtitle: the figure is an average over the last 10 sessions."
+  },
+  "levelStage": "Stage {stage}",
+  "@levelStage": {
+    "description": "A proficiency stage, 1-13. Also used for the two ends of the level scale.",
+    "placeholders": {
+      "stage": {
+        "type": "int",
+        "example": "7"
+      }
+    }
+  },
+  "topPercent": "Top {percent}%",
+  "@topPercent": {
+    "description": "Percentile rank, e.g. Top 45%.",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "45"
+      }
+    }
+  },
+  "allLearnersBasis": "Among all learners",
+  "@allLearnersBasis": {
+    "description": "Caption under the percentile: the rank is across all learners."
+  },
+  "aheadOfLearners": "You're ahead of {percent}% of all learners",
+  "@aheadOfLearners": {
+    "description": "Sentence under the level scale. The my-page card emphasises the '{percent}%' token in Label/Strong, so keep the number and the percent sign adjacent with no space.",
+    "placeholders": {
+      "percent": {
+        "type": "int",
+        "example": "55"
+      }
+    }
+  },
+  "retakeLevelTest": "Retake level test",
+  "@retakeLevelTest": {
+    "description": "CTA on the level card - start the level-test call again."
+  },
+  "practicePronunciation": "Practice pronunciation",
+  "@practicePronunciation": {
+    "description": "CTA on the pronunciation card - open the latest call analysis."
+  },
+  "priceChangedTitle": "Price changed",
+  "priceChangedBody": "This item is now {price}. Would you like to continue?",
+  "@priceChangedBody": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "billingGroupPlanPurchases": "Plan & purchases",
+  "@billingGroupPlanPurchases": {
+    "description": "Billing list group title - in-app rail rows (spec section 5). English copy is final; do not localize away from the confirmed wording."
+  },
+  "billingGroupInTheStore": "In the store",
+  "@billingGroupInTheStore": {
+    "description": "Billing list group title - rows that leave the app for the store."
+  },
+  "billingChangePlan": "Change plan",
+  "@billingChangePlan": {
+    "description": "Billing slot 1 label on a paid plan."
+  },
+  "billingCompareAllPlans": "Compare all plans",
+  "@billingCompareAllPlans": {
+    "description": "Billing slot 1 label on every non-paid state."
+  },
+  "billingBuyACharacter": "Buy a character",
+  "@billingBuyACharacter": {
+    "description": "Billing slot 2 - character one-off purchase (in-house PG rail)."
+  },
+  "billingRestorePurchases": "Restore purchases",
+  "@billingRestorePurchases": {
+    "description": "Billing slot 3."
+  },
+  "billingPaymentHistory": "Payment history",
+  "@billingPaymentHistory": {
+    "description": "Billing slot 4."
+  },
+  "billingManageInTheStore": "Manage in the store",
+  "@billingManageInTheStore": {
+    "description": "Billing slot 5 - deep link to the platform store. 'the store' is deliberately neutral; store names never appear in copy (work order section 1-3)."
+  },
+  "billingRefundHelp": "Refund help",
+  "@billingRefundHelp": {
+    "description": "Billing slot 6 - external, refunds are delegated to the store."
+  },
+  "billingCancelSubscription": "Cancel subscription",
+  "@billingCancelSubscription": {
+    "description": "Billing slot 7 in every state but ENDING."
+  },
+  "billingResubscribe": "Resubscribe",
+  "@billingResubscribe": {
+    "description": "Billing slot 7 on ENDING - the cancellation is reversible until expiry."
+  },
+  "badgeCurrent": "Current",
+  "@badgeCurrent": {
+    "description": "Status pill - Free plan in force."
+  },
+  "badgeTrial": "Trial",
+  "@badgeTrial": {
+    "description": "Status pill - inside the Max trial. Not 'Renewing' (spec section 16-4 fixed that defect)."
+  },
+  "badgeRenewing": "Renewing",
+  "@badgeRenewing": {
+    "description": "Status pill - paid plan with auto-renew on."
+  },
+  "badgePastDue": "Past due",
+  "@badgePastDue": {
+    "description": "Status pill - renewal failed, store retrying (GRACE)."
+  },
+  "badgePaused": "Paused",
+  "@badgePaused": {
+    "description": "Status pill - account hold (ON_HOLD)."
+  },
+  "badgeCanceling": "Canceling",
+  "@badgeCanceling": {
+    "description": "Status pill - cancelled, running out the paid term (ENDING)."
+  },
+  "subscriptionTitle": "Subscription",
+  "@subscriptionTitle": {
+    "description": "GNB title of every manage-state screen (measured off 4514:4739 etc)."
+  },
+  "plansTitle": "Plans",
+  "@plansTitle": {
+    "description": "GNB title of the trial-expired notice screen (4514:5179)."
+  },
+  "planFree": "Free",
+  "planPro": "Pro",
+  "planMax": "Max",
+  "planMaxTrial": "Max trial",
+  "@planMaxTrial": {
+    "description": "Plan-card title while inside the Max trial."
+  },
+  "freePlanPriceLine": "$0.00 — one call a day",
+  "@freePlanPriceLine": {
+    "description": "Plan-card subtitle on the Free state. Confirmed copy; do not reword."
+  },
+  "pricePerMonthLine": "{amount} per month",
+  "@pricePerMonthLine": {
+    "description": "Plan-card subtitle for a monthly paid plan. 'per month' is mandated wording (spec 6-4 forbids 'a month').",
+    "placeholders": {
+      "amount": {
+        "type": "String",
+        "example": "$12.90"
+      }
+    }
+  },
+  "freeUntilDate": "Free until {date}",
+  "@freeUntilDate": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 27, 2026"
+      }
+    }
+  },
+  "todaysCalls": "Today's calls",
+  "callsUsedOfLimit": "{used} of {limit} used",
+  "@callsUsedOfLimit": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "limit": {
+        "type": "int"
+      }
+    }
+  },
+  "firstPaymentLabel": "First payment",
+  "nextPaymentLabel": "Next payment",
+  "retryingUntilLabel": "Retrying until",
+  "@retryingUntilLabel": {
+    "description": "Grace plan-card row label. The date value is a server value (spec 11-3)."
+  },
+  "pausedSinceLabel": "Paused since",
+  "planEndsLabel": "{plan} ends",
+  "@planEndsLabel": {
+    "description": "Ending plan-card row label; design shows 'Pro ends'.",
+    "placeholders": {
+      "plan": {
+        "type": "String",
+        "example": "Pro"
+      }
+    }
+  },
+  "bannerGoUnlimitedTitle": "Go unlimited with Pro",
+  "bannerGoUnlimitedSub": "Unlimited calls · 15 minutes each · $12.90 per month",
+  "bannerMaxUpsellTitle": "Turn on video with Max",
+  "bannerMaxUpsellSub": "Face-to-face calls · $19.90 per month",
+  "bannerAnnualSwitchTitle": "Switch to annual",
+  "bannerAnnualSwitchSub": "$159 per year · $13.25 per month",
+  "bannerPaymentFailedTitle": "We couldn't take the payment",
+  "bannerPaymentFailedSub": "Update payment in the store to keep Pro",
+  "bannerPausedTitle": "Your plan is paused",
+  "bannerPausedSub": "The payment never went through",
+  "noteRestoreHint": "Already subscribed on another device? Restore brings it back on this one.",
+  "noteStoreHandled": "Payment method, plan changes, and cancellation are handled by the store.",
+  "noteFairUse": "Unlimited use is subject to our fair use policy.",
+  "noteTrialEnds": "Your trial ends {date}. Cancel in the store before then and nothing is charged.",
+  "@noteTrialEnds": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 27"
+      }
+    }
+  },
+  "noteGrace": "Benefits keep running through the grace period. Cancellation is never intercepted in the app.",
+  "noteHold": "Pro is paused until the payment goes through. Your characters and progress are safe.",
+  "noteEnding": "Your plan is set to end. Benefits run until {date}, then you move to Free. You can resubscribe any time.",
+  "@noteEnding": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20"
+      }
+    }
+  },
+  "trialExpiredTitle": "Your Max trial ended",
+  "trialExpiredSub": "You are on Free now",
+  "seePlans": "See plans",
+  "currentPlanTitle": "Current Plan",
+  "@currentPlanTitle": {
+    "description": "GNB title of plans_compare (4514:5226)."
+  },
+  "badgeRecommended": "Recommended",
+  "perMonthUnit": "per month",
+  "planTaglinePro": "Unlimited calls. 15 minutes each.",
+  "planTaglineMax": "Now you can see them.",
+  "planTaglineFree": "One call a day. On the house.",
+  "bulletProCalls": "Voice calls, as often as you want",
+  "bulletProLength": "15 minutes a call",
+  "bulletProScoring": "Pronunciation scored letter by letter",
+  "bulletProCorrections": "Corrections aimed at your native language",
+  "bulletProBeaverCalls": "Beaver calls you first",
+  "bulletMaxVideo": "Face-to-face video calls",
+  "bulletMaxEverything": "Everything in Pro",
+  "bulletMaxCharacters": "Every character, unlimited",
+  "bulletMaxStudyBook": "A study book matched to where you are",
+  "bulletMaxWeeklyReport": "A weekly report on how your sound is changing",
+  "bulletFreeCall": "One 5-minute voice call a day",
+  "bulletFreeCheck": "One pronunciation check a day",
+  "bulletFreeAccent": "Unlimited accent checks",
+  "bulletFreeCharacter": "One character to start",
+  "ctaGoUnlimited": "Go unlimited",
+  "ctaTurnOnVideo": "Turn on video",
+  "noteCallLength": "Calls are 15 minutes each.",
+  "paywallProTitle1": "Your Korean friend",
+  "paywallProTitle2": "who's up at 3 a.m.",
+  "paywallProSub": "Unlimited calls. 15 minutes each. All year.",
+  "paywallLimitHeadline": "Pro removes the limit.",
+  "@paywallLimitHeadline": {
+    "description": "Hot-entry paywall headline - one line, no story (spec 8-1)."
+  },
+  "limitBannerCallTitle": "That was today's call",
+  "limitBannerCallSub": "Free gives you one call a day",
+  "limitBannerCheckTitle": "That was today's check",
+  "limitBannerCheckSub": "Free gives you one check a day",
+  "bulletProCharactersForever": "Characters you buy stay yours forever",
+  "paywallMaxTitle": "Now you can see them.",
+  "paywallMaxSub": "Video calls, every character, and a study book made for where you are.",
+  "planMonthly": "Monthly",
+  "planAnnual": "Annual",
+  "proMonthlyPriceLine": "$12.90 per month",
+  "proAnnualPriceLine": "$100.00 · $8.33 per month",
+  "maxMonthlyPriceLine": "$19.90 per month",
+  "maxAnnualPriceLine": "$159.00 per year · $13.25 per month",
+  "ctaCaptionPro": "$12.90 per month · cancel anytime in the store",
+  "ctaCaptionMax": "$19.90 per month · cancel anytime in the store",
+  "footerTerms": "Terms",
+  "footerPrivacy": "Privacy",
+  "noteMaxCharacters": "Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.",
+  "processingTitle": "Confirming your purchase",
+  "processingSub": "This usually takes a few seconds.",
+  "successProTitle": "You're on Pro.",
+  "successProSub": "Unlimited calls, starting right now.",
+  "successProBenefit1": "Call as often as you want — 15 minutes a call",
+  "successProBenefit2": "Unlimited pronunciation checks",
+  "successProBenefit3": "Every character, plus one-off purchases",
+  "successMaxTitle": "You can see them now.",
+  "successMaxSub": "Video calls are on. Tap the video button in any call.",
+  "successMaxBenefit1": "Face-to-face video calls",
+  "successMaxBenefit2": "Every character, unlimited and new ones first",
+  "successMaxBenefit3": "A study book matched to where you are",
+  "ctaStartACall": "Start a call",
+  "ctaStartAVideoCall": "Start a video call",
+  "ctaSeeYourSubscription": "See your subscription",
+  "successProCaption": "$12.90 is charged monthly until you cancel. Manage or cancel anytime in the store.",
+  "successMaxCaption": "$19.90 is charged monthly until you cancel. Manage or cancel anytime in the store.",
+  "plansErrorTitle": "We couldn't load the plans",
+  "plansErrorSub": "The store didn't answer.",
+  "ctaTryAgain": "Try again",
+  "plansErrorCaption": "Nothing was charged.",
+  "changePlanTitle": "Change Plan",
+  "moveToMaxTitle": "Move to Max",
+  "maxPriceShort": "$19.90 / mo",
+  "moveToMaxCardSub": "Face-to-face video calls · every character · a study book made for you",
+  "whatHappensNow": "What happens now",
+  "maxStartsLabel": "Max starts",
+  "immediately": "Immediately",
+  "unusedProTime": "Unused Pro time",
+  "creditedTowardMax": "Credited toward Max",
+  "nextPaymentMaxValue": "$19.90 · {date}",
+  "@nextPaymentMaxValue": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20, 2026"
+      }
+    }
+  },
+  "nextPaymentProValue": "$12.90 · {date}",
+  "@nextPaymentProValue": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20, 2026"
+      }
+    }
+  },
+  "ctaSwitchToMax": "Switch to Max",
+  "upgradeCaption": "Your new plan starts right away. Unused Pro time is credited, never charged twice.",
+  "moveToProTitle": "Move to Pro",
+  "moveToProSub": "Nothing changes today. Max runs to the end of the month you already paid for.",
+  "maxRunsUntil": "Max runs until",
+  "proStarts": "Pro starts",
+  "whatYouKeep": "What you keep",
+  "keepBenefitCalls": "Unlimited voice calls, 15 minutes each",
+  "keepBenefitCharacters": "Characters you bought stay yours forever",
+  "downgradeWarning": "Video calls and Max-only characters turn off on {date}.",
+  "@downgradeWarning": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20"
+      }
+    }
+  },
+  "ctaSwitchToPro": "Switch to Pro",
+  "ctaKeepMax": "Keep Max",
+  "winbackSkip": "Skip",
+  "winbackTitle": "Your Pro plan ended",
+  "winbackSub": "You're on Free now — one call a day.",
+  "winbackQuestion": "Mind telling us why you left?",
+  "winbackReasonExpensive": "Too expensive",
+  "winbackReasonUnused": "I wasn't using it enough",
+  "winbackReasonMissing": "Missing a feature I needed",
+  "winbackReasonOtherApp": "I found another app",
+  "winbackReasonElse": "Something else",
+  "ctaSend": "Send",
+  "ctaNotNow": "Not now",
+  "winbackCaption": "This doesn't restore your plan. Resubscribe in the store.",
+  "ctaContinue": "Continue",
+  "ctaClose": "Close",
+  "ovRestoreSuccessTitle": "Pro is back",
+  "ovRestoreSuccessBody": "We found your subscription and turned it back on for this device.",
+  "ovRestoreEmptyTitle": "Nothing to restore",
+  "ovRestoreEmptyBody": "No active subscription is linked to this store account.",
+  "ovRestoreOtherTitle": "That plan belongs to another account",
+  "ovRestoreOtherBody": "This subscription is already active on a different BeaverTalk account.",
+  "ctaSignInThatAccount": "Sign in to that account",
+  "ctaGetHelp": "Get help",
+  "ovCharacterOfferTitle": "Not ready for Pro?",
+  "ovCharacterOfferBody": "Pick one character and keep them. A one-off purchase — no subscription, no renewal.",
+  "rowOneCharacter": "One character",
+  "rowFromPrice": "from $5.00",
+  "rowYoursForever": "Yours forever",
+  "rowNoRenewal": "No renewal",
+  "rowWorksOnFree": "Works on Free",
+  "rowYes": "Yes",
+  "ctaSeeCharacters": "See characters",
+  "ovNotEligibleTitle": "Nothing to cancel",
+  "ovNotEligibleBody": "You're on Free. There is no active subscription on this account.",
+  "ovCancelDownsellTitle": "Before you go",
+  "ovCancelDownsellBody": "Canceling happens in the store. Two things worth knowing.",
+  "rowPayYearlyInstead": "Pay yearly instead",
+  "rowYearlyMonthEquiv": "$8.33 per month",
+  "rowCharactersYouBought": "Characters you bought",
+  "rowProRunsUntil": "Pro runs until",
+  "ctaSwitchToYearly": "Switch to yearly",
+  "ctaContinueToStore": "Continue to the store",
+  "ovAnnualSwitchTitle": "Pay yearly, save $54.80",
+  "ovAnnualSwitchBody": "You've been on Pro for two months. The yearly plan works out cheaper.",
+  "rowYouSave": "You save",
+  "amountSaved": "$54.80",
+  "rowYearly": "Yearly",
+  "amountYearly": "$100.00",
+  "rowMonthlyForYear": "Monthly, for a year",
+  "amountMonthlyForYear": "$154.80",
+  "ovMonthlySwitchTitle": "Switch to monthly",
+  "ovMonthlySwitchBody": "Your yearly plan runs until {date}. Monthly billing starts the day after.",
+  "@ovMonthlySwitchBody": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20, 2026"
+      }
+    }
+  },
+  "rowMonthlyBillingStarts": "Monthly billing starts",
+  "rowMonthlyLabel": "Monthly",
+  "rowYearlyWorkedOut": "Yearly worked out at",
+  "ctaSwitchToMonthly": "Switch to monthly",
+  "ovRefundHelpTitle": "Refunds are handled by the store",
+  "ovRefundHelpBody": "We cannot issue refunds ourselves. Every request is reviewed by the store.",
+  "ctaGoToStore": "Go to the store",
+  "ovTrialEndingTitle": "Your trial ends tomorrow",
+  "ovTrialEndingBody": "Max keeps running unless you cancel. Here is what happens.",
+  "rowTrialEnds": "Trial ends",
+  "rowFirstCharge": "First charge",
+  "rowThenMonthly": "Then monthly",
+  "ctaCancelInStore": "Cancel in the store",
+  "ovTrialStartTitle": "7 days of Max, free",
+  "ovTrialStartBody": "Free until {date}. Then $19.90 per month, unless you cancel in the store.",
+  "@ovTrialStartBody": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 27, 2026"
+      }
+    }
+  },
+  "ctaStart7Days": "Start 7 days free",
+  "ovOtoTitle": "One more thing before you start",
+  "ovOtoBody": "Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.",
+  "ovFailedDeclinedTitle": "Your card was declined",
+  "ovFailedDeclinedBody": "The store couldn't take the payment. Nothing was charged.",
+  "ctaUpdatePaymentMethod": "Update payment method",
+  "ovFailedCanceledTitle": "Payment canceled",
+  "ovFailedCanceledBody": "You're still on Free. Nothing was charged.",
+  "ovFailedStoreTitle": "Something went wrong",
+  "ovFailedStoreBody": "We couldn't reach the store. Nothing was charged.",
+  "ovAlreadyTitle": "You're already on Pro",
+  "ovAlreadyBody": "This store account has an active plan. There's nothing to buy.",
+  "ctaSeeMySubscription": "See my subscription",
+  "subCancelTitle": "Cancel subscription",
+  "subCancelBody": "Pro runs until {date}. After that you move to Free.",
+  "@subCancelBody": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20, 2026"
+      }
+    }
+  },
+  "subWhatYouLose": "What you lose",
+  "benefitCalls15": "Unlimited calls, 15 minutes each",
+  "benefitScoring": "Pronunciation scored letter by letter",
+  "benefitEveryCharacter": "Every character, unlimited",
+  "ctaKeepPro": "Keep Pro",
+  "subPaymentTitle": "Update payment",
+  "subPaymentBody": "We could not take the payment. Pro keeps running during the grace period.",
+  "subHowToFix": "How to fix it",
+  "fixStep1": "Open the store and update your payment method",
+  "fixStep2": "Come back — your plan resumes automatically",
+  "fixStep3": "Nothing is charged twice",
+  "subResubTitle": "Resubscribe",
+  "subResubBody": "Pro ends on {date}. Turn auto-renew back on and nothing changes.",
+  "@subResubBody": {
+    "placeholders": {
+      "date": {
+        "type": "String",
+        "example": "Jun 20, 2026"
+      }
+    }
+  },
+  "subWhatYouKeep": "What you keep",
+  "ctaTurnItBackOn": "Turn it back on",
+  "flTodayTitle": "That's today's call",
+  "@flTodayTitle": {
+    "description": "free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa)."
+  },
+  "flTodayBody": "Pick up where you left off — right now.",
+  "flCheckTitle": "That's today's check",
+  "flCheckBody": "One check a day on Free. Pro makes it unlimited.",
+  "flBenefitCalls": "Unlimited calls with Pro · 15 minutes each",
+  "flBenefitChecks": "Unlimited pronunciation checks with Pro",
+  "flCaption": "$12.90 per month · cancel anytime",
+  "flUsage": "{used} of {limit} used",
+  "@flUsage": {
+    "placeholders": {
+      "used": {
+        "type": "String",
+        "example": "4:58"
+      },
+      "limit": {
+        "type": "String",
+        "example": "5:00"
+      }
+    }
+  },
+  "ctaMaybeTomorrow": "Maybe tomorrow",
+  "accountSection": "Account",
+  "nicknameLabel": "Nickname",
+  "emailLabel": "Email",
+  "loginMethodLabel": "Login Method",
+  "joinedLabel": "Joined",
+  "editNicknameTitle": "Edit Nickname",
+  "nicknameRule": "2–12 characters. Letters and numbers. English Only",
+  "ctaSave": "Save",
+  "subscriptionRow": "Subscription",
+  "iapSuccessTitle": "Purchase complete",
+  "@iapSuccessTitle": {
+    "description": "Character IAP result sheet (4713:28243). Korean is the confirmed original; this is its translation."
+  },
+  "iapSuccessBody": "The {name} avatar is yours forever.\nApplied as soon as the receipt clears.",
+  "@iapSuccessBody": {
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Baba"
+      }
+    }
+  },
+  "ctaGoHome": "Home",
+  "ctaUseNow": "Use it now",
+  "iapFailTitle": "The payment didn't go through",
+  "iapFailBody": "You can try again",
+  "paywallLeaveTitle": "If you leave now, you won't be subscribed",
+  "paywallLeaveBody": "Your benefits unlock right after checkout. You can come back anytime from My Page.",
+  "ctaKeepLooking": "Keep looking",
+  "ctaLeaveAnyway": "Leave anyway",
+  "iapCharacterSuccessTitle": "A new friend joins you!",
+  "iapCharacterSuccessBody": "This character is yours forever - it stays even if your plan changes, and Restore purchases brings it back on any device.",
+  "iapCharacterFailedBody": "The purchase didn't go through. Nothing was charged - please try again."
+}

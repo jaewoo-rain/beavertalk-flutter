@@ -1,0 +1,2388 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:math' as math;
+import 'dart:typed_data';
+
+import 'package:audio_session/audio_session.dart';
+import 'package:flutter/foundation.dart'
+    show
+        ValueNotifier,
+        debugPrint,
+        defaultTargetPlatform,
+        kDebugMode,
+        kIsWeb,
+        TargetPlatform;
+import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
+import 'package:flutter/services.dart' show MethodChannel;
+import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
+import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_sound/flutter_sound.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+import '../../../core/i18n/locale_controller.dart';
+import '../../../core/network/ws_url.dart';
+import '../../../l10n/app_localizations.dart';
+import '../domain/entities/call_hint.dart';
+import 'normalcall_providers.dart';
+
+/// Lifecycle phases of a live normalcall session.
+enum CallPhase {
+  /// No active session (initial / after teardown).
+  idle,
+
+  /// WebSocket connecting + mic warming up, before the first `turn_start`.
+  connecting,
+
+  /// Live conversation in progress (beaver and/or user talking).
+  inCall,
+
+  /// Wind-down: `call_ended` received, draining the final audio before close.
+  ending,
+
+  /// Session finished cleanly; [CallState.callId] holds the analyzable id.
+  ended,
+
+  /// Connection/auth failure; [CallState.errorMsg] holds a reason.
+  error,
+}
+
+/// Immutable snapshot of the current call, exposed to the UI.
+class CallState {
+  /// Creates a call-state snapshot.
+  const CallState({
+    this.phase = CallPhase.idle,
+    this.elapsedSec = 0,
+    this.callId,
+    this.characterId,
+    this.baselineCallId,
+    this.beaverSubtitle = '',
+    this.userSubtitle = '',
+    this.errorMsg,
+    this.hint,
+    this.teachingPlan = const [],
+    this.subtitleOn = true,
+    this.hintOn = true,
+  });
+
+  /// Current lifecycle phase.
+  final CallPhase phase;
+
+  /// Elapsed call time in whole seconds (UI display only; server is the source
+  /// of truth for actual call limits via `call_ended`).
+  final int elapsedSec;
+
+  /// Server call id, available once `call_ended` arrives. Pass to analysis.
+  final String? callId;
+
+  /// 서버가 정한 이 통화의 캐릭터(`call_started`). 통화 화면 아바타는 이걸 우선
+  /// 쓴다 — 수신통화는 알람마다 캐릭터가 달라서 대표 캐릭터로 그리면 **대화 상대와
+  /// 화면 얼굴이 어긋난다**. 도착 전(연결 중)이나 구버전 서버에서는 null 이고,
+  /// 그때는 화면이 대표 캐릭터로 폴백한다.
+  final int? characterId;
+
+  /// Max existing `call_id` captured at call start, before the server creates
+  /// this call's row. On a manual hang-up (no `call_ended`/[callId]), the
+  /// wrap-up screen recovers the new id by polling `GET /calls` for an id
+  /// greater than this baseline. Null when the pre-call fetch failed/none.
+  final int? baselineCallId;
+
+  /// Current beaver (assistant) subtitle line. Built up by accumulating the
+  /// token deltas that arrive as `output_transcript`, and reset each `turn_start`.
+  final String beaverSubtitle;
+
+  /// Current user subtitle line. Built up by accumulating the token deltas that
+  /// arrive as `input_transcript`, and reset each `turn_end` (before the user
+  /// speaks again).
+  final String userSubtitle;
+
+  /// Human-readable error message when [phase] is [CallPhase.error].
+  final String? errorMsg;
+
+  /// Active dynamic hint for the current/last beaver question, or null when no
+  /// hint is showing. Cleared on each `turn_start` and on `call_ended`.
+  final HintData? hint;
+
+  /// Today's teaching plan (pushed once at call start; may be empty). Stored for
+  /// a future teaching-card screen — not rendered by `screen/call_main`.
+  final List<TeachingItem> teachingPlan;
+
+  /// Whether the subtitle (caption) is shown. When false the speaking
+  /// equalizer replaces it. UI preference; resets to true each call.
+  final bool subtitleOn;
+
+  /// Whether the hint affordance is enabled. When false the hint card is hidden
+  /// even if a hint has arrived. UI preference; resets to true each call.
+  final bool hintOn;
+
+  /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
+  /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
+  static const Object _keep = Object();
+
+  /// Returns a copy with the given fields replaced. Pass `hint: null` to clear
+  /// the active hint (the [_keep] sentinel preserves it when omitted).
+  CallState copyWith({
+    CallPhase? phase,
+    int? elapsedSec,
+    String? callId,
+    int? characterId,
+    int? baselineCallId,
+    String? beaverSubtitle,
+    String? userSubtitle,
+    String? errorMsg,
+    Object? hint = _keep,
+    List<TeachingItem>? teachingPlan,
+    bool? subtitleOn,
+    bool? hintOn,
+  }) {
+    return CallState(
+      phase: phase ?? this.phase,
+      elapsedSec: elapsedSec ?? this.elapsedSec,
+      callId: callId ?? this.callId,
+        characterId: characterId ?? this.characterId,
+      baselineCallId: baselineCallId ?? this.baselineCallId,
+      beaverSubtitle: beaverSubtitle ?? this.beaverSubtitle,
+      userSubtitle: userSubtitle ?? this.userSubtitle,
+      errorMsg: errorMsg ?? this.errorMsg,
+      hint: identical(hint, _keep) ? this.hint : hint as HintData?,
+      teachingPlan: teachingPlan ?? this.teachingPlan,
+      subtitleOn: subtitleOn ?? this.subtitleOn,
+      hintOn: hintOn ?? this.hintOn,
+    );
+  }
+}
+
+/// App-scoped singleton owning the live normalcall pipeline: a single WebSocket,
+/// the mic recorder (FlutterSoundRecorder, PCM 16k → server), and gapless native
+/// playback (flutter_pcm_sound, callback-pull PCM 24k ← server). Device-only:
+/// playback isn't available on web, where [start] fails cleanly (see the
+/// `kIsWeb` guard).
+///
+/// Design guarantees (see plan §8):
+/// - **No double socket (§8-1):** [start] is guarded against re-entry and against
+///   active phases, and always runs [_teardown] *before* connecting
+///   (teardown-first-then-connect), so two sockets are structurally impossible.
+/// - **Leave = hang up (§8-2):** every exit path ([hangUp], `call_ended`, errors)
+///   funnels through [_teardown]; screens add `PopScope`/lifecycle triggers.
+/// - **Auto opening line (§8-3):** [start] sends `{type:start}` right after the
+///   socket opens (no button); the first `turn_start` flips phase to `inCall`.
+final normalCallControllerProvider =
+    NotifierProvider<NormalCallController, CallState>(NormalCallController.new);
+
+/// Notifier implementing the normalcall socket + audio pipeline.
+class NormalCallController extends Notifier<CallState> {
+  /// Translated strings for the user-facing failures this controller reports.
+  ///
+  /// There is no `BuildContext` here, so `AppLocalizations.of` is unavailable —
+  /// which is why every `errorMsg` below used to be a Korean literal, shown to
+  /// every user regardless of their language. gen-l10n emits a **synchronous**
+  /// `lookupAppLocalizations(Locale)`, and the active locale already lives in
+  /// [localeControllerProvider].
+  AppLocalizations get _l10n =>
+      lookupAppLocalizations(ref.read(localeControllerProvider));
+
+  // ── Avatar lip-sync signals (video-call avatar; see avatar_view.dart) ───────
+  // Gemini Live returns raw PCM with no viseme timing, so the mouth is driven
+  // from the audio envelope. These are published from the PCM *about to play*
+  // (in [_onFeed] via [_takeArray]) — NOT from arrival time — because the
+  // playback queue buffers seconds ahead, so arrival-time RMS would lead the
+  // sound. In-memory only; consumed by [BeaverAvatar]. Additive: the audio
+  // pipeline itself is unchanged.
+
+  /// Live mouth-open level, 0 (closed) .. 1 (wide), from the RMS of the audio
+  /// currently being fed to the player. ~10Hz; the widget smooths to 60fps.
+  final ValueNotifier<double> avatarLevel = ValueNotifier<double>(0.0);
+
+  /// True while the beaver is speaking (mirrors [_beaverSpeaking]).
+  final ValueNotifier<bool> avatarSpeaking = ValueNotifier<bool>(false);
+
+  /// Current avatar emotion code (0 neutral/smug, 1 happy, 2 surprised, 3 sad,
+  /// 4 angry), classified from the beaver's streamed line so the face reacts to
+  /// what it says. Reset to neutral each turn; set sticky within a turn.
+  final ValueNotifier<int> avatarEmotion = ValueNotifier<int>(0);
+
+  /// Mouth SHAPE, −1 (round "OO") .. 0 ("AH") .. +1 (wide "EE"), from the
+  /// zero-crossing rate of the audio about to play (a cheap spectral-tilt proxy:
+  /// high ZCR = front/fricative → wide, low ZCR = back vowel → round). Lets the
+  /// mouth form vowel shapes instead of a generic open/close. The widget smooths
+  /// it. Characters without EE/OO sprites simply ignore this.
+  final ValueNotifier<double> avatarShape = ValueNotifier<double>(0.0);
+
+  /// Keyword lexicon for the (heuristic) emotion classifier. Keyed by the same
+  /// codes as [avatarEmotion]. Korean + English; matched case-insensitively.
+  static const Map<int, List<String>> _emotionLexicon = {
+    1: ['하하', 'ㅋㅋ', 'ㅎㅎ', '좋아', '좋은', '좋네', '좋다', '최고', '굿', '짱', '잘했',
+      '대단', '훌륭', '기뻐', '신나', '행복', '사랑', 'good', 'great', 'awesome',
+      'nice', 'love', 'cool', 'haha', 'perfect', 'well done', 'yay'],
+    2: ['헐', '대박', '진짜?', '정말?', '뭐?', '우와', '와우', '놀라', '세상에', '믿기',
+      '오마이', 'wow', 'whoa', 'no way', 'oh my', 'really?', 'what?!'],
+    3: ['슬프', '슬퍼', '미안', '아쉽', '안타', '속상', '우울', 'ㅠ', 'ㅜ', '눈물',
+      'sorry', 'sad', 'unfortunately', 'poor'],
+    4: ['짜증', '뭐야', '바보', '멍청', '어이없', '그만', '답답', '흥', '쳇', '열받', '화나',
+      'ugh', 'stupid', 'annoying', 'stop it'],
+  };
+
+  /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
+  /// audio is handed to the player and drained in real time. A single RMS per
+  /// ~200ms feed (≈5Hz) is far too coarse for syllables; this runs at 40Hz so
+  /// the mouth lands on the actual speech.
+  final List<double> _envQueue = <double>[];
+  Timer? _envTimer;
+  static const int _envStepMs = 25;
+
+  /// Extra holdback on top of the engine's own depth, to cover the platform
+  /// channel hop. Small on purpose: the avatar switches picture on this signal,
+  /// and a picture that arrives a hair early reads as in-sync while a late one
+  /// reads as broken.
+  ///
+  /// ⚠ 이것만으로 버티던 시절이 있었는데(고정 25ms), 그 전제는 "네이티브가 아주
+  ///   조금만 앞서 문다" 였다. [_pump] 가 그 조금을 **1.2~2.5초**로 만들었으므로
+  ///   이제 홀드백의 본체는 [_engineLevelFrames] 이고 이건 그 위의 여유분이다.
+  ///   고정값으로 되돌리면 입이 소리보다 최대 2.5초 먼저 움직인다 — 로그엔 안 보이고
+  ///   실기기에서 눈으로만 보인다.
+  static const int _envLeadMs = 25;
+
+  /// RMS below this (near-silence) closes the mouth outright.
+  static const double _avatarRmsGate = 260;
+
+  /// RMS mapped to a fully-open mouth (tuned for Gemini 24k speech).
+  static const double _avatarRmsFull = 5200;
+
+  WebSocketChannel? _channel;
+  StreamSubscription<dynamic>? _wsSub;
+
+  FlutterSoundRecorder? _recorder;
+
+  /// Native channel to force loudspeaker (speakerphone) routing during a call —
+  /// see ios/Runner/AppDelegate.swift `beavertalk/audio`.
+  static const MethodChannel _audioRouteChannel =
+      MethodChannel('beavertalk/audio');
+
+  /// Native CallKit state bridge — see ios/Runner/AppDelegate.swift
+  /// `beavertalk/callkit`. Used to learn when CallKit has activated the call's
+  /// audio session, without trusting the plugin's unbuffered event stream.
+  static const MethodChannel _callkitChannel =
+      MethodChannel('beavertalk/callkit');
+
+  // ── Audio session ownership ───────────────────────────────────────────────
+  // Two entry paths with different owners:
+  // - home ("전화하기"): no CallKit call exists, so this controller configures AND
+  //   activates the session itself.
+  // - CallKit (scheduled inbound call): the system owns the call and its audio
+  //   session. We must NOT setActive(true)/setActive(false) under it — the
+  //   category is set natively before activation and CallKit does the rest.
+
+  /// True while the current call's audio session belongs to CallKit.
+  bool _callkitOwnedAudio = false;
+
+  /// True when THIS controller called `setActive(true)` on the shared audio
+  /// session — the ONLY condition under which teardown may deactivate it.
+  ///
+  /// Inferring it from [_callkitOwnedAudio] was a real bug: [_connect] runs
+  /// teardown-before-connect BEFORE assigning that flag, so answering a CallKit
+  /// call deactivated the session the system had just activated for it. The
+  /// socket kept running (conversation visibly in progress) while playback and
+  /// mic were both dead. Track what we actually did instead of deducing it.
+  bool _weActivatedSession = false;
+
+  /// True once the native in-call route observer has been started, so teardown
+  /// only stops routing it actually started (same reasoning as above).
+  bool _audioRoutingStarted = false;
+
+  /// CallKit call UUID backing this session, when there is one. [hangUp] ends it
+  /// so the lock-screen call UI disappears together with the conversation.
+  String? _callUuid;
+
+  /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
+  /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
+  bool _callkitAudioReady = false;
+
+  /// Bounded wait for CallKit's didActivate before starting audio anyway.
+  ///
+  /// Polled tightly: every 100ms of waiting here is 100ms before the beaver can
+  /// be heard, and the check is a cheap synchronous native flag read.
+  static const Duration _callkitAudioTimeout = Duration(seconds: 10);
+  static const Duration _callkitAudioPollInterval = Duration(milliseconds: 50);
+
+  /// When this call's socket opened — used to attribute start-up latency.
+  DateTime? _sessionStartedAt;
+
+  /// True once the first inbound audio chunk of this call has arrived.
+  bool _gotFirstAudio = false;
+  StreamController<Uint8List>? _micController;
+  StreamSubscription<Uint8List>? _micSub;
+
+  // ── Gapless PCM playback (flutter_pcm_sound, callback-pull @ native 24kHz) ──
+  // A byte queue holds inbound server PCM16; the plugin's feed callback pulls
+  // from it. When the queue is empty we feed a short silence so the engine is
+  // never starved into a stuck underflow churn — the root cause of the ~1-min
+  // audio cutout with the old flutter_sound stream player.
+
+  /// Inbound PCM16 byte queue (little-endian samples). Live bytes are
+  /// `[_pcmHead, _pcmTail)`; an odd trailing byte simply stays until the next
+  /// chunk completes its Int16 sample, so samples never split across chunks.
+  ///
+  /// Deliberately a [Uint8List] with explicit indices rather than a `List<int>`
+  /// that gets `sublist`-compacted. The server bursts up to ~4.8s (≈230KB) at
+  /// once, and the old shape paid a word-per-byte store plus a full-buffer copy
+  /// **on the feed callback path** — the audio thread's deadline is the one place
+  /// that allocation must not happen. Here a steady call never copies at all:
+  /// indices reset to 0 whenever the queue drains.
+  Uint8List _pcmQueue = Uint8List(_pcmQueueInitialBytes);
+
+  /// Read offset — bytes before it are already fed.
+  int _pcmHead = 0;
+
+  /// Write offset — bytes at/after it are unwritten capacity.
+  int _pcmTail = 0;
+
+  /// Initial queue capacity (~5.4s at 24kHz PCM16), so the common case never
+  /// grows. Growth doubles; the buffer is never shrunk during a call.
+  static const int _pcmQueueInitialBytes = 1 << 18; // 256KB
+
+  /// Times the queue ran dry while the beaver was still speaking — the Dart-side
+  /// starve count. Debug logging only (see [_pump]); the authoritative view of
+  /// whether the push loop is holding is the `PUMP:` line in [_startInflateLog].
+  int _dbgStarveCount = 0;
+
+  /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
+  bool _pcmSetup = false;
+
+  /// True while playback is live; gates the feed callback and enqueue so no
+  /// audio work runs before setup or after teardown.
+  bool _pcmActive = false;
+
+  // Playback tuning (frames = samples; PCM16 mono → 2 bytes/frame @ 24kHz).
+  static const int _playbackSampleRate = 24000;
+  static const int _playbackChannels = 1;
+
+  /// Backstop threshold for the plugin's feed callback (~400ms).
+  ///
+  /// Playback is no longer driven by this callback — [_startPushFeed] pushes on
+  /// Dart's own clock (see [_pump]). The callback stays wired for two reasons:
+  /// it re-anchors the engine-level estimate with a ground-truth number, and it
+  /// recovers playback if the push timer ever falls behind. Kept low precisely
+  /// so it *doesn't* fire in normal operation: with the push loop holding the
+  /// engine at 1.2–2.5s, a callback at 400ms means something went wrong.
+  ///
+  /// Why the ping-pong had to go: the native playback thread posted its request
+  /// through `mainThreadHandler` and the method channel, so the heartbeat of the
+  /// playback path ran through the **Android main thread**. Every cushion this
+  /// file has grown (200ms → 600ms → 1.5s) was buying time against a busy UI
+  /// frame. Pushing from Dart takes the main thread out of the loop instead.
+  static const int _feedThresholdFrames = 9600;
+
+  /// How often [_pump] tops the engine up. Short enough that a missed tick is
+  /// invisible against the 1.2s low-water mark below.
+  static const Duration _pushInterval = Duration(milliseconds: 40);
+
+  /// Engine low-water / target for **real audio**, in frames (~1.2s / ~2.5s).
+  ///
+  /// Below the low mark, [_pump] refills to the target; above it, the tick does
+  /// nothing at all (no channel traffic). The gap between them is the budget for
+  /// everything that can go wrong upstream — a stalled main thread, a slow tick,
+  /// a Dart GC — and at 1.2s nothing measured on this project comes close.
+  ///
+  /// Costs no added latency: these bytes would have waited in [_pcmQueue]
+  /// anyway; they just wait inside the engine instead.
+  static const int _engineLowFrames = _playbackSampleRate * 1200 ~/ 1000;
+  static const int _engineTargetFrames = _playbackSampleRate * 2500 ~/ 1000;
+
+  /// Engine low-water / target for **silence**, in frames (~120ms / ~300ms).
+  ///
+  /// Deliberately far below the audio target: queued silence sits *in front of*
+  /// the next real audio, so filling to 2.5s of it would add 2.5s to every reply.
+  /// This only has to keep the AudioTrack out of the idle path (AudioFlinger
+  /// `BUFFER TIMEOUT` → ~130ms to reactivate) and cover the platform round trip
+  /// so the plugin never has to inject its own 20ms silence mid-stream.
+  static const int _silenceLowFrames = _playbackSampleRate * 120 ~/ 1000;
+  static const int _silenceTargetFrames = _playbackSampleRate * 300 ~/ 1000;
+
+  /// Upper bound on one push (~1.5s of 24kHz PCM16), so a single feed can't
+  /// hand the platform channel an unbounded array after a long buffering pause.
+  static const int _feedChunkBytes = 72000;
+
+  /// Jitter prebuffer (~900ms of PCM16): at the start of a beaver turn, hold real
+  /// audio (feed silence) until this much is queued, so a gap in the server's
+  /// delivery can't starve the engine into an audible gap ("voice 씹힘").
+  ///
+  /// Sized from a measured 5-minute call (19 dropouts, 5.63s of inserted silence).
+  /// Every large dropout had the same shape: the server opens a beaver turn with
+  /// one **471ms** chunk (`queue 22634B`, byte-identical across turns), then goes
+  /// quiet for 0.7–1.4s while it generates, then sends the bulk (up to 4.8s at
+  /// once). At the old 400ms the first chunk alone satisfied the gate, so playback
+  /// started and ran dry 471ms later — every single turn. The cushion has to be
+  /// bigger than that opening chunk or it buys nothing.
+  static const int _prebufferBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+
+  /// Safety net for a *missed* `turn_end`: audio is queued, the cushion never
+  /// fills, and nothing more arrives. Normally unused — a completed short
+  /// utterance is released by the `_turnEnded` arm of the gate in [_onFeed], not
+  /// by this timer, so this can be generous without delaying short replies.
+  static const Duration _prebufferFlush = Duration(milliseconds: 1000);
+
+  /// Adaptive jitter cushion, in bytes. Starts at [_prebufferBytes] and grows
+  /// when a turn starves, shrinks back over turns that play clean.
+  ///
+  /// A fixed cushion cannot hold, because the server delivers a turn's audio at
+  /// roughly **90% of realtime** (measured 2026-07-27: 91.9s of audio across
+  /// 101.8s of beaver turns). A constant deficit means the cushion drains for as
+  /// long as the turn runs, so what's needed scales with turn length, not with
+  /// jitter — 900ms covers a 9s turn and nothing longer. Rather than tax every
+  /// reply with a cushion sized for the worst turn, this tracks the deficit the
+  /// call is actually showing.
+  int _cushionBytes = _prebufferBytes;
+
+  /// Growth per starved turn (~150ms), ceiling (~1.2s), and decay per clean turn
+  /// (~300ms).
+  ///
+  /// ⚠ 감쇠가 성장의 **2배**여야 한다. 처음엔 반대(+300/−150)로 뒀는데, 그러면
+  /// 값이 통화 내내 단조 증가한다 — 이 쿠션은 모든 응답의 시작 지연에 그대로
+  /// 더해지므로 5분 통화의 4분 지점에서 초반보다 눈에 띄게 굼떠진다(실기기 확인,
+  /// 2026-08-02). 나쁜 구간이 지나면 되돌아오게 하려면 감쇠가 더 커야 한다.
+  /// 시작값 [_prebufferBytes](900ms)는 건드리지 마라 — 그건 재생 안정화의 핵심이라
+  /// 낮추면 끊김이 돌아온다.
+  ///
+  /// 상한 1.8s → 1.2s (2026-08-02 실측). 턴 계측으로 지연을 분해해 보니 재생 시작
+  /// 지연 777ms 중 **684ms(88%)가 첫 오디오를 이미 받아둔 뒤 쿠션을 채우느라 기다린
+  /// 시간**이었다(서버가 첫 청크를 주기까지는 중앙값 61ms 뿐). 그리고 같은 통화의
+  /// 후반 225초는 쿠션이 1050~1200 으로 내려간 상태에서 **끊김 0건**이었다 —
+  /// 끊김 5건은 전부 첫 66초에 몰렸고 그때 쿠션은 오히려 1050~1800 이었다.
+  /// 즉 1.8s 까지 차오르는 구간은 지연만 더하고 끊김은 못 막았다.
+  static const int _cushionStepBytes = _playbackSampleRate * 2 * 150 ~/ 1000;
+  static const int _cushionMaxBytes = _playbackSampleRate * 2 * 1200 ~/ 1000;
+  static const int _cushionDecayBytes = _playbackSampleRate * 2 * 300 ~/ 1000;
+
+  /// True once the current turn has starved, so the cushion grows once per turn
+  /// rather than once per feed callback, and a starved turn can't also decay.
+  bool _turnStarved = false;
+
+  /// Cushion required to *resume* after the queue ran dry mid-utterance.
+  ///
+  /// Separate from the turn-start cushion, which only guards a turn's first
+  /// sample. Once [_playing] is set it short-circuits the gate in [_onFeed], so
+  /// a starve mid-word used to resume on whatever scrap had arrived — measured
+  /// at as little as 120ms — which starved again on the next jitter and again
+  /// after that. That loop is the "라디오 신호 안 좋을 때처럼" texture: logs caught
+  /// 10 of 27 playback starts below the cushion in a 2.5 minute call.
+  ///
+  /// Half the adaptive cushion, floored at 400ms (the holes measured were mostly
+  /// ≤400ms) and capped at 1.2s so [_prebufferFlush] stays the real bound.
+  int get _resumeCushionBytes {
+    const floor = _playbackSampleRate * 2 * 400 ~/ 1000;
+    const ceil = _playbackSampleRate * 2 * 1200 ~/ 1000;
+    final half = _cushionBytes ~/ 2;
+    return half < floor ? floor : (half > ceil ? ceil : half);
+  }
+
+  /// Settle after `release()` so the singleton native engine fully tears down
+  /// before a rapid re-call re-runs `setup()` (the "끊고 바로 통화 시 voice 안 나옴"
+  /// re-init race).
+  static const Duration _releaseSettle = Duration(milliseconds: 120);
+
+  /// Resync cap: a **runaway guard only**. A normal beaver turn arrives as a
+  /// burst and legitimately buffers several seconds (played out over the turn),
+  /// so this must be far above any real turn — otherwise resync would clip live
+  /// speech and immediately starve. Set to ~60s; only true drift/leak trips it.
+  static const int _maxQueueBytes = _playbackSampleRate * 2 * 60;
+
+  /// Resync target after a drop (~45s buffered). Still huge — a drop here means
+  /// something is badly wrong; normal turns never reach it.
+  static const int _targetQueueBytes = _playbackSampleRate * 2 * 45;
+
+  /// Cap for audio buffered BEFORE playback opens (~20s). The CallKit path opens
+  /// the socket first on purpose, so a short pre-roll is normal; a long one means
+  /// the audio stage is stuck and the oldest speech is no longer worth replaying.
+  static const int _prerollMaxBytes = _playbackSampleRate * 2 * 20;
+
+  /// Bytes currently queued (unfed).
+  int get _queueLen => _pcmTail - _pcmHead;
+
+  /// Last feed mode (true=silence, false=audio, null=unset), so [_log] reports
+  /// only audio↔silence transitions instead of spamming every feed callback.
+  bool? _lastFeedSilent;
+
+  /// True while a feed is mid-flight (awaiting the native `feed`), so
+  /// [_teardown] can wait for it before `release()` — a fresh call's `setup()`
+  /// must not race a feed running against the old (releasing) engine. It is also
+  /// the re-entrancy guard for [_pump]: the push timer and the backstop callback
+  /// both call it, and two feeds in flight would double-count the engine level.
+  bool _feeding = false;
+
+  /// Drives [_pump] on Dart's own clock instead of waiting to be asked.
+  Timer? _pushTimer;
+
+  /// Last known engine queue depth (frames) and when it was known.
+  ///
+  /// The Android `feed` returns the depth after enqueue, and the backstop
+  /// callback carries it too, so both re-anchor this with ground truth. Between
+  /// those points [_engineLevelFrames] extrapolates: the engine consumes at
+  /// exactly [_playbackSampleRate] (a blocking AudioTrack write never runs fast
+  /// or slow), so elapsed time *is* the amount drained.
+  int _engineAnchorFrames = 0;
+  int _engineAnchorMs = 0;
+
+  /// Estimated frames still queued inside the native engine.
+  ///
+  /// Floored at zero: once it hits bottom the engine pads with its own silence,
+  /// so time past that point doesn't accumulate a debt to be paid back.
+  int get _engineLevelFrames {
+    final anchorMs = _engineAnchorMs;
+    if (anchorMs == 0) return 0;
+    final drained = (DateTime.now().millisecondsSinceEpoch - anchorMs) *
+        _playbackSampleRate ~/
+        1000;
+    final level = _engineAnchorFrames - drained;
+    return level > 0 ? level : 0;
+  }
+
+  /// Re-anchors the estimate after a feed. [atMs] is the time the feed was
+  /// *sent*, not when the reply landed: the platform measured its depth
+  /// somewhere in between, so anchoring at send time under-reports slightly,
+  /// which errs toward feeding more rather than less.
+  void _anchorEngine(int frames, int atMs) {
+    _engineAnchorFrames = frames;
+    _engineAnchorMs = atMs;
+    if (frames < _engineMinFrames) _engineMinFrames = frames;
+  }
+
+  /// [계측] Lowest engine depth seen this call — the one number that says whether
+  /// the push loop is holding. If this stays near [_engineLowFrames] the engine
+  /// never came close to drying out, and any remaining glitch is upstream of us.
+  int _engineMinFrames = 1 << 30;
+
+  /// True once the jitter prebuffer has filled and real audio is draining. Reset
+  /// whenever the queue actually empties — including mid-utterance — so the
+  /// cushion is rebuilt rather than run down to nothing for the rest of the turn.
+  /// Resuming instantly on a starve (the previous behaviour) traded one gap for a
+  /// whole turn with no slack, which measured as repeated dropouts.
+  bool _playing = false;
+
+  /// Bounded flush for the prebuffer: if audio is queued but stays below
+  /// [_prebufferBytes], start playing anyway so a short utterance never stalls.
+  Timer? _prebufferFlushTimer;
+
+  /// Wall-clock anchor for [_log]'s elapsed prefix — set when playback opens, so
+  /// every line is stamped with "how far into this call". Without it the pipeline
+  /// log has no timestamps at all and a glitch can't be located in time (the whole
+  /// point of the "~76초에 음성이 튐" investigation).
+  int? _logAnchorMs;
+
+  /// When the queue went empty *while the beaver was still speaking* — i.e. the
+  /// server stopped feeding us mid-utterance. Cleared (and reported) when real
+  /// audio resumes, which yields the stall duration: the number that decides
+  /// whether a client-side buffer can cover it at all.
+  int? _starveAtMs;
+
+  /// Set when [_prebufferFlush] gives up waiting for [_resumeCushionBytes], so a
+  /// tail that never refills the cushion still plays instead of hanging.
+  bool _resumeFlushed = false;
+
+  /// Arrival time of the last inbound audio chunk, for the server-gap metric in
+  /// [_feedPlayer]. Independent of playback and of the mic gate.
+  int? _lastChunkAtMs;
+
+  /// 마지막 **실오디오**가 스피커에서 끝날 것으로 보는 시각(벽시계 ms).
+  ///
+  /// [_pump] 가 실오디오를 밀 때마다 갱신한다. 무음 피드는 갱신하지 않는다.
+  int _audioTailUntilMs = 0;
+
+  /// 비버 음성이 **정말로** 다 나왔는가 — Dart 큐가 빈 것만으로는 알 수 없다.
+  ///
+  /// [_pump] 가 Dart 큐를 엔진으로 최대 2.5초 앞당겨 옮기므로, 큐가 비어도 스피커에서는
+  /// 아직 나오는 중일 수 있다. 이걸 안 보면 세 가지가 깨진다:
+  ///   ① 마이크가 비버 발화 중에 열려 스피커 소리를 되먹는다(반이중 게이트 무력화)
+  ///   ② 작별 인사가 release() 에 잘린다(엔진 잔량이 통째로 버려진다)
+  ///   ③ 위 둘이 겹쳐 "가끔 뚝 끊긴다"로만 보인다
+  ///
+  /// ⛔ `_engineLevelFrames <= 임계` 로 판정하지 마라 — 함정이다. [_pump] 의 무음
+  ///   분기가 엔진을 **항상** 120~300ms 로 유지하므로, 임계를 300ms 이상 잡으면 무음을
+  ///   오디오로 오판하고 300ms 미만으로 잡으면 게이트가 영영 안 열린다. 무음은 실오디오
+  ///   *뒤에* 쌓이기 때문에 깊이로는 둘을 가를 수 없다 — 그래서 벽시계를 쓴다.
+  ///
+  /// 추정치다: 엔진 레벨 자체가 외삽이고 잔량 실측은 안드로이드만 준다. 게이트 판정에만
+  /// 쓰고(±수백 ms 허용) 재생 타이밍에는 쓰지 않는다.
+  bool get _audioDrained =>
+      _queueLen < 2 &&
+      DateTime.now().millisecondsSinceEpoch >= _audioTailUntilMs;
+
+  /// Dev-only pipeline log (compiled out of release builds via [kDebugMode]).
+  /// Prefixed with elapsed seconds since playback opened (`--` before that).
+  void _log(String msg) {
+    if (!kDebugMode) return;
+    final anchor = _logAnchorMs;
+    final at = anchor == null
+        ? '--'
+        : '${((DateTime.now().millisecondsSinceEpoch - anchor) / 1000).toStringAsFixed(1)}s';
+    debugPrint('[call $at] $msg');
+  }
+
+  Timer? _elapsedTimer;
+
+  /// Application-level keepalive: pings the server every [_keepaliveInterval] so
+  /// the socket has periodic client→server traffic. Without it, a long beaver
+  /// monologue (mic gated, no upstream bytes) lets a proxy/LB idle-timeout close
+  /// the WS around ~1 min — the "1분 경과 시 voice 끊김" symptom.
+  Timer? _keepaliveTimer;
+  static const Duration _keepaliveInterval = Duration(seconds: 15);
+
+  /// True once a close is expected (hang-up / `call_ended` / teardown) so the
+  /// socket's `onDone` isn't mistaken for an unexpected mid-call drop.
+  bool _expectClose = false;
+
+  /// Re-entry guard for [start] (§8-1).
+  bool _starting = false;
+
+  /// Bumped by every [hangUp]/[_teardown]; [start] claims a generation and
+  /// aborts if it changes across any await — so hanging up while `connecting`
+  /// (e.g. the call-loading X) can't be silently overwritten by an in-flight
+  /// start that keeps recording/playing after the UI has left (zombie call).
+  int _gen = 0;
+
+  /// Set after `call_ended` while draining the beaver's closing line before
+  /// sending `playback_done` (§8-4).
+  bool _drainScheduled = false;
+
+  /// Stability timer for the closing drain: the queue must stay empty for a
+  /// short window (no new audio) before the close completes, so the closing
+  /// line isn't cut off. Reset whenever fresh audio arrives.
+  Timer? _closingStableTimer;
+
+  /// The `call_ended` drain fallback timer. Stored so it can be cancelled when a
+  /// call finishes/tears down — otherwise a stray timer could fire against a
+  /// later call.
+  Timer? _closingFallbackTimer;
+
+  /// Quiet window the queue must hold (empty) before the closing drain acks.
+  static const Duration _closingStableDelay = Duration(milliseconds: 300);
+
+  // ── Half-duplex mic gating (echo-loop prevention) ──────────────────────────
+  // On speakerphone the AI's voice bleeds into the mic, gets sent back, is
+  // transcribed as user speech, and the AI replies to itself → infinite loop.
+  // Echo cancellation alone isn't enough, so while the beaver is speaking we
+  // DROP mic frames instead of forwarding them. This is intentionally
+  // half-duplex: the user cannot barge-in / interrupt the AI mid-sentence — an
+  // accepted tradeoff to kill the self-talk loop.
+
+  /// Count of mic frames actually forwarded to the socket (dev-log heartbeat).
+  int _micFramesSent = 0;
+
+  /// True while the beaver is speaking (turn open and/or audio still playing).
+  /// While true, mic PCM is dropped (not sent to the socket).
+  bool _beaverSpeaking = false;
+
+  /// True once `turn_end` for the current beaver turn has arrived; the gate
+  /// only clears after this *and* the playback queue has drained.
+  bool _turnEnded = false;
+
+  /// Hangover timer: after drain + turn_end, waits a short tail before
+  /// ungating so the speaker's decaying audio isn't recaptured.
+  Timer? _micGateTimer;
+
+  /// Safety timer: if `turn_end` is missed, ungate once playback has been idle
+  /// (no new audio, queue empty) for a short window so the mic can't deadlock.
+  Timer? _gateSafetyTimer;
+
+  /// Hangover delay after the beaver's audio finishes before re-opening the mic.
+  static const Duration _micHangover = Duration(milliseconds: 300);
+
+  /// Idle window after which a missed `turn_end` is assumed and the gate clears.
+  static const Duration _gateSafetyWindow = Duration(milliseconds: 800);
+
+  @override
+  CallState build() {
+    // App-scoped singleton: clean up if the provider container is disposed.
+    ref.onDispose(() {
+      unawaited(_teardown());
+    });
+    return const CallState();
+  }
+
+  /// Starts a live call from the home flow.
+  ///
+  /// **캐릭터를 넘기지 않는다** — 서버가 `member.character_id`(사용자가 고른 대표
+  /// 캐릭터)로 정한다. 예전엔 여기로 id 를 받아 보냈는데, 호출부가 인자를 안 주면
+  /// `call_loading` 이 1(BABA)로 폴백해 마이페이지·기록·온보딩완료에서 건 전화가
+  /// 전부 BABA 로 갔다(prod 통화 701 건 중 421 건이 고른 캐릭터와 불일치).
+  ///
+  /// Re-entry safe (§8-1): returns immediately when already starting or when the
+  /// phase is connecting/inCall/ending; otherwise runs [_teardown] first so any
+  /// stale socket/recorder/player is closed before a fresh connection opens.
+  /// After the socket opens it sends `{type:"start"}` once, which triggers the
+  /// server's automatic opening line (§8-3).
+  /// [inboundCallId] 는 **안드로이드 수신통화 전용**이다. 안드로이드는 accept 직후
+  /// `endAllCalls()` 로 CallKit 을 정리하고 이 경로로 들어오므로 [startFromIncoming]
+  /// 을 타지 않는데, 그래도 서버는 어느 알람의 전화인지 알아야 그 알람의 캐릭터로
+  /// 연결한다. CallKit 세션은 이미 없으므로 callUuid(끊기용)와는 분리한다.
+  Future<void> start({String? inboundCallId}) async {
+    final ok = await _connect(
+      callUuid: null,
+      inboundCallId: inboundCallId,
+      callkitOwnedAudio: false,
+    );
+    if (!ok) return;
+    await _startAudio();
+  }
+
+  /// Starts a call answered through CallKit (a scheduled inbound call).
+  ///
+  /// Two stages, deliberately decoupled — the socket has nothing to do with audio:
+  /// 1. [_connect] runs IMMEDIATELY at accept, so the server starts generating its
+  ///    opening line while the audio session is still being handed over. Inbound
+  ///    PCM queues up meanwhile (see [_feedPlayer]) instead of being dropped.
+  /// 2. [_startAudio] runs once CallKit has activated the call's audio session,
+  ///    then drains that queue. No fixed-delay guess.
+  ///
+  /// Coupling them is what made the lock-screen flow silent: the socket only
+  /// opened after the call SCREEN was built, and the screen waited on a
+  /// foreground state that never arrives while the device is locked.
+  ///
+  /// [callUuid] is the CallKit call this session belongs to; [hangUp] ends it so
+  /// the lock-screen call UI disappears together with the conversation.
+  ///
+  /// 그 [callUuid] 는 **서버가 푸시로 내려준 통화 id** 이기도 하다. `start` 에
+  /// `inbound_call_id` 로 되돌려주면 서버가 발송 로그로 알람을 되짚어 **그 알람의
+  /// 캐릭터**로 통화를 연다 — 알람마다 캐릭터가 다를 수 있는데 대표 캐릭터 하나로는
+  /// 표현할 수 없기 때문이다. 앱이 캐릭터를 고르는 게 아니라, 서버가 준 불투명한
+  /// uuid 를 그대로 돌려줄 뿐이다.
+  Future<void> startFromIncoming({String? callUuid}) async {
+    final ok = await _connect(
+      callUuid: callUuid,
+      inboundCallId: callUuid,
+      callkitOwnedAudio: true,
+    );
+    if (!ok) return;
+    final myGen = _gen;
+    if (!await _awaitCallKitAudio()) {
+      // Bounded fallback: better to open audio against a session that may not be
+      // ready than to strand the user on a silent call forever.
+      _log('CallKit audio-session signal missing → starting audio anyway');
+    }
+    if (myGen != _gen) return; // hung up while waiting
+    await _startAudio();
+  }
+
+  /// The plugin's didActivate event (fast path). The native flag is the truth —
+  /// this only removes the polling latency. See [_awaitCallKitAudio].
+  void onCallKitAudioReady() => _callkitAudioReady = true;
+
+  /// Stage 1 — open the WebSocket and trigger the server's opening line.
+  ///
+  /// Returns true when the socket is up and the caller should proceed to
+  /// [_startAudio]. Never touches playback, the mic, or the audio session.
+  Future<bool> _connect({
+    required String? callUuid,
+    required String? inboundCallId,
+    required bool callkitOwnedAudio,
+  }) async {
+    if (_starting) return false;
+    final phase = state.phase;
+    if (phase == CallPhase.connecting ||
+        phase == CallPhase.inCall ||
+        phase == CallPhase.ending) {
+      return false;
+    }
+    _starting = true;
+    try {
+      // teardown-first-then-connect → two sockets are structurally impossible.
+      await _teardown();
+      // Claim this start's generation AFTER the initial teardown. A hangUp() at
+      // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
+      final myGen = ++_gen;
+      _callkitOwnedAudio = callkitOwnedAudio;
+      _callUuid = callUuid;
+      _callkitAudioReady = false;
+      _sessionStartedAt = DateTime.now();
+      _gotFirstAudio = false;
+      state = const CallState(phase: CallPhase.connecting);
+
+      // Every failure below tears down with keepError so the error phase SURVIVES
+      // for the UI to react to. A plain _teardown() resets the state to idle,
+      // which silently swallows the message and leaves the loading screen
+      // spinning forever with no callback ever arriving.
+      final token = Supabase.instance.client.auth.currentSession?.accessToken;
+      if (token == null || token.isEmpty) {
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: _l10n.loginRequired,
+        );
+        await _teardown(keepError: true);
+        return false;
+      }
+
+      // Playback is device-only (flutter_pcm_sound has no web support). Guard so
+      // entering a call on web fails cleanly instead of crashing on a missing
+      // platform channel. Mic/WS aren't opened either — the call is a no-op here.
+      if (kIsWeb) {
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: _l10n.callWebNotSupported,
+        );
+        await _teardown(keepError: true);
+        return false;
+      }
+
+      // Capture the baseline max call_id *before* the socket creates this call's
+      // row, so a manual hang-up (which gets no `call_ended`) can recover the new
+      // id later by polling for an id greater than this.
+      //
+      // NOT awaited. It is an HTTP round trip, and nothing until the wrap-up
+      // screen needs it — but awaiting it here delayed the `start` frame, and
+      // therefore the beaver's first word, by that request's entire latency.
+      // Fire it alongside the socket instead. A failure just leaves the baseline
+      // null and recovery degrades to "newest id".
+      unawaited(_captureBaselineCallId(myGen));
+
+      // Connect the WebSocket.
+      _expectClose = false;
+      final url = normalcallWsUrl(token);
+      final channel = WebSocketChannel.connect(Uri.parse(url));
+      _channel = channel;
+      _wsSub = channel.stream.listen(
+        _onWsData,
+        onDone: _onWsDone,
+        onError: _onWsError,
+        cancelOnError: false,
+      );
+
+      // §8-3: trigger the server's auto opening line (no button).
+      //
+      // (멀티랭귀지) target_language 는 **보내지 않는다** — 서버가 member.target_language
+      // 를 읽어 그 언어의 코스(레벨테스트·체크판·레벨업)로 진행한다. 예전엔 여기서
+      // SharedPreferences 값을 실어 보냈는데, 그 복원이 비동기라 **복원 전에 통화가
+      // 시작되면 기본 'ko' 가 나갔다**(잠금화면 수신통화가 정확히 그 구간이다 —
+      // 콜드스타트 → accept → 즉시 connect). 앱을 지우면 선택도 리셋됐고, 서버가 거는
+      // 예약전화인데 언어는 클라가 정하는 모순도 있었다. 이제 DB 가 단일 소스다.
+      //
+      // (캐릭터) character_id 도 **보내지 않는다** — 같은 이유로 서버가 정한다.
+      // 수신통화만 서버가 준 통화 id 를 `inbound_call_id` 로 되돌려주고, 서버가
+      // 그걸로 알람을 되짚어 그 알람의 캐릭터를 쓴다. 홈에서 건 전화는 이 필드가
+      // 없어 서버가 member.character_id 를 쓴다.
+      _send({
+        'type': 'start',
+        'inbound_call_id': ?inboundCallId,
+      });
+
+      // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
+      _startKeepalive();
+      _log('socket connected (audio pending)');
+      unawaited(_logNativeAudio('connect/socket-open'));
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        phase: CallPhase.error,
+        errorMsg: _l10n.callConnectFailed,
+      );
+      await _teardown(keepError: true);
+      return false;
+    } finally {
+      _starting = false;
+    }
+  }
+
+  /// Stage 2 — open playback and the mic, then drain whatever the server already
+  /// sent while the audio session was being handed over.
+  Future<void> _startAudio() async {
+    final myGen = _gen;
+    try {
+      // 잠금화면에서 예약전화를 받으면 accept 직후엔 아직 잠금 해제/화면 전환 전이라,
+      // **안드로이드는** 마이크 접근을 막는다. iOS는 CallKit이 통화 오디오 세션을
+      // 소유하고 `audio` 백그라운드 모드가 있어 잠금 상태에서도 정상 동작하므로
+      // 기다리지 않는다 — 기다리면 잠금 중엔 resumed에 영영 도달하지 않아 통화가
+      // 통째로 멈춘다(잠금화면 무음의 직접 원인이었다).
+      if (defaultTargetPlatform != TargetPlatform.iOS) {
+        await _awaitForeground();
+        if (myGen != _gen) return _abortStart();
+      }
+
+      // 마이크(음성) 권한 확인·요청. 이미 허용돼 있으면 즉시 통과하고, 아니면 시스템
+      // 권한 팝업을 띄운다. 거부 상태면 마이크 없이는 대화가 불가하므로 안내하고 끝낸다
+      // (소켓은 이미 열려 있으므로 반드시 teardown 한다).
+      final micStatus = await Permission.microphone.request();
+      if (!micStatus.isGranted) {
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: micStatus.isPermanentlyDenied
+              ? _l10n.micPermissionNeededBody
+              : _l10n.micPermissionRequiredForCall,
+        );
+        await _teardown(keepError: true);
+        return;
+      }
+      if (myGen != _gen) return _abortStart();
+
+      // Route call audio like a loud media/Bluetooth CALL, not the quiet earpiece.
+      // With no explicit session, the voice-processing recorder pins output to the
+      // receiver at call volume and never picks AirPods. playAndRecord +
+      // defaultToSpeaker + allowBluetooth sends it to the speaker / BT headset;
+      // voiceChat keeps the echo canceller working. Best-effort: a failure here
+      // shouldn't abort the call, just leave default routing.
+      //
+      // NO allowBluetoothA2DP: A2DP is an OUTPUT-only (music) profile with no mic.
+      // Allowing it lets iOS route call output over A2DP, which breaks the BT mic
+      // (HFP) path — the beaver is heard but the user's voice is not captured.
+      // HFP (allowBluetooth) carries both mic and speaker for a two-way call.
+      //
+      // Activation has exactly ONE owner per call:
+      // - home path: this controller.
+      // - CallKit path: the system (didActivate) — the only way to get an active
+      //   call audio session while the device is locked. The category is already
+      //   set natively there (AppDelegate.configureCallAudioCategory), so we must
+      //   not re-configure or re-activate underneath a live call.
+      //
+      // But VERIFY rather than assume: if CallKit's activation never happened
+      // ([_awaitCallKitAudio] timed out), nobody has activated the session and it
+      // is silent in BOTH directions while the socket runs on regardless. In that
+      // case fall back to activating it ourselves.
+      final systemOwnsActiveSession =
+          _callkitOwnedAudio && await _isCallKitAudioActive();
+      if (!systemOwnsActiveSession) {
+        if (_callkitOwnedAudio) {
+          _log('CallKit never activated the session → activating it ourselves');
+        }
+        try {
+          final session = await AudioSession.instance;
+          await session.configure(AudioSessionConfiguration(
+            avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+            avAudioSessionCategoryOptions:
+                AVAudioSessionCategoryOptions.defaultToSpeaker |
+                    AVAudioSessionCategoryOptions.allowBluetooth,
+            avAudioSessionMode: AVAudioSessionMode.voiceChat,
+          ));
+          await session.setActive(true);
+          _weActivatedSession = true;
+        } catch (e) {
+          _log('audio session configure failed: $e');
+        }
+        if (myGen != _gen) return _abortStart();
+      }
+      await _logNativeAudio('startAudio/session-ready +${_elapsedSinceStartMs}ms');
+
+      // Open native gapless PCM playback at the server's 24kHz (no upsampling).
+      // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
+      // underflow-churn stall that cut audio out after ~1 minute.
+      //
+      // NOTE: _pcmQueue/_pcmHead are NOT reset here. [_connect]'s teardown already
+      // cleared them, and anything that arrived since is the server's opening line
+      // waiting to be played — clearing it would silence exactly what we buffered.
+      _pcmActive = false;
+      _playing = false;
+      await FlutterPcmSound.setLogLevel(LogLevel.error);
+      await FlutterPcmSound.setup(
+        sampleRate: _playbackSampleRate,
+        channelCount: _playbackChannels,
+        // MUST be passed — both defaults are wrong for a phone call:
+        //
+        // `iosAllowBackgroundAudio` defaults to FALSE, and the plugin's `feed`
+        // handler then does this whenever the app is not active:
+        //     if (!mIsAppActive && !mAllowBackgroundAudio) {
+        //         [self.mSamples setLength:0];   // discards the audio
+        //         result(@YES);                  // and reports SUCCESS
+        //     }
+        // i.e. every PCM chunk is silently thrown away the moment the screen
+        // locks, with no error for us to see — the beaver went mute on the lock
+        // screen and audio "came back" only when the app was reopened
+        // (mIsAppActive flips on UIApplicationDidBecomeActive).
+        //
+        // `iosAudioCategory` defaults to `playback`, and setup() applies it with
+        // setCategory: alone — no options, no mode — wiping playAndRecord +
+        // allowBluetooth + defaultToSpeaker + voiceChat. `playback` has no input
+        // at all. We re-assert the full category right after (routeToSpeaker),
+        // but ask for the closest one so the window is harmless.
+        iosAudioCategory: IosAudioCategory.playAndRecord,
+        iosAllowBackgroundAudio: true,
+      );
+      _pcmSetup = true;
+      await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
+      FlutterPcmSound.setFeedCallback(_onFeed);
+      _pcmActive = true;
+      _lastFeedSilent = null;
+      _envQueue.clear();
+      _startEnvelope();
+      _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
+      _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
+
+      // Per-call playback state. The cushion in particular must not carry over:
+      // a rough previous call must not tax this one.
+      _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
+      _starveAtMs = null;
+      _cushionBytes = _prebufferBytes;
+      _turnStarved = false;
+      _resumeFlushed = false;
+
+      // Drive playback from Dart's own clock instead of the plugin's feed
+      // callback. Note this also sidesteps FlutterPcmSound.start(), which only
+      // kicks when the plugin's *static* `_needsStart` flag is true — and that
+      // flag is NEVER reset by release()/setup(): the first call feeds audio →
+      // sets it false → it stays false, so on the 2nd call start() no-ops and
+      // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
+      // is independent of that stale flag and works on every call.
+      _startPushFeed();
+      unawaited(_pump()); // don't wait a tick to open the stream
+      _log('playback started @ ${_playbackSampleRate}Hz '
+          '(queued ${_queueLen}B waiting)');
+      if (myGen != _gen) return _abortStart();
+
+      // iOS: settle the category and select a Bluetooth headset input BEFORE
+      // opening the recorder. The voice-processing (VoiceProcessingIO) unit binds
+      // to whatever input is active at open time; setting the BT input only AFTER
+      // _startMic leaves the unit pinned to the built-in mic and the user's voice
+      // over AirPods is never captured. Doing it first is what makes the BT mic work.
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+          _audioRoutingStarted = true;
+        } catch (_) {}
+      }
+
+      // Start streaming the mic to the server.
+      await _startMic();
+      if (myGen != _gen) return _abortStart();
+      // The recorder can open successfully and still capture nothing when the
+      // session/route was not settled yet — a silent failure with no exception.
+      // Watch for it and re-open once.
+      _armMicWatchdog();
+
+      // Force the loudspeaker (speakerphone). flutter_sound's voice-processing
+      // recorder just re-pinned the session to the earpiece(receiver), undoing
+      // the defaultToSpeaker option; re-assert now that the mic is up. iOS-only,
+      // best-effort; the native side keeps a headset/AirPods route if connected.
+      if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+        try {
+          await _audioRouteChannel.invokeMethod<void>('routeToSpeaker');
+          _audioRoutingStarted = true;
+        } catch (_) {}
+      }
+      await _logNativeAudio('startAudio/mic-up +${_elapsedSinceStartMs}ms');
+    } catch (e) {
+      state = state.copyWith(
+        phase: CallPhase.error,
+        errorMsg: _l10n.callConnectFailed,
+      );
+      await _teardown(keepError: true);
+    }
+  }
+
+  /// Fetches the pre-call max `call_id` in the background (see [_connect]).
+  /// Applied only if this call is still the current one.
+  Future<void> _captureBaselineCallId(int myGen) async {
+    try {
+      final base = await ref.read(normalcallRepositoryProvider).latestCallId();
+      if (myGen != _gen) return;
+      state = state.copyWith(baselineCallId: base);
+    } catch (_) {
+      // Recovery degrades to "newest id".
+    }
+  }
+
+  /// Milliseconds since this call's socket was opened — for latency logging.
+  int get _elapsedSinceStartMs => _sessionStartedAt == null
+      ? -1
+      : DateTime.now().difference(_sessionStartedAt!).inMilliseconds;
+
+  /// Asks the native side whether CallKit currently holds an ACTIVE call audio
+  /// session (between didActivate and didDeactivate). False on non-iOS.
+  Future<bool> _isCallKitAudioActive() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return false;
+    if (_callkitAudioReady) return true;
+    try {
+      return await _callkitChannel
+              .invokeMethod<bool>('isCallAudioSessionActive') ??
+          false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Dumps the live audio-session state to the NATIVE log.
+  ///
+  /// [_log] is compiled out of release builds (`kDebugMode`), so a TestFlight run
+  /// — the only place the lock-screen flow can be exercised — is otherwise
+  /// completely blind. NSLog survives release and shows up in Console.app.
+  Future<void> _logNativeAudio(String tag) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return;
+    try {
+      await _audioRouteChannel
+          .invokeMethod<void>('logAudioState', <String, dynamic>{'tag': tag});
+    } catch (_) {}
+  }
+
+  /// Waits for CallKit to activate the call's audio session (didActivate).
+  ///
+  /// The plugin's event for this is as unbuffered as the accept event, so the
+  /// NATIVE flag is the source of truth and [onCallKitAudioReady] merely removes
+  /// the polling latency. Bounded — returns false on timeout so the caller can
+  /// start audio anyway rather than waiting forever. Non-iOS returns immediately.
+  Future<bool> _awaitCallKitAudio() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.iOS) return true;
+    final deadline = DateTime.now().add(_callkitAudioTimeout);
+    while (DateTime.now().isBefore(deadline)) {
+      if (await _isCallKitAudioActive()) return true;
+      await Future<void>.delayed(_callkitAudioPollInterval);
+    }
+    return false;
+  }
+
+  /// Aborts an in-flight [start] whose generation was superseded by a [hangUp]:
+  /// tears down anything already opened. The phase was already set by the
+  /// hangUp, so [_teardown] preserves it.
+  Future<void> _abortStart() async {
+    _log('start aborted — superseded by hang up');
+    await _teardown();
+  }
+
+  /// User-initiated hang up: ends the CallKit call (if this session has one),
+  /// closes the socket (the server finalizes the call in its `finally`) and tears
+  /// the pipeline down (§8-2).
+  ///
+  /// Re-entrant by design: ending the CallKit call fires `ACTION_CALL_ENDED`,
+  /// which the coordinator routes back here. [_hangingUp] absorbs that bounce.
+  Future<void> hangUp() async {
+    if (_hangingUp) return;
+    _hangingUp = true;
+    try {
+      await _hangUp();
+    } finally {
+      _hangingUp = false;
+    }
+  }
+
+  /// Re-entry guard for [hangUp] — see its doc.
+  bool _hangingUp = false;
+
+  /// 끝난 통화의 결과를 **소비했다**고 표시하고 [CallPhase.idle] 로 되돌린다.
+  ///
+  /// [_teardown] 은 `ended` 를 일부러 보존한다 — 요약 화면이 callId·통화 시간을 읽어야
+  /// 하기 때문이다. 그런데 그 상태를 **아무도 되돌리지 않아서**, 한 번 통화가 끝나면
+  /// phase 가 `ended` 로 남았다. `call_loading` 은 진입 시 phase 를 보고 분기하므로
+  /// (`ended` → 요약 화면), 그 뒤로는 홈에서 전화하기를 눌러도 새 통화가 시작되지 않고
+  /// 지난 통화의 요약 화면만 떴다. 앱을 껐다 켜야(= ProviderContainer 가 새로 생겨야)
+  /// 다시 통화할 수 있었다.
+  ///
+  /// 그래서 결과를 다 쓴 화면이 떠날 때 이걸 호출한다. 요약 화면은 callId·통화 시간을
+  /// 라우트 인자로 따로 받으므로, 넘어간 뒤에 상태를 비워도 표시에는 영향이 없다.
+  ///
+  /// **끝난 통화에만 적용된다.** 이미 다음 통화가 시작된 상태(connecting/inCall 등)면
+  /// 아무 것도 하지 않는다 — 살아 있는 통화를 지워버리면 안 된다.
+  void clearFinished() {
+    if (state.phase == CallPhase.ended || state.phase == CallPhase.error) {
+      state = const CallState();
+    }
+  }
+
+  Future<void> _hangUp() async {
+    // Invalidate any in-flight start() so it can't re-establish the pipeline
+    // after we tear it down here.
+    _gen++;
+    _expectClose = true;
+    if (state.phase == CallPhase.ended || state.phase == CallPhase.idle) {
+      await _teardown();
+      return;
+    }
+    final preservedCallId = state.callId;
+    // Preserve the elapsed time too so the wrap-up screen can show the real call
+    // duration ([_teardown] would otherwise reset it to 0).
+    final preservedElapsed = state.elapsedSec;
+    // Preserve the baseline so the wrap-up screen can recover the call id when
+    // this was a manual hang-up (no `call_ended`, so [preservedCallId] is null).
+    final preservedBaseline = state.baselineCallId;
+    await _teardown();
+    state = CallState(
+      phase: CallPhase.ended,
+      callId: preservedCallId,
+      elapsedSec: preservedElapsed,
+      baselineCallId: preservedBaseline,
+    );
+  }
+
+  /// Opens the recorder and pipes its PCM16k stream straight to the socket.
+  Future<void> _startMic() async {
+    final controller = StreamController<Uint8List>();
+    _micController = controller;
+    _micSub = controller.stream.listen((bytes) {
+      // Counted BEFORE the gate: this measures whether the recorder is capturing
+      // at all, which is a different failure from "gated because the beaver is
+      // speaking". [_armMicWatchdog] keys off it.
+      _micFramesReceived++;
+      // Half-duplex gate: while the beaver is speaking (or its audio tail is
+      // still decaying), DROP the frame so the AI's voice picked up by the mic
+      // is never echoed back to the server's STT (which caused the self-talk
+      // loop on speakerphone). The recorder keeps running so the audio
+      // session / AEC stays stable; we only skip forwarding.
+      if (_beaverSpeaking) return;
+      final ch = _channel;
+      if (ch != null) {
+        ch.sink.add(bytes);
+        if (++_micFramesSent % 50 == 0) {
+          _log('mic → sent $_micFramesSent frames (your voice flowing)');
+        }
+      }
+    });
+
+    // 마이크 열기 재시도: 잠금화면 accept 직후엔 (아직 잠금 해제/포그라운드 전환 중이거나)
+    // 직전 CallKit 통화가 잡았던 오디오 세션(Android MODE_IN_COMMUNICATION·오디오 포커스)이
+    // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
+    // ("AudioFlinger could not create record track, status: -1"). 잠깐 뒤 다시 열면 되는
+    // 일시 실패라, 짧은 백오프로 재시도한다.
+    // iOS: with a headset (AirPods/BT/wired) connected, DISABLE voice processing.
+    // flutter_sound's voice processing (VoiceProcessingIO) refuses the Bluetooth
+    // HFP mic on iOS, so the user's voice was never captured over AirPods. A plain
+    // recorder follows the session route and uses the BT mic. Voice processing is
+    // only needed for the loudspeaker case (echo cancellation) — no headset there.
+    var useVoiceProcessing = true;
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+      try {
+        final headset = await _audioRouteChannel
+            .invokeMethod<bool>('isHeadsetConnected');
+        if (headset == true) useVoiceProcessing = false;
+      } catch (_) {}
+    }
+
+    Object? lastError;
+    for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
+      final recorder = FlutterSoundRecorder();
+      _recorder = recorder;
+      try {
+        await recorder.openRecorder();
+        await recorder.startRecorder(
+          toStream: controller.sink,
+          codec: Codec.pcm16,
+          sampleRate: 16000,
+          numChannels: 1,
+          enableVoiceProcessing: useVoiceProcessing,
+          enableEchoCancellation: true,
+        );
+        if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
+        return; // 성공
+      } catch (e) {
+        lastError = e;
+        _log('mic open failed ($attempt/$_micOpenMaxAttempts): $e');
+        try {
+          await recorder.closeRecorder();
+        } catch (_) {}
+        _recorder = null;
+        if (attempt < _micOpenMaxAttempts) {
+          await Future<void>.delayed(_micOpenRetryDelay);
+        }
+      }
+    }
+    throw Exception('마이크를 열 수 없습니다(재시도 $_micOpenMaxAttempts회 실패): $lastError');
+  }
+
+  // ── Mic capture watchdog ──────────────────────────────────────────────────
+  // openRecorder()/startRecorder() can both succeed against a session that is
+  // not actually usable yet and then deliver NOTHING — no exception, no retry,
+  // just a call where the user is never heard. Detect it by the absence of
+  // frames and re-open the recorder once.
+
+  /// Frames the recorder produced (counted before the half-duplex gate).
+  int _micFramesReceived = 0;
+  Timer? _micWatchdogTimer;
+  bool _micRestarted = false;
+
+  /// How long a live recorder may produce nothing before it is presumed broken.
+  /// Comfortably longer than the opening greeting's ramp-up.
+  static const Duration _micWatchdogDelay = Duration(seconds: 6);
+
+  /// Arms the one-shot capture watchdog (see [_micFramesReceived]).
+  void _armMicWatchdog() {
+    _micWatchdogTimer?.cancel();
+    _micWatchdogTimer = Timer(_micWatchdogDelay, () async {
+      _micWatchdogTimer = null;
+      if (_micFramesReceived > 0 || _micRestarted) return;
+      final phase = state.phase;
+      if (phase != CallPhase.inCall && phase != CallPhase.connecting) return;
+      _micRestarted = true; // one attempt only — never loop on a dead mic
+      _log('mic captured nothing in ${_micWatchdogDelay.inSeconds}s → reopening');
+      await _logNativeAudio('mic-watchdog/before-restart');
+      final myGen = _gen;
+      try {
+        await _restartMic();
+      } catch (e) {
+        _log('mic reopen failed: $e');
+        return;
+      }
+      if (myGen != _gen) return;
+      await _logNativeAudio('mic-watchdog/after-restart');
+    });
+  }
+
+  /// Closes the recorder and opens a fresh one, keeping the call otherwise live.
+  Future<void> _restartMic() async {
+    await _micSub?.cancel();
+    _micSub = null;
+    try {
+      await _recorder?.stopRecorder();
+    } catch (_) {}
+    try {
+      await _recorder?.closeRecorder();
+    } catch (_) {}
+    _recorder = null;
+    await _micController?.close();
+    _micController = null;
+    await _startMic();
+  }
+
+  /// 마이크 열기 최대 재시도 횟수(오디오 세션 해제 지연/포그라운드 전환 흡수).
+  static const int _micOpenMaxAttempts = 6;
+
+  /// 마이크 열기 재시도 간격.
+  static const Duration _micOpenRetryDelay = Duration(milliseconds: 400);
+
+  /// 앱이 실제로 포그라운드(resumed) 될 때까지 대기한다(최대 [timeout]).
+  ///
+  /// 잠금화면에서 예약전화를 받으면 accept 직후엔 아직 잠금 해제/화면 전환 전이라,
+  /// 안드로이드가 마이크 접근을 막고 오디오도 제대로 안 난다. 앱이 켜져 통화 화면으로
+  /// 들어온 뒤(resumed)에 오디오를 시작해야 한다. 일반(홈→전화하기) 경로는 이미
+  /// resumed라 즉시 통과한다. 타임아웃되면 그냥 진행한다(마이크 재시도가 흡수).
+  Future<void> _awaitForeground({
+    Duration timeout = const Duration(seconds: 30),
+  }) async {
+    const interval = Duration(milliseconds: 200);
+    final deadline = DateTime.now().add(timeout);
+    while (
+        WidgetsBinding.instance.lifecycleState != AppLifecycleState.resumed) {
+      if (!DateTime.now().isBefore(deadline)) return;
+      await Future<void>.delayed(interval);
+    }
+  }
+
+  /// WebSocket data handler. Splits text (control JSON) from binary (PCM) (§8-7).
+  void _onWsData(dynamic data) {
+    if (data is String) {
+      _handleControl(data);
+    } else if (data is Uint8List) {
+      _feedPlayer(data);
+    } else if (data is List<int>) {
+      _feedPlayer(Uint8List.fromList(data));
+    }
+  }
+
+  /// Enqueues an inbound PCM24k chunk onto [_pcmQueue]. The plugin's feed
+  /// callback ([_onFeed]) drains it; here we only gate the mic, reset the
+  /// closing-drain stability window, and cap the queue (resync).
+  // [계측] 수신 처리 시간이 통화가 갈수록 무거워지는지(1분 후 악화 원인) 측정.
+  int _fpLastUs = 0, _fpChunks = 0, _fpMicros = 0, _fpWinMs = 0, _fpMaxGapMs = 0;
+  // [계측] 창당 수신 바이트 — 서버가 "느려진" 것과 "같은 양을 뭉텅이로 보낸" 것을 가른다.
+  int _fpBytes = 0;
+
+  // [계측] 이벤트 루프 지연 프로브. 20ms 주기 타이머가 실제로 얼마나 늦게 실행되는지
+  // 재서, 청크 도착 갭(maxArrivalGap)의 원인을 가른다:
+  //   갭 큼 + 루프 정시  → 소켓에 데이터가 없었다 = 서버 전송 공백 (서버 사안)
+  //   갭 큼 + 루프도 밀림 → 이벤트 루프가 막혔다 = 클라 사안
+  // 이 구분이 없으면 두 원인이 로그상 완전히 똑같이 보인다.
+  static const int _elProbeMs = 20;
+  Timer? _elProbeTimer;
+  int _elLastMs = 0, _elLagMaxMs = 0, _elLagOver50 = 0;
+
+  // [계측] 스트림 인플레이션(Dart 측). native 20ms 무음과 별개로 여기서도 [_silenceFrames]
+  // (=50ms) 무음을 피드한다 — 주입기가 둘이다. 재생 스트림에 들어간 총량이 경과 시간을
+  // 넘으면(fed/elapsed > 100%) 그 초과분이 곧 백로그 증가분이고, 어느 분기가 넣었는지까지 가른다.
+  Timer? _inflateTimer;
+  int _callT0Ms = 0;
+  int _rxBytesTotal = 0; // 서버에서 받은 오디오(=재생돼야 할 진짜 양)
+  int _fedAudBytes = 0; // 플러그인에 넣은 진짜 오디오
+  int _fedSilFrames = 0; // 넣은 무음 전체
+  int _fedSilSpeakFrames = 0; // 그중 "비버 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilPrebufFrames = 0; // 그중 프리버퍼 대기로 넣은 것 = 의도된 지연
+
+  static String _sec(num bytes) => (bytes / 48000.0).toStringAsFixed(1);
+
+  void _startInflateLog() {
+    _inflateTimer?.cancel();
+    _callT0Ms = DateTime.now().millisecondsSinceEpoch;
+    _rxBytesTotal = 0;
+    _fedAudBytes = 0;
+    _fedSilFrames = 0;
+    _fedSilSpeakFrames = 0;
+    _fedSilPrebufFrames = 0;
+    // 타이머 기반(청크 도착 기반 아님) — 오디오가 안 올 때도 균일하게 찍혀야 비교가 된다.
+    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      final elapsedMs = DateTime.now().millisecondsSinceEpoch - _callT0Ms;
+      final fedBytes = _fedAudBytes + _fedSilFrames * 2;
+      final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
+      _log('INFLATE: elapsed ${(elapsedMs / 1000).toStringAsFixed(1)}s, '
+          'rx ${_sec(_rxBytesTotal)}s, fedAud ${_sec(_fedAudBytes)}s, '
+          'fedSil ${_sec(_fedSilFrames * 2)}s '
+          '(speaking ${_sec(_fedSilSpeakFrames * 2)}s, prebuf ${_sec(_fedSilPrebufFrames * 2)}s), '
+          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
+      // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
+      // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
+      final minMs = _engineMinFrames == 1 << 30
+          ? -1
+          : _engineMinFrames * 1000 ~/ _playbackSampleRate;
+      _log('PUMP: engine now ${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms, '
+          'min ${minMs}ms (low ${_engineLowFrames * 1000 ~/ _playbackSampleRate}ms / '
+          'target ${_engineTargetFrames * 1000 ~/ _playbackSampleRate}ms)');
+      _engineMinFrames = 1 << 30; // 창마다 리셋 — 통화 전체 최저가 아니라 추세를 본다
+    });
+  }
+
+  void _stopInflateLog() {
+    _inflateTimer?.cancel();
+    _inflateTimer = null;
+  }
+
+  void _startEventLoopProbe() {
+    _elProbeTimer?.cancel();
+    _elLastMs = DateTime.now().millisecondsSinceEpoch;
+    _elLagMaxMs = 0;
+    _elLagOver50 = 0;
+    _elProbeTimer =
+        Timer.periodic(const Duration(milliseconds: _elProbeMs), (_) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      final lag = (now - _elLastMs) - _elProbeMs; // 예정보다 늦은 정도(ms)
+      _elLastMs = now;
+      if (lag > _elLagMaxMs) _elLagMaxMs = lag;
+      if (lag > 50) _elLagOver50++;
+    });
+  }
+
+  void _stopEventLoopProbe() {
+    _elProbeTimer?.cancel();
+    _elProbeTimer = null;
+  }
+
+  void _feedPlayer(Uint8List chunk) {
+    // First inbound audio of the call: the split between "server was still
+    // thinking" and "our pipeline was not ready yet" is exactly this timestamp
+    // against startAudio's. Logged natively so it survives release builds.
+    if (!_gotFirstAudio) {
+      _gotFirstAudio = true;
+      unawaited(_logNativeAudio('first-audio-in +${_elapsedSinceStartMs}ms '
+          '(playback ${_pcmActive ? "ready" : "NOT ready"})'));
+    }
+    final fpT0 = DateTime.now().microsecondsSinceEpoch;
+    final fpGap = _fpLastUs == 0 ? 0 : (fpT0 - _fpLastUs) ~/ 1000; // 청크 도착 간격(ms)
+    _fpLastUs = fpT0;
+    if (fpGap > _fpMaxGapMs) _fpMaxGapMs = fpGap;
+    _feedPlayerBody(chunk);
+    _fpChunks++;
+    _fpBytes += chunk.length;
+    _rxBytesTotal += chunk.length;
+    _fpMicros += DateTime.now().microsecondsSinceEpoch - fpT0;
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (_fpWinMs == 0) _fpWinMs = nowMs;
+    if (nowMs - _fpWinMs >= 5000) {
+      final avg = _fpChunks > 0 ? _fpMicros / _fpChunks / 1000 : 0;
+      // 24kHz mono Int16 → 48000 B/s. 5초 창이면 실시간은 240000B.
+      final secs = _fpBytes / 48000.0;
+      _log('FP-TIMING: $_fpChunks chunks/5s, avg ${avg.toStringAsFixed(2)}ms/chunk, '
+          'maxArrivalGap ${_fpMaxGapMs}ms, queue ${_queueLen}B, '
+          'rx ${_fpBytes}B (${secs.toStringAsFixed(2)}s audio), '
+          'elLagMax ${_elLagMaxMs}ms, elLagOver50 $_elLagOver50');
+      _fpChunks = 0; _fpMicros = 0; _fpMaxGapMs = 0; _fpWinMs = nowMs;
+      _fpBytes = 0; _elLagMaxMs = 0; _elLagOver50 = 0;
+    }
+  }
+
+  /// MERGE(v3→multilang) 주의: 재생이 아직 안 열렸어도 **항상** 큐에 쌓는다. CallKit
+  /// 경로에서는 소켓이 오디오 파이프라인보다 먼저 열리므로(see [startFromIncoming])
+  /// 서버의 첫 인사가 재생보다 먼저 도착하는 게 정상이고, 여기서 [_pcmActive] 로
+  /// 막으면 사용자가 기다리는 인사말이 그대로 잘린다. 소비 측([_pump])만 게이트한다.
+  /// 대신 재생 전 무한 적재는 아래 pre-roll cap 이 막는다.
+  void _feedPlayerBody(Uint8List chunk) {
+    // Ground truth for "did the server go quiet mid-utterance": the gap between
+    // inbound chunks. The playback-side starve clock can't answer that — a long
+    // enough hole trips the idle-ungate, `_beaverSpeaking` flips to false, and the
+    // resumption then looks like a brand-new turn. Measured here (before
+    // [_gateMic] clears `_turnEnded`) it survives all of that.
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    final prevChunkMs = _lastChunkAtMs;
+    if (prevChunkMs != null && !_turnEnded && nowMs - prevChunkMs >= 250) {
+      _log('SERVER GAP ${nowMs - prevChunkMs}ms mid-utterance '
+          '(mic was ${_beaverSpeaking ? "closed" : "OPEN"})');
+    }
+    _lastChunkAtMs = nowMs;
+    // Beaver audio is arriving → gate the mic (covers the opening greeting even
+    // before/without a turn_start).
+    _gateMic();
+    // Queue is no longer empty → cancel any idle-ungate countdown so the mic
+    // stays closed while the beaver's buffered turn is still playing out. (The
+    // countdown is (re)armed by [_onFeed] only once the queue actually drains.)
+    _gateSafetyTimer?.cancel();
+    _gateSafetyTimer = null;
+    // Fresh audio during a pending close resets the quiet window so the closing
+    // line isn't acked early.
+    _closingStableTimer?.cancel();
+    _closingStableTimer = null;
+
+    _appendToQueue(chunk);
+
+    // Pre-roll cap: while playback isn't open yet, nothing drains the queue, so
+    // it needs its own (much tighter) bound. An opening line is a few seconds;
+    // anything beyond this means the audio stage is badly stuck, and holding
+    // minutes of stale speech to replay later would be worse than dropping it.
+    //
+    // MERGE(v3→multilang): 이 상한은 청크 참조 큐(_dropFront) 기준으로 들어왔었다.
+    // 이 브랜치는 v3 의 평면 링버퍼를 쓰므로 등가 연산은 head 전진 + 압축이다.
+    if (!_pcmActive && _queueLen > _prerollMaxBytes) {
+      var drop = _queueLen - _prerollMaxBytes;
+      if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
+      _pcmHead += drop;
+      _maybeCompact();
+      _log('preroll cap: dropped ${drop}B (playback not open yet)');
+      return;
+    }
+
+    // Resync: if the queue outgrows the cap (server bursts ahead / clock drift),
+    // drop the oldest bytes down to the target so latency can't pile up and
+    // stall — the callback-pull analogue of the demo's `playT = now`.
+    final len = _queueLen;
+    if (len > _maxQueueBytes) {
+      var drop = len - _targetQueueBytes;
+      if (drop.isOdd) drop -= 1; // keep Int16 sample alignment
+      _pcmHead += drop;
+      _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
+      _maybeCompact();
+    }
+  }
+
+  /// Starts the push loop. From here on Dart decides when the engine gets fed;
+  /// the plugin's callback is only a backstop (see [_feedThresholdFrames]).
+  void _startPushFeed() {
+    _pushTimer?.cancel();
+    _engineAnchorFrames = 0;
+    _engineAnchorMs = 0;
+    _engineMinFrames = 1 << 30;
+    _pushTimer = Timer.periodic(_pushInterval, (_) => unawaited(_pump()));
+  }
+
+  void _stopPushFeed() {
+    _pushTimer?.cancel();
+    _pushTimer = null;
+  }
+
+  /// Backstop path: the plugin noticed its queue fell below
+  /// [_feedThresholdFrames]. Its `remainingFrames` is ground truth, so use it to
+  /// re-anchor the estimate, then pump. In a healthy call this never fires.
+  Future<void> _onFeed(int remainingFrames) async {
+    if (!_pcmActive) return;
+    _anchorEngine(remainingFrames, DateTime.now().millisecondsSinceEpoch);
+    await _pump();
+  }
+
+  /// Tops the native engine up. Called every [_pushInterval] (and by the
+  /// backstop callback); does nothing at all unless the engine has drained past
+  /// its low-water mark, so a healthy call spends most ticks returning here.
+  ///
+  /// Pulls up to [_feedChunkBytes] of real audio from [_pcmQueue]; when there's
+  /// nothing to play it feeds silence instead, which keeps the AudioTrack out of
+  /// AudioFlinger's idle path (the ~130ms reactivation stall).
+  Future<void> _pump() async {
+    if (!_pcmActive) return;
+    if (_feeding) return; // a feed is already in flight — don't double-count
+    _feeding = true;
+    try {
+      final avail = _queueLen;
+      final whole = avail - (avail & 1); // even bytes = whole Int16 samples
+      // Jitter prebuffer: at a turn start, hold real audio (feed silence) until a
+      // small cushion is buffered so brief jitter can't starve mid-word. Bypassed
+      // once playing, while closing (must drain), or when the flush timer fires.
+      // `_turnEnded` matters as much as the cushion here: once the server has sent
+      // `turn_end` the whole utterance is already queued, so holding out for
+      // [_prebufferBytes] would only delay a short reply that will never reach it.
+      // Without this arm, raising the cushion to 900ms would stall every "네."
+      // until [_prebufferFlush] expired.
+      // Resuming from a mid-utterance starve is the one case [_playing] must not
+      // wave through: rebuild a small cushion first, or playback resumes on a
+      // scrap and starves straight back into the stutter loop. `_turnEnded` and
+      // `_drainScheduled` still bypass everything so short replies stay instant,
+      // and [_prebufferFlush] bounds the wait via [_resumeFlushed].
+      final resuming = _starveAtMs != null && !_resumeFlushed;
+      final ready = _turnEnded ||
+          _drainScheduled ||
+          (resuming
+              ? whole >= _resumeCushionBytes
+              : (_playing || whole >= _cushionBytes));
+      if (whole >= 2 && ready) {
+        _playing = true;
+        // Cancel unconditionally: a resume gate can arm this while [_playing] is
+        // already true, so keying the cancel off `!_playing` would leave it live.
+        _prebufferFlushTimer?.cancel();
+        _prebufferFlushTimer = null;
+        final starvedAt = _starveAtMs;
+        if (starvedAt != null) {
+          // The server had gone quiet mid-utterance and has now resumed. This gap
+          // IS the glitch the user hears — measure it, don't just note that it
+          // happened. Anything under [_prebufferFlush] would have been absorbed.
+          _starveAtMs = null;
+          _resumeFlushed = false;
+          _log('audio resumed after '
+              '${DateTime.now().millisecondsSinceEpoch - starvedAt}ms gap (starved)');
+        }
+        if (_lastFeedSilent != false) {
+          _log('feed AUDIO (queue ${avail}B, engine '
+              '${_engineLevelFrames * 1000 ~/ _playbackSampleRate}ms, '
+              '쿠션 ${_cushionBytes ~/ 48}ms)');
+          _lastFeedSilent = false;
+        }
+        // Only push once the engine has drained past its low-water mark. Above
+        // it the tick does nothing — the bookkeeping above still had to run, but
+        // there is no reason to hand the platform channel more bytes.
+        final level = _engineLevelFrames;
+        if (level < _engineLowFrames) {
+          var take = (_engineTargetFrames - level) * 2;
+          if (take > _feedChunkBytes) take = _feedChunkBytes;
+          if (take > whole) take = whole;
+          _fedAudBytes += take; // [계측]
+          final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final reported = await FlutterPcmSound.feed(_takeArray(take));
+          // Android reports its depth; elsewhere fall back to our own arithmetic
+          // so iOS/web keep working unchanged.
+          _anchorEngine(reported ?? (level + take ~/ 2), sentAtMs);
+          // 이 실오디오가 스피커에서 끝날 시각. 무음 피드는 갱신하지 않는다 —
+          // 무음까지 세면 턴 사이에도 꼬리가 계속 밀려 마이크가 안 열린다.
+          _audioTailUntilMs = sentAtMs +
+              (level + take ~/ 2) * 1000 ~/ _playbackSampleRate;
+        }
+      } else {
+        if (whole >= 2) {
+          // Buffering the prebuffer cushion → arm a bounded flush so a short
+          // utterance (never reaching the cushion) still plays out.
+          _prebufferFlushTimer ??= Timer(_prebufferFlush, () {
+            _prebufferFlushTimer = null;
+            _playing = true; // next feed drains whatever is queued
+            // Releases the resume gate too, so a tail that never refills
+            // [_resumeCushionBytes] plays out instead of hanging on silence.
+            _resumeFlushed = true;
+          });
+        } else {
+          // Queue genuinely drained. Between turns (beaver not speaking) require a
+          // fresh prebuffer next turn; mid-turn keep _playing so resumed audio is
+          // instant (no re-buffer gap).
+          // Reverted from an unconditional refill: rebuilding the 900ms cushion
+          // mid-utterance only added ~450ms of dead air per resumption without
+          // removing a single dropout, because the holes being ridden out are
+          // multi-second server gaps, not jitter a cushion can cover.
+          if (!_beaverSpeaking) _playing = false;
+          // Only a mid-utterance drain is a glitch; a drained queue between turns
+          // is normal, so don't start the stall clock for it.
+          // ⚠ `_beaverSpeaking` 만으로 판정하면 안 된다 — [_audioDrained] 여야 한다.
+          //   푸시 모델에서는 [_pump] 가 매 틱 Dart 큐를 통째로 엔진에 밀어넣으므로
+          //   **큐가 비어 있는 게 정상 상태**다(측정: INFLATE 창 대부분이 queue 0B).
+          //   큐 빔만 보고 세면 엔진이 1.8초를 물고 멀쩡히 재생 중인데도 굶었다고
+          //   집계돼, 쿠션이 상한까지 못 박히고 감쇠가 영영 안 걸린다.
+          //   실측(5분 통화, 2026-08-02): 판정 26회 중 실제로 들린 끊김은 8회.
+          //   나머지 18회가 가짜였고 쿠션은 72초 만에 1800ms 상한에 고정됐다.
+          if (_beaverSpeaking && _audioDrained) {
+            if (_starveAtMs == null) {
+              // First starve of this turn: the cushion was too small for the
+              // deficit this call is running, so widen it for the turns ahead.
+              _starveAtMs = DateTime.now().millisecondsSinceEpoch;
+              if (!_turnStarved) {
+                _turnStarved = true;
+                if (_cushionBytes < _cushionMaxBytes) {
+                  _cushionBytes += _cushionStepBytes;
+                  if (_cushionBytes > _cushionMaxBytes) {
+                    _cushionBytes = _cushionMaxBytes;
+                  }
+                  _log('cushion grew → ${_cushionBytes * 1000 ~/ 48000}ms '
+                      '(turn starved)');
+                }
+              }
+            }
+          } else {
+            // The gate has cleared — the beaver finished and it's the user's turn.
+            // Drop any clock started during the hangover, otherwise the *next*
+            // turn's first chunk reports the whole exchange (beaver→user→beaver)
+            // as one multi-second "gap" and buries the real glitches.
+            _starveAtMs = null;
+            _resumeFlushed = false;
+          }
+          if (_lastFeedSilent != true) {
+            if (_beaverSpeaking) _dbgStarveCount++; // DEBUG(audio-glitch)
+            _log('feed silence — queue empty'
+                '${_beaverSpeaking ? ' WHILE beaver speaking (starved! #$_dbgStarveCount)' : ''}');
+            _lastFeedSilent = true;
+          }
+          // Idle-ungate countdown (covers a missed turn_end so the mic can't
+          // deadlock). Armed once per empty period; fresh audio cancels it.
+          _armIdleUngate();
+        }
+        // Keep only a shallow floor of silence queued. It exists to hold the
+        // AudioTrack in AudioFlinger's active list and to cover the platform
+        // round trip; anything deeper is dead air queued ahead of the next reply.
+        final level = _engineLevelFrames;
+        if (level < _silenceLowFrames) {
+          final silFrames = _silenceTargetFrames - level;
+          // [계측] 무음 주입을 분기별로 분리 집계: 프리버퍼 대기(의도된 지연)인지,
+          // 비버 발화 중 큐가 빈 것(진짜 구멍)인지가 원인 판정을 가른다.
+          _fedSilFrames += silFrames;
+          if (whole >= 2) {
+            _fedSilPrebufFrames += silFrames;
+          } else if (_beaverSpeaking) {
+            _fedSilSpeakFrames += silFrames;
+          }
+          final sentAtMs = DateTime.now().millisecondsSinceEpoch;
+          final reported = await FlutterPcmSound.feed(
+            PcmArrayInt16.zeros(count: silFrames),
+          );
+          _anchorEngine(reported ?? (level + silFrames), sentAtMs);
+        }
+      }
+    } catch (_) {
+      // Engine released mid-feed (teardown) → ignore.
+    } finally {
+      _feeding = false;
+    }
+    // Real audio drained → maybe re-open the mic / finish the closing drain.
+    // ⚠ Dart 큐가 아니라 [_audioDrained] 다 — 엔진에 남은 것까지 봐야 한다.
+    if (_audioDrained) {
+      _tryUngateMic();
+      _maybeFinishClosing();
+    }
+  }
+
+  /// Removes [byteCount] bytes from the front of the queue as a [PcmArrayInt16].
+  /// The server's little-endian PCM16 passes straight through: mobile targets
+  /// are little-endian (host), which is what the native player expects.
+  /// Caller guarantees `byteCount <= _queueLen`.
+  PcmArrayInt16 _takeArray(int byteCount) {
+    final out = Uint8List(byteCount);
+    out.setRange(0, byteCount, _pcmQueue, _pcmHead);
+    _pcmHead += byteCount;
+    _maybeCompact();
+    // Drive the avatar mouth from the samples about to play (matches what's
+    // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
+    _updateAvatarLevel(out, byteCount);
+    return PcmArrayInt16(bytes: out.buffer.asByteData());
+  }
+
+  /// Rewinds the indices once the queue is fully consumed. That is the only
+  /// bookkeeping a steady call needs: between feeds the queue regularly hits
+  /// empty, so the window slides back to the front for free and [_appendToQueue]
+  /// never has to move live bytes.
+  void _maybeCompact() {
+    if (_pcmHead >= _pcmTail) {
+      _pcmHead = 0;
+      _pcmTail = 0;
+    }
+  }
+
+  /// Computes the RMS of the PCM16 chunk about to play and publishes it as the
+  /// avatar mouth-open level (0..1), with a perceptual curve so quiet speech
+  /// still parts the mouth. Cheap (~a few thousand ops per ~10Hz feed).
+  void _updateAvatarLevel(Uint8List bytes, int len) {
+    final n = len ~/ 2;
+    if (n == 0) return;
+    final bd = bytes.buffer.asByteData();
+    // One envelope entry per _envStepMs of audio (24kHz mono PCM16).
+    final step = (_playbackSampleRate * _envStepMs) ~/ 1000; // samples
+    var sumSqAll = 0.0;
+    var zc = 0;
+    var prev = 0;
+    var i = 0;
+    while (i < n) {
+      final end = math.min(i + step, n);
+      var sumSq = 0.0;
+      for (var k = i; k < end; k++) {
+        final s = bd.getInt16(k * 2, Endian.little);
+        sumSq += s * s;
+        sumSqAll += s * s;
+        if (k > 0 && (s >= 0) != (prev >= 0)) zc++;
+        prev = s;
+      }
+      final cnt = end - i;
+      final rms = cnt > 0 ? math.sqrt(sumSq / cnt) : 0.0;
+      _envQueue.add(_levelFromRms(rms));
+      i = end;
+    }
+    // Runaway guard. ⚠ 홀드백 자체가 최대 2.5초(엔진 목표)라 3초 캡은 여유가
+    // 0.5초뿐이었다 — 한 번의 take(최대 1.5초)가 얹히면 캡이 큐 앞머리를 잘라
+    // 립싱크가 **조용히** 어긋난다. 엔진 목표 + take 상한 위로 잡는다.
+    final cap = 4000 ~/ _envStepMs;
+    if (_envQueue.length > cap) {
+      _envQueue.removeRange(0, _envQueue.length - cap);
+    }
+    // Zero-crossing rate → vowel shape (whole chunk is fine for this).
+    final zcr = n > 1 ? zc / (n - 1) : 0.0;
+    avatarShape.value = ((zcr - 0.045) / 0.05).clamp(-1.0, 1.0);
+    // Keep sumSqAll referenced (kept for future tuning/telemetry).
+    assert(sumSqAll >= 0);
+  }
+
+  /// Maps an RMS to a 0..1 mouth-open level (gate + perceptual curve).
+  double _levelFromRms(double rms) {
+    if (rms < _avatarRmsGate) return 0.0;
+    var lvl = rms / _avatarRmsFull;
+    if (lvl > 1) lvl = 1;
+    return math.pow(lvl, 0.7).toDouble();
+  }
+
+  /// Drains the sub-frame envelope in real time so the mouth tracks the audio.
+  ///
+  /// 홀드백 = **지금 네이티브가 물고 있는 양** + [_envLeadMs]. [_takeArray] 는 재생
+  /// 직전이 아니라 "엔진이 저수위로 내려갔을 때" 불리므로, 거기서 뽑은 RMS 는 지금
+  /// 들리는 소리가 아니라 **엔진 깊이만큼 뒤에 들릴** 소리다. 그만큼 붙잡아 둬야
+  /// 입과 소리가 맞는다(sync_avatar 의 "aligns level to what is actually audible"
+  /// 계약이 이걸 전제한다). 매 틱 계산하므로 쿠션이 적응적으로 커져도 따라간다.
+  void _startEnvelope() {
+    _envTimer?.cancel();
+    _envTimer = Timer.periodic(
+      const Duration(milliseconds: _envStepMs),
+      (_) {
+        final holdMs =
+            _engineLevelFrames * 1000 ~/ _playbackSampleRate + _envLeadMs;
+        final lead = holdMs ~/ _envStepMs;
+        if (_envQueue.length > lead) {
+          avatarLevel.value = _envQueue.removeAt(0);
+        } else if (!_beaverSpeaking) {
+          avatarLevel.value = 0.0;
+        } else {
+          // Brief gap mid-turn: ease shut rather than snapping.
+          avatarLevel.value = avatarLevel.value * 0.6;
+        }
+      },
+    );
+  }
+
+  /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
+  /// counting lexicon hits. Cheap keyword scan; short lines. Ties/none → the
+  /// highest-count wins, 0 when nothing matches.
+  int _classifyEmotion(String line) {
+    if (line.isEmpty) return 0;
+    final t = line.toLowerCase();
+    var best = 0;
+    var bestCount = 0;
+    _emotionLexicon.forEach((code, words) {
+      var c = 0;
+      for (final w in words) {
+        if (t.contains(w)) c++;
+      }
+      if (c > bestCount) {
+        bestCount = c;
+        best = code;
+      }
+    });
+    return best;
+  }
+
+  /// Appends an inbound chunk, moving or growing the backing buffer only when it
+  /// genuinely cannot fit. Both paths are rare: the queue normally drains to
+  /// empty (see [_maybeCompact]) long before the write cursor reaches the end.
+  void _appendToQueue(Uint8List chunk) {
+    final live = _queueLen;
+    final needed = live + chunk.length;
+    if (needed > _pcmQueue.length) {
+      var capacity = _pcmQueue.length;
+      while (capacity < needed) {
+        capacity *= 2;
+      }
+      final grown = Uint8List(capacity);
+      grown.setRange(0, live, _pcmQueue, _pcmHead);
+      _pcmQueue = grown;
+      _pcmHead = 0;
+      _pcmTail = live;
+    } else if (_pcmTail + chunk.length > _pcmQueue.length) {
+      // Enough total room, just not at the end → slide the live window forward.
+      // `setRange` handles the self-overlapping copy correctly.
+      _pcmQueue.setRange(0, live, _pcmQueue, _pcmHead);
+      _pcmHead = 0;
+      _pcmTail = live;
+    }
+    _pcmQueue.setRange(_pcmTail, _pcmTail + chunk.length, chunk);
+    _pcmTail += chunk.length;
+  }
+
+  // ── Half-duplex mic gating helpers ─────────────────────────────────────────
+
+  /// Engages the mic gate for a new/ongoing beaver turn. Cancels any pending
+  /// ungate (hangover/safety) since the beaver is speaking again.
+  /// Walks the adaptive cushion back down after a turn that played clean, so a
+  /// single bad stretch doesn't leave every later reply paying its latency.
+  /// Never goes below [_prebufferBytes].
+  void _decayCushion() {
+    if (_turnStarved) return; // this turn starved — don't undo the growth
+    if (_cushionBytes <= _prebufferBytes) return;
+    _cushionBytes -= _cushionDecayBytes;
+    if (_cushionBytes < _prebufferBytes) _cushionBytes = _prebufferBytes;
+  }
+
+  void _gateMic() {
+    if (!_beaverSpeaking) {
+      _log('mic GATED — beaver speaking (your mic paused)');
+      _turnStarved = false; // fresh turn: it hasn't starved yet
+    }
+    _micGateTimer?.cancel();
+    _micGateTimer = null;
+    _turnEnded = false;
+    _beaverSpeaking = true;
+    avatarSpeaking.value = true;
+  }
+
+  /// Attempts to clear the mic gate. Requires BOTH the turn to have ended AND
+  /// the playback queue to be empty, then waits a [_micHangover] tail (so the
+  /// speaker's decaying audio isn't recaptured) before actually ungating.
+  void _tryUngateMic() {
+    if (!_beaverSpeaking) return;
+    if (!_turnEnded) return;
+    // ⚠ Dart 큐가 아니라 [_audioDrained]. 큐가 비어도 엔진에 최대 2.5초가 남아 있고,
+    //   그때 마이크를 열면 스피커에서 나오는 비버 목소리를 그대로 되먹는다.
+    if (!_audioDrained) return;
+    // Arm the hangover once. Restarting it on every call was a real bug: [_pump]
+    // calls this on every tick that finds the queue empty, so the countdown was
+    // reset before it could ever expire and the mic never opened by this path —
+    // it fell through to the slow `idle drained` safety net instead (measured 13
+    // of 22 openings). New audio still cancels it via [_gateMic], which is what
+    // the restart was there for.
+    if (_micGateTimer != null) return;
+    _micGateTimer = Timer(_micHangover, () {
+      _micGateTimer = null;
+      _gateSafetyTimer?.cancel();
+      _gateSafetyTimer = null;
+      _beaverSpeaking = false;
+      avatarSpeaking.value = false;
+      avatarLevel.value = 0.0;
+      _decayCushion();
+      _log('mic OPEN — your turn (turn_end + drained)');
+    });
+  }
+
+  /// Idle-based ungate for the pull model: called from [_onFeed] once the queue
+  /// has actually drained (silence being fed) while the beaver is still gated.
+  /// If the queue is still empty after [_gateSafetyWindow], open the mic — this
+  /// covers a missed `turn_end` ([_tryUngateMic] handles the fast path). Armed at
+  /// most once per empty period (the `!= null` guard stops re-arming every
+  /// silence callback); a fresh inbound chunk in [_feedPlayer] cancels it.
+  void _armIdleUngate() {
+    if (!_beaverSpeaking) return;
+    if (_gateSafetyTimer != null) return; // already counting this empty period
+    _gateSafetyTimer = Timer(_gateSafetyWindow, () {
+      _gateSafetyTimer = null;
+      if (_beaverSpeaking && _audioDrained) {
+        _micGateTimer?.cancel();
+        _micGateTimer = null;
+        _beaverSpeaking = false;
+        avatarSpeaking.value = false;
+        avatarLevel.value = 0.0;
+        _decayCushion();
+        _log('mic OPEN — your turn (idle drained)');
+      }
+    });
+  }
+
+  /// Parses and dispatches a control JSON frame from the server.
+  void _handleControl(String text) {
+    Map<String, dynamic> msg;
+    try {
+      final decoded = jsonDecode(text);
+      if (decoded is! Map<String, dynamic>) return;
+      msg = decoded;
+    } catch (_) {
+      return;
+    }
+
+    switch (msg['type'] as String?) {
+      // 서버가 이 통화의 캐릭터를 정했다 — 화면 아바타를 대화 상대와 맞춘다.
+      case 'call_started':
+        final cid = msg['character_id'];
+        if (cid is int) state = state.copyWith(characterId: cid);
+        break;
+
+      case 'turn_start':
+        if (state.phase == CallPhase.connecting) {
+          state = state.copyWith(phase: CallPhase.inCall);
+          _startElapsedTimer();
+        }
+        // New beaver turn → start a fresh subtitle line. The server streams the
+        // line token-by-token via `output_transcript`, so the line must be
+        // cleared here (not overwritten per token) and then accumulated below.
+        // Also clear any stale hint: a new turn means the prior question is
+        // answered (matches the server "new question cancels previous").
+        state = state.copyWith(beaverSubtitle: '', hint: null);
+        // New line → reset the avatar expression to neutral; it re-classifies as
+        // the line streams in below.
+        avatarEmotion.value = 0;
+        // Beaver turn begins → gate the mic until the turn ends + audio drains.
+        _gateMic();
+      case 'output_transcript':
+        // Incremental token/delta of the current beaver line — ACCUMULATE it
+        // onto the running line instead of replacing, otherwise only the latest
+        // token shows and the sentence appears chopped word-by-word. The line is
+        // reset per turn in `turn_start` above.
+        {
+          final delta = msg['text'] as String?;
+          if (delta != null && delta.isNotEmpty) {
+            final line = state.beaverSubtitle + delta;
+            state = state.copyWith(beaverSubtitle: line);
+            // React to what the beaver says: a detected emotion sticks until the
+            // next turn resets it (avoids flicker on neutral tokens).
+            final emo = _classifyEmotion(line);
+            if (emo != 0) avatarEmotion.value = emo;
+          }
+        }
+      case 'input_transcript':
+        // Same streaming contract for the user's line: accumulate tokens; the
+        // line is reset when the beaver's turn ends (below), i.e. right before
+        // the user starts speaking.
+        {
+          final delta = msg['text'] as String?;
+          if (delta != null && delta.isNotEmpty) {
+            state = state.copyWith(userSubtitle: state.userSubtitle + delta);
+          }
+        }
+      case 'turn_end':
+        // Beaver turn finished generating. Clear the gate only once the
+        // playback queue has also drained (+ hangover); see [_tryUngateMic].
+        _turnEnded = true;
+        // The beaver is done and the user is about to speak → start a fresh user
+        // subtitle line so their next utterance accumulates from empty.
+        state = state.copyWith(userSubtitle: '');
+        _tryUngateMic();
+      case 'call_ended':
+        final id = msg['call_id'];
+        // Server-initiated close is expected; the socket's onDone must not be
+        // treated as an unexpected drop.
+        _expectClose = true;
+        state = state.copyWith(
+          phase: CallPhase.ending,
+          callId: id?.toString(),
+          hint: null,
+        );
+        _log('call_ended id=$id → draining closing line');
+        _scheduleClosingDrain();
+      case 'error':
+        state = state.copyWith(
+          phase: CallPhase.error,
+          errorMsg: (msg['message'] as String?) ?? _l10n.callErrorGeneric,
+        );
+        unawaited(_teardown(keepError: true));
+      case 'hint':
+        // Dynamic example-answer hint for the beaver's question turn. Additive:
+        // unknown to older builds (harmlessly ignored). Replaces any prior hint.
+        final hint = HintData.fromJson(msg);
+        if (hint != null) state = state.copyWith(hint: hint);
+      case 'teaching_plan':
+        final raw = msg['items'];
+        if (raw is List) {
+          final items = raw
+              .whereType<Map<String, dynamic>>()
+              .map(TeachingItem.fromJson)
+              .whereType<TeachingItem>()
+              .toList(growable: false);
+          state = state.copyWith(teachingPlan: items);
+        }
+      case 'pong':
+        break;
+      default:
+        break;
+    }
+  }
+
+  /// After `call_ended`, waits for the queue to drain the beaver's closing line
+  /// before acknowledging and closing (§8-4). The drain completes once the queue
+  /// is empty *and* has stayed empty for [_closingStableDelay] (no new audio).
+  /// A fallback timer guards against the queue never settling.
+  void _scheduleClosingDrain() {
+    if (_drainScheduled) return;
+    _drainScheduled = true;
+    // The queue may already be empty by now; start the stability check.
+    _maybeFinishClosing();
+    // Fallback: finish after a delay regardless (e.g. no trailing audio).
+    // Stored + cancelled in [_teardown]/[_finishClosing] so a stray timer from a
+    // finished call can't fire against a *later* call and end it early.
+    //
+    // ⚠ 3초였는데 **클라가 서버보다 조급했다.** 서버는 작별 오디오를 전부 흘려보낸
+    //   뒤에 call_ended 를 보내고, playback_done 을 PLAYBACK_DONE_WAIT_S = 7.0 초까지
+    //   기다린다(call_session.py). 즉 3초는 서버가 준 예산의 43% 만 쓰고 끊는 것이고,
+    //   엔진이 최대 2.5초를 물고 있는 지금은 그 차이가 그대로 인사 절단이 된다.
+    //   6초 = 서버 7초 안쪽에서 최대한 쓰는 값(넘기면 서버가 먼저 닫는다).
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = Timer(
+      const Duration(seconds: 6),
+      _forceFinishClosing,
+    );
+  }
+
+  /// While a close is pending, completes it once the queue has been empty for a
+  /// short quiet window. Fresh audio (in [_feedPlayer]) cancels the timer, so a
+  /// still-arriving closing line is never cut off.
+  void _maybeFinishClosing() {
+    if (!_drainScheduled) return;
+    // ⚠ 엔진 잔량까지 봐야 한다 — 여기서 조기 확정하면 _teardown 의 release() 가
+    //   엔진에 남은 작별 인사(최대 2.5초)를 통째로 버린다.
+    if (!_audioDrained) return; // still real audio queued/playing
+    if (_closingStableTimer != null) return; // already waiting out the tail
+    _closingStableTimer = Timer(_closingStableDelay, () {
+      _closingStableTimer = null;
+      if (!_drainScheduled) return;
+      if (!_audioDrained) return; // audio came back; a later drain retries
+      _forceFinishClosing();
+    });
+  }
+
+  /// Fallback path: closes even if the queue never settles cleanly, but only
+  /// after waiting out the fallback timer.
+  void _forceFinishClosing() {
+    if (!_drainScheduled) return;
+    unawaited(_finishClosing());
+  }
+
+  /// Sends `playback_done`, closes the socket, and ends the session.
+  Future<void> _finishClosing() async {
+    if (!_drainScheduled) return;
+    _drainScheduled = false;
+    _closingStableTimer?.cancel();
+    _closingStableTimer = null;
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = null;
+    _log('playback drained → playback_done, closing');
+    _send({'type': 'playback_done'});
+    final preservedCallId = state.callId;
+    final preservedElapsed = state.elapsedSec;
+    await _teardown();
+    state = CallState(
+      phase: CallPhase.ended,
+      callId: preservedCallId,
+      elapsedSec: preservedElapsed,
+    );
+  }
+
+  /// Socket closed by the server (incl. 1008 auth reject) (§8-6).
+  void _onWsDone() {
+    final phase = state.phase;
+    if (phase == CallPhase.connecting) {
+      // Closed before we ever went live → treat as auth/connection error.
+      state = state.copyWith(
+        phase: CallPhase.error,
+        errorMsg: _l10n.connectionFailedTitle,
+      );
+      unawaited(_teardown(keepError: true));
+      return;
+    }
+    // Expected close (hang-up / call_ended / teardown) already drives the exit.
+    if (_expectClose) return;
+    if (phase == CallPhase.inCall) {
+      // Unexpected mid-call drop with no `call_ended` (e.g. a ~1-min idle
+      // timeout on a proxy/LB). The old code did nothing here, stranding the
+      // user on a frozen, silent "live" call. Recover exactly like a hang-up so
+      // the wrap-up screen opens (and can recover the call id via the baseline).
+      _log('ws closed unexpectedly during inCall → recovering to wrap-up');
+      unawaited(hangUp());
+    }
+  }
+
+  /// Transport-level error (§8-6).
+  void _onWsError(Object error) {
+    // Expected close (hang-up / call_ended / teardown) — the exit is already
+    // being driven; a trailing error frame must not clobber it.
+    if (_expectClose) return;
+    // The call already completed (`call_ended` received, id captured) and is just
+    // draining its closing line — an error here should finish the call normally
+    // (opening the wrap-up screen), not discard a successful conversation.
+    if (state.phase == CallPhase.ending && state.callId != null) {
+      _log('ws error during closing drain → finishing normally');
+      unawaited(_finishClosing());
+      return;
+    }
+    state = state.copyWith(
+      phase: CallPhase.error,
+      errorMsg: _l10n.callNetworkError,
+    );
+    unawaited(_teardown(keepError: true));
+  }
+
+  /// Encodes and sends a control JSON frame if the socket is open.
+  void _send(Map<String, dynamic> msg) {
+    final ch = _channel;
+    if (ch == null) return;
+    try {
+      ch.sink.add(jsonEncode(msg));
+    } catch (_) {
+      // Socket already closing; ignore.
+    }
+  }
+
+  /// Signals that the learner revealed a hint (fire-and-forget, no ack). The
+  /// server downgrades that turn's evidence, so the UI must call this exactly
+  /// once per hint, on first reveal.
+  void sendHintUsed(String turnId) =>
+      _send({'type': 'hint_used', 'turn_id': turnId});
+
+  /// Toggles the subtitle (caption) display. UI preference only.
+  void setSubtitleOn(bool value) =>
+      state = state.copyWith(subtitleOn: value);
+
+  /// Toggles whether the hint card is shown. UI preference only.
+  void setHintOn(bool value) => state = state.copyWith(hintOn: value);
+
+  /// Starts the UI elapsed-time ticker.
+  void _startElapsedTimer() {
+    _elapsedTimer?.cancel();
+    _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      state = state.copyWith(elapsedSec: state.elapsedSec + 1);
+    });
+  }
+
+  /// Starts the application keepalive: a periodic `ping` so the socket always
+  /// has recent client→server traffic (the server replies `pong`, already
+  /// handled). Cancelled in [_teardown].
+  void _startKeepalive() {
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = Timer.periodic(_keepaliveInterval, (_) {
+      _send({'type': 'ping'});
+    });
+  }
+
+  /// Tears down all resources: recorder, player, socket, timers (§8-1/§8-2).
+  ///
+  /// When [keepError] is true the phase is left untouched (an error phase was
+  /// already set by the caller); otherwise it resets to [CallPhase.idle].
+  Future<void> _teardown({bool keepError = false}) async {
+    // End the CallKit call backing this session, first thing — every exit path
+    // funnels through here (hang-up, server `call_ended`, ws error, next call's
+    // teardown-before-connect), and the call is kept alive for the whole
+    // conversation on purpose. Miss this and the lock-screen call UI outlives the
+    // conversation, with its timer still counting.
+    //
+    // Safe on the [_connect] path too: _callUuid is still the PREVIOUS call's at
+    // that point (it is assigned after this teardown), so a stale call gets
+    // cleaned up rather than the new one.
+    final callUuid = _callUuid;
+    _callUuid = null; // cleared first: the ENDED event this triggers is a no-op
+    if (callUuid != null) {
+      try {
+        await FlutterCallkitIncoming.endCall(callUuid);
+      } catch (_) {
+        // Already gone (user pressed End on the lock screen) — nothing to do.
+      }
+    }
+
+    _elapsedTimer?.cancel();
+    _elapsedTimer = null;
+    _keepaliveTimer?.cancel();
+    _keepaliveTimer = null;
+    _envTimer?.cancel();
+    _envTimer = null;
+    _envQueue.clear();
+    _drainScheduled = false;
+    _closingStableTimer?.cancel();
+    _closingStableTimer = null;
+    _closingFallbackTimer?.cancel();
+    _closingFallbackTimer = null;
+    // Diagnostics are per-call: a stall left open here would otherwise be
+    // reported against the *next* call's anchor as an absurd gap.
+    _starveAtMs = null;
+    _lastChunkAtMs = null;
+    _logAnchorMs = null;
+    _audioTailUntilMs = 0;
+
+    // Reset the half-duplex mic gate + its timers so a new call starts ungated.
+    _micGateTimer?.cancel();
+    _micGateTimer = null;
+    _gateSafetyTimer?.cancel();
+    _gateSafetyTimer = null;
+    _beaverSpeaking = false;
+    avatarSpeaking.value = false;
+    avatarLevel.value = 0.0;
+    avatarEmotion.value = 0;
+    avatarShape.value = 0.0;
+    _turnEnded = false;
+    _micFramesSent = 0;
+    _micWatchdogTimer?.cancel();
+    _micWatchdogTimer = null;
+    _micFramesReceived = 0;
+    _micRestarted = false;
+
+    // Stop the mic first so no more bytes flow into a closing socket.
+    await _micSub?.cancel();
+    _micSub = null;
+    try {
+      await _recorder?.stopRecorder();
+    } catch (_) {}
+    try {
+      await _recorder?.closeRecorder();
+    } catch (_) {}
+    _recorder = null;
+    await _micController?.close();
+    _micController = null;
+
+    // Stop in-call audio routing: remove the native route-change observer and
+    // clear the speaker override so the session doesn't stay forced to the
+    // loudspeaker after the call. Pairs with 'routeToSpeaker' in [start].
+    //
+    // Guarded on [_audioRoutingStarted] for the same reason as the session
+    // deactivation below: the teardown that runs at the start of every call must
+    // not clear the preferred input of a call that is just coming up.
+    if (_audioRoutingStarted &&
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      _audioRoutingStarted = false;
+      try {
+        await _audioRouteChannel.invokeMethod<void>('stopCallAudioRouting');
+      } catch (_) {}
+    }
+
+    // Stop native PCM playback: disable the feed callback first so no feed runs
+    // against a released engine, then release and clear the queue.
+    _pcmActive = false;
+    _stopPushFeed();
+    _stopEventLoopProbe();
+    _stopInflateLog();
+    _prebufferFlushTimer?.cancel();
+    _prebufferFlushTimer = null;
+    _playing = false;
+    if (!kIsWeb && _pcmSetup) {
+      try {
+        FlutterPcmSound.setFeedCallback(null);
+      } catch (_) {}
+      // Wait out any feed callback that's mid-flight so release() doesn't race a
+      // feed against the engine — that race can leave a fast re-call silent.
+      for (var i = 0; i < 20 && _feeding; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 10));
+      }
+      try {
+        await FlutterPcmSound.release();
+      } catch (_) {}
+      // Let the singleton native engine fully tear down before a rapid re-call
+      // re-runs setup() (guards the re-init race → "재통화 시 voice 안 나옴").
+      await Future<void>.delayed(_releaseSettle);
+    }
+    _pcmSetup = false;
+    _feeding = false;
+    _pcmQueue = Uint8List(_pcmQueueInitialBytes);
+    _pcmHead = 0;
+    _pcmTail = 0;
+    _lastFeedSilent = null;
+
+    // Close the socket.
+    await _wsSub?.cancel();
+    _wsSub = null;
+    try {
+      await _channel?.sink.close();
+    } catch (_) {}
+    _channel = null;
+
+    // Hand the audio session back so other apps' audio un-ducks and the next
+    // call reconfigures from a clean slate. Best-effort (cleanup path).
+    //
+    // ONLY when we activated it. Never deactivate a session someone else owns:
+    // teardown-before-connect runs at the START of every call, and deducing
+    // ownership from [_callkitOwnedAudio] there read the PREVIOUS call's value —
+    // so answering a CallKit call deactivated the session the system had just
+    // activated for it. Socket alive, both audio directions dead. On the CallKit
+    // path the system deactivates its own session (didDeactivate) when the call
+    // ends, so there is nothing for us to do.
+    if (_weActivatedSession) {
+      _weActivatedSession = false;
+      try {
+        final session = await AudioSession.instance;
+        await session.setActive(
+          false,
+          avAudioSessionSetActiveOptions:
+              AVAudioSessionSetActiveOptions.notifyOthersOnDeactivation,
+        );
+      } catch (_) {}
+    }
+
+    if (!keepError) {
+      // Preserve callId/ended state set by callers; only reset a live phase.
+      if (state.phase != CallPhase.ended) {
+        state = const CallState();
+      }
+    }
+  }
+}
