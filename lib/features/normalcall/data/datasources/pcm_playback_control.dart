@@ -1,34 +1,27 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 
 /// 재생 엔진의 **즉시 폐기(flush)** 를 호출하는 얇은 어댑터.
 ///
-/// ## 왜 여기에 있나 (임시 경계)
+/// ## 왜 어댑터를 두나
 ///
 /// barge-in 은 "비버를 끊는" 동작이고, 그러려면 이미 큐에 든 오디오를 버려야 한다.
-/// 그런데 `flutter_pcm_sound` 의 메서드채널에는 지금
-/// `setLogLevel / setup / feed / setFeedThreshold / release / getStats` 뿐이고
-/// **flush/clear 가 없다**. 유일한 중단 수단인 `release()` 는 트랙을 죽이고
-/// 스레드까지 내리므로 barge-in 마다 쓰기엔 재기동 비용이 크다.
+/// 유일한 다른 중단 수단인 `release()` 는 트랙을 죽이고 스레드까지 내리므로,
+/// 턴마다 일어나는 barge-in 에 쓰기엔 재기동 비용이 크다.
+/// 그래서 플러그인에 `clear()` 를 신설했고([FlutterPcmSound.clear]), 이 클래스는
+/// 그 호출을 **실패해도 재생을 죽이지 않는 형태로** 감싼다.
 ///
-/// 플러그인(`packages/flutter_pcm_sound`) 의 네이티브·Dart API 는 **bt-front 소유**라
-/// 여기서 직접 추가할 수 없다. 그래서 정식 API 가 생길 때까지 **같은 메서드채널에
-/// `clear` 를 직접 invoke** 하는 어댑터를 앱 쪽에 둔다.
+/// 플러그인 API 가 없던 시절에는 여기서 메서드채널을 직접 두드렸다. 지금은 정식
+/// API 를 부르므로 채널 이름이 갈릴 위험이 없다.
 ///
-/// 플러그인에 `FlutterPcmSound.clear()` 가 생기면 [clear] 본문 한 줄만 그쪽으로
-/// 바꾸면 된다. 호출부는 손대지 않는다.
+/// ## 실패를 삼키되, 숨기지는 않는다
 ///
-/// ## 없는 메서드를 불러도 안전하다
-///
-/// 네이티브가 아직 `clear` 를 모르면 [MissingPluginException] 이 나는데, 그걸 여기서
-/// 삼키고 [ClearResult.unsupported] 를 돌려준다. 즉 **네이티브 작업이 끝나기 전에도
-/// 앱은 정상 동작**하고, 호출부는 "폐기가 실제로 됐는지"를 반환값으로 구분할 수 있다.
+/// 네이티브가 `clear` 를 모르거나(구버전 플러그인) 예외를 던지면
+/// [ClearResult.unsupported] 를 돌려준다. 앱은 계속 돌지만 호출부는 **폐기가 실제로
+/// 됐는지**를 반환값으로 구분할 수 있다 — 여기서 조용히 성공한 척하면
+/// "끊었는데 안 끊긴다"가 원인 불명의 증상으로만 남는다.
 class PcmPlaybackControl {
   const PcmPlaybackControl();
-
-  /// 플러그인이 이미 쓰고 있는 채널. 이름이 갈리면 서로 다른 엔진을 만지게 되므로
-  /// 반드시 플러그인과 같은 문자열이어야 한다.
-  static const MethodChannel _channel =
-      MethodChannel('flutter_pcm_sound/methods');
 
   /// 대기 큐 + 트랙 내부 버퍼를 비운다. 트랙 자체는 살려 둔다(재기동 비용 회피).
   ///
@@ -38,17 +31,8 @@ class PcmPlaybackControl {
   /// 를 null 로 둬서 **호출부가 폴백을 쓴다는 사실을 알 수 있게** 한다.
   static Future<ClearResult> clear() async {
     try {
-      final res = await _channel.invokeMethod<dynamic>('clear');
-      if (res is int) return ClearResult(ok: true, framesDiscarded: res);
-      if (res is Map) {
-        final v = res['frames_discarded'];
-        return ClearResult(
-          ok: true,
-          framesDiscarded: v is num ? v.toInt() : null,
-        );
-      }
-      // 구현은 됐는데 값을 안 주는 경우(void 반환) — 폐기는 믿고, 잔량은 모른다.
-      return const ClearResult(ok: true, framesDiscarded: null);
+      final frames = await FlutterPcmSound.clear();
+      return ClearResult(ok: true, framesDiscarded: frames);
     } on MissingPluginException {
       return ClearResult.unsupported;
     } on PlatformException {

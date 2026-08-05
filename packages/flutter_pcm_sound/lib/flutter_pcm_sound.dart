@@ -96,6 +96,40 @@ class FlutterPcmSound {
     return await _invokeMethod('release');
   }
 
+  /// (beavertalk patch) Drops everything queued for playback **without tearing the
+  /// engine down** — the barge-in path.
+  ///
+  /// [release] is the only other way to stop mid-utterance, but it kills the
+  /// AudioTrack and its thread, so reusing it costs a `setup()` plus a settle
+  /// delay. Barge-in happens every time the user interrupts, so that price can't
+  /// be paid. This keeps the track alive (silence keep-alive included, so
+  /// AudioFlinger never moves it to the idle list and charges ~130ms to
+  /// reactivate) and empties only the queue and the track buffer.
+  ///
+  /// Returns the number of **input frames** discarded — the caller's ground truth
+  /// for "how much of what we sent never reached the speaker". Measured *before*
+  /// the flush, and on Android it includes the AudioTrack's own buffer, not just
+  /// the pending queue: counting the queue alone drops up to 800ms on some
+  /// devices, which is the same class of error that caused the self-talk loop
+  /// (see [getStats]' notes and `remainingInputFrames` on the Android side).
+  ///
+  /// Returns null when the platform does not implement it, so the caller can tell
+  /// "nothing was queued" (0) apart from "I could not clear" (null) instead of
+  /// silently trusting a wrong number.
+  ///
+  /// ⚠ iOS reports the pending queue only. Its render callback pulls ~10-20ms at
+  /// a time, so there is no queryable "handed over but unplayed" pool the way
+  /// Android has one; the value runs a few ms low.
+  static Future<int?> clear() async {
+    final res = await _invokeMethod<dynamic>('clear');
+    if (res is int) return res;
+    if (res is Map) {
+      final v = res['frames_discarded'];
+      if (v is num) return v.toInt();
+    }
+    return null;
+  }
+
   /// (beavertalk patch) O(1) snapshot of the native playback backlog, for
   /// diagnosing stutter that worsens over a long call.
   ///
