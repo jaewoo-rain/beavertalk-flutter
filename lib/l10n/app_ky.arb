@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Сатып алуу ишке ашкан жок. Акча алынган жок — кайра аракет кылыңыз.",
   "priceChangedTitle": "Баа өзгөрдү",
   "priceChangedBody": "Бул товар эми {price} турат. Улантасызбы?",
-  "joinedLabel": "Катталган күнү"
+  "joinedLabel": "Катталган күнү",
+  "unlockedWithMax": "Max менен жеткиликтүү"
 }

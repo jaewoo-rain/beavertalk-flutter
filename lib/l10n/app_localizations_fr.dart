@@ -2042,4 +2042,7 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'L\'achat n\'a pas abouti. Rien n\'a été débité — veuillez réessayer.';
+
+  @override
+  String get unlockedWithMax => 'Disponible avec Max';
 }

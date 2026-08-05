@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "L'acquisto non è andato a buon fine. Non è stato addebitato nulla: riprova.",
   "priceChangedTitle": "Il prezzo è cambiato",
   "priceChangedBody": "Questo articolo ora costa {price}. Vuoi continuare?",
-  "joinedLabel": "Iscrizione"
+  "joinedLabel": "Iscrizione",
+  "unlockedWithMax": "Disponibile con Max"
 }

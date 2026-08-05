@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.",
   "priceChangedTitle": "Megváltozott az ár",
   "priceChangedBody": "Ez a tétel most {price}. Folytatod?",
-  "joinedLabel": "Csatlakozott"
+  "joinedLabel": "Csatlakozott",
+  "unlockedWithMax": "Elérhető a Maxszal"
 }

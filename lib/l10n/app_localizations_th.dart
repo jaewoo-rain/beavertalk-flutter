@@ -1995,4 +1995,7 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'การซื้อไม่สำเร็จ ไม่มีการเรียกเก็บเงิน โปรดลองอีกครั้ง';
+
+  @override
+  String get unlockedWithMax => 'ใช้ได้ด้วย Max';
 }

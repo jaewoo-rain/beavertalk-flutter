@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "কেনা সম্পন্ন হয়নি। কোনো টাকা কাটা হয়নি — আবার চেষ্টা করুন।",
   "priceChangedTitle": "দাম বদলে গেছে",
   "priceChangedBody": "এই আইটেমের দাম এখন {price}। চালিয়ে যেতে চান?",
-  "joinedLabel": "যোগদানের তারিখ"
+  "joinedLabel": "যোগদানের তারিখ",
+  "unlockedWithMax": "Max দিয়ে ব্যবহারযোগ্য"
 }

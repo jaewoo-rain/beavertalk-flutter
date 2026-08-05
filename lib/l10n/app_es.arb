@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "La compra no se completó. No se cobró nada; inténtalo de nuevo.",
   "priceChangedTitle": "El precio cambió",
   "priceChangedBody": "Este artículo ahora cuesta {price}. ¿Quieres continuar?",
-  "joinedLabel": "Fecha de registro"
+  "joinedLabel": "Fecha de registro",
+  "unlockedWithMax": "Disponible con Max"
 }

@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "खरीदारी पूरी नहीं हुई। कोई राशि नहीं कटी — कृपया फिर से कोशिश करें।",
   "priceChangedTitle": "कीमत बदल गई",
   "priceChangedBody": "इस आइटम की कीमत अब {price} है। क्या जारी रखें?",
-  "joinedLabel": "शामिल हुए"
+  "joinedLabel": "शामिल हुए",
+  "unlockedWithMax": "Max के साथ उपलब्ध"
 }

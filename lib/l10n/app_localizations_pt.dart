@@ -2023,4 +2023,7 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'A compra não foi concluída. Nada foi cobrado — tente novamente.';
+
+  @override
+  String get unlockedWithMax => 'Disponível com Max';
 }

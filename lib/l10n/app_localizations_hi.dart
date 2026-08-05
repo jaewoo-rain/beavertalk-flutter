@@ -1999,4 +1999,7 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'खरीदारी पूरी नहीं हुई। कोई राशि नहीं कटी — कृपया फिर से कोशिश करें।';
+
+  @override
+  String get unlockedWithMax => 'Max के साथ उपलब्ध';
 }

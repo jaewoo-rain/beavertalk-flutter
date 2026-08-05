@@ -25,6 +25,12 @@ import '../../theme/app_typography.dart';
 ///   price row; bottom = single Use This (primary).
 /// - [ownedUsed] — `state=owned-used`: owned and in use. No price row; bottom =
 ///   single 닫기 (secondary).
+///
+/// 여기에 **구독 축 2값**이 더 붙는다([subscriptionUnused] / [subscriptionUsed]).
+/// Figma 에는 없는 상태다 — 서버가 소유(`is_owned`)와 접근(`is_unlocked`)을 분리하면서
+/// 생겼다. Max 회원의 미구매 캐릭터는 **쓸 수는 있지만 산 것이 아니므로**, 기존 네 값
+/// 중 어느 것으로도 그릴 수 없다: `owned*` 로 그리면 "Owned" 배지가 떠서 샀다고
+/// 오해시킨 뒤 해지 때 뺏는 꼴이 되고, `unowned*` 로 그리면 잠긴 채로 남는다.
 enum AvatarDetailState {
   /// Not owned, full price; price row + two-button footer (close + buy).
   unownedNormal,
@@ -37,6 +43,20 @@ enum AvatarDetailState {
 
   /// Owned and active; single 닫기 (secondary) footer.
   ownedUsed,
+
+  /// 구독(Max)으로 열렸고 대표 캐릭터가 아님 — 배지는 "Max 이용 중", 가격 행 유지,
+  /// 푸터 = 구매하기(outline) + 사용하기(primary).
+  ///
+  /// 구매 버튼이 남는 게 요점이다: Max 회원도 해지 후를 대비해 영구 구매를 할 수 있어야
+  /// 하고, 서버가 그 흐름을 막지 않는다.
+  subscriptionUnused,
+
+  /// 구독(Max)으로 열렸고 지금 쓰는 중 — 푸터 = 닫기(outline) + 구매하기(primary).
+  ///
+  /// 소유 축에 `ownedUsed` 가 있는 것과 같은 이유로 필요하다. 구독으로 열린 캐릭터도
+  /// **대표 캐릭터가 될 수 있다** — 서버가 `PATCH /members/me {character_id}` 에
+  /// 소유 검증을 걸지 않고, 통화도 `MemberCharacter` 행 없이 구독만으로 허용한다.
+  subscriptionUsed,
 }
 
 /// AvatarDetailScreen — full-page avatar detail, measured 1:1 from Figma
@@ -79,6 +99,7 @@ class AvatarDetailScreen extends StatelessWidget {
     this.discountPrice,
     this.discountPercent,
     this.onConfirm,
+    this.onPurchase,
     this.onClose,
     this.onPlaySample,
     this.onShare,
@@ -124,8 +145,12 @@ class AvatarDetailScreen extends StatelessWidget {
   /// When null the marker is omitted rather than guessing a rate.
   final int? discountPercent;
 
-  /// Primary action: 구매하기 (unowned) or Use This (owned-unused).
+  /// Primary action: 구매하기 (unowned) or Use This (owned-unused / subscription).
   final VoidCallback? onConfirm;
+
+  /// 구매하기 — **구독 상태 전용**. 그 두 상태는 "사용하기"와 "구매하기"를 동시에
+  /// 제공해야 해서 액션이 둘이다(다른 상태는 [onConfirm] 하나로 충분하다).
+  final VoidCallback? onPurchase;
 
   /// Back / 닫기 action — the GNB arrow and the secondary footer button.
   final VoidCallback? onClose;
@@ -142,11 +167,24 @@ class AvatarDetailScreen extends StatelessWidget {
   /// Gap between content-column items (Figma 10).
   static const double _gap = 10;
 
-  bool get _isDiscount => state == AvatarDetailState.unownedDiscount;
+  /// 할인 레이아웃(정가 취소선 + 할인가)을 쓸 상태인가.
+  ///
+  /// 소유 축은 값 하나로 할인을 구분하지만(`unownedDiscount`), 구독 축까지 그렇게 하면
+  /// 값이 두 배가 된다. 구독 상태는 **할인가가 실제로 넘어왔는지**로 판단한다 — 화면에
+  /// 그릴 재료가 있느냐가 기준이라 결과는 같고 enum 은 안 늘어난다.
+  bool get _isDiscount =>
+      state == AvatarDetailState.unownedDiscount ||
+      (_isSubscription && discountPrice != null);
 
   bool get _isOwned =>
       state == AvatarDetailState.ownedUnused ||
       state == AvatarDetailState.ownedUsed;
+
+  /// 구독으로 열린 상태 — 소유가 **아니다.** "Owned" 배지가 뜨면 안 되고 가격 행과
+  /// 구매 버튼은 남아야 한다.
+  bool get _isSubscription =>
+      state == AvatarDetailState.subscriptionUnused ||
+      state == AvatarDetailState.subscriptionUsed;
 
   @override
   Widget build(BuildContext context) {
@@ -299,26 +337,44 @@ class AvatarDetailScreen extends StatelessWidget {
     );
   }
 
-  /// Status chip — "Available to purchase" (neutral) vs "Owned" (light-blue).
+  /// Status chip — "Available to purchase" (neutral) / "Owned" (light-blue) /
+  /// "Included with Max" (violet).
+  ///
+  /// ⛔ 구독으로 열린 캐릭터에 **"Owned" 를 쓰면 안 된다.** 산 게 아니라 구독이 열어준
+  /// 것이라 해지하면 닫힌다 — 소유 배지를 띄우면 샀다고 오해시킨 뒤 뺏는 꼴이 된다.
+  /// 그래서 색까지 소유(light blue)와 갈라 놓았다. 한눈에 다른 상태로 읽혀야 한다.
   Widget _statusBadge(BuildContext context, AppLocalizations l10n) {
     final owned = _isOwned;
-    final fg =
-        owned ? context.c.accentForegroundLightBlue : context.c.labelNormal;
+    final subscription = _isSubscription;
+    final tinted = owned || subscription;
+    final fg = owned
+        ? context.c.accentForegroundLightBlue
+        : subscription
+            ? context.c.accentForegroundViolet
+            : context.c.labelNormal;
     final bg = owned
         ? context.c.accentBackgroundLightBlue10
-        : context.c.backgroundNormalAlternative;
+        : subscription
+            // 소유 칩과 같은 10% 틴트 구조, 색만 다르다. Violet 계열에는 10% 토큰이
+            // 없어 같은 값을 알파로 낮춰 쓴다.
+            ? context.c.accentBackgroundViolet.withValues(alpha: 0.1)
+            : context.c.backgroundNormalAlternative;
     return Container(
       padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.s8, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
-        border: owned
+        border: tinted
             ? null
             : Border.all(color: context.c.backgroundNormalAlternative),
       ),
       child: Text(
-        owned ? l10n.owned : l10n.availableForPurchase,
+        owned
+            ? l10n.owned
+            : subscription
+                ? l10n.unlockedWithMax
+                : l10n.availableForPurchase,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppType.caption1.sb.copyWith(color: fg),
@@ -427,26 +483,12 @@ class AvatarDetailScreen extends StatelessWidget {
     switch (state) {
       case AvatarDetailState.unownedNormal:
       case AvatarDetailState.unownedDiscount:
-        return Row(
-          children: [
-            Expanded(
-              child: Button(
-                type: BtnType.secondaryOutline,
-                size: BtnSize.s60,
-                text: l10n.close,
-                onPressed: onClose,
-              ),
-            ),
-            const SizedBox(width: _gap),
-            Expanded(
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.buy,
-                onPressed: onConfirm,
-              ),
-            ),
-          ],
+        return _twoButtons(
+          leadingType: BtnType.secondaryOutline,
+          leadingText: l10n.close,
+          onLeading: onClose,
+          trailingText: l10n.buy,
+          onTrailing: onConfirm,
         );
       case AvatarDetailState.ownedUnused:
         return Button(
@@ -462,7 +504,58 @@ class AvatarDetailScreen extends StatelessWidget {
           text: l10n.close,
           onPressed: onClose,
         );
+      // 구독 축은 둘 다 **두 버튼**이다. 하나로 줄이면 둘 중 하나가 사라지는데, 어느
+      // 쪽을 없애도 손해다: 사용하기가 없으면 애초의 버그(선택 불가)로 돌아가고,
+      // 구매하기가 없으면 해지 후에도 남길 방법이 화면에서 사라진다.
+      case AvatarDetailState.subscriptionUnused:
+        return _twoButtons(
+          leadingType: BtnType.secondaryOutline,
+          leadingText: l10n.buy,
+          onLeading: onPurchase,
+          trailingText: l10n.useThisAvatar,
+          onTrailing: onConfirm,
+        );
+      case AvatarDetailState.subscriptionUsed:
+        // 이미 쓰는 중이라 "사용하기"는 할 일이 없다 — 남는 건 영구 구매뿐이다.
+        return _twoButtons(
+          leadingType: BtnType.secondaryOutline,
+          leadingText: l10n.close,
+          onLeading: onClose,
+          trailingText: l10n.buy,
+          onTrailing: onPurchase,
+        );
     }
+  }
+
+  /// 좌(보조) + 우(주) 2버튼 푸터 — `unowned*` 가 쓰는 것과 같은 배치.
+  Widget _twoButtons({
+    required BtnType leadingType,
+    required String leadingText,
+    required VoidCallback? onLeading,
+    required String trailingText,
+    required VoidCallback? onTrailing,
+  }) {
+    return Row(
+      children: [
+        Expanded(
+          child: Button(
+            type: leadingType,
+            size: BtnSize.s60,
+            text: leadingText,
+            onPressed: onLeading,
+          ),
+        ),
+        const SizedBox(width: _gap),
+        Expanded(
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: trailingText,
+            onPressed: onTrailing,
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -484,6 +577,10 @@ class _AvatarDetailDemoState extends State<AvatarDetailDemo> {
     ('unowned-discount', AvatarDetailState.unownedDiscount),
     ('owned-unused', AvatarDetailState.ownedUnused),
     ('owned-used', AvatarDetailState.ownedUsed),
+    // 구독 축 — Figma 에는 없다. 서버가 소유와 접근을 나누면서 생긴 상태라,
+    // 실물을 눈으로 확인할 곳이 갤러리밖에 없다.
+    ('subscription-unused', AvatarDetailState.subscriptionUnused),
+    ('subscription-used', AvatarDetailState.subscriptionUsed),
   ];
 
   int _index = 0;
@@ -539,6 +636,7 @@ class _AvatarDetailDemoState extends State<AvatarDetailDemo> {
             discountPercent:
                 state == AvatarDetailState.unownedDiscount ? 50 : null,
             onConfirm: () {},
+            onPurchase: () {},
             onClose: () {},
             onPlaySample: () {},
             onShare: () {},

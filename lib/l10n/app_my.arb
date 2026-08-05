@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "ဝယ်ယူမှု မအောင်မြင်ပါ။ ငွေမဖြတ်ပါ — ထပ်စမ်းကြည့်ပါ။",
   "priceChangedTitle": "ဈေးနှုန်းပြောင်းသွားသည်",
   "priceChangedBody": "ဤပစ္စည်းသည် ယခု {price} ဖြစ်သည်။ ဆက်လုပ်မလား။",
-  "joinedLabel": "စတင်ဝင်ရောက်သည့်ရက်"
+  "joinedLabel": "စတင်ဝင်ရောက်သည့်ရက်",
+  "unlockedWithMax": "Max ဖြင့် ရနိုင်သည်"
 }

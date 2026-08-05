@@ -2009,4 +2009,7 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Сатып алуу ишке ашкан жок. Акча алынган жок — кайра аракет кылыңыз.';
+
+  @override
+  String get unlockedWithMax => 'Max менен жеткиликтүү';
 }

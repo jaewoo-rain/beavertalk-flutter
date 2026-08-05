@@ -2011,4 +2011,7 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Pembelian tidak berhasil. Tidak ada tagihan — silakan coba lagi.';
+
+  @override
+  String get unlockedWithMax => 'Tersedia dengan Max';
 }

@@ -2006,4 +2006,7 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Худалдан авалт амжилтгүй боллоо. Төлбөр гараагүй — дахин оролдоно уу.';
+
+  @override
+  String get unlockedWithMax => 'Max-аар ашиглах боломжтой';
 }

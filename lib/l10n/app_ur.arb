@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "خریداری مکمل نہیں ہوئی۔ کوئی رقم نہیں کٹی — دوبارہ کوشش کریں۔",
   "priceChangedTitle": "قیمت تبدیل ہو گئی",
   "priceChangedBody": "اس آئٹم کی قیمت اب {price} ہے۔ کیا جاری رکھیں؟",
-  "joinedLabel": "شمولیت کی تاریخ"
+  "joinedLabel": "شمولیت کی تاریخ",
+  "unlockedWithMax": "Max کے ساتھ دستیاب"
 }

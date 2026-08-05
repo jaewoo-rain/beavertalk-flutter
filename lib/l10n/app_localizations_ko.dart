@@ -1942,4 +1942,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get iapCharacterFailedBody => '구매가 완료되지 않았어요. 결제된 금액은 없으니 다시 시도해 주세요.';
+
+  @override
+  String get unlockedWithMax => 'Max로 이용 가능';
 }

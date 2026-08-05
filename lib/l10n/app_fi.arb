@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Ostos ei onnistunut. Mitään ei veloitettu — yritä uudelleen.",
   "priceChangedTitle": "Hinta muuttui",
   "priceChangedBody": "Tämä tuote maksaa nyt {price}. Haluatko jatkaa?",
-  "joinedLabel": "Liittynyt"
+  "joinedLabel": "Liittynyt",
+  "unlockedWithMax": "Käytettävissä Maxilla"
 }

@@ -1996,4 +1996,7 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'खरिद पूरा भएन। कुनै रकम काटिएको छैन — फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get unlockedWithMax => 'Max सँग उपलब्ध';
 }

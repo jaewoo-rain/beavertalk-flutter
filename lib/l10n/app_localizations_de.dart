@@ -2029,4 +2029,7 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Der Kauf wurde nicht abgeschlossen. Es wurde nichts abgebucht — bitte versuche es erneut.';
+
+  @override
+  String get unlockedWithMax => 'Mit Max verfügbar';
 }

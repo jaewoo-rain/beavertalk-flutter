@@ -2004,4 +2004,7 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'خریداری مکمل نہیں ہوئی۔ کوئی رقم نہیں کٹی — دوبارہ کوشش کریں۔';
+
+  @override
+  String get unlockedWithMax => 'Max کے ساتھ دستیاب';
 }

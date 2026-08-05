@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Pembelian tidak selesai. Tiada caj dikenakan — sila cuba lagi.",
   "priceChangedTitle": "Harga berubah",
   "priceChangedBody": "Item ini kini {price}. Teruskan?",
-  "joinedLabel": "Menyertai"
+  "joinedLabel": "Menyertai",
+  "unlockedWithMax": "Tersedia dengan Max"
 }

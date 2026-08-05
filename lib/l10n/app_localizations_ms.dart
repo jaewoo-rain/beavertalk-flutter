@@ -2023,4 +2023,7 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Pembelian tidak selesai. Tiada caj dikenakan — sila cuba lagi.';
+
+  @override
+  String get unlockedWithMax => 'Tersedia dengan Max';
 }

@@ -2027,4 +2027,7 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'L\'acquisto non è andato a buon fine. Non è stato addebitato nulla: riprova.';
+
+  @override
+  String get unlockedWithMax => 'Disponibile con Max';
 }

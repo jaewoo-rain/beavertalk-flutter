@@ -2000,4 +2000,7 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'මිලදී ගැනීම සම්පූර්ණ නොවීය. මුදල් අය නොවුණි — නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get unlockedWithMax => 'Max සමඟ ලබා ගත හැක';
 }

@@ -1998,4 +1998,7 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'কেনা সম্পন্ন হয়নি। কোনো টাকা কাটা হয়নি — আবার চেষ্টা করুন।';
+
+  @override
+  String get unlockedWithMax => 'Max দিয়ে ব্যবহারযোগ্য';
 }

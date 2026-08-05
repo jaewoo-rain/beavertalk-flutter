@@ -2020,4 +2020,7 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.';
+
+  @override
+  String get unlockedWithMax => 'Elérhető a Maxszal';
 }

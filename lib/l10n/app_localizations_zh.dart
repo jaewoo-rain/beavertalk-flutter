@@ -1933,4 +1933,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get iapCharacterFailedBody => '购买未完成。没有产生任何扣款,请重试。';
+
+  @override
+  String get unlockedWithMax => 'Max 可用';
 }

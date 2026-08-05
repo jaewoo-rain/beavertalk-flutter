@@ -2017,4 +2017,7 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Hindi natuloy ang pagbili. Walang na-charge — pakisubukan ulit.';
+
+  @override
+  String get unlockedWithMax => 'Available sa Max';
 }

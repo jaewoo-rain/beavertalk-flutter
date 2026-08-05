@@ -1995,4 +1995,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'لم تكتمل عملية الشراء. لم يتم خصم أي مبلغ — يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get unlockedWithMax => 'متاح مع Max';
 }

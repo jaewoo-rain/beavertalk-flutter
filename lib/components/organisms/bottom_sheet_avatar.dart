@@ -34,6 +34,13 @@ enum BottomSheetAvatarState {
 
   /// Owned and active; single 닫기 (secondary) footer.
   ownedUsed,
+
+  /// 구독(Max)으로 열림 — 쓸 수는 있지만 **산 것은 아니다.** 배지는 "Owned" 가 아니라
+  /// "Max 이용 중", 가격 행과 구매 버튼은 남는다. 푸터 = 구매하기 + 사용하기.
+  ///
+  /// Figma 에는 없는 상태다. 서버가 소유(`is_owned`)와 접근(`is_unlocked`)을 분리하면서
+  /// 생겼다 — 자세한 배경은 [AvatarDetailState.subscriptionUnused] 참고.
+  unlockedBySubscription,
 }
 
 /// BottomSheetAvatar — avatar purchase / selection sheet, measured 1:1 from
@@ -85,6 +92,7 @@ class BottomSheetAvatar extends StatelessWidget {
     this.discountPrice,
     this.discountPercent,
     this.onConfirm,
+    this.onPurchase,
     this.onClose,
     this.onPlaySample,
   });
@@ -127,8 +135,12 @@ class BottomSheetAvatar extends StatelessWidget {
   /// When null the badge is omitted rather than guessing a rate.
   final int? discountPercent;
 
-  /// Primary action: 구매하기 (unowned) or 변경하기 (owned-unused).
+  /// Primary action: 구매하기 (unowned) / 변경하기 (owned-unused, subscription).
   final VoidCallback? onConfirm;
+
+  /// 구매하기 — [BottomSheetAvatarState.unlockedBySubscription] 전용. 그 상태만
+  /// "사용하기"와 "구매하기"를 동시에 제공해야 해서 액션이 둘이다.
+  final VoidCallback? onPurchase;
 
   /// Close / dismiss action: the header ✕, the 닫기 button and the scrim.
   final VoidCallback? onClose;
@@ -148,6 +160,10 @@ class BottomSheetAvatar extends StatelessWidget {
   bool get _isOwned =>
       state == BottomSheetAvatarState.ownedUnused ||
       state == BottomSheetAvatarState.ownedUsed;
+
+  /// 구독으로 열린 상태 — 소유가 **아니다**([_isOwned] 와 배타적).
+  bool get _isSubscription =>
+      state == BottomSheetAvatarState.unlockedBySubscription;
 
   @override
   Widget build(BuildContext context) {
@@ -308,25 +324,38 @@ class BottomSheetAvatar extends StatelessWidget {
     );
   }
 
-  /// Status chip — "Available" (neutral) for unowned, "Owned" (light-blue) for owned.
+  /// Status chip — "Available" (neutral) for unowned, "Owned" (light-blue) for
+  /// owned, "Included with Max" (violet) for subscription-unlocked.
   Widget _statusBadge(BuildContext context, AppLocalizations l10n) {
     final owned = _isOwned;
-    final fg = owned ? _ownedBadgeColor : context.c.labelNormal;
-    final bg = owned
-        ? _ownedBadgeColor.withValues(alpha: 0.1)
-        : context.c.backgroundNormalAlternative;
+    final subscription = _isSubscription;
+    final accent = owned
+        ? _ownedBadgeColor
+        : subscription
+            // ⛔ 소유와 다른 색이어야 한다 — 같은 색이면 "샀다"로 읽힌다.
+            ? context.c.accentForegroundViolet
+            : null;
+    final fg = accent ?? context.c.labelNormal;
+    final bg = accent?.withValues(alpha: 0.1) ??
+        context.c.backgroundNormalAlternative;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: BorderRadius.circular(6),
-        border: owned ? null : Border.all(color: context.c.backgroundNormalAlternative),
+        border: accent != null
+            ? null
+            : Border.all(color: context.c.backgroundNormalAlternative),
       ),
       child: Text(
         // Figma v2 `3360:20576`: the unowned chip reads "구매 가능", the same
         // wording as the catalog section — not "이용 가능" (`l10n.available`),
         // which claims the character is usable when it has not been bought.
-        owned ? l10n.owned : l10n.availableForPurchase,
+        owned
+            ? l10n.owned
+            : subscription
+                ? l10n.unlockedWithMax
+                : l10n.availableForPurchase,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: AppType.caption1.sb.copyWith(color: fg),
@@ -457,6 +486,30 @@ class BottomSheetAvatar extends StatelessWidget {
           text: l10n.close,
           onPressed: onClose,
         );
+      // 사용하기와 구매하기가 **둘 다** 필요하다: 사용하기가 없으면 원래 버그(선택
+      // 불가)로 돌아가고, 구매하기가 없으면 해지 후에도 남길 방법이 사라진다.
+      case BottomSheetAvatarState.unlockedBySubscription:
+        return Row(
+          children: [
+            Expanded(
+              child: Button(
+                type: BtnType.secondaryOutline,
+                size: BtnSize.s60,
+                text: l10n.buy,
+                onPressed: onPurchase,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: l10n.useThisAvatar,
+                onPressed: onConfirm,
+              ),
+            ),
+          ],
+        );
     }
   }
 
@@ -484,6 +537,8 @@ class BottomSheetAvatarDemo extends StatelessWidget {
     ('unowned-discount', BottomSheetAvatarState.unownedDiscount),
     ('owned-unused', BottomSheetAvatarState.ownedUnused),
     ('owned-used', BottomSheetAvatarState.ownedUsed),
+    ('unlocked-by-subscription',
+        BottomSheetAvatarState.unlockedBySubscription),
   ];
 
   @override
@@ -530,6 +585,7 @@ class BottomSheetAvatarDemo extends StatelessWidget {
                                 ? '5\$'
                                 : null,
                         onConfirm: () {},
+                        onPurchase: () {},
                         onClose: () {},
                         onPlaySample: () {},
                       ),

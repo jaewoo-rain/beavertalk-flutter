@@ -1938,4 +1938,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get iapCharacterFailedBody => '購入が完了しませんでした。請求は発生していません。もう一度お試しください。';
+
+  @override
+  String get unlockedWithMax => 'Max で利用可能';
 }

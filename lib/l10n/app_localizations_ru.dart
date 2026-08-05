@@ -2011,4 +2011,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Покупка не прошла. Деньги не списаны — попробуйте ещё раз.';
+
+  @override
+  String get unlockedWithMax => 'Доступно с Max';
 }

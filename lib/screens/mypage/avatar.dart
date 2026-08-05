@@ -364,10 +364,29 @@ class AvatarScreen extends ConsumerWidget {
               AvatarDetailState.unownedDiscount =>
                 () => _purchase(
                     routeCtx, ref, characterId, productKey, effectivePriceMinor),
-              AvatarDetailState.ownedUnused => () =>
-                  _useCharacter(routeCtx, ref, characterId),
+              // 구독으로 열린 캐릭터도 **대표로 지정할 수 있다** — 서버가
+              // `PATCH /members/me {character_id}` 에 소유 검증을 걸지 않고, 통화도
+              // `MemberCharacter` 행 없이 구독만으로 허용한다
+              // (`normalcall_service.py:155-160`). 여기서 소유만 통과시키면 원래
+              // 버그(Max 인데 선택 불가)가 그대로 남는다.
+              AvatarDetailState.ownedUnused ||
+              AvatarDetailState.subscriptionUnused =>
+                () => _useCharacter(routeCtx, ref, characterId),
               // Already in use — the screen shows a single 닫기 footer.
               AvatarDetailState.ownedUsed => () => Navigator.pop(routeCtx),
+              // 이미 쓰는 중이라 확인할 게 없다. 이 상태의 액션은 onPurchase 쪽이다.
+              AvatarDetailState.subscriptionUsed => () =>
+                  Navigator.pop(routeCtx),
+            },
+            // 구독 상태에서만 구매 버튼이 따로 있다. 나머지 상태는 구매가
+            // onConfirm 이거나(unowned) 아예 없어서(owned) null 로 둔다 — 기존
+            // 상태들의 동작은 그대로다.
+            onPurchase: switch (state) {
+              AvatarDetailState.subscriptionUnused ||
+              AvatarDetailState.subscriptionUsed =>
+                () => _purchase(
+                    routeCtx, ref, characterId, productKey, effectivePriceMinor),
+              _ => null,
             },
             onClose: () => Navigator.pop(routeCtx),
           ),
@@ -609,6 +628,7 @@ class _AvatarDetailRoute extends StatefulWidget {
     required this.discountPrice,
     required this.discountPercent,
     required this.onConfirm,
+    required this.onPurchase,
     required this.onClose,
   });
 
@@ -623,6 +643,9 @@ class _AvatarDetailRoute extends StatefulWidget {
   final String? discountPrice;
   final int? discountPercent;
   final VoidCallback onConfirm;
+
+  /// 구독 상태 전용 구매 액션. 다른 상태에서는 null(구매는 [onConfirm] 이거나 없다).
+  final VoidCallback? onPurchase;
   final VoidCallback onClose;
 
   @override
@@ -671,6 +694,7 @@ class _AvatarDetailRouteState extends State<_AvatarDetailRoute> {
       discountPrice: widget.discountPrice,
       discountPercent: widget.discountPercent,
       onConfirm: widget.onConfirm,
+      onPurchase: widget.onPurchase,
       onClose: widget.onClose,
       onPlaySample: _playable ? _playSample : null,
     );

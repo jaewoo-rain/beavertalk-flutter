@@ -2008,4 +2008,7 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Ostos ei onnistunut. Mitään ei veloitettu — yritä uudelleen.';
+
+  @override
+  String get unlockedWithMax => 'Käytettävissä Maxilla';
 }

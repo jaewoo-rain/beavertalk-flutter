@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Pembelian tidak berhasil. Tidak ada tagihan — silakan coba lagi.",
   "priceChangedTitle": "Harga berubah",
   "priceChangedBody": "Item ini sekarang {price}. Lanjutkan?",
-  "joinedLabel": "Bergabung"
+  "joinedLabel": "Bergabung",
+  "unlockedWithMax": "Tersedia dengan Max"
 }

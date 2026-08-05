@@ -2005,4 +2005,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'The purchase didn\'t go through. Nothing was charged - please try again.';
+
+  @override
+  String get unlockedWithMax => 'Available with Max';
 }

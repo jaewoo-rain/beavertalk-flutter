@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Giao dịch chưa hoàn tất. Chưa bị trừ tiền — vui lòng thử lại.",
   "priceChangedTitle": "Giá đã thay đổi",
   "priceChangedBody": "Mặt hàng này hiện là {price}. Bạn có muốn tiếp tục?",
-  "joinedLabel": "Ngày tham gia"
+  "joinedLabel": "Ngày tham gia",
+  "unlockedWithMax": "Có sẵn với Max"
 }

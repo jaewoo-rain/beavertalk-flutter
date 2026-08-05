@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "لم تكتمل عملية الشراء. لم يتم خصم أي مبلغ — يرجى المحاولة مرة أخرى.",
   "priceChangedTitle": "تغيّر السعر",
   "priceChangedBody": "أصبح سعر هذا العنصر {price}. هل تريد المتابعة؟",
-  "joinedLabel": "تاريخ الانضمام"
+  "joinedLabel": "تاريخ الانضمام",
+  "unlockedWithMax": "متاح مع Max"
 }

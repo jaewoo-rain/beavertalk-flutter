@@ -2008,4 +2008,7 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'ការទិញមិនបានសម្រេចទេ។ មិនមានការគិតប្រាក់ទេ — សូមព្យាយាមម្ដងទៀត។';
+
+  @override
+  String get unlockedWithMax => 'អាចប្រើបានជាមួយ Max';
 }

@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.",
   "priceChangedTitle": "Narx oʻzgardi",
   "priceChangedBody": "Bu mahsulot endi {price}. Davom etasizmi?",
-  "joinedLabel": "Roʻyxatdan oʻtgan sana"
+  "joinedLabel": "Roʻyxatdan oʻtgan sana",
+  "unlockedWithMax": "Max bilan mavjud"
 }

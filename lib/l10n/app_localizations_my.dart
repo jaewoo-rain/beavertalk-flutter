@@ -2017,4 +2017,7 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'ဝယ်ယူမှု မအောင်မြင်ပါ။ ငွေမဖြတ်ပါ — ထပ်စမ်းကြည့်ပါ။';
+
+  @override
+  String get unlockedWithMax => 'Max ဖြင့် ရနိုင်သည်';
 }

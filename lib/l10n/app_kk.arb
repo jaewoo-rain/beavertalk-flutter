@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.",
   "priceChangedTitle": "Баға өзгерді",
   "priceChangedBody": "Бұл тауар енді {price} тұрады. Жалғастырасыз ба?",
-  "joinedLabel": "Тіркелген күні"
+  "joinedLabel": "Тіркелген күні",
+  "unlockedWithMax": "Max-пен қолжетімді"
 }

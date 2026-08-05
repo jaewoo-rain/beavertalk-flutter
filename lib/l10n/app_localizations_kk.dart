@@ -2004,4 +2004,7 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.';
+
+  @override
+  String get unlockedWithMax => 'Max-пен қолжетімді';
 }

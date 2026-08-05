@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Худалдан авалт амжилтгүй боллоо. Төлбөр гараагүй — дахин оролдоно уу.",
   "priceChangedTitle": "Үнэ өөрчлөгдлөө",
   "priceChangedBody": "Энэ бараа одоо {price} болсон. Үргэлжлүүлэх үү?",
-  "joinedLabel": "Бүртгүүлсэн"
+  "joinedLabel": "Бүртгүүлсэн",
+  "unlockedWithMax": "Max-аар ашиглах боломжтой"
 }

@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Der Kauf wurde nicht abgeschlossen. Es wurde nichts abgebucht — bitte versuche es erneut.",
   "priceChangedTitle": "Preis geändert",
   "priceChangedBody": "Dieser Artikel kostet jetzt {price}. Möchtest du fortfahren?",
-  "joinedLabel": "Beigetreten"
+  "joinedLabel": "Beigetreten",
+  "unlockedWithMax": "Mit Max verfügbar"
 }

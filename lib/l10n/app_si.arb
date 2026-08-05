@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "මිලදී ගැනීම සම්පූර්ණ නොවීය. මුදල් අය නොවුණි — නැවත උත්සාහ කරන්න.",
   "priceChangedTitle": "මිල වෙනස් වුණා",
   "priceChangedBody": "මෙම අයිතමය දැන් {price} යි. දිගටම යන්නද?",
-  "joinedLabel": "එක් වූ දිනය"
+  "joinedLabel": "එක් වූ දිනය",
+  "unlockedWithMax": "Max සමඟ ලබා ගත හැක"
 }

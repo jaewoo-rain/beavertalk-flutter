@@ -2007,4 +2007,7 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Giao dịch chưa hoàn tất. Chưa bị trừ tiền — vui lòng thử lại.';
+
+  @override
+  String get unlockedWithMax => 'Có sẵn với Max';
 }

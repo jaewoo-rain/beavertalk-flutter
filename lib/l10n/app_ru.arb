@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Покупка не прошла. Деньги не списаны — попробуйте ещё раз.",
   "priceChangedTitle": "Цена изменилась",
   "priceChangedBody": "Теперь этот товар стоит {price}. Продолжить?",
-  "joinedLabel": "Дата регистрации"
+  "joinedLabel": "Дата регистрации",
+  "unlockedWithMax": "Доступно с Max"
 }

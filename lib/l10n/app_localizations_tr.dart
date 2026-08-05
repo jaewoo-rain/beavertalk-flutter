@@ -2005,4 +2005,7 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Satın alma tamamlanamadı. Ücret alınmadı — lütfen tekrar dene.';
+
+  @override
+  String get unlockedWithMax => 'Max ile kullanılabilir';
 }

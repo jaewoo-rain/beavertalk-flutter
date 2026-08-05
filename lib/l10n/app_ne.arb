@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "खरिद पूरा भएन। कुनै रकम काटिएको छैन — फेरि प्रयास गर्नुहोस्।",
   "priceChangedTitle": "मूल्य परिवर्तन भयो",
   "priceChangedBody": "यो वस्तुको मूल्य अब {price} छ। जारी राख्ने?",
-  "joinedLabel": "सामेल भएको मिति"
+  "joinedLabel": "सामेल भएको मिति",
+  "unlockedWithMax": "Max सँग उपलब्ध"
 }

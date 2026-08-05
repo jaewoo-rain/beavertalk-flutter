@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "Hindi natuloy ang pagbili. Walang na-charge — pakisubukan ulit.",
   "priceChangedTitle": "Nagbago ang presyo",
   "priceChangedBody": "Ang item na ito ay {price} na ngayon. Magpapatuloy ka ba?",
-  "joinedLabel": "Sumali noong"
+  "joinedLabel": "Sumali noong",
+  "unlockedWithMax": "Available sa Max"
 }

@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "ការទិញមិនបានសម្រេចទេ។ មិនមានការគិតប្រាក់ទេ — សូមព្យាយាមម្ដងទៀត។",
   "priceChangedTitle": "តម្លៃបានផ្លាស់ប្ដូរ",
   "priceChangedBody": "ទំនិញនេះឥឡូវតម្លៃ {price}។ បន្តទេ?",
-  "joinedLabel": "ថ្ងៃចូលរួម"
+  "joinedLabel": "ថ្ងៃចូលរួម",
+  "unlockedWithMax": "អាចប្រើបានជាមួយ Max"
 }

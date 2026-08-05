@@ -2018,4 +2018,7 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.';
+
+  @override
+  String get unlockedWithMax => 'Max bilan mavjud';
 }

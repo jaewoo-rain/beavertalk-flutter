@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "購入が完了しませんでした。請求は発生していません。もう一度お試しください。",
   "priceChangedTitle": "価格が変更されました",
   "priceChangedBody": "この商品は現在{price}です。続けますか?",
-  "joinedLabel": "登録日"
+  "joinedLabel": "登録日",
+  "unlockedWithMax": "Max で利用可能"
 }

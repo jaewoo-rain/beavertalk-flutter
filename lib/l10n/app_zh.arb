@@ -608,5 +608,6 @@
   "iapCharacterFailedBody": "购买未完成。没有产生任何扣款,请重试。",
   "priceChangedTitle": "价格已变更",
   "priceChangedBody": "此商品现价为{price}。要继续吗?",
-  "joinedLabel": "注册日期"
+  "joinedLabel": "注册日期",
+  "unlockedWithMax": "Max 可用"
 }
