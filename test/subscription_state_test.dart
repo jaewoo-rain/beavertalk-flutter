@@ -1,6 +1,7 @@
 import 'package:beavertalk/core/store/store_subscription_link.dart';
 import 'package:beavertalk/features/subscription/data/models/subscription_status_dto.dart';
 import 'package:beavertalk/features/subscription/domain/iap_service.dart';
+import 'package:beavertalk/features/subscription/domain/plan_prices.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
@@ -420,6 +421,116 @@ void main() {
       final products =
           await iap.getProducts({IapProductIds.proMonthly, 'bt_nope'});
       expect(products.map((p) => p.id), [IapProductIds.proMonthly]);
+    });
+  });
+
+  group('store catalog ids (design doc 2026-08-04 §4)', () {
+    test('every id satisfies the two stores’ intersection of rules', () {
+      // Play is the stricter store: lowercase, digits, `_` and `.` only,
+      // first char lowercase, 40 chars max. Apple accepts a superset, so
+      // passing Play's rule passes both — and an id can never be edited or
+      // reused once registered.
+      final pattern = RegExp(r'^[a-z][a-z0-9._]{0,39}$');
+      final ids = <String>{
+        ...IapProductIds.subscriptions,
+        // Only the characters that actually get registered — the free ones
+        // have no product.
+        ...IapProductIds.characterSlugs.keys
+            .map(IapProductIds.characterFor)
+            .whereType<String>(),
+        ...IapProductIds.subscriptions
+            .map((sku) => IapProductIds.playIdsFor(sku)!.subscriptionId),
+      };
+      for (final id in ids) {
+        expect(pattern.hasMatch(id), isTrue, reason: '$id breaks the rule');
+        expect(id.length, lessThanOrEqualTo(40), reason: id);
+      }
+    });
+
+    test('characters resolve by slug, and unknown server ids resolve to null',
+        () {
+      expect(IapProductIds.characterFor(9), 'bt_character_popo');
+      expect(IapProductIds.characterFor(11), 'bt_character_dudu');
+      // A character the server added after this build: no slug, no registered
+      // store product. Null keeps us from inventing `bt_character_42`.
+      expect(IapProductIds.characterFor(42), isNull);
+    });
+
+    test('derived prices still follow from the ones they are derived from', () {
+      // `$154.80` once outlived the `$12.90` it was twelve months of. The
+      // arithmetic is the only thing that says these four belong together, so
+      // it is the thing worth asserting.
+      int cents(String s) =>
+          (double.parse(s.replaceAll(RegExp(r'[^0-9.]'), '')) * 100).round();
+
+      expect(cents(PlanPrices.proYearlyAnchor), cents(PlanPrices.proMonthly) * 12,
+          reason: 'the struck anchor is twelve months at the monthly rate');
+      expect(
+        cents(PlanPrices.proYearlySaved),
+        cents(PlanPrices.proYearlyAnchor) - cents(PlanPrices.proYearly),
+        reason: 'what annual saves is anchor minus annual',
+      );
+      // Per-month figures round to the cent, so allow the rounding but not a
+      // stale number.
+      expect((cents(PlanPrices.proYearly) / 12).round(),
+          cents(PlanPrices.proYearlyPerMonth));
+      expect((cents(PlanPrices.maxYearly) / 12).round(),
+          cents(PlanPrices.maxYearlyPerMonth));
+      // Anchors only make sense above the price they strike through.
+      expect(cents(PlanPrices.maxMonthlyAnchor),
+          greaterThan(cents(PlanPrices.maxMonthly)));
+    });
+
+    test('a rail that cannot check intro eligibility says so', () {
+      // The trial line on the Max paywall hangs off this flag. A mock rail
+      // claiming eligibility it cannot verify would put "7 days free" in front
+      // of members who already spent their trial — 3.1.2 territory.
+      final iap = MockIapService();
+      addTearDown(iap.dispose);
+      expect(iap.reportsIntroEligibility, isFalse);
+    });
+
+    test('the free characters are not sold', () {
+      // Baba and Bibi ship with the Free plan (대표 결정 2026-08-04), so they
+      // have no store product — selling them is the bug this guards against.
+      for (final id in [1, 2]) {
+        expect(IapProductIds.isFreeCharacter(id), isTrue, reason: 'id $id');
+        expect(IapProductIds.characterFor(id), isNull, reason: 'id $id');
+      }
+      for (final id in [9, 10, 11]) {
+        expect(IapProductIds.isFreeCharacter(id), isFalse, reason: 'id $id');
+        expect(IapProductIds.characterFor(id), isNotNull, reason: 'id $id');
+      }
+      // Unknown ids are not free — they are unknown. Conflating the two would
+      // hand out an unreleased character for nothing.
+      expect(IapProductIds.isFreeCharacter(42), isFalse);
+      expect(
+        IapProductIds.characterSlugs.values
+            .where((s) => !IapProductIds.freeCharacterSlugs.contains(s))
+            .length,
+        3,
+        reason: 'three characters remain purchasable',
+      );
+    });
+
+    test('Play ids round-trip without losing the billing period', () {
+      // The regression this guards: Play reports `bt_pro` for both periods,
+      // so yearly reads as monthly the moment the base plan id is dropped.
+      for (final sku in IapProductIds.subscriptions) {
+        final play = IapProductIds.playIdsFor(sku);
+        expect(play, isNotNull, reason: '$sku has no Play mapping');
+        expect(
+          IapProductIds.logicalSkuFromPlay(
+              play!.subscriptionId, play.basePlanId),
+          sku,
+        );
+      }
+      // Same subscription, different base plans — must not collapse.
+      expect(IapProductIds.playIdsFor(IapProductIds.proMonthly)!.subscriptionId,
+          IapProductIds.playIdsFor(IapProductIds.proYearly)!.subscriptionId);
+      expect(IapProductIds.logicalSkuFromPlay('bt_pro', 'yearly'),
+          IapProductIds.proYearly);
+      expect(IapProductIds.logicalSkuFromPlay('bt_pro', 'weekly'), isNull);
     });
   });
 }

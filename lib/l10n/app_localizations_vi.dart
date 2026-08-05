@@ -490,7 +490,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get proMembership => 'Thành viên Pro';
 
   @override
-  String get pricePerMonth => '\$12.9 / mo';
+  String pricePerMonth(String price) {
+    return '$price / mo';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Cuộc gọi không giới hạn';
@@ -1200,20 +1202,25 @@ class AppLocalizationsVi extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Gọi không giới hạn với Pro';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Gọi không giới hạn · 15 phút mỗi cuộc · \$12.90 mỗi tháng';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Gọi không giới hạn · 15 phút mỗi cuộc · $price mỗi tháng';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Bật gọi video với Max';
 
   @override
-  String get bannerMaxUpsellSub => 'Gọi mặt đối mặt · \$19.90 mỗi tháng';
+  String bannerMaxUpsellSub(String price) {
+    return 'Gọi mặt đối mặt · $price mỗi tháng';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Chuyển sang gói năm';
 
   @override
-  String get bannerAnnualSwitchSub => '\$159 mỗi năm · \$13.25 mỗi tháng';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '$yearly mỗi năm · $perMonth mỗi tháng';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Chúng tôi không thể thu tiền';
@@ -1380,24 +1387,42 @@ class AppLocalizationsVi extends AppLocalizations {
   String get planAnnual => 'Hằng năm';
 
   @override
-  String get proMonthlyPriceLine => '\$12.90 mỗi tháng';
+  String proMonthlyPriceLine(String price) {
+    return '$price mỗi tháng';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · \$8.33 mỗi tháng';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · $perMonth mỗi tháng';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '\$19.90 mỗi tháng';
+  String maxMonthlyPriceLine(String price) {
+    return '$price mỗi tháng';
+  }
 
   @override
-  String get maxAnnualPriceLine => '\$159.00 mỗi năm · \$13.25 mỗi tháng';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly mỗi năm · $perMonth mỗi tháng';
+  }
 
   @override
-  String get ctaCaptionPro =>
-      '\$12.90 mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+  String ctaCaptionPro(String price) {
+    return '$price mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+  }
 
   @override
-  String get ctaCaptionMax =>
-      '\$19.90 mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+  String ctaCaptionMax(String price) {
+    return '$price mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return 'Miễn phí 7 ngày, sau đó $price mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => 'Tự động gia hạn cho đến khi bạn hủy.';
 
   @override
   String get footerTerms => 'Điều khoản';
@@ -1457,12 +1482,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Xem gói đăng ký của bạn';
 
   @override
-  String get successProCaption =>
-      '\$12.90 được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
+  String successProCaption(String price) {
+    return '$price được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
+  }
 
   @override
-  String get successMaxCaption =>
-      '\$19.90 được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
+  String successMaxCaption(String price) {
+    return '$price được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
+  }
 
   @override
   String get plansErrorTitle => 'Không tải được các gói';
@@ -1483,7 +1510,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get moveToMaxTitle => 'Chuyển lên Max';
 
   @override
-  String get maxPriceShort => '\$19.90/tháng';
+  String maxPriceShort(String price) {
+    return '$price/tháng';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1505,13 +1534,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get creditedTowardMax => 'Được trừ vào phí Max';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1636,7 +1665,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get rowOneCharacter => 'Một nhân vật';
 
   @override
-  String get rowFromPrice => 'từ \$5.00';
+  String rowFromPrice(String price) {
+    return 'từ $price';
+  }
 
   @override
   String get rowYoursForever => 'Của bạn mãi mãi';
@@ -1671,7 +1702,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get rowPayYearlyInstead => 'Trả theo năm thay vì';
 
   @override
-  String get rowYearlyMonthEquiv => '\$8.33 mỗi tháng';
+  String rowYearlyMonthEquiv(String price) {
+    return '$price mỗi tháng';
+  }
 
   @override
   String get rowCharactersYouBought => 'Nhân vật bạn đã mua';
@@ -1686,7 +1719,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaContinueToStore => 'Tiếp tục đến cửa hàng';
 
   @override
-  String get ovAnnualSwitchTitle => 'Trả theo năm, tiết kiệm \$54.80';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Trả theo năm, tiết kiệm $saved';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1696,19 +1731,25 @@ class AppLocalizationsVi extends AppLocalizations {
   String get rowYouSave => 'Bạn tiết kiệm';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Theo năm';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Theo tháng, trong một năm';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Chuyển sang gói tháng';
@@ -1763,8 +1804,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ovTrialStartTitle => '7 ngày dùng Max, miễn phí';
 
   @override
-  String ovTrialStartBody(String date) {
-    return 'Miễn phí đến $date. Sau đó \$19.90 mỗi tháng, trừ khi bạn hủy trong cửa hàng.';
+  String ovTrialStartBody(String price, String date) {
+    return 'Miễn phí đến $date. Sau đó $price mỗi tháng, trừ khi bạn hủy trong cửa hàng.';
   }
 
   @override
@@ -1887,7 +1928,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get flBenefitChecks => 'Kiểm tra phát âm không giới hạn với Pro';
 
   @override
-  String get flCaption => '\$12.90 mỗi tháng · hủy bất cứ lúc nào';
+  String flCaption(String price) {
+    return '$price mỗi tháng · hủy bất cứ lúc nào';
+  }
 
   @override
   String flUsage(String used, String limit) {

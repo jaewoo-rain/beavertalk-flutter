@@ -14,6 +14,7 @@ import '../../core/store/store_subscription_link.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/subscription_status_resolver.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../components/organisms/gnb.dart';
 import '../overlays/subscription_overlays.dart';
@@ -57,7 +58,7 @@ String _shortDate(BuildContext context, DateTime d) =>
     localizedShortDate(context, d);
 
 /// The plan-card monthly price line: server value when present, otherwise the
-/// plan's list price (the design's `$12.90` / `$19.90`).
+/// plan's list price (the design's `$12.99` / `$19.99`).
 String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
   final minor = status.source?.price ??
       (status.tier == SubscriptionTier.max ? 1990 : 1290);
@@ -130,7 +131,7 @@ class _ManageBody extends StatelessWidget {
       SubscriptionState.free => Banner(
           tone: BannerTone.brand,
           title: l10n.bannerGoUnlimitedTitle,
-          sub: l10n.bannerGoUnlimitedSub,
+          sub: l10n.bannerGoUnlimitedSub(PlanPrices.proMonthly),
           onTap: () => Navigator.pushNamed(context, Routes.paywallPro),
         ),
       SubscriptionState.activePro ||
@@ -139,13 +140,13 @@ class _ManageBody extends StatelessWidget {
         Banner(
           tone: BannerTone.gold,
           title: l10n.bannerMaxUpsellTitle,
-          sub: l10n.bannerMaxUpsellSub,
+          sub: l10n.bannerMaxUpsellSub(PlanPrices.maxMonthly),
           onTap: () => Navigator.pushNamed(context, Routes.paywallMax),
         ),
       SubscriptionState.activeMax => Banner(
           tone: BannerTone.gold,
           title: l10n.bannerAnnualSwitchTitle,
-          sub: l10n.bannerAnnualSwitchSub,
+          sub: l10n.bannerAnnualSwitchSub(PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth),
           onTap: () => showSubscriptionOverlay(
               context, SubscriptionOverlay.annualSwitch,
               expiresAt: status.expiresAt),

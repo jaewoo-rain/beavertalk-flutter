@@ -477,7 +477,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get proMembership => 'Pro メンバーシップ';
 
   @override
-  String get pricePerMonth => '\$12.9 / 月';
+  String pricePerMonth(String price) {
+    return '$price / 月';
+  }
 
   @override
   String get benefitUnlimitedCalls => '無制限の通話';
@@ -1174,19 +1176,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Proで無制限に';
 
   @override
-  String get bannerGoUnlimitedSub => '通話無制限 · 1回15分 · 月額\$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return '通話無制限 · 1回15分 · 月額$price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Maxでビデオ通話を';
 
   @override
-  String get bannerMaxUpsellSub => '顔を見ながら通話 · 月額\$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return '顔を見ながら通話 · 月額$price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => '年間プランに切り替え';
 
   @override
-  String get bannerAnnualSwitchSub => '年額\$159 · 月あたり\$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '年額$yearly · 月あたり$perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'お支払いができませんでした';
@@ -1343,22 +1351,42 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planAnnual => '年間';
 
   @override
-  String get proMonthlyPriceLine => '月額\$12.90';
+  String proMonthlyPriceLine(String price) {
+    return '月額$price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · 月あたり\$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · 月あたり$perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '月額\$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return '月額$price';
+  }
 
   @override
-  String get maxAnnualPriceLine => '年額\$159.00 · 月あたり\$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '年額$yearly · 月あたり$perMonth';
+  }
 
   @override
-  String get ctaCaptionPro => '月額\$12.90 · ストアでいつでも解約できます';
+  String ctaCaptionPro(String price) {
+    return '月額$price · ストアでいつでも解約できます';
+  }
 
   @override
-  String get ctaCaptionMax => '月額\$19.90 · ストアでいつでも解約できます';
+  String ctaCaptionMax(String price) {
+    return '月額$price · ストアでいつでも解約できます';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7日間無料、その後 月額$price · ストアでいつでも解約できます';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => '解約するまで自動更新されます。';
 
   @override
   String get footerTerms => '利用規約';
@@ -1416,10 +1444,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaSeeYourSubscription => 'サブスクリプションを見る';
 
   @override
-  String get successProCaption => '解約するまで毎月\$12.90が請求されます。管理・解約はいつでもストアで行えます。';
+  String successProCaption(String price) {
+    return '解約するまで毎月$priceが請求されます。管理・解約はいつでもストアで行えます。';
+  }
 
   @override
-  String get successMaxCaption => '解約するまで毎月\$19.90が請求されます。管理・解約はいつでもストアで行えます。';
+  String successMaxCaption(String price) {
+    return '解約するまで毎月$priceが請求されます。管理・解約はいつでもストアで行えます。';
+  }
 
   @override
   String get plansErrorTitle => 'プランを読み込めませんでした';
@@ -1440,7 +1472,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get moveToMaxTitle => 'Maxへ移行';
 
   @override
-  String get maxPriceShort => '月額\$19.90';
+  String maxPriceShort(String price) {
+    return '月額$price';
+  }
 
   @override
   String get moveToMaxCardSub => '顔を見ながらビデオ通話 · 全キャラクター · あなた専用のスタディブック';
@@ -1461,13 +1495,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get creditedTowardMax => 'Max料金に充当';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1585,7 +1619,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get rowOneCharacter => 'キャラクター1体';
 
   @override
-  String get rowFromPrice => '\$5.00から';
+  String rowFromPrice(String price) {
+    return '$priceから';
+  }
 
   @override
   String get rowYoursForever => 'ずっとあなたのもの';
@@ -1618,7 +1654,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get rowPayYearlyInstead => '年払いに変えると';
 
   @override
-  String get rowYearlyMonthEquiv => '月あたり\$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return '月あたり$price';
+  }
 
   @override
   String get rowCharactersYouBought => '購入したキャラクター';
@@ -1633,7 +1671,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaContinueToStore => 'ストアへ進む';
 
   @override
-  String get ovAnnualSwitchTitle => '年払いで\$54.80お得に';
+  String ovAnnualSwitchTitle(String saved) {
+    return '年払いで$savedお得に';
+  }
 
   @override
   String get ovAnnualSwitchBody => 'Proを2か月ご利用中ですね。年間プランのほうが割安です。';
@@ -1642,19 +1682,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get rowYouSave => '節約額';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => '年間';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => '月払いで1年';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => '月払いに切り替え';
@@ -1707,8 +1753,8 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ovTrialStartTitle => 'Maxを7日間無料で';
 
   @override
-  String ovTrialStartBody(String date) {
-    return '$dateまで無料です。その後はストアで解約しない限り月額\$19.90です。';
+  String ovTrialStartBody(String price, String date) {
+    return '$dateまで無料です。その後はストアで解約しない限り月額$priceです。';
   }
 
   @override
@@ -1824,7 +1870,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get flBenefitChecks => 'Proで発音チェック無制限';
 
   @override
-  String get flCaption => '月額\$12.90 · いつでも解約できます';
+  String flCaption(String price) {
+    return '月額$price · いつでも解約できます';
+  }
 
   @override
   String flUsage(String used, String limit) {

@@ -492,7 +492,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get proMembership => 'Pro-jäsenyys';
 
   @override
-  String get pricePerMonth => '12,9 \$ / kk';
+  String pricePerMonth(String price) {
+    return '$price / kk';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Rajattomat puhelut';
@@ -1202,20 +1204,25 @@ class AppLocalizationsFi extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Rajattomat puhelut Pro-paketilla';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Rajattomat puhelut · 15 min kukin · \$12.90 kuukaudessa';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Rajattomat puhelut · 15 min kukin · $price kuukaudessa';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Ota video käyttöön Max-paketilla';
 
   @override
-  String get bannerMaxUpsellSub => 'Kasvokkaiset puhelut · \$19.90 kuukaudessa';
+  String bannerMaxUpsellSub(String price) {
+    return 'Kasvokkaiset puhelut · $price kuukaudessa';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Vaihda vuositilaukseen';
 
   @override
-  String get bannerAnnualSwitchSub => '\$159 vuodessa · \$13.25 kuukaudessa';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '$yearly vuodessa · $perMonth kuukaudessa';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Maksua ei voitu veloittaa';
@@ -1382,22 +1389,43 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planAnnual => 'Vuosi';
 
   @override
-  String get proMonthlyPriceLine => '\$12.90 kuukaudessa';
+  String proMonthlyPriceLine(String price) {
+    return '$price kuukaudessa';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · \$8.33 kuukaudessa';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · $perMonth kuukaudessa';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '\$19.90 kuukaudessa';
+  String maxMonthlyPriceLine(String price) {
+    return '$price kuukaudessa';
+  }
 
   @override
-  String get maxAnnualPriceLine => '\$159.00 vuodessa · \$13.25 kuukaudessa';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly vuodessa · $perMonth kuukaudessa';
+  }
 
   @override
-  String get ctaCaptionPro => '\$12.90/kk · peruuta milloin tahansa kaupassa';
+  String ctaCaptionPro(String price) {
+    return '$price/kk · peruuta milloin tahansa kaupassa';
+  }
 
   @override
-  String get ctaCaptionMax => '\$19.90/kk · peruuta milloin tahansa kaupassa';
+  String ctaCaptionMax(String price) {
+    return '$price/kk · peruuta milloin tahansa kaupassa';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 päivää ilmaiseksi, sitten $price/kk · peruuta milloin tahansa kaupassa';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew =>
+      'Uusiutuu automaattisesti, kunnes peruutat.';
 
   @override
   String get footerTerms => 'Ehdot';
@@ -1457,12 +1485,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Katso tilauksesi';
 
   @override
-  String get successProCaption =>
-      '\$12.90 veloitetaan kuukausittain, kunnes peruutat. Hallinnoi tai peruuta milloin tahansa kaupassa.';
+  String successProCaption(String price) {
+    return '$price veloitetaan kuukausittain, kunnes peruutat. Hallinnoi tai peruuta milloin tahansa kaupassa.';
+  }
 
   @override
-  String get successMaxCaption =>
-      '\$19.90 veloitetaan kuukausittain, kunnes peruutat. Hallinnoi tai peruuta milloin tahansa kaupassa.';
+  String successMaxCaption(String price) {
+    return '$price veloitetaan kuukausittain, kunnes peruutat. Hallinnoi tai peruuta milloin tahansa kaupassa.';
+  }
 
   @override
   String get plansErrorTitle => 'Paketteja ei voitu ladata';
@@ -1483,7 +1513,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get moveToMaxTitle => 'Siirry Max-pakettiin';
 
   @override
-  String get maxPriceShort => '\$19.90 / kk';
+  String maxPriceShort(String price) {
+    return '$price / kk';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1505,13 +1537,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get creditedTowardMax => 'Hyvitetään Max-hinnassa';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1635,7 +1667,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get rowOneCharacter => 'Yksi hahmo';
 
   @override
-  String get rowFromPrice => 'alk. \$5.00';
+  String rowFromPrice(String price) {
+    return 'alk. $price';
+  }
 
   @override
   String get rowYoursForever => 'Omasi ikuisesti';
@@ -1670,7 +1704,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get rowPayYearlyInstead => 'Maksa mieluummin vuosittain';
 
   @override
-  String get rowYearlyMonthEquiv => '\$8.33 kuukaudessa';
+  String rowYearlyMonthEquiv(String price) {
+    return '$price kuukaudessa';
+  }
 
   @override
   String get rowCharactersYouBought => 'Ostamasi hahmot';
@@ -1685,7 +1721,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaContinueToStore => 'Jatka kauppaan';
 
   @override
-  String get ovAnnualSwitchTitle => 'Maksa vuosittain, säästä \$54.80';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Maksa vuosittain, säästä $saved';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1695,19 +1733,25 @@ class AppLocalizationsFi extends AppLocalizations {
   String get rowYouSave => 'Säästät';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Vuosittain';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Kuukausittain, vuoden ajan';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Vaihda kuukausitilaukseen';
@@ -1761,8 +1805,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ovTrialStartTitle => '7 päivää Maxia, ilmaiseksi';
 
   @override
-  String ovTrialStartBody(String date) {
-    return 'Ilmainen $date asti. Sitten \$19.90 kuukaudessa, ellet peruuta kaupassa.';
+  String ovTrialStartBody(String price, String date) {
+    return 'Ilmainen $date asti. Sitten $price kuukaudessa, ellet peruuta kaupassa.';
   }
 
   @override
@@ -1886,7 +1930,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get flBenefitChecks => 'Rajattomat ääntämistarkistukset Pro-paketilla';
 
   @override
-  String get flCaption => '\$12.90/kk · peruuta milloin tahansa';
+  String flCaption(String price) {
+    return '$price/kk · peruuta milloin tahansa';
+  }
 
   @override
   String flUsage(String used, String limit) {

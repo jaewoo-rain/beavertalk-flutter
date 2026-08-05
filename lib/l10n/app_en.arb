@@ -261,7 +261,14 @@
   "viewBillingHistory": "View Billing History",
   "keepUsingPro": "Keep Using Pro",
   "proMembership": "Pro Membership",
-  "pricePerMonth": "$12.9 / mo",
+  "pricePerMonth": "{price} / mo",
+  "@pricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "benefitUnlimitedCalls": "Unlimited calls",
   "benefitDetailedAnalysis": "Detailed pronunciation & grammar analysis",
   "benefitAllCharacters": "Access to all characters",
@@ -704,7 +711,7 @@
     "placeholders": {
       "amount": {
         "type": "String",
-        "example": "$12.90"
+        "example": "$12.99"
       }
     }
   },
@@ -747,11 +754,35 @@
     }
   },
   "bannerGoUnlimitedTitle": "Go unlimited with Pro",
-  "bannerGoUnlimitedSub": "Unlimited calls · 15 minutes each · $12.90 per month",
+  "bannerGoUnlimitedSub": "Unlimited calls · 15 minutes each · {price} per month",
+  "@bannerGoUnlimitedSub": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "bannerMaxUpsellTitle": "Turn on video with Max",
-  "bannerMaxUpsellSub": "Face-to-face calls · $19.90 per month",
+  "bannerMaxUpsellSub": "Face-to-face calls · {price} per month",
+  "@bannerMaxUpsellSub": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "bannerAnnualSwitchTitle": "Switch to annual",
-  "bannerAnnualSwitchSub": "$159 per year · $13.25 per month",
+  "bannerAnnualSwitchSub": "{yearly} per year · {perMonth} per month",
+  "@bannerAnnualSwitchSub": {
+    "placeholders": {
+      "yearly": {
+        "type": "String"
+      },
+      "perMonth": {
+        "type": "String"
+      }
+    }
+  },
   "bannerPaymentFailedTitle": "We couldn't take the payment",
   "bannerPaymentFailedSub": "Update payment in the store to keep Pro",
   "bannerPausedTitle": "Your plan is paused",
@@ -824,12 +855,69 @@
   "paywallMaxSub": "Video calls, every character, and a study book made for where you are.",
   "planMonthly": "Monthly",
   "planAnnual": "Annual",
-  "proMonthlyPriceLine": "$12.90 per month",
-  "proAnnualPriceLine": "$100.00 · $8.33 per month",
-  "maxMonthlyPriceLine": "$19.90 per month",
-  "maxAnnualPriceLine": "$159.00 per year · $13.25 per month",
-  "ctaCaptionPro": "$12.90 per month · cancel anytime in the store",
-  "ctaCaptionMax": "$19.90 per month · cancel anytime in the store",
+  "proMonthlyPriceLine": "{price} per month",
+  "@proMonthlyPriceLine": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "proAnnualPriceLine": "{yearly} · {perMonth} per month",
+  "@proAnnualPriceLine": {
+    "placeholders": {
+      "yearly": {
+        "type": "String"
+      },
+      "perMonth": {
+        "type": "String"
+      }
+    }
+  },
+  "maxMonthlyPriceLine": "{price} per month",
+  "@maxMonthlyPriceLine": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "maxAnnualPriceLine": "{yearly} per year · {perMonth} per month",
+  "@maxAnnualPriceLine": {
+    "placeholders": {
+      "yearly": {
+        "type": "String"
+      },
+      "perMonth": {
+        "type": "String"
+      }
+    }
+  },
+  "ctaCaptionPro": "{price} per month · cancel anytime in the store",
+  "@ctaCaptionPro": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "ctaCaptionMax": "{price} per month · cancel anytime in the store",
+  "@ctaCaptionMax": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "ctaCaptionMaxTrial": "7 days free, then {price} per month · cancel anytime in the store",
+  "@ctaCaptionMaxTrial": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "ctaCaptionAutoRenew": "Renews automatically until canceled.",
   "footerTerms": "Terms",
   "footerPrivacy": "Privacy",
   "noteMaxCharacters": "Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.",
@@ -848,33 +936,60 @@
   "ctaStartACall": "Start a call",
   "ctaStartAVideoCall": "Start a video call",
   "ctaSeeYourSubscription": "See your subscription",
-  "successProCaption": "$12.90 is charged monthly until you cancel. Manage or cancel anytime in the store.",
-  "successMaxCaption": "$19.90 is charged monthly until you cancel. Manage or cancel anytime in the store.",
+  "successProCaption": "{price} is charged monthly until you cancel. Manage or cancel anytime in the store.",
+  "@successProCaption": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
+  "successMaxCaption": "{price} is charged monthly until you cancel. Manage or cancel anytime in the store.",
+  "@successMaxCaption": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "plansErrorTitle": "We couldn't load the plans",
   "plansErrorSub": "The store didn't answer.",
   "ctaTryAgain": "Try again",
   "plansErrorCaption": "Nothing was charged.",
   "changePlanTitle": "Change Plan",
   "moveToMaxTitle": "Move to Max",
-  "maxPriceShort": "$19.90 / mo",
+  "maxPriceShort": "{price} / mo",
+  "@maxPriceShort": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "moveToMaxCardSub": "Face-to-face video calls · every character · a study book made for you",
   "whatHappensNow": "What happens now",
   "maxStartsLabel": "Max starts",
   "immediately": "Immediately",
   "unusedProTime": "Unused Pro time",
   "creditedTowardMax": "Credited toward Max",
-  "nextPaymentMaxValue": "$19.90 · {date}",
+  "nextPaymentMaxValue": "{price} · {date}",
   "@nextPaymentMaxValue": {
     "placeholders": {
+      "price": {
+        "type": "String"
+      },
       "date": {
         "type": "String",
         "example": "Jun 20, 2026"
       }
     }
   },
-  "nextPaymentProValue": "$12.90 · {date}",
+  "nextPaymentProValue": "{price} · {date}",
   "@nextPaymentProValue": {
     "placeholders": {
+      "price": {
+        "type": "String"
+      },
       "date": {
         "type": "String",
         "example": "Jun 20, 2026"
@@ -926,7 +1041,14 @@
   "ovCharacterOfferTitle": "Not ready for Pro?",
   "ovCharacterOfferBody": "Pick one character and keep them. A one-off purchase — no subscription, no renewal.",
   "rowOneCharacter": "One character",
-  "rowFromPrice": "from $5.00",
+  "rowFromPrice": "from {price}",
+  "@rowFromPrice": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "rowYoursForever": "Yours forever",
   "rowNoRenewal": "No renewal",
   "rowWorksOnFree": "Works on Free",
@@ -937,19 +1059,54 @@
   "ovCancelDownsellTitle": "Before you go",
   "ovCancelDownsellBody": "Canceling happens in the store. Two things worth knowing.",
   "rowPayYearlyInstead": "Pay yearly instead",
-  "rowYearlyMonthEquiv": "$8.33 per month",
+  "rowYearlyMonthEquiv": "{price} per month",
+  "@rowYearlyMonthEquiv": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "rowCharactersYouBought": "Characters you bought",
   "rowProRunsUntil": "Pro runs until",
   "ctaSwitchToYearly": "Switch to yearly",
   "ctaContinueToStore": "Continue to the store",
-  "ovAnnualSwitchTitle": "Pay yearly, save $54.80",
+  "ovAnnualSwitchTitle": "Pay yearly, save {saved}",
+  "@ovAnnualSwitchTitle": {
+    "placeholders": {
+      "saved": {
+        "type": "String"
+      }
+    }
+  },
   "ovAnnualSwitchBody": "You've been on Pro for two months. The yearly plan works out cheaper.",
   "rowYouSave": "You save",
-  "amountSaved": "$54.80",
+  "amountSaved": "{price}",
+  "@amountSaved": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "rowYearly": "Yearly",
-  "amountYearly": "$100.00",
+  "amountYearly": "{price}",
+  "@amountYearly": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "rowMonthlyForYear": "Monthly, for a year",
-  "amountMonthlyForYear": "$154.80",
+  "amountMonthlyForYear": "{price}",
+  "@amountMonthlyForYear": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "ovMonthlySwitchTitle": "Switch to monthly",
   "ovMonthlySwitchBody": "Your yearly plan runs until {date}. Monthly billing starts the day after.",
   "@ovMonthlySwitchBody": {
@@ -974,9 +1131,12 @@
   "rowThenMonthly": "Then monthly",
   "ctaCancelInStore": "Cancel in the store",
   "ovTrialStartTitle": "7 days of Max, free",
-  "ovTrialStartBody": "Free until {date}. Then $19.90 per month, unless you cancel in the store.",
+  "ovTrialStartBody": "Free until {date}. Then {price} per month, unless you cancel in the store.",
   "@ovTrialStartBody": {
     "placeholders": {
+      "price": {
+        "type": "String"
+      },
       "date": {
         "type": "String",
         "example": "Jun 27, 2026"
@@ -1038,7 +1198,14 @@
   "flCheckBody": "One check a day on Free. Pro makes it unlimited.",
   "flBenefitCalls": "Unlimited calls with Pro · 15 minutes each",
   "flBenefitChecks": "Unlimited pronunciation checks with Pro",
-  "flCaption": "$12.90 per month · cancel anytime",
+  "flCaption": "{price} per month · cancel anytime",
+  "@flCaption": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "flUsage": "{used} of {limit} used",
   "@flUsage": {
     "placeholders": {

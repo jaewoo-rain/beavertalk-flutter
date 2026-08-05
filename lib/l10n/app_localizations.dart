@@ -1051,8 +1051,8 @@ abstract class AppLocalizations {
   /// No description provided for @pricePerMonth.
   ///
   /// In en, this message translates to:
-  /// **'\$12.9 / mo'**
-  String get pricePerMonth;
+  /// **'{price} / mo'**
+  String pricePerMonth(String price);
 
   /// No description provided for @benefitUnlimitedCalls.
   ///
@@ -2377,8 +2377,8 @@ abstract class AppLocalizations {
   /// No description provided for @bannerGoUnlimitedSub.
   ///
   /// In en, this message translates to:
-  /// **'Unlimited calls · 15 minutes each · \$12.90 per month'**
-  String get bannerGoUnlimitedSub;
+  /// **'Unlimited calls · 15 minutes each · {price} per month'**
+  String bannerGoUnlimitedSub(String price);
 
   /// No description provided for @bannerMaxUpsellTitle.
   ///
@@ -2389,8 +2389,8 @@ abstract class AppLocalizations {
   /// No description provided for @bannerMaxUpsellSub.
   ///
   /// In en, this message translates to:
-  /// **'Face-to-face calls · \$19.90 per month'**
-  String get bannerMaxUpsellSub;
+  /// **'Face-to-face calls · {price} per month'**
+  String bannerMaxUpsellSub(String price);
 
   /// No description provided for @bannerAnnualSwitchTitle.
   ///
@@ -2401,8 +2401,8 @@ abstract class AppLocalizations {
   /// No description provided for @bannerAnnualSwitchSub.
   ///
   /// In en, this message translates to:
-  /// **'\$159 per year · \$13.25 per month'**
-  String get bannerAnnualSwitchSub;
+  /// **'{yearly} per year · {perMonth} per month'**
+  String bannerAnnualSwitchSub(String yearly, String perMonth);
 
   /// No description provided for @bannerPaymentFailedTitle.
   ///
@@ -2707,38 +2707,50 @@ abstract class AppLocalizations {
   /// No description provided for @proMonthlyPriceLine.
   ///
   /// In en, this message translates to:
-  /// **'\$12.90 per month'**
-  String get proMonthlyPriceLine;
+  /// **'{price} per month'**
+  String proMonthlyPriceLine(String price);
 
   /// No description provided for @proAnnualPriceLine.
   ///
   /// In en, this message translates to:
-  /// **'\$100.00 · \$8.33 per month'**
-  String get proAnnualPriceLine;
+  /// **'{yearly} · {perMonth} per month'**
+  String proAnnualPriceLine(String yearly, String perMonth);
 
   /// No description provided for @maxMonthlyPriceLine.
   ///
   /// In en, this message translates to:
-  /// **'\$19.90 per month'**
-  String get maxMonthlyPriceLine;
+  /// **'{price} per month'**
+  String maxMonthlyPriceLine(String price);
 
   /// No description provided for @maxAnnualPriceLine.
   ///
   /// In en, this message translates to:
-  /// **'\$159.00 per year · \$13.25 per month'**
-  String get maxAnnualPriceLine;
+  /// **'{yearly} per year · {perMonth} per month'**
+  String maxAnnualPriceLine(String yearly, String perMonth);
 
   /// No description provided for @ctaCaptionPro.
   ///
   /// In en, this message translates to:
-  /// **'\$12.90 per month · cancel anytime in the store'**
-  String get ctaCaptionPro;
+  /// **'{price} per month · cancel anytime in the store'**
+  String ctaCaptionPro(String price);
 
   /// No description provided for @ctaCaptionMax.
   ///
   /// In en, this message translates to:
-  /// **'\$19.90 per month · cancel anytime in the store'**
-  String get ctaCaptionMax;
+  /// **'{price} per month · cancel anytime in the store'**
+  String ctaCaptionMax(String price);
+
+  /// No description provided for @ctaCaptionMaxTrial.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days free, then {price} per month · cancel anytime in the store'**
+  String ctaCaptionMaxTrial(String price);
+
+  /// No description provided for @ctaCaptionAutoRenew.
+  ///
+  /// In en, this message translates to:
+  /// **'Renews automatically until canceled.'**
+  String get ctaCaptionAutoRenew;
 
   /// No description provided for @footerTerms.
   ///
@@ -2851,14 +2863,14 @@ abstract class AppLocalizations {
   /// No description provided for @successProCaption.
   ///
   /// In en, this message translates to:
-  /// **'\$12.90 is charged monthly until you cancel. Manage or cancel anytime in the store.'**
-  String get successProCaption;
+  /// **'{price} is charged monthly until you cancel. Manage or cancel anytime in the store.'**
+  String successProCaption(String price);
 
   /// No description provided for @successMaxCaption.
   ///
   /// In en, this message translates to:
-  /// **'\$19.90 is charged monthly until you cancel. Manage or cancel anytime in the store.'**
-  String get successMaxCaption;
+  /// **'{price} is charged monthly until you cancel. Manage or cancel anytime in the store.'**
+  String successMaxCaption(String price);
 
   /// No description provided for @plansErrorTitle.
   ///
@@ -2899,8 +2911,8 @@ abstract class AppLocalizations {
   /// No description provided for @maxPriceShort.
   ///
   /// In en, this message translates to:
-  /// **'\$19.90 / mo'**
-  String get maxPriceShort;
+  /// **'{price} / mo'**
+  String maxPriceShort(String price);
 
   /// No description provided for @moveToMaxCardSub.
   ///
@@ -2941,14 +2953,14 @@ abstract class AppLocalizations {
   /// No description provided for @nextPaymentMaxValue.
   ///
   /// In en, this message translates to:
-  /// **'\$19.90 · {date}'**
-  String nextPaymentMaxValue(String date);
+  /// **'{price} · {date}'**
+  String nextPaymentMaxValue(String price, String date);
 
   /// No description provided for @nextPaymentProValue.
   ///
   /// In en, this message translates to:
-  /// **'\$12.90 · {date}'**
-  String nextPaymentProValue(String date);
+  /// **'{price} · {date}'**
+  String nextPaymentProValue(String price, String date);
 
   /// No description provided for @ctaSwitchToMax.
   ///
@@ -3175,8 +3187,8 @@ abstract class AppLocalizations {
   /// No description provided for @rowFromPrice.
   ///
   /// In en, this message translates to:
-  /// **'from \$5.00'**
-  String get rowFromPrice;
+  /// **'from {price}'**
+  String rowFromPrice(String price);
 
   /// No description provided for @rowYoursForever.
   ///
@@ -3241,8 +3253,8 @@ abstract class AppLocalizations {
   /// No description provided for @rowYearlyMonthEquiv.
   ///
   /// In en, this message translates to:
-  /// **'\$8.33 per month'**
-  String get rowYearlyMonthEquiv;
+  /// **'{price} per month'**
+  String rowYearlyMonthEquiv(String price);
 
   /// No description provided for @rowCharactersYouBought.
   ///
@@ -3271,8 +3283,8 @@ abstract class AppLocalizations {
   /// No description provided for @ovAnnualSwitchTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pay yearly, save \$54.80'**
-  String get ovAnnualSwitchTitle;
+  /// **'Pay yearly, save {saved}'**
+  String ovAnnualSwitchTitle(String saved);
 
   /// No description provided for @ovAnnualSwitchBody.
   ///
@@ -3289,8 +3301,8 @@ abstract class AppLocalizations {
   /// No description provided for @amountSaved.
   ///
   /// In en, this message translates to:
-  /// **'\$54.80'**
-  String get amountSaved;
+  /// **'{price}'**
+  String amountSaved(String price);
 
   /// No description provided for @rowYearly.
   ///
@@ -3301,8 +3313,8 @@ abstract class AppLocalizations {
   /// No description provided for @amountYearly.
   ///
   /// In en, this message translates to:
-  /// **'\$100.00'**
-  String get amountYearly;
+  /// **'{price}'**
+  String amountYearly(String price);
 
   /// No description provided for @rowMonthlyForYear.
   ///
@@ -3313,8 +3325,8 @@ abstract class AppLocalizations {
   /// No description provided for @amountMonthlyForYear.
   ///
   /// In en, this message translates to:
-  /// **'\$154.80'**
-  String get amountMonthlyForYear;
+  /// **'{price}'**
+  String amountMonthlyForYear(String price);
 
   /// No description provided for @ovMonthlySwitchTitle.
   ///
@@ -3415,8 +3427,8 @@ abstract class AppLocalizations {
   /// No description provided for @ovTrialStartBody.
   ///
   /// In en, this message translates to:
-  /// **'Free until {date}. Then \$19.90 per month, unless you cancel in the store.'**
-  String ovTrialStartBody(String date);
+  /// **'Free until {date}. Then {price} per month, unless you cancel in the store.'**
+  String ovTrialStartBody(String price, String date);
 
   /// No description provided for @ctaStart7Days.
   ///
@@ -3637,8 +3649,8 @@ abstract class AppLocalizations {
   /// No description provided for @flCaption.
   ///
   /// In en, this message translates to:
-  /// **'\$12.90 per month · cancel anytime'**
-  String get flCaption;
+  /// **'{price} per month · cancel anytime'**
+  String flCaption(String price);
 
   /// No description provided for @flUsage.
   ///

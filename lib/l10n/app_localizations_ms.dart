@@ -494,7 +494,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get proMembership => 'Keahlian Pro';
 
   @override
-  String get pricePerMonth => '\$12.9 / bulan';
+  String pricePerMonth(String price) {
+    return '$price / bulan';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Panggilan tanpa had';
@@ -1210,20 +1212,25 @@ class AppLocalizationsMs extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Tanpa had dengan Pro';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Panggilan tanpa had · 15 minit setiap satu · \$12.90 sebulan';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Panggilan tanpa had · 15 minit setiap satu · $price sebulan';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Hidupkan video dengan Max';
 
   @override
-  String get bannerMaxUpsellSub => 'Panggilan bersemuka · \$19.90 sebulan';
+  String bannerMaxUpsellSub(String price) {
+    return 'Panggilan bersemuka · $price sebulan';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Tukar ke tahunan';
 
   @override
-  String get bannerAnnualSwitchSub => '\$159 setahun · \$13.25 sebulan';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '$yearly setahun · $perMonth sebulan';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Pembayaran anda tidak berjaya';
@@ -1391,22 +1398,43 @@ class AppLocalizationsMs extends AppLocalizations {
   String get planAnnual => 'Tahunan';
 
   @override
-  String get proMonthlyPriceLine => '\$12.90 sebulan';
+  String proMonthlyPriceLine(String price) {
+    return '$price sebulan';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · \$8.33 sebulan';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · $perMonth sebulan';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '\$19.90 sebulan';
+  String maxMonthlyPriceLine(String price) {
+    return '$price sebulan';
+  }
 
   @override
-  String get maxAnnualPriceLine => '\$159.00 setahun · \$13.25 sebulan';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly setahun · $perMonth sebulan';
+  }
 
   @override
-  String get ctaCaptionPro => '\$12.90 sebulan · batal bila-bila masa di kedai';
+  String ctaCaptionPro(String price) {
+    return '$price sebulan · batal bila-bila masa di kedai';
+  }
 
   @override
-  String get ctaCaptionMax => '\$19.90 sebulan · batal bila-bila masa di kedai';
+  String ctaCaptionMax(String price) {
+    return '$price sebulan · batal bila-bila masa di kedai';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 hari percuma, kemudian $price sebulan · batal bila-bila masa di kedai';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew =>
+      'Diperbaharui secara automatik sehingga dibatalkan.';
 
   @override
   String get footerTerms => 'Terma';
@@ -1467,12 +1495,14 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Lihat langganan anda';
 
   @override
-  String get successProCaption =>
-      '\$12.90 dicaj setiap bulan sehingga anda batalkan. Urus atau batal bila-bila masa di kedai.';
+  String successProCaption(String price) {
+    return '$price dicaj setiap bulan sehingga anda batalkan. Urus atau batal bila-bila masa di kedai.';
+  }
 
   @override
-  String get successMaxCaption =>
-      '\$19.90 dicaj setiap bulan sehingga anda batalkan. Urus atau batal bila-bila masa di kedai.';
+  String successMaxCaption(String price) {
+    return '$price dicaj setiap bulan sehingga anda batalkan. Urus atau batal bila-bila masa di kedai.';
+  }
 
   @override
   String get plansErrorTitle => 'Tidak dapat memuatkan pelan';
@@ -1493,7 +1523,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get moveToMaxTitle => 'Beralih ke Max';
 
   @override
-  String get maxPriceShort => '\$19.90 / bulan';
+  String maxPriceShort(String price) {
+    return '$price / bulan';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1515,13 +1547,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get creditedTowardMax => 'Dikreditkan kepada Max';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1647,7 +1679,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get rowOneCharacter => 'Satu watak';
 
   @override
-  String get rowFromPrice => 'dari \$5.00';
+  String rowFromPrice(String price) {
+    return 'dari $price';
+  }
 
   @override
   String get rowYoursForever => 'Milik anda selamanya';
@@ -1682,7 +1716,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get rowPayYearlyInstead => 'Bayar tahunan sahaja';
 
   @override
-  String get rowYearlyMonthEquiv => '\$8.33 sebulan';
+  String rowYearlyMonthEquiv(String price) {
+    return '$price sebulan';
+  }
 
   @override
   String get rowCharactersYouBought => 'Watak yang anda beli';
@@ -1697,7 +1733,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ctaContinueToStore => 'Teruskan ke kedai';
 
   @override
-  String get ovAnnualSwitchTitle => 'Bayar tahunan, jimat \$54.80';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Bayar tahunan, jimat $saved';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1707,19 +1745,25 @@ class AppLocalizationsMs extends AppLocalizations {
   String get rowYouSave => 'Anda jimat';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Tahunan';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Bulanan, selama setahun';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Tukar ke bulanan';
@@ -1774,8 +1818,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ovTrialStartTitle => '7 hari Max, percuma';
 
   @override
-  String ovTrialStartBody(String date) {
-    return 'Percuma sehingga $date. Kemudian \$19.90 sebulan, melainkan anda batalkan di kedai.';
+  String ovTrialStartBody(String price, String date) {
+    return 'Percuma sehingga $date. Kemudian $price sebulan, melainkan anda batalkan di kedai.';
   }
 
   @override
@@ -1901,7 +1945,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get flBenefitChecks => 'Semakan sebutan tanpa had dengan Pro';
 
   @override
-  String get flCaption => '\$12.90 sebulan · batal bila-bila masa';
+  String flCaption(String price) {
+    return '$price sebulan · batal bila-bila masa';
+  }
 
   @override
   String flUsage(String used, String limit) {

@@ -13,6 +13,7 @@ import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/iap_service.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -306,7 +307,7 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  _isMax ? l10n.successMaxCaption : l10n.successProCaption,
+                  _isMax ? l10n.successMaxCaption(PlanPrices.maxMonthly) : l10n.successProCaption(PlanPrices.proMonthly),
                   textAlign: TextAlign.center,
                   style: AppType.caption1.r.copyWith(color: c.labelNormal),
                 ),

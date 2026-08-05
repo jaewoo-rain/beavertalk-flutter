@@ -493,7 +493,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get proMembership => 'Assinatura Pro';
 
   @override
-  String get pricePerMonth => 'US\$ 12,90 / mês';
+  String pricePerMonth(String price) {
+    return 'US$price / mês';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Ligações ilimitadas';
@@ -1210,20 +1212,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Fique sem limites com o Pro';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Ligações ilimitadas · 15 minutos cada · \$12.90 por mês';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Ligações ilimitadas · 15 minutos cada · $price por mês';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Ative o vídeo com o Max';
 
   @override
-  String get bannerMaxUpsellSub => 'Ligações cara a cara · \$19.90 por mês';
+  String bannerMaxUpsellSub(String price) {
+    return 'Ligações cara a cara · $price por mês';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Mude para o anual';
 
   @override
-  String get bannerAnnualSwitchSub => '\$159 por ano · \$13.25 por mês';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '$yearly por ano · $perMonth por mês';
+  }
 
   @override
   String get bannerPaymentFailedTitle =>
@@ -1392,22 +1399,42 @@ class AppLocalizationsPt extends AppLocalizations {
   String get planAnnual => 'Anual';
 
   @override
-  String get proMonthlyPriceLine => '\$12.90 por mês';
+  String proMonthlyPriceLine(String price) {
+    return '$price por mês';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · \$8.33 por mês';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · $perMonth por mês';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '\$19.90 por mês';
+  String maxMonthlyPriceLine(String price) {
+    return '$price por mês';
+  }
 
   @override
-  String get maxAnnualPriceLine => '\$159.00 por ano · \$13.25 por mês';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly por ano · $perMonth por mês';
+  }
 
   @override
-  String get ctaCaptionPro => '\$12.90 por mês · cancele quando quiser na loja';
+  String ctaCaptionPro(String price) {
+    return '$price por mês · cancele quando quiser na loja';
+  }
 
   @override
-  String get ctaCaptionMax => '\$19.90 por mês · cancele quando quiser na loja';
+  String ctaCaptionMax(String price) {
+    return '$price por mês · cancele quando quiser na loja';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 dias grátis, depois $price por mês · cancele quando quiser na loja';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => 'Renova automaticamente até você cancelar.';
 
   @override
   String get footerTerms => 'Termos';
@@ -1469,12 +1496,14 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Ver sua assinatura';
 
   @override
-  String get successProCaption =>
-      '\$12.90 são cobrados por mês até você cancelar. Gerencie ou cancele quando quiser na loja.';
+  String successProCaption(String price) {
+    return '$price são cobrados por mês até você cancelar. Gerencie ou cancele quando quiser na loja.';
+  }
 
   @override
-  String get successMaxCaption =>
-      '\$19.90 são cobrados por mês até você cancelar. Gerencie ou cancele quando quiser na loja.';
+  String successMaxCaption(String price) {
+    return '$price são cobrados por mês até você cancelar. Gerencie ou cancele quando quiser na loja.';
+  }
 
   @override
   String get plansErrorTitle => 'Não foi possível carregar os planos';
@@ -1495,7 +1524,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get moveToMaxTitle => 'Mudar para o Max';
 
   @override
-  String get maxPriceShort => '\$19.90/mês';
+  String maxPriceShort(String price) {
+    return '$price/mês';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1517,13 +1548,13 @@ class AppLocalizationsPt extends AppLocalizations {
   String get creditedTowardMax => 'Creditado no Max';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1648,7 +1679,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get rowOneCharacter => 'Um personagem';
 
   @override
-  String get rowFromPrice => 'a partir de \$5.00';
+  String rowFromPrice(String price) {
+    return 'a partir de $price';
+  }
 
   @override
   String get rowYoursForever => 'Seu para sempre';
@@ -1683,7 +1716,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get rowPayYearlyInstead => 'Pague uma vez por ano';
 
   @override
-  String get rowYearlyMonthEquiv => '\$8.33 por mês';
+  String rowYearlyMonthEquiv(String price) {
+    return '$price por mês';
+  }
 
   @override
   String get rowCharactersYouBought => 'Personagens comprados';
@@ -1698,7 +1733,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ctaContinueToStore => 'Continuar para a loja';
 
   @override
-  String get ovAnnualSwitchTitle => 'Pague por ano e economize \$54.80';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Pague por ano e economize $saved';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1708,19 +1745,25 @@ class AppLocalizationsPt extends AppLocalizations {
   String get rowYouSave => 'Você economiza';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Anual';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Mensal, por um ano';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Mudar para o mensal';
@@ -1775,8 +1818,8 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ovTrialStartTitle => '7 dias de Max, grátis';
 
   @override
-  String ovTrialStartBody(String date) {
-    return 'Grátis até $date. Depois, \$19.90 por mês, a menos que você cancele na loja.';
+  String ovTrialStartBody(String price, String date) {
+    return 'Grátis até $date. Depois, $price por mês, a menos que você cancele na loja.';
   }
 
   @override
@@ -1901,7 +1944,9 @@ class AppLocalizationsPt extends AppLocalizations {
       'Verificações de pronúncia ilimitadas com o Pro';
 
   @override
-  String get flCaption => '\$12.90 por mês · cancele quando quiser';
+  String flCaption(String price) {
+    return '$price por mês · cancele quando quiser';
+  }
 
   @override
   String flUsage(String used, String limit) {

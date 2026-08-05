@@ -10,6 +10,7 @@ import '../../core/format/dates.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/subscription_status_resolver.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -98,7 +99,7 @@ class PlanChangeScreen extends ConsumerWidget {
                       style:
                           AppType.headline1.sb.copyWith(color: c.labelStrong)),
                 ),
-                Text(l10n.maxPriceShort,
+                Text(l10n.maxPriceShort(PlanPrices.maxMonthly),
                     style: AppType.body2.sb
                         .copyWith(color: c.accentForegroundOrange)),
               ],
@@ -115,7 +116,10 @@ class PlanChangeScreen extends ConsumerWidget {
       _rowsCard(c, [
         (l10n.maxStartsLabel, l10n.immediately),
         (l10n.unusedProTime, l10n.creditedTowardMax),
-        (l10n.nextPaymentLabel, l10n.nextPaymentMaxValue(date)),
+        (
+          l10n.nextPaymentLabel,
+          l10n.nextPaymentMaxValue(PlanPrices.maxMonthly, date)
+        ),
       ]),
     ];
   }
@@ -137,7 +141,10 @@ class PlanChangeScreen extends ConsumerWidget {
       _rowsCard(c, [
         (l10n.maxRunsUntil, date),
         (l10n.proStarts, date),
-        (l10n.nextPaymentLabel, l10n.nextPaymentProValue(date)),
+        (
+          l10n.nextPaymentLabel,
+          l10n.nextPaymentProValue(PlanPrices.proMonthly, date)
+        ),
       ]),
       const SizedBox(height: AppSpacing.s24),
       _sectionTitle(c, l10n.whatYouKeep),

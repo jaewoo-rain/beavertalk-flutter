@@ -274,7 +274,7 @@ class AvatarScreen extends ConsumerWidget {
       // actual traits. Null when the character has no tags, so the row is
       // omitted rather than rendering an empty strip.
       subtitle: c.tags.isEmpty ? null : c.tags.join('·'),
-      price: _priceLabel(context, c.price),
+      price: _catalogPrice(context, c),
       action: _buyButton(context, () => _openDetail(
             context,
             AvatarDetailState.unownedNormal,
@@ -285,8 +285,11 @@ class AvatarScreen extends ConsumerWidget {
             backgroundStory: c.backgroundStory,
             voiceUrl: c.voiceUrl,
             tags: c.tags,
-            price: _priceLabel(context, c.price),
-            effectivePriceMinor: c.effectivePrice,
+            price: _catalogPrice(context, c),
+            // Null for a free character: there is no amount to report back to
+            // the server, and reporting 0 against a stale catalog price is how
+            // a price-mismatch rejection would appear out of nowhere.
+            effectivePriceMinor: _isFree(c) ? null : c.effectivePrice,
           )),
     );
   }
@@ -384,8 +387,27 @@ class AvatarScreen extends ConsumerWidget {
       [int? expectedMinor]) async {
     final l10n = AppLocalizations.of(routeCtx);
     final iap = ref.read(iapServiceProvider);
+    // Free characters never reach the store. There is no product to charge
+    // for, so acquiring one is a server record and nothing else — routing
+    // them through the store would only look for an id that was deliberately
+    // never registered.
+    if (IapProductIds.isFreeCharacter(id) || expectedMinor == 0) {
+      await _deliver(routeCtx, ref, id, expectedMinor);
+      return;
+    }
+    // Store products are keyed by slug, not by the server's primary key
+    // (design doc §4-5). A character the server added after this build has no
+    // slug — and no registered store product either, so there is nothing to
+    // buy. Say so instead of sending the store an id it has never seen.
+    final productId = IapProductIds.characterFor(id);
+    if (productId == null) {
+      ScaffoldMessenger.of(routeCtx)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(l10n.iapCharacterFailedBody)));
+      return;
+    }
     final product = IapProduct(
-      id: IapProductIds.character('$id'),
+      id: productId,
       type: IapProductType.nonConsumable,
       // Store-localized in production (v2 §6-4: the store is the price
       // authority); until then the server-fed screen price stands in.
@@ -415,6 +437,19 @@ class AvatarScreen extends ConsumerWidget {
       case IapPurchaseState.restored:
         break; // paid — deliver below.
     }
+    // The store sheet was an async gap; the route may be gone.
+    if (!routeCtx.mounted) return;
+    await _deliver(routeCtx, ref, id, expectedMinor);
+  }
+
+  /// Records the acquisition on the server and closes the flow.
+  ///
+  /// Two callers, one delivery: the paid path runs it once the store says the
+  /// money moved, the free path runs it directly because no money ever moves.
+  /// Keeping it in one place is what stops the free path from quietly missing
+  /// the cache invalidation or the success sheet.
+  Future<void> _deliver(
+      BuildContext routeCtx, WidgetRef ref, int id, int? expectedMinor) async {
     try {
       await ref
           .read(characterRepositoryProvider)
@@ -514,6 +549,20 @@ class AvatarScreen extends ConsumerWidget {
     if (minor <= 0) return AppLocalizations.of(context).priceFree;
     return formatUsd(minor, locale: Localizations.localeOf(context).toString());
   }
+
+  /// Whether [c] costs nothing — either the server says so, or it is one of
+  /// the characters the Free plan includes (Baba·Bibi, 대표 결정 2026-08-04).
+  ///
+  /// The client-side half of the test is deliberate: the catalog still ships a
+  /// price for those two until the server drops it (서버 제안 별건), and until
+  /// then the screen would offer to sell something that has no store product.
+  bool _isFree(Character c) =>
+      c.isFree || IapProductIds.isFreeCharacter(c.id);
+
+  /// The price a catalog card shows — `Free` for the included characters.
+  String _catalogPrice(BuildContext context, Character c) => _isFree(c)
+      ? AppLocalizations.of(context).priceFree
+      : _priceLabel(context, c.price);
 
   /// Network avatar when available, else a neutral placeholder.
   ///

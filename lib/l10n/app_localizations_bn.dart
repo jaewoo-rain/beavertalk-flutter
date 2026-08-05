@@ -491,7 +491,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get proMembership => 'Pro সদস্যপদ';
 
   @override
-  String get pricePerMonth => '\$12.9 / মাস';
+  String pricePerMonth(String price) {
+    return '$price / মাস';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'সীমাহীন কল';
@@ -1200,20 +1202,25 @@ class AppLocalizationsBn extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Pro দিয়ে সীমাহীন হোন';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'সীমাহীন কল · প্রতিটি ১৫ মিনিট · প্রতি মাসে \$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return 'সীমাহীন কল · প্রতিটি ১৫ মিনিট · প্রতি মাসে $price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Max দিয়ে ভিডিও চালু করুন';
 
   @override
-  String get bannerMaxUpsellSub => 'মুখোমুখি কল · প্রতি মাসে \$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return 'মুখোমুখি কল · প্রতি মাসে $price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'বার্ষিক প্ল্যানে যান';
 
   @override
-  String get bannerAnnualSwitchSub => 'বছরে \$159 · প্রতি মাসে \$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return 'বছরে $yearly · প্রতি মাসে $perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'পেমেন্ট নেওয়া যায়নি';
@@ -1377,22 +1384,43 @@ class AppLocalizationsBn extends AppLocalizations {
   String get planAnnual => 'বার্ষিক';
 
   @override
-  String get proMonthlyPriceLine => 'প্রতি মাসে \$12.90';
+  String proMonthlyPriceLine(String price) {
+    return 'প্রতি মাসে $price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · প্রতি মাসে \$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · প্রতি মাসে $perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => 'প্রতি মাসে \$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return 'প্রতি মাসে $price';
+  }
 
   @override
-  String get maxAnnualPriceLine => 'বছরে \$159.00 · প্রতি মাসে \$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return 'বছরে $yearly · প্রতি মাসে $perMonth';
+  }
 
   @override
-  String get ctaCaptionPro => 'প্রতি মাসে \$12.90 · স্টোরে যেকোনো সময় বাতিল';
+  String ctaCaptionPro(String price) {
+    return 'প্রতি মাসে $price · স্টোরে যেকোনো সময় বাতিল';
+  }
 
   @override
-  String get ctaCaptionMax => 'প্রতি মাসে \$19.90 · স্টোরে যেকোনো সময় বাতিল';
+  String ctaCaptionMax(String price) {
+    return 'প্রতি মাসে $price · স্টোরে যেকোনো সময় বাতিল';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '৭ দিন ফ্রি, এরপর প্রতি মাসে $price · স্টোরে যেকোনো সময় বাতিল';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew =>
+      'বাতিল না করা পর্যন্ত স্বয়ংক্রিয়ভাবে নবায়ন হয়।';
 
   @override
   String get footerTerms => 'শর্তাবলী';
@@ -1452,12 +1480,14 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaSeeYourSubscription => 'আপনার সাবস্ক্রিপশন দেখুন';
 
   @override
-  String get successProCaption =>
-      'বাতিল না করা পর্যন্ত প্রতি মাসে \$12.90 চার্জ হবে। স্টোরে যেকোনো সময় ম্যানেজ বা বাতিল করুন।';
+  String successProCaption(String price) {
+    return 'বাতিল না করা পর্যন্ত প্রতি মাসে $price চার্জ হবে। স্টোরে যেকোনো সময় ম্যানেজ বা বাতিল করুন।';
+  }
 
   @override
-  String get successMaxCaption =>
-      'বাতিল না করা পর্যন্ত প্রতি মাসে \$19.90 চার্জ হবে। স্টোরে যেকোনো সময় ম্যানেজ বা বাতিল করুন।';
+  String successMaxCaption(String price) {
+    return 'বাতিল না করা পর্যন্ত প্রতি মাসে $price চার্জ হবে। স্টোরে যেকোনো সময় ম্যানেজ বা বাতিল করুন।';
+  }
 
   @override
   String get plansErrorTitle => 'প্ল্যান লোড করা যায়নি';
@@ -1478,7 +1508,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get moveToMaxTitle => 'Max-এ যান';
 
   @override
-  String get maxPriceShort => '\$19.90 / মাস';
+  String maxPriceShort(String price) {
+    return '$price / মাস';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1500,13 +1532,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get creditedTowardMax => 'Max-এ সমন্বয় হবে';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1630,7 +1662,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get rowOneCharacter => 'একটি ক্যারেক্টার';
 
   @override
-  String get rowFromPrice => '\$5.00 থেকে';
+  String rowFromPrice(String price) {
+    return '$price থেকে';
+  }
 
   @override
   String get rowYoursForever => 'চিরকাল আপনার';
@@ -1665,7 +1699,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get rowPayYearlyInstead => 'বরং বছরে একবার দিন';
 
   @override
-  String get rowYearlyMonthEquiv => 'প্রতি মাসে \$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return 'প্রতি মাসে $price';
+  }
 
   @override
   String get rowCharactersYouBought => 'কেনা ক্যারেক্টার';
@@ -1680,7 +1716,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaContinueToStore => 'স্টোরে এগিয়ে যান';
 
   @override
-  String get ovAnnualSwitchTitle => 'বছরে দিন, \$54.80 বাঁচান';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'বছরে দিন, $saved বাঁচান';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1690,19 +1728,25 @@ class AppLocalizationsBn extends AppLocalizations {
   String get rowYouSave => 'আপনার সাশ্রয়';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'বার্ষিক';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'মাসিক, এক বছরে';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'মাসিকে যান';
@@ -1757,8 +1801,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ovTrialStartTitle => '৭ দিন Max, ফ্রি';
 
   @override
-  String ovTrialStartBody(String date) {
-    return '$date পর্যন্ত ফ্রি। তারপর প্রতি মাসে \$19.90, স্টোরে বাতিল না করলে।';
+  String ovTrialStartBody(String price, String date) {
+    return '$date পর্যন্ত ফ্রি। তারপর প্রতি মাসে $price, স্টোরে বাতিল না করলে।';
   }
 
   @override
@@ -1879,7 +1923,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get flBenefitChecks => 'Pro-তে সীমাহীন উচ্চারণ পরীক্ষা';
 
   @override
-  String get flCaption => 'প্রতি মাসে \$12.90 · যেকোনো সময় বাতিল';
+  String flCaption(String price) {
+    return 'প্রতি মাসে $price · যেকোনো সময় বাতিল';
+  }
 
   @override
   String flUsage(String used, String limit) {

@@ -163,7 +163,7 @@ class BottomSheetContent extends StatelessWidget {
   /// colour with a strikethrough, per work order §6-4.
   final String? videoPriceOriginal;
 
-  /// Live price line of the video sheet (`$19.90 per month`).
+  /// Live price line of the video sheet (`$19.99 per month`).
   final String? videoPrice;
 
   /// Benefit line, or null for none.

@@ -476,7 +476,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get proMembership => 'Pro 会员';
 
   @override
-  String get pricePerMonth => '\$12.9 / mo';
+  String pricePerMonth(String price) {
+    return '$price / mo';
+  }
 
   @override
   String get benefitUnlimitedCalls => '无限通话';
@@ -1171,19 +1173,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bannerGoUnlimitedTitle => '用 Pro 解锁无限通话';
 
   @override
-  String get bannerGoUnlimitedSub => '通话不限次 · 每次 15 分钟 · 每月 \$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return '通话不限次 · 每次 15 分钟 · 每月 $price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => '用 Max 开启视频通话';
 
   @override
-  String get bannerMaxUpsellSub => '面对面通话 · 每月 \$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return '面对面通话 · 每月 $price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => '换成年付';
 
   @override
-  String get bannerAnnualSwitchSub => '每年 \$159 · 折合每月 \$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '每年 $yearly · 折合每月 $perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => '扣款没有成功';
@@ -1340,22 +1348,42 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planAnnual => '年付';
 
   @override
-  String get proMonthlyPriceLine => '每月 \$12.90';
+  String proMonthlyPriceLine(String price) {
+    return '每月 $price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · 折合每月 \$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · 折合每月 $perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '每月 \$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return '每月 $price';
+  }
 
   @override
-  String get maxAnnualPriceLine => '每年 \$159.00 · 折合每月 \$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '每年 $yearly · 折合每月 $perMonth';
+  }
 
   @override
-  String get ctaCaptionPro => '每月 \$12.90 · 随时可在商店中取消';
+  String ctaCaptionPro(String price) {
+    return '每月 $price · 随时可在商店中取消';
+  }
 
   @override
-  String get ctaCaptionMax => '每月 \$19.90 · 随时可在商店中取消';
+  String ctaCaptionMax(String price) {
+    return '每月 $price · 随时可在商店中取消';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 天免费，之后 每月 $price · 随时可在商店中取消';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => '在您取消前将自动续订。';
 
   @override
   String get footerTerms => '条款';
@@ -1412,10 +1440,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaSeeYourSubscription => '查看我的订阅';
 
   @override
-  String get successProCaption => '每月收取 \$12.90，直到你取消为止。可随时在商店中管理或取消。';
+  String successProCaption(String price) {
+    return '每月收取 $price，直到你取消为止。可随时在商店中管理或取消。';
+  }
 
   @override
-  String get successMaxCaption => '每月收取 \$19.90，直到你取消为止。可随时在商店中管理或取消。';
+  String successMaxCaption(String price) {
+    return '每月收取 $price，直到你取消为止。可随时在商店中管理或取消。';
+  }
 
   @override
   String get plansErrorTitle => '套餐加载失败';
@@ -1436,7 +1468,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get moveToMaxTitle => '升级到 Max';
 
   @override
-  String get maxPriceShort => '\$19.90/月';
+  String maxPriceShort(String price) {
+    return '$price/月';
+  }
 
   @override
   String get moveToMaxCardSub => '面对面视频通话 · 所有角色 · 为你定制的学习手册';
@@ -1457,13 +1491,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get creditedTowardMax => '折抵 Max 费用';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1580,7 +1614,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowOneCharacter => '一个角色';
 
   @override
-  String get rowFromPrice => '\$5.00 起';
+  String rowFromPrice(String price) {
+    return '$price 起';
+  }
 
   @override
   String get rowYoursForever => '永久拥有';
@@ -1613,7 +1649,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowPayYearlyInstead => '改为年付';
 
   @override
-  String get rowYearlyMonthEquiv => '折合每月 \$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return '折合每月 $price';
+  }
 
   @override
   String get rowCharactersYouBought => '你买下的角色';
@@ -1628,7 +1666,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaContinueToStore => '继续前往商店';
 
   @override
-  String get ovAnnualSwitchTitle => '改年付，省 \$54.80';
+  String ovAnnualSwitchTitle(String saved) {
+    return '改年付，省 $saved';
+  }
 
   @override
   String get ovAnnualSwitchBody => '你已经用了两个月 Pro。年付套餐算下来更划算。';
@@ -1637,19 +1677,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowYouSave => '你省下';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => '年付';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => '月付满一年';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => '换成月付';
@@ -1702,8 +1748,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovTrialStartTitle => '免费体验 Max 7 天';
 
   @override
-  String ovTrialStartBody(String date) {
-    return '$date前免费。之后每月 \$19.90，除非你在商店中取消。';
+  String ovTrialStartBody(String price, String date) {
+    return '$date前免费。之后每月 $price，除非你在商店中取消。';
   }
 
   @override
@@ -1819,7 +1865,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get flBenefitChecks => 'Pro 发音检测不限次';
 
   @override
-  String get flCaption => '每月 \$12.90 · 随时可取消';
+  String flCaption(String price) {
+    return '每月 $price · 随时可取消';
+  }
 
   @override
   String flUsage(String used, String limit) {

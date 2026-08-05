@@ -496,7 +496,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get proMembership => 'Pro tagság';
 
   @override
-  String get pricePerMonth => '12,9 \$ / hó';
+  String pricePerMonth(String price) {
+    return '$price / hó';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Korlátlan hívások';
@@ -1211,20 +1213,25 @@ class AppLocalizationsHu extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Korlátlan hívások a Pro csomaggal';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Korlátlan hívások · egyenként 15 perc · havi \$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Korlátlan hívások · egyenként 15 perc · havi $price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Kapcsold be a videót a Max csomaggal';
 
   @override
-  String get bannerMaxUpsellSub => 'Szemtől szembeni hívások · havi \$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return 'Szemtől szembeni hívások · havi $price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Válts évesre';
 
   @override
-  String get bannerAnnualSwitchSub => 'Évi \$159 · havi \$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return 'Évi $yearly · havi $perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Nem sikerült levonni a díjat';
@@ -1391,22 +1398,42 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planAnnual => 'Éves';
 
   @override
-  String get proMonthlyPriceLine => 'Havi \$12.90';
+  String proMonthlyPriceLine(String price) {
+    return 'Havi $price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · havi \$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · havi $perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => 'Havi \$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return 'Havi $price';
+  }
 
   @override
-  String get maxAnnualPriceLine => 'Évi \$159.00 · havi \$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return 'Évi $yearly · havi $perMonth';
+  }
 
   @override
-  String get ctaCaptionPro => 'Havi \$12.90 · bármikor lemondható az áruházban';
+  String ctaCaptionPro(String price) {
+    return 'Havi $price · bármikor lemondható az áruházban';
+  }
 
   @override
-  String get ctaCaptionMax => 'Havi \$19.90 · bármikor lemondható az áruházban';
+  String ctaCaptionMax(String price) {
+    return 'Havi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 nap ingyen, utána Havi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => 'Lemondásig automatikusan megújul.';
 
   @override
   String get footerTerms => 'Feltételek';
@@ -1467,12 +1494,14 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Előfizetésed megtekintése';
 
   @override
-  String get successProCaption =>
-      'Havonta \$12.90 kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
+  String successProCaption(String price) {
+    return 'Havonta $price kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
+  }
 
   @override
-  String get successMaxCaption =>
-      'Havonta \$19.90 kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
+  String successMaxCaption(String price) {
+    return 'Havonta $price kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
+  }
 
   @override
   String get plansErrorTitle => 'Nem sikerült betölteni a csomagokat';
@@ -1493,7 +1522,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get moveToMaxTitle => 'Váltás Max csomagra';
 
   @override
-  String get maxPriceShort => '\$19.90 / hó';
+  String maxPriceShort(String price) {
+    return '$price / hó';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1515,13 +1546,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get creditedTowardMax => 'Beszámítjuk a Max árába';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1645,7 +1676,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get rowOneCharacter => 'Egy karakter';
 
   @override
-  String get rowFromPrice => 'már \$5.00-tól';
+  String rowFromPrice(String price) {
+    return 'már $price-tól';
+  }
 
   @override
   String get rowYoursForever => 'Örökre a tiéd';
@@ -1680,7 +1713,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get rowPayYearlyInstead => 'Fizess inkább évente';
 
   @override
-  String get rowYearlyMonthEquiv => 'Havi \$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return 'Havi $price';
+  }
 
   @override
   String get rowCharactersYouBought => 'A megvásárolt karaktereid';
@@ -1695,7 +1730,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaContinueToStore => 'Tovább az áruházba';
 
   @override
-  String get ovAnnualSwitchTitle => 'Éves fizetéssel \$54.80 megtakarítás';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Éves fizetéssel $saved megtakarítás';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1705,19 +1742,25 @@ class AppLocalizationsHu extends AppLocalizations {
   String get rowYouSave => 'Megtakarításod';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Éves';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Havi, egy évig';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Váltás havira';
@@ -1772,8 +1815,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ovTrialStartTitle => '7 nap Max, ingyen';
 
   @override
-  String ovTrialStartBody(String date) {
-    return 'Ingyenes $date napjáig. Utána havi \$19.90, hacsak le nem mondod az áruházban.';
+  String ovTrialStartBody(String price, String date) {
+    return 'Ingyenes $date napjáig. Utána havi $price, hacsak le nem mondod az áruházban.';
   }
 
   @override
@@ -1898,7 +1941,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get flBenefitChecks => 'Korlátlan kiejtésellenőrzés a Pro csomaggal';
 
   @override
-  String get flCaption => 'Havi \$12.90 · bármikor lemondható';
+  String flCaption(String price) {
+    return 'Havi $price · bármikor lemondható';
+  }
 
   @override
   String flUsage(String used, String limit) {

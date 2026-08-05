@@ -492,7 +492,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get proMembership => 'Pro aʼzolik';
 
   @override
-  String get pricePerMonth => '\$12.9 / oy';
+  String pricePerMonth(String price) {
+    return '$price / oy';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Cheksiz qoʻngʻiroqlar';
@@ -1206,20 +1208,25 @@ class AppLocalizationsUz extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Pro bilan cheksiz boʻling';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Cheksiz qoʻngʻiroqlar · har biri 15 daqiqa · oyiga \$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Cheksiz qoʻngʻiroqlar · har biri 15 daqiqa · oyiga $price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Max bilan videoni yoqing';
 
   @override
-  String get bannerMaxUpsellSub => 'Yuzma-yuz qoʻngʻiroqlar · oyiga \$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return 'Yuzma-yuz qoʻngʻiroqlar · oyiga $price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Yillik tarifga oʻting';
 
   @override
-  String get bannerAnnualSwitchSub => 'Yiliga \$159 · oyiga \$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return 'Yiliga $yearly · oyiga $perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Toʻlovni olib boʻlmadi';
@@ -1387,24 +1394,43 @@ class AppLocalizationsUz extends AppLocalizations {
   String get planAnnual => 'Yillik';
 
   @override
-  String get proMonthlyPriceLine => 'Oyiga \$12.90';
+  String proMonthlyPriceLine(String price) {
+    return 'Oyiga $price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · oyiga \$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · oyiga $perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => 'Oyiga \$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return 'Oyiga $price';
+  }
 
   @override
-  String get maxAnnualPriceLine => 'Yiliga \$159.00 · oyiga \$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return 'Yiliga $yearly · oyiga $perMonth';
+  }
 
   @override
-  String get ctaCaptionPro =>
-      'Oyiga \$12.90 · doʻkonda istalgan vaqtda bekor qilish mumkin';
+  String ctaCaptionPro(String price) {
+    return 'Oyiga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
+  }
 
   @override
-  String get ctaCaptionMax =>
-      'Oyiga \$19.90 · doʻkonda istalgan vaqtda bekor qilish mumkin';
+  String ctaCaptionMax(String price) {
+    return 'Oyiga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 kun bepul, keyin Oyiga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew =>
+      'Bekor qilinmaguncha avtomatik yangilanadi.';
 
   @override
   String get footerTerms => 'Shartlar';
@@ -1466,12 +1492,14 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Obunangizni koʻrish';
 
   @override
-  String get successProCaption =>
-      'Bekor qilguningizcha har oy \$12.90 olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
+  String successProCaption(String price) {
+    return 'Bekor qilguningizcha har oy $price olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
+  }
 
   @override
-  String get successMaxCaption =>
-      'Bekor qilguningizcha har oy \$19.90 olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
+  String successMaxCaption(String price) {
+    return 'Bekor qilguningizcha har oy $price olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
+  }
 
   @override
   String get plansErrorTitle => 'Tariflarni yuklab boʻlmadi';
@@ -1492,7 +1520,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get moveToMaxTitle => 'Max tarifiga oʻtish';
 
   @override
-  String get maxPriceShort => '\$19.90 / oy';
+  String maxPriceShort(String price) {
+    return '$price / oy';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1514,13 +1544,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get creditedTowardMax => 'Max hisobiga oʻtkaziladi';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1646,7 +1676,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get rowOneCharacter => 'Bitta personaj';
 
   @override
-  String get rowFromPrice => '\$5.00 dan boshlab';
+  String rowFromPrice(String price) {
+    return '$price dan boshlab';
+  }
 
   @override
   String get rowYoursForever => 'Abadiy sizniki';
@@ -1681,7 +1713,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get rowPayYearlyInstead => 'Buning oʻrniga yillik toʻlang';
 
   @override
-  String get rowYearlyMonthEquiv => 'Oyiga \$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return 'Oyiga $price';
+  }
 
   @override
   String get rowCharactersYouBought => 'Sotib olgan personajlaringiz';
@@ -1696,7 +1730,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaContinueToStore => 'Doʻkonga oʻtish';
 
   @override
-  String get ovAnnualSwitchTitle => 'Yillik toʻlab, \$54.80 tejang';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Yillik toʻlab, $saved tejang';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1706,19 +1742,25 @@ class AppLocalizationsUz extends AppLocalizations {
   String get rowYouSave => 'Tejaysiz';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Yillik';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Oylik, bir yil davomida';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Oylikka oʻtish';
@@ -1773,8 +1815,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ovTrialStartTitle => '7 kun Max, bepul';
 
   @override
-  String ovTrialStartBody(String date) {
-    return '$date gacha bepul. Soʻng oyiga \$19.90, agar doʻkonda bekor qilmasangiz.';
+  String ovTrialStartBody(String price, String date) {
+    return '$date gacha bepul. Soʻng oyiga $price, agar doʻkonda bekor qilmasangiz.';
   }
 
   @override
@@ -1898,7 +1940,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get flBenefitChecks => 'Pro bilan cheksiz talaffuz tekshiruvlari';
 
   @override
-  String get flCaption => 'Oyiga \$12.90 · istalgan vaqtda bekor qilish mumkin';
+  String flCaption(String price) {
+    return 'Oyiga $price · istalgan vaqtda bekor qilish mumkin';
+  }
 
   @override
   String flUsage(String used, String limit) {

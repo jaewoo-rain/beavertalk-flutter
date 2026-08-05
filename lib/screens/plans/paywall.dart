@@ -13,6 +13,8 @@ import '../../components/molecules/plan_row.dart';
 import '../../components/molecules/plan_summary_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -246,8 +248,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     if (_isMax) {
       return PlanSummaryCard(
         title: l10n.planMax,
-        price: PlansCompareCopy.maxPrice,
-        anchorPrice: PlansCompareCopy.maxAnchorPrice,
+        price: PlanPrices.maxMonthly,
+        anchorPrice: PlanPrices.maxMonthlyAnchor,
         perMonthUnit: l10n.perMonthUnit,
         badgeTone: BadgeTone.gold,
         badgeLabel: l10n.badgeRecommended,
@@ -267,7 +269,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     }
     return PlanSummaryCard(
       title: l10n.planPro,
-      price: PlansCompareCopy.proPrice,
+      price: PlanPrices.proMonthly,
       perMonthUnit: l10n.perMonthUnit,
       tagline: l10n.planTaglinePro,
       taglineColor: c.primaryNormal,
@@ -294,8 +296,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         tier: tier,
         selected: _cycle == _Cycle.monthly,
         title: l10n.planMonthly,
-        price: _isMax ? l10n.maxMonthlyPriceLine : l10n.proMonthlyPriceLine,
-        priceOriginal: _isMax ? PlansCompareCopy.maxAnchorPrice : null,
+        price: _isMax ? l10n.maxMonthlyPriceLine(PlanPrices.maxMonthly) : l10n.proMonthlyPriceLine(PlanPrices.proMonthly),
+        priceOriginal: _isMax ? PlanPrices.maxMonthlyAnchor : null,
         onTap: () => setState(() => _cycle = _Cycle.monthly),
       ),
       const SizedBox(height: AppSpacing.s12),
@@ -303,8 +305,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         tier: tier,
         selected: _cycle == _Cycle.annual,
         title: l10n.planAnnual,
-        price: _isMax ? l10n.maxAnnualPriceLine : l10n.proAnnualPriceLine,
-        priceOriginal: _isMax ? null : PlansCompareCopy.proAnnualAnchor,
+        price: _isMax ? l10n.maxAnnualPriceLine(PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth) : l10n.proAnnualPriceLine(PlanPrices.proYearly, PlanPrices.proYearlyPerMonth),
+        priceOriginal: _isMax ? null : PlanPrices.proYearlyAnchor,
         onTap: () => setState(() => _cycle = _Cycle.annual),
       ),
     ];
@@ -343,6 +345,25 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
+  /// Whether the 7-day Max trial may be announced on this screen.
+  ///
+  /// The store is the real authority — an introductory offer is once per
+  /// account per subscription group, and only StoreKit / Play Billing can say
+  /// whether this account already used it. Until the SDK lands this
+  /// approximates it as "has never been on a paid plan", which errs toward
+  /// hiding the line: promising a free trial to someone who already spent it
+  /// is a 3.1.2 misstatement, not a cosmetic slip.
+  bool get _trialEligible {
+    // Gate one: can the rail answer at all? The mock cannot, so today this is
+    // always false and the trial line never ships. That is the intended
+    // state — see [IapService.reportsIntroEligibility].
+    if (!ref.watch(iapServiceProvider).reportsIntroEligibility) return false;
+    // Gate two: **replace this when a real rail lands.** "Never been on a paid
+    // plan" is not eligibility — a member who took the trial, cancelled, and
+    // whose server row lapsed reads as free here. Ask the store per product.
+    return ref.watch(subscriptionStatusProvider).state == SubscriptionState.free;
+  }
+
   Widget _stickyCta(AppLocalizations l10n, AppColorTokens c) {
     return Container(
       padding: const EdgeInsets.fromLTRB(
@@ -371,9 +392,21 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-            _isMax ? l10n.ctaCaptionMax : l10n.ctaCaptionPro,
+            _isMax
+                ? (_trialEligible ? l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly) : l10n.ctaCaptionMax(PlanPrices.maxMonthly))
+                : l10n.ctaCaptionPro(PlanPrices.proMonthly),
             textAlign: TextAlign.center,
             style: AppType.caption1.r.copyWith(color: c.labelNormal),
+          ),
+          // App Review 3.1.2 wants five things on the purchase screen: title,
+          // length, price, **that it auto-renews**, and how to cancel. The
+          // caption above carried four of them; this is the fifth. Its own
+          // line rather than an infix — spliced mid-sentence it reads wrong in
+          // half the locales.
+          Text(
+            l10n.ctaCaptionAutoRenew,
+            textAlign: TextAlign.center,
+            style: AppType.caption1.r.copyWith(color: c.labelAlternative),
           ),
         ],
       ),
@@ -381,13 +414,3 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 }
 
-/// Display price strings shared by plan screens.
-///
-/// TODO(iap): the store catalog replaces these (v2 §6-4 — localized store
-/// prices are the authority once products exist).
-abstract final class PlansCompareCopy {
-  static const proPrice = r'$12.90';
-  static const proAnnualAnchor = r'$154.80';
-  static const maxPrice = r'$19.90';
-  static const maxAnchorPrice = r'$24.90';
-}
