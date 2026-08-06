@@ -110,6 +110,8 @@ void main() {
       // 각 항목이 빠졌을 때 무엇이 새는지는 auth_controller.dart 의 주석에 있다.
       expect(invalidated, containsAll(<String>[
         'myProfileProvider',
+        // 두 번째로 발견된 누락. 안 지우면 B 의 마이페이지에 A 의 억양 통계가 뜬다.
+        'myAccentProvider',
         'alarmListControllerProvider',
         'bookmarkListProvider',
         'ownedCharactersProvider',

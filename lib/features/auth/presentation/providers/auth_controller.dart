@@ -96,6 +96,10 @@ class AuthController extends Notifier<AuthStatus> {
   /// [callListProvider] is `.autoDispose` and needs no entry here.
   void _clearUserScopedState() {
     ref.invalidate(myProfileProvider);
+    // 억양(국가) 분석 결과 — 마이페이지 억양 카드가 이걸 그린다. 바로 아래
+    // myLevelProvider 는 autoDispose 라 안전한데 이것만 평범한 FutureProvider 라,
+    // 지우지 않으면 B 의 마이페이지에 A 의 억양 통계가 그대로 뜬다.
+    ref.invalidate(myAccentProvider);
     // A's alarms → B's ring (see above). Also clears a 401 cached pre-login.
     ref.invalidate(alarmListControllerProvider);
     // A's saved sentences would show in B's 보관 tab.
