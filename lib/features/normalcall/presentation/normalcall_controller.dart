@@ -942,7 +942,15 @@ class NormalCallController extends Notifier<CallState> {
         token: token,
         cascade: _channelMode.isCascade,
       );
-      _log('연결 통로: ${_channelMode.name} → ${_channelMode.wsPath}');
+      // 통로를 매 연결마다 찍는다. 캐스케이드일 때는 **전제조건 상태까지** 같이 찍는다 —
+      // 위험은 "운영 서버냐"가 아니라 "플랫폼 AEC 가 실제로 걸렸냐"다. 마이크가 상시
+      // 열리므로 AEC 없이 고르면 비버가 자기 목소리에 끊긴다(call_id=855 전례).
+      // ⚠ 게이트가 아니라 **정보**다. 막지 않는 이유는 [CallChannel] 문서 참조 —
+      //   클라는 지금 붙은 백엔드가 운영인지 알 방법이 없다(실서비스도 ENV=test 다).
+      _log(_channelMode.isCascade
+          ? '연결 통로: cascade → ${_channelMode.wsPath} '
+              '(마이크 상시개방 · Android 통화용 오디오=$_androidVoiceAudio)'
+          : '연결 통로: live → ${_channelMode.wsPath}');
       final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
       _wsSub = channel.stream.listen(
