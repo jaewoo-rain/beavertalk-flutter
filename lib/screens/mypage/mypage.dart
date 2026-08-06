@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -118,6 +119,10 @@ class MyPageScreen extends ConsumerWidget {
                 _levelCard(context, ref, l10n, level),
                 const SizedBox(height: AppSpacing.s24),
                 _pronunciationCard(context, l10n, pron, recentCalls),
+                if (kDebugMode) ...[
+                  const SizedBox(height: AppSpacing.s24),
+                  _devToolsCard(context),
+                ],
               ],
             ),
           ),
@@ -125,6 +130,88 @@ class MyPageScreen extends ConsumerWidget {
       ),
     );
   }
+
+  // ── 개발자 도구 (디버그 빌드 전용) ──────────────────────────────────────
+
+  /// 제품 플로우에서 도달할 수 없는 dev 화면들의 **유일한 진입점**.
+  ///
+  /// ⛔ `kDebugMode` 로만 그린다. 릴리즈 빌드에서는 이 카드가 트리에 아예 안 들어가고,
+  ///   Dart 컴파일러가 `kDebugMode` 를 상수로 접어 코드째 제거한다. 실사용자가 닿을 수 없다.
+  ///
+  /// 마이페이지 스크롤 맨 아래에 둔 이유: 이미 아는 화면이라 찾기 쉽고, 끝까지 내려야
+  /// 보이니 실수로 눌릴 일이 적다. **숨겨진 제스처(로고 롱프레스 같은 것)는 일부러 피했다** —
+  /// 못 찾으면 없는 것과 같고, 그러면 측정이 통째로 막힌다.
+  ///
+  /// 여기 오기 전까지 `Routes.gallery` 는 라우트만 있고 도달할 UI 가 없어 사실상 죽어
+  /// 있었다. dev 진입점을 새로 만드는 김에 같이 살렸다 — 다음 dev 도구도 갈 자리가 생긴다.
+  Widget _devToolsCard(BuildContext context) => _card(
+        context,
+        header: _cardHeader(
+          context,
+          title: '개발자 도구',
+          subtitle: '디버그 빌드에만 보입니다',
+        ),
+        children: [
+          _devRow(
+            context,
+            title: '에코 측정 리그',
+            description: '스피커폰·이어폰에서 비버 소리가 마이크로 얼마나 되돌아오는지 잽니다. '
+                '서버 에코 임계값을 정하는 실측 도구입니다.',
+            route: Routes.echoRig,
+          ),
+          _devRow(
+            context,
+            title: '컴포넌트 갤러리',
+            description: '디자인 시스템 컴포넌트 미리보기.',
+            route: Routes.gallery,
+          ),
+        ],
+      );
+
+  /// dev 도구 한 줄. 제목 + 무엇을 하는 화면인지 한 줄.
+  ///
+  /// 계측 도구 진입점이라 꾸밀 이유가 없다 — 눈에 띄고 뭔지 읽히면 그걸로 끝이다.
+  Widget _devRow(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required String route,
+  }) =>
+      InkWell(
+        onTap: () => Navigator.pushNamed(context, route),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Expanded: 설명이 길어 두 줄 이상으로 접히므로 Row 안에서 폭을 받아야
+              // 한다. 고정폭이나 double.infinity 를 쓰면 오버플로가 난다.
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title,
+                        style: AppType.body1.sb
+                            .copyWith(color: context.c.labelStrong)),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(description,
+                        style: AppType.label1.r
+                            .copyWith(color: context.c.labelNormal)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s12),
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.s4),
+                child: AppIcons.chevronRight(
+                    size: 20, color: context.c.labelAssistive),
+              ),
+            ],
+          ),
+        ),
+      );
 
   // ── Cards ──────────────────────────────────────────────────────────────
 

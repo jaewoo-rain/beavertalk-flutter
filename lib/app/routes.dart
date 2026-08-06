@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import '../preview/echo_rig_screen.dart';
 import '../preview/gallery_screen.dart';
@@ -154,8 +155,14 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
   }
 
   final builders = <String, WidgetBuilder>{
-    Routes.gallery: (_) => const GalleryScreen(),
-    Routes.echoRig: (_) => const EchoRigScreen(),
+    // 개발자 전용 화면은 **디버그 빌드에만 등록한다.**
+    //
+    // 진입 버튼을 kDebugMode 로 가리는 것만으로는 부족하다 — 라우트가 테이블에 남아
+    // 있으면 화면 클래스가 릴리즈 바이너리에 그대로 컴파일되고(실측: 릴리즈 libapp.so 에
+    // 리그 화면 문자열이 UTF-16 으로 남아 있었다), pushNamed 로 이름만 알면 도달할 수
+    // 있는 경로가 남는다. 여기서 막아야 트리셰이킹이 화면째 들어낸다.
+    if (kDebugMode) Routes.gallery: (_) => const GalleryScreen(),
+    if (kDebugMode) Routes.echoRig: (_) => const EchoRigScreen(),
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
     Routes.onboardingName: (_) => const OnboardingNameScreen(),
     Routes.onboardingReason: (_) => const OnboardingReasonScreen(),
