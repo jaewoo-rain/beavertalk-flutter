@@ -949,6 +949,88 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
+  /// Opens the native PCM playback engine and starts the push pump.
+  ///
+  /// Extracted from [_startAudio] so the debug cancel rig ([debugOpenPlayback])
+  /// can bring up the exact same pipeline **without** a socket, mic, or audio
+  /// session. Copy-pasting it there would have drifted: this block owns the
+  /// per-call playback reset (cushion, ledger, barge-in flags), and a rig running
+  /// against a stale copy of that reset would measure a pipeline the call never
+  /// uses. Touches nothing outside playback.
+  Future<void> _openPlayback() async {
+    // Open native gapless PCM playback at the server's 24kHz (no upsampling).
+    // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
+    // underflow-churn stall that cut audio out after ~1 minute.
+    //
+    // NOTE: _pcmQueue/_pcmHead are NOT reset here. [_connect]'s teardown already
+    // cleared them, and anything that arrived since is the server's opening line
+    // waiting to be played — clearing it would silence exactly what we buffered.
+    _pcmActive = false;
+    _playing = false;
+    await FlutterPcmSound.setLogLevel(LogLevel.error);
+    await FlutterPcmSound.setup(
+      sampleRate: _playbackSampleRate,
+      channelCount: _playbackChannels,
+      // MUST be passed — both defaults are wrong for a phone call:
+      //
+      // `iosAllowBackgroundAudio` defaults to FALSE, and the plugin's `feed`
+      // handler then does this whenever the app is not active:
+      //     if (!mIsAppActive && !mAllowBackgroundAudio) {
+      //         [self.mSamples setLength:0];   // discards the audio
+      //         result(@YES);                  // and reports SUCCESS
+      //     }
+      // i.e. every PCM chunk is silently thrown away the moment the screen
+      // locks, with no error for us to see — the beaver went mute on the lock
+      // screen and audio "came back" only when the app was reopened
+      // (mIsAppActive flips on UIApplicationDidBecomeActive).
+      //
+      // `iosAudioCategory` defaults to `playback`, and setup() applies it with
+      // setCategory: alone — no options, no mode — wiping playAndRecord +
+      // allowBluetooth + defaultToSpeaker + voiceChat. `playback` has no input
+      // at all. We re-assert the full category right after (routeToSpeaker),
+      // but ask for the closest one so the window is harmless.
+      iosAudioCategory: IosAudioCategory.playAndRecord,
+      iosAllowBackgroundAudio: true,
+    );
+    _pcmSetup = true;
+    await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
+    FlutterPcmSound.setFeedCallback(_onFeed);
+    _pcmActive = true;
+    _lastFeedSilent = null;
+    _envQueue.clear();
+    _startEnvelope();
+    _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
+    _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
+
+    // Per-call playback state. The cushion in particular must not carry over:
+    // a rough previous call must not tax this one.
+    _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
+    _starveAtMs = null;
+    _cushionBytes = _prebufferBytes;
+    _turnStarved = false;
+    _resumeFlushed = false;
+    // barge-in 상태도 통화 스코프다: 이전 통화의 취소 구간이 살아 있으면 새 통화의
+    // 첫 인사가 통째로 폐기된다.
+    _cancelledResidual = false;
+    _cancelledResidualBytes = 0;
+    _currentTurnId = null;
+    _ledger.reset();
+    _prevTurnBacklogMs = -1;
+    _backlogRiseStreak = 0;
+
+    // Drive playback from Dart's own clock instead of the plugin's feed
+    // callback. Note this also sidesteps FlutterPcmSound.start(), which only
+    // kicks when the plugin's *static* `_needsStart` flag is true — and that
+    // flag is NEVER reset by release()/setup(): the first call feeds audio →
+    // sets it false → it stays false, so on the 2nd call start() no-ops and
+    // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
+    // is independent of that stale flag and works on every call.
+    _startPushFeed();
+    unawaited(_pump()); // don't wait a tick to open the stream
+    _log('playback started @ ${_playbackSampleRate}Hz '
+        '(queued ${_queueLen}B waiting)');
+  }
+
   /// Stage 2 — open playback and the mic, then drain whatever the server already
   /// sent while the audio session was being handed over.
   Future<void> _startAudio() async {
@@ -1027,77 +1109,7 @@ class NormalCallController extends Notifier<CallState> {
       }
       await _logNativeAudio('startAudio/session-ready +${_elapsedSinceStartMs}ms');
 
-      // Open native gapless PCM playback at the server's 24kHz (no upsampling).
-      // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
-      // underflow-churn stall that cut audio out after ~1 minute.
-      //
-      // NOTE: _pcmQueue/_pcmHead are NOT reset here. [_connect]'s teardown already
-      // cleared them, and anything that arrived since is the server's opening line
-      // waiting to be played — clearing it would silence exactly what we buffered.
-      _pcmActive = false;
-      _playing = false;
-      await FlutterPcmSound.setLogLevel(LogLevel.error);
-      await FlutterPcmSound.setup(
-        sampleRate: _playbackSampleRate,
-        channelCount: _playbackChannels,
-        // MUST be passed — both defaults are wrong for a phone call:
-        //
-        // `iosAllowBackgroundAudio` defaults to FALSE, and the plugin's `feed`
-        // handler then does this whenever the app is not active:
-        //     if (!mIsAppActive && !mAllowBackgroundAudio) {
-        //         [self.mSamples setLength:0];   // discards the audio
-        //         result(@YES);                  // and reports SUCCESS
-        //     }
-        // i.e. every PCM chunk is silently thrown away the moment the screen
-        // locks, with no error for us to see — the beaver went mute on the lock
-        // screen and audio "came back" only when the app was reopened
-        // (mIsAppActive flips on UIApplicationDidBecomeActive).
-        //
-        // `iosAudioCategory` defaults to `playback`, and setup() applies it with
-        // setCategory: alone — no options, no mode — wiping playAndRecord +
-        // allowBluetooth + defaultToSpeaker + voiceChat. `playback` has no input
-        // at all. We re-assert the full category right after (routeToSpeaker),
-        // but ask for the closest one so the window is harmless.
-        iosAudioCategory: IosAudioCategory.playAndRecord,
-        iosAllowBackgroundAudio: true,
-      );
-      _pcmSetup = true;
-      await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
-      FlutterPcmSound.setFeedCallback(_onFeed);
-      _pcmActive = true;
-      _lastFeedSilent = null;
-      _envQueue.clear();
-      _startEnvelope();
-      _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
-      _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
-
-      // Per-call playback state. The cushion in particular must not carry over:
-      // a rough previous call must not tax this one.
-      _logAnchorMs = DateTime.now().millisecondsSinceEpoch;
-      _starveAtMs = null;
-      _cushionBytes = _prebufferBytes;
-      _turnStarved = false;
-      _resumeFlushed = false;
-      // barge-in 상태도 통화 스코프다: 이전 통화의 취소 구간이 살아 있으면 새 통화의
-      // 첫 인사가 통째로 폐기된다.
-      _cancelledResidual = false;
-      _cancelledResidualBytes = 0;
-      _currentTurnId = null;
-      _ledger.reset();
-      _prevTurnBacklogMs = -1;
-      _backlogRiseStreak = 0;
-
-      // Drive playback from Dart's own clock instead of the plugin's feed
-      // callback. Note this also sidesteps FlutterPcmSound.start(), which only
-      // kicks when the plugin's *static* `_needsStart` flag is true — and that
-      // flag is NEVER reset by release()/setup(): the first call feeds audio →
-      // sets it false → it stays false, so on the 2nd call start() no-ops and
-      // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
-      // is independent of that stale flag and works on every call.
-      _startPushFeed();
-      unawaited(_pump()); // don't wait a tick to open the stream
-      _log('playback started @ ${_playbackSampleRate}Hz '
-          '(queued ${_queueLen}B waiting)');
+      await _openPlayback();
       if (myGen != _gen) return _abortStart();
 
       // iOS: settle the category and select a Bluetooth headset input BEFORE
@@ -2533,6 +2545,11 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Encodes and sends a control JSON frame if the socket is open.
   void _send(Map<String, dynamic> msg) {
+    // ⚠ 소켓 null 체크 **앞**이다. 취소 배관 리그는 소켓 없이 돌기 때문에 여기서 못
+    //   가로채면 `playback_progress` 가 조용히 사라진다 — 그러면 리그가 재려는 값이
+    //   화면에 안 나온다. 가로채는 건 서버가 받게 될 것과 **같은 Map** 이어야 하므로
+    //   가공하지 않고 그대로 넘긴다.
+    if (kDebugMode) debugOutboundSink?.call(msg);
     final ch = _channel;
     if (ch == null) return;
     try {
@@ -2738,6 +2755,59 @@ class NormalCallController extends Notifier<CallState> {
       }
     }
   }
+
+  // ── 취소 배관 리그 전용 표면 (디버그 빌드 전용) ─────────────────────────────
+  //
+  // `audio_cancel` 배관을 실기기에서 재려면 서버가 취소를 쏴 줘야 하는데, 서버 dev
+  // 훅이 배포 전이다. 그래서 프레임을 **클라 안에서** 주입한다.
+  //
+  // 이게 유효한 측정인 이유: 재려는 값 `client_stop_ms`(취소 수신 → 실제 무음)는
+  // 전부 클라 내부 구간이다. 서버가 기여하는 건 RTT 뿐이고 그건 이번 측정 대상이
+  // 아니다. 즉 로컬 주입으로 나오는 숫자는 대용품이 아니라 진짜다.
+  //
+  // ⛔ 리그가 [_clearPlayback] 이나 [_onAudioCancel] 을 직접 부르면 안 된다. 그러면
+  //   실제로는 안 도는 경로를 검증한 게 된다. 진입은 [debugInjectWsFrame] 하나뿐이다.
+
+  /// [디버그 전용] 소켓으로 나가려던 제어 프레임을 가로챈다.
+  ///
+  /// 리그에는 소켓이 없어 [_send] 가 조용히 빠진다. 여기로 받아야 `playback_progress`
+  /// 페이로드를 **서버가 받게 될 모습 그대로** 화면에 찍을 수 있다.
+  static void Function(Map<String, dynamic> msg)? debugOutboundSink;
+
+  /// [디버그 전용] 소켓이 받은 것처럼 프레임을 밀어 넣는다.
+  ///
+  /// [_onWsData] 는 소켓이 닿는 유일한 관문이다. 여기로만 들어가면 파싱·디스패치·
+  /// 게이팅·원장·`clear()`·회신 구성까지 한 줄도 우회하지 않는다.
+  /// [data] 는 제어 JSON 문자열이거나 PCM24k 바이너리([Uint8List]).
+  void debugInjectWsFrame(dynamic data) {
+    assert(kDebugMode, 'debug 전용 진입점이 릴리즈 경로에서 불렸다');
+    _onWsData(data);
+  }
+
+  /// [디버그 전용] 소켓·마이크·권한 없이 **재생 파이프라인만** 개통한다.
+  Future<void> debugOpenPlayback() async {
+    assert(kDebugMode, 'debug 전용 진입점이 릴리즈 경로에서 불렸다');
+    await _openPlayback();
+  }
+
+  /// [디버그 전용] 리그 종료. 소켓/마이크가 애초에 없어도 [_teardown] 은 안전하다
+  /// (전부 null 가드). 엔진 release 까지 여기서 끝낸다.
+  Future<void> debugClosePlayback() => _teardown();
+
+  /// [디버그 전용] 취소 이후 폐기한 잔여 바이트. 서버 불변식("취소~다음 turn_start
+  /// 사이 오디오는 버린다")이 실제로 지켜지는지 리그가 이걸로 판정한다.
+  int get debugCancelledResidualBytes => _cancelledResidualBytes;
+
+  /// [디버그 전용] Dart 링버퍼에 남은 바이트.
+  ///
+  /// **락업 검출량이다.** 네이티브가 in-flight 를 부풀린 채 굳으면
+  /// [_engineLevelFrames] 가 계속 높게 나오고 [_pump] 의 `level < _engineLowFrames`
+  /// 가 영영 거짓이 되어, 이 값이 단조 증가한다. 사람 귀 대신 이걸 본다.
+  int get debugQueuedBytes => _queueLen;
+
+  /// [디버그 전용] 엔진에 남았다고 **추정**되는 프레임(외삽값). 큐가 안 빠질 때 원인이
+  /// 엔진 과대보고인지 가르는 보조 지표다.
+  int get debugEngineLevelFrames => _engineLevelFrames;
 }
 
 /// [NormalCallController._clearPlayback] 의 결과 — `playback_progress` 페이로드의 재료.
