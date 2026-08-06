@@ -154,6 +154,13 @@ class MyPageScreen extends ConsumerWidget {
         children: [
           _devRow(
             context,
+            title: '취소 배관 리그',
+            description: '끼어들기(audio_cancel) 수신부터 소리가 실제로 멎기까지 몇 ms 걸리는지 '
+                '반복 측정합니다. 서버 없이 클라 안에서 프레임을 주입합니다.',
+            route: Routes.cancelRig,
+          ),
+          _devRow(
+            context,
             title: '에코 측정 리그',
             description: '스피커폰·이어폰에서 비버 소리가 마이크로 얼마나 되돌아오는지 잽니다. '
                 '서버 에코 임계값을 정하는 실측 도구입니다.',
