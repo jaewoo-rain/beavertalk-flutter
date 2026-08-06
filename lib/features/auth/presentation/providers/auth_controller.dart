@@ -12,14 +12,10 @@ import '../../../../core/error/app_exception.dart';
 import '../../../../core/i18n/locale_controller.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../mock/mock_data.dart' show clearBookmarks;
-import '../../../alarm/presentation/providers/alarm_list_controller.dart';
-import '../../../bookmark/presentation/providers/bookmark_providers.dart';
-import '../../../character/presentation/providers/character_providers.dart';
 import '../../../incoming_call/presentation/incoming_call_providers.dart';
-import '../../../subscription/presentation/providers/subscription_state_providers.dart';
 import 'auth_providers.dart';
 import 'my_profile_provider.dart';
-import 'signup_draft_provider.dart';
+import 'user_scoped_providers.dart';
 
 /// Deep link Supabase OAuth (Kakao, and the Apple/Android fallback) redirects
 /// back to after the browser consent step. Must be registered in three places:
@@ -88,37 +84,16 @@ class AuthController extends Notifier<AuthStatus> {
   /// 401 expiry, and the `signedOut` event) and on sign-in as a belt-and-braces
   /// guard against state cached before the session existed.
   ///
-  /// Only [myProfileProvider] used to be invalidated here. The rest of these are
-  /// plain (non-autoDispose) providers, so their cached values outlived sign-out
-  /// entirely — user A's alarms would still be in memory when user B signed in
-  /// on the same device, and [InboundCallScheduler] reads that cache on a timer,
-  /// so B's phone would ring with A's alarm and A's character.
-  /// [callListProvider] is `.autoDispose` and needs no entry here.
+  /// **무엇을 지우는지는 여기 없다** — [userScopedProviders] 에 있다. 목록이 이 메서드
+  /// 안에 손으로 나열돼 있던 동안 같은 사고가 두 번 났다(`charactersProvider`,
+  /// `myAccentProvider` 가 각각 빠져 다음 회원에게 앞 회원 데이터가 보였다). 나열을
+  /// 코드 밖으로 빼서, 새 provider 를 만들 때 분류가 강제되게 했다. 그 파일의 주석에
+  /// 각 항목이 왜 지워지는지/왜 안 지워지는지가 적혀 있다.
   void _clearUserScopedState() {
-    ref.invalidate(myProfileProvider);
-    // 억양(국가) 분석 결과 — 마이페이지 억양 카드가 이걸 그린다. 바로 아래
-    // myLevelProvider 는 autoDispose 라 안전한데 이것만 평범한 FutureProvider 라,
-    // 지우지 않으면 B 의 마이페이지에 A 의 억양 통계가 그대로 뜬다.
-    ref.invalidate(myAccentProvider);
-    // A's alarms → B's ring (see above). Also clears a 401 cached pre-login.
-    ref.invalidate(alarmListControllerProvider);
-    // A's saved sentences would show in B's 보관 tab.
-    ref.invalidate(bookmarkListProvider);
-    // A's owned characters would show in B's avatar screen.
-    ref.invalidate(ownedCharactersProvider);
-    // ⚠ 카탈로그도 **회원별 데이터다.** 캐릭터 목록 자체는 공용이지만 각 행에 붙어 오는
-    // is_owned / is_unlocked / unlock_source 는 조회한 회원 기준으로 계산된 값이다
-    // (서버가 구독 상태를 읽어 매긴다). 이걸 안 지우면 B 가 A 의 소유·잠금해제 상태를
-    // 그대로 본다 — 아바타 화면의 목록 구성과 알람의 통화 상대 목록이 둘 다 이 값으로
-    // 갈린다. 바로 위 보유 목록만 지우고 여기를 빠뜨린 게 원래 상태였다.
-    ref.invalidate(charactersProvider);
-    // A's in-session plan purchase would upgrade B's subscription screens.
-    ref.invalidate(sessionEntitlementProvider);
-    // A's language/name/reasons would prefill B's onboarding — the login screen
-    // skips the language sheet when `language != null`, and the reason step
-    // would open with A's answers already checked and Continue enabled.
-    ref.invalidate(signupDraftProvider);
-    // Top-level global, outside Riverpod — must be cleared by hand.
+    for (final provider in userScopedProviders) {
+      ref.invalidate(provider);
+    }
+    // Riverpod 밖의 전역이라 목록에 못 들어간다 — 손으로 지운다.
     clearBookmarks();
   }
 
