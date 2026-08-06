@@ -50,4 +50,39 @@ class AudioRouteProbe {
       return '';
     }
   }
+
+  /// [Android 전용] 통화 용도 오디오 모드를 켜고 끈다.
+  ///
+  /// 켜야 플랫폼 AEC 가 참조할 다운링크가 생긴다. **켜면 같이 바뀌는 게 있다** —
+  /// 볼륨 스트림이 미디어→통화로 넘어가고, 헤드셋이 없으면 기본 출력이 리시버로
+  /// 빠지려 한다(네이티브가 스피커폰을 명시적으로 켜서 막는다).
+  ///
+  /// 반환은 [audioDiag] 와 같은 스냅샷 — **실제로 무엇이 적용됐는지**다.
+  /// "켜라고 했다"와 "켜졌다"는 다르므로 호출자는 이걸 확인해야 한다.
+  /// iOS/web 은 빈 Map(이 스위치는 Android 전용이다).
+  static Future<Map<String, dynamic>> setVoiceCallMode(bool enable) async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return const {};
+    try {
+      final r = await _channel.invokeMapMethod<String, dynamic>(
+        'setVoiceCallMode',
+        <String, dynamic>{'enable': enable},
+      );
+      return r ?? const {};
+    } catch (_) {
+      return const {};
+    }
+  }
+
+  /// [Android 전용] 오디오 상태 스냅샷: `mode`, `speakerphone`, `route`,
+  /// `music_vol`/`voice_vol`(+ 각 max). AEC 를 바꾸면 같이 움직이는 값들이라
+  /// 측정 전후로 찍어 둔다. 못 읽으면 빈 Map.
+  static Future<Map<String, dynamic>> audioDiag() async {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) return const {};
+    try {
+      final r = await _channel.invokeMapMethod<String, dynamic>('getAudioDiag');
+      return r ?? const {};
+    } catch (_) {
+      return const {};
+    }
+  }
 }

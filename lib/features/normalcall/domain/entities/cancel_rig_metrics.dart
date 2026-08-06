@@ -103,6 +103,7 @@ class CancelRigSummary {
     required this.residualFails,
     required this.resumeFails,
     required this.payloadMissing,
+    required this.routeCounts,
   });
 
   factory CancelRigSummary.of(List<CancelSample> samples) {
@@ -112,6 +113,7 @@ class CancelRigSummary {
     var residualFails = 0;
     var resumeFails = 0;
     var missing = 0;
+    final routes = <String, int>{};
 
     for (final s in samples) {
       if (!s.residualOk) residualFails++;
@@ -124,6 +126,9 @@ class CancelRigSummary {
       if (v != null) ms.add(v.toDouble());
       if (s.stopMeasure == 'hal_drained') halDrained++;
       if (s.source == 'native') native++;
+      final r = s.payload['audio_route'] as String? ?? '';
+      final key = r.isEmpty ? '(못 읽음)' : r;
+      routes[key] = (routes[key] ?? 0) + 1;
     }
 
     final timed = ms.length;
@@ -138,6 +143,7 @@ class CancelRigSummary {
       residualFails: residualFails,
       resumeFails: resumeFails,
       payloadMissing: missing,
+      routeCounts: routes,
     );
   }
 
@@ -162,6 +168,15 @@ class CancelRigSummary {
   final int residualFails;
   final int resumeFails;
   final int payloadMissing;
+
+  /// 라우트별 표본 수. **AEC 를 바꾸면 여기가 먼저 움직인다** — 통화 용도 오디오는
+  /// 헤드셋이 없으면 리시버로 빠지려 하므로, `speaker` 였던 게 `receiver` 로 넘어가면
+  /// "에코는 줄었는데 소리가 작아졌다"의 정체가 바로 이것이다. 측정이 끝난 뒤가 아니라
+  /// 요약에서 바로 보여야 한다.
+  final Map<String, int> routeCounts;
+
+  /// 라우트가 측정 도중 바뀌었는가. 바뀌었으면 앞뒤 숫자를 한 덩어리로 못 읽는다.
+  bool get routeChanged => routeCounts.length > 1;
 
   /// 배관 자체가 깨진 건수. 여기 하나라도 있으면 타이밍 판정은 의미가 없다.
   int get brokenCount => residualFails + resumeFails + payloadMissing;
@@ -257,6 +272,7 @@ String buildCancelRigReport({
   required int cancelDelayMs,
   required int residualMs,
   required String aecNote,
+  Map<String, dynamic> audioDiag = const {},
 }) {
   final s = CancelRigSummary.of(samples);
   final b = StringBuffer()
@@ -265,6 +281,9 @@ String buildCancelRigReport({
     ..writeln('- 기기: $deviceLabel')
     ..writeln('- 시각: $timestamp')
     ..writeln('- AEC 설정: $aecNote')
+    // AEC 를 바꾸면 라우팅·볼륨이 같이 움직인다. 측정치만 있고 이게 없으면
+    // "에코는 줄었는데 소리가 리시버로 빠졌다"를 나중에야 알게 된다.
+    ..writeln('- 오디오 상태: ${audioDiag.isEmpty ? '(못 읽음 — Android 아님/실패)' : audioDiag}')
     ..writeln('- 조건: 턴 시작 후 ${cancelDelayMs}ms 에 취소 '
         '→ 잔여 ${residualMs}ms 추가 주입(전량 폐기돼야 함)')
     ..writeln('- 프레임 주입 경로: `_onWsData` (소켓과 동일 관문). '
@@ -288,6 +307,8 @@ String buildCancelRigReport({
     ..writeln('| 락업(재생 안 살아남) | ${s.resumeFails} 건 |')
     ..writeln('| 잔여 미폐기 | ${s.residualFails} 건 |')
     ..writeln('| 무회신 | ${s.payloadMissing} 건 |')
+    ..writeln('| 출력 라우트 | ${s.routeCounts.entries.map((e) => '${e.key} ${e.value}건').join(' · ')}'
+        '${s.routeChanged ? ' ⚠ 측정 도중 바뀜' : ''} |')
     ..writeln()
     ..writeln('## 표본')
     ..writeln()

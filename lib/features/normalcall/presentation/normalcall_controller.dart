@@ -682,6 +682,27 @@ class NormalCallController extends Notifier<CallState> {
   static const bool _cascadeBargeIn =
       bool.fromEnvironment('CASCADE_BARGE_IN');
 
+  /// [Android] 통화 용도 오디오로 열지 여부 — 플랫폼 AEC 를 실제로 걸기 위한 스위치.
+  ///
+  /// **기본은 false = 종전 동작 그대로.** 켜면 세 곳이 한꺼번에 통화 경로로 넘어간다:
+  ///   ① 재생 트랙 `USAGE_VOICE_COMMUNICATION`/`CONTENT_TYPE_SPEECH`
+  ///   ② 녹음 소스 `AudioSource.voice_communication`
+  ///   ③ `AudioManager.MODE_IN_COMMUNICATION` (+ 헤드셋 없으면 스피커폰 강제)
+  ///
+  /// ⚠ **셋 중 하나만 바꾸면 의미가 없다.** 플랫폼 AEC 는 "통화 다운링크를 참조해
+  ///   업링크에서 뺀다"는 구조라, 재생만 통화 경로로 옮기고 녹음이 `DEFAULT` 로 남으면
+  ///   참조할 짝이 안 생긴다. 그래서 세 곳이 같은 플래그를 본다.
+  ///
+  /// ⚠ 켜면 **볼륨 스트림이 미디어→통화로 넘어가고 기본 라우팅이 리시버로 빠지려 한다.**
+  ///   그래서 기본을 끔으로 두고, 실기기에서 전/후를 재서 확인한 뒤에 켠다.
+  ///   리그는 이 플래그와 무관하게 런타임으로 전/후를 전환한다([debugOpenPlayback]).
+  static const bool _androidVoiceAudio =
+      bool.fromEnvironment('ANDROID_VOICE_AUDIO');
+
+  /// [_androidVoiceAudio] 로 실제로 모드를 켰는가. 켠 쪽만 되돌린다 — 우리가 안 켠
+  /// 모드를 teardown 이 NORMAL 로 돌리면 시스템 통화(CallKit/수신전화)를 밟는다.
+  bool _voiceModeSet = false;
+
   /// Count of mic frames actually forwarded to the socket (dev-log heartbeat).
   int _micFramesSent = 0;
 
@@ -957,7 +978,18 @@ class NormalCallController extends Notifier<CallState> {
   /// per-call playback reset (cushion, ledger, barge-in flags), and a rig running
   /// against a stale copy of that reset would measure a pipeline the call never
   /// uses. Touches nothing outside playback.
-  Future<void> _openPlayback() async {
+  Future<void> _openPlayback({bool? voiceCallAudio}) async {
+    // [AEC] 통화 용도로 열지. 리그만 인자로 덮어쓰고(리빌드 없이 전/후 측정), 통화
+    // 경로는 컴파일 플래그를 따른다.
+    final voice = voiceCallAudio ?? _androidVoiceAudio;
+    if (voice && !kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      // ⚠ setup() **전에** 모드를 세운다. AudioTrack 은 만들어지는 시점의 모드로
+      //   라우팅이 정해지므로, 뒤에 바꾸면 이번 트랙에는 안 먹는다.
+      final diag = await AudioRouteProbe.setVoiceCallMode(true);
+      _voiceModeSet = true;
+      _log('AEC: 통화 용도 오디오 ON → $diag');
+    }
+
     // Open native gapless PCM playback at the server's 24kHz (no upsampling).
     // The feed callback pulls from [_pcmQueue]; silence keep-alive prevents the
     // underflow-churn stall that cut audio out after ~1 minute.
@@ -991,6 +1023,7 @@ class NormalCallController extends Notifier<CallState> {
       // but ask for the closest one so the window is harmless.
       iosAudioCategory: IosAudioCategory.playAndRecord,
       iosAllowBackgroundAudio: true,
+      androidVoiceCallAudio: voice,
     );
     _pcmSetup = true;
     await FlutterPcmSound.setFeedThreshold(_feedThresholdFrames);
@@ -1343,6 +1376,15 @@ class NormalCallController extends Notifier<CallState> {
           numChannels: 1,
           enableVoiceProcessing: useVoiceProcessing,
           enableEchoCancellation: true,
+          // [AEC] 녹음 소스. 기본(`defaultSource` = MediaRecorder.AudioSource.DEFAULT)
+          // 은 **통화 경로가 아니다** — 플랫폼 AEC 는 통화 다운링크를 참조해 업링크에서
+          // 빼는 구조라, 재생만 통화 경로로 옮기고 여기가 DEFAULT 로 남으면 참조할 짝이
+          // 안 생겨 아무 효과가 없다. 재생 트랙과 **반드시 같은 플래그**를 본다.
+          audioSource: _androidVoiceAudio &&
+                  !kIsWeb &&
+                  defaultTargetPlatform == TargetPlatform.android
+              ? AudioSource.voice_communication
+              : AudioSource.defaultSource,
         );
         if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
         return; // 성공
@@ -2713,6 +2755,16 @@ class NormalCallController extends Notifier<CallState> {
     }
     _pcmSetup = false;
     _feeding = false;
+
+    // [AEC] 통화 용도 모드를 되돌린다. **우리가 켠 경우에만** — 안 켠 모드를 NORMAL 로
+    // 돌리면 시스템 통화(수신전화)가 잡고 있던 모드를 밟는다. 재생 트랙을 release 한
+    // 뒤에 되돌려야 라우팅이 트랙보다 먼저 바뀌어 마지막 소리가 리시버로 새지 않는다.
+    if (_voiceModeSet) {
+      _voiceModeSet = false;
+      final diag = await AudioRouteProbe.setVoiceCallMode(false);
+      _log('AEC: 통화 용도 오디오 OFF → $diag');
+    }
+
     _pcmQueue = Uint8List(_pcmQueueInitialBytes);
     _pcmHead = 0;
     _pcmTail = 0;
@@ -2785,9 +2837,13 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   /// [디버그 전용] 소켓·마이크·권한 없이 **재생 파이프라인만** 개통한다.
-  Future<void> debugOpenPlayback() async {
+  ///
+  /// [voiceCallAudio] 로 AEC 전/후를 **리빌드 없이** 전환한다 — 컴파일 플래그
+  /// (`ANDROID_VOICE_AUDIO`)에 묶으면 리그가 한 빌드에서 전/후를 못 재고, 그러면
+  /// 두 측정 사이에 빌드가 끼어 "무엇 때문에 달라졌는지"를 못 가린다.
+  Future<void> debugOpenPlayback({bool voiceCallAudio = false}) async {
     assert(kDebugMode, 'debug 전용 진입점이 릴리즈 경로에서 불렸다');
-    await _openPlayback();
+    await _openPlayback(voiceCallAudio: voiceCallAudio);
   }
 
   /// [디버그 전용] 리그 종료. 소켓/마이크가 애초에 없어도 [_teardown] 은 안전하다

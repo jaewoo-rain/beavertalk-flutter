@@ -41,12 +41,14 @@ class FlutterPcmSound {
       required int channelCount,
       IosAudioCategory iosAudioCategory = IosAudioCategory.playback,
       bool iosAllowBackgroundAudio = false,
+      bool androidVoiceCallAudio = false,
       }) async {
     return await _invokeMethod('setup', {
       'sample_rate': sampleRate,
       'num_channels': channelCount,
       'ios_audio_category': iosAudioCategory.name,
       'ios_allow_background_audio' : iosAllowBackgroundAudio,
+      'voice_call_audio': androidVoiceCallAudio,
     });
   }
 

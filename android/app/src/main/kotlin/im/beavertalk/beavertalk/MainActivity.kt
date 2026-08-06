@@ -183,6 +183,9 @@ class MainActivity : FlutterActivity() {
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "getAudioRoute" -> result.success(currentAudioRoute())
+                    "setVoiceCallMode" ->
+                        result.success(setVoiceCallMode(call.argument<Boolean>("enable") == true))
+                    "getAudioDiag" -> result.success(audioDiag())
                     else -> result.notImplemented()
                 }
             }
@@ -204,14 +207,19 @@ class MainActivity : FlutterActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 // API 31+ 만 "이 속성으로 재생하면 어디로 나가는가"를 직접 답해준다.
                 //
-                // ⚠ 속성은 재생 트랙과 **같아야** 한다. flutter_pcm_sound 의 AudioTrack 이
-                //   지금 USAGE_MEDIA/CONTENT_TYPE_MUSIC 이라 여기도 그렇게 묻는다. 통화
-                //   경로(USAGE_VOICE_COMMUNICATION)로 물으면 라우팅이 달라질 수 있어
-                //   (예: 미디어는 스피커, 통화는 리시버) 실제와 다른 답이 나온다.
-                //   AEC 정비로 트랙 속성을 바꾸면 **여기도 같이 바꿔야 한다.**
+                // ⚠ 속성은 재생 트랙과 **같아야** 한다. 통화 경로(USAGE_VOICE_COMMUNICATION)
+                //   로 물으면 라우팅이 달라질 수 있어(예: 미디어는 스피커, 통화는 리시버)
+                //   실제와 다른 답이 나온다. 그래서 [voiceCallMode] 를 따라간다 —
+                //   AEC 스위치를 켜면 트랙도 여기도 같이 통화 속성으로 넘어간다.
                 val attrs = AudioAttributes.Builder()
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .setUsage(
+                        if (voiceCallMode) AudioAttributes.USAGE_VOICE_COMMUNICATION
+                        else AudioAttributes.USAGE_MEDIA
+                    )
+                    .setContentType(
+                        if (voiceCallMode) AudioAttributes.CONTENT_TYPE_SPEECH
+                        else AudioAttributes.CONTENT_TYPE_MUSIC
+                    )
                     .build()
                 val type = am.getAudioDevicesForAttributes(attrs).firstOrNull()?.type
                 if (type != null) return mapDeviceType(type)
@@ -227,11 +235,91 @@ class MainActivity : FlutterActivity() {
             return when {
                 am.isBluetoothScoOn || am.isBluetoothA2dpOn || am.isWiredHeadsetOn -> "headset"
                 am.isSpeakerphoneOn -> "speaker"
+                // 통화 usage 는 스피커폰이 꺼져 있으면 **리시버**로 간다. 여기서
+                // speaker 로 답하면 "에코가 왜 이렇게 적지"의 원인을 영영 못 찾는다.
+                voiceCallMode -> hasOutput(am, AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)
                 else -> hasOutput(am, AudioDeviceInfo.TYPE_BUILTIN_SPEAKER)
             }
         } catch (_: Throwable) {
             // 진단이 통화를 죽이면 안 된다. 모르면 모른다고 답한다.
             return ""
+        }
+    }
+
+    /**
+     * 통화 용도 오디오 모드가 켜져 있는가. **기본은 꺼짐(=종전 동작)**.
+     *
+     * [currentAudioRoute] 가 이 값을 따라 질의 속성을 바꾼다 — 재생 트랙과 다른 속성으로
+     * 물으면 실제와 다른 라우트가 나오기 때문이다.
+     */
+    private var voiceCallMode = false
+
+    /**
+     * 통화 용도 오디오 모드를 켜고 끈다. 켜야 플랫폼 AEC 가 참조할 다운링크가 생긴다.
+     *
+     * ⚠ **켜면 기본 출력이 리시버(귀에 대는 구멍)로 빠진다.** 지금 사용자는 폰을 귀에
+     *   안 대고 쓰고 있으므로 그대로 두면 "소리가 갑자기 작아졌다"가 된다. 그래서 헤드셋이
+     *   안 붙어 있을 때는 스피커폰을 명시적으로 켠다. 헤드셋이 있으면 건드리지 않는다 —
+     *   그쪽은 시스템이 알아서 라우팅하고, 강제로 스피커를 켜면 이어폰을 꽂은 채 스피커로
+     *   나가는 최악이 된다.
+     *
+     * 끌 때는 **역순으로** 되돌린다(스피커폰 먼저, 모드 나중). 모드를 먼저 NORMAL 로
+     * 돌리면 그 시점의 스피커폰 설정이 미디어 라우팅에 남는다.
+     *
+     * 반환은 [audioDiag] — 실제로 무엇이 적용됐는지 호출자가 눈으로 확인해야 한다.
+     * "켜라고 했다"와 "켜졌다"는 다르다.
+     */
+    private fun setVoiceCallMode(enable: Boolean): Map<String, Any> {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            ?: return emptyMap()
+        try {
+            @Suppress("DEPRECATION")
+            if (enable) {
+                am.mode = AudioManager.MODE_IN_COMMUNICATION
+                val headset = am.isBluetoothScoOn || am.isBluetoothA2dpOn || am.isWiredHeadsetOn
+                if (!headset) am.isSpeakerphoneOn = true
+                voiceCallMode = true
+            } else {
+                am.isSpeakerphoneOn = false
+                am.mode = AudioManager.MODE_NORMAL
+                voiceCallMode = false
+            }
+        } catch (_: Throwable) {
+            // 모드 전환 실패가 통화를 죽이면 안 된다. 아래 진단이 실패를 그대로 드러낸다.
+        }
+        return audioDiag()
+    }
+
+    /**
+     * 오디오 상태 스냅샷 — **AEC 를 바꿨을 때 같이 바뀌는 것들**을 한 번에 읽는다.
+     *
+     * 라우팅과 볼륨 스트림이 같이 움직이기 때문에, "에코는 줄었는데 소리가 리시버로 빠졌다"
+     * 를 측정이 끝난 뒤에 알면 늦다. 리그가 측정 전후로 이걸 찍어 리포트에 싣는다.
+     */
+    private fun audioDiag(): Map<String, Any> {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+            ?: return emptyMap()
+        return try {
+            @Suppress("DEPRECATION")
+            mapOf(
+                "mode" to when (am.mode) {
+                    AudioManager.MODE_NORMAL -> "normal"
+                    AudioManager.MODE_IN_COMMUNICATION -> "in_communication"
+                    AudioManager.MODE_IN_CALL -> "in_call"
+                    AudioManager.MODE_RINGTONE -> "ringtone"
+                    else -> "other(${am.mode})"
+                },
+                "speakerphone" to am.isSpeakerphoneOn,
+                "route" to currentAudioRoute(),
+                // 볼륨 키가 실제로 무엇을 조절하는지는 앱이 못 읽는다. 대신 두 스트림의
+                // 현재 값을 같이 실어, 통화 스트림 볼륨이 낮게 방치돼 있는지를 드러낸다.
+                "music_vol" to am.getStreamVolume(AudioManager.STREAM_MUSIC),
+                "music_vol_max" to am.getStreamMaxVolume(AudioManager.STREAM_MUSIC),
+                "voice_vol" to am.getStreamVolume(AudioManager.STREAM_VOICE_CALL),
+                "voice_vol_max" to am.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
+            )
+        } catch (_: Throwable) {
+            emptyMap()
         }
     }
 

@@ -12,6 +12,7 @@ CancelSample sample({
   int residualInjected = 14400,
   int? residualDiscarded,
   int resumeDrainMs = 40,
+  String route = 'speaker',
   bool missing = false,
 }) =>
     CancelSample(
@@ -27,7 +28,7 @@ CancelSample sample({
               'client_stop_ms': clientStopMs,
               'stop_measure': stopMeasure,
               'platform': 'android',
-              'audio_route': 'speaker',
+              'audio_route': route,
             },
       residualInjectedBytes: residualInjected,
       residualDiscardedBytes: residualDiscarded ?? residualInjected,
@@ -186,6 +187,30 @@ void main() {
     });
   });
 
+  group('AEC 부작용 관측 — 라우트', () {
+    test('라우트별로 센다', () {
+      final s = CancelRigSummary.of([
+        sample(index: 0, route: 'speaker'),
+        sample(index: 1, route: 'speaker'),
+        sample(index: 2, route: 'receiver'),
+      ]);
+      expect(s.routeCounts, {'speaker': 2, 'receiver': 1});
+      expect(s.routeChanged, isTrue);
+    });
+
+    test('한 라우트뿐이면 바뀐 게 아니다', () {
+      final s = CancelRigSummary.of([
+        for (var i = 0; i < 5; i++) sample(index: i, route: 'speaker'),
+      ]);
+      expect(s.routeChanged, isFalse);
+    });
+
+    test('빈 문자열은 speaker 로 뭉개지 않고 "못 읽음"으로 남는다', () {
+      final s = CancelRigSummary.of([sample(index: 0, route: '')]);
+      expect(s.routeCounts, {'(못 읽음)': 1});
+    });
+  });
+
   group('내보내기', () {
     test('CSV 는 헤더 + 표본당 한 줄', () {
       final csv = buildCancelRigCsv([sample(index: 0), sample(index: 1)]);
@@ -208,11 +233,26 @@ void main() {
         cancelDelayMs: 1500,
         residualMs: 300,
         aecNote: 'AEC 변경 전',
+        audioDiag: const {'mode': 'normal', 'speakerphone': true},
       );
       expect(text, contains('AEC 설정: AEC 변경 전'));
+      expect(text, contains('mode: normal'));
+      expect(text, contains('| 출력 라우트 |'));
       expect(text, contains('1500ms 에 취소'));
       expect(text, contains('client_stop_ms p95'));
       expect(text, contains('```csv'));
+    });
+
+    test('오디오 상태를 못 읽었으면 그렇게 적는다 — 빈 Map 을 숨기지 않는다', () {
+      final text = buildCancelRigReport(
+        samples: [sample(index: 0)],
+        deviceLabel: 'ios 18',
+        timestamp: '2026-08-07T02:00:00',
+        cancelDelayMs: 1500,
+        residualMs: 300,
+        aecNote: 'AEC 변경 전',
+      );
+      expect(text, contains('오디오 상태: (못 읽음'));
     });
   });
 }

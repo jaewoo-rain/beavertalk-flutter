@@ -303,11 +303,26 @@ public class FlutterPcmSoundPlugin implements
                         + " trackRate=" + trackRate + " up=" + mUpsample
                         + " minBuf=" + mMinBufferSize + "B trackBuf=" + trackBufferSize + "B mult=" + BUFFER_MULTIPLIER);
 
+                    // [BeaverTalk AEC] 통화 용도 오디오로 열지 여부. **기본은 false(=종전 동작)**.
+                    //
+                    // true 로 가면 플랫폼 AEC 가 참조할 다운링크가 생긴다. 대신 같이 바뀌는 게 있다:
+                    //   - 볼륨 스트림이 미디어 → 통화로 넘어간다(볼륨 키가 조절하는 대상이 바뀐다)
+                    //   - 기본 라우팅이 리시버(귀에 대는 구멍)로 빠질 수 있다 → 스피커 강제가 필요하다
+                    //     (MainActivity.setVoiceCallMode 가 담당한다)
+                    // 그래서 인자로 받아 런타임에 켜고 끈다 — 리그가 리빌드 없이 전/후를 재야 한다.
+                    Boolean voiceArg = call.argument("voice_call_audio");
+                    boolean voiceCallAudio = voiceArg != null && voiceArg;
+                    Log.w("BeaverTalkPCM", "setup: voiceCallAudio=" + voiceCallAudio);
+
                     if (Build.VERSION.SDK_INT >= 23) { // Android 6 (Marshmallow) and above
                         mAudioTrack = new AudioTrack.Builder()
                             .setAudioAttributes(new AudioAttributes.Builder()
-                                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                                    .setUsage(voiceCallAudio
+                                            ? AudioAttributes.USAGE_VOICE_COMMUNICATION
+                                            : AudioAttributes.USAGE_MEDIA)
+                                    .setContentType(voiceCallAudio
+                                            ? AudioAttributes.CONTENT_TYPE_SPEECH
+                                            : AudioAttributes.CONTENT_TYPE_MUSIC)
                                     .build())
                             .setAudioFormat(new AudioFormat.Builder()
                                     .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
@@ -319,7 +334,9 @@ public class FlutterPcmSoundPlugin implements
                             .build();
                     } else {
                         mAudioTrack = new AudioTrack(
-                            AudioManager.STREAM_MUSIC,
+                            voiceCallAudio
+                                ? AudioManager.STREAM_VOICE_CALL
+                                : AudioManager.STREAM_MUSIC,
                             trackRate, // [BeaverTalk fix] 네이티브 레이트
                             channelConfig,
                             AudioFormat.ENCODING_PCM_16BIT,

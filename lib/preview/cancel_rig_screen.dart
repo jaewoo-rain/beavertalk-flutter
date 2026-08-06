@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../features/normalcall/data/datasources/audio_route_probe.dart';
 import '../features/normalcall/domain/entities/cancel_rig_metrics.dart';
 import '../features/normalcall/domain/entities/echo_stimulus.dart';
 import '../features/normalcall/presentation/normalcall_controller.dart';
@@ -77,12 +78,21 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
   /// 턴 시작 후 취소까지. 900ms 쿠션을 넘겨야 실제 재생 중에 취소하는 게 된다.
   int _cancelDelayMs = 1500;
 
-  /// AEC 설정 상태 — **반드시 기록한다.** AEC 를 바꾸면 라우팅·볼륨·지연이 같이
-  /// 변해서 측정치가 통째로 달라진다. 안 적으면 전후 비교가 불가능하다.
-  String _aecNote = _aecBefore;
+  /// AEC(통화 용도 오디오) 스위치 — **선언이 아니라 실제로 켜고 끈다.**
+  ///
+  /// 조작자가 "변경 후"라고 고르기만 하고 빌드는 변경 전인 사고를 원천 차단한다.
+  /// 리빌드 없이 한 자리에서 전/후를 재야 두 측정 사이에 빌드가 안 끼어든다 —
+  /// 끼면 "무엇 때문에 달라졌는지"를 못 가린다.
+  bool _voiceCallAudio = false;
+
+  String get _aecNote => _voiceCallAudio ? _aecAfter : _aecBefore;
   static const String _aecBefore =
-      'AEC 변경 전 (AudioTrack USAGE_MEDIA / CONTENT_TYPE_MUSIC)';
-  static const String _aecAfter = 'AEC 변경 후 (통화 용도 속성 적용)';
+      'AEC 변경 전 (AudioTrack USAGE_MEDIA / CONTENT_TYPE_MUSIC, mode NORMAL)';
+  static const String _aecAfter =
+      'AEC 변경 후 (USAGE_VOICE_COMMUNICATION + MODE_IN_COMMUNICATION)';
+
+  /// 재생 개통 직후 읽은 오디오 상태(모드·스피커폰·라우트·볼륨). 리포트에 그대로 실린다.
+  Map<String, dynamic> _diag = const {};
 
   // ── 진행 상태 ─────────────────────────────────────────────────────────────
 
@@ -127,12 +137,31 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
       // `_send` 로 나가려던 프레임을 가로챈다. 소켓이 없어 그냥 두면 회신이 조용히
       // 사라진다 — 리그가 재려는 값이 바로 그 안에 있다.
       NormalCallController.debugOutboundSink = _onOutbound;
-      await _ctl.debugOpenPlayback();
+      await _ctl.debugOpenPlayback(voiceCallAudio: _voiceCallAudio);
       _stimulus = EchoStimulus(sampleRate: _rate);
-      if (mounted) setState(() {});
+      // 개통 **후**에 읽는다 — 모드·라우팅이 트랙 생성 시점에 정해지므로, 그 전에
+      // 읽으면 적용 전 상태를 리포트에 박게 된다.
+      final diag = await AudioRouteProbe.audioDiag();
+      if (mounted) setState(() => _diag = diag);
     } catch (e) {
       if (mounted) setState(() => _error = '재생 엔진 개통 실패: $e');
     }
+  }
+
+  /// AEC 스위치를 실제로 바꾼다. 엔진을 닫았다 다시 열어야 새 오디오 속성이 먹는다 —
+  /// AudioTrack 은 만들어지는 시점의 속성으로 라우팅이 굳는다.
+  Future<void> _switchAec(bool voice) async {
+    setState(() {
+      _voiceCallAudio = voice;
+      _error = null;
+      // 설정이 바뀌면 앞의 표본과 같은 조건이 아니다. 섞이면 원인을 못 가른다.
+      _samples.clear();
+      _done = 0;
+      _diag = const {};
+    });
+    _stopPump();
+    await _ctl.debugClosePlayback();
+    await _open();
   }
 
   /// 컨트롤러가 서버로 보내려던 제어 프레임. `playback_progress` 만 잡는다.
@@ -285,6 +314,7 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
       cancelDelayMs: _cancelDelayMs,
       residualMs: _residualMs,
       aecNote: _aecNote,
+      audioDiag: _diag,
     );
     // 로그로도 남긴다 — 파일 공유가 막힌 기기에서도 값을 건질 수 있게.
     debugPrint('=== CANCEL RIG REPORT ===\n$text');
@@ -347,16 +377,26 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
                   : (s) => setState(() => _cancelDelayMs = s.first),
             ),
             const SizedBox(height: 12),
-            _label('AEC 설정 — 바꾼 전후를 섞으면 원인을 못 가릅니다'),
-            SegmentedButton<String>(
+            _label('AEC(통화 용도 오디오) — 실제로 켜고 끕니다. 바꾸면 표본이 초기화됩니다'),
+            SegmentedButton<bool>(
               segments: const [
-                ButtonSegment(value: _aecBefore, label: Text('변경 전')),
-                ButtonSegment(value: _aecAfter, label: Text('변경 후')),
+                ButtonSegment(value: false, label: Text('변경 전')),
+                ButtonSegment(value: true, label: Text('변경 후')),
               ],
-              selected: {_aecNote},
+              selected: {_voiceCallAudio},
               onSelectionChanged:
-                  _running ? null : (s) => setState(() => _aecNote = s.first),
+                  _running ? null : (s) => unawaited(_switchAec(s.first)),
             ),
+            if (_diag.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                '지금 상태 — 모드 ${_diag['mode']} · 스피커폰 ${_diag['speakerphone']} · '
+                '출력 ${_diag['route'] == '' ? '(못 읽음)' : _diag['route']}\n'
+                '볼륨 미디어 ${_diag['music_vol']}/${_diag['music_vol_max']} · '
+                '통화 ${_diag['voice_vol']}/${_diag['voice_vol_max']}',
+                style: const TextStyle(fontSize: 12, height: 1.4),
+              ),
+            ],
             const SizedBox(height: 8),
             Text('예상 소요 약 $estSec초', style: const TextStyle(fontSize: 12)),
             const SizedBox(height: 16),
@@ -421,6 +461,11 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
             _row('락업(재생 안 살아남)', '${s.resumeFails} 건'),
             _row('잔여 미폐기', '${s.residualFails} 건'),
             _row('무회신', '${s.payloadMissing} 건'),
+            _row(
+              '출력 라우트',
+              s.routeCounts.entries.map((e) => '${e.key} ${e.value}').join(' · ') +
+                  (s.routeChanged ? ' ⚠바뀜' : ''),
+            ),
           ],
         ),
       );
