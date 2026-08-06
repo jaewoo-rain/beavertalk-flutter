@@ -27,6 +27,7 @@ import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/datasources/audio_route_probe.dart';
 import '../data/datasources/pcm_playback_control.dart';
+import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
 import 'normalcall_providers.dart';
@@ -669,18 +670,18 @@ class NormalCallController extends Notifier<CallState> {
   // half-duplex: the user cannot barge-in / interrupt the AI mid-sentence — an
   // accepted tradeoff to kill the self-talk loop.
   //
-  // ── 캐스케이드 barge-in (STT→LLM→TTS 경로) ─────────────────────────────────
-  // barge-in 은 "사용자가 아무 때나 말할 수 있다"는 뜻이고, 그러려면 마이크가 항상
-  // 열려 있어야 한다. 게이팅은 barge-in 이 없던 시절의 장치다. 끼어들기 판정은 전부
-  // 서버가 한다(STT 활동 + 서버 타이머 + 에코 2차 방어).
-  //
-  // ⚠ 그래도 기본값은 **게이팅 유지**다. Android 재생 트랙이 아직 `USAGE_MEDIA` 라
-  //   플랫폼 AEC 가 실질적으로 안 걸리는 상태이고(docs/2026-08-05_1720 §2-1A),
-  //   그 상태로 게이팅을 빼면 비버 목소리가 무방비로 업링크에 실린다 —
-  //   실측 전례가 있다(call_id=855, 2026-08-01: 유저 턴의 절반이 비버 대사였다).
-  //   AEC 정비 + 실기기 에코 측정이 끝난 뒤에 이 스위치를 켠다.
-  static const bool _cascadeBargeIn =
-      bool.fromEnvironment('CASCADE_BARGE_IN');
+  // ── 통화 통로 (live ↔ cascade) ────────────────────────────────────────────
+
+  /// 이번 통화가 붙은 통로. 소켓 주소와 마이크 정책이 여기서 같이 갈린다.
+  ///
+  /// **통화별 런타임 값이다.** 예전엔 컴파일 상수 하나여서 **한 APK 가 한 통로만**
+  /// 됐다 — 두 통로를 같이 쓰려면 빌드를 두 벌 내야 했고, 되돌리는 데 스토어 심사가
+  /// 꼈다. [CallChannel.defaultChannel] 이 `bool.fromEnvironment` 를 기본값 출처로
+  /// 들고 있으므로 **아무도 인자를 안 주면 동작이 종전과 같다.**
+  ///
+  /// [_connect] 가 통화마다 새로 넣는다(초기 [_teardown] **뒤에**). 값의 출처는 지금은
+  /// 호출부이고, 서버가 통화 시작 응답에 실어 주게 되면 그쪽으로 바뀐다.
+  CallChannel _channelMode = CallChannel.defaultChannel;
 
   /// [Android] 통화 용도 오디오로 열지 여부 — 플랫폼 AEC 를 실제로 걸기 위한 스위치.
   ///
@@ -717,9 +718,9 @@ class NormalCallController extends Notifier<CallState> {
 
   /// 마이크 프레임을 버릴 것인가 — 반이중 게이트의 **유일한** 판정.
   ///
-  /// 캐스케이드 경로에서는 항상 false(상시 개방)다. 그 외에는 종전대로
-  /// [_beaverAudioActive] 를 따라가므로, 스위치가 꺼져 있으면 동작이 현행과 같다.
-  bool get _micGated => _cascadeBargeIn ? false : _beaverAudioActive;
+  /// 캐스케이드 통로에서는 항상 false(상시 개방)다. 그 외에는 종전대로
+  /// [_beaverAudioActive] 를 따라가므로, 라이브 통로면 동작이 현행과 같다.
+  bool get _micGated => _channelMode.gatesMic && _beaverAudioActive;
 
   // ── barge-in: 취소(audio_cancel) 처리 상태 ─────────────────────────────────
 
@@ -804,11 +805,16 @@ class NormalCallController extends Notifier<CallState> {
   /// `endAllCalls()` 로 CallKit 을 정리하고 이 경로로 들어오므로 [startFromIncoming]
   /// 을 타지 않는데, 그래도 서버는 어느 알람의 전화인지 알아야 그 알람의 캐릭터로
   /// 연결한다. CallKit 세션은 이미 없으므로 callUuid(끊기용)와는 분리한다.
-  Future<void> start({String? inboundCallId}) async {
+  ///
+  /// [callChannel] 은 이 통화가 붙을 통로다. 안 주면 [CallChannel.defaultChannel] —
+  /// 즉 **호출부를 안 고치면 동작이 종전과 같다.** 나중에 서버가 통화 시작 응답으로
+  /// 내려주면 그 값을 여기로 넘긴다(필드 계약은 아직 없다).
+  Future<void> start({String? inboundCallId, CallChannel? callChannel}) async {
     final ok = await _connect(
       callUuid: null,
       inboundCallId: inboundCallId,
       callkitOwnedAudio: false,
+      callChannel: callChannel,
     );
     if (!ok) return;
     await _startAudio();
@@ -835,11 +841,12 @@ class NormalCallController extends Notifier<CallState> {
   /// 캐릭터**로 통화를 연다 — 알람마다 캐릭터가 다를 수 있는데 대표 캐릭터 하나로는
   /// 표현할 수 없기 때문이다. 앱이 캐릭터를 고르는 게 아니라, 서버가 준 불투명한
   /// uuid 를 그대로 돌려줄 뿐이다.
-  Future<void> startFromIncoming({String? callUuid}) async {
+  Future<void> startFromIncoming({String? callUuid, CallChannel? callChannel}) async {
     final ok = await _connect(
       callUuid: callUuid,
       inboundCallId: callUuid,
       callkitOwnedAudio: true,
+      callChannel: callChannel,
     );
     if (!ok) return;
     final myGen = _gen;
@@ -864,6 +871,7 @@ class NormalCallController extends Notifier<CallState> {
     required String? callUuid,
     required String? inboundCallId,
     required bool callkitOwnedAudio,
+    CallChannel? callChannel,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -879,6 +887,9 @@ class NormalCallController extends Notifier<CallState> {
       // Claim this start's generation AFTER the initial teardown. A hangUp() at
       // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
       final myGen = ++_gen;
+      // ⚠ 초기 [_teardown] **뒤에** 넣는다. teardown 이 통로를 기본값으로 되돌리므로
+      //   앞에서 넣으면 방금 정한 값이 지워진다.
+      _channelMode = callChannel ?? CallChannel.defaultChannel;
       _callkitOwnedAudio = callkitOwnedAudio;
       _callUuid = callUuid;
       _callkitAudioReady = false;
@@ -925,7 +936,13 @@ class NormalCallController extends Notifier<CallState> {
 
       // Connect the WebSocket.
       _expectClose = false;
-      final url = normalcallWsUrl(token);
+      // 통로에 따라 소켓 주소가 갈린다. 토큰은 둘 다 같다(서버가 둘 다 Supabase
+      // 액세스 토큰을 `verify_token` 으로 본다).
+      final url = callStreamWsUrl(
+        token: token,
+        cascade: _channelMode.isCascade,
+      );
+      _log('연결 통로: ${_channelMode.name} → ${_channelMode.wsPath}');
       final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
       _wsSub = channel.stream.listen(
@@ -2138,9 +2155,9 @@ class NormalCallController extends Notifier<CallState> {
 
   void _gateMic() {
     if (!_beaverAudioActive) {
-      _log(_cascadeBargeIn
-          ? 'beaver turn OPEN — mic stays open (barge-in)'
-          : 'mic GATED — beaver speaking (your mic paused)');
+      _log(_channelMode.gatesMic
+          ? 'mic GATED — beaver speaking (your mic paused)'
+          : 'beaver turn OPEN — mic stays open (barge-in)');
       _turnStarved = false; // fresh turn: it hasn't starved yet
       // 새 턴 = 진행도 원장의 기준선. 턴 경계에서는 엔진이 비어 있는 게 계약이라
       // (재개방 조건이 [_audioDrained]) 여기서 비우면 이후 산출값이 곧
@@ -2720,6 +2737,10 @@ class NormalCallController extends Notifier<CallState> {
     _ledger.reset();
     _prevTurnBacklogMs = -1;
     _backlogRiseStreak = 0;
+    // 통로도 통화 스코프다. 남겨 두면 캐스케이드 통화 뒤의 다음 통화가 (호출부가
+    // 값을 안 주는 경로로 들어왔을 때) 게이팅 없이 열린다 — AEC 실측 전엔 그게
+    // 자기-대화 루프다. [_connect] 가 이 teardown **뒤에** 새 값을 넣는다.
+    _channelMode = CallChannel.defaultChannel;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
