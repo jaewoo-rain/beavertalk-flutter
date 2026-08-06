@@ -951,6 +951,8 @@ class NormalCallController extends Notifier<CallState> {
       _send({
         'type': 'start',
         'inbound_call_id': ?inboundCallId,
+        // (barge-in) AEC 자기진단. 서버가 **세션마다** 끼어들기 확인 방식을 고르는 입력이다.
+        'aec': await _aecHint(),
       });
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
@@ -968,6 +970,43 @@ class NormalCallController extends Notifier<CallState> {
     } finally {
       _starting = false;
     }
+  }
+
+  /// 세션 시작에 실을 AEC 자기진단(`start.aec`).
+  ///
+  /// 서버는 이걸로 **세션마다** barge-in 확인 방식을 고른다 — 이어폰은 음향 결합이
+  /// 사실상 없어 즉시 끊어도 되지만, 스피커폰 + AEC 미적용이면 비버가 자기 목소리에
+  /// 끊긴다. 전역 설정 하나로는 이 차이를 못 담는다.
+  ///
+  /// ## ⛔ 관측한 것만 싣는다. 정책은 서버 몫이다
+  ///
+  /// - **`hw`(플랫폼 AEC 가 실제로 걸렸다)를 실측 전에 주장하지 않는다.**
+  ///   `AcousticEchoCanceler.create()` 가 호출된다는 것까지는 확인됐지만
+  ///   (flutter_sound_core AAR), **불렸다와 걸렸다는 다르다** — 기기가 지원하지 않으면
+  ///   조용히 실패한다. `hw` 는 서버에서 `immediate` 를 켜고, 그건 자기-대화 루프의
+  ///   문을 여는 것이다. 에코 실측이 나온 뒤에 매핑을 확정한다.
+  /// - **`immediate`/`transcript` 같은 정책을 클라가 요청하지 않는다.** "헤드셋이다"
+  ///   까지만 말한다. 클라가 정책을 실어 보내기 시작하면 서버가 정책을 바꿔도 구버전
+  ///   앱이 안 따라온다.
+  /// - 라우트를 못 읽으면 필드를 **빼서** 보낸다(서버 기본 None). `speaker` 로 추측해
+  ///   채우면 측정 실패와 스피커폰이 서버에서 같은 값이 된다.
+  ///
+  /// ## ⚠ 한계 두 가지
+  ///
+  /// ① **재생을 열기 전 시점의 스냅샷이다** — `start` 는 오디오보다 먼저 나가야 한다.
+  ///   그래도 우리가 쓰는 유일한 구분(헤드셋이냐 아니냐)은 물리적 사실이라 재생 전에도
+  ///   맞다. speaker/receiver 구분은 활성 라우트에 의존해 흔들릴 수 있는데, 그 둘은
+  ///   어차피 똑같이 `unknown` 으로 떨어진다.
+  /// ② **통화 도중 라우트가 바뀌면 서버에 알릴 방법이 없다.** 이어폰을 뽑으면
+  ///   speaker 로 넘어가는데 서버는 세션 시작의 `headset` 을 계속 믿는다. 프로토콜에
+  ///   세션 중 재통보가 없다(서버 주석도 P1 로 남겨 뒀다). 지금은 그대로 두되,
+  ///   "이어폰 뽑고 에코가 터졌는데 왜 immediate 로 남아 있었나"는 여기가 원인이다.
+  Future<Map<String, dynamic>> _aecHint() async {
+    final route = await AudioRouteProbe.currentRoute();
+    return <String, dynamic>{
+      'mode': route == 'headset' ? 'headset' : 'unknown',
+      if (route.isNotEmpty) 'route': route,
+    };
   }
 
   /// Opens the native PCM playback engine and starts the push pump.
@@ -2850,20 +2889,27 @@ class NormalCallController extends Notifier<CallState> {
   /// (전부 null 가드). 엔진 release 까지 여기서 끝낸다.
   Future<void> debugClosePlayback() => _teardown();
 
-  /// [디버그 전용] 취소 이후 폐기한 잔여 바이트. 서버 불변식("취소~다음 turn_start
-  /// 사이 오디오는 버린다")이 실제로 지켜지는지 리그가 이걸로 판정한다.
-  int get debugCancelledResidualBytes => _cancelledResidualBytes;
-
-  /// [디버그 전용] Dart 링버퍼에 남은 바이트.
+  /// [디버그 전용] 리그가 보는 계측 카운터 묶음.
   ///
-  /// **락업 검출량이다.** 네이티브가 in-flight 를 부풀린 채 굳으면
-  /// [_engineLevelFrames] 가 계속 높게 나오고 [_pump] 의 `level < _engineLowFrames`
-  /// 가 영영 거짓이 되어, 이 값이 단조 증가한다. 사람 귀 대신 이걸 본다.
-  int get debugQueuedBytes => _queueLen;
-
-  /// [디버그 전용] 엔진에 남았다고 **추정**되는 프레임(외삽값). 큐가 안 빠질 때 원인이
-  /// 엔진 과대보고인지 가르는 보조 지표다.
-  int get debugEngineLevelFrames => _engineLevelFrames;
+  /// - `cancelledResidualBytes` — 취소 이후 폐기한 잔여. 서버 불변식("취소~다음
+  ///   `turn_start` 사이 오디오는 버린다")이 실제로 지켜지는지 리그가 이걸로 판정한다.
+  /// - `queuedBytes` — Dart 링버퍼 잔량. **락업 검출량이다.** 네이티브가 in-flight 를
+  ///   부풀린 채 굳으면 [_engineLevelFrames] 가 계속 높게 나오고 [_pump] 의
+  ///   `level < _engineLowFrames` 가 영영 거짓이 되어 이 값이 단조 증가한다.
+  ///   사람 귀 대신 이걸 본다.
+  /// - `engineLevelFrames` — 엔진 잔량 **추정**(외삽). 큐가 안 빠질 때 원인이 엔진
+  ///   과대보고인지 가르는 보조 지표다.
+  ///
+  /// getter 3개가 아니라 메서드 하나인 이유: riverpod_lint 의
+  /// `avoid_public_notifier_properties` 는 Notifier 의 공개 상태를 `state` 로만
+  /// 노출하라고 요구한다. 이건 상태가 아니라 계측 훅이라 `state` 에 넣을 것도 아니고,
+  /// 그렇다고 린트를 무시로 덮는 것보다 애초에 프로퍼티가 아닌 게 맞다.
+  ({int cancelledResidualBytes, int queuedBytes, int engineLevelFrames})
+      debugCounters() => (
+            cancelledResidualBytes: _cancelledResidualBytes,
+            queuedBytes: _queueLen,
+            engineLevelFrames: _engineLevelFrames,
+          );
 }
 
 /// [NormalCallController._clearPlayback] 의 결과 — `playback_progress` 페이로드의 재료.

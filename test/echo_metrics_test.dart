@@ -245,4 +245,78 @@ void main() {
       expect(r, contains('관측구간에 잘림'));
     });
   });
+
+  group('조건 표기 — 라우트 · AEC (표본을 가르는 두 축)', () {
+    EchoRigResult res({
+      EchoRoute route = EchoRoute.speakerphone,
+      String detectedRoute = '',
+      bool voiceCallAudio = false,
+      Map<String, dynamic> audioDiag = const {},
+    }) =>
+        EchoRigResult(
+          route: route,
+          noiseFloor: RmsStats.empty,
+          echo: const RmsStats(count: 10, median: 0.001, p5: 0, p95: 0.002),
+          speech: const RmsStats(count: 10, median: 0.2, p5: 0.1, p95: 0.3),
+          burst: const DurationStats(count: 3, p95Ms: 300),
+          tail: const DurationStats(count: 1, p95Ms: 150),
+          tailSettled: true,
+          stimulusNote: 'test',
+          detectedRoute: detectedRoute,
+          voiceCallAudio: voiceCallAudio,
+          audioDiag: audioDiag,
+        );
+
+    test('프로브가 고른 조건과 어긋나면 밝힌다', () {
+      expect(
+        res(route: EchoRoute.headset, detectedRoute: 'speaker').routeMismatch,
+        isTrue,
+      );
+      expect(
+        res(route: EchoRoute.speakerphone, detectedRoute: 'speaker').routeMismatch,
+        isFalse,
+      );
+    });
+
+    test('AEC 를 켜면 리시버로 빠질 수 있다 — 그것도 어긋남이다', () {
+      expect(
+        res(route: EchoRoute.speakerphone, detectedRoute: 'receiver').routeMismatch,
+        isTrue,
+      );
+    });
+
+    test('못 읽은 것(빈 문자열)은 어긋난 것과 다르다', () {
+      expect(res(route: EchoRoute.headset).routeMismatch, isFalse);
+    });
+
+    test('리포트가 AEC 상태를 조건 제목에 박는다', () {
+      final off = buildEchoReport(
+          results: [res()], deviceLabel: 'test', timestamp: 't');
+      expect(off, contains('AEC 끔'));
+      final on = buildEchoReport(
+          results: [res(voiceCallAudio: true)], deviceLabel: 'test', timestamp: 't');
+      expect(on, contains('AEC 켬'));
+    });
+
+    test('리포트가 어긋남을 경고로 찍는다', () {
+      final r = buildEchoReport(
+        results: [res(route: EchoRoute.headset, detectedRoute: 'speaker')],
+        deviceLabel: 'test',
+        timestamp: 't',
+      );
+      expect(r, contains('고른 조건과 프로브가 어긋났다'));
+    });
+
+    test('오디오 상태를 못 읽었으면 숨기지 않고 그렇게 적는다', () {
+      final r = buildEchoReport(
+          results: [res()], deviceLabel: 'test', timestamp: 't');
+      expect(r, contains('오디오 상태: (못 읽음'));
+      final r2 = buildEchoReport(
+        results: [res(audioDiag: const {'mode': 'in_communication'})],
+        deviceLabel: 'test',
+        timestamp: 't',
+      );
+      expect(r2, contains('mode: in_communication'));
+    });
+  });
 }

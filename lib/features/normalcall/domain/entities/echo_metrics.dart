@@ -173,9 +173,39 @@ class EchoRigResult {
     required this.tail,
     required this.tailSettled,
     required this.stimulusNote,
+    this.detectedRoute = '',
+    this.voiceCallAudio = false,
+    this.audioDiag = const {},
   });
 
+  /// 이 표본을 **통화 용도 오디오(AEC 켬)** 상태에서 쟀는가.
+  ///
+  /// ⚠ 이건 조건의 일부다 — AEC 를 켜면 잔여 에코가 통째로 달라진다. 끈 상태로 잰
+  /// 숫자로 서버 임계를 잡으면 임계가 너무 헐거워진다. 그래서 라우트와 **함께**
+  /// 표본을 가르는 키다(같은 라우트라도 AEC 전/후는 다른 표본이다).
+  final bool voiceCallAudio;
+
+  /// 측정 시점의 오디오 상태 스냅샷(모드·스피커폰·라우트·볼륨). Android 만 채워진다.
+  final Map<String, dynamic> audioDiag;
+
+  /// 조작자가 **고른** 조건(스피커폰/이어폰).
   final EchoRoute route;
+
+  /// [AudioRouteProbe] 가 실제로 답한 라우트. 못 읽으면 `''`.
+  ///
+  /// ⚠ **이건 `route` 와 다른 값이다.** 통화 세션의 `start.aec` 도, 취소 리그의
+  /// `audio_route` 도 전부 이 프로브를 소스로 쓴다. 여기에만 조작자의 선택을 싣고
+  /// 프로브 값을 안 실으면, **실측으로 임계를 잡아 놓고 실제 세션은 다른 분류로 도는**
+  /// 사고가 난다 — 예: 조작자는 "이어폰"으로 쟀는데 프로브는 speaker 로 보고 있었고,
+  /// 서버는 그 세션을 speaker 정책으로 돌린다. 그래서 둘을 같이 싣고 어긋나면 밝힌다.
+  final String detectedRoute;
+
+  /// 고른 조건과 프로브가 어긋났는가. 어긋났으면 이 표본으로 임계를 잡으면 안 된다.
+  bool get routeMismatch {
+    if (detectedRoute.isEmpty) return false; // 못 읽은 것은 어긋난 것과 다르다
+    final expected = route == EchoRoute.headset ? 'headset' : 'speaker';
+    return detectedRoute != expected;
+  }
 
   /// 0단계에서 잰 환경 소음. ③④ 판정 임계의 기준이자, 사후 검증용 근거.
   final RmsStats noiseFloor;

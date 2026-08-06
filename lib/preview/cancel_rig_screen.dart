@@ -259,7 +259,7 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
     _countingResidual = false;
     final injected = _residualInjected;
     // ⚠ 이 값은 다음 `turn_start` 에서 0 으로 리셋된다. 반드시 지금 읽는다.
-    final discarded = _ctl.debugCancelledResidualBytes;
+    final discarded = _ctl.debugCounters().cancelledResidualBytes;
 
     // ④ 회신 수거. 안 오면 배관이 도중에 멈춘 것이므로 빈 Map 으로 남긴다
     //    (0ms 로 채우면 분포가 좋아 보이고, 정확히 그 실패가 우리가 찾는 것이다).
@@ -297,7 +297,7 @@ class _CancelRigScreenState extends ConsumerState<CancelRigScreen> {
   Future<int> _awaitDrain() async {
     final sw = Stopwatch()..start();
     while (sw.elapsed < _drainLimit) {
-      if (_ctl.debugQueuedBytes < 2) return sw.elapsedMilliseconds;
+      if (_ctl.debugCounters().queuedBytes < 2) return sw.elapsedMilliseconds;
       await _sleep(25);
     }
     return -1;

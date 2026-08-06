@@ -61,6 +61,18 @@ class _EchoRigScreenState extends State<EchoRigScreen> {
   static const Duration _tailDur = Duration(seconds: 3);
 
   EchoRoute _route = EchoRoute.speakerphone;
+
+  /// [AEC] 통화 용도 오디오로 잴지. **라우트와 함께 표본을 가르는 두 번째 축이다** —
+  /// 같은 스피커폰이라도 AEC 전/후는 다른 표본이다. 섞으면 임계를 못 잡는다.
+  bool _voiceCallAudio = false;
+
+  /// 우리가 모드를 켰는가. 켠 쪽만 되돌린다 — 안 켠 모드를 NORMAL 로 돌리면
+  /// 시스템 통화가 잡고 있던 모드를 밟는다.
+  bool _voiceModeSet = false;
+
+  /// 측정 시점의 오디오 상태 스냅샷. 리포트에 그대로 실린다.
+  Map<String, dynamic> _diag = const {};
+
   _Step _step = _Step.idle;
   String? _error;
 
@@ -189,9 +201,14 @@ class _EchoRigScreenState extends State<EchoRigScreen> {
 
     setState(() {
       _results
-        ..removeWhere((r) => r.route == _route)
+        // ⚠ (라우트, AEC) **두 축**으로 지운다. 라우트만 보고 지우면 AEC 후 스피커를
+        //   재는 순간 AEC 전 스피커 결과가 사라진다 — 비교할 짝을 잃는다.
+        ..removeWhere(
+            (r) => r.route == _route && r.voiceCallAudio == _voiceCallAudio)
         ..add(EchoRigResult(
           route: _route,
+          voiceCallAudio: _voiceCallAudio,
+          audioDiag: _diag,
           noiseFloor: floor,
           echo: RmsStats.from(_echoRms),
           speech: RmsStats.from(_speechRms),
@@ -199,6 +216,9 @@ class _EchoRigScreenState extends State<EchoRigScreen> {
           tail: DurationStats.from([tail]),
           tailSettled: settled,
           stimulusNote: EchoStimulus.note,
+          // 조작자가 고른 조건이 아니라 **프로브가 답한 값**이다. 통화 세션의
+          // `start.aec` 와 같은 소스여야 실측 임계가 실제 세션에 그대로 적용된다.
+          detectedRoute: _detectedRoute,
         ));
       _step = _Step.done;
     });
@@ -233,13 +253,29 @@ class _EchoRigScreenState extends State<EchoRigScreen> {
   }
 
   Future<void> _openPlayer() async {
+    // [AEC] 통화 용도 오디오로 열지. **켜야 플랫폼 AEC 가 참조할 다운링크가 생긴다** —
+    // 끈 상태로 잰 잔여 에코로 서버 임계를 잡으면 임계가 너무 헐거워진다.
+    //
+    // ⚠ setup() **전에** 모드를 세운다. AudioTrack 은 만들어지는 시점의 모드로
+    //   라우팅이 굳으므로 뒤에 바꾸면 이번 트랙에는 안 먹는다.
+    //
+    // ⛔ 통화 컨트롤러를 거치지 않는다 — 이 리그가 자기 recorder/player 를 직접 여는
+    //   건 의도한 격리다. 계측 도구가 통화 상태기계를 건드리면 둘 다 못 믿게 된다.
+    //   AEC 를 붙이면서도 그 경계를 그대로 둔다.
+    if (_voiceCallAudio) {
+      _diag = await AudioRouteProbe.setVoiceCallMode(true);
+      _voiceModeSet = true;
+    }
     await FlutterPcmSound.setup(
       sampleRate: _playRate,
       channelCount: 1,
       iosAudioCategory: IosAudioCategory.playAndRecord,
+      androidVoiceCallAudio: _voiceCallAudio,
     );
     _pcmReady = true;
     _stimulus = EchoStimulus(sampleRate: _playRate);
+    // 개통 후에 읽어야 실제 적용된 상태가 잡힌다.
+    _diag = await AudioRouteProbe.audioDiag();
   }
 
   void _startPlayback() {
@@ -299,6 +335,12 @@ class _EchoRigScreenState extends State<EchoRigScreen> {
       } catch (_) {}
       _pcmReady = false;
     }
+    // [AEC] 트랙을 내린 **뒤에** 모드를 되돌린다. 먼저 되돌리면 마지막 소리가
+    // 리시버로 샌다. 우리가 켠 경우에만 — 안 켠 모드를 밟지 않는다.
+    if (_voiceModeSet) {
+      _voiceModeSet = false;
+      await AudioRouteProbe.setVoiceCallMode(false);
+    }
   }
 
   // ── 내보내기 ──────────────────────────────────────────────────────────────
@@ -350,9 +392,21 @@ class _EchoRigScreenState extends State<EchoRigScreen> {
                   running ? null : (s) => setState(() => _route = s.first),
             ),
             const SizedBox(height: 8),
+            SegmentedButton<bool>(
+              segments: const [
+                ButtonSegment(value: false, label: Text('AEC 끔')),
+                ButtonSegment(value: true, label: Text('AEC 켬')),
+              ],
+              selected: {_voiceCallAudio},
+              onSelectionChanged: running
+                  ? null
+                  : (s) => setState(() => _voiceCallAudio = s.first),
+            ),
+            const SizedBox(height: 8),
             const Text(
-              '⚠ 볼륨은 실사용 크기로 맞추고, 측정 중에는 바꾸지 마세요.',
-              style: TextStyle(fontSize: 12),
+              '⚠ 볼륨은 실사용 크기로 맞추고, 측정 중에는 바꾸지 마세요.\n'
+              '⚠ AEC 를 켜면 출력이 리시버로 빠질 수 있습니다 — 아래 "실제 출력"을 확인하세요.',
+              style: TextStyle(fontSize: 12, height: 1.4),
             ),
             if (_detectedRoute.isNotEmpty) ...[
               const SizedBox(height: 4),

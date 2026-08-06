@@ -29,7 +29,23 @@ String buildEchoReport({
   for (final r in results) {
     b.writeln('---');
     b.writeln();
-    b.writeln('## 조건: ${r.route.label}');
+    b.writeln('## 조건: ${r.route.label} · '
+        '${r.voiceCallAudio ? 'AEC 켬(통화 용도 오디오)' : 'AEC 끔(종전)'}');
+    b.writeln();
+    b.writeln('오디오 상태: '
+        '${r.audioDiag.isEmpty ? '(못 읽음 — Android 아님/실패)' : r.audioDiag}');
+    // ⚠ 고른 조건과 **프로브가 실제로 답한 값**을 같이 싣는다. 통화 세션의 `start.aec`
+    //   와 취소 리그의 `audio_route` 가 전부 이 프로브를 소스로 쓰기 때문이다. 여기에
+    //   조작자의 선택만 실으면, 실측으로 임계를 잡아 놓고 실제 세션은 다른 분류로 도는
+    //   사고를 못 잡는다.
+    b.writeln('출력 라우트(프로브 실측): '
+        '${r.detectedRoute.isEmpty ? '(못 읽음)' : r.detectedRoute}');
+    if (r.routeMismatch) {
+      b.writeln();
+      b.writeln('> ⛔ **고른 조건과 프로브가 어긋났다.** 이 표본으로 임계를 잡으면 안 된다 — '
+          '서버는 프로브 값으로 세션을 분류하므로, 여기서 잰 조건과 실제로 적용될 정책이 '
+          '달라진다. 라우트를 바로잡고 다시 재라.');
+    }
     b.writeln();
     b.writeln('자극음: ${r.stimulusNote}');
     b.writeln();
