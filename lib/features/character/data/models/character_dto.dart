@@ -38,8 +38,11 @@ class CharacterDto {
   /// `is_owned` — 영구 구매 여부. 지금 쓸 수 있는지는 [isUnlocked] 다.
   final bool isOwned;
 
-  /// `is_unlocked` — 지금 쓸 수 있는가. 이 키를 안 보내는 서버(현 prod)에서는
-  /// [isOwned] 로 폴백한다.
+  /// `is_unlocked` — 지금 쓸 수 있는가. 이 키를 **안 보내는** 서버에서는
+  /// [isOwned] 로 폴백한다(구버전 대비).
+  ///
+  /// 2026-08-07 확인: prod·demo 둘 다 이 키를 보낸다(`/openapi.json` HTTP 200,
+  /// `CharacterSummary`·`CharacterDetail`). 시점 있는 사실이니 다시 확인하고 쓸 것.
   final bool isUnlocked;
 
   /// `unlock_source` — 무엇이 열어줬나. 잠겼거나 모르면 null.
@@ -60,8 +63,11 @@ class CharacterDto {
     // member_character 행을 만들지 않는다 — 만들면 해지 후에도 영구 소유가 되어
     // 되돌릴 수 없기 때문. 그래서 "지금 쓸 수 있나"는 별도 필드로 온다.
     //
-    // 키가 없으면 소유값으로 폴백한다: 이 필드를 모르는 구버전 서버(현 prod)에서는
+    // 키가 없으면 소유값으로 폴백한다: 이 필드를 모르는 **구버전** 서버에서도
     // 종전 동작(구매한 것만 열림)이 그대로 유지되고, 크래시하지 않는다.
+    //
+    // 2026-08-07 확인: 현 prod·demo 는 이 키를 보낸다. 그래도 폴백은 남긴다 —
+    // 롤백·구버전·다른 환경이 있고, 없을 때 크래시가 아니라 종전 동작이어야 한다.
     final unlocked = json['is_unlocked'] as bool? ?? owned;
     return CharacterDto(
       characterId: json['character_id'] as int,
