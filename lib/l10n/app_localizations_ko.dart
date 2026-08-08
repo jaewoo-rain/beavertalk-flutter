@@ -1908,7 +1908,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaSave => '저장';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => '구독';
 
   @override
   String get iapSuccessTitle => 'Purchase complete';
