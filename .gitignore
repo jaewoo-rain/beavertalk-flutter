@@ -56,3 +56,5 @@ docs
 tools/service-account.json
 service-account.json
 google-services.json
+# 자산 교체 전 백업 — 로컬 전용(레포에 영상 사본을 쌓지 않는다)
+backup_old_assets/
