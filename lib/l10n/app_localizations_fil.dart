@@ -2058,4 +2058,19 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get reviewToSeeScore =>
       'Mag-review para makita ang iskor ng bigkas mo';
+
+  @override
+  String get playAgain => 'Ulitin';
+
+  @override
+  String get difficultySlow => 'Mabagal';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Mabilis';
+
+  @override
+  String get difficultyLabel => 'Antas ng hirap';
 }

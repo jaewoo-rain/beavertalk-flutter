@@ -2042,4 +2042,19 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'دہرانے پر تلفظ کا اسکور نظر آئے گا';
+
+  @override
+  String get playAgain => 'دوبارہ کھیلیں';
+
+  @override
+  String get difficultySlow => 'آہستہ';
+
+  @override
+  String get difficultyNormal => 'معمول';
+
+  @override
+  String get difficultyFast => 'تیز';
+
+  @override
+  String get difficultyLabel => 'دشواری';
 }

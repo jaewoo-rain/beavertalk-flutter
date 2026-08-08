@@ -2030,4 +2030,19 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'راجع لترى درجة نطقك';
+
+  @override
+  String get playAgain => 'العب مرة أخرى';
+
+  @override
+  String get difficultySlow => 'بطيء';
+
+  @override
+  String get difficultyNormal => 'عادي';
+
+  @override
+  String get difficultyFast => 'سريع';
+
+  @override
+  String get difficultyLabel => 'الصعوبة';
 }

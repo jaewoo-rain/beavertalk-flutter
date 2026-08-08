@@ -609,5 +609,10 @@
   "noPhonemesYet": "Пока нет звуков для анализа",
   "noSentencesYet": "Пока нет предложений для анализа",
   "takeLevelTest": "Пройти тест уровня",
-  "reviewToSeeScore": "Повторите, чтобы увидеть оценку произношения"
+  "reviewToSeeScore": "Повторите, чтобы увидеть оценку произношения",
+  "playAgain": "Играть снова",
+  "difficultySlow": "Медленно",
+  "difficultyNormal": "Обычно",
+  "difficultyFast": "Быстро",
+  "difficultyLabel": "Сложность"
 }

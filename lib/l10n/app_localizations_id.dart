@@ -2051,4 +2051,19 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Ulas kembali untuk melihat skor pelafalanmu';
+
+  @override
+  String get playAgain => 'Main lagi';
+
+  @override
+  String get difficultySlow => 'Lambat';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Cepat';
+
+  @override
+  String get difficultyLabel => 'Tingkat kesulitan';
 }

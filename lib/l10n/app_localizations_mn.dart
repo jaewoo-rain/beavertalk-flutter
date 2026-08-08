@@ -2046,4 +2046,19 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Давтвал дуудлагын оноо гарна';
+
+  @override
+  String get playAgain => 'Дахин тоглох';
+
+  @override
+  String get difficultySlow => 'Удаан';
+
+  @override
+  String get difficultyNormal => 'Хэвийн';
+
+  @override
+  String get difficultyFast => 'Хурдан';
+
+  @override
+  String get difficultyLabel => 'Хүндрэл';
 }

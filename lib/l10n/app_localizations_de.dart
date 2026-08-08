@@ -2068,4 +2068,19 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get reviewToSeeScore =>
       'Wiederhole, um deine Aussprachebewertung zu sehen';
+
+  @override
+  String get playAgain => 'Nochmal spielen';
+
+  @override
+  String get difficultySlow => 'Langsam';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Schnell';
+
+  @override
+  String get difficultyLabel => 'Schwierigkeit';
 }

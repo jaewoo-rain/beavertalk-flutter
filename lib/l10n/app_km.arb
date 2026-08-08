@@ -609,5 +609,10 @@
   "noPhonemesYet": "មិនទាន់មានសំឡេងសម្រាប់វិភាគទេ",
   "noSentencesYet": "មិនទាន់មានប្រយោគសម្រាប់វិភាគទេ",
   "takeLevelTest": "ធ្វើតេស្តកម្រិត",
-  "reviewToSeeScore": "ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង"
+  "reviewToSeeScore": "ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង",
+  "playAgain": "លេងម្តងទៀត",
+  "difficultySlow": "យឺត",
+  "difficultyNormal": "ធម្មតា",
+  "difficultyFast": "លឿន",
+  "difficultyLabel": "កម្រិតលំបាក"
 }

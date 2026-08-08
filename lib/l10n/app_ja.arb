@@ -609,5 +609,10 @@
   "noPhonemesYet": "分析する音がまだありません",
   "noSentencesYet": "分析する文がまだありません",
   "takeLevelTest": "レベルテストを受ける",
-  "reviewToSeeScore": "復習すると発音スコアが出ます"
+  "reviewToSeeScore": "復習すると発音スコアが出ます",
+  "playAgain": "もう一度",
+  "difficultySlow": "ゆっくり",
+  "difficultyNormal": "ふつう",
+  "difficultyFast": "はやく",
+  "difficultyLabel": "難易度"
 }

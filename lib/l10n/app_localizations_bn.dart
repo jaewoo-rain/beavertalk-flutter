@@ -2040,4 +2040,19 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'পুনরালোচনা করলে উচ্চারণের স্কোর দেখা যাবে';
+
+  @override
+  String get playAgain => 'আবার খেলুন';
+
+  @override
+  String get difficultySlow => 'ধীরে';
+
+  @override
+  String get difficultyNormal => 'স্বাভাবিক';
+
+  @override
+  String get difficultyFast => 'দ্রুত';
+
+  @override
+  String get difficultyLabel => 'কঠিনতা';
 }

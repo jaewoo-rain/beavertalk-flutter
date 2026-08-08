@@ -2036,4 +2036,19 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'ทบทวนเพื่อดูคะแนนการออกเสียง';
+
+  @override
+  String get playAgain => 'เล่นอีกครั้ง';
+
+  @override
+  String get difficultySlow => 'ช้า';
+
+  @override
+  String get difficultyNormal => 'ปกติ';
+
+  @override
+  String get difficultyFast => 'เร็ว';
+
+  @override
+  String get difficultyLabel => 'ระดับความยาก';
 }

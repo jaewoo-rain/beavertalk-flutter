@@ -609,5 +609,10 @@
   "noPhonemesYet": "Noch keine Laute zum Analysieren",
   "noSentencesYet": "Noch keine Sätze zum Analysieren",
   "takeLevelTest": "Einstufungstest machen",
-  "reviewToSeeScore": "Wiederhole, um deine Aussprachebewertung zu sehen"
+  "reviewToSeeScore": "Wiederhole, um deine Aussprachebewertung zu sehen",
+  "playAgain": "Nochmal spielen",
+  "difficultySlow": "Langsam",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Schnell",
+  "difficultyLabel": "Schwierigkeit"
 }

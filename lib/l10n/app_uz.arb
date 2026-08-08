@@ -609,5 +609,10 @@
   "noPhonemesYet": "Tahlil qilish uchun hozircha tovush yo'q",
   "noSentencesYet": "Tahlil qilish uchun hozircha gap yo'q",
   "takeLevelTest": "Daraja testini topshirish",
-  "reviewToSeeScore": "Takrorlasangiz talaffuz ballingiz chiqadi"
+  "reviewToSeeScore": "Takrorlasangiz talaffuz ballingiz chiqadi",
+  "playAgain": "Qayta o'ynash",
+  "difficultySlow": "Sekin",
+  "difficultyNormal": "Oddiy",
+  "difficultyFast": "Tez",
+  "difficultyLabel": "Murakkablik"
 }

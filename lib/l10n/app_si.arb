@@ -609,5 +609,10 @@
   "noPhonemesYet": "විශ්ලේෂණය කිරීමට තවම ශබ්ද නැත",
   "noSentencesYet": "විශ්ලේෂණය කිරීමට තවම වාක්‍ය නැත",
   "takeLevelTest": "මට්ටම් පරීක්ෂණය කරන්න",
-  "reviewToSeeScore": "නැවත බලා උච්චාරණ ලකුණු බලන්න"
+  "reviewToSeeScore": "නැවත බලා උච්චාරණ ලකුණු බලන්න",
+  "playAgain": "නැවත සෙල්ලම් කරන්න",
+  "difficultySlow": "සෙමින්",
+  "difficultyNormal": "සාමාන්‍ය",
+  "difficultyFast": "වේගයෙන්",
+  "difficultyLabel": "දුෂ්කරතාව"
 }

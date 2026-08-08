@@ -2058,4 +2058,19 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Takrorlasangiz talaffuz ballingiz chiqadi';
+
+  @override
+  String get playAgain => 'Qayta o\'ynash';
+
+  @override
+  String get difficultySlow => 'Sekin';
+
+  @override
+  String get difficultyNormal => 'Oddiy';
+
+  @override
+  String get difficultyFast => 'Tez';
+
+  @override
+  String get difficultyLabel => 'Murakkablik';
 }

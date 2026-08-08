@@ -609,5 +609,10 @@
   "noPhonemesYet": "Ei vielä analysoitavia äänteitä",
   "noSentencesYet": "Ei vielä analysoitavia lauseita",
   "takeLevelTest": "Tee tasotesti",
-  "reviewToSeeScore": "Kertaa nähdäksesi ääntämispisteesi"
+  "reviewToSeeScore": "Kertaa nähdäksesi ääntämispisteesi",
+  "playAgain": "Pelaa uudelleen",
+  "difficultySlow": "Hidas",
+  "difficultyNormal": "Normaali",
+  "difficultyFast": "Nopea",
+  "difficultyLabel": "Vaikeustaso"
 }

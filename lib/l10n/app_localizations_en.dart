@@ -2045,4 +2045,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Review to see your pronunciation score';
+
+  @override
+  String get playAgain => 'Play Again';
+
+  @override
+  String get difficultySlow => 'Slow';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Fast';
+
+  @override
+  String get difficultyLabel => 'Difficulty';
 }

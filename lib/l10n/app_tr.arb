@@ -609,5 +609,10 @@
   "noPhonemesYet": "Analiz edilecek ses henüz yok",
   "noSentencesYet": "Analiz edilecek cümle henüz yok",
   "takeLevelTest": "Seviye testine gir",
-  "reviewToSeeScore": "Tekrar edince telaffuz puanınız çıkar"
+  "reviewToSeeScore": "Tekrar edince telaffuz puanınız çıkar",
+  "playAgain": "Tekrar oyna",
+  "difficultySlow": "Yavaş",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Hızlı",
+  "difficultyLabel": "Zorluk"
 }

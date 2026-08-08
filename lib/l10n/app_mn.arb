@@ -609,5 +609,10 @@
   "noPhonemesYet": "Шинжлэх дуу одоогоор алга",
   "noSentencesYet": "Шинжлэх өгүүлбэр одоогоор алга",
   "takeLevelTest": "Түвшин тогтоох шалгалт өгөх",
-  "reviewToSeeScore": "Давтвал дуудлагын оноо гарна"
+  "reviewToSeeScore": "Давтвал дуудлагын оноо гарна",
+  "playAgain": "Дахин тоглох",
+  "difficultySlow": "Удаан",
+  "difficultyNormal": "Хэвийн",
+  "difficultyFast": "Хурдан",
+  "difficultyLabel": "Хүндрэл"
 }

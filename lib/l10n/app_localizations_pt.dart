@@ -2063,4 +2063,19 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Revise para ver sua pontuação de pronúncia';
+
+  @override
+  String get playAgain => 'Jogar de novo';
+
+  @override
+  String get difficultySlow => 'Lento';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Rápido';
+
+  @override
+  String get difficultyLabel => 'Dificuldade';
 }

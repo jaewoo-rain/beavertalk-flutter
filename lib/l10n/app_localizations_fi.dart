@@ -2049,4 +2049,19 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Kertaa nähdäksesi ääntämispisteesi';
+
+  @override
+  String get playAgain => 'Pelaa uudelleen';
+
+  @override
+  String get difficultySlow => 'Hidas';
+
+  @override
+  String get difficultyNormal => 'Normaali';
+
+  @override
+  String get difficultyFast => 'Nopea';
+
+  @override
+  String get difficultyLabel => 'Vaikeustaso';
 }

@@ -2045,4 +2045,19 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង';
+
+  @override
+  String get playAgain => 'លេងម្តងទៀត';
+
+  @override
+  String get difficultySlow => 'យឺត';
+
+  @override
+  String get difficultyNormal => 'ធម្មតា';
+
+  @override
+  String get difficultyFast => 'លឿន';
+
+  @override
+  String get difficultyLabel => 'កម្រិតលំបាក';
 }

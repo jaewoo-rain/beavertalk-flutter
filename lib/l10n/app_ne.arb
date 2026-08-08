@@ -609,5 +609,10 @@
   "noPhonemesYet": "विश्लेषण गर्ने ध्वनि अझै छैन",
   "noSentencesYet": "विश्लेषण गर्ने वाक्य अझै छैन",
   "takeLevelTest": "स्तर परीक्षा दिनुहोस्",
-  "reviewToSeeScore": "दोहोर्‍याएपछि उच्चारण अंक देखिन्छ"
+  "reviewToSeeScore": "दोहोर्‍याएपछि उच्चारण अंक देखिन्छ",
+  "playAgain": "फेरि खेल्नुहोस्",
+  "difficultySlow": "बिस्तारै",
+  "difficultyNormal": "सामान्य",
+  "difficultyFast": "छिटो",
+  "difficultyLabel": "कठिनाइ"
 }

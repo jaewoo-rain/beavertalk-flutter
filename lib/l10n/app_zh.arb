@@ -609,5 +609,10 @@
   "noPhonemesYet": "还没有可分析的发音",
   "noSentencesYet": "还没有可分析的句子",
   "takeLevelTest": "参加等级测试",
-  "reviewToSeeScore": "复习后就会出现发音分数"
+  "reviewToSeeScore": "复习后就会出现发音分数",
+  "playAgain": "再玩一次",
+  "difficultySlow": "慢速",
+  "difficultyNormal": "正常",
+  "difficultyFast": "快速",
+  "difficultyLabel": "难度"
 }

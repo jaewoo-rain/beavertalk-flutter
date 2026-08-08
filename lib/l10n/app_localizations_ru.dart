@@ -2049,4 +2049,19 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Повторите, чтобы увидеть оценку произношения';
+
+  @override
+  String get playAgain => 'Играть снова';
+
+  @override
+  String get difficultySlow => 'Медленно';
+
+  @override
+  String get difficultyNormal => 'Обычно';
+
+  @override
+  String get difficultyFast => 'Быстро';
+
+  @override
+  String get difficultyLabel => 'Сложность';
 }

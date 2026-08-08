@@ -2064,4 +2064,19 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Ulang kaji untuk melihat skor sebutan anda';
+
+  @override
+  String get playAgain => 'Main semula';
+
+  @override
+  String get difficultySlow => 'Perlahan';
+
+  @override
+  String get difficultyNormal => 'Biasa';
+
+  @override
+  String get difficultyFast => 'Laju';
+
+  @override
+  String get difficultyLabel => 'Tahap kesukaran';
 }

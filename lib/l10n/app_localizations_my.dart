@@ -2053,4 +2053,19 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'ပြန်လေ့လာပါက အသံထွက်ရမှတ် ပေါ်လာပါမည်';
+
+  @override
+  String get playAgain => 'ထပ်ကစားရန်';
+
+  @override
+  String get difficultySlow => 'နှေး';
+
+  @override
+  String get difficultyNormal => 'ပုံမှန်';
+
+  @override
+  String get difficultyFast => 'မြန်';
+
+  @override
+  String get difficultyLabel => 'အခက်အခဲအဆင့်';
 }

@@ -3861,6 +3861,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Review to see your pronunciation score'**
   String get reviewToSeeScore;
+
+  /// Pronunciation challenge - restart the run from the result screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Again'**
+  String get playAgain;
+
+  /// Pronunciation challenge difficulty - slow.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow'**
+  String get difficultySlow;
+
+  /// Pronunciation challenge difficulty - normal.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get difficultyNormal;
+
+  /// Pronunciation challenge difficulty - fast.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get difficultyFast;
+
+  /// Pronunciation challenge - label above the difficulty toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get difficultyLabel;
 }
 
 class _AppLocalizationsDelegate

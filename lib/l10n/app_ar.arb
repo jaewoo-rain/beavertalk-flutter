@@ -609,5 +609,10 @@
   "noPhonemesYet": "لا توجد أصوات للتحليل بعد",
   "noSentencesYet": "لا توجد جمل للتحليل بعد",
   "takeLevelTest": "خوض اختبار المستوى",
-  "reviewToSeeScore": "راجع لترى درجة نطقك"
+  "reviewToSeeScore": "راجع لترى درجة نطقك",
+  "playAgain": "العب مرة أخرى",
+  "difficultySlow": "بطيء",
+  "difficultyNormal": "عادي",
+  "difficultyFast": "سريع",
+  "difficultyLabel": "الصعوبة"
 }

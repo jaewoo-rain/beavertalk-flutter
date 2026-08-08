@@ -609,5 +609,10 @@
   "noPhonemesYet": "বিশ্লেষণের জন্য এখনও কোনো ধ্বনি নেই",
   "noSentencesYet": "বিশ্লেষণের জন্য এখনও কোনো বাক্য নেই",
   "takeLevelTest": "স্তর পরীক্ষা দিন",
-  "reviewToSeeScore": "পুনরালোচনা করলে উচ্চারণের স্কোর দেখা যাবে"
+  "reviewToSeeScore": "পুনরালোচনা করলে উচ্চারণের স্কোর দেখা যাবে",
+  "playAgain": "আবার খেলুন",
+  "difficultySlow": "ধীরে",
+  "difficultyNormal": "স্বাভাবিক",
+  "difficultyFast": "দ্রুত",
+  "difficultyLabel": "কঠিনতা"
 }

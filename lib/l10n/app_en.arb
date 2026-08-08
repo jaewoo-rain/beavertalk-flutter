@@ -1296,5 +1296,25 @@
   "reviewToSeeScore": "Review to see your pronunciation score",
   "@reviewToSeeScore": {
     "description": "Hint under the pronunciation gauge when there is no score yet."
+  },
+  "playAgain": "Play Again",
+  "@playAgain": {
+    "description": "Pronunciation challenge - restart the run from the result screen."
+  },
+  "difficultySlow": "Slow",
+  "@difficultySlow": {
+    "description": "Pronunciation challenge difficulty - slow."
+  },
+  "difficultyNormal": "Normal",
+  "@difficultyNormal": {
+    "description": "Pronunciation challenge difficulty - normal."
+  },
+  "difficultyFast": "Fast",
+  "@difficultyFast": {
+    "description": "Pronunciation challenge difficulty - fast."
+  },
+  "difficultyLabel": "Difficulty",
+  "@difficultyLabel": {
+    "description": "Pronunciation challenge - label above the difficulty toggle."
   }
 }

@@ -609,5 +609,10 @@
   "noPhonemesYet": "Belum ada bunyi untuk dianalisis",
   "noSentencesYet": "Belum ada kalimat untuk dianalisis",
   "takeLevelTest": "Ikuti tes level",
-  "reviewToSeeScore": "Ulas kembali untuk melihat skor pelafalanmu"
+  "reviewToSeeScore": "Ulas kembali untuk melihat skor pelafalanmu",
+  "playAgain": "Main lagi",
+  "difficultySlow": "Lambat",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Cepat",
+  "difficultyLabel": "Tingkat kesulitan"
 }

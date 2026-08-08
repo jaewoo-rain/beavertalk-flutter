@@ -2036,4 +2036,19 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'दोहोर्‍याएपछि उच्चारण अंक देखिन्छ';
+
+  @override
+  String get playAgain => 'फेरि खेल्नुहोस्';
+
+  @override
+  String get difficultySlow => 'बिस्तारै';
+
+  @override
+  String get difficultyNormal => 'सामान्य';
+
+  @override
+  String get difficultyFast => 'छिटो';
+
+  @override
+  String get difficultyLabel => 'कठिनाइ';
 }

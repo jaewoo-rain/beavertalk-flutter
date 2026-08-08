@@ -2038,4 +2038,19 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'නැවත බලා උච්චාරණ ලකුණු බලන්න';
+
+  @override
+  String get playAgain => 'නැවත සෙල්ලම් කරන්න';
+
+  @override
+  String get difficultySlow => 'සෙමින්';
+
+  @override
+  String get difficultyNormal => 'සාමාන්‍ය';
+
+  @override
+  String get difficultyFast => 'වේගයෙන්';
+
+  @override
+  String get difficultyLabel => 'දුෂ්කරතාව';
 }

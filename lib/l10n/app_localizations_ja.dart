@@ -1983,4 +1983,19 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => '復習すると発音スコアが出ます';
+
+  @override
+  String get playAgain => 'もう一度';
+
+  @override
+  String get difficultySlow => 'ゆっくり';
+
+  @override
+  String get difficultyNormal => 'ふつう';
+
+  @override
+  String get difficultyFast => 'はやく';
+
+  @override
+  String get difficultyLabel => '難易度';
 }

@@ -1978,4 +1978,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => '复习后就会出现发音分数';
+
+  @override
+  String get playAgain => '再玩一次';
+
+  @override
+  String get difficultySlow => '慢速';
+
+  @override
+  String get difficultyNormal => '正常';
+
+  @override
+  String get difficultyFast => '快速';
+
+  @override
+  String get difficultyLabel => '难度';
 }

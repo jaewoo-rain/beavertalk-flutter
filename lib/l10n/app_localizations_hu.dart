@@ -2059,4 +2059,19 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Ismételd át, hogy lásd a kiejtési pontszámod';
+
+  @override
+  String get playAgain => 'Újra';
+
+  @override
+  String get difficultySlow => 'Lassú';
+
+  @override
+  String get difficultyNormal => 'Normál';
+
+  @override
+  String get difficultyFast => 'Gyors';
+
+  @override
+  String get difficultyLabel => 'Nehézség';
 }

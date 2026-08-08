@@ -1984,4 +1984,19 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => '복습하면 발음 점수가 나와요';
+
+  @override
+  String get playAgain => '다시 하기';
+
+  @override
+  String get difficultySlow => '느리게';
+
+  @override
+  String get difficultyNormal => '보통';
+
+  @override
+  String get difficultyFast => '빠르게';
+
+  @override
+  String get difficultyLabel => '난이도';
 }

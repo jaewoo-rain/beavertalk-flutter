@@ -609,5 +609,10 @@
   "noPhonemesYet": "Chưa có âm nào để phân tích",
   "noSentencesYet": "Chưa có câu nào để phân tích",
   "takeLevelTest": "Làm bài kiểm tra trình độ",
-  "reviewToSeeScore": "Ôn tập để xem điểm phát âm"
+  "reviewToSeeScore": "Ôn tập để xem điểm phát âm",
+  "playAgain": "Chơi lại",
+  "difficultySlow": "Chậm",
+  "difficultyNormal": "Bình thường",
+  "difficultyFast": "Nhanh",
+  "difficultyLabel": "Độ khó"
 }

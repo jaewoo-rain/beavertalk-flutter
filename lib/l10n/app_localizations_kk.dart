@@ -2043,4 +2043,19 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Қайталасаңыз айтылым ұпайы шығады';
+
+  @override
+  String get playAgain => 'Қайта ойнау';
+
+  @override
+  String get difficultySlow => 'Баяу';
+
+  @override
+  String get difficultyNormal => 'Қалыпты';
+
+  @override
+  String get difficultyFast => 'Жылдам';
+
+  @override
+  String get difficultyLabel => 'Күрделілік';
 }

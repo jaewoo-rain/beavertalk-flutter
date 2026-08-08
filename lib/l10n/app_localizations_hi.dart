@@ -2040,4 +2040,19 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'दोहराने पर उच्चारण स्कोर दिखेगा';
+
+  @override
+  String get playAgain => 'फिर से खेलें';
+
+  @override
+  String get difficultySlow => 'धीमा';
+
+  @override
+  String get difficultyNormal => 'सामान्य';
+
+  @override
+  String get difficultyFast => 'तेज़';
+
+  @override
+  String get difficultyLabel => 'कठिनाई';
 }

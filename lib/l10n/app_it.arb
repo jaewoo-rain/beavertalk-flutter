@@ -609,5 +609,10 @@
   "noPhonemesYet": "Ancora nessun suono da analizzare",
   "noSentencesYet": "Ancora nessuna frase da analizzare",
   "takeLevelTest": "Fai il test di livello",
-  "reviewToSeeScore": "Ripassa per vedere il punteggio di pronuncia"
+  "reviewToSeeScore": "Ripassa per vedere il punteggio di pronuncia",
+  "playAgain": "Gioca di nuovo",
+  "difficultySlow": "Lento",
+  "difficultyNormal": "Normale",
+  "difficultyFast": "Veloce",
+  "difficultyLabel": "Difficoltà"
 }

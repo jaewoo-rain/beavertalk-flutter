@@ -2044,4 +2044,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Ôn tập để xem điểm phát âm';
+
+  @override
+  String get playAgain => 'Chơi lại';
+
+  @override
+  String get difficultySlow => 'Chậm';
+
+  @override
+  String get difficultyNormal => 'Bình thường';
+
+  @override
+  String get difficultyFast => 'Nhanh';
+
+  @override
+  String get difficultyLabel => 'Độ khó';
 }

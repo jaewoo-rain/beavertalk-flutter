@@ -609,5 +609,10 @@
   "noPhonemesYet": "تجزیے کے لیے ابھی کوئی آواز نہیں",
   "noSentencesYet": "تجزیے کے لیے ابھی کوئی جملہ نہیں",
   "takeLevelTest": "سطح کا امتحان دیں",
-  "reviewToSeeScore": "دہرانے پر تلفظ کا اسکور نظر آئے گا"
+  "reviewToSeeScore": "دہرانے پر تلفظ کا اسکور نظر آئے گا",
+  "playAgain": "دوبارہ کھیلیں",
+  "difficultySlow": "آہستہ",
+  "difficultyNormal": "معمول",
+  "difficultyFast": "تیز",
+  "difficultyLabel": "دشواری"
 }

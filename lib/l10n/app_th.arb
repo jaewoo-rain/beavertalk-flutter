@@ -609,5 +609,10 @@
   "noPhonemesYet": "ยังไม่มีเสียงให้วิเคราะห์",
   "noSentencesYet": "ยังไม่มีประโยคให้วิเคราะห์",
   "takeLevelTest": "ทำแบบทดสอบระดับ",
-  "reviewToSeeScore": "ทบทวนเพื่อดูคะแนนการออกเสียง"
+  "reviewToSeeScore": "ทบทวนเพื่อดูคะแนนการออกเสียง",
+  "playAgain": "เล่นอีกครั้ง",
+  "difficultySlow": "ช้า",
+  "difficultyNormal": "ปกติ",
+  "difficultyFast": "เร็ว",
+  "difficultyLabel": "ระดับความยาก"
 }

@@ -609,5 +609,10 @@
   "noPhonemesYet": "ခွဲခြမ်းရန် အသံ မရှိသေးပါ",
   "noSentencesYet": "ခွဲခြမ်းရန် စာကြောင်း မရှိသေးပါ",
   "takeLevelTest": "အဆင့်စစ်ဆေးမှု ဖြေဆိုရန်",
-  "reviewToSeeScore": "ပြန်လေ့လာပါက အသံထွက်ရမှတ် ပေါ်လာပါမည်"
+  "reviewToSeeScore": "ပြန်လေ့လာပါက အသံထွက်ရမှတ် ပေါ်လာပါမည်",
+  "playAgain": "ထပ်ကစားရန်",
+  "difficultySlow": "နှေး",
+  "difficultyNormal": "ပုံမှန်",
+  "difficultyFast": "မြန်",
+  "difficultyLabel": "အခက်အခဲအဆင့်"
 }

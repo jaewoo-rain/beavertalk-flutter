@@ -2046,4 +2046,19 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get reviewToSeeScore => 'Tekrar edince telaffuz puanınız çıkar';
+
+  @override
+  String get playAgain => 'Tekrar oyna';
+
+  @override
+  String get difficultySlow => 'Yavaş';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Hızlı';
+
+  @override
+  String get difficultyLabel => 'Zorluk';
 }
