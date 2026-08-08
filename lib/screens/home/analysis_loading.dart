@@ -18,6 +18,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
 ///
@@ -191,12 +192,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
               title: AppLocalizations.of(context).conversationRecord,
               onBack: () => Navigator.pop(context),
             ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
-                child: _error(),
-              ),
-            ),
+            // No padding wrapper: NetworkErrorView carries the standard 20
+            // gutter itself, and the old 24 here would have stacked on top.
+            Expanded(child: _error()),
           ],
         ),
       );
@@ -379,45 +377,15 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         child: child,
       );
 
-  Widget _error() {
-    final l10n = AppLocalizations.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 56,
-            color: context.c.labelNormal,
-          ),
-          const SizedBox(height: AppSpacing.s20),
-          Text(
-            l10n.analysisLoadError,
-            style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Text(
-            _errorMsg,
-            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.s28),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: l10n.tryAgain,
-            onPressed: _callId == null ? _goHome : _start,
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Button(
-            type: BtnType.secondaryFill,
-            size: BtnSize.s60,
-            text: l10n.home,
-            onPressed: _goHome,
-          ),
-        ],
-      ),
-    );
-  }
+  /// The shared network-error body, carrying [_errorMsg] as the reason.
+  ///
+  /// Retry is null when there is no `callId` — there is no request to re-run,
+  /// so the button is hidden rather than shown. It used to render as 다시 시도
+  /// and quietly navigate home instead, which is a different action under the
+  /// wrong label.
+  Widget _error() => NetworkErrorView(
+        message: _errorMsg,
+        onRetry: _callId == null ? null : _start,
+        onHome: _goHome,
+      );
 }

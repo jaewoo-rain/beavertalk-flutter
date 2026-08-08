@@ -13,6 +13,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 import 'learning_args.dart';
 import 'learning_call_main_loading.dart';
 import 'learning_summary.dart';
@@ -94,30 +95,9 @@ class LearningCallMainScreen extends ConsumerWidget {
         children: [
           Gnb.main(onBack: () => _finish(context)),
           Expanded(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.s24),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l10n.analysisFailed,
-                      textAlign: TextAlign.center,
-                      style: AppType.label2.r
-                          .copyWith(color: context.c.labelNormal),
-                    ),
-                    if (onRetry != null) ...[
-                      const SizedBox(height: AppSpacing.s16),
-                      Button(
-                        type: BtnType.primaryFill,
-                        size: BtnSize.s48,
-                        text: l10n.retry,
-                        onPressed: onRetry,
-                      ),
-                    ],
-                  ],
-                ),
-              ),
+            child: NetworkErrorView(
+              message: l10n.analysisFailed,
+              onRetry: onRetry,
             ),
           ),
         ],

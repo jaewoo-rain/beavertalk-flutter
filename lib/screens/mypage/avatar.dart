@@ -31,6 +31,7 @@ import 'avatar_detail.dart';
 import 'avatar_loading.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 
 /// Change avatar — Figma `screen/main_change_avatar` (`2117:20355`).
 ///
@@ -65,7 +66,7 @@ class AvatarScreen extends ConsumerWidget {
               // own shape held with bars, not a spinner in an empty screen, so
               // nothing jumps when the characters land.
               loading: () => const AvatarLoading(),
-              error: (e, _) => _ErrorState(
+              error: (e, _) => NetworkErrorView(
                 message: e is AppException ? e.message : l10n.charactersLoadError,
                 onRetry: () {
                   ref.invalidate(charactersProvider);
@@ -695,32 +696,6 @@ class _AvatarDetailRouteState extends State<_AvatarDetailRoute> {
       onConfirm: widget.onConfirm,
       onClose: widget.onClose,
       onPlaySample: _playable ? _playSample : null,
-    );
-  }
-}
-
-/// Inline error with a retry action.
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message,
-              style: AppType.body2.r
-                  .copyWith(color: context.c.labelNormal)),
-          const SizedBox(height: AppSpacing.s12),
-          TextButton(
-              onPressed: onRetry,
-              child: Text(AppLocalizations.of(context).retry)),
-        ],
-      ),
     );
   }
 }

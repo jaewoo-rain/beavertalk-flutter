@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../app/app_scaffold.dart';
-import '../../components/atoms/button.dart';
+import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
 import '../../components/atoms/pressable.dart';
 import '../../components/molecules/card_line.dart';
@@ -16,6 +16,7 @@ import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 import 'payment_history_loading.dart';
 
 /// Payment history — Figma `screen/main_mypage_payment` (`2117:20206`).
@@ -57,8 +58,10 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
               // The page's own layout held with bars, not a spinner in an empty
               // screen, so the summary and rows don't jump in when they land.
               loading: () => const PaymentHistoryLoading(),
-              error: (e, _) => _ErrorState(
-                message: l10n.paymentsLoadError,
+              // Was the only one of the seven that dropped the server's reason
+              // and always showed the generic copy. Aligned with the rest.
+              error: (e, _) => NetworkErrorView(
+                message: e is AppException ? e.message : l10n.paymentsLoadError,
                 onRetry: () => ref.invalidate(paymentPageProvider(_filter)),
               ),
               data: (page) => _body(l10n, page),
@@ -283,37 +286,3 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
   String _money(int minor, String locale) => formatUsd(minor, locale: locale);
 }
 
-/// Load failure + retry, matching the avatar screen's error state.
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s44,
-              text: l10n.retry,
-              onPressed: onRetry,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

@@ -25,6 +25,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../home/learning_args.dart';
+import '../system/network_error.dart';
 
 /// Records screen with two in-page tabs — Figma `screen/record_list`
 /// (`2117:20307`) and `screen/record_archive` (`2117:20332`).
@@ -97,7 +98,12 @@ class _RecordsBody extends ConsumerWidget {
     final calls = ref.watch(callListProvider);
     return calls.when(
       loading: () => const _RecordsLoading(),
-      error: (_, _) => _RecordsError(
+      // Stays inside the tab body: the tab bar above keeps working, so a failed
+      // 기록 fetch does not also cost the user access to 보관함.
+      error: (e, _) => NetworkErrorView(
+        message: e is AppException
+            ? e.message
+            : AppLocalizations.of(context).recordsLoadError,
         onRetry: () => ref.invalidate(callListProvider),
       ),
       data: (state) => state.items.isEmpty
@@ -291,55 +297,6 @@ class _RecordsEmpty extends StatelessWidget {
   }
 }
 
-/// Inline error state with a retry that re-runs [callListProvider].
-class _RecordsError extends StatelessWidget {
-  const _RecordsError({required this.onRetry});
-
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: IntrinsicHeight(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.recordsLoadError,
-                    textAlign: TextAlign.center,
-                    style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    l10n.tryAgainLater,
-                    textAlign: TextAlign.center,
-                    style:
-                        AppType.label1.r.copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s20),
-                  Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: l10n.retry,
-                    onPressed: onRetry,
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
 // 보관 (archive) tab
 // ─────────────────────────────────────────────────────────────────────────────
@@ -462,7 +419,7 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
     final l10n = AppLocalizations.of(context);
     return ref.watch(bookmarkListProvider).when(
           loading: () => const _ArchiveLoading(),
-          error: (e, _) => _ArchiveError(
+          error: (e, _) => NetworkErrorView(
             message:
                 e is AppException ? e.message : l10n.savedExpressionsLoadError,
             onRetry: () => ref.invalidate(bookmarkListProvider),
@@ -545,37 +502,6 @@ class _ArchiveEmpty extends StatelessWidget {
           AppLocalizations.of(context).noSavedSentences,
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-        ),
-      ),
-    );
-  }
-}
-
-/// Inline error with a retry action (mirrors the alarm-list error state).
-class _ArchiveError extends StatelessWidget {
-  const _ArchiveError({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s40),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-                onPressed: onRetry,
-                child: Text(AppLocalizations.of(context).retry)),
-          ],
         ),
       ),
     );

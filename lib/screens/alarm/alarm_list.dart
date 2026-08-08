@@ -14,6 +14,7 @@ import '../../features/alarm/presentation/providers/alarm_list_controller.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 import 'alarm_add.dart';
 import 'alarm_empty.dart';
 import 'alarm_models.dart';
@@ -131,7 +132,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
           Expanded(
             child: alarmsAsync.when(
               loading: () => const _AlarmsLoading(),
-              error: (e, _) => _ErrorState(
+              error: (e, _) => NetworkErrorView(
                 message: e is AppException ? e.message : l10n.alarmsLoadError,
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
               ),
@@ -264,29 +265,3 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-/// Inline error with a retry action.
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message,
-              style: AppType.body2.r
-                  .copyWith(color: context.c.labelNormal)),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: onRetry,
-            child: Text(AppLocalizations.of(context).retry),
-          ),
-        ],
-      ),
-    );
-  }
-}
