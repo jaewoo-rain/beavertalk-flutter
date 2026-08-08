@@ -179,9 +179,25 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     if (_phase == _LoadingPhase.error) {
       return AppScaffold(
         background: context.c.backgroundNormalNormal,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
-          child: _error(),
+        // The error branch carries the same GNB as the polling branch below.
+        // Without it the only ways out were the two CTAs in [_error], both of
+        // which leave for 홈 — there was no way back to wherever the user came
+        // from. Keeps the title the polling branch already defines rather than
+        // blanking it: same screen, same header, so nothing shifts when the
+        // poll fails.
+        body: Column(
+          children: [
+            Gnb.main(
+              title: AppLocalizations.of(context).conversationRecord,
+              onBack: () => Navigator.pop(context),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
+                child: _error(),
+              ),
+            ),
+          ],
         ),
       );
     }

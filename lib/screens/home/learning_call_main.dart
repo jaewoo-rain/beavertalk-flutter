@@ -6,6 +6,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../components/organisms/gnb.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -62,7 +63,26 @@ class LearningCallMainScreen extends ConsumerWidget {
         );
   }
 
+  /// Ends the session: strips every learning screen (intro/report/loading) off
+  /// the stack and lands on the entry point (대화 기록 = 전화기록). Stops at the
+  /// first non-learning route rather than popping to a hardcoded one, so it
+  /// works whichever screen launched the flow.
+  void _finish(BuildContext context) =>
+      Navigator.popUntil(context, (route) {
+        final name = route.settings.name;
+        return name != Routes.learningIntro &&
+            name != Routes.learningCallMain &&
+            name != Routes.learningCallMainLoading;
+      });
+
   /// Error state — a message and, when recoverable, a retry that refetches.
+  ///
+  /// The GNB is the point of this branch. Without it there was no way out at
+  /// all when [onRetry] is null (a missing `callId`): the retry button is the
+  /// only other control and it does not render in that case, so the screen was
+  /// a dead end. Back runs [_finish] for the same reason the footer does —
+  /// popping one step would land on the learning screens this flow is done
+  /// with.
   Widget _errorView(
     BuildContext context,
     AppLocalizations l10n,
@@ -70,29 +90,37 @@ class LearningCallMainScreen extends ConsumerWidget {
   ) {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.s24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                l10n.analysisFailed,
-                textAlign: TextAlign.center,
-                style: AppType.label2.r.copyWith(color: context.c.labelNormal),
-              ),
-              if (onRetry != null) ...[
-                const SizedBox(height: AppSpacing.s16),
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s48,
-                  text: l10n.retry,
-                  onPressed: onRetry,
+      body: Column(
+        children: [
+          Gnb.main(onBack: () => _finish(context)),
+          Expanded(
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(AppSpacing.s24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      l10n.analysisFailed,
+                      textAlign: TextAlign.center,
+                      style: AppType.label2.r
+                          .copyWith(color: context.c.labelNormal),
+                    ),
+                    if (onRetry != null) ...[
+                      const SizedBox(height: AppSpacing.s16),
+                      Button(
+                        type: BtnType.primaryFill,
+                        size: BtnSize.s48,
+                        text: l10n.retry,
+                        onPressed: onRetry,
+                      ),
+                    ],
+                  ],
                 ),
-              ],
-            ],
+              ),
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -103,6 +131,9 @@ class LearningCallMainScreen extends ConsumerWidget {
       background: context.c.backgroundNormalNormal,
       body: Column(
         children: [
+          // Untitled: the frame defines no title for this screen, so the GNB
+          // is a back affordance only. Same unwind as the footer below.
+          Gnb.main(onBack: () => _finish(context)),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(
@@ -151,14 +182,7 @@ class LearningCallMainScreen extends ConsumerWidget {
               type: BtnType.primaryFill,
               size: BtnSize.s60,
               text: l10n.endLearning,
-              // 학습 화면(intro/report/loading)을 모두 걷어내고 시작점(대화 기록
-              // = 전화기록)에 착지 — 하드코딩 route 대신 첫 비-학습 route 에서 멈춘다.
-              onPressed: () => Navigator.popUntil(context, (route) {
-                final name = route.settings.name;
-                return name != Routes.learningIntro &&
-                    name != Routes.learningCallMain &&
-                    name != Routes.learningCallMainLoading;
-              }),
+              onPressed: () => _finish(context),
             ),
           ),
         ],

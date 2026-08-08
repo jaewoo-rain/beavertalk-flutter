@@ -4,6 +4,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -62,6 +63,15 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
       background: context.c.backgroundNormalAlternative,
       body: Column(
         children: [
+          // No title: the frame defines none for this screen, so the GNB is a
+          // back affordance only (`title ?? ''` renders an empty centered slot).
+          //
+          // Back runs [_finish], the same unwind as the footer's 학습 종료 —
+          // *not* a plain pop. Popping would land on learning_intro, the
+          // recording step, which has already been scored and torn down; the
+          // user would face a dead recorder. Duplicating the footer action is
+          // the cheaper trade.
+          Gnb.main(onBack: _finish),
           Expanded(
             child: Center(
               child: Padding(
