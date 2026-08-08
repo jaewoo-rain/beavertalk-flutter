@@ -14,6 +14,16 @@ const int kEmotionSurprised = 2;
 const int kEmotionSad = 3;
 const int kEmotionAngry = 4;
 
+/// 비버가 말하지 않는 동안의 대기 상태. `idle` **슬롯 하나**에서 갈아끼운다.
+///
+/// ★왜 나뉘었나 — 이전에는 「사용자가 말하는 중」과 「아무도 말 안 함」이 같은
+/// `idle` 이었다. 상대가 내 말에 아무 반응이 없으면 듣고 있는지 의심하게 된다.
+/// ⛔ 세 클립을 동시에 열어 두지 마라 — 하드 디코더가 2~3개 한계이고
+///    idle + talk + 감정으로 이미 셋이다(2026-08-02 S8 실측).
+const int kIdleWait = 0; // 아무도 말하지 않음 — `idle.mp4`
+const int kIdleListen = 1; // 사용자가 말하는 중 — `idle_listen.mp4`(끄덕임)
+const int kIdleThink = 2; // 응답을 기다리는 중 — `idle_think.mp4`(생각)
+
 /// Emotion code → sprite file stem within the character's asset dir.
 const Map<int, String> _emotionStem = {
   kEmotionHappy: 'e_happy',

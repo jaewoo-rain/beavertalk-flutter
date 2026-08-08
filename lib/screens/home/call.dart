@@ -330,6 +330,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                       level: callNotifier.avatarLevel,
                                       speaking: callNotifier.avatarSpeaking,
                                       emotion: callNotifier.avatarEmotion,
+                                      idleKind: callNotifier.avatarIdleKind,
                                       // A still image, NOT [BeaverAvatar].
                                       //
                                       // SyncAvatar shows this while its idle/talk
