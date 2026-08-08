@@ -133,7 +133,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
             child: alarmsAsync.when(
               loading: () => const _AlarmsLoading(),
               error: (e, _) => NetworkErrorView(
-                message: e is AppException ? e.message : l10n.alarmsLoadError,
+                message: e is AppException && e.fromServer ? e.message : null,
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
               ),
               data: (alarms) => alarms.isEmpty

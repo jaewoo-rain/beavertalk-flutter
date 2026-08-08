@@ -59,10 +59,8 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
               // The page's own layout held with bars, not a spinner in an empty
               // screen, so the summary and rows don't jump in when they land.
               loading: () => const PaymentHistoryLoading(),
-              // Was the only one of the seven that dropped the server's reason
-              // and always showed the generic copy. Aligned with the rest.
               error: (e, _) => NetworkErrorView(
-                message: e is AppException ? e.message : l10n.paymentsLoadError,
+                message: e is AppException && e.fromServer ? e.message : null,
                 onRetry: () => ref.invalidate(paymentPageProvider(_filter)),
               ),
               data: (page) => _body(l10n, page),

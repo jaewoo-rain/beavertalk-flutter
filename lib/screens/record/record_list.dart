@@ -100,10 +100,11 @@ class _RecordsBody extends ConsumerWidget {
       loading: () => const _RecordsLoading(),
       // Stays inside the tab body: the tab bar above keeps working, so a failed
       // 기록 fetch does not also cost the user access to 보관함.
+      // Server reason only when the server actually wrote one; otherwise the
+      // view falls back to its own localized copy. AppException's built-in
+      // fallbacks are hardcoded Korean (see AppException.fromServer).
       error: (e, _) => NetworkErrorView(
-        message: e is AppException
-            ? e.message
-            : AppLocalizations.of(context).recordsLoadError,
+        message: e is AppException && e.fromServer ? e.message : null,
         onRetry: () => ref.invalidate(callListProvider),
       ),
       data: (state) => state.items.isEmpty
@@ -383,8 +384,7 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
     return ref.watch(bookmarkListProvider).when(
           loading: () => const _ArchiveLoading(),
           error: (e, _) => NetworkErrorView(
-            message:
-                e is AppException ? e.message : l10n.savedExpressionsLoadError,
+            message: e is AppException && e.fromServer ? e.message : null,
             onRetry: () => ref.invalidate(bookmarkListProvider),
           ),
           data: (saved) =>

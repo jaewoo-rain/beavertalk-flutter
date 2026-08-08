@@ -25,6 +25,15 @@ import '../../theme/app_typography.dart';
 /// So this drops into whatever box the caller gives it (typically the
 /// `Expanded` under a GNB) and [onRetry] refetches in place.
 /// [NetworkErrorScreen] wraps it for the cases that really are whole-screen.
+///
+/// **Two button layouts, and the design system already draws both.**
+/// `Empty/Screen` variant `type=error` is a copy block over a *single* 다시 시도,
+/// stacked inline; `screen/network_error` is the whole screen with a pinned
+/// 홈으로 | 다시 시도 footer. Regional errors take the first: a tab body still
+/// has its tabs and a GNB back arrow above it, so a 홈으로 would be the third
+/// way out of a screen that already has two, and a screen-level pinned footer
+/// inside a tab reads as if it belonged to the tab bar. [showHome] picks the
+/// footer layout and defaults to the regional one.
 class NetworkErrorView extends StatelessWidget {
   /// Creates the network-error body.
   const NetworkErrorView({
@@ -32,6 +41,7 @@ class NetworkErrorView extends StatelessWidget {
     required this.onRetry,
     this.message,
     this.onHome,
+    this.showHome = false,
   });
 
   /// Refetches whatever failed, **without leaving the screen** — callers pass
@@ -49,7 +59,12 @@ class NetworkErrorView extends StatelessWidget {
   final String? message;
 
   /// Overrides the 홈으로 destination. Defaults to unwinding to [Routes.home].
+  /// Ignored unless [showHome].
   final VoidCallback? onHome;
+
+  /// Whether to draw the whole-screen 홈으로 | 다시 시도 footer instead of the
+  /// regional single-CTA layout. Only [NetworkErrorScreen] sets this.
+  final bool showHome;
 
   void _goHome(BuildContext context) => Navigator.of(context)
       // Keep the AuthGate root ((r) => r.isFirst, not => false): AuthGate is
@@ -95,6 +110,26 @@ class NetworkErrorView extends StatelessWidget {
                           style: AppType.label1.r
                               .copyWith(color: context.c.labelNormal),
                         ),
+                        // Regional: the CTA sits with the copy (Empty/Screen
+                        // `type=error` stacks Copy + CTA at gap 20), not pinned
+                        // to the bottom of whatever box this landed in.
+                        if (!showHome && onRetry != null) ...[
+                          const SizedBox(height: AppSpacing.s20),
+                          // Full width (335 at 375), like the frame. The column
+                          // centers its children, so without this the button
+                          // would hug its label — and "Retry" is short enough
+                          // that it reads as a chip rather than the screen's
+                          // primary action.
+                          SizedBox(
+                            width: double.infinity,
+                            child: Button(
+                              type: BtnType.primaryFill,
+                              size: BtnSize.s60,
+                              text: l10n.retry,
+                              onPressed: onRetry,
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),
@@ -103,33 +138,34 @@ class NetworkErrorView extends StatelessWidget {
             ),
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, AppSpacing.s24),
-          child: Row(
-            children: [
-              Expanded(
-                child: Button(
-                  type: BtnType.secondaryOutline,
-                  size: BtnSize.s60,
-                  text: l10n.goHome,
-                  onPressed: onHome ?? () => _goHome(context),
-                ),
-              ),
-              if (onRetry != null) ...[
-                const SizedBox(width: 10),
+        if (showHome)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, AppSpacing.s24),
+            child: Row(
+              children: [
                 Expanded(
                   child: Button(
-                    type: BtnType.primaryFill,
+                    type: BtnType.secondaryOutline,
                     size: BtnSize.s60,
-                    text: l10n.retry,
-                    onPressed: onRetry,
+                    text: l10n.goHome,
+                    onPressed: onHome ?? () => _goHome(context),
                   ),
                 ),
+                if (onRetry != null) ...[
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Button(
+                      type: BtnType.primaryFill,
+                      size: BtnSize.s60,
+                      text: l10n.retry,
+                      onPressed: onRetry,
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
       ],
     );
   }
@@ -149,7 +185,10 @@ class NetworkErrorScreen extends StatelessWidget {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       homeVariant: HomeIndicatorVariant.subTransparent,
-      body: NetworkErrorView(onRetry: () => Navigator.maybePop(context)),
+      body: NetworkErrorView(
+        showHome: true,
+        onRetry: () => Navigator.maybePop(context),
+      ),
     );
   }
 }

@@ -137,7 +137,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       // Transient network errors: keep polling until the timeout, but if we're
       // already past the deadline, surface the message.
       if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
-        _fail(e.message);
+        _fail(_reason(e));
       }
     } finally {
       _busy = false;
@@ -158,9 +158,16 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         arguments: result,
       );
     } on AppException catch (e) {
-      _fail(e.message);
+      _fail(_reason(e));
     }
   }
+
+  /// The reason line for [e] — its message only when the server wrote it.
+  /// The built-in fallbacks are hardcoded Korean, so showing them unconditionally
+  /// leaks Korean into all 30 locales (see [AppException.fromServer]). Empty
+  /// falls through to the view's own localized copy.
+  String _reason(AppException e) =>
+      e.fromServer ? e.message : '';
 
   /// Stops polling and shows the retry UI with [message].
   void _fail(String message) {
@@ -172,20 +179,17 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     });
   }
 
-  void _goHome() =>
-      Navigator.pushNamedAndRemoveUntil(context, Routes.home, (r) => r.isFirst);
-
   @override
   Widget build(BuildContext context) {
     if (_phase == _LoadingPhase.error) {
       return AppScaffold(
         background: context.c.backgroundNormalNormal,
         // The error branch carries the same GNB as the polling branch below.
-        // Without it the only ways out were the two CTAs in [_error], both of
-        // which leave for 홈 — there was no way back to wherever the user came
-        // from. Keeps the title the polling branch already defines rather than
-        // blanking it: same screen, same header, so nothing shifts when the
-        // poll fails.
+        // Without it the only way out was a CTA that left for 홈 — there was no
+        // way back to wherever the user came from. With the GNB here, the
+        // regional error needs no 홈으로 of its own. Keeps the title the polling
+        // branch already defines rather than blanking it: same screen, same
+        // header, so nothing shifts when the poll fails.
         body: Column(
           children: [
             Gnb.main(
@@ -384,8 +388,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// and quietly navigate home instead, which is a different action under the
   /// wrong label.
   Widget _error() => NetworkErrorView(
-        message: _errorMsg,
+        message: _errorMsg.isEmpty ? null : _errorMsg,
         onRetry: _callId == null ? null : _start,
-        onHome: _goHome,
       );
 }

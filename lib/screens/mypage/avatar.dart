@@ -68,7 +68,7 @@ class AvatarScreen extends ConsumerWidget {
               // nothing jumps when the characters land.
               loading: () => const AvatarLoading(),
               error: (e, _) => NetworkErrorView(
-                message: e is AppException ? e.message : l10n.charactersLoadError,
+                message: e is AppException && e.fromServer ? e.message : null,
                 onRetry: () {
                   ref.invalidate(charactersProvider);
                   ref.invalidate(ownedCharactersProvider);
