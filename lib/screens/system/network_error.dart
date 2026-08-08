@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/pressable.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -11,9 +12,8 @@ import '../../theme/app_typography.dart';
 
 /// The network-error body — Figma `screen/network_error` (`3360:19658`).
 ///
-/// A centered error illustration, the "연결에 실패했어요" heading and a reason
-/// line, over the Figma `two-button-row`: a secondary 홈으로 and a primary
-/// 다시 시도.
+/// The "연결에 실패했어요" heading and a reason line, over a retry affordance.
+/// The frame's 3D error illustration is deliberately not drawn — see [build].
 ///
 /// **This is a view, not a screen, because the failure it reports is usually
 /// local to one region.** Every load failure in the app used to draw its own
@@ -91,13 +91,11 @@ class NetworkErrorView extends StatelessWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Error illustration — Figma 3D asset (`281:20345`).
-                        Image.asset(
-                          'assets/images/error_3d.png',
-                          width: AppSpacing.s100,
-                          height: AppSpacing.s100,
-                        ),
-                        const SizedBox(height: AppSpacing.s20),
+                        // The Figma 3D error asset (`281:20345`) used to sit
+                        // here. Dropped on request: a failed fetch is a routine
+                        // moment, and a 100px illustration gave it more weight
+                        // than the thing the user actually wants, which is the
+                        // retry.
                         Text(
                           l10n.connectionFailedTitle,
                           textAlign: TextAlign.center,
@@ -115,18 +113,22 @@ class NetworkErrorView extends StatelessWidget {
                         // to the bottom of whatever box this landed in.
                         if (!showHome && onRetry != null) ...[
                           const SizedBox(height: AppSpacing.s20),
-                          // Full width (335 at 375), like the frame. The column
-                          // centers its children, so without this the button
-                          // would hug its label — and "Retry" is short enough
-                          // that it reads as a chip rather than the screen's
-                          // primary action.
-                          SizedBox(
-                            width: double.infinity,
-                            child: Button(
-                              type: BtnType.primaryFill,
-                              size: BtnSize.s60,
-                              text: l10n.retry,
-                              onPressed: onRetry,
+                          // An underlined text link, not a filled CTA. A
+                          // regional failure is recoverable and ordinary; a
+                          // full-width mint button made it the loudest thing on
+                          // a screen whose tabs and back arrow still work. The
+                          // brand colour stays so it still reads as tappable.
+                          Pressable(
+                            onTap: onRetry,
+                            semanticLabel: l10n.retry,
+                            child: Text(
+                              l10n.retry,
+                              textAlign: TextAlign.center,
+                              style: AppType.label2.m.copyWith(
+                                color: context.c.primaryNormal,
+                                decoration: TextDecoration.underline,
+                                decorationColor: context.c.primaryNormal,
+                              ),
                             ),
                           ),
                         ],
