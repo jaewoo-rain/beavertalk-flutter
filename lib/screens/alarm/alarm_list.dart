@@ -7,6 +7,7 @@ import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_alarm.dart';
 import '../../components/molecules/card_alarm_loading.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
@@ -16,7 +17,6 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
 import 'alarm_add.dart';
-import 'alarm_empty.dart';
 import 'alarm_models.dart';
 
 /// Alarm list — Figma `screen/etc_alarm` (`3665:11992`). A scrollable list of
@@ -137,7 +137,13 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
               ),
               data: (alarms) => alarms.isEmpty
-                  ? const _EmptyState()
+                  // No CTA here: this screen already pins 새 일정 추가 to the
+                  // bottom, so the Empty/Screen CTA would be the same action
+                  // twice on one screen.
+                  ? EmptyScreen(
+                      title: l10n.noAlarms,
+                      body: l10n.noAlarmsBody,
+                    )
                   : _list(alarms),
             ),
           ),
@@ -254,14 +260,4 @@ class _AlarmsLoading extends StatelessWidget {
       );
 }
 
-/// Empty list — reuses the [AlarmEmptyScreen] body styling inline.
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    // Reuse the existing empty screen's centered message block.
-    return const Center(child: AlarmEmptyBody());
-  }
-}
 

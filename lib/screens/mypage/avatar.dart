@@ -11,6 +11,7 @@ import '../../components/molecules/card_box.dart';
 import '../../components/organisms/bottom_sheet.dart';
 import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/organisms/dialog_basic.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
@@ -140,11 +141,7 @@ class AvatarScreen extends ConsumerWidget {
                     if (owned.isEmpty && discounted.isEmpty && buyable.isEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.s40),
-                        child: Center(
-                          child: Text(l10n.noCharactersToShow,
-                              style: AppType.body2.r.copyWith(
-                                  color: context.c.labelNormal)),
-                        ),
+                        child: EmptyBlock(body: l10n.noCharactersToShow),
                       ),
                   ],
                 );

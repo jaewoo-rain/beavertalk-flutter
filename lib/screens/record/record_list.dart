@@ -4,12 +4,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/blur_up_image.dart';
-import '../../components/atoms/button.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/molecules/card_box_loading.dart';
 import '../../components/molecules/card_loading.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/segmented_tabs.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -107,7 +107,7 @@ class _RecordsBody extends ConsumerWidget {
         onRetry: () => ref.invalidate(callListProvider),
       ),
       data: (state) => state.items.isEmpty
-          ? const _RecordsEmpty()
+          ? _recordsEmpty(context)
           : _RecordList(
               state: state,
               onLoadMore: () => ref.read(callListProvider.notifier).loadMore(),
@@ -250,51 +250,14 @@ class _RecordList extends StatelessWidget {
 
 /// Empty state shown when there are no past calls (mirrors
 /// [Routes.recordsEmpty] copy, kept inline so the tabs stay visible).
-class _RecordsEmpty extends StatelessWidget {
-  const _RecordsEmpty();
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return LayoutBuilder(
-      builder: (context, constraints) => SingleChildScrollView(
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: constraints.maxHeight),
-          child: IntrinsicHeight(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.noCallRecords,
-                    textAlign: TextAlign.center,
-                    style: AppType.headline1.sb.copyWith(color: context.c.labelStrong),
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    l10n.noCallRecordsBody,
-                    textAlign: TextAlign.center,
-                    style:
-                        AppType.label1.r.copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s20),
-                  Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: l10n.startCall,
-                    onPressed: () =>
-                        Navigator.pushNamed(context, Routes.callLoading),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+Widget _recordsEmpty(BuildContext context) {
+  final l10n = AppLocalizations.of(context);
+  return EmptyScreen(
+    title: l10n.noCallRecords,
+    body: l10n.noCallRecordsBody,
+    ctaText: l10n.startCall,
+    onCta: () => Navigator.pushNamed(context, Routes.callLoading),
+  );
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -425,7 +388,9 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
             onRetry: () => ref.invalidate(bookmarkListProvider),
           ),
           data: (saved) =>
-              saved.isEmpty ? const _ArchiveEmpty() : _list(saved),
+              saved.isEmpty
+                  ? EmptyScreen(body: l10n.noSavedSentences)
+                  : _list(saved),
         );
   }
 
@@ -487,23 +452,4 @@ class _ArchiveLoading extends StatelessWidget {
           ],
         ),
       );
-}
-
-/// Shown when no sentence has been bookmarked yet.
-class _ArchiveEmpty extends StatelessWidget {
-  const _ArchiveEmpty();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s40),
-        child: Text(
-          AppLocalizations.of(context).noSavedSentences,
-          textAlign: TextAlign.center,
-          style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-        ),
-      ),
-    );
-  }
 }

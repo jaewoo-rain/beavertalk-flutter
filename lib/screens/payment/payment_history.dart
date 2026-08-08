@@ -7,6 +7,7 @@ import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
 import '../../components/atoms/pressable.dart';
 import '../../components/molecules/card_line.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/payment/domain/entities/payment.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
@@ -90,14 +91,12 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
           _filterRow(l10n),
           const SizedBox(height: AppSpacing.s12),
           if (groups.isEmpty)
+            // Placed, not centered: this sits in the scrolling page below the
+            // summary card and filter chips. The 80 gap is the Figma one
+            // (`4864:9331` puts Empty at y152 under a 72-tall filter rail).
             Padding(
               padding: const EdgeInsets.only(top: AppSpacing.s80),
-              child: Text(
-                l10n.noPayments,
-                textAlign: TextAlign.center,
-                style:
-                    AppType.label1.r.copyWith(color: context.c.labelNormal),
-              ),
+              child: EmptyBlock(body: l10n.noPayments),
             )
           else
             Padding(
