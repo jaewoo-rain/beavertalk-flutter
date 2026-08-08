@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Pembelian tidak berhasil. Tidak ada tagihan — silakan coba lagi.",
   "priceChangedTitle": "Harga berubah",
   "priceChangedBody": "Item ini sekarang {price}. Lanjutkan?",
-  "joinedLabel": "Bergabung"
+  "joinedLabel": "Bergabung",
+  "noAccentDataTitle": "Belum ada data intonasi",
+  "noAccentDataBody": "Terus mengobrol agar pola intonasimu terkumpul.",
+  "noLevelYetTitle": "Belum ada level",
+  "noLevelYetBody": "Selesaikan panggilan pertamamu untuk mendapat level.",
+  "noPronunciationDataTitle": "Belum ada rekaman pelafalan",
+  "noPronunciationDataBody": "Kami menganalisis pelafalan dari kalimat yang kamu ucapkan saat menelepon.",
+  "noCharacterNote": "Belum ada pesan",
+  "noPhonemesYet": "Belum ada bunyi untuk dianalisis",
+  "noSentencesYet": "Belum ada kalimat untuk dianalisis",
+  "takeLevelTest": "Ikuti tes level",
+  "reviewToSeeScore": "Ulas kembali untuk melihat skor pelafalanmu"
 }

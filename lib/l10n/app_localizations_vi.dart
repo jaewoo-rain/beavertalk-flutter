@@ -2010,4 +2010,38 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Giao dịch chưa hoàn tất. Chưa bị trừ tiền — vui lòng thử lại.';
+
+  @override
+  String get noAccentDataTitle => 'Chưa có dữ liệu ngữ điệu';
+
+  @override
+  String get noAccentDataBody => 'Tiếp tục gọi để tích lũy đặc điểm ngữ điệu.';
+
+  @override
+  String get noLevelYetTitle => 'Chưa có cấp độ';
+
+  @override
+  String get noLevelYetBody => 'Hoàn thành cuộc gọi đầu tiên để nhận cấp độ.';
+
+  @override
+  String get noPronunciationDataTitle => 'Chưa có bản ghi phát âm';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Chúng tôi phân tích phát âm từ những câu bạn nói khi gọi.';
+
+  @override
+  String get noCharacterNote => 'Chưa có lời nhắn nào';
+
+  @override
+  String get noPhonemesYet => 'Chưa có âm nào để phân tích';
+
+  @override
+  String get noSentencesYet => 'Chưa có câu nào để phân tích';
+
+  @override
+  String get takeLevelTest => 'Làm bài kiểm tra trình độ';
+
+  @override
+  String get reviewToSeeScore => 'Ôn tập để xem điểm phát âm';
 }

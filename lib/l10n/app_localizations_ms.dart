@@ -2028,4 +2028,40 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Pembelian tidak selesai. Tiada caj dikenakan — sila cuba lagi.';
+
+  @override
+  String get noAccentDataTitle => 'Belum ada data intonasi';
+
+  @override
+  String get noAccentDataBody =>
+      'Teruskan berbual dan ciri intonasi anda akan terkumpul.';
+
+  @override
+  String get noLevelYetTitle => 'Belum ada tahap';
+
+  @override
+  String get noLevelYetBody =>
+      'Selesaikan panggilan pertama anda untuk mendapat tahap.';
+
+  @override
+  String get noPronunciationDataTitle => 'Belum ada rekod sebutan';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Kami menganalisis sebutan daripada ayat yang anda tuturkan semasa panggilan.';
+
+  @override
+  String get noCharacterNote => 'Belum ada pesanan';
+
+  @override
+  String get noPhonemesYet => 'Belum ada bunyi untuk dianalisis';
+
+  @override
+  String get noSentencesYet => 'Belum ada ayat untuk dianalisis';
+
+  @override
+  String get takeLevelTest => 'Ambil ujian tahap';
+
+  @override
+  String get reviewToSeeScore => 'Ulang kaji untuk melihat skor sebutan anda';
 }

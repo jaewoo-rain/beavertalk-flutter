@@ -2010,4 +2010,40 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Satın alma tamamlanamadı. Ücret alınmadı — lütfen tekrar dene.';
+
+  @override
+  String get noAccentDataTitle => 'Henüz tonlama verisi yok';
+
+  @override
+  String get noAccentDataBody =>
+      'Konuşmaya devam ettikçe tonlama özellikleriniz birikir.';
+
+  @override
+  String get noLevelYetTitle => 'Henüz seviye yok';
+
+  @override
+  String get noLevelYetBody =>
+      'İlk aramanızı tamamlayın, seviyeniz belirlensin.';
+
+  @override
+  String get noPronunciationDataTitle => 'Henüz telaffuz kaydı yok';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Aramada söylediğiniz cümlelerden telaffuzunuzu analiz ediyoruz.';
+
+  @override
+  String get noCharacterNote => 'Henüz bırakılan bir söz yok';
+
+  @override
+  String get noPhonemesYet => 'Analiz edilecek ses henüz yok';
+
+  @override
+  String get noSentencesYet => 'Analiz edilecek cümle henüz yok';
+
+  @override
+  String get takeLevelTest => 'Seviye testine gir';
+
+  @override
+  String get reviewToSeeScore => 'Tekrar edince telaffuz puanınız çıkar';
 }

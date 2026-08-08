@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "購入が完了しませんでした。請求は発生していません。もう一度お試しください。",
   "priceChangedTitle": "価格が変更されました",
   "priceChangedBody": "この商品は現在{price}です。続けますか?",
-  "joinedLabel": "登録日"
+  "joinedLabel": "登録日",
+  "noAccentDataTitle": "まだイントネーションのデータがありません",
+  "noAccentDataBody": "通話を続けるとイントネーションの特徴が集まります。",
+  "noLevelYetTitle": "まだレベルがありません",
+  "noLevelYetBody": "最初の通話を終えるとレベルが出ます。",
+  "noPronunciationDataTitle": "まだ発音の記録がありません",
+  "noPronunciationDataBody": "通話で話した文から発音を分析します。",
+  "noCharacterNote": "まだ残した言葉がありません",
+  "noPhonemesYet": "分析する音がまだありません",
+  "noSentencesYet": "分析する文がまだありません",
+  "takeLevelTest": "レベルテストを受ける",
+  "reviewToSeeScore": "復習すると発音スコアが出ます"
 }

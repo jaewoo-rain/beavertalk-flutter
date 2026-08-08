@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Giao dịch chưa hoàn tất. Chưa bị trừ tiền — vui lòng thử lại.",
   "priceChangedTitle": "Giá đã thay đổi",
   "priceChangedBody": "Mặt hàng này hiện là {price}. Bạn có muốn tiếp tục?",
-  "joinedLabel": "Ngày tham gia"
+  "joinedLabel": "Ngày tham gia",
+  "noAccentDataTitle": "Chưa có dữ liệu ngữ điệu",
+  "noAccentDataBody": "Tiếp tục gọi để tích lũy đặc điểm ngữ điệu.",
+  "noLevelYetTitle": "Chưa có cấp độ",
+  "noLevelYetBody": "Hoàn thành cuộc gọi đầu tiên để nhận cấp độ.",
+  "noPronunciationDataTitle": "Chưa có bản ghi phát âm",
+  "noPronunciationDataBody": "Chúng tôi phân tích phát âm từ những câu bạn nói khi gọi.",
+  "noCharacterNote": "Chưa có lời nhắn nào",
+  "noPhonemesYet": "Chưa có âm nào để phân tích",
+  "noSentencesYet": "Chưa có câu nào để phân tích",
+  "takeLevelTest": "Làm bài kiểm tra trình độ",
+  "reviewToSeeScore": "Ôn tập để xem điểm phát âm"
 }

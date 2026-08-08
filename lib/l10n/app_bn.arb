@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "কেনা সম্পন্ন হয়নি। কোনো টাকা কাটা হয়নি — আবার চেষ্টা করুন।",
   "priceChangedTitle": "দাম বদলে গেছে",
   "priceChangedBody": "এই আইটেমের দাম এখন {price}। চালিয়ে যেতে চান?",
-  "joinedLabel": "যোগদানের তারিখ"
+  "joinedLabel": "যোগদানের তারিখ",
+  "noAccentDataTitle": "এখনও স্বরভঙ্গির তথ্য নেই",
+  "noAccentDataBody": "কথা বলা চালিয়ে গেলে আপনার স্বরভঙ্গির বৈশিষ্ট্য জমতে থাকবে।",
+  "noLevelYetTitle": "এখনও কোনো স্তর নেই",
+  "noLevelYetBody": "প্রথম কল শেষ করলে আপনার স্তর পাবেন।",
+  "noPronunciationDataTitle": "এখনও উচ্চারণের রেকর্ড নেই",
+  "noPronunciationDataBody": "কলে বলা বাক্য থেকে আমরা উচ্চারণ বিশ্লেষণ করি।",
+  "noCharacterNote": "এখনও কিছু বলা হয়নি",
+  "noPhonemesYet": "বিশ্লেষণের জন্য এখনও কোনো ধ্বনি নেই",
+  "noSentencesYet": "বিশ্লেষণের জন্য এখনও কোনো বাক্য নেই",
+  "takeLevelTest": "স্তর পরীক্ষা দিন",
+  "reviewToSeeScore": "পুনরালোচনা করলে উচ্চারণের স্কোর দেখা যাবে"
 }

@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "购买未完成。没有产生任何扣款,请重试。",
   "priceChangedTitle": "价格已变更",
   "priceChangedBody": "此商品现价为{price}。要继续吗?",
-  "joinedLabel": "注册日期"
+  "joinedLabel": "注册日期",
+  "noAccentDataTitle": "还没有语调数据",
+  "noAccentDataBody": "继续通话就会积累语调特征。",
+  "noLevelYetTitle": "还没有等级",
+  "noLevelYetBody": "完成第一次通话后就会显示等级。",
+  "noPronunciationDataTitle": "还没有发音记录",
+  "noPronunciationDataBody": "我们会根据通话中说的句子分析发音。",
+  "noCharacterNote": "还没有留下的话",
+  "noPhonemesYet": "还没有可分析的发音",
+  "noSentencesYet": "还没有可分析的句子",
+  "takeLevelTest": "参加等级测试",
+  "reviewToSeeScore": "复习后就会出现发音分数"
 }

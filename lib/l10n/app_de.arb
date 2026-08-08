@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Der Kauf wurde nicht abgeschlossen. Es wurde nichts abgebucht — bitte versuche es erneut.",
   "priceChangedTitle": "Preis geändert",
   "priceChangedBody": "Dieser Artikel kostet jetzt {price}. Möchtest du fortfahren?",
-  "joinedLabel": "Beigetreten"
+  "joinedLabel": "Beigetreten",
+  "noAccentDataTitle": "Noch keine Intonationsdaten",
+  "noAccentDataBody": "Sprich weiter, dann sammeln sich deine Intonationsmerkmale.",
+  "noLevelYetTitle": "Noch kein Level",
+  "noLevelYetBody": "Schließe deinen ersten Anruf ab, um dein Level zu erhalten.",
+  "noPronunciationDataTitle": "Noch keine Aussprache-Aufzeichnungen",
+  "noPronunciationDataBody": "Wir analysieren deine Aussprache anhand der Sätze, die du im Anruf sagst.",
+  "noCharacterNote": "Noch nichts gesagt",
+  "noPhonemesYet": "Noch keine Laute zum Analysieren",
+  "noSentencesYet": "Noch keine Sätze zum Analysieren",
+  "takeLevelTest": "Einstufungstest machen",
+  "reviewToSeeScore": "Wiederhole, um deine Aussprachebewertung zu sehen"
 }

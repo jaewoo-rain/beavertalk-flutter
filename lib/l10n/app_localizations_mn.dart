@@ -2011,4 +2011,39 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Худалдан авалт амжилтгүй боллоо. Төлбөр гараагүй — дахин оролдоно уу.';
+
+  @override
+  String get noAccentDataTitle => 'Аялгууны мэдээлэл одоогоор алга';
+
+  @override
+  String get noAccentDataBody =>
+      'Яриагаа үргэлжлүүлбэл аялгууны онцлог чинь хуримтлагдана.';
+
+  @override
+  String get noLevelYetTitle => 'Түвшин одоогоор алга';
+
+  @override
+  String get noLevelYetBody => 'Эхний дуудлагаа дуусгавал түвшин чинь гарна.';
+
+  @override
+  String get noPronunciationDataTitle => 'Дуудлагын бичлэг одоогоор алга';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Дуудлагад хэлсэн өгүүлбэрээс тань дуудлагыг шинжилнэ.';
+
+  @override
+  String get noCharacterNote => 'Одоогоор үлдээсэн үг алга';
+
+  @override
+  String get noPhonemesYet => 'Шинжлэх дуу одоогоор алга';
+
+  @override
+  String get noSentencesYet => 'Шинжлэх өгүүлбэр одоогоор алга';
+
+  @override
+  String get takeLevelTest => 'Түвшин тогтоох шалгалт өгөх';
+
+  @override
+  String get reviewToSeeScore => 'Давтвал дуудлагын оноо гарна';
 }

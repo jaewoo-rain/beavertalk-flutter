@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "මිලදී ගැනීම සම්පූර්ණ නොවීය. මුදල් අය නොවුණි — නැවත උත්සාහ කරන්න.",
   "priceChangedTitle": "මිල වෙනස් වුණා",
   "priceChangedBody": "මෙම අයිතමය දැන් {price} යි. දිගටම යන්නද?",
-  "joinedLabel": "එක් වූ දිනය"
+  "joinedLabel": "එක් වූ දිනය",
+  "noAccentDataTitle": "තවම ස්වර දත්ත නැත",
+  "noAccentDataBody": "කතා කරමින් සිටින්න, ඔබේ ස්වර ලක්ෂණ එකතු වේ.",
+  "noLevelYetTitle": "තවම මට්ටමක් නැත",
+  "noLevelYetBody": "පළමු ඇමතුම අවසන් කර ඔබේ මට්ටම ලබා ගන්න.",
+  "noPronunciationDataTitle": "තවම උච්චාරණ වාර්තා නැත",
+  "noPronunciationDataBody": "ඇමතුමේදී ඔබ කී වාක්‍ය අනුව උච්චාරණය විශ්ලේෂණය කරමු.",
+  "noCharacterNote": "තවම තැබූ පණිවිඩයක් නැත",
+  "noPhonemesYet": "විශ්ලේෂණය කිරීමට තවම ශබ්ද නැත",
+  "noSentencesYet": "විශ්ලේෂණය කිරීමට තවම වාක්‍ය නැත",
+  "takeLevelTest": "මට්ටම් පරීක්ෂණය කරන්න",
+  "reviewToSeeScore": "නැවත බලා උච්චාරණ ලකුණු බලන්න"
 }

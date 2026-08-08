@@ -1951,4 +1951,37 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get iapCharacterFailedBody => '구매가 완료되지 않았어요. 결제된 금액은 없으니 다시 시도해 주세요.';
+
+  @override
+  String get noAccentDataTitle => '아직 억양 데이터가 없어요';
+
+  @override
+  String get noAccentDataBody => '통화를 이어가면 억양 특징이 모여요.';
+
+  @override
+  String get noLevelYetTitle => '아직 레벨이 없어요';
+
+  @override
+  String get noLevelYetBody => '첫 통화를 마치면 레벨이 나와요.';
+
+  @override
+  String get noPronunciationDataTitle => '아직 발음 기록이 없어요';
+
+  @override
+  String get noPronunciationDataBody => '통화에서 말한 문장으로 발음을 분석해요.';
+
+  @override
+  String get noCharacterNote => '아직 남긴 말이 없어요';
+
+  @override
+  String get noPhonemesYet => '분석할 소리가 아직 없어요';
+
+  @override
+  String get noSentencesYet => '분석할 문장이 아직 없어요';
+
+  @override
+  String get takeLevelTest => '레벨 테스트 받기';
+
+  @override
+  String get reviewToSeeScore => '복습하면 발음 점수가 나와요';
 }

@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Сатып алуу ишке ашкан жок. Акча алынган жок — кайра аракет кылыңыз.",
   "priceChangedTitle": "Баа өзгөрдү",
   "priceChangedBody": "Бул товар эми {price} турат. Улантасызбы?",
-  "joinedLabel": "Катталган күнү"
+  "joinedLabel": "Катталган күнү",
+  "noAccentDataTitle": "Интонация маалыматы азырынча жок",
+  "noAccentDataBody": "Сүйлөшүүнү улантсаңыз, интонацияңыздын өзгөчөлүктөрү топтолот.",
+  "noLevelYetTitle": "Деңгээл азырынча жок",
+  "noLevelYetBody": "Биринчи чалууну аяктасаңыз деңгээлиңиз чыгат.",
+  "noPronunciationDataTitle": "Айтылыш жазуулары азырынча жок",
+  "noPronunciationDataBody": "Чалууда айткан сүйлөмдөрүңүздөн айтылышты талдайбыз.",
+  "noCharacterNote": "Азырынча калтырылган сөз жок",
+  "noPhonemesYet": "Талдоого алынуучу үн азырынча жок",
+  "noSentencesYet": "Талдоого алынуучу сүйлөм азырынча жок",
+  "takeLevelTest": "Деңгээл тестин тапшыруу",
+  "reviewToSeeScore": "Кайталасаңыз айтылыш упайы чыгат"
 }

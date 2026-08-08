@@ -2015,4 +2015,40 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Pembelian tidak berhasil. Tidak ada tagihan — silakan coba lagi.';
+
+  @override
+  String get noAccentDataTitle => 'Belum ada data intonasi';
+
+  @override
+  String get noAccentDataBody =>
+      'Terus mengobrol agar pola intonasimu terkumpul.';
+
+  @override
+  String get noLevelYetTitle => 'Belum ada level';
+
+  @override
+  String get noLevelYetBody =>
+      'Selesaikan panggilan pertamamu untuk mendapat level.';
+
+  @override
+  String get noPronunciationDataTitle => 'Belum ada rekaman pelafalan';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Kami menganalisis pelafalan dari kalimat yang kamu ucapkan saat menelepon.';
+
+  @override
+  String get noCharacterNote => 'Belum ada pesan';
+
+  @override
+  String get noPhonemesYet => 'Belum ada bunyi untuk dianalisis';
+
+  @override
+  String get noSentencesYet => 'Belum ada kalimat untuk dianalisis';
+
+  @override
+  String get takeLevelTest => 'Ikuti tes level';
+
+  @override
+  String get reviewToSeeScore => 'Ulas kembali untuk melihat skor pelafalanmu';
 }

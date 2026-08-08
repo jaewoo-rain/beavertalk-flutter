@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.",
   "priceChangedTitle": "Narx oʻzgardi",
   "priceChangedBody": "Bu mahsulot endi {price}. Davom etasizmi?",
-  "joinedLabel": "Roʻyxatdan oʻtgan sana"
+  "joinedLabel": "Roʻyxatdan oʻtgan sana",
+  "noAccentDataTitle": "Hozircha ohang ma'lumotlari yo'q",
+  "noAccentDataBody": "Suhbatni davom ettiring, ohangingiz xususiyatlari to'plana boradi.",
+  "noLevelYetTitle": "Hozircha daraja yo'q",
+  "noLevelYetBody": "Birinchi qo'ng'iroqni yakunlasangiz darajangiz chiqadi.",
+  "noPronunciationDataTitle": "Hozircha talaffuz yozuvlari yo'q",
+  "noPronunciationDataBody": "Qo'ng'iroqda aytgan gaplaringizdan talaffuzni tahlil qilamiz.",
+  "noCharacterNote": "Hozircha qoldirilgan so'z yo'q",
+  "noPhonemesYet": "Tahlil qilish uchun hozircha tovush yo'q",
+  "noSentencesYet": "Tahlil qilish uchun hozircha gap yo'q",
+  "takeLevelTest": "Daraja testini topshirish",
+  "reviewToSeeScore": "Takrorlasangiz talaffuz ballingiz chiqadi"
 }

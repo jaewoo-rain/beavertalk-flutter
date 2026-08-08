@@ -2043,4 +2043,42 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'L\'achat n\'a pas abouti. Rien n\'a été débité — veuillez réessayer.';
+
+  @override
+  String get noAccentDataTitle => 'Pas encore de données d\'intonation';
+
+  @override
+  String get noAccentDataBody =>
+      'Continuez à parler et les traits de votre intonation s\'accumuleront.';
+
+  @override
+  String get noLevelYetTitle => 'Pas encore de niveau';
+
+  @override
+  String get noLevelYetBody =>
+      'Terminez votre premier appel pour obtenir votre niveau.';
+
+  @override
+  String get noPronunciationDataTitle =>
+      'Pas encore d\'enregistrements de prononciation';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Nous analysons votre prononciation à partir des phrases dites pendant les appels.';
+
+  @override
+  String get noCharacterNote => 'Rien n\'a encore été dit';
+
+  @override
+  String get noPhonemesYet => 'Pas encore de sons à analyser';
+
+  @override
+  String get noSentencesYet => 'Pas encore de phrases à analyser';
+
+  @override
+  String get takeLevelTest => 'Passer le test de niveau';
+
+  @override
+  String get reviewToSeeScore =>
+      'Révisez pour voir votre score de prononciation';
 }

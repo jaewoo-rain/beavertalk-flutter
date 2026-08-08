@@ -2007,4 +2007,39 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'خریداری مکمل نہیں ہوئی۔ کوئی رقم نہیں کٹی — دوبارہ کوشش کریں۔';
+
+  @override
+  String get noAccentDataTitle => 'ابھی تک لہجے کا کوئی ڈیٹا نہیں';
+
+  @override
+  String get noAccentDataBody =>
+      'بات چیت جاری رکھیں، آپ کے لہجے کی خصوصیات جمع ہوتی جائیں گی۔';
+
+  @override
+  String get noLevelYetTitle => 'ابھی تک کوئی سطح نہیں';
+
+  @override
+  String get noLevelYetBody => 'پہلی کال مکمل کریں تو آپ کی سطح مل جائے گی۔';
+
+  @override
+  String get noPronunciationDataTitle => 'ابھی تک تلفظ کا کوئی ریکارڈ نہیں';
+
+  @override
+  String get noPronunciationDataBody =>
+      'ہم کال میں کہے گئے جملوں سے تلفظ کا تجزیہ کرتے ہیں۔';
+
+  @override
+  String get noCharacterNote => 'ابھی تک کچھ نہیں کہا گیا';
+
+  @override
+  String get noPhonemesYet => 'تجزیے کے لیے ابھی کوئی آواز نہیں';
+
+  @override
+  String get noSentencesYet => 'تجزیے کے لیے ابھی کوئی جملہ نہیں';
+
+  @override
+  String get takeLevelTest => 'سطح کا امتحان دیں';
+
+  @override
+  String get reviewToSeeScore => 'دہرانے پر تلفظ کا اسکور نظر آئے گا';
 }

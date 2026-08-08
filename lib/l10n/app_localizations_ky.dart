@@ -2012,4 +2012,39 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Сатып алуу ишке ашкан жок. Акча алынган жок — кайра аракет кылыңыз.';
+
+  @override
+  String get noAccentDataTitle => 'Интонация маалыматы азырынча жок';
+
+  @override
+  String get noAccentDataBody =>
+      'Сүйлөшүүнү улантсаңыз, интонацияңыздын өзгөчөлүктөрү топтолот.';
+
+  @override
+  String get noLevelYetTitle => 'Деңгээл азырынча жок';
+
+  @override
+  String get noLevelYetBody => 'Биринчи чалууну аяктасаңыз деңгээлиңиз чыгат.';
+
+  @override
+  String get noPronunciationDataTitle => 'Айтылыш жазуулары азырынча жок';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Чалууда айткан сүйлөмдөрүңүздөн айтылышты талдайбыз.';
+
+  @override
+  String get noCharacterNote => 'Азырынча калтырылган сөз жок';
+
+  @override
+  String get noPhonemesYet => 'Талдоого алынуучу үн азырынча жок';
+
+  @override
+  String get noSentencesYet => 'Талдоого алынуучу сүйлөм азырынча жок';
+
+  @override
+  String get takeLevelTest => 'Деңгээл тестин тапшыруу';
+
+  @override
+  String get reviewToSeeScore => 'Кайталасаңыз айтылыш упайы чыгат';
 }

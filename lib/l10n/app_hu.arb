@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.",
   "priceChangedTitle": "Megváltozott az ár",
   "priceChangedBody": "Ez a tétel most {price}. Folytatod?",
-  "joinedLabel": "Csatlakozott"
+  "joinedLabel": "Csatlakozott",
+  "noAccentDataTitle": "Még nincs hanglejtési adat",
+  "noAccentDataBody": "Beszélgess tovább, és összegyűlnek a hanglejtésed jellemzői.",
+  "noLevelYetTitle": "Még nincs szint",
+  "noLevelYetBody": "Fejezd be az első hívásod, hogy megkapd a szinted.",
+  "noPronunciationDataTitle": "Még nincs kiejtési adat",
+  "noPronunciationDataBody": "A hívásban elmondott mondataidból elemezzük a kiejtésed.",
+  "noCharacterNote": "Még nem mondott semmit",
+  "noPhonemesYet": "Még nincs elemezhető hang",
+  "noSentencesYet": "Még nincs elemezhető mondat",
+  "takeLevelTest": "Szintfelmérő kitöltése",
+  "reviewToSeeScore": "Ismételd át, hogy lásd a kiejtési pontszámod"
 }

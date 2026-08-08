@@ -1945,4 +1945,37 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get iapCharacterFailedBody => '购买未完成。没有产生任何扣款,请重试。';
+
+  @override
+  String get noAccentDataTitle => '还没有语调数据';
+
+  @override
+  String get noAccentDataBody => '继续通话就会积累语调特征。';
+
+  @override
+  String get noLevelYetTitle => '还没有等级';
+
+  @override
+  String get noLevelYetBody => '完成第一次通话后就会显示等级。';
+
+  @override
+  String get noPronunciationDataTitle => '还没有发音记录';
+
+  @override
+  String get noPronunciationDataBody => '我们会根据通话中说的句子分析发音。';
+
+  @override
+  String get noCharacterNote => '还没有留下的话';
+
+  @override
+  String get noPhonemesYet => '还没有可分析的发音';
+
+  @override
+  String get noSentencesYet => '还没有可分析的句子';
+
+  @override
+  String get takeLevelTest => '参加等级测试';
+
+  @override
+  String get reviewToSeeScore => '复习后就会出现发音分数';
 }

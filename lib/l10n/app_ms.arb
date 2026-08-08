@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Pembelian tidak selesai. Tiada caj dikenakan — sila cuba lagi.",
   "priceChangedTitle": "Harga berubah",
   "priceChangedBody": "Item ini kini {price}. Teruskan?",
-  "joinedLabel": "Menyertai"
+  "joinedLabel": "Menyertai",
+  "noAccentDataTitle": "Belum ada data intonasi",
+  "noAccentDataBody": "Teruskan berbual dan ciri intonasi anda akan terkumpul.",
+  "noLevelYetTitle": "Belum ada tahap",
+  "noLevelYetBody": "Selesaikan panggilan pertama anda untuk mendapat tahap.",
+  "noPronunciationDataTitle": "Belum ada rekod sebutan",
+  "noPronunciationDataBody": "Kami menganalisis sebutan daripada ayat yang anda tuturkan semasa panggilan.",
+  "noCharacterNote": "Belum ada pesanan",
+  "noPhonemesYet": "Belum ada bunyi untuk dianalisis",
+  "noSentencesYet": "Belum ada ayat untuk dianalisis",
+  "takeLevelTest": "Ambil ujian tahap",
+  "reviewToSeeScore": "Ulang kaji untuk melihat skor sebutan anda"
 }

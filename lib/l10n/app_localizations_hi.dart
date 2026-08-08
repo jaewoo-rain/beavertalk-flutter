@@ -2005,4 +2005,39 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'खरीदारी पूरी नहीं हुई। कोई राशि नहीं कटी — कृपया फिर से कोशिश करें।';
+
+  @override
+  String get noAccentDataTitle => 'अभी तक कोई स्वर-लय डेटा नहीं';
+
+  @override
+  String get noAccentDataBody =>
+      'बात करते रहिए, आपकी स्वर-लय की विशेषताएँ जमा होती जाएँगी।';
+
+  @override
+  String get noLevelYetTitle => 'अभी तक कोई स्तर नहीं';
+
+  @override
+  String get noLevelYetBody => 'पहली कॉल पूरी करने पर आपका स्तर मिलेगा।';
+
+  @override
+  String get noPronunciationDataTitle => 'अभी तक उच्चारण का रिकॉर्ड नहीं';
+
+  @override
+  String get noPronunciationDataBody =>
+      'कॉल में बोले गए वाक्यों से हम उच्चारण का विश्लेषण करते हैं।';
+
+  @override
+  String get noCharacterNote => 'अभी तक कोई बात नहीं कही';
+
+  @override
+  String get noPhonemesYet => 'विश्लेषण के लिए अभी कोई ध्वनि नहीं';
+
+  @override
+  String get noSentencesYet => 'विश्लेषण के लिए अभी कोई वाक्य नहीं';
+
+  @override
+  String get takeLevelTest => 'स्तर परीक्षा दें';
+
+  @override
+  String get reviewToSeeScore => 'दोहराने पर उच्चारण स्कोर दिखेगा';
 }

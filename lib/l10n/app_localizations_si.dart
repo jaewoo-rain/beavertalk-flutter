@@ -2004,4 +2004,38 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'මිලදී ගැනීම සම්පූර්ණ නොවීය. මුදල් අය නොවුණි — නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get noAccentDataTitle => 'තවම ස්වර දත්ත නැත';
+
+  @override
+  String get noAccentDataBody => 'කතා කරමින් සිටින්න, ඔබේ ස්වර ලක්ෂණ එකතු වේ.';
+
+  @override
+  String get noLevelYetTitle => 'තවම මට්ටමක් නැත';
+
+  @override
+  String get noLevelYetBody => 'පළමු ඇමතුම අවසන් කර ඔබේ මට්ටම ලබා ගන්න.';
+
+  @override
+  String get noPronunciationDataTitle => 'තවම උච්චාරණ වාර්තා නැත';
+
+  @override
+  String get noPronunciationDataBody =>
+      'ඇමතුමේදී ඔබ කී වාක්‍ය අනුව උච්චාරණය විශ්ලේෂණය කරමු.';
+
+  @override
+  String get noCharacterNote => 'තවම තැබූ පණිවිඩයක් නැත';
+
+  @override
+  String get noPhonemesYet => 'විශ්ලේෂණය කිරීමට තවම ශබ්ද නැත';
+
+  @override
+  String get noSentencesYet => 'විශ්ලේෂණය කිරීමට තවම වාක්‍ය නැත';
+
+  @override
+  String get takeLevelTest => 'මට්ටම් පරීක්ෂණය කරන්න';
+
+  @override
+  String get reviewToSeeScore => 'නැවත බලා උච්චාරණ ලකුණු බලන්න';
 }

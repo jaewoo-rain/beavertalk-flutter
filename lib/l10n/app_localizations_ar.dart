@@ -1996,4 +1996,38 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'لم تكتمل عملية الشراء. لم يتم خصم أي مبلغ — يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get noAccentDataTitle => 'لا توجد بيانات نبرة بعد';
+
+  @override
+  String get noAccentDataBody => 'تابع المحادثة وستتراكم سمات نبرتك.';
+
+  @override
+  String get noLevelYetTitle => 'لا يوجد مستوى بعد';
+
+  @override
+  String get noLevelYetBody => 'أنهِ مكالمتك الأولى للحصول على مستواك.';
+
+  @override
+  String get noPronunciationDataTitle => 'لا توجد سجلات نطق بعد';
+
+  @override
+  String get noPronunciationDataBody =>
+      'نحلل نطقك من الجمل التي تقولها أثناء المكالمة.';
+
+  @override
+  String get noCharacterNote => 'لم يُترك أي كلام بعد';
+
+  @override
+  String get noPhonemesYet => 'لا توجد أصوات للتحليل بعد';
+
+  @override
+  String get noSentencesYet => 'لا توجد جمل للتحليل بعد';
+
+  @override
+  String get takeLevelTest => 'خوض اختبار المستوى';
+
+  @override
+  String get reviewToSeeScore => 'راجع لترى درجة نطقك';
 }

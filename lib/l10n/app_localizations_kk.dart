@@ -2007,4 +2007,40 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.';
+
+  @override
+  String get noAccentDataTitle => 'Интонация деректері әзірге жоқ';
+
+  @override
+  String get noAccentDataBody =>
+      'Сөйлесуді жалғастырсаңыз, интонация ерекшеліктері жинала береді.';
+
+  @override
+  String get noLevelYetTitle => 'Деңгей әзірге жоқ';
+
+  @override
+  String get noLevelYetBody =>
+      'Алғашқы қоңырауды аяқтасаңыз деңгейіңіз шығады.';
+
+  @override
+  String get noPronunciationDataTitle => 'Айтылым жазбалары әзірге жоқ';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Қоңырауда айтқан сөйлемдеріңізден айтылымды талдаймыз.';
+
+  @override
+  String get noCharacterNote => 'Әзірге қалдырылған сөз жоқ';
+
+  @override
+  String get noPhonemesYet => 'Талдауға арналған дыбыс әзірге жоқ';
+
+  @override
+  String get noSentencesYet => 'Талдауға арналған сөйлем әзірге жоқ';
+
+  @override
+  String get takeLevelTest => 'Деңгей тестін тапсыру';
+
+  @override
+  String get reviewToSeeScore => 'Қайталасаңыз айтылым ұпайы шығады';
 }

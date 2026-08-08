@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "ការទិញមិនបានសម្រេចទេ។ មិនមានការគិតប្រាក់ទេ — សូមព្យាយាមម្ដងទៀត។",
   "priceChangedTitle": "តម្លៃបានផ្លាស់ប្ដូរ",
   "priceChangedBody": "ទំនិញនេះឥឡូវតម្លៃ {price}។ បន្តទេ?",
-  "joinedLabel": "ថ្ងៃចូលរួម"
+  "joinedLabel": "ថ្ងៃចូលរួម",
+  "noAccentDataTitle": "មិនទាន់មានទិន្នន័យសំនៀងទេ",
+  "noAccentDataBody": "បន្តសន្ទនា នោះលក្ខណៈសំនៀងរបស់អ្នកនឹងកកកុញឡើង។",
+  "noLevelYetTitle": "មិនទាន់មានកម្រិតទេ",
+  "noLevelYetBody": "បញ្ចប់ការហៅលើកដំបូង ដើម្បីទទួលបានកម្រិតរបស់អ្នក។",
+  "noPronunciationDataTitle": "មិនទាន់មានកំណត់ត្រាការបញ្ចេញសំឡេងទេ",
+  "noPronunciationDataBody": "យើងវិភាគការបញ្ចេញសំឡេងពីប្រយោគដែលអ្នកនិយាយពេលហៅ។",
+  "noCharacterNote": "មិនទាន់មានសាររក្សាទុកទេ",
+  "noPhonemesYet": "មិនទាន់មានសំឡេងសម្រាប់វិភាគទេ",
+  "noSentencesYet": "មិនទាន់មានប្រយោគសម្រាប់វិភាគទេ",
+  "takeLevelTest": "ធ្វើតេស្តកម្រិត",
+  "reviewToSeeScore": "ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង"
 }

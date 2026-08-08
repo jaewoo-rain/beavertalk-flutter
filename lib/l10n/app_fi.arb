@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Ostos ei onnistunut. Mitään ei veloitettu — yritä uudelleen.",
   "priceChangedTitle": "Hinta muuttui",
   "priceChangedBody": "Tämä tuote maksaa nyt {price}. Haluatko jatkaa?",
-  "joinedLabel": "Liittynyt"
+  "joinedLabel": "Liittynyt",
+  "noAccentDataTitle": "Ei vielä intonaatiotietoja",
+  "noAccentDataBody": "Jatka puhumista, niin intonaatiosi piirteet kertyvät.",
+  "noLevelYetTitle": "Ei vielä tasoa",
+  "noLevelYetBody": "Suorita ensimmäinen puhelusi saadaksesi tasosi.",
+  "noPronunciationDataTitle": "Ei vielä ääntämistietoja",
+  "noPronunciationDataBody": "Analysoimme ääntämistäsi puheluissa sanomistasi lauseista.",
+  "noCharacterNote": "Ei vielä sanottua",
+  "noPhonemesYet": "Ei vielä analysoitavia äänteitä",
+  "noSentencesYet": "Ei vielä analysoitavia lauseita",
+  "takeLevelTest": "Tee tasotesti",
+  "reviewToSeeScore": "Kertaa nähdäksesi ääntämispisteesi"
 }

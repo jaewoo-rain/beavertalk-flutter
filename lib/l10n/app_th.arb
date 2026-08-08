@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "การซื้อไม่สำเร็จ ไม่มีการเรียกเก็บเงิน โปรดลองอีกครั้ง",
   "priceChangedTitle": "ราคามีการเปลี่ยนแปลง",
   "priceChangedBody": "สินค้านี้ตอนนี้ราคา {price} ต้องการดำเนินการต่อหรือไม่",
-  "joinedLabel": "วันที่เข้าร่วม"
+  "joinedLabel": "วันที่เข้าร่วม",
+  "noAccentDataTitle": "ยังไม่มีข้อมูลน้ำเสียง",
+  "noAccentDataBody": "คุยต่อไปแล้วลักษณะน้ำเสียงจะค่อยๆ สะสม",
+  "noLevelYetTitle": "ยังไม่มีระดับ",
+  "noLevelYetBody": "จบการโทรครั้งแรกเพื่อรับระดับของคุณ",
+  "noPronunciationDataTitle": "ยังไม่มีบันทึกการออกเสียง",
+  "noPronunciationDataBody": "เราวิเคราะห์การออกเสียงจากประโยคที่คุณพูดในสาย",
+  "noCharacterNote": "ยังไม่มีข้อความ",
+  "noPhonemesYet": "ยังไม่มีเสียงให้วิเคราะห์",
+  "noSentencesYet": "ยังไม่มีประโยคให้วิเคราะห์",
+  "takeLevelTest": "ทำแบบทดสอบระดับ",
+  "reviewToSeeScore": "ทบทวนเพื่อดูคะแนนการออกเสียง"
 }

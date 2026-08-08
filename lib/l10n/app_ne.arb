@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "खरिद पूरा भएन। कुनै रकम काटिएको छैन — फेरि प्रयास गर्नुहोस्।",
   "priceChangedTitle": "मूल्य परिवर्तन भयो",
   "priceChangedBody": "यो वस्तुको मूल्य अब {price} छ। जारी राख्ने?",
-  "joinedLabel": "सामेल भएको मिति"
+  "joinedLabel": "सामेल भएको मिति",
+  "noAccentDataTitle": "अझै स्वराघात डेटा छैन",
+  "noAccentDataBody": "कुराकानी जारी राख्नुहोस्, स्वराघातका विशेषता जम्मा हुँदै जान्छन्।",
+  "noLevelYetTitle": "अझै स्तर छैन",
+  "noLevelYetBody": "पहिलो कल सकेपछि तपाईंको स्तर देखिन्छ।",
+  "noPronunciationDataTitle": "अझै उच्चारण रेकर्ड छैन",
+  "noPronunciationDataBody": "कलमा बोलेका वाक्यबाट उच्चारण विश्लेषण गर्छौं।",
+  "noCharacterNote": "अझै छाडिएको सन्देश छैन",
+  "noPhonemesYet": "विश्लेषण गर्ने ध्वनि अझै छैन",
+  "noSentencesYet": "विश्लेषण गर्ने वाक्य अझै छैन",
+  "takeLevelTest": "स्तर परीक्षा दिनुहोस्",
+  "reviewToSeeScore": "दोहोर्‍याएपछि उच्चारण अंक देखिन्छ"
 }

@@ -2010,4 +2010,39 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'The purchase didn\'t go through. Nothing was charged - please try again.';
+
+  @override
+  String get noAccentDataTitle => 'No accent data yet';
+
+  @override
+  String get noAccentDataBody =>
+      'Keep talking and your accent patterns will build up.';
+
+  @override
+  String get noLevelYetTitle => 'No level yet';
+
+  @override
+  String get noLevelYetBody => 'Finish your first call to get your level.';
+
+  @override
+  String get noPronunciationDataTitle => 'No pronunciation records yet';
+
+  @override
+  String get noPronunciationDataBody =>
+      'We analyze your pronunciation from what you say on calls.';
+
+  @override
+  String get noCharacterNote => 'Nothing said yet';
+
+  @override
+  String get noPhonemesYet => 'No sounds to analyze yet';
+
+  @override
+  String get noSentencesYet => 'No sentences to analyze yet';
+
+  @override
+  String get takeLevelTest => 'Take level test';
+
+  @override
+  String get reviewToSeeScore => 'Review to see your pronunciation score';
 }

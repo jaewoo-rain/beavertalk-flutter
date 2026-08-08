@@ -3795,6 +3795,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The purchase didn\'t go through. Nothing was charged - please try again.'**
   String get iapCharacterFailedBody;
+
+  /// Mypage accent card, empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No accent data yet'**
+  String get noAccentDataTitle;
+
+  /// Mypage accent card, empty state body.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep talking and your accent patterns will build up.'**
+  String get noAccentDataBody;
+
+  /// Mypage level card, empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No level yet'**
+  String get noLevelYetTitle;
+
+  /// Mypage level card, empty state body.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your first call to get your level.'**
+  String get noLevelYetBody;
+
+  /// Mypage pronunciation card, empty state title.
+  ///
+  /// In en, this message translates to:
+  /// **'No pronunciation records yet'**
+  String get noPronunciationDataTitle;
+
+  /// Mypage pronunciation card, empty state body.
+  ///
+  /// In en, this message translates to:
+  /// **'We analyze your pronunciation from what you say on calls.'**
+  String get noPronunciationDataBody;
+
+  /// Analysis - the character left no remark for this call.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing said yet'**
+  String get noCharacterNote;
+
+  /// Learning report - the per-sound table has no rows yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No sounds to analyze yet'**
+  String get noPhonemesYet;
+
+  /// Learning report - the per-sentence table has no rows yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No sentences to analyze yet'**
+  String get noSentencesYet;
+
+  /// CTA on the level card when the user has never taken the test.
+  ///
+  /// In en, this message translates to:
+  /// **'Take level test'**
+  String get takeLevelTest;
+
+  /// Hint under the pronunciation gauge when there is no score yet.
+  ///
+  /// In en, this message translates to:
+  /// **'Review to see your pronunciation score'**
+  String get reviewToSeeScore;
 }
 
 class _AppLocalizationsDelegate

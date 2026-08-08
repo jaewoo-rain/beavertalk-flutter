@@ -2009,4 +2009,40 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'ការទិញមិនបានសម្រេចទេ។ មិនមានការគិតប្រាក់ទេ — សូមព្យាយាមម្ដងទៀត។';
+
+  @override
+  String get noAccentDataTitle => 'មិនទាន់មានទិន្នន័យសំនៀងទេ';
+
+  @override
+  String get noAccentDataBody =>
+      'បន្តសន្ទនា នោះលក្ខណៈសំនៀងរបស់អ្នកនឹងកកកុញឡើង។';
+
+  @override
+  String get noLevelYetTitle => 'មិនទាន់មានកម្រិតទេ';
+
+  @override
+  String get noLevelYetBody =>
+      'បញ្ចប់ការហៅលើកដំបូង ដើម្បីទទួលបានកម្រិតរបស់អ្នក។';
+
+  @override
+  String get noPronunciationDataTitle => 'មិនទាន់មានកំណត់ត្រាការបញ្ចេញសំឡេងទេ';
+
+  @override
+  String get noPronunciationDataBody =>
+      'យើងវិភាគការបញ្ចេញសំឡេងពីប្រយោគដែលអ្នកនិយាយពេលហៅ។';
+
+  @override
+  String get noCharacterNote => 'មិនទាន់មានសាររក្សាទុកទេ';
+
+  @override
+  String get noPhonemesYet => 'មិនទាន់មានសំឡេងសម្រាប់វិភាគទេ';
+
+  @override
+  String get noSentencesYet => 'មិនទាន់មានប្រយោគសម្រាប់វិភាគទេ';
+
+  @override
+  String get takeLevelTest => 'ធ្វើតេស្តកម្រិត';
+
+  @override
+  String get reviewToSeeScore => 'ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង';
 }

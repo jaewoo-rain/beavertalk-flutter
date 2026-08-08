@@ -2005,4 +2005,39 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'কেনা সম্পন্ন হয়নি। কোনো টাকা কাটা হয়নি — আবার চেষ্টা করুন।';
+
+  @override
+  String get noAccentDataTitle => 'এখনও স্বরভঙ্গির তথ্য নেই';
+
+  @override
+  String get noAccentDataBody =>
+      'কথা বলা চালিয়ে গেলে আপনার স্বরভঙ্গির বৈশিষ্ট্য জমতে থাকবে।';
+
+  @override
+  String get noLevelYetTitle => 'এখনও কোনো স্তর নেই';
+
+  @override
+  String get noLevelYetBody => 'প্রথম কল শেষ করলে আপনার স্তর পাবেন।';
+
+  @override
+  String get noPronunciationDataTitle => 'এখনও উচ্চারণের রেকর্ড নেই';
+
+  @override
+  String get noPronunciationDataBody =>
+      'কলে বলা বাক্য থেকে আমরা উচ্চারণ বিশ্লেষণ করি।';
+
+  @override
+  String get noCharacterNote => 'এখনও কিছু বলা হয়নি';
+
+  @override
+  String get noPhonemesYet => 'বিশ্লেষণের জন্য এখনও কোনো ধ্বনি নেই';
+
+  @override
+  String get noSentencesYet => 'বিশ্লেষণের জন্য এখনও কোনো বাক্য নেই';
+
+  @override
+  String get takeLevelTest => 'স্তর পরীক্ষা দিন';
+
+  @override
+  String get reviewToSeeScore => 'পুনরালোচনা করলে উচ্চারণের স্কোর দেখা যাবে';
 }

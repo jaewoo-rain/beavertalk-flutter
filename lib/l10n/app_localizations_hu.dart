@@ -2023,4 +2023,40 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.';
+
+  @override
+  String get noAccentDataTitle => 'Még nincs hanglejtési adat';
+
+  @override
+  String get noAccentDataBody =>
+      'Beszélgess tovább, és összegyűlnek a hanglejtésed jellemzői.';
+
+  @override
+  String get noLevelYetTitle => 'Még nincs szint';
+
+  @override
+  String get noLevelYetBody =>
+      'Fejezd be az első hívásod, hogy megkapd a szinted.';
+
+  @override
+  String get noPronunciationDataTitle => 'Még nincs kiejtési adat';
+
+  @override
+  String get noPronunciationDataBody =>
+      'A hívásban elmondott mondataidból elemezzük a kiejtésed.';
+
+  @override
+  String get noCharacterNote => 'Még nem mondott semmit';
+
+  @override
+  String get noPhonemesYet => 'Még nincs elemezhető hang';
+
+  @override
+  String get noSentencesYet => 'Még nincs elemezhető mondat';
+
+  @override
+  String get takeLevelTest => 'Szintfelmérő kitöltése';
+
+  @override
+  String get reviewToSeeScore => 'Ismételd át, hogy lásd a kiejtési pontszámod';
 }

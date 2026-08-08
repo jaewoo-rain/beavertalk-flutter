@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "A compra não foi concluída. Nada foi cobrado — tente novamente.",
   "priceChangedTitle": "O preço mudou",
   "priceChangedBody": "Este item agora custa {price}. Deseja continuar?",
-  "joinedLabel": "Cadastro"
+  "joinedLabel": "Cadastro",
+  "noAccentDataTitle": "Ainda sem dados de entonação",
+  "noAccentDataBody": "Continue conversando e as características da sua entonação vão se acumular.",
+  "noLevelYetTitle": "Ainda sem nível",
+  "noLevelYetBody": "Conclua sua primeira chamada para obter seu nível.",
+  "noPronunciationDataTitle": "Ainda sem registros de pronúncia",
+  "noPronunciationDataBody": "Analisamos sua pronúncia a partir das frases que você diz nas chamadas.",
+  "noCharacterNote": "Ainda nada foi dito",
+  "noPhonemesYet": "Ainda não há sons para analisar",
+  "noSentencesYet": "Ainda não há frases para analisar",
+  "takeLevelTest": "Fazer teste de nível",
+  "reviewToSeeScore": "Revise para ver sua pontuação de pronúncia"
 }

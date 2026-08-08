@@ -2021,4 +2021,41 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Hindi natuloy ang pagbili. Walang na-charge — pakisubukan ulit.';
+
+  @override
+  String get noAccentDataTitle => 'Wala pang datos ng intonasyon';
+
+  @override
+  String get noAccentDataBody =>
+      'Magpatuloy sa pagtawag at maiipon ang mga katangian ng iyong intonasyon.';
+
+  @override
+  String get noLevelYetTitle => 'Wala pang antas';
+
+  @override
+  String get noLevelYetBody =>
+      'Tapusin ang unang tawag mo para makuha ang antas mo.';
+
+  @override
+  String get noPronunciationDataTitle => 'Wala pang tala ng bigkas';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Sinusuri namin ang bigkas mula sa mga pangungusap na sinabi mo sa tawag.';
+
+  @override
+  String get noCharacterNote => 'Wala pang naiwang mensahe';
+
+  @override
+  String get noPhonemesYet => 'Wala pang tunog na masusuri';
+
+  @override
+  String get noSentencesYet => 'Wala pang pangungusap na masusuri';
+
+  @override
+  String get takeLevelTest => 'Kumuha ng level test';
+
+  @override
+  String get reviewToSeeScore =>
+      'Mag-review para makita ang iskor ng bigkas mo';
 }

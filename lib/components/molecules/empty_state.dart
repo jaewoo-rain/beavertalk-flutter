@@ -39,20 +39,27 @@ class EmptyBlock extends StatelessWidget {
   const EmptyBlock({
     super.key,
     this.title,
-    required this.body,
+    this.body,
     this.ctaText,
     this.onCta,
     this.scale = EmptyScale.screen,
-  }) : assert(
+    this.ctaSize,
+    this.ctaType = BtnType.primaryFill,
+  })  : assert(
           (ctaText == null) == (onCta == null),
           'A CTA needs both its label and its action',
-        );
+        ),
+        assert(title != null || body != null, 'An empty state needs some copy');
 
   /// Heading line, or null when the copy is a single sentence.
   final String? title;
 
-  /// The explanatory line. Always present.
-  final String body;
+  /// The explanatory line, or null when the copy is a title alone.
+  ///
+  /// Both slots are optional because Figma's `Empty/*` instances hide whichever
+  /// they do not need — the analysis expressions card shows a Title with the
+  /// Body hidden, the archive shows the reverse. At least one must be present.
+  final String? body;
 
   /// CTA label, or null for the no-CTA variants.
   final String? ctaText;
@@ -62,6 +69,16 @@ class EmptyBlock extends StatelessWidget {
 
   /// Type ramp — see [EmptyScale].
   final EmptyScale scale;
+
+  /// Overrides the CTA height. Defaults to 60 on [EmptyScale.screen] and 44 on
+  /// [EmptyScale.card]; the mypage cards use 60 to match the button their
+  /// populated state draws.
+  final BtnSize? ctaSize;
+
+  /// CTA emphasis. Defaults to the filled brand button, which is right when the
+  /// empty state owns the screen. Cards that sit two-to-a-page drop to
+  /// [BtnType.secondaryElevated] — only one action per screen gets the mint.
+  final BtnType ctaType;
 
   bool get _isScreen => scale == EmptyScale.screen;
 
@@ -83,14 +100,15 @@ class EmptyBlock extends StatelessWidget {
           // Figma draws 8 here on Empty/Screen. Empty/Card is inconsistent
           // between its own variants (6 on `no-cta`, 12 on `with-cta`); 8 keeps
           // one rhythm rather than encoding that split.
-          const SizedBox(height: AppSpacing.s8),
+          if (body != null) const SizedBox(height: AppSpacing.s8),
         ],
-        Text(body, textAlign: TextAlign.center, style: bodyStyle),
+        if (body != null)
+          Text(body!, textAlign: TextAlign.center, style: bodyStyle),
         if (ctaText != null) ...[
           SizedBox(height: _isScreen ? AppSpacing.s20 : AppSpacing.s12),
           Button(
-            type: BtnType.primaryFill,
-            size: _isScreen ? BtnSize.s60 : BtnSize.s44,
+            type: ctaType,
+            size: ctaSize ?? (_isScreen ? BtnSize.s60 : BtnSize.s44),
             text: ctaText!,
             onPressed: onCta,
           ),
@@ -113,7 +131,7 @@ class EmptyScreen extends StatelessWidget {
   const EmptyScreen({
     super.key,
     this.title,
-    required this.body,
+    this.body,
     this.ctaText,
     this.onCta,
   });
@@ -121,8 +139,8 @@ class EmptyScreen extends StatelessWidget {
   /// Heading line, or null when the copy is a single sentence.
   final String? title;
 
-  /// The explanatory line.
-  final String body;
+  /// The explanatory line, or null when the title stands alone.
+  final String? body;
 
   /// CTA label, or null when there is nothing to offer.
   final String? ctaText;
@@ -169,22 +187,30 @@ class EmptyCard extends StatelessWidget {
   const EmptyCard({
     super.key,
     this.title,
-    required this.body,
+    this.body,
     this.ctaText,
     this.onCta,
+    this.ctaSize,
+    this.ctaType = BtnType.primaryFill,
   });
 
   /// Heading line, or null for the compact variant.
   final String? title;
 
-  /// The explanatory line.
-  final String body;
+  /// The explanatory line, or null when the title stands alone.
+  final String? body;
 
   /// CTA label, or null for the no-CTA variant.
   final String? ctaText;
 
   /// CTA action. Must accompany [ctaText].
   final VoidCallback? onCta;
+
+  /// Overrides the CTA height — see [EmptyBlock.ctaSize].
+  final BtnSize? ctaSize;
+
+  /// CTA emphasis — see [EmptyBlock.ctaType].
+  final BtnType ctaType;
 
   @override
   Widget build(BuildContext context) {
@@ -199,6 +225,8 @@ class EmptyCard extends StatelessWidget {
         body: body,
         ctaText: ctaText,
         onCta: onCta,
+        ctaSize: ctaSize,
+        ctaType: ctaType,
         scale: EmptyScale.card,
       ),
     );

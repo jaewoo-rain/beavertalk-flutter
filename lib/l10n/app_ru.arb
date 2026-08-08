@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Покупка не прошла. Деньги не списаны — попробуйте ещё раз.",
   "priceChangedTitle": "Цена изменилась",
   "priceChangedBody": "Теперь этот товар стоит {price}. Продолжить?",
-  "joinedLabel": "Дата регистрации"
+  "joinedLabel": "Дата регистрации",
+  "noAccentDataTitle": "Данных об интонации пока нет",
+  "noAccentDataBody": "Продолжайте общаться — особенности вашей интонации накопятся.",
+  "noLevelYetTitle": "Уровня пока нет",
+  "noLevelYetBody": "Завершите первый звонок, чтобы узнать свой уровень.",
+  "noPronunciationDataTitle": "Записей о произношении пока нет",
+  "noPronunciationDataBody": "Мы анализируем произношение по фразам, которые вы говорите во время звонка.",
+  "noCharacterNote": "Пока ничего не сказано",
+  "noPhonemesYet": "Пока нет звуков для анализа",
+  "noSentencesYet": "Пока нет предложений для анализа",
+  "takeLevelTest": "Пройти тест уровня",
+  "reviewToSeeScore": "Повторите, чтобы увидеть оценку произношения"
 }

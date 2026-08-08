@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.",
   "priceChangedTitle": "Баға өзгерді",
   "priceChangedBody": "Бұл тауар енді {price} тұрады. Жалғастырасыз ба?",
-  "joinedLabel": "Тіркелген күні"
+  "joinedLabel": "Тіркелген күні",
+  "noAccentDataTitle": "Интонация деректері әзірге жоқ",
+  "noAccentDataBody": "Сөйлесуді жалғастырсаңыз, интонация ерекшеліктері жинала береді.",
+  "noLevelYetTitle": "Деңгей әзірге жоқ",
+  "noLevelYetBody": "Алғашқы қоңырауды аяқтасаңыз деңгейіңіз шығады.",
+  "noPronunciationDataTitle": "Айтылым жазбалары әзірге жоқ",
+  "noPronunciationDataBody": "Қоңырауда айтқан сөйлемдеріңізден айтылымды талдаймыз.",
+  "noCharacterNote": "Әзірге қалдырылған сөз жоқ",
+  "noPhonemesYet": "Талдауға арналған дыбыс әзірге жоқ",
+  "noSentencesYet": "Талдауға арналған сөйлем әзірге жоқ",
+  "takeLevelTest": "Деңгей тестін тапсыру",
+  "reviewToSeeScore": "Қайталасаңыз айтылым ұпайы шығады"
 }

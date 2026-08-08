@@ -1950,4 +1950,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get iapCharacterFailedBody => '購入が完了しませんでした。請求は発生していません。もう一度お試しください。';
+
+  @override
+  String get noAccentDataTitle => 'まだイントネーションのデータがありません';
+
+  @override
+  String get noAccentDataBody => '通話を続けるとイントネーションの特徴が集まります。';
+
+  @override
+  String get noLevelYetTitle => 'まだレベルがありません';
+
+  @override
+  String get noLevelYetBody => '最初の通話を終えるとレベルが出ます。';
+
+  @override
+  String get noPronunciationDataTitle => 'まだ発音の記録がありません';
+
+  @override
+  String get noPronunciationDataBody => '通話で話した文から発音を分析します。';
+
+  @override
+  String get noCharacterNote => 'まだ残した言葉がありません';
+
+  @override
+  String get noPhonemesYet => '分析する音がまだありません';
+
+  @override
+  String get noSentencesYet => '分析する文がまだありません';
+
+  @override
+  String get takeLevelTest => 'レベルテストを受ける';
+
+  @override
+  String get reviewToSeeScore => '復習すると発音スコアが出ます';
 }

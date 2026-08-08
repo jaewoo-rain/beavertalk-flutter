@@ -2002,4 +2002,38 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'การซื้อไม่สำเร็จ ไม่มีการเรียกเก็บเงิน โปรดลองอีกครั้ง';
+
+  @override
+  String get noAccentDataTitle => 'ยังไม่มีข้อมูลน้ำเสียง';
+
+  @override
+  String get noAccentDataBody => 'คุยต่อไปแล้วลักษณะน้ำเสียงจะค่อยๆ สะสม';
+
+  @override
+  String get noLevelYetTitle => 'ยังไม่มีระดับ';
+
+  @override
+  String get noLevelYetBody => 'จบการโทรครั้งแรกเพื่อรับระดับของคุณ';
+
+  @override
+  String get noPronunciationDataTitle => 'ยังไม่มีบันทึกการออกเสียง';
+
+  @override
+  String get noPronunciationDataBody =>
+      'เราวิเคราะห์การออกเสียงจากประโยคที่คุณพูดในสาย';
+
+  @override
+  String get noCharacterNote => 'ยังไม่มีข้อความ';
+
+  @override
+  String get noPhonemesYet => 'ยังไม่มีเสียงให้วิเคราะห์';
+
+  @override
+  String get noSentencesYet => 'ยังไม่มีประโยคให้วิเคราะห์';
+
+  @override
+  String get takeLevelTest => 'ทำแบบทดสอบระดับ';
+
+  @override
+  String get reviewToSeeScore => 'ทบทวนเพื่อดูคะแนนการออกเสียง';
 }

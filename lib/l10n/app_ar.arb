@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "لم تكتمل عملية الشراء. لم يتم خصم أي مبلغ — يرجى المحاولة مرة أخرى.",
   "priceChangedTitle": "تغيّر السعر",
   "priceChangedBody": "أصبح سعر هذا العنصر {price}. هل تريد المتابعة؟",
-  "joinedLabel": "تاريخ الانضمام"
+  "joinedLabel": "تاريخ الانضمام",
+  "noAccentDataTitle": "لا توجد بيانات نبرة بعد",
+  "noAccentDataBody": "تابع المحادثة وستتراكم سمات نبرتك.",
+  "noLevelYetTitle": "لا يوجد مستوى بعد",
+  "noLevelYetBody": "أنهِ مكالمتك الأولى للحصول على مستواك.",
+  "noPronunciationDataTitle": "لا توجد سجلات نطق بعد",
+  "noPronunciationDataBody": "نحلل نطقك من الجمل التي تقولها أثناء المكالمة.",
+  "noCharacterNote": "لم يُترك أي كلام بعد",
+  "noPhonemesYet": "لا توجد أصوات للتحليل بعد",
+  "noSentencesYet": "لا توجد جمل للتحليل بعد",
+  "takeLevelTest": "خوض اختبار المستوى",
+  "reviewToSeeScore": "راجع لترى درجة نطقك"
 }

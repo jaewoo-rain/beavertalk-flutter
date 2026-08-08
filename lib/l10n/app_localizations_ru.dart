@@ -2013,4 +2013,40 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Покупка не прошла. Деньги не списаны — попробуйте ещё раз.';
+
+  @override
+  String get noAccentDataTitle => 'Данных об интонации пока нет';
+
+  @override
+  String get noAccentDataBody =>
+      'Продолжайте общаться — особенности вашей интонации накопятся.';
+
+  @override
+  String get noLevelYetTitle => 'Уровня пока нет';
+
+  @override
+  String get noLevelYetBody =>
+      'Завершите первый звонок, чтобы узнать свой уровень.';
+
+  @override
+  String get noPronunciationDataTitle => 'Записей о произношении пока нет';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Мы анализируем произношение по фразам, которые вы говорите во время звонка.';
+
+  @override
+  String get noCharacterNote => 'Пока ничего не сказано';
+
+  @override
+  String get noPhonemesYet => 'Пока нет звуков для анализа';
+
+  @override
+  String get noSentencesYet => 'Пока нет предложений для анализа';
+
+  @override
+  String get takeLevelTest => 'Пройти тест уровня';
+
+  @override
+  String get reviewToSeeScore => 'Повторите, чтобы увидеть оценку произношения';
 }

@@ -2001,4 +2001,39 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'खरिद पूरा भएन। कुनै रकम काटिएको छैन — फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get noAccentDataTitle => 'अझै स्वराघात डेटा छैन';
+
+  @override
+  String get noAccentDataBody =>
+      'कुराकानी जारी राख्नुहोस्, स्वराघातका विशेषता जम्मा हुँदै जान्छन्।';
+
+  @override
+  String get noLevelYetTitle => 'अझै स्तर छैन';
+
+  @override
+  String get noLevelYetBody => 'पहिलो कल सकेपछि तपाईंको स्तर देखिन्छ।';
+
+  @override
+  String get noPronunciationDataTitle => 'अझै उच्चारण रेकर्ड छैन';
+
+  @override
+  String get noPronunciationDataBody =>
+      'कलमा बोलेका वाक्यबाट उच्चारण विश्लेषण गर्छौं।';
+
+  @override
+  String get noCharacterNote => 'अझै छाडिएको सन्देश छैन';
+
+  @override
+  String get noPhonemesYet => 'विश्लेषण गर्ने ध्वनि अझै छैन';
+
+  @override
+  String get noSentencesYet => 'विश्लेषण गर्ने वाक्य अझै छैन';
+
+  @override
+  String get takeLevelTest => 'स्तर परीक्षा दिनुहोस्';
+
+  @override
+  String get reviewToSeeScore => 'दोहोर्‍याएपछि उच्चारण अंक देखिन्छ';
 }

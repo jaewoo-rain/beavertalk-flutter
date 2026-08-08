@@ -2018,4 +2018,39 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'ဝယ်ယူမှု မအောင်မြင်ပါ။ ငွေမဖြတ်ပါ — ထပ်စမ်းကြည့်ပါ။';
+
+  @override
+  String get noAccentDataTitle => 'အသံနေအသံထားဒေတာ မရှိသေးပါ';
+
+  @override
+  String get noAccentDataBody =>
+      'ဆက်လက်စကားပြောပါက အသံနေအသံထား လက္ခဏာများ စုဆောင်းလာပါမည်။';
+
+  @override
+  String get noLevelYetTitle => 'အဆင့် မရှိသေးပါ';
+
+  @override
+  String get noLevelYetBody => 'ပထမဆုံးခေါ်ဆိုမှုပြီးလျှင် အဆင့်ရရှိပါမည်။';
+
+  @override
+  String get noPronunciationDataTitle => 'အသံထွက်မှတ်တမ်း မရှိသေးပါ';
+
+  @override
+  String get noPronunciationDataBody =>
+      'ခေါ်ဆိုစဉ် ပြောသောစာကြောင်းများမှ အသံထွက်ကို ခွဲခြမ်းစိတ်ဖြာပါသည်။';
+
+  @override
+  String get noCharacterNote => 'ချန်ထားသည့်စကား မရှိသေးပါ';
+
+  @override
+  String get noPhonemesYet => 'ခွဲခြမ်းရန် အသံ မရှိသေးပါ';
+
+  @override
+  String get noSentencesYet => 'ခွဲခြမ်းရန် စာကြောင်း မရှိသေးပါ';
+
+  @override
+  String get takeLevelTest => 'အဆင့်စစ်ဆေးမှု ဖြေဆိုရန်';
+
+  @override
+  String get reviewToSeeScore => 'ပြန်လေ့လာပါက အသံထွက်ရမှတ် ပေါ်လာပါမည်';
 }

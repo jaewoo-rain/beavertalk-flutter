@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "خریداری مکمل نہیں ہوئی۔ کوئی رقم نہیں کٹی — دوبارہ کوشش کریں۔",
   "priceChangedTitle": "قیمت تبدیل ہو گئی",
   "priceChangedBody": "اس آئٹم کی قیمت اب {price} ہے۔ کیا جاری رکھیں؟",
-  "joinedLabel": "شمولیت کی تاریخ"
+  "joinedLabel": "شمولیت کی تاریخ",
+  "noAccentDataTitle": "ابھی تک لہجے کا کوئی ڈیٹا نہیں",
+  "noAccentDataBody": "بات چیت جاری رکھیں، آپ کے لہجے کی خصوصیات جمع ہوتی جائیں گی۔",
+  "noLevelYetTitle": "ابھی تک کوئی سطح نہیں",
+  "noLevelYetBody": "پہلی کال مکمل کریں تو آپ کی سطح مل جائے گی۔",
+  "noPronunciationDataTitle": "ابھی تک تلفظ کا کوئی ریکارڈ نہیں",
+  "noPronunciationDataBody": "ہم کال میں کہے گئے جملوں سے تلفظ کا تجزیہ کرتے ہیں۔",
+  "noCharacterNote": "ابھی تک کچھ نہیں کہا گیا",
+  "noPhonemesYet": "تجزیے کے لیے ابھی کوئی آواز نہیں",
+  "noSentencesYet": "تجزیے کے لیے ابھی کوئی جملہ نہیں",
+  "takeLevelTest": "سطح کا امتحان دیں",
+  "reviewToSeeScore": "دہرانے پر تلفظ کا اسکور نظر آئے گا"
 }

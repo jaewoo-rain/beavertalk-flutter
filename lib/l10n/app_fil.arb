@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Hindi natuloy ang pagbili. Walang na-charge — pakisubukan ulit.",
   "priceChangedTitle": "Nagbago ang presyo",
   "priceChangedBody": "Ang item na ito ay {price} na ngayon. Magpapatuloy ka ba?",
-  "joinedLabel": "Sumali noong"
+  "joinedLabel": "Sumali noong",
+  "noAccentDataTitle": "Wala pang datos ng intonasyon",
+  "noAccentDataBody": "Magpatuloy sa pagtawag at maiipon ang mga katangian ng iyong intonasyon.",
+  "noLevelYetTitle": "Wala pang antas",
+  "noLevelYetBody": "Tapusin ang unang tawag mo para makuha ang antas mo.",
+  "noPronunciationDataTitle": "Wala pang tala ng bigkas",
+  "noPronunciationDataBody": "Sinusuri namin ang bigkas mula sa mga pangungusap na sinabi mo sa tawag.",
+  "noCharacterNote": "Wala pang naiwang mensahe",
+  "noPhonemesYet": "Wala pang tunog na masusuri",
+  "noSentencesYet": "Wala pang pangungusap na masusuri",
+  "takeLevelTest": "Kumuha ng level test",
+  "reviewToSeeScore": "Mag-review para makita ang iskor ng bigkas mo"
 }

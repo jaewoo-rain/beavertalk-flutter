@@ -2013,4 +2013,40 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Ostos ei onnistunut. Mitään ei veloitettu — yritä uudelleen.';
+
+  @override
+  String get noAccentDataTitle => 'Ei vielä intonaatiotietoja';
+
+  @override
+  String get noAccentDataBody =>
+      'Jatka puhumista, niin intonaatiosi piirteet kertyvät.';
+
+  @override
+  String get noLevelYetTitle => 'Ei vielä tasoa';
+
+  @override
+  String get noLevelYetBody =>
+      'Suorita ensimmäinen puhelusi saadaksesi tasosi.';
+
+  @override
+  String get noPronunciationDataTitle => 'Ei vielä ääntämistietoja';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Analysoimme ääntämistäsi puheluissa sanomistasi lauseista.';
+
+  @override
+  String get noCharacterNote => 'Ei vielä sanottua';
+
+  @override
+  String get noPhonemesYet => 'Ei vielä analysoitavia äänteitä';
+
+  @override
+  String get noSentencesYet => 'Ei vielä analysoitavia lauseita';
+
+  @override
+  String get takeLevelTest => 'Tee tasotesti';
+
+  @override
+  String get reviewToSeeScore => 'Kertaa nähdäksesi ääntämispisteesi';
 }

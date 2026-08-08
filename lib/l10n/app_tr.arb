@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "Satın alma tamamlanamadı. Ücret alınmadı — lütfen tekrar dene.",
   "priceChangedTitle": "Fiyat değişti",
   "priceChangedBody": "Bu ürün artık {price}. Devam etmek ister misin?",
-  "joinedLabel": "Katılma tarihi"
+  "joinedLabel": "Katılma tarihi",
+  "noAccentDataTitle": "Henüz tonlama verisi yok",
+  "noAccentDataBody": "Konuşmaya devam ettikçe tonlama özellikleriniz birikir.",
+  "noLevelYetTitle": "Henüz seviye yok",
+  "noLevelYetBody": "İlk aramanızı tamamlayın, seviyeniz belirlensin.",
+  "noPronunciationDataTitle": "Henüz telaffuz kaydı yok",
+  "noPronunciationDataBody": "Aramada söylediğiniz cümlelerden telaffuzunuzu analiz ediyoruz.",
+  "noCharacterNote": "Henüz bırakılan bir söz yok",
+  "noPhonemesYet": "Analiz edilecek ses henüz yok",
+  "noSentencesYet": "Analiz edilecek cümle henüz yok",
+  "takeLevelTest": "Seviye testine gir",
+  "reviewToSeeScore": "Tekrar edince telaffuz puanınız çıkar"
 }

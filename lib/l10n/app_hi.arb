@@ -598,5 +598,16 @@
   "iapCharacterFailedBody": "खरीदारी पूरी नहीं हुई। कोई राशि नहीं कटी — कृपया फिर से कोशिश करें।",
   "priceChangedTitle": "कीमत बदल गई",
   "priceChangedBody": "इस आइटम की कीमत अब {price} है। क्या जारी रखें?",
-  "joinedLabel": "शामिल हुए"
+  "joinedLabel": "शामिल हुए",
+  "noAccentDataTitle": "अभी तक कोई स्वर-लय डेटा नहीं",
+  "noAccentDataBody": "बात करते रहिए, आपकी स्वर-लय की विशेषताएँ जमा होती जाएँगी।",
+  "noLevelYetTitle": "अभी तक कोई स्तर नहीं",
+  "noLevelYetBody": "पहली कॉल पूरी करने पर आपका स्तर मिलेगा।",
+  "noPronunciationDataTitle": "अभी तक उच्चारण का रिकॉर्ड नहीं",
+  "noPronunciationDataBody": "कॉल में बोले गए वाक्यों से हम उच्चारण का विश्लेषण करते हैं।",
+  "noCharacterNote": "अभी तक कोई बात नहीं कही",
+  "noPhonemesYet": "विश्लेषण के लिए अभी कोई ध्वनि नहीं",
+  "noSentencesYet": "विश्लेषण के लिए अभी कोई वाक्य नहीं",
+  "takeLevelTest": "स्तर परीक्षा दें",
+  "reviewToSeeScore": "दोहराने पर उच्चारण स्कोर दिखेगा"
 }

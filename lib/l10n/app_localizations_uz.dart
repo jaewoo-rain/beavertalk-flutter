@@ -2022,4 +2022,40 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Xarid amalga oshmadi. Pul yechilmadi — qayta urinib koʻring.';
+
+  @override
+  String get noAccentDataTitle => 'Hozircha ohang ma\'lumotlari yo\'q';
+
+  @override
+  String get noAccentDataBody =>
+      'Suhbatni davom ettiring, ohangingiz xususiyatlari to\'plana boradi.';
+
+  @override
+  String get noLevelYetTitle => 'Hozircha daraja yo\'q';
+
+  @override
+  String get noLevelYetBody =>
+      'Birinchi qo\'ng\'iroqni yakunlasangiz darajangiz chiqadi.';
+
+  @override
+  String get noPronunciationDataTitle => 'Hozircha talaffuz yozuvlari yo\'q';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Qo\'ng\'iroqda aytgan gaplaringizdan talaffuzni tahlil qilamiz.';
+
+  @override
+  String get noCharacterNote => 'Hozircha qoldirilgan so\'z yo\'q';
+
+  @override
+  String get noPhonemesYet => 'Tahlil qilish uchun hozircha tovush yo\'q';
+
+  @override
+  String get noSentencesYet => 'Tahlil qilish uchun hozircha gap yo\'q';
+
+  @override
+  String get takeLevelTest => 'Daraja testini topshirish';
+
+  @override
+  String get reviewToSeeScore => 'Takrorlasangiz talaffuz ballingiz chiqadi';
 }

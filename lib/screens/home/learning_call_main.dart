@@ -5,6 +5,7 @@ import 'package:intl/intl.dart' as intl;
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
@@ -258,6 +259,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                     style: _rowEmphasis(_accuracyColor(context, p.accuracy))),
               ],
           ],
+          emptyLabel: l10n.noPhonemesYet,
         ),
       );
 
@@ -288,6 +290,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                 _Cell.fixed('${x.rhythm}', 36, style: _rowValue(context)),
               ],
           ],
+          emptyLabel: l10n.noSentencesYet,
         ),
       );
 
@@ -382,9 +385,17 @@ class LearningCallMainScreen extends ConsumerWidget {
 
   /// The table shell shared by all three tables (`3569:15126`) — a header row,
   /// then rows split by hairlines.
+  /// [emptyLabel] fills the body when [rows] is empty — the header and the
+  /// divider stay, so the table keeps its shape instead of collapsing to a bare
+  /// header row (`screen/learning_main__pronunciation__sparse`, 4849:8555).
+  ///
+  /// Null on the trend table: the sparse frame keeps that one populated, so the
+  /// design has no empty copy for it and inventing a line here would be exactly
+  /// the kind of made-up string the work order forbids.
   Widget _table(BuildContext context, {
     required List<_Cell> header,
     required List<List<_Cell>> rows,
+    String? emptyLabel,
   }) =>
       Container(
         decoration: BoxDecoration(
@@ -395,11 +406,15 @@ class LearningCallMainScreen extends ConsumerWidget {
         child: Column(
           children: [
             _row(context, header, vertical: 10),
+            // `Line/Neutral` — 12% white. (This read `borderSubtle` (6%) under
+            // a comment claiming the design was 7%; the variable actually
+            // resolves to 12%, so every divider on this screen was drawn at
+            // half the intended weight.)
+            if (rows.isEmpty && emptyLabel != null) ...[
+              Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
+              EmptyRow(label: emptyLabel),
+            ],
             for (final r in rows) ...[
-              // `Line/Neutral` — 12% white. (This read `borderSubtle` (6%) under
-              // a comment claiming the design was 7%; the variable actually
-              // resolves to 12%, so every divider on this screen was drawn at
-              // half the intended weight.)
               Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
               _row(context, r, vertical: 11),
             ],

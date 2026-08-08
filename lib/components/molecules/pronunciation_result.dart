@@ -55,6 +55,7 @@ class PronunciationResult extends StatelessWidget {
     required this.score,
     required this.metrics,
     this.state = PronunciationState.active,
+    this.hint,
   });
 
   /// Overall score 0–100, shown in the gauge center and driving the arc.
@@ -66,6 +67,18 @@ class PronunciationResult extends StatelessWidget {
 
   /// Whether the result is scored ([PronunciationState.active]) or empty.
   final PronunciationState state;
+
+  /// One line under the metrics explaining *why* the gauge reads `-%`.
+  ///
+  /// **Injected by the caller, never hardcoded.** Three screens share this
+  /// component and the reason differs in each: on analysis the score is missing
+  /// because the user has not reviewed yet, on mypage because there is no
+  /// pronunciation history at all. A single built-in string would be wrong on
+  /// at least one of them.
+  ///
+  /// Null on the loading skeletons — a shimmering placeholder should not also
+  /// assert why a value it is still fetching is absent.
+  final String? hint;
 
   static const double _gaugeWidth = 255;
   static const double _gaugeHeight = 127.5;
@@ -111,6 +124,16 @@ class PronunciationResult extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s16),
           _MetricsFooter(metrics: metrics),
+          // Figma `Hint` (`Hint#4863:0`) — the component grows 218 → 258 with
+          // it: 20 gap + a 20-tall line.
+          if (hint != null) ...[
+            const SizedBox(height: AppSpacing.s20),
+            Text(
+              hint!,
+              textAlign: TextAlign.center,
+              style: AppType.label1.r.copyWith(color: context.c.labelNormal),
+            ),
+          ],
         ],
       ),
     );

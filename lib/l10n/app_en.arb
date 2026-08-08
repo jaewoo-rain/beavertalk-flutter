@@ -1252,5 +1252,49 @@
   "ctaLeaveAnyway": "Leave anyway",
   "iapCharacterSuccessTitle": "A new friend joins you!",
   "iapCharacterSuccessBody": "This character is yours forever - it stays even if your plan changes, and Restore purchases brings it back on any device.",
-  "iapCharacterFailedBody": "The purchase didn't go through. Nothing was charged - please try again."
+  "iapCharacterFailedBody": "The purchase didn't go through. Nothing was charged - please try again.",
+  "noAccentDataTitle": "No accent data yet",
+  "@noAccentDataTitle": {
+    "description": "Mypage accent card, empty state title."
+  },
+  "noAccentDataBody": "Keep talking and your accent patterns will build up.",
+  "@noAccentDataBody": {
+    "description": "Mypage accent card, empty state body."
+  },
+  "noLevelYetTitle": "No level yet",
+  "@noLevelYetTitle": {
+    "description": "Mypage level card, empty state title."
+  },
+  "noLevelYetBody": "Finish your first call to get your level.",
+  "@noLevelYetBody": {
+    "description": "Mypage level card, empty state body."
+  },
+  "noPronunciationDataTitle": "No pronunciation records yet",
+  "@noPronunciationDataTitle": {
+    "description": "Mypage pronunciation card, empty state title."
+  },
+  "noPronunciationDataBody": "We analyze your pronunciation from what you say on calls.",
+  "@noPronunciationDataBody": {
+    "description": "Mypage pronunciation card, empty state body."
+  },
+  "noCharacterNote": "Nothing said yet",
+  "@noCharacterNote": {
+    "description": "Analysis - the character left no remark for this call."
+  },
+  "noPhonemesYet": "No sounds to analyze yet",
+  "@noPhonemesYet": {
+    "description": "Learning report - the per-sound table has no rows yet."
+  },
+  "noSentencesYet": "No sentences to analyze yet",
+  "@noSentencesYet": {
+    "description": "Learning report - the per-sentence table has no rows yet."
+  },
+  "takeLevelTest": "Take level test",
+  "@takeLevelTest": {
+    "description": "CTA on the level card when the user has never taken the test."
+  },
+  "reviewToSeeScore": "Review to see your pronunciation score",
+  "@reviewToSeeScore": {
+    "description": "Hint under the pronunciation gauge when there is no score yet."
+  }
 }
