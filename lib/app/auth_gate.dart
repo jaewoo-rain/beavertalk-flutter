@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_color_tokens.dart';
+import '../theme/app_spacing.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/error/app_exception.dart';
@@ -174,6 +175,16 @@ class _Splash extends StatelessWidget {
 
 /// Shown when `members/me` fails for a NON-auth reason (offline / server error).
 /// The session is left intact; the user can retry instead of being signed out.
+///
+/// **Deliberately not `NetworkErrorView`.** That view's secondary action is
+/// 홈으로, which pushes [Routes.home] — but this widget *is* what decides
+/// between home and login, so sending the user "home" from here would land them
+/// back on this same failure. It keeps its own minimal shape: a retry and
+/// nothing else.
+///
+/// The copy used to be two hardcoded Korean literals, which is what all 30
+/// locales saw. Reuses the existing network-error strings rather than adding
+/// keys for a wording the app already has.
 class _ProfileError extends StatelessWidget {
   const _ProfileError({required this.onRetry});
 
@@ -181,24 +192,26 @@ class _ProfileError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: context.c.backgroundNormalDeep,
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.wifi_off, color: context.c.labelNormal),
-            const SizedBox(height: 12),
-            Text(
-              AppLocalizations.of(context).connectionFailedTitle,
-              style: TextStyle(color: context.c.labelStrong),
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(AppLocalizations.of(context).retry),
-            ),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.wifi_off, color: context.c.labelNormal),
+              const SizedBox(height: 12),
+              Text(
+                l10n.connectionFailedTitle,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: context.c.labelStrong),
+              ),
+              const SizedBox(height: 12),
+              TextButton(onPressed: onRetry, child: Text(l10n.retry)),
+            ],
+          ),
         ),
       ),
     );

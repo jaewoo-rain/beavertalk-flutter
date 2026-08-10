@@ -530,7 +530,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get proMembership => 'Pro гишүүнчлэл';
 
   @override
-  String get pricePerMonth => '\$12.9 / сар';
+  String pricePerMonth(String price) {
+    return '$price / сар';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Хязгааргүй дуудлага';
@@ -1239,20 +1241,25 @@ class AppLocalizationsMn extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Pro-гоор хязгааргүй болоорой';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Хязгааргүй дуудлага · тус бүр 15 минут · сард \$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Хязгааргүй дуудлага · тус бүр 15 минут · сард $price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Max-аар видеог асаагаарай';
 
   @override
-  String get bannerMaxUpsellSub => 'Нүүр тулсан дуудлага · сард \$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return 'Нүүр тулсан дуудлага · сард $price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Жилийн багцад шилжих';
 
   @override
-  String get bannerAnnualSwitchSub => 'Жилд \$159 · сард \$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return 'Жилд $yearly · сард $perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Төлбөрийг авч чадсангүй';
@@ -1419,22 +1426,42 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planAnnual => 'Жилийн';
 
   @override
-  String get proMonthlyPriceLine => 'Сард \$12.90';
+  String proMonthlyPriceLine(String price) {
+    return 'Сард $price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · сард \$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · сард $perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => 'Сард \$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return 'Сард $price';
+  }
 
   @override
-  String get maxAnnualPriceLine => 'Жилд \$159.00 · сард \$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return 'Жилд $yearly · сард $perMonth';
+  }
 
   @override
-  String get ctaCaptionPro => 'Сард \$12.90 · дэлгүүрт хүссэн үедээ цуцална';
+  String ctaCaptionPro(String price) {
+    return 'Сард $price · дэлгүүрт хүссэн үедээ цуцална';
+  }
 
   @override
-  String get ctaCaptionMax => 'Сард \$19.90 · дэлгүүрт хүссэн үедээ цуцална';
+  String ctaCaptionMax(String price) {
+    return 'Сард $price · дэлгүүрт хүссэн үедээ цуцална';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 хоног үнэгүй, дараа нь Сард $price · дэлгүүрт хүссэн үедээ цуцална';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => 'Цуцлах хүртэл автоматаар сунгагдана.';
 
   @override
   String get footerTerms => 'Үйлчилгээний нөхцөл';
@@ -1496,12 +1523,14 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Захиалгаа үзэх';
 
   @override
-  String get successProCaption =>
-      'Цуцлах хүртэл сар бүр \$12.90 төлөгдөнө. Дэлгүүрт хүссэн үедээ удирдах эсвэл цуцлаарай.';
+  String successProCaption(String price) {
+    return 'Цуцлах хүртэл сар бүр $price төлөгдөнө. Дэлгүүрт хүссэн үедээ удирдах эсвэл цуцлаарай.';
+  }
 
   @override
-  String get successMaxCaption =>
-      'Цуцлах хүртэл сар бүр \$19.90 төлөгдөнө. Дэлгүүрт хүссэн үедээ удирдах эсвэл цуцлаарай.';
+  String successMaxCaption(String price) {
+    return 'Цуцлах хүртэл сар бүр $price төлөгдөнө. Дэлгүүрт хүссэн үедээ удирдах эсвэл цуцлаарай.';
+  }
 
   @override
   String get plansErrorTitle => 'Багцуудыг ачаалж чадсангүй';
@@ -1522,7 +1551,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get moveToMaxTitle => 'Max руу шилжих';
 
   @override
-  String get maxPriceShort => '\$19.90 / сар';
+  String maxPriceShort(String price) {
+    return '$price / сар';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1544,13 +1575,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get creditedTowardMax => 'Max-д тооцогдоно';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1674,7 +1705,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get rowOneCharacter => 'Нэг дүр';
 
   @override
-  String get rowFromPrice => '\$5.00-с эхлэн';
+  String rowFromPrice(String price) {
+    return '$price-с эхлэн';
+  }
 
   @override
   String get rowYoursForever => 'Үүрд таных';
@@ -1709,7 +1742,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get rowPayYearlyInstead => 'Оронд нь жилээр төлөх';
 
   @override
-  String get rowYearlyMonthEquiv => 'Сард \$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return 'Сард $price';
+  }
 
   @override
   String get rowCharactersYouBought => 'Худалдаж авсан дүрүүд';
@@ -1724,7 +1759,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaContinueToStore => 'Дэлгүүр рүү үргэлжлүүлэх';
 
   @override
-  String get ovAnnualSwitchTitle => 'Жилээр төлж, \$54.80 хэмнээрэй';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Жилээр төлж, $saved хэмнээрэй';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1734,19 +1771,25 @@ class AppLocalizationsMn extends AppLocalizations {
   String get rowYouSave => 'Таны хэмнэлт';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Жилийн';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Сараар, жилийн турш';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Сарын багцад шилжих';
@@ -1801,8 +1844,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ovTrialStartTitle => 'Max-ын 7 хоног, үнэгүй';
 
   @override
-  String ovTrialStartBody(String date) {
-    return '$date хүртэл үнэгүй. Дараа нь дэлгүүрт цуцлахгүй бол сард \$19.90.';
+  String ovTrialStartBody(String price, String date) {
+    return '$date хүртэл үнэгүй. Дараа нь дэлгүүрт цуцлахгүй бол сард $price.';
   }
 
   @override
@@ -1926,7 +1969,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get flBenefitChecks => 'Pro-гоор хязгааргүй дуудлагын шалгалт';
 
   @override
-  String get flCaption => 'Сард \$12.90 · хүссэн үедээ цуцална';
+  String flCaption(String price) {
+    return 'Сард $price · хүссэн үедээ цуцална';
+  }
 
   @override
   String flUsage(String used, String limit) {
@@ -2006,4 +2051,54 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Худалдан авалт амжилтгүй боллоо. Төлбөр гараагүй — дахин оролдоно уу.';
+
+  @override
+  String get noAccentDataTitle => 'Аялгууны мэдээлэл одоогоор алга';
+
+  @override
+  String get noAccentDataBody =>
+      'Яриагаа үргэлжлүүлбэл аялгууны онцлог чинь хуримтлагдана.';
+
+  @override
+  String get noLevelYetTitle => 'Түвшин одоогоор алга';
+
+  @override
+  String get noLevelYetBody => 'Эхний дуудлагаа дуусгавал түвшин чинь гарна.';
+
+  @override
+  String get noPronunciationDataTitle => 'Дуудлагын бичлэг одоогоор алга';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Дуудлагад хэлсэн өгүүлбэрээс тань дуудлагыг шинжилнэ.';
+
+  @override
+  String get noCharacterNote => 'Одоогоор үлдээсэн үг алга';
+
+  @override
+  String get noPhonemesYet => 'Шинжлэх дуу одоогоор алга';
+
+  @override
+  String get noSentencesYet => 'Шинжлэх өгүүлбэр одоогоор алга';
+
+  @override
+  String get takeLevelTest => 'Түвшин тогтоох шалгалт өгөх';
+
+  @override
+  String get reviewToSeeScore => 'Давтвал дуудлагын оноо гарна';
+
+  @override
+  String get playAgain => 'Дахин тоглох';
+
+  @override
+  String get difficultySlow => 'Удаан';
+
+  @override
+  String get difficultyNormal => 'Хэвийн';
+
+  @override
+  String get difficultyFast => 'Хурдан';
+
+  @override
+  String get difficultyLabel => 'Хүндрэл';
 }

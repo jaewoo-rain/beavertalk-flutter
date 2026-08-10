@@ -18,6 +18,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
 ///
@@ -136,7 +137,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       // Transient network errors: keep polling until the timeout, but if we're
       // already past the deadline, surface the message.
       if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
-        _fail(e.message);
+        _fail(_reason(e));
       }
     } finally {
       _busy = false;
@@ -157,9 +158,16 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         arguments: result,
       );
     } on AppException catch (e) {
-      _fail(e.message);
+      _fail(_reason(e));
     }
   }
+
+  /// The reason line for [e] — its message only when the server wrote it.
+  /// The built-in fallbacks are hardcoded Korean, so showing them unconditionally
+  /// leaks Korean into all 30 locales (see [AppException.fromServer]). Empty
+  /// falls through to the view's own localized copy.
+  String _reason(AppException e) =>
+      e.fromServer ? e.message : '';
 
   /// Stops polling and shows the retry UI with [message].
   void _fail(String message) {
@@ -171,19 +179,27 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     });
   }
 
-  /// 홈으로. 첫 라우트(AuthGate)가 이미 홈을 그리므로 **pop** 이지 push 가 아니다
-  /// — `pushNamedAndRemoveUntil(Routes.home, isFirst)` 는 홈 위에 홈을 또 얹어
-  /// 뒤로가기하면 홈이 한 번 더 나온다.
-  void _goHome() => Navigator.of(context).popUntil((r) => r.isFirst);
-
   @override
   Widget build(BuildContext context) {
     if (_phase == _LoadingPhase.error) {
       return AppScaffold(
         background: context.c.backgroundNormalNormal,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s24),
-          child: _error(),
+        // The error branch carries the same GNB as the polling branch below.
+        // Without it the only way out was a CTA that left for 홈 — there was no
+        // way back to wherever the user came from. With the GNB here, the
+        // regional error needs no 홈으로 of its own. Keeps the title the polling
+        // branch already defines rather than blanking it: same screen, same
+        // header, so nothing shifts when the poll fails.
+        body: Column(
+          children: [
+            Gnb.main(
+              title: AppLocalizations.of(context).conversationRecord,
+              onBack: () => Navigator.pop(context),
+            ),
+            // No padding wrapper: NetworkErrorView carries the standard 20
+            // gutter itself, and the old 24 here would have stacked on top.
+            Expanded(child: _error()),
+          ],
         ),
       );
     }
@@ -365,49 +381,14 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         child: child,
       );
 
-  Widget _error() {
-    final l10n = AppLocalizations.of(context);
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        // 액션 버튼은 HUG 가 아니라 Fill 이다 — 화면의 24 좌우 여백 안에서 폭을 꽉
-        // 채우고 세로로 쌓인다(다시 시도 → 홈). stretch 를 쓰면 아이콘/문구는 각자
-        // 가운데 정렬을 유지한 채 버튼만 폭을 받는다.
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Icon(
-            Icons.error_outline,
-            size: 56,
-            color: context.c.labelNormal,
-          ),
-          const SizedBox(height: AppSpacing.s20),
-          Text(
-            l10n.analysisLoadError,
-            style: AppType.heading2.sb.copyWith(color: context.c.labelStrong),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Text(
-            _errorMsg,
-            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: AppSpacing.s28),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: l10n.tryAgain,
-            onPressed: _callId == null ? _goHome : _start,
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Button(
-            type: BtnType.secondaryFill,
-            size: BtnSize.s60,
-            text: l10n.home,
-            onPressed: _goHome,
-          ),
-        ],
-      ),
-    );
-  }
+  /// The shared network-error body, carrying [_errorMsg] as the reason.
+  ///
+  /// Retry is null when there is no `callId` — there is no request to re-run,
+  /// so the button is hidden rather than shown. It used to render as 다시 시도
+  /// and quietly navigate home instead, which is a different action under the
+  /// wrong label.
+  Widget _error() => NetworkErrorView(
+        message: _errorMsg.isEmpty ? null : _errorMsg,
+        onRetry: _callId == null ? null : _start,
+      );
 }

@@ -526,7 +526,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get proMembership => 'Pro мүшелігі';
 
   @override
-  String get pricePerMonth => '\$12.9 / ай';
+  String pricePerMonth(String price) {
+    return '$price / ай';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'Шексіз қоңыраулар';
@@ -1235,20 +1237,25 @@ class AppLocalizationsKk extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'Pro-мен шексіз болыңыз';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'Шексіз қоңырау · әрқайсысы 15 минут · айына \$12.90';
+  String bannerGoUnlimitedSub(String price) {
+    return 'Шексіз қоңырау · әрқайсысы 15 минут · айына $price';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'Max-пен бейнені қосыңыз';
 
   @override
-  String get bannerMaxUpsellSub => 'Бетпе-бет қоңыраулар · айына \$19.90';
+  String bannerMaxUpsellSub(String price) {
+    return 'Бетпе-бет қоңыраулар · айына $price';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'Жылдық жоспарға өту';
 
   @override
-  String get bannerAnnualSwitchSub => 'Жылына \$159 · айына \$13.25';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return 'Жылына $yearly · айына $perMonth';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'Төлемді алу мүмкін болмады';
@@ -1414,24 +1421,43 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planAnnual => 'Жылдық';
 
   @override
-  String get proMonthlyPriceLine => 'Айына \$12.90';
+  String proMonthlyPriceLine(String price) {
+    return 'Айына $price';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · айына \$8.33';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · айына $perMonth';
+  }
 
   @override
-  String get maxMonthlyPriceLine => 'Айына \$19.90';
+  String maxMonthlyPriceLine(String price) {
+    return 'Айына $price';
+  }
 
   @override
-  String get maxAnnualPriceLine => 'Жылына \$159.00 · айына \$13.25';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return 'Жылына $yearly · айына $perMonth';
+  }
 
   @override
-  String get ctaCaptionPro =>
-      'Айына \$12.90 · дүкенде кез келген уақытта бас тартуға болады';
+  String ctaCaptionPro(String price) {
+    return 'Айына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
 
   @override
-  String get ctaCaptionMax =>
-      'Айына \$19.90 · дүкенде кез келген уақытта бас тартуға болады';
+  String ctaCaptionMax(String price) {
+    return 'Айына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '7 күн тегін, содан кейін Айына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew =>
+      'Бас тартқанға дейін автоматты түрде жаңарады.';
 
   @override
   String get footerTerms => 'Шарттар';
@@ -1492,12 +1518,14 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ctaSeeYourSubscription => 'Жазылымыңызды көру';
 
   @override
-  String get successProCaption =>
-      'Бас тартқанша ай сайын \$12.90 алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
+  String successProCaption(String price) {
+    return 'Бас тартқанша ай сайын $price алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
+  }
 
   @override
-  String get successMaxCaption =>
-      'Бас тартқанша ай сайын \$19.90 алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
+  String successMaxCaption(String price) {
+    return 'Бас тартқанша ай сайын $price алынады. Дүкенде кез келген уақытта басқарыңыз немесе бас тартыңыз.';
+  }
 
   @override
   String get plansErrorTitle => 'Жоспарларды жүктеу мүмкін болмады';
@@ -1518,7 +1546,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get moveToMaxTitle => 'Max-қа өту';
 
   @override
-  String get maxPriceShort => '\$19.90 / ай';
+  String maxPriceShort(String price) {
+    return '$price / ай';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1540,13 +1570,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get creditedTowardMax => 'Max есебіне саналады';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1672,7 +1702,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get rowOneCharacter => 'Бір кейіпкер';
 
   @override
-  String get rowFromPrice => '\$5.00 бастап';
+  String rowFromPrice(String price) {
+    return '$price бастап';
+  }
 
   @override
   String get rowYoursForever => 'Мәңгі сіздікі';
@@ -1707,7 +1739,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get rowPayYearlyInstead => 'Орнына жылдық төлеңіз';
 
   @override
-  String get rowYearlyMonthEquiv => 'Айына \$8.33';
+  String rowYearlyMonthEquiv(String price) {
+    return 'Айына $price';
+  }
 
   @override
   String get rowCharactersYouBought => 'Сатып алған кейіпкерлеріңіз';
@@ -1722,7 +1756,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ctaContinueToStore => 'Дүкенге өту';
 
   @override
-  String get ovAnnualSwitchTitle => 'Жылдық төлеп, \$54.80 үнемдеңіз';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'Жылдық төлеп, $saved үнемдеңіз';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1732,19 +1768,25 @@ class AppLocalizationsKk extends AppLocalizations {
   String get rowYouSave => 'Үнемдейсіз';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'Жылдық';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'Айлық, бір жыл бойы';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'Айлыққа ауысу';
@@ -1799,8 +1841,8 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ovTrialStartTitle => 'Max-тың 7 күні, тегін';
 
   @override
-  String ovTrialStartBody(String date) {
-    return '$date дейін тегін. Одан кейін дүкенде бас тартпасаңыз, айына \$19.90.';
+  String ovTrialStartBody(String price, String date) {
+    return '$date дейін тегін. Одан кейін дүкенде бас тартпасаңыз, айына $price.';
   }
 
   @override
@@ -1923,8 +1965,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get flBenefitChecks => 'Pro-мен шексіз айтылым тексерісі';
 
   @override
-  String get flCaption =>
-      'Айына \$12.90 · кез келген уақытта бас тартуға болады';
+  String flCaption(String price) {
+    return 'Айына $price · кез келген уақытта бас тартуға болады';
+  }
 
   @override
   String flUsage(String used, String limit) {
@@ -2004,4 +2047,55 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'Сатып алу өтпеді. Ақша алынған жоқ — қайталап көріңіз.';
+
+  @override
+  String get noAccentDataTitle => 'Интонация деректері әзірге жоқ';
+
+  @override
+  String get noAccentDataBody =>
+      'Сөйлесуді жалғастырсаңыз, интонация ерекшеліктері жинала береді.';
+
+  @override
+  String get noLevelYetTitle => 'Деңгей әзірге жоқ';
+
+  @override
+  String get noLevelYetBody =>
+      'Алғашқы қоңырауды аяқтасаңыз деңгейіңіз шығады.';
+
+  @override
+  String get noPronunciationDataTitle => 'Айтылым жазбалары әзірге жоқ';
+
+  @override
+  String get noPronunciationDataBody =>
+      'Қоңырауда айтқан сөйлемдеріңізден айтылымды талдаймыз.';
+
+  @override
+  String get noCharacterNote => 'Әзірге қалдырылған сөз жоқ';
+
+  @override
+  String get noPhonemesYet => 'Талдауға арналған дыбыс әзірге жоқ';
+
+  @override
+  String get noSentencesYet => 'Талдауға арналған сөйлем әзірге жоқ';
+
+  @override
+  String get takeLevelTest => 'Деңгей тестін тапсыру';
+
+  @override
+  String get reviewToSeeScore => 'Қайталасаңыз айтылым ұпайы шығады';
+
+  @override
+  String get playAgain => 'Қайта ойнау';
+
+  @override
+  String get difficultySlow => 'Баяу';
+
+  @override
+  String get difficultyNormal => 'Қалыпты';
+
+  @override
+  String get difficultyFast => 'Жылдам';
+
+  @override
+  String get difficultyLabel => 'Күрделілік';
 }

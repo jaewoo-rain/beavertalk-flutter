@@ -509,6 +509,7 @@ class _PronunciationChallengeScreenState
   }
 
   Widget _resultPanel() {
+    final l10n = AppLocalizations.of(context);
     final engine = _controller.engine;
     return _panelShell(
       children: [
@@ -536,7 +537,7 @@ class _PronunciationChallengeScreenState
               child: Button(
                 type: BtnType.secondaryFill,
                 size: BtnSize.s60,
-                text: 'Share',
+                text: l10n.share,
                 onPressed: _shareResult,
               ),
             ),
@@ -545,7 +546,7 @@ class _PronunciationChallengeScreenState
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: 'Play Again',
+                text: l10n.playAgain,
                 onPressed: _replay,
               ),
             ),
@@ -672,22 +673,23 @@ class _PronunciationChallengeScreenState
 
   // ── difficulty toggle (Slow / Normal / Fast) ────────────────────────
   Widget _difficultyToggle() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Difficulty',
+          l10n.difficultyLabel,
           style: AppType.label2.b.copyWith(color: _stageInkMuted(context)),
         ),
         const SizedBox(height: AppSpacing.s8),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _diffButton(Difficulty.slow, 'Slow'),
+            _diffButton(Difficulty.slow, l10n.difficultySlow),
             const SizedBox(width: AppSpacing.s8),
-            _diffButton(Difficulty.normal, 'Normal'),
+            _diffButton(Difficulty.normal, l10n.difficultyNormal),
             const SizedBox(width: AppSpacing.s8),
-            _diffButton(Difficulty.fast, 'Fast'),
+            _diffButton(Difficulty.fast, l10n.difficultyFast),
           ],
         ),
       ],

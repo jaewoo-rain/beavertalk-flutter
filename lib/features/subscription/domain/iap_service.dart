@@ -9,6 +9,8 @@ library;
 
 import 'dart:async';
 
+import 'plan_prices.dart';
+
 /// The two product shapes the store sells for us.
 enum IapProductType {
   /// Auto-renewing subscription (Pro / Max, monthly / yearly).
@@ -20,25 +22,116 @@ enum IapProductType {
   nonConsumable,
 }
 
-/// Provisional product ids — **the id scheme is an open decision** (v2 §7-4,
-/// owner: 대표). One place to change when the real catalog is registered.
+/// The confirmed store catalog — see
+/// `docs/2026-08-04_2018_IAP_상품등록_ID체계_설계서.md` (v2 §7-4 closed).
+///
+/// These strings are what gets registered in App Store Connect and Play
+/// Console. **A store product id can never be edited or reused**, not even
+/// after deleting the product, so a typo here is permanent: change nothing
+/// without changing the design doc first.
+///
+/// The character set is the intersection of both stores' rules — lowercase
+/// letters, digits, `_` and `.`, at most 40 chars, first char lowercase.
+/// Apple also allows hyphens and uppercase; Play does not, and one string has
+/// to work on both.
 abstract final class IapProductIds {
+  /// Logical SKUs. On iOS these *are* the App Store product ids; on Android
+  /// they are the composition of a subscription id and a base plan id (see
+  /// [playIdsFor]).
   static const proMonthly = 'bt_pro_monthly';
   static const proYearly = 'bt_pro_yearly';
   static const maxMonthly = 'bt_max_monthly';
   static const maxYearly = 'bt_max_yearly';
 
-  /// Character products carry the character's **immutable slug** as a suffix
-  /// (`character.product_key` on the server), never the database id.
-  ///
-  /// A store product id can never be changed once registered. `character_id`
-  /// differs between dev and prod (prod 2·9·10·11 / dev 2·3·4·5), so a receipt
-  /// bought in one environment would resolve to a different character in the
-  /// other; the display name is a marketing asset and may be rewritten. The
-  /// slug is decoupled from both.
-  static String character(String productKey) => 'bt_character_$productKey';
-
   static const subscriptions = {proMonthly, proYearly, maxMonthly, maxYearly};
+
+  /// Character product id, keyed by **slug** — never by the server's primary
+  /// key. Store ids are permanent while database ids are not, and a bare
+  /// integer tells nobody in the console or the payout report which character
+  /// sold. Slugs match the asset folders under `assets/avatar/`.
+  static String character(String slug) => 'bt_character_$slug';
+
+  /// Server `character_id` → slug. **A fallback, not the source of truth.**
+  ///
+  /// The server now carries the slug itself as `character.product_key`
+  /// (`CharacterDto.productKey`), and callers must prefer that: these ids are
+  /// **prod-only** — dev numbers the same characters 2·3·4·5 — so resolving a
+  /// purchase through this table off prod buys a *different* character than
+  /// the one on screen. It stays for older servers that send no `product_key`
+  /// and for [isFreeCharacter], which needs an id→slug answer before any
+  /// character payload is in hand. Ids come from
+  /// `character_copy_overrides.dart`, which carries the same mapping.
+  static const characterSlugs = <int, String>{
+    1: 'baba',
+    2: 'bibi',
+    9: 'popo',
+    10: 'rara',
+    11: 'dudu',
+  };
+
+  /// The characters every member gets without paying (대표 결정 2026-08-04).
+  ///
+  /// They are **not** registered as store products — there is nothing to
+  /// charge for — which is why [characterFor] returns null for them. The Free
+  /// plan already advertises this as "Basic characters included".
+  static const freeCharacterSlugs = {'baba', 'bibi'};
+
+  /// Whether this character is free for everyone.
+  static bool isFreeCharacter(int serverId) =>
+      freeCharacterSlugs.contains(characterSlugs[serverId]);
+
+  /// Store product id for a server character id, or `null` when that character
+  /// has no registered store product.
+  ///
+  /// Null covers two different situations, and callers that need to tell them
+  /// apart should ask [isFreeCharacter] first:
+  /// - **Free character** — deliberately not sold.
+  /// - **Unknown character** — added server-side after this build shipped. No
+  ///   slug here means no product was registered on the store either, so
+  ///   inventing `bt_character_42` would only trade a clear failure for a
+  ///   store lookup miss.
+  static String? characterFor(int serverId) {
+    final slug = characterSlugs[serverId];
+    if (slug == null || freeCharacterSlugs.contains(slug)) return null;
+    return character(slug);
+  }
+
+  /// Logical SKU → Play (subscription id, base plan id).
+  ///
+  /// The stores model subscriptions differently: Apple sells four products,
+  /// Play sells two subscriptions with two base plans each. Play's purchase
+  /// therefore reports `bt_pro`, and **the billing period lives only in the
+  /// base plan id** — drop it and yearly silently reads as monthly, which is
+  /// exactly the bug that already shipped once. This table is the single
+  /// place that keeps the two halves together.
+  static const _playIds =
+      <String, ({String subscriptionId, String basePlanId})>{
+    proMonthly: (subscriptionId: 'bt_pro', basePlanId: 'monthly'),
+    proYearly: (subscriptionId: 'bt_pro', basePlanId: 'yearly'),
+    maxMonthly: (subscriptionId: 'bt_max', basePlanId: 'monthly'),
+    maxYearly: (subscriptionId: 'bt_max', basePlanId: 'yearly'),
+  };
+
+  /// Play identifiers for a logical subscription SKU, or `null` if unknown.
+  static ({String subscriptionId, String basePlanId})? playIdsFor(
+          String logicalSku) =>
+      _playIds[logicalSku];
+
+  /// Play identifiers → logical SKU, or `null` if the pair is not ours.
+  ///
+  /// Use this on every Android subscription purchase before reporting the
+  /// product to the server (design doc §8): the server treats `product_id` as
+  /// a logical SKU, and it must never be guessed from the subscription id
+  /// alone.
+  static String? logicalSkuFromPlay(String subscriptionId, String basePlanId) {
+    for (final entry in _playIds.entries) {
+      if (entry.value.subscriptionId == subscriptionId &&
+          entry.value.basePlanId == basePlanId) {
+        return entry.key;
+      }
+    }
+    return null;
+  }
 }
 
 /// A store product as the store describes it.
@@ -57,7 +150,7 @@ class IapProduct {
   /// Subscription or non-consumable.
   final IapProductType type;
 
-  /// The store's localized display price (`$12.90`). **Always displayed
+  /// The store's localized display price (`$15.99`). **Always displayed
   /// verbatim** — v2 §6-4 forbids hardcoding character prices; the store is
   /// the price authority. Mock values stand in until the catalog exists.
   final String localizedPrice;
@@ -155,6 +248,21 @@ abstract class IapService {
 
   /// Purchase outcomes, including restores.
   Stream<IapPurchase> get purchases;
+
+  /// Whether this rail can say if the member may still take an introductory
+  /// offer — the 7-day Max trial (대표 결정 2026-08-04).
+  ///
+  /// An introductory offer is **once per account per subscription group**, and
+  /// only StoreKit / Play Billing knows whether this account already spent
+  /// theirs. A rail that cannot answer must return `false`, and screens must
+  /// then say nothing about a free trial: promising one to a member who
+  /// already used it is an App Review 3.1.2 misstatement and an immediate
+  /// charge they did not expect.
+  ///
+  /// This is deliberately a capability flag rather than a nullable answer —
+  /// "I don't know" and "not eligible" lead to the same screen, and whoever
+  /// wires a real SDK has to come here and say `true` on purpose.
+  bool get reportsIntroEligibility;
 }
 
 /// The stand-in rail until store products exist.
@@ -177,23 +285,28 @@ class MockIapService implements IapService {
     IapProduct(
         id: IapProductIds.proMonthly,
         type: IapProductType.subscription,
-        localizedPrice: r'$12.90'),
+        localizedPrice: PlanPrices.proMonthly),
     IapProduct(
         id: IapProductIds.proYearly,
         type: IapProductType.subscription,
-        localizedPrice: r'$100.00'),
+        localizedPrice: PlanPrices.proYearly),
     IapProduct(
         id: IapProductIds.maxMonthly,
         type: IapProductType.subscription,
-        localizedPrice: r'$19.90'),
+        localizedPrice: PlanPrices.maxMonthly),
     IapProduct(
         id: IapProductIds.maxYearly,
         type: IapProductType.subscription,
-        localizedPrice: r'$159.00'),
+        localizedPrice: PlanPrices.maxYearly),
   ];
 
   final List<IapProduct> _catalog;
   final List<IapPurchase> _owned;
+
+  /// The mock has no store behind it, so it cannot know. False keeps the
+  /// trial line off every screen until a real rail lands.
+  @override
+  bool get reportsIntroEligibility => false;
 
   /// What the next [purchase] resolves to.
   IapPurchaseState scriptedOutcome;

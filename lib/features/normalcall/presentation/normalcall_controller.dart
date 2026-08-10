@@ -26,6 +26,8 @@ import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
 import '../domain/entities/call_hint.dart';
+import 'avatar_emotion.dart';
+import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'normalcall_providers.dart';
 
 /// Lifecycle phases of a live normalcall session.
@@ -203,6 +205,31 @@ class NormalCallController extends Notifier<CallState> {
   /// what it says. Reset to neutral each turn; set sticky within a turn.
   final ValueNotifier<int> avatarEmotion = ValueNotifier<int>(0);
 
+  /// 비버가 말하지 않는 동안의 **대기 상태**([kIdleWait]·[kIdleListen]·[kIdleThink]).
+  /// 아바타가 `idle` 슬롯에서 무엇을 재생할지 고른다.
+  ///
+  /// ★신호는 원래부터 있었다 — 사용자 발화는 `input_transcript`(서버가 인식한
+  /// 사용자 말)로, 응답 대기는 `turn_end` 뒤 `turn_start` 전 구간으로 잡는다.
+  /// 「마이크/유저턴 신호가 없어서 못 한다」는 옛 기록은 사실이 아니었다.
+  final ValueNotifier<int> avatarIdleKind = ValueNotifier<int>(kIdleWait);
+
+  /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
+  /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
+  static const Duration _listenHold = Duration(milliseconds: 900);
+  Timer? _listenTimer;
+
+  /// 사용자가 말하는 중임을 알린다(`input_transcript` 델타마다 호출).
+  /// 비버가 말하는 동안에는 무시한다 — 그때는 talk/emo 가 화면을 덮는다.
+  void _markUserSpeaking() {
+    if (avatarSpeaking.value) return;
+    avatarIdleKind.value = kIdleListen;
+    _listenTimer?.cancel();
+    _listenTimer = Timer(_listenHold, () {
+      // 말이 끊겼다 → 이제 서버가 답을 만드는 중이다.
+      if (!avatarSpeaking.value) avatarIdleKind.value = kIdleThink;
+    });
+  }
+
   /// Mouth SHAPE, −1 (round "OO") .. 0 ("AH") .. +1 (wide "EE"), from the
   /// zero-crossing rate of the audio about to play (a cheap spectral-tilt proxy:
   /// high ZCR = front/fricative → wide, low ZCR = back vowel → round). Lets the
@@ -210,19 +237,11 @@ class NormalCallController extends Notifier<CallState> {
   /// it. Characters without EE/OO sprites simply ignore this.
   final ValueNotifier<double> avatarShape = ValueNotifier<double>(0.0);
 
-  /// Keyword lexicon for the (heuristic) emotion classifier. Keyed by the same
-  /// codes as [avatarEmotion]. Korean + English; matched case-insensitively.
-  static const Map<int, List<String>> _emotionLexicon = {
-    1: ['하하', 'ㅋㅋ', 'ㅎㅎ', '좋아', '좋은', '좋네', '좋다', '최고', '굿', '짱', '잘했',
-      '대단', '훌륭', '기뻐', '신나', '행복', '사랑', 'good', 'great', 'awesome',
-      'nice', 'love', 'cool', 'haha', 'perfect', 'well done', 'yay'],
-    2: ['헐', '대박', '진짜?', '정말?', '뭐?', '우와', '와우', '놀라', '세상에', '믿기',
-      '오마이', 'wow', 'whoa', 'no way', 'oh my', 'really?', 'what?!'],
-    3: ['슬프', '슬퍼', '미안', '아쉽', '안타', '속상', '우울', 'ㅠ', 'ㅜ', '눈물',
-      'sorry', 'sad', 'unfortunately', 'poor'],
-    4: ['짜증', '뭐야', '바보', '멍청', '어이없', '그만', '답답', '흥', '쳇', '열받', '화나',
-      'ugh', 'stupid', 'annoying', 'stop it'],
-  };
+  /// 표정 분류기. 어휘 사전·문장 분할·최소 유지 시간은 `avatar_emotion.dart` 에
+  /// 있다 — 랩(`avatar_lab_main.dart`)과 단위 테스트가 **같은 코드**를 돌리기
+  /// 위해서다. 유지 시간은 계측으로 고른 기본값(400ms)을 쓴다 — 근거는 그 파일의
+  /// [SentenceEmotion] 주석.
+  final SentenceEmotion _emo = SentenceEmotion();
 
   /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
   /// audio is handed to the player and drained in real time. A single RMS per
@@ -1839,27 +1858,6 @@ class NormalCallController extends Notifier<CallState> {
     );
   }
 
-  /// Classifies the beaver's (partial) line into an emotion code (0 neutral) by
-  /// counting lexicon hits. Cheap keyword scan; short lines. Ties/none → the
-  /// highest-count wins, 0 when nothing matches.
-  int _classifyEmotion(String line) {
-    if (line.isEmpty) return 0;
-    final t = line.toLowerCase();
-    var best = 0;
-    var bestCount = 0;
-    _emotionLexicon.forEach((code, words) {
-      var c = 0;
-      for (final w in words) {
-        if (t.contains(w)) c++;
-      }
-      if (c > bestCount) {
-        bestCount = c;
-        best = code;
-      }
-    });
-    return best;
-  }
-
   /// Appends an inbound chunk, moving or growing the backing buffer only when it
   /// genuinely cannot fit. Both paths are rare: the queue normally drains to
   /// empty (see [_maybeCompact]) long before the write cursor reaches the end.
@@ -1911,6 +1909,11 @@ class NormalCallController extends Notifier<CallState> {
     _turnEnded = false;
     _beaverSpeaking = true;
     avatarSpeaking.value = true;
+    // 비버가 말하기 시작했다 → 대기 상태를 기본으로 되돌린다. 말이 끝나 idle 이
+    // 다시 보일 때 「듣는 중」이나 「생각 중」이 남아 있으면 대사와 어긋난다.
+    _listenTimer?.cancel();
+    _listenTimer = null;
+    avatarIdleKind.value = kIdleWait;
   }
 
   /// Attempts to clear the mic gate. Requires BOTH the turn to have ended AND
@@ -1994,8 +1997,10 @@ class NormalCallController extends Notifier<CallState> {
         // answered (matches the server "new question cancels previous").
         state = state.copyWith(beaverSubtitle: '', hint: null);
         // New line → reset the avatar expression to neutral; it re-classifies as
-        // the line streams in below.
+        // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
+        // 다음 턴 첫 문장에 섞이면 엉뚱한 표정이 나온다).
         avatarEmotion.value = 0;
+        _emo.reset();
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -2008,10 +2013,14 @@ class NormalCallController extends Notifier<CallState> {
           if (delta != null && delta.isNotEmpty) {
             final line = state.beaverSubtitle + delta;
             state = state.copyWith(beaverSubtitle: line);
-            // React to what the beaver says: a detected emotion sticks until the
-            // next turn resets it (avoids flicker on neutral tokens).
-            final emo = _classifyEmotion(line);
-            if (emo != 0) avatarEmotion.value = emo;
+            // 표정은 **문장이 끝날 때 그 문장만** 보고 정한다.
+            //
+            // 이전 구현은 토큰마다 **누적 문자열 전체**를 재검사하고, 한 번 잡힌 값을
+            // 턴이 끝날 때까지 고정했다. 그래서 문장 첫머리의 우연한 단어 하나가 턴
+            // 전체의 표정을 결정했고, 실기기에서 "표정이 대사와 전혀 안 맞는다"로
+            // 나타났다(2026-08-02). 립싱크 플랜 §6의 「턴 단위 갱신」 규약 위반이다.
+            final next = _emo.feed(delta);
+            if (next != null) avatarEmotion.value = next;
           }
         }
       case 'input_transcript':
@@ -2022,6 +2031,7 @@ class NormalCallController extends Notifier<CallState> {
           final delta = msg['text'] as String?;
           if (delta != null && delta.isNotEmpty) {
             state = state.copyWith(userSubtitle: state.userSubtitle + delta);
+            _markUserSpeaking(); // 듣는 얼굴로 — idle 슬롯 교체
           }
         }
       case 'turn_end':
@@ -2280,6 +2290,10 @@ class NormalCallController extends Notifier<CallState> {
     avatarLevel.value = 0.0;
     avatarEmotion.value = 0;
     avatarShape.value = 0.0;
+    _listenTimer?.cancel();
+    _listenTimer = null;
+    avatarIdleKind.value = kIdleWait;
+    _emo.reset();
     _turnEnded = false;
     _micFramesSent = 0;
     _micWatchdogTimer?.cancel();

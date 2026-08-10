@@ -7,6 +7,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
@@ -267,7 +268,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: result == null ? const _EmptyState() : _content(result),
+            // Opened without a CallResult argument — nothing to show, and
+            // nothing to retry either (there is no request behind this screen).
+            child: result == null
+                ? EmptyScreen(
+                    body: AppLocalizations.of(context).analysisLoadError)
+                : _content(result),
           ),
         ],
       ),
@@ -315,6 +321,9 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                   ? PronunciationState.inactive
                   : PronunciationState.active,
               score: total ?? 0,
+              // Why the gauge reads -%. Injected here rather than baked into
+              // the component: mypage shares it and its reason is different.
+              hint: total == null ? l10n.reviewToSeeScore : null,
               metrics: [
                 PronunciationMetric(
                   label: l10n.pronunciation,
@@ -393,7 +402,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   List<Widget> _babaNote(AppLocalizations l10n, CallResult result) {
     final note = result.note;
     final character = result.character;
-    if (note == null || character == null) return const [];
+    // The partner is what the section is *about* — without it there is nothing
+    // to attribute a remark to, so the section stays hidden. A missing remark
+    // is different: the partner is known and simply left nothing this call
+    // (`screen/analysis__no_expressions`, 4849:8834), so the card stays with
+    // its avatar and says so.
+    if (character == null) return const [];
     return _section(
       label: l10n.characterNoteTitle(character.name),
       child: _card(
@@ -407,18 +421,24 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             ),
             const SizedBox(width: AppSpacing.s12),
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(note.text, style: AppType.label2.r),
-                  const SizedBox(height: 6), // no s6 token
-                  Text(
-                    l10n.characterNoteFooter(character.name),
-                    style: AppType.caption2.r
-                        .copyWith(color: context.c.labelAlternative),
-                  ),
-                ],
-              ),
+              child: note == null
+                  ? Text(
+                      l10n.noCharacterNote,
+                      style: AppType.label2.r
+                          .copyWith(color: context.c.labelNormal),
+                    )
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(note.text, style: AppType.label2.r),
+                        const SizedBox(height: 6), // no s6 token
+                        Text(
+                          l10n.characterNoteFooter(character.name),
+                          style: AppType.caption2.r
+                              .copyWith(color: context.c.labelAlternative),
+                        ),
+                      ],
+                    ),
             ),
           ],
         ),
@@ -438,7 +458,17 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// 연습하기 button that practices just that sentence.
   List<Widget> _expressions(AppLocalizations l10n, CallResult result) {
     final sentences = result.sentences;
-    if (sentences.isEmpty) return const [];
+    // Was `return const []` — the section vanished, so a call that taught
+    // nothing looked identical to one whose expressions failed to load.
+    // `screen/analysis__no_expressions` (4849:8840) keeps the label and puts an
+    // Empty card under it; the label drops its count, since 0 is not a count
+    // worth printing.
+    if (sentences.isEmpty) {
+      return _section(
+        label: l10n.newExpressions,
+        child: EmptyCard(title: l10n.noNewExpressions),
+      );
+    }
     return _section(
       label: l10n.newExpressionsCount(sentences.length),
       child: ValueListenableBuilder<Set<int>>(
@@ -541,21 +571,3 @@ CallResult _withDesignPreview(CallResult r) => CallResult(
             text: '강아지 얘기 나오니까 갑자기 말이 빨라지던데요.\n그 톤이 진짜예요.',
           ),
     );
-
-/// Shown when the screen is opened without a [CallResult] argument.
-class _EmptyState extends StatelessWidget {
-  const _EmptyState();
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.s24),
-        child: Text(
-          AppLocalizations.of(context).analysisLoadError,
-          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-        ),
-      ),
-    );
-  }
-}
