@@ -44,10 +44,10 @@ class PlanRow extends StatelessWidget {
   /// Row title (e.g. `Monthly`), from l10n.
   final String title;
 
-  /// Price line (e.g. `$100.00 · $8.33 per month`).
+  /// Price line (e.g. `$117.99 · $9.83 per month`).
   final String price;
 
-  /// Struck-through anchor price rendered before [price] (e.g. `$154.80`).
+  /// Struck-through anchor price rendered before [price] (e.g. `$191.88`).
   ///
   /// Same `Label/Normal` colour as the live price — work order §6-4: the
   /// strikethrough does the distinguishing, dimming it breaks contrast.

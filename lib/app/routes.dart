@@ -29,6 +29,7 @@ import '../screens/home/learning_sentence_main.dart';
 import '../screens/payment/payment_history.dart';
 import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
+import '../screens/system/network_error.dart';
 import '../screens/mypage/mypage.dart';
 import '../screens/mypage/edit_nickname.dart';
 import '../screens/mypage/settings.dart';
@@ -121,6 +122,12 @@ abstract final class Routes {
   static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
 
+  /// Whole-screen load failure. Most failures are regional and render
+  /// `NetworkErrorView` in place instead — this is the route for the ones that
+  /// own the screen. The screen existed with no route for a while, which meant
+  /// nothing could open it.
+  static const networkError = '/network-error';
+
   static const gallery = '/gallery';
 }
 
@@ -178,6 +185,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
     Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
+    Routes.networkError: (_) => const NetworkErrorScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
     Routes.mypageSettings: (_) => const MyPageSettingsScreen(),
     Routes.editNickname: (_) => const EditNicknameScreen(),

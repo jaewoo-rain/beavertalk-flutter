@@ -7,7 +7,12 @@ import 'app_exception.dart';
 ///
 /// The backend reports errors as `{"detail": {"code", "message"}}`, but
 /// FastAPI's 422 validation responses use `{"detail": [ {loc, msg, type} ]}`.
-/// [parseDetail] defends against both shapes.
+/// [_ParsedDetail] defends against both shapes.
+///
+/// Every branch sets `fromServer: true` **only** when `detail.message` was
+/// actually present. The `??` fallbacks here are hardcoded Korean, so without
+/// that distinction a UI that renders `AppException.message` shows Korean in
+/// all 30 locales — see [AppException.fromServer].
 AppException mapDioException(DioException e) {
   switch (e.type) {
     case DioExceptionType.connectionTimeout:
@@ -30,14 +35,20 @@ AppException mapDioException(DioException e) {
   switch (status) {
     case 400:
       return detail.message != null
-          ? UnknownFailure(detail.message!)
+          ? UnknownFailure.server(detail.message!)
           : const UnknownFailure('잘못된 요청이에요');
     case 401:
-      return UnauthorizedFailure(detail.message ?? '로그인이 필요해요');
+      return detail.message != null
+          ? UnauthorizedFailure.server(detail.message!)
+          : const UnauthorizedFailure();
     case 403:
-      return ForbiddenFailure(detail.message ?? '권한이 없어요');
+      return detail.message != null
+          ? ForbiddenFailure.server(detail.message!)
+          : const ForbiddenFailure();
     case 404:
-      return NotFoundFailure(detail.message ?? '대상을 찾을 수 없어요');
+      return detail.message != null
+          ? NotFoundFailure.server(detail.message!)
+          : const NotFoundFailure();
     case 409:
       // 할인이 탭하는 사이 끝나면 서버가 결제를 거절하고 실제 가격을 함께 준다.
       // 일반 409(중복 보유 등)와 달리 앱이 새 가격으로 재확인을 받아야 하므로
@@ -47,21 +58,29 @@ AppException mapDioException(DioException e) {
           detail.message ?? '가격이 변경되었어요',
           expectedPrice: parseMoneyMinor(detail.extra['expected_price']),
           actualPrice: parseMoneyMinor(detail.extra['actual_price']),
+          fromServer: detail.message != null,
         );
       }
-      return ConflictFailure(detail.message ?? '이미 존재하는 정보예요');
+      return detail.message != null
+          ? ConflictFailure.server(detail.message!)
+          : const ConflictFailure();
     case 422:
       return ValidationFailure(
         detail.message ?? '입력값을 확인해주세요',
         fieldErrors: detail.fieldErrors,
+        fromServer: detail.message != null,
       );
   }
 
   if (status != null && status >= 500) {
-    return ServerFailure(detail.message ?? '서버에 문제가 발생했어요');
+    return detail.message != null
+        ? ServerFailure.server(detail.message!)
+        : const ServerFailure();
   }
   if (e.error is AppException) return e.error as AppException;
-  return UnknownFailure(detail.message ?? '알 수 없는 오류가 발생했어요');
+  return detail.message != null
+      ? UnknownFailure.server(detail.message!)
+      : const UnknownFailure();
 }
 
 /// Result of defensively parsing the `detail` field of an error body.

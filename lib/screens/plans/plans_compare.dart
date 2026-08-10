@@ -10,6 +10,7 @@ import '../../components/molecules/plan_summary_card.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -24,13 +25,6 @@ import '../../theme/app_typography.dart';
 class PlansCompareScreen extends ConsumerWidget {
   /// Creates the plan comparison screen.
   const PlansCompareScreen({super.key});
-
-  // List prices as displayed. TODO(iap): replace with store-localized prices
-  // from `IapService.getProducts` once the catalog exists (v2 §7-4).
-  static const proPrice = r'$12.90';
-  static const maxPrice = r'$19.90';
-  static const maxAnchorPrice = r'$24.90';
-  static const freePrice = r'$0.00';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -53,7 +47,7 @@ class PlansCompareScreen extends ConsumerWidget {
               children: [
                 PlanSummaryCard(
                   title: l10n.planPro,
-                  price: proPrice,
+                  price: PlanPrices.proMonthly,
                   perMonthUnit: l10n.perMonthUnit,
                   badgeTone:
                       tier == SubscriptionTier.pro ? BadgeTone.neutral : null,
@@ -78,8 +72,8 @@ class PlansCompareScreen extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.s24),
                 PlanSummaryCard(
                   title: l10n.planMax,
-                  price: maxPrice,
-                  anchorPrice: maxAnchorPrice,
+                  price: PlanPrices.maxMonthly,
+                  anchorPrice: PlanPrices.maxMonthlyAnchor,
                   perMonthUnit: l10n.perMonthUnit,
                   badgeTone: tier == SubscriptionTier.max
                       ? BadgeTone.neutral
@@ -106,7 +100,7 @@ class PlansCompareScreen extends ConsumerWidget {
                 const SizedBox(height: AppSpacing.s24),
                 PlanSummaryCard(
                   title: l10n.planFree,
-                  price: freePrice,
+                  price: PlanPrices.free,
                   badgeTone:
                       tier == SubscriptionTier.free ? BadgeTone.neutral : null,
                   badgeLabel:

@@ -85,8 +85,8 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       .name;
 
   // The legacy modal subscription sheet (manage → change-plan → cancel, the
-  // old Figma `3360:20267…` flow) lived here until the P2 redesign. The row
-  // now navigates to `Routes.subscription` — the state-driven manage screen —
+  // old Figma `3360:20267…` flow) lived here until the P2 redesign. The
+  // Subscription row navigates to `Routes.subscription` — the manage screen —
   // and cancellation moves to the store per work order v2. The legacy
   // `BottomSheetSubscription` organism was deleted once its last (gallery)
   // usage went.
@@ -275,11 +275,23 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                 _section(l10n.paymentSection),
                 const SizedBox(height: AppSpacing.s16),
                 _group([
-                  _navRow(l10n.currentPlan, _planLabel(l10n),
-                      // P2 redesign: the manage screen replaced the legacy
-                      // modal sheet as the subscription entry point.
+                  // Three rows, matching Figma `depth/main_mypage_settings`
+                  // (`4514:4684`): Subscription / Current Plan / Payment
+                  // History.
+                  //
+                  // Subscription and Current Plan are deliberately separate
+                  // destinations. The first opens the state-driven manage
+                  // screen; the second opens the plan comparison. They were
+                  // folded into one Current Plan row for a while, and the cost
+                  // was that [Routes.plansCompare] lost its entry point here —
+                  // the only way left to reach it was one level deeper, from
+                  // inside the manage screen.
+                  _navRow(l10n.subscriptionRow, '',
                       onTap: () =>
                           Navigator.pushNamed(context, Routes.subscription)),
+                  _navRow(l10n.currentPlan, _planLabel(l10n),
+                      onTap: () =>
+                          Navigator.pushNamed(context, Routes.plansCompare)),
                   _navRow(l10n.paymentHistory, '',
                       route: Routes.paymentHistory, divider: false),
                 ]),

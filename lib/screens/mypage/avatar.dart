@@ -11,6 +11,7 @@ import '../../components/molecules/card_box.dart';
 import '../../components/organisms/bottom_sheet.dart';
 import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/organisms/dialog_basic.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
@@ -32,6 +33,7 @@ import 'avatar_detail.dart';
 import 'avatar_loading.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../system/network_error.dart';
 
 /// Change avatar — Figma `screen/main_change_avatar` (`2117:20355`).
 ///
@@ -66,8 +68,8 @@ class AvatarScreen extends ConsumerWidget {
               // own shape held with bars, not a spinner in an empty screen, so
               // nothing jumps when the characters land.
               loading: () => const AvatarLoading(),
-              error: (e, _) => _ErrorState(
-                message: e is AppException ? e.message : l10n.charactersLoadError,
+              error: (e, _) => NetworkErrorView(
+                message: e is AppException && e.fromServer ? e.message : null,
                 onRetry: () {
                   ref.invalidate(charactersProvider);
                   ref.invalidate(ownedCharactersProvider);
@@ -140,11 +142,7 @@ class AvatarScreen extends ConsumerWidget {
                     if (owned.isEmpty && discounted.isEmpty && buyable.isEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.s40),
-                        child: Center(
-                          child: Text(l10n.noCharactersToShow,
-                              style: AppType.body2.r.copyWith(
-                                  color: context.c.labelNormal)),
-                        ),
+                        child: EmptyBlock(body: l10n.noCharactersToShow),
                       ),
                   ],
                 );
@@ -276,7 +274,7 @@ class AvatarScreen extends ConsumerWidget {
       // actual traits. Null when the character has no tags, so the row is
       // omitted rather than rendering an empty strip.
       subtitle: c.tags.isEmpty ? null : c.tags.join('·'),
-      price: _priceLabel(context, c.price),
+      price: _catalogPrice(context, c),
       action: _buyButton(context, () => _openDetail(
             context,
             AvatarDetailState.unownedNormal,
@@ -288,8 +286,11 @@ class AvatarScreen extends ConsumerWidget {
             backgroundStory: c.backgroundStory,
             voiceUrl: c.voiceUrl,
             tags: c.tags,
-            price: _priceLabel(context, c.price),
-            effectivePriceMinor: c.effectivePrice,
+            price: _catalogPrice(context, c),
+            // Null for a free character: there is no amount to report back to
+            // the server, and reporting 0 against a stale catalog price is how
+            // a price-mismatch rejection would appear out of nowhere.
+            effectivePriceMinor: _isFree(c) ? null : c.effectivePrice,
           )),
     );
   }
@@ -392,18 +393,34 @@ class AvatarScreen extends ConsumerWidget {
       String productKey, [int? expectedMinor]) async {
     final l10n = AppLocalizations.of(routeCtx);
     final iap = ref.read(iapServiceProvider);
-    if (productKey.isEmpty) {
-      // 서버가 product_key 를 안 준다(구버전). `bt_character_` 만 보내면 스토어에서
-      // 알 수 없는 상품이 되므로, 잘못된 결제를 띄우느니 여기서 멈춘다.
-      if (routeCtx.mounted) {
-        ScaffoldMessenger.of(routeCtx)
-          ..clearSnackBars()
-          ..showSnackBar(SnackBar(content: Text(l10n.iapCharacterFailedBody)));
-      }
+    // Free characters never reach the store. There is no product to charge
+    // for, so acquiring one is a server record and nothing else — routing
+    // them through the store would only look for an id that was deliberately
+    // never registered.
+    if (IapProductIds.isFreeCharacter(id) || expectedMinor == 0) {
+      await _deliver(routeCtx, ref, id, productKey, expectedMinor);
+      return;
+    }
+    // Store products are keyed by slug, not by the server's primary key
+    // (design doc §4-5).
+    //
+    // The server's own `product_key` wins whenever it sent one: the local
+    // id→slug table is prod-numbered, so off prod it resolves to a *different*
+    // character than the one on screen. The table is the fallback for servers
+    // predating that field. Neither available means no registered store
+    // product either, so there is nothing to buy — say so instead of sending
+    // the store an id it has never seen.
+    final productId = productKey.isNotEmpty
+        ? IapProductIds.character(productKey)
+        : IapProductIds.characterFor(id);
+    if (productId == null) {
+      ScaffoldMessenger.of(routeCtx)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text(l10n.iapCharacterFailedBody)));
       return;
     }
     final product = IapProduct(
-      id: IapProductIds.character(productKey),
+      id: productId,
       type: IapProductType.nonConsumable,
       // Store-localized in production (v2 §6-4: the store is the price
       // authority); until then the server-fed screen price stands in.
@@ -433,8 +450,37 @@ class AvatarScreen extends ConsumerWidget {
       case IapPurchaseState.restored:
         break; // paid — deliver below.
     }
+    // The store sheet was an async gap; the route may be gone.
+    if (!routeCtx.mounted) return;
+    await _deliver(routeCtx, ref, id, productKey, expectedMinor,
+        verdict: verdict);
+  }
+
+  /// Records the acquisition on the server and closes the flow.
+  ///
+  /// Two callers, one delivery: the paid path runs it once the store says the
+  /// money moved, the free path runs it directly because no money ever moves.
+  /// Keeping it in one place is what stops the free path from quietly missing
+  /// the cache invalidation or the success sheet.
+  ///
+  /// [verdict] is the store's answer, and is null exactly when no store was
+  /// involved — a free character. That is why the receipt branch below is
+  /// guarded on it rather than on [IapPurchase.hasReceipt] alone: a free
+  /// acquisition has no receipt to verify and must take the server-record
+  /// path, not be mistaken for an unverifiable paid one.
+  ///
+  /// [productKey] only travels so the price-changed retry can re-enter
+  /// [_purchase] with the same slug it started from.
+  Future<void> _deliver(
+    BuildContext routeCtx,
+    WidgetRef ref,
+    int id,
+    String productKey,
+    int? expectedMinor, {
+    IapPurchase? verdict,
+  }) async {
     try {
-      if (verdict.hasReceipt) {
+      if (verdict != null && verdict.hasReceipt) {
         // 실영수증이 있다 → **서버가 스토어에 확인**하고 소유권을 준다. 앱 말만 믿고
         // 지급하면 "샀다"고 주장하는 요청으로 결제를 우회할 수 있다.
         // 같은 영수증이 여러 번 와도 서버가 멱등 처리한다(already_granted 도 성공).
@@ -541,6 +587,20 @@ class AvatarScreen extends ConsumerWidget {
     if (minor <= 0) return AppLocalizations.of(context).priceFree;
     return formatUsd(minor, locale: Localizations.localeOf(context).toString());
   }
+
+  /// Whether [c] costs nothing — either the server says so, or it is one of
+  /// the characters the Free plan includes (Baba·Bibi, 대표 결정 2026-08-04).
+  ///
+  /// The client-side half of the test is deliberate: the catalog still ships a
+  /// price for those two until the server drops it (서버 제안 별건), and until
+  /// then the screen would offer to sell something that has no store product.
+  bool _isFree(Character c) =>
+      c.isFree || IapProductIds.isFreeCharacter(c.id);
+
+  /// The price a catalog card shows — `Free` for the included characters.
+  String _catalogPrice(BuildContext context, Character c) => _isFree(c)
+      ? AppLocalizations.of(context).priceFree
+      : _priceLabel(context, c.price);
 
   /// Network avatar when available, else a neutral placeholder.
   ///
@@ -673,32 +733,6 @@ class _AvatarDetailRouteState extends State<_AvatarDetailRoute> {
       onConfirm: widget.onConfirm,
       onClose: widget.onClose,
       onPlaySample: _playable ? _playSample : null,
-    );
-  }
-}
-
-/// Inline error with a retry action.
-class _ErrorState extends StatelessWidget {
-  const _ErrorState({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message,
-              style: AppType.body2.r
-                  .copyWith(color: context.c.labelNormal)),
-          const SizedBox(height: AppSpacing.s12),
-          TextButton(
-              onPressed: onRetry,
-              child: Text(AppLocalizations.of(context).retry)),
-        ],
-      ),
     );
   }
 }

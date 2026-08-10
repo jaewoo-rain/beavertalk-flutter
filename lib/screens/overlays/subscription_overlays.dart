@@ -9,6 +9,7 @@ import '../../components/organisms/subscription_action_sheet.dart';
 import '../../core/format/dates.dart';
 import '../../core/store/store_subscription_link.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
+import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 
@@ -221,7 +222,7 @@ class _OverlaySheet extends StatelessWidget {
           rows: [
             SheetRowData(
                 label: l10n.rowOneCharacter,
-                value: l10n.rowFromPrice,
+                value: l10n.rowFromPrice(PlanPrices.characterFrom),
                 highlighted: true),
             SheetRowData(label: l10n.rowYoursForever, value: l10n.rowNoRenewal),
             SheetRowData(label: l10n.rowWorksOnFree, value: l10n.rowYes),
@@ -250,7 +251,7 @@ class _OverlaySheet extends StatelessWidget {
           rows: [
             SheetRowData(
                 label: l10n.rowPayYearlyInstead,
-                value: l10n.rowYearlyMonthEquiv,
+                value: l10n.rowYearlyMonthEquiv(PlanPrices.proYearlyPerMonth),
                 highlighted: true),
             SheetRowData(
                 label: l10n.rowCharactersYouBought,
@@ -276,17 +277,17 @@ class _OverlaySheet extends StatelessWidget {
       case SubscriptionOverlay.annualSwitch:
         return BottomSheetContent(
           type: SheetContentType.rows,
-          title: l10n.ovAnnualSwitchTitle,
+          title: l10n.ovAnnualSwitchTitle(PlanPrices.proYearlySaved),
           body: l10n.ovAnnualSwitchBody,
           rows: [
             SheetRowData(
                 label: l10n.rowYouSave,
-                value: l10n.amountSaved,
+                value: l10n.amountSaved(PlanPrices.proYearlySaved),
                 highlighted: true),
-            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly),
+            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.proYearly)),
             SheetRowData(
                 label: l10n.rowMonthlyForYear,
-                value: l10n.amountMonthlyForYear),
+                value: l10n.amountMonthlyForYear(PlanPrices.proYearlyAnchor)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToYearly,
@@ -311,10 +312,10 @@ class _OverlaySheet extends StatelessWidget {
                 value: _date(context, expiresAt),
                 highlighted: true),
             SheetRowData(
-                label: l10n.rowMonthlyLabel, value: l10n.proMonthlyPriceLine),
+                label: l10n.rowMonthlyLabel, value: l10n.proMonthlyPriceLine(PlanPrices.proMonthly)),
             SheetRowData(
                 label: l10n.rowYearlyWorkedOut,
-                value: l10n.rowYearlyMonthEquiv),
+                value: l10n.rowYearlyMonthEquiv(PlanPrices.proYearlyPerMonth)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToMonthly,
@@ -401,9 +402,9 @@ class _OverlaySheet extends StatelessWidget {
                 highlighted: true),
             SheetRowData(
                 label: l10n.rowFirstCharge,
-                value: PlansCopy.maxPrice),
+                value: PlanPrices.maxMonthly),
             SheetRowData(
-                label: l10n.rowThenMonthly, value: PlansCopy.maxPrice),
+                label: l10n.rowThenMonthly, value: PlanPrices.maxMonthly),
           ],
           primaryAction:
               SheetAction(label: l10n.ctaKeepMax, onPressed: () => _close(context)),
@@ -414,7 +415,8 @@ class _OverlaySheet extends StatelessWidget {
       case SubscriptionOverlay.trialStart:
         return BottomSheetContent(
           title: l10n.ovTrialStartTitle,
-          body: l10n.ovTrialStartBody(_date(context, expiresAt)),
+          body: l10n.ovTrialStartBody(
+              PlanPrices.maxMonthly, _date(context, expiresAt)),
           primaryAction: SheetAction(
               label: l10n.ctaStart7Days,
               // The trial is a Max trial — without the argument the flow lands
@@ -437,12 +439,12 @@ class _OverlaySheet extends StatelessWidget {
           rows: [
             SheetRowData(
                 label: l10n.rowYouSave,
-                value: l10n.amountSaved,
+                value: l10n.amountSaved(PlanPrices.proYearlySaved),
                 highlighted: true),
-            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly),
+            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.proYearly)),
             SheetRowData(
                 label: l10n.rowMonthlyForYear,
-                value: l10n.amountMonthlyForYear),
+                value: l10n.amountMonthlyForYear(PlanPrices.proYearlyAnchor)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToYearly,
@@ -517,7 +519,7 @@ class _OverlaySheet extends StatelessWidget {
           ),
           benefitLabel: l10n.flBenefitCalls,
           benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption,
+          caption: l10n.flCaption(PlanPrices.proMonthly),
           primaryAction: SheetAction(
               label: l10n.ctaGoUnlimited,
               onPressed: () => _then(context, () {
@@ -535,7 +537,7 @@ class _OverlaySheet extends StatelessWidget {
           rows: scores ?? const [],
           benefitLabel: l10n.flBenefitChecks,
           benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption,
+          caption: l10n.flCaption(PlanPrices.proMonthly),
           primaryAction: SheetAction(
               label: l10n.ctaGoUnlimited,
               onPressed: () => _then(context, () {
@@ -549,8 +551,3 @@ class _OverlaySheet extends StatelessWidget {
   }
 }
 
-/// Display prices quoted inside sheets. TODO(iap): store catalog replaces
-/// these (v2 §6-4).
-abstract final class PlansCopy {
-  static const maxPrice = r'$19.90';
-}

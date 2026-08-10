@@ -159,11 +159,11 @@ class BottomSheetContent extends StatelessWidget {
   /// placeholder composition (avatar disc + self-view).
   final Widget? videoPreview;
 
-  /// Struck anchor price of the video sheet (`$24.90`) — rendered in body
+  /// Struck anchor price of the video sheet (`$29.99`) — rendered in body
   /// colour with a strikethrough, per work order §6-4.
   final String? videoPriceOriginal;
 
-  /// Live price line of the video sheet (`$19.90 per month`).
+  /// Live price line of the video sheet (`$23.99 per month`).
   final String? videoPrice;
 
   /// Benefit line, or null for none.

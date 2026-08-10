@@ -530,7 +530,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get proMembership => 'សមាជិកភាព Pro';
 
   @override
-  String get pricePerMonth => '\$12.9 / ខែ';
+  String pricePerMonth(String price) {
+    return '$price / ខែ';
+  }
 
   @override
   String get benefitUnlimitedCalls => 'ការហៅគ្មានកំណត់';
@@ -1242,21 +1244,25 @@ class AppLocalizationsKm extends AppLocalizations {
   String get bannerGoUnlimitedTitle => 'គ្មានដែនកំណត់ជាមួយ Pro';
 
   @override
-  String get bannerGoUnlimitedSub =>
-      'ការហៅគ្មានដែនកំណត់ · ១៥ នាទីក្នុងមួយលើក · \$12.90 ក្នុងមួយខែ';
+  String bannerGoUnlimitedSub(String price) {
+    return 'ការហៅគ្មានដែនកំណត់ · ១៥ នាទីក្នុងមួយលើក · $price ក្នុងមួយខែ';
+  }
 
   @override
   String get bannerMaxUpsellTitle => 'បើកវីដេអូជាមួយ Max';
 
   @override
-  String get bannerMaxUpsellSub => 'ការហៅទល់មុខគ្នា · \$19.90 ក្នុងមួយខែ';
+  String bannerMaxUpsellSub(String price) {
+    return 'ការហៅទល់មុខគ្នា · $price ក្នុងមួយខែ';
+  }
 
   @override
   String get bannerAnnualSwitchTitle => 'ប្ដូរទៅគម្រោងប្រចាំឆ្នាំ';
 
   @override
-  String get bannerAnnualSwitchSub =>
-      '\$159 ក្នុងមួយឆ្នាំ · \$13.25 ក្នុងមួយខែ';
+  String bannerAnnualSwitchSub(String yearly, String perMonth) {
+    return '$yearly ក្នុងមួយឆ្នាំ · $perMonth ក្នុងមួយខែ';
+  }
 
   @override
   String get bannerPaymentFailedTitle => 'មិនអាចទូទាត់បានទេ';
@@ -1423,25 +1429,42 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planAnnual => 'ប្រចាំឆ្នាំ';
 
   @override
-  String get proMonthlyPriceLine => '\$12.90 ក្នុងមួយខែ';
+  String proMonthlyPriceLine(String price) {
+    return '$price ក្នុងមួយខែ';
+  }
 
   @override
-  String get proAnnualPriceLine => '\$100.00 · \$8.33 ក្នុងមួយខែ';
+  String proAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly · $perMonth ក្នុងមួយខែ';
+  }
 
   @override
-  String get maxMonthlyPriceLine => '\$19.90 ក្នុងមួយខែ';
+  String maxMonthlyPriceLine(String price) {
+    return '$price ក្នុងមួយខែ';
+  }
 
   @override
-  String get maxAnnualPriceLine =>
-      '\$159.00 ក្នុងមួយឆ្នាំ · \$13.25 ក្នុងមួយខែ';
+  String maxAnnualPriceLine(String yearly, String perMonth) {
+    return '$yearly ក្នុងមួយឆ្នាំ · $perMonth ក្នុងមួយខែ';
+  }
 
   @override
-  String get ctaCaptionPro =>
-      '\$12.90 ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  String ctaCaptionPro(String price) {
+    return '$price ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  }
 
   @override
-  String get ctaCaptionMax =>
-      '\$19.90 ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  String ctaCaptionMax(String price) {
+    return '$price ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  }
+
+  @override
+  String ctaCaptionMaxTrial(String price) {
+    return '៧ ថ្ងៃឥតគិតថ្លៃ បន្ទាប់មក $price ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  }
+
+  @override
+  String get ctaCaptionAutoRenew => 'បន្តដោយស្វ័យប្រវត្តិរហូតដល់បោះបង់។';
 
   @override
   String get footerTerms => 'លក្ខខណ្ឌ';
@@ -1502,12 +1525,14 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaSeeYourSubscription => 'មើលការជាវរបស់អ្នក';
 
   @override
-  String get successProCaption =>
-      '\$12.90 ត្រូវគិតប្រចាំខែរហូតដល់អ្នកបញ្ឈប់។ គ្រប់គ្រង ឬបញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង។';
+  String successProCaption(String price) {
+    return '$price ត្រូវគិតប្រចាំខែរហូតដល់អ្នកបញ្ឈប់។ គ្រប់គ្រង ឬបញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង។';
+  }
 
   @override
-  String get successMaxCaption =>
-      '\$19.90 ត្រូវគិតប្រចាំខែរហូតដល់អ្នកបញ្ឈប់។ គ្រប់គ្រង ឬបញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង។';
+  String successMaxCaption(String price) {
+    return '$price ត្រូវគិតប្រចាំខែរហូតដល់អ្នកបញ្ឈប់។ គ្រប់គ្រង ឬបញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង។';
+  }
 
   @override
   String get plansErrorTitle => 'មិនអាចផ្ទុកគម្រោងបានទេ';
@@ -1528,7 +1553,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get moveToMaxTitle => 'ទៅ Max';
 
   @override
-  String get maxPriceShort => '\$19.90 / ខែ';
+  String maxPriceShort(String price) {
+    return '$price / ខែ';
+  }
 
   @override
   String get moveToMaxCardSub =>
@@ -1550,13 +1577,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get creditedTowardMax => 'បញ្ចូលទៅក្នុង Max';
 
   @override
-  String nextPaymentMaxValue(String date) {
-    return '\$19.90 · $date';
+  String nextPaymentMaxValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
-  String nextPaymentProValue(String date) {
-    return '\$12.90 · $date';
+  String nextPaymentProValue(String price, String date) {
+    return '$price · $date';
   }
 
   @override
@@ -1679,7 +1706,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get rowOneCharacter => 'តួអង្គមួយ';
 
   @override
-  String get rowFromPrice => 'ចាប់ពី \$5.00';
+  String rowFromPrice(String price) {
+    return 'ចាប់ពី $price';
+  }
 
   @override
   String get rowYoursForever => 'ជារបស់អ្នកជារៀងរហូត';
@@ -1714,7 +1743,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get rowPayYearlyInstead => 'បង់ប្រចាំឆ្នាំវិញ';
 
   @override
-  String get rowYearlyMonthEquiv => '\$8.33 ក្នុងមួយខែ';
+  String rowYearlyMonthEquiv(String price) {
+    return '$price ក្នុងមួយខែ';
+  }
 
   @override
   String get rowCharactersYouBought => 'តួអង្គដែលអ្នកបានទិញ';
@@ -1729,7 +1760,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaContinueToStore => 'បន្តទៅហាង';
 
   @override
-  String get ovAnnualSwitchTitle => 'បង់ប្រចាំឆ្នាំ សន្សំបាន \$54.80';
+  String ovAnnualSwitchTitle(String saved) {
+    return 'បង់ប្រចាំឆ្នាំ សន្សំបាន $saved';
+  }
 
   @override
   String get ovAnnualSwitchBody =>
@@ -1739,19 +1772,25 @@ class AppLocalizationsKm extends AppLocalizations {
   String get rowYouSave => 'អ្នកសន្សំបាន';
 
   @override
-  String get amountSaved => '\$54.80';
+  String amountSaved(String price) {
+    return '$price';
+  }
 
   @override
   String get rowYearly => 'ប្រចាំឆ្នាំ';
 
   @override
-  String get amountYearly => '\$100.00';
+  String amountYearly(String price) {
+    return '$price';
+  }
 
   @override
   String get rowMonthlyForYear => 'ប្រចាំខែ រយៈពេលមួយឆ្នាំ';
 
   @override
-  String get amountMonthlyForYear => '\$154.80';
+  String amountMonthlyForYear(String price) {
+    return '$price';
+  }
 
   @override
   String get ovMonthlySwitchTitle => 'ប្ដូរទៅប្រចាំខែ';
@@ -1806,8 +1845,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ovTrialStartTitle => 'Max ៧ ថ្ងៃ ឥតគិតថ្លៃ';
 
   @override
-  String ovTrialStartBody(String date) {
-    return 'ឥតគិតថ្លៃរហូតដល់ $date។ បន្ទាប់មក \$19.90 ក្នុងមួយខែ លុះត្រាតែអ្នកបញ្ឈប់នៅក្នុងហាង។';
+  String ovTrialStartBody(String price, String date) {
+    return 'ឥតគិតថ្លៃរហូតដល់ $date។ បន្ទាប់មក $price ក្នុងមួយខែ លុះត្រាតែអ្នកបញ្ឈប់នៅក្នុងហាង។';
   }
 
   @override
@@ -1928,7 +1967,9 @@ class AppLocalizationsKm extends AppLocalizations {
       'ការត្រួតពិនិត្យការបញ្ចេញសំឡេងគ្មានដែនកំណត់ជាមួយ Pro';
 
   @override
-  String get flCaption => '\$12.90 ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេល';
+  String flCaption(String price) {
+    return '$price ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេល';
+  }
 
   @override
   String flUsage(String used, String limit) {
@@ -2008,4 +2049,55 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get iapCharacterFailedBody =>
       'ការទិញមិនបានសម្រេចទេ។ មិនមានការគិតប្រាក់ទេ — សូមព្យាយាមម្ដងទៀត។';
+
+  @override
+  String get noAccentDataTitle => 'មិនទាន់មានទិន្នន័យសំនៀងទេ';
+
+  @override
+  String get noAccentDataBody =>
+      'បន្តសន្ទនា នោះលក្ខណៈសំនៀងរបស់អ្នកនឹងកកកុញឡើង។';
+
+  @override
+  String get noLevelYetTitle => 'មិនទាន់មានកម្រិតទេ';
+
+  @override
+  String get noLevelYetBody =>
+      'បញ្ចប់ការហៅលើកដំបូង ដើម្បីទទួលបានកម្រិតរបស់អ្នក។';
+
+  @override
+  String get noPronunciationDataTitle => 'មិនទាន់មានកំណត់ត្រាការបញ្ចេញសំឡេងទេ';
+
+  @override
+  String get noPronunciationDataBody =>
+      'យើងវិភាគការបញ្ចេញសំឡេងពីប្រយោគដែលអ្នកនិយាយពេលហៅ។';
+
+  @override
+  String get noCharacterNote => 'មិនទាន់មានសាររក្សាទុកទេ';
+
+  @override
+  String get noPhonemesYet => 'មិនទាន់មានសំឡេងសម្រាប់វិភាគទេ';
+
+  @override
+  String get noSentencesYet => 'មិនទាន់មានប្រយោគសម្រាប់វិភាគទេ';
+
+  @override
+  String get takeLevelTest => 'ធ្វើតេស្តកម្រិត';
+
+  @override
+  String get reviewToSeeScore => 'ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង';
+
+  @override
+  String get playAgain => 'លេងម្តងទៀត';
+
+  @override
+  String get difficultySlow => 'យឺត';
+
+  @override
+  String get difficultyNormal => 'ធម្មតា';
+
+  @override
+  String get difficultyFast => 'លឿន';
+
+  @override
+  String get difficultyLabel => 'កម្រិតលំបាក';
 }

@@ -6,6 +6,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
+import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/level_progress.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/dialog_share_profile.dart';
@@ -167,7 +168,19 @@ class MyPageScreen extends ConsumerWidget {
             child: AppIcons.share(color: context.c.labelNormal),
           ),
         ),
-        children: [
+        children: stats.isEmpty
+            // `screen/main_mypage__null_all` (4849:8301): the header and its
+            // share action stay, the body says why it is blank. The old shape
+            // drew the avatar over a lone em dash, which reads as a value the
+            // server returned rather than as "nothing yet".
+            ? [
+                EmptyBlock(
+                  title: l10n.noAccentDataTitle,
+                  body: l10n.noAccentDataBody,
+                  scale: EmptyScale.card,
+                ),
+              ]
+            : [
           Center(
             child: Container(
               width: AppSpacing.s80,
@@ -185,7 +198,7 @@ class MyPageScreen extends ConsumerWidget {
             style: AppType.body1.r.copyWith(color: context.c.labelNormal),
           ),
           Text(
-            stats.isEmpty ? '—' : stats.first.label,
+            stats.first.label,
             textAlign: TextAlign.center,
             style: AppType.title3.b.copyWith(color: context.c.labelStrong),
           ),
@@ -212,7 +225,25 @@ class MyPageScreen extends ConsumerWidget {
           title: l10n.overallLevel,
           subtitle: l10n.overallLevelSubtitle,
         ),
-        children: [
+        children: level?.level == null
+            // `screen/main_mypage__null_all` (4849:8307). The stage used to read
+            // "—" with the rail drawn empty beneath it, which looks like a
+            // level of zero rather than a level not taken yet. The CTA is
+            // 레벨 테스트 **받기** here, not 다시하기 (§4-6) — a user who has
+            // never tested cannot re-take.
+            ? [
+                EmptyBlock(
+                  title: l10n.noLevelYetTitle,
+                  body: l10n.noLevelYetBody,
+                  ctaText: l10n.takeLevelTest,
+                  onCta: () => _startLevelTest(context, ref),
+                  ctaSize: BtnSize.s60,
+                  // Matches the populated card's button — see its comment.
+                  ctaType: BtnType.secondaryElevated,
+                  scale: EmptyScale.card,
+                ),
+              ]
+            : [
           // Both sides are flexible: at 320dp "Stage 7" + "Among all learners"
           // exceeds the 240pt card interior in the wordier locales. The stage
           // ellipsizes (it is short and numeric) and the caption wraps rather
@@ -300,7 +331,24 @@ class MyPageScreen extends ConsumerWidget {
           title: l10n.pronunciationAnalysis,
           subtitle: l10n.recentSessionsAverage,
         ),
-        children: [
+        children: !(pron?.hasData ?? false)
+            // `screen/main_mypage__null_all` (4849:8313) replaces the gauge
+            // outright rather than showing it at `-%`. Note this supersedes the
+            // work order's §4-5 line about a mypage gauge hint: the frame has
+            // no gauge here to hang a hint on. The hint survives on analysis,
+            // where the gauge does stay.
+            ? [
+                EmptyBlock(
+                  title: l10n.noPronunciationDataTitle,
+                  body: l10n.noPronunciationDataBody,
+                  ctaText: l10n.practicePronunciation,
+                  onCta: () => _openRecentAnalysis(context, recentCalls),
+                  ctaSize: BtnSize.s60,
+                  ctaType: BtnType.secondaryElevated,
+                  scale: EmptyScale.card,
+                ),
+              ]
+            : [
           // 최근 10세션 평균. 점수가 없으면(발음 챌린지를 아직 안 했거나 통화가
           // 없으면) inactive 상태로 게이지가 `-%` 를 그린다 — 0% 로 그리면
           // "0점을 받았다"로 읽혀서 없는 것과 나쁜 것이 구별되지 않는다.
