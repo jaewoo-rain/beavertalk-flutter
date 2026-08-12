@@ -77,3 +77,36 @@ abstract final class CascadeMicOff {
   /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다(조용한 실패 금지).
   static bool get suppressed => flag && !kDebugMode;
 }
+
+/// dev 전용 — 마이크는 열되 **플랫폼 에코 제거(AEC)만 끈다.**
+///
+/// ## 왜 이게 따로 필요한가 — [CascadeMicOff] 는 **한 번에 네 가지를 뺐다**
+///
+/// 마이크를 안 열면 다음이 **동시에** 빠진다:
+///   ① 네이티브→Dart 프레임 전달(초당 83건)
+///   ② AudioRecord 스레드 자체
+///   ③ 플랫폼 AEC / VoiceProcessingIO
+///   ④ 업링크 소켓 전송(초당 32KB)
+///
+/// 실측은 "마이크 파이프라인이 원인이다"까지만 말한다. **그중 무엇이 범인인지는
+/// 아직 모른다.** 이 구분이 실제 처방을 가른다:
+///
+///   - 범인이 ①이면 → **프레임을 묶으면** 낫는다(싸다)
+///   - 범인이 ③이면 → 묶어도 **아무 소용 없다.** 건수와 무관하게 오디오 HAL 이 무거운 것이다
+///
+/// ⛔ 그래서 묶기 수술(플러그인 벤더링 = 큰 작업) **전에** 이걸 먼저 잰다. 순서를 바꾸면
+///   소용없을 수도 있는 수술에 큰 비용을 쓴다.
+///
+/// ⚠ 켜면 **에코가 안 걸린다** — 스피커폰에서는 비버가 자기 목소리에 끊길 수 있다.
+/// 계측 전용이고, 그 자체가 이 실험의 알려진 부작용이다(측정을 무효로 만들지는 않는다 —
+/// 우리가 보는 건 왕복 곡선이지 STT 품질이 아니다).
+///
+/// `--dart-define=MIC_NO_AEC=true` + 디버그 빌드에서만 동작한다.
+abstract final class CascadeMicNoAec {
+  static const bool flag = bool.fromEnvironment('MIC_NO_AEC');
+
+  static bool get enabled => flag && kDebugMode;
+
+  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
+  static bool get suppressed => flag && !kDebugMode;
+}

@@ -33,7 +33,7 @@ import '../domain/entities/playback_ledger.dart';
 import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
-import 'cascade_experiment.dart' show CascadeMicOff;
+import 'cascade_experiment.dart' show CascadeMicNoAec, CascadeMicOff;
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -1744,6 +1744,11 @@ class NormalCallController extends Notifier<CallState> {
       // at all, which is a different failure from "gated because the beaver is
       // speaking". [_armMicWatchdog] keys off it.
       _micFramesReceived++;
+      // [계측] 이 창에서 **네이티브가 올려 준** 건수·바이트. 묶기 실험의 눈금이다 —
+      // 묶음 크기를 바꿨을 때 건수가 실제로 줄었는지는 이 값으로만 확인된다
+      // (dart-define 을 줬다고 네이티브가 그렇게 준다는 보장이 없다).
+      _micRxWindow++;
+      _micRxBytesWindow += bytes.length;
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
@@ -1776,7 +1781,18 @@ class NormalCallController extends Notifier<CallState> {
     // recorder follows the session route and uses the BT mic. Voice processing is
     // only needed for the loudspeaker case (echo cancellation) — no headset there.
     var useVoiceProcessing = true;
-    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
+    // [실험] AEC 만 뺀다 — 마이크 파이프라인 중 **무엇이** 플랫폼을 막는지 가른다.
+    if (CascadeMicNoAec.enabled) {
+      useVoiceProcessing = false;
+      _log('⚠ [실험] MIC_NO_AEC — 음성처리/에코제거를 끄고 연다. '
+          '에코가 안 걸리니 스피커폰에서 비버가 자기 목소리에 끊길 수 있다(계측 전용)');
+    }
+    if (CascadeMicNoAec.suppressed) {
+      _log('⚠ MIC_NO_AEC 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — AEC 는 정상이다');
+    }
+    if (!CascadeMicNoAec.enabled &&
+        !kIsWeb &&
+        defaultTargetPlatform == TargetPlatform.iOS) {
       try {
         final headset = await _audioRouteChannel
             .invokeMethod<bool>('isHeadsetConnected');
@@ -1796,7 +1812,8 @@ class NormalCallController extends Notifier<CallState> {
           sampleRate: 16000,
           numChannels: 1,
           enableVoiceProcessing: useVoiceProcessing,
-          enableEchoCancellation: true,
+          // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
+          enableEchoCancellation: !CascadeMicNoAec.enabled,
           // [AEC] 녹음 소스. 기본(`defaultSource` = MediaRecorder.AudioSource.DEFAULT)
           // 은 **통화 경로가 아니다** — 플랫폼 AEC 는 통화 다운링크를 참조해 업링크에서
           // 빼는 구조라, 재생만 통화 경로로 옮기고 여기가 DEFAULT 로 남으면 참조할 짝이
@@ -1832,6 +1849,10 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Frames the recorder produced (counted before the half-duplex gate).
   int _micFramesReceived = 0;
+
+  /// [계측] 5초 창 동안 네이티브가 올려 준 마이크 프레임 건수·바이트.
+  /// 창마다 리셋된다(누계가 아니라 **추세**를 본다).
+  int _micRxWindow = 0, _micRxBytesWindow = 0;
   Timer? _micWatchdogTimer;
   bool _micRestarted = false;
 
@@ -2043,6 +2064,13 @@ class NormalCallController extends Notifier<CallState> {
           '완료 ${ch.done}건, 미완 ${ch.inflight}(창최대 ${ch.inflightMax}), '
           'rtt avg ${ch.rttAvgMs.toStringAsFixed(1)}ms / max ${ch.rttMaxMs}ms, '
           '역방향이벤트 ${ch.events}건');
+      // ⭐ 마이크는 **다른 채널**(flutter_sound)이라 위 계량기가 못 센다. 같은 창에서
+      //   따로 찍어야 "우리 것만 셌다" 함정을 피한다. 묶기 실험의 눈금이기도 하다.
+      _log('MIC: 수신 $_micRxWindow건(${(_micRxWindow / 5).toStringAsFixed(1)}/s, '
+          '건당 ${_micRxWindow > 0 ? _micRxBytesWindow ~/ _micRxWindow : 0}B, '
+          '${(_micRxBytesWindow / 5 / 1024).toStringAsFixed(1)}KB/s)');
+      _micRxWindow = 0;
+      _micRxBytesWindow = 0;
     });
   }
 
