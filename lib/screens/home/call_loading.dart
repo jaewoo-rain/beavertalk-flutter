@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/normalcall/domain/entities/call_channel.dart';
+
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/icons/app_icons.dart';
@@ -80,7 +82,13 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         // 캐릭터를 넘기지 않는다 — 서버가 member.character_id 로 정한다.
         // 예전엔 `args is int ? args : 1` 로 폴백해, 인자를 안 주는 진입점
         // (마이페이지·기록·온보딩완료)에서 건 전화가 전부 1(BABA)로 갔다.
-        ref.read(normalCallControllerProvider.notifier).start();
+        // ⭐ 라우트 인자로 **통로**가 오면 그걸로 건다(디버그 전용 캐스케이드 진입점).
+        //   인자가 없으면 null → [CallChannel.defaultChannel] = 라이브. 즉 기존 진입점
+        //   (홈·마이페이지·기록·온보딩완료·수신통화)의 동작은 **한 글자도 안 바뀐다.**
+        final arg = ModalRoute.of(context)?.settings.arguments;
+        ref.read(normalCallControllerProvider.notifier).start(
+              callChannel: arg is CallChannel ? arg : null,
+            );
     }
   }
 

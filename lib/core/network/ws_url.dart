@@ -3,8 +3,8 @@ import 'env.dart';
 /// Rewrites [Env.apiBaseUrl] (already `…/api/v1`) from its HTTP scheme to the
 /// WebSocket equivalent (`https→wss`, `http→ws`), leaving the `/api/v1` prefix
 /// intact. Shared by every WS endpoint so no host is ever hardcoded.
-String _wsBase() {
-  final base = Env.apiBaseUrl;
+String _wsBase([String? httpBase]) {
+  final base = httpBase ?? Env.apiBaseUrl;
   if (base.startsWith('https://')) {
     return base.replaceFirst('https://', 'wss://');
   }
@@ -30,10 +30,13 @@ String normalcallWsUrl(String token) =>
 /// (서버도 둘 다 `verify_token` 으로 Supabase 액세스 토큰을 본다). 그래서 통로를
 /// 바꾸는 데 토큰 경로 변경이 따라붙지 않는다.
 ///
-/// ⚠ 서버 라우터가 **dev 전용**이다(`ENV != prod` 일 때만 include). prod 백엔드에
-/// 대고 부르면 소켓이 안 열린다.
+/// ⛔ **호스트가 라이브와 다를 수 있다.** 캐스케이드 라우터는 demo-api 에만 있어
+/// (`CASCADE_ENABLED` 기본 False, 운영엔 라우터 자체가 없어 1008 close),
+/// `.env` 의 `CASCADE_API_BASE_URL` 이 있으면 그쪽으로 붙는다. 없으면 [normalcallWsUrl]
+/// 과 같은 호스트로 폴백한다 — 즉 **키가 없는 환경의 동작은 종전과 같다.**
+/// 토큰은 두 백엔드가 같은 Supabase 프로젝트를 봐서 양쪽에서 통한다.
 String cascadeWsUrl(String token) =>
-    '${_wsBase()}/cascade/stream?token=${Uri.encodeComponent(token)}';
+    '${_wsBase(Env.cascadeApiBaseUrl)}/cascade/stream?token=${Uri.encodeComponent(token)}';
 
 /// 통화 통로에 맞는 WS 주소를 고른다.
 ///

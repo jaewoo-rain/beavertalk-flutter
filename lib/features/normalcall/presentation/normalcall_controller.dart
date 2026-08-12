@@ -71,6 +71,7 @@ class CallState {
     this.teachingPlan = const [],
     this.subtitleOn = true,
     this.hintOn = true,
+    this.beaverPreparing = false,
   });
 
   /// Current lifecycle phase.
@@ -123,6 +124,14 @@ class CallState {
   /// even if a hint has arrived. UI preference; resets to true each call.
   final bool hintOn;
 
+  /// 서버가 대답을 만드는 중인가(`beaver_preparing`). **캐스케이드 통로 전용**이고
+  /// 라이브에서는 항상 false 다.
+  ///
+  /// ⚠ 아직 그리는 UI 가 없다 — 설명되지 않는 침묵이 통화를 끊게 만들기 때문에 서버가
+  /// 단계를 보내 주는데, 그걸 받을 자리를 먼저 만들어 둔다. `turn_start` 에서 내려간다
+  /// (소리가 나기 시작하면 준비 중이 아니다).
+  final bool beaverPreparing;
+
   /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
   /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
   static const Object _keep = Object();
@@ -142,6 +151,7 @@ class CallState {
     List<TeachingItem>? teachingPlan,
     bool? subtitleOn,
     bool? hintOn,
+    bool? beaverPreparing,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -156,6 +166,7 @@ class CallState {
       teachingPlan: teachingPlan ?? this.teachingPlan,
       subtitleOn: subtitleOn ?? this.subtitleOn,
       hintOn: hintOn ?? this.hintOn,
+      beaverPreparing: beaverPreparing ?? this.beaverPreparing,
     );
   }
 }
@@ -438,7 +449,14 @@ class NormalCallController extends Notifier<CallState> {
   /// once). At the old 400ms the first chunk alone satisfied the gate, so playback
   /// started and ran dry 471ms later — every single turn. The cushion has to be
   /// bigger than that opening chunk or it buys nothing.
-  static const int _prebufferBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+  /// ⚠ **통로마다 다르다.** 이 상수는 라이브(900ms) 기본값이자 필드 초기화용이고,
+  /// 실제로 쓰는 값은 [_prebufferBytes] 다 — 통화가 열릴 때 [_channelMode] 를 따라간다.
+  /// 근거는 [CallChannel.prebufferMs] 주석(두 서버가 오디오를 다른 모양으로 준다).
+  static const int _prebufferLiveBytes = _playbackSampleRate * 2 * 900 ~/ 1000;
+
+  /// 이번 통화의 지터 쿠션 하한(바이트). 통로가 정한다.
+  int get _prebufferBytes =>
+      _playbackSampleRate * 2 * _channelMode.prebufferMs ~/ 1000;
 
   /// Safety net for a *missed* `turn_end`: audio is queued, the cushion never
   /// fills, and nothing more arrives. Normally unused — a completed short
@@ -456,7 +474,7 @@ class NormalCallController extends Notifier<CallState> {
   /// jitter — 900ms covers a 9s turn and nothing longer. Rather than tax every
   /// reply with a cushion sized for the worst turn, this tracks the deficit the
   /// call is actually showing.
-  int _cushionBytes = _prebufferBytes;
+  int _cushionBytes = _prebufferLiveBytes;
 
   /// Growth per starved turn (~150ms), ceiling (~1.2s), and decay per clean turn
   /// (~300ms).
@@ -737,9 +755,49 @@ class NormalCallController extends Notifier<CallState> {
 
   /// 마이크 프레임을 버릴 것인가 — 반이중 게이트의 **유일한** 판정.
   ///
-  /// 캐스케이드 통로에서는 항상 false(상시 개방)다. 그 외에는 종전대로
-  /// [_beaverAudioActive] 를 따라가므로, 라이브 통로면 동작이 현행과 같다.
-  bool get _micGated => _channelMode.gatesMic && _beaverAudioActive;
+  /// 마이크를 여는 데는 **세 조건이 전부** 필요하다. 하나라도 빠지면 종전대로 게이팅한다:
+  ///   ① 통로가 캐스케이드다([CallChannel.gatesMic] == false)
+  ///   ② **서버가 열라고 했다**([_serverMicAlwaysOpen], `ready.mic_always_open`)
+  ///   ③ **플랫폼 AEC 가 실제로 켜져 있다**([_androidVoiceAudio])
+  ///
+  /// ②가 필요한 이유: 서버 값이 그쪽 에너지 게이트·barge-in 정책과 **한 몸**이다. 서버는
+  /// 마이크가 닫힌 전제로 "들어온 소리는 에코"라고 판정하는데 클라가 열어 두면 두 쪽이 다른
+  /// 세계를 가정한다. 그래서 **서버가 이긴다** — 서버가 false 면 캐스케이드여도 닫는다.
+  ///
+  /// ⛔ ③이 필요한 이유 — **서버가 true 를 보내도 우리가 거부한다.** 마이크 상시 개방이
+  ///   안전한 유일한 조건은 플랫폼 AEC 가 실제로 걸리는 것이고, 그걸 켜는 스위치가
+  ///   [_androidVoiceAudio](기본 꺼짐, 에코 실측 대기 중)다. AEC 없이 열면 비버가 자기
+  ///   목소리에 끊긴다 — 실측 전례가 있다(call_id=855: 유저 턴의 절반이 비버 대사였다).
+  ///   ⭐ 새 플래그를 만들지 않고 그 스위치를 재사용한다: 안전 조건과 스위치가 **같은 것**이라
+  ///   둘로 나누면 한쪽만 켜진 상태가 생긴다. 실측이 끝나 그 스위치가 켜지면 여기도 같이 열린다.
+  bool get _micGated {
+    if (!_channelMode.gatesMic && _serverMicAlwaysOpen && _androidVoiceAudio) {
+      return false;
+    }
+    return _beaverAudioActive;
+  }
+
+  // ── 서버가 준 세션 정책(`ready`) ─────────────────────────────────────────────
+  // ⭐ **서버가 이긴다.** 이 값들은 서버의 에너지 게이트·barge-in 확인 정책과 한 몸이라,
+  //   클라가 다르게 돌면 두 쪽이 다른 세계를 가정한다.
+  // ⚠ 와이어는 **snake_case** 다(`cascade_protocol.py` + 서버 데모 HTML 로 확인).
+  //   camelCase 로 읽으면 기능이 **조용히 아무 일도 안 한다** — 그래서 양쪽을 다 받는다.
+
+  /// `ready.mic_always_open`. 도착 전에는 false = **닫혀 있다**(안전한 쪽).
+  bool _serverMicAlwaysOpen = false;
+
+  /// `ready.bargein_confirm` — 'immediate' | 'transcript'. 지금은 로그·상태로만 둔다.
+  String _serverBargeinConfirm = '';
+
+  /// `ready.turn_silence_ms` — 서버 자체 침묵 타이머. 지금은 로그·상태로만 둔다.
+  int _serverTurnSilenceMs = 0;
+
+  /// [계측] 홀수 길이로 도착한 바이너리 프레임 수 — **서버 불변식 I6 의 외부 감시자**다.
+  ///
+  /// 우리 바이트 큐는 홀수가 와도 다음 청크와 이어붙어 재생이 안 깨진다(구조적으로 안전).
+  /// 그래서 **자연 신호가 없다** — 서버가 깨져도 우리는 모른다. 백엔드 회귀는 자기 코드만
+  /// 보므로 실기기에서 다른 경로가 생기면 못 본다. **0 이 아니면 서버 버그다.**
+  int _oddFrames = 0;
 
   // ── barge-in: 취소(audio_cancel) 처리 상태 ─────────────────────────────────
 
@@ -1581,6 +1639,16 @@ class NormalCallController extends Notifier<CallState> {
   /// [_gateMic] 을 호출해 턴을 "다시 연다"(`_beaverAudioActive=true`, `_turnEnded=false`).
   /// 큐를 비우는 것만으로는 그 뒤 도착분을 막지 못하므로, 진입 자체를 차단해야 한다.
   void _onWsAudio(Uint8List chunk) {
+    // [계측] 홀수 길이 = **서버 불변식 I6 위반**. 우리 큐는 다음 청크와 이어붙어 재생이
+    // 안 깨지므로 자연 신호가 없다 — 세지 않으면 아무도 모른다. 재생은 손대지 않는다.
+    // 첫 1건만 로그로 튀우고(로그 폭발 방지) 총계는 진행도 회신에 실어 서버로 보낸다.
+    if (chunk.length.isOdd) {
+      _oddFrames++;
+      if (_oddFrames == 1) {
+        _log('⚠ 홀수 길이 오디오 프레임 도착(${chunk.length}B) — 서버 I6 위반이다. '
+            '재생은 이어붙여 계속한다. 총계는 playback_progress.odd_frames 로 보낸다');
+      }
+    }
     if (_cancelledResidual) {
       _cancelledResidualBytes += chunk.length;
       return;
@@ -2306,6 +2374,11 @@ class NormalCallController extends Notifier<CallState> {
       'client_stop_ms': clientStopMs,
       'stop_measure': outcome.stopMeasure,
       'platform': AudioRouteProbe.platformName,
+      // ⭐ 서버 불변식 I6 의 **외부 감시자**(백엔드 요청, 2026-08-12). 0 이 아니면 서버 버그다.
+      //   서버 모델(`ClientPlaybackProgress`)에 `extra="forbid"` 가 없어 모르는 필드는
+      //   무시된다(pydantic v2 기본 `ignore`) — 확인하고 넣었다. 즉 서버가 이 필드를
+      //   받기 전에 보내도 진행도 회신 자체가 깨지지 않는다.
+      'odd_frames': _oddFrames,
       // 빈 문자열 = **못 읽음**. 'speaker' 로 추측해 채우지 않는다 — 그러면 서버가
       // 측정 실패와 스피커폰을 구분하지 못한다.
       'audio_route': route,
@@ -2406,6 +2479,43 @@ class NormalCallController extends Notifier<CallState> {
     );
   }
 
+  /// `ready` — 이 세션이 **어떤 정책으로 도는지**를 서버가 알려준다. 서버가 이긴다.
+  ///
+  /// ⚠ 와이어 키는 **snake_case** 다. `cascade_protocol.py:254-264` 에 alias 도
+  ///   alias_generator 도 없고, 서버 자신의 데모 화면(`cascade_demo.html`)도
+  ///   `bargein_confirm`/`turn_silence_ms` 로 읽는다 — 1차 자료로 확인했다.
+  ///   camelCase 도 같이 받는 이유: 나중에 서버가 alias 를 붙여도 **조용히 무동작**이
+  ///   되지 않게. 이 종류의 어긋남은 에러가 안 나서 제일 늦게 발견된다.
+  void _applyServerReady(Map<String, dynamic> msg) {
+    bool? readBool(String snake, String camel) {
+      final v = msg[snake] ?? msg[camel];
+      return v is bool ? v : null;
+    }
+
+    int? readInt(String snake, String camel) {
+      final v = msg[snake] ?? msg[camel];
+      return v is int ? v : null;
+    }
+
+    final open = readBool('mic_always_open', 'micAlwaysOpen');
+    if (open != null) _serverMicAlwaysOpen = open;
+    final confirm = msg['bargein_confirm'] ?? msg['bargeinConfirm'];
+    if (confirm is String) _serverBargeinConfirm = confirm;
+    final silence = readInt('turn_silence_ms', 'turnSilenceMs');
+    if (silence != null) _serverTurnSilenceMs = silence;
+
+    // ⛔ 서버가 열라고 해도 AEC 스위치가 꺼져 있으면 **안 연다**. 그 거부를 로그에
+    //   드러낸다 — 안 그러면 "서버는 상시개방인데 왜 barge-in 이 한 번도 안 되나"를
+    //   아무도 못 찾는다(양쪽 다 자기 설정대로 돌고 있다고 믿는다).
+    final refused = _serverMicAlwaysOpen && !_androidVoiceAudio;
+    _log('ready: engine=${msg['engine']} 통로=${_channelMode.name} '
+        'mic_always_open=$_serverMicAlwaysOpen '
+        'bargein_confirm=$_serverBargeinConfirm '
+        'turn_silence_ms=$_serverTurnSilenceMs '
+        '→ 마이크 ${_micGated ? '게이팅' : '상시개방'}'
+        '${refused ? ' ⚠ 서버는 상시개방을 요청했지만 AEC 미검증이라 거부했다' : ''}');
+  }
+
   /// Parses and dispatches a control JSON frame from the server.
   void _handleControl(String text) {
     Map<String, dynamic> msg;
@@ -2448,7 +2558,8 @@ class NormalCallController extends Notifier<CallState> {
         // cleared here (not overwritten per token) and then accumulated below.
         // Also clear any stale hint: a new turn means the prior question is
         // answered (matches the server "new question cancels previous").
-        state = state.copyWith(beaverSubtitle: '', hint: null);
+        // 소리가 나기 시작했다 = 더 이상 '준비 중'이 아니다.
+        state = state.copyWith(beaverSubtitle: '', hint: null, beaverPreparing: false);
         // New line → reset the avatar expression to neutral; it re-classifies as
         // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
         // 다음 턴 첫 문장에 섞이면 엉뚱한 표정이 나온다).
@@ -2541,6 +2652,36 @@ class NormalCallController extends Notifier<CallState> {
         }
       case 'pong':
         break;
+
+      // ── 캐스케이드 통로 전용 프레임 ─────────────────────────────────────────
+      case 'ready':
+        _applyServerReady(msg);
+      case 'beaver_preparing':
+        // 서버가 LLM/TTS 를 도는 중 — **설명되지 않는 침묵**을 막기 위한 통지다.
+        // UI 는 아직 없다. 상태에만 얹어 두고(화면은 나중), 로그로 단계를 남긴다.
+        {
+          final stage = msg['stage'] as String? ?? '';
+          final idx = msg['index'];
+          final total = msg['total'];
+          final elapsed = msg['elapsed_ms'];
+          state = state.copyWith(beaverPreparing: true);
+          _log('beaver_preparing: $stage '
+              '${idx is int && total is int && total > 0 ? '$idx/$total ' : ''}'
+              '${elapsed is int ? '+${elapsed}ms' : ''}');
+        }
+      case 'stt_rollover':
+        // STT 내부 스트림 교체(구글은 5분 상한이 있다). 재생·턴에는 영향이 없지만,
+        // **지연이 튀었을 때 롤오버 때문이었는지**를 사후에 가르려면 클라 로그에도 있어야 한다.
+        {
+          final reason = msg['reason'] as String? ?? '';
+          final gap = msg['gap_ms'];
+          _log('stt_rollover: reason=$reason '
+              '${gap is int ? 'gap=${gap}ms' : ''} — 다음 턴부터 새 스트림');
+        }
+      case '__test_cancel_report':
+        // dev 왕복 계측 회신(가짜 비버 취소). 앱 UI 는 없다 — 로그로만 받는다.
+        _log('__test_cancel_report: $msg');
+
       default:
         break;
     }
@@ -2759,6 +2900,12 @@ class NormalCallController extends Notifier<CallState> {
     // 값을 안 주는 경로로 들어왔을 때) 게이팅 없이 열린다 — AEC 실측 전엔 그게
     // 자기-대화 루프다. [_connect] 가 이 teardown **뒤에** 새 값을 넣는다.
     _channelMode = CallChannel.defaultChannel;
+    // 서버가 준 세션 정책도 통화 스코프다. 남기면 다음 통화가 **이전 서버 답**으로
+    // 마이크를 연다 — 그 통화의 서버는 다르게 말했을 수 있다.
+    _serverMicAlwaysOpen = false;
+    _serverBargeinConfirm = '';
+    _serverTurnSilenceMs = 0;
+    _oddFrames = 0;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();

@@ -96,4 +96,65 @@ void main() {
       expect(CallChannel.defaultChannel.wsPath, '/calls/stream');
     });
   });
+
+  // ⭐ A안(2026-08-12) 회귀망 — 캐스케이드 소켓만 데모 서버로 보낸다.
+  //   두 가지를 **동시에** 고정한다: 라이브 URL 불변 · 캐스케이드 URL 이 오버라이드를 따라감.
+  //   하나만 고정하면 나머지 하나가 조용히 깨진다(둘 다 "그냥 URL"이라 에러가 안 난다).
+  group('캐스케이드 전용 호스트 오버라이드', () {
+    const prod = 'https://prod.test';
+    const demo = 'https://demo.test';
+
+    void loadEnv({String? cascade}) {
+      dotenv.clean();
+      final lines = <String>['API_BASE_URL=$prod'];
+      if (cascade != null) lines.add('CASCADE_API_BASE_URL=$cascade');
+      dotenv.testLoad(fileInput: lines.join('\n'));
+    }
+
+    test('⛔ 라이브 URL 은 오버라이드가 있든 없든 한 글자도 안 바뀐다', () {
+      loadEnv();
+      final without = normalcallWsUrl('t');
+      loadEnv(cascade: demo);
+      final with_ = normalcallWsUrl('t');
+      expect(with_, without);
+      expect(with_, 'wss://prod.test/api/v1/calls/stream?token=t');
+    });
+
+    test('⛔ 발음 STT 도 안 바뀐다 — 같은 _wsBase 를 공유한다', () {
+      loadEnv();
+      final without = pronSttWsUrl('t');
+      loadEnv(cascade: demo);
+      expect(pronSttWsUrl('t'), without);
+    });
+
+    test('캐스케이드는 오버라이드 호스트로 간다', () {
+      loadEnv(cascade: demo);
+      expect(cascadeWsUrl('t'), 'wss://demo.test/api/v1/cascade/stream?token=t');
+      // 같은 빌드에서 두 통로가 **다른 호스트**로 간다 — 이게 A안의 정의다.
+      expect(Uri.parse(cascadeWsUrl('t')).host,
+          isNot(Uri.parse(normalcallWsUrl('t')).host));
+    });
+
+    test('키가 없으면 캐스케이드도 API_BASE_URL 로 폴백한다 (동작 무변화)', () {
+      loadEnv();
+      expect(cascadeWsUrl('t'), 'wss://prod.test/api/v1/cascade/stream?token=t');
+      expect(Uri.parse(cascadeWsUrl('t')).host,
+          Uri.parse(normalcallWsUrl('t')).host);
+    });
+
+    test('빈 값도 미설정과 같게 다룬다 — 공백 한 칸이 통로를 갈라선 안 된다', () {
+      dotenv.clean();
+      dotenv.testLoad(
+        fileInput: ['API_BASE_URL=$prod', 'CASCADE_API_BASE_URL=   '].join('\n'),
+      );
+      expect(Uri.parse(cascadeWsUrl('t')).host, 'prod.test');
+    });
+
+    test('오버라이드에도 /api/v1 접두와 토큰 인코딩이 그대로 붙는다', () {
+      loadEnv(cascade: demo);
+      final u = Uri.parse(cascadeWsUrl('a+b/c='));
+      expect(u.path, '/api/v1/cascade/stream');
+      expect(u.queryParameters['token'], 'a+b/c=');
+    });
+  });
 }

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_channel.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
@@ -155,6 +156,15 @@ class MyPageScreen extends ConsumerWidget {
         children: [
           _devRow(
             context,
+            title: '캐스케이드 통화 (테스트 서버)',
+            description: '⚠ 실제 통화가 아니라 실험 통로입니다. 소켓만 데모 서버로 붙습니다 '
+                '— 통화 기록이 데모 DB 에 남아 통화 후 분석은 "정보를 찾을 수 없음"으로 끝납니다. '
+                '일반 통화(라이브)는 운영 서버 그대로입니다.',
+            route: Routes.callLoading,
+            arguments: CallChannel.cascade,
+          ),
+          _devRow(
+            context,
             title: '취소 배관 리그',
             description: '끼어들기(audio_cancel) 수신부터 소리가 실제로 멎기까지 몇 ms 걸리는지 '
                 '반복 측정합니다. 서버 없이 클라 안에서 프레임을 주입합니다.',
@@ -184,9 +194,11 @@ class MyPageScreen extends ConsumerWidget {
     required String title,
     required String description,
     required String route,
+    Object? arguments,
   }) =>
       InkWell(
-        onTap: () => Navigator.pushNamed(context, route),
+        onTap: () =>
+            Navigator.pushNamed(context, route, arguments: arguments),
         borderRadius: BorderRadius.circular(AppRadius.xs),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
