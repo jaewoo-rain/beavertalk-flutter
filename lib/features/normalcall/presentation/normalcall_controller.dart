@@ -33,7 +33,8 @@ import '../domain/entities/playback_ledger.dart';
 import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
-import 'cascade_experiment.dart' show CascadeMicNoAec, CascadeMicOff;
+import 'cascade_experiment.dart'
+    show CascadeMicAlwaysGated, CascadeMicNoAec, CascadeMicOff;
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -1737,6 +1738,13 @@ class NormalCallController extends Notifier<CallState> {
     if (CascadeMicOff.suppressed) {
       _log('⚠ MIC_OFF 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 마이크는 정상 동작한다');
     }
+    if (CascadeMicAlwaysGated.enabled) {
+      _log('⚠ [실험] MIC_ALWAYS_GATED — 마이크는 열되 **업링크만** 통화 내내 막는다. '
+          '프레임은 계속 채널을 건너온다(그게 이 실험의 요점이다). uplink_bytes 는 0 이 된다');
+    }
+    if (CascadeMicAlwaysGated.suppressed) {
+      _log('⚠ MIC_ALWAYS_GATED 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 업링크는 정상이다');
+    }
     final controller = StreamController<Uint8List>();
     _micController = controller;
     _micSub = controller.stream.listen((bytes) {
@@ -1757,6 +1765,9 @@ class NormalCallController extends Notifier<CallState> {
       //
       // 캐스케이드 barge-in 에서는 [_micGated] 가 항상 false 라 이 줄이 통과된다 —
       // 마이크 상시 개방. 끼어들기 판정은 서버가 한다.
+      // [실험] 업링크만 뺀다 — 프레임은 이미 채널을 건너왔고(①), 레코더·AEC 도
+      // 그대로 돈다(②③). 여기서 버리면 빠지는 것은 ④ 소켓 전송뿐이다.
+      if (CascadeMicAlwaysGated.enabled) return;
       if (_micGated) return;
       final ch = _channel;
       if (ch != null) {

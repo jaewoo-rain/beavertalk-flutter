@@ -110,3 +110,30 @@ abstract final class CascadeMicNoAec {
   /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
   static bool get suppressed => flag && !kDebugMode;
 }
+
+/// dev 전용 — 마이크는 열되 **업링크 전송만** 통화 내내 막는다.
+///
+/// ## 무엇을 가르나 — 넷 중 ④만 뺀다
+///
+/// [CascadeMicOff] 는 넷을 한꺼번에 뺐다(프레임 전달·AudioRecord 스레드·AEC·업링크).
+/// 이 스위치는 **④ 업링크 소켓 전송만** 뺀다 — 프레임은 그대로 네이티브에서 Dart 로
+/// 건너오고(①), 레코더도 AEC 도 그대로 돈다(②③).
+///
+///   - 곡선이 평평해지면 → 범인은 **업링크 전송**이다
+///   - 그대로면 → 업링크는 무죄. ①②③ 중 하나다
+///
+/// ⭐ 벤더링이 필요 없다. 기존 반이중 게이트(`_micGated`)가 이미 **같은 자리에서**
+///   프레임을 버리고 있으므로, 그 조건을 통화 내내 참으로 만들기만 하면 된다.
+///
+/// ⚠ 켜면 **사람 목소리가 서버에 안 간다**(자동 대화는 STT 를 안 타므로 대화는 굴러간다).
+/// ⚠ `route_change.uplink_bytes` 가 0 으로 보고된다 — 실제로 안 보냈으니 맞는 값이다.
+///
+/// `--dart-define=MIC_ALWAYS_GATED=true` + 디버그 빌드에서만 동작한다.
+abstract final class CascadeMicAlwaysGated {
+  static const bool flag = bool.fromEnvironment('MIC_ALWAYS_GATED');
+
+  static bool get enabled => flag && kDebugMode;
+
+  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
+  static bool get suppressed => flag && !kDebugMode;
+}
