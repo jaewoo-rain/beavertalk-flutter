@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io' show File;
 import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:audio_session/audio_session.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart'
     show
         ValueNotifier,
@@ -34,7 +36,11 @@ import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
-    show CascadeMicAlwaysGated, CascadeMicNoAec, CascadeMicOff;
+    show
+        CascadeMicAlwaysGated,
+        CascadeMicNoAec,
+        CascadeMicOff,
+        CascadeMicToFile;
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -1811,6 +1817,27 @@ class NormalCallController extends Notifier<CallState> {
       } catch (_) {}
     }
 
+    // [실험] 스트림 대신 파일로 녹음한다 — 프레임당 채널 메시지만 0 이 되고
+    // 레코더 스레드·AEC 는 그대로 돈다. ①과 ②를 가르는 유일한 자리다.
+    String? toFilePath;
+    if (CascadeMicToFile.enabled) {
+      try {
+        final dir = await getTemporaryDirectory();
+        toFilePath = '${dir.path}/mic_probe.pcm';
+        _micProbeFile = toFilePath;
+        _log('⚠ [실험] MIC_TO_FILE — 스트림 대신 파일로 녹음한다($toFilePath). '
+            '사람 목소리는 서버에 안 간다. MIC: 줄이 0건이어야 실험이 성립한다');
+      } catch (e) {
+        // ⛔ 조용히 스트림으로 돌아가면 **실험이 안 걸린 판을 걸린 줄 알고 읽는다.**
+        _log('⛔ [실험] MIC_TO_FILE 실패 — 임시 경로를 못 얻었다($e). '
+            '스트림으로 진행한다. **이 판의 곡선을 toFile 결과로 쓰지 마라**');
+        toFilePath = null;
+      }
+    }
+    if (CascadeMicToFile.suppressed) {
+      _log('⚠ MIC_TO_FILE 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 스트림 녹음이다');
+    }
+
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
       final recorder = FlutterSoundRecorder();
@@ -1818,7 +1845,8 @@ class NormalCallController extends Notifier<CallState> {
       try {
         await recorder.openRecorder();
         await recorder.startRecorder(
-          toStream: controller.sink,
+          toFile: toFilePath,
+          toStream: toFilePath == null ? controller.sink : null,
           codec: Codec.pcm16,
           sampleRate: 16000,
           numChannels: 1,
@@ -1864,6 +1892,9 @@ class NormalCallController extends Notifier<CallState> {
   /// [계측] 5초 창 동안 네이티브가 올려 준 마이크 프레임 건수·바이트.
   /// 창마다 리셋된다(누계가 아니라 **추세**를 본다).
   int _micRxWindow = 0, _micRxBytesWindow = 0;
+
+  /// [실험] MIC_TO_FILE 이 만든 녹음 파일 경로. 통화 종료 시 지운다.
+  String? _micProbeFile;
   Timer? _micWatchdogTimer;
   bool _micRestarted = false;
 
@@ -1873,9 +1904,9 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Arms the one-shot capture watchdog (see [_micFramesReceived]).
   void _armMicWatchdog() {
-    // [실험] 마이크를 일부러 안 열었다 — "프레임이 0" 은 고장이 아니라 **의도**다.
-    // 무장하면 6초 뒤 레코더를 다시 열어 실험 자체를 무효로 만든다.
-    if (CascadeMicOff.enabled) return;
+    // [실험] 마이크를 일부러 안 열었거나 파일로 돌렸다 — "프레임이 0" 은 고장이 아니라
+    // **의도**다. 무장하면 6초 뒤 레코더를 다시 열어 실험 자체를 무효로 만든다.
+    if (CascadeMicOff.enabled || CascadeMicToFile.enabled) return;
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = Timer(_micWatchdogDelay, () async {
       _micWatchdogTimer = null;
@@ -3713,6 +3744,22 @@ class NormalCallController extends Notifier<CallState> {
     _recorder = null;
     await _micController?.close();
     _micController = null;
+    // [실험] 계측용 녹음 파일은 남기지 않는다 — 6분치 PCM 이 통화마다 쌓인다.
+    // 크기를 찍는 이유: 레코더가 **실제로 돌았는지**의 증거다(파일이 0B 면 ②③ 유지라는
+    // 실험의 전제가 깨진 것이고, 그러면 곡선을 읽으면 안 된다).
+    final probe = _micProbeFile;
+    if (probe != null) {
+      _micProbeFile = null;
+      try {
+        final f = File(probe);
+        final size = await f.length();
+        await f.delete();
+        _log('[실험] MIC_TO_FILE 파일 삭제 — ${size ~/ 1024}KB '
+            '(=${(size / 32000).toStringAsFixed(1)}초치. 통화 길이와 비슷해야 한다)');
+      } catch (e) {
+        _log('⚠ [실험] 녹음 파일 정리 실패: $e');
+      }
+    }
 
     // Stop in-call audio routing: remove the native route-change observer and
     // clear the speaker override so the session doesn't stay forced to the

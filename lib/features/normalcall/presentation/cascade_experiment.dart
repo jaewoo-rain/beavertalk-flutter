@@ -137,3 +137,38 @@ abstract final class CascadeMicAlwaysGated {
   /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
   static bool get suppressed => flag && !kDebugMode;
 }
+
+/// dev 전용 — 마이크를 **파일로** 녹음한다(스트림 대신).
+///
+/// ## 마지막 갈림길 — ①과 ②를 가른다
+///
+/// 지금까지 넷 중 둘이 무죄로 지워졌다(③ AEC 81% · ④ 업링크 97% — 곡선이 그대로 섰다).
+/// 남은 둘은 **①프레임당 채널 메시지**와 **②AudioRecord 스레드의 존재 자체**인데,
+/// 이 둘은 마이크를 켜는 한 항상 같이 있어서 지금까지 못 갈랐다.
+///
+/// `toFile` 은 정확히 ①만 뺀다:
+///   - AudioRecord 스레드·AEC·오디오 세션 → **그대로 돈다**(②③ 유지)
+///   - 프레임당 채널 메시지 → **0건**(네이티브가 파일에 직접 쓴다)
+///
+/// 판정(미리 못박는다 — 나중에 합리화하지 않으려고):
+///   - 기울기 ≤ 기준선의 30% → **① 확정.** 그때 벤더링 비용을 치른다
+///   - 기울기 ≥ 80%          → **② 확정.** 묶기·백그라운드 큐가 전부 무의미하다.
+///     ⭐ 이 경우 "벤더링을 안 해서 다행"이 결론이다
+///   - 30~80%                → 부분 기여. 다시 설계한다
+///
+/// ⚠ 교란 점검: 이 통화 경로는 `setSubscriptionDuration` 을 **부르지 않는다**
+///   (기본 `Duration.zero` = 진행 이벤트 없음). 80ms 로 켜는 곳은 복습 화면의
+///   별도 레코더뿐이다. 즉 `toFile` 이면 마이크발 채널 메시지가 실제로 0 이 된다.
+/// ⚠ 파일 쓰기라는 **새 부하**가 생긴다(디스크 I/O). 레코더 스레드 쪽이라 메인 큐와는
+///   다른 축이지만, 대조군(네이티브 처리·elLag)이 두 판 모두 평평한지 확인해야 한다.
+/// ⚠ 사람 목소리가 서버에 안 간다. 자동 대화는 STT 를 안 타므로 대화는 굴러간다.
+///
+/// `--dart-define=MIC_TO_FILE=true` + 디버그 빌드에서만 동작한다.
+abstract final class CascadeMicToFile {
+  static const bool flag = bool.fromEnvironment('MIC_TO_FILE');
+
+  static bool get enabled => flag && kDebugMode;
+
+  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
+  static bool get suppressed => flag && !kDebugMode;
+}
