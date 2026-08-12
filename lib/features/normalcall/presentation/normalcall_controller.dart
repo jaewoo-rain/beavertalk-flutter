@@ -75,6 +75,63 @@ String buildCallSummaryLine({
     '통화 요약: sentence=$sentences 미발화마커=$pendingMarkers '
     'odd_frames=$oddFrames 통로=${channel.name}';
 
+/// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
+///
+/// ⭐ [spanTicks] 가 양수면 그건 **이 조각이 실제로 차지하는 오디오 길이**다(다음 마커가
+/// 이미 대기 중이라 그 위치를 안다 — 마커는 오디오보다 먼저 도착한다). 그러면 추정이
+/// 아니라 실제 길이에 맞춘다: 글자가 조각의 소리와 **정확히 같이 끝난다**.
+///
+/// 모를 때만(마지막 조각) 언어별 기본값을 쓴다. 근거는 실측 말하기 속도다:
+///   한국어 6.3~8.5 자/초(중앙 7.7) → ≈0.19 자/틱
+///   영어 19.6 자/초              → ≈0.49 자/틱
+/// ⚠ 한글 1글자(음절)가 영문 3~4글자 소리다. 같은 속도를 쓰면 한글 자막이 소리보다 훨씬
+///   먼저 끝난다 — 그래서 **한글이 섞여 있으면 느린 쪽**을 쓴다(섞인 조각은 한글이 시간을 지배한다).
+double revealRatePerTick({
+  required String text,
+  int spanBytes = -1,
+  double charsPerByte = 0,
+}) {
+  if (text.isEmpty) return 1.0;
+  // 봉투 틱 = 25ms, 24kHz·16bit = 48,000 B/s → 틱당 1,200 B.
+  const bytesPerTick = 1200;
+  if (spanBytes > 0) {
+    final ticks = spanBytes / bytesPerTick;
+    if (ticks >= 1) return text.length / ticks;
+  }
+  if (charsPerByte > 0) {
+    // ⭐ **짧은 쪽으로 편향한다**(계수 < 1). 비대칭이기 때문이다:
+    //   짧게 잡으면 → 글자가 먼저 다 나오고 **가만히 있는다**(눈에 잘 안 띈다)
+    //   길게 잡으면 → 다음 마커에서 남은 걸 **한 번에 쏟는다** = 지금 고치려는 그 점프
+    final estBytes = text.length / charsPerByte;
+    final ticks = estBytes / bytesPerTick * _revealShortBias;
+    if (ticks >= 1) return text.length / ticks;
+  }
+  // 아무 재료도 없을 때(턴의 첫 구간이자 마지막 구간)만 언어별 실측 기본값.
+  //   한국어 6.3~8.5 자/초(중앙 7.7) → ≈0.19 자/틱 · 영어 19.6 자/초 → ≈0.49 자/틱
+  // ⚠ 한글 1글자(음절)가 영문 3~4글자 소리다 — 섞이면 한글이 시간을 지배하므로 느린 쪽.
+  final hasHangul = RegExp(r'[가-힣ㄱ-ㅎㅏ-ㅣ]').hasMatch(text);
+  return hasHangul ? 0.19 : 0.49;
+}
+
+/// 추정 구간의 길이 편향 계수. 1 보다 작아야 **짧은 쪽**으로 틀린다.
+const double _revealShortBias = 0.8;
+
+/// 마이크가 **왜 닫혔는지** — 세 관문 중 무엇이 막았나.
+///
+/// 여는 데는 셋이 **전부** 필요하다: 통로가 캐스케이드 · 서버가 열라고 함 · AEC 스위치 켜짐.
+/// ⚠ 이 문장이 없으면 "끼어들기가 안 된다"는 보고에서 **AEC 문제인지 서버 정책인지**
+/// 구분이 안 된다 — 둘은 다음 행동이 완전히 다르다(에코 실측 vs 서버 설정).
+String micGateReason({
+  required bool channelGates,
+  required bool serverMicAlwaysOpen,
+  required bool aecOn,
+}) {
+  if (channelGates) return '라이브 통로 — 반이중 게이팅';
+  if (!serverMicAlwaysOpen) return '서버 정책(ready.mic_always_open=false)';
+  if (!aecOn) return 'AEC 스위치 꺼짐(ANDROID_VOICE_AUDIO) — 실측 전 안전장치';
+  return '알 수 없음';
+}
+
 /// Lifecycle phases of a live normalcall session.
 enum CallPhase {
   /// No active session (initial / after teardown).
@@ -322,8 +379,24 @@ class NormalCallController extends Notifier<CallState> {
   /// 안 그러면 그 뒤 마커가 영영 안 터진다.
   int _envPlayed = 0;
 
+  /// 타자기 드러내기 — 지금까지 **붙은 전체 자막**과 그중 **드러낸 글자 수**.
+  /// 화면에는 `_revealTarget.substring(0, _revealed)` 만 나간다.
+  ///
+  /// ⛔ 조각을 통째로 붙이면 자막이 2~5단어씩 **점프**한다(사장님 지적, 2026-08-12).
+  ///   한 문장이 TTS 언어 분할로 2~3구간이라 그 점프가 문장 중간마다 일어난다.
+  String _revealTarget = '';
+  int _revealed = 0;
+  double _revealAccum = 0;
+  double _revealPerTick = 0.49;
+
+  /// 이 턴에서 발화된 구간들의 **글자 수 / 서버 바이트** 누계 — 마지막 구간의 길이를
+  /// 추정하는 재료다. 한 턴 안에서는 말하기 속도가 거의 일정하다.
+  int _revealCharsSum = 0;
+  int _revealBytesSum = 0;
+
   /// 아직 발화되지 않은 마커들. `at` 은 [_envPlayed] 가 그 값에 닿으면 터진다는 뜻.
-  final List<({int at, String text, int emotion, int seq})> _pendingMarkers = [];
+  final List<({int at, String text, int emotion, int seq, int serverBytes})>
+      _pendingMarkers = [];
 
   /// [계측] 이 통화에서 받은 `sentence` 마커 수. **0 이면 서버가 안 보낸 것**이고,
   /// 0 이 아닌데 화면이 비면 앱 문제다 — 첫 실기기 통화에서 그 경계를 가르는 값이다.
@@ -1293,6 +1366,8 @@ class NormalCallController extends Notifier<CallState> {
     // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
     //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
     _pendingMarkers.clear();
+    // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
+    _resetReveal();
     _startEnvelope();
     _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
     _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
@@ -2316,6 +2391,7 @@ class NormalCallController extends Notifier<CallState> {
           avatarLevel.value = _envQueue.removeAt(0);
           _envPlayed++;
           _fireDueMarkers();
+          _advanceReveal();
         } else if (!_beaverAudioActive) {
           avatarLevel.value = 0.0;
         } else {
@@ -2369,8 +2445,18 @@ class NormalCallController extends Notifier<CallState> {
 
   void _gateMic() {
     if (!_beaverAudioActive) {
-      _log(_channelMode.gatesMic
-          ? 'mic GATED — beaver speaking (your mic paused)'
+      // ⛔ **실제 게이트를 읽는다.** 예전엔 `_channelMode.gatesMic` 만 보고 찍어서,
+      //   서버가 `mic_always_open=false` 를 준 통화에서 **마이크는 닫혀 있는데 로그는
+      //   "열려 있다(barge-in)"** 고 말했다(실기기 확인, 2026-08-12).
+      //   `통로=live` 와 **같은 계열**이다 — 진단이 실제 상태를 안 본다.
+      // ⭐ 닫혔으면 **무엇이 막았는지**까지 찍는다. 안 그러면 "끼어들기가 안 된다"고 할 때
+      //   AEC 문제인지 서버 정책인지 통로인지 못 가른다.
+      _log(_micGated
+          ? 'mic GATED — ${micGateReason(
+              channelGates: _channelMode.gatesMic,
+              serverMicAlwaysOpen: _serverMicAlwaysOpen,
+              aecOn: _androidVoiceAudio,
+            )}'
           : 'beaver turn OPEN — mic stays open (barge-in)');
       _turnStarved = false; // fresh turn: it hasn't starved yet
       // 새 턴 = 진행도 원장의 기준선. 턴 경계에서는 엔진이 비어 있는 게 계약이라
@@ -2580,6 +2666,8 @@ class NormalCallController extends Notifier<CallState> {
     // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
     //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
     _pendingMarkers.clear();
+    // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
+    _resetReveal();
     _lastFeedSilent = null;
 
     // 쿠션(`_cushionBytes`)은 건드리지 않는다 — 통화가 실제로 겪은 지터의 추정치라
@@ -2666,11 +2754,15 @@ class NormalCallController extends Notifier<CallState> {
     final seqRaw = msg['seq'];
     final seq = seqRaw is int ? seqRaw : -1;
     _serverEmotionSeen = true;
+    final sbRaw = msg['server_bytes'];
     _pendingMarkers.add((
       at: _envAdded,
       text: text,
       emotion: emotionCode(rawEmotion),
       seq: seq,
+      // ⭐ **버리지 않는다.** 다음 마커와의 차분이 이 구간의 **정확한 오디오 길이**다
+      //   (24kHz·16bit = 48,000 B/s 고정). 타자기 속도가 여기서 나온다.
+      serverBytes: sbRaw is int ? sbRaw : -1,
     ));
     // [진단] 첫 실기기 통화에서 **서버 탓 / 앱 탓**을 가르는 줄이다.
     // 이 줄이 0건이면 서버가 안 보낸 것이고, 있는데 화면이 비면 앱 문제다.
@@ -2697,21 +2789,92 @@ class NormalCallController extends Notifier<CallState> {
   void _fireDueMarkers() {
     while (_pendingMarkers.isNotEmpty && _pendingMarkers.first.at <= _envPlayed) {
       final m = _pendingMarkers.removeAt(0);
-      // ⚠ **구간 ≠ 문장이다.** 코드스위칭 문장은 언어별로 쪼개져 마커가 2개 온다
-      //   (seq 0 한국어 / seq 1 영어) — 이어 붙여야 한 문장이 된다.
-      //   와이어에는 문장 경계가 없으므로 **턴을 단위로** 누적한다. `turn_start` 가
-      //   자막을 비우는 기존 규약과 그대로 맞물리고, `output_transcript` 가 토큰을
-      //   누적하던 라이브 동작과도 같은 모양이다.
+      // ⚠ **구간 ≠ 문장이다.** 코드스위칭 문장은 언어별로 쪼개져 마커가 2~3개 온다
+      //   (실측: "Hey! How's your" / "한국어" / "study today?"). LLM 이 끊는 게 아니라
+      //   **TTS 가 언어별로 나눈다**(목소리가 언어마다 다르다).
+      //   와이어에는 문장 경계가 없으므로 **턴을 단위로** 누적한다.
       if (m.text.isNotEmpty) {
-        final prev = state.beaverSubtitle;
-        state = state.copyWith(
-          beaverSubtitle: prev.isEmpty ? m.text : '$prev ${m.text}',
-        );
+        // ⭐ **앞 조각이 아직 다 안 드러났으면 즉시 마저 채운다.**
+        //   뒤로 밀리면 자막이 소리보다 **늦어진다** — 앞서는 것만큼 나쁘다.
+        _revealed = _revealTarget.length;
+        _revealTarget =
+            _revealTarget.isEmpty ? m.text : '$_revealTarget ${m.text}';
+        _revealPerTick = _revealRateFor(m.text, m.serverBytes, _pendingMarkers);
+        _revealAccum = 0;
+        // 이 구간의 실측(글자↔바이트)을 다음 추정 재료로 남긴다.
+        if (m.serverBytes >= 0 && _pendingMarkers.isNotEmpty) {
+          final nb = _pendingMarkers.first.serverBytes;
+          if (nb > m.serverBytes) {
+            _revealCharsSum += m.text.length;
+            _revealBytesSum += nb - m.serverBytes;
+          }
+        }
       }
       // ⛔ 감정은 **상태를 안 든다.** 서버가 매 마커에 이어붙인 결과를 이미 실어 준다.
       //   직전 값을 기억하면 `audio_cancel` 로 마커를 버릴 때 감정이 어긋난다.
       avatarEmotion.value = m.emotion;
     }
+  }
+
+  /// 이 조각을 **틱당 몇 글자씩** 드러낼지.
+  ///
+  /// ⭐ 다음 마커가 이미 대기 중이면 그 위치가 **이 조각의 오디오 길이**를 말해 준다
+  ///   (마커는 오디오보다 먼저 도착한다). 그러면 추정이 아니라 **실제 길이에 맞춘다** —
+  ///   글자가 조각의 소리와 정확히 같이 끝난다.
+  ///
+  /// 없을 때만 언어별 기본값을 쓴다. 근거는 실측 말하기 속도다:
+  ///   한국어 6.3~8.5 자/초(중앙 7.7) · 영어 19.6 자/초.
+  ///   봉투 틱이 25ms = 40틱/초 이므로 한국어 ≈0.19, 영문 ≈0.49 자/틱.
+  /// ⚠ 한글 1글자(음절)가 영문 3~4글자 소리다 — 같은 속도를 쓰면 한글이 소리보다 훨씬
+  ///   빨리 끝난다. 그래서 **한글이 섞여 있으면 느린 쪽**을 쓴다.
+  double _revealRateFor(
+    String text,
+    int myServerBytes,
+    List<({int at, String text, int emotion, int seq, int serverBytes})> pending,
+  ) {
+    // ① 다음 마커가 큐에 있으면 **차분이 곧 이 구간의 길이**다(추정 아님).
+    //    실기기 로그가 이게 대부분 가능함을 보여 준다 — 우리가 최대 1.2초를 앞당겨
+    //    엔진에 넣으므로 마커는 재생보다 앞서 쌓인다(`대기=2` 가 그 증거).
+    var spanBytes = -1;
+    if (pending.isNotEmpty && myServerBytes >= 0) {
+      final nb = pending.first.serverBytes;
+      if (nb > myServerBytes) spanBytes = nb - myServerBytes;
+    }
+    return revealRatePerTick(
+      text: text,
+      spanBytes: spanBytes,
+      // ② 없으면(턴의 마지막 구간) **이 턴의 실측 비율**로 추정한다.
+      charsPerByte: _revealBytesSum > 0 ? _revealCharsSum / _revealBytesSum : 0,
+    );
+  }
+
+  /// 재생이 한 틱 나아갔다 — 그만큼 글자를 드러낸다.
+  ///
+  /// ⛔ **벽시계 타이머로 하지 않는다.** `Timer` 로 돌리면 재생이 멈춰도 자막이 계속
+  ///   흐르고, 그게 지금 고치려는 어긋남과 **같은 종류**다. 이 함수는 봉투 큐가 실제로
+  ///   한 칸 빠질 때만 불린다(= 소리가 그만큼 났을 때만).
+  void _advanceReveal() {
+    if (_revealTarget.isEmpty || _revealed >= _revealTarget.length) return;
+    _revealAccum += _revealPerTick;
+    var next = _revealed;
+    while (_revealAccum >= 1.0 && next < _revealTarget.length) {
+      next++;
+      _revealAccum -= 1.0;
+    }
+    if (next != _revealed) {
+      _revealed = next;
+      state = state.copyWith(beaverSubtitle: _revealTarget.substring(0, _revealed));
+    }
+  }
+
+  /// 드러내기 상태를 통째로 비운다(턴 시작 · 취소 · 통화 종료).
+  void _resetReveal() {
+    _revealTarget = '';
+    _revealed = 0;
+    _revealAccum = 0;
+    _revealPerTick = 0.49;
+    _revealCharsSum = 0;
+    _revealBytesSum = 0;
   }
 
   /// `ready` — 이 세션이 **어떤 정책으로 도는지**를 서버가 알려준다. 서버가 이긴다.
@@ -2767,6 +2930,10 @@ class NormalCallController extends Notifier<CallState> {
       case 'call_started':
         final cid = msg['character_id'];
         if (cid is int) state = state.copyWith(characterId: cid);
+        // [진단] 캐스케이드가 이걸 보내기 시작했는지 실기기에서 가리는 줄이다
+        // (00155-br2). 안 오면 화면이 대표 캐릭터로 폴백하는데, 그건 **조용히**
+        // 일어나서 로그가 없으면 "왜 다른 얼굴이지"를 못 찾는다.
+        _log('call_started: character_id=$cid name=${msg['name'] ?? '(없음)'}');
         break;
 
       case 'turn_start':
@@ -2794,6 +2961,8 @@ class NormalCallController extends Notifier<CallState> {
         // Also clear any stale hint: a new turn means the prior question is
         // answered (matches the server "new question cancels previous").
         // 소리가 나기 시작했다 = 더 이상 '준비 중'이 아니다.
+        // 드러내기도 같이 멈춘다 — 안 그러면 다음 턴에 지난 조각이 이어서 흐른다.
+        _resetReveal();
         state = state.copyWith(beaverSubtitle: '', hint: null, beaverPreparing: false);
         // New line → reset the avatar expression to neutral; it re-classifies as
         // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
@@ -3132,6 +3301,8 @@ class NormalCallController extends Notifier<CallState> {
     // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
     //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
     _pendingMarkers.clear();
+    // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
+    _resetReveal();
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
