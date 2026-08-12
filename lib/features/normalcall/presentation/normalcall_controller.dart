@@ -50,6 +50,10 @@ String? normalizeCallId(Object? raw) {
   return (s == null || s.isEmpty) ? null : s;
 }
 
+/// 테스트에서 [NormalCallController] 인스턴스 없이 라벨 매핑만 검사하기 위한 창구.
+/// (구현은 컨트롤러 안의 `_emotionCode` 하나뿐이다 — 두 벌로 만들지 않는다.)
+int emotionCodeForTest(String? raw) => NormalCallController.emotionCode(raw);
+
 /// Lifecycle phases of a live normalcall session.
 enum CallPhase {
   /// No active session (initial / after teardown).
@@ -281,6 +285,35 @@ class NormalCallController extends Notifier<CallState> {
   final List<double> _envQueue = <double>[];
   Timer? _envTimer;
   static const int _envStepMs = 25;
+
+  // ── `sentence` 마커 (캐스케이드) ──────────────────────────────────────────
+  //
+  // 서버가 구간 오디오 **직전에 인밴드**로 자막·표정을 보낸다. 미리 안 보낸다.
+  // ⛔ **도착 시점에 발화하면 안 된다.** 그 오디오는 아직 안 들린다 — 우리는 최대
+  //   1.2초치를 앞당겨 엔진에 밀어 넣으므로, 도착 즉시 자막을 바꾸면 소리보다 그만큼
+  //   앞서 간다. 그래서 입모양([_envQueue])과 **같은 큐에 위치로 꽂는다.**
+  //   이게 이 봉투 큐가 존재하는 이유다.
+
+  /// 지금까지 봉투 큐에 **넣은** 칸 수(누계). 마커는 도착 시점의 이 값을 위치로 잡는다.
+  int _envAdded = 0;
+
+  /// 지금까지 **소비된**(재생된 것으로 간주) 칸 수(누계). 캡으로 잘려 나간 분도 포함한다 —
+  /// 안 그러면 그 뒤 마커가 영영 안 터진다.
+  int _envPlayed = 0;
+
+  /// 아직 발화되지 않은 마커들. `at` 은 [_envPlayed] 가 그 값에 닿으면 터진다는 뜻.
+  final List<({int at, String text, int emotion, int seq})> _pendingMarkers = [];
+
+  /// [계측] 이 통화에서 받은 `sentence` 마커 수. **0 이면 서버가 안 보낸 것**이고,
+  /// 0 이 아닌데 화면이 비면 앱 문제다 — 첫 실기기 통화에서 그 경계를 가르는 값이다.
+  int _sentenceCount = 0;
+
+  /// 서버가 감정을 직접 준 적이 있는가. 있으면 키워드 추측기([_emo])의 결과를 쓰지 않는다.
+  ///
+  /// ⛔ 통로로 가르지 않는 이유: 진짜 판별 기준은 "캐스케이드냐"가 아니라 **"서버가
+  ///   감정을 주느냐"** 다. 둘이 동시에 `avatarEmotion` 을 쓰면 어느 쪽이 이겼는지 모르게
+  ///   되므로, 명시적인 값(서버)이 추측(키워드)을 이긴다.
+  bool _serverEmotionSeen = false;
 
   /// Extra holdback on top of the engine's own depth, to cover the platform
   /// channel hop. Small on purpose: the avatar switches picture on this signal,
@@ -1236,6 +1269,9 @@ class NormalCallController extends Notifier<CallState> {
     _pcmActive = true;
     _lastFeedSilent = null;
     _envQueue.clear();
+    // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
+    //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
+    _pendingMarkers.clear();
     _startEnvelope();
     _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
     _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
@@ -2206,6 +2242,7 @@ class NormalCallController extends Notifier<CallState> {
       final cnt = end - i;
       final rms = cnt > 0 ? math.sqrt(sumSq / cnt) : 0.0;
       _envQueue.add(_levelFromRms(rms));
+      _envAdded++; // 마커 위치의 기준 — 이 인덱스에 자막·표정을 꽂는다
       i = end;
     }
     // Runaway guard. ⚠ 홀드백 자체가 최대 2.5초(엔진 목표)라 3초 캡은 여유가
@@ -2213,7 +2250,10 @@ class NormalCallController extends Notifier<CallState> {
     // 립싱크가 **조용히** 어긋난다. 엔진 목표 + take 상한 위로 잡는다.
     final cap = 4000 ~/ _envStepMs;
     if (_envQueue.length > cap) {
-      _envQueue.removeRange(0, _envQueue.length - cap);
+      final dropped = _envQueue.length - cap;
+      _envQueue.removeRange(0, dropped);
+      // 잘려 나간 만큼도 '지나간' 것으로 센다. 안 그러면 마커가 영영 안 터진다.
+      _envPlayed += dropped;
     }
     // Zero-crossing rate → vowel shape (whole chunk is fine for this).
     final zcr = n > 1 ? zc / (n - 1) : 0.0;
@@ -2247,6 +2287,8 @@ class NormalCallController extends Notifier<CallState> {
         final lead = holdMs ~/ _envStepMs;
         if (_envQueue.length > lead) {
           avatarLevel.value = _envQueue.removeAt(0);
+          _envPlayed++;
+          _fireDueMarkers();
         } else if (!_beaverAudioActive) {
           avatarLevel.value = 0.0;
         } else {
@@ -2508,6 +2550,9 @@ class NormalCallController extends Notifier<CallState> {
     _engineAnchorMs = DateTime.now().millisecondsSinceEpoch;
     // 취소된 오디오의 입모양이 다음 턴에 남으면 안 된다.
     _envQueue.clear();
+    // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
+    //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
+    _pendingMarkers.clear();
     _lastFeedSilent = null;
 
     // 쿠션(`_cushionBytes`)은 건드리지 않는다 — 통화가 실제로 겪은 지터의 추정치라
@@ -2548,6 +2593,97 @@ class NormalCallController extends Notifier<CallState> {
       halResidualKnown: res.halResidualKnown,
       writeInFlight: res.writeInFlight,
     );
+  }
+
+  /// 감정 라벨 → [avatarEmotion] 코드. **모르는 값은 0(neutral)** 이다.
+  ///
+  /// ⚠ 서버가 한글 라벨을 줄지 영문 슬러그를 줄지 **아직 확정 전**이라 둘 다 받는다.
+  /// ⛔ 화이트리스트로 막지 않는다 — 모르는 값이 오면 표정을 안 바꿀 뿐, 자막까지 버리면 안 된다.
+  static int emotionCode(String? raw) {
+    switch ((raw ?? '').trim().toLowerCase()) {
+      case 'happy':
+      case '기쁨':
+      case '행복':
+        return 1;
+      case 'surprised':
+      case 'surprise':
+      case '놀람':
+        return 2;
+      case 'sad':
+      case '슬픔':
+        return 3;
+      case 'angry':
+      case '화남':
+      case '분노':
+        return 4;
+      default:
+        return 0; // neutral · 모르는 값 포함
+    }
+  }
+
+  /// `sentence` — 구간 자막·표정 마커. **오디오 직전에 인밴드로** 온다.
+  ///
+  /// ⛔ 여기서 화면을 바꾸지 않는다. 이 구간의 오디오는 아직 안 들린다(우리는 최대 1.2초를
+  ///   앞당겨 엔진에 넣는다). 도착 시점에 자막을 바꾸면 **소리보다 그만큼 앞서 간다.**
+  ///   입모양과 같은 봉투 큐에 **위치로 꽂아** 두고, 재생이 그 지점에 닿을 때 터뜨린다.
+  void _onSentenceMarker(Map<String, dynamic> msg) {
+    // 취소 잔여 구간의 마커는 오디오와 **같이** 버린다(그 오디오는 이미 폐기됐다).
+    if (_cancelledResidual) {
+      _log('sentence 무시 — 취소 잔여 구간');
+      return;
+    }
+    _sentenceCount++;
+    final text = (msg['text'] as String?)?.trim() ?? '';
+    final rawEmotion = msg['emotion'] as String?;
+    final seqRaw = msg['seq'];
+    final seq = seqRaw is int ? seqRaw : -1;
+    _serverEmotionSeen = true;
+    _pendingMarkers.add((
+      at: _envAdded,
+      text: text,
+      emotion: emotionCode(rawEmotion),
+      seq: seq,
+    ));
+    // [진단] 첫 실기기 통화에서 **서버 탓 / 앱 탓**을 가르는 줄이다.
+    // 이 줄이 0건이면 서버가 안 보낸 것이고, 있는데 화면이 비면 앱 문제다.
+    _log('sentence #$_sentenceCount seq=$seq emotion=$rawEmotion '
+        'text="${text.length > 10 ? '${text.substring(0, 10)}…' : text}" '
+        '위치=$_envAdded(재생 $_envPlayed) 대기=${_pendingMarkers.length}');
+
+    // `server_bytes` 교차검증 — 없어도 동작한다. 어긋나면 드러낸다.
+    final sb = msg['server_bytes'];
+    if (sb is int) {
+      final ours = _ledger.fedServerFrames * 2;
+      final diff = sb - ours;
+      if (diff.abs() > _serverBytesTolerance) {
+        _log('⚠ server_bytes 불일치: 서버=$sb 우리원장=$ours 차이=${diff}B '
+            '(${diff ~/ 48}ms) — 원장 절단 기준이 어긋난다');
+      }
+    }
+  }
+
+  /// 허용 오차(바이트). 한 청크(약 0.5초) 정도의 어긋남은 도착 순서 차이로 정상이다.
+  static const int _serverBytesTolerance = 48 * 500;
+
+  /// 재생이 마커 위치에 닿았다 — 이제 화면을 바꾼다.
+  void _fireDueMarkers() {
+    while (_pendingMarkers.isNotEmpty && _pendingMarkers.first.at <= _envPlayed) {
+      final m = _pendingMarkers.removeAt(0);
+      // ⚠ **구간 ≠ 문장이다.** 코드스위칭 문장은 언어별로 쪼개져 마커가 2개 온다
+      //   (seq 0 한국어 / seq 1 영어) — 이어 붙여야 한 문장이 된다.
+      //   와이어에는 문장 경계가 없으므로 **턴을 단위로** 누적한다. `turn_start` 가
+      //   자막을 비우는 기존 규약과 그대로 맞물리고, `output_transcript` 가 토큰을
+      //   누적하던 라이브 동작과도 같은 모양이다.
+      if (m.text.isNotEmpty) {
+        final prev = state.beaverSubtitle;
+        state = state.copyWith(
+          beaverSubtitle: prev.isEmpty ? m.text : '$prev ${m.text}',
+        );
+      }
+      // ⛔ 감정은 **상태를 안 든다.** 서버가 매 마커에 이어붙인 결과를 이미 실어 준다.
+      //   직전 값을 기억하면 `audio_cancel` 로 마커를 버릴 때 감정이 어긋난다.
+      avatarEmotion.value = m.emotion;
+    }
   }
 
   /// `ready` — 이 세션이 **어떤 정책으로 도는지**를 서버가 알려준다. 서버가 이긴다.
@@ -2654,8 +2790,10 @@ class NormalCallController extends Notifier<CallState> {
             // 턴이 끝날 때까지 고정했다. 그래서 문장 첫머리의 우연한 단어 하나가 턴
             // 전체의 표정을 결정했고, 실기기에서 "표정이 대사와 전혀 안 맞는다"로
             // 나타났다(2026-08-02). 립싱크 플랜 §6의 「턴 단위 갱신」 규약 위반이다.
+            // ⛔ 서버가 감정을 직접 준 통화면 키워드 추측기를 쓰지 않는다. 둘이 같이
+            //   쓰면 어느 쪽이 이겼는지 모르게 된다 — 명시적인 값이 추측을 이긴다.
             final next = _emo.feed(delta);
-            if (next != null) avatarEmotion.value = next;
+            if (next != null && !_serverEmotionSeen) avatarEmotion.value = next;
           }
         }
       case 'input_transcript':
@@ -2734,6 +2872,8 @@ class NormalCallController extends Notifier<CallState> {
         break;
 
       // ── 캐스케이드 통로 전용 프레임 ─────────────────────────────────────────
+      case 'sentence':
+        _onSentenceMarker(msg);
       case 'ready':
         _applyServerReady(msg);
       case 'beaver_preparing':
@@ -2958,6 +3098,9 @@ class NormalCallController extends Notifier<CallState> {
     _envTimer?.cancel();
     _envTimer = null;
     _envQueue.clear();
+    // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
+    //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
+    _pendingMarkers.clear();
     _drainScheduled = false;
     _closingStableTimer?.cancel();
     _closingStableTimer = null;
@@ -2985,7 +3128,19 @@ class NormalCallController extends Notifier<CallState> {
     _serverMicAlwaysOpen = false;
     _serverBargeinConfirm = '';
     _serverTurnSilenceMs = 0;
+    // ⭐ [진단] 통화 한 건의 **경계 판정용 한 줄**. 첫 실기기 통화에서 자막이 안 뜨면
+    //   여기부터 본다:
+    //     sentence=0        → **서버가 안 보냈다**(앱은 받을 준비가 돼 있었다)
+    //     sentence>0, 자막 X → **앱 문제**(위치 발화·자막 배선을 본다)
+    //     odd_frames>0      → **서버 불변식 I6 위반**(0 이 정상)
+    _log('통화 요약: sentence=$_sentenceCount 미발화마커=${_pendingMarkers.length} '
+        'odd_frames=$_oddFrames 통로=${_channelMode.name}');
     _oddFrames = 0;
+    _pendingMarkers.clear();
+    _envAdded = 0;
+    _envPlayed = 0;
+    _sentenceCount = 0;
+    _serverEmotionSeen = false;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
