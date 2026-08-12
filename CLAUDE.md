@@ -67,6 +67,19 @@
   flutter build apk --debug
   ```
 
+- **R9. `flutter analyze` 가 `riverpod_lint` 를 태운다고 믿지 마라 — "analyze 무이슈"는 반쪽 보고일 수 있다.**
+  `analysis_options.yaml:15` 가 `custom_lint` 플러그인을 켜고 `pubspec.yaml` 이 `riverpod_lint` 를 걸어 뒀지만, **`flutter analyze` 결과에 그 플러그인 지적이 들어온다는 보장이 없다.** `dart run custom_lint` 를 **별도 게이트로** 돌려야 한다.
+  **실측(2026-08-07)** — `flutter analyze` 를 여러 번 돌렸다. 대부분(내 3회 + 담당 5회)은 **~4초 만에 "No issues found"** 로 끝났고 riverpod_lint 지적이 안 나왔다. 그런데 **딱 한 번 46.2초가 걸리며 "8 issues found" 로 그 지적을 포함해 냈다.** 재현 조건은 **찾지 못했고**, 그 8건의 내역도 **확인 못 했다**(플러그인 로딩이 붙느냐 마느냐로 갈리는 것으로 보이나 미확인).
+  ⛔ **그래서 결론이 약해지는 게 아니라 세진다 — 간헐적으로만 보이는 검사는 초록이어도 의미가 없다.** 한 번의 실행 결과로 판정하지 마라.
+  같은 시기에 `dart run custom_lint` 로 돌리니 `avoid_public_notifier_properties` 7건이 나왔다. Riverpod provider 를 직접 만진 작업일수록 이 구멍이 정확히 그 영역을 비껴간다.
+  ⚠ **`build/` 가 있으면 `PathNotFoundException` 으로 죽는다** — flutter_local_notifications 의 gradle transform 경로에 와일드카드가 들어가 있어서다. **"잔재"가 아니라 방금 성공한 빌드가 만든 `build/` 로도 즉시 죽는다**(2026-08-07 실측 재현). 그래서 **두 게이트는 순서가 강제된다**:
+  ```
+  build/ 삭제  →  dart run custom_lint  →  flutter build apk --debug
+  ```
+  빌드가 먼저면 린트를 못 돌리고, 린트를 다시 돌리려면 APK 를 또 날려야 한다. **실기기 검증용 APK 가 필요하면 반드시 이 순서로** — 린트 먼저, 빌드 나중.
+  ⚠ 그 경로는 **260자를 넘어 `Remove-Item` 으로 안 지워진다**(열지를 못한다). `robocopy /MIR` 로 빈 폴더를 덮어써서 지운다.
+  지적이 나오면 **내가 넣은 것과 원래 있던 것을 가른다.** 내 몫은 되도록 `ignore` 로 덮지 말고 구조로 푼다(예: public getter 3개 → 메서드 1개). 기존 것은 손대지 말고 건수·파일만 보고한다.
+
 ## 기술 스택 결정 (확정)
 
 - **상태관리: Riverpod** (`flutter_riverpod`) — Flutter 입문자 친화 목적.
