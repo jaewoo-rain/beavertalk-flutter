@@ -33,6 +33,7 @@ import '../domain/entities/playback_ledger.dart';
 import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
+import 'cascade_experiment.dart' show CascadeMicOff;
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -1726,6 +1727,16 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Opens the recorder and pipes its PCM16k stream straight to the socket.
   Future<void> _startMic() async {
+    // [실험] 마이크를 아예 안 연다 — 플랫폼 스레드 부하에서 마이크를 빼고 곡선을 본다.
+    // ⛔ 게이팅으로는 이걸 못 한다(게이팅은 Dart 에서 버리므로 채널은 그대로 탄다).
+    if (CascadeMicOff.enabled) {
+      _log('⚠ [실험] MIC_OFF — 레코더를 열지 않는다. 사람 목소리는 서버에 안 간다. '
+          '자동 대화는 STT 를 안 타므로 대화는 계속된다');
+      return;
+    }
+    if (CascadeMicOff.suppressed) {
+      _log('⚠ MIC_OFF 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 마이크는 정상 동작한다');
+    }
     final controller = StreamController<Uint8List>();
     _micController = controller;
     _micSub = controller.stream.listen((bytes) {
@@ -1830,6 +1841,9 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Arms the one-shot capture watchdog (see [_micFramesReceived]).
   void _armMicWatchdog() {
+    // [실험] 마이크를 일부러 안 열었다 — "프레임이 0" 은 고장이 아니라 **의도**다.
+    // 무장하면 6초 뒤 레코더를 다시 열어 실험 자체를 무효로 만든다.
+    if (CascadeMicOff.enabled) return;
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = Timer(_micWatchdogDelay, () async {
       _micWatchdogTimer = null;
