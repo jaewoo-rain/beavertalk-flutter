@@ -54,6 +54,27 @@ String? normalizeCallId(Object? raw) {
 /// (구현은 컨트롤러 안의 `_emotionCode` 하나뿐이다 — 두 벌로 만들지 않는다.)
 int emotionCodeForTest(String? raw) => NormalCallController.emotionCode(raw);
 
+/// 통화 한 건의 **경계 판정용 요약 줄**.
+///
+/// ⛔ **통로를 인자로 받는다 — 필드를 읽지 않는다.** 실기기 첫 통화에서 이 줄이
+/// `통로=live` 라고 **거짓을 말했다**(2026-08-12). 원인은 값이 아니라 **읽는 시점**이었다:
+/// `_teardown` 이 통로를 기본값(live)으로 되돌린 **뒤에** 이 줄이 찍혔다.
+/// 되돌리는 것 자체는 맞다(안 되돌리면 다음 통화가 게이팅 없이 열린다 — 자기-대화 루프).
+///
+/// ⭐ 그래서 "로그를 리셋 위로 옮긴다"로 안 고쳤다. 그건 **순서에 의존**하는 수리라
+/// 다음에 누가 리셋을 재배치하면 같은 버그가 돌아온다. 값을 **인자로 넘기게** 만들고
+/// 호출부가 함수 진입 시점에 붙잡아 두면 순서와 무관해진다.
+///
+/// ⚠ 원인을 가르려고 넣은 줄이 정확히 그 자리에서 거짓을 말하면, 그 줄이 없느니만 못하다.
+String buildCallSummaryLine({
+  required int sentences,
+  required int pendingMarkers,
+  required int oddFrames,
+  required CallChannel channel,
+}) =>
+    '통화 요약: sentence=$sentences 미발화마커=$pendingMarkers '
+    'odd_frames=$oddFrames 통로=${channel.name}';
+
 /// Lifecycle phases of a live normalcall session.
 enum CallPhase {
   /// No active session (initial / after teardown).
@@ -1812,8 +1833,14 @@ class NormalCallController extends Notifier<CallState> {
       final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
       _log('INFLATE: elapsed ${(elapsedMs / 1000).toStringAsFixed(1)}s, '
           'rx ${_sec(_rxBytesTotal)}s, fedAud ${_sec(_fedAudBytes)}s, '
-          'fedSil ${_sec(_fedSilFrames * 2)}s '
-          '(speaking ${_sec(_fedSilSpeakFrames * 2)}s, prebuf ${_sec(_fedSilPrebufFrames * 2)}s), '
+          // ⚠ 라벨을 바꿨다(2026-08-12). 예전 `speaking` 은 **"비버가 말한 시간"으로
+          //   읽혔지만** 실제로는 *무음 중* "비버 발화 중에 넣은 것"이다 = 진짜 구멍.
+          //   나머지(턴 사이 keep-alive)를 같이 찍어 셋의 합이 fedSil 임을 드러낸다 —
+          //   두 항목만 보이면 "둘이 fedSil 과 안 맞는다"로 오해한다.
+          'fedSil ${_sec(_fedSilFrames * 2)}s(무음주입: 발화중구멍 '
+          '${_sec(_fedSilSpeakFrames * 2)}s + 프리버퍼대기 '
+          '${_sec(_fedSilPrebufFrames * 2)}s + 턴사이 '
+          '${_sec((_fedSilFrames - _fedSilSpeakFrames - _fedSilPrebufFrames) * 2)}s), '
           'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
       // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
       // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
@@ -2597,7 +2624,8 @@ class NormalCallController extends Notifier<CallState> {
 
   /// 감정 라벨 → [avatarEmotion] 코드. **모르는 값은 0(neutral)** 이다.
   ///
-  /// ⚠ 서버가 한글 라벨을 줄지 영문 슬러그를 줄지 **아직 확정 전**이라 둘 다 받는다.
+  /// ⚠ **실측(2026-08-12 실기기 첫 통화): 영문 슬러그로 온다**(`happy`). 한글 수용은
+  ///   그대로 둔다 — 서버가 라벨을 바꿔도 조용히 무표정이 되지 않게 하는 보험이다.
   /// ⛔ 화이트리스트로 막지 않는다 — 모르는 값이 오면 표정을 안 바꿀 뿐, 자막까지 버리면 안 된다.
   static int emotionCode(String? raw) {
     switch ((raw ?? '').trim().toLowerCase()) {
@@ -3072,6 +3100,9 @@ class NormalCallController extends Notifier<CallState> {
   /// When [keepError] is true the phase is left untouched (an error phase was
   /// already set by the caller); otherwise it resets to [CallPhase.idle].
   Future<void> _teardown({bool keepError = false}) async {
+    // ⛔ **아래 리셋들보다 먼저** 붙잡는다. 요약 줄이 실제로 쓴 통로를 말해야 하는데,
+    //   리셋이 통로를 기본값으로 되돌리므로 나중에 읽으면 거짓이 된다(실기기 확인).
+    final endedChannel = _channelMode;
     // End the CallKit call backing this session, first thing — every exit path
     // funnels through here (hang-up, server `call_ended`, ws error, next call's
     // teardown-before-connect), and the call is kept alive for the whole
@@ -3133,8 +3164,14 @@ class NormalCallController extends Notifier<CallState> {
     //     sentence=0        → **서버가 안 보냈다**(앱은 받을 준비가 돼 있었다)
     //     sentence>0, 자막 X → **앱 문제**(위치 발화·자막 배선을 본다)
     //     odd_frames>0      → **서버 불변식 I6 위반**(0 이 정상)
-    _log('통화 요약: sentence=$_sentenceCount 미발화마커=${_pendingMarkers.length} '
-        'odd_frames=$_oddFrames 통로=${_channelMode.name}');
+    _log(buildCallSummaryLine(
+      sentences: _sentenceCount,
+      pendingMarkers: _pendingMarkers.length,
+      oddFrames: _oddFrames,
+      // ⚠ 함수 **진입 시점에 붙잡아 둔** 값이다. 여기서 `_channelMode` 를 읽으면
+      //   이미 기본값으로 되돌아간 뒤라 `live` 가 찍힌다(실기기에서 그렇게 나왔다).
+      channel: endedChannel,
+    ));
     _oddFrames = 0;
     _pendingMarkers.clear();
     _envAdded = 0;
