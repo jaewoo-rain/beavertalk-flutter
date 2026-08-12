@@ -446,6 +446,13 @@ public class FlutterPcmSoundPlugin implements
                         break;
                     }
 
+                    // ⭐ [계측] **네이티브 내부 소요**를 따로 잰다(2026-08-13).
+                    //   호출부의 `폐기` 는 지금까지 한 덩어리였다: 플랫폼채널 왕복 +
+                    //   네이티브 내부. 그래서 통화 내내 늘어나는 것을 봐도 **어디가
+                    //   늘어나는지 못 갈랐다.** 여기 값이 평평한데 호출부 값만 크면
+                    //   원인은 스레드 스케줄링(왕복)이고, 여기가 같이 크면 pause/flush 다.
+                    long nativeT0 = System.nanoTime();
+
                     // ① 비우기 전에 잰다. 순서가 뒤바뀌면 항상 0 이 나온다.
                     long discarded = remainingInputFrames();
 
@@ -524,6 +531,7 @@ public class FlutterPcmSoundPlugin implements
                     // ⚠ gen 증가 **뒤에** 읽어야 Dekker 짝이 성립한다. 순서를 바꾸지 마라.
                     res.put("write_in_flight", mAudioWritePending ? 1 : 0);
                     res.put("hal_residual_known", halKnown ? 1 : 0);
+                    res.put("native_ms", (System.nanoTime() - nativeT0) / 1000000L);
                     result.success(res);
                     break;
                 }

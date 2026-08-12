@@ -38,6 +38,7 @@ class PcmPlaybackControl {
         halResidualMs: raw.halResidualMs,
         halResidualKnown: raw.halResidualKnown,
         writeInFlight: raw.writeInFlight,
+        nativeMs: raw.nativeMs,
       );
     } on MissingPluginException {
       return ClearResult.unsupported;
@@ -58,6 +59,7 @@ class ClearResult {
     this.halResidualMs = 0,
     this.halResidualKnown = false,
     this.writeInFlight = false,
+    this.nativeMs = -1,
   });
 
   /// 네이티브가 실제로 큐를 비웠는가. false 면 Dart 링버퍼만 비워진 상태이므로
@@ -84,6 +86,12 @@ class ClearResult {
   /// 스레드가 스스로 회수할 때까지 진짜 무음이 아니다. 그 회수는 이 호출이 반환한
   /// 뒤에 일어나므로 여기서 기다릴 수 없다 — 대신 보고값을 **하한**으로 표시해야 한다.
   final bool writeInFlight;
+
+  /// 네이티브 `clear()` **내부**에서만 쓴 시간(ms). -1 = 미보고(구버전 플러그인).
+  ///
+  /// 호출부가 재는 `폐기` 는 **플랫폼채널 왕복 + 이 값**이다. 둘을 갈라야
+  /// "통화가 길어질수록 느려진다"의 원인이 스레드 스케줄링인지 pause/flush 인지 가른다.
+  final int nativeMs;
 
   static const ClearResult unsupported =
       ClearResult(ok: false, framesDiscarded: null);

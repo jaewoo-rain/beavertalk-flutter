@@ -137,11 +137,13 @@ class FlutterPcmSound {
       final h = res['hal_residual_ms'];
       final k = res['hal_residual_known'];
       final w = res['write_in_flight'];
+      final n = res['native_ms'];
       return PcmClearResult(
         framesDiscarded: f is num ? f.toInt() : null,
         halResidualMs: h is num ? h.toInt() : 0,
         halResidualKnown: k is num ? k.toInt() != 0 : false,
         writeInFlight: w is num ? w.toInt() != 0 : false,
+        nativeMs: n is num ? n.toInt() : -1,
       );
     }
     return const PcmClearResult(
@@ -216,6 +218,7 @@ class PcmClearResult {
     required this.halResidualMs,
     required this.halResidualKnown,
     this.writeInFlight = false,
+    this.nativeMs = -1,
   });
 
   /// Input frames dropped, measured just before the flush. Null if the platform
@@ -233,6 +236,11 @@ class PcmClearResult {
   /// pull-based AudioUnit has no equivalent. When false, the 0 means **unknown**,
   /// not "nothing left" — reporting it as zero would flatter the measured latency.
   final bool halResidualKnown;
+
+  /// Milliseconds spent **inside** the native clear. -1 when not reported.
+  /// The caller's own measurement is (platform-channel round trip + this), and
+  /// splitting them is what tells a scheduling problem from a pause/flush one.
+  final int nativeMs;
 
   /// Whether the playback thread was inside a real-audio `write()` when the clear
   /// ran. If it was, that data lands in the track *after* our flush and keeps

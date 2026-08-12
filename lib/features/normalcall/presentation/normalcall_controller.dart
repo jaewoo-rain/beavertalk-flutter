@@ -71,9 +71,12 @@ String buildCallSummaryLine({
   required int pendingMarkers,
   required int oddFrames,
   required CallChannel channel,
+  int hints = 0,
+  int hintsDropped = 0,
 }) =>
-    '통화 요약: sentence=$sentences 미발화마커=$pendingMarkers '
-    'odd_frames=$oddFrames 통로=${channel.name}';
+    '통화 요약: sentence=$sentences hint=$hints'
+    '${hintsDropped > 0 ? '(버림 $hintsDropped)' : ''} '
+    '미발화마커=$pendingMarkers odd_frames=$oddFrames 통로=${channel.name}';
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
 ///
@@ -401,6 +404,13 @@ class NormalCallController extends Notifier<CallState> {
   /// [계측] 이 통화에서 받은 `sentence` 마커 수. **0 이면 서버가 안 보낸 것**이고,
   /// 0 이 아닌데 화면이 비면 앱 문제다 — 첫 실기기 통화에서 그 경계를 가르는 값이다.
   int _sentenceCount = 0;
+
+  /// [계측] 이 통화에서 **받아서 쓴** 힌트 / **버린** 힌트.
+  ///
+  /// ⭐ 서버도 `hint[turn=b4]: 3개` 를 찍는다 — 두 로그를 나란히 놓으면 **턴 단위로
+  /// 대조**되어 "서버가 안 보냈나 / 우리가 버렸나"가 한눈에 갈린다. 그게 요약에 넣는 이유다.
+  int _hintCount = 0;
+  int _hintDropped = 0;
 
   /// 서버가 감정을 직접 준 적이 있는가. 있으면 키워드 추측기([_emo])의 결과를 쓰지 않는다.
   ///
@@ -2614,9 +2624,16 @@ class NormalCallController extends Notifier<CallState> {
         'client_stop=${clientStopMs}ms '
         'stop_measure=${outcome.stopMeasure} '
         'route=${route.isEmpty ? '(못 읽음)' : route} '
-        '(폐기 ${stopWatch.elapsedMilliseconds}ms + HAL 잔량 ${outcome.halResidualMs}ms'
+        // ⭐ [진단] `폐기` 를 **왕복 / 네이티브 내부**로 쪼개고 쿠션을 같이 찍는다
+        //   (2026-08-13). 통화가 길수록 client_stop 이 커지는데(186→413ms) 어디가
+        //   커지는지 못 갈랐다. 네이티브가 평평한데 폐기만 크면 스레드 스케줄링이고,
+        //   같이 크면 pause/flush 다. 쿠션은 "굶어서 커진 쿠션 탓"이라는 가설의 재료다.
+        '(폐기 ${stopWatch.elapsedMilliseconds}ms'
+        '${outcome.nativeMs >= 0 ? '[네이티브 ${outcome.nativeMs}ms]' : ''}'
+        ' + HAL 잔량 ${outcome.halResidualMs}ms'
         '${outcome.halResidualKnown ? '' : ' ⚠미측정'}'
-        '${outcome.writeInFlight ? ' ⚠write 진행 중 — 회수 대기분 있음' : ''})');
+        '${outcome.writeInFlight ? ' ⚠write 진행 중 — 회수 대기분 있음' : ''}'
+        ' 쿠션 ${_cushionBytes ~/ 48}ms)');
   }
 
   /// 재생 파이프라인을 즉시 비우고, **이번 턴에 실제로 스피커로 나간 서버발 바이트**를
@@ -2707,6 +2724,7 @@ class NormalCallController extends Notifier<CallState> {
       halResidualMs: res.halResidualMs,
       halResidualKnown: res.halResidualKnown,
       writeInFlight: res.writeInFlight,
+      nativeMs: res.nativeMs,
     );
   }
 
@@ -3053,17 +3071,40 @@ class NormalCallController extends Notifier<CallState> {
       case 'hint':
         // Dynamic example-answer hint for the beaver's question turn. Additive:
         // unknown to older builds (harmlessly ignored). Replaces any prior hint.
-        final hint = HintData.fromJson(msg);
-        if (hint != null) state = state.copyWith(hint: hint);
+        // ⛔ **버리면 왜 버렸는지 찍는다.** 서버는 보냈는데 앱에 아무 흔적도 없던
+        //   통화가 있었다(2026-08-12) — 받아도 안 남고 버려도 안 남아 **판정 자체가
+        //   불가능**했다. 조용한 실패를 없애는 게 이 로그의 목적이다.
+        {
+          final parsed = HintData.parse(msg);
+          final hint = parsed.hint;
+          if (hint != null) {
+            _hintCount++;
+            state = state.copyWith(hint: hint);
+            _log('hint[turn=${hint.turnId}]: ${hint.examples.length}개 수신');
+          } else {
+            _hintDropped++;
+            _log('⚠ hint 버림 — ${parsed.drop} (turn=${msg['turn_id']})');
+          }
+        }
       case 'teaching_plan':
-        final raw = msg['items'];
-        if (raw is List) {
-          final items = raw
-              .whereType<Map<String, dynamic>>()
-              .map(TeachingItem.fromJson)
-              .whereType<TeachingItem>()
-              .toList(growable: false);
-          state = state.copyWith(teachingPlan: items);
+        // ⚠ 여기도 같은 모양이다 — `whereType` 두 번이 **조용히** 걸러낸다.
+        //   버린 게 있을 때만 찍는다(정상은 요약 카운터로 충분하다 — 로그 폭탄 금지).
+        {
+          final raw = msg['items'];
+          if (raw is List) {
+            final items = raw
+                .whereType<Map<String, dynamic>>()
+                .map(TeachingItem.fromJson)
+                .whereType<TeachingItem>()
+                .toList(growable: false);
+            if (items.length != raw.length) {
+              _log('⚠ teaching_plan 일부 버림 — ${raw.length}개 중 '
+                  '${items.length}개만 살았다');
+            }
+            state = state.copyWith(teachingPlan: items);
+          } else {
+            _log('⚠ teaching_plan 버림 — items 가 배열이 아님(${raw.runtimeType})');
+          }
         }
       case 'pong':
         break;
@@ -3342,12 +3383,16 @@ class NormalCallController extends Notifier<CallState> {
       // ⚠ 함수 **진입 시점에 붙잡아 둔** 값이다. 여기서 `_channelMode` 를 읽으면
       //   이미 기본값으로 되돌아간 뒤라 `live` 가 찍힌다(실기기에서 그렇게 나왔다).
       channel: endedChannel,
+      hints: _hintCount,
+      hintsDropped: _hintDropped,
     ));
     _oddFrames = 0;
     _pendingMarkers.clear();
     _envAdded = 0;
     _envPlayed = 0;
     _sentenceCount = 0;
+    _hintCount = 0;
+    _hintDropped = 0;
     _serverEmotionSeen = false;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
@@ -3560,6 +3605,7 @@ class _ClearOutcome {
     required this.halResidualMs,
     required this.halResidualKnown,
     required this.writeInFlight,
+    this.nativeMs = -1,
   });
 
   /// 이번 턴에 실제로 스피커로 나간 **서버발** 바이트(클라 필러 무음 제외).
@@ -3578,6 +3624,9 @@ class _ClearOutcome {
   /// 폐기 시점에 재생 스레드가 실오디오 write() 안에 있었는가 — 그 데이터는 우리 flush
   /// 뒤에 트랙으로 들어가 잠깐 더 울린다.
   final bool writeInFlight;
+
+  /// 네이티브 `clear()` **내부** 소요(ms). -1 = 미보고.
+  final int nativeMs;
 
   /// `client_stop_ms` 가 **무엇을 잰 값인지** 와이어에 명시한다.
   ///
