@@ -891,6 +891,23 @@ class NormalCallController extends Notifier<CallState> {
   /// 호출부이고, 서버가 통화 시작 응답에 실어 주게 되면 그쪽으로 바뀐다.
   CallChannel _channelMode = CallChannel.defaultChannel;
 
+  /// [dev] 지터 쿠션 **성장을 끈다** — 통로 하한(캐스케이드 300ms)에 고정한다.
+  ///
+  /// ## 왜 재보나
+  ///
+  /// 실측: 서버는 캐스케이드 오디오를 **실시간의 103~105%** 로 보내는데도 쿠션이
+  /// **상한 1200ms 까지 자랐다.** 즉 **전달 부족이 아니라 재생 쪽 정체**다. 그렇다면
+  /// 쿠션을 키워도 못 막고 **첫 소리 지연만 그만큼 더한다**(쿠션은 모든 응답의 시작에
+  /// 그대로 얹힌다). 이 플래그는 그 맞바꿈의 **크기**를 재기 위한 것이다.
+  ///
+  /// ⭐ 둘 다 재야 답이 나온다: **첫 소리까지의 지연** vs **끊김**(무음 삽입 횟수·총 길이).
+  ///   `INFLATE` 줄의 `발화중구멍` 이 후자다.
+  ///
+  /// ⛔ 기본은 **현행 동작 유지**(성장 켬). 그리고 자동 대화와 **같은 통화에서 켜지 마라** —
+  ///   순정 곡선을 먼저 얻고, 쿠션 실험은 그다음이다. 섞으면 해석이 흔들린다.
+  static const bool _cushionGrowthOff =
+      bool.fromEnvironment('CUSHION_GROWTH_OFF');
+
   /// [Android] 통화 용도 오디오로 열지 여부 — 플랫폼 AEC 를 실제로 걸기 위한 스위치.
   ///
   /// **기본은 false = 종전 동작 그대로.** 켜면 세 곳이 한꺼번에 통화 경로로 넘어간다:
@@ -2297,7 +2314,11 @@ class NormalCallController extends Notifier<CallState> {
               _starveAtMs = DateTime.now().millisecondsSinceEpoch;
               if (!_turnStarved) {
                 _turnStarved = true;
-                if (_cushionBytes < _cushionMaxBytes) {
+                if (_cushionGrowthOff) {
+                  // 성장을 껐다. **굶었다는 사실 자체는 그대로 센다** — 그게 이 실험의
+                  // 측정값이다(쿠션을 안 키우면 끊김이 얼마나 늘어나는가).
+                  _log('cushion 성장 OFF — 굶었지만 ${_cushionBytes * 1000 ~/ 48000}ms 유지');
+                } else if (_cushionBytes < _cushionMaxBytes) {
                   _cushionBytes += _cushionStepBytes;
                   if (_cushionBytes > _cushionMaxBytes) {
                     _cushionBytes = _cushionMaxBytes;
