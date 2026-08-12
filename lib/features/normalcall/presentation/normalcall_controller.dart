@@ -760,6 +760,18 @@ class NormalCallController extends Notifier<CallState> {
   /// Count of mic frames actually forwarded to the socket (dev-log heartbeat).
   int _micFramesSent = 0;
 
+  /// 서버로 **실제로 보낸** 마이크 PCM 누적 바이트. `route_change` 가 이 값을 싣는다.
+  ///
+  /// ⭐ ms 가 아니라 바이트인 이유는 `played_server_bytes` 와 **같다**: 마이크는
+  /// PCM16/16kHz mono = **32,000 B/s 고정**이라 바이트↔ms 는 산수이고, 서버가 받은
+  /// 바이트 수와 **정수로 대조**된다. 시각으로 보내면 어느 시계인지가 불분명하고
+  /// 네트워크 지터·시계 오차가 낀다 — 서버는 이 판정을 오디오 시각으로 한다.
+  int _uplinkBytes = 0;
+
+  /// 마지막으로 서버에 알린 라우트. 같은 값을 반복해 보내지 않는다(콜백은 라우트가
+  /// 안 바뀌는 사건에서도 온다 — 예: 볼륨 경로 변경).
+  String _lastReportedRoute = '';
+
   /// 비버 오디오가 살아 있는가 — 턴이 열려 있거나 아직 스피커에서 나오는 중.
   ///
   /// ⚠ 이 플래그는 원래 세 가지를 겸직했다: ①마이크 게이트 ②재생 회계 ③아바타 UI.
@@ -1127,6 +1139,42 @@ class NormalCallController extends Notifier<CallState> {
     };
   }
 
+  /// 통화 **도중** 출력 라우트가 바뀌면 서버에 알린다(`route_change`).
+  ///
+  /// ## 왜 필요한가
+  ///
+  /// `start.aec` 는 **세션 시작 스냅샷**이다. 통화 중 이어폰을 뽑으면 서버는 계속
+  /// `headset` 을 믿고 즉시 끊기 정책을 유지하는데, 실제로는 **스피커폰**(에코 최악)이다.
+  /// 정확히 그 전이가 안 잡혀서 비버가 자기 목소리에 끊긴다.
+  ///
+  /// ## 페이로드가 `start.aec` 와 **같은 객체**인 이유
+  ///
+  /// 서버가 `_apply_aec_hint` 를 그대로 재사용할 수 있다. 필드를 새로 만들면 두 곳이
+  /// 갈라지고, **갈라진 두 곳은 반드시 어긋난다.**
+  ///
+  /// ⛔ 정책(`immediate`/`transcript`)은 여전히 **클라가 요청하지 않는다.** "지금 헤드셋이다"
+  ///   까지만 말한다. `hw` 도 실측 전까지 쓰지 않는다 — [_aecHint] 와 같은 규칙이다.
+  Future<void> _onRouteChanged() async {
+    final route = await AudioRouteProbe.currentRoute();
+    // 콜백은 라우트가 안 바뀌는 사건에서도 온다. 같은 값을 반복해 보내면 서버가
+    // 정책을 계속 다시 잡는다.
+    if (route == _lastReportedRoute) return;
+    _lastReportedRoute = route;
+    _send({
+      'type': 'route_change',
+      'aec': <String, dynamic>{
+        'mode': route == 'headset' ? 'headset' : 'unknown',
+        if (route.isNotEmpty) 'route': route,
+      },
+      // ⭐ 시각이 아니라 **업링크 누적 바이트**다. 마이크는 PCM16/16kHz mono =
+      //   32,000 B/s 고정이라 서버가 받은 바이트와 정수로 대조된다. 시각으로 보내면
+      //   어느 시계인지 불분명하고 지터·시계 오차가 낀다(`played_server_bytes` 와 같은 논거).
+      'uplink_bytes': _uplinkBytes,
+    });
+    _log('route_change → ${route.isEmpty ? '(못 읽음)' : route} '
+        'uplink=${_uplinkBytes}B (=${_uplinkBytes ~/ 32}ms)');
+  }
+
   /// Opens the native PCM playback engine and starts the push pump.
   ///
   /// Extracted from [_startAudio] so the debug cancel rig ([debugOpenPlayback])
@@ -1215,6 +1263,10 @@ class NormalCallController extends Notifier<CallState> {
     // sets it false → it stays false, so on the 2nd call start() no-ops and
     // playback never begins (the "재통화 시 음성 안 나옴" bug). Pumping ourselves
     // is independent of that stale flag and works on every call.
+    // 통화 도중 라우트 전환을 서버에 알린다(`route_change`). 재생을 연 뒤에 건다 —
+    // 그래야 첫 조회가 실제 통화 라우트를 본다(재생 전에는 세션이 아직 안 굳었다).
+    _lastReportedRoute = await AudioRouteProbe.currentRoute();
+    AudioRouteProbe.setRouteChangeListener(() => unawaited(_onRouteChanged()));
     _startPushFeed();
     unawaited(_pump()); // don't wait a tick to open the stream
     _log('playback started @ ${_playbackSampleRate}Hz '
@@ -1495,6 +1547,9 @@ class NormalCallController extends Notifier<CallState> {
       final ch = _channel;
       if (ch != null) {
         ch.sink.add(bytes);
+        // ⭐ 업링크 누계 — `route_change.uplink_bytes` 의 기준값이다. **보낸 것만** 센다
+        //   (게이팅으로 버린 프레임은 서버가 받지 못했으므로 서버 카운터와 어긋난다).
+        _uplinkBytes += bytes.length;
         if (++_micFramesSent % 50 == 0) {
           _log('mic → sent $_micFramesSent frames (your voice flowing)');
         }
@@ -2948,6 +3003,9 @@ class NormalCallController extends Notifier<CallState> {
     _emo.reset();
     _turnEnded = false;
     _micFramesSent = 0;
+    _uplinkBytes = 0;
+    _lastReportedRoute = '';
+    AudioRouteProbe.setRouteChangeListener(null);
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = null;
     _micFramesReceived = 0;

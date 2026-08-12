@@ -73,6 +73,35 @@ class AudioRouteProbe {
     }
   }
 
+  /// 출력 라우트가 **바뀐 순간** 불린다(이어폰 연결/해제 등). 등록은 통화당 1회.
+  ///
+  /// ## ⛔ 폴링이 아니라 이벤트인 이유
+  ///
+  /// 라우트 전환은 드물고(통화당 0~2회) 순간적이다. 1초 폴링이면 전환 순간을 최대 1초
+  /// 놓치는데, **그 1초가 정확히 에코가 터지는 구간**이다(이어폰을 뽑은 직후 스피커폰).
+  /// 양쪽 플랫폼 다 이벤트 API 가 있으므로 폴링할 이유가 없다:
+  ///   - iOS `AVAudioSession.routeChangeNotification` — **이미 등록돼 있다**
+  ///     (`AppDelegate.startCallAudioRouting`). 통화 라우팅 로직이 쓰던 것에 얹었다.
+  ///   - Android `AudioManager.registerAudioDeviceCallback` (API 23+, minSdk 26)
+  ///
+  /// ⚠ **콜백은 "바뀌었다"만 알려준다.** 바뀐 결과 라우트는 [currentRoute] 로 한 번 더
+  /// 물어야 하고, 그 왕복(5~15ms)만큼 보고가 늦는다.
+  /// ⚠ iOS 옵저버는 `routeToSpeaker` 이후에만 산다 — 통화 시작 직후 짧은 창은 못 잡는다.
+  ///
+  /// 새 채널을 안 판 이유: [_channel] 은 양방향이라 네이티브가 `invokeMethod` 로 부르고
+  /// 여기서 받으면 된다. EventChannel 을 신설하면 네이티브 표면만 늘어난다.
+  static void setRouteChangeListener(void Function()? onChanged) {
+    if (kIsWeb) return;
+    if (onChanged == null) {
+      _channel.setMethodCallHandler(null);
+      return;
+    }
+    _channel.setMethodCallHandler((call) async {
+      if (call.method == 'routeChanged') onChanged();
+      return null;
+    });
+  }
+
   /// [Android 전용] 오디오 상태 스냅샷: `mode`, `speakerphone`, `route`,
   /// `music_vol`/`voice_vol`(+ 각 max). AEC 를 바꾸면 같이 움직이는 값들이라
   /// 측정 전후로 찍어 둔다. 못 읽으면 빈 Map.

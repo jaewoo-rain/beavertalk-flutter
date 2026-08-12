@@ -65,6 +65,13 @@ import flutter_callkit_incoming
       .registrar(forPlugin: "BeaverAudioRoute")?.messenger() {
       let channel = FlutterMethodChannel(
         name: "beavertalk/audio", binaryMessenger: messenger)
+      // Held so a route change can call BACK into Dart (`routeChanged`).
+      // Dart then re-reads the route and tells the server (`route_change`):
+      // `start.aec` is only a session-start snapshot, so pulling the headset
+      // mid-call otherwise leaves the server believing "headset" while the audio
+      // is actually on the loudspeaker — the worst echo case, and precisely the
+      // transition it never sees. No new channel: this one is bidirectional.
+      self.audioChannel = channel
       channel.setMethodCallHandler { [weak self] call, result in
         switch call.method {
         case "routeToSpeaker":
@@ -220,6 +227,9 @@ import flutter_callkit_incoming
   // `setPreferredInput` — which does not disturb an ongoing session.
   private var callAudioRoutingActive = false
 
+  /// `beavertalk/audio` — kept so route changes can be pushed to Dart.
+  private var audioChannel: FlutterMethodChannel?
+
   private func startCallAudioRouting() {
     let session = AVAudioSession.sharedInstance()
     if !callAudioRoutingActive {
@@ -351,6 +361,11 @@ import flutter_callkit_incoming
     switch reason {
     case .newDeviceAvailable, .oldDeviceUnavailable:
       steerInputToHeadset()
+      // Tell Dart the route moved. We deliberately do NOT send the route itself:
+      // the notification fires before the session settles, so Dart re-reads it
+      // (one 5-15ms round trip) and reports that. Same reasons filter as above —
+      // Control Center / override / config changes must not trigger this.
+      audioChannel?.invokeMethod("routeChanged", arguments: nil)
     default:
       break
     }

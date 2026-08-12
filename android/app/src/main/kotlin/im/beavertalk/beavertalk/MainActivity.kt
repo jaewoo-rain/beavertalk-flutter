@@ -7,6 +7,7 @@ import android.content.Intent
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.AudioAttributes
+import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
 import android.media.MediaRecorder
@@ -14,6 +15,8 @@ import android.media.projection.MediaProjection
 import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
@@ -179,16 +182,72 @@ class MainActivity : FlutterActivity() {
                     else -> result.notImplemented()
                 }
             }
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, audioChannelName)
-            .setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "getAudioRoute" -> result.success(currentAudioRoute())
-                    "setVoiceCallMode" ->
-                        result.success(setVoiceCallMode(call.argument<Boolean>("enable") == true))
-                    "getAudioDiag" -> result.success(audioDiag())
-                    else -> result.notImplemented()
-                }
+        val audio = MethodChannel(flutterEngine.dartExecutor.binaryMessenger, audioChannelName)
+        audio.setMethodCallHandler { call, result ->
+            when (call.method) {
+                "getAudioRoute" -> result.success(currentAudioRoute())
+                "setVoiceCallMode" ->
+                    result.success(setVoiceCallMode(call.argument<Boolean>("enable") == true))
+                "getAudioDiag" -> result.success(audioDiag())
+                else -> result.notImplemented()
             }
+        }
+        audioChannel = audio
+        registerRouteWatcher()
+    }
+
+    /** `beavertalk/audio` — 라우트 변경을 Dart 로 **밀어 올리기** 위해 들고 있는다. */
+    private var audioChannel: MethodChannel? = null
+    private var routeCallback: AudioDeviceCallback? = null
+
+    /**
+     * 출력 장치가 붙거나 빠지면 Dart 에 알린다(`routeChanged`).
+     *
+     * ⛔ **폴링이 아니라 이벤트다.** 라우트 전환은 드물지만(통화당 0~2회) 순간적이고,
+     *   1초 폴링이면 전환 순간을 최대 1초 놓치는데 **그 1초가 정확히 에코가 터지는 구간**이다
+     *   (이어폰을 뽑은 직후 스피커폰). `registerAudioDeviceCallback` 은 API 23+ 이고
+     *   우리 minSdk 는 26 이라 분기 없이 쓴다.
+     *
+     * ⚠ **라우트 값 자체는 안 보낸다.** 콜백은 장치 목록이 바뀐 순간에 오는데 그때는
+     *   활성 라우트가 아직 안 굳었을 수 있다. Dart 가 `getAudioRoute` 로 한 번 더 물어
+     *   그 값을 서버에 싣는다(그 왕복 5~15ms 만큼 보고가 늦다 — 서버 제안서에 명시).
+     *
+     * ⚠ 새 채널(EventChannel)을 안 판다. MethodChannel 은 양방향이라 이걸로 충분하고,
+     *   네이티브 표면을 늘리지 않는 쪽이 낫다.
+     */
+    private fun registerRouteWatcher() {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+        if (routeCallback != null) return
+        val cb = object : AudioDeviceCallback() {
+            override fun onAudioDevicesAdded(added: Array<out AudioDeviceInfo>?) {
+                audioChannel?.invokeMethod("routeChanged", null)
+            }
+
+            override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>?) {
+                audioChannel?.invokeMethod("routeChanged", null)
+            }
+        }
+        try {
+            // 메인 스레드 핸들러 — MethodChannel 은 플랫폼 스레드에서만 부를 수 있다.
+            am.registerAudioDeviceCallback(cb, Handler(Looper.getMainLooper()))
+            routeCallback = cb
+        } catch (_: Throwable) {
+            // 진단이 통화를 죽이면 안 된다(R5). 못 걸면 라우트 변경 통지만 없다.
+        }
+    }
+
+    override fun onDestroy() {
+        val cb = routeCallback
+        if (cb != null) {
+            routeCallback = null
+            try {
+                (getSystemService(Context.AUDIO_SERVICE) as? AudioManager)
+                    ?.unregisterAudioDeviceCallback(cb)
+            } catch (_: Throwable) {
+            }
+        }
+        audioChannel = null
+        super.onDestroy()
     }
 
     /**
