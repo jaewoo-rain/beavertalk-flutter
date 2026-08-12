@@ -173,6 +173,7 @@ class CallState {
     this.subtitleOn = true,
     this.hintOn = true,
     this.beaverPreparing = false,
+    this.channel = CallChannel.live,
   });
 
   /// Current lifecycle phase.
@@ -233,6 +234,10 @@ class CallState {
   /// (소리가 나기 시작하면 준비 중이 아니다).
   final bool beaverPreparing;
 
+  /// 이 통화가 붙은 통로. **화면이 통로를 알아야** 캐스케이드만 벗기고 라이브는 제품
+  /// 그대로 둘 수 있다(격리 실험의 대조군 유지 — [CascadeExperiment]).
+  final CallChannel channel;
+
   /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
   /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
   static const Object _keep = Object();
@@ -253,6 +258,7 @@ class CallState {
     bool? subtitleOn,
     bool? hintOn,
     bool? beaverPreparing,
+    CallChannel? channel,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -268,6 +274,7 @@ class CallState {
       subtitleOn: subtitleOn ?? this.subtitleOn,
       hintOn: hintOn ?? this.hintOn,
       beaverPreparing: beaverPreparing ?? this.beaverPreparing,
+      channel: channel ?? this.channel,
     );
   }
 }
@@ -1137,7 +1144,7 @@ class NormalCallController extends Notifier<CallState> {
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
-      state = const CallState(phase: CallPhase.connecting);
+      state = CallState(phase: CallPhase.connecting, channel: _channelMode);
 
       // Every failure below tears down with keepError so the error phase SURVIVES
       // for the UI to react to. A plain _teardown() resets the state to idle,

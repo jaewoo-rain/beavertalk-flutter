@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
+import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
@@ -164,6 +165,21 @@ class MyPageScreen extends ConsumerWidget {
             route: Routes.callLoading,
             arguments: CallChannel.cascade,
           ),
+          // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
+          //   다음 단계가 "하나씩 다시 켜기"라 빌드 없이 껐다 켰다 할 수 있어야 한다.
+          _devSwitch(
+            context,
+            title: '└ 아바타 영상',
+            description: '끄면 정적 이미지만. ExoPlayer/SurfaceView 가 안드로이드 '
+                'UI 스레드를 막는지 보는 스위치입니다 — 제1 용의자.',
+            flag: CascadeExperiment.avatarVideo,
+          ),
+          _devSwitch(
+            context,
+            title: '└ 힌트 카드',
+            description: '끄면 힌트를 안 그립니다.',
+            flag: CascadeExperiment.hints,
+          ),
           _devRow(
             context,
             title: '취소 배관 리그',
@@ -185,6 +201,42 @@ class MyPageScreen extends ConsumerWidget {
             route: Routes.gallery,
           ),
         ],
+      );
+
+  /// 격리 실험 스위치 한 줄. **통화 밖에서 미리 정해 두고 들어간다.**
+  ///
+  /// 통화 중에 바꾸면 그 통화의 측정이 두 구성에 걸쳐 오염된다 — 한 통화 = 한 구성이다.
+  Widget _devSwitch(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required ValueNotifier<bool> flag,
+  }) =>
+      ValueListenableBuilder<bool>(
+        valueListenable: flag,
+        builder: (context, on, _) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title,
+                        style: AppType.body1.sb
+                            .copyWith(color: context.c.labelStrong)),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(description,
+                        style: AppType.label1.r
+                            .copyWith(color: context.c.labelAlternative)),
+                  ],
+                ),
+              ),
+              Switch(value: on, onChanged: (v) => flag.value = v),
+            ],
+          ),
+        ),
       );
 
   /// dev 도구 한 줄. 제목 + 무엇을 하는 화면인지 한 줄.
