@@ -2014,6 +2014,21 @@ class NormalCallController extends Notifier<CallState> {
           'min ${minMs}ms (low ${_engineLowFrames * 1000 ~/ _playbackSampleRate}ms / '
           'target ${_engineTargetFrames * 1000 ~/ _playbackSampleRate}ms)');
       _engineMinFrames = 1 << 30; // 창마다 리셋 — 통화 전체 최저가 아니라 추세를 본다
+
+      // ⭐ [계측] 채널 처리량 — **도착률 vs 처리율**(2026-08-13).
+      //   가설: 처리율이 도착률보다 낮으면 부하가 일정해도 밀린 양이 누적돼 지연이
+      //   선형으로 자란다. 그 가설이 맞다면 `미완`(보냄-완료)이 시간에 따라 벌어져야
+      //   한다. 안 벌어지는데 왕복만 자라면 적체는 **채널 밖**(플랫폼 스레드)에 있다.
+      //   두 경우의 처방이 정반대라, 이 한 줄이 없으면 수술 대상을 못 고른다.
+      //
+      //   `보냄/초`·`건당B` 는 조각 크기를 키우는 값싼 처방(②)의 사전 실측이기도 하다.
+      final ch = FlutterPcmSound.channelWindow();
+      final per = ch.sent > 0 ? ch.bytes ~/ ch.sent : 0;
+      _log('CHAN: 보냄 ${ch.sent}건(${(ch.sent / 5).toStringAsFixed(1)}/s, '
+          '${(ch.bytes / 5 / 1024).toStringAsFixed(1)}KB/s, 건당 ${per}B) '
+          '완료 ${ch.done}건, 미완 ${ch.inflight}(창최대 ${ch.inflightMax}), '
+          'rtt avg ${ch.rttAvgMs.toStringAsFixed(1)}ms / max ${ch.rttMaxMs}ms, '
+          '역방향이벤트 ${ch.events}건');
     });
   }
 
@@ -2964,16 +2979,38 @@ class NormalCallController extends Notifier<CallState> {
         '위치=$_envAdded(재생 $_envPlayed) 대기=${_pendingMarkers.length}');
 
     // `server_bytes` 교차검증 — 없어도 동작한다. 어긋나면 드러낸다.
+    //
+    // ⚠ **단위를 맞춘 뒤에 비교한다.** 서버는 턴마다 0 부터 세고(그래서 턴 첫 마커의
+    //   `server_bytes` 는 0 이다) 우리 원장은 통화 누적이다. 예전엔 그대로 뺐고, 그러니
+    //   통화가 길어질수록 무조건 벌어져 **매 턴 경고가 떴다** — 경고가 상시가 되면
+    //   진짜 어긋남을 못 본다. 여기서 턴 원점([_turnServerBytesBase])을 뺀다.
     final sb = msg['server_bytes'];
     if (sb is int) {
-      final ours = _ledger.fedServerFrames * 2;
-      final diff = sb - ours;
+      var ours = _ledger.fedServerFrames * 2 - _turnServerBytesBase;
+      var diff = sb - ours;
+      // ⭐ 자가치유(bt-back 제안). 원점을 `turn_start` 에서 잡는 게 정확하지만, 그 프레임을
+      //   못 보면(취소 경로·유실) 원점이 낡은 채 남아 이후 **모든 턴**이 어긋난다.
+      //   우리가 이 턴에 서버보다 **많이** 먹였다는 건 물리적으로 불가능하므로
+      //   (서버가 보낸 것만 먹인다), 크게 음수면 원점이 낡은 것이다 → 다시 잡는다.
+      if (diff < -_serverBytesTolerance) {
+        _turnServerBytesBase = _ledger.fedServerFrames * 2 - sb;
+        _log('server_bytes 원점 재설정 — turn_start 를 못 본 것으로 본다 '
+            '(서버=$sb, 새 원점=$_turnServerBytesBase)');
+        ours = sb;
+        diff = 0;
+      }
       if (diff.abs() > _serverBytesTolerance) {
-        _log('⚠ server_bytes 불일치: 서버=$sb 우리원장=$ours 차이=${diff}B '
-            '(${diff ~/ 48}ms) — 원장 절단 기준이 어긋난다');
+        _log('⚠ server_bytes 불일치: 서버=$sb 우리턴원장=$ours 차이=${diff}B '
+            '(${diff ~/ 48}ms) — 원장 절단 기준이 어긋난다 '
+            '(턴원점=$_turnServerBytesBase, 통화누적=${_ledger.fedServerFrames * 2})');
       }
     }
   }
+
+  /// 이 비버 턴이 시작될 때의 원장 누적치(바이트). `turn_start` 에서 찍는다.
+  ///
+  /// ⚠ 0 으로 두면 통화 첫 턴만 맞고 그다음부터 전부 어긋난다 — 그게 실측된 증상이다.
+  int _turnServerBytesBase = 0;
 
   /// 허용 오차(바이트). 한 청크(약 0.5초) 정도의 어긋남은 도착 순서 차이로 정상이다.
   static const int _serverBytesTolerance = 48 * 500;
@@ -3143,6 +3180,11 @@ class NormalCallController extends Notifier<CallState> {
         // 진행도 회신([_onAudioCancel])이 이 값을 쓴다.
         final rawTurnId = msg['turn_id'];
         _currentTurnId = rawTurnId is String ? rawTurnId : null;
+        // ⭐ 이 턴의 원장 원점. 서버의 `server_bytes` 는 **턴마다 0 부터** 세고 우리
+        //   원장은 **통화 누적**이라, 빼지 않으면 통화가 길어질수록 차이가 벌어져
+        //   매 턴 "불일치" 가 뜬다(실측 2026-08-13: 서버=0 우리원장=435,840).
+        //   교차검증이 **항상 울리면 아무것도 검증하지 못한다.**
+        _turnServerBytesBase = _ledger.fedServerFrames * 2;
         _logTurnBoundaryBacklog();
         if (state.phase == CallPhase.connecting) {
           state = state.copyWith(phase: CallPhase.inCall);
@@ -3238,6 +3280,13 @@ class NormalCallController extends Notifier<CallState> {
             '→ draining closing line');
         _scheduleClosingDrain();
       case 'error':
+        // ⛔ **조용히 삼키지 마라.** 지금까지 이 프레임은 스낵바로만 떴고 logcat 에는
+        //   한 줄도 안 남았다 — 통화가 죽었는데 로그에는 죽은 이유가 없었다
+        //   (2026-08-13 에뮬: `Invalid value: 'en-US'` 가 토스트로만 보였다).
+        //   여기 문자열은 **서버가 준 그대로**다. 앱이 만든 문구가 아니다.
+        _log('⛔ 서버 error 프레임 — code=${msg['code'] ?? '(없음)'} '
+            'message=${msg['message'] ?? '(없음)'} '
+            '기타키=${msg.keys.where((k) => k != 'type' && k != 'code' && k != 'message').toList()}');
         state = state.copyWith(
           phase: CallPhase.error,
           errorMsg: (msg['message'] as String?) ?? _l10n.callErrorGeneric,
@@ -3591,6 +3640,7 @@ class NormalCallController extends Notifier<CallState> {
     _turnEnded = false;
     _micFramesSent = 0;
     _uplinkBytes = 0;
+    _turnServerBytesBase = 0; // 원장도 통화마다 리셋된다 — 원점만 남으면 다음 통화가 어긋난다
     _lastReportedRoute = '';
     AudioRouteProbe.setRouteChangeListener(null);
     _micWatchdogTimer?.cancel();
