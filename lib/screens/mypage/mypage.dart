@@ -157,9 +157,10 @@ class MyPageScreen extends ConsumerWidget {
           _devRow(
             context,
             title: '캐스케이드 통화 (테스트 서버)',
-            description: '⚠ 실제 통화가 아니라 실험 통로입니다. 소켓만 데모 서버로 붙습니다 '
-                '— 통화 기록이 데모 DB 에 남아 통화 후 분석은 "정보를 찾을 수 없음"으로 끝납니다. '
-                '일반 통화(라이브)는 운영 서버 그대로입니다.',
+            description: '실험 통로입니다 — 소켓만 데모 서버로 붙고, 일반 통화(라이브)는 '
+                '운영 서버 그대로입니다. '
+                '⚠ 두 서버가 같은 DB 를 쓰므로 이 통화도 실서비스 데이터에 그대로 쌓입니다. '
+                '통화 후 분석이 정상 동작하는지는 아직 확인되지 않았습니다.',
             route: Routes.callLoading,
             arguments: CallChannel.cascade,
           ),

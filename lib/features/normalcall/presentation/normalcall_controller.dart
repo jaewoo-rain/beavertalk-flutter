@@ -34,6 +34,22 @@ import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'normalcall_providers.dart';
 
+/// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
+///
+/// 서버는 통화 행이 없을 때 null 이 아니라 **빈 문자열**을 보낸다
+/// (`cascade_session.py:3198` — `ServerCallEnded(call_id=str(self._call_id or ""))`).
+/// 그대로 받으면 "우리가 id 를 가졌다"가 되어 **통화 종료 화면의 복구 폴링이 안 돈다**
+/// (`call_finish.dart` `_analyze()` 는 `callId == null` 일 때만 `_recoverCallId()` 를 부른다).
+/// 즉 복구가 가장 필요한 경우에 정확히 복구가 죽는다 — null 보다 나쁘다.
+///
+/// ⭐ 통로로 가르지 않는다. 여기 한 자리에서 막으면 라이브 서버가 언젠가 같은 값을 보내도
+/// 안 깨진다. 공백만 있는 값도 없는 것으로 본다(서버가 `" "` 를 보낼 이유는 없지만,
+/// 이 함수의 계약은 "쓸 수 있는 id 인가"이지 "서버가 무엇을 보냈나"가 아니다).
+String? normalizeCallId(Object? raw) {
+  final s = raw?.toString().trim();
+  return (s == null || s.isEmpty) ? null : s;
+}
+
 /// Lifecycle phases of a live normalcall session.
 enum CallPhase {
   /// No active session (initial / after teardown).
@@ -2618,16 +2634,25 @@ class NormalCallController extends Notifier<CallState> {
         // 통지만. 자막 라인은 다음 `user_turn_start` 에서 새로 연다.
         break;
       case 'call_ended':
-        final id = msg['call_id'];
+        // ⛔ **빈 문자열은 id 가 아니다.** 서버는 통화 행이 없을 때 `call_id` 를 null 이
+        //   아니라 **`""`** 로 보낸다(`cascade_session.py:3198`:
+        //   `ServerCallEnded(call_id=str(self._call_id or ""))`).
+        //   그대로 받으면 `id?.toString()` 이 `""` 를 통과시켜 **우리가 id 를 가졌다고 믿는다.**
+        //   그러면 통화 종료 화면의 복구 폴링(`_recoverCallId`)이 안 돌고 빈 id 로 분석을 친다 —
+        //   **복구가 가장 필요한 경우(행이 없다)에 정확히 복구가 죽는다.** null 보다 나쁘다.
+        // ⭐ 통로로 가르지 않는다. 한 자리에서 막아 두면 라이브 서버가 언젠가 같은 값을
+        //   보내도 안 깨진다. 공백만 있는 값도 같이 없는 것으로 본다.
+        final id = normalizeCallId(msg['call_id']);
         // Server-initiated close is expected; the socket's onDone must not be
         // treated as an unexpected drop.
         _expectClose = true;
         state = state.copyWith(
           phase: CallPhase.ending,
-          callId: id?.toString(),
+          callId: id,
           hint: null,
         );
-        _log('call_ended id=$id → draining closing line');
+        _log('call_ended id=${id ?? '(없음 — 종료 화면이 복구 폴링으로 되짚는다)'} '
+            '→ draining closing line');
         _scheduleClosingDrain();
       case 'error':
         state = state.copyWith(
