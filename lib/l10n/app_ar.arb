@@ -626,5 +626,6 @@
   "difficultySlow": "بطيء",
   "difficultyNormal": "عادي",
   "difficultyFast": "سريع",
-  "difficultyLabel": "الصعوبة"
+  "difficultyLabel": "الصعوبة",
+  "unlockedWithMax": "متاح مع Max"
 }

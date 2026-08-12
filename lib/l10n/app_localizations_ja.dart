@@ -2034,4 +2034,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get difficultyLabel => '難易度';
+
+  @override
+  String get unlockedWithMax => 'Max で利用可能';
 }

@@ -2120,4 +2120,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Tahap kesukaran';
+
+  @override
+  String get unlockedWithMax => 'Tersedia dengan Max';
 }

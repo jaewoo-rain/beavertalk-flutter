@@ -2100,4 +2100,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'កម្រិតលំបាក';
+
+  @override
+  String get unlockedWithMax => 'អាចប្រើបានជាមួយ Max';
 }

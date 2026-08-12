@@ -626,5 +626,6 @@
   "difficultySlow": "Медленно",
   "difficultyNormal": "Обычно",
   "difficultyFast": "Быстро",
-  "difficultyLabel": "Сложность"
+  "difficultyLabel": "Сложность",
+  "unlockedWithMax": "Доступно с Max"
 }

@@ -626,5 +626,6 @@
   "difficultySlow": "Mabagal",
   "difficultyNormal": "Normal",
   "difficultyFast": "Mabilis",
-  "difficultyLabel": "Antas ng hirap"
+  "difficultyLabel": "Antas ng hirap",
+  "unlockedWithMax": "Available sa Max"
 }

@@ -626,5 +626,6 @@
   "difficultySlow": "慢速",
   "difficultyNormal": "正常",
   "difficultyFast": "快速",
-  "difficultyLabel": "难度"
+  "difficultyLabel": "难度",
+  "unlockedWithMax": "Max 可用"
 }

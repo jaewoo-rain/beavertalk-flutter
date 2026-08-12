@@ -626,5 +626,6 @@
   "difficultySlow": "සෙමින්",
   "difficultyNormal": "සාමාන්‍ය",
   "difficultyFast": "වේගයෙන්",
-  "difficultyLabel": "දුෂ්කරතාව"
+  "difficultyLabel": "දුෂ්කරතාව",
+  "unlockedWithMax": "Max සමඟ ලබා ගත හැක"
 }

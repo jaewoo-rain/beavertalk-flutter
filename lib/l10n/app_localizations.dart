@@ -3963,6 +3963,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Difficulty'**
   String get difficultyLabel;
+
+  /// Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does.
+  ///
+  /// In en, this message translates to:
+  /// **'Available with Max'**
+  String get unlockedWithMax;
 }
 
 class _AppLocalizationsDelegate

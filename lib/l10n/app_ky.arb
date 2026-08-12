@@ -626,5 +626,6 @@
   "difficultySlow": "Жай",
   "difficultyNormal": "Орточо",
   "difficultyFast": "Тез",
-  "difficultyLabel": "Татаалдык"
+  "difficultyLabel": "Татаалдык",
+  "unlockedWithMax": "Max менен жеткиликтүү"
 }

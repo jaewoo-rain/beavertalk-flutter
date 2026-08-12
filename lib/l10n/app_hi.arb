@@ -626,5 +626,6 @@
   "difficultySlow": "धीमा",
   "difficultyNormal": "सामान्य",
   "difficultyFast": "तेज़",
-  "difficultyLabel": "कठिनाई"
+  "difficultyLabel": "कठिनाई",
+  "unlockedWithMax": "Max के साथ उपलब्ध"
 }

@@ -2119,4 +2119,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Dificultad';
+
+  @override
+  String get unlockedWithMax => 'Disponible con Max';
 }

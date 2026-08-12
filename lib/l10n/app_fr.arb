@@ -626,5 +626,6 @@
   "difficultySlow": "Lent",
   "difficultyNormal": "Normal",
   "difficultyFast": "Rapide",
-  "difficultyLabel": "Difficulté"
+  "difficultyLabel": "Difficulté",
+  "unlockedWithMax": "Disponible avec Max"
 }

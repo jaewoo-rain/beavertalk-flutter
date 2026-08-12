@@ -2103,4 +2103,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Татаалдык';
+
+  @override
+  String get unlockedWithMax => 'Max менен жеткиликтүү';
 }

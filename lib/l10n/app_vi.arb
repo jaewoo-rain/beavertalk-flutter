@@ -626,5 +626,6 @@
   "difficultySlow": "Chậm",
   "difficultyNormal": "Bình thường",
   "difficultyFast": "Nhanh",
-  "difficultyLabel": "Độ khó"
+  "difficultyLabel": "Độ khó",
+  "unlockedWithMax": "Có sẵn với Max"
 }

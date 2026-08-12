@@ -2099,4 +2099,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Độ khó';
+
+  @override
+  String get unlockedWithMax => 'Có sẵn với Max';
 }

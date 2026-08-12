@@ -2139,4 +2139,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Difficulté';
+
+  @override
+  String get unlockedWithMax => 'Disponible avec Max';
 }

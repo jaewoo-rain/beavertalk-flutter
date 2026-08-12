@@ -2094,4 +2094,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'কঠিনতা';
+
+  @override
+  String get unlockedWithMax => 'Max দিয়ে ব্যবহারযোগ্য';
 }

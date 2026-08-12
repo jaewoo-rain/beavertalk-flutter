@@ -626,5 +626,6 @@
   "difficultySlow": "ゆっくり",
   "difficultyNormal": "ふつう",
   "difficultyFast": "はやく",
-  "difficultyLabel": "難易度"
+  "difficultyLabel": "難易度",
+  "unlockedWithMax": "Max で利用可能"
 }

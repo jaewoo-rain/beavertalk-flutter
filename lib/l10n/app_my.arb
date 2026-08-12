@@ -626,5 +626,6 @@
   "difficultySlow": "နှေး",
   "difficultyNormal": "ပုံမှန်",
   "difficultyFast": "မြန်",
-  "difficultyLabel": "အခက်အခဲအဆင့်"
+  "difficultyLabel": "အခက်အခဲအဆင့်",
+  "unlockedWithMax": "Max ဖြင့် ရနိုင်သည်"
 }

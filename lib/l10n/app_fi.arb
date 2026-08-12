@@ -626,5 +626,6 @@
   "difficultySlow": "Hidas",
   "difficultyNormal": "Normaali",
   "difficultyFast": "Nopea",
-  "difficultyLabel": "Vaikeustaso"
+  "difficultyLabel": "Vaikeustaso",
+  "unlockedWithMax": "Käytettävissä Maxilla"
 }

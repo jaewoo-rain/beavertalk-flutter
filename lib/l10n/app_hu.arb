@@ -626,5 +626,6 @@
   "difficultySlow": "Lassú",
   "difficultyNormal": "Normál",
   "difficultyFast": "Gyors",
-  "difficultyLabel": "Nehézség"
+  "difficultyLabel": "Nehézség",
+  "unlockedWithMax": "Elérhető a Maxszal"
 }

@@ -2098,4 +2098,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'دشواری';
+
+  @override
+  String get unlockedWithMax => 'Max کے ساتھ دستیاب';
 }

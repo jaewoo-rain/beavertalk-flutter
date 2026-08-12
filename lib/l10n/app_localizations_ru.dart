@@ -2105,4 +2105,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Сложность';
+
+  @override
+  String get unlockedWithMax => 'Доступно с Max';
 }

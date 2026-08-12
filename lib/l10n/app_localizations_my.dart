@@ -2110,4 +2110,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'အခက်အခဲအဆင့်';
+
+  @override
+  String get unlockedWithMax => 'Max ဖြင့် ရနိုင်သည်';
 }

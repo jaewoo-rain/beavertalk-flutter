@@ -626,5 +626,6 @@
   "difficultySlow": "យឺត",
   "difficultyNormal": "ធម្មតា",
   "difficultyFast": "លឿន",
-  "difficultyLabel": "កម្រិតលំបាក"
+  "difficultyLabel": "កម្រិតលំបាក",
+  "unlockedWithMax": "អាចប្រើបានជាមួយ Max"
 }

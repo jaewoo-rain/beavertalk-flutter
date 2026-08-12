@@ -85,10 +85,21 @@ class AvatarScreen extends ConsumerWidget {
                   data: (list) => list,
                   orElse: () => const <OwnedCharacter>[],
                 );
-                final discounted =
-                    characters.where((c) => c.hasDiscount).toList();
+                // 구독(Max)으로 열린 미구매 캐릭터 — 살 수는 없어도 **지금 고를 수
+                // 있는** 것들이다. 서버의 "보유 목록"(`ownedCharactersProvider`)에는
+                // 안 들어온다: 구독으로 여는 것은 member_character 행을 만들지
+                // 않으므로(해지 후 영구 소유 방지), 카탈로그에만 나타난다.
+                final unlockedByMax =
+                    characters.where((c) => c.isSubscriptionUnlocked).toList();
+                // 아래 두 목록의 기준이 소유(isOwned)에서 **접근(isUnlocked)** 으로
+                // 옮겨간다. 무료·Pro 회원에게는 두 값이 항상 같아서(구독이 아무것도
+                // 열지 않는다) 목록이 수학적으로 종전과 동일하다 — 이 등가성은
+                // `avatar_sections_test.dart` 가 화면 기준으로 못박고 있다.
+                final discounted = characters
+                    .where((c) => c.hasDiscount && !c.isSubscriptionUnlocked)
+                    .toList();
                 final buyable = characters
-                    .where((c) => !c.isOwned && !c.hasDiscount)
+                    .where((c) => !c.isUnlocked && !c.hasDiscount)
                     .toList();
 
                 return ListView(
@@ -105,6 +116,15 @@ class AvatarScreen extends ConsumerWidget {
                       _label(context, l10n.myPartnersOwned(owned.length)),
                       const SizedBox(height: AppSpacing.s12),
                       _ownedRow(context, owned, activeId),
+                      const SizedBox(height: AppSpacing.s28),
+                    ],
+                    // 구매한 것 바로 아래 — "지금 고를 수 있는 것"이 화면 위쪽에
+                    // 모이게 한다. 원래 증상이 "고를 수가 없다" 였고, 이 목록이
+                    // 생기기 전에는 고를 수 있는 캐릭터가 구매 목록에 섞여 있었다.
+                    if (unlockedByMax.isNotEmpty) ...[
+                      _label(context, l10n.unlockedWithMax),
+                      const SizedBox(height: AppSpacing.s12),
+                      _maxUnlockedRow(context, unlockedByMax, activeId),
                       const SizedBox(height: AppSpacing.s28),
                     ],
                     if (discounted.isNotEmpty) ...[
@@ -139,7 +159,10 @@ class AvatarScreen extends ConsumerWidget {
                         const SizedBox(height: AppSpacing.s12),
                       ],
                     ],
-                    if (owned.isEmpty && discounted.isEmpty && buyable.isEmpty)
+                    if (owned.isEmpty &&
+                        unlockedByMax.isEmpty &&
+                        discounted.isEmpty &&
+                        buyable.isEmpty)
                       Padding(
                         padding: const EdgeInsets.only(top: AppSpacing.s40),
                         child: EmptyBlock(body: l10n.noCharactersToShow),
@@ -195,6 +218,61 @@ class AvatarScreen extends ConsumerWidget {
                   backgroundStory: c.backgroundStory,
                   voiceUrl: c.voiceUrl,
                   tags: c.tags,
+                ),
+              );
+            },
+          ),
+      ],
+    );
+  }
+
+  /// 구독(Max)으로 열린 캐릭터들 — 보유 목록과 **같은 카드 모양**의 행.
+  ///
+  /// 모양을 맞춘 게 요점이다: 이 목록의 캐릭터는 구매 카드처럼 "사러 가는" 것이 아니라
+  /// 보유 캐릭터처럼 **탭해서 고르는** 것이므로, 같은 동작을 하는 것끼리 같아 보여야
+  /// 한다. 상태 라벨은 소유가 아니라 "이용 가능"이다 — 여기서 "보유"라고 하면 산 것으로
+  /// 오해시킨 뒤 해지 때 뺏는 꼴이 된다.
+  Widget _maxUnlockedRow(
+    BuildContext context,
+    List<Character> unlocked,
+    int? activeId,
+  ) {
+    final l10n = AppLocalizations.of(context);
+    return Wrap(
+      spacing: AppSpacing.s16,
+      runSpacing: AppSpacing.s16,
+      children: [
+        for (final c in unlocked)
+          Builder(
+            builder: (context) {
+              final isActive = activeId != null && c.id == activeId;
+              final image = _imageFor(c.imageUrl, c.id);
+              return AvatarCard(
+                name: c.name,
+                statusLabel: isActive ? l10n.inUse : l10n.available,
+                active: isActive,
+                imageProvider: image,
+                onTap: () => _openDetail(
+                  context,
+                  isActive
+                      ? AvatarDetailState.subscriptionUsed
+                      : AvatarDetailState.subscriptionUnused,
+                  c.name,
+                  image,
+                  characterId: c.id,
+                  // 상세 화면에 구매 버튼이 살아 있으므로 결제 재료를 그대로 넘긴다 —
+                  // Max 회원도 해지 후를 대비해 영구 구매를 할 수 있어야 한다.
+                  productKey: c.productKey,
+                  description: c.description,
+                  backgroundStory: c.backgroundStory,
+                  voiceUrl: c.voiceUrl,
+                  tags: c.tags,
+                  price: _priceLabel(context, c.price),
+                  discountPrice: c.hasDiscount
+                      ? _priceLabel(context, c.effectivePrice)
+                      : null,
+                  discountPercent: _discountPercent(c),
+                  effectivePriceMinor: c.effectivePrice,
                 ),
               );
             },
@@ -365,10 +443,29 @@ class AvatarScreen extends ConsumerWidget {
               AvatarDetailState.unownedDiscount =>
                 () => _purchase(
                     routeCtx, ref, characterId, productKey, effectivePriceMinor),
-              AvatarDetailState.ownedUnused => () =>
-                  _useCharacter(routeCtx, ref, characterId),
+              // 구독으로 열린 캐릭터도 **대표로 지정할 수 있다** — 서버가
+              // `PATCH /members/me {character_id}` 에 소유 검증을 걸지 않고, 통화도
+              // `MemberCharacter` 행 없이 구독만으로 허용한다
+              // (`normalcall_service.py:155-160`). 여기서 소유만 통과시키면 원래
+              // 버그(Max 인데 선택 불가)가 그대로 남는다.
+              AvatarDetailState.ownedUnused ||
+              AvatarDetailState.subscriptionUnused =>
+                () => _useCharacter(routeCtx, ref, characterId),
               // Already in use — the screen shows a single 닫기 footer.
               AvatarDetailState.ownedUsed => () => Navigator.pop(routeCtx),
+              // 이미 쓰는 중이라 확인할 게 없다. 이 상태의 액션은 onPurchase 쪽이다.
+              AvatarDetailState.subscriptionUsed => () =>
+                  Navigator.pop(routeCtx),
+            },
+            // 구독 상태에서만 구매 버튼이 따로 있다. 나머지 상태는 구매가
+            // onConfirm 이거나(unowned) 아예 없어서(owned) null 로 둔다 — 기존
+            // 상태들의 동작은 그대로다.
+            onPurchase: switch (state) {
+              AvatarDetailState.subscriptionUnused ||
+              AvatarDetailState.subscriptionUsed =>
+                () => _purchase(
+                    routeCtx, ref, characterId, productKey, effectivePriceMinor),
+              _ => null,
             },
             onClose: () => Navigator.pop(routeCtx),
           ),
@@ -669,6 +766,7 @@ class _AvatarDetailRoute extends StatefulWidget {
     required this.discountPrice,
     required this.discountPercent,
     required this.onConfirm,
+    required this.onPurchase,
     required this.onClose,
   });
 
@@ -683,6 +781,9 @@ class _AvatarDetailRoute extends StatefulWidget {
   final String? discountPrice;
   final int? discountPercent;
   final VoidCallback onConfirm;
+
+  /// 구독 상태 전용 구매 액션. 다른 상태에서는 null(구매는 [onConfirm] 이거나 없다).
+  final VoidCallback? onPurchase;
   final VoidCallback onClose;
 
   @override
@@ -731,6 +832,7 @@ class _AvatarDetailRouteState extends State<_AvatarDetailRoute> {
       discountPrice: widget.discountPrice,
       discountPercent: widget.discountPercent,
       onConfirm: widget.onConfirm,
+      onPurchase: widget.onPurchase,
       onClose: widget.onClose,
       onPlaySample: _playable ? _playSample : null,
     );

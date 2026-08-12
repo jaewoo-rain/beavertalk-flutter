@@ -2113,4 +2113,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Antas ng hirap';
+
+  @override
+  String get unlockedWithMax => 'Available sa Max';
 }

@@ -2105,4 +2105,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Vaikeustaso';
+
+  @override
+  String get unlockedWithMax => 'Käytettävissä Maxilla';
 }

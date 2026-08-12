@@ -2100,4 +2100,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Zorluk';
+
+  @override
+  String get unlockedWithMax => 'Max ile kullanılabilir';
 }

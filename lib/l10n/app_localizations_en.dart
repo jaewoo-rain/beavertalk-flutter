@@ -2100,4 +2100,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Difficulty';
+
+  @override
+  String get unlockedWithMax => 'Available with Max';
 }

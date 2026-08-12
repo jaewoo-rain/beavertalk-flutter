@@ -1328,5 +1328,9 @@
   "difficultyLabel": "Difficulty",
   "@difficultyLabel": {
     "description": "Pronunciation challenge - label above the difficulty toggle."
+  },
+  "unlockedWithMax": "Available with Max",
+  "@unlockedWithMax": {
+    "description": "Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does."
   }
 }

@@ -2107,4 +2107,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Tingkat kesulitan';
+
+  @override
+  String get unlockedWithMax => 'Tersedia dengan Max';
 }

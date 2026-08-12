@@ -2101,4 +2101,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Хүндрэл';
+
+  @override
+  String get unlockedWithMax => 'Max-аар ашиглах боломжтой';
 }

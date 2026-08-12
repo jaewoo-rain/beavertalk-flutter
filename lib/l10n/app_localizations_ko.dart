@@ -2036,4 +2036,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get difficultyLabel => '난이도';
+
+  @override
+  String get unlockedWithMax => 'Max로 이용 가능';
 }

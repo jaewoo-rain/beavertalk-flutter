@@ -626,5 +626,6 @@
   "difficultySlow": "ধীরে",
   "difficultyNormal": "স্বাভাবিক",
   "difficultyFast": "দ্রুত",
-  "difficultyLabel": "কঠিনতা"
+  "difficultyLabel": "কঠিনতা",
+  "unlockedWithMax": "Max দিয়ে ব্যবহারযোগ্য"
 }

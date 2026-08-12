@@ -626,5 +626,6 @@
   "difficultySlow": "Баяу",
   "difficultyNormal": "Қалыпты",
   "difficultyFast": "Жылдам",
-  "difficultyLabel": "Күрделілік"
+  "difficultyLabel": "Күрделілік",
+  "unlockedWithMax": "Max-пен қолжетімді"
 }

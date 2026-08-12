@@ -2094,4 +2094,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'कठिनाई';
+
+  @override
+  String get unlockedWithMax => 'Max के साथ उपलब्ध';
 }

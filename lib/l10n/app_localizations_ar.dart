@@ -2087,4 +2087,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'الصعوبة';
+
+  @override
+  String get unlockedWithMax => 'متاح مع Max';
 }

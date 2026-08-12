@@ -626,5 +626,6 @@
   "difficultySlow": "Удаан",
   "difficultyNormal": "Хэвийн",
   "difficultyFast": "Хурдан",
-  "difficultyLabel": "Хүндрэл"
+  "difficultyLabel": "Хүндрэл",
+  "unlockedWithMax": "Max-аар ашиглах боломжтой"
 }

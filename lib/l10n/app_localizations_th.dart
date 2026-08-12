@@ -2089,4 +2089,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'ระดับความยาก';
+
+  @override
+  String get unlockedWithMax => 'ใช้ได้ด้วย Max';
 }

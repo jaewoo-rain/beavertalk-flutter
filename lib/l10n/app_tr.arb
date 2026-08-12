@@ -626,5 +626,6 @@
   "difficultySlow": "Yavaş",
   "difficultyNormal": "Normal",
   "difficultyFast": "Hızlı",
-  "difficultyLabel": "Zorluk"
+  "difficultyLabel": "Zorluk",
+  "unlockedWithMax": "Max ile kullanılabilir"
 }

@@ -2098,4 +2098,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Күрделілік';
+
+  @override
+  String get unlockedWithMax => 'Max-пен қолжетімді';
 }

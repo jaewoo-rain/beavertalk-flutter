@@ -626,5 +626,6 @@
   "difficultySlow": "آہستہ",
   "difficultyNormal": "معمول",
   "difficultyFast": "تیز",
-  "difficultyLabel": "دشواری"
+  "difficultyLabel": "دشواری",
+  "unlockedWithMax": "Max کے ساتھ دستیاب"
 }
