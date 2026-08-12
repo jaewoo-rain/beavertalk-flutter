@@ -38,7 +38,32 @@ public class FlutterPcmSoundPlugin implements
     MethodChannel.MethodCallHandler
 {
     private static final String CHANNEL_NAME = "flutter_pcm_sound/methods";
-    private static final int MAX_FRAMES_PER_BUFFER = 200;
+    // [BeaverTalk fix 2026-08-13] 한 조각의 **바이트** 상한.
+    //
+    // ⛔ 예전 이름은 `MAX_FRAMES_PER_BUFFER = 200` 이었는데 **단위가 어긋나 있었다**:
+    //   `split()` 은 이 값을 **바이트**로 쓰고(`Math.min(len - offset, maxSize)`),
+    //   `mMaxChunkBytes` 는 **프레임**으로 보고 `×2×채널` 을 곱했다. 즉 실제 조각은
+    //   200B(=100프레임)인데 코얼레싱 한계는 400B 로 계산됐다. 이름을 바이트로 통일한다.
+    //
+    // ## 왜 200B 가 문제였나 (실측으로 확정)
+    //   feed 1회 72,000B ÷ 200B = **조각 360개**, 초당 25회 → **9,000 객체/초**
+    //   (ByteBuffer + ArrayList 원소 + LinkedBlockingQueue 노드)
+    //   `feed` 핸들러는 **안드로이드 UI 스레드**에서 돈다 → 힙 압박 → GC 정지 누적 →
+    //   UI 스레드 정체 → **모든 채널 호출이 대기**한다.
+    //   실측(6분 라이브 통화): 아무 일도 안 하는 `ping` 왕복이 4ms → **3,155ms**.
+    //   원본 주석은 `// Split for better performance` 뿐인데, 그건 **콜백(풀) 모델** 전제로
+    //   보인다 — 우리는 푸시 모델이라 잘게 쪼개서 얻는 게 없다.
+    //
+    // ## 왜 "안 쪼개기"가 아니라 4,800B 인가 — 두 상한 사이에서 골랐다
+    //   ⛔ 위: `mScratch` 가 **1초치(48,000B)** 다. Dart 의 feed 상한이 72,000B 이므로
+    //      안 쪼개면 `data.get(mScratch, 0, total)` 에서 **넘친다**(즉시 크래시).
+    //   ⛔ 아래: `write()` 는 WRITE_BLOCKING 이라 조각이 클수록 재생 스레드가 **한 번에
+    //      오래 잡힌다**. 그 구간이 `clear()`(barge-in)의 `write_in_flight` 창이다.
+    //   ⇒ **100ms 분량(24kHz mono = 4,800B)** 으로 잡는다. 트랙 버퍼가 이미 ~166ms
+    //     (minBuf×4)라 그보다 짧아 응답성 손해가 그 안에 묻히고, 할당은
+    //     9,000 → **375 객체/초(96% 감소)** 가 된다.
+    //   ⚠ 스테레오면 같은 바이트가 50ms 가 된다(우리는 mono). 상한의 성격은 그대로다.
+    private static final int MAX_CHUNK_BYTES = 4800;
 
     // [BeaverTalk patch] AudioTrack underrun 방지용 버퍼 배수.
     // 원본은 getMinBufferSize() 최소치를 그대로 setBufferSizeInBytes 에 넘겨, 재생 스레드가
@@ -273,7 +298,8 @@ public class FlutterPcmSoundPlugin implements
 
                     // 코얼레싱/업샘플 버퍼(재생 스레드 전용). scratch 는 입력 1초, out 은 출력 1초.
                     int bytesPerSec = sampleRate * 2 * mNumChannels;
-                    mMaxChunkBytes = MAX_FRAMES_PER_BUFFER * 2 * mNumChannels;
+                    // 단위를 통일했다 — split 과 **같은 바이트 값**을 쓴다(예전엔 2배로 어긋났다).
+                    mMaxChunkBytes = MAX_CHUNK_BYTES;
                     mCoalesceTargetBytes = 0; // [test] 코얼레싱 비활성 — 작은 write 가 더 나음
                     mScratch = new byte[bytesPerSec];                 // 입력(24k) 1s
                     mScratchOut = new byte[bytesPerSec * mUpsample];  // 출력(48k) 1s
@@ -387,7 +413,7 @@ public class FlutterPcmSoundPlugin implements
                     byte[] buffer = call.argument("buffer");
 
                     // Split for better performance
-                    List<ByteBuffer> chunks = split(buffer, MAX_FRAMES_PER_BUFFER);
+                    List<ByteBuffer> chunks = split(buffer, MAX_CHUNK_BYTES);
 
                     // [BeaverTalk fix] mSamples(LinkedBlockingQueue) 는 스레드-안전하므로 락 없이 add.
                     // 재생 스레드가 이 add 때문에 블록되지 않는다(예전 synchronized 병목 제거).
@@ -654,7 +680,19 @@ public class FlutterPcmSoundPlugin implements
             // (블록 없이 poll) scratch 에 모아 목표(~300ms)까지 채운 뒤 "한 번에" write 한다.
             // write 호출당 붙는 HAL 지연(~130ms)을 청크 수백 개가 아니라 write 한 번에만 물리게 해
             // 재생이 실시간을 넉넉히 따라잡게 만든다.
-            int total = data.remaining();
+            // ⛔ **scratch 를 넘길 수 없다.** `mScratch` 는 1초치인데 조각 상한이 바뀌면
+            //   (설정·다른 샘플레이트) 여기서 넘쳐 **재생 스레드가 통째로 죽는다.**
+            //   조각 상한(4,800B)이 1초치보다 한참 작아 지금은 절대 안 걸리지만,
+            //   상한을 만지는 다음 사람이 이 줄에서 크래시를 만나지 않게 잘라 쓴다.
+            int avail = data.remaining();
+            int total = Math.min(avail, mScratch.length);
+            if (total < avail) {
+                // ⛔ **조용히 버리지 않는다.** 여기서 잘린다는 건 오디오가 사라진다는 뜻이고,
+                //   그건 에러 없이 "소리가 이상하다"로만 나타나 원인을 못 찾는다.
+                Log.w("BeaverTalkPCM", "⚠ 조각이 scratch 보다 크다 — " + (avail - total)
+                    + "B 버림(조각상한=" + MAX_CHUNK_BYTES + "B scratch=" + mScratch.length
+                    + "B). 상한을 scratch 안으로 낮춰라.");
+            }
             data.get(mScratch, 0, total);
             while (total < mCoalesceTargetBytes && total + mMaxChunkBytes <= mScratch.length) {
                 ByteBuffer more = mSamples.poll(); // 비블록: 지금 있는 것만
