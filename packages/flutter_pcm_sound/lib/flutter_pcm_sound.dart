@@ -193,6 +193,58 @@ class FlutterPcmSound {
     }
   }
 
+  // ── [계측] 플랫폼 채널 처리량 — 도착률 vs 처리율 ──────────────────────────────
+  //
+  // 왜 여기인가: Dart→네이티브 호출은 **전부** [_invokeMethod] 를 지난다. 호출부마다
+  // 세면 새 경로가 생길 때 조용히 빠지지만, 여기서 세면 빠질 수 없다.
+  //
+  // ⭐ 무엇을 가르나 — 빈채널왕복(ping)이 3ms → 1,443ms 로 커지는데 네이티브 처리
+  //   시간은 0.02→0.03ms 로 평평하다(2026-08-13 에뮬 6분). 그러면 시간은 **호출과
+  //   처리 사이**에서 사라지는 것이고, 원인 후보는 둘 뿐이다:
+  //     ① 우리가 처리율보다 많이 보낸다 → `미완`(sent-done)이 시간에 따라 벌어진다
+  //     ② 건수는 그대로인데 왕복만 늘어난다 → 채널 밖(플랫폼 스레드)이 막힌 것
+  //   `미완` 을 안 재면 이 둘이 로그에서 똑같이 보인다.
+  //
+  // ⛔ 계측이 원인을 만들면 안 된다 — 여기 있는 건 정수 덧셈과 [Stopwatch] 하나뿐이고
+  //   새 타이머·새 채널 호출을 만들지 않는다. 출력은 호출부의 기존 5초 타이머가 한다.
+  static int _chSent = 0; // 이 창에서 보낸 건수
+  static int _chDone = 0; // 이 창에서 응답이 돌아온 건수
+  static int _chBytes = 0; // 이 창에서 보낸 인자 바이트(feed 만 — 나머지는 무시 가능)
+  static int _chRttSumMs = 0; // 창 평균용
+  static int _chRttMaxMs = 0;
+  static int _chEvents = 0; // 네이티브→Dart 이벤트(OnFeedSamples) 건수
+  static int _chInflight = 0; // ⚠ 창을 넘어 유지되는 **게이지**(리셋하지 않는다)
+  static int _chInflightMax = 0; // 창 최대 동시 미완
+
+  /// 창 하나치 채널 통계를 돌려주고 **누적분을 리셋**한다(게이지 `inflight` 제외).
+  ///
+  /// `inflight` 는 지금 이 순간 응답을 기다리는 건수다. Dart 는 한 번에 하나씩만
+  /// 보내도록 호출부가 막고 있으니 정상값은 0~1 이고, **이게 커지면 그 자체가 답**이다.
+  ///
+  /// ⚠ 레코드가 아니라 클래스인 이유: 이 패키지의 pubspec 언어 버전이 3.0 미만이라
+  /// 레코드가 꺼져 있다. 계측 하나 붙이자고 벤더 패키지의 SDK 하한을 올리지 않는다.
+  static PcmChannelWindow channelWindow() {
+    final done = _chDone;
+    final r = PcmChannelWindow(
+      sent: _chSent,
+      done: done,
+      bytes: _chBytes,
+      inflight: _chInflight,
+      inflightMax: _chInflightMax,
+      events: _chEvents,
+      rttAvgMs: done > 0 ? _chRttSumMs / done : 0.0,
+      rttMaxMs: _chRttMaxMs,
+    );
+    _chSent = 0;
+    _chDone = 0;
+    _chBytes = 0;
+    _chRttSumMs = 0;
+    _chRttMaxMs = 0;
+    _chEvents = 0;
+    _chInflightMax = _chInflight; // 다음 창은 지금 미완에서 출발한다
+    return r;
+  }
+
   static Future<T?> _invokeMethod<T>(String method, [dynamic arguments]) async {
     if (_logLevel.index >= LogLevel.standard.index) {
       String args = '';
@@ -208,7 +260,24 @@ class FlutterPcmSound {
       }
       print("[PCM] invoke: $method $args");
     }
-    return await _channel.invokeMethod(method, arguments);
+    _chSent++;
+    _chInflight++;
+    if (_chInflight > _chInflightMax) _chInflightMax = _chInflight;
+    if (arguments is Map && arguments['buffer'] is Uint8List) {
+      _chBytes += (arguments['buffer'] as Uint8List).lengthInBytes;
+    }
+    final sw = Stopwatch()..start();
+    try {
+      return await _channel.invokeMethod(method, arguments);
+    } finally {
+      // ⚠ 실패해도 센다 — 예외로 빠지는 호출을 안 세면 `미완`이 영영 안 줄어
+      //   "채널이 막혔다"는 **가짜 결론**이 나온다.
+      _chInflight--;
+      _chDone++;
+      final ms = sw.elapsedMilliseconds;
+      _chRttSumMs += ms;
+      if (ms > _chRttMaxMs) _chRttMaxMs = ms;
+    }
   }
 
   static Future<dynamic> _methodCallHandler(MethodCall call) async {
@@ -219,6 +288,7 @@ class FlutterPcmSound {
     }
     switch (call.method) {
       case 'OnFeedSamples':
+        _chEvents++; // [계측] 네이티브→Dart 방향 건수(반대 방향과 따로 센다)
         int remainingFrames = call.arguments["remaining_frames"];
         _needsStart = remainingFrames == 0;
         if (onFeedSamplesCallback != null) {
@@ -229,6 +299,41 @@ class FlutterPcmSound {
         print('Method not implemented');
     }
   }
+}
+
+/// 창 하나치 플랫폼 채널 통계. [FlutterPcmSound.channelWindow] 참조.
+class PcmChannelWindow {
+  const PcmChannelWindow({
+    required this.sent,
+    required this.done,
+    required this.bytes,
+    required this.inflight,
+    required this.inflightMax,
+    required this.events,
+    required this.rttAvgMs,
+    required this.rttMaxMs,
+  });
+
+  /// 이 창에서 Dart→네이티브로 **보낸** 건수(도착률).
+  final int sent;
+
+  /// 이 창에서 응답이 **돌아온** 건수(처리율). 예외로 끝난 것도 포함한다.
+  final int done;
+
+  /// 이 창에서 보낸 `feed` 인자 바이트 합.
+  final int bytes;
+
+  /// 지금 응답을 기다리는 건수(게이지 — 창 경계에서 리셋되지 않는다).
+  final int inflight;
+
+  /// 이 창에서 관측된 동시 미완의 최대치.
+  final int inflightMax;
+
+  /// 네이티브→Dart 이벤트(`OnFeedSamples`) 건수.
+  final int events;
+
+  final double rttAvgMs;
+  final int rttMaxMs;
 }
 
 /// What a `clear` gave back.
