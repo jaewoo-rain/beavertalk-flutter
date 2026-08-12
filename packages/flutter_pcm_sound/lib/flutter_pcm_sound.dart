@@ -41,12 +41,14 @@ class FlutterPcmSound {
       required int channelCount,
       IosAudioCategory iosAudioCategory = IosAudioCategory.playback,
       bool iosAllowBackgroundAudio = false,
+      bool androidVoiceCallAudio = false,
       }) async {
     return await _invokeMethod('setup', {
       'sample_rate': sampleRate,
       'num_channels': channelCount,
       'ios_audio_category': iosAudioCategory.name,
       'ios_allow_background_audio' : iosAllowBackgroundAudio,
+      'voice_call_audio': androidVoiceCallAudio,
     });
   }
 
@@ -94,6 +96,56 @@ class FlutterPcmSound {
   /// release all audio resources
   static Future<void> release() async {
     return await _invokeMethod('release');
+  }
+
+  /// (beavertalk patch) Drops everything queued for playback **without tearing the
+  /// engine down** — the barge-in path.
+  ///
+  /// [release] is the only other way to stop mid-utterance, but it kills the
+  /// AudioTrack and its thread, so reusing it costs a `setup()` plus a settle
+  /// delay. Barge-in happens every time the user interrupts, so that price can't
+  /// be paid. This keeps the track alive (silence keep-alive included, so
+  /// AudioFlinger never moves it to the idle list and charges ~130ms to
+  /// reactivate) and empties only the queue and the track buffer.
+  ///
+  /// Returns the number of **input frames** discarded — the caller's ground truth
+  /// for "how much of what we sent never reached the speaker". Measured *before*
+  /// the flush, and on Android it includes the AudioTrack's own buffer, not just
+  /// the pending queue: counting the queue alone drops up to 800ms on some
+  /// devices, which is the same class of error that caused the self-talk loop
+  /// (see [getStats]' notes and `remainingInputFrames` on the Android side).
+  ///
+  /// Returns null when the platform does not implement it, so the caller can tell
+  /// "nothing was queued" (0) apart from "I could not clear" (null) instead of
+  /// silently trusting a wrong number.
+  ///
+  /// ⚠ iOS reports the pending queue only. Its render callback pulls ~10-20ms at
+  /// a time, so there is no queryable "handed over but unplayed" pool the way
+  /// Android has one; the value runs a few ms low.
+  static Future<int?> clear() async => (await clearDetailed()).framesDiscarded;
+
+  /// [clear], plus the numbers a caller needs to say **when the speaker actually
+  /// went quiet** rather than when the flush call returned.
+  static Future<PcmClearResult> clearDetailed() async {
+    final res = await _invokeMethod<dynamic>('clear');
+    if (res is int) {
+      return PcmClearResult(
+          framesDiscarded: res, halResidualMs: 0, halResidualKnown: false);
+    }
+    if (res is Map) {
+      final f = res['frames_discarded'];
+      final h = res['hal_residual_ms'];
+      final k = res['hal_residual_known'];
+      final w = res['write_in_flight'];
+      return PcmClearResult(
+        framesDiscarded: f is num ? f.toInt() : null,
+        halResidualMs: h is num ? h.toInt() : 0,
+        halResidualKnown: k is num ? k.toInt() != 0 : false,
+        writeInFlight: w is num ? w.toInt() != 0 : false,
+      );
+    }
+    return const PcmClearResult(
+        framesDiscarded: null, halResidualMs: 0, halResidualKnown: false);
   }
 
   /// (beavertalk patch) O(1) snapshot of the native playback backlog, for
@@ -155,6 +207,40 @@ class FlutterPcmSound {
         print('Method not implemented');
     }
   }
+}
+
+/// What a `clear` gave back.
+class PcmClearResult {
+  const PcmClearResult({
+    required this.framesDiscarded,
+    required this.halResidualMs,
+    required this.halResidualKnown,
+    this.writeInFlight = false,
+  });
+
+  /// Input frames dropped, measured just before the flush. Null if the platform
+  /// does not report it — the caller must not substitute a guess.
+  final int? framesDiscarded;
+
+  /// Audio already handed to the mixer/HAL, which `flush()` cannot take back and
+  /// which therefore keeps sounding after the call returns. Add this to know when
+  /// the speaker is really quiet.
+  final int halResidualMs;
+
+  /// Whether [halResidualMs] was actually measured. Android exposes it through
+  /// `AudioTrack.getTimestamp()`, which the platform may decline (route changes,
+  /// clock still stabilising, or routes that never support timestamps), and iOS's
+  /// pull-based AudioUnit has no equivalent. When false, the 0 means **unknown**,
+  /// not "nothing left" — reporting it as zero would flatter the measured latency.
+  final bool halResidualKnown;
+
+  /// Whether the playback thread was inside a real-audio `write()` when the clear
+  /// ran. If it was, that data lands in the track *after* our flush and keeps
+  /// sounding until the thread notices the generation change and flushes it back
+  /// out — which happens after this call has already returned. So the moment the
+  /// flush completed is **not** the moment the speaker went quiet, and a caller
+  /// reporting stop latency must mark its number as a lower bound.
+  final bool writeInFlight;
 }
 
 class PcmArrayInt16 {

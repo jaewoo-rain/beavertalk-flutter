@@ -256,6 +256,32 @@ typedef NS_ENUM(NSUInteger, LogLevel) {
 
             result(@YES);
         }
+        // [BeaverTalk barge-in] 유닛을 멈추지 않고 대기 중인 재생만 버린다.
+        //
+        // 반환: @{@"frames_discarded": 입력 프레임 수}. Android 와 같은 규약이다.
+        //
+        // ⚠ Android 와 정확도가 다르다. Android 는 AudioTrack 내부 버퍼(기기에 따라
+        //   800ms 초과)까지 세지만, iOS 는 렌더 콜백이 소량(≈10~20ms)씩 당겨가는 pull
+        //   구조라 "미방출분"에 해당하는 게 콜백 한 번치뿐이고 조회할 방법도 없다.
+        //   따라서 여기 값은 **대기 큐 기준**이고 한 자릿수 ms 만큼 작게 나온다.
+        //   → 호출부(PlaybackLedger)에서 재생량이 그만큼 과대 보고된다. 보정하지 않는다.
+        //
+        // 렌더 콜백이 같은 @synchronized(mSamples) 안에서 복사하므로, 이 블록 안에서
+        // 비우면 "이미 꺼내 든 청크" 문제가 없다 — Android 의 mClearGen 같은 장치가
+        // iOS 에는 필요 없는 이유다.
+        else if([@"clear" isEqualToString:call.method])
+        {
+            NSUInteger discarded = 0;
+            @synchronized (self.mSamples) {
+                NSUInteger bytesPerFrame = self.mNumChannels * sizeof(short);
+                if (bytesPerFrame > 0) {
+                    discarded = [self.mSamples length] / bytesPerFrame;
+                }
+                [self.mSamples setLength:0];
+            }
+            NSLog(@"BeaverTalkPCM clear: discarded=%lu inFrames", (unsigned long)discarded);
+            result(@{@"frames_discarded": @(discarded)});
+        }
         else if([@"release" isEqualToString:call.method])
         {
             [self cleanup];
