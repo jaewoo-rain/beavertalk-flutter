@@ -32,6 +32,7 @@ import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
 import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
+import 'cascade_auto_talk.dart';
 import 'normalcall_providers.dart';
 
 /// `call_ended.call_id` 정규화 — **빈 값은 없는 것**이다.
@@ -407,6 +408,16 @@ class NormalCallController extends Notifier<CallState> {
   /// 아직 발화되지 않은 마커들. `at` 은 [_envPlayed] 가 그 값에 닿으면 터진다는 뜻.
   final List<({int at, String text, int emotion, int seq, int serverBytes})>
       _pendingMarkers = [];
+
+  // ── dev 자동 대화 ─────────────────────────────────────────────────────────
+  /// 지금까지 던진 문장 수. 다음 문장 고르기와 로그에 쓴다.
+  int _autoTalkSent = 0;
+
+  /// 예약된 다음 문장. 발화 종료마다 하나만 건다(겹치면 취소하고 다시 건다).
+  Timer? _autoTalkTimer;
+
+  /// 자동 대화를 시작한 시각 — [CascadeAutoTalk.duration] 이 지나면 스스로 끊는다.
+  DateTime? _autoTalkStartedAt;
 
   /// [계측] 이 통화에서 받은 `sentence` 마커 수. **0 이면 서버가 안 보낸 것**이고,
   /// 0 이 아닌데 화면이 비면 앱 문제다 — 첫 실기기 통화에서 그 경계를 가르는 값이다.
@@ -1229,6 +1240,8 @@ class NormalCallController extends Notifier<CallState> {
         'aec': await _aecHint(),
       });
 
+      _startAutoTalkIfEnabled();
+
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
       _log('socket connected (audio pending)');
@@ -1441,7 +1454,11 @@ class NormalCallController extends Notifier<CallState> {
       // 권한 팝업을 띄운다. 거부 상태면 마이크 없이는 대화가 불가하므로 안내하고 끝낸다
       // (소켓은 이미 열려 있으므로 반드시 teardown 한다).
       final micStatus = await Permission.microphone.request();
-      if (!micStatus.isGranted) {
+      if (!micStatus.isGranted && CascadeAutoTalk.enabled) {
+        // 자동 대화는 업링크가 없어도 성립한다 — 권한 거부로 통화를 못 열면
+        // 에뮬레이터에서 6분 곡선을 아예 못 잰다. 제품 경로는 아래처럼 그대로 막힌다.
+        _log('⚠ [auto] 마이크 권한이 없다 — 자동 대화라 통화는 계속한다');
+      } else if (!micStatus.isGranted) {
         state = state.copyWith(
           phase: CallPhase.error,
           errorMsg: micStatus.isPermanentlyDenied
@@ -1516,7 +1533,22 @@ class NormalCallController extends Notifier<CallState> {
       }
 
       // Start streaming the mic to the server.
-      await _startMic();
+      //
+      // ⛔ **자동 대화에서만** 마이크 실패를 견딘다. 에뮬레이터엔 마이크가 없어
+      //   (`AUDIO_DEVICE_NONE`) `_startMic` 이 재시도 끝에 던지고, 그러면 통화가 통째로
+      //   죽어 **재려던 6분 곡선을 못 잰다.** 자동 대화는 글자를 직접 주입하므로 업링크가
+      //   없어도 성립한다.
+      // ⚠ 제품 경로는 **그대로 죽는다.** 마이크 없는 통화는 실사용자에게 무의미하고,
+      //   조용히 이어 가면 "말해도 반응이 없다"가 된다 — 그건 지금 고치는 종류의 결함이다.
+      if (CascadeAutoTalk.enabled) {
+        try {
+          await _startMic();
+        } catch (e) {
+          _log('⚠ [auto] 마이크를 못 열었다 — 자동 대화라 통화는 계속한다: $e');
+        }
+      } else {
+        await _startMic();
+      }
       if (myGen != _gen) return _abortStart();
       // The recorder can open successfully and still capture nothing when the
       // session/route was not settled yet — a silent failure with no exception.
@@ -2568,6 +2600,7 @@ class NormalCallController extends Notifier<CallState> {
       avatarLevel.value = 0.0;
       _decayCushion();
       _log('mic OPEN — your turn (turn_end + drained)');
+      _scheduleAutoTalk();
     });
   }
 
@@ -2590,8 +2623,72 @@ class NormalCallController extends Notifier<CallState> {
         avatarLevel.value = 0.0;
         _decayCushion();
         _log('mic OPEN — your turn (idle drained)');
+        _scheduleAutoTalk();
       }
     });
+  }
+
+  // ── dev 자동 대화 ─────────────────────────────────────────────────────────
+
+  /// 비버 발화가 **완전히 끝난 뒤** 다음 문장을 예약한다.
+  ///
+  /// ⛔ 고정 주기로 쏘지 않는다. 여기(턴 종료 + 오디오 배수 + 행오버)에만 거는 이유는,
+  ///   비버 말과 겹치면 **대기열·취소 경로가 섞여 무엇을 재는지 흐려지기** 때문이다.
+  ///   발화 종료 지점이 두 곳(행오버 / idle-ungate)이라 양쪽에서 부르고, 이미 예약된
+  ///   게 있으면 갈아끼운다 — 두 경로가 같은 종료를 두 번 알릴 수 있다.
+  void _scheduleAutoTalk() {
+    if (!CascadeAutoTalk.enabled) return;
+    final started = _autoTalkStartedAt;
+    if (started == null) return; // 이 통화에서 시작하지 않았다
+    _autoTalkTimer?.cancel();
+
+    final elapsed = DateTime.now().difference(started);
+    if (elapsed >= CascadeAutoTalk.duration) {
+      _log('[auto] ${elapsed.inSeconds}초 경과 — 스스로 끊는다 '
+          '(문장 $_autoTalkSent개)');
+      unawaited(hangUp());
+      return;
+    }
+
+    final wait = CascadeAutoTalk.gapFor(_autoTalkSent);
+    _autoTalkTimer = Timer(wait, _sendAutoTalk);
+  }
+
+  /// 문장 하나를 서버에 주입한다(`__test_say`).
+  ///
+  /// ⛔ **재생 경로를 건드리지 않는다** — 송신만 한다. 재생이 측정 대상이다.
+  void _sendAutoTalk() {
+    _autoTalkTimer = null;
+    if (!CascadeAutoTalk.enabled) return;
+    // ⛔ **조용한 실패 금지.** 소켓이 없으면 훅이 안 나간 것이고, 그러면 통화가 조용히
+    //   멈춰 6분을 못 채운다. 그때 "왜 안 돌지"를 로그 없이 찾게 두지 않는다.
+    if (_channel == null) {
+      _log('⚠ [auto] 소켓이 없어 문장을 못 보냈다 — 자동 대화가 여기서 멈춘다');
+      return;
+    }
+    final text = CascadeAutoTalk.lineAt(_autoTalkSent);
+    _autoTalkSent++;
+    _send({'type': '__test_say', 'text': text});
+    final elapsed = _autoTalkStartedAt == null
+        ? Duration.zero
+        : DateTime.now().difference(_autoTalkStartedAt!);
+    _log('[auto] #$_autoTalkSent (${elapsed.inSeconds}초) → "$text"');
+  }
+
+  /// 통화가 열린 뒤 자동 대화를 켠다(첫 문장은 비버 인사가 끝나면 나간다).
+  void _startAutoTalkIfEnabled() {
+    if (CascadeAutoTalk.suppressed) {
+      // 플래그는 켰는데 릴리즈 빌드라 무시됐다. **조용히 넘어가면 안 된다** —
+      // 6분을 기다린 뒤에야 "안 돌았네"를 알게 된다.
+      _log('⚠ [auto] AUTO_TALK 플래그가 켜져 있지만 릴리즈 빌드라 동작하지 않는다');
+      return;
+    }
+    if (!CascadeAutoTalk.enabled) return;
+    _autoTalkStartedAt = DateTime.now();
+    _autoTalkSent = 0;
+    _log('[auto] 자동 대화 ON — 발화 종료마다 문장을 던진다. '
+        '${CascadeAutoTalk.duration.inMinutes}분 뒤 스스로 끊는다. '
+        '⚠ STT 는 안 탄다 — **끊김 곡선 전용**이고 응답시간 측정용이 아니다');
   }
 
   // ── barge-in: 취소 처리 ────────────────────────────────────────────────────
@@ -3447,6 +3544,10 @@ class NormalCallController extends Notifier<CallState> {
     _pendingMarkers.clear();
     _envAdded = 0;
     _envPlayed = 0;
+    _autoTalkTimer?.cancel();
+    _autoTalkTimer = null;
+    _autoTalkStartedAt = null;
+    _autoTalkSent = 0;
     _sentenceCount = 0;
     _hintCount = 0;
     _hintDropped = 0;
