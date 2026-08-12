@@ -370,6 +370,12 @@ public class FlutterPcmSoundPlugin implements
                     result.success(true);
                     break;
                 }
+                case "ping": {
+                    // [계측] 아무 일도 안 한다. **플랫폼 채널 왕복 자체**를 재기 위한 것이다.
+                    // 이 값이 통화 내내 우상향하면 원인은 clear() 가 아니라 채널 적체다.
+                    result.success(null);
+                    break;
+                }
                 case "feed": {
 
                     // check setup (to match iOS behavior)

@@ -60,9 +60,29 @@ class FlutterPcmSound {
   /// the caller has to fall back to its own estimate.
   static Future<int?> feed(PcmArrayInt16 buffer) async {
     if (_needsStart && buffer.count != 0) _needsStart = false;
-    final result = await _invokeMethod('feed', {'buffer': buffer.bytes.buffer.asUint8List()});
+    final result = await _invokeMethod('feed', {'buffer': pcmBytesOf(buffer)});
     return result is int ? result : null;
   }
+
+  /// **호출당 새 배열을 만들지 않게** 하는 열쇠 — [PcmArrayInt16] 이 큰 버퍼의 **일부만**
+  /// 가리켜도 그 구간만 꺼낸다.
+  ///
+  /// ⛔ 예전엔 `buffer.bytes.buffer.asUint8List()` 였다. 그건 뷰의 **offset/length 를
+  /// 통째로 무시하고 backing buffer 전체**를 돌려준다. 지금까지 안 깨진 건 호출부가
+  /// 매번 **정확한 크기로 새 배열**을 만들어 넘겼기 때문이다 — 즉 버퍼를 재사용하려는
+  /// 순간 조용히 **오디오가 깨진다**(요청한 것보다 긴 데이터가 나간다).
+  static Uint8List pcmBytesOf(PcmArrayInt16 buffer) => Uint8List.view(
+        buffer.bytes.buffer,
+        buffer.bytes.offsetInBytes,
+        buffer.bytes.lengthInBytes,
+      );
+
+  /// 아무 일도 안 하고 즉시 돌아오는 왕복 — **플랫폼 채널 자체의 지연**을 잰다.
+  ///
+  /// ⭐ `clear()` 왕복만 보고 있으면 "`clear` 가 느린 것"과 "채널 전체가 밀리는 것"을
+  /// 못 가른다. 이 호출은 네이티브에서 즉시 반환하므로, 이 값이 우상향하면 원인은
+  /// **채널 적체**이고 `clear` 특유의 문제가 아니다.
+  static Future<void> ping() => _invokeMethod<dynamic>('ping');
 
   /// set the threshold at which we call the
   /// feed callback. i.e. if we have less than X

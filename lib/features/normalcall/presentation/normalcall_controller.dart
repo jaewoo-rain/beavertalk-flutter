@@ -1912,7 +1912,26 @@ class NormalCallController extends Notifier<CallState> {
     _fedSilSpeakFrames = 0;
     _fedSilPrebufFrames = 0;
     // 타이머 기반(청크 도착 기반 아님) — 오디오가 안 올 때도 균일하게 찍혀야 비교가 된다.
-    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+    _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
+      // ⭐ [계측] **빈 채널 호출의 왕복**을 같이 잰다(2026-08-13).
+      //   실측: 네이티브 clear() 는 0~3ms 로 평평한데 Dart↔네이티브 왕복만 79→434ms 로
+      //   커진다. 그런데 `clear()` 하나만 보고 있으면 **`clear` 가 느린 것**과
+      //   **채널 전체가 밀리는 것**을 못 가른다. `ping` 은 네이티브에서 즉시 반환하므로,
+      //   이 값이 같이 우상향하면 원인은 채널 적체다(= feed 가 앞에 쌓인 것).
+      //
+      // ⛔ **진단이 원인을 만들면 안 된다.** 그래서 새 타이머를 안 만들고 이미 있는 5초
+      //   진단 타이머에 얹었다 — 같은 5초 창에서 feed 가 125회 도는데 여기에 1회를
+      //   더하는 것이라 0.8% 다. 별도 주기로 자주 던지면 재려던 적체를 우리가 키운다.
+      var pingMs = -1;
+      if (_pcmActive) {
+        final sw = Stopwatch()..start();
+        try {
+          await FlutterPcmSound.ping();
+          pingMs = sw.elapsedMilliseconds;
+        } catch (_) {
+          // 구버전 플러그인 — 계측만 없다.
+        }
+      }
       final elapsedMs = DateTime.now().millisecondsSinceEpoch - _callT0Ms;
       final fedBytes = _fedAudBytes + _fedSilFrames * 2;
       final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
@@ -1926,7 +1945,10 @@ class NormalCallController extends Notifier<CallState> {
           '${_sec(_fedSilSpeakFrames * 2)}s + 프리버퍼대기 '
           '${_sec(_fedSilPrebufFrames * 2)}s + 턴사이 '
           '${_sec((_fedSilFrames - _fedSilSpeakFrames - _fedSilPrebufFrames) * 2)}s), '
-          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B');
+          'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B'
+          // 통로와 무관하게 찍는다 — 사장님 증상은 **라이브 5분**이다. 캐스케이드에서만
+          // 재면 반쪽이라, 같은 줄에서 두 통로를 같은 방식으로 본다.
+          '${pingMs >= 0 ? ', 빈채널왕복 ${pingMs}ms' : ''}');
       // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
       // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
       final minMs = _engineMinFrames == 1 << 30
@@ -2283,7 +2305,7 @@ class NormalCallController extends Notifier<CallState> {
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
           final gen = _clearGen; // 오디오 분기와 같은 이유 — 위 주석 참조
           final reported = await FlutterPcmSound.feed(
-            PcmArrayInt16.zeros(count: silFrames),
+            _silenceArray(silFrames),
           );
           if (gen != _clearGen) return;
           _anchorEngine(reported ?? (level + silFrames), sentAtMs);
@@ -2306,15 +2328,43 @@ class NormalCallController extends Notifier<CallState> {
   /// The server's little-endian PCM16 passes straight through: mobile targets
   /// are little-endian (host), which is what the native player expects.
   /// Caller guarantees `byteCount <= _queueLen`.
+  /// 오디오 피드용 스크래치. **호출마다 새로 만들지 않는다.**
+  ///
+  /// ⛔ 예전엔 `Uint8List(byteCount)` 를 매번 만들었다 — 최대 72KB × 초당 25회 =
+  ///   **초당 1.8MB 를 GC 에 던진다.** 5분 통화면 수백 MB 다.
+  /// ⭐ 재사용이 안전한 이유 두 가지:
+  ///   ① `MethodChannel.invokeMethod` 는 인자를 **동기적으로** 인코딩한 뒤 await 한다 —
+  ///      즉 우리가 다시 쓰기 전에 이미 채널 메시지로 복사돼 있다.
+  ///   ② 그래도 겹칠 일이 없다: [_pump] 가 `_feeding` 으로 재진입을 막는다(한 번에 하나).
+  ///   그리고 네이티브는 코덱이 디코드한 **자기 배열**(`byte[]`)을 들고 있다 — Dart 메모리를
+  ///   참조하지 않는다(Android `feed` 의 `call.argument("buffer")` 확인).
+  final Uint8List _feedScratch = Uint8List(_feedChunkBytes);
+
+  /// 무음 피드용 스크래치 — **0 으로만 채워지므로 내용이 바뀔 일이 없다.**
+  /// 최대 크기로 한 번 잡고 필요한 만큼만 뷰로 넘긴다.
+  final Uint8List _silenceScratch = Uint8List(_silenceTargetFrames * 2);
+
+  /// 무음 [frames] 개. 새로 할당하지 않는다.
+  PcmArrayInt16 _silenceArray(int frames) {
+    final want = frames * 2;
+    // 방어: 목표보다 큰 요청이 오면(설정이 바뀌면) 그때만 새로 만든다.
+    if (want > _silenceScratch.lengthInBytes) {
+      return PcmArrayInt16.zeros(count: frames);
+    }
+    return PcmArrayInt16(bytes: ByteData.sublistView(_silenceScratch, 0, want));
+  }
+
   PcmArrayInt16 _takeArray(int byteCount) {
-    final out = Uint8List(byteCount);
+    final out = _feedScratch;
     out.setRange(0, byteCount, _pcmQueue, _pcmHead);
     _pcmHead += byteCount;
     _maybeCompact();
     // Drive the avatar mouth from the samples about to play (matches what's
     // heard; the queue buffers ahead so arrival-time RMS would lead the audio).
     _updateAvatarLevel(out, byteCount);
-    return PcmArrayInt16(bytes: out.buffer.asByteData());
+    // ⚠ **부분 뷰**를 넘긴다. 전체를 넘기면 요청보다 긴 오디오가 나간다 —
+    //   `FlutterPcmSound.pcmBytesOf` 가 offset/length 를 존중하도록 같이 고쳤다.
+    return PcmArrayInt16(bytes: ByteData.sublistView(out, 0, byteCount));
   }
 
   /// Rewinds the indices once the queue is fully consumed. That is the only
