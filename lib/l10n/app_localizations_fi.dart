@@ -789,6 +789,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple-kirjautuminen epäonnistui.';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook-kirjautuminen epäonnistui.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao-kirjautuminen epäonnistui.';
 
   @override
@@ -796,6 +799,9 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Jatka Googlella';
+
+  @override
+  String get loginContinueWithFacebook => 'Jatka Facebookilla';
 
   @override
   String get loginContinueWithApple => 'Jatka Applella';

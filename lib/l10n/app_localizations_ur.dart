@@ -783,16 +783,22 @@ class AppLocalizationsUr extends AppLocalizations {
   String get loginGoogleSignInFailed => 'گوگل سائن ان ناکام ہو گیا۔';
 
   @override
-  String get loginAppleSignInFailed => 'گوگل سائن ان ناکام ہو گیا۔';
+  String get loginAppleSignInFailed => 'Apple سائن ان ناکام ہو گیا۔';
 
   @override
-  String get loginKakaoSignInFailed => 'گوگل سائن ان ناکام ہو گیا۔';
+  String get loginFacebookSignInFailed => 'Facebook سائن ان ناکام ہو گیا۔';
+
+  @override
+  String get loginKakaoSignInFailed => 'Kakao سائن ان ناکام ہو گیا۔';
 
   @override
   String get loginContinueWithKakao => 'Kakao کے ساتھ جاری رکھیں';
 
   @override
   String get loginContinueWithGoogle => 'Google کے ساتھ جاری رکھیں';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook کے ساتھ جاری رکھیں';
 
   @override
   String get loginContinueWithApple => 'Apple کے ساتھ جاری رکھیں';

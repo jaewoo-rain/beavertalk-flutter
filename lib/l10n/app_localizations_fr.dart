@@ -799,6 +799,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get loginAppleSignInFailed => 'Échec de la connexion avec Apple.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Échec de la connexion avec Facebook.';
+
+  @override
   String get loginKakaoSignInFailed => 'Échec de la connexion avec Kakao.';
 
   @override
@@ -806,6 +810,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Continuer avec Google';
+
+  @override
+  String get loginContinueWithFacebook => 'Continuer avec Facebook';
 
   @override
   String get loginContinueWithApple => 'Continuer avec Apple';

@@ -787,6 +787,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get loginAppleSignInFailed => 'ការចូល Apple បរាជ័យ។';
 
   @override
+  String get loginFacebookSignInFailed => 'ការចូល Facebook បរាជ័យ។';
+
+  @override
   String get loginKakaoSignInFailed => 'ការចូល Kakao បរាជ័យ។';
 
   @override
@@ -794,6 +797,9 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'បន្តជាមួយ Google';
+
+  @override
+  String get loginContinueWithFacebook => 'បន្តជាមួយ Facebook';
 
   @override
   String get loginContinueWithApple => 'បន្តជាមួយ Apple';

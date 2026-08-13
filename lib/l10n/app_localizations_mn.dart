@@ -785,6 +785,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple нэвтрэлт амжилтгүй боллоо.';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook нэвтрэлт амжилтгүй боллоо.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao нэвтрэлт амжилтгүй боллоо.';
 
   @override
@@ -792,6 +795,9 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google-ээр үргэлжлүүлэх';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook-оор үргэлжлүүлэх';
 
   @override
   String get loginContinueWithApple => 'Apple-ээр үргэлжлүүлэх';

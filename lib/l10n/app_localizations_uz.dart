@@ -790,6 +790,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple orqali kirish amalga oshmadi.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Facebook orqali kirish amalga oshmadi.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao orqali kirish amalga oshmadi.';
 
   @override
@@ -797,6 +801,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google bilan davom etish';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook bilan davom etish';
 
   @override
   String get loginContinueWithApple => 'Apple bilan davom etish';

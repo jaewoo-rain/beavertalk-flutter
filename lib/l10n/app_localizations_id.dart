@@ -787,6 +787,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get loginAppleSignInFailed => 'Masuk dengan Apple gagal.';
 
   @override
+  String get loginFacebookSignInFailed => 'Masuk dengan Facebook gagal.';
+
+  @override
   String get loginKakaoSignInFailed => 'Masuk dengan Kakao gagal.';
 
   @override
@@ -794,6 +797,9 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Lanjutkan dengan Google';
+
+  @override
+  String get loginContinueWithFacebook => 'Lanjutkan dengan Facebook';
 
   @override
   String get loginContinueWithApple => 'Lanjutkan dengan Apple';

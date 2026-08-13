@@ -41,10 +41,10 @@ const _googleClientId =
 /// Supabase session via `signInWithIdToken`. The AuthGate then shows home (or
 /// onboarding for a first-time user).
 ///
-/// **Kakao** is real via Supabase OAuth (external browser → deep link
-/// `kOAuthRedirect` → `onAuthStateChange` → AuthGate). **Apple** is native on
-/// iOS (Sign in with Apple → `signInWithIdToken`) and falls back to browser
-/// OAuth on Android/web; the controller picks the path per platform.
+/// **Kakao** and **Facebook** are real via Supabase OAuth (external browser →
+/// deep link `kOAuthRedirect` → `onAuthStateChange` → AuthGate). **Apple** is
+/// native on iOS (Sign in with Apple → `signInWithIdToken`) and falls back to
+/// browser OAuth on Android/web; the controller picks the path per platform.
 class LoginScreen extends ConsumerStatefulWidget {
   /// Creates the login landing screen.
   const LoginScreen({super.key});
@@ -69,6 +69,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   StreamSubscription<GoogleSignInAccount?>? _googleSub;
   bool _googleBusy = false;
   bool _kakaoBusy = false;
+  bool _facebookBusy = false;
   bool _appleBusy = false;
 
   @override
@@ -218,6 +219,25 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  /// Facebook sign-in via Supabase OAuth (external browser) — identical shape to
+  /// [_kakaoLogin]: the session returns asynchronously through the deep link →
+  /// `onAuthStateChange` → AuthGate re-routes, so there is no navigation here.
+  /// We only surface a launch failure.
+  Future<void> _facebookLogin() async {
+    if (_facebookBusy) return;
+    final l10n = AppLocalizations.of(context);
+    setState(() => _facebookBusy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).signInWithFacebook();
+    } on AppException catch (e) {
+      _showError(e.message);
+    } catch (_) {
+      _showError(l10n.loginFacebookSignInFailed);
+    } finally {
+      if (mounted) setState(() => _facebookBusy = false);
+    }
+  }
+
   /// Apple sign-in. On iOS the controller runs the native Sign in with Apple
   /// sheet and sets the session directly; on Android/web it opens Supabase
   /// browser OAuth and the session returns asynchronously via the deep link →
@@ -291,6 +311,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               leftIcon: const GoogleIcon(size: 24),
               disabled: _googleBusy,
               onPressed: _googleLogin,
+            ),
+            const SizedBox(height: AppSpacing.s16),
+            Button(
+              type: BtnType.secondaryFill,
+              size: BtnSize.s60,
+              text: l10n.loginContinueWithFacebook,
+              leftIcon: const FacebookIcon(size: 24),
+              disabled: _facebookBusy,
+              onPressed: _facebookLogin,
             ),
             const SizedBox(height: AppSpacing.s16),
             Button(

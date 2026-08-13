@@ -301,6 +301,37 @@ class AuthController extends Notifier<AuthStatus> {
     }
   }
 
+  /// Facebook sign-in via Supabase OAuth.
+  ///
+  /// Same shape as [signInWithKakao]: Facebook's consent page opens in an
+  /// external browser, the deep link [kOAuthRedirect] returns to the app, and
+  /// `onAuthStateChange` (wired in [_subscribeOnce]) flips the gate — so this
+  /// method does NOT set [state] itself and the caller needs no post-login
+  /// navigation. Returns as soon as the browser is launched; the session
+  /// arrives asynchronously.
+  ///
+  /// No Facebook App ID lives in the client: the browser flow is driven entirely
+  /// by the Supabase Facebook provider, which holds the App ID + secret. (A
+  /// *native* Limited Login path would need `flutter_facebook_auth` plus
+  /// per-platform token handling — deliberately out of scope here.)
+  ///
+  /// `scopes` is left at Supabase's default (`email`, `public_profile`) — the
+  /// two permissions Meta grants without App Review. Widening this pulls the app
+  /// into review, so don't add scopes casually.
+  ///
+  /// Throws [AppException] if the browser can't be launched.
+  Future<void> signInWithFacebook() async {
+    try {
+      await _client.auth.signInWithOAuth(
+        OAuthProvider.facebook,
+        redirectTo: kOAuthRedirect,
+        authScreenLaunchMode: LaunchMode.externalApplication,
+      );
+    } on AuthException catch (e) {
+      throw _mapAuthException(e, context: _AuthContext.login);
+    }
+  }
+
   /// Apple sign-in.
   ///
   /// **iOS** uses the *native* Sign in with Apple sheet (`sign_in_with_apple`):

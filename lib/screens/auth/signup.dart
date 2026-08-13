@@ -238,8 +238,9 @@ class _ErrorText extends StatelessWidget {
   }
 }
 
-/// Three equal-width social sign-up buttons (Kakao / Google / Apple),
-/// matching the Figma `screen/auth_signup` footer row.
+/// Four equal-width social sign-up buttons (Kakao / Google / Facebook / Apple),
+/// matching the login screen's provider order and the Figma
+/// `screen/auth_signup` footer row.
 class _SocialButtonRow extends StatelessWidget {
   const _SocialButtonRow({required this.onPressed});
 
@@ -262,6 +263,8 @@ class _SocialButtonRow extends StatelessWidget {
         social(const KakaoIcon(size: 24)),
         const SizedBox(width: AppSpacing.s12),
         social(const GoogleIcon(size: 24)),
+        const SizedBox(width: AppSpacing.s12),
+        social(const FacebookIcon(size: 24)),
         const SizedBox(width: AppSpacing.s12),
         social(AppleIcon(size: 24, color: context.c.labelStrong)),
       ],
