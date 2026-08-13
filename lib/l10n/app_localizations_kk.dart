@@ -1075,4 +1075,22 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Айтылымды жаттықтыру';
+
+  @override
+  String get connected => 'Байланысты';
+
+  @override
+  String get playAgain => 'Қайта ойнау';
+
+  @override
+  String get difficulty => 'Қиындық';
+
+  @override
+  String get difficultySlow => 'Баяу';
+
+  @override
+  String get difficultyNormal => 'Қалыпты';
+
+  @override
+  String get difficultyFast => 'Жылдам';
 }

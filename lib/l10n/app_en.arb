@@ -601,5 +601,29 @@
   "practicePronunciation": "Practice pronunciation",
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."
+  },
+  "connected": "Connected",
+  "@connected": {
+    "description": "Call header status - the call is live. Sibling of `connecting`."
+  },
+  "playAgain": "Play Again",
+  "@playAgain": {
+    "description": "Pronunciation challenge result panel - restart the game."
+  },
+  "difficulty": "Difficulty",
+  "@difficulty": {
+    "description": "Pronunciation challenge - label above the speed toggle."
+  },
+  "difficultySlow": "Slow",
+  "@difficultySlow": {
+    "description": "Pronunciation challenge speed option - slowest card pace."
+  },
+  "difficultyNormal": "Normal",
+  "@difficultyNormal": {
+    "description": "Pronunciation challenge speed option - default card pace."
+  },
+  "difficultyFast": "Fast",
+  "@difficultyFast": {
+    "description": "Pronunciation challenge speed option - fastest card pace."
   }
 }

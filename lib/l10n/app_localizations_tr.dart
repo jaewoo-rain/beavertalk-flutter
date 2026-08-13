@@ -1081,4 +1081,22 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Telaffuz çalış';
+
+  @override
+  String get connected => 'Bağlandı';
+
+  @override
+  String get playAgain => 'Tekrar Oyna';
+
+  @override
+  String get difficulty => 'Zorluk';
+
+  @override
+  String get difficultySlow => 'Yavaş';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Hızlı';
 }

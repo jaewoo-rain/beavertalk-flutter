@@ -333,5 +333,11 @@
   "allLearnersBasis": "Среди всех учащихся",
   "aheadOfLearners": "Вы опережаете {percent}% учащихся",
   "retakeLevelTest": "Пройти тест уровня заново",
-  "practicePronunciation": "Тренировать произношение"
+  "practicePronunciation": "Тренировать произношение",
+  "connected": "Подключено",
+  "playAgain": "Играть снова",
+  "difficulty": "Сложность",
+  "difficultySlow": "Медленно",
+  "difficultyNormal": "Обычно",
+  "difficultyFast": "Быстро"
 }

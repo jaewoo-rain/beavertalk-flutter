@@ -1080,4 +1080,22 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Latih pelafalan';
+
+  @override
+  String get connected => 'Terhubung';
+
+  @override
+  String get playAgain => 'Main Lagi';
+
+  @override
+  String get difficulty => 'Kesulitan';
+
+  @override
+  String get difficultySlow => 'Lambat';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Cepat';
 }

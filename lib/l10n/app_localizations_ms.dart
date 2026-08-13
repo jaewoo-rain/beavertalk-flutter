@@ -1090,4 +1090,22 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Latih sebutan';
+
+  @override
+  String get connected => 'Disambungkan';
+
+  @override
+  String get playAgain => 'Main Lagi';
+
+  @override
+  String get difficulty => 'Kesukaran';
+
+  @override
+  String get difficultySlow => 'Perlahan';
+
+  @override
+  String get difficultyNormal => 'Biasa';
+
+  @override
+  String get difficultyFast => 'Laju';
 }

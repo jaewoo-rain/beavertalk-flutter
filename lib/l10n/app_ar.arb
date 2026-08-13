@@ -333,5 +333,11 @@
   "allLearnersBasis": "بين جميع المتعلمين",
   "aheadOfLearners": "أنت متقدم على {percent}% من المتعلمين",
   "retakeLevelTest": "إعادة اختبار المستوى",
-  "practicePronunciation": "تدرب على النطق"
+  "practicePronunciation": "تدرب على النطق",
+  "connected": "متصل",
+  "playAgain": "العب مرة أخرى",
+  "difficulty": "الصعوبة",
+  "difficultySlow": "بطيء",
+  "difficultyNormal": "عادي",
+  "difficultyFast": "سريع"
 }

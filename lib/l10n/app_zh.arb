@@ -333,5 +333,11 @@
   "allLearnersBasis": "全体学习者中",
   "aheadOfLearners": "你领先于{percent}%的学习者",
   "retakeLevelTest": "重新测试等级",
-  "practicePronunciation": "练习发音"
+  "practicePronunciation": "练习发音",
+  "connected": "已连接",
+  "playAgain": "再玩一次",
+  "difficulty": "难度",
+  "difficultySlow": "慢速",
+  "difficultyNormal": "普通",
+  "difficultyFast": "快速"
 }

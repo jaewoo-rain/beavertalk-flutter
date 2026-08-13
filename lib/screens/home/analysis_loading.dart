@@ -368,6 +368,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
+        // The two CTAs below are full-width (fill) inside the caller's
+        // horizontal 24 padding. Centred, each Button hugged its own label —
+        // 다시 시도 and 홈으로 are different lengths, so the pair stepped.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Icon(
             Icons.error_outline,

@@ -333,5 +333,11 @@
   "allLearnersBasis": "ក្នុងចំណោមអ្នកសិក្សាទាំងអស់",
   "aheadOfLearners": "អ្នកនាំមុខ {percent}% នៃអ្នកសិក្សា",
   "retakeLevelTest": "ធ្វើតេស្តកម្រិតម្តងទៀត",
-  "practicePronunciation": "អនុវត្តការបញ្ចេញសំឡេង"
+  "practicePronunciation": "អនុវត្តការបញ្ចេញសំឡេង",
+  "connected": "បានភ្ជាប់",
+  "playAgain": "លេងម្ដងទៀត",
+  "difficulty": "កម្រិតលំបាក",
+  "difficultySlow": "យឺត",
+  "difficultyNormal": "ធម្មតា",
+  "difficultyFast": "លឿន"
 }

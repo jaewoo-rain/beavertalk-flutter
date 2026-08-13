@@ -1051,4 +1051,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get practicePronunciation => '练习发音';
+
+  @override
+  String get connected => '已连接';
+
+  @override
+  String get playAgain => '再玩一次';
+
+  @override
+  String get difficulty => '难度';
+
+  @override
+  String get difficultySlow => '慢速';
+
+  @override
+  String get difficultyNormal => '普通';
+
+  @override
+  String get difficultyFast => '快速';
 }

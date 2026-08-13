@@ -1079,4 +1079,22 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'උච්චාරණය පුහුණු වන්න';
+
+  @override
+  String get connected => 'සම්බන්ධයි';
+
+  @override
+  String get playAgain => 'නැවත ක්‍රීඩා කරන්න';
+
+  @override
+  String get difficulty => 'දුෂ්කරතාව';
+
+  @override
+  String get difficultySlow => 'මන්දගාමී';
+
+  @override
+  String get difficultyNormal => 'සාමාන්‍ය';
+
+  @override
+  String get difficultyFast => 'වේගවත්';
 }

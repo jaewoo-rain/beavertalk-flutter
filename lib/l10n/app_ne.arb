@@ -333,5 +333,11 @@
   "allLearnersBasis": "सबै सिकारुमध्ये",
   "aheadOfLearners": "तपाईं {percent}% सिकारुभन्दा अगाडि हुनुहुन्छ",
   "retakeLevelTest": "स्तर परीक्षा दोहोर्‍याउनुहोस्",
-  "practicePronunciation": "उच्चारण अभ्यास गर्नुहोस्"
+  "practicePronunciation": "उच्चारण अभ्यास गर्नुहोस्",
+  "connected": "जडान भयो",
+  "playAgain": "फेरि खेल्नुहोस्",
+  "difficulty": "कठिनाइ",
+  "difficultySlow": "ढिलो",
+  "difficultyNormal": "सामान्य",
+  "difficultyFast": "छिटो"
 }

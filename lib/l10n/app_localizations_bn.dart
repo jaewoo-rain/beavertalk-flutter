@@ -1080,4 +1080,22 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'উচ্চারণ অনুশীলন করুন';
+
+  @override
+  String get connected => 'সংযুক্ত';
+
+  @override
+  String get playAgain => 'আবার খেলুন';
+
+  @override
+  String get difficulty => 'কঠিনতা';
+
+  @override
+  String get difficultySlow => 'ধীর';
+
+  @override
+  String get difficultyNormal => 'সাধারণ';
+
+  @override
+  String get difficultyFast => 'দ্রুত';
 }

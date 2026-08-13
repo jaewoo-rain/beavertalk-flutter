@@ -333,5 +333,11 @@
   "allLearnersBasis": "Trong tất cả người học",
   "aheadOfLearners": "Bạn vượt {percent}% người học",
   "retakeLevelTest": "Làm lại bài kiểm tra cấp độ",
-  "practicePronunciation": "Luyện phát âm"
+  "practicePronunciation": "Luyện phát âm",
+  "connected": "Đã kết nối",
+  "playAgain": "Chơi lại",
+  "difficulty": "Độ khó",
+  "difficultySlow": "Chậm",
+  "difficultyNormal": "Bình thường",
+  "difficultyFast": "Nhanh"
 }

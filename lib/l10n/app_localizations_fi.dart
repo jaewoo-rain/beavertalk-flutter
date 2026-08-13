@@ -1082,4 +1082,22 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Harjoittele ääntämistä';
+
+  @override
+  String get connected => 'Yhdistetty';
+
+  @override
+  String get playAgain => 'Pelaa uudelleen';
+
+  @override
+  String get difficulty => 'Vaikeustaso';
+
+  @override
+  String get difficultySlow => 'Hidas';
+
+  @override
+  String get difficultyNormal => 'Normaali';
+
+  @override
+  String get difficultyFast => 'Nopea';
 }

@@ -1088,4 +1088,22 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Practicar pronunciación';
+
+  @override
+  String get connected => 'Conectado';
+
+  @override
+  String get playAgain => 'Jugar de nuevo';
+
+  @override
+  String get difficulty => 'Dificultad';
+
+  @override
+  String get difficultySlow => 'Lento';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Rápido';
 }

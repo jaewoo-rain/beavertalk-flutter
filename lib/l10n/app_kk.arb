@@ -333,5 +333,11 @@
   "allLearnersBasis": "Барлық оқушы ішінде",
   "aheadOfLearners": "Сіз оқушылардың {percent}%-нан оздыңыз",
   "retakeLevelTest": "Деңгей тестін қайта тапсыру",
-  "practicePronunciation": "Айтылымды жаттықтыру"
+  "practicePronunciation": "Айтылымды жаттықтыру",
+  "connected": "Байланысты",
+  "playAgain": "Қайта ойнау",
+  "difficulty": "Қиындық",
+  "difficultySlow": "Баяу",
+  "difficultyNormal": "Қалыпты",
+  "difficultyFast": "Жылдам"
 }

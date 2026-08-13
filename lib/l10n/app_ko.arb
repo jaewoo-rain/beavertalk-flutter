@@ -333,5 +333,11 @@
   "allLearnersBasis": "전체 학습자 기준",
   "aheadOfLearners": "전체 학습자의 {percent}%보다 앞서 있어요",
   "retakeLevelTest": "레벨 테스트 다시하기",
-  "practicePronunciation": "발음 학습하기"
+  "practicePronunciation": "발음 학습하기",
+  "connected": "연결됨",
+  "playAgain": "다시 하기",
+  "difficulty": "난이도",
+  "difficultySlow": "느리게",
+  "difficultyNormal": "보통",
+  "difficultyFast": "빠르게"
 }

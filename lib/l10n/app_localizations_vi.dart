@@ -1080,4 +1080,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Luyện phát âm';
+
+  @override
+  String get connected => 'Đã kết nối';
+
+  @override
+  String get playAgain => 'Chơi lại';
+
+  @override
+  String get difficulty => 'Độ khó';
+
+  @override
+  String get difficultySlow => 'Chậm';
+
+  @override
+  String get difficultyNormal => 'Bình thường';
+
+  @override
+  String get difficultyFast => 'Nhanh';
 }

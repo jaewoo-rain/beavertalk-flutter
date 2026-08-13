@@ -419,11 +419,18 @@ class _PronunciationChallengeScreenState
         const SizedBox(height: AppSpacing.s16),
         _recordToggle(l10n),
         const SizedBox(height: AppSpacing.s24),
-        Button(
-          type: BtnType.primaryFill,
-          size: BtnSize.s60,
-          text: l10n.challengeStart,
-          onPressed: _onStart,
+        // Fill, not hug: the result panel's CTAs are Row+Expanded and span the
+        // panel, so a label-width start button read as a different control in
+        // the same overlay. _panelShell's Column is centre-aligned, so the
+        // width has to come from here.
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeStart,
+            onPressed: _onStart,
+          ),
         ),
         const SizedBox(height: AppSpacing.s8),
         Text(
@@ -536,7 +543,7 @@ class _PronunciationChallengeScreenState
               child: Button(
                 type: BtnType.secondaryFill,
                 size: BtnSize.s60,
-                text: 'Share',
+                text: AppLocalizations.of(context).share,
                 onPressed: _shareResult,
               ),
             ),
@@ -545,7 +552,7 @@ class _PronunciationChallengeScreenState
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: 'Play Again',
+                text: AppLocalizations.of(context).playAgain,
                 onPressed: _replay,
               ),
             ),
@@ -672,22 +679,23 @@ class _PronunciationChallengeScreenState
 
   // ── difficulty toggle (Slow / Normal / Fast) ────────────────────────
   Widget _difficultyToggle() {
+    final l10n = AppLocalizations.of(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Text(
-          'Difficulty',
+          l10n.difficulty,
           style: AppType.label2.b.copyWith(color: _stageInkMuted(context)),
         ),
         const SizedBox(height: AppSpacing.s8),
         Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _diffButton(Difficulty.slow, 'Slow'),
+            _diffButton(Difficulty.slow, l10n.difficultySlow),
             const SizedBox(width: AppSpacing.s8),
-            _diffButton(Difficulty.normal, 'Normal'),
+            _diffButton(Difficulty.normal, l10n.difficultyNormal),
             const SizedBox(width: AppSpacing.s8),
-            _diffButton(Difficulty.fast, 'Fast'),
+            _diffButton(Difficulty.fast, l10n.difficultyFast),
           ],
         ),
       ],

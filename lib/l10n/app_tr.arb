@@ -333,5 +333,11 @@
   "allLearnersBasis": "Tüm öğrenciler arasında",
   "aheadOfLearners": "Öğrencilerin {percent}%'inden öndesin",
   "retakeLevelTest": "Seviye testini tekrarla",
-  "practicePronunciation": "Telaffuz çalış"
+  "practicePronunciation": "Telaffuz çalış",
+  "connected": "Bağlandı",
+  "playAgain": "Tekrar Oyna",
+  "difficulty": "Zorluk",
+  "difficultySlow": "Yavaş",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Hızlı"
 }

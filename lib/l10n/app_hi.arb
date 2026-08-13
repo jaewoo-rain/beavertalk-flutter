@@ -333,5 +333,11 @@
   "allLearnersBasis": "सभी शिक्षार्थियों में",
   "aheadOfLearners": "आप {percent}% शिक्षार्थियों से आगे हैं",
   "retakeLevelTest": "स्तर परीक्षा दोबारा दें",
-  "practicePronunciation": "उच्चारण अभ्यास करें"
+  "practicePronunciation": "उच्चारण अभ्यास करें",
+  "connected": "कनेक्ट हो गया",
+  "playAgain": "फिर से खेलें",
+  "difficulty": "कठिनाई",
+  "difficultySlow": "धीमा",
+  "difficultyNormal": "सामान्य",
+  "difficultyFast": "तेज़"
 }

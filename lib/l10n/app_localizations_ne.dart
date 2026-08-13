@@ -1077,4 +1077,22 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'उच्चारण अभ्यास गर्नुहोस्';
+
+  @override
+  String get connected => 'जडान भयो';
+
+  @override
+  String get playAgain => 'फेरि खेल्नुहोस्';
+
+  @override
+  String get difficulty => 'कठिनाइ';
+
+  @override
+  String get difficultySlow => 'ढिलो';
+
+  @override
+  String get difficultyNormal => 'सामान्य';
+
+  @override
+  String get difficultyFast => 'छिटो';
 }

@@ -1091,4 +1091,22 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Kiejtés gyakorlása';
+
+  @override
+  String get connected => 'Csatlakozva';
+
+  @override
+  String get playAgain => 'Új játék';
+
+  @override
+  String get difficulty => 'Nehézség';
+
+  @override
+  String get difficultySlow => 'Lassú';
+
+  @override
+  String get difficultyNormal => 'Normál';
+
+  @override
+  String get difficultyFast => 'Gyors';
 }

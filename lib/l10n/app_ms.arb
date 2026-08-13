@@ -333,5 +333,11 @@
   "allLearnersBasis": "Antara semua pelajar",
   "aheadOfLearners": "Anda mendahului {percent}% pelajar",
   "retakeLevelTest": "Ulang ujian tahap",
-  "practicePronunciation": "Latih sebutan"
+  "practicePronunciation": "Latih sebutan",
+  "connected": "Disambungkan",
+  "playAgain": "Main Lagi",
+  "difficulty": "Kesukaran",
+  "difficultySlow": "Perlahan",
+  "difficultyNormal": "Biasa",
+  "difficultyFast": "Laju"
 }

@@ -333,5 +333,11 @@
   "allLearnersBasis": "Бардык окуучулардын арасында",
   "aheadOfLearners": "Сиз окуучулардын {percent}%нан алдыдасыз",
   "retakeLevelTest": "Деңгээл тестин кайра тапшыруу",
-  "practicePronunciation": "Айтылышты машыктыруу"
+  "practicePronunciation": "Айтылышты машыктыруу",
+  "connected": "Туташты",
+  "playAgain": "Кайра ойноо",
+  "difficulty": "Кыйындык",
+  "difficultySlow": "Жай",
+  "difficultyNormal": "Кадимки",
+  "difficultyFast": "Тез"
 }

@@ -1090,4 +1090,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Praticar pronúncia';
+
+  @override
+  String get connected => 'Conectado';
+
+  @override
+  String get playAgain => 'Jogar de novo';
+
+  @override
+  String get difficulty => 'Dificuldade';
+
+  @override
+  String get difficultySlow => 'Lento';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Rápido';
 }

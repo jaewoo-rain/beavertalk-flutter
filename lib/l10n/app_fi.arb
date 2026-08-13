@@ -333,5 +333,11 @@
   "allLearnersBasis": "Kaikista oppijoista",
   "aheadOfLearners": "Olet {percent}% oppijaa edellä",
   "retakeLevelTest": "Uusi tasotesti",
-  "practicePronunciation": "Harjoittele ääntämistä"
+  "practicePronunciation": "Harjoittele ääntämistä",
+  "connected": "Yhdistetty",
+  "playAgain": "Pelaa uudelleen",
+  "difficulty": "Vaikeustaso",
+  "difficultySlow": "Hidas",
+  "difficultyNormal": "Normaali",
+  "difficultyFast": "Nopea"
 }

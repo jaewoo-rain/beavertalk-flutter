@@ -1086,4 +1086,22 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Talaffuzni mashq qilish';
+
+  @override
+  String get connected => 'Ulandi';
+
+  @override
+  String get playAgain => 'Qayta oʻynash';
+
+  @override
+  String get difficulty => 'Qiyinlik';
+
+  @override
+  String get difficultySlow => 'Sekin';
+
+  @override
+  String get difficultyNormal => 'Oddiy';
+
+  @override
+  String get difficultyFast => 'Tez';
 }

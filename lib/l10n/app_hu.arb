@@ -333,5 +333,11 @@
   "allLearnersBasis": "Az összes tanuló közül",
   "aheadOfLearners": "A tanulók {percent}%-át megelőzöd",
   "retakeLevelTest": "Szintfelmérő újra",
-  "practicePronunciation": "Kiejtés gyakorlása"
+  "practicePronunciation": "Kiejtés gyakorlása",
+  "connected": "Csatlakozva",
+  "playAgain": "Új játék",
+  "difficulty": "Nehézség",
+  "difficultySlow": "Lassú",
+  "difficultyNormal": "Normál",
+  "difficultyFast": "Gyors"
 }

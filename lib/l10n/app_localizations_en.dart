@@ -1080,4 +1080,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Practice pronunciation';
+
+  @override
+  String get connected => 'Connected';
+
+  @override
+  String get playAgain => 'Play Again';
+
+  @override
+  String get difficulty => 'Difficulty';
+
+  @override
+  String get difficultySlow => 'Slow';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Fast';
 }

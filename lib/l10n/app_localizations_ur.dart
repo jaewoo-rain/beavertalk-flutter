@@ -1080,4 +1080,22 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'تلفظ کی مشق کریں';
+
+  @override
+  String get connected => 'منسلک';
+
+  @override
+  String get playAgain => 'دوبارہ کھیلیں';
+
+  @override
+  String get difficulty => 'دشواری';
+
+  @override
+  String get difficultySlow => 'سست';
+
+  @override
+  String get difficultyNormal => 'عام';
+
+  @override
+  String get difficultyFast => 'تیز';
 }

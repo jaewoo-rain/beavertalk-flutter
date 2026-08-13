@@ -333,5 +333,11 @@
   "allLearnersBasis": "全学習者基準",
   "aheadOfLearners": "全学習者の{percent}%より進んでいます",
   "retakeLevelTest": "レベルテストを再受験",
-  "practicePronunciation": "発音を学習する"
+  "practicePronunciation": "発音を学習する",
+  "connected": "接続済み",
+  "playAgain": "もう一度プレイ",
+  "difficulty": "難易度",
+  "difficultySlow": "ゆっくり",
+  "difficultyNormal": "ふつう",
+  "difficultyFast": "はやい"
 }

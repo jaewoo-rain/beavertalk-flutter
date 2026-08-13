@@ -2157,6 +2157,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Practice pronunciation'**
   String get practicePronunciation;
+
+  /// Call header status - the call is live. Sibling of `connecting`.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
+
+  /// Pronunciation challenge result panel - restart the game.
+  ///
+  /// In en, this message translates to:
+  /// **'Play Again'**
+  String get playAgain;
+
+  /// Pronunciation challenge - label above the speed toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Difficulty'**
+  String get difficulty;
+
+  /// Pronunciation challenge speed option - slowest card pace.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow'**
+  String get difficultySlow;
+
+  /// Pronunciation challenge speed option - default card pace.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get difficultyNormal;
+
+  /// Pronunciation challenge speed option - fastest card pace.
+  ///
+  /// In en, this message translates to:
+  /// **'Fast'**
+  String get difficultyFast;
 }
 
 class _AppLocalizationsDelegate

@@ -1088,4 +1088,22 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Magsanay ng pagbigkas';
+
+  @override
+  String get connected => 'Nakakonekta';
+
+  @override
+  String get playAgain => 'Maglaro Ulit';
+
+  @override
+  String get difficulty => 'Hirap';
+
+  @override
+  String get difficultySlow => 'Mabagal';
+
+  @override
+  String get difficultyNormal => 'Normal';
+
+  @override
+  String get difficultyFast => 'Mabilis';
 }

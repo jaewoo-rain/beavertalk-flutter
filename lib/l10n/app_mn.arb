@@ -333,5 +333,11 @@
   "allLearnersBasis": "Бүх суралцагчаас",
   "aheadOfLearners": "Та суралцагчдын {percent}%-аас түрүүлж байна",
   "retakeLevelTest": "Түвшин тогтоох шалгалтыг дахин өгөх",
-  "practicePronunciation": "Дуудлага дасгалжуулах"
+  "practicePronunciation": "Дуудлага дасгалжуулах",
+  "connected": "Холбогдсон",
+  "playAgain": "Дахин тоглох",
+  "difficulty": "Хүндрэл",
+  "difficultySlow": "Удаан",
+  "difficultyNormal": "Хэвийн",
+  "difficultyFast": "Хурдан"
 }

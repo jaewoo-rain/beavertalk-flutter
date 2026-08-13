@@ -333,5 +333,11 @@
   "allLearnersBasis": "Barcha oʻquvchilar orasida",
   "aheadOfLearners": "Siz oʻquvchilarning {percent}% dan oldindasiz",
   "retakeLevelTest": "Daraja testini qayta topshirish",
-  "practicePronunciation": "Talaffuzni mashq qilish"
+  "practicePronunciation": "Talaffuzni mashq qilish",
+  "connected": "Ulandi",
+  "playAgain": "Qayta oʻynash",
+  "difficulty": "Qiyinlik",
+  "difficultySlow": "Sekin",
+  "difficultyNormal": "Oddiy",
+  "difficultyFast": "Tez"
 }

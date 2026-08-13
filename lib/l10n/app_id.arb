@@ -333,5 +333,11 @@
   "allLearnersBasis": "Di antara semua pelajar",
   "aheadOfLearners": "Kamu unggul dari {percent}% pelajar",
   "retakeLevelTest": "Ulangi tes level",
-  "practicePronunciation": "Latih pelafalan"
+  "practicePronunciation": "Latih pelafalan",
+  "connected": "Terhubung",
+  "playAgain": "Main Lagi",
+  "difficulty": "Kesulitan",
+  "difficultySlow": "Lambat",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Cepat"
 }

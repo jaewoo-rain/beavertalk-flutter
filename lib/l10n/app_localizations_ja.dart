@@ -1054,4 +1054,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get practicePronunciation => '発音を学習する';
+
+  @override
+  String get connected => '接続済み';
+
+  @override
+  String get playAgain => 'もう一度プレイ';
+
+  @override
+  String get difficulty => '難易度';
+
+  @override
+  String get difficultySlow => 'ゆっくり';
+
+  @override
+  String get difficultyNormal => 'ふつう';
+
+  @override
+  String get difficultyFast => 'はやい';
 }

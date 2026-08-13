@@ -333,5 +333,11 @@
   "allLearnersBasis": "Entre todos los estudiantes",
   "aheadOfLearners": "Superas al {percent}% de los estudiantes",
   "retakeLevelTest": "Repetir prueba de nivel",
-  "practicePronunciation": "Practicar pronunciación"
+  "practicePronunciation": "Practicar pronunciación",
+  "connected": "Conectado",
+  "playAgain": "Jugar de nuevo",
+  "difficulty": "Dificultad",
+  "difficultySlow": "Lento",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Rápido"
 }

@@ -1082,4 +1082,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Тренировать произношение';
+
+  @override
+  String get connected => 'Подключено';
+
+  @override
+  String get playAgain => 'Играть снова';
+
+  @override
+  String get difficulty => 'Сложность';
+
+  @override
+  String get difficultySlow => 'Медленно';
+
+  @override
+  String get difficultyNormal => 'Обычно';
+
+  @override
+  String get difficultyFast => 'Быстро';
 }

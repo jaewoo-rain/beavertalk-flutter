@@ -333,5 +333,11 @@
   "allLearnersBasis": "Sa lahat ng mag-aaral",
   "aheadOfLearners": "Nangunguna ka sa {percent}% ng mag-aaral",
   "retakeLevelTest": "Ulitin ang level test",
-  "practicePronunciation": "Magsanay ng pagbigkas"
+  "practicePronunciation": "Magsanay ng pagbigkas",
+  "connected": "Nakakonekta",
+  "playAgain": "Maglaro Ulit",
+  "difficulty": "Hirap",
+  "difficultySlow": "Mabagal",
+  "difficultyNormal": "Normal",
+  "difficultyFast": "Mabilis"
 }

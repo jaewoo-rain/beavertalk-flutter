@@ -1072,4 +1072,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'تدرب على النطق';
+
+  @override
+  String get connected => 'متصل';
+
+  @override
+  String get playAgain => 'العب مرة أخرى';
+
+  @override
+  String get difficulty => 'الصعوبة';
+
+  @override
+  String get difficultySlow => 'بطيء';
+
+  @override
+  String get difficultyNormal => 'عادي';
+
+  @override
+  String get difficultyFast => 'سريع';
 }

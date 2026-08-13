@@ -102,6 +102,12 @@ class LearningCallMainScreen extends ConsumerWidget {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: Column(
+        // The bottom CTA is full-width (fill). Without this the Column defaults
+        // to CrossAxisAlignment.center and the Button — which has no width of
+        // its own (Row/mainAxisSize.min) — hugs its label and floats centred.
+        // The inner scroll Column already stretches, which is why the footer
+        // read as correct on review.
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
             child: SingleChildScrollView(

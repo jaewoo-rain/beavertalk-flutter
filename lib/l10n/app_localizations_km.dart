@@ -1082,4 +1082,22 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
+
+  @override
+  String get connected => 'បានភ្ជាប់';
+
+  @override
+  String get playAgain => 'លេងម្ដងទៀត';
+
+  @override
+  String get difficulty => 'កម្រិតលំបាក';
+
+  @override
+  String get difficultySlow => 'យឺត';
+
+  @override
+  String get difficultyNormal => 'ធម្មតា';
+
+  @override
+  String get difficultyFast => 'លឿន';
 }

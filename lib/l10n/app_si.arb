@@ -333,5 +333,11 @@
   "allLearnersBasis": "සියලු ඉගෙනුම්කරුවන් අතර",
   "aheadOfLearners": "ඔබ ඉගෙනුම්කරුවන්ගෙන් {percent}% ට වඩා ඉදිරියෙන්",
   "retakeLevelTest": "මට්ටම් පරීක්ෂණය නැවත කරන්න",
-  "practicePronunciation": "උච්චාරණය පුහුණු වන්න"
+  "practicePronunciation": "උච්චාරණය පුහුණු වන්න",
+  "connected": "සම්බන්ධයි",
+  "playAgain": "නැවත ක්‍රීඩා කරන්න",
+  "difficulty": "දුෂ්කරතාව",
+  "difficultySlow": "මන්දගාමී",
+  "difficultyNormal": "සාමාන්‍ය",
+  "difficultyFast": "වේගවත්"
 }

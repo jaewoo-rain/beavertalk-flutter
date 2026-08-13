@@ -1086,4 +1086,22 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
+
+  @override
+  String get connected => 'ချိတ်ဆက်ပြီး';
+
+  @override
+  String get playAgain => 'ထပ်ကစားရန်';
+
+  @override
+  String get difficulty => 'အခက်အခဲအဆင့်';
+
+  @override
+  String get difficultySlow => 'နှေး';
+
+  @override
+  String get difficultyNormal => 'ပုံမှန်';
+
+  @override
+  String get difficultyFast => 'မြန်';
 }

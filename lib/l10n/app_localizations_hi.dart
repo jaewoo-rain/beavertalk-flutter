@@ -1079,4 +1079,22 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'उच्चारण अभ्यास करें';
+
+  @override
+  String get connected => 'कनेक्ट हो गया';
+
+  @override
+  String get playAgain => 'फिर से खेलें';
+
+  @override
+  String get difficulty => 'कठिनाई';
+
+  @override
+  String get difficultySlow => 'धीमा';
+
+  @override
+  String get difficultyNormal => 'सामान्य';
+
+  @override
+  String get difficultyFast => 'तेज़';
 }

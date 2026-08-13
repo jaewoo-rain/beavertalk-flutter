@@ -333,5 +333,11 @@
   "allLearnersBasis": "จากผู้เรียนทั้งหมด",
   "aheadOfLearners": "คุณนำหน้าผู้เรียน {percent}%",
   "retakeLevelTest": "ทำแบบทดสอบระดับอีกครั้ง",
-  "practicePronunciation": "ฝึกการออกเสียง"
+  "practicePronunciation": "ฝึกการออกเสียง",
+  "connected": "เชื่อมต่อแล้ว",
+  "playAgain": "เล่นอีกครั้ง",
+  "difficulty": "ระดับความยาก",
+  "difficultySlow": "ช้า",
+  "difficultyNormal": "ปกติ",
+  "difficultyFast": "เร็ว"
 }

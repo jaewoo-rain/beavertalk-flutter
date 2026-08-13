@@ -1055,4 +1055,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get practicePronunciation => '발음 학습하기';
+
+  @override
+  String get connected => '연결됨';
+
+  @override
+  String get playAgain => '다시 하기';
+
+  @override
+  String get difficulty => '난이도';
+
+  @override
+  String get difficultySlow => '느리게';
+
+  @override
+  String get difficultyNormal => '보통';
+
+  @override
+  String get difficultyFast => '빠르게';
 }

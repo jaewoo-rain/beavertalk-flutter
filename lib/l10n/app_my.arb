@@ -333,5 +333,11 @@
   "allLearnersBasis": "သင်ယူသူအားလုံးအနက်",
   "aheadOfLearners": "သင်ယူသူ {percent}% ထက် သင်ရှေ့ရောက်နေသည်",
   "retakeLevelTest": "အဆင့်စစ်ဆေးမှု ပြန်ဖြေရန်",
-  "practicePronunciation": "အသံထွက် လေ့ကျင့်ရန်"
+  "practicePronunciation": "အသံထွက် လေ့ကျင့်ရန်",
+  "connected": "ချိတ်ဆက်ပြီး",
+  "playAgain": "ထပ်ကစားရန်",
+  "difficulty": "အခက်အခဲအဆင့်",
+  "difficultySlow": "နှေး",
+  "difficultyNormal": "ပုံမှန်",
+  "difficultyFast": "မြန်"
 }

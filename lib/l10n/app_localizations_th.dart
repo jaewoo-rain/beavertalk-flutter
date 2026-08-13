@@ -1076,4 +1076,22 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'ฝึกการออกเสียง';
+
+  @override
+  String get connected => 'เชื่อมต่อแล้ว';
+
+  @override
+  String get playAgain => 'เล่นอีกครั้ง';
+
+  @override
+  String get difficulty => 'ระดับความยาก';
+
+  @override
+  String get difficultySlow => 'ช้า';
+
+  @override
+  String get difficultyNormal => 'ปกติ';
+
+  @override
+  String get difficultyFast => 'เร็ว';
 }

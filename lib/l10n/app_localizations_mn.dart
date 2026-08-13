@@ -1079,4 +1079,22 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
+
+  @override
+  String get connected => 'Холбогдсон';
+
+  @override
+  String get playAgain => 'Дахин тоглох';
+
+  @override
+  String get difficulty => 'Хүндрэл';
+
+  @override
+  String get difficultySlow => 'Удаан';
+
+  @override
+  String get difficultyNormal => 'Хэвийн';
+
+  @override
+  String get difficultyFast => 'Хурдан';
 }

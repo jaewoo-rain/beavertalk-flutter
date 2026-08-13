@@ -1081,4 +1081,22 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get practicePronunciation => 'Айтылышты машыктыруу';
+
+  @override
+  String get connected => 'Туташты';
+
+  @override
+  String get playAgain => 'Кайра ойноо';
+
+  @override
+  String get difficulty => 'Кыйындык';
+
+  @override
+  String get difficultySlow => 'Жай';
+
+  @override
+  String get difficultyNormal => 'Кадимки';
+
+  @override
+  String get difficultyFast => 'Тез';
 }

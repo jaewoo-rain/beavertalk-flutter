@@ -333,5 +333,11 @@
   "allLearnersBasis": "تمام سیکھنے والوں میں",
   "aheadOfLearners": "آپ {percent}% سیکھنے والوں سے آگے ہیں",
   "retakeLevelTest": "لیول ٹیسٹ دوبارہ دیں",
-  "practicePronunciation": "تلفظ کی مشق کریں"
+  "practicePronunciation": "تلفظ کی مشق کریں",
+  "connected": "منسلک",
+  "playAgain": "دوبارہ کھیلیں",
+  "difficulty": "دشواری",
+  "difficultySlow": "سست",
+  "difficultyNormal": "عام",
+  "difficultyFast": "تیز"
 }
