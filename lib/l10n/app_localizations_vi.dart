@@ -745,6 +745,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get loginAppleSignInFailed => 'Đăng nhập Apple thất bại.';
 
   @override
+  String get loginFacebookSignInFailed => 'Đăng nhập Facebook thất bại.';
+
+  @override
   String get loginKakaoSignInFailed => 'Đăng nhập Kakao thất bại.';
 
   @override
@@ -752,6 +755,9 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Tiếp tục với Google';
+
+  @override
+  String get loginContinueWithFacebook => 'Tiếp tục với Facebook';
 
   @override
   String get loginContinueWithApple => 'Tiếp tục với Apple';

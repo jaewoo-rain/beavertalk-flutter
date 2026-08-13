@@ -745,6 +745,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple පිවිසුම අසාර්ථක විය.';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook පිවිසුම අසාර්ථක විය.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao පිවිසුම අසාර්ථක විය.';
 
   @override
@@ -752,6 +755,9 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google සමඟ ඉදිරියට යන්න';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook සමඟ ඉදිරියට යන්න';
 
   @override
   String get loginContinueWithApple => 'Apple සමඟ ඉදිරියට යන්න';

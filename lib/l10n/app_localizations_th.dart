@@ -742,6 +742,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get loginAppleSignInFailed => 'ลงชื่อเข้าใช้ด้วย Apple ไม่สำเร็จ';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'ลงชื่อเข้าใช้ด้วย Facebook ไม่สำเร็จ';
+
+  @override
   String get loginKakaoSignInFailed => 'ลงชื่อเข้าใช้ด้วย Kakao ไม่สำเร็จ';
 
   @override
@@ -749,6 +753,9 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'ดำเนินการต่อด้วย Google';
+
+  @override
+  String get loginContinueWithFacebook => 'ดำเนินการต่อด้วย Facebook';
 
   @override
   String get loginContinueWithApple => 'ดำเนินการต่อด้วย Apple';

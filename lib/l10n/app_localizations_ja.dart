@@ -724,6 +724,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get loginAppleSignInFailed => 'Appleサインインに失敗しました。';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebookサインインに失敗しました。';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakaoサインインに失敗しました。';
 
   @override
@@ -731,6 +734,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Googleで続ける';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebookで続ける';
 
   @override
   String get loginContinueWithApple => 'Appleで続ける';

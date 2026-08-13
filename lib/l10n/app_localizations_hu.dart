@@ -755,6 +755,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get loginAppleSignInFailed => 'A Apple bejelentkezés sikertelen volt.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'A Facebook bejelentkezés sikertelen volt.';
+
+  @override
   String get loginKakaoSignInFailed => 'A Kakao bejelentkezés sikertelen volt.';
 
   @override
@@ -762,6 +766,9 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Folytatás Google fiókkal';
+
+  @override
+  String get loginContinueWithFacebook => 'Folytatás Facebook fiókkal';
 
   @override
   String get loginContinueWithApple => 'Folytatás Apple fiókkal';

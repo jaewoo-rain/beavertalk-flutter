@@ -724,6 +724,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get loginAppleSignInFailed => '애플 로그인에 실패했어요.';
 
   @override
+  String get loginFacebookSignInFailed => '페이스북 로그인에 실패했어요.';
+
+  @override
   String get loginKakaoSignInFailed => '카카오 로그인에 실패했어요.';
 
   @override
@@ -731,6 +734,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => '구글로 계속하기';
+
+  @override
+  String get loginContinueWithFacebook => '페이스북으로 계속하기';
 
   @override
   String get loginContinueWithApple => '애플로 계속하기';

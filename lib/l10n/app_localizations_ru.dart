@@ -746,6 +746,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get loginAppleSignInFailed => 'Не удалось войти через Apple.';
 
   @override
+  String get loginFacebookSignInFailed => 'Не удалось войти через Facebook.';
+
+  @override
   String get loginKakaoSignInFailed => 'Не удалось войти через Kakao.';
 
   @override
@@ -753,6 +756,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Продолжить с Google';
+
+  @override
+  String get loginContinueWithFacebook => 'Продолжить с Facebook';
 
   @override
   String get loginContinueWithApple => 'Продолжить с Apple';

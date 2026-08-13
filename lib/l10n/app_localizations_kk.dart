@@ -740,6 +740,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple арқылы кіру сәтсіз аяқталды.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Facebook арқылы кіру сәтсіз аяқталды.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao арқылы кіру сәтсіз аяқталды.';
 
   @override
@@ -747,6 +751,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google арқылы жалғастыру';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook арқылы жалғастыру';
 
   @override
   String get loginContinueWithApple => 'Apple арқылы жалғастыру';

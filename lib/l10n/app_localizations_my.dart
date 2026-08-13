@@ -749,6 +749,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Facebook အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao အကောင့်ဝင်ခြင်း မအောင်မြင်ပါ။';
 
   @override
@@ -756,6 +760,9 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google ဖြင့် ဆက်လုပ်ရန်';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook ဖြင့် ဆက်လုပ်ရန်';
 
   @override
   String get loginContinueWithApple => 'Apple ဖြင့် ဆက်လုပ်ရန်';

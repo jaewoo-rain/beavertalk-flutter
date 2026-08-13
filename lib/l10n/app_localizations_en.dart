@@ -746,6 +746,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple sign-in failed.';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook sign-in failed.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao sign-in failed.';
 
   @override
@@ -753,6 +756,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Continue with Google';
+
+  @override
+  String get loginContinueWithFacebook => 'Continue with Facebook';
 
   @override
   String get loginContinueWithApple => 'Continue with Apple';

@@ -747,6 +747,10 @@ class AppLocalizationsKy extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple аркылуу кирүү ишке ашкан жок.';
 
   @override
+  String get loginFacebookSignInFailed =>
+      'Facebook аркылуу кирүү ишке ашкан жок.';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao аркылуу кирүү ишке ашкан жок.';
 
   @override
@@ -754,6 +758,9 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => 'Google аркылуу улантуу';
+
+  @override
+  String get loginContinueWithFacebook => 'Facebook аркылуу улантуу';
 
   @override
   String get loginContinueWithApple => 'Apple аркылуу улантуу';

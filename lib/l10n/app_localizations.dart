@@ -1534,6 +1534,12 @@ abstract class AppLocalizations {
   /// **'Apple sign-in failed.'**
   String get loginAppleSignInFailed;
 
+  /// No description provided for @loginFacebookSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Facebook sign-in failed.'**
+  String get loginFacebookSignInFailed;
+
   /// No description provided for @loginKakaoSignInFailed.
   ///
   /// In en, this message translates to:
@@ -1551,6 +1557,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Continue with Google'**
   String get loginContinueWithGoogle;
+
+  /// No description provided for @loginContinueWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue with Facebook'**
+  String get loginContinueWithFacebook;
 
   /// No description provided for @loginContinueWithApple.
   ///

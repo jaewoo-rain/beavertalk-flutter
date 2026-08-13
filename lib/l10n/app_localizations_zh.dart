@@ -721,6 +721,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get loginAppleSignInFailed => 'Apple 登录失败。';
 
   @override
+  String get loginFacebookSignInFailed => 'Facebook 登录失败。';
+
+  @override
   String get loginKakaoSignInFailed => 'Kakao 登录失败。';
 
   @override
@@ -728,6 +731,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loginContinueWithGoogle => '使用 Google 继续';
+
+  @override
+  String get loginContinueWithFacebook => '使用 Facebook 继续';
 
   @override
   String get loginContinueWithApple => '使用 Apple 继续';
