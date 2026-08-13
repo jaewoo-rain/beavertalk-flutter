@@ -74,6 +74,7 @@
   `analysis_options.yaml:15` 가 `custom_lint` 플러그인을 켜고 `pubspec.yaml` 이 `riverpod_lint` 를 걸어 뒀지만, **`flutter analyze` 결과에 그 플러그인 지적이 들어온다는 보장이 없다.** `dart run custom_lint` 를 **별도 게이트로** 돌려야 한다.
   **실측(2026-08-07)** — `flutter analyze` 를 여러 번 돌렸다. 대부분(내 3회 + 담당 5회)은 **~4초 만에 "No issues found"** 로 끝났고 riverpod_lint 지적이 안 나왔다. 그런데 **딱 한 번 46.2초가 걸리며 "8 issues found" 로 그 지적을 포함해 냈다.** 재현 조건은 **찾지 못했고**, 그 8건의 내역도 **확인 못 했다**(플러그인 로딩이 붙느냐 마느냐로 갈리는 것으로 보이나 미확인).
   ⛔ **그래서 결론이 약해지는 게 아니라 세진다 — 간헐적으로만 보이는 검사는 초록이어도 의미가 없다.** 한 번의 실행 결과로 판정하지 마라.
+  **재확인(2026-08-13)** — 같은 현상이 또 나왔다. `flutter analyze` 가 **52.6초** 걸리며 `avoid_public_notifier_properties`·`missing_provider_scope` 를 포함해 **12 issues** 를 냈다. 같은 날 다른 실행에서는 그 지적이 없었다. **재현 조건은 여전히 못 찾았다.** 이 규칙을 지워도 되는 근거는 아직 없다.
   같은 시기에 `dart run custom_lint` 로 돌리니 `avoid_public_notifier_properties` 7건이 나왔다. Riverpod provider 를 직접 만진 작업일수록 이 구멍이 정확히 그 영역을 비껴간다.
   ⚠ **`build/` 가 있으면 `PathNotFoundException` 으로 죽는다** — flutter_local_notifications 의 gradle transform 경로에 와일드카드가 들어가 있어서다. **"잔재"가 아니라 방금 성공한 빌드가 만든 `build/` 로도 즉시 죽는다**(2026-08-07 실측 재현). 그래서 **두 게이트는 순서가 강제된다**:
   ```

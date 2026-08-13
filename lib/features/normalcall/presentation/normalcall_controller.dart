@@ -1433,6 +1433,7 @@ class NormalCallController extends Notifier<CallState> {
     _starveAtMs = null;
     _cushionBytes = _prebufferBytes;
     _turnStarved = false;
+    _turnFirstAudioFed = false;
     _resumeFlushed = false;
     // barge-in 상태도 통화 스코프다: 이전 통화의 취소 구간이 살아 있으면 새 통화의
     // 첫 인사가 통째로 폐기된다.
@@ -2031,8 +2032,19 @@ class NormalCallController extends Notifier<CallState> {
   int _rxBytesTotal = 0; // 서버에서 받은 오디오(=재생돼야 할 진짜 양)
   int _fedAudBytes = 0; // 플러그인에 넣은 진짜 오디오
   int _fedSilFrames = 0; // 넣은 무음 전체
-  int _fedSilSpeakFrames = 0; // 그중 "비버 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilSpeakFrames = 0; // 그중 "첫 소리 **뒤**, 발화 중"에 넣은 것 = 진짜 구멍
+  int _fedSilTurnWaitFrames = 0; // 그중 "턴은 열렸는데 첫 소리 전"에 넣은 것 = 턴 시작 대기
   int _fedSilPrebufFrames = 0; // 그중 프리버퍼 대기로 넣은 것 = 의도된 지연
+
+  /// 이번 턴에서 실오디오를 한 번이라도 피드했는가 — [_fedSilSpeakFrames] 와
+  /// [_fedSilTurnWaitFrames] 를 가르는 **유일한** 기준.
+  ///
+  /// ⛔ 왜 필요한가: [_beaverAudioActive] 는 `turn_start` 에서 켜지므로 **첫 소리가 나기
+  /// 전부터** 참이다. 그것만 보면 「턴 시작까지의 대기」가 「발화 중 끊김」으로 집계된다.
+  /// 2026-08-13 실측에서 관측한 919·999·1040·720·640ms 가 **전부 전자**였는데 후자로
+  /// 읽고 있었다. 둘은 처방이 다르다 — 전자는 첫 묶음 도착+쿠션, 후자는 서버 와이어공백
+  /// (그날 클라 735/1356/1221/1246ms 가 서버 0.73/1.36/1.22/1.24s 와 밀리초까지 맞았다).
+  bool _turnFirstAudioFed = false;
 
   static String _sec(num bytes) => (bytes / 48000.0).toStringAsFixed(1);
 
@@ -2043,6 +2055,7 @@ class NormalCallController extends Notifier<CallState> {
     _fedAudBytes = 0;
     _fedSilFrames = 0;
     _fedSilSpeakFrames = 0;
+    _fedSilTurnWaitFrames = 0;
     _fedSilPrebufFrames = 0;
     // 타이머 기반(청크 도착 기반 아님) — 오디오가 안 올 때도 균일하게 찍혀야 비교가 된다.
     _inflateTimer = Timer.periodic(const Duration(seconds: 5), (_) async {
@@ -2074,10 +2087,13 @@ class NormalCallController extends Notifier<CallState> {
           //   읽혔지만** 실제로는 *무음 중* "비버 발화 중에 넣은 것"이다 = 진짜 구멍.
           //   나머지(턴 사이 keep-alive)를 같이 찍어 셋의 합이 fedSil 임을 드러낸다 —
           //   두 항목만 보이면 "둘이 fedSil 과 안 맞는다"로 오해한다.
+          // ⭐ 2026-08-13: `발화중구멍` 에서 **턴시작대기**를 갈라냈다. 예전 값은 둘의 합이라
+          //   **새 지표와 같은 표에 놓으면 안 된다.**
           'fedSil ${_sec(_fedSilFrames * 2)}s(무음주입: 발화중구멍 '
-          '${_sec(_fedSilSpeakFrames * 2)}s + 프리버퍼대기 '
+          '${_sec(_fedSilSpeakFrames * 2)}s + 턴시작대기 '
+          '${_sec(_fedSilTurnWaitFrames * 2)}s + 프리버퍼대기 '
           '${_sec(_fedSilPrebufFrames * 2)}s + 턴사이 '
-          '${_sec((_fedSilFrames - _fedSilSpeakFrames - _fedSilPrebufFrames) * 2)}s), '
+          '${_sec((_fedSilFrames - _fedSilSpeakFrames - _fedSilTurnWaitFrames - _fedSilPrebufFrames) * 2)}s), '
           'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B'
           // 통로와 무관하게 찍는다 — 사장님 증상은 **라이브 5분**이다. 캐스케이드에서만
           // 재면 반쪽이라, 같은 줄에서 두 통로를 같은 방식으로 본다.
@@ -2336,10 +2352,18 @@ class NormalCallController extends Notifier<CallState> {
           // The server had gone quiet mid-utterance and has now resumed. This gap
           // IS the glitch the user hears — measure it, don't just note that it
           // happened. Anything under [_prebufferFlush] would have been absorbed.
+          //
+          // ⛔ 두 가지를 한 이름으로 부르면 안 된다(2026-08-13 실측으로 드러났다).
+          //   [_beaverAudioActive] 는 `turn_start` 에서 켜지므로 **첫 소리가 나기 전부터**
+          //   켜져 있다. 그래서 예전엔 「턴 시작까지의 대기」가 「발화 중 끊김」으로
+          //   집계됐다 — 그날 관측한 919·999·1040·720·640ms 가 **전부 전자**였다.
+          //   둘은 처방이 다르다(전자는 첫 묶음 도착+쿠션, 후자는 서버 와이어공백).
           _starveAtMs = null;
           _resumeFlushed = false;
-          _log('audio resumed after '
-              '${DateTime.now().millisecondsSinceEpoch - starvedAt}ms gap (starved)');
+          final gapMs = DateTime.now().millisecondsSinceEpoch - starvedAt;
+          _log(_turnFirstAudioFed
+              ? 'audio resumed after ${gapMs}ms gap (발화중구멍)'
+              : 'audio resumed after ${gapMs}ms gap (턴시작대기 — 이 턴의 첫 소리)');
         }
         if (_lastFeedSilent != false) {
           _log('feed AUDIO (queue ${avail}B, engine '
@@ -2356,6 +2380,9 @@ class NormalCallController extends Notifier<CallState> {
           if (take > _feedChunkBytes) take = _feedChunkBytes;
           if (take > whole) take = whole;
           _fedAudBytes += take; // [계측]
+          // [계측] 이 턴의 **첫 실오디오**. 이 뒤부터 넣는 무음이 「발화 중 구멍」이고,
+          // 이 앞은 「턴 시작 대기」다. 이 한 줄이 두 지표를 가른다.
+          _turnFirstAudioFed = true;
           // 원장: 이건 **서버발** 오디오다. 진행도 보고가 이 기록에 걸려 있다.
           _ledger.recordFeed(frames: take ~/ 2, server: true);
           final sentAtMs = DateTime.now().millisecondsSinceEpoch;
@@ -2457,7 +2484,14 @@ class NormalCallController extends Notifier<CallState> {
           if (whole >= 2) {
             _fedSilPrebufFrames += silFrames;
           } else if (_beaverAudioActive) {
-            _fedSilSpeakFrames += silFrames;
+            // ⛔ 첫 소리 전이면 「턴 시작 대기」다 — **발화 중 구멍이 아니다.**
+            //   [_beaverAudioActive] 가 `turn_start` 에서 켜지기 때문에 예전엔 둘이
+            //   한 통에 들어갔다. 처방이 달라 갈라야 한다(2026-08-13).
+            if (_turnFirstAudioFed) {
+              _fedSilSpeakFrames += silFrames;
+            } else {
+              _fedSilTurnWaitFrames += silFrames;
+            }
           }
           // 원장: 이건 **우리가 만든 필러**다. 서버는 이걸 "들은 양"으로 세면 안 된다.
           _ledger.recordFeed(frames: silFrames, server: false);
@@ -2678,6 +2712,8 @@ class NormalCallController extends Notifier<CallState> {
             )}'
           : 'beaver turn OPEN — mic stays open (barge-in)');
       _turnStarved = false; // fresh turn: it hasn't starved yet
+      // 새 턴은 아직 첫 소리를 안 냈다 → 지금부터 넣는 무음은 「턴 시작 대기」다.
+      _turnFirstAudioFed = false;
       // 새 턴 = 진행도 원장의 기준선. 턴 경계에서는 엔진이 비어 있는 게 계약이라
       // (재개방 조건이 [_audioDrained]) 여기서 비우면 이후 산출값이 곧
       // **이번 턴의** 재생량이 된다.
@@ -2941,6 +2977,9 @@ class NormalCallController extends Notifier<CallState> {
     _turnStarved = false;
     _starveAtMs = null;
     _resumeFlushed = false;
+    // 취소 뒤 이어지는 턴도 「첫 소리 전」부터 다시 센다 — 안 되돌리면 다음 턴의 시작
+    // 대기가 「발화 중 구멍」으로 집계된다(barge-in 이 잦을수록 그 오염이 커진다).
+    _turnFirstAudioFed = false;
     // 다음 턴은 쿠션을 다시 쌓아야 한다(취소로 끊긴 재생을 이어가는 게 아니다).
     _playing = false;
     _prebufferFlushTimer?.cancel();
