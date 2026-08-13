@@ -345,6 +345,16 @@ class NormalCallController extends Notifier<CallState> {
   /// 「마이크/유저턴 신호가 없어서 못 한다」는 옛 기록은 사실이 아니었다.
   final ValueNotifier<int> avatarIdleKind = ValueNotifier<int>(kIdleWait);
 
+  /// [계측] 사용자 턴 타이밍 — **사람이 말하는 판에서만 값이 생긴다.**
+  ///
+  /// 자동 대화(`__test_say`)는 STT 를 안 타므로 `user_turn_start`/`input_transcript` 가
+  /// 아예 안 온다. 그래서 오늘(2026-08-13)까지 이 구간을 **한 번도 못 쟀다** — 사장님이
+  /// 「응답이 느리다」고 하신 바로 그 구간인데도 그렇다.
+  /// ⛔ 값이 안 나오는 것을 「계측 실패」로 읽지 마라. 그 판에는 경로가 없다.
+  int? _userTurnStartAtMs;
+  int? _userFirstTranscriptAtMs;
+  int? _userTurnEndAtMs;
+
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
   static const Duration _listenHold = Duration(milliseconds: 900);
@@ -3290,6 +3300,16 @@ class NormalCallController extends Notifier<CallState> {
         break;
 
       case 'turn_start':
+        // [계측] 사용자 발화 끝 → 비버 턴 시작까지. 사장님이 「응답이 느리다」고 하신
+        // 그 구간이다. 클라가 **프레임을 받은 시각**으로만 잰다(서버 내부 분해는 서버 몫).
+        {
+          final endedAt = _userTurnEndAtMs;
+          if (endedAt != null) {
+            _userTurnEndAtMs = null;
+            _log('RESPONSE: user_turn_end → turn_start '
+                '${DateTime.now().millisecondsSinceEpoch - endedAt}ms');
+          }
+        }
         // 새 비버 턴이 열렸다 = 취소 잔여 구간의 끝. 서버 불변식상 여기부터 도착하는
         // 오디오는 이 턴의 것이다.
         if (_cancelledResidual) {
@@ -3358,6 +3378,14 @@ class NormalCallController extends Notifier<CallState> {
         {
           final delta = msg['text'] as String?;
           if (delta != null && delta.isNotEmpty) {
+            // [계측] 이 사용자 턴의 **첫 전사 델타**가 도착한 시각. `user_turn_start`
+            // 부터의 간격이 곧 「내 말이 글자로 뜨기까지」다 — 자동 대화(`__test_say`)
+            // 로는 이 경로가 아예 안 돌아서 오늘까지 한 번도 못 쟀다.
+            final startedAt = _userTurnStartAtMs;
+            if (startedAt != null && _userFirstTranscriptAtMs == null) {
+              _userFirstTranscriptAtMs = DateTime.now().millisecondsSinceEpoch;
+              _log('USER-TURN: 첫 전사 ${_userFirstTranscriptAtMs! - startedAt}ms');
+            }
             state = state.copyWith(userSubtitle: state.userSubtitle + delta);
             _markUserSpeaking(); // 듣는 얼굴로 — idle 슬롯 교체
           }
@@ -3377,10 +3405,26 @@ class NormalCallController extends Notifier<CallState> {
       case 'user_turn_start':
         // ⚠ 서버→클라 **통지**다(UI 표시용). 클라에 VAD 는 없고 턴 판정은 전적으로
         //   서버가 한다. 그러니 재생·마이크 로직을 여기에 걸지 않는다 — 자막만 만진다.
+        // [계측] 이 사용자 턴의 원점. 아래 두 값이 여기서 시작한다.
+        _userTurnStartAtMs = DateTime.now().millisecondsSinceEpoch;
+        _userFirstTranscriptAtMs = null;
         state = state.copyWith(userSubtitle: '');
       case 'user_turn_end':
         // 통지만. 자막 라인은 다음 `user_turn_start` 에서 새로 연다.
-        break;
+        // [계측] 발화 길이와, 전사가 끝까지 못 따라왔는지를 한 줄로 남긴다.
+        {
+          final nowMs = DateTime.now().millisecondsSinceEpoch;
+          final startedAt = _userTurnStartAtMs;
+          final firstAt = _userFirstTranscriptAtMs;
+          if (startedAt != null) {
+            _log('USER-TURN 종료: 발화 ${nowMs - startedAt}ms, '
+                // ⛔ 「전사 0건」을 「STT 가 죽었다」로 읽지 않게 **없음**을 명시한다.
+                //   자동 대화 판에서는 이 경로가 아예 안 돈다.
+                '첫 전사 ${firstAt == null ? "없음" : "${firstAt - startedAt}ms"}');
+          }
+          _userTurnEndAtMs = nowMs;
+          _userTurnStartAtMs = null;
+        }
       case 'call_ended':
         // ⛔ **빈 문자열은 id 가 아니다.** 서버는 통화 행이 없을 때 `call_id` 를 null 이
         //   아니라 **`""`** 로 보낸다(`cascade_session.py:3198`:
