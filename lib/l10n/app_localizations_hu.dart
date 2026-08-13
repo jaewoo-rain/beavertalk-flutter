@@ -2123,4 +2123,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Nehézség';
+
+  @override
+  String get connected => 'Csatlakozva';
 }

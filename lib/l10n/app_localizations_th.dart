@@ -2096,4 +2096,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'ระดับความยาก';
+
+  @override
+  String get connected => 'เชื่อมต่อแล้ว';
 }

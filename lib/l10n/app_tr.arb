@@ -628,5 +628,6 @@
   "difficultySlow": "Yavaş",
   "difficultyNormal": "Normal",
   "difficultyFast": "Hızlı",
-  "difficultyLabel": "Zorluk"
+  "difficultyLabel": "Zorluk",
+  "connected": "Bağlandı"
 }

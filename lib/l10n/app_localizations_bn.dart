@@ -2100,4 +2100,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'কঠিনতা';
+
+  @override
+  String get connected => 'সংযুক্ত';
 }

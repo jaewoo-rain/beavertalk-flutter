@@ -628,5 +628,6 @@
   "difficultySlow": "آہستہ",
   "difficultyNormal": "معمول",
   "difficultyFast": "تیز",
-  "difficultyLabel": "دشواری"
+  "difficultyLabel": "دشواری",
+  "connected": "منسلک"
 }

@@ -2106,4 +2106,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Zorluk';
+
+  @override
+  String get connected => 'Bağlandı';
 }

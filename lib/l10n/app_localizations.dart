@@ -3975,6 +3975,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Difficulty'**
   String get difficultyLabel;
+
+  /// Call header status - the call is live. Sibling of `connecting`.
+  ///
+  /// In en, this message translates to:
+  /// **'Connected'**
+  String get connected;
 }
 
 class _AppLocalizationsDelegate

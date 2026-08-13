@@ -628,5 +628,6 @@
   "difficultySlow": "Perlahan",
   "difficultyNormal": "Biasa",
   "difficultyFast": "Laju",
-  "difficultyLabel": "Tahap kesukaran"
+  "difficultyLabel": "Tahap kesukaran",
+  "connected": "Disambungkan"
 }

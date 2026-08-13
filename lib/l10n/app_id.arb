@@ -628,5 +628,6 @@
   "difficultySlow": "Lambat",
   "difficultyNormal": "Normal",
   "difficultyFast": "Cepat",
-  "difficultyLabel": "Tingkat kesulitan"
+  "difficultyLabel": "Tingkat kesulitan",
+  "connected": "Terhubung"
 }

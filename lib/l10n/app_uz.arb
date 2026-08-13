@@ -628,5 +628,6 @@
   "difficultySlow": "Sekin",
   "difficultyNormal": "Oddiy",
   "difficultyFast": "Tez",
-  "difficultyLabel": "Murakkablik"
+  "difficultyLabel": "Murakkablik",
+  "connected": "Ulandi"
 }

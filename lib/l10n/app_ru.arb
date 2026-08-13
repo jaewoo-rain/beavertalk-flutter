@@ -628,5 +628,6 @@
   "difficultySlow": "Медленно",
   "difficultyNormal": "Обычно",
   "difficultyFast": "Быстро",
-  "difficultyLabel": "Сложность"
+  "difficultyLabel": "Сложность",
+  "connected": "Подключено"
 }

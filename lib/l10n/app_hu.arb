@@ -628,5 +628,6 @@
   "difficultySlow": "Lassú",
   "difficultyNormal": "Normál",
   "difficultyFast": "Gyors",
-  "difficultyLabel": "Nehézség"
+  "difficultyLabel": "Nehézség",
+  "connected": "Csatlakozva"
 }

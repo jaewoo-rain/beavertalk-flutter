@@ -2117,4 +2117,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'အခက်အခဲအဆင့်';
+
+  @override
+  String get connected => 'ချိတ်ဆက်ပြီး';
 }

@@ -628,5 +628,6 @@
   "difficultySlow": "Hidas",
   "difficultyNormal": "Normaali",
   "difficultyFast": "Nopea",
-  "difficultyLabel": "Vaikeustaso"
+  "difficultyLabel": "Vaikeustaso",
+  "connected": "Yhdistetty"
 }

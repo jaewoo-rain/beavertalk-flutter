@@ -2107,4 +2107,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Хүндрэл';
+
+  @override
+  String get connected => 'Холбогдсон';
 }

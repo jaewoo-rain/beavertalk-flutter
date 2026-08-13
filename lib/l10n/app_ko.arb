@@ -636,5 +636,6 @@
   "difficultySlow": "느리게",
   "difficultyNormal": "보통",
   "difficultyFast": "빠르게",
-  "difficultyLabel": "난이도"
+  "difficultyLabel": "난이도",
+  "connected": "연결됨"
 }

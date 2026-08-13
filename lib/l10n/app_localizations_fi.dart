@@ -2111,4 +2111,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Vaikeustaso';
+
+  @override
+  String get connected => 'Yhdistetty';
 }

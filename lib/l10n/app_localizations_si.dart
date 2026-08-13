@@ -2100,4 +2100,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'දුෂ්කරතාව';
+
+  @override
+  String get connected => 'සම්බන්ධයි';
 }

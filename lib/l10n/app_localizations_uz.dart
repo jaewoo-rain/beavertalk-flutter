@@ -2120,4 +2120,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Murakkablik';
+
+  @override
+  String get connected => 'Ulandi';
 }

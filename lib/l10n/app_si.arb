@@ -628,5 +628,6 @@
   "difficultySlow": "සෙමින්",
   "difficultyNormal": "සාමාන්‍ය",
   "difficultyFast": "වේගයෙන්",
-  "difficultyLabel": "දුෂ්කරතාව"
+  "difficultyLabel": "දුෂ්කරතාව",
+  "connected": "සම්බන්ධයි"
 }

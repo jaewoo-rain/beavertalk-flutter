@@ -2110,4 +2110,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Татаалдык';
+
+  @override
+  String get connected => 'Туташты';
 }

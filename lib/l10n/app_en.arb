@@ -1330,5 +1330,9 @@
   "difficultyLabel": "Difficulty",
   "@difficultyLabel": {
     "description": "Pronunciation challenge - label above the difficulty toggle."
+  },
+  "connected": "Connected",
+  "@connected": {
+    "description": "Call header status - the call is live. Sibling of `connecting`."
   }
 }

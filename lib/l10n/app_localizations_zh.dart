@@ -2035,4 +2035,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get difficultyLabel => '难度';
+
+  @override
+  String get connected => '已连接';
 }

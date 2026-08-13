@@ -2106,4 +2106,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'កម្រិតលំបាក';
+
+  @override
+  String get connected => 'បានភ្ជាប់';
 }

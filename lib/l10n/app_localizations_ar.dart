@@ -2093,4 +2093,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'الصعوبة';
+
+  @override
+  String get connected => 'متصل';
 }

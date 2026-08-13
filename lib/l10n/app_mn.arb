@@ -628,5 +628,6 @@
   "difficultySlow": "Удаан",
   "difficultyNormal": "Хэвийн",
   "difficultyFast": "Хурдан",
-  "difficultyLabel": "Хүндрэл"
+  "difficultyLabel": "Хүндрэл",
+  "connected": "Холбогдсон"
 }

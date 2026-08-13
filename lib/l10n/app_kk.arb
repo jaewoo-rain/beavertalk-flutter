@@ -628,5 +628,6 @@
   "difficultySlow": "Баяу",
   "difficultyNormal": "Қалыпты",
   "difficultyFast": "Жылдам",
-  "difficultyLabel": "Күрделілік"
+  "difficultyLabel": "Күрделілік",
+  "connected": "Байланысты"
 }

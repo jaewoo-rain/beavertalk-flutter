@@ -628,5 +628,6 @@
   "difficultySlow": "ゆっくり",
   "difficultyNormal": "ふつう",
   "difficultyFast": "はやく",
-  "difficultyLabel": "難易度"
+  "difficultyLabel": "難易度",
+  "connected": "接続済み"
 }

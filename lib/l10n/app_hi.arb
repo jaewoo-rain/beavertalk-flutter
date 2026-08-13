@@ -628,5 +628,6 @@
   "difficultySlow": "धीमा",
   "difficultyNormal": "सामान्य",
   "difficultyFast": "तेज़",
-  "difficultyLabel": "कठिनाई"
+  "difficultyLabel": "कठिनाई",
+  "connected": "कनेक्ट हो गया"
 }

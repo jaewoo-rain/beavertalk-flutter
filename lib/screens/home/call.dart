@@ -272,7 +272,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       ),
                       const SizedBox(width: AppSpacing.s12),
                       Text(
-                        'Connected',
+                        l10n.connected,
                         style: AppType.label1.r.copyWith(
                           color: context.c.labelNormal,
                         ),

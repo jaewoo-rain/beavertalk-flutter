@@ -2040,4 +2040,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get difficultyLabel => '難易度';
+
+  @override
+  String get connected => '接続済み';
 }

@@ -2042,4 +2042,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get difficultyLabel => '난이도';
+
+  @override
+  String get connected => '연결됨';
 }

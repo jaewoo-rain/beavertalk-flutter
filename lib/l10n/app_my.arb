@@ -628,5 +628,6 @@
   "difficultySlow": "နှေး",
   "difficultyNormal": "ပုံမှန်",
   "difficultyFast": "မြန်",
-  "difficultyLabel": "အခက်အခဲအဆင့်"
+  "difficultyLabel": "အခက်အခဲအဆင့်",
+  "connected": "ချိတ်ဆက်ပြီး"
 }

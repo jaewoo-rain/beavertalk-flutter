@@ -628,5 +628,6 @@
   "difficultySlow": "Lento",
   "difficultyNormal": "Normal",
   "difficultyFast": "Rápido",
-  "difficultyLabel": "Dificuldade"
+  "difficultyLabel": "Dificuldade",
+  "connected": "Conectado"
 }

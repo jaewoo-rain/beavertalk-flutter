@@ -628,5 +628,6 @@
   "difficultySlow": "Жай",
   "difficultyNormal": "Орточо",
   "difficultyFast": "Тез",
-  "difficultyLabel": "Татаалдык"
+  "difficultyLabel": "Татаалдык",
+  "connected": "Туташты"
 }

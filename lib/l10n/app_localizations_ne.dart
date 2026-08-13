@@ -2097,4 +2097,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'कठिनाइ';
+
+  @override
+  String get connected => 'जडान भयो';
 }

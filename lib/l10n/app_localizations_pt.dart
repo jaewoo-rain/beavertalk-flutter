@@ -2125,4 +2125,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Dificuldade';
+
+  @override
+  String get connected => 'Conectado';
 }

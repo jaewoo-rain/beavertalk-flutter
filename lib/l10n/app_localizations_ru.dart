@@ -2111,4 +2111,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Сложность';
+
+  @override
+  String get connected => 'Подключено';
 }

@@ -2132,4 +2132,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get difficultyLabel => 'Schwierigkeit';
+
+  @override
+  String get connected => 'Verbunden';
 }

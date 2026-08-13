@@ -111,6 +111,13 @@ class LearningCallMainScreen extends ConsumerWidget {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: Column(
+        // The footer CTA is full-width (fill). Without this the Column defaults
+        // to CrossAxisAlignment.center and the Button — which has no width of
+        // its own (Row/mainAxisSize.min) — hugs its label and floats centred.
+        // The inner scroll Column already stretches, which is why the footer
+        // read as correct on review. Same failure `avatar_detail._footer`
+        // documents ("Use This" rendered ~260px wide instead of the gutters).
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // Untitled: the frame defines no title for this screen, so the GNB
           // is a back affordance only. Same unwind as the footer below.

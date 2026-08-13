@@ -419,11 +419,18 @@ class _PronunciationChallengeScreenState
         const SizedBox(height: AppSpacing.s16),
         _recordToggle(l10n),
         const SizedBox(height: AppSpacing.s24),
-        Button(
-          type: BtnType.primaryFill,
-          size: BtnSize.s60,
-          text: l10n.challengeStart,
-          onPressed: _onStart,
+        // Fill, not hug: the result panel's CTAs are Row+Expanded and span the
+        // panel, so a label-width start button read as a different control in
+        // the same overlay. _panelShell's Column is centre-aligned, so the
+        // width has to come from here.
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeStart,
+            onPressed: _onStart,
+          ),
         ),
         const SizedBox(height: AppSpacing.s8),
         Text(
