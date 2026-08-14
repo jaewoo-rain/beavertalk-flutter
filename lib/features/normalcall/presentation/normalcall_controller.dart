@@ -129,6 +129,25 @@ double revealRatePerTick({
 /// 추정 구간의 길이 편향 계수. 1 보다 작아야 **짧은 쪽**으로 틀린다.
 const double _revealShortBias = 0.8;
 
+/// 첫 소리가 **들리는 시각**까지의 응답시간(ms). 순수 산수라 따로 뽑아 테스트한다.
+///
+/// 지금 넣은 오디오는 **엔진에 이미 들어 있던 것이 다 나간 뒤**에 들린다:
+///     들리는 시각 = 피드한 시각 + (피드 **직전** 엔진 잔량)
+///
+/// ⛔ 끝점을 「오디오 **도착**」으로 잡으면 안 된다. 그러면 엔진 잔량(= 지터 쿠션이 만든 것)이
+///   지표에서 사라져 **쿠션 0 과 300 이 같아 보인다** — 지금 가리려는 게 정확히 그 차이다.
+///   그래서 [preDepthFrames] 가 커지면 이 값도 반드시 커져야 한다(테스트로 고정).
+int audibleResponseMs({
+  required int userTurnEndAtMs,
+  required int fedAtMs,
+  required int preDepthFrames,
+  required int sampleRate,
+}) {
+  final depth = preDepthFrames < 0 ? 0 : preDepthFrames;
+  final audibleAt = fedAtMs + (sampleRate > 0 ? depth * 1000 ~/ sampleRate : 0);
+  return audibleAt - userTurnEndAtMs;
+}
+
 /// 마이크가 **왜 닫혔는지** — 세 관문 중 무엇이 막았나.
 ///
 /// 여는 데는 둘이 **전부** 필요하다: 통로가 캐스케이드 · 서버가 열라고 함.
@@ -355,6 +374,13 @@ class NormalCallController extends Notifier<CallState> {
   int? _userTurnStartAtMs;
   int? _userFirstTranscriptAtMs;
   int? _userTurnEndAtMs;
+
+  /// ⛔ **[_userTurnEndAtMs] 를 재사용하면 안 된다.** 그 값은 `turn_start` 핸들러가 로그를
+  /// 찍고 **바로 null 로 만든다**(`RESPONSE:` 줄). 그런데 첫 오디오는 `turn_start` **뒤에**
+  /// 오므로, 같은 필드를 쓰면 응답시간 계기가 **한 번도 안 돈다** — 그리고 로그가 조용해서
+  /// 「응답이 빨라서 안 찍히나」로 읽힌다. 오늘 여러 번 물린 그 함정이다.
+  /// ⇒ 소리 기준 계기는 **자기 필드**를 쓴다.
+  int? _userTurnEndForAudioMs;
 
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
@@ -1472,6 +1498,9 @@ class NormalCallController extends Notifier<CallState> {
     _cushionBytes = _prebufferBytes;
     _turnStarved = false;
     _turnFirstAudioFed = false;
+    _userTurnEndForAudioMs = null;
+    _responseSamples.clear();
+    responseSummary.value = '';
     _resumeFlushed = false;
     // barge-in 상태도 통화 스코프다: 이전 통화의 취소 구간이 살아 있으면 새 통화의
     // 첫 인사가 통째로 폐기된다.
@@ -2111,6 +2140,72 @@ class NormalCallController extends Notifier<CallState> {
 
   static String _sec(num bytes) => (bytes / 48000.0).toStringAsFixed(1);
 
+  // ── 응답시간 계기 ────────────────────────────────────────────────────────
+  //
+  // ⛔ 이미 있는 `RESPONSE: user_turn_end → turn_start` 와 **다른 자다. 지우지 마라.**
+  //   `turn_start` 는 오디오 첫 바이트보다 **먼저** 오는 제어 메시지라(서버 불변식 I2),
+  //   그 값엔 **TTS 벤더·송출·지터 쿠션이 안 들어간다.**
+  //   실측 대조(2026-08-14, 서버측): `turn_start` 까지 중앙 1,500ms vs 실제 소리까지 3,370ms.
+  //   **두 배 이상 벌어진다.** 서버 내부 구간을 보려면 그 줄이, 사용자 체감을 보려면 이 줄이 필요하다.
+  //
+  // ⛔ 끝점을 「오디오 **도착**」으로 잡으면 안 된다. 그러면 쿠션이 지표에서 사라져
+  //   **쿠션 0 과 300 이 같아 보인다** — 지금 가리려는 게 정확히 그 차이다.
+
+  /// 이번 통화의 응답시간 표본(ms). 중앙값을 같이 찍는다 — 한 판의 튐에 속지 않으려고.
+  final List<int> _responseSamples = [];
+
+  /// 개발자 도구 카드에 띄우는 한 줄. 밖에서 USB 없이 읽으라고 화면에도 둔다.
+  static final ValueNotifier<String> responseSummary = ValueNotifier<String>('');
+
+  /// 첫 소리가 **들리는 시각**까지를 잰다.
+  ///
+  /// ## 어떻게 「들리는 시각」을 아는가
+  /// 지금 넣은 오디오는 **엔진에 이미 들어 있던 것이 다 나간 뒤**에 들린다. 그래서
+  ///     들리는 시각 = 피드한 시각 + (피드 **직전** 엔진 잔량)
+  /// 이다. 그 잔량은 안드로이드가 `feed` 응답으로 **직접 알려준다**(`reported` = 넣은 뒤 총량,
+  /// 거기서 방금 넣은 양을 빼면 직전 잔량). 그 경로면 **실측**이다.
+  ///
+  /// ⚠ 안드로이드가 값을 안 주면(iOS/web/구버전 플러그인) 우리 외삽치([_engineLevelFrames])로
+  ///   떨어진다. 그때는 **추정이라고 로그에 적는다** — 추정을 실측처럼 찍지 않는다.
+  ///
+  /// ⚠ 그리고 **메인 스레드가 막히면 이 값도 같이 는다.** 그건 결함이 아니라 우리가 재려는
+  ///   대상이다 — 같은 통화의 `Skipped frames`·`Davey!` 와 함께 읽어야 한다.
+  void _recordResponseTime(int sentAtMs, int? reported, int level, int take) {
+    final endedAt = _userTurnEndForAudioMs;
+    // 사용자 발화가 없던 턴(첫 인사·자동 대화)은 잴 대상이 아니다. 조용히 건너뛴다.
+    if (endedAt == null) return;
+    _userTurnEndForAudioMs = null;
+
+    final fedFrames = take ~/ 2;
+    final int preDepthFrames;
+    final bool measured;
+    if (reported != null) {
+      final v = reported - fedFrames;
+      preDepthFrames = v < 0 ? 0 : v;
+      measured = true;
+    } else {
+      preDepthFrames = level < 0 ? 0 : level;
+      measured = false;
+    }
+    final responseMs = audibleResponseMs(
+      userTurnEndAtMs: endedAt,
+      fedAtMs: sentAtMs,
+      preDepthFrames: preDepthFrames,
+      sampleRate: _playbackSampleRate,
+    );
+    // 시계가 뒤로 간 경우(있으면 안 되지만) 음수를 표본에 넣지 않는다.
+    if (responseMs < 0) return;
+
+    _responseSamples.add(responseMs);
+    final sorted = [..._responseSamples]..sort();
+    final median = sorted[sorted.length ~/ 2];
+    final cushionMs = _cushionBytes ~/ 48;
+    final line = '응답 ${responseMs}ms (말끝→첫소리 · 쿠션 ${cushionMs}ms) — '
+        '${_responseSamples.length}턴 중앙값 ${median}ms';
+    _log(measured ? line : '$line ⚠ 추정(네이티브 잔량 미제공)');
+    responseSummary.value = measured ? line : '$line ⚠ 추정';
+  }
+
   void _startInflateLog() {
     _inflateTimer?.cancel();
     _callT0Ms = DateTime.now().millisecondsSinceEpoch;
@@ -2454,6 +2549,7 @@ class NormalCallController extends Notifier<CallState> {
           _fedAudBytes += take; // [계측]
           // [계측] 이 턴의 **첫 실오디오**. 이 뒤부터 넣는 무음이 「발화 중 구멍」이고,
           // 이 앞은 「턴 시작 대기」다. 이 한 줄이 두 지표를 가른다.
+          final isFirstOfTurn = !_turnFirstAudioFed;
           _turnFirstAudioFed = true;
           // 원장: 이건 **서버발** 오디오다. 진행도 보고가 이 기록에 걸려 있다.
           _ledger.recordFeed(frames: take ~/ 2, server: true);
@@ -2468,6 +2564,9 @@ class NormalCallController extends Notifier<CallState> {
             _log('feed raced clear — 앵커/꼬리 갱신 건너뜀');
             return;
           }
+          // ⭐ [계측] **응답시간** — 이 턴의 첫 소리가 **실제로 들리는 시각**까지.
+          //   데모(`/__cascadedemo`)와 **글자 그대로 같은 정의**여야 나란히 놓을 수 있다.
+          if (isFirstOfTurn) _recordResponseTime(sentAtMs, reported, level, take);
           // Android reports its depth; elsewhere fall back to our own arithmetic
           // so iOS/web keep working unchanged.
           _anchorEngine(reported ?? (level + take ~/ 2), sentAtMs);
@@ -3045,6 +3144,9 @@ class NormalCallController extends Notifier<CallState> {
     // 취소 뒤 이어지는 턴도 「첫 소리 전」부터 다시 센다 — 안 되돌리면 다음 턴의 시작
     // 대기가 「발화 중 구멍」으로 집계된다(barge-in 이 잦을수록 그 오염이 커진다).
     _turnFirstAudioFed = false;
+    // ⛔ 끼어들어 끊은 턴은 응답시간 표본이 아니다. 안 지우면 **취소된 턴의 말끝**부터
+    //   다음 턴 첫 소리까지가 응답시간으로 잡혀 값이 통째로 부풀린다.
+    _userTurnEndForAudioMs = null;
     // 다음 턴은 쿠션을 다시 쌓아야 한다(취소로 끊긴 재생을 이어가는 게 아니다).
     _playing = false;
     _prebufferFlushTimer?.cancel();
@@ -3477,6 +3579,7 @@ class NormalCallController extends Notifier<CallState> {
                 '첫 전사 ${firstAt == null ? "없음" : "${firstAt - startedAt}ms"}');
           }
           _userTurnEndAtMs = nowMs;
+          _userTurnEndForAudioMs = nowMs;
           _userTurnStartAtMs = null;
         }
       case 'call_ended':

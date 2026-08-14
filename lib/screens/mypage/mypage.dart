@@ -24,6 +24,7 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/domain/entities/pron_summary.dart';
+import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -312,7 +313,7 @@ class MyPageScreen extends ConsumerWidget {
         //   두 군데로 갈려 오늘 혼선이 반쪽만 닫힌다. 아무 토글이나 하나를 들으면
         //   setState 가 카드 전체를 다시 그리므로 나머지도 같이 갱신된다.
         valueListenable: CascadeAutoTalk.toggle,
-        builder: (context, _, __) => _buildInfoBody(context),
+        builder: (context, _, _) => _buildInfoBody(context),
       );
 
   Widget _buildInfoBody(BuildContext context) {
@@ -328,6 +329,21 @@ class MyPageScreen extends ConsumerWidget {
                     fontWeight: FontWeight.w700,
                   )),
           const SizedBox(height: 2),
+          // ⭐ 응답시간 — **밖에서 USB 없이 읽으라고** 화면에도 둔다. 오늘 그게 반나절을 아꼈다.
+          //   통화가 끝나도 마지막 값이 남는다(통화 화면을 나와야 이 화면을 볼 수 있으므로).
+          ValueListenableBuilder<String>(
+            valueListenable: NormalCallController.responseSummary,
+            builder: (context, line, _) => line.isEmpty
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Text(line,
+                        style: Theme.of(context)
+                            .textTheme
+                            .bodySmall
+                            ?.copyWith(fontWeight: FontWeight.w700)),
+                  ),
+          ),
           Text(BuildFlags.summary,
               style: Theme.of(context)
                   .textTheme
