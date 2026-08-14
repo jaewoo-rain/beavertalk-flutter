@@ -58,10 +58,10 @@ $Criteria = @(
     Why  = '⛔ **대화가 있는 판에서만 읽어라.** 이 값은 (보낸 오디오 / 벽시계)라 비버가 말을 안 하면 당연히 낮게 나온다 - 조용한 판(에뮬은 호스트 마이크가 무음이라 턴이 거의 없다)에서 이 값으로 「이상」을 내면 전부 거짓 양성이다. 교차 확인: 재생이 진짜 못 따라갔으면 engine min 이 0ms 로 말라야 한다. 둘이 반대로 말하면 이 항목이 틀린 것이다(2026-08-13 실측: 70~79% 인데 engine min 0ms 는 0회). 주판정은 핑 곡선, 체감은 발화중구멍이다.'
   }
   [pscustomobject]@{
-    Name = 'MIC KB/s'
-    Good = '31.3 KB/s (오차 5%)'
-    Bad  = '60 KB/s 이상 = 2배'
-    Why  = '[측정 유효성 게이트] 16kHz mono s16 = 32,000 B/s = 31.3KB/s. 실기기 0.97~1.05배, 에뮬 0.98~1.00배로 둘 다 확인됨(2026-08-13). 2배가 나오면 그 판은 버린다 - 그때는 무언가 새로 생긴 것이다'
+    Name = '마이크 평균간격'
+    Good = '22.3ms (한 프레임 704B = 352샘플 = 16kHz)'
+    Bad  = '11ms 근처 = 두 배 속도 캡처 → **그 판은 버린다**'
+    Why  = '[측정 유효성 게이트] 2026-08-14 실측: 에뮬 오디오 HAL 이 16kHz 라고 선언해 놓고 실제로는 32,322Hz(2.020배)로 읽는 상태에 빠질 수 있다. 통화 도중 45/s -> 90/s 로 계단을 밟고 그 뒤 통화 내내 유지된다. 입력이 2배면 서버 부하·턴 구조가 통째로 달라져 다른 항목을 못 읽는다. ⭐ KB/s 가 아니라 **간격**을 보는 이유: 무음에서도 돈다(내용 비교는 무음이면 100%로 붙어 못 쓴다). ⚠ 방아쇠는 미상이고 빌드·턴구조와 무관하다(같은 APK 가 어제는 정상, 오늘은 계단). 그래서 판마다 확인해야 한다 - 어제 정상이었으니 오늘도 정상이 안 통한다'
   }
   [pscustomobject]@{
     Name = '오디오/통화시간 배수'
@@ -209,6 +209,8 @@ function Invoke-Judge([string]$path) {
   }
 
   $micKB  = @(); foreach ($l in $text) { if ($l -match 'MIC: .*?([\d.]+)KB/s')   { $micKB  += [double]$Matches[1] } }
+  # ⭐ 2026-08-14: 유효성 게이트를 KB/s -> **평균간격**으로 갈았다. 무음에서도 돌기 때문이다.
+  $micGap = @(); foreach ($l in $text) { if ($l -match '평균간격 ([\d.]+)ms')     { $micGap += [double]$Matches[1] } }
   $engMin = @(); foreach ($l in $text) { if ($l -match 'PUMP: .*min (-?\d+)ms') { $engMin += [int]$Matches[1] } }
   $grew   = @($text | Where-Object { $_ -match 'cushion grew' })
   $starve = @($text | Where-Object { $_ -match 'starved! #' })
@@ -264,10 +266,16 @@ function Invoke-Judge([string]$path) {
         "초반 {0}% -> 마지막 {1}%" -f $first.fedPct, $last.fedPct
       }))
 
-  Write-Verdict 'MIC 평균' $micAvg '{0:N1} KB/s' `
+  # ⛔ 이 항목이 「이상」이면 **다른 항목을 읽지 마라.** 입력이 2배인 판이다.
+  $gapAvg = if ($micGap.Count) { ($micGap | Measure-Object -Average).Average } else { $null }
+  Write-Verdict '마이크 평균간격' $gapAvg '{0:N1}ms' `
+    ($null -ne $gapAvg -and $gapAvg -ge 20.0) `
+    ($null -ne $gapAvg -and $gapAvg -lt 16.0) `
+    '기준 22.3ms(=16kHz). 11ms 근처면 HAL 이 2배로 읽는 상태다 - **이 판은 버리고 다른 항목을 읽지 마라**'
+  Write-Verdict 'MIC 평균(참고)' $micAvg '{0:N1} KB/s' `
     ($null -ne $micAvg -and $micAvg -ge 29.7 -and $micAvg -le 32.8) `
     ($null -ne $micAvg -and $micAvg -ge 60) `
-    '기준 31.3 KB/s. 60 이상이면 이 판은 버린다 - 가상 마이크 결함'
+    '기준 31.3 KB/s. ⚠ 무음이어도 값은 나오지만, 계기 없는 빌드에서는 측정없음으로 뜬다'
 
   Write-Verdict '오디오/통화시간' $ratio '{0:N2}배' `
     ($null -ne $ratio -and $ratio -ge 0.95 -and $ratio -le 1.05) `

@@ -1774,22 +1774,29 @@ class NormalCallController extends Notifier<CallState> {
       // (dart-define 을 줬다고 네이티브가 그렇게 준다는 보장이 없다).
       _micRxWindow++;
       _micRxBytesWindow += bytes.length;
-      // ⭐ [계측 2026-08-14] **직전 프레임과 내용이 같은가.** 마이크 건수가 통화 도중
-      //   45/s → 92/s 로 계단을 밟는데 **건당 바이트는 704B 그대로**인 현상을 가른다.
-      //     중복률 ~50%  → 같은 버퍼가 두 번 올라온다(네이티브/채널 중복 등록)
-      //     중복률 ~0%   → 서로 다른 프레임이 두 배 = 캡처가 두 배 속도(HAL/장치)
-      //   두 경우는 수사 방향이 정반대다. 건수만으로는 절대 못 가른다.
-      // ⛔ **복사해서 들고 있는다.** 네이티브가 같은 버퍼를 재사용하면 참조만 들고 있을 때
-      //   prev 와 bytes 가 같은 객체가 되어 **항상 중복으로 보인다**(거짓 100%).
-      final prev = _micPrevFrame;
-      if (prev != null && prev.length == bytes.length) {
-        var same = true;
-        for (var i = 0; i < prev.length; i++) {
-          if (prev[i] != bytes[i]) { same = false; break; }
-        }
-        if (same) _micDupWindow++;
+      // ⭐ [계측 2026-08-14] 마이크 건수가 통화 도중 45/s → 92/s 로 계단을 밟는데
+      //   **건당 바이트는 704B 그대로**인 현상을 가른다. 갈래가 둘이고 수사 방향이 정반대다:
+      //     ⓐ 같은 버퍼가 두 번 올라온다(네이티브/채널 중복)
+      //     ⓑ 서로 다른 프레임이 두 배 = 캡처가 두 배 속도(HAL/장치)
+      //
+      // ⛔ **내용 비교(직전 프레임과 같은가)는 이 판에서 못 쓴다.** 실측으로 확인했다
+      //   (2026-08-14): 에뮬 호스트 마이크가 무음이라 프레임이 전부 0 이고, 계단 **전에도**
+      //   중복률이 100% 로 나왔다. 무음에서는 ⓐ든 ⓑ든 100% 다 — 아무것도 못 가른다.
+      //
+      // ⭐ 그래서 **도착 간격**으로 가른다. 이건 소리 내용과 무관하다:
+      //     ⓐ 같은 버퍼 두 번 → 짝지어 도착한다: ~0ms, ~22ms, ~0ms, ~22ms …
+      //                        ⇒ **2ms 미만 간격이 전체의 절반 가까이** 나온다
+      //     ⓑ 두 배 속도     → 고르게 ~11ms
+      //   한 프레임이 704B = 352샘플 = 16kHz 에서 **22ms** 다. 그게 기준자다.
+      final nowUs = DateTime.now().microsecondsSinceEpoch;
+      final prevUs = _micPrevAtUs;
+      if (prevUs != 0) {
+        final gapUs = nowUs - prevUs;
+        if (gapUs < 2000) _micBackToBackWindow++; // 2ms 미만 = 사실상 동시 도착
+        _micGapSumUs += gapUs;
+        _micGapCount++;
       }
-      _micPrevFrame = Uint8List.fromList(bytes);
+      _micPrevAtUs = nowUs;
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
@@ -1920,10 +1927,12 @@ class NormalCallController extends Notifier<CallState> {
   /// 창마다 리셋된다(누계가 아니라 **추세**를 본다).
   int _micRxWindow = 0, _micRxBytesWindow = 0;
 
-  /// [계측] 이 창에서 **직전 프레임과 내용이 같았던** 건수 + 비교용 직전 프레임(복사본).
-  /// 마이크 2배 계단이 「같은 버퍼 두 번」인지 「두 배 속도 캡처」인지 가른다.
-  int _micDupWindow = 0;
-  Uint8List? _micPrevFrame;
+  /// [계측] 마이크 프레임 **도착 간격**. 2배 계단이 「같은 버퍼 두 번」인지
+  /// 「두 배 속도 캡처」인지 가른다 — 소리 내용과 무관해서 무음에서도 답이 나온다.
+  /// (내용 비교는 무음이면 100% 로 붙어 못 쓴다. 2026-08-14 실측으로 확인.)
+  int _micBackToBackWindow = 0; // 2ms 미만 간격 = 짝지어 도착
+  int _micGapSumUs = 0, _micGapCount = 0;
+  int _micPrevAtUs = 0;
 
   /// [실험] MIC_TO_FILE 이 만든 녹음 파일 경로. 통화 종료 시 지운다.
   String? _micProbeFile;
@@ -2158,13 +2167,17 @@ class NormalCallController extends Notifier<CallState> {
       _log('MIC: 수신 $_micRxWindow건(${(_micRxWindow / 5).toStringAsFixed(1)}/s, '
           '건당 ${_micRxWindow > 0 ? _micRxBytesWindow ~/ _micRxWindow : 0}B, '
           '${(_micRxBytesWindow / 5 / 1024).toStringAsFixed(1)}KB/s)'
-          // ⭐ 2배 계단의 성격을 가르는 값. 50% 근처면 같은 버퍼가 두 번, 0% 근처면
-          //   서로 다른 프레임이 두 배 = 캡처 속도 문제다.
-          ', 중복 $_micDupWindow건'
-          '(${_micRxWindow > 0 ? (_micDupWindow * 100 ~/ _micRxWindow) : 0}%)');
+          // ⭐ 2배 계단의 성격을 가르는 값. 한 프레임 = 704B = 22ms 가 기준자다.
+          //   짝도착 40% 이상 + 평균 간격 ~11ms → **같은 버퍼가 두 번**
+          //   짝도착 ~0%   + 평균 간격 ~11ms → **두 배 속도 캡처**
+          ', 짝도착 $_micBackToBackWindow건'
+          '(${_micRxWindow > 0 ? (_micBackToBackWindow * 100 ~/ _micRxWindow) : 0}%)'
+          ', 평균간격 ${_micGapCount > 0 ? (_micGapSumUs / _micGapCount / 1000).toStringAsFixed(1) : "-"}ms');
       _micRxWindow = 0;
       _micRxBytesWindow = 0;
-      _micDupWindow = 0;
+      _micBackToBackWindow = 0;
+      _micGapSumUs = 0;
+      _micGapCount = 0;
     });
   }
 
