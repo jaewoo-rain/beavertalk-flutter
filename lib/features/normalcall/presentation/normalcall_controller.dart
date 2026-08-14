@@ -2583,6 +2583,23 @@ class NormalCallController extends Notifier<CallState> {
       _log('resync: queue ${len}B > cap ${_maxQueueBytes}B → dropped ${drop}B');
       _maybeCompact();
     }
+
+    // ⭐ **새 오디오가 들어왔으니 지금 바로 한 번 밀어 본다(2026-08-15).**
+    //
+    // 푸시 타이머는 40ms 주기라, 쿠션 게이트가 열리는 순간과 다음 틱 사이에 **평균 20ms,
+    // 최대 40ms** 를 논다. 그게 매 턴 첫 소리에 그대로 더해진다.
+    //
+    // 주기를 20ms 로 줄이는 안 대신 **이쪽을 골랐다**: 주기를 줄이면 아무것도 안 바뀐
+    // 틱까지 두 배로 돌아 **플랫폼 채널 왕복이 늘어난다.** 이 프로젝트에서 채널 적체는
+    // 이미 한 번 범인이었다(2026-08-14, 재생 채널을 백그라운드 큐로 옮긴 그 건).
+    // ⇒ **바뀐 순간에만** 부른다.
+    //
+    // ⛔ 공짜로 도는 게 아니라 **거의 즉시 반환한다**: [_pump] 는 재진입 가드
+    //   (`if (_feeding) return`)와 저수위 검사(`level < _engineLowFrames`)를 먼저 본다.
+    //   엔진이 차 있으면 채널을 한 번도 안 두드린다.
+    // ⚠ 소켓 수신 경로에서 부르므로 **await 하지 않는다** — 여기서 기다리면 다음 청크 수신이
+    //   그만큼 밀린다.
+    unawaited(_pump());
   }
 
   /// Starts the push loop. From here on Dart decides when the engine gets fed;
