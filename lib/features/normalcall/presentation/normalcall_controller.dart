@@ -2738,7 +2738,28 @@ class NormalCallController extends Notifier<CallState> {
           //   집계돼, 쿠션이 상한까지 못 박히고 감쇠가 영영 안 걸린다.
           //   실측(5분 통화, 2026-08-02): 판정 26회 중 실제로 들린 끊김은 8회.
           //   나머지 18회가 가짜였고 쿠션은 72초 만에 1800ms 상한에 고정됐다.
-          if (_beaverAudioActive && _audioDrained) {
+          //
+          // ⛔ **그때 [_audioDrained] 로 막은 것만으로는 부족했다(2026-08-15).**
+          //   턴의 **양 끝**이 아직 샜다. 둘 다 「굶주림」이 아니다:
+          //     ① 턴 **시작** — 서버는 `turn_start` 를 첫 오디오보다 **먼저** 보낸다
+          //        (서버 불변식 I2). 그 사이 [_pump] 가 돌면 큐가 빈 게 당연한데
+          //        굶었다고 센다 ⇒ **매 턴 가짜 확정** ⇒ 턴마다 +150ms, 20초면 상한 1200ms,
+          //        감쇠는 영영 안 걸린다.
+          //     ② 턴 **끝** — `turn_end` 는 「서버가 이 턴 오디오를 다 보냈다」는 뜻이다.
+          //        그 뒤 큐가 마르는 건 턴이 정상적으로 끝나는 것이지 끊김이 아니다.
+          //        게다가 그 상태에서는 위 `ready` 가 `_turnEnded` 로 **쿠션을 이미 우회**하므로
+          //        쿠션을 키워도 아무것도 못 막는다.
+          //   ⭐ ①의 판별식은 **이 함수가 이미 갖고 있었다** — 무음 집계(아래)가
+          //     `_turnFirstAudioFed` 로 「턴 시작 대기」와 「발화 중 구멍」을 가른다.
+          //     계측에는 붙여 놓고 **쿠션 판정에는 안 붙어 있었다.** 그 의도를 완성한다.
+          //   ⚠ 진짜 발화 중 끊김은 여전히 잡힌다 — 그때는 서버가 아직 보내는 중이라
+          //     `_turnEnded` 가 false 이고, 첫 소리는 이미 났으므로 `_turnFirstAudioFed` 가 true 다.
+          //   실측 배경(서버 로그 턴 단위 조인, 2026-08-15): 웹 클라몫 중앙 303ms(쿠션 300 고정)
+          //     vs 앱 중앙 520ms — **앱의 클라몫이 쿠션을 그대로 따라갔다.**
+          if (_beaverAudioActive &&
+              _audioDrained &&
+              _turnFirstAudioFed &&
+              !_turnEnded) {
             if (_starveAtMs == null) {
               // First starve of this turn: the cushion was too small for the
               // deficit this call is running, so widen it for the turns ahead.
