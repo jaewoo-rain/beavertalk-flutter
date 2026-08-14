@@ -386,6 +386,32 @@ class NormalCallController extends Notifier<CallState> {
   /// 서버로 같이 보내야 서버가 「제어 신호까지」와 「소리까지」를 한 줄에서 뺀다.
   int? _turnStartDelayMs;
 
+  // ── [계측] 「내가 입을 연 시각」 ──────────────────────────────────────────
+  //
+  // ⛔ **턴 판정에 쓰지 않는다.** 턴은 전적으로 서버가 판정한다(클라에 VAD 를 두지 않는
+  //   그 규율 그대로다). 이건 **오직 원점을 기록하기 위한 것**이다.
+  //
+  // 왜 필요한가: `audible_ms` 는 `user_turn_end` **수신 시각**부터 잰다 = 서버가 「말이
+  // 끝났다」고 알려 준 시각이다. 그 앞에 침묵판정·전송·전사·대기가 **약 1.1초** 숨어 있어서,
+  // 사장님 체감(4~5초)과 우리 지표(2.8초)가 안 맞았다.
+  // ⭐ 웹 데모는 로컬 VAD 로 이 원점을 이미 갖고 있다. **앱만 없어서** 같은 자로 비교가 안 됐다.
+
+  /// 유성 판정 임계(0~1 정규화 RMS).
+  ///
+  /// ⚠ **검증된 값이 아니다.** 서버 barge-in 게이트가 0.05 인데 그건 「끊어도 되나」를 보는
+  /// 값이라 보수적이다. 여기는 「입을 열었나」라서 더 예민해야 한다. 0.02 로 시작하고,
+  /// 실측에서 첫 유성이 너무 늦거나(임계 높음) 숨소리에 걸리면(낮음) 조정한다.
+  static const double _voicedRmsThreshold = 0.02;
+
+  /// 이 정도 조용하면 **다음 발화**로 본다(웹 데모와 같은 규율).
+  static const int _voicedResetMs = 400;
+
+  int? _firstVoicedAtMs;
+  int _lastVoicedAtMs = 0;
+
+  /// `user_turn_end` 시점에 **굳혀 둔** 첫 유성 시각. 그 뒤 리셋에 안 쓸리게 따로 둔다.
+  int? _frozenFirstVoicedAtMs;
+
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
   static const Duration _listenHold = Duration(milliseconds: 900);
@@ -1504,6 +1530,10 @@ class NormalCallController extends Notifier<CallState> {
     _turnFirstAudioFed = false;
     _userTurnEndForAudioMs = null;
     _turnStartDelayMs = null;
+    // 발화 감지도 통화 스코프다 — 이전 통화의 시작 시각이 남으면 첫 턴 값이 통째로 부풀린다.
+    _firstVoicedAtMs = null;
+    _lastVoicedAtMs = 0;
+    _frozenFirstVoicedAtMs = null;
     _responseSamples.clear();
     responseSummary.value = '';
     _resumeFlushed = false;
@@ -1853,6 +1883,9 @@ class NormalCallController extends Notifier<CallState> {
         _micGapCount++;
       }
       _micPrevAtUs = nowUs;
+      // ⭐ [계측] **첫 유성 프레임 시각.** 정수 산술만 쓰고 할당이 없다 — 초당 45~90회
+      //   도는 자리라 여기서 비싸지면 우리가 재려던 것을 우리가 흔든다.
+      _markVoicedIfLoud(bytes);
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
@@ -2205,7 +2238,17 @@ class NormalCallController extends Notifier<CallState> {
     final sorted = [..._responseSamples]..sort();
     final median = sorted[sorted.length ~/ 2];
     final cushionMs = _cushionBytes ~/ 48;
-    final line = '응답 ${responseMs}ms (말끝→첫소리 · 쿠션 ${cushionMs}ms) — '
+
+    // ⭐ **사장님이 체감하시는 원점**부터의 값. `user_turn_end` 는 서버가 「말 끝났다」고
+    //   알려 준 시각이라 그 앞의 침묵판정·전송·전사·대기(약 1.1초)가 빠져 있다.
+    // ⛔ 못 쟀으면 **-1**. 0 으로 채우면 「즉시였다」로 읽힌다 — 없음과 0 은 다르다.
+    final voicedAt = _frozenFirstVoicedAtMs;
+    _frozenFirstVoicedAtMs = null;
+    final audibleAtMs = endedAt + responseMs;
+    final speechToSoundMs = voicedAt == null ? -1 : audibleAtMs - voicedAt;
+
+    final line = '응답 ${responseMs}ms (말끝→첫소리 · 쿠션 ${cushionMs}ms) · '
+        '말시작→첫소리 ${speechToSoundMs < 0 ? "못잼" : "${speechToSoundMs}ms"} — '
         '${_responseSamples.length}턴 중앙값 ${median}ms';
     _log(measured ? line : '$line ⚠ 추정(네이티브 잔량 미제공)');
     responseSummary.value = measured ? line : '$line ⚠ 추정';
@@ -2213,7 +2256,35 @@ class NormalCallController extends Notifier<CallState> {
       audibleMs: responseMs,
       cushionMs: cushionMs,
       estimated: !measured,
+      speechToSoundMs: speechToSoundMs,
     );
+  }
+
+  /// 프레임의 RMS 가 임계를 넘으면 「입을 열었다」로 기록한다.
+  ///
+  /// ⛔ **계측 전용이다.** 재생·마이크·턴 로직에 아무것도 안 건다.
+  /// ⛔ 초당 45~90회 도는 자리라 **산술만** 한다(할당·파싱 없음) — 여기서 비싸지면
+  ///   우리가 재려던 것을 우리가 흔든다.
+  void _markVoicedIfLoud(Uint8List bytes) {
+    final n = bytes.length ~/ 2;
+    if (n == 0) return;
+    // PCM16 LE. 352 샘플 × 32768² 는 int64 안에서 안전하다.
+    var sumSq = 0;
+    for (var i = 0; i + 1 < bytes.length; i += 2) {
+      var v = (bytes[i + 1] << 8) | bytes[i];
+      if (v >= 0x8000) v -= 0x10000; // 부호 확장
+      sumSq += v * v;
+    }
+    final rms = math.sqrt(sumSq / n) / 32768.0;
+    if (rms < _voicedRmsThreshold) return;
+
+    final nowMs = DateTime.now().millisecondsSinceEpoch;
+    // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
+    if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
+      _firstVoicedAtMs = null;
+    }
+    _firstVoicedAtMs ??= nowMs;
+    _lastVoicedAtMs = nowMs;
   }
 
   /// 이 턴의 응답시간을 **서버로** 보낸다 — 턴당 1건.
@@ -2234,6 +2305,7 @@ class NormalCallController extends Notifier<CallState> {
     required int audibleMs,
     required int cushionMs,
     required bool estimated,
+    required int speechToSoundMs,
   }) {
     final turnId = _currentTurnId;
     if (turnId == null || turnId.isEmpty) {
@@ -2253,6 +2325,8 @@ class NormalCallController extends Notifier<CallState> {
       'turn_start_ms': ?_turnStartDelayMs,
       'cushion_ms': cushionMs,
       'estimated': estimated,
+      // ⛔ 못 쟀으면 **-1**이다. 0 으로 채우지 않는다 — 서버가 「즉시였다」로 읽는다.
+      'speech_to_sound_ms': speechToSoundMs,
     });
     _turnStartDelayMs = null; // 턴당 1회. 다음 턴 값이 섞이지 않게 즉시 비운다.
   }
@@ -3198,6 +3272,8 @@ class NormalCallController extends Notifier<CallState> {
     // ⛔ 끼어들어 끊은 턴은 응답시간 표본이 아니다. 안 지우면 **취소된 턴의 말끝**부터
     //   다음 턴 첫 소리까지가 응답시간으로 잡혀 값이 통째로 부풀린다.
     _userTurnEndForAudioMs = null;
+    // 굳혀 둔 발화 시작 시각도 같은 이유로 버린다.
+    _frozenFirstVoicedAtMs = null;
     // 취소된 턴의 `turn_start` 지연도 다음 턴에 실리면 안 된다.
     _turnStartDelayMs = null;
     // 다음 턴은 쿠션을 다시 쌓아야 한다(취소로 끊긴 재생을 이어가는 게 아니다).
@@ -3634,6 +3710,10 @@ class NormalCallController extends Notifier<CallState> {
           }
           _userTurnEndAtMs = nowMs;
           _userTurnEndForAudioMs = nowMs;
+          // ⭐ 이 발화의 시작 시각을 **굳힌다.** 안 굳히면 그 뒤 400ms 리셋이나 다음 숨소리에
+          //   쓸려서, 첫 소리가 날 때쯤엔 엉뚱한 값이 되어 있다.
+          _frozenFirstVoicedAtMs = _firstVoicedAtMs;
+          _firstVoicedAtMs = null;
           _userTurnStartAtMs = null;
         }
       case 'call_ended':

@@ -22,6 +22,7 @@ void main() {
       int? turnStartMs,
       required int cushionMs,
       required bool estimated,
+      int speechToSoundMs = -1,
     }) =>
         {
           'type': 'client_timing',
@@ -30,6 +31,7 @@ void main() {
           'turn_start_ms': ?turnStartMs,
           'cushion_ms': cushionMs,
           'estimated': estimated,
+          'speech_to_sound_ms': speechToSoundMs,
         };
 
     test('필수 키가 다 있다 — 하나라도 빠지면 서버가 조인/뺄셈을 못 한다', () {
@@ -57,6 +59,26 @@ void main() {
             estimated: false)['turn_start_ms'],
         1500,
       );
+    });
+
+    test('⛔ 못 잰 speech_to_sound_ms 는 **-1**이다 — 0 으로 채우면 「즉시였다」로 읽힌다', () {
+      // 사장님 원점(입을 연 시각)은 유성 감지가 실패하면 아예 없다. 없음과 0 은 다르다.
+      final m = payload(
+          turnId: 'b3', audibleMs: 100, cushionMs: 0, estimated: false);
+      expect(m['speech_to_sound_ms'], -1);
+      expect(m['speech_to_sound_ms'], isNot(0));
+    });
+
+    test('잰 경우엔 그 값이 그대로 실린다', () {
+      final m = payload(
+          turnId: 'b4',
+          audibleMs: 3370,
+          cushionMs: 300,
+          estimated: false,
+          speechToSoundMs: 4531);
+      expect(m['speech_to_sound_ms'], 4531);
+      // ⭐ 사장님 원점이 더 앞이므로 **audible_ms 보다 크다.** 작아지면 원점을 잘못 잡은 것이다.
+      expect(m['speech_to_sound_ms'] as int, greaterThan(m['audible_ms'] as int));
     });
 
     test('⛔ estimated 를 빠뜨리지 않는다 — 추정치가 실측과 같은 표에 섞이면 안 된다', () {
