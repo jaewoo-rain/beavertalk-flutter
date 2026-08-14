@@ -1774,6 +1774,22 @@ class NormalCallController extends Notifier<CallState> {
       // (dart-define 을 줬다고 네이티브가 그렇게 준다는 보장이 없다).
       _micRxWindow++;
       _micRxBytesWindow += bytes.length;
+      // ⭐ [계측 2026-08-14] **직전 프레임과 내용이 같은가.** 마이크 건수가 통화 도중
+      //   45/s → 92/s 로 계단을 밟는데 **건당 바이트는 704B 그대로**인 현상을 가른다.
+      //     중복률 ~50%  → 같은 버퍼가 두 번 올라온다(네이티브/채널 중복 등록)
+      //     중복률 ~0%   → 서로 다른 프레임이 두 배 = 캡처가 두 배 속도(HAL/장치)
+      //   두 경우는 수사 방향이 정반대다. 건수만으로는 절대 못 가른다.
+      // ⛔ **복사해서 들고 있는다.** 네이티브가 같은 버퍼를 재사용하면 참조만 들고 있을 때
+      //   prev 와 bytes 가 같은 객체가 되어 **항상 중복으로 보인다**(거짓 100%).
+      final prev = _micPrevFrame;
+      if (prev != null && prev.length == bytes.length) {
+        var same = true;
+        for (var i = 0; i < prev.length; i++) {
+          if (prev[i] != bytes[i]) { same = false; break; }
+        }
+        if (same) _micDupWindow++;
+      }
+      _micPrevFrame = Uint8List.fromList(bytes);
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
@@ -1903,6 +1919,11 @@ class NormalCallController extends Notifier<CallState> {
   /// [계측] 5초 창 동안 네이티브가 올려 준 마이크 프레임 건수·바이트.
   /// 창마다 리셋된다(누계가 아니라 **추세**를 본다).
   int _micRxWindow = 0, _micRxBytesWindow = 0;
+
+  /// [계측] 이 창에서 **직전 프레임과 내용이 같았던** 건수 + 비교용 직전 프레임(복사본).
+  /// 마이크 2배 계단이 「같은 버퍼 두 번」인지 「두 배 속도 캡처」인지 가른다.
+  int _micDupWindow = 0;
+  Uint8List? _micPrevFrame;
 
   /// [실험] MIC_TO_FILE 이 만든 녹음 파일 경로. 통화 종료 시 지운다.
   String? _micProbeFile;
@@ -2136,9 +2157,14 @@ class NormalCallController extends Notifier<CallState> {
       //   따로 찍어야 "우리 것만 셌다" 함정을 피한다. 묶기 실험의 눈금이기도 하다.
       _log('MIC: 수신 $_micRxWindow건(${(_micRxWindow / 5).toStringAsFixed(1)}/s, '
           '건당 ${_micRxWindow > 0 ? _micRxBytesWindow ~/ _micRxWindow : 0}B, '
-          '${(_micRxBytesWindow / 5 / 1024).toStringAsFixed(1)}KB/s)');
+          '${(_micRxBytesWindow / 5 / 1024).toStringAsFixed(1)}KB/s)'
+          // ⭐ 2배 계단의 성격을 가르는 값. 50% 근처면 같은 버퍼가 두 번, 0% 근처면
+          //   서로 다른 프레임이 두 배 = 캡처 속도 문제다.
+          ', 중복 $_micDupWindow건'
+          '(${_micRxWindow > 0 ? (_micDupWindow * 100 ~/ _micRxWindow) : 0}%)');
       _micRxWindow = 0;
       _micRxBytesWindow = 0;
+      _micDupWindow = 0;
     });
   }
 
