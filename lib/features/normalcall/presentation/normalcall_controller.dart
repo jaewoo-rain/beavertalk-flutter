@@ -1273,6 +1273,12 @@ class NormalCallController extends Notifier<CallState> {
         'inbound_call_id': ?inboundCallId,
         // (barge-in) AEC 자기진단. 서버가 **세션마다** 끼어들기 확인 방식을 고르는 입력이다.
         'aec': await _aecHint(),
+        // ⭐ 마이크 규격을 **명시한다**(2026-08-14). 지금까지 안 보냈고 서버는 기본값
+        //   16000Hz 를 가정했는데, 우연히 우리 레코더도 16000 이라 맞았을 뿐이다.
+        //   ⛔ 암묵 계약이라 취약하다 — 누가 레코더 상수를 바꾸면 서버는 모른 채 틀리고,
+        //     **에러가 안 나서 조용히 이상한 목소리가 된다.** 값이 한 곳에서 나오게 묶는다.
+        'sample_rate': _micSampleRate,
+        'num_channels': _micNumChannels,
       });
 
       _startAutoTalkIfEnabled();
@@ -1882,8 +1888,8 @@ class NormalCallController extends Notifier<CallState> {
           toFile: toFilePath,
           toStream: toFilePath == null ? controller.sink : null,
           codec: Codec.pcm16,
-          sampleRate: 16000,
-          numChannels: 1,
+          sampleRate: _micSampleRate,
+          numChannels: _micNumChannels,
           enableVoiceProcessing: useVoiceProcessing,
           // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
           enableEchoCancellation: !CascadeMicNoAec.enabled,
@@ -1984,6 +1990,14 @@ class NormalCallController extends Notifier<CallState> {
     _micController = null;
     await _startMic();
   }
+
+  /// 마이크 규격 — **한 곳에서만 정한다.**
+  ///
+  /// ⛔ 예전엔 `startRecorder(sampleRate: 16000, numChannels: 1)` 에만 있었고 `start` 페이로드는
+  /// 아무것도 안 보냈다. 서버는 기본값 16000 을 가정했고 **우연히 맞았을 뿐**이다.
+  /// 여기를 바꾸면 서버에 보내는 값도 같이 바뀐다 — 두 곳이 갈라지면 반드시 어긋난다.
+  static const int _micSampleRate = 16000;
+  static const int _micNumChannels = 1;
 
   /// 마이크 열기 최대 재시도 횟수(오디오 세션 해제 지연/포그라운드 전환 흡수).
   static const int _micOpenMaxAttempts = 6;

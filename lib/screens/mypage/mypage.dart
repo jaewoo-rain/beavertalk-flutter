@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
+import '../../features/normalcall/presentation/build_flags.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
@@ -155,6 +156,11 @@ class MyPageScreen extends ConsumerWidget {
           subtitle: '디버그 빌드에만 보입니다',
         ),
         children: [
+          // ⭐ **이 APK 가 무엇인지** 맨 위에 띄운다. 2026-08-14: 서버는 마이크 상시개방을
+          //   요청했는데 끼어들기가 한 번도 안 걸렸고, 원인은 폰에 깔린 APK 가
+          //   `ANDROID_VOICE_AUDIO` 없이 빌드된 것이었다. **그걸 확인할 방법이 화면에
+          //   없어서** 반나절을 왕복했다(외부라 USB 도 못 썼다). 안 보이는 상태가 원인이다.
+          _buildInfoRow(context),
           _devRow(
             context,
             title: '캐스케이드 통화 (테스트 서버)',
@@ -242,6 +248,46 @@ class MyPageScreen extends ConsumerWidget {
   /// dev 도구 한 줄. 제목 + 무엇을 하는 화면인지 한 줄.
   ///
   /// 계측 도구 진입점이라 꾸밀 이유가 없다 — 눈에 띄고 뭔지 읽히면 그걸로 끝이다.
+  /// 빌드 식별자 + 컴파일 플래그 한 줄. **USB 없이 화면만으로** 어느 APK 인지 가른다.
+  ///
+  /// ⛔ 값을 손으로 나열하지 않는다 — [BuildFlags] 가 **실제 상수**를 읽는다.
+  ///   여기서 문자열을 다시 쓰면 플래그를 늘렸을 때 화면이 조용히 낡아, 정확히 우리가
+  ///   없애려는 거짓말이 다시 생긴다.
+  Widget _buildInfoRow(BuildContext context) {
+    final ok = BuildFlags.micReachesServer;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('빌드 ${BuildFlags.tag}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  )),
+          const SizedBox(height: 2),
+          Text(BuildFlags.summary,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(fontFamily: 'monospace')),
+          const SizedBox(height: 4),
+          // ⭐ 사람이 판단하지 않아도 되게 **결론을 문장으로** 쓴다. 플래그 조합을 읽고
+          //   해석하라고 하면 오늘 같은 혼선이 그대로 반복된다.
+          Text(
+            ok
+                ? (BuildFlags.androidVoiceAudio
+                    ? '⚠ 끼어들기 가능 빌드입니다 — 서버가 허용하면 비버 말 중에도 마이크가 열립니다.'
+                    : '끼어들기 불가 빌드입니다 — 서버가 허용해도 비버 말 중에는 마이크를 막습니다.')
+                : '⛔ 실험용 빌드입니다 — 내 목소리가 서버에 가지 않습니다. 통화가 성립하지 않습니다.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: ok ? null : Theme.of(context).colorScheme.error,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _devRow(
     BuildContext context, {
     required String title,
