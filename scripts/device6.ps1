@@ -164,9 +164,13 @@ if ($Start) {
   $log   = Join-Path $OutDir ("{0}stage-{1}_{2}.log" -f $tag, $Start, $stamp)
 
   & $Adb -s $serial logcat -c
-  $p = Start-Process -FilePath $Adb `
-        -ArgumentList @('-s', $serial, 'logcat', '-s', 'flutter:V') `
-        -NoNewWindow -PassThru -RedirectStandardOutput $log
+  # ⛔ 2026-08-14: flutter 태그만 잡으면 Choreographer 의 Skipped N frames 와
+  #   OpenGLRenderer 의 Davey! 가 통째로 빠진다. 그 둘이 「안드로이드 메인 스레드가
+  #   막혔다」의 유일한 외부 증거인데, 12분 판에서 0건으로 나와 「없다」로 읽을 뻔했다.
+  #   실제로는 **캡처가 안 된 것**이었다(계측 부재를 부재로 읽는 함정).
+  # ⚠ 인자 목록 사이에 주석을 끼워 넣지 마라 — 백틱 줄바꿈 뒤 주석은 파싱이 깨진다.
+  $logcatArgs = @('-s', $serial, 'logcat', '-s', 'flutter:V', 'Choreographer:V', 'OpenGLRenderer:V')
+  $p = Start-Process -FilePath $Adb -ArgumentList $logcatArgs -NoNewWindow -PassThru -RedirectStandardOutput $log
 
   @{ pid = $p.Id; log = $log; stage = $Start; serial = $serial } |
     ConvertTo-Json | Set-Content $StateF -Encoding utf8

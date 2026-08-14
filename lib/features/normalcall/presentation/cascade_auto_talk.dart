@@ -39,8 +39,13 @@ abstract final class CascadeAutoTalk {
   ///   **무엇을 재는지 흐려진다.** 발화 종료(턴 종료 + 오디오 배수 + 행오버)에만 건다.
   static const Duration gap = Duration(seconds: 2);
 
-  /// 이만큼 지나면 스스로 끊는다. 6분 곡선이 목표라 여유를 둔다.
-  static const Duration duration = Duration(minutes: 7);
+  /// 이만큼 지나면 스스로 끊는다.
+  ///
+  /// ⚠ 7분이었다. 그런데 사장님 체감이 **6분 30초부터 다시 끊긴다**라, 7분이면 그 지점을
+  /// 30초밖에 못 넘긴다 — 후반 증가율을 볼 구간이 사실상 없다. 12분으로 올린다.
+  /// (서버 `NORMAL_CALL_DURATION_S=900` 이 열려 있을 때만 여기까지 간다. 무료 플랜 상한이
+  ///  걸린 환경에서는 서버가 300초에서 먼저 끊으므로 이 값과 무관하게 짧게 끝난다.)
+  static const Duration duration = Duration(minutes: 12);
 
   /// 돌려 쓸 문장.
   ///
