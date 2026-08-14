@@ -470,6 +470,13 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// ⛔ 조각을 통째로 붙이면 자막이 2~5단어씩 **점프**한다(사장님 지적, 2026-08-12).
   ///   한 문장이 TTS 언어 분할로 2~3구간이라 그 점프가 문장 중간마다 일어난다.
+  /// 다음에 자막을 쓸 때 **누적이 아니라 교체**할 것인가.
+  ///
+  /// `turn_start` 에서 세우고, 새 대사가 화면에 **처음 쓰이는 순간** 내려간다.
+  /// 그 사이에는 이전 턴 대사가 그대로 화면에 남는다 — 화면이 비는 순간을 0 으로 만드는
+  /// 장치다(2026-08-15 사장님 지시: 「이전 대사 지우고 새 대사로 처음부터 전사」).
+  bool _subtitleReplaceOnNext = false;
+
   String _revealTarget = '';
   int _revealed = 0;
   double _revealAccum = 0;
@@ -1517,6 +1524,8 @@ class NormalCallController extends Notifier<CallState> {
     _pendingMarkers.clear();
     // 진행 중이던 드러내기도 멈춘다 — 남은 글자가 새면 안 들은 말이 자막에 남는다.
     _resetReveal();
+    // 새 통화는 화면에 아무 대사도 없다 — 첫 대사는 그냥 쓰면 된다(교체할 것이 없다).
+    _subtitleReplaceOnNext = false;
     _startEnvelope();
     _startEventLoopProbe(); // [계측] 청크 갭의 원인(서버 공백 vs 루프 블록) 판별용
     _startInflateLog(); // [계측] 무음 주입으로 스트림이 부풀어 백로그가 자라는지 판별용
@@ -3512,6 +3521,10 @@ class NormalCallController extends Notifier<CallState> {
     }
     if (next != _revealed) {
       _revealed = next;
+      // 이 경로는 `substring` 이라 **원래부터 통째 교체**다 — 이전 턴 대사가 남아 있어도
+      // 첫 글자가 드러나는 순간 갈아치운다. 플래그만 내려 두면 나중에 오는
+      // `output_transcript` 델타가 누적으로 붙는다(교체는 이미 끝났으므로).
+      _subtitleReplaceOnNext = false;
       state = state.copyWith(beaverSubtitle: _revealTarget.substring(0, _revealed));
     }
   }
@@ -3621,13 +3634,24 @@ class NormalCallController extends Notifier<CallState> {
         }
         // New beaver turn → start a fresh subtitle line. The server streams the
         // line token-by-token via `output_transcript`, so the line must be
-        // cleared here (not overwritten per token) and then accumulated below.
         // Also clear any stale hint: a new turn means the prior question is
         // answered (matches the server "new question cancels previous").
         // 소리가 나기 시작했다 = 더 이상 '준비 중'이 아니다.
-        // 드러내기도 같이 멈춘다 — 안 그러면 다음 턴에 지난 조각이 이어서 흐른다.
+        //
+        // ⛔ **자막은 여기서 안 지운다(2026-08-15, 사장님 지시).**
+        //   `turn_start` 는 서버 불변식 I2 상 **첫 오디오 바이트보다 먼저** 온다.
+        //   실측: `turn_start` ~1.0초 / 첫 소리 ~2.35초 ⇒ 여기서 지우면 **약 1.3초 동안
+        //   화면이 완전히 빈다.** 사장님은 화면을 보며 스피커폰으로 쓰신다 — 그 구간이
+        //   「자막이 사라졌다」로 보인다. (체감은 STT 탓 같지만 트리거는 여기다.)
+        // ⇒ 지우기를 **새 대사가 실제로 화면에 처음 쓰이는 순간**으로 미룬다. 그 자리에서
+        //   이전 대사를 통째로 갈아치우므로 **비는 순간이 0** 이다.
+        //
+        // ⚠ [_resetReveal] 은 그대로 둔다 — 그건 **드러내기 버퍼**를 비울 뿐 화면(state)을
+        //   건드리지 않는다. 안 비우면 다음 턴 글자가 지난 턴 버퍼에 이어붙는다(:3629 원주석).
         _resetReveal();
-        state = state.copyWith(beaverSubtitle: '', hint: null, beaverPreparing: false);
+        // 다음에 화면에 처음 쓰는 쪽이 **누적이 아니라 교체**를 하도록 표시해 둔다.
+        _subtitleReplaceOnNext = true;
+        state = state.copyWith(hint: null, beaverPreparing: false);
         // New line → reset the avatar expression to neutral; it re-classifies as
         // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
         // 다음 턴 첫 문장에 섞이면 엉뚱한 표정이 나온다).
@@ -3643,7 +3667,11 @@ class NormalCallController extends Notifier<CallState> {
         {
           final delta = msg['text'] as String?;
           if (delta != null && delta.isNotEmpty) {
-            final line = state.beaverSubtitle + delta;
+            // ⭐ **이 턴 첫 델타면 교체, 그 뒤부터 누적.** 이어붙이기만 두면 이전 턴 대사
+            //   뒤에 이번 턴 대사가 그대로 붙는다 — 「지우기 제거」만으론 안 되는 이유다.
+            final line =
+                _subtitleReplaceOnNext ? delta : state.beaverSubtitle + delta;
+            _subtitleReplaceOnNext = false;
             state = state.copyWith(beaverSubtitle: line);
             // 표정은 **문장이 끝날 때 그 문장만** 보고 정한다.
             //
