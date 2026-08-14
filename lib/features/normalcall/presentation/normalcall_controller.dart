@@ -37,6 +37,7 @@ import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
     show
+        CascadeCushionGrowthOff,
         CascadeMicAlwaysGated,
         CascadeMicNoAec,
         CascadeMicOff,
@@ -130,17 +131,17 @@ const double _revealShortBias = 0.8;
 
 /// 마이크가 **왜 닫혔는지** — 세 관문 중 무엇이 막았나.
 ///
-/// 여는 데는 셋이 **전부** 필요하다: 통로가 캐스케이드 · 서버가 열라고 함 · AEC 스위치 켜짐.
-/// ⚠ 이 문장이 없으면 "끼어들기가 안 된다"는 보고에서 **AEC 문제인지 서버 정책인지**
-/// 구분이 안 된다 — 둘은 다음 행동이 완전히 다르다(에코 실측 vs 서버 설정).
+/// 여는 데는 둘이 **전부** 필요하다: 통로가 캐스케이드 · 서버가 열라고 함.
+/// ⛔ 예전엔 셋째로 클라 컴파일 스위치(`ANDROID_VOICE_AUDIO`)가 있었고, **그게 빠진 APK 가
+/// 돌아다녀 반나절을 태웠다.** 그 스위치를 없앴다 — 판단은 이제 서버 한 곳이다.
+/// ⚠ 이 문장이 없으면 "끼어들기가 안 된다"는 보고에서 **통로 문제인지 서버 정책인지**
+/// 구분이 안 된다 — 둘은 다음 행동이 완전히 다르다.
 String micGateReason({
   required bool channelGates,
   required bool serverMicAlwaysOpen,
-  required bool aecOn,
 }) {
   if (channelGates) return '라이브 통로 — 반이중 게이팅';
   if (!serverMicAlwaysOpen) return '서버 정책(ready.mic_always_open=false)';
-  if (!aecOn) return 'AEC 스위치 꺼짐(ANDROID_VOICE_AUDIO) — 실측 전 안전장치';
   return '알 수 없음';
 }
 
@@ -923,8 +924,9 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// ⛔ 기본은 **현행 동작 유지**(성장 켬). 그리고 자동 대화와 **같은 통화에서 켜지 마라** —
   ///   순정 곡선을 먼저 얻고, 쿠션 실험은 그다음이다. 섞으면 해석이 흔들린다.
-  static const bool _cushionGrowthOff =
-      bool.fromEnvironment('CUSHION_GROWTH_OFF');
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작(쿠션이 자란다).**
+  /// ⛔ 예전엔 `bool.fromEnvironment('CUSHION_GROWTH_OFF')` 였다 — 켜려면 APK 를 구워야 했다.
+  bool get _cushionGrowthOff => CascadeCushionGrowthOff.enabled;
 
   /// [Android] 통화 용도 오디오로 열지 여부 — 플랫폼 AEC 를 실제로 걸기 위한 스위치.
   ///
@@ -940,10 +942,16 @@ class NormalCallController extends Notifier<CallState> {
   /// ⚠ 켜면 **볼륨 스트림이 미디어→통화로 넘어가고 기본 라우팅이 리시버로 빠지려 한다.**
   ///   그래서 기본을 끔으로 두고, 실기기에서 전/후를 재서 확인한 뒤에 켠다.
   ///   리그는 이 플래그와 무관하게 런타임으로 전/후를 전환한다([debugOpenPlayback]).
-  static const bool _androidVoiceAudio =
-      bool.fromEnvironment('ANDROID_VOICE_AUDIO');
+  /// ⛔ **컴파일 플래그를 없앴다(2026-08-14).** 이건 실험 스위치가 아니라 **제품 설정**이다 —
+  ///   끼어들기가 여기 달려 있다. 그런데 실험 플래그처럼 다뤄져서 **이게 빠진 APK 가
+  ///   돌아다녔고**, 사장님 폰에 그게 깔렸다. 서버는 마이크를 열라고 보내는데 클라가
+  ///   거부했고, 서버 로그엔 **기각 로그조차 없어서**(판정 자체가 안 돌았다) 반나절을 태웠다.
+  ///   ⇒ 「이 플래그가 없는 APK」라는 상태 자체를 없앤다. **항상 통화 용도로 연다.**
+  ///   ⇒ 끌 일이 생기면 **서버 env** 로 끈다(`CASCADE_MIC_ALWAYS_OPEN`). 30초면 되고
+  ///     APK 재배포가 필요 없다 — 되돌리기가 훨씬 싸다.
+  ///   ⚠ 리그는 여전히 런타임으로 전/후를 전환한다([debugOpenPlayback]의 인자).
 
-  /// [_androidVoiceAudio] 로 실제로 모드를 켰는가. 켠 쪽만 되돌린다 — 우리가 안 켠
+  /// 통화 용도 오디오 모드를 실제로 켰는가. 켠 쪽만 되돌린다 — 우리가 안 켠 켠 쪽만 되돌린다 — 우리가 안 켠
   /// 모드를 teardown 이 NORMAL 로 돌리면 시스템 통화(CallKit/수신전화)를 밟는다.
   bool _voiceModeSet = false;
 
@@ -976,20 +984,19 @@ class NormalCallController extends Notifier<CallState> {
   /// 마이크를 여는 데는 **세 조건이 전부** 필요하다. 하나라도 빠지면 종전대로 게이팅한다:
   ///   ① 통로가 캐스케이드다([CallChannel.gatesMic] == false)
   ///   ② **서버가 열라고 했다**([_serverMicAlwaysOpen], `ready.mic_always_open`)
-  ///   ③ **플랫폼 AEC 가 실제로 켜져 있다**([_androidVoiceAudio])
+  ///   ③ ~~플랫폼 AEC 스위치~~ — **없앴다. 이제 항상 참이다**(위 주석 참고)
   ///
   /// ②가 필요한 이유: 서버 값이 그쪽 에너지 게이트·barge-in 정책과 **한 몸**이다. 서버는
   /// 마이크가 닫힌 전제로 "들어온 소리는 에코"라고 판정하는데 클라가 열어 두면 두 쪽이 다른
   /// 세계를 가정한다. 그래서 **서버가 이긴다** — 서버가 false 면 캐스케이드여도 닫는다.
   ///
-  /// ⛔ ③이 필요한 이유 — **서버가 true 를 보내도 우리가 거부한다.** 마이크 상시 개방이
-  ///   안전한 유일한 조건은 플랫폼 AEC 가 실제로 걸리는 것이고, 그걸 켜는 스위치가
-  ///   [_androidVoiceAudio](기본 꺼짐, 에코 실측 대기 중)다. AEC 없이 열면 비버가 자기
-  ///   목소리에 끊긴다 — 실측 전례가 있다(call_id=855: 유저 턴의 절반이 비버 대사였다).
-  ///   ⭐ 새 플래그를 만들지 않고 그 스위치를 재사용한다: 안전 조건과 스위치가 **같은 것**이라
-  ///   둘로 나누면 한쪽만 켜진 상태가 생긴다. 실측이 끝나 그 스위치가 켜지면 여기도 같이 열린다.
+  /// ⛔ ③은 **클라 쪽 컴파일 스위치였고 없앴다.** 그 자리는 이제 **서버가 진다** —
+  ///   끼어들기를 끄려면 서버가 `mic_always_open=false` 를 보내면 되고(②), 그러면 여기서
+  ///   그대로 게이팅된다. 안전장치가 사라진 게 아니라 **한 곳(서버)으로 모인 것**이다.
+  ///   ⚠ AEC 없이 열면 비버가 자기 목소리에 끊긴다는 위험은 그대로다(call_id=855:
+  ///     유저 턴의 절반이 비버 대사였다). 그 판단을 **서버 env 한 줄**이 쥔다.
   bool get _micGated {
-    if (!_channelMode.gatesMic && _serverMicAlwaysOpen && _androidVoiceAudio) {
+    if (!_channelMode.gatesMic && _serverMicAlwaysOpen) {
       return false;
     }
     return _beaverAudioActive;
@@ -1244,7 +1251,7 @@ class NormalCallController extends Notifier<CallState> {
       //   클라는 지금 붙은 백엔드가 운영인지 알 방법이 없다(실서비스도 ENV=test 다).
       _log(_channelMode.isCascade
           ? '연결 통로: cascade → ${_channelMode.wsPath} '
-              '(마이크 상시개방 · Android 통화용 오디오=$_androidVoiceAudio)'
+              '(마이크 상시개방 · Android 통화용 오디오=항상 켬)'
           : '연결 통로: live → ${_channelMode.wsPath}');
       final channel = WebSocketChannel.connect(Uri.parse(url));
       _channel = channel;
@@ -1384,7 +1391,8 @@ class NormalCallController extends Notifier<CallState> {
   Future<void> _openPlayback({bool? voiceCallAudio}) async {
     // [AEC] 통화 용도로 열지. 리그만 인자로 덮어쓰고(리빌드 없이 전/후 측정), 통화
     // 경로는 컴파일 플래그를 따른다.
-    final voice = voiceCallAudio ?? _androidVoiceAudio;
+    // 리그만 인자로 덮어쓴다. 통화 경로는 **항상 통화 용도**다(컴파일 스위치 없앴다).
+    final voice = voiceCallAudio ?? true;
     if (voice && !kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       // ⚠ setup() **전에** 모드를 세운다. AudioTrack 은 만들어지는 시점의 모드로
       //   라우팅이 정해지므로, 뒤에 바꾸면 이번 트랙에는 안 먹는다.
@@ -1758,15 +1766,9 @@ class NormalCallController extends Notifier<CallState> {
           '자동 대화는 STT 를 안 타므로 대화는 계속된다');
       return;
     }
-    if (CascadeMicOff.suppressed) {
-      _log('⚠ MIC_OFF 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 마이크는 정상 동작한다');
-    }
     if (CascadeMicAlwaysGated.enabled) {
       _log('⚠ [실험] MIC_ALWAYS_GATED — 마이크는 열되 **업링크만** 통화 내내 막는다. '
           '프레임은 계속 채널을 건너온다(그게 이 실험의 요점이다). uplink_bytes 는 0 이 된다');
-    }
-    if (CascadeMicAlwaysGated.suppressed) {
-      _log('⚠ MIC_ALWAYS_GATED 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 업링크는 정상이다');
     }
     final controller = StreamController<Uint8List>();
     _micController = controller;
@@ -1844,9 +1846,6 @@ class NormalCallController extends Notifier<CallState> {
       _log('⚠ [실험] MIC_NO_AEC — 음성처리/에코제거를 끄고 연다. '
           '에코가 안 걸리니 스피커폰에서 비버가 자기 목소리에 끊길 수 있다(계측 전용)');
     }
-    if (CascadeMicNoAec.suppressed) {
-      _log('⚠ MIC_NO_AEC 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — AEC 는 정상이다');
-    }
     if (!CascadeMicNoAec.enabled &&
         !kIsWeb &&
         defaultTargetPlatform == TargetPlatform.iOS) {
@@ -1874,9 +1873,6 @@ class NormalCallController extends Notifier<CallState> {
         toFilePath = null;
       }
     }
-    if (CascadeMicToFile.suppressed) {
-      _log('⚠ MIC_TO_FILE 플래그가 켜졌지만 릴리즈 빌드라 **무시한다** — 스트림 녹음이다');
-    }
 
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
@@ -1897,8 +1893,7 @@ class NormalCallController extends Notifier<CallState> {
           // 은 **통화 경로가 아니다** — 플랫폼 AEC 는 통화 다운링크를 참조해 업링크에서
           // 빼는 구조라, 재생만 통화 경로로 옮기고 여기가 DEFAULT 로 남으면 참조할 짝이
           // 안 생겨 아무 효과가 없다. 재생 트랙과 **반드시 같은 플래그**를 본다.
-          audioSource: _androidVoiceAudio &&
-                  !kIsWeb &&
+          audioSource: !kIsWeb &&
                   defaultTargetPlatform == TargetPlatform.android
               ? AudioSource.voice_communication
               : AudioSource.defaultSource,
@@ -2771,7 +2766,6 @@ class NormalCallController extends Notifier<CallState> {
           ? 'mic GATED — ${micGateReason(
               channelGates: _channelMode.gatesMic,
               serverMicAlwaysOpen: _serverMicAlwaysOpen,
-              aecOn: _androidVoiceAudio,
             )}'
           : 'beaver turn OPEN — mic stays open (barge-in)');
       _turnStarved = false; // fresh turn: it hasn't starved yet
@@ -2896,12 +2890,6 @@ class NormalCallController extends Notifier<CallState> {
 
   /// 통화가 열린 뒤 자동 대화를 켠다(첫 문장은 비버 인사가 끝나면 나간다).
   void _startAutoTalkIfEnabled() {
-    if (CascadeAutoTalk.suppressed) {
-      // 플래그는 켰는데 릴리즈 빌드라 무시됐다. **조용히 넘어가면 안 된다** —
-      // 6분을 기다린 뒤에야 "안 돌았네"를 알게 된다.
-      _log('⚠ [auto] AUTO_TALK 플래그가 켜져 있지만 릴리즈 빌드라 동작하지 않는다');
-      return;
-    }
     if (!CascadeAutoTalk.enabled) return;
     _autoTalkStartedAt = DateTime.now();
     _autoTalkSent = 0;
@@ -3318,16 +3306,15 @@ class NormalCallController extends Notifier<CallState> {
     final silence = readInt('turn_silence_ms', 'turnSilenceMs');
     if (silence != null) _serverTurnSilenceMs = silence;
 
-    // ⛔ 서버가 열라고 해도 AEC 스위치가 꺼져 있으면 **안 연다**. 그 거부를 로그에
-    //   드러낸다 — 안 그러면 "서버는 상시개방인데 왜 barge-in 이 한 번도 안 되나"를
-    //   아무도 못 찾는다(양쪽 다 자기 설정대로 돌고 있다고 믿는다).
-    final refused = _serverMicAlwaysOpen && !_androidVoiceAudio;
+    // ⭐ 마이크가 열렸는지/닫혔는지를 **결과로** 찍는다. 예전엔 클라 컴파일 스위치가
+    //   서버 요청을 거부할 수 있었고, 그 거부가 로그에 없으면 "서버는 상시개방인데 왜
+    //   barge-in 이 한 번도 안 되나"를 아무도 못 찾았다(양쪽 다 자기 설정대로 돌고 있다고
+    //   믿는다). 그 스위치는 없앴지만 **결과를 찍는 규율은 남긴다.**
     _log('ready: engine=${msg['engine']} 통로=${_channelMode.name} '
         'mic_always_open=$_serverMicAlwaysOpen '
         'bargein_confirm=$_serverBargeinConfirm '
         'turn_silence_ms=$_serverTurnSilenceMs '
-        '→ 마이크 ${_micGated ? '게이팅' : '상시개방'}'
-        '${refused ? ' ⚠ 서버는 상시개방을 요청했지만 AEC 미검증이라 거부했다' : ''}');
+        '→ 마이크 ${_micGated ? '게이팅' : '상시개방'}');
   }
 
   /// Parses and dispatches a control JSON frame from the server.

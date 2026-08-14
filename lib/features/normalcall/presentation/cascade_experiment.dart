@@ -70,12 +70,15 @@ class CascadeExperiment {
 /// ⛔ 켜면 **사람 목소리가 서버에 안 간다.** 계측 전용이다.
 /// `--dart-define=MIC_OFF=true` + 디버그 빌드에서만 동작한다.
 abstract final class CascadeMicOff {
-  static const bool flag = bool.fromEnvironment('MIC_OFF');
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작.**
+  ///
+  /// ⛔ 예전엔 `bool.fromEnvironment('MIC_OFF')` 였다. 컴파일 플래그라 **끄고 켤 때마다
+  ///   APK 를 구워야 했고**, 그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다.
+  ///   2026-08-14 에 그것 때문에 반나절을 태웠다(서버는 마이크를 열라는데 클라가 거부했고,
+  ///   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다).
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
 
-  static bool get enabled => flag && kDebugMode;
-
-  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다(조용한 실패 금지).
-  static bool get suppressed => flag && !kDebugMode;
+  static bool get enabled => toggle.value && kDebugMode;
 }
 
 /// dev 전용 — 마이크는 열되 **플랫폼 에코 제거(AEC)만 끈다.**
@@ -103,12 +106,15 @@ abstract final class CascadeMicOff {
 ///
 /// `--dart-define=MIC_NO_AEC=true` + 디버그 빌드에서만 동작한다.
 abstract final class CascadeMicNoAec {
-  static const bool flag = bool.fromEnvironment('MIC_NO_AEC');
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작.**
+  ///
+  /// ⛔ 예전엔 `bool.fromEnvironment('MIC_NO_AEC')` 였다. 컴파일 플래그라 **끄고 켤 때마다
+  ///   APK 를 구워야 했고**, 그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다.
+  ///   2026-08-14 에 그것 때문에 반나절을 태웠다(서버는 마이크를 열라는데 클라가 거부했고,
+  ///   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다).
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
 
-  static bool get enabled => flag && kDebugMode;
-
-  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
-  static bool get suppressed => flag && !kDebugMode;
+  static bool get enabled => toggle.value && kDebugMode;
 }
 
 /// dev 전용 — 마이크는 열되 **업링크 전송만** 통화 내내 막는다.
@@ -130,12 +136,15 @@ abstract final class CascadeMicNoAec {
 ///
 /// `--dart-define=MIC_ALWAYS_GATED=true` + 디버그 빌드에서만 동작한다.
 abstract final class CascadeMicAlwaysGated {
-  static const bool flag = bool.fromEnvironment('MIC_ALWAYS_GATED');
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작.**
+  ///
+  /// ⛔ 예전엔 `bool.fromEnvironment('MIC_ALWAYS_GATED')` 였다. 컴파일 플래그라 **끄고 켤 때마다
+  ///   APK 를 구워야 했고**, 그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다.
+  ///   2026-08-14 에 그것 때문에 반나절을 태웠다(서버는 마이크를 열라는데 클라가 거부했고,
+  ///   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다).
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
 
-  static bool get enabled => flag && kDebugMode;
-
-  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
-  static bool get suppressed => flag && !kDebugMode;
+  static bool get enabled => toggle.value && kDebugMode;
 }
 
 /// dev 전용 — 마이크를 **파일로** 녹음한다(스트림 대신).
@@ -165,10 +174,30 @@ abstract final class CascadeMicAlwaysGated {
 ///
 /// `--dart-define=MIC_TO_FILE=true` + 디버그 빌드에서만 동작한다.
 abstract final class CascadeMicToFile {
-  static const bool flag = bool.fromEnvironment('MIC_TO_FILE');
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작.**
+  ///
+  /// ⛔ 예전엔 `bool.fromEnvironment('MIC_TO_FILE')` 였다. 컴파일 플래그라 **끄고 켤 때마다
+  ///   APK 를 구워야 했고**, 그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다.
+  ///   2026-08-14 에 그것 때문에 반나절을 태웠다(서버는 마이크를 열라는데 클라가 거부했고,
+  ///   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다).
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
 
-  static bool get enabled => flag && kDebugMode;
+  static bool get enabled => toggle.value && kDebugMode;
+}
 
-  /// 플래그는 켰는데 릴리즈라 무시된 상태 — 호출부가 로그로 드러낸다.
-  static bool get suppressed => flag && !kDebugMode;
+/// dev 전용 — **지터 쿠션이 자라지 않게 고정한다.**
+///
+/// 쿠션은 굶을 때마다 +150ms 씩 자라 상한 1.2초까지 간다. 그 값은 **모든 턴의 첫 소리에
+/// 그대로 더해지므로**, 끊김을 줄이는 대신 응답이 굼떠 보이는 맞바꿈이다.
+/// 이 토글은 그 맞바꿈의 **크기를 재기 위한 것**이다 — 성장을 끄면 끊김이 얼마나 늘어나는가.
+///
+/// ⛔ 성장만 끈다. **굶었다는 사실 자체는 그대로 센다** — 그게 이 실험의 측정값이다.
+/// ⛔ 기본은 꺼짐 = 제품 동작(쿠션이 자란다).
+abstract final class CascadeCushionGrowthOff {
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐.**
+  ///
+  /// ⛔ 예전엔 `bool.fromEnvironment('CUSHION_GROWTH_OFF')` 였다 — 켜려면 APK 를 구워야 했다.
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
+
+  static bool get enabled => toggle.value && kDebugMode;
 }

@@ -8,26 +8,29 @@ import 'package:beavertalk/features/normalcall/presentation/cascade_auto_talk.da
 /// ⚠ 이 도구는 **끊김 곡선 전용**이다. STT 가 안 타므로 응답시간 측정에 쓰면 안 된다 —
 /// 그 구분이 흐려지면 잘못된 숫자로 서버를 고치게 된다.
 void main() {
-  // ⚠ 이 스위트는 `--dart-define=AUTO_TALK=true` 로도 돈다. **플래그 값을 하드코딩하면
-  //   그 판에서 깨진다**(한 번 깨뜨렸다). 값이 아니라 **관계**를 고정한다.
-  const flagOn = bool.fromEnvironment('AUTO_TALK');
+  // ⛔ 2026-08-14: dart-define 에서 **화면 토글**로 바뀌었다. 값이 아니라 **관계**를 고정하는
+  //   규율은 그대로다 — 하드코딩하면 다른 판에서 깨진다(예전에 두 번 깼다).
+  tearDown(() => CascadeAutoTalk.toggle.value = false);
 
-  test('⛔ dart-define 이 없으면 꺼져 있다 — 배포 빌드에 새면 안 된다', () {
-    expect(CascadeAutoTalk.flag, flagOn);
-    if (!flagOn) {
-      expect(CascadeAutoTalk.enabled, isFalse);
-      expect(CascadeAutoTalk.suppressed, isFalse);
-    }
+  test('⛔ 기본은 꺼져 있다 — 켜 둔 채 잊는 것이 다음 사고다', () {
+    expect(CascadeAutoTalk.toggle.value, isFalse);
+    expect(CascadeAutoTalk.enabled, isFalse);
   });
 
-  test('enabled 는 플래그 **와** 디버그를 함께 요구한다', () {
-    expect(CascadeAutoTalk.enabled, flagOn && kDebugMode);
+  test('enabled 는 토글 **와** 디버그를 함께 요구한다', () {
+    CascadeAutoTalk.toggle.value = true;
+    expect(CascadeAutoTalk.enabled, kDebugMode);
   });
 
-  test('릴리즈에서 플래그만 켜면 suppressed 로 드러난다 — 조용한 실패 금지', () {
-    expect(CascadeAutoTalk.suppressed, flagOn && !kDebugMode);
-    // 두 술어는 절대 동시에 참일 수 없다 — 그러면 "돌면서 동시에 무시됨"이 된다.
-    expect(CascadeAutoTalk.enabled && CascadeAutoTalk.suppressed, isFalse);
+  test('⛔ 릴리즈에서는 토글을 켜도 안 돈다 — 실사용자에게 새면 안 된다', () {
+    CascadeAutoTalk.toggle.value = true;
+    if (!kDebugMode) expect(CascadeAutoTalk.enabled, isFalse);
+  });
+
+  test('토글을 되돌리면 즉시 꺼진다 — 리빌드 없이 끌 수 있어야 한다', () {
+    CascadeAutoTalk.toggle.value = true;
+    CascadeAutoTalk.toggle.value = false;
+    expect(CascadeAutoTalk.enabled, isFalse);
   });
 
   group('문장', () {
@@ -72,8 +75,11 @@ void main() {
       expect(CascadeAutoTalk.gapFor(7), CascadeAutoTalk.gapFor(7));
     });
 
-    test('6분 곡선을 담을 만큼 길다', () {
-      expect(CascadeAutoTalk.duration, greaterThanOrEqualTo(const Duration(minutes: 6)));
+    test('⭐ 6분 30초를 **넘겨야** 한다 — 사장님 체감이 그 지점부터다', () {
+      // 7분이면 그 지점을 30초밖에 못 넘긴다 = 후반 증가율을 볼 구간이 없다.
+      expect(CascadeAutoTalk.duration,
+          greaterThan(const Duration(minutes: 6, seconds: 30)));
+      expect(CascadeAutoTalk.duration, greaterThanOrEqualTo(const Duration(minutes: 10)));
     });
   });
 }

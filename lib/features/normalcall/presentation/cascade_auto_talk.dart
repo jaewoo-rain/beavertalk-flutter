@@ -20,18 +20,18 @@ import 'package:flutter/foundation.dart';
 ///
 /// ## 켜는 법
 ///
-/// `--dart-define=AUTO_TALK=true` 로만 켜진다(기본 OFF).
-/// ⚠ 추가로 [kDebugMode] 도 요구한다 — 배포 빌드에 새지 않게. 릴리즈에서 플래그만 켜면
-///   **조용히 아무 일도 안 하므로**, 그 경우 호출부가 로그로 드러낸다(조용한 실패 금지).
+/// 마이페이지 → 개발자 도구의 **화면 토글**로 켠다(기본 OFF).
+/// ⚠ 추가로 [kDebugMode] 도 요구한다 — 배포 빌드에 새지 않게. 릴리즈에서는 그 토글이
+///   **화면에 아예 안 그려지므로** 켜질 경로 자체가 없다.
 abstract final class CascadeAutoTalk {
-  /// dart-define 값. 릴리즈에서 켜졌는지 판정하려고 그대로 노출한다.
-  static const bool flag = bool.fromEnvironment('AUTO_TALK');
+  /// 화면 토글(마이페이지 → 개발자 도구). **기본 꺼짐 = 제품 동작.**
+  ///
+  /// ⛔ 예전엔 `bool.fromEnvironment('AUTO_TALK')` 였다. 컴파일 플래그라 켤 때마다 APK 를
+  ///   구워야 했고, 그래서 폰에 깔린 게 어느 빌드인지 화면에서 볼 수 없었다.
+  static final ValueNotifier<bool> toggle = ValueNotifier<bool>(false);
 
   /// 실제로 도는가.
-  static bool get enabled => flag && kDebugMode;
-
-  /// 플래그는 켰는데 빌드가 릴리즈라 무시된 상태 — 호출부가 이걸 로그로 드러낸다.
-  static bool get suppressed => flag && !kDebugMode;
+  static bool get enabled => toggle.value && kDebugMode;
 
   /// 비버 발화가 끝난 뒤 이만큼 쉬고 다음 문장을 던진다.
   ///

@@ -6,6 +6,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
 import '../../features/normalcall/presentation/build_flags.dart';
+import '../../features/normalcall/presentation/cascade_auto_talk.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
@@ -200,6 +201,59 @@ class MyPageScreen extends ConsumerWidget {
                 '서버 에코 임계값을 정하는 실측 도구입니다.',
             route: Routes.echoRig,
           ),
+          // ── 계측 토글 ──────────────────────────────────────────────────
+          // ⛔ 예전엔 전부 `--dart-define` 이었다. 끄고 켤 때마다 **APK 를 구워야 했고**,
+          //   그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다. 2026-08-14 에
+          //   그것 때문에 반나절을 태웠다 — 서버는 마이크를 열라는데 클라가 거부했고,
+          //   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다.
+          // ⚠ **오디오 세션에 관계된 것은 다음 통화부터** 먹는다(통화 중에 바꿔도 안 바뀐다).
+          //   그 사실을 각 설명에 적는다 — 안 적으면 「토글했는데 안 바뀐다」가 된다.
+          _devSwitch(
+            context,
+            title: '└ 자동 대화',
+            description: '사람 없이 문장을 주입해 통화를 채웁니다(12분 뒤 자동 종료). '
+                '⚠ STT 를 안 타므로 **끊김 곡선 전용**이고 응답시간 측정에 쓰면 안 됩니다. '
+                '다음 통화부터 적용.',
+            flag: CascadeAutoTalk.toggle,
+          ),
+          _devSwitch(
+            context,
+            title: '└ 업링크 차단',
+            description: '마이크는 열되 **서버로 보내는 것만** 막습니다. 레코더·AEC 는 그대로 '
+                '돌아서 오디오 세션이 안 흔들립니다. ⛔ 내 목소리가 서버에 안 갑니다. '
+                '다음 통화부터 적용.',
+            flag: CascadeMicAlwaysGated.toggle,
+          ),
+          _devSwitch(
+            context,
+            title: '└ 쿠션 성장 끔',
+            description: '지터 쿠션이 자라지 않게 고정합니다. 끊김이 얼마나 늘어나는지 '
+                '재는 용도입니다(쿠션은 모든 대답의 첫 소리를 그만큼 늦춥니다). '
+                '다음 통화부터 적용.',
+            flag: CascadeCushionGrowthOff.toggle,
+          ),
+          _devSwitch(
+            context,
+            title: '└ 마이크 끔',
+            description: '레코더를 **아예 열지 않습니다**(게이팅과 다릅니다 — 게이팅은 '
+                '프레임을 받은 뒤 버립니다). ⛔ 내 목소리가 서버에 안 갑니다. '
+                '다음 통화부터 적용.',
+            flag: CascadeMicOff.toggle,
+          ),
+          _devSwitch(
+            context,
+            title: '└ 파일 녹음',
+            description: '스트림 대신 파일로 녹음합니다 — 레코더는 돌되 프레임이 앱으로 '
+                '안 올라옵니다. ⛔ 내 목소리가 서버에 안 갑니다. 다음 통화부터 적용.',
+            flag: CascadeMicToFile.toggle,
+          ),
+          _devSwitch(
+            context,
+            title: '└ AEC 끔',
+            description: '에코 제거·음성처리를 끄고 마이크를 엽니다. ⚠ 스피커폰에서 비버가 '
+                '자기 목소리에 끊길 수 있습니다. 다음 통화부터 적용.',
+            flag: CascadeMicNoAec.toggle,
+          ),
           _devRow(
             context,
             title: '컴포넌트 갤러리',
@@ -253,8 +307,17 @@ class MyPageScreen extends ConsumerWidget {
   /// ⛔ 값을 손으로 나열하지 않는다 — [BuildFlags] 가 **실제 상수**를 읽는다.
   ///   여기서 문자열을 다시 쓰면 플래그를 늘렸을 때 화면이 조용히 낡아, 정확히 우리가
   ///   없애려는 거짓말이 다시 생긴다.
-  Widget _buildInfoRow(BuildContext context) {
+  Widget _buildInfoRow(BuildContext context) => ValueListenableBuilder<bool>(
+        // ⭐ 토글을 켜면 **이 줄이 즉시 바뀌어야** 한다. 안 그러면 「지금 무슨 상태인가」가
+        //   두 군데로 갈려 오늘 혼선이 반쪽만 닫힌다. 아무 토글이나 하나를 들으면
+        //   setState 가 카드 전체를 다시 그리므로 나머지도 같이 갱신된다.
+        valueListenable: CascadeAutoTalk.toggle,
+        builder: (context, _, __) => _buildInfoBody(context),
+      );
+
+  Widget _buildInfoBody(BuildContext context) {
     final ok = BuildFlags.micReachesServer;
+    final anyOn = BuildFlags.anyExperimentOn;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
       child: Column(
@@ -275,14 +338,24 @@ class MyPageScreen extends ConsumerWidget {
           //   해석하라고 하면 오늘 같은 혼선이 그대로 반복된다.
           Text(
             ok
-                ? (BuildFlags.androidVoiceAudio
-                    ? '⚠ 끼어들기 가능 빌드입니다 — 서버가 허용하면 비버 말 중에도 마이크가 열립니다.'
-                    : '끼어들기 불가 빌드입니다 — 서버가 허용해도 비버 말 중에는 마이크를 막습니다.')
-                : '⛔ 실험용 빌드입니다 — 내 목소리가 서버에 가지 않습니다. 통화가 성립하지 않습니다.',
+                ? '⚠ 끼어들기는 **서버가** 정합니다 — 서버가 허용하면 비버 말 중에도 마이크가 열립니다.'
+                : '⛔ 지금 내 목소리가 서버에 가지 않습니다 — 통화가 성립하지 않습니다. '
+                    '아래 실험 토글을 끄세요.',
             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: ok ? null : Theme.of(context).colorScheme.error,
                 ),
           ),
+          // ⭐ 켜 둔 채 잊는 것이 다음 사고다. 하나라도 켜져 있으면 눈에 띄게 알린다.
+          if (anyOn) ...[
+            const SizedBox(height: 4),
+            Text(
+              '⚠ 실험 토글이 켜져 있습니다 — 지금 이 앱은 제품 동작이 아닙니다.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ],
         ],
       ),
     );

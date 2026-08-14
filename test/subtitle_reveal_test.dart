@@ -62,10 +62,12 @@ void main() {
   });
 
   group('마이크 게이트 사유 — 무엇이 막았는지 말한다', () {
-    // ⚠ 이게 없으면 "끼어들기가 안 된다"에서 AEC 문제인지 서버 정책인지 못 가른다.
+    // ⚠ 이게 없으면 "끼어들기가 안 된다"에서 통로 문제인지 서버 정책인지 못 가른다.
+    // ⛔ 2026-08-14: 셋째 관문(클라 컴파일 스위치 `ANDROID_VOICE_AUDIO`)을 **없앴다.**
+    //   그게 빠진 APK 가 돌아다녀 반나절을 태웠기 때문이다 — 판단은 이제 서버 한 곳이다.
     test('라이브 통로가 먼저 막는다', () {
       expect(
-        micGateReason(channelGates: true, serverMicAlwaysOpen: true, aecOn: true),
+        micGateReason(channelGates: true, serverMicAlwaysOpen: true),
         contains('라이브 통로'),
       );
     });
@@ -73,24 +75,31 @@ void main() {
     test('⛔ 서버가 닫으라고 하면 그렇게 말한다 — 실기기에서 이 경우였다', () {
       expect(
         micGateReason(
-            channelGates: false, serverMicAlwaysOpen: false, aecOn: true),
+            channelGates: false, serverMicAlwaysOpen: false),
         contains('mic_always_open=false'),
       );
     });
 
-    test('서버는 열라 했는데 AEC 가 꺼졌으면 그렇게 말한다', () {
+    test('⭐ 두 관문이 다 통과면 사유가 없다 = 열려 있어야 한다', () {
+      // 예전엔 여기서 셋째 관문(AEC 스위치)이 걸려 '알 수 없음'이 안 나왔다.
+      // 그 스위치를 없앴으므로 이 조합은 **열린 상태**여야 한다.
       expect(
-        micGateReason(
-            channelGates: false, serverMicAlwaysOpen: true, aecOn: false),
-        contains('ANDROID_VOICE_AUDIO'),
+        micGateReason(channelGates: false, serverMicAlwaysOpen: true),
+        '알 수 없음',
       );
     });
 
-    test('세 관문이 다 통과면 사유가 없다 = 열려 있어야 한다', () {
-      expect(
-        micGateReason(channelGates: false, serverMicAlwaysOpen: true, aecOn: true),
-        '알 수 없음',
-      );
+    test('⛔ 클라가 서버 요청을 거부할 길이 없다 — 사유에 컴파일 스위치가 안 나온다', () {
+      // 이 단언이 깨지면 누군가 클라 쪽 안전장치를 되살린 것이다. 그러면 「서버는 열라는데
+      // 안 열린다」가 다시 생기고, 화면·로그 어디에도 안 드러난다.
+      for (final gates in [true, false]) {
+        for (final open in [true, false]) {
+          expect(
+            micGateReason(channelGates: gates, serverMicAlwaysOpen: open),
+            isNot(contains('ANDROID_VOICE_AUDIO')),
+          );
+        }
+      }
     });
   });
 }

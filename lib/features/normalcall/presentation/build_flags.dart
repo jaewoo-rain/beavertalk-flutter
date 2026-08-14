@@ -30,26 +30,38 @@ abstract final class BuildFlags {
   static const String tag =
       String.fromEnvironment('BUILD_TAG', defaultValue: '(미지정)');
 
-  /// [Android] 통화 용도 오디오. ⭐ **끼어들기의 세 조건 중 하나**다.
+  /// [Android] 통화 용도 오디오는 **이제 항상 켜진다.** 컴파일 플래그를 없앴다.
   ///
-  /// 이게 꺼져 있으면 서버가 `mic_always_open=true` 를 보내도 클라가 **거부한다**
-  /// (`NormalCallController._micGated`). 그 거부가 오늘의 원인이었다.
-  static const bool androidVoiceAudio =
-      bool.fromEnvironment('ANDROID_VOICE_AUDIO');
+  /// ⛔ 이건 실험 스위치가 아니라 **제품 설정**이었는데 플래그로 다뤄져서, 그게 빠진 APK 가
+  ///   돌아다녔고 사장님 폰에 깔렸다. 「이 플래그가 없는 APK」라는 상태 자체를 없앴다.
+  ///   끌 일이 생기면 **서버 env**(`CASCADE_MIC_ALWAYS_OPEN`) 로 끈다.
+  static const bool androidVoiceAudio = true;
 
-  /// 한 줄 요약. 개발자 도구 카드에 그대로 띄운다.
+  /// 실험 토글 현재 상태. 개발자 도구 카드에 그대로 띄운다.
+  ///
+  /// ⛔ **런타임 값을 읽는다.** 예전엔 컴파일 플래그를 읽었고, 그래서 「지금 이 앱이 무슨
+  ///   상태인가」를 알려면 APK 를 다시 구워야 했다.
   static String get summary {
     final parts = <String>[
-      'AEC(통화오디오)=${_on(androidVoiceAudio)}',
-      'AUTO_TALK=${_on(CascadeAutoTalk.flag)}${_suppressed(CascadeAutoTalk.suppressed)}',
-      'MIC_OFF=${_on(CascadeMicOff.flag)}${_suppressed(CascadeMicOff.suppressed)}',
-      'MIC_TO_FILE=${_on(CascadeMicToFile.flag)}${_suppressed(CascadeMicToFile.suppressed)}',
-      'MIC_ALWAYS_GATED=${_on(CascadeMicAlwaysGated.flag)}'
-          '${_suppressed(CascadeMicAlwaysGated.suppressed)}',
-      'MIC_NO_AEC=${_on(CascadeMicNoAec.flag)}${_suppressed(CascadeMicNoAec.suppressed)}',
+      'AEC(통화오디오)=항상ON',
+      '자동대화=${_on(CascadeAutoTalk.enabled)}',
+      '마이크끔=${_on(CascadeMicOff.enabled)}',
+      '파일녹음=${_on(CascadeMicToFile.enabled)}',
+      '업링크차단=${_on(CascadeMicAlwaysGated.enabled)}',
+      'AEC끔=${_on(CascadeMicNoAec.enabled)}',
+      '쿠션성장끔=${_on(CascadeCushionGrowthOff.enabled)}',
     ];
     return parts.join(' · ');
   }
+
+  /// 실험 토글이 **하나라도 켜져 있나.** 켜진 채 잊고 "왜 이상하지"가 되는 게 다음 사고다.
+  static bool get anyExperimentOn =>
+      CascadeAutoTalk.enabled ||
+      CascadeMicOff.enabled ||
+      CascadeMicToFile.enabled ||
+      CascadeMicAlwaysGated.enabled ||
+      CascadeMicNoAec.enabled ||
+      CascadeCushionGrowthOff.enabled;
 
   /// ⭐ **마이크가 서버로 갈 수 있는 빌드인가.** 하나라도 켜져 있으면 사람 목소리가
   /// 서버에 **아예 안 간다** — 그러면 통화가 성립하지 않는다. 실험용 APK 를 실수로
@@ -63,9 +75,6 @@ abstract final class BuildFlags {
   static bool get bargeInPossible => androidVoiceAudio && micReachesServer;
 
   static String _on(bool v) => v ? 'ON' : 'off';
-
-  /// 플래그는 줬는데 릴리즈 빌드라 무시된 상태 — **조용히 무시되면 안 된다.**
-  static String _suppressed(bool v) => v ? '(무시됨)' : '';
 
   /// 디버그 빌드인가. 릴리즈면 실험 플래그가 전부 접힌다.
   static bool get isDebug => kDebugMode;

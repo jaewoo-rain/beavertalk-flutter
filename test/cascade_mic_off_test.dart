@@ -13,31 +13,67 @@ import 'package:beavertalk/features/normalcall/presentation/cascade_experiment.d
 /// 를 내려도 **플랫폼 스레드 부하는 안 준다.** 마이크가 왕복 지연의 원인인지 가리려면
 /// 레코더 자체를 안 여는 스위치가 있어야 하고, 그게 이 스위치다.
 ///
-/// ⛔ 값을 하드코딩하지 않는다. 이 스위트는 `--dart-define=MIC_OFF=true` 로도 도는데
-///   (실험판 빌드가 실제로 그렇게 돈다), 하드코딩하면 그 판에서 깨진다 —
-///   AUTO_TALK·CASCADE_BARGE_IN 에서 실제로 두 번 깼다. **관계**를 검사한다.
+/// ⛔ 2026-08-14: dart-define 에서 **화면 토글**로 바뀌었다. 컴파일 플래그일 때는 끄고 켤 때마다
+///   APK 를 구워야 했고, 그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다.
 void main() {
-  group('MIC_OFF 은 플래그와 디버그모드의 곱이다', () {
-    test('켜졌다면 플래그가 켜져 있다 — 플래그 없이 저절로 켜지지 않는다', () {
-      if (CascadeMicOff.enabled) expect(CascadeMicOff.flag, isTrue);
-    });
+  final all = <String, ({ValueNotifier<bool> toggle, bool Function() enabled})>{
+    'MIC_OFF': (toggle: CascadeMicOff.toggle, enabled: () => CascadeMicOff.enabled),
+    'MIC_TO_FILE': (
+      toggle: CascadeMicToFile.toggle,
+      enabled: () => CascadeMicToFile.enabled
+    ),
+    'MIC_ALWAYS_GATED': (
+      toggle: CascadeMicAlwaysGated.toggle,
+      enabled: () => CascadeMicAlwaysGated.enabled
+    ),
+    'MIC_NO_AEC': (
+      toggle: CascadeMicNoAec.toggle,
+      enabled: () => CascadeMicNoAec.enabled
+    ),
+    'CUSHION_GROWTH_OFF': (
+      toggle: CascadeCushionGrowthOff.toggle,
+      enabled: () => CascadeCushionGrowthOff.enabled
+    ),
+  };
 
-    test('플래그가 꺼져 있으면 동작도 억제도 없다', () {
-      if (!CascadeMicOff.flag) {
-        expect(CascadeMicOff.enabled, isFalse);
-        expect(CascadeMicOff.suppressed, isFalse);
-      }
-    });
+  tearDown(() {
+    for (final e in all.values) {
+      e.toggle.value = false;
+    }
+  });
 
-    test('플래그가 켜지면 동작하거나 억제되거나 **둘 중 하나**다 — 조용히 사라지지 않는다', () {
-      if (CascadeMicOff.flag) {
-        expect(CascadeMicOff.enabled != CascadeMicOff.suppressed, isTrue);
-        expect(CascadeMicOff.enabled, kDebugMode);
-      }
-    });
+  for (final entry in all.entries) {
+    group(entry.key, () {
+      final t = entry.value;
 
-    test('⛔ 릴리즈에서는 절대 동작하지 않는다 — 실사용자 마이크가 죽으면 안 된다', () {
-      if (!kDebugMode) expect(CascadeMicOff.enabled, isFalse);
+      test('⛔ 기본은 꺼져 있다 — 제품 동작이 기본이다', () {
+        expect(t.toggle.value, isFalse);
+        expect(t.enabled(), isFalse);
+      });
+
+      test('enabled 는 토글 **와** 디버그를 함께 요구한다', () {
+        t.toggle.value = true;
+        expect(t.enabled(), kDebugMode);
+      });
+
+      test('⛔ 릴리즈에서는 토글을 켜도 안 돈다 — 실사용자에게 새면 안 된다', () {
+        t.toggle.value = true;
+        if (!kDebugMode) expect(t.enabled(), isFalse);
+      });
+
+      test('되돌리면 즉시 꺼진다 — 리빌드 없이 끌 수 있어야 한다', () {
+        t.toggle.value = true;
+        t.toggle.value = false;
+        expect(t.enabled(), isFalse);
+      });
     });
+  }
+
+  test('⭐ 토글끼리 독립이다 — 하나를 켜도 다른 게 켜지지 않는다', () {
+    CascadeMicOff.toggle.value = true;
+    expect(CascadeMicToFile.enabled, isFalse);
+    expect(CascadeMicAlwaysGated.enabled, isFalse);
+    expect(CascadeMicNoAec.enabled, isFalse);
+    expect(CascadeCushionGrowthOff.enabled, isFalse);
   });
 }
