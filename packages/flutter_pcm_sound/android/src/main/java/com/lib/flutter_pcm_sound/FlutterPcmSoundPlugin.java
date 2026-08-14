@@ -28,6 +28,7 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.StandardMethodCodec;
 
 /**
  * FlutterPcmSoundPlugin implements a "one pedal" PCM sound playback mechanism.
@@ -266,7 +267,44 @@ public class FlutterPcmSoundPlugin implements
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
         BinaryMessenger messenger = binding.getBinaryMessenger();
-        mMethodChannel = new MethodChannel(messenger, CHANNEL_NAME);
+        // ⭐ [BeaverTalk fix 2026-08-14] 이 채널을 **전용 백그라운드 큐**로 뺀다.
+        //
+        // 실기기 실측(408초 대화판)에서 결정적 증거가 나왔다:
+        //     queue 272,788B(5.7초 분량)  ·  PUMP: engine now 0ms  ·  빈채널왕복 2,858ms
+        //     그리고 logcat: "Skipped 139 frames! ... too much work on its main thread."
+        // **오디오는 Dart 에 다 와 있는데 네이티브로 못 내려간다.** 도착 문제가 아니라
+        // 플랫폼 채널이 메인 스레드 줄에 서 있다가 2.4~3.1초씩 밀리는 것이다.
+        //
+        // ⛔ 채널은 **가해자가 아니라 피해자다.** 무엇이 메인 스레드를 막든(우리 실측으로는
+        //   AudioRecord 가 열려 있는 것 자체였다) 오디오가 그 줄에 서 있는 한 굶는다.
+        //   그래서 원인을 못 없애도 **오디오를 그 줄에서 빼는 것**은 할 수 있다.
+        //   조용한 통화(2026-08-13 오전 6판)에서는 채널에 실을 오디오가 거의 없어서
+        //   이게 안 보였다 — 대화가 있는 실기기 판에서야 드러났다.
+        //
+        // ── 동시성 감사 (이 변경 전에 확인한 것) ─────────────────────────────
+        // 이 큐는 **직렬(serial)** 이다. 핸들러끼리는 여전히 서로 겹치지 않는다
+        // (setup/feed/clear/release 가 동시에 돌지 않는다). 바뀌는 것은 「핸들러가 도는
+        // 스레드가 메인이 아니다」 하나뿐이고, **핸들러↔재생스레드**는 원래부터 교차
+        // 스레드였다. 그 공유 상태는 이미 다 보호돼 있다:
+        //   mSamples          LinkedBlockingQueue
+        //   mQueuedBytes · mWrittenOutFrames · mClearGen · mPolledNotWrittenBytes · mTotalFeeds
+        //                     AtomicLong
+        //   mShouldCleanup · mFeedThreshold · mAudioWritePending   volatile
+        //   mSampleRate/mNumChannels/mUpsample/mScratch*/mSilence  setup 에서 **playbackThread.start()
+        //                     이전에** 쓴다 → 스레드 시작이 happens-before 를 준다
+        //   mDidSetup · mTrackBufferBytes  핸들러 전용(같은 직렬 큐) → 순서 보장
+        // ⚠ 남는 것 하나: mAudioTrack 이 plain 필드다(재생 스레드 종료 시 null 대입).
+        //   **이건 이 변경으로 새로 생긴 위험이 아니다** — 예전에도 메인↔재생 교차였다.
+        //   스레드 수도 안 늘었다(핸들러 1 + 재생 1). 별건으로 다룬다.
+        //
+        // ⛔ 그리고 아래 invokeFeedCallback 은 **메인 스레드에 그대로 둔다**(:841 부근).
+        //   나가는 invokeMethod 는 플랫폼 스레드에서 부르는 것이 안전한 계약이고,
+        //   그 콜백은 백스톱이다 — 주 경로는 Dart 의 40ms 푸시 타이머다.
+        mMethodChannel = new MethodChannel(
+                messenger,
+                CHANNEL_NAME,
+                StandardMethodCodec.INSTANCE,
+                messenger.makeBackgroundTaskQueue());
         mMethodChannel.setMethodCallHandler(this);
     }
 
