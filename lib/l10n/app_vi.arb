@@ -629,5 +629,6 @@
   "difficultyNormal": "Bình thường",
   "difficultyFast": "Nhanh",
   "difficultyLabel": "Độ khó",
-  "connected": "Đã kết nối"
+  "connected": "Đã kết nối",
+  "unlockedWithMax": "Có sẵn với Max"
 }

@@ -2099,4 +2099,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get connected => 'เชื่อมต่อแล้ว';
+
+  @override
+  String get unlockedWithMax => 'ใช้ได้ด้วย Max';
 }

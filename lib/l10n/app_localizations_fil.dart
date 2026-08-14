@@ -2122,4 +2122,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get connected => 'Nakakonekta';
+
+  @override
+  String get unlockedWithMax => 'Available sa Max';
 }

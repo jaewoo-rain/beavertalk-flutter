@@ -2110,4 +2110,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get connected => 'Холбогдсон';
+
+  @override
+  String get unlockedWithMax => 'Max-аар ашиглах боломжтой';
 }

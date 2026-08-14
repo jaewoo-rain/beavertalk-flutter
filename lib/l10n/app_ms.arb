@@ -629,5 +629,6 @@
   "difficultyNormal": "Biasa",
   "difficultyFast": "Laju",
   "difficultyLabel": "Tahap kesukaran",
-  "connected": "Disambungkan"
+  "connected": "Disambungkan",
+  "unlockedWithMax": "Tersedia dengan Max"
 }

@@ -2120,4 +2120,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get connected => 'ချိတ်ဆက်ပြီး';
+
+  @override
+  String get unlockedWithMax => 'Max ဖြင့် ရနိုင်သည်';
 }

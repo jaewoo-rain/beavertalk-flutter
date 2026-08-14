@@ -2114,4 +2114,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get connected => 'Подключено';
+
+  @override
+  String get unlockedWithMax => 'Доступно с Max';
 }

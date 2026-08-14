@@ -629,5 +629,6 @@
   "difficultyNormal": "सामान्य",
   "difficultyFast": "छिटो",
   "difficultyLabel": "कठिनाइ",
-  "connected": "जडान भयो"
+  "connected": "जडान भयो",
+  "unlockedWithMax": "Max सँग उपलब्ध"
 }

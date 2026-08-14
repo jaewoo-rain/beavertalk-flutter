@@ -629,5 +629,6 @@
   "difficultyNormal": "ปกติ",
   "difficultyFast": "เร็ว",
   "difficultyLabel": "ระดับความยาก",
-  "connected": "เชื่อมต่อแล้ว"
+  "connected": "เชื่อมต่อแล้ว",
+  "unlockedWithMax": "ใช้ได้ด้วย Max"
 }

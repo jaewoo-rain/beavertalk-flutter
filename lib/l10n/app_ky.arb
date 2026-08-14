@@ -629,5 +629,6 @@
   "difficultyNormal": "Орточо",
   "difficultyFast": "Тез",
   "difficultyLabel": "Татаалдык",
-  "connected": "Туташты"
+  "connected": "Туташты",
+  "unlockedWithMax": "Max менен жеткиликтүү"
 }

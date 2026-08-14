@@ -1334,5 +1334,9 @@
   "connected": "Connected",
   "@connected": {
     "description": "Call header status - the call is live. Sibling of `connecting`."
+  },
+  "unlockedWithMax": "Available with Max",
+  "@unlockedWithMax": {
+    "description": "Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does."
   }
 }

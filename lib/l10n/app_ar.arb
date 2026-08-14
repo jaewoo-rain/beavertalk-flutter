@@ -629,5 +629,6 @@
   "difficultyNormal": "عادي",
   "difficultyFast": "سريع",
   "difficultyLabel": "الصعوبة",
-  "connected": "متصل"
+  "connected": "متصل",
+  "unlockedWithMax": "متاح مع Max"
 }

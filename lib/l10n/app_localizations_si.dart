@@ -2103,4 +2103,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get connected => 'සම්බන්ධයි';
+
+  @override
+  String get unlockedWithMax => 'Max සමඟ ලබා ගත හැක';
 }

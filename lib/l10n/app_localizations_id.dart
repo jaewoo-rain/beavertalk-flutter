@@ -2116,4 +2116,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get connected => 'Terhubung';
+
+  @override
+  String get unlockedWithMax => 'Tersedia dengan Max';
 }

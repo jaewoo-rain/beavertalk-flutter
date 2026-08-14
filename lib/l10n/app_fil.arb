@@ -629,5 +629,6 @@
   "difficultyNormal": "Normal",
   "difficultyFast": "Mabilis",
   "difficultyLabel": "Antas ng hirap",
-  "connected": "Nakakonekta"
+  "connected": "Nakakonekta",
+  "unlockedWithMax": "Available sa Max"
 }

@@ -2149,4 +2149,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get connected => 'Connecté';
+
+  @override
+  String get unlockedWithMax => 'Disponible avec Max';
 }

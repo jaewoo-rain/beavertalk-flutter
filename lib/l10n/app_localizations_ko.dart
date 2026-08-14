@@ -2045,4 +2045,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get connected => '연결됨';
+
+  @override
+  String get unlockedWithMax => 'Max로 이용 가능';
 }

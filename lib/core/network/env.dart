@@ -45,6 +45,29 @@ abstract final class Env {
     return '${_withScheme(_trimTrailingSlash(host))}$apiPrefix';
   }
 
+  /// 캐스케이드(STT→LLM→TTS) 전용 백엔드. **키가 없으면 [apiBaseUrl] 로 폴백한다.**
+  ///
+  /// ## 왜 통로마다 호스트가 갈리나
+  ///
+  /// 캐스케이드 라우터는 **demo-api 에만** 있다 — 서버가 `CASCADE_ENABLED`(기본 False)로
+  /// 막고, 운영에는 라우터 자체가 없어 붙으면 **1008 로 닫힌다.** 그런데 WS 주소는
+  /// [apiBaseUrl] 을 그대로 따라가므로, 그냥 두면 캐스케이드가 **운영으로 붙어 끊긴다.**
+  ///
+  /// ⛔ **라이브 통화는 운영 그대로 둔다.** 이건 캐스케이드 소켓 하나만 옮기는 장치다
+  /// (사장님 결정 A안, 2026-08-12). [normalcallWsUrl]·[pronSttWsUrl] 은 이 값을 안 본다.
+  ///
+  /// ⭐ 토큰은 양쪽에서 통한다 — 두 백엔드가 **같은 Supabase 프로젝트**를 본다
+  /// (`.env` 의 운영/테스트 SUPABASE_URL 이 동일). 그래서 호스트만 갈라도 인증이 안 깨진다.
+  ///
+  /// ⚠ 이 키는 `.env` 에 있고 `.env` 는 gitignore 다 — **새 워크트리에 안 따라온다.**
+  /// 없으면 캐스케이드가 운영으로 붙어 즉시 끊긴다(에러는 "연결 실패"로만 보인다).
+  /// CLAUDE.md R8 목록에 같이 적어 뒀다.
+  static String get cascadeApiBaseUrl {
+    final value = dotenv.maybeGet('CASCADE_API_BASE_URL')?.trim();
+    if (value == null || value.isEmpty) return apiBaseUrl;
+    return '${_withScheme(_trimTrailingSlash(value))}$apiPrefix';
+  }
+
   /// Adds an `http://` scheme when the value has none (e.g. a bare
   /// `175.123.55.182:8000`).
   static String _withScheme(String host) {

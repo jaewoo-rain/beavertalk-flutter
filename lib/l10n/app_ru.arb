@@ -629,5 +629,6 @@
   "difficultyNormal": "Обычно",
   "difficultyFast": "Быстро",
   "difficultyLabel": "Сложность",
-  "connected": "Подключено"
+  "connected": "Подключено",
+  "unlockedWithMax": "Доступно с Max"
 }

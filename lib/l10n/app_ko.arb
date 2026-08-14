@@ -637,5 +637,6 @@
   "difficultyNormal": "보통",
   "difficultyFast": "빠르게",
   "difficultyLabel": "난이도",
-  "connected": "연결됨"
+  "connected": "연결됨",
+  "unlockedWithMax": "Max로 이용 가능"
 }

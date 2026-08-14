@@ -73,6 +73,19 @@ void main() {
           discountPrice: '₩2,450',
           discountPercent: 50,
         ),
+    // 구독 축의 최악 케이스: 이름 + "Included with Max"(소유 배지보다 길다) + "-N%"
+    // 마커가 한 줄에, 푸터에는 버튼이 둘. 소유 상태는 배지 하나에 버튼도 하나라
+    // 여기서 안 걸린다.
+    'AvatarDetailSubscription': () => const AvatarDetailScreen(
+          state: AvatarDetailState.subscriptionUnused,
+          name: 'Baba',
+          tags: ['Savage', 'Blunt', 'Tsundere'],
+          summary: 'A sharp-tongued master.',
+          description: 'Baba, a beaver famous for his flawless dams.',
+          price: '₩4,900',
+          discountPrice: '₩2,450',
+          discountPercent: 50,
+        ),
     'AvatarDetailOwned': () => const AvatarDetailScreen(
           state: AvatarDetailState.ownedUnused,
           name: 'Baba',

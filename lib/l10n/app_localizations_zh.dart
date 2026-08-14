@@ -2038,4 +2038,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get connected => '已连接';
+
+  @override
+  String get unlockedWithMax => 'Max 可用';
 }

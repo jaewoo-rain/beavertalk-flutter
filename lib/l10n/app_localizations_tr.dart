@@ -2109,4 +2109,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get connected => 'Bağlandı';
+
+  @override
+  String get unlockedWithMax => 'Max ile kullanılabilir';
 }

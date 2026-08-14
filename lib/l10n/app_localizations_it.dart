@@ -2132,4 +2132,7 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get connected => 'Connesso';
+
+  @override
+  String get unlockedWithMax => 'Disponibile con Max';
 }

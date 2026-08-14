@@ -629,5 +629,6 @@
   "difficultyNormal": "正常",
   "difficultyFast": "快速",
   "difficultyLabel": "难度",
-  "connected": "已连接"
+  "connected": "已连接",
+  "unlockedWithMax": "Max 可用"
 }

@@ -2103,4 +2103,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get connected => 'कनेक्ट हो गया';
+
+  @override
+  String get unlockedWithMax => 'Max के साथ उपलब्ध';
 }

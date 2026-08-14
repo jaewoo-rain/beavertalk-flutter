@@ -2109,4 +2109,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get connected => 'បានភ្ជាប់';
+
+  @override
+  String get unlockedWithMax => 'អាចប្រើបានជាមួយ Max';
 }

@@ -2100,4 +2100,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get connected => 'जडान भयो';
+
+  @override
+  String get unlockedWithMax => 'Max सँग उपलब्ध';
 }

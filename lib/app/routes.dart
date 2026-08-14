@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
+import '../preview/cancel_rig_screen.dart';
+import '../preview/echo_rig_screen.dart';
 import '../preview/gallery_screen.dart';
 import '../theme/app_motion.dart';
 import 'placeholder_screen.dart';
@@ -129,6 +132,15 @@ abstract final class Routes {
   static const networkError = '/network-error';
 
   static const gallery = '/gallery';
+
+  /// 개발자 전용 계측 도구. 서버 에코 게이트 상수를 정하기 위한 실측 리그다.
+  /// [gallery] 와 같은 부류(제품 플로우에서 도달하지 않는 진입점)라 여기 둔다 —
+  /// 컴포넌트 갤러리에 끼워 넣지 않은 건 그쪽이 컴포넌트 미리보기 전용이기 때문이다.
+  static const echoRig = '/dev/echo-rig';
+
+  /// 개발자 전용 계측 도구. `audio_cancel` 수신 → 실제 무음까지(`client_stop_ms`)를
+  /// 잰다. 서버 dev 훅이 배포되기 전에도 클라 안에서 프레임을 주입해 배관을 발동시킨다.
+  static const cancelRig = '/dev/cancel-rig';
 }
 
 /// Central route table. Screens are swapped for real ones flow-by-flow; until
@@ -155,7 +167,15 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
   }
 
   final builders = <String, WidgetBuilder>{
-    Routes.gallery: (_) => const GalleryScreen(),
+    // 개발자 전용 화면은 **디버그 빌드에만 등록한다.**
+    //
+    // 진입 버튼을 kDebugMode 로 가리는 것만으로는 부족하다 — 라우트가 테이블에 남아
+    // 있으면 화면 클래스가 릴리즈 바이너리에 그대로 컴파일되고(실측: 릴리즈 libapp.so 에
+    // 리그 화면 문자열이 UTF-16 으로 남아 있었다), pushNamed 로 이름만 알면 도달할 수
+    // 있는 경로가 남는다. 여기서 막아야 트리셰이킹이 화면째 들어낸다.
+    if (kDebugMode) Routes.gallery: (_) => const GalleryScreen(),
+    if (kDebugMode) Routes.echoRig: (_) => const EchoRigScreen(),
+    if (kDebugMode) Routes.cancelRig: (_) => const CancelRigScreen(),
     Routes.onboarding: (_) => const OnboardingLanguageScreen(),
     Routes.onboardingName: (_) => const OnboardingNameScreen(),
     Routes.onboardingReason: (_) => const OnboardingReasonScreen(),

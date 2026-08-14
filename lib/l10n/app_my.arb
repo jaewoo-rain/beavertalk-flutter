@@ -629,5 +629,6 @@
   "difficultyNormal": "ပုံမှန်",
   "difficultyFast": "မြန်",
   "difficultyLabel": "အခက်အခဲအဆင့်",
-  "connected": "ချိတ်ဆက်ပြီး"
+  "connected": "ချိတ်ဆက်ပြီး",
+  "unlockedWithMax": "Max ဖြင့် ရနိုင်သည်"
 }

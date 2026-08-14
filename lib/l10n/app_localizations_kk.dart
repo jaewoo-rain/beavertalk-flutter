@@ -2108,4 +2108,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get connected => 'Байланысты';
+
+  @override
+  String get unlockedWithMax => 'Max-пен қолжетімді';
 }

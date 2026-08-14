@@ -2043,4 +2043,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get connected => '接続済み';
+
+  @override
+  String get unlockedWithMax => 'Max で利用可能';
 }

@@ -629,5 +629,6 @@
   "difficultyNormal": "Normal",
   "difficultyFast": "Hızlı",
   "difficultyLabel": "Zorluk",
-  "connected": "Bağlandı"
+  "connected": "Bağlandı",
+  "unlockedWithMax": "Max ile kullanılabilir"
 }

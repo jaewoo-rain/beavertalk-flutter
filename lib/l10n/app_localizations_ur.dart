@@ -2107,4 +2107,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get connected => 'منسلک';
+
+  @override
+  String get unlockedWithMax => 'Max کے ساتھ دستیاب';
 }

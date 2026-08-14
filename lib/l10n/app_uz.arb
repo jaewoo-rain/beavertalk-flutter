@@ -629,5 +629,6 @@
   "difficultyNormal": "Oddiy",
   "difficultyFast": "Tez",
   "difficultyLabel": "Murakkablik",
-  "connected": "Ulandi"
+  "connected": "Ulandi",
+  "unlockedWithMax": "Max bilan mavjud"
 }

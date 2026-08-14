@@ -2108,4 +2108,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get connected => 'Đã kết nối';
+
+  @override
+  String get unlockedWithMax => 'Có sẵn với Max';
 }

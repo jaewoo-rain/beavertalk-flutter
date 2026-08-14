@@ -2123,4 +2123,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get connected => 'Ulandi';
+
+  @override
+  String get unlockedWithMax => 'Max bilan mavjud';
 }

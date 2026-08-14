@@ -629,5 +629,6 @@
   "difficultyNormal": "Normaali",
   "difficultyFast": "Nopea",
   "difficultyLabel": "Vaikeustaso",
-  "connected": "Yhdistetty"
+  "connected": "Yhdistetty",
+  "unlockedWithMax": "Käytettävissä Maxilla"
 }

@@ -629,5 +629,6 @@
   "difficultyNormal": "Normál",
   "difficultyFast": "Gyors",
   "difficultyLabel": "Nehézség",
-  "connected": "Csatlakozva"
+  "connected": "Csatlakozva",
+  "unlockedWithMax": "Elérhető a Maxszal"
 }

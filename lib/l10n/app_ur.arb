@@ -629,5 +629,6 @@
   "difficultyNormal": "معمول",
   "difficultyFast": "تیز",
   "difficultyLabel": "دشواری",
-  "connected": "منسلک"
+  "connected": "منسلک",
+  "unlockedWithMax": "Max کے ساتھ دستیاب"
 }

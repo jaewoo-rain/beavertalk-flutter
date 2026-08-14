@@ -1,8 +1,12 @@
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_channel.dart';
+import '../../features/normalcall/presentation/build_flags.dart';
+import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/icons/app_icons.dart';
@@ -119,6 +123,10 @@ class MyPageScreen extends ConsumerWidget {
                 _levelCard(context, ref, l10n, level),
                 const SizedBox(height: AppSpacing.s24),
                 _pronunciationCard(context, l10n, pron, recentCalls),
+                if (kDebugMode) ...[
+                  const SizedBox(height: AppSpacing.s24),
+                  _devToolsCard(context),
+                ],
               ],
             ),
           ),
@@ -126,6 +134,203 @@ class MyPageScreen extends ConsumerWidget {
       ),
     );
   }
+
+  // ── 개발자 도구 (디버그 빌드 전용) ──────────────────────────────────────
+
+  /// 제품 플로우에서 도달할 수 없는 dev 화면들의 **유일한 진입점**.
+  ///
+  /// ⛔ `kDebugMode` 로만 그린다. 릴리즈 빌드에서는 이 카드가 트리에 아예 안 들어가고,
+  ///   Dart 컴파일러가 `kDebugMode` 를 상수로 접어 코드째 제거한다. 실사용자가 닿을 수 없다.
+  ///
+  /// 마이페이지 스크롤 맨 아래에 둔 이유: 이미 아는 화면이라 찾기 쉽고, 끝까지 내려야
+  /// 보이니 실수로 눌릴 일이 적다. **숨겨진 제스처(로고 롱프레스 같은 것)는 일부러 피했다** —
+  /// 못 찾으면 없는 것과 같고, 그러면 측정이 통째로 막힌다.
+  ///
+  /// 여기 오기 전까지 `Routes.gallery` 는 라우트만 있고 도달할 UI 가 없어 사실상 죽어
+  /// 있었다. dev 진입점을 새로 만드는 김에 같이 살렸다 — 다음 dev 도구도 갈 자리가 생긴다.
+  Widget _devToolsCard(BuildContext context) => _card(
+        context,
+        header: _cardHeader(
+          context,
+          title: '개발자 도구',
+          subtitle: '디버그 빌드에만 보입니다',
+        ),
+        children: [
+          // ⭐ **이 APK 가 무엇인지** 맨 위에 띄운다. 2026-08-14: 서버는 마이크 상시개방을
+          //   요청했는데 끼어들기가 한 번도 안 걸렸고, 원인은 폰에 깔린 APK 가
+          //   `ANDROID_VOICE_AUDIO` 없이 빌드된 것이었다. **그걸 확인할 방법이 화면에
+          //   없어서** 반나절을 왕복했다(외부라 USB 도 못 썼다). 안 보이는 상태가 원인이다.
+          _buildInfoRow(context),
+          _devRow(
+            context,
+            title: '캐스케이드 통화 (테스트 서버)',
+            description: '실험 통로입니다 — 소켓만 데모 서버로 붙고, 일반 통화(라이브)는 '
+                '운영 서버 그대로입니다. '
+                '⚠ 두 서버가 같은 DB 를 쓰므로 이 통화도 실서비스 데이터에 그대로 쌓입니다. '
+                '통화 후 분석이 정상 동작하는지는 아직 확인되지 않았습니다.',
+            route: Routes.callLoading,
+            arguments: CallChannel.cascade,
+          ),
+          // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
+          //   다음 단계가 "하나씩 다시 켜기"라 빌드 없이 껐다 켰다 할 수 있어야 한다.
+          _devSwitch(
+            context,
+            title: '└ 아바타 영상',
+            description: '끄면 정적 이미지만. ExoPlayer/SurfaceView 가 안드로이드 '
+                'UI 스레드를 막는지 보는 스위치입니다 — 제1 용의자.',
+            flag: CascadeExperiment.avatarVideo,
+          ),
+          _devSwitch(
+            context,
+            title: '└ 힌트 카드',
+            description: '끄면 힌트를 안 그립니다.',
+            flag: CascadeExperiment.hints,
+          ),
+          _devRow(
+            context,
+            title: '취소 배관 리그',
+            description: '끼어들기(audio_cancel) 수신부터 소리가 실제로 멎기까지 몇 ms 걸리는지 '
+                '반복 측정합니다. 서버 없이 클라 안에서 프레임을 주입합니다.',
+            route: Routes.cancelRig,
+          ),
+          _devRow(
+            context,
+            title: '에코 측정 리그',
+            description: '스피커폰·이어폰에서 비버 소리가 마이크로 얼마나 되돌아오는지 잽니다. '
+                '서버 에코 임계값을 정하는 실측 도구입니다.',
+            route: Routes.echoRig,
+          ),
+          _devRow(
+            context,
+            title: '컴포넌트 갤러리',
+            description: '디자인 시스템 컴포넌트 미리보기.',
+            route: Routes.gallery,
+          ),
+        ],
+      );
+
+  /// 격리 실험 스위치 한 줄. **통화 밖에서 미리 정해 두고 들어간다.**
+  ///
+  /// 통화 중에 바꾸면 그 통화의 측정이 두 구성에 걸쳐 오염된다 — 한 통화 = 한 구성이다.
+  Widget _devSwitch(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required ValueNotifier<bool> flag,
+  }) =>
+      ValueListenableBuilder<bool>(
+        valueListenable: flag,
+        builder: (context, on, _) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s4),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title,
+                        style: AppType.body1.sb
+                            .copyWith(color: context.c.labelStrong)),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(description,
+                        style: AppType.label1.r
+                            .copyWith(color: context.c.labelAlternative)),
+                  ],
+                ),
+              ),
+              Switch(value: on, onChanged: (v) => flag.value = v),
+            ],
+          ),
+        ),
+      );
+
+  /// dev 도구 한 줄. 제목 + 무엇을 하는 화면인지 한 줄.
+  ///
+  /// 계측 도구 진입점이라 꾸밀 이유가 없다 — 눈에 띄고 뭔지 읽히면 그걸로 끝이다.
+  /// 빌드 식별자 + 컴파일 플래그 한 줄. **USB 없이 화면만으로** 어느 APK 인지 가른다.
+  ///
+  /// ⛔ 값을 손으로 나열하지 않는다 — [BuildFlags] 가 **실제 상수**를 읽는다.
+  ///   여기서 문자열을 다시 쓰면 플래그를 늘렸을 때 화면이 조용히 낡아, 정확히 우리가
+  ///   없애려는 거짓말이 다시 생긴다.
+  Widget _buildInfoRow(BuildContext context) {
+    final ok = BuildFlags.micReachesServer;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('빌드 ${BuildFlags.tag}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  )),
+          const SizedBox(height: 2),
+          Text(BuildFlags.summary,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodySmall
+                  ?.copyWith(fontFamily: 'monospace')),
+          const SizedBox(height: 4),
+          // ⭐ 사람이 판단하지 않아도 되게 **결론을 문장으로** 쓴다. 플래그 조합을 읽고
+          //   해석하라고 하면 오늘 같은 혼선이 그대로 반복된다.
+          Text(
+            ok
+                ? (BuildFlags.androidVoiceAudio
+                    ? '⚠ 끼어들기 가능 빌드입니다 — 서버가 허용하면 비버 말 중에도 마이크가 열립니다.'
+                    : '끼어들기 불가 빌드입니다 — 서버가 허용해도 비버 말 중에는 마이크를 막습니다.')
+                : '⛔ 실험용 빌드입니다 — 내 목소리가 서버에 가지 않습니다. 통화가 성립하지 않습니다.',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: ok ? null : Theme.of(context).colorScheme.error,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _devRow(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required String route,
+    Object? arguments,
+  }) =>
+      InkWell(
+        onTap: () =>
+            Navigator.pushNamed(context, route, arguments: arguments),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Expanded: 설명이 길어 두 줄 이상으로 접히므로 Row 안에서 폭을 받아야
+              // 한다. 고정폭이나 double.infinity 를 쓰면 오버플로가 난다.
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(title,
+                        style: AppType.body1.sb
+                            .copyWith(color: context.c.labelStrong)),
+                    const SizedBox(height: AppSpacing.s4),
+                    Text(description,
+                        style: AppType.label1.r
+                            .copyWith(color: context.c.labelNormal)),
+                  ],
+                ),
+              ),
+              const SizedBox(width: AppSpacing.s12),
+              Padding(
+                padding: const EdgeInsets.only(top: AppSpacing.s4),
+                child: AppIcons.chevronRight(
+                    size: 20, color: context.c.labelAssistive),
+              ),
+            ],
+          ),
+        ),
+      );
 
   // ── Cards ──────────────────────────────────────────────────────────────
 

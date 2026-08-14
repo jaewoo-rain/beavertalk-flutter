@@ -15,6 +15,7 @@ import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
+import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../l10n/app_localizations.dart';
@@ -236,7 +237,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     });
 
     final showSubtitle = subtitleOn && beaverSubtitle.isNotEmpty;
-    final showHint = hintOn && hint != null;
+    // 격리 실험: 캐스케이드는 **순정으로 벗겨서** 먼저 돌린다(라이브는 제품 그대로).
+    // 판정은 CascadeExperiment.enabledFor 한 곳에서만 — 릴리즈에서는 항상 켬이다.
+    final channel =
+        ref.watch(normalCallControllerProvider.select((s) => s.channel));
+    final showHint = hintOn &&
+        hint != null &&
+        CascadeExperiment.enabledFor(channel, CascadeExperiment.hints);
+    final showAvatarVideo = !kDisableAvatarVideo &&
+        CascadeExperiment.enabledFor(channel, CascadeExperiment.avatarVideo);
 
     return PopScope(
       canPop: false,
@@ -328,7 +337,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           child: AspectRatio(
                             aspectRatio: 16 / 9,
                             child: ClipRect(
-                              child: avatarDir != null && !kDisableAvatarVideo
+                              child: avatarDir != null && showAvatarVideo
                                   ? SyncAvatar(
                                       assetDir: avatarDir,
                                       level: callNotifier.avatarLevel,

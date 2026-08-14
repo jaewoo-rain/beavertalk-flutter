@@ -629,5 +629,6 @@
   "difficultyNormal": "Қалыпты",
   "difficultyFast": "Жылдам",
   "difficultyLabel": "Күрделілік",
-  "connected": "Байланысты"
+  "connected": "Байланысты",
+  "unlockedWithMax": "Max-пен қолжетімді"
 }

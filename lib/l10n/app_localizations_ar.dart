@@ -2096,4 +2096,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get connected => 'متصل';
+
+  @override
+  String get unlockedWithMax => 'متاح مع Max';
 }

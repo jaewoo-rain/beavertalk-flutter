@@ -1,3 +1,18 @@
+/// 캐릭터가 **왜** 열려 있는가 (`unlock_source`).
+///
+/// 소유와 접근은 다른 축이다: [owned] 는 영구 구매(해지해도 남는다), [subscription]
+/// 은 구독이 여는 것(해지하면 닫힌다). 서버는 둘 다 해당할 때 [owned] 로 답한다 —
+/// 순서를 뒤집으면 이미 산 캐릭터까지 "해지하면 사라짐"으로 표시된다.
+///
+/// 잠긴 상태는 값이 아니라 `null` 이다 (`Character.unlockSource`).
+enum CharacterUnlockSource {
+  /// 영구 구매로 열림.
+  owned,
+
+  /// 구독(Max)으로 열림 — 구독이 끝나면 닫힌다.
+  subscription,
+}
+
 /// A purchasable call-partner character (catalog view). Pure Dart — no
 /// Flutter/dio/JSON knowledge. Prices are **USD cents** (see
 /// `core/format/money.dart`) — `$10.00` is 1000, never 10.
@@ -10,6 +25,8 @@ class Character {
     required this.price,
     required this.effectivePrice,
     required this.isOwned,
+    required this.isUnlocked,
+    this.unlockSource,
     this.description,
     this.backgroundStory,
     this.voiceUrl,
@@ -46,7 +63,20 @@ class Character {
   final int effectivePrice;
 
   /// Whether the current member already owns this character.
+  ///
+  /// **영구 구매 여부만** 뜻한다. 지금 쓸 수 있는지는 [isUnlocked] 다 — 구독으로 열린
+  /// 캐릭터는 여기가 `false` 인 채로 사용 가능하다. 둘을 합치면 "샀다"고 오해시킨 뒤
+  /// 해지 때 뺏는 꼴이 되므로 서버가 일부러 나눠서 보낸다.
   final bool isOwned;
+
+  /// Whether the member can use this character **right now** (`is_unlocked`).
+  ///
+  /// 선택 가능 여부는 [isOwned] 가 아니라 이 값으로 판단한다. `is_unlocked` 를 안 보내는
+  /// 구버전 서버(현 prod)에서는 [isOwned] 로 폴백되므로 종전 동작이 유지된다.
+  final bool isUnlocked;
+
+  /// 무엇이 열어줬나 (`unlock_source`). 잠긴 캐릭터는 `null`.
+  final CharacterUnlockSource? unlockSource;
 
   /// Card description.
   ///
@@ -79,6 +109,13 @@ class Character {
   /// same N+1 reason as [description] — the avatar screen must not fetch detail
   /// per card just to know a deadline.
   final DateTime? discountEndsAt;
+
+  /// 구독으로만 열린 상태 — **쓸 수는 있지만 산 것은 아니다.**
+  ///
+  /// 이 상태의 화면 규칙: 선택 가능 / "Owned" 배지 금지 / 구매 CTA 유지. 마지막 항목이
+  /// 중요하다 — Max 회원도 해지 후를 대비해 영구 구매를 할 수 있어야 하고, 서버가 그
+  /// 흐름을 막지 않는다.
+  bool get isSubscriptionUnlocked => isUnlocked && !isOwned;
 
   /// True when a discount is active ([effectivePrice] below [price]).
   bool get hasDiscount => effectivePrice < price;

@@ -629,5 +629,6 @@
   "difficultyNormal": "স্বাভাবিক",
   "difficultyFast": "দ্রুত",
   "difficultyLabel": "কঠিনতা",
-  "connected": "সংযুক্ত"
+  "connected": "সংযুক্ত",
+  "unlockedWithMax": "Max দিয়ে ব্যবহারযোগ্য"
 }

@@ -2114,4 +2114,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get connected => 'Yhdistetty';
+
+  @override
+  String get unlockedWithMax => 'Käytettävissä Maxilla';
 }

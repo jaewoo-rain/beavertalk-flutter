@@ -2113,4 +2113,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get connected => 'Туташты';
+
+  @override
+  String get unlockedWithMax => 'Max менен жеткиликтүү';
 }

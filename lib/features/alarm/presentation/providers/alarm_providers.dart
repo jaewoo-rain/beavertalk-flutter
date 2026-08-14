@@ -19,26 +19,29 @@ final alarmRepositoryProvider = Provider<AlarmRepository>((ref) {
   );
 });
 
-/// Selectable alarm partners — the characters the member actually **owns**
-/// (`GET /members/me/characters`). Consume with `AsyncValue.when`.
+/// Selectable alarm partners — every character the member can **use right now**
+/// (`GET /characters` filtered by `is_unlocked`). Consume with `AsyncValue.when`.
 ///
-/// This used to call `GET /characters` (the whole catalog) via
-/// `alarmRepository.listCharacters()`, so the alarm picker offered characters
-/// the user had not bought — scheduling a call with a partner they cannot use.
-/// Owned-only is the requirement, and `ownedCharactersProvider` is exactly that
-/// list, so it feeds the picker directly instead of fetching the catalog and
-/// filtering it (one request instead of two).
+/// 기준이 소유가 아니라 **접근**이다. 예약 전화도 Max 혜택에 포함된다(사장님 결정,
+/// 2026-08-06). 서버는 이미 그렇게 동작한다 — 예약 전화가 실제로 걸릴 때
+/// `MemberCharacter` 행이 없어도 구독만으로 통과시킨다
+/// (`learning/service/normalcall_service.py:155-160`). 앱만 막고 있었다.
 ///
-/// [OwnedCharacter] maps field-for-field onto [AlarmCharacter]
-/// (`id`→`characterId`, `name`, `imageUrl`); the extra purchase fields are not
-/// needed here. The alarm screen already renders an empty state when this is
-/// empty (`alarm_add.dart`), which is the correct result for a member who owns
-/// nothing.
+/// ⛔ 보유 목록(`ownedCharactersProvider` = `GET /members/me/characters`)으로는
+/// 만들 수 없다. 그 응답에는 `is_unlocked` 가 **아예 없다** — 서버가 "보유 = 구매한
+/// 것"으로 못 박았고, 구독으로 열린 캐릭터는 카탈로그 응답에만 나타난다. 그래서
+/// 출처를 카탈로그로 옮겼다.
+///
+/// 무료·Pro 회원은 구독이 아무것도 열지 않아 `is_unlocked == is_owned` 이므로,
+/// 종전과 똑같이 **산 캐릭터만** 보인다.
+///
+/// 화면(`alarm_add.dart`)은 이 목록이 비면 빈 상태를 그린다 — 아무것도 못 쓰는
+/// 회원에게 맞는 결과다.
 final availableCharactersProvider =
     FutureProvider<List<AlarmCharacter>>((ref) async {
-  final owned = await ref.watch(ownedCharactersProvider.future);
+  final catalog = await ref.watch(charactersProvider.future);
   return [
-    for (final c in owned)
+    for (final c in catalog.where((c) => c.isUnlocked))
       AlarmCharacter(
         characterId: c.id,
         name: c.name,

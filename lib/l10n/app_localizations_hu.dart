@@ -2126,4 +2126,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get connected => 'Csatlakozva';
+
+  @override
+  String get unlockedWithMax => 'Elérhető a Maxszal';
 }

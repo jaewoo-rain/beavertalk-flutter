@@ -629,5 +629,6 @@
   "difficultyNormal": "Хэвийн",
   "difficultyFast": "Хурдан",
   "difficultyLabel": "Хүндрэл",
-  "connected": "Холбогдсон"
+  "connected": "Холбогдсон",
+  "unlockedWithMax": "Max-аар ашиглах боломжтой"
 }

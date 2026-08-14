@@ -629,5 +629,6 @@
   "difficultyNormal": "Normale",
   "difficultyFast": "Veloce",
   "difficultyLabel": "Difficoltà",
-  "connected": "Connesso"
+  "connected": "Connesso",
+  "unlockedWithMax": "Disponibile con Max"
 }
