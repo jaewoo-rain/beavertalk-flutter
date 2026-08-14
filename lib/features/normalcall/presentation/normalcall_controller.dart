@@ -382,6 +382,10 @@ class NormalCallController extends Notifier<CallState> {
   /// ⇒ 소리 기준 계기는 **자기 필드**를 쓴다.
   int? _userTurnEndForAudioMs;
 
+  /// `user_turn_end` → `turn_start` 도착(ms). 기존 `RESPONSE:` 줄이 찍고 **버리던** 값이다.
+  /// 서버로 같이 보내야 서버가 「제어 신호까지」와 「소리까지」를 한 줄에서 뺀다.
+  int? _turnStartDelayMs;
+
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
   static const Duration _listenHold = Duration(milliseconds: 900);
@@ -1499,6 +1503,7 @@ class NormalCallController extends Notifier<CallState> {
     _turnStarved = false;
     _turnFirstAudioFed = false;
     _userTurnEndForAudioMs = null;
+    _turnStartDelayMs = null;
     _responseSamples.clear();
     responseSummary.value = '';
     _resumeFlushed = false;
@@ -2204,6 +2209,52 @@ class NormalCallController extends Notifier<CallState> {
         '${_responseSamples.length}턴 중앙값 ${median}ms';
     _log(measured ? line : '$line ⚠ 추정(네이티브 잔량 미제공)');
     responseSummary.value = measured ? line : '$line ⚠ 추정';
+    _sendClientTiming(
+      audibleMs: responseMs,
+      cushionMs: cushionMs,
+      estimated: !measured,
+    );
+  }
+
+  /// 이 턴의 응답시간을 **서버로** 보낸다 — 턴당 1건.
+  ///
+  /// ## 왜 서버로 보내나 — 평균이 아니라 **뺄셈** 때문이다
+  /// 서버는 자기가 첫소리를 **언제 보냈는지** 알고, 클라는 **언제 실제로 들렸는지** 안다.
+  ///     클라 재생 몫 = 클라가 들은 시각 − 서버가 보낸 시각
+  /// 이 값을 지금까지 추정만 했고 한 번도 못 쟀다. 그래서 **턴 단위**로 보낸다 — 통화 끝에
+  /// 평균만 보내면 **짝을 못 맞춰 뺄셈이 성립하지 않는다.**
+  ///
+  /// ⛔ `turn_id` 는 **비버 턴 id**다(`turn_start` 로 받은 그것). 사용자 턴 id 를 실으면
+  ///   서버가 자기 `첫소리` 기록과 조인을 못 한다.
+  /// ⛔ **여기서 값을 다시 계산하지 않는다.** [_recordResponseTime] 이 뽑은 값을 그대로 싣는다 —
+  ///   두 곳에서 계산하면 언젠가 갈라지고, 갈라진 두 곳은 반드시 어긋난다.
+  /// ⛔ **전송 실패가 통화를 죽이면 안 된다.** 다만 **조용히 넘어가지도 않는다** — 못 보낸
+  ///   사실을 로그로 남긴다(오늘 여섯 번 밟은 「조용한 부재」 계열).
+  void _sendClientTiming({
+    required int audibleMs,
+    required int cushionMs,
+    required bool estimated,
+  }) {
+    final turnId = _currentTurnId;
+    if (turnId == null || turnId.isEmpty) {
+      // 서버가 조인할 키가 없으면 보내봐야 버려진다. 안 보내되 **왜 안 보냈는지** 남긴다.
+      _log('client_timing 미전송 — 비버 turn_id 가 없다(서버가 조인 못 함)');
+      return;
+    }
+    if (_channel == null) {
+      _log('client_timing 미전송 — 소켓이 닫혀 있다 (통화는 정상)');
+      return;
+    }
+    _send({
+      'type': 'client_timing',
+      'turn_id': turnId,
+      'audible_ms': audibleMs,
+      // 기존 자도 같이 보낸다 — 서버가 한 줄에서 두 구간을 비교할 수 있게.
+      'turn_start_ms': ?_turnStartDelayMs,
+      'cushion_ms': cushionMs,
+      'estimated': estimated,
+    });
+    _turnStartDelayMs = null; // 턴당 1회. 다음 턴 값이 섞이지 않게 즉시 비운다.
   }
 
   void _startInflateLog() {
@@ -3147,6 +3198,8 @@ class NormalCallController extends Notifier<CallState> {
     // ⛔ 끼어들어 끊은 턴은 응답시간 표본이 아니다. 안 지우면 **취소된 턴의 말끝**부터
     //   다음 턴 첫 소리까지가 응답시간으로 잡혀 값이 통째로 부풀린다.
     _userTurnEndForAudioMs = null;
+    // 취소된 턴의 `turn_start` 지연도 다음 턴에 실리면 안 된다.
+    _turnStartDelayMs = null;
     // 다음 턴은 쿠션을 다시 쌓아야 한다(취소로 끊긴 재생을 이어가는 게 아니다).
     _playing = false;
     _prebufferFlushTimer?.cancel();
@@ -3462,8 +3515,9 @@ class NormalCallController extends Notifier<CallState> {
           final endedAt = _userTurnEndAtMs;
           if (endedAt != null) {
             _userTurnEndAtMs = null;
-            _log('RESPONSE: user_turn_end → turn_start '
-                '${DateTime.now().millisecondsSinceEpoch - endedAt}ms');
+            final d = DateTime.now().millisecondsSinceEpoch - endedAt;
+            _turnStartDelayMs = d;
+            _log('RESPONSE: user_turn_end → turn_start ${d}ms');
           }
         }
         // 새 비버 턴이 열렸다 = 취소 잔여 구간의 끝. 서버 불변식상 여기부터 도착하는
