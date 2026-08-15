@@ -238,11 +238,79 @@ class _SyncAvatarState extends State<SyncAvatar> {
     }
   }
 
+  /// 지금 살아 있는 [VideoPlayerController] 수 = **하드웨어 디코더 점유 수**.
+  ///
+  /// ## 왜 세는가 — 「3개를 안 넘는다」가 지금까지 **주석에만** 있었다
+  ///
+  /// 파일 곳곳에 「⛔ 네 번째 컨트롤러를 열지 마라」가 적혀 있지만 **아무도 세지 않았다.**
+  /// 그래서 멈춤이 돌아왔을 때 그것이 한계 초과인지 다른 원인인지 가릴 외부 증거가 한 줄도
+  /// 없었다(2026-08-15 실기기: 캐스케이드 통화 중 영상 멈춤).
+  /// ⇒ 규칙을 **셈으로** 바꾼다. 넘으면 로그에 남고, 로그가 곧 판정이다.
+  static int _decoders = 0;
+
+  void _countOpen(String name) {
+    _decoders++;
+    if (kDebugMode) {
+      debugPrint('[avatar] decoder +1 → $_decoders ($name)'
+          '${_decoders > 3 ? '  ⛔ 한계초과' : ''}');
+    }
+  }
+
+  /// 트리에서 빠졌으나 **아직 해제되지 않은** 컨트롤러들.
+  ///
+  /// ## 왜 목록이 필요한가 — 2026-08-15 실기기에서 한계초과 2건이 남았다
+  ///
+  /// 교체는 옛것을 페이드(340ms) 뒤에 해제한다. 그런데 대기 상태는 턴마다
+  /// `듣기 → 생각 → 대기` 로 **연달아** 바뀌고, 실측 간격이 그보다 짧다:
+  ///
+  ///     16:56:55.674  +1 → 3 (idle_think)
+  ///     16:56:56.060  +1 → 4 (idle)   ⛔ 386ms 뒤 — 앞의 옛것이 아직 대기 중
+  ///
+  /// `_idleSwapping` 은 `_open` 이 끝나면 풀리므로 이 창을 못 막는다.
+  /// ⇒ 대기 중인 옛것은 **이미 트리에서 빠져 있으므로** 새로 열기 전에 즉시 해제해도
+  ///   안전하다(v6.4 의 금지 대상은 «그려지는 중»이지 «대기 중»이 아니다).
+  final List<VideoPlayerController> _retiring = [];
+
+  /// 옛 컨트롤러를 대기열에 넣고 페이드가 끝나면 해제한다.
+  void _retire(VideoPlayerController? c, String why) {
+    if (c == null) return;
+    _retiring.add(c);
+    Future.delayed(_fadeOut + const Duration(milliseconds: 120), () {
+      if (_retiring.remove(c)) unawaited(_release(c, why));
+    });
+  }
+
+  /// 대기 중인 옛 컨트롤러를 **지금** 해제한다 — 새로 열기 전에 자리를 비운다.
+  Future<void> _flushRetiring(String why) async {
+    if (_retiring.isEmpty) return;
+    final now = List.of(_retiring);
+    _retiring.clear();
+    for (final c in now) {
+      await _release(c, '$why(대기분 조기해제)');
+    }
+  }
+
+  /// 컨트롤러를 해제하고 셈을 줄인다.
+  ///
+  /// ⛔ 그리는 중인 텍스처를 해제하면 화면이 굳는다(2026-08-02 실기기, v6.4 에서 확정).
+  ///   그래서 호출자는 **참조를 먼저 끊고** 이 함수를 부른다.
+  Future<void> _release(VideoPlayerController? c, String why) async {
+    if (c == null) return;
+    try {
+      await c.dispose();
+    } catch (_) {
+      // 이미 정리된 컨트롤러 — 조용히 넘어간다.
+    }
+    _decoders--;
+    if (kDebugMode) debugPrint('[avatar] decoder -1 → $_decoders ($why)');
+  }
+
   Future<VideoPlayerController?> _open(String name,
       {required bool loop, required bool play}) async {
     final c = VideoPlayerController.asset('${widget.assetDir}/$name.mp4');
     try {
       await c.initialize();
+      _countOpen(name);
       await c.setLooping(loop);
       await c.setVolume(0);
       if (play) await c.play();
@@ -250,6 +318,40 @@ class _SyncAvatarState extends State<SyncAvatar> {
     } catch (_) {
       await c.dispose();
       return null;
+    }
+  }
+
+  /// 새 컨트롤러를 열기 **전에** 감정 슬롯을 비운다 — 4번째를 만들지 않기 위해서다.
+  ///
+  /// ## 왜 필요한가 — 「열고 나서 나중에 해제」가 겹침을 만든다
+  ///
+  /// 교체 자리(`_swapIdle`·`_swapTalk`·감정 전환)는 전부 **새것을 먼저 열고 옛것을
+  /// 페이드 뒤에 해제**한다. 그 규율 자체는 옳다(v6.4 가 그걸로 멈춤을 고쳤다).
+  /// 그러나 그 340ms 동안 **컨트롤러가 하나 더 있다.** 감정 클립이 한 번이라도 뜬
+  /// 뒤에는
+  ///
+  ///     idle + talk + emo + (새로 여는 것) = **4개**
+  ///
+  /// 가 되어 하드 한계(2~3개)를 넘는다. 통화 초반에는 감정이 아직 없어 3개라 멀쩡하고,
+  /// **감정이 한 번 뜬 뒤부터** 교체마다 4개가 된다 — 「하다가 중간에 멈춘다」의 형태다.
+  ///
+  /// ⇒ 감정은 **선택적인 층**이다(없어도 talk 가 화면을 채운다). 자리가 모자라면 감정을
+  ///   먼저 내린다. 다음 발화에서 다시 열리고, 그때는 idle+talk+emo = 3 이다.
+  ///
+  /// ⛔ 트리에서 뺀 **다음 프레임에** 해제한다. 지금 그려지는 텍스처를 지우면 굳는다.
+  Future<void> _freeEmoSlot(String why) async {
+    if (_emoCache.isEmpty) return;
+    final stale = _emoCache.values.toList();
+    _emoCache.clear();
+    _emoCode = 0;
+    _emo = null;
+    if (mounted) {
+      setState(() => _emoOpacity = 0);
+      // 참조를 끊은 뒤 한 프레임을 넘겨야 렌더러가 그 텍스처를 놓는다.
+      await WidgetsBinding.instance.endOfFrame;
+    }
+    for (final c in stale) {
+      await _release(c, why);
     }
   }
 
@@ -380,16 +482,22 @@ class _SyncAvatarState extends State<SyncAvatar> {
   ///    새것으로 갈아끼우고 **페이드가 끝난 뒤** 해제한다(`_swapTalk` 와 같은 규율).
   /// 🟡 말하는 중에도 갈아끼운다 — 그때 idle 은 talk 에 가려 보이지 않으므로
   ///    교체가 화면에 드러나지 않는다. 오히려 말이 끝나기 전에 준비되어야 한다.
+  ///
+  /// ⭐ 열기 **전에** [_freeEmoSlot] 으로 자리를 만든다. 이 교체는 턴마다 세 번
+  ///   일어나므로(대기→듣기→생각→대기), 겹침을 그대로 두면 감정이 한 번 뜬 뒤부터
+  ///   **매 턴 세 번씩** 한계를 넘는다.
   Future<void> _swapIdle(int kind) async {
     if (kind == _idleKind || _idleSwapping || !_ready) return;
     final name = _idleAsset[kind];
     if (name == null) return;
     _idleSwapping = true;
+    await _flushRetiring('idle 교체');
+    await _freeEmoSlot('idle 교체 자리 확보');
     final next = await _open(name, loop: true, play: false);
     _idleSwapping = false;
     if (next == null) return; // 그 캐릭터엔 해당 대기 자산이 없다 — 쓰던 것을 유지한다.
     if (!mounted) {
-      await next.dispose();
+      await _release(next, 'idle 교체 중 unmount');
       return;
     }
     final stale = _idle;
@@ -398,11 +506,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
       _idleKind = kind;
     });
     await _applyPlayback();
-    if (stale != null) {
-      Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
-        await stale.dispose();
-      });
-    }
+    _retire(stale, 'idle 옛것');
   }
 
   /// talk 클립을 다른 템포로 갈아끼운다.
@@ -417,11 +521,13 @@ class _SyncAvatarState extends State<SyncAvatar> {
     final name = _talkAsset[tempo];
     if (name == null) return;
     _talkSwapping = true;
+    await _flushRetiring('talk 교체');
+    await _freeEmoSlot('talk 교체 자리 확보');
     final next = await _open(name, loop: true, play: false);
     _talkSwapping = false;
     if (next == null) return; // 그 캐릭터엔 해당 템포 자산이 없다 — 쓰던 것을 유지한다.
     if (!mounted) {
-      await next.dispose();
+      await _release(next, 'talk 교체 중 unmount');
       return;
     }
     final stale = _talk;
@@ -430,11 +536,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
       _talkTempo = tempo;
     });
     await _applyPlayback();
-    if (stale != null) {
-      Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
-        await stale.dispose();
-      });
-    }
+    _retire(stale, 'talk 옛것');
   }
 
   void _onEmotion() {
@@ -456,39 +558,26 @@ class _SyncAvatarState extends State<SyncAvatar> {
       if (next == null) {
         if (_emoLoading) return;
         _emoLoading = true;
+        // ★감정은 **한 개만** 살려 둔다. 캐시를 쌓으면 idle·talk 까지 더해 디코더가
+        // 최대 6개가 되고, 하드웨어 한계(2~3개)를 넘어 화면이 얼었다(2026-08-02 S8).
+        //
+        // ⛔ 예전엔 새것을 **먼저 열고** 옛것을 페이드 뒤에 해제했다. 해제 순서는 옳았지만
+        //   (v6.4) 그 340ms 동안 idle + talk + 옛감정 + 새감정 = **4개**가 됐다.
+        //   ⇒ 옛 감정을 **먼저 내리고**(트리에서 뺀 뒤 다음 프레임에 해제) 그다음에 연다.
+        //   그 사이 화면은 talk 이 채운다 — 같은 발화의 기본 클립이라 튀지 않는다.
+        await _freeEmoSlot('감정 교체 자리 확보');
         next = await _open(name, loop: true, play: true);
         _emoLoading = false;
         if (!mounted) {
-          await next?.dispose();
+          await _release(next, '감정 교체 중 unmount');
           return;
         }
         if (next == null) return;
-        // ★감정은 **한 개만** 살려 둔다. 캐시를 계속 쌓으면 idle·talk 까지 더해
-        // 디코더가 최대 6개가 되고, 하드웨어 한계(2~3개)를 넘어 화면이 얼었다
-        // (2026-08-02 S8 실기기). 이제 최대 3개 = idle + talk + 감정 1.
-        //
-        // ⛔ 여기서 바로 해제하면 안 된다. 지금 이 순간 `_emo`(그리고 위젯 트리)가
-        // 옛 컨트롤러를 가리키고 있어서, 먼저 해제하면 **해제된 텍스처를 그리다 화면이
-        // 굳는다**(2026-08-02 실기기에서 "말하다 멈춤"으로 나타남).
-        // 새 컨트롤러로 갈아끼우고 페이드가 끝난 뒤에 해제한다.
-        final stale = _emoCache.entries
-            .where((e) => e.key != code)
-            .map((e) => e.value)
-            .toList();
-        _emoCache
-          ..clear()
-          ..[code] = next;
+        _emoCache[code] = next;
         _emo = next;
         _emoCode = code;
         if (mounted) setState(() => _emoOpacity = 1);
         await _applyPlayback();
-        if (stale.isNotEmpty) {
-          Future.delayed(_fadeOut + const Duration(milliseconds: 120), () async {
-            for (final c in stale) {
-              await c.dispose();
-            }
-          });
-        }
         return;
       }
       _emo = next;
@@ -508,10 +597,24 @@ class _SyncAvatarState extends State<SyncAvatar> {
     widget.tempo?.removeListener(_onTempo);
     widget.idleKind?.removeListener(_onIdleKind);
     _stopTimer?.cancel();
-    _idle?.dispose();
-    _talk?.dispose();
-    for (final c in _emoCache.values) {
-      c.dispose(); // _emo 는 캐시를 가리키므로 별도 dispose 하지 않는다(중복 방지)
+    // ⛔ [_release] 로 해제한다 — 셈이 [_decoders] 하나로 모여야 다음 통화의 시작값이
+    //   0 이 된다. 여기서만 `dispose()` 를 직접 부르면 통화를 걸 때마다 셈이 남아
+    //   두 번째 통화부터 「한계초과」가 거짓으로 뜬다(계측이 스스로 거짓말을 한다).
+    // ⛔ [_retiring] 도 같이 비운다. 통화를 끊는 순간 대기 중이던 옛것이 남아 있으면
+    //   그 타이머는 위젯이 사라진 뒤에 돌고, 그때까지 디코더를 물고 있다.
+    final leaving = <VideoPlayerController?>[
+      _idle,
+      _talk,
+      ..._emoCache.values,
+      ..._retiring,
+    ];
+    _retiring.clear();
+    _idle = null;
+    _talk = null;
+    _emo = null; // _emo 는 캐시를 가리키므로 목록에 또 넣지 않는다(중복 해제 방지)
+    _emoCache.clear();
+    for (final c in leaving) {
+      unawaited(_release(c, '위젯 해제'));
     }
     super.dispose();
   }

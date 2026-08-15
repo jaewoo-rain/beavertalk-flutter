@@ -64,6 +64,10 @@ String? normalizeCallId(Object? raw) {
 /// (구현은 컨트롤러 안의 `_emotionCode` 하나뿐이다 — 두 벌로 만들지 않는다.)
 int emotionCodeForTest(String? raw) => NormalCallController.emotionCode(raw);
 
+/// 같은 목적의 창구 — 「이 라벨을 우리가 읽을 수 있는가」.
+/// `neutral` 과 모르는 값은 **둘 다 코드 0** 이라 [emotionCodeForTest] 로는 못 가른다.
+bool emotionKnownForTest(String? raw) => NormalCallController.knownLabel(raw);
+
 /// 통화 한 건의 **경계 판정용 요약 줄**.
 ///
 /// ⛔ **통로를 인자로 받는다 — 필드를 읽지 않는다.** 실기기 첫 통화에서 이 줄이
@@ -3389,8 +3393,21 @@ class NormalCallController extends Notifier<CallState> {
   /// ⚠ **실측(2026-08-12 실기기 첫 통화): 영문 슬러그로 온다**(`happy`). 한글 수용은
   ///   그대로 둔다 — 서버가 라벨을 바꿔도 조용히 무표정이 되지 않게 하는 보험이다.
   /// ⛔ 화이트리스트로 막지 않는다 — 모르는 값이 오면 표정을 안 바꿀 뿐, 자막까지 버리면 안 된다.
+  ///
+  /// ⭐ `neutral` 을 **명시 case 로** 둔다. [knownLabel] 과 짝이다 — 둘 다 0 을 돌려주지만
+  ///   «서버가 무표정을 지시했다」와 「우리가 못 읽어서 버렸다」는 **뜻이 다르다.** 예전엔
+  ///   둘이 같은 `default` 로 떨어져 구분이 안 됐고, 그래서 서버가 새 라벨을 보내기
+  ///   시작해도 **아무도 모르는 채 표정만 사라진다.**
+  ///   2026-08-15 실측에서 서버가 보낸 값은 `neutral`(19건)·`angry`(5건) 둘뿐이었다.
+  ///   나머지 자산 3종(happy·surprised·sad)이 안 쓰이는 이유가 「서버가 안 보내서」인지
+  ///   「우리가 못 읽어서」인지 가릴 수단이 없으면 이 판정은 영원히 안 끝난다.
   static int emotionCode(String? raw) {
     switch ((raw ?? '').trim().toLowerCase()) {
+      case 'neutral':
+      case 'none':
+      case '중립':
+      case '무표정':
+        return 0;
       case 'happy':
       case '기쁨':
       case '행복':
@@ -3407,8 +3424,20 @@ class NormalCallController extends Notifier<CallState> {
       case '분노':
         return 4;
       default:
-        return 0; // neutral · 모르는 값 포함
+        return 0; // 모르는 값 — 표정을 안 바꾼다. [knownLabel] 이 이 경우를 드러낸다
     }
+  }
+
+  /// 이 라벨을 **우리가 읽을 수 있는가.** [emotionCode] 와 짝이다.
+  ///
+  /// ⛔ 표정을 막는 용도가 아니다. 모르는 값도 통과시키고 표정만 안 바꾼다(위 참조).
+  ///   이건 **로그에 드러내기 위한** 판정이다 — 서버가 어휘를 넓혔는데 우리가 조용히
+  ///   버리고 있는 상태를 통화 로그 한 줄로 잡는다.
+  static bool knownLabel(String? raw) {
+    final v = (raw ?? '').trim().toLowerCase();
+    if (v.isEmpty) return false;
+    return emotionCode(v) != 0 ||
+        const {'neutral', 'none', '중립', '무표정'}.contains(v);
   }
 
   /// `sentence` — 구간 자막·표정 마커. **오디오 직전에 인밴드로** 온다.
@@ -3440,7 +3469,10 @@ class NormalCallController extends Notifier<CallState> {
     ));
     // [진단] 첫 실기기 통화에서 **서버 탓 / 앱 탓**을 가르는 줄이다.
     // 이 줄이 0건이면 서버가 안 보낸 것이고, 있는데 화면이 비면 앱 문제다.
-    _log('sentence #$_sentenceCount seq=$seq emotion=$rawEmotion '
+    // ⭐ 모르는 라벨을 **로그에 드러낸다.** 표정은 그대로 무표정으로 두되(위 규약),
+    //   서버가 어휘를 넓혔는데 우리가 조용히 버리는 상태를 여기서 잡는다.
+    _log('sentence #$_sentenceCount seq=$seq emotion=$rawEmotion'
+        '${knownLabel(rawEmotion) ? '' : ' ⛔모르는라벨'} '
         'text="${text.length > 10 ? '${text.substring(0, 10)}…' : text}" '
         '위치=$_envAdded(재생 $_envPlayed) 대기=${_pendingMarkers.length}');
 

@@ -37,4 +37,38 @@ void main() {
       expect(emotionCodeForTest(null), 0);
     });
   });
+
+  /// 코드만으로는 「서버가 무표정을 지시함」과 「우리가 못 읽어서 버림」이 **둘 다 0** 이라
+  /// 안 갈린다. 그 구분이 없으면 서버가 어휘를 넓혔을 때 아무도 모르는 채 표정만 사라진다.
+  ///
+  /// 2026-08-15 실측: 서버가 보낸 값은 `neutral`(19건)·`angry`(5건) 둘뿐이었다.
+  group('아는 라벨 / 모르는 라벨을 가른다', () {
+    test('아는 값 — neutral 도 «아는 값»이다', () {
+      for (final v in ['neutral', 'none', '중립', '무표정']) {
+        expect(emotionKnownForTest(v), isTrue, reason: v);
+        expect(emotionCodeForTest(v), 0, reason: v);
+      }
+      for (final v in ['happy', 'surprised', 'sad', 'angry', '기쁨', '화남']) {
+        expect(emotionKnownForTest(v), isTrue, reason: v);
+      }
+    });
+
+    test('⛔ 모르는 값은 코드가 같아도(0) 여기서 갈린다', () {
+      for (final v in ['excited', 'thinking', '두근두근']) {
+        expect(emotionCodeForTest(v), 0, reason: v);
+        expect(emotionKnownForTest(v), isFalse, reason: v);
+      }
+    });
+
+    test('빈 값·null 은 «없음»이다 — 경보를 만들지 않는다', () {
+      // 서버가 감정을 안 실은 프레임까지 ⛔ 로 찍으면 로그가 경보로 뒤덮인다.
+      expect(emotionKnownForTest(''), isFalse);
+      expect(emotionKnownForTest(null), isFalse);
+    });
+
+    test('대소문자·공백을 견딘다', () {
+      expect(emotionKnownForTest(' NEUTRAL '), isTrue);
+      expect(emotionKnownForTest(' Excited '), isFalse);
+    });
+  });
 }

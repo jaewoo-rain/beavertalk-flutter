@@ -168,8 +168,12 @@ if ($Start) {
   #   OpenGLRenderer 의 Davey! 가 통째로 빠진다. 그 둘이 「안드로이드 메인 스레드가
   #   막혔다」의 유일한 외부 증거인데, 12분 판에서 0건으로 나와 「없다」로 읽을 뻔했다.
   #   실제로는 **캡처가 안 된 것**이었다(계측 부재를 부재로 읽는 함정).
+  # ⛔ 2026-08-15: 같은 함정을 아바타 쪽에서 한 번 더 닫는다. 단계 2·3 은 ExoPlayer 가
+  #   도는 판인데 코덱 태그를 안 잡으면 **화면이 얼어붙어도 로그에 아무 증거가 없다**.
+  #   아바타는 육안 판정이 원칙이지만(하드웨어 오버레이라 screencap 이 검게 나온다),
+  #   「얼었다」를 봤을 때 그 원인이 디코더인지 가릴 외부 증거는 이 태그들뿐이다.
   # ⚠ 인자 목록 사이에 주석을 끼워 넣지 마라 — 백틱 줄바꿈 뒤 주석은 파싱이 깨진다.
-  $logcatArgs = @('-s', $serial, 'logcat', '-s', 'flutter:V', 'Choreographer:V', 'OpenGLRenderer:V')
+  $logcatArgs = @('-s', $serial, 'logcat', '-s', 'flutter:V', 'Choreographer:V', 'OpenGLRenderer:V', 'MediaCodec:V', 'ExoPlayerImplInternal:V', 'ACodec:V', 'CCodec:V', 'OMXClient:V')
   $p = Start-Process -FilePath $Adb -ArgumentList $logcatArgs -NoNewWindow -PassThru -RedirectStandardOutput $log
 
   @{ pid = $p.Id; log = $log; stage = $Start; serial = $serial } |
