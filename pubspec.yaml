@@ -71,8 +71,6 @@ dependencies:
   flutter_pcm_sound: ^3.1.4
   # normalcall — 마이크 권한 요청.
   permission_handler: ^11.3.1
-  flutter_markdown: ^0.7.7+1
-
   # 예약 인바운드 콜(비버가 거는 전화) — 로컬 트리거 단계.
   # CallKit 수신 화면(전화 오는 UI) + accept/decline/timeout 이벤트. 이번 단계는
   # 로컬 showCallkitIncoming만 사용(FCM/VoIP 없음). Android 우선.
@@ -107,6 +105,7 @@ dependencies:
   crypto: ^3.0.7
   audio_session: ^0.2.4
   url_launcher: ^6.3.2
+  webview_flutter: ^4.14.1
 
 # 통화 음성 깨짐/버벅임(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
 # pub 원본은 조각 하나 쓸 때마다 큐 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은
