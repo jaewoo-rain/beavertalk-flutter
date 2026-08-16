@@ -491,6 +491,32 @@ class NormalCallController extends Notifier<CallState> {
   int _revealCharsSum = 0;
   int _revealBytesSum = 0;
 
+  /// 봉투 큐에서 앞에서부터 [count] 칸을 버리되 **지나간 것으로 계상**한다.
+  ///
+  /// ## ⛔ 불변식 — 이걸 깨면 자막이 영구히 늦는다
+  ///     `_envAdded == _envPlayed + _envQueue.length`
+  /// 두 카운터는 **통화 스코프 절대값**이고 마커는 `at: _envAdded` 에 꽂혀
+  /// `_envPlayed >= at` 일 때 터진다([_fireDueMarkers]). 큐에서 N칸을 없애면서
+  /// `_envPlayed` 를 안 올리면 그 차이가 **영구히** N 만큼 벌어지고,
+  /// **이후 모든 마커가 N×25ms 늦게** 터진다. 끼어들 때마다 누적된다.
+  ///
+  /// 실측(2026-08-16, 사장님 실기기): 취소 시 `discarded=33120 inFrames` = **1.38초**.
+  /// 그 통화 후반 자막이 그만큼 늦게 떴다.
+  /// ⚠ 입모양은 [_envQueue] 값 자체로 도는 별개 경로라 **안 늦는다** ⇒ 「입은 맞는데
+  ///   자막만 늦는」 모양으로 나타난다. 그래서 원인을 립싱크에서 찾으면 못 찾는다.
+  ///
+  /// ⭐ **큐를 비우는 모든 경로가 이 함수를 거쳐야 한다.** 예전엔 폭주 캡 경로만 계상하고
+  ///   (주석까지 달아 놨다) 취소 경로가 빠져 있었다 — 규칙을 아는 사람이 한 곳만 고친 것이다.
+  ///   그래서 숫자를 맞추는 대신 **자리를 하나로 모았다.**
+  void _dropEnvelopeFront(int count) {
+    if (count <= 0) return;
+    _envQueue.removeRange(0, count);
+    _envPlayed += count;
+  }
+
+  /// 봉투 큐를 통째로 비운다 — [_dropEnvelopeFront] 와 **같은 계상 규칙**을 쓴다.
+  void _clearEnvelope() => _dropEnvelopeFront(_envQueue.length);
+
   /// 아직 발화되지 않은 마커들. `at` 은 [_envPlayed] 가 그 값에 닿으면 터진다는 뜻.
   final List<({int at, String text, int emotion, int seq, int serverBytes})>
       _pendingMarkers = [];
@@ -1522,7 +1548,7 @@ class NormalCallController extends Notifier<CallState> {
     FlutterPcmSound.setFeedCallback(_onFeed);
     _pcmActive = true;
     _lastFeedSilent = null;
-    _envQueue.clear();
+    _clearEnvelope();
     // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
     //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
     _pendingMarkers.clear();
@@ -2952,10 +2978,8 @@ class NormalCallController extends Notifier<CallState> {
     // 립싱크가 **조용히** 어긋난다. 엔진 목표 + take 상한 위로 잡는다.
     final cap = 4000 ~/ _envStepMs;
     if (_envQueue.length > cap) {
-      final dropped = _envQueue.length - cap;
-      _envQueue.removeRange(0, dropped);
       // 잘려 나간 만큼도 '지나간' 것으로 센다. 안 그러면 마커가 영영 안 터진다.
-      _envPlayed += dropped;
+      _dropEnvelopeFront(_envQueue.length - cap);
     }
     // Zero-crossing rate → vowel shape (whole chunk is fine for this).
     final zcr = n > 1 ? zc / (n - 1) : 0.0;
@@ -3339,7 +3363,9 @@ class NormalCallController extends Notifier<CallState> {
     _engineAnchorFrames = 0;
     _engineAnchorMs = DateTime.now().millisecondsSinceEpoch;
     // 취소된 오디오의 입모양이 다음 턴에 남으면 안 된다.
-    _envQueue.clear();
+    // ⛔ **반드시 [_clearEnvelope] 를 쓴다.** 예전엔 `_envQueue.clear()` 였고 그래서
+    //   `_envPlayed` 가 안 올라가, 취소할 때마다 이후 자막이 영구히 늦어졌다.
+    _clearEnvelope();
     // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
     //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
     _pendingMarkers.clear();
@@ -4118,7 +4144,7 @@ class NormalCallController extends Notifier<CallState> {
     _keepaliveTimer = null;
     _envTimer?.cancel();
     _envTimer = null;
-    _envQueue.clear();
+    _clearEnvelope();
     // ⛔ 큐에 꽂아 둔 **미발화 마커**도 같이 버린다. 안 지우면 다음 턴에 지난 턴
     //   표정·자막이 뜬다(그 오디오는 이미 폐기됐다).
     _pendingMarkers.clear();
