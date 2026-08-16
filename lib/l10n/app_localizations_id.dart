@@ -531,7 +531,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String pricePerMonth(String price) {
-    return '$price / mo';
+    return '$price / bulan';
   }
 
   @override

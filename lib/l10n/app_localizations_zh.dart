@@ -513,7 +513,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String pricePerMonth(String price) {
-    return '$price / mo';
+    return '$price / 月';
   }
 
   @override

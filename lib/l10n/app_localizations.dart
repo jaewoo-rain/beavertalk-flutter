@@ -1120,7 +1120,7 @@ abstract class AppLocalizations {
   /// **'Pro Membership'**
   String get proMembership;
 
-  /// No description provided for @pricePerMonth.
+  /// Subscription price line. {price} is the store-formatted, storefront-local price string (StoreKit displayPrice / Play formattedPrice) and already carries its own currency symbol - never prefix or append one in a translation.
   ///
   /// In en, this message translates to:
   /// **'{price} / mo'**

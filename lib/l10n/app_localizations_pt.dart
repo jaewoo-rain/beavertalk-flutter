@@ -535,7 +535,7 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String pricePerMonth(String price) {
-    return 'US$price / mês';
+    return '$price / mês';
   }
 
   @override

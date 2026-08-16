@@ -161,7 +161,7 @@
   "viewBillingHistory": "Ver histórico de cobranças",
   "keepUsingPro": "Continuar com o Pro",
   "proMembership": "Assinatura Pro",
-  "pricePerMonth": "US{price} / mês",
+  "pricePerMonth": "{price} / mês",
   "benefitUnlimitedCalls": "Ligações ilimitadas",
   "benefitDetailedAnalysis": "Análise detalhada de pronúncia e gramática",
   "benefitAllCharacters": "Acesso a todos os personagens",

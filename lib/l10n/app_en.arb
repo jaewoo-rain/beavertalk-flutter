@@ -275,9 +275,11 @@
   "proMembership": "Pro Membership",
   "pricePerMonth": "{price} / mo",
   "@pricePerMonth": {
+    "description": "Subscription price line. {price} is the store-formatted, storefront-local price string (StoreKit displayPrice / Play formattedPrice) and already carries its own currency symbol - never prefix or append one in a translation.",
     "placeholders": {
       "price": {
-        "type": "String"
+        "type": "String",
+        "example": "$15.99"
       }
     }
   },

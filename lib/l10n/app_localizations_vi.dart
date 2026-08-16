@@ -531,7 +531,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String pricePerMonth(String price) {
-    return '$price / mo';
+    return '$price / tháng';
   }
 
   @override
