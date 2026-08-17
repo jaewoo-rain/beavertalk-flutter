@@ -14,11 +14,13 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
+import '../../features/normalcall/domain/entities/call_allowance.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../l10n/app_localizations.dart';
+import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -63,6 +65,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   static const bool kDisableAvatarVideo = false;
 
   bool _navigated = false;
+
+  /// 구간 시트가 떠 있는가 — 중복 표시 방어.
+  ///
+  /// `ref.listen` 은 빌드마다 다시 걸리고 상태도 여러 번 흐르므로, 이게 없으면
+  /// [CallPhase.awaitingContinue] 하나에 시트가 여러 장 쌓인다.
+  bool _segmentSheetOpen = false;
 
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
   /// new hint carries a new turn_id, so the card auto-collapses.
@@ -174,6 +182,77 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
+  /// 5분 구간이 끝났을 때 뜨는 시트 — 무료는 구독 유도, 유료는 「Keep going?」.
+  ///
+  /// 어느 시트인지는 [CallState.paidCallTime] 이 가른다. **화면이 구독 상태를 따로
+  /// 읽지 않는 이유**는, 그러면 판정이 두 벌이 되어 컨트롤러가 계산한 상한
+  /// (5분/15분)과 화면이 그리는 시트가 어긋날 수 있기 때문이다. 판정은 통화 시작
+  /// 시점에 컨트롤러가 한 번 하고, 화면은 그 결과를 그린다.
+  Future<void> _showSegmentSheet(
+    CallState s, {
+    required String characterName,
+    required ImageProvider? avatarImage,
+  }) async {
+    if (_navigated || _segmentSheetOpen) return;
+    _segmentSheetOpen = true;
+    final notifier = ref.read(normalCallControllerProvider.notifier);
+
+    // 시트가 닫혔는데 아무 것도 안 골랐다면(시스템 뒤로가기 등) 통화를 끝낸다.
+    // 안 그러면 소리도 없고 화면도 안 바뀌는 상태에 갇힌다.
+    var decided = false;
+    final used = s.segmentsUsed;
+    final limit = CallAllowance.limitFor(paidAccess: s.paidCallTime);
+
+    try {
+      await showSubscriptionOverlay(
+        context,
+        s.paidCallTime
+            ? SubscriptionOverlay.keepGoing
+            : SubscriptionOverlay.freeCallEnded,
+        characterName: characterName,
+        avatar: avatarImage == null
+            ? null
+            : Image(image: avatarImage, fit: BoxFit.cover),
+        // 「5:00 of 5:00 used」 — 무료 시트에만 쓰인다.
+        usage: (
+          used: _clock(CallAllowance.segment.inSeconds * used),
+          limit: _clock(limit.inSeconds),
+        ),
+        onContinue: () {
+          decided = true;
+          notifier.continueCall();
+        },
+        onEndCall: () {
+          decided = true;
+          notifier.hangUp();
+        },
+        // 통화를 끝내고 **요약을 건너뛰고** 결제 화면으로 간다. 방금 "구독"을 고른
+        // 사람에게 통화 요약을 보여 줄 이유가 없다.
+        //
+        // ⚠ 순서가 중요하다. `hangUp` 을 먼저 **끝까지** 기다린 뒤 [_leave] 로
+        //   나간다 — [_leave] 안의 `clearFinished()` 는 phase 가 `ended` 일 때만
+        //   먹고, 안 먹으면 다음에 홈에서 전화를 걸어도 지난 통화의 요약이 뜬다.
+        //   `_navigated` 를 먼저 올려 자동 요약 이동 리스너를 재운다.
+        onSubscribe: () async {
+          if (_navigated) return;
+          decided = true;
+          _navigated = true;
+          await notifier.hangUp();
+          if (!mounted) return;
+          await _leave(() => Navigator.of(context, rootNavigator: true)
+              .pushReplacementNamed(Routes.paywallProLimit, arguments: 'call'));
+        },
+      );
+      if (!decided) await notifier.hangUp();
+    } finally {
+      _segmentSheetOpen = false;
+    }
+  }
+
+  /// `초 → m:ss` — 시트의 사용량 줄(`5:00 of 5:00 used`)에 쓴다.
+  static String _clock(int seconds) =>
+      '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -219,7 +298,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
         setState(() => _suggestionIndex = 0);
       }
-      if (next.phase == CallPhase.ended) {
+      if (next.phase == CallPhase.awaitingContinue) {
+        _showSegmentSheet(
+          next,
+          characterName: selectedChar?.name ?? '',
+          avatarImage: partnerImage,
+        );
+      } else if (next.phase == CallPhase.ended) {
         _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;

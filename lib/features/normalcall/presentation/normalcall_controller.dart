@@ -29,6 +29,10 @@ import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/datasources/audio_route_probe.dart';
 import '../data/datasources/pcm_playback_control.dart';
+import '../../subscription/domain/entities/subscription_state.dart';
+import '../../subscription/presentation/providers/subscription_providers.dart';
+import '../../subscription/presentation/providers/subscription_state_providers.dart';
+import '../domain/entities/call_allowance.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
@@ -179,6 +183,20 @@ enum CallPhase {
   /// Live conversation in progress (beaver and/or user talking).
   inCall,
 
+  /// 5분 구간을 다 써서 **사용자의 결정을 기다리는 중**(플랜 §3-5).
+  ///
+  /// 이 구간의 세션은 이미 닫혔다 — 소켓·마이크·재생이 전부 내려간 상태다. 사용자가
+  /// 고민하는 동안 소켓을 붙들지 않는 이유는, 상한(5분)이 마침 Cloud Run 요청
+  /// 타임아웃 기본값(300초)과 같아서 **붙들어 봐야 곧 끊기기 때문**이다.
+  ///
+  /// 여기서 갈리는 길은 둘뿐이다:
+  /// - [NormalCallController.continueCall] → 새 세션을 열고 [inCall] 로 돌아간다
+  /// - [NormalCallController.hangUp] → [ended] 로 가고 요약 화면이 뜬다
+  ///
+  /// ⛔ **[ended] 로 대신 쓰지 마라.** 통화 화면은 `ended` 를 보면 요약 화면으로
+  ///   넘어간다(`call.dart`). 그러면 사용자가 고르기도 전에 화면이 떠난다.
+  awaitingContinue,
+
   /// Wind-down: `call_ended` received, draining the final audio before close.
   ending,
 
@@ -187,6 +205,25 @@ enum CallPhase {
 
   /// Connection/auth failure; [CallState.errorMsg] holds a reason.
   error,
+}
+
+/// [CallPhase] 술어.
+extension CallPhaseX on CallPhase {
+  /// 이 phase 가 **통화를 붙들고 있는가** — 새 수신 전화를 띄우면 안 되는 상태인가.
+  ///
+  /// ⛔ 이 판정을 호출부에 복사하지 마라. 예전엔 `connecting || inCall || ending` 이
+  ///   세 곳(`push_bootstrap`·`inbound_call_scheduler`·`incoming_call_coordinator`)에
+  ///   복붙돼 있었고, phase 가 하나 늘 때마다 **세 곳을 다 고쳐야 새 상태가 반영**됐다.
+  ///   [CallPhase.awaitingContinue] 를 추가하며 한 자리로 모았다 — 시트를 보고 있는
+  ///   동안 수신 전화가 끼어들면 통화가 통째로 날아간다.
+  bool get isBusy => switch (this) {
+        CallPhase.connecting ||
+        CallPhase.inCall ||
+        CallPhase.ending ||
+        CallPhase.awaitingContinue =>
+          true,
+        CallPhase.idle || CallPhase.ended || CallPhase.error => false,
+      };
 }
 
 /// Immutable snapshot of the current call, exposed to the UI.
@@ -207,6 +244,8 @@ class CallState {
     this.hintOn = true,
     this.beaverPreparing = false,
     this.channel = CallChannel.live,
+    this.segmentsUsed = 0,
+    this.paidCallTime = false,
   });
 
   /// Current lifecycle phase.
@@ -271,6 +310,29 @@ class CallState {
   /// 그대로 둘 수 있다(격리 실험의 대조군 유지 — [CascadeExperiment]).
   final CallChannel channel;
 
+  /// 지금까지 **끝낸** 5분 구간의 수. 0 = 첫 구간 진행 중, 1 = 첫 5분을 마쳤다.
+  ///
+  /// 통화는 5분 세션을 이어 붙여 만든다([CallAllowance]). 한 소켓이 15분을 버티는 게
+  /// 아니라 구간마다 새로 연결하므로, "몇 초 지났나"([elapsedSec])가 아니라 이 값이
+  /// 상한 판정의 단위다.
+  ///
+  /// ⚠ **재연결을 건너서 유지된다.** 구간 사이의 [_teardown] 이 이 값을 0 으로
+  ///   되돌리면 통화가 영원히 끝나지 않는다.
+  final int segmentsUsed;
+
+  /// 이 통화가 **유료 통화 시간**을 쓰는가 — 통화 시작 시 굳힌 값.
+  ///
+  /// 화면이 어느 시트를 띄울지 가르는 값이다(무료=구독 유도 / 유료=「Keep going?」).
+  /// 컨트롤러가 판정해서 실어 보내는 이유는, 화면이 따로 구독 상태를 읽으면 **판정이
+  /// 두 벌**이 되고 서로 어긋날 수 있기 때문이다. 판정 근거는
+  /// `SubscriptionStatus.grantsPaidAccess` 하나다 — `grace`(결제 재시도)는 접근권을
+  /// 유지하고 `onHold`(결제 실패 정지)는 차단한다(스펙 §6).
+  ///
+  /// ⛔ **컨트롤러는 시트를 띄우지 않는다.** 앱 스코프 싱글톤이라 `BuildContext` 가
+  ///   없고, 잠금화면·백그라운드에서도 살아 있다. 여기서 UI 를 부르면 컨텍스트가 없는
+  ///   시점에 터진다. 컨트롤러는 상태만 싣고 표시는 화면의 몫이다.
+  final bool paidCallTime;
+
   /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
   /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
   static const Object _keep = Object();
@@ -292,6 +354,8 @@ class CallState {
     bool? hintOn,
     bool? beaverPreparing,
     CallChannel? channel,
+    int? segmentsUsed,
+    bool? paidCallTime,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -308,6 +372,8 @@ class CallState {
       hintOn: hintOn ?? this.hintOn,
       beaverPreparing: beaverPreparing ?? this.beaverPreparing,
       channel: channel ?? this.channel,
+      segmentsUsed: segmentsUsed ?? this.segmentsUsed,
+      paidCallTime: paidCallTime ?? this.paidCallTime,
     );
   }
 }
@@ -945,6 +1011,39 @@ class NormalCallController extends Notifier<CallState> {
 
   Timer? _elapsedTimer;
 
+  // ── 통화 시간 구간(5분) ─────────────────────────────────────────────────────
+
+  /// 이 통화의 유료 접근권. **통화가 시작될 때 한 번 굳힌다.**
+  ///
+  /// ⛔ **5분 경계에서 그때그때 읽으면 안 된다.** `subscriptionStatusProvider` 는
+  ///   autoDispose 라, 경계 시점에 다시 읽으면 서버 응답이 아직 안 실린 빈 상태
+  ///   (`SubscriptionStatus.none` → free)로 떨어질 수 있다. 그러면 **유료 회원의
+  ///   통화가 5분에 잘리고 구독 유도 시트가 뜬다.** 통화 도중 플랜이 바뀌는 것도
+  ///   이 통화에 반영하지 않는다 — 시작 시점의 권한으로 끝까지 간다.
+  ///
+  /// Future 로 들고 있는 이유: 연결 직후 **비동기로 띄워 두고** 5분 뒤에 받는다.
+  /// 시작 경로에서 await 하면 소켓 연결이 그만큼 늦어지는데, 이 값은 5분 뒤에야
+  /// 필요하다(서버가 첫 인사말을 만드는 시간을 까먹지 않으려는 것 — [_connect] 주석).
+  Future<bool>? _paidAccess;
+
+  /// 이 통화의 접근권을 확정한다. 서버 판정을 우선하고, 못 받으면 기존 추론으로 내려간다.
+  Future<bool> _resolvePaidAccess() async {
+    try {
+      final status =
+          await ref.read(subscriptionRepositoryProvider).fetchStatus();
+      if (status != null) return status.state.grantsPaidAccess;
+    } catch (_) {
+      // 서버가 못 주면(구버전·네트워크) 아래 폴백. 통화를 막을 이유는 아니다.
+    }
+    return ref.read(subscriptionStatusProvider).grantsPaidAccess;
+  }
+
+  /// 다음 구간을 여는 중인가 — [continueCall] 재진입 방어.
+  ///
+  /// 시트의 버튼은 연타될 수 있고, 재연결은 `await` 가 여러 번 들어간 긴 경로다.
+  /// 이게 없으면 소켓이 두 벌 열린다.
+  bool _continuing = false;
+
   /// Application-level keepalive: pings the server every [_keepaliveInterval] so
   /// the socket has periodic client→server traffic. Without it, a long beaver
   /// monologue (mic gated, no upstream bytes) lets a proxy/LB idle-timeout close
@@ -1393,9 +1492,20 @@ class NormalCallController extends Notifier<CallState> {
         //     **에러가 안 나서 조용히 이상한 목소리가 된다.** 값이 한 곳에서 나오게 묶는다.
         'sample_rate': _micSampleRate,
         'num_channels': _micNumChannels,
+        // 「Keep talking」 으로 이어진 구간이면 직전 구간의 id 를 싣는다. 서버가 그
+        // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
+        // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
+        'continues_call_id': ?_continuesCallId,
       });
 
       _startAutoTalkIfEnabled();
+
+      // 이 통화의 유료 접근권을 **지금 띄워 둔다**(await 하지 않는다). 5분 뒤에야
+      // 필요한 값이라, 여기서 기다리면 서버가 첫 인사말을 만들 시간만 까먹는다.
+      // ⚠ 이어가기가 **아닐 때만** 다시 받는다 — 한 통화 안에서는 시작 시점의 권한으로
+      //   끝까지 간다(구간마다 다시 물으면 중간에 만료된 회원의 통화가 잘린다).
+      if (_continuesCallId == null) _paidAccess = null;
+      _paidAccess ??= _resolvePaidAccess();
 
       // Keepalive so an idle proxy/LB doesn't drop the socket mid-call.
       _startKeepalive();
@@ -4094,12 +4204,172 @@ class NormalCallController extends Notifier<CallState> {
   void setHintOn(bool value) => state = state.copyWith(hintOn: value);
 
   /// Starts the UI elapsed-time ticker.
+  ///
+  /// 이 자가 구간 경계도 본다 — [elapsedSec] 은 **구간을 건너서 누적**되므로
+  /// (통화 화면의 시계는 총 통화 시간을 보여야 한다) 경계는
+  /// `(segmentsUsed + 1) × 5분` 이다.
   void _startElapsedTimer() {
     _elapsedTimer?.cancel();
     _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
-      state = state.copyWith(elapsedSec: state.elapsedSec + 1);
+      final elapsed = state.elapsedSec + 1;
+      state = state.copyWith(elapsedSec: elapsed);
+      _checkSegmentBoundary(elapsed);
     });
   }
+
+  /// 이 통화에 5분 구간 상한을 적용해야 하는가.
+  ///
+  /// ⛔ **캐스케이드와 자동대화는 뺀다.** 둘 다 측정용이고, 캐스케이드 리그는
+  ///   단일 세션 12분을 일부러 채워 끊김 곡선을 잰다
+  ///   (`CascadeAutoTalk.duration` = 12분, 7분에서 올린 값). 여기에 5분 게이트를
+  ///   걸면 **그 계측이 통째로 죽는다.** 제품 규칙은 라이브 통화의 것이다.
+  bool get _segmentLimitApplies =>
+      state.channel == CallChannel.live && !CascadeAutoTalk.enabled;
+
+  /// 1초마다 불린다 — 구간 경계에 닿았으면 [_reachSegmentEnd] 로 넘긴다.
+  void _checkSegmentBoundary(int elapsedSec) {
+    if (!_segmentLimitApplies) return;
+    if (_continuing) return;
+    // 통화가 이미 끝나가는 중이면 끼어들지 않는다.
+    if (state.phase != CallPhase.inCall) return;
+    final boundary = CallAllowance.segment.inSeconds * (state.segmentsUsed + 1);
+    if (elapsedSec < boundary) return;
+    unawaited(_reachSegmentEnd());
+  }
+
+  /// 구간 하나를 다 썼다. **이 구간의 세션을 닫고** 사용자에게 물을지 정한다.
+  ///
+  /// 세션을 여기서 닫는 이유는 [CallPhase.awaitingContinue] 에 적어 두었다 —
+  /// 사용자가 고민하는 동안 붙들어 봐야 인프라가 끊는다.
+  Future<void> _reachSegmentEnd() async {
+    if (state.phase != CallPhase.inCall) return;
+    // 다음 1초 틱이 또 들어오지 못하게 **먼저** 막는다. `await` 가 여러 번 들어가는
+    // 경로라, 이걸 뒤로 미루면 경계에서 이 함수가 두 번 돈다.
+    _continuing = true;
+    try {
+      final paid = await (_paidAccess ??= _resolvePaidAccess());
+      if (state.phase != CallPhase.inCall) return;
+
+      final used = state.segmentsUsed + 1;
+      final canExtend =
+          CallAllowance.canExtend(segmentsUsed: used, paidAccess: paid);
+
+      // 유료 상한(15분) 소진 → 시트를 띄우지 않는다. 누를 수 없는 버튼을 보여 주는
+      // 꼴이기 때문이다. **무료는 다르다** — 5분에 끝나도 구독 유도 시트를 봐야 한다.
+      if (!canExtend && paid) {
+        _log('구간 $used 소진 — 유료 상한(${CallAllowance.limitFor(paidAccess: true).inMinutes}분) 도달, 시트 없이 종료');
+        state = state.copyWith(segmentsUsed: used, paidCallTime: paid);
+        await hangUp();
+        return;
+      }
+
+      _log('구간 $used 끝 — 세션을 닫고 결정을 기다린다 '
+          '(유료=$paid, 연장가능=$canExtend)');
+
+      // 요약 화면이 읽어야 하는 값들은 [_teardown] 이 지우므로 먼저 붙잡는다
+      // ([_hangUp] 과 같은 이유·같은 방식).
+      final preservedCallId = state.callId;
+      final preservedElapsed = state.elapsedSec;
+      final preservedBaseline = state.baselineCallId;
+      final preservedCharacter = state.characterId;
+      final preservedChannel = state.channel;
+
+      // [_teardown] 은 CallKit 통화를 끝내고, 그 `ACTION_CALL_ENDED` 가 코디네이터를
+      // 거쳐 [hangUp] 으로 되돌아올 수 있다(잠금화면 통화). 그 사이 사용자가 끊었다면
+      // 결정 대기 상태로 덮어써서는 안 된다 — 끝난 통화가 다시 살아난 것처럼 보인다.
+      // [_hangUp] 이 올리는 [_gen] 이 그 외부 신호다.
+      final gen = _gen;
+      _expectClose = true;
+      await _teardown();
+      if (_gen != gen) {
+        _log('구간 종료 중 통화가 끊겼다 — 결정 대기로 덮지 않는다');
+        return;
+      }
+
+      state = CallState(
+        phase: CallPhase.awaitingContinue,
+        callId: preservedCallId,
+        elapsedSec: preservedElapsed,
+        baselineCallId: preservedBaseline,
+        characterId: preservedCharacter,
+        channel: preservedChannel,
+        segmentsUsed: used,
+        paidCallTime: paid,
+      );
+    } finally {
+      _continuing = false;
+    }
+  }
+
+  /// 「Keep talking」 — 다음 5분 구간을 연다.
+  ///
+  /// 새 세션이지만 **같은 대화의 계속**이다. 직전 구간의 `call_id` 를 서버에 넘겨
+  /// 맥락을 이어받게 한다([_continuesCallId] 참조).
+  ///
+  /// 아무 것도 하지 않는 경우:
+  /// - [CallPhase.awaitingContinue] 가 아닐 때(이미 끊었거나 이미 이어감)
+  /// - 상한을 다 썼을 때 — 화면이 버튼을 안 보여 주지만, 여기서도 막는다
+  ///   (화면 하나가 실수해도 15분을 넘기면 안 된다)
+  Future<void> continueCall() async {
+    if (state.phase != CallPhase.awaitingContinue) return;
+    if (_continuing) return;
+    final used = state.segmentsUsed;
+    if (!CallAllowance.canExtend(
+        segmentsUsed: used, paidAccess: state.paidCallTime)) {
+      _log('continueCall 무시 — 상한을 이미 다 썼다 (구간 $used)');
+      return;
+    }
+    _continuing = true;
+    try {
+      // 직전 구간을 서버에 알린다. 서버가 아직 이 필드를 안 받아도 무해하다.
+      _continuesCallId = state.callId;
+      // [_connect] 가 상태를 새 통화 것으로 갈아엎기 전에 붙잡는다([CallState] 는
+      // 불변이라 참조만 들고 있으면 된다).
+      final carried = state;
+      _log('구간 ${used + 1} 시작 — 직전 call_id=${_continuesCallId ?? '(없음)'}');
+
+      final ok = await _connect(
+        callUuid: null,
+        inboundCallId: null,
+        callkitOwnedAudio: false,
+        callChannel: carried.channel,
+      );
+      if (!ok) {
+        _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');
+        await hangUp();
+        return;
+      }
+      // 누적 시계·구간 수를 되살린다. [_connect] 가 새 통화로 보고 0 부터 시작하므로,
+      // 이걸 빠뜨리면 **통화가 영원히 끝나지 않는다**(매 구간 5분이 새로 주어진다).
+      //
+      // ⛔ [CallState.baselineCallId] 는 **일부러 안 되살린다.** 새 구간은 서버에
+      //    새 행을 만들고, [_captureBaselineCallId] 가 이 구간용 기준값을 새로 잡는다.
+      //    옛 값을 얹으면 그 캡처와 경합하고, 수동 종료 시 복구 폴링이
+      //    "기준값보다 큰 첫 id" 로 **직전 구간의 행**을 집을 수 있다.
+      state = state.copyWith(
+        elapsedSec: carried.elapsedSec,
+        segmentsUsed: carried.segmentsUsed,
+        paidCallTime: carried.paidCallTime,
+      );
+      await _startAudio();
+    } finally {
+      _continuing = false;
+      _continuesCallId = null;
+    }
+  }
+
+  /// 다음 `start` 프레임에 실을 **직전 구간의 call_id**.
+  ///
+  /// 서버는 이 id 의 대화를 읽어 요약해 새 세션에 주입한다 — 그래야 비버가 앞
+  /// 구간을 기억한다. 클라가 요약을 만들어 보내지 않는 이유: 요약은 통화 종료 후
+  /// 분석이 만들고 그 대기가 **최대 60초**라(`analysis_loading.dart`), 「Keep talking」
+  /// 을 누른 사용자를 대화 중간에 1분 세우게 된다. 서버는 이미 대화 원본을 갖고 있다
+  /// (`GET /calls/{id}/raw`).
+  ///
+  /// ⚠ **서버가 아직 이 필드를 안 받는다.** 그때까지는 맥락 없이 재연결된다(비버가
+  ///   앞 구간을 잊는다). 기능은 돌아가므로 클라를 막지 않되, 이 상태로 릴리즈하면
+  ///   "방금 한 얘기를 잊는다"는 리포트가 온다. 서버가 붙는 순간 코드 변경 없이 살아난다.
+  String? _continuesCallId;
 
   /// Starts the application keepalive: a periodic `ping` so the socket always
   /// has recent client→server traffic (the server replies `pong`, already

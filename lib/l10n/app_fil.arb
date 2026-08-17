@@ -630,5 +630,11 @@
   "difficultyFast": "Mabilis",
   "difficultyLabel": "Antas ng hirap",
   "connected": "Nakakonekta",
-  "unlockedWithMax": "Available sa Max"
+  "unlockedWithMax": "Available sa Max",
+  "fcEndedTitle": "Tapos na ang libre mong tawag",
+  "fcEndedBody": "Hanggang 5 minuto lang ang libreng tawag\nMag-subscribe para mas mahabang usapan",
+  "ctaSubscribeKeepTalking": "Mag-subscribe at ituloy ang usapan",
+  "kgTitle": "Ituloy pa?",
+  "kgBody": "Nagpapatuloy ang tawag kada 5 minuto.\nTatanungin ka naming muli sa bawat pagkakataon.",
+  "ctaKeepTalking": "Ituloy ang usapan"
 }

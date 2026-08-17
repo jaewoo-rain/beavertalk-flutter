@@ -630,5 +630,11 @@
   "difficultyFast": "تیز",
   "difficultyLabel": "دشواری",
   "connected": "منسلک",
-  "unlockedWithMax": "Max کے ساتھ دستیاب"
+  "unlockedWithMax": "Max کے ساتھ دستیاب",
+  "fcEndedTitle": "آپ کی مفت کال ختم ہو گئی",
+  "fcEndedBody": "مفت کالیں زیادہ سے زیادہ 5 منٹ کی ہوتی ہیں\nمزید بات کرنے کے لیے سبسکرائب کریں",
+  "ctaSubscribeKeepTalking": "سبسکرائب کریں اور بات جاری رکھیں",
+  "kgTitle": "جاری رکھیں؟",
+  "kgBody": "کالیں 5 منٹ کے حصوں میں جاری رہتی ہیں۔\nہم ہر بار دوبارہ پوچھیں گے۔",
+  "ctaKeepTalking": "بات جاری رکھیں"
 }

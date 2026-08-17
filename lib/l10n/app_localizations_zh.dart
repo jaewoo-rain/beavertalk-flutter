@@ -2041,4 +2041,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max 可用';
+
+  @override
+  String get fcEndedTitle => '免费通话已结束';
+
+  @override
+  String get fcEndedBody => '免费通话最长5分钟\n订阅后可继续畅聊';
+
+  @override
+  String get ctaSubscribeKeepTalking => '订阅并继续通话';
+
+  @override
+  String get kgTitle => '继续吗？';
+
+  @override
+  String get kgBody => '通话以5分钟为一段继续。\n每段结束时都会再问你一次。';
+
+  @override
+  String get ctaKeepTalking => '继续通话';
 }

@@ -149,11 +149,7 @@ Future<void> _initFcm(ProviderContainer container) async {
         final payload = IncomingCallPayloadDto.fromMap(m.data);
         // 이미 통화 중이면 라이브 통화 위에 두 번째 수신 화면을 쌓지 않는다.
         final phase = container.read(normalCallControllerProvider).phase;
-        if (phase == CallPhase.connecting ||
-            phase == CallPhase.inCall ||
-            phase == CallPhase.ending) {
-          return;
-        }
+        if (phase.isBusy) return;
         // FCM at-least-once 재전송으로 같은 콜이 여러 번 오면 한 번만 띄운다.
         //
         // call_id가 비면(누락/빈 문자열 → DTO가 '' 폴백, payload dto :21-27) dedup을

@@ -630,5 +630,11 @@
   "difficultyFast": "Schnell",
   "difficultyLabel": "Schwierigkeit",
   "connected": "Verbunden",
-  "unlockedWithMax": "Mit Max verfügbar"
+  "unlockedWithMax": "Mit Max verfügbar",
+  "fcEndedTitle": "Dein kostenloses Gespräch ist beendet",
+  "fcEndedBody": "Kostenlose Gespräche dauern bis zu 5 Minuten\nAbonniere, um länger zu sprechen",
+  "ctaSubscribeKeepTalking": "Abonnieren und weitersprechen",
+  "kgTitle": "Weitermachen?",
+  "kgBody": "Gespräche laufen in 5-Minuten-Abschnitten weiter.\nWir fragen jedes Mal nach.",
+  "ctaKeepTalking": "Weitersprechen"
 }

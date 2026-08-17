@@ -630,5 +630,11 @@
   "difficultyFast": "Gyors",
   "difficultyLabel": "Nehézség",
   "connected": "Csatlakozva",
-  "unlockedWithMax": "Elérhető a Maxszal"
+  "unlockedWithMax": "Elérhető a Maxszal",
+  "fcEndedTitle": "A díjmentes hívásod véget ért",
+  "fcEndedBody": "A díjmentes hívások legfeljebb 5 percig tartanak\nElőfizetéssel tovább beszélgethetsz",
+  "ctaSubscribeKeepTalking": "Előfizetés és beszélgetés folytatása",
+  "kgTitle": "Folytatjuk?",
+  "kgBody": "A hívások 5 perces szakaszokban folytatódnak.\nMinden alkalommal rákérdezünk.",
+  "ctaKeepTalking": "Beszélgetés folytatása"
 }

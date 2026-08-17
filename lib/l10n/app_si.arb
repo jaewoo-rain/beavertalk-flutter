@@ -630,5 +630,11 @@
   "difficultyFast": "වේගයෙන්",
   "difficultyLabel": "දුෂ්කරතාව",
   "connected": "සම්බන්ධයි",
-  "unlockedWithMax": "Max සමඟ ලබා ගත හැක"
+  "unlockedWithMax": "Max සමඟ ලබා ගත හැක",
+  "fcEndedTitle": "ඔබේ නොමිලේ ඇමතුම අවසන් විය",
+  "fcEndedBody": "නොමිලේ ඇමතුම් විනාඩි 5ක් දක්වා පවතී\nවැඩි වේලාවක් කතා කිරීමට දායක වන්න",
+  "ctaSubscribeKeepTalking": "දායක වී කතාව දිගටම කරගෙන යන්න",
+  "kgTitle": "දිගටම කරගෙන යමුද?",
+  "kgBody": "ඇමතුම් විනාඩි 5ක කොටස් වශයෙන් දිගටම පවතී.\nසෑම වතාවකම අපි ඔබෙන් නැවත අසන්නෙමු.",
+  "ctaKeepTalking": "කතාව දිගටම කරගෙන යන්න"
 }

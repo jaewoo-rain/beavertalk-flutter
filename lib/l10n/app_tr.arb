@@ -630,5 +630,11 @@
   "difficultyFast": "Hızlı",
   "difficultyLabel": "Zorluk",
   "connected": "Bağlandı",
-  "unlockedWithMax": "Max ile kullanılabilir"
+  "unlockedWithMax": "Max ile kullanılabilir",
+  "fcEndedTitle": "Ücretsiz görüşmen sona erdi",
+  "fcEndedBody": "Ücretsiz görüşmeler en fazla 5 dakika sürer\nDaha uzun konuşmak için abone ol",
+  "ctaSubscribeKeepTalking": "Abone ol ve konuşmaya devam et",
+  "kgTitle": "Devam edelim mi?",
+  "kgBody": "Görüşmeler 5 dakikalık bölümler hâlinde sürer.\nHer seferinde sana tekrar soracağız.",
+  "ctaKeepTalking": "Konuşmaya devam et"
 }

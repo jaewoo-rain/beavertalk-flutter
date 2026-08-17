@@ -2046,4 +2046,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max で利用可能';
+
+  @override
+  String get fcEndedTitle => '無料通話が終了しました';
+
+  @override
+  String get fcEndedBody => '無料通話は5分までです\n購読すればもっと長く話せます';
+
+  @override
+  String get ctaSubscribeKeepTalking => '購読して会話を続ける';
+
+  @override
+  String get kgTitle => '続けますか？';
+
+  @override
+  String get kgBody => '通話は5分ごとに続きます。\n毎回確認します。';
+
+  @override
+  String get ctaKeepTalking => '会話を続ける';
 }

@@ -209,10 +209,7 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
 
     // 이미 통화 중이면 새 수신을 거절(endCall).
     final phase = ref.read(normalCallControllerProvider).phase;
-    final busy = phase == CallPhase.connecting ||
-        phase == CallPhase.inCall ||
-        phase == CallPhase.ending;
-    if (busy) {
+    if (phase.isBusy) {
       _log('accept 거절: 이미 통화 중(phase=$phase)');
       if (uuid != null) await callkit.endCall(uuid);
       return;

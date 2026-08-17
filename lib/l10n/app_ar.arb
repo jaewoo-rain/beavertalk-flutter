@@ -630,5 +630,11 @@
   "difficultyFast": "سريع",
   "difficultyLabel": "الصعوبة",
   "connected": "متصل",
-  "unlockedWithMax": "متاح مع Max"
+  "unlockedWithMax": "متاح مع Max",
+  "fcEndedTitle": "انتهت مكالمتك المجانية",
+  "fcEndedBody": "المكالمات المجانية تصل إلى 5 دقائق\nاشترك لمواصلة الحديث لفترة أطول",
+  "ctaSubscribeKeepTalking": "اشترك وواصل الحديث",
+  "kgTitle": "هل نكمل؟",
+  "kgBody": "تستمر المكالمات على فترات مدتها 5 دقائق.\nسنسألك مرة أخرى في كل مرة.",
+  "ctaKeepTalking": "مواصلة الحديث"
 }

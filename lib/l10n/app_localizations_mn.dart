@@ -2113,4 +2113,24 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max-аар ашиглах боломжтой';
+
+  @override
+  String get fcEndedTitle => 'Таны үнэгүй дуудлага дууслаа';
+
+  @override
+  String get fcEndedBody =>
+      'Үнэгүй дуудлага хамгийн ихдээ 5 минут үргэлжилнэ\nУрт ярихын тулд захиалга аваарай';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Захиалж, яриаг үргэлжлүүлэх';
+
+  @override
+  String get kgTitle => 'Үргэлжлүүлэх үү?';
+
+  @override
+  String get kgBody =>
+      'Дуудлага 5 минутын хэсгээр үргэлжилнэ.\nБид болгонд дахин асууна.';
+
+  @override
+  String get ctaKeepTalking => 'Яриаг үргэлжлүүлэх';
 }

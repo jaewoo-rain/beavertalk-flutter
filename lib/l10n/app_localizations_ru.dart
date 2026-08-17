@@ -2117,4 +2117,24 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Доступно с Max';
+
+  @override
+  String get fcEndedTitle => 'Бесплатный звонок завершён';
+
+  @override
+  String get fcEndedBody =>
+      'Бесплатные звонки длятся до 5 минут\nОформите подписку, чтобы говорить дольше';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Оформить подписку и продолжить';
+
+  @override
+  String get kgTitle => 'Продолжим?';
+
+  @override
+  String get kgBody =>
+      'Звонки продолжаются отрезками по 5 минут.\nМы будем спрашивать каждый раз.';
+
+  @override
+  String get ctaKeepTalking => 'Продолжить разговор';
 }

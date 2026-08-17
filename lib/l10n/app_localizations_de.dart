@@ -2138,4 +2138,24 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Mit Max verfügbar';
+
+  @override
+  String get fcEndedTitle => 'Dein kostenloses Gespräch ist beendet';
+
+  @override
+  String get fcEndedBody =>
+      'Kostenlose Gespräche dauern bis zu 5 Minuten\nAbonniere, um länger zu sprechen';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Abonnieren und weitersprechen';
+
+  @override
+  String get kgTitle => 'Weitermachen?';
+
+  @override
+  String get kgBody =>
+      'Gespräche laufen in 5-Minuten-Abschnitten weiter.\nWir fragen jedes Mal nach.';
+
+  @override
+  String get ctaKeepTalking => 'Weitersprechen';
 }

@@ -2132,4 +2132,24 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Disponible con Max';
+
+  @override
+  String get fcEndedTitle => 'Tu llamada gratuita ha terminado';
+
+  @override
+  String get fcEndedBody =>
+      'Las llamadas gratuitas duran hasta 5 minutos\nSuscríbete para seguir hablando más tiempo';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Suscribirse y seguir hablando';
+
+  @override
+  String get kgTitle => '¿Seguimos?';
+
+  @override
+  String get kgBody =>
+      'Las llamadas continúan en tramos de 5 minutos.\nTe preguntaremos cada vez.';
+
+  @override
+  String get ctaKeepTalking => 'Seguir hablando';
 }

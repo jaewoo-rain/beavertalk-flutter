@@ -94,18 +94,72 @@ void main() {
       SubscriptionOverlay.alreadySubscribed: "You're already on Pro",
       SubscriptionOverlay.freeLimitCall: "That's today's call",
       SubscriptionOverlay.freeLimitCheck: "That's today's check",
+      SubscriptionOverlay.freeCallEnded: 'Your free call has ended',
+      SubscriptionOverlay.keepGoing: 'Keep going?',
     };
 
-    testWidgets('all 21 sheets mount with their title', (tester) async {
+    /// 결정을 받아야 하는 시트 — 딤 탭으로 닫히지 않는다. CTA 로 닫아야 한다.
+    const mustDecide = {
+      SubscriptionOverlay.freeCallEnded,
+      SubscriptionOverlay.keepGoing,
+    };
+
+    test('제목 표가 enum 을 빠짐없이 덮는다', () {
+      // ⛔ 이 검사가 없으면 새 오버레이를 추가해도 위 표에 안 넣는 한 **아무 테스트도
+      //    안 도는데 초록으로 보인다.** 표를 갱신하도록 강제한다.
+      expect(titles.keys.toSet(), SubscriptionOverlay.values.toSet());
+    });
+
+    testWidgets('모든 시트가 제목과 함께 뜬다', (tester) async {
       for (final e in titles.entries) {
         await pumpHost(tester, e.key);
         // `monthly_switch` repeats its title as the CTA label — hence
         // at-least-one rather than exactly-one.
         expect(find.text(e.value), findsAtLeastNWidgets(1), reason: '${e.key}');
         // Dismiss for the next round.
-        await tester.tapAt(const Offset(187, 10));
+        if (mustDecide.contains(e.key)) {
+          await tester.tap(find.text('End Call'));
+        } else {
+          await tester.tapAt(const Offset(187, 10));
+        }
         await tester.pumpAndSettle();
+        expect(find.text(e.value), findsNothing, reason: '${e.key} 가 안 닫혔다');
       }
+    });
+  });
+
+  group('통화 구간 시트 (5분/15분)', () {
+    testWidgets('딤을 눌러도 안 닫힌다 — 결정을 받아야 한다', (tester) async {
+      // 흘려보내면 통화가 결정 대기 상태로 남는다: 소리도 없고 화면도 안 바뀐다.
+      await pumpHost(tester, SubscriptionOverlay.keepGoing);
+      expect(find.text('Keep going?'), findsOneWidget);
+      await tester.tapAt(const Offset(187, 10));
+      await tester.pumpAndSettle();
+      expect(find.text('Keep going?'), findsOneWidget);
+    });
+
+    testWidgets('무료 시트는 연장이 아니라 구독으로 보낸다', (tester) async {
+      await pumpHost(tester, SubscriptionOverlay.freeCallEnded);
+      expect(find.text('Your free call has ended'), findsOneWidget);
+      expect(find.text('Subscribe and keep talking'), findsOneWidget);
+      expect(find.text('Keep talking'), findsNothing,
+          reason: '무료에는 연장이 없다');
+      expect(find.text('End Call'), findsOneWidget);
+    });
+
+    testWidgets('유료 시트는 연장을 준다', (tester) async {
+      await pumpHost(tester, SubscriptionOverlay.keepGoing);
+      expect(find.text('Keep talking'), findsOneWidget);
+      expect(find.text('End Call'), findsOneWidget);
+      expect(find.text('Subscribe and keep talking'), findsNothing,
+          reason: '이미 유료다 — 구독을 다시 팔지 않는다');
+    });
+
+    testWidgets('무료 시트는 사용량과 Pro 혜택 줄을 보여 준다', (tester) async {
+      await pumpHost(tester, SubscriptionOverlay.freeCallEnded);
+      expect(find.text('4:58 of 5:00 used'), findsOneWidget);
+      expect(find.text('Unlimited calls with Pro · 15 minutes each'),
+          findsOneWidget);
     });
   });
 

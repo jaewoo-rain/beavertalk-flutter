@@ -2125,4 +2125,24 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Available sa Max';
+
+  @override
+  String get fcEndedTitle => 'Tapos na ang libre mong tawag';
+
+  @override
+  String get fcEndedBody =>
+      'Hanggang 5 minuto lang ang libreng tawag\nMag-subscribe para mas mahabang usapan';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Mag-subscribe at ituloy ang usapan';
+
+  @override
+  String get kgTitle => 'Ituloy pa?';
+
+  @override
+  String get kgBody =>
+      'Nagpapatuloy ang tawag kada 5 minuto.\nTatanungin ka naming muli sa bawat pagkakataon.';
+
+  @override
+  String get ctaKeepTalking => 'Ituloy ang usapan';
 }

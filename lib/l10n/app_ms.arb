@@ -630,5 +630,11 @@
   "difficultyFast": "Laju",
   "difficultyLabel": "Tahap kesukaran",
   "connected": "Disambungkan",
-  "unlockedWithMax": "Tersedia dengan Max"
+  "unlockedWithMax": "Tersedia dengan Max",
+  "fcEndedTitle": "Panggilan percuma anda telah tamat",
+  "fcEndedBody": "Panggilan percuma berlangsung sehingga 5 minit\nLanggan untuk terus berbual lebih lama",
+  "ctaSubscribeKeepTalking": "Langgan dan terus berbual",
+  "kgTitle": "Teruskan?",
+  "kgBody": "Panggilan diteruskan dalam sesi 5 minit.\nKami akan bertanya lagi setiap kali.",
+  "ctaKeepTalking": "Terus berbual"
 }

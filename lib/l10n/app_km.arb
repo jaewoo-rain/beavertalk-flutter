@@ -630,5 +630,11 @@
   "difficultyFast": "លឿន",
   "difficultyLabel": "កម្រិតលំបាក",
   "connected": "បានភ្ជាប់",
-  "unlockedWithMax": "អាចប្រើបានជាមួយ Max"
+  "unlockedWithMax": "អាចប្រើបានជាមួយ Max",
+  "fcEndedTitle": "ការហៅទូរស័ព្ទឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់",
+  "fcEndedBody": "ការហៅឥតគិតថ្លៃមានរយៈពេលដល់ទៅ ៥ នាទី\nជាវដើម្បីនិយាយបានយូរជាងនេះ",
+  "ctaSubscribeKeepTalking": "ជាវ ហើយបន្តនិយាយ",
+  "kgTitle": "បន្តទៀតទេ?",
+  "kgBody": "ការហៅបន្តជាដំណាក់កាល ៥ នាទី។\nយើងនឹងសួរអ្នកម្តងទៀតរាល់ពេល។",
+  "ctaKeepTalking": "បន្តនិយាយ"
 }

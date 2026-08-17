@@ -2126,4 +2126,25 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max bilan mavjud';
+
+  @override
+  String get fcEndedTitle => 'Bepul qo\'ng\'irog\'ingiz tugadi';
+
+  @override
+  String get fcEndedBody =>
+      'Bepul qo\'ng\'iroqlar 5 daqiqagacha davom etadi\nUzoqroq suhbatlashish uchun obuna bo\'ling';
+
+  @override
+  String get ctaSubscribeKeepTalking =>
+      'Obuna bo\'lib, suhbatni davom ettirish';
+
+  @override
+  String get kgTitle => 'Davom etamizmi?';
+
+  @override
+  String get kgBody =>
+      'Qo\'ng\'iroqlar 5 daqiqalik qismlarda davom etadi.\nHar safar sizdan yana so\'raymiz.';
+
+  @override
+  String get ctaKeepTalking => 'Suhbatni davom ettirish';
 }

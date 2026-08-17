@@ -2112,4 +2112,24 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'អាចប្រើបានជាមួយ Max';
+
+  @override
+  String get fcEndedTitle => 'ការហៅទូរស័ព្ទឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';
+
+  @override
+  String get fcEndedBody =>
+      'ការហៅឥតគិតថ្លៃមានរយៈពេលដល់ទៅ ៥ នាទី\nជាវដើម្បីនិយាយបានយូរជាងនេះ';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'ជាវ ហើយបន្តនិយាយ';
+
+  @override
+  String get kgTitle => 'បន្តទៀតទេ?';
+
+  @override
+  String get kgBody =>
+      'ការហៅបន្តជាដំណាក់កាល ៥ នាទី។\nយើងនឹងសួរអ្នកម្តងទៀតរាល់ពេល។';
+
+  @override
+  String get ctaKeepTalking => 'បន្តនិយាយ';
 }

@@ -3987,6 +3987,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available with Max'**
   String get unlockedWithMax;
+
+  /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free call has ended'**
+  String get fcEndedTitle;
+
+  /// Body of the free 5-minute limit sheet. Two lines separated by a newline.
+  ///
+  /// In en, this message translates to:
+  /// **'Free calls last up to 5 minutes\nSubscribe to keep talking for longer'**
+  String get fcEndedBody;
+
+  /// Primary CTA on the free 5-minute limit sheet. Opens the paywall.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe and keep talking'**
+  String get ctaSubscribeKeepTalking;
+
+  /// Title of the sheet shown to a PAID member every 5 minutes, asking whether to continue. Up to 15 minutes total.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going?'**
+  String get kgTitle;
+
+  /// Body of the paid continue sheet. Two lines separated by a newline.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls continue in 5-minute stretches.\nWe\'ll check in again each time.'**
+  String get kgBody;
+
+  /// Primary CTA on the paid continue sheet. Opens the next 5-minute segment.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep talking'**
+  String get ctaKeepTalking;
 }
 
 class _AppLocalizationsDelegate

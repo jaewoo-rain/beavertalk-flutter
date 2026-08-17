@@ -2119,4 +2119,24 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Tersedia dengan Max';
+
+  @override
+  String get fcEndedTitle => 'Panggilan gratis kamu sudah berakhir';
+
+  @override
+  String get fcEndedBody =>
+      'Panggilan gratis berlangsung hingga 5 menit\nBerlangganan untuk mengobrol lebih lama';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Berlangganan dan lanjut mengobrol';
+
+  @override
+  String get kgTitle => 'Lanjut?';
+
+  @override
+  String get kgBody =>
+      'Panggilan berlanjut dalam sesi 5 menit.\nKami akan bertanya lagi setiap kali.';
+
+  @override
+  String get ctaKeepTalking => 'Lanjut mengobrol';
 }

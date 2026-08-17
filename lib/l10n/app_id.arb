@@ -630,5 +630,11 @@
   "difficultyFast": "Cepat",
   "difficultyLabel": "Tingkat kesulitan",
   "connected": "Terhubung",
-  "unlockedWithMax": "Tersedia dengan Max"
+  "unlockedWithMax": "Tersedia dengan Max",
+  "fcEndedTitle": "Panggilan gratis kamu sudah berakhir",
+  "fcEndedBody": "Panggilan gratis berlangsung hingga 5 menit\nBerlangganan untuk mengobrol lebih lama",
+  "ctaSubscribeKeepTalking": "Berlangganan dan lanjut mengobrol",
+  "kgTitle": "Lanjut?",
+  "kgBody": "Panggilan berlanjut dalam sesi 5 menit.\nKami akan bertanya lagi setiap kali.",
+  "ctaKeepTalking": "Lanjut mengobrol"
 }

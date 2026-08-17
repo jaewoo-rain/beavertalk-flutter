@@ -630,5 +630,11 @@
   "difficultyFast": "Rápido",
   "difficultyLabel": "Dificultad",
   "connected": "Conectado",
-  "unlockedWithMax": "Disponible con Max"
+  "unlockedWithMax": "Disponible con Max",
+  "fcEndedTitle": "Tu llamada gratuita ha terminado",
+  "fcEndedBody": "Las llamadas gratuitas duran hasta 5 minutos\nSuscríbete para seguir hablando más tiempo",
+  "ctaSubscribeKeepTalking": "Suscribirse y seguir hablando",
+  "kgTitle": "¿Seguimos?",
+  "kgBody": "Las llamadas continúan en tramos de 5 minutos.\nTe preguntaremos cada vez.",
+  "ctaKeepTalking": "Seguir hablando"
 }

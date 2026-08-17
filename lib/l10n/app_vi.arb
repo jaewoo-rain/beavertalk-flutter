@@ -630,5 +630,11 @@
   "difficultyFast": "Nhanh",
   "difficultyLabel": "Độ khó",
   "connected": "Đã kết nối",
-  "unlockedWithMax": "Có sẵn với Max"
+  "unlockedWithMax": "Có sẵn với Max",
+  "fcEndedTitle": "Cuộc gọi miễn phí đã kết thúc",
+  "fcEndedBody": "Cuộc gọi miễn phí kéo dài tối đa 5 phút\nĐăng ký để trò chuyện lâu hơn",
+  "ctaSubscribeKeepTalking": "Đăng ký và tiếp tục trò chuyện",
+  "kgTitle": "Tiếp tục nhé?",
+  "kgBody": "Cuộc gọi tiếp tục theo từng đoạn 5 phút.\nChúng tôi sẽ hỏi lại mỗi lần.",
+  "ctaKeepTalking": "Tiếp tục trò chuyện"
 }

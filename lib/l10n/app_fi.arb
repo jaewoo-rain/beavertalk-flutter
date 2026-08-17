@@ -630,5 +630,11 @@
   "difficultyFast": "Nopea",
   "difficultyLabel": "Vaikeustaso",
   "connected": "Yhdistetty",
-  "unlockedWithMax": "Käytettävissä Maxilla"
+  "unlockedWithMax": "Käytettävissä Maxilla",
+  "fcEndedTitle": "Ilmainen puhelusi päättyi",
+  "fcEndedBody": "Ilmaiset puhelut kestävät enintään 5 minuuttia\nTilaa, niin voit jutella pidempään",
+  "ctaSubscribeKeepTalking": "Tilaa ja jatka juttelua",
+  "kgTitle": "Jatketaanko?",
+  "kgBody": "Puhelut jatkuvat 5 minuutin jaksoissa.\nKysymme sinulta joka kerta uudelleen.",
+  "ctaKeepTalking": "Jatka juttelua"
 }

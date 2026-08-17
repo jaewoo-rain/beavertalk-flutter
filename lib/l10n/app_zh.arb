@@ -630,5 +630,11 @@
   "difficultyFast": "快速",
   "difficultyLabel": "难度",
   "connected": "已连接",
-  "unlockedWithMax": "Max 可用"
+  "unlockedWithMax": "Max 可用",
+  "fcEndedTitle": "免费通话已结束",
+  "fcEndedBody": "免费通话最长5分钟\n订阅后可继续畅聊",
+  "ctaSubscribeKeepTalking": "订阅并继续通话",
+  "kgTitle": "继续吗？",
+  "kgBody": "通话以5分钟为一段继续。\n每段结束时都会再问你一次。",
+  "ctaKeepTalking": "继续通话"
 }
