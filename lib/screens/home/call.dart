@@ -4,9 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/call_toggle_button.dart';
-import '../../components/atoms/record_circle_button.dart';
-import '../../components/organisms/bottom_sheet_change_mode.dart';
-import '../../components/organisms/gnb.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/atoms/speaking_equalizer.dart';
 import '../../components/icons/app_icons.dart';
@@ -49,10 +46,6 @@ class CallScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<CallScreen> createState() => _CallScreenState();
 }
-
-/// 하단 중앙 컨트롤 슬롯의 한 변(Figma 96). 라이브의 종료 60 과 캐스케이드의
-/// 마이크 96 이 **같은 크기의 칸**에 놓여야 두 모드의 푸터 높이가 어긋나지 않는다.
-const double _controlSlot = 96;
 
 /// Free·Pro 의 원형 스틸 아바타 지름(Figma 120).
 const double _stillAvatarSize = 120;
@@ -204,31 +197,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
-  /// 대화 방식 시트를 연다 — 헤더 우측 버튼.
-  ///
-  /// ⚠ **전환은 아직 붙지 않았다.** 통로를 바꾸려면 세션을 다시 세워야 하는데
-  /// ([NormalCallController.start] 가 통로를 인자로 받는다), 그렇게 하면 지금 구조에서는
-  /// 통화가 한 번 끊기고 **새 통화 기록이 생기며 한도가 또 차감된다.** 대화 맥락 이월도
-  /// 서버가 받쳐 줘야 한다.
-  ///
-  /// 그래서 시트는 **띄우고 고르는 데까지만** 동작한다. 확인을 누르면 아직 아무 일도
-  /// 하지 않는다 — 조용히 세션을 끊는 것보다 아무 일도 안 하는 쪽이 덜 나쁘다.
-  /// 서버 계약(결정요청서 D-3)이 확정되면 여기서 전환을 호출한다.
-  Future<void> _openModeSheet() async {
-    final channel = ref.read(normalCallControllerProvider).channel;
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.c.materialDim,
-      isScrollControlled: true,
-      builder: (sheetCtx) => BottomSheetChangeMode(
-        current: channel,
-        onConfirm: (_) => Navigator.of(sheetCtx).pop(),
-        onDismiss: () => Navigator.of(sheetCtx).pop(),
-      ),
-    );
-  }
-
   /// 통화가 끝나 이 화면을 떠난다.
   ///
   /// 잠금화면 통화였고 아직 잠겨 있으면 앱을 뒤로 보내고 [inApp] 은 실행하지 않는다.
@@ -291,9 +259,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
     final micMuted = ref.watch(
       normalCallControllerProvider.select((s) => s.micMuted),
-    );
-    final pttHeld = ref.watch(
-      normalCallControllerProvider.select((s) => s.pttHeld),
     );
     // 이 통화의 상대는 **서버가 정한다**(`call_started`). 예약전화는 알람마다
     // 캐릭터가 달라서, 대표 캐릭터로 그리면 대화 상대와 화면 얼굴이 어긋난다.
@@ -363,7 +328,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         CascadeExperiment.enabledFor(channel, CascadeExperiment.hints);
     final showAvatarVideo = !kDisableAvatarVideo &&
         CascadeExperiment.enabledFor(channel, CascadeExperiment.avatarVideo);
-    final isCascade = channel.isCascade;
     // Max 만 영상 아바타를 받는다. 상태 조회가 아직 안 왔거나 실패하면 무료로
     // 떨어져 원형 스틸이 된다 — 제한 쪽으로 기우는 폴백이라 유료 기능이 새지 않는다.
     //
@@ -388,23 +352,54 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         homeVariant: HomeIndicatorVariant.whiteTransparent,
         body: Column(
           children: [
-            // Header — 좌 닫기 · 가운데 상태블록 · 우 대화방식.
-            //
-            // 두 버튼은 [Gnb] 가 가운데 블록 **위에 겹쳐** 그린다. 행에 나란히 두면
-            // 상대 이름 길이에 따라 가운데가 좌우로 밀린다.
-            //
-            // 이름이 빈 문자열일 수 있다 — 카탈로그도 id 맵도 상대를 못 대면 그렇다.
-            // 예전엔 모르는 id 를 전부 "Bibi" 로 답해서 Baba 사용자가 통화 내내 다른
-            // 이름을 봤다. 빈 줄이 정직한 쪽이다.
-            Gnb.sub(
-              title: selectedChar?.name ?? '',
-              status: l10n.connected,
-              caption: _formatted(elapsed),
-              onClose: _confirmEnd,
-              trailing: _HeaderIconButton(
-                icon: AppIcons.sliders,
-                semanticLabel: l10n.callModeChange,
-                onTap: _openModeSheet,
+            // Header — connected dot + name + live timer.
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 10,
+                vertical: AppSpacing.s12,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: AppSpacing.s8,
+                        height: AppSpacing.s8,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: context.c.primaryNormal,
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.s12),
+                      Text(
+                        l10n.connected,
+                        style: AppType.label1.r.copyWith(
+                          color: context.c.labelNormal,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.s4),
+                  Text(
+                    // Empty when neither the catalog nor the id map can name the
+                    // partner. The id map used to answer any unknown id with
+                    // "Bibi", so a Baba user watched the wrong name for the
+                    // whole call; a blank line is the honest version.
+                    selectedChar?.name ?? '',
+                    style: AppType.body1.sb.copyWith(
+                      color: context.c.labelStrong,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.s4),
+                  Text(
+                    _formatted(elapsed),
+                    style: AppType.label1.r.copyWith(
+                      color: context.c.labelNormal,
+                    ),
+                  ),
+                ],
               ),
             ),
             // Body — the feed, the caption slot and the hint card are ONE
@@ -567,157 +562,50 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                             .read(normalCallControllerProvider.notifier)
                             .setSubtitleOn(v),
                       ),
-                      // 라이브 전용 — 음소거 토글. 캐스케이드는 중앙의 꾹 눌러
-                      // 전송 버튼이 같은 자리를 맡으므로 여기 두면 조작이 둘로 갈린다.
-                      if (!isCascade) ...[
-                        const SizedBox(width: AppSpacing.s8),
-                        CallToggleButton(
-                          icon: AppIcons.mic,
-                          // 토글의 `active` 는 **마이크가 열려 있음**을 뜻한다.
-                          // 음소거가 켜진 상태가 아니라 그 반대다.
-                          active: !micMuted,
-                          activeFill: context.c.backgroundNormalAlternative,
-                          activeGlyph: context.c.labelStrong,
-                          semanticLabel:
-                              micMuted ? l10n.callMicUnmute : l10n.callMicMute,
-                          onChanged: (open) => ref
-                              .read(normalCallControllerProvider.notifier)
-                              .setMicMuted(!open),
-                        ),
-                      ],
+                      const SizedBox(width: AppSpacing.s8),
+                      CallToggleButton(
+                        icon: AppIcons.mic,
+                        // 토글의 `active` 는 **마이크가 열려 있음**을 뜻한다.
+                        // 음소거가 켜진 상태가 아니라 그 반대다.
+                        active: !micMuted,
+                        activeFill: context.c.backgroundNormalAlternative,
+                        activeGlyph: context.c.labelStrong,
+                        semanticLabel:
+                            micMuted ? l10n.callMicUnmute : l10n.callMicMute,
+                        onChanged: (open) => ref
+                            .read(normalCallControllerProvider.notifier)
+                            .setMicMuted(!open),
+                      ),
                     ],
                   ),
                   const SizedBox(height: AppSpacing.s32),
-                  // 중앙 96 슬롯 — 라이브는 종료, 캐스케이드는 꾹 눌러 전송.
-                  //
-                  // 캐스케이드에 종료 버튼을 두지 않는 것은 의도된 설계다. 종료는
-                  // 헤더 닫기 하나로 모은다.
-                  SizedBox(
-                    width: _controlSlot,
-                    height: _controlSlot,
-                    child: Center(
-                      child: isCascade
-                          ? _PushToTalkButton(
-                              held: pttHeld,
-                              semanticLabel: l10n.callPushToTalk,
-                              onChanged: (v) => ref
-                                  .read(normalCallControllerProvider.notifier)
-                                  .setPttHeld(v),
-                            )
-                          : Semantics(
-                              button: true,
-                              label: l10n.callExitConfirm,
-                              child: Material(
-                                color: context.c.accentBackgroundRed,
-                                shape: const CircleBorder(),
-                                clipBehavior: Clip.antiAlias,
-                                child: InkWell(
-                                  customBorder: const CircleBorder(),
-                                  onTap: _confirmEnd,
-                                  child: SizedBox(
-                                    width: AppSpacing.s60,
-                                    height: AppSpacing.s60,
-                                    child: Center(
-                                      child: AppIcons.callEnd(
-                                        size: 32,
-                                        color: context.c.staticWhite,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                  Semantics(
+                    button: true,
+                    label: l10n.callExitConfirm,
+                    child: Material(
+                      color: context.c.accentBackgroundRed,
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        customBorder: const CircleBorder(),
+                        onTap: _confirmEnd,
+                        child: SizedBox(
+                          width: AppSpacing.s60,
+                          height: AppSpacing.s60,
+                          child: Center(
+                            child: AppIcons.callEnd(
+                              size: 32,
+                              color: context.c.staticWhite,
                             ),
+                          ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-/// 헤더 우측의 28px 아이콘 버튼 — Figma `GNB type=sub` 의 `sliders` 자리.
-///
-/// [Gnb] 의 내장 닫기 버튼과 같은 히트박스(28)를 쓰되, 탭 타깃은 44 로 넓힌다.
-/// 28 그대로면 손끝 기준 최소 타깃에 못 미친다.
-class _HeaderIconButton extends StatelessWidget {
-  const _HeaderIconButton({
-    required this.icon,
-    required this.semanticLabel,
-    required this.onTap,
-  });
-
-  final AppIconBuilder icon;
-  final String semanticLabel;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: semanticLabel,
-      child: InkResponse(
-        onTap: onTap,
-        radius: 22,
-        child: SizedBox(
-          width: 44,
-          height: 44,
-          child: Center(
-            child: icon(size: 28, color: context.c.labelStrong),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// 캐스케이드의 **꾹 눌러 전송** 버튼 — Figma `mic` 96 (`4990:20040`).
-///
-/// ## 왜 탭이 아니라 누르고 있기인가
-///
-/// 캐스케이드는 턴 기반이라 「어디까지가 내 발화인가」를 사람이 정해 줘야 한다.
-/// 탭 토글이면 뗀 줄 알고 말하다 계속 녹음되는 사고가 난다. 누르고 있는 동안만
-/// 열리면 손을 떼는 순간이 곧 턴의 끝이라 어긋날 수 없다.
-///
-/// [onChanged] 는 누를 때 `true`, 뗄 때 `false` 로 정확히 한 번씩 불린다.
-/// **취소([GestureDetector.onTapCancel])도 뗀 것으로 친다** — 손가락이 버튼 밖으로
-/// 미끄러졌을 때 마이크가 열린 채 남으면 안 된다.
-class _PushToTalkButton extends StatelessWidget {
-  const _PushToTalkButton({
-    required this.held,
-    required this.semanticLabel,
-    required this.onChanged,
-  });
-
-  final bool held;
-  final String semanticLabel;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      label: semanticLabel,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTapDown: (_) => onChanged(true),
-        onTapUp: (_) => onChanged(false),
-        onTapCancel: () => onChanged(false),
-        child: AnimatedScale(
-          duration: const Duration(milliseconds: 90),
-          curve: Curves.easeOut,
-          scale: held ? 1.06 : 1.0,
-          child: RecordCircleButton(
-            icon: AppIcons.mic,
-            // 탭은 위의 GestureDetector 가 받는다. 여기서 또 받으면 한 번 누른 것이
-            // 두 번으로 센다.
-            onTap: null,
-            semanticLabel: semanticLabel,
-            size: _controlSlot,
-          ),
         ),
       ),
     );
