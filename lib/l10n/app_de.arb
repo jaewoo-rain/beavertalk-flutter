@@ -645,5 +645,9 @@
   "callExitConfirm": "Anruf beenden",
   "callMicMute": "Stummschalten",
   "callMicUnmute": "Stummschaltung aufheben",
-  "callPushToTalk": "Zum Sprechen halten"
+  "callPushToTalk": "Zum Sprechen halten",
+  "callFreeEndedTitle": "Dein kostenloser Anruf ist beendet",
+  "callFreeEndedCta": "Abonnieren und weitersprechen",
+  "callKeepGoingTitle": "Weitermachen?",
+  "callKeepGoingSubtitle": "Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach."
 }

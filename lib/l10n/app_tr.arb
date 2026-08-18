@@ -645,5 +645,9 @@
   "callExitConfirm": "Aramayı bitir",
   "callMicMute": "Sesi kapat",
   "callMicUnmute": "Sesi aç",
-  "callPushToTalk": "Konuşmak için basılı tut"
+  "callPushToTalk": "Konuşmak için basılı tut",
+  "callFreeEndedTitle": "Ücretsiz aramanız sona erdi",
+  "callFreeEndedCta": "Abone ol ve konuşmaya devam et",
+  "callKeepGoingTitle": "Devam edelim mi?",
+  "callKeepGoingSubtitle": "Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız."
 }

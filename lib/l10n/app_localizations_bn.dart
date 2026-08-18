@@ -2151,4 +2151,17 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'বলতে চেপে ধরুন';
+
+  @override
+  String get callFreeEndedTitle => 'আপনার ফ্রি কল শেষ হয়েছে';
+
+  @override
+  String get callFreeEndedCta => 'সাবস্ক্রাইব করে কথা চালিয়ে যান';
+
+  @override
+  String get callKeepGoingTitle => 'চালিয়ে যাবেন?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।';
 }

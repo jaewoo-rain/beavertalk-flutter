@@ -2147,4 +2147,17 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'กดค้างเพื่อพูด';
+
+  @override
+  String get callFreeEndedTitle => 'สายฟรีของคุณหมดแล้ว';
+
+  @override
+  String get callFreeEndedCta => 'สมัครสมาชิกและคุยต่อ';
+
+  @override
+  String get callKeepGoingTitle => 'คุยต่อไหม';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง';
 }

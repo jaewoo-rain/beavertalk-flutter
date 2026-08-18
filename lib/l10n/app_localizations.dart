@@ -4077,6 +4077,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hold to talk'**
   String get callPushToTalk;
+
+  /// Five-minute sheet (free) - heading when the free call time is used up.
+  ///
+  /// In en, this message translates to:
+  /// **'Your free call has ended'**
+  String get callFreeEndedTitle;
+
+  /// Five-minute sheet (free) - primary action, opens the paywall.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe and keep talking'**
+  String get callFreeEndedCta;
+
+  /// Five-minute sheet (paid) - heading of the continue check-in.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going?'**
+  String get callKeepGoingTitle;
+
+  /// Five-minute sheet (paid) - body explaining calls run in 5-minute stretches.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls continue in 5-minute stretches. We\'ll check in again each time.'**
+  String get callKeepGoingSubtitle;
 }
 
 class _AppLocalizationsDelegate

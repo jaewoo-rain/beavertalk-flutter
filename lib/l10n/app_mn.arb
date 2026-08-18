@@ -645,5 +645,9 @@
   "callExitConfirm": "Дуудлагыг дуусгах",
   "callMicMute": "Дуу хаах",
   "callMicUnmute": "Дуу нээх",
-  "callPushToTalk": "Ярихын тулд дараад байна уу"
+  "callPushToTalk": "Ярихын тулд дараад байна уу",
+  "callFreeEndedTitle": "Таны үнэгүй дуудлага дууслаа",
+  "callFreeEndedCta": "Захиалж яриагаа үргэлжлүүл",
+  "callKeepGoingTitle": "Үргэлжлүүлэх үү?",
+  "callKeepGoingSubtitle": "Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна."
 }

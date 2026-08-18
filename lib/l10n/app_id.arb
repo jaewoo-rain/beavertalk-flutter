@@ -645,5 +645,9 @@
   "callExitConfirm": "Akhiri panggilan",
   "callMicMute": "Bisukan",
   "callMicUnmute": "Nyalakan mikrofon",
-  "callPushToTalk": "Tahan untuk bicara"
+  "callPushToTalk": "Tahan untuk bicara",
+  "callFreeEndedTitle": "Panggilan gratismu sudah habis",
+  "callFreeEndedCta": "Berlangganan dan lanjut ngobrol",
+  "callKeepGoingTitle": "Lanjut?",
+  "callKeepGoingSubtitle": "Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali."
 }

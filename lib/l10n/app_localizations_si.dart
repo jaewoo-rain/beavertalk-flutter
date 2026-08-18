@@ -2151,4 +2151,17 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'කතා කිරීමට තද කර තබන්න';
+
+  @override
+  String get callFreeEndedTitle => 'ඔබේ නොමිලේ ඇමතුම අවසන් විය';
+
+  @override
+  String get callFreeEndedCta => 'දායක වී කතාබහ දිගටම කරන්න';
+
+  @override
+  String get callKeepGoingTitle => 'දිගටම කරන්නද?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු.';
 }

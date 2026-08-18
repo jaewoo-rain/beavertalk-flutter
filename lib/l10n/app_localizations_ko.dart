@@ -2093,4 +2093,16 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get callPushToTalk => '꾹 눌러 말하기';
+
+  @override
+  String get callFreeEndedTitle => '무료 통화가 끝났어요';
+
+  @override
+  String get callFreeEndedCta => '구독하고 계속 대화하기';
+
+  @override
+  String get callKeepGoingTitle => '더 이어갈까요?';
+
+  @override
+  String get callKeepGoingSubtitle => '통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요.';
 }

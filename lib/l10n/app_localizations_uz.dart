@@ -2172,4 +2172,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Gapirish uchun bosib turing';
+
+  @override
+  String get callFreeEndedTitle => 'Bepul qo‘ng‘irog‘ingiz tugadi';
+
+  @override
+  String get callFreeEndedCta => 'Obuna bo‘ling va suhbatni davom ettiring';
+
+  @override
+  String get callKeepGoingTitle => 'Davom etamizmi?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz.';
 }

@@ -24,6 +24,9 @@ import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
+import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/screens/home/call.dart';
 
 /// Holds a fixed [CallState] — the real `build()` opens a socket and starts the
@@ -53,10 +56,23 @@ void _useFigmaFrame(WidgetTester tester) {
   addTearDown(tester.view.reset);
 }
 
+/// 영상 아바타는 **Max 전용**이다(Figma 04_통화). 피드 위치를 재는 테스트는
+/// 그 밴드가 있어야 성립하므로 Max 로 고정한다. 플랜 분기 자체는 아래 별도
+/// 케이스가 검증한다.
+const _max = SubscriptionStatus(
+  state: SubscriptionState.activeMax,
+  tier: SubscriptionTier.max,
+);
+const _free = SubscriptionStatus(
+  state: SubscriptionState.free,
+  tier: SubscriptionTier.free,
+);
+
 Future<void> _pumpCall(
   WidgetTester tester, {
   required bool subtitleOn,
   required bool hintOn,
+  SubscriptionStatus status = _max,
 }) async {
   final state = CallState(
     phase: CallPhase.inCall,
@@ -73,6 +89,7 @@ Future<void> _pumpCall(
       overrides: [
         normalCallControllerProvider
             .overrideWith(() => _StubCallController(state)),
+        subscriptionStatusProvider.overrideWithValue(status),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -124,5 +141,19 @@ void main() {
     // A feed pinned to the top would leave these equal — the regression this
     // guards against.
     expect(open, lessThan(closed));
+  });
+
+  testWidgets('avatar: Max gets the 16:9 video band', (tester) async {
+    _useFigmaFrame(tester);
+    await _pumpCall(tester, subtitleOn: true, hintOn: false, status: _max);
+    expect(find.byType(AspectRatio), findsWidgets);
+    expect(find.byType(ClipOval), findsNothing);
+  });
+
+  testWidgets('avatar: Free falls back to the circular still', (tester) async {
+    _useFigmaFrame(tester);
+    await _pumpCall(tester, subtitleOn: true, hintOn: false, status: _free);
+    // 무료에게 영상 밴드가 나가면 유료 기능이 새는 것이다 — 이 줄이 그것을 막는다.
+    expect(find.byType(ClipOval), findsOneWidget);
   });
 }

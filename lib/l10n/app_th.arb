@@ -645,5 +645,9 @@
   "callExitConfirm": "วางสาย",
   "callMicMute": "ปิดไมค์",
   "callMicUnmute": "เปิดไมค์",
-  "callPushToTalk": "กดค้างเพื่อพูด"
+  "callPushToTalk": "กดค้างเพื่อพูด",
+  "callFreeEndedTitle": "สายฟรีของคุณหมดแล้ว",
+  "callFreeEndedCta": "สมัครสมาชิกและคุยต่อ",
+  "callKeepGoingTitle": "คุยต่อไหม",
+  "callKeepGoingSubtitle": "สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง"
 }

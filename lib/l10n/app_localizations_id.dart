@@ -2165,4 +2165,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Tahan untuk bicara';
+
+  @override
+  String get callFreeEndedTitle => 'Panggilan gratismu sudah habis';
+
+  @override
+  String get callFreeEndedCta => 'Berlangganan dan lanjut ngobrol';
+
+  @override
+  String get callKeepGoingTitle => 'Lanjut?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali.';
 }

@@ -2144,4 +2144,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'اضغط مع الاستمرار للتحدث';
+
+  @override
+  String get callFreeEndedTitle => 'انتهت مكالمتك المجانية';
+
+  @override
+  String get callFreeEndedCta => 'اشترك وتابع الحديث';
+
+  @override
+  String get callKeepGoingTitle => 'هل نكمل؟';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'تستمر المكالمات على دفعات من 5 دقائق. سنسألك في كل مرة.';
 }

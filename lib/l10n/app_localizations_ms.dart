@@ -2179,4 +2179,17 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Tahan untuk bercakap';
+
+  @override
+  String get callFreeEndedTitle => 'Panggilan percuma anda telah tamat';
+
+  @override
+  String get callFreeEndedCta => 'Langgan dan teruskan bersembang';
+
+  @override
+  String get callKeepGoingTitle => 'Teruskan?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Panggilan diteruskan setiap 5 minit. Kami akan bertanya setiap kali.';
 }

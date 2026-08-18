@@ -2176,4 +2176,17 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Segure para falar';
+
+  @override
+  String get callFreeEndedTitle => 'Sua chamada gratuita terminou';
+
+  @override
+  String get callFreeEndedCta => 'Assine e continue conversando';
+
+  @override
+  String get callKeepGoingTitle => 'Vamos continuar?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'As chamadas seguem em blocos de 5 minutos. Vamos perguntar a cada vez.';
 }

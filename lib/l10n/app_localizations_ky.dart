@@ -2161,4 +2161,17 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Сүйлөш үчүн басып туруңуз';
+
+  @override
+  String get callFreeEndedTitle => 'Акысыз чалууңуз аяктады';
+
+  @override
+  String get callFreeEndedCta => 'Жазылып, сүйлөшүүнү улантыңыз';
+
+  @override
+  String get callKeepGoingTitle => 'Улантабызбы?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз.';
 }

@@ -645,5 +645,9 @@
   "callExitConfirm": "Завершить звонок",
   "callMicMute": "Выключить микрофон",
   "callMicUnmute": "Включить микрофон",
-  "callPushToTalk": "Удерживай, чтобы говорить"
+  "callPushToTalk": "Удерживай, чтобы говорить",
+  "callFreeEndedTitle": "Бесплатный звонок закончился",
+  "callFreeEndedCta": "Оформить подписку и продолжить",
+  "callKeepGoingTitle": "Продолжим?",
+  "callKeepGoingSubtitle": "Звонки идут отрезками по 5 минут. Мы будем спрашивать каждый раз."
 }

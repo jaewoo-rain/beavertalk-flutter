@@ -2157,4 +2157,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Hold to talk';
+
+  @override
+  String get callFreeEndedTitle => 'Your free call has ended';
+
+  @override
+  String get callFreeEndedCta => 'Subscribe and keep talking';
+
+  @override
+  String get callKeepGoingTitle => 'Keep going?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Calls continue in 5-minute stretches. We\'ll check in again each time.';
 }

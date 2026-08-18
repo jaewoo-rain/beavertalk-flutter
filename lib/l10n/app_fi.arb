@@ -645,5 +645,9 @@
   "callExitConfirm": "Lopeta puhelu",
   "callMicMute": "Mykistä",
   "callMicUnmute": "Poista mykistys",
-  "callPushToTalk": "Pidä pohjassa puhuaksesi"
+  "callPushToTalk": "Pidä pohjassa puhuaksesi",
+  "callFreeEndedTitle": "Ilmainen puhelusi päättyi",
+  "callFreeEndedCta": "Tilaa ja jatka juttelua",
+  "callKeepGoingTitle": "Jatketaanko?",
+  "callKeepGoingSubtitle": "Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen."
 }

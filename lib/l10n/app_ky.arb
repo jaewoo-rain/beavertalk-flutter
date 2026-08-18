@@ -645,5 +645,9 @@
   "callExitConfirm": "Чалууну аяктоо",
   "callMicMute": "Үнсүз кылуу",
   "callMicUnmute": "Үндү күйгүзүү",
-  "callPushToTalk": "Сүйлөш үчүн басып туруңуз"
+  "callPushToTalk": "Сүйлөш үчүн басып туруңуз",
+  "callFreeEndedTitle": "Акысыз чалууңуз аяктады",
+  "callFreeEndedCta": "Жазылып, сүйлөшүүнү улантыңыз",
+  "callKeepGoingTitle": "Улантабызбы?",
+  "callKeepGoingSubtitle": "Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз."
 }

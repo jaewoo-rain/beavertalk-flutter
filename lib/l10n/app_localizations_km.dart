@@ -2157,4 +2157,17 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'សង្កត់ដើម្បីនិយាយ';
+
+  @override
+  String get callFreeEndedTitle => 'ការហៅឥតគិតថ្លៃរបស់អ្នកបានបញ្ចប់';
+
+  @override
+  String get callFreeEndedCta => 'ជាវ ហើយបន្តនិយាយ';
+
+  @override
+  String get callKeepGoingTitle => 'បន្តទេ?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'ការហៅបន្តជា ៥ នាទីម្តង។ យើងនឹងសួរម្តងទៀតរាល់ពេល។';
 }

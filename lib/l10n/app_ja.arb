@@ -645,5 +645,9 @@
   "callExitConfirm": "通話終了",
   "callMicMute": "ミュート",
   "callMicUnmute": "ミュート解除",
-  "callPushToTalk": "押しながら話す"
+  "callPushToTalk": "押しながら話す",
+  "callFreeEndedTitle": "無料通話が終了しました",
+  "callFreeEndedCta": "登録して会話を続ける",
+  "callKeepGoingTitle": "続けますか？",
+  "callKeepGoingSubtitle": "通話は5分ごとに続きます。そのたびにお伺いします。"
 }

@@ -2155,4 +2155,17 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'بولنے کے لیے دبائے رکھیں';
+
+  @override
+  String get callFreeEndedTitle => 'آپ کی مفت کال ختم ہو گئی';
+
+  @override
+  String get callFreeEndedCta => 'سبسکرائب کریں اور بات جاری رکھیں';
+
+  @override
+  String get callKeepGoingTitle => 'جاری رکھیں؟';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔';
 }

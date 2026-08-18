@@ -13,6 +13,8 @@ import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
+import '../../components/organisms/bottom_sheet.dart' show SheetAction;
+import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
@@ -20,7 +22,10 @@ import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/normalcall/data/call_quota_mock.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
+import '../../features/subscription/domain/entities/subscription_state.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -49,6 +54,9 @@ class CallScreen extends ConsumerStatefulWidget {
 /// 마이크 96 이 **같은 크기의 칸**에 놓여야 두 모드의 푸터 높이가 어긋나지 않는다.
 const double _controlSlot = 96;
 
+/// Free·Pro 의 원형 스틸 아바타 지름(Figma 120).
+const double _stillAvatarSize = 120;
+
 class _CallScreenState extends ConsumerState<CallScreen> {
   /// Max width of the 16:9 avatar feed — full mobile width, capped on large
   /// screens so the video doesn't stretch edge-to-edge on tablets.
@@ -70,6 +78,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   static const bool kDisableAvatarVideo = false;
 
   bool _navigated = false;
+
+  /// 5분 시트를 이번 구간에서 이미 띄웠는가.
+  ///
+  /// 경과시간은 매초 올라오므로 조건만으로 열면 **초마다 다시 뜬다**. 「이어가기」를
+  /// 누르면 다음 구간을 위해 [_limitShownAtSec] 를 갱신한다.
+  int? _limitShownAtSec;
 
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
   /// new hint carries a new turn_id, so the card auto-collapses.
@@ -137,6 +151,55 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           Navigator.of(context).pop();
           ref.read(normalCallControllerProvider.notifier).hangUp();
         },
+      ),
+    );
+  }
+
+  /// 5분 경과 시트 — 플랜에 따라 업셀과 연장으로 갈린다.
+  ///
+  /// | 플랜 | 문구 | 1차 버튼 |
+  /// |---|---|---|
+  /// | free | 무료 통화가 끝났어요 | 구독하고 계속 대화하기 |
+  /// | pro·max | 더 이어갈까요? | 계속 통화하기 |
+  ///
+  /// ⚠ **오디오를 멈추지 않는다** — 아직 못 한다. 서버가 5분에 세션을 붙들어 주는지
+  /// 확인되지 않았고(서버질문지 B-5·B-7), 클라가 임의로 끊으면 유료 사용자의 통화가
+  /// 사라진다. 지금은 **묻기만** 한다.
+  ///
+  /// ⚠ 한도 판정은 서버 권위다. 이 시트는 경과시간으로 **띄우기만** 하고, 실제로
+  /// 끊는 것은 서버의 `call_ended` 다.
+  Future<void> _showLimitSheet(int atSec) async {
+    final l10n = AppLocalizations.of(context);
+    final quota = ref.read(callQuotaProvider);
+    final unlimited = quota.dailyLimit == null;
+    setState(() => _limitShownAtSec = atSec);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      isScrollControlled: true,
+      isDismissible: false,
+      enableDrag: false,
+      builder: (sheetCtx) => BottomSheetContent(
+        title: unlimited ? l10n.callKeepGoingTitle : l10n.callFreeEndedTitle,
+        body: unlimited ? l10n.callKeepGoingSubtitle : l10n.freePlanCallLimit,
+        primaryAction: SheetAction(
+          label: unlimited ? l10n.callExitKeep : l10n.callFreeEndedCta,
+          onPressed: () {
+            Navigator.of(sheetCtx).pop();
+            if (unlimited) return;
+            // v2 §2-3 ④ — 파는 것은 페이월, 사는 것은 OS 결제 시트다.
+            Navigator.pushNamed(context, Routes.paywallPro);
+          },
+        ),
+        secondaryAction: SheetAction(
+          label: l10n.endCall,
+          onPressed: () {
+            Navigator.of(sheetCtx).pop();
+            ref.read(normalCallControllerProvider.notifier).hangUp();
+          },
+        ),
       ),
     );
   }
@@ -261,6 +324,18 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
         setState(() => _suggestionIndex = 0);
       }
+      // 5분 구간이 찼다. 경과시간은 매초 오므로 **구간당 한 번만** 연다.
+      //
+      // 유료는 확인을 받고 다음 5분을 이어가므로 시트가 5분마다 다시 뜬다. 무료는
+      // 한 번 뜨고 끝이다 — 구독하거나 끊거나 둘 중 하나다.
+      final limit = ref.read(callQuotaProvider).maxDurationSec;
+      if (next.phase == CallPhase.inCall &&
+          limit > 0 &&
+          next.elapsedSec > 0 &&
+          next.elapsedSec % limit == 0 &&
+          _limitShownAtSec != next.elapsedSec) {
+        _showLimitSheet(next.elapsedSec);
+      }
       if (next.phase == CallPhase.ended) {
         _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
@@ -289,6 +364,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final showAvatarVideo = !kDisableAvatarVideo &&
         CascadeExperiment.enabledFor(channel, CascadeExperiment.avatarVideo);
     final isCascade = channel.isCascade;
+    // Max 만 영상 아바타를 받는다. 상태 조회가 아직 안 왔거나 실패하면 무료로
+    // 떨어져 원형 스틸이 된다 — 제한 쪽으로 기우는 폴백이라 유료 기능이 새지 않는다.
+    //
+    // ⚠ [SubscriptionStatus.isPlanInferred] 를 같이 보지 않는 이유:
+    //   그 플래그는 「tier 를 읽은 게 아니라 **가정**했다」는 뜻이고, 리졸버의 가정은
+    //   언제나 **Pro** 다(서버 와이어에 plan 필드가 없어서다). 즉 가정으로 max 가 되는
+    //   경로가 없다 — 가정은 늘 제한 쪽으로 떨어진다. 여기서 `!isPlanInferred` 를
+    //   덧붙이면 **서버가 확인해 준 Max 사용자까지** 스틸로 내려가 없던 손해가 생긴다.
+    //   Max 를 **부여**하는 판단이 아니라 **표현**을 고르는 자리라 tier 로 충분하다.
+    final avatarIsVideo =
+        ref.watch(subscriptionStatusProvider).tier == SubscriptionTier.max;
 
     return PopScope(
       canPop: false,
@@ -340,7 +426,23 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // 16:9 avatar feed — full width, capped at [_avatarMaxWidth].
+                      // 아바타 — **플랜이 표현을 가른다**(Figma 04_통화).
+                      //
+                      //   Max      전폭 16:9 영상 밴드
+                      //   Free/Pro 원형 스틸 120
+                      //
+                      // 영상 아바타는 Max 의 값어치다. 예전엔 이 분기가 없어서
+                      // 무료 사용자도 전폭 영상을 봤다 — 설계와 달랐다.
+                      //
+                      // ⚠ [showAvatarVideo] 와 혼동하지 마라. 그건 안드로이드
+                      //   오디오 끊김 격리 실험용 디버그 플래그이지 플랜이 아니다.
+                      //   둘 다 참이어야 영상이 나간다.
+                      if (!avatarIsVideo)
+                        _CircularStill(
+                          size: _stillAvatarSize,
+                          child: _partnerStill(partnerImage),
+                        )
+                      else
                       Center(
                         child: ConstrainedBox(
                           constraints: const BoxConstraints(
@@ -617,6 +719,32 @@ class _PushToTalkButton extends StatelessWidget {
             size: _controlSlot,
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// 원형 스틸 아바타 — Free·Pro 의 아바타 표현.
+///
+/// Max 의 전폭 16:9 영상 밴드와 **같은 자리**에 놓이지만 모양이 다르다. 링은
+/// 배경과 대비를 만들어 원이 어두운 화면에 묻히지 않게 한다(Figma).
+class _CircularStill extends StatelessWidget {
+  const _CircularStill({required this.size, required this.child});
+
+  final double size;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: context.c.primaryHeavy, width: 4),
+        ),
+        child: ClipOval(child: child),
       ),
     );
   }

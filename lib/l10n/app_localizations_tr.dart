@@ -2157,4 +2157,17 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Konuşmak için basılı tut';
+
+  @override
+  String get callFreeEndedTitle => 'Ücretsiz aramanız sona erdi';
+
+  @override
+  String get callFreeEndedCta => 'Abone ol ve konuşmaya devam et';
+
+  @override
+  String get callKeepGoingTitle => 'Devam edelim mi?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız.';
 }

@@ -645,5 +645,9 @@
   "callExitConfirm": "Қоңырауды аяқтау",
   "callMicMute": "Дыбысты өшіру",
   "callMicUnmute": "Дыбысты қосу",
-  "callPushToTalk": "Сөйлеу үшін басып тұрыңыз"
+  "callPushToTalk": "Сөйлеу үшін басып тұрыңыз",
+  "callFreeEndedTitle": "Тегін қоңырауыңыз аяқталды",
+  "callFreeEndedCta": "Жазылып, сөйлесуді жалғастырыңыз",
+  "callKeepGoingTitle": "Жалғастырамыз ба?",
+  "callKeepGoingSubtitle": "Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз."
 }

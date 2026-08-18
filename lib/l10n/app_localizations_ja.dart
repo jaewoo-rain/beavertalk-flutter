@@ -2091,4 +2091,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callPushToTalk => '押しながら話す';
+
+  @override
+  String get callFreeEndedTitle => '無料通話が終了しました';
+
+  @override
+  String get callFreeEndedCta => '登録して会話を続ける';
+
+  @override
+  String get callKeepGoingTitle => '続けますか？';
+
+  @override
+  String get callKeepGoingSubtitle => '通話は5分ごとに続きます。そのたびにお伺いします。';
 }

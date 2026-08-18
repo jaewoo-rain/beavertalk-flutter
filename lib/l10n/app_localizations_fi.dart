@@ -2163,4 +2163,17 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Pidä pohjassa puhuaksesi';
+
+  @override
+  String get callFreeEndedTitle => 'Ilmainen puhelusi päättyi';
+
+  @override
+  String get callFreeEndedCta => 'Tilaa ja jatka juttelua';
+
+  @override
+  String get callKeepGoingTitle => 'Jatketaanko?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.';
 }

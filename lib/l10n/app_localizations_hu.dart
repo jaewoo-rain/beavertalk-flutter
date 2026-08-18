@@ -2174,4 +2174,17 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Tartsd nyomva a beszédhez';
+
+  @override
+  String get callFreeEndedTitle => 'Az ingyenes hívásod véget ért';
+
+  @override
+  String get callFreeEndedCta => 'Fizess elő és beszélgess tovább';
+
+  @override
+  String get callKeepGoingTitle => 'Folytatjuk?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk.';
 }

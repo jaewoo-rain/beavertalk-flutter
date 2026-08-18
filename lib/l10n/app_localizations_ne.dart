@@ -2148,4 +2148,17 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'बोल्न थिचिराख्नुहोस्';
+
+  @override
+  String get callFreeEndedTitle => 'तपाईंको निःशुल्क कल सकियो';
+
+  @override
+  String get callFreeEndedCta => 'सदस्यता लिनुहोस् र कुरा जारी राख्नुहोस्';
+
+  @override
+  String get callKeepGoingTitle => 'जारी राख्ने?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'कल ५ मिनेटको खण्डमा जारी रहन्छ। हरेक पटक हामी फेरि सोध्नेछौं।';
 }

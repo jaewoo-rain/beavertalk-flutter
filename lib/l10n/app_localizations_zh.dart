@@ -2086,4 +2086,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callPushToTalk => '按住说话';
+
+  @override
+  String get callFreeEndedTitle => '免费通话已结束';
+
+  @override
+  String get callFreeEndedCta => '订阅并继续聊天';
+
+  @override
+  String get callKeepGoingTitle => '要继续吗？';
+
+  @override
+  String get callKeepGoingSubtitle => '通话以5分钟为一段继续。每次都会再询问你。';
 }

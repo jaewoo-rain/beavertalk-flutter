@@ -2178,4 +2178,17 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Mantén para hablar';
+
+  @override
+  String get callFreeEndedTitle => 'Tu llamada gratuita terminó';
+
+  @override
+  String get callFreeEndedCta => 'Suscríbete y sigue hablando';
+
+  @override
+  String get callKeepGoingTitle => '¿Seguimos?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Las llamadas continúan en tramos de 5 minutos. Te preguntaremos cada vez.';
 }

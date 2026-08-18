@@ -645,5 +645,9 @@
   "callExitConfirm": "کال ختم کریں",
   "callMicMute": "خاموش کریں",
   "callMicUnmute": "آواز کھولیں",
-  "callPushToTalk": "بولنے کے لیے دبائے رکھیں"
+  "callPushToTalk": "بولنے کے لیے دبائے رکھیں",
+  "callFreeEndedTitle": "آپ کی مفت کال ختم ہو گئی",
+  "callFreeEndedCta": "سبسکرائب کریں اور بات جاری رکھیں",
+  "callKeepGoingTitle": "جاری رکھیں؟",
+  "callKeepGoingSubtitle": "کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔"
 }

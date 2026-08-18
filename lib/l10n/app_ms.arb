@@ -645,5 +645,9 @@
   "callExitConfirm": "Tamatkan panggilan",
   "callMicMute": "Bisu",
   "callMicUnmute": "Nyahbisu",
-  "callPushToTalk": "Tahan untuk bercakap"
+  "callPushToTalk": "Tahan untuk bercakap",
+  "callFreeEndedTitle": "Panggilan percuma anda telah tamat",
+  "callFreeEndedCta": "Langgan dan teruskan bersembang",
+  "callKeepGoingTitle": "Teruskan?",
+  "callKeepGoingSubtitle": "Panggilan diteruskan setiap 5 minit. Kami akan bertanya setiap kali."
 }

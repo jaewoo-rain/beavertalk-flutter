@@ -645,5 +645,9 @@
   "callExitConfirm": "结束通话",
   "callMicMute": "静音",
   "callMicUnmute": "取消静音",
-  "callPushToTalk": "按住说话"
+  "callPushToTalk": "按住说话",
+  "callFreeEndedTitle": "免费通话已结束",
+  "callFreeEndedCta": "订阅并继续聊天",
+  "callKeepGoingTitle": "要继续吗？",
+  "callKeepGoingSubtitle": "通话以5分钟为一段继续。每次都会再询问你。"
 }

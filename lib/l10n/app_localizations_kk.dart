@@ -2156,4 +2156,17 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Сөйлеу үшін басып тұрыңыз';
+
+  @override
+  String get callFreeEndedTitle => 'Тегін қоңырауыңыз аяқталды';
+
+  @override
+  String get callFreeEndedCta => 'Жазылып, сөйлесуді жалғастырыңыз';
+
+  @override
+  String get callKeepGoingTitle => 'Жалғастырамыз ба?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз.';
 }

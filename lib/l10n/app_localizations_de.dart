@@ -2184,4 +2184,17 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Zum Sprechen halten';
+
+  @override
+  String get callFreeEndedTitle => 'Dein kostenloser Anruf ist beendet';
+
+  @override
+  String get callFreeEndedCta => 'Abonnieren und weitersprechen';
+
+  @override
+  String get callKeepGoingTitle => 'Weitermachen?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach.';
 }

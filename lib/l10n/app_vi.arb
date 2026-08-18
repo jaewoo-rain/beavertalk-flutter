@@ -645,5 +645,9 @@
   "callExitConfirm": "Kết thúc cuộc gọi",
   "callMicMute": "Tắt tiếng",
   "callMicUnmute": "Bật tiếng",
-  "callPushToTalk": "Giữ để nói"
+  "callPushToTalk": "Giữ để nói",
+  "callFreeEndedTitle": "Cuộc gọi miễn phí đã kết thúc",
+  "callFreeEndedCta": "Đăng ký và tiếp tục trò chuyện",
+  "callKeepGoingTitle": "Tiếp tục nhé?",
+  "callKeepGoingSubtitle": "Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại."
 }

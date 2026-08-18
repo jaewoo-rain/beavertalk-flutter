@@ -2169,4 +2169,17 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'ပြောရန် ဖိထားပါ';
+
+  @override
+  String get callFreeEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ကုန်သွားပါပြီ';
+
+  @override
+  String get callFreeEndedCta => 'စာရင်းသွင်းပြီး ဆက်ပြောပါ';
+
+  @override
+  String get callKeepGoingTitle => 'ဆက်လုပ်မလား။';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'ခေါ်ဆိုမှုများသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်သည်။ အကြိမ်တိုင်း ထပ်မေးပါမည်။';
 }

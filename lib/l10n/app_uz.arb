@@ -645,5 +645,9 @@
   "callExitConfirm": "Qo‘ng‘iroqni tugatish",
   "callMicMute": "Ovozni o‘chirish",
   "callMicUnmute": "Ovozni yoqish",
-  "callPushToTalk": "Gapirish uchun bosib turing"
+  "callPushToTalk": "Gapirish uchun bosib turing",
+  "callFreeEndedTitle": "Bepul qo‘ng‘irog‘ingiz tugadi",
+  "callFreeEndedCta": "Obuna bo‘ling va suhbatni davom ettiring",
+  "callKeepGoingTitle": "Davom etamizmi?",
+  "callKeepGoingSubtitle": "Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz."
 }

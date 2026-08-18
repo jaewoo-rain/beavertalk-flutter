@@ -2172,4 +2172,17 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Pindutin nang matagal para magsalita';
+
+  @override
+  String get callFreeEndedTitle => 'Naubos na ang libre mong tawag';
+
+  @override
+  String get callFreeEndedCta => 'Mag-subscribe at magpatuloy';
+
+  @override
+  String get callKeepGoingTitle => 'Ituloy pa?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon.';
 }

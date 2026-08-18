@@ -645,5 +645,9 @@
   "callExitConfirm": "Encerrar chamada",
   "callMicMute": "Silenciar",
   "callMicUnmute": "Reativar microfone",
-  "callPushToTalk": "Segure para falar"
+  "callPushToTalk": "Segure para falar",
+  "callFreeEndedTitle": "Sua chamada gratuita terminou",
+  "callFreeEndedCta": "Assine e continue conversando",
+  "callKeepGoingTitle": "Vamos continuar?",
+  "callKeepGoingSubtitle": "As chamadas seguem em blocos de 5 minutos. Vamos perguntar a cada vez."
 }

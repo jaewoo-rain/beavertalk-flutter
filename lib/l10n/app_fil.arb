@@ -645,5 +645,9 @@
   "callExitConfirm": "Tapusin ang tawag",
   "callMicMute": "I-mute",
   "callMicUnmute": "I-unmute",
-  "callPushToTalk": "Pindutin nang matagal para magsalita"
+  "callPushToTalk": "Pindutin nang matagal para magsalita",
+  "callFreeEndedTitle": "Naubos na ang libre mong tawag",
+  "callFreeEndedCta": "Mag-subscribe at magpatuloy",
+  "callKeepGoingTitle": "Ituloy pa?",
+  "callKeepGoingSubtitle": "Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon."
 }

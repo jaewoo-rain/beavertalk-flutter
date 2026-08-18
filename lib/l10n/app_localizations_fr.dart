@@ -2198,4 +2198,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Maintiens pour parler';
+
+  @override
+  String get callFreeEndedTitle => 'Ton appel gratuit est terminé';
+
+  @override
+  String get callFreeEndedCta => 'S’abonner et continuer';
+
+  @override
+  String get callKeepGoingTitle => 'On continue ?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Les appels se poursuivent par tranches de 5 minutes. On te redemandera à chaque fois.';
 }

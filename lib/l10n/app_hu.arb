@@ -645,5 +645,9 @@
   "callExitConfirm": "Hívás befejezése",
   "callMicMute": "Némítás",
   "callMicUnmute": "Némítás feloldása",
-  "callPushToTalk": "Tartsd nyomva a beszédhez"
+  "callPushToTalk": "Tartsd nyomva a beszédhez",
+  "callFreeEndedTitle": "Az ingyenes hívásod véget ért",
+  "callFreeEndedCta": "Fizess elő és beszélgess tovább",
+  "callKeepGoingTitle": "Folytatjuk?",
+  "callKeepGoingSubtitle": "A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk."
 }

@@ -645,5 +645,9 @@
   "callExitConfirm": "কল শেষ করুন",
   "callMicMute": "মিউট",
   "callMicUnmute": "আনমিউট",
-  "callPushToTalk": "বলতে চেপে ধরুন"
+  "callPushToTalk": "বলতে চেপে ধরুন",
+  "callFreeEndedTitle": "আপনার ফ্রি কল শেষ হয়েছে",
+  "callFreeEndedCta": "সাবস্ক্রাইব করে কথা চালিয়ে যান",
+  "callKeepGoingTitle": "চালিয়ে যাবেন?",
+  "callKeepGoingSubtitle": "কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।"
 }

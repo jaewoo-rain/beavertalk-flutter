@@ -2159,4 +2159,17 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Ярихын тулд дараад байна уу';
+
+  @override
+  String get callFreeEndedTitle => 'Таны үнэгүй дуудлага дууслаа';
+
+  @override
+  String get callFreeEndedCta => 'Захиалж яриагаа үргэлжлүүл';
+
+  @override
+  String get callKeepGoingTitle => 'Үргэлжлүүлэх үү?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна.';
 }

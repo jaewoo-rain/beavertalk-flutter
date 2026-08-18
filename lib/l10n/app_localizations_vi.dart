@@ -2156,4 +2156,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Giữ để nói';
+
+  @override
+  String get callFreeEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';
+
+  @override
+  String get callFreeEndedCta => 'Đăng ký và tiếp tục trò chuyện';
+
+  @override
+  String get callKeepGoingTitle => 'Tiếp tục nhé?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại.';
 }

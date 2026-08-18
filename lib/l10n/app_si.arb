@@ -645,5 +645,9 @@
   "callExitConfirm": "ඇමතුම අවසන් කරන්න",
   "callMicMute": "නිශ්ශබ්ද",
   "callMicUnmute": "නිශ්ශබ්දතාව ඉවත් කරන්න",
-  "callPushToTalk": "කතා කිරීමට තද කර තබන්න"
+  "callPushToTalk": "කතා කිරීමට තද කර තබන්න",
+  "callFreeEndedTitle": "ඔබේ නොමිලේ ඇමතුම අවසන් විය",
+  "callFreeEndedCta": "දායක වී කතාබහ දිගටම කරන්න",
+  "callKeepGoingTitle": "දිගටම කරන්නද?",
+  "callKeepGoingSubtitle": "ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු."
 }

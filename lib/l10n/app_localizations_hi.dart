@@ -2151,4 +2151,17 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'बोलने के लिए दबाए रखें';
+
+  @override
+  String get callFreeEndedTitle => 'आपकी मुफ़्त कॉल समाप्त हो गई';
+
+  @override
+  String get callFreeEndedCta => 'सब्सक्राइब करें और बात जारी रखें';
+
+  @override
+  String get callKeepGoingTitle => 'जारी रखें?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'कॉल 5 मिनट के हिस्सों में चलती है। हर बार हम फिर पूछेंगे।';
 }

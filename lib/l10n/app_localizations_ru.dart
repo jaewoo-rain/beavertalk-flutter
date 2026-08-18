@@ -2163,4 +2163,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get callPushToTalk => 'Удерживай, чтобы говорить';
+
+  @override
+  String get callFreeEndedTitle => 'Бесплатный звонок закончился';
+
+  @override
+  String get callFreeEndedCta => 'Оформить подписку и продолжить';
+
+  @override
+  String get callKeepGoingTitle => 'Продолжим?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Звонки идут отрезками по 5 минут. Мы будем спрашивать каждый раз.';
 }
