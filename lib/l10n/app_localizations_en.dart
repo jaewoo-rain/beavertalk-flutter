@@ -2112,4 +2112,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Available with Max';
+
+  @override
+  String get callModeSheetTitle => 'How do you want to talk?';
+
+  @override
+  String get callModeSheetSubtitle => 'Applies to this call right away';
+
+  @override
+  String get callModeFreeTalk => 'Free Talk';
+
+  @override
+  String get callModeFreeTalkDesc => 'Just talk — no corrections';
+
+  @override
+  String get callModeStudy => 'Study';
+
+  @override
+  String get callModeStudyDesc => 'Learn one expression at a time';
+
+  @override
+  String get callModeChange => 'Change mode';
+
+  @override
+  String get callModeKeep => 'Not now';
+
+  @override
+  String get callExitTitle => 'End this call?';
+
+  @override
+  String get callExitSubtitle => 'Ending now still uses one of your calls';
+
+  @override
+  String get callExitKeep => 'Keep talking';
+
+  @override
+  String get callExitConfirm => 'End call';
+
+  @override
+  String get callMicMute => 'Mute';
+
+  @override
+  String get callMicUnmute => 'Unmute';
+
+  @override
+  String get callPushToTalk => 'Hold to talk';
 }

@@ -2099,4 +2099,49 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'متاح مع Max';
+
+  @override
+  String get callModeSheetTitle => 'كيف تريد أن تتحدث؟';
+
+  @override
+  String get callModeSheetSubtitle => 'يُطبَّق على هذه المكالمة فورًا';
+
+  @override
+  String get callModeFreeTalk => 'محادثة حرة';
+
+  @override
+  String get callModeFreeTalkDesc => 'تحدث بحرية دون تصحيح';
+
+  @override
+  String get callModeStudy => 'التعلّم';
+
+  @override
+  String get callModeStudyDesc => 'تعلّم تعبيرًا واحدًا في كل مرة';
+
+  @override
+  String get callModeChange => 'تغيير الوضع';
+
+  @override
+  String get callModeKeep => 'ليس الآن';
+
+  @override
+  String get callExitTitle => 'هل تريد إنهاء المكالمة؟';
+
+  @override
+  String get callExitSubtitle => 'الإنهاء الآن يستهلك مكالمة من مكالماتك';
+
+  @override
+  String get callExitKeep => 'متابعة الحديث';
+
+  @override
+  String get callExitConfirm => 'إنهاء المكالمة';
+
+  @override
+  String get callMicMute => 'كتم الصوت';
+
+  @override
+  String get callMicUnmute => 'إلغاء الكتم';
+
+  @override
+  String get callPushToTalk => 'اضغط مع الاستمرار للتحدث';
 }

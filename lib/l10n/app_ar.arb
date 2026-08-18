@@ -630,5 +630,20 @@
   "difficultyFast": "سريع",
   "difficultyLabel": "الصعوبة",
   "connected": "متصل",
-  "unlockedWithMax": "متاح مع Max"
+  "unlockedWithMax": "متاح مع Max",
+  "callModeSheetTitle": "كيف تريد أن تتحدث؟",
+  "callModeSheetSubtitle": "يُطبَّق على هذه المكالمة فورًا",
+  "callModeFreeTalk": "محادثة حرة",
+  "callModeFreeTalkDesc": "تحدث بحرية دون تصحيح",
+  "callModeStudy": "التعلّم",
+  "callModeStudyDesc": "تعلّم تعبيرًا واحدًا في كل مرة",
+  "callModeChange": "تغيير الوضع",
+  "callModeKeep": "ليس الآن",
+  "callExitTitle": "هل تريد إنهاء المكالمة؟",
+  "callExitSubtitle": "الإنهاء الآن يستهلك مكالمة من مكالماتك",
+  "callExitKeep": "متابعة الحديث",
+  "callExitConfirm": "إنهاء المكالمة",
+  "callMicMute": "كتم الصوت",
+  "callMicUnmute": "إلغاء الكتم",
+  "callPushToTalk": "اضغط مع الاستمرار للتحدث"
 }

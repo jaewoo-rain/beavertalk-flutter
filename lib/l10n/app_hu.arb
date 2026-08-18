@@ -630,5 +630,20 @@
   "difficultyFast": "Gyors",
   "difficultyLabel": "Nehézség",
   "connected": "Csatlakozva",
-  "unlockedWithMax": "Elérhető a Maxszal"
+  "unlockedWithMax": "Elérhető a Maxszal",
+  "callModeSheetTitle": "Hogyan szeretnél beszélgetni?",
+  "callModeSheetSubtitle": "Azonnal érvénybe lép ebben a hívásban",
+  "callModeFreeTalk": "Szabad beszélgetés",
+  "callModeFreeTalkDesc": "Beszélj javítások nélkül",
+  "callModeStudy": "Tanulás",
+  "callModeStudyDesc": "Egyszerre egy kifejezést tanulj",
+  "callModeChange": "Mód váltása",
+  "callModeKeep": "Most nem",
+  "callExitTitle": "Befejezed a hívást?",
+  "callExitSubtitle": "A most befejezés is felhasznál egy hívást",
+  "callExitKeep": "Beszélgetés folytatása",
+  "callExitConfirm": "Hívás befejezése",
+  "callMicMute": "Némítás",
+  "callMicUnmute": "Némítás feloldása",
+  "callPushToTalk": "Tartsd nyomva a beszédhez"
 }

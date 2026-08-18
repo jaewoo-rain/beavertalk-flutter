@@ -207,6 +207,8 @@ class CallState {
     this.hintOn = true,
     this.beaverPreparing = false,
     this.channel = CallChannel.live,
+    this.micMuted = false,
+    this.pttHeld = false,
   });
 
   /// Current lifecycle phase.
@@ -271,6 +273,23 @@ class CallState {
   /// 그대로 둘 수 있다(격리 실험의 대조군 유지 — [CascadeExperiment]).
   final CallChannel channel;
 
+  /// 사용자가 **음소거**했는가. [CallChannel.live] 전용이다.
+  ///
+  /// 라이브는 스트리밍 세션이라 마이크가 통화 내내 열려 있고, 사용자가 잠시 닫을
+  /// 수단이 필요하다. 켜도 **세션은 유지된다** — 업링크 프레임만 버린다. 비버는
+  /// 계속 말하고 경과시간도 계속 흐른다.
+  ///
+  /// ⚠ 캐스케이드에서는 쓰지 않는다. 그쪽은 [pttHeld] 가 같은 자리를 맡는다.
+  final bool micMuted;
+
+  /// **꾹 눌러 전송** 버튼을 누르고 있는가. [CallChannel.cascade] 전용이다.
+  ///
+  /// 캐스케이드는 턴 기반이라 사용자가 말할 구간을 직접 연다. 누르는 동안만 업링크가
+  /// 열리고, 떼면 닫힌다.
+  ///
+  /// ⚠ 라이브에서는 쓰지 않는다. 그쪽은 [micMuted] 가 같은 자리를 맡는다.
+  final bool pttHeld;
+
   /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
   /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
   static const Object _keep = Object();
@@ -292,6 +311,8 @@ class CallState {
     bool? hintOn,
     bool? beaverPreparing,
     CallChannel? channel,
+    bool? micMuted,
+    bool? pttHeld,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -308,6 +329,8 @@ class CallState {
       hintOn: hintOn ?? this.hintOn,
       beaverPreparing: beaverPreparing ?? this.beaverPreparing,
       channel: channel ?? this.channel,
+      micMuted: micMuted ?? this.micMuted,
+      pttHeld: pttHeld ?? this.pttHeld,
     );
   }
 }
@@ -1088,7 +1111,31 @@ class NormalCallController extends Notifier<CallState> {
   ///   그대로 게이팅된다. 안전장치가 사라진 게 아니라 **한 곳(서버)으로 모인 것**이다.
   ///   ⚠ AEC 없이 열면 비버가 자기 목소리에 끊긴다는 위험은 그대로다(call_id=855:
   ///     유저 턴의 절반이 비버 대사였다). 그 판단을 **서버 env 한 줄**이 쥔다.
+  /// ## 2026-08-18 — 사용자 조작이 위에 올라왔다
+  ///
+  /// 모드 분기가 들어오면서 두 통로 모두 **사람이 직접 여닫는 수단**이 생겼다. 그 조작은
+  /// 반이중 게이트보다 위다 — 사용자가 닫으라고 한 마이크를 서버 정책으로 열면 안 된다.
+  ///
+  /// | 통로 | 사용자 수단 | 열리는 때 |
+  /// |---|---|---|
+  /// | [CallChannel.live] | 음소거 토글([CallState.micMuted]) | 음소거가 아니고 + 종전 반이중 규칙 |
+  /// | [CallChannel.cascade] | 꾹 눌러 전송([CallState.pttHeld]) | **누르고 있는 동안만** |
+  ///
+  /// ⛔ **캐스케이드가 기본 닫힘으로 바뀌었다.** 예전엔 서버가 열라고 하면 통화 내내
+  ///   열려 있었다(barge-in). 이제는 버튼을 눌러야 열린다. barge-in 격리 실험을 돌리던
+  ///   빌드에서는 「마이크가 안 열린다」로 보일 수 있는데 고장이 아니다.
+  ///
+  /// ⚠ 서버의 `mic_always_open` 은 **상시 개방**을 허가하는 값이라, 사용자가 의도적으로
+  ///   연 짧은 PTT 구간까지 막는 데 쓰지 않는다. PTT 는 마이크가 기본 닫힘이라 AEC 위험이
+  ///   상시 개방보다 낮다. 서버가 PTT 자체를 막아야 한다면 **별도 필드가 필요하다** —
+  ///   지금 값으로 겸직시키면 두 정책이 한 플래그에 얽힌다.
   bool get _micGated {
+    if (_channelMode.isCascade) {
+      // 꾹 눌러 전송 — 누른 구간만 업링크가 열린다. 비버가 말하는 중에 눌렀다면
+      // 그건 의도된 끼어들기다(서버가 STT 활동으로 판정한다).
+      return !state.pttHeld;
+    }
+    if (state.micMuted) return true;
     if (!_channelMode.gatesMic && _serverMicAlwaysOpen) {
       return false;
     }
@@ -4092,6 +4139,32 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Toggles whether the hint card is shown. UI preference only.
   void setHintOn(bool value) => state = state.copyWith(hintOn: value);
+
+  /// 라이브 통화의 **음소거**를 켜고 끈다.
+  ///
+  /// 세션은 유지하고 업링크 프레임만 버린다([_micGated]). 레코더를 닫지 않는 이유는
+  /// 오디오 세션·AEC 를 흔들지 않기 위해서다 — 통화 중 세션을 여닫으면 라우트가 튄다.
+  ///
+  /// 캐스케이드에서는 호출하지 않는다. 그쪽은 [setPttHeld] 를 쓴다.
+  void setMicMuted(bool value) {
+    if (state.channel.isCascade) return;
+    if (state.micMuted == value) return;
+    state = state.copyWith(micMuted: value);
+    _log('mic ${value ? "음소거" : "해제"} (live)');
+  }
+
+  /// 캐스케이드의 **꾹 눌러 전송** 버튼 상태를 반영한다.
+  ///
+  /// 누르는 동안 true, 떼면 false 다. 떼는 순간이 곧 「이번 발화 끝」이므로 서버는
+  /// 업링크가 끊기는 지점을 턴 경계로 읽는다.
+  ///
+  /// 라이브에서는 호출하지 않는다. 그쪽은 [setMicMuted] 를 쓴다.
+  void setPttHeld(bool value) {
+    if (!state.channel.isCascade) return;
+    if (state.pttHeld == value) return;
+    state = state.copyWith(pttHeld: value);
+    _log('ptt ${value ? "누름" : "뗌"} (cascade)');
+  }
 
   /// Starts the UI elapsed-time ticker.
   void _startElapsedTimer() {

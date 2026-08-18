@@ -630,5 +630,20 @@
   "difficultyFast": "Жылдам",
   "difficultyLabel": "Күрделілік",
   "connected": "Байланысты",
-  "unlockedWithMax": "Max-пен қолжетімді"
+  "unlockedWithMax": "Max-пен қолжетімді",
+  "callModeSheetTitle": "Қалай сөйлескіңіз келеді?",
+  "callModeSheetSubtitle": "Осы қоңырауға бірден қолданылады",
+  "callModeFreeTalk": "Еркін әңгіме",
+  "callModeFreeTalkDesc": "Түзетусіз еркін сөйлесіңіз",
+  "callModeStudy": "Оқу",
+  "callModeStudyDesc": "Бір уақытта бір тіркесті үйреніңіз",
+  "callModeChange": "Режимді өзгерту",
+  "callModeKeep": "Қазір емес",
+  "callExitTitle": "Қоңырауды аяқтау керек пе?",
+  "callExitSubtitle": "Қазір аяқтасаңыз да бір қоңырау есептеледі",
+  "callExitKeep": "Сөйлесуді жалғастыру",
+  "callExitConfirm": "Қоңырауды аяқтау",
+  "callMicMute": "Дыбысты өшіру",
+  "callMicUnmute": "Дыбысты қосу",
+  "callPushToTalk": "Сөйлеу үшін басып тұрыңыз"
 }

@@ -630,5 +630,20 @@
   "difficultyFast": "Cepat",
   "difficultyLabel": "Tingkat kesulitan",
   "connected": "Terhubung",
-  "unlockedWithMax": "Tersedia dengan Max"
+  "unlockedWithMax": "Tersedia dengan Max",
+  "callModeSheetTitle": "Mau ngobrol seperti apa?",
+  "callModeSheetSubtitle": "Langsung berlaku untuk panggilan ini",
+  "callModeFreeTalk": "Obrolan bebas",
+  "callModeFreeTalkDesc": "Bicara tanpa koreksi",
+  "callModeStudy": "Belajar",
+  "callModeStudyDesc": "Pelajari satu ungkapan sekaligus",
+  "callModeChange": "Ubah mode",
+  "callModeKeep": "Nanti saja",
+  "callExitTitle": "Akhiri panggilan ini?",
+  "callExitSubtitle": "Mengakhiri sekarang tetap memakai satu panggilan",
+  "callExitKeep": "Lanjut bicara",
+  "callExitConfirm": "Akhiri panggilan",
+  "callMicMute": "Bisukan",
+  "callMicUnmute": "Nyalakan mikrofon",
+  "callPushToTalk": "Tahan untuk bicara"
 }

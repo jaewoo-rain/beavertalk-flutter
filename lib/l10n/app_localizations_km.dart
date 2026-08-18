@@ -2112,4 +2112,49 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'អាចប្រើបានជាមួយ Max';
+
+  @override
+  String get callModeSheetTitle => 'តើអ្នកចង់និយាយបែបណា?';
+
+  @override
+  String get callModeSheetSubtitle => 'អនុវត្តភ្លាមៗចំពោះការហៅនេះ';
+
+  @override
+  String get callModeFreeTalk => 'ការសន្ទនាសេរី';
+
+  @override
+  String get callModeFreeTalkDesc => 'និយាយដោយគ្មានការកែតម្រូវ';
+
+  @override
+  String get callModeStudy => 'ការសិក្សា';
+
+  @override
+  String get callModeStudyDesc => 'រៀនកន្សោមម្តងមួយ';
+
+  @override
+  String get callModeChange => 'ប្តូររបៀប';
+
+  @override
+  String get callModeKeep => 'មិនទាន់ទេ';
+
+  @override
+  String get callExitTitle => 'បញ្ចប់ការហៅនេះ?';
+
+  @override
+  String get callExitSubtitle => 'បញ្ចប់ឥឡូវនេះនៅតែប្រើការហៅមួយ';
+
+  @override
+  String get callExitKeep => 'បន្តនិយាយ';
+
+  @override
+  String get callExitConfirm => 'បញ្ចប់ការហៅ';
+
+  @override
+  String get callMicMute => 'បិទសំឡេង';
+
+  @override
+  String get callMicUnmute => 'បើកសំឡេង';
+
+  @override
+  String get callPushToTalk => 'សង្កត់ដើម្បីនិយាយ';
 }

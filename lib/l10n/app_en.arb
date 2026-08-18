@@ -1340,5 +1340,65 @@
   "unlockedWithMax": "Available with Max",
   "@unlockedWithMax": {
     "description": "Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does."
+  },
+  "callModeSheetTitle": "How do you want to talk?",
+  "@callModeSheetTitle": {
+    "description": "Mode sheet - heading. Asks how the learner wants to talk in this call."
+  },
+  "callModeSheetSubtitle": "Applies to this call right away",
+  "@callModeSheetSubtitle": {
+    "description": "Mode sheet - subheading. The choice applies to the current call immediately."
+  },
+  "callModeFreeTalk": "Free Talk",
+  "@callModeFreeTalk": {
+    "description": "Mode sheet - the Free Talk mode name (streaming conversation, no corrections)."
+  },
+  "callModeFreeTalkDesc": "Just talk — no corrections",
+  "@callModeFreeTalkDesc": {
+    "description": "Mode sheet - one-line description of Free Talk."
+  },
+  "callModeStudy": "Study",
+  "@callModeStudy": {
+    "description": "Mode sheet - the Study mode name (turn-based expression drill)."
+  },
+  "callModeStudyDesc": "Learn one expression at a time",
+  "@callModeStudyDesc": {
+    "description": "Mode sheet - one-line description of Study."
+  },
+  "callModeChange": "Change mode",
+  "@callModeChange": {
+    "description": "Mode sheet - confirm button, and the label of the call header button that opens the sheet."
+  },
+  "callModeKeep": "Not now",
+  "@callModeKeep": {
+    "description": "Mode sheet - dismiss button. Closes without changing the mode."
+  },
+  "callExitTitle": "End this call?",
+  "@callExitTitle": {
+    "description": "End-call dialog - heading."
+  },
+  "callExitSubtitle": "Ending now still uses one of your calls",
+  "@callExitSubtitle": {
+    "description": "End-call dialog - body. Warns the call is still counted against the daily quota."
+  },
+  "callExitKeep": "Keep talking",
+  "@callExitKeep": {
+    "description": "End-call dialog - stay in the call."
+  },
+  "callExitConfirm": "End call",
+  "@callExitConfirm": {
+    "description": "End-call dialog - confirm hanging up."
+  },
+  "callMicMute": "Mute",
+  "@callMicMute": {
+    "description": "Live call - accessibility label for the mic button when the mic is open."
+  },
+  "callMicUnmute": "Unmute",
+  "@callMicUnmute": {
+    "description": "Live call - accessibility label for the mic button when muted."
+  },
+  "callPushToTalk": "Hold to talk",
+  "@callPushToTalk": {
+    "description": "Study call - accessibility label for the hold-to-talk button."
   }
 }

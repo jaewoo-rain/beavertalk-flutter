@@ -2129,4 +2129,49 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Elérhető a Maxszal';
+
+  @override
+  String get callModeSheetTitle => 'Hogyan szeretnél beszélgetni?';
+
+  @override
+  String get callModeSheetSubtitle => 'Azonnal érvénybe lép ebben a hívásban';
+
+  @override
+  String get callModeFreeTalk => 'Szabad beszélgetés';
+
+  @override
+  String get callModeFreeTalkDesc => 'Beszélj javítások nélkül';
+
+  @override
+  String get callModeStudy => 'Tanulás';
+
+  @override
+  String get callModeStudyDesc => 'Egyszerre egy kifejezést tanulj';
+
+  @override
+  String get callModeChange => 'Mód váltása';
+
+  @override
+  String get callModeKeep => 'Most nem';
+
+  @override
+  String get callExitTitle => 'Befejezed a hívást?';
+
+  @override
+  String get callExitSubtitle => 'A most befejezés is felhasznál egy hívást';
+
+  @override
+  String get callExitKeep => 'Beszélgetés folytatása';
+
+  @override
+  String get callExitConfirm => 'Hívás befejezése';
+
+  @override
+  String get callMicMute => 'Némítás';
+
+  @override
+  String get callMicUnmute => 'Némítás feloldása';
+
+  @override
+  String get callPushToTalk => 'Tartsd nyomva a beszédhez';
 }

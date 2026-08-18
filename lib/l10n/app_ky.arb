@@ -630,5 +630,20 @@
   "difficultyFast": "Тез",
   "difficultyLabel": "Татаалдык",
   "connected": "Туташты",
-  "unlockedWithMax": "Max менен жеткиликтүү"
+  "unlockedWithMax": "Max менен жеткиликтүү",
+  "callModeSheetTitle": "Кантип сүйлөшкүңүз келет?",
+  "callModeSheetSubtitle": "Бул чалууга дароо колдонулат",
+  "callModeFreeTalk": "Эркин маек",
+  "callModeFreeTalkDesc": "Оңдоосуз эркин сүйлөшүңүз",
+  "callModeStudy": "Үйрөнүү",
+  "callModeStudyDesc": "Бир жолу бир сөз айкашын үйрөнүңүз",
+  "callModeChange": "Режимди өзгөртүү",
+  "callModeKeep": "Азыр эмес",
+  "callExitTitle": "Чалууну аяктайсызбы?",
+  "callExitSubtitle": "Азыр аяктасаңыз да бир чалуу эсептелет",
+  "callExitKeep": "Сүйлөшүүнү улантуу",
+  "callExitConfirm": "Чалууну аяктоо",
+  "callMicMute": "Үнсүз кылуу",
+  "callMicUnmute": "Үндү күйгүзүү",
+  "callPushToTalk": "Сүйлөш үчүн басып туруңуз"
 }

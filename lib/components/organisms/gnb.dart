@@ -133,6 +133,8 @@ class Gnb extends StatelessWidget {
     String? status,
     Color? statusColor,
     String? caption,
+    VoidCallback? onClose,
+    Widget? trailing,
   }) : this(
           key: key,
           type: GnbType.sub,
@@ -140,6 +142,8 @@ class Gnb extends StatelessWidget {
           status: status,
           statusColor: statusColor,
           caption: caption,
+          onClose: onClose,
+          trailing: trailing,
         );
 
   /// [GnbType.sub2]: mirrored back arrow + centered [title] + close button.
@@ -165,7 +169,7 @@ class Gnb extends StatelessWidget {
   /// Tapped when the back arrow is pressed.
   final VoidCallback? onBack;
 
-  /// Tapped when the close button is pressed ([GnbType.sub2]).
+  /// Tapped when the close button is pressed ([GnbType.sub]/[GnbType.sub2]).
   final VoidCallback? onClose;
 
   /// Progress data for [GnbType.main2].
@@ -183,7 +187,8 @@ class Gnb extends StatelessWidget {
   /// Caption below the title in [GnbType.sub] (e.g. a `00:00:01` timer).
   final String? caption;
 
-  /// Optional widget pinned to the trailing edge ([GnbType.main]/[main2]).
+  /// Optional widget pinned to the trailing edge
+  /// ([GnbType.main]/[main2]/[sub]).
   /// When omitted, a balancing transparent spacer keeps the title centered.
   final Widget? trailing;
 
@@ -292,7 +297,32 @@ class Gnb extends StatelessWidget {
   }
 
   // ── sub: status dot + title + caption (centered column) ─────────
+  /// ## 2026-08-18 — sub 에 좌·우 버튼이 붙었다
+  ///
+  /// 통화 화면 GNB 가 「좌 닫기 · 가운데 상태블록 · 우 대화방식」으로 바뀌었다
+  /// (Figma `GNB type=sub` `162:46472`).
+  ///
+  /// 두 버튼은 [Stack] 으로 **가운데 블록 위에 겹쳐** 놓는다. [Row] 에 나란히 두면
+  /// 상대 이름 길이에 따라 가운데 블록이 좌우로 밀리는데, Figma 는 이름과 무관하게
+  /// 정중앙이다.
+  ///
+  /// [onClose] · [trailing] 이 **둘 다 null 이면 종전과 완전히 같은 컬럼**이다 —
+  /// 기존 호출부는 영향받지 않는다.
   Widget _buildSub(BuildContext context) {
+    final column = _buildSubColumn(context);
+    if (onClose == null && trailing == null) return column;
+    return Stack(
+      alignment: Alignment.topCenter,
+      children: [
+        column,
+        if (onClose != null)
+          Positioned(left: 0, top: 0, child: _CloseButton(onTap: onClose)),
+        if (trailing != null) Positioned(right: 0, top: 0, child: trailing!),
+      ],
+    );
+  }
+
+  Widget _buildSubColumn(BuildContext context) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.center,

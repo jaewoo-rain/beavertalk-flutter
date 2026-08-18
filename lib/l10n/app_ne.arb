@@ -630,5 +630,20 @@
   "difficultyFast": "छिटो",
   "difficultyLabel": "कठिनाइ",
   "connected": "जडान भयो",
-  "unlockedWithMax": "Max सँग उपलब्ध"
+  "unlockedWithMax": "Max सँग उपलब्ध",
+  "callModeSheetTitle": "तपाईं कसरी कुरा गर्न चाहनुहुन्छ?",
+  "callModeSheetSubtitle": "यो कलमा तुरुन्तै लागू हुन्छ",
+  "callModeFreeTalk": "स्वतन्त्र कुराकानी",
+  "callModeFreeTalkDesc": "सुधार बिना कुरा गर्नुहोस्",
+  "callModeStudy": "अभ्यास",
+  "callModeStudyDesc": "एक पटकमा एउटा अभिव्यक्ति सिक्नुहोस्",
+  "callModeChange": "मोड बदल्नुहोस्",
+  "callModeKeep": "अहिले होइन",
+  "callExitTitle": "कल समाप्त गर्ने?",
+  "callExitSubtitle": "अहिले समाप्त गरे पनि एक कल गनिन्छ",
+  "callExitKeep": "कुरा जारी राख्नुहोस्",
+  "callExitConfirm": "कल समाप्त गर्नुहोस्",
+  "callMicMute": "म्युट",
+  "callMicUnmute": "अनम्युट",
+  "callPushToTalk": "बोल्न थिचिराख्नुहोस्"
 }

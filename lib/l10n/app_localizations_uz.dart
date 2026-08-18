@@ -2126,4 +2126,50 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max bilan mavjud';
+
+  @override
+  String get callModeSheetTitle => 'Qanday suhbatlashmoqchisiz?';
+
+  @override
+  String get callModeSheetSubtitle => 'Ushbu qo‘ng‘iroqqa darhol qo‘llanadi';
+
+  @override
+  String get callModeFreeTalk => 'Erkin suhbat';
+
+  @override
+  String get callModeFreeTalkDesc => 'Tuzatishlarsiz suhbatlashing';
+
+  @override
+  String get callModeStudy => 'O‘rganish';
+
+  @override
+  String get callModeStudyDesc => 'Bir vaqtda bitta iborani o‘rganing';
+
+  @override
+  String get callModeChange => 'Rejimni o‘zgartirish';
+
+  @override
+  String get callModeKeep => 'Hozir emas';
+
+  @override
+  String get callExitTitle => 'Qo‘ng‘iroq tugatilsinmi?';
+
+  @override
+  String get callExitSubtitle =>
+      'Hozir tugatsangiz ham bitta qo‘ng‘iroq hisoblanadi';
+
+  @override
+  String get callExitKeep => 'Suhbatni davom ettirish';
+
+  @override
+  String get callExitConfirm => 'Qo‘ng‘iroqni tugatish';
+
+  @override
+  String get callMicMute => 'Ovozni o‘chirish';
+
+  @override
+  String get callMicUnmute => 'Ovozni yoqish';
+
+  @override
+  String get callPushToTalk => 'Gapirish uchun bosib turing';
 }

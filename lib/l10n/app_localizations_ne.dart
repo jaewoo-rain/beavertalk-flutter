@@ -2103,4 +2103,49 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max सँग उपलब्ध';
+
+  @override
+  String get callModeSheetTitle => 'तपाईं कसरी कुरा गर्न चाहनुहुन्छ?';
+
+  @override
+  String get callModeSheetSubtitle => 'यो कलमा तुरुन्तै लागू हुन्छ';
+
+  @override
+  String get callModeFreeTalk => 'स्वतन्त्र कुराकानी';
+
+  @override
+  String get callModeFreeTalkDesc => 'सुधार बिना कुरा गर्नुहोस्';
+
+  @override
+  String get callModeStudy => 'अभ्यास';
+
+  @override
+  String get callModeStudyDesc => 'एक पटकमा एउटा अभिव्यक्ति सिक्नुहोस्';
+
+  @override
+  String get callModeChange => 'मोड बदल्नुहोस्';
+
+  @override
+  String get callModeKeep => 'अहिले होइन';
+
+  @override
+  String get callExitTitle => 'कल समाप्त गर्ने?';
+
+  @override
+  String get callExitSubtitle => 'अहिले समाप्त गरे पनि एक कल गनिन्छ';
+
+  @override
+  String get callExitKeep => 'कुरा जारी राख्नुहोस्';
+
+  @override
+  String get callExitConfirm => 'कल समाप्त गर्नुहोस्';
+
+  @override
+  String get callMicMute => 'म्युट';
+
+  @override
+  String get callMicUnmute => 'अनम्युट';
+
+  @override
+  String get callPushToTalk => 'बोल्न थिचिराख्नुहोस्';
 }

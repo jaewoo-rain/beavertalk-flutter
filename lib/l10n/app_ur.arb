@@ -630,5 +630,20 @@
   "difficultyFast": "تیز",
   "difficultyLabel": "دشواری",
   "connected": "منسلک",
-  "unlockedWithMax": "Max کے ساتھ دستیاب"
+  "unlockedWithMax": "Max کے ساتھ دستیاب",
+  "callModeSheetTitle": "آپ کیسے بات کرنا چاہتے ہیں؟",
+  "callModeSheetSubtitle": "یہ کال پر فوراً لاگو ہوگا",
+  "callModeFreeTalk": "آزاد گفتگو",
+  "callModeFreeTalkDesc": "بغیر اصلاح کے بات کریں",
+  "callModeStudy": "مشق",
+  "callModeStudyDesc": "ایک وقت میں ایک جملہ سیکھیں",
+  "callModeChange": "موڈ تبدیل کریں",
+  "callModeKeep": "ابھی نہیں",
+  "callExitTitle": "کال ختم کریں؟",
+  "callExitSubtitle": "ابھی ختم کرنے پر بھی ایک کال شمار ہوگی",
+  "callExitKeep": "بات جاری رکھیں",
+  "callExitConfirm": "کال ختم کریں",
+  "callMicMute": "خاموش کریں",
+  "callMicUnmute": "آواز کھولیں",
+  "callPushToTalk": "بولنے کے لیے دبائے رکھیں"
 }

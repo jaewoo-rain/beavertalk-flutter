@@ -2106,4 +2106,49 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max দিয়ে ব্যবহারযোগ্য';
+
+  @override
+  String get callModeSheetTitle => 'আপনি কীভাবে কথা বলতে চান?';
+
+  @override
+  String get callModeSheetSubtitle => 'এই কলে সঙ্গে সঙ্গে প্রযোজ্য';
+
+  @override
+  String get callModeFreeTalk => 'মুক্ত আলাপ';
+
+  @override
+  String get callModeFreeTalkDesc => 'সংশোধন ছাড়াই কথা বলুন';
+
+  @override
+  String get callModeStudy => 'অনুশীলন';
+
+  @override
+  String get callModeStudyDesc => 'একবারে একটি অভিব্যক্তি শিখুন';
+
+  @override
+  String get callModeChange => 'মোড বদলান';
+
+  @override
+  String get callModeKeep => 'এখন নয়';
+
+  @override
+  String get callExitTitle => 'কল শেষ করবেন?';
+
+  @override
+  String get callExitSubtitle => 'এখন শেষ করলেও একটি কল গণনা হবে';
+
+  @override
+  String get callExitKeep => 'কথা চালিয়ে যান';
+
+  @override
+  String get callExitConfirm => 'কল শেষ করুন';
+
+  @override
+  String get callMicMute => 'মিউট';
+
+  @override
+  String get callMicUnmute => 'আনমিউট';
+
+  @override
+  String get callPushToTalk => 'বলতে চেপে ধরুন';
 }

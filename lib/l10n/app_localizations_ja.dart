@@ -2046,4 +2046,49 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max で利用可能';
+
+  @override
+  String get callModeSheetTitle => 'どのように話しますか？';
+
+  @override
+  String get callModeSheetSubtitle => 'この通話にすぐ反映されます';
+
+  @override
+  String get callModeFreeTalk => 'フリートーク';
+
+  @override
+  String get callModeFreeTalkDesc => '訂正なしで気軽に話す';
+
+  @override
+  String get callModeStudy => '表現学習';
+
+  @override
+  String get callModeStudyDesc => '表現を一つずつ学び発音を直す';
+
+  @override
+  String get callModeChange => '話し方を変える';
+
+  @override
+  String get callModeKeep => '閉じる';
+
+  @override
+  String get callExitTitle => '通話を終了しますか？';
+
+  @override
+  String get callExitSubtitle => '今終了しても本日の通話1回が消費されます';
+
+  @override
+  String get callExitKeep => '通話を続ける';
+
+  @override
+  String get callExitConfirm => '通話終了';
+
+  @override
+  String get callMicMute => 'ミュート';
+
+  @override
+  String get callMicUnmute => 'ミュート解除';
+
+  @override
+  String get callPushToTalk => '押しながら話す';
 }

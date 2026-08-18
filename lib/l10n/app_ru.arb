@@ -630,5 +630,20 @@
   "difficultyFast": "Быстро",
   "difficultyLabel": "Сложность",
   "connected": "Подключено",
-  "unlockedWithMax": "Доступно с Max"
+  "unlockedWithMax": "Доступно с Max",
+  "callModeSheetTitle": "Как хочешь говорить?",
+  "callModeSheetSubtitle": "Применится к этому звонку сразу",
+  "callModeFreeTalk": "Свободный разговор",
+  "callModeFreeTalkDesc": "Говори без исправлений",
+  "callModeStudy": "Изучение",
+  "callModeStudyDesc": "Учи по одному выражению за раз",
+  "callModeChange": "Сменить режим",
+  "callModeKeep": "Не сейчас",
+  "callExitTitle": "Завершить звонок?",
+  "callExitSubtitle": "Завершение сейчас всё равно использует один звонок",
+  "callExitKeep": "Продолжить разговор",
+  "callExitConfirm": "Завершить звонок",
+  "callMicMute": "Выключить микрофон",
+  "callMicUnmute": "Включить микрофон",
+  "callPushToTalk": "Удерживай, чтобы говорить"
 }

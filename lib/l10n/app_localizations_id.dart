@@ -2119,4 +2119,50 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Tersedia dengan Max';
+
+  @override
+  String get callModeSheetTitle => 'Mau ngobrol seperti apa?';
+
+  @override
+  String get callModeSheetSubtitle => 'Langsung berlaku untuk panggilan ini';
+
+  @override
+  String get callModeFreeTalk => 'Obrolan bebas';
+
+  @override
+  String get callModeFreeTalkDesc => 'Bicara tanpa koreksi';
+
+  @override
+  String get callModeStudy => 'Belajar';
+
+  @override
+  String get callModeStudyDesc => 'Pelajari satu ungkapan sekaligus';
+
+  @override
+  String get callModeChange => 'Ubah mode';
+
+  @override
+  String get callModeKeep => 'Nanti saja';
+
+  @override
+  String get callExitTitle => 'Akhiri panggilan ini?';
+
+  @override
+  String get callExitSubtitle =>
+      'Mengakhiri sekarang tetap memakai satu panggilan';
+
+  @override
+  String get callExitKeep => 'Lanjut bicara';
+
+  @override
+  String get callExitConfirm => 'Akhiri panggilan';
+
+  @override
+  String get callMicMute => 'Bisukan';
+
+  @override
+  String get callMicUnmute => 'Nyalakan mikrofon';
+
+  @override
+  String get callPushToTalk => 'Tahan untuk bicara';
 }

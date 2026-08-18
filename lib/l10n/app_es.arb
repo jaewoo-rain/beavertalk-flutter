@@ -630,5 +630,20 @@
   "difficultyFast": "Rápido",
   "difficultyLabel": "Dificultad",
   "connected": "Conectado",
-  "unlockedWithMax": "Disponible con Max"
+  "unlockedWithMax": "Disponible con Max",
+  "callModeSheetTitle": "¿Cómo quieres hablar?",
+  "callModeSheetSubtitle": "Se aplica a esta llamada de inmediato",
+  "callModeFreeTalk": "Charla libre",
+  "callModeFreeTalkDesc": "Habla sin correcciones",
+  "callModeStudy": "Estudio",
+  "callModeStudyDesc": "Aprende una expresión a la vez",
+  "callModeChange": "Cambiar modo",
+  "callModeKeep": "Ahora no",
+  "callExitTitle": "¿Terminar la llamada?",
+  "callExitSubtitle": "Terminar ahora igual consume una de tus llamadas",
+  "callExitKeep": "Seguir hablando",
+  "callExitConfirm": "Finalizar llamada",
+  "callMicMute": "Silenciar",
+  "callMicUnmute": "Activar micrófono",
+  "callPushToTalk": "Mantén para hablar"
 }

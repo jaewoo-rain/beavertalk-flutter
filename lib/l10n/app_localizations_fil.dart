@@ -2125,4 +2125,51 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Available sa Max';
+
+  @override
+  String get callModeSheetTitle => 'Paano mo gustong mag-usap?';
+
+  @override
+  String get callModeSheetSubtitle => 'Agad na mag-aaply sa tawag na ito';
+
+  @override
+  String get callModeFreeTalk => 'Malayang usapan';
+
+  @override
+  String get callModeFreeTalkDesc => 'Mag-usap nang walang pagwawasto';
+
+  @override
+  String get callModeStudy => 'Pag-aaral';
+
+  @override
+  String get callModeStudyDesc =>
+      'Matuto ng isang ekspresyon sa bawat pagkakataon';
+
+  @override
+  String get callModeChange => 'Palitan ang mode';
+
+  @override
+  String get callModeKeep => 'Hindi muna';
+
+  @override
+  String get callExitTitle => 'Tapusin ang tawag?';
+
+  @override
+  String get callExitSubtitle =>
+      'Kahit tapusin ngayon, gagamit pa rin ng isang tawag';
+
+  @override
+  String get callExitKeep => 'Magpatuloy sa pag-uusap';
+
+  @override
+  String get callExitConfirm => 'Tapusin ang tawag';
+
+  @override
+  String get callMicMute => 'I-mute';
+
+  @override
+  String get callMicUnmute => 'I-unmute';
+
+  @override
+  String get callPushToTalk => 'Pindutin nang matagal para magsalita';
 }

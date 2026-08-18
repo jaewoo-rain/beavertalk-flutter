@@ -630,5 +630,20 @@
   "difficultyFast": "မြန်",
   "difficultyLabel": "အခက်အခဲအဆင့်",
   "connected": "ချိတ်ဆက်ပြီး",
-  "unlockedWithMax": "Max ဖြင့် ရနိုင်သည်"
+  "unlockedWithMax": "Max ဖြင့် ရနိုင်သည်",
+  "callModeSheetTitle": "ဘယ်လိုစကားပြောချင်ပါသလဲ။",
+  "callModeSheetSubtitle": "ဤခေါ်ဆိုမှုတွင် ချက်ချင်းသက်ရောက်သည်",
+  "callModeFreeTalk": "လွတ်လပ်စွာစကားပြော",
+  "callModeFreeTalkDesc": "ပြင်ဆင်မှုမပါဘဲ စကားပြောပါ",
+  "callModeStudy": "လေ့လာခြင်း",
+  "callModeStudyDesc": "အသုံးအနှုန်းတစ်ခုချင်း လေ့လာပါ",
+  "callModeChange": "မုဒ်ပြောင်းရန်",
+  "callModeKeep": "ယခုမဟုတ်ပါ",
+  "callExitTitle": "ခေါ်ဆိုမှုကို အဆုံးသတ်မလား။",
+  "callExitSubtitle": "ယခုအဆုံးသတ်လျှင်လည်း ယနေ့ခေါ်ဆိုမှုတစ်ကြိမ် ကုန်ပါမည်",
+  "callExitKeep": "ဆက်ပြောပါ",
+  "callExitConfirm": "ခေါ်ဆိုမှုအဆုံးသတ်ရန်",
+  "callMicMute": "အသံပိတ်",
+  "callMicUnmute": "အသံဖွင့်",
+  "callPushToTalk": "ပြောရန် ဖိထားပါ"
 }

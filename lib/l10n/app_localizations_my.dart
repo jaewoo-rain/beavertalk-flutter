@@ -2123,4 +2123,50 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max ဖြင့် ရနိုင်သည်';
+
+  @override
+  String get callModeSheetTitle => 'ဘယ်လိုစကားပြောချင်ပါသလဲ။';
+
+  @override
+  String get callModeSheetSubtitle => 'ဤခေါ်ဆိုမှုတွင် ချက်ချင်းသက်ရောက်သည်';
+
+  @override
+  String get callModeFreeTalk => 'လွတ်လပ်စွာစကားပြော';
+
+  @override
+  String get callModeFreeTalkDesc => 'ပြင်ဆင်မှုမပါဘဲ စကားပြောပါ';
+
+  @override
+  String get callModeStudy => 'လေ့လာခြင်း';
+
+  @override
+  String get callModeStudyDesc => 'အသုံးအနှုန်းတစ်ခုချင်း လေ့လာပါ';
+
+  @override
+  String get callModeChange => 'မုဒ်ပြောင်းရန်';
+
+  @override
+  String get callModeKeep => 'ယခုမဟုတ်ပါ';
+
+  @override
+  String get callExitTitle => 'ခေါ်ဆိုမှုကို အဆုံးသတ်မလား။';
+
+  @override
+  String get callExitSubtitle =>
+      'ယခုအဆုံးသတ်လျှင်လည်း ယနေ့ခေါ်ဆိုမှုတစ်ကြိမ် ကုန်ပါမည်';
+
+  @override
+  String get callExitKeep => 'ဆက်ပြောပါ';
+
+  @override
+  String get callExitConfirm => 'ခေါ်ဆိုမှုအဆုံးသတ်ရန်';
+
+  @override
+  String get callMicMute => 'အသံပိတ်';
+
+  @override
+  String get callMicUnmute => 'အသံဖွင့်';
+
+  @override
+  String get callPushToTalk => 'ပြောရန် ဖိထားပါ';
 }

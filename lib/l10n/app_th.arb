@@ -630,5 +630,20 @@
   "difficultyFast": "เร็ว",
   "difficultyLabel": "ระดับความยาก",
   "connected": "เชื่อมต่อแล้ว",
-  "unlockedWithMax": "ใช้ได้ด้วย Max"
+  "unlockedWithMax": "ใช้ได้ด้วย Max",
+  "callModeSheetTitle": "อยากคุยแบบไหน",
+  "callModeSheetSubtitle": "มีผลกับสายนี้ทันที",
+  "callModeFreeTalk": "คุยอิสระ",
+  "callModeFreeTalkDesc": "คุยสบาย ๆ ไม่มีการแก้",
+  "callModeStudy": "เรียนรู้",
+  "callModeStudyDesc": "เรียนทีละสำนวนและแก้การออกเสียง",
+  "callModeChange": "เปลี่ยนโหมด",
+  "callModeKeep": "ไว้ก่อน",
+  "callExitTitle": "วางสายเลยไหม",
+  "callExitSubtitle": "วางตอนนี้ก็ยังนับเป็นหนึ่งสายของวันนี้",
+  "callExitKeep": "คุยต่อ",
+  "callExitConfirm": "วางสาย",
+  "callMicMute": "ปิดไมค์",
+  "callMicUnmute": "เปิดไมค์",
+  "callPushToTalk": "กดค้างเพื่อพูด"
 }

@@ -630,5 +630,20 @@
   "difficultyFast": "වේගයෙන්",
   "difficultyLabel": "දුෂ්කරතාව",
   "connected": "සම්බන්ධයි",
-  "unlockedWithMax": "Max සමඟ ලබා ගත හැක"
+  "unlockedWithMax": "Max සමඟ ලබා ගත හැක",
+  "callModeSheetTitle": "ඔබට කෙසේ කතා කරන්න ඕනද?",
+  "callModeSheetSubtitle": "මෙම ඇමතුමට වහාම අදාළ වේ",
+  "callModeFreeTalk": "නිදහස් කතාබහ",
+  "callModeFreeTalkDesc": "නිවැරදි කිරීමකින් තොරව කතා කරන්න",
+  "callModeStudy": "ඉගෙනීම",
+  "callModeStudyDesc": "එක් ප්‍රකාශනයක් බැගින් ඉගෙන ගන්න",
+  "callModeChange": "ආකාරය වෙනස් කරන්න",
+  "callModeKeep": "දැන් නොවේ",
+  "callExitTitle": "ඇමතුම අවසන් කරන්නද?",
+  "callExitSubtitle": "දැන් අවසන් කළත් අද ඇමතුමකින් එකක් වැය වේ",
+  "callExitKeep": "කතා කරමින් සිටින්න",
+  "callExitConfirm": "ඇමතුම අවසන් කරන්න",
+  "callMicMute": "නිශ්ශබ්ද",
+  "callMicUnmute": "නිශ්ශබ්දතාව ඉවත් කරන්න",
+  "callPushToTalk": "කතා කිරීමට තද කර තබන්න"
 }

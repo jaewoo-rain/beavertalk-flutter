@@ -2106,4 +2106,49 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max සමඟ ලබා ගත හැක';
+
+  @override
+  String get callModeSheetTitle => 'ඔබට කෙසේ කතා කරන්න ඕනද?';
+
+  @override
+  String get callModeSheetSubtitle => 'මෙම ඇමතුමට වහාම අදාළ වේ';
+
+  @override
+  String get callModeFreeTalk => 'නිදහස් කතාබහ';
+
+  @override
+  String get callModeFreeTalkDesc => 'නිවැරදි කිරීමකින් තොරව කතා කරන්න';
+
+  @override
+  String get callModeStudy => 'ඉගෙනීම';
+
+  @override
+  String get callModeStudyDesc => 'එක් ප්‍රකාශනයක් බැගින් ඉගෙන ගන්න';
+
+  @override
+  String get callModeChange => 'ආකාරය වෙනස් කරන්න';
+
+  @override
+  String get callModeKeep => 'දැන් නොවේ';
+
+  @override
+  String get callExitTitle => 'ඇමතුම අවසන් කරන්නද?';
+
+  @override
+  String get callExitSubtitle => 'දැන් අවසන් කළත් අද ඇමතුමකින් එකක් වැය වේ';
+
+  @override
+  String get callExitKeep => 'කතා කරමින් සිටින්න';
+
+  @override
+  String get callExitConfirm => 'ඇමතුම අවසන් කරන්න';
+
+  @override
+  String get callMicMute => 'නිශ්ශබ්ද';
+
+  @override
+  String get callMicUnmute => 'නිශ්ශබ්දතාව ඉවත් කරන්න';
+
+  @override
+  String get callPushToTalk => 'කතා කිරීමට තද කර තබන්න';
 }

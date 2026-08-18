@@ -2117,4 +2117,50 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Доступно с Max';
+
+  @override
+  String get callModeSheetTitle => 'Как хочешь говорить?';
+
+  @override
+  String get callModeSheetSubtitle => 'Применится к этому звонку сразу';
+
+  @override
+  String get callModeFreeTalk => 'Свободный разговор';
+
+  @override
+  String get callModeFreeTalkDesc => 'Говори без исправлений';
+
+  @override
+  String get callModeStudy => 'Изучение';
+
+  @override
+  String get callModeStudyDesc => 'Учи по одному выражению за раз';
+
+  @override
+  String get callModeChange => 'Сменить режим';
+
+  @override
+  String get callModeKeep => 'Не сейчас';
+
+  @override
+  String get callExitTitle => 'Завершить звонок?';
+
+  @override
+  String get callExitSubtitle =>
+      'Завершение сейчас всё равно использует один звонок';
+
+  @override
+  String get callExitKeep => 'Продолжить разговор';
+
+  @override
+  String get callExitConfirm => 'Завершить звонок';
+
+  @override
+  String get callMicMute => 'Выключить микрофон';
+
+  @override
+  String get callMicUnmute => 'Включить микрофон';
+
+  @override
+  String get callPushToTalk => 'Удерживай, чтобы говорить';
 }

@@ -630,5 +630,20 @@
   "difficultyFast": "はやく",
   "difficultyLabel": "難易度",
   "connected": "接続済み",
-  "unlockedWithMax": "Max で利用可能"
+  "unlockedWithMax": "Max で利用可能",
+  "callModeSheetTitle": "どのように話しますか？",
+  "callModeSheetSubtitle": "この通話にすぐ反映されます",
+  "callModeFreeTalk": "フリートーク",
+  "callModeFreeTalkDesc": "訂正なしで気軽に話す",
+  "callModeStudy": "表現学習",
+  "callModeStudyDesc": "表現を一つずつ学び発音を直す",
+  "callModeChange": "話し方を変える",
+  "callModeKeep": "閉じる",
+  "callExitTitle": "通話を終了しますか？",
+  "callExitSubtitle": "今終了しても本日の通話1回が消費されます",
+  "callExitKeep": "通話を続ける",
+  "callExitConfirm": "通話終了",
+  "callMicMute": "ミュート",
+  "callMicUnmute": "ミュート解除",
+  "callPushToTalk": "押しながら話す"
 }

@@ -630,5 +630,20 @@
   "difficultyFast": "Mabilis",
   "difficultyLabel": "Antas ng hirap",
   "connected": "Nakakonekta",
-  "unlockedWithMax": "Available sa Max"
+  "unlockedWithMax": "Available sa Max",
+  "callModeSheetTitle": "Paano mo gustong mag-usap?",
+  "callModeSheetSubtitle": "Agad na mag-aaply sa tawag na ito",
+  "callModeFreeTalk": "Malayang usapan",
+  "callModeFreeTalkDesc": "Mag-usap nang walang pagwawasto",
+  "callModeStudy": "Pag-aaral",
+  "callModeStudyDesc": "Matuto ng isang ekspresyon sa bawat pagkakataon",
+  "callModeChange": "Palitan ang mode",
+  "callModeKeep": "Hindi muna",
+  "callExitTitle": "Tapusin ang tawag?",
+  "callExitSubtitle": "Kahit tapusin ngayon, gagamit pa rin ng isang tawag",
+  "callExitKeep": "Magpatuloy sa pag-uusap",
+  "callExitConfirm": "Tapusin ang tawag",
+  "callMicMute": "I-mute",
+  "callMicUnmute": "I-unmute",
+  "callPushToTalk": "Pindutin nang matagal para magsalita"
 }

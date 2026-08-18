@@ -630,5 +630,20 @@
   "difficultyFast": "Laju",
   "difficultyLabel": "Tahap kesukaran",
   "connected": "Disambungkan",
-  "unlockedWithMax": "Tersedia dengan Max"
+  "unlockedWithMax": "Tersedia dengan Max",
+  "callModeSheetTitle": "Bagaimana anda mahu bercakap?",
+  "callModeSheetSubtitle": "Berkuat kuasa serta-merta untuk panggilan ini",
+  "callModeFreeTalk": "Sembang bebas",
+  "callModeFreeTalkDesc": "Bercakap tanpa pembetulan",
+  "callModeStudy": "Belajar",
+  "callModeStudyDesc": "Pelajari satu ungkapan pada satu masa",
+  "callModeChange": "Tukar mod",
+  "callModeKeep": "Bukan sekarang",
+  "callExitTitle": "Tamatkan panggilan ini?",
+  "callExitSubtitle": "Menamatkan sekarang tetap menggunakan satu panggilan",
+  "callExitKeep": "Teruskan bercakap",
+  "callExitConfirm": "Tamatkan panggilan",
+  "callMicMute": "Bisu",
+  "callMicUnmute": "Nyahbisu",
+  "callPushToTalk": "Tahan untuk bercakap"
 }

@@ -3987,6 +3987,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available with Max'**
   String get unlockedWithMax;
+
+  /// Mode sheet - heading. Asks how the learner wants to talk in this call.
+  ///
+  /// In en, this message translates to:
+  /// **'How do you want to talk?'**
+  String get callModeSheetTitle;
+
+  /// Mode sheet - subheading. The choice applies to the current call immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Applies to this call right away'**
+  String get callModeSheetSubtitle;
+
+  /// Mode sheet - the Free Talk mode name (streaming conversation, no corrections).
+  ///
+  /// In en, this message translates to:
+  /// **'Free Talk'**
+  String get callModeFreeTalk;
+
+  /// Mode sheet - one-line description of Free Talk.
+  ///
+  /// In en, this message translates to:
+  /// **'Just talk — no corrections'**
+  String get callModeFreeTalkDesc;
+
+  /// Mode sheet - the Study mode name (turn-based expression drill).
+  ///
+  /// In en, this message translates to:
+  /// **'Study'**
+  String get callModeStudy;
+
+  /// Mode sheet - one-line description of Study.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn one expression at a time'**
+  String get callModeStudyDesc;
+
+  /// Mode sheet - confirm button, and the label of the call header button that opens the sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Change mode'**
+  String get callModeChange;
+
+  /// Mode sheet - dismiss button. Closes without changing the mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get callModeKeep;
+
+  /// End-call dialog - heading.
+  ///
+  /// In en, this message translates to:
+  /// **'End this call?'**
+  String get callExitTitle;
+
+  /// End-call dialog - body. Warns the call is still counted against the daily quota.
+  ///
+  /// In en, this message translates to:
+  /// **'Ending now still uses one of your calls'**
+  String get callExitSubtitle;
+
+  /// End-call dialog - stay in the call.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep talking'**
+  String get callExitKeep;
+
+  /// End-call dialog - confirm hanging up.
+  ///
+  /// In en, this message translates to:
+  /// **'End call'**
+  String get callExitConfirm;
+
+  /// Live call - accessibility label for the mic button when the mic is open.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute'**
+  String get callMicMute;
+
+  /// Live call - accessibility label for the mic button when muted.
+  ///
+  /// In en, this message translates to:
+  /// **'Unmute'**
+  String get callMicUnmute;
+
+  /// Study call - accessibility label for the hold-to-talk button.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to talk'**
+  String get callPushToTalk;
 }
 
 class _AppLocalizationsDelegate

@@ -2111,4 +2111,49 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Có sẵn với Max';
+
+  @override
+  String get callModeSheetTitle => 'Bạn muốn trò chuyện thế nào?';
+
+  @override
+  String get callModeSheetSubtitle => 'Áp dụng ngay cho cuộc gọi này';
+
+  @override
+  String get callModeFreeTalk => 'Trò chuyện tự do';
+
+  @override
+  String get callModeFreeTalkDesc => 'Nói thoải mái, không sửa lỗi';
+
+  @override
+  String get callModeStudy => 'Học biểu đạt';
+
+  @override
+  String get callModeStudyDesc => 'Học từng mẫu câu và sửa phát âm';
+
+  @override
+  String get callModeChange => 'Đổi chế độ';
+
+  @override
+  String get callModeKeep => 'Để sau';
+
+  @override
+  String get callExitTitle => 'Kết thúc cuộc gọi?';
+
+  @override
+  String get callExitSubtitle => 'Kết thúc bây giờ vẫn dùng hết một lượt gọi';
+
+  @override
+  String get callExitKeep => 'Tiếp tục nói';
+
+  @override
+  String get callExitConfirm => 'Kết thúc cuộc gọi';
+
+  @override
+  String get callMicMute => 'Tắt tiếng';
+
+  @override
+  String get callMicUnmute => 'Bật tiếng';
+
+  @override
+  String get callPushToTalk => 'Giữ để nói';
 }

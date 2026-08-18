@@ -2041,4 +2041,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max 可用';
+
+  @override
+  String get callModeSheetTitle => '你想怎么聊？';
+
+  @override
+  String get callModeSheetSubtitle => '立即应用于本次通话';
+
+  @override
+  String get callModeFreeTalk => '自由聊天';
+
+  @override
+  String get callModeFreeTalkDesc => '轻松交谈，不做纠正';
+
+  @override
+  String get callModeStudy => '表达学习';
+
+  @override
+  String get callModeStudyDesc => '逐句学习表达并纠正发音';
+
+  @override
+  String get callModeChange => '更改模式';
+
+  @override
+  String get callModeKeep => '关闭';
+
+  @override
+  String get callExitTitle => '要结束通话吗？';
+
+  @override
+  String get callExitSubtitle => '现在结束仍会消耗今天的一次通话';
+
+  @override
+  String get callExitKeep => '继续通话';
+
+  @override
+  String get callExitConfirm => '结束通话';
+
+  @override
+  String get callMicMute => '静音';
+
+  @override
+  String get callMicUnmute => '取消静音';
+
+  @override
+  String get callPushToTalk => '按住说话';
 }

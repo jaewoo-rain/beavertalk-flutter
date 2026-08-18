@@ -2131,4 +2131,49 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Disponível com Max';
+
+  @override
+  String get callModeSheetTitle => 'Como você quer conversar?';
+
+  @override
+  String get callModeSheetSubtitle => 'Aplica-se a esta chamada imediatamente';
+
+  @override
+  String get callModeFreeTalk => 'Conversa livre';
+
+  @override
+  String get callModeFreeTalkDesc => 'Fale sem correções';
+
+  @override
+  String get callModeStudy => 'Estudo';
+
+  @override
+  String get callModeStudyDesc => 'Aprenda uma expressão de cada vez';
+
+  @override
+  String get callModeChange => 'Mudar modo';
+
+  @override
+  String get callModeKeep => 'Agora não';
+
+  @override
+  String get callExitTitle => 'Encerrar esta chamada?';
+
+  @override
+  String get callExitSubtitle => 'Encerrar agora ainda consome uma chamada';
+
+  @override
+  String get callExitKeep => 'Continuar falando';
+
+  @override
+  String get callExitConfirm => 'Encerrar chamada';
+
+  @override
+  String get callMicMute => 'Silenciar';
+
+  @override
+  String get callMicUnmute => 'Reativar microfone';
+
+  @override
+  String get callPushToTalk => 'Segure para falar';
 }

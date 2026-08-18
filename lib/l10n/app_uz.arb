@@ -630,5 +630,20 @@
   "difficultyFast": "Tez",
   "difficultyLabel": "Murakkablik",
   "connected": "Ulandi",
-  "unlockedWithMax": "Max bilan mavjud"
+  "unlockedWithMax": "Max bilan mavjud",
+  "callModeSheetTitle": "Qanday suhbatlashmoqchisiz?",
+  "callModeSheetSubtitle": "Ushbu qo‘ng‘iroqqa darhol qo‘llanadi",
+  "callModeFreeTalk": "Erkin suhbat",
+  "callModeFreeTalkDesc": "Tuzatishlarsiz suhbatlashing",
+  "callModeStudy": "O‘rganish",
+  "callModeStudyDesc": "Bir vaqtda bitta iborani o‘rganing",
+  "callModeChange": "Rejimni o‘zgartirish",
+  "callModeKeep": "Hozir emas",
+  "callExitTitle": "Qo‘ng‘iroq tugatilsinmi?",
+  "callExitSubtitle": "Hozir tugatsangiz ham bitta qo‘ng‘iroq hisoblanadi",
+  "callExitKeep": "Suhbatni davom ettirish",
+  "callExitConfirm": "Qo‘ng‘iroqni tugatish",
+  "callMicMute": "Ovozni o‘chirish",
+  "callMicUnmute": "Ovozni yoqish",
+  "callPushToTalk": "Gapirish uchun bosib turing"
 }

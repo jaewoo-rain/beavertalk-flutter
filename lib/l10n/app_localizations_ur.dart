@@ -2110,4 +2110,49 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max کے ساتھ دستیاب';
+
+  @override
+  String get callModeSheetTitle => 'آپ کیسے بات کرنا چاہتے ہیں؟';
+
+  @override
+  String get callModeSheetSubtitle => 'یہ کال پر فوراً لاگو ہوگا';
+
+  @override
+  String get callModeFreeTalk => 'آزاد گفتگو';
+
+  @override
+  String get callModeFreeTalkDesc => 'بغیر اصلاح کے بات کریں';
+
+  @override
+  String get callModeStudy => 'مشق';
+
+  @override
+  String get callModeStudyDesc => 'ایک وقت میں ایک جملہ سیکھیں';
+
+  @override
+  String get callModeChange => 'موڈ تبدیل کریں';
+
+  @override
+  String get callModeKeep => 'ابھی نہیں';
+
+  @override
+  String get callExitTitle => 'کال ختم کریں؟';
+
+  @override
+  String get callExitSubtitle => 'ابھی ختم کرنے پر بھی ایک کال شمار ہوگی';
+
+  @override
+  String get callExitKeep => 'بات جاری رکھیں';
+
+  @override
+  String get callExitConfirm => 'کال ختم کریں';
+
+  @override
+  String get callMicMute => 'خاموش کریں';
+
+  @override
+  String get callMicUnmute => 'آواز کھولیں';
+
+  @override
+  String get callPushToTalk => 'بولنے کے لیے دبائے رکھیں';
 }

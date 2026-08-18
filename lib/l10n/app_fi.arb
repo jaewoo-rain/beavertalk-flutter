@@ -630,5 +630,20 @@
   "difficultyFast": "Nopea",
   "difficultyLabel": "Vaikeustaso",
   "connected": "Yhdistetty",
-  "unlockedWithMax": "Käytettävissä Maxilla"
+  "unlockedWithMax": "Käytettävissä Maxilla",
+  "callModeSheetTitle": "Miten haluat jutella?",
+  "callModeSheetSubtitle": "Astuu voimaan heti tässä puhelussa",
+  "callModeFreeTalk": "Vapaa juttelu",
+  "callModeFreeTalkDesc": "Juttele ilman korjauksia",
+  "callModeStudy": "Opiskelu",
+  "callModeStudyDesc": "Opettele yksi ilmaus kerrallaan",
+  "callModeChange": "Vaihda tila",
+  "callModeKeep": "Ei nyt",
+  "callExitTitle": "Lopetetaanko puhelu?",
+  "callExitSubtitle": "Lopettaminen nyt kuluttaa silti yhden puhelun",
+  "callExitKeep": "Jatka puhumista",
+  "callExitConfirm": "Lopeta puhelu",
+  "callMicMute": "Mykistä",
+  "callMicUnmute": "Poista mykistys",
+  "callPushToTalk": "Pidä pohjassa puhuaksesi"
 }

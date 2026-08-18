@@ -2112,4 +2112,49 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max ile kullanılabilir';
+
+  @override
+  String get callModeSheetTitle => 'Nasıl konuşmak istersin?';
+
+  @override
+  String get callModeSheetSubtitle => 'Bu aramaya hemen uygulanır';
+
+  @override
+  String get callModeFreeTalk => 'Serbest sohbet';
+
+  @override
+  String get callModeFreeTalkDesc => 'Düzeltme olmadan konuş';
+
+  @override
+  String get callModeStudy => 'Çalışma';
+
+  @override
+  String get callModeStudyDesc => 'Her seferinde bir ifade öğren';
+
+  @override
+  String get callModeChange => 'Modu değiştir';
+
+  @override
+  String get callModeKeep => 'Şimdi değil';
+
+  @override
+  String get callExitTitle => 'Arama sonlandırılsın mı?';
+
+  @override
+  String get callExitSubtitle => 'Şimdi bitirmek yine de bir aramanı kullanır';
+
+  @override
+  String get callExitKeep => 'Konuşmaya devam et';
+
+  @override
+  String get callExitConfirm => 'Aramayı bitir';
+
+  @override
+  String get callMicMute => 'Sesi kapat';
+
+  @override
+  String get callMicUnmute => 'Sesi aç';
+
+  @override
+  String get callPushToTalk => 'Konuşmak için basılı tut';
 }

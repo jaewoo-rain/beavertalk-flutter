@@ -630,5 +630,20 @@
   "difficultyFast": "Хурдан",
   "difficultyLabel": "Хүндрэл",
   "connected": "Холбогдсон",
-  "unlockedWithMax": "Max-аар ашиглах боломжтой"
+  "unlockedWithMax": "Max-аар ашиглах боломжтой",
+  "callModeSheetTitle": "Та яаж ярихыг хүсэж байна?",
+  "callModeSheetSubtitle": "Энэ дуудлагад шууд хэрэгжинэ",
+  "callModeFreeTalk": "Чөлөөт яриа",
+  "callModeFreeTalkDesc": "Засваргүйгээр чөлөөтэй ярь",
+  "callModeStudy": "Суралцах",
+  "callModeStudyDesc": "Нэг удаад нэг хэллэг сурна",
+  "callModeChange": "Горим солих",
+  "callModeKeep": "Одоо биш",
+  "callExitTitle": "Дуудлагыг дуусгах уу?",
+  "callExitSubtitle": "Одоо дуусгасан ч өнөөдрийн нэг дуудлага зарцуулагдана",
+  "callExitKeep": "Үргэлжлүүлэн ярих",
+  "callExitConfirm": "Дуудлагыг дуусгах",
+  "callMicMute": "Дуу хаах",
+  "callMicUnmute": "Дуу нээх",
+  "callPushToTalk": "Ярихын тулд дараад байна уу"
 }

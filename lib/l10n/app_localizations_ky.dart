@@ -2116,4 +2116,49 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max менен жеткиликтүү';
+
+  @override
+  String get callModeSheetTitle => 'Кантип сүйлөшкүңүз келет?';
+
+  @override
+  String get callModeSheetSubtitle => 'Бул чалууга дароо колдонулат';
+
+  @override
+  String get callModeFreeTalk => 'Эркин маек';
+
+  @override
+  String get callModeFreeTalkDesc => 'Оңдоосуз эркин сүйлөшүңүз';
+
+  @override
+  String get callModeStudy => 'Үйрөнүү';
+
+  @override
+  String get callModeStudyDesc => 'Бир жолу бир сөз айкашын үйрөнүңүз';
+
+  @override
+  String get callModeChange => 'Режимди өзгөртүү';
+
+  @override
+  String get callModeKeep => 'Азыр эмес';
+
+  @override
+  String get callExitTitle => 'Чалууну аяктайсызбы?';
+
+  @override
+  String get callExitSubtitle => 'Азыр аяктасаңыз да бир чалуу эсептелет';
+
+  @override
+  String get callExitKeep => 'Сүйлөшүүнү улантуу';
+
+  @override
+  String get callExitConfirm => 'Чалууну аяктоо';
+
+  @override
+  String get callMicMute => 'Үнсүз кылуу';
+
+  @override
+  String get callMicUnmute => 'Үндү күйгүзүү';
+
+  @override
+  String get callPushToTalk => 'Сүйлөш үчүн басып туруңуз';
 }

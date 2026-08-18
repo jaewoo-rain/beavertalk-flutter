@@ -630,5 +630,20 @@
   "difficultyFast": "Hızlı",
   "difficultyLabel": "Zorluk",
   "connected": "Bağlandı",
-  "unlockedWithMax": "Max ile kullanılabilir"
+  "unlockedWithMax": "Max ile kullanılabilir",
+  "callModeSheetTitle": "Nasıl konuşmak istersin?",
+  "callModeSheetSubtitle": "Bu aramaya hemen uygulanır",
+  "callModeFreeTalk": "Serbest sohbet",
+  "callModeFreeTalkDesc": "Düzeltme olmadan konuş",
+  "callModeStudy": "Çalışma",
+  "callModeStudyDesc": "Her seferinde bir ifade öğren",
+  "callModeChange": "Modu değiştir",
+  "callModeKeep": "Şimdi değil",
+  "callExitTitle": "Arama sonlandırılsın mı?",
+  "callExitSubtitle": "Şimdi bitirmek yine de bir aramanı kullanır",
+  "callExitKeep": "Konuşmaya devam et",
+  "callExitConfirm": "Aramayı bitir",
+  "callMicMute": "Sesi kapat",
+  "callMicUnmute": "Sesi aç",
+  "callPushToTalk": "Konuşmak için basılı tut"
 }

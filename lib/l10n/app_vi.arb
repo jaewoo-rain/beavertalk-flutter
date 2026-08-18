@@ -630,5 +630,20 @@
   "difficultyFast": "Nhanh",
   "difficultyLabel": "Độ khó",
   "connected": "Đã kết nối",
-  "unlockedWithMax": "Có sẵn với Max"
+  "unlockedWithMax": "Có sẵn với Max",
+  "callModeSheetTitle": "Bạn muốn trò chuyện thế nào?",
+  "callModeSheetSubtitle": "Áp dụng ngay cho cuộc gọi này",
+  "callModeFreeTalk": "Trò chuyện tự do",
+  "callModeFreeTalkDesc": "Nói thoải mái, không sửa lỗi",
+  "callModeStudy": "Học biểu đạt",
+  "callModeStudyDesc": "Học từng mẫu câu và sửa phát âm",
+  "callModeChange": "Đổi chế độ",
+  "callModeKeep": "Để sau",
+  "callExitTitle": "Kết thúc cuộc gọi?",
+  "callExitSubtitle": "Kết thúc bây giờ vẫn dùng hết một lượt gọi",
+  "callExitKeep": "Tiếp tục nói",
+  "callExitConfirm": "Kết thúc cuộc gọi",
+  "callMicMute": "Tắt tiếng",
+  "callMicUnmute": "Bật tiếng",
+  "callPushToTalk": "Giữ để nói"
 }

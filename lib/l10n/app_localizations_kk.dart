@@ -2111,4 +2111,49 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get unlockedWithMax => 'Max-пен қолжетімді';
+
+  @override
+  String get callModeSheetTitle => 'Қалай сөйлескіңіз келеді?';
+
+  @override
+  String get callModeSheetSubtitle => 'Осы қоңырауға бірден қолданылады';
+
+  @override
+  String get callModeFreeTalk => 'Еркін әңгіме';
+
+  @override
+  String get callModeFreeTalkDesc => 'Түзетусіз еркін сөйлесіңіз';
+
+  @override
+  String get callModeStudy => 'Оқу';
+
+  @override
+  String get callModeStudyDesc => 'Бір уақытта бір тіркесті үйреніңіз';
+
+  @override
+  String get callModeChange => 'Режимді өзгерту';
+
+  @override
+  String get callModeKeep => 'Қазір емес';
+
+  @override
+  String get callExitTitle => 'Қоңырауды аяқтау керек пе?';
+
+  @override
+  String get callExitSubtitle => 'Қазір аяқтасаңыз да бір қоңырау есептеледі';
+
+  @override
+  String get callExitKeep => 'Сөйлесуді жалғастыру';
+
+  @override
+  String get callExitConfirm => 'Қоңырауды аяқтау';
+
+  @override
+  String get callMicMute => 'Дыбысты өшіру';
+
+  @override
+  String get callMicUnmute => 'Дыбысты қосу';
+
+  @override
+  String get callPushToTalk => 'Сөйлеу үшін басып тұрыңыз';
 }
