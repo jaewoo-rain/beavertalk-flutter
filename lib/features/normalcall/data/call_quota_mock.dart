@@ -14,8 +14,11 @@ import '../domain/entities/call_quota.dart';
 ///
 /// 값 전부다. `GET /calls/quota` 가 아직 없다(서버질문지 B). 지금은 확정된 정책을
 /// 상수로 흉내 낸다:
-///   - 무료 — 1일 1통화 · 통화당 5분
-///   - 유료 — 통화 수 무제한 · 5분마다 확인
+///   - 무료 — 1일 1통화 · **상한 5분**
+///   - 유료 — 통화 수 무제한 · **상한 15분** · 5분마다 확인
+///
+/// 상한 값은 기존 제품 카피에서 그대로 가져왔다(`bulletFreeCall` 5분 ·
+/// `noteCallLength` 15분). 새로 정한 수치가 아니다.
 ///
 /// [CallQuota.usedToday] 는 **항상 0** 이다. 실제 사용량을 세는 곳이 없어서다. 그래서
 /// 「오늘 다 썼다」 상태는 이 목으로 재현되지 않는다 — 그 화면을 검증하려면 서버가
@@ -29,12 +32,17 @@ final callQuotaProvider = Provider.autoDispose<CallQuota>((ref) {
   return CallQuota(
     dailyLimit: paid ? null : 1,
     usedToday: 0,
-    maxDurationSec: kMockCallLimitSec,
+    maxDurationSec: paid ? kMockPaidCallCeilingSec : kMockFreeCallCeilingSec,
+    checkInEverySec: kMockCheckInSec,
     resetsAt: null,
   );
 });
 
-/// 통화 한 번의 상한(초). 무료·유료 공통으로 5분마다 확인을 받는다.
-///
-/// ⚠ 목 상수다. 서버의 `max_duration_sec` 로 교체된다.
-const int kMockCallLimitSec = 300;
+/// 무료 통화의 상한(초) — 카피 `bulletFreeCall`「One 5-minute voice call a day」.
+const int kMockFreeCallCeilingSec = 300;
+
+/// 유료 통화의 상한(초) — 카피 `noteCallLength`「Calls are 15 minutes each.」.
+const int kMockPaidCallCeilingSec = 900;
+
+/// 확인 주기(초). 상한이 아니라 그 안에서의 페이스다.
+const int kMockCheckInSec = 300;

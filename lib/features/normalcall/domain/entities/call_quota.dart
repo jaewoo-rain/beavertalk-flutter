@@ -1,7 +1,17 @@
 /// 통화 한도 — 「하루 몇 번, 한 번에 몇 분」.
 ///
-/// 무료 플랜은 **1일 1통화 · 통화당 5분**이다(2026-08-18 확정). 유료는 5분마다
-/// 이어갈지 확인만 받고 통화 자체를 막지 않는다.
+/// ## 상한과 확인 주기는 다른 축이다
+///
+/// 기존 제품 카피가 이미 둘을 가르고 있다 — `planTaglinePro` 는 「Unlimited calls.
+/// **15 minutes each**」이고 `bulletFreeCall` 은 「One **5-minute** voice call a day」다.
+/// 즉 **「무제한」은 횟수**([dailyLimit])이고 **「15분」은 한 통화의 상한**([maxDurationSec])이다.
+///
+/// 5분마다 뜨는 확인 시트는 그 **상한 안에서의 페이스**([checkInEverySec])이지 상한이
+/// 아니다. Pro 가 15분 통화 중 5·10분에 두 번 확인받아도 「15 minutes each」는 깨지지
+/// 않는다.
+///
+/// ⛔ 둘을 한 값으로 겸직시키지 마라. 겸직시키면 **Pro 가 5분마다 무한히 이어갈 수
+///   있어 상한이 사라진다** — 2026-08-18 에 실제로 그 상태로 한 번 짰다.
 ///
 /// ## ⛔ 판정 권위는 서버다
 ///
@@ -19,6 +29,7 @@ class CallQuota {
     required this.dailyLimit,
     required this.usedToday,
     required this.maxDurationSec,
+    required this.checkInEverySec,
     required this.resetsAt,
   });
 
@@ -28,8 +39,15 @@ class CallQuota {
   /// 오늘 쓴 통화 수(UTC 자정 기준).
   final int usedToday;
 
-  /// 통화 한 번의 상한(초). 무료·유료 모두 5분 단위로 확인을 받는다.
+  /// 통화 한 번의 **상한**(초). 무료 300 · 유료 900.
+  ///
+  /// 여기에 도달하면 통화가 끝난다. 실제로 끊는 것은 서버다.
   final int maxDurationSec;
+
+  /// **확인 주기**(초). 이 배수마다 「더 이어갈까요?」를 묻는다.
+  ///
+  /// [maxDurationSec] 과 다른 축이다 — 상한이 아니라 그 안에서의 페이스다.
+  final int checkInEverySec;
 
   /// 다음 리셋 시각. **서버 값이다.**
   final DateTime? resetsAt;
@@ -41,8 +59,21 @@ class CallQuota {
   int? get callsLeft =>
       dailyLimit == null ? null : (dailyLimit! - usedToday).clamp(0, dailyLimit!);
 
+  /// [elapsedSec] 가 확인 시점인가 — 상한 **미만**의 주기 배수일 때만 참이다.
+  ///
+  /// 상한 그 자체는 확인 시점이 아니다. 거기서는 물을 게 아니라 끝난다.
+  bool isCheckIn(int elapsedSec) =>
+      elapsedSec > 0 &&
+      checkInEverySec > 0 &&
+      elapsedSec % checkInEverySec == 0 &&
+      elapsedSec < maxDurationSec;
+
+  /// 상한에 도달했는가.
+  bool isCeiling(int elapsedSec) =>
+      maxDurationSec > 0 && elapsedSec >= maxDurationSec;
+
   @override
   String toString() =>
       'CallQuota(limit: $dailyLimit, used: $usedToday, '
-      'max: ${maxDurationSec}s, resets: $resetsAt)';
+      'max: ${maxDurationSec}s, checkIn: ${checkInEverySec}s, resets: $resetsAt)';
 }

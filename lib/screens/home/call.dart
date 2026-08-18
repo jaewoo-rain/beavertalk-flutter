@@ -148,12 +148,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
-  /// 5분 경과 시트 — 플랜에 따라 업셀과 연장으로 갈린다.
+  /// 통화 구간 시트 — **이어갈 수 있느냐**로 갈린다. 플랜으로 직접 가르지 않는다.
   ///
-  /// | 플랜 | 문구 | 1차 버튼 |
+  /// | 시점 | 문구 | 1차 버튼 |
   /// |---|---|---|
-  /// | free | 무료 통화가 끝났어요 | 구독하고 계속 대화하기 |
-  /// | pro·max | 더 이어갈까요? | 계속 통화하기 |
+  /// | 상한 미만(확인) | 더 이어갈까요? | 계속 통화하기 |
+  /// | 상한 도달 | 무료 통화가 끝났어요 | 구독하고 계속 대화하기 |
+  ///
+  /// 무료는 상한이 5분이라 첫 시트가 곧 종료 시트다. 유료는 상한이 15분이라
+  /// 5·10분에 확인만 받고, 15분에 닿으면 같은 자리에서 종료로 바뀐다.
   ///
   /// ⚠ **오디오를 멈추지 않는다** — 아직 못 한다. 서버가 5분에 세션을 붙들어 주는지
   /// 확인되지 않았고(서버질문지 B-5·B-7), 클라가 임의로 끊으면 유료 사용자의 통화가
@@ -164,7 +167,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   Future<void> _showLimitSheet(int atSec) async {
     final l10n = AppLocalizations.of(context);
     final quota = ref.read(callQuotaProvider);
-    final unlimited = quota.dailyLimit == null;
+    // 「이어갈 수 있는가」가 갈림돌이다. 상한에 닿았으면 유료여도 못 이어간다.
+    final canContinue = !quota.isCeiling(atSec);
     setState(() => _limitShownAtSec = atSec);
 
     await showModalBottomSheet<void>(
@@ -175,13 +179,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       isDismissible: false,
       enableDrag: false,
       builder: (sheetCtx) => BottomSheetContent(
-        title: unlimited ? l10n.callKeepGoingTitle : l10n.callFreeEndedTitle,
-        body: unlimited ? l10n.callKeepGoingSubtitle : l10n.freePlanCallLimit,
+        title: canContinue ? l10n.callKeepGoingTitle : l10n.callFreeEndedTitle,
+        body: canContinue ? l10n.callKeepGoingSubtitle : l10n.freePlanCallLimit,
         primaryAction: SheetAction(
-          label: unlimited ? l10n.callExitKeep : l10n.callFreeEndedCta,
+          label: canContinue ? l10n.callExitKeep : l10n.callFreeEndedCta,
           onPressed: () {
             Navigator.of(sheetCtx).pop();
-            if (unlimited) return;
+            if (canContinue) return;
             // v2 §2-3 ④ — 파는 것은 페이월, 사는 것은 OS 결제 시트다.
             Navigator.pushNamed(context, Routes.paywallPro);
           },
@@ -289,16 +293,16 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
         setState(() => _suggestionIndex = 0);
       }
-      // 5분 구간이 찼다. 경과시간은 매초 오므로 **구간당 한 번만** 연다.
+      // 상한과 확인 시점은 **다른 축**이다(CallQuota 문서 참조).
       //
-      // 유료는 확인을 받고 다음 5분을 이어가므로 시트가 5분마다 다시 뜬다. 무료는
-      // 한 번 뜨고 끝이다 — 구독하거나 끊거나 둘 중 하나다.
-      final limit = ref.read(callQuotaProvider).maxDurationSec;
+      //   무료   상한 5분  → 5분에 업셀 시트. 계속할 수 없다
+      //   유료   상한 15분 → 5·10분에 확인 시트. 15분은 서버가 끊는다
+      //
+      // 경과시간은 매초 오므로 **같은 초에 두 번 열지 않게** 막는다.
+      final q = ref.read(callQuotaProvider);
       if (next.phase == CallPhase.inCall &&
-          limit > 0 &&
-          next.elapsedSec > 0 &&
-          next.elapsedSec % limit == 0 &&
-          _limitShownAtSec != next.elapsedSec) {
+          _limitShownAtSec != next.elapsedSec &&
+          (q.isCheckIn(next.elapsedSec) || q.isCeiling(next.elapsedSec))) {
         _showLimitSheet(next.elapsedSec);
       }
       if (next.phase == CallPhase.ended) {
