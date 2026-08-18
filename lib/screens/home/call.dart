@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -458,6 +459,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       if (!avatarIsVideo)
                         _CircularStill(
                           size: _stillAvatarSize,
+                          level: callNotifier.avatarLevel,
                           child: _partnerStill(partnerImage),
                         )
                       else
@@ -586,18 +588,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                             .setSubtitleOn(v),
                       ),
                       const SizedBox(width: AppSpacing.s8),
-                      CallToggleButton(
-                        icon: AppIcons.mic,
-                        // 토글의 `active` 는 **마이크가 열려 있음**을 뜻한다.
-                        // 음소거가 켜진 상태가 아니라 그 반대다.
-                        active: !micMuted,
-                        activeFill: context.c.backgroundNormalAlternative,
-                        activeGlyph: context.c.labelStrong,
+                      _MicToggleButton(
+                        muted: micMuted,
                         semanticLabel:
                             micMuted ? l10n.callMicUnmute : l10n.callMicMute,
-                        onChanged: (open) => ref
+                        onChanged: (m) => ref
                             .read(normalCallControllerProvider.notifier)
-                            .setMicMuted(!open),
+                            .setMicMuted(m),
                       ),
                     ],
                   ),
@@ -639,24 +636,180 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 ///
 /// Max 의 전폭 16:9 영상 밴드와 **같은 자리**에 놓이지만 모양이 다르다. 링은
 /// 배경과 대비를 만들어 원이 어두운 화면에 묻히지 않게 한다(Figma).
+///
+/// ## 웅웅 퍼지는 헤일로
+///
+/// [level] 은 **비버 음성의 RMS** 다(`avatarLevel`). 비버가 말하는 동안 원 바깥으로
+/// 두 겹의 파문이 퍼진다 — 정지 이미지라 「지금 말하는 중」을 알릴 다른 수단이 없다.
+///
+/// ⚠ 이 신호는 **재생 오디오**에서 온다. 그래서 음소거를 눌러도 계속 움직인다 —
+/// 그게 맞다. 음소거는 내 목소리를 막는 것이지 비버를 멈추는 것이 아니다.
+///
+/// ⛔ [ValueListenableBuilder] 로 **헤일로만** 다시 그린다. 아바타 이미지까지 리빌드에
+///   넣으면 초당 수십 번 디코딩이 돈다.
 class _CircularStill extends StatelessWidget {
-  const _CircularStill({required this.size, required this.child});
+  const _CircularStill({
+    required this.size,
+    required this.child,
+    this.level,
+  });
 
   final double size;
   final Widget child;
 
+  /// 비버 음성 레벨(0~1). null 이면 헤일로 없이 정지 상태로 그린다.
+  final ValueListenable<double>? level;
+
+  /// 헤일로가 최대로 퍼지는 폭. 이만큼을 미리 비워 둬야 퍼질 때 레이아웃이 안 밀린다.
+  static const double _maxHalo = 28;
+
   @override
   Widget build(BuildContext context) {
+    final ring = Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: context.c.primaryHeavy, width: 4),
+      ),
+      child: ClipOval(child: child),
+    );
+
+    final lv = level;
+    if (lv == null) return Center(child: ring);
+
     return Center(
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: context.c.primaryHeavy, width: 4),
+      child: SizedBox(
+        width: size + _maxHalo * 2,
+        height: size + _maxHalo * 2,
+        child: ValueListenableBuilder<double>(
+          valueListenable: lv,
+          builder: (context, raw, _) {
+            final v = raw.clamp(0.0, 1.0);
+            final c = context.c;
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                // 바깥 파문 — 크게 퍼지고 옅다.
+                _halo(size + _maxHalo * 2 * v, c.primaryHeavy, 0.10 * v),
+                // 안쪽 파문 — 링에 붙어 따라다닌다.
+                _halo(size + _maxHalo * 1.1 * v, c.primaryHeavy, 0.18 * v),
+                ring,
+              ],
+            );
+          },
         ),
-        child: ClipOval(child: child),
       ),
     );
   }
+
+  Widget _halo(double d, Color color, double alpha) => AnimatedContainer(
+        duration: const Duration(milliseconds: 90),
+        curve: Curves.easeOut,
+        width: d,
+        height: d,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: color.withValues(alpha: alpha),
+        ),
+      );
+}
+
+/// 마이크 음소거 토글 — **꺼진 상태를 표시하는** 버튼이다.
+///
+/// ## 왜 [CallToggleButton] 을 안 쓰나
+///
+/// 저 위젯은 「기능이 켜졌다」를 칠하는 물건이다. 힌트·자막은 꺼진 게 기본이라 그게 맞다.
+/// 그런데 마이크는 **열린 게 기본**이다. 같은 규칙을 적용하면 평상시에 혼자 칠해져 있고,
+/// 정작 알려야 할 음소거 상태가 「칠이 빠진」 모습이 된다 — 사용자는 그걸 못 읽는다.
+///
+/// 실기기에서 실제로 그렇게 나왔다(2026-08-18). 로그상 업링크는 정확히 끊겼는데
+/// **사장님이 「음소거가 안 되는 것 같다」고 판단**했다. 기능이 아니라 표시의 문제였다.
+///
+/// ⇒ 뒤집는다. 평상시엔 힌트·자막과 **같은 빈 칩**이고, 음소거일 때만 칠하고 **사선을
+///   긋는다.** 색만으로는 부족하다 — 비버가 계속 말하고 있어서 「소리가 나니까 안 꺼진
+///   건가」로 읽히기 때문이다. 사선은 그 오독을 막는 유일한 신호다.
+class _MicToggleButton extends StatelessWidget {
+  const _MicToggleButton({
+    required this.muted,
+    required this.semanticLabel,
+    required this.onChanged,
+  });
+
+  final bool muted;
+  final String semanticLabel;
+
+  /// 새 음소거 값으로 호출된다(누르면 반전).
+  final ValueChanged<bool> onChanged;
+
+  static const double _size = 40;
+  static const double _iconSize = 24;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final glyph = muted ? c.staticWhite : c.labelNormal;
+
+    return Semantics(
+      button: true,
+      toggled: muted,
+      label: semanticLabel,
+      child: Material(
+        color: muted ? c.accentBackgroundRed : Colors.transparent,
+        shape: CircleBorder(
+          side: muted ? BorderSide.none : BorderSide(color: c.lineNeutral),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: () => onChanged(!muted),
+          child: SizedBox(
+            width: _size,
+            height: _size,
+            child: Center(
+              child: SizedBox(
+                width: _iconSize,
+                height: _iconSize,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    AppIcons.mic(size: _iconSize, color: glyph),
+                    if (muted)
+                      CustomPaint(
+                        size: const Size.square(_iconSize),
+                        painter: _SlashPainter(color: glyph),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// 음소거 사선. 아이콘 자산에 `mic-off` 가 없어 위에 긋는다.
+class _SlashPainter extends CustomPainter {
+  const _SlashPainter({required this.color});
+
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Paint()
+      ..color = color
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round;
+    // 좌하 → 우상. 마이크 글리프를 가로지른다.
+    canvas.drawLine(
+      Offset(size.width * 0.18, size.height * 0.82),
+      Offset(size.width * 0.82, size.height * 0.18),
+      p,
+    );
+  }
+
+  @override
+  bool shouldRepaint(_SlashPainter old) => old.color != color;
 }
