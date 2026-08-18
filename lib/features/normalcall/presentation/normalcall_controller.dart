@@ -1106,7 +1106,17 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// ⛔ 캐스케이드는 **종전 barge-in 규칙 그대로**다 — 서버가 열라고 하면 통화 내내
   ///   열려 있다. 여기에 다시 손대면 barge-in 격리 실험이 조용히 죽는다.
+  /// 시트가 떠 있는 동안 **업링크와 경과시간을 멈춘다**.
+  ///
+  /// ⚠ [CallState.micMuted] 와 다른 것이다. 저건 **사용자가** 끈 것이고 이건 **시스템이**
+  ///   잠시 막은 것이다. 한 값으로 겸직시키면 시트가 닫힐 때 사용자의 음소거까지 풀려
+  ///   본인이 끈 마이크가 저절로 켜진다.
+  ///
+  /// 재생은 멈추지 않는다 — 비버는 계속 말한다(2026-08-18 결정 Q1=②).
+  bool _sessionPaused = false;
+
   bool get _micGated {
+    if (_sessionPaused) return true;
     if (state.micMuted) return true;
     if (!_channelMode.gatesMic && _serverMicAlwaysOpen) {
       return false;
@@ -4112,6 +4122,20 @@ class NormalCallController extends Notifier<CallState> {
   /// Toggles whether the hint card is shown. UI preference only.
   void setHintOn(bool value) => state = state.copyWith(hintOn: value);
 
+  /// 통화 구간 시트가 떠 있는 동안 세션을 **잠시 멈춘다**.
+  ///
+  /// 멈추는 것은 **업링크와 경과시간 두 가지**다. 비버 재생은 그대로 둔다.
+  ///
+  /// ⚠ 세션 자체는 살아 있으므로 **원가는 계속 나간다.** 그것까지 막으려면 서버가
+  ///   일시정지를 받아 줘야 한다(서버 요청서 §C). 여기서 소켓을 닫으면 통화가 끝난다.
+  ///
+  /// ⛔ 사용자의 음소거([setMicMuted])와 섞지 마라. 시트가 닫힐 때 이 값만 푼다.
+  void setSessionPaused(bool value) {
+    if (_sessionPaused == value) return;
+    _sessionPaused = value;
+    _log('세션 ${value ? "일시정지" : "재개"} (업링크·경과시간)');
+  }
+
   /// 라이브 통화의 **음소거**를 켜고 끈다.
   ///
   /// 세션은 유지하고 업링크 프레임만 버린다([_micGated]). 레코더를 닫지 않는 이유는
@@ -4129,6 +4153,9 @@ class NormalCallController extends Notifier<CallState> {
   void _startElapsedTimer() {
     _elapsedTimer?.cancel();
     _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      // 일시정지 중에는 초를 세지 않는다. 시트를 읽는 시간이 통화 시간에서
+      // 빠지면 안 된다 — 무료 5분에서 30초는 10% 다(2026-08-18 결정 Q2=②).
+      if (_sessionPaused) return;
       state = state.copyWith(elapsedSec: state.elapsedSec + 1);
     });
   }
@@ -4204,6 +4231,7 @@ class NormalCallController extends Notifier<CallState> {
     // 값을 안 주는 경로로 들어왔을 때) 게이팅 없이 열린다 — AEC 실측 전엔 그게
     // 자기-대화 루프다. [_connect] 가 이 teardown **뒤에** 새 값을 넣는다.
     _channelMode = CallChannel.defaultChannel;
+    _sessionPaused = false;
     // 서버가 준 세션 정책도 통화 스코프다. 남기면 다음 통화가 **이전 서버 답**으로
     // 마이크를 연다 — 그 통화의 서버는 다르게 말했을 수 있다.
     _serverMicAlwaysOpen = false;

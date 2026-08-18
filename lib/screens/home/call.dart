@@ -169,7 +169,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final quota = ref.read(callQuotaProvider);
     // 「이어갈 수 있는가」가 갈림돌이다. 상한에 닿았으면 유료여도 못 이어간다.
     final canContinue = !quota.isCeiling(atSec);
+    final notifier = ref.read(normalCallControllerProvider.notifier);
     setState(() => _limitShownAtSec = atSec);
+
+    // 시트를 읽는 동안 업링크와 경과시간을 멈춘다. 비버 재생은 그대로 둔다.
+    notifier.setSessionPaused(true);
 
     await showModalBottomSheet<void>(
       context: context,
@@ -186,6 +190,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           onPressed: () {
             Navigator.of(sheetCtx).pop();
             if (canContinue) return;
+            // 상한에 닿았으면 이 통화는 여기서 끝이다. 페이월로 보내기 **전에**
+            // 끊는다 — 안 끊으면 결제 화면을 보는 내내 세션이 살아 있다.
+            notifier.hangUp();
             // v2 §2-3 ④ — 파는 것은 페이월, 사는 것은 OS 결제 시트다.
             Navigator.pushNamed(context, Routes.paywallPro);
           },
@@ -194,11 +201,23 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           label: l10n.endCall,
           onPressed: () {
             Navigator.of(sheetCtx).pop();
-            ref.read(normalCallControllerProvider.notifier).hangUp();
+            notifier.hangUp();
           },
         ),
       ),
     );
+
+    if (!mounted) return;
+    // 상한에 닿았는데도 아직 살아 있다면 **클라가 끊는다.**
+    //
+    // 서버가 끊는 것이 진짜 한도지만, 서버가 안 끊으면 세션이 무한정 돈다.
+    // 이중 안전장치다(2026-08-18 결정 Q3=②).
+    final phase = ref.read(normalCallControllerProvider).phase;
+    if (!canContinue && phase == CallPhase.inCall) {
+      notifier.hangUp();
+      return;
+    }
+    notifier.setSessionPaused(false);
   }
 
   /// 통화가 끝나 이 화면을 떠난다.
