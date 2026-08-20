@@ -32,7 +32,6 @@ import '../data/datasources/pcm_playback_control.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
-import 'avatar_emotion.dart';
 import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
@@ -452,11 +451,10 @@ class NormalCallController extends Notifier<CallState> {
   /// it. Characters without EE/OO sprites simply ignore this.
   final ValueNotifier<double> avatarShape = ValueNotifier<double>(0.0);
 
-  /// 표정 분류기. 어휘 사전·문장 분할·최소 유지 시간은 `avatar_emotion.dart` 에
-  /// 있다 — 랩(`avatar_lab_main.dart`)과 단위 테스트가 **같은 코드**를 돌리기
-  /// 위해서다. 유지 시간은 계측으로 고른 기본값(400ms)을 쓴다 — 근거는 그 파일의
-  /// [SentenceEmotion] 주석.
-  final SentenceEmotion _emo = SentenceEmotion();
+  // ⛔ 표정 분류기(`SentenceEmotion`)를 여기서 **들어냈다**(2026-08-20). 서버가
+  //   `set_face` 로 감정을 직접 준다 — 클라는 추측하지 않는다.
+  //   ⚠ `avatar_emotion.dart` 파일 자체는 남긴다: 랩(`avatar_lab_main.dart`)과
+  //     단위 테스트가 그 코드를 계속 돌린다. 통화 경로에서만 뺀 것이다.
 
   /// Sub-frame mouth envelope: one entry per [_envStepMs] of audio, queued as
   /// audio is handed to the player and drained in real time. A single RMS per
@@ -554,12 +552,8 @@ class NormalCallController extends Notifier<CallState> {
   int _hintCount = 0;
   int _hintDropped = 0;
 
-  /// 서버가 감정을 직접 준 적이 있는가. 있으면 키워드 추측기([_emo])의 결과를 쓰지 않는다.
-  ///
-  /// ⛔ 통로로 가르지 않는 이유: 진짜 판별 기준은 "캐스케이드냐"가 아니라 **"서버가
-  ///   감정을 주느냐"** 다. 둘이 동시에 `avatarEmotion` 을 쓰면 어느 쪽이 이겼는지 모르게
-  ///   되므로, 명시적인 값(서버)이 추측(키워드)을 이긴다.
-  bool _serverEmotionSeen = false;
+  // ⛔ `_serverEmotionSeen` 게이트도 없앴다 — 추측기가 사라져 가를 대상이 없다.
+  //   그 게이트는 "서버 값이 추측을 이긴다"를 위한 것이었는데, 이제 소스가 하나다.
 
   /// Extra holdback on top of the engine's own depth, to cover the platform
   /// channel hop. Small on purpose: the avatar switches picture on this signal,
@@ -3511,7 +3505,6 @@ class NormalCallController extends Notifier<CallState> {
     final rawEmotion = msg['emotion'] as String?;
     final seqRaw = msg['seq'];
     final seq = seqRaw is int ? seqRaw : -1;
-    _serverEmotionSeen = true;
     final sbRaw = msg['server_bytes'];
     _pendingMarkers.add((
       at: _envAdded,
@@ -3777,11 +3770,19 @@ class NormalCallController extends Notifier<CallState> {
         // 다음에 화면에 처음 쓰는 쪽이 **누적이 아니라 교체**를 하도록 표시해 둔다.
         _subtitleReplaceOnNext = true;
         state = state.copyWith(hint: null, beaverPreparing: false);
-        // New line → reset the avatar expression to neutral; it re-classifies as
-        // the line streams in below. 문장 버퍼도 함께 비운다(직전 턴의 미완 조각이
-        // 다음 턴 첫 문장에 섞이면 엉뚱한 표정이 나온다).
-        avatarEmotion.value = 0;
-        _emo.reset();
+        // ⛔⛔ **여기서 표정을 리셋하지 않는다**(2026-08-20 사장님 결정).
+        //
+        //   서버 계약은 "표정이 **바뀔 때만** 마커를 보낸다 — 안 보내면 이전 표정이
+        //   그대로 유지된다" 이다(서버 `_FACE_TOOL_RULE`, 그리고 마커 중복 억제가
+        //   그 전제 위에 서 있다). 그런데 예전 이 자리는 **턴마다 neutral 로 되돌렸다.**
+        //   ⇒ 비버가 계속 기쁜 상태면 서버는 `happy` 를 다시 안 보내고(중복), 클라는
+        //     리셋해 버려서 **웃음이 조용히 사라졌다.** 두 계약이 정면으로 어긋났다.
+        //
+        //   ⚠ 대가: 표정이 턴을 넘어 **유지**되므로, 서버가 `neutral` 을 안 불러 주면
+        //     계속 웃는 상태가 될 수 있다. 그건 서버 프롬프트가 "평소로 돌아오면
+        //     neutral 을 불러라"로 받는다 — 실측(call 1117)에서 모델이 스스로
+        //     neutral → happy → neutral 을 불렀다.
+        //   ⛔ 되돌리려거든 서버의 중복 억제부터 함께 봐라. 한쪽만 바꾸면 다시 어긋난다.
         // Beaver turn begins → gate the mic until the turn ends + audio drains.
         _gateMic();
       case 'output_transcript':
@@ -3798,16 +3799,16 @@ class NormalCallController extends Notifier<CallState> {
                 _subtitleReplaceOnNext ? delta : state.beaverSubtitle + delta;
             _subtitleReplaceOnNext = false;
             state = state.copyWith(beaverSubtitle: line);
-            // 표정은 **문장이 끝날 때 그 문장만** 보고 정한다.
+            // ⛔⛔ **클라가 표정을 추측하지 않는다**(2026-08-20 사장님 지시:
+            //   "클라에서 임의로 만든 규칙은 다 버려, 서버에서 준 것만 그대로 넣어").
             //
-            // 이전 구현은 토큰마다 **누적 문자열 전체**를 재검사하고, 한 번 잡힌 값을
-            // 턴이 끝날 때까지 고정했다. 그래서 문장 첫머리의 우연한 단어 하나가 턴
-            // 전체의 표정을 결정했고, 실기기에서 "표정이 대사와 전혀 안 맞는다"로
-            // 나타났다(2026-08-02). 립싱크 플랜 §6의 「턴 단위 갱신」 규약 위반이다.
-            // ⛔ 서버가 감정을 직접 준 통화면 키워드 추측기를 쓰지 않는다. 둘이 같이
-            //   쓰면 어느 쪽이 이겼는지 모르게 된다 — 명시적인 값이 추측을 이긴다.
-            final next = _emo.feed(delta);
-            if (next != null && !_serverEmotionSeen) avatarEmotion.value = next;
+            //   예전엔 키워드 사전으로 대사를 훑어 감정을 정했다. 그 추측이 실기기에서
+            //   "표정이 대사와 전혀 안 맞는다"를 만들었고(2026-08-02), 그 뒤 서버 값이
+            //   있으면 꺼지도록 게이트(`_serverEmotionSeen`)를 달아 두 소스가 공존했다.
+            //   ⇒ 이제 서버가 `set_face` 로 정답을 준다. 추측기는 **지운다** —
+            //     두 소스가 있으면 어느 쪽이 이겼는지 로그로도 못 가른다.
+            //   ⚠ 서버 마커가 없는 구간은 **직전 표정이 유지된다**(위 turn_start 주석).
+            //     추측으로 메우지 않는다. 비어 있는 게 틀린 것보다 낫다.
           }
         }
       case 'input_transcript':
@@ -4263,7 +4264,6 @@ class NormalCallController extends Notifier<CallState> {
     _sentenceCount = 0;
     _hintCount = 0;
     _hintDropped = 0;
-    _serverEmotionSeen = false;
 
     // Reset the half-duplex mic gate + its timers so a new call starts ungated.
     _micGateTimer?.cancel();
@@ -4278,7 +4278,6 @@ class NormalCallController extends Notifier<CallState> {
     _listenTimer?.cancel();
     _listenTimer = null;
     avatarIdleKind.value = kIdleWait;
-    _emo.reset();
     _turnEnded = false;
     _micFramesSent = 0;
     _uplinkBytes = 0;
