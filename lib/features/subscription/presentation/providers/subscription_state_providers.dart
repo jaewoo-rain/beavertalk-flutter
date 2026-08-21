@@ -61,14 +61,14 @@ final subscriptionStatusProvider =
   // is server-side (work order §1-5), and it is the only source that can say
   // trial / grace / on_hold / active_max at all.
   final server = ref.watch(serverSubscriptionStatusProvider).valueOrNull;
-  if (server != null) return _applySessionEntitlement(server, bought);
+  if (server != null) return applySessionEntitlement(server, bought);
 
   // Fallback: infer from the row list, exactly as before the endpoint existed.
   final subscriptions = ref.watch(subscriptionsProvider).valueOrNull;
   if (subscriptions == null) {
-    return _applySessionEntitlement(SubscriptionStatus.none, bought);
+    return applySessionEntitlement(SubscriptionStatus.none, bought);
   }
-  return _applySessionEntitlement(
+  return applySessionEntitlement(
     ref.watch(subscriptionStatusResolverProvider).resolve(subscriptions),
     bought,
   );
@@ -91,11 +91,17 @@ final sessionEntitlementProvider =
 
 /// Lifts [base] to what the member actually [bought] this session.
 ///
+/// ⛔ **서버 상태를 직접 fetch 해서 판정하는 쪽은 반드시 이걸 통과시켜라.**
+///   [MockIapService] 는 서버에 닿지 않아서, 방금 결제한 사람에게도 서버는 계속
+///   `free` 라고 답한다. 이 보정을 건너뛰면 **결제한 사람이 무료로 판정된다** —
+///   `NormalCallController._resolvePaidAccess` 가 정확히 그래서 결제 직후 통화를
+///   끊었다. 그래서 private 이 아니라 공개다: 보정 규칙이 두 벌이 되면 안 된다.
+///
 /// The server keeps authority over *billing trouble* (grace / hold / ending):
 /// those states are kept and only the tier — which the server cannot know —
 /// is corrected. States that merely lack the purchase (free / expired, and the
 /// inferred-Pro actives) are promoted to the bought plan's active state.
-SubscriptionStatus _applySessionEntitlement(
+SubscriptionStatus applySessionEntitlement(
     SubscriptionStatus base, SubscriptionTier? bought) {
   if (bought == null) return base;
   // An explicit server plan on a paid state is the stronger truth.

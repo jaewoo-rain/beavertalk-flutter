@@ -29,7 +29,6 @@ import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/datasources/audio_route_probe.dart';
 import '../data/datasources/pcm_playback_control.dart';
-import '../../subscription/domain/entities/subscription_state.dart';
 import '../../subscription/presentation/providers/subscription_providers.dart';
 import '../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../domain/entities/call_allowance.dart';
@@ -1027,11 +1026,28 @@ class NormalCallController extends Notifier<CallState> {
   Future<bool>? _paidAccess;
 
   /// 이 통화의 접근권을 확정한다. 서버 판정을 우선하고, 못 받으면 기존 추론으로 내려간다.
+  ///
+  /// ⛔ **서버 답을 그대로 믿으면 안 된다 — [applySessionEntitlement] 를 반드시 태운다.**
+  ///   결제는 [MockIapService] 를 타서 **서버에 닿지 않는다**(그 provider 주석: "the mock
+  ///   rail never reaches the server at all"). 그래서 방금 결제한 사람에게도 서버는
+  ///   계속 `free` 라고 답하고, 보정 없이 읽으면 **유료 회원이 무료로 판정된다.**
+  ///   실제로 그래서 결제 직후 [resumeAfterPaywall] 이 통화를 끊고 요약으로 보냈다
+  ///   (사장님 실기기 리포트 2026-08-22).
+  ///
+  /// 이 보정은 통화 **시작** 경로에도 똑같이 필요하다 — 홈에서 결제하고 바로 전화를
+  /// 걸어도 같은 이유로 5분에 잘린다.
+  ///
+  /// ⚠ [subscriptionStatusProvider] 를 그냥 읽어 대신하지 마라. autoDispose 라 여기서
+  ///   차갑게 읽으면 서버 값이 아직 없는 빈 상태로 떨어진다. 그래서 **서버는 직접
+  ///   fetch 해서 기다리고**, 세션 보정만 같은 규칙으로 얹는다.
   Future<bool> _resolvePaidAccess() async {
+    final bought = ref.read(sessionEntitlementProvider);
     try {
       final status =
           await ref.read(subscriptionRepositoryProvider).fetchStatus();
-      if (status != null) return status.state.grantsPaidAccess;
+      if (status != null) {
+        return applySessionEntitlement(status, bought).grantsPaidAccess;
+      }
     } catch (_) {
       // 서버가 못 주면(구버전·네트워크) 아래 폴백. 통화를 막을 이유는 아니다.
     }

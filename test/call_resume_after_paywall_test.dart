@@ -20,6 +20,7 @@ import 'package:beavertalk/features/subscription/domain/entities/subscription_st
 import 'package:beavertalk/features/subscription/domain/repositories/subscription_repository.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_providers.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 
 /// 서버가 돌려줄 구독 상태를 고정한다. [fetchCount] 로 **다시 읽었는지**를 본다.
 class _FakeSubscriptionRepository implements SubscriptionRepository {
@@ -100,6 +101,7 @@ const _parked = CallState(
 }) _build(
   SubscriptionStatus status, {
   CallState initial = _parked,
+  SubscriptionTier? boughtThisSession,
 }) {
   final calls = _CallLog();
   final controller = _RecordingCallController(initial, calls);
@@ -109,6 +111,12 @@ const _parked = CallState(
     subscriptionRepositoryProvider.overrideWithValue(repo),
   ]);
   addTearDown(container.dispose);
+  // 이번 세션에 결제한 사실. 결제 화면이 실제로 여기에 적는다
+  // (`purchase_flow.dart` — `sessionEntitlementProvider.notifier).state = tier`).
+  if (boughtThisSession != null) {
+    container.read(sessionEntitlementProvider.notifier).state =
+        boughtThisSession;
+  }
   // Notifier 를 세운다(build() 실행).
   container.read(normalCallControllerProvider);
   return (controller: controller, repo: repo, calls: calls);
@@ -146,6 +154,33 @@ void main() {
       await b.controller.resumeAfterPaywall();
 
       expect(b.repo.fetchCount, 1);
+    });
+  });
+
+  group('resumeAfterPaywall — 서버가 아직 결제를 모를 때 (실기기에서 터진 것)', () {
+    test('목 IAP 라 서버는 free 라고 답해도, 이번 세션에 샀으면 이어간다', () async {
+      // ⛔ 이게 이 커밋의 핵심이다. `iapServiceProvider` 는 [MockIapService] 라
+      //    **결제가 서버에 닿지 않는다.** 그래서 결제 직후에도 서버는 계속 `free` 다.
+      //    서버 답을 그대로 믿으면 방금 돈을 낸 사람이 무료로 판정돼,
+      //    통화가 끊기고 요약 화면이 뜬다 — 사장님 실기기 리포트(2026-08-22)가 그것.
+      final b = _build(_freeStatus, boughtThisSession: SubscriptionTier.pro);
+
+      final resumed = await b.controller.resumeAfterPaywall();
+
+      expect(resumed, isTrue, reason: '결제했으면 이어져야 한다');
+      expect(b.calls.continues, 1);
+      expect(b.calls.hangUps, 0, reason: '결제한 사람의 통화를 끊으면 안 된다');
+      expect(b.controller.state.paidCallTime, isTrue);
+    });
+
+    test('사지 않았으면 서버 free 를 그대로 따른다', () async {
+      // 보정이 "무조건 유료"로 새지 않는지. 안 그러면 무료 회원이 무한히 통화한다.
+      final b = _build(_freeStatus);
+
+      final resumed = await b.controller.resumeAfterPaywall();
+
+      expect(resumed, isFalse);
+      expect(b.calls.hangUps, 1);
     });
   });
 
