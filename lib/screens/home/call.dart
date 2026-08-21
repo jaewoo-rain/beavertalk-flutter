@@ -226,21 +226,39 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           decided = true;
           notifier.hangUp();
         },
-        // 통화를 끝내고 **요약을 건너뛰고** 결제 화면으로 간다. 방금 "구독"을 고른
-        // 사람에게 통화 요약을 보여 줄 이유가 없다.
+        // 결제 퍼널을 **이 화면 위에 얹는다.** 통화를 끊지도, 화면을 떠나지도 않는다.
         //
-        // ⚠ 순서가 중요하다. `hangUp` 을 먼저 **끝까지** 기다린 뒤 [_leave] 로
-        //   나간다 — [_leave] 안의 `clearFinished()` 는 phase 가 `ended` 일 때만
-        //   먹고, 안 먹으면 다음에 홈에서 전화를 걸어도 지난 통화의 요약이 뜬다.
-        //   `_navigated` 를 먼저 올려 자동 요약 이동 리스너를 재운다.
+        // 시트 카피가 「Subscribe and keep talking」이라 결제가 끝나면 **대화가
+        // 이어져야 한다.** 그러려면 두 가지가 살아 있어야 한다:
+        //   1. [CallPhase.awaitingContinue] — [NormalCallController.continueCall] 의 입장권
+        //   2. [CallState.callId] — 다음 구간의 `continues_call_id`. 서버가 이 id 로
+        //      앞 구간을 요약해 주입하므로, 끊어 버리면 **비버가 방금 한 얘기를 잊는다**
+        // 예전처럼 `hangUp()` 을 먼저 부르면 둘 다 사라진다.
+        //
+        // ⛔ `pushReplacement` 를 쓰지 마라 — 통화 화면이 스택에서 빠지면 결제 뒤
+        //   돌아올 자리가 없어 홈으로 떨어진다(사장님 리포트의 그 증상).
+        //
+        // ⛔ `_navigated` 를 올리지 않는다. 이 화면은 **떠나지 않으므로** 요약 이동
+        //   리스너를 재울 이유가 없고, 재우면 이어서 진짜로 끊었을 때 요약으로 못 간다.
+        //
+        // 결제 성공이면 `purchase_flow` 가 성공 화면 대신 이 화면까지 팝해 주고,
+        // 취소·실패면 페이월이 그냥 pop 된다 — **두 경로 모두 이 await 로 돌아온다.**
+        // 어느 쪽이었는지는 [NormalCallController.resumeAfterPaywall] 이 구독 상태를
+        // 다시 읽어 판정한다(이어가기 / 통화 종료).
         onSubscribe: () async {
-          if (_navigated) return;
           decided = true;
-          _navigated = true;
-          await notifier.hangUp();
+          await Navigator.of(context, rootNavigator: true)
+              .pushNamed(Routes.paywallProLimit, arguments: 'call');
           if (!mounted) return;
-          await _leave(() => Navigator.of(context, rootNavigator: true)
-              .pushReplacementNamed(Routes.paywallProLimit, arguments: 'call'));
+          final resumed = await notifier.resumeAfterPaywall();
+          if (!mounted || !resumed) return;
+          // 결제 성공 화면을 건너뛰었으므로(그 시안의 CTA 는 「Start a call」이라 통화
+          // 중엔 성립하지 않는다) **결제됐다는 사실만** 통화 위에 얹어 알린다.
+          // 기존 키를 재사용한다 — 새 문구를 만들면 30개 로케일이 따라와야 한다.
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(
+                content: Text(AppLocalizations.of(context).successProTitle)));
         },
       );
       if (!decided) await notifier.hangUp();
@@ -298,7 +316,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
         setState(() => _suggestionIndex = 0);
       }
-      if (next.phase == CallPhase.awaitingContinue) {
+      // ⛔ **그 상태로 진입할 때만** 띄운다. `next.phase == awaitingContinue` 만 보면
+      //   결정을 기다리는 **동안의 다른 상태 변화**에도 시트가 다시 열린다 —
+      //   [NormalCallController.resumeAfterPaywall] 이 결제 확인 후 `paidCallTime` 을
+      //   굳히는 순간이 정확히 그렇다(phase 는 아직 `awaitingContinue`). 그러면
+      //   결제하고 돌아온 사람 앞에 시트가 **다시** 뜬다 — 그것도 `paidCallTime` 이
+      //   이제 true 라 무료 시트가 아니라 「Keep going?」 이, 방금 재개한 통화 위로.
+      //   `_segmentSheetOpen` 은 이걸 못 막는다 — 그 시점엔 이미 false 로 풀려 있다.
+      if (next.phase == CallPhase.awaitingContinue &&
+          prev?.phase != CallPhase.awaitingContinue) {
         _showSegmentSheet(
           next,
           characterName: selectedChar?.name ?? '',

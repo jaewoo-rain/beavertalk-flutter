@@ -4358,6 +4358,39 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
+  /// 결제 퍼널이 닫힌 뒤 — **이어갈지 끝낼지**를 여기서 하나로 판정한다.
+  ///
+  /// 5분 시트의 「Subscribe and keep talking」 은 통화를 끊지 않고 결제 화면을
+  /// 통화 화면 **위에** 얹는다(`call.dart`). 그 화면이 닫히면 결제를 했는지 취소했는지
+  /// 모르는 채 여기로 돌아오는데, 굳이 구분해 넘겨받지 않는다 — **구독 상태를 다시
+  /// 읽으면 그게 답이다.** 성공/취소/실패/뒤로가기가 전부 같은 길로 들어와 같은
+  /// 질문 하나로 갈린다.
+  ///
+  /// 반환값은 **통화가 이어졌는가** — 화면이 결제 완료를 알릴지 정하는 데 쓴다.
+  ///
+  /// ⛔ [_paidAccess] 캐시를 **반드시 버린다.** 그 값은 통화를 시작할 때 굳은 것이라
+  ///   무료 회원이면 `false` 다. 안 버리면 방금 결제한 사람에게도 그 `false` 가
+  ///   답해서, [continueCall] 이 `canExtend(1, false)` → 거부로 통화를 끝낸다.
+  ///   **이어지지 않는 원인이 정확히 여기다.**
+  Future<bool> resumeAfterPaywall() async {
+    if (state.phase != CallPhase.awaitingContinue) return false;
+    _paidAccess = null;
+    final paid = await (_paidAccess ??= _resolvePaidAccess());
+    // 결제를 기다리는 동안 사용자가 직접 끊었을 수 있다(잠금화면 통화 포함).
+    if (state.phase != CallPhase.awaitingContinue) return false;
+    if (!paid) {
+      _log('결제 후에도 유료가 아니다 — 통화를 끝낸다');
+      await hangUp();
+      return false;
+    }
+    _log('결제 확인 — 구간 ${state.segmentsUsed + 1} 로 이어간다');
+    // [continueCall] 의 상한 판정이 이 값을 읽는다. 굳혀 두지 않으면 이어가더라도
+    // 다음 경계에서 다시 무료로 판정돼 5분 만에 잘린다.
+    state = state.copyWith(paidCallTime: true);
+    await continueCall();
+    return state.phase != CallPhase.ended && state.phase != CallPhase.error;
+  }
+
   /// 다음 `start` 프레임에 실을 **직전 구간의 call_id**.
   ///
   /// 서버는 이 id 의 대화를 읽어 요약해 새 세션에 주입한다 — 그래야 비버가 앞
@@ -4366,9 +4399,14 @@ class NormalCallController extends Notifier<CallState> {
   /// 을 누른 사용자를 대화 중간에 1분 세우게 된다. 서버는 이미 대화 원본을 갖고 있다
   /// (`GET /calls/{id}/raw`).
   ///
-  /// ⚠ **서버가 아직 이 필드를 안 받는다.** 그때까지는 맥락 없이 재연결된다(비버가
-  ///   앞 구간을 잊는다). 기능은 돌아가므로 클라를 막지 않되, 이 상태로 릴리즈하면
-  ///   "방금 한 얘기를 잊는다"는 리포트가 온다. 서버가 붙는 순간 코드 변경 없이 살아난다.
+  /// ✅ **서버가 이 필드를 받는다**(2026-08-21 확인). 앞 구간의 대화를 압축해 새
+  ///   세션에 주입해 주므로 비버가 이어서 말한다. 예전 주석이 "서버가 아직 안 받는다 /
+  ///   릴리즈 블로커"라고 적고 있었으나 그 상태는 해소됐다.
+  ///
+  /// ⛔ 그래서 **이 id 를 잃는 경로를 만들지 마라.** 구간 사이에 `hangUp()` 이 끼면
+  ///   [CallState.callId] 가 지워져 여기에 실을 게 없어지고, 비버는 방금 한 얘기를
+  ///   잊은 채 다시 인사한다. 결제 경로가 정확히 그 실수를 하고 있었다
+  ///   ([resumeAfterPaywall] 참조).
   String? _continuesCallId;
 
   /// Starts the application keepalive: a periodic `ping` so the socket always
