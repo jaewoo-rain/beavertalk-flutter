@@ -32,6 +32,7 @@ import '../data/datasources/pcm_playback_control.dart';
 import '../../subscription/presentation/providers/subscription_providers.dart';
 import '../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../domain/entities/call_allowance.dart';
+import '../domain/segment_call_id_recovery.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
@@ -1980,6 +1981,10 @@ class NormalCallController extends Notifier<CallState> {
     // after we tear it down here.
     _gen++;
     _expectClose = true;
+    // 이어가지 않고 끝냈으니 되짚기는 버린다. 남겨 두면 **다음 통화의**
+    // [continueCall] 이 지난 통화의 id 를 집어 서버가 엉뚱한 대화를 요약해 넣는다.
+    // (`_gen` 이 올라가 되짚기 자체도 곧 null 로 빠진다 — 이건 그 흔적까지 지우는 것.)
+    _pendingSegmentCallId = null;
     if (state.phase == CallPhase.ended || state.phase == CallPhase.idle) {
       await _teardown();
       return;
@@ -4302,6 +4307,20 @@ class NormalCallController extends Notifier<CallState> {
         return;
       }
 
+      // ⭐ 방금 끝난 구간의 `call_id` 를 **지금부터** 되짚기 시작한다.
+      //
+      //   이 경계에서는 클라가 먼저 소켓을 닫으므로 `call_ended` 가 오지 않고,
+      //   그래서 [preservedCallId] 는 **거의 항상 null 이다**([_hangUp] 의 같은 주석).
+      //   그 상태로 다음 구간을 열면 `continues_call_id` 가 **필드째 빠져서**
+      //   서버는 이어가기인 줄 모르고 새 대화를 시작한다 — 비버가 방금 한 얘기를
+      //   잊는 증상이 정확히 이것이다(사장님 실기기 2026-08-24).
+      //
+      //   `await` 하지 않는 이유: 값은 사용자가 「계속」을 누른 **뒤에야** 필요하다.
+      //   시트를 보는 동안(결제면 수십 초) 미리 돌려 두면 대기가 0 이 된다.
+      if (preservedCallId == null) {
+        _pendingSegmentCallId = _recoverSegmentCallId(preservedBaseline, gen);
+      }
+
       state = CallState(
         phase: CallPhase.awaitingContinue,
         callId: preservedCallId,
@@ -4315,6 +4334,44 @@ class NormalCallController extends Notifier<CallState> {
     } finally {
       _continuing = false;
     }
+  }
+
+  /// 방금 끝난 구간의 `call_id` 를 되짚는 중인 작업. [continueCall] 이 받아 간다.
+  Future<int?>? _pendingSegmentCallId;
+
+  /// 소켓을 닫아 버려 `call_ended` 를 못 받은 구간의 `call_id` 를 서버에서 되짚는다.
+  ///
+  /// `GET /calls` 의 최신 id 가 [baseline] 보다 크면 그게 방금 끝난 그 구간이다
+  /// ([_captureBaselineCallId] 가 **구간을 열 때마다** 직전 최신 id 를 잡아 두므로
+  /// 이 비교가 성립한다). 서버가 행을 마감하는 데 시간이 걸려 몇 번 재시도한다 —
+  /// `call_finish.dart` 의 `_recoverCallId` 와 같은 방식·같은 이유다.
+  ///
+  /// 되짚지 못하면 null 을 돌려주고 **통화는 그대로 이어간다.** 맥락 없이 이어질 뿐
+  /// 통화를 막을 일은 아니다. 다만 조용히 지나가지 않게 로그를 남긴다 — 이 실패가
+  /// 곧 "비버가 기억 못 한다" 로 보이는데, 로그가 없으면 원인이 안 드러난다.
+  Future<int?> _recoverSegmentCallId(int? baseline, int gen) async {
+    // ⛔ 무엇도 밖으로 던지지 않는다. 이 Future 는 **아무도 안 기다릴 수 있다** —
+    //   사용자가 시트에서 「통화 종료」를 고르면 [_hangUp] 이 참조를 버린다. 그때
+    //   예외가 새면 미처리 비동기 에러가 된다. 되짚기 실패는 통화를 막을 일이 아니다.
+    int? found;
+    try {
+      found = await const SegmentCallIdRecovery().run(
+        baseline: baseline,
+        latestCallId: ref.read(normalcallRepositoryProvider).latestCallId,
+        // 그 사이 사용자가 끊었으면 되짚을 이유가 없다.
+        cancelled: () => _gen != gen,
+      );
+    } catch (e) {
+      _log('⚠ 구간 call_id 되짚기가 던졌다: $e');
+      return null;
+    }
+    if (found == null) {
+      _log('⚠ 구간 call_id 를 못 되짚었다 (기준 ${baseline ?? '(없음)'}) '
+          '— 맥락 없이 이어진다');
+    } else {
+      _log('구간 call_id 되짚음: $found (기준 ${baseline ?? '(없음)'})');
+    }
+    return found;
   }
 
   /// 「Keep talking」 — 다음 5분 구간을 연다.
@@ -4337,8 +4394,29 @@ class NormalCallController extends Notifier<CallState> {
     }
     _continuing = true;
     try {
-      // 직전 구간을 서버에 알린다. 서버가 아직 이 필드를 안 받아도 무해하다.
-      _continuesCallId = state.callId;
+      // 직전 구간을 서버에 알린다 — 서버는 이 id 의 대화를 요약해 새 세션에 넣는다.
+      //
+      // ⛔ `state.callId` 만 보면 **거의 항상 null 이다.** 이 경계에서는 클라가 먼저
+      //   소켓을 닫아 `call_ended` 가 오지 않기 때문이다. 그래서 [_reachSegmentEnd] 가
+      //   미리 띄워 둔 되짚기([_recoverSegmentCallId])를 여기서 받는다. 시트를 보는
+      //   동안 이미 돌았으므로 보통 즉시 끝난다.
+      // 되짚기는 `GET /calls` 를 타서 int 로 오고, `call_ended` 로 오는 id 는 문자열이다
+      // (`ServerCallEnded(call_id=str(...))`). 소켓 계약이 문자열이므로 그쪽에 맞춘다.
+      // (`Future<int?>?` 를 그대로 await 하면 정적 타입이 `Object?` 로 뭉개져서 지역으로 푼다.)
+      final pending = _pendingSegmentCallId;
+      _pendingSegmentCallId = null;
+      var carriedId = state.callId;
+      // 되짚기는 **필요할 때만** 기다린다. `call_ended` 로 id 가 이미 왔다면 폴링을
+      // 붙들 이유가 없다(최대 3초를 공짜로 버리게 된다).
+      if (carriedId == null && pending != null) {
+        carriedId = (await pending)?.toString();
+      }
+      _continuesCallId = carriedId;
+      // 되짚는 사이 사용자가 끊었을 수 있다(폴링이 최대 3초다).
+      if (state.phase != CallPhase.awaitingContinue) {
+        _log('되짚는 사이 통화가 끝났다 — 다음 구간을 열지 않는다');
+        return;
+      }
       // [_connect] 가 상태를 새 통화 것으로 갈아엎기 전에 붙잡는다([CallState] 는
       // 불변이라 참조만 들고 있으면 된다).
       final carried = state;
@@ -4416,13 +4494,17 @@ class NormalCallController extends Notifier<CallState> {
   /// (`GET /calls/{id}/raw`).
   ///
   /// ✅ **서버가 이 필드를 받는다**(2026-08-21 확인). 앞 구간의 대화를 압축해 새
-  ///   세션에 주입해 주므로 비버가 이어서 말한다. 예전 주석이 "서버가 아직 안 받는다 /
-  ///   릴리즈 블로커"라고 적고 있었으나 그 상태는 해소됐다.
+  ///   세션에 주입해 주므로 비버가 이어서 말한다.
   ///
-  /// ⛔ 그래서 **이 id 를 잃는 경로를 만들지 마라.** 구간 사이에 `hangUp()` 이 끼면
-  ///   [CallState.callId] 가 지워져 여기에 실을 게 없어지고, 비버는 방금 한 얘기를
-  ///   잊은 채 다시 인사한다. 결제 경로가 정확히 그 실수를 하고 있었다
-  ///   ([resumeAfterPaywall] 참조).
+  /// ⛔ **받는 쪽이 준비됐다고 계약이 성립한 게 아니다 — 보내는 쪽이 비어 있었다.**
+  ///   이 값은 [CallState.callId] 에서 오는데, 그건 `call_ended` 프레임에서만 채워진다.
+  ///   구간 경계는 **클라가 먼저 소켓을 닫아서** 그 프레임이 오지 않는다. 그래서
+  ///   여기가 늘 null 이었고, `start` 에서 `?` 로 **필드째 빠져** 서버는 이어가기인 줄
+  ///   몰랐다. 화면상 통화는 멀쩡히 이어지는데 비버만 처음부터 다시 인사했다
+  ///   (사장님 실기기 2026-08-24). 지금은 [_recoverSegmentCallId] 가 되짚어 채운다.
+  ///
+  /// ⛔ 그러니 **이 값이 채워지는지를 실기기 로그로 확인하고 손대라.** null 이어도
+  ///   통화는 정상으로 보이기 때문에, 화면만 봐서는 고장을 알 수 없다.
   String? _continuesCallId;
 
   /// Starts the application keepalive: a periodic `ping` so the socket always
