@@ -246,6 +246,7 @@ class CallState {
     this.channel = CallChannel.live,
     this.segmentsUsed = 0,
     this.paidCallTime = false,
+    this.micMuted = false,
   });
 
   /// Current lifecycle phase.
@@ -332,6 +333,14 @@ class CallState {
   ///   없고, 잠금화면·백그라운드에서도 살아 있다. 여기서 UI 를 부르면 컨텍스트가 없는
   ///   시점에 터진다. 컨트롤러는 상태만 싣고 표시는 화면의 몫이다.
   final bool paidCallTime;
+  /// 사용자가 **음소거**했는가. [CallChannel.live] 전용이다.
+  ///
+  /// 라이브는 스트리밍 세션이라 마이크가 통화 내내 열려 있고, 사용자가 잠시 닫을
+  /// 수단이 필요하다. 켜도 **세션은 유지된다** — 업링크 프레임만 버린다. 비버는
+  /// 계속 말하고 경과시간도 계속 흐른다.
+  ///
+  /// ⚠ 캐스케이드에는 대응 수단이 없다 — 그쪽은 종전대로 서버 정책이 마이크를 쥔다.
+  final bool micMuted;
 
   /// Sentinel so [copyWith] can distinguish "leave [hint] unchanged" from
   /// "clear [hint] to null" — the `?? this.hint` idiom cannot express the latter.
@@ -356,6 +365,7 @@ class CallState {
     CallChannel? channel,
     int? segmentsUsed,
     bool? paidCallTime,
+    bool? micMuted,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -374,6 +384,7 @@ class CallState {
       channel: channel ?? this.channel,
       segmentsUsed: segmentsUsed ?? this.segmentsUsed,
       paidCallTime: paidCallTime ?? this.paidCallTime,
+      micMuted: micMuted ?? this.micMuted,
     );
   }
 }
@@ -1188,23 +1199,8 @@ class NormalCallController extends Notifier<CallState> {
   ///   생긴다(전이 지점이 4곳: [_gateMic] / 행오버 / idle-ungate / [_teardown]).
   bool _beaverAudioActive = false;
 
-  /// 마이크 프레임을 버릴 것인가 — 반이중 게이트의 **유일한** 판정.
-  ///
-  /// 마이크를 여는 데는 **세 조건이 전부** 필요하다. 하나라도 빠지면 종전대로 게이팅한다:
-  ///   ① 통로가 캐스케이드다([CallChannel.gatesMic] == false)
-  ///   ② **서버가 열라고 했다**([_serverMicAlwaysOpen], `ready.mic_always_open`)
-  ///   ③ ~~플랫폼 AEC 스위치~~ — **없앴다. 이제 항상 참이다**(위 주석 참고)
-  ///
-  /// ②가 필요한 이유: 서버 값이 그쪽 에너지 게이트·barge-in 정책과 **한 몸**이다. 서버는
-  /// 마이크가 닫힌 전제로 "들어온 소리는 에코"라고 판정하는데 클라가 열어 두면 두 쪽이 다른
-  /// 세계를 가정한다. 그래서 **서버가 이긴다** — 서버가 false 면 캐스케이드여도 닫는다.
-  ///
-  /// ⛔ ③은 **클라 쪽 컴파일 스위치였고 없앴다.** 그 자리는 이제 **서버가 진다** —
-  ///   끼어들기를 끄려면 서버가 `mic_always_open=false` 를 보내면 되고(②), 그러면 여기서
-  ///   그대로 게이팅된다. 안전장치가 사라진 게 아니라 **한 곳(서버)으로 모인 것**이다.
-  ///   ⚠ AEC 없이 열면 비버가 자기 목소리에 끊긴다는 위험은 그대로다(call_id=855:
-  ///     유저 턴의 절반이 비버 대사였다). 그 판단을 **서버 env 한 줄**이 쥔다.
   bool get _micGated {
+    if (state.micMuted) return true;
     if (!_channelMode.gatesMic && _serverMicAlwaysOpen) {
       return false;
     }
@@ -4253,6 +4249,19 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Toggles whether the hint card is shown. UI preference only.
   void setHintOn(bool value) => state = state.copyWith(hintOn: value);
+
+  /// 라이브 통화의 **음소거**를 켜고 끈다.
+  ///
+  /// 세션은 유지하고 업링크 프레임만 버린다([_micGated]). 레코더를 닫지 않는 이유는
+  /// 오디오 세션·AEC 를 흔들지 않기 위해서다 — 통화 중 세션을 여닫으면 라우트가 튄다.
+  ///
+  /// 캐스케이드에서는 아무 일도 하지 않는다.
+  void setMicMuted(bool value) {
+    if (state.channel.isCascade) return;
+    if (state.micMuted == value) return;
+    state = state.copyWith(micMuted: value);
+    _log('mic ${value ? "음소거" : "해제"} (live)');
+  }
 
   /// Starts the UI elapsed-time ticker.
   ///

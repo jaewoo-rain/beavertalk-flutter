@@ -2137,4 +2137,63 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'Jatka juttelua';
+
+  @override
+  String get callModeSheetTitle => 'Miten haluat jutella?';
+
+  @override
+  String get callModeSheetSubtitle => 'Astuu voimaan heti tässä puhelussa';
+
+  @override
+  String get callModeFreeTalk => 'Vapaa juttelu';
+
+  @override
+  String get callModeFreeTalkDesc => 'Juttele ilman korjauksia';
+
+  @override
+  String get callModeStudy => 'Opiskelu';
+
+  @override
+  String get callModeStudyDesc => 'Opettele yksi ilmaus kerrallaan';
+
+  @override
+  String get callModeChange => 'Vaihda tila';
+
+  @override
+  String get callModeKeep => 'Ei nyt';
+
+  @override
+  String get callExitTitle => 'Lopetetaanko puhelu?';
+
+  @override
+  String get callExitSubtitle =>
+      'Lopettaminen nyt kuluttaa silti yhden puhelun';
+
+  @override
+  String get callExitKeep => 'Jatka puhumista';
+
+  @override
+  String get callExitConfirm => 'Lopeta puhelu';
+
+  @override
+  String get callMicMute => 'Mykistä';
+
+  @override
+  String get callMicUnmute => 'Poista mykistys';
+
+  @override
+  String get callPushToTalk => 'Pidä pohjassa puhuaksesi';
+
+  @override
+  String get callFreeEndedTitle => 'Ilmainen puhelusi päättyi';
+
+  @override
+  String get callFreeEndedCta => 'Tilaa ja jatka juttelua';
+
+  @override
+  String get callKeepGoingTitle => 'Jatketaanko?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.';
 }

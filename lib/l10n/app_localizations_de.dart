@@ -2158,4 +2158,63 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'Weitersprechen';
+
+  @override
+  String get callModeSheetTitle => 'Wie möchtest du sprechen?';
+
+  @override
+  String get callModeSheetSubtitle => 'Gilt sofort für diesen Anruf';
+
+  @override
+  String get callModeFreeTalk => 'Freies Gespräch';
+
+  @override
+  String get callModeFreeTalkDesc => 'Einfach reden – ohne Korrekturen';
+
+  @override
+  String get callModeStudy => 'Lernen';
+
+  @override
+  String get callModeStudyDesc => 'Lerne einen Ausdruck nach dem anderen';
+
+  @override
+  String get callModeChange => 'Modus ändern';
+
+  @override
+  String get callModeKeep => 'Jetzt nicht';
+
+  @override
+  String get callExitTitle => 'Anruf beenden?';
+
+  @override
+  String get callExitSubtitle =>
+      'Jetzt beenden verbraucht trotzdem einen Anruf';
+
+  @override
+  String get callExitKeep => 'Weiter sprechen';
+
+  @override
+  String get callExitConfirm => 'Anruf beenden';
+
+  @override
+  String get callMicMute => 'Stummschalten';
+
+  @override
+  String get callMicUnmute => 'Stummschaltung aufheben';
+
+  @override
+  String get callPushToTalk => 'Zum Sprechen halten';
+
+  @override
+  String get callFreeEndedTitle => 'Dein kostenloser Anruf ist beendet';
+
+  @override
+  String get callFreeEndedCta => 'Abonnieren und weitersprechen';
+
+  @override
+  String get callKeepGoingTitle => 'Weitermachen?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach.';
 }

@@ -2066,4 +2066,61 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => '계속 대화하기';
+
+  @override
+  String get callModeSheetTitle => '어떻게 대화할까요?';
+
+  @override
+  String get callModeSheetSubtitle => '지금 통화에 바로 적용돼요';
+
+  @override
+  String get callModeFreeTalk => '자유 대화';
+
+  @override
+  String get callModeFreeTalkDesc => '교정 없이 편하게 이어가요';
+
+  @override
+  String get callModeStudy => '표현 학습';
+
+  @override
+  String get callModeStudyDesc => '표현을 하나씩 짚고 발음을 고쳐요';
+
+  @override
+  String get callModeChange => '대화 방식 바꾸기';
+
+  @override
+  String get callModeKeep => '닫기';
+
+  @override
+  String get callExitTitle => '통화를 끝낼까요?';
+
+  @override
+  String get callExitSubtitle => '지금 끝내도 오늘 통화 1회가 사용돼요';
+
+  @override
+  String get callExitKeep => '계속 통화하기';
+
+  @override
+  String get callExitConfirm => '통화 종료';
+
+  @override
+  String get callMicMute => '음소거';
+
+  @override
+  String get callMicUnmute => '음소거 해제';
+
+  @override
+  String get callPushToTalk => '꾹 눌러 말하기';
+
+  @override
+  String get callFreeEndedTitle => '무료 통화가 끝났어요';
+
+  @override
+  String get callFreeEndedCta => '구독하고 계속 대화하기';
+
+  @override
+  String get callKeepGoingTitle => '더 이어갈까요?';
+
+  @override
+  String get callKeepGoingSubtitle => '통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요.';
 }

@@ -2126,4 +2126,62 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'කතාව දිගටම කරගෙන යන්න';
+
+  @override
+  String get callModeSheetTitle => 'ඔබට කෙසේ කතා කරන්න ඕනද?';
+
+  @override
+  String get callModeSheetSubtitle => 'මෙම ඇමතුමට වහාම අදාළ වේ';
+
+  @override
+  String get callModeFreeTalk => 'නිදහස් කතාබහ';
+
+  @override
+  String get callModeFreeTalkDesc => 'නිවැරදි කිරීමකින් තොරව කතා කරන්න';
+
+  @override
+  String get callModeStudy => 'ඉගෙනීම';
+
+  @override
+  String get callModeStudyDesc => 'එක් ප්‍රකාශනයක් බැගින් ඉගෙන ගන්න';
+
+  @override
+  String get callModeChange => 'ආකාරය වෙනස් කරන්න';
+
+  @override
+  String get callModeKeep => 'දැන් නොවේ';
+
+  @override
+  String get callExitTitle => 'ඇමතුම අවසන් කරන්නද?';
+
+  @override
+  String get callExitSubtitle => 'දැන් අවසන් කළත් අද ඇමතුමකින් එකක් වැය වේ';
+
+  @override
+  String get callExitKeep => 'කතා කරමින් සිටින්න';
+
+  @override
+  String get callExitConfirm => 'ඇමතුම අවසන් කරන්න';
+
+  @override
+  String get callMicMute => 'නිශ්ශබ්ද';
+
+  @override
+  String get callMicUnmute => 'නිශ්ශබ්දතාව ඉවත් කරන්න';
+
+  @override
+  String get callPushToTalk => 'කතා කිරීමට තද කර තබන්න';
+
+  @override
+  String get callFreeEndedTitle => 'ඔබේ නොමිලේ ඇමතුම අවසන් විය';
+
+  @override
+  String get callFreeEndedCta => 'දායක වී කතාබහ දිගටම කරන්න';
+
+  @override
+  String get callKeepGoingTitle => 'දිගටම කරන්නද?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු.';
 }

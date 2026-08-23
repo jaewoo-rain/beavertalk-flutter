@@ -2149,4 +2149,62 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'Beszélgetés folytatása';
+
+  @override
+  String get callModeSheetTitle => 'Hogyan szeretnél beszélgetni?';
+
+  @override
+  String get callModeSheetSubtitle => 'Azonnal érvénybe lép ebben a hívásban';
+
+  @override
+  String get callModeFreeTalk => 'Szabad beszélgetés';
+
+  @override
+  String get callModeFreeTalkDesc => 'Beszélj javítások nélkül';
+
+  @override
+  String get callModeStudy => 'Tanulás';
+
+  @override
+  String get callModeStudyDesc => 'Egyszerre egy kifejezést tanulj';
+
+  @override
+  String get callModeChange => 'Mód váltása';
+
+  @override
+  String get callModeKeep => 'Most nem';
+
+  @override
+  String get callExitTitle => 'Befejezed a hívást?';
+
+  @override
+  String get callExitSubtitle => 'A most befejezés is felhasznál egy hívást';
+
+  @override
+  String get callExitKeep => 'Beszélgetés folytatása';
+
+  @override
+  String get callExitConfirm => 'Hívás befejezése';
+
+  @override
+  String get callMicMute => 'Némítás';
+
+  @override
+  String get callMicUnmute => 'Némítás feloldása';
+
+  @override
+  String get callPushToTalk => 'Tartsd nyomva a beszédhez';
+
+  @override
+  String get callFreeEndedTitle => 'Az ingyenes hívásod véget ért';
+
+  @override
+  String get callFreeEndedCta => 'Fizess elő és beszélgess tovább';
+
+  @override
+  String get callKeepGoingTitle => 'Folytatjuk?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk.';
 }

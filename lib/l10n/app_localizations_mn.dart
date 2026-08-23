@@ -2133,4 +2133,63 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'Яриаг үргэлжлүүлэх';
+
+  @override
+  String get callModeSheetTitle => 'Та яаж ярихыг хүсэж байна?';
+
+  @override
+  String get callModeSheetSubtitle => 'Энэ дуудлагад шууд хэрэгжинэ';
+
+  @override
+  String get callModeFreeTalk => 'Чөлөөт яриа';
+
+  @override
+  String get callModeFreeTalkDesc => 'Засваргүйгээр чөлөөтэй ярь';
+
+  @override
+  String get callModeStudy => 'Суралцах';
+
+  @override
+  String get callModeStudyDesc => 'Нэг удаад нэг хэллэг сурна';
+
+  @override
+  String get callModeChange => 'Горим солих';
+
+  @override
+  String get callModeKeep => 'Одоо биш';
+
+  @override
+  String get callExitTitle => 'Дуудлагыг дуусгах уу?';
+
+  @override
+  String get callExitSubtitle =>
+      'Одоо дуусгасан ч өнөөдрийн нэг дуудлага зарцуулагдана';
+
+  @override
+  String get callExitKeep => 'Үргэлжлүүлэн ярих';
+
+  @override
+  String get callExitConfirm => 'Дуудлагыг дуусгах';
+
+  @override
+  String get callMicMute => 'Дуу хаах';
+
+  @override
+  String get callMicUnmute => 'Дуу нээх';
+
+  @override
+  String get callPushToTalk => 'Ярихын тулд дараад байна уу';
+
+  @override
+  String get callFreeEndedTitle => 'Таны үнэгүй дуудлага дууслаа';
+
+  @override
+  String get callFreeEndedCta => 'Захиалж яриагаа үргэлжлүүл';
+
+  @override
+  String get callKeepGoingTitle => 'Үргэлжлүүлэх үү?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна.';
 }

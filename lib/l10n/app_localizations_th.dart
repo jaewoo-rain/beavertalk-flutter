@@ -2122,4 +2122,62 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'คุยต่อ';
+
+  @override
+  String get callModeSheetTitle => 'อยากคุยแบบไหน';
+
+  @override
+  String get callModeSheetSubtitle => 'มีผลกับสายนี้ทันที';
+
+  @override
+  String get callModeFreeTalk => 'คุยอิสระ';
+
+  @override
+  String get callModeFreeTalkDesc => 'คุยสบาย ๆ ไม่มีการแก้';
+
+  @override
+  String get callModeStudy => 'เรียนรู้';
+
+  @override
+  String get callModeStudyDesc => 'เรียนทีละสำนวนและแก้การออกเสียง';
+
+  @override
+  String get callModeChange => 'เปลี่ยนโหมด';
+
+  @override
+  String get callModeKeep => 'ไว้ก่อน';
+
+  @override
+  String get callExitTitle => 'วางสายเลยไหม';
+
+  @override
+  String get callExitSubtitle => 'วางตอนนี้ก็ยังนับเป็นหนึ่งสายของวันนี้';
+
+  @override
+  String get callExitKeep => 'คุยต่อ';
+
+  @override
+  String get callExitConfirm => 'วางสาย';
+
+  @override
+  String get callMicMute => 'ปิดไมค์';
+
+  @override
+  String get callMicUnmute => 'เปิดไมค์';
+
+  @override
+  String get callPushToTalk => 'กดค้างเพื่อพูด';
+
+  @override
+  String get callFreeEndedTitle => 'สายฟรีของคุณหมดแล้ว';
+
+  @override
+  String get callFreeEndedCta => 'สมัครสมาชิกและคุยต่อ';
+
+  @override
+  String get callKeepGoingTitle => 'คุยต่อไหม';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง';
 }

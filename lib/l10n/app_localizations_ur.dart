@@ -2130,4 +2130,62 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'بات جاری رکھیں';
+
+  @override
+  String get callModeSheetTitle => 'آپ کیسے بات کرنا چاہتے ہیں؟';
+
+  @override
+  String get callModeSheetSubtitle => 'یہ کال پر فوراً لاگو ہوگا';
+
+  @override
+  String get callModeFreeTalk => 'آزاد گفتگو';
+
+  @override
+  String get callModeFreeTalkDesc => 'بغیر اصلاح کے بات کریں';
+
+  @override
+  String get callModeStudy => 'مشق';
+
+  @override
+  String get callModeStudyDesc => 'ایک وقت میں ایک جملہ سیکھیں';
+
+  @override
+  String get callModeChange => 'موڈ تبدیل کریں';
+
+  @override
+  String get callModeKeep => 'ابھی نہیں';
+
+  @override
+  String get callExitTitle => 'کال ختم کریں؟';
+
+  @override
+  String get callExitSubtitle => 'ابھی ختم کرنے پر بھی ایک کال شمار ہوگی';
+
+  @override
+  String get callExitKeep => 'بات جاری رکھیں';
+
+  @override
+  String get callExitConfirm => 'کال ختم کریں';
+
+  @override
+  String get callMicMute => 'خاموش کریں';
+
+  @override
+  String get callMicUnmute => 'آواز کھولیں';
+
+  @override
+  String get callPushToTalk => 'بولنے کے لیے دبائے رکھیں';
+
+  @override
+  String get callFreeEndedTitle => 'آپ کی مفت کال ختم ہو گئی';
+
+  @override
+  String get callFreeEndedCta => 'سبسکرائب کریں اور بات جاری رکھیں';
+
+  @override
+  String get callKeepGoingTitle => 'جاری رکھیں؟';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔';
 }

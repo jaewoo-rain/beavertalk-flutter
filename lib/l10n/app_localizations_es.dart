@@ -2152,4 +2152,63 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get ctaKeepTalking => 'Seguir hablando';
+
+  @override
+  String get callModeSheetTitle => '¿Cómo quieres hablar?';
+
+  @override
+  String get callModeSheetSubtitle => 'Se aplica a esta llamada de inmediato';
+
+  @override
+  String get callModeFreeTalk => 'Charla libre';
+
+  @override
+  String get callModeFreeTalkDesc => 'Habla sin correcciones';
+
+  @override
+  String get callModeStudy => 'Estudio';
+
+  @override
+  String get callModeStudyDesc => 'Aprende una expresión a la vez';
+
+  @override
+  String get callModeChange => 'Cambiar modo';
+
+  @override
+  String get callModeKeep => 'Ahora no';
+
+  @override
+  String get callExitTitle => '¿Terminar la llamada?';
+
+  @override
+  String get callExitSubtitle =>
+      'Terminar ahora igual consume una de tus llamadas';
+
+  @override
+  String get callExitKeep => 'Seguir hablando';
+
+  @override
+  String get callExitConfirm => 'Finalizar llamada';
+
+  @override
+  String get callMicMute => 'Silenciar';
+
+  @override
+  String get callMicUnmute => 'Activar micrófono';
+
+  @override
+  String get callPushToTalk => 'Mantén para hablar';
+
+  @override
+  String get callFreeEndedTitle => 'Tu llamada gratuita terminó';
+
+  @override
+  String get callFreeEndedCta => 'Suscríbete y sigue hablando';
+
+  @override
+  String get callKeepGoingTitle => '¿Seguimos?';
+
+  @override
+  String get callKeepGoingSubtitle =>
+      'Las llamadas continúan en tramos de 5 minutos. Te preguntaremos cada vez.';
 }
