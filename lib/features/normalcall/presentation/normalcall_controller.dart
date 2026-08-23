@@ -1457,6 +1457,10 @@ class NormalCallController extends Notifier<CallState> {
       // therefore the beaver's first word, by that request's entire latency.
       // Fire it alongside the socket instead. A failure just leaves the baseline
       // null and recovery degrades to "newest id".
+      // ⛔ **새 연결마다 비운다.** 안 비우면 이 구간의 `call_started` 가 (구버전 서버나
+      //   유실로) 안 왔을 때 **직전 구간의 id 가 남아** 다음 이어가기에 실린다 —
+      //   서버가 엉뚱한 대화를 요약해 넣는다. 없는 편이 틀린 것보다 낫다.
+      _serverCallId = null;
       unawaited(_captureBaselineCallId(myGen));
 
       // Connect the WebSocket.
@@ -1498,7 +1502,7 @@ class NormalCallController extends Notifier<CallState> {
       // 수신통화만 서버가 준 통화 id 를 `inbound_call_id` 로 되돌려주고, 서버가
       // 그걸로 알람을 되짚어 그 알람의 캐릭터를 쓴다. 홈에서 건 전화는 이 필드가
       // 없어 서버가 member.character_id 를 쓴다.
-      _send({
+      final startFrame = <String, dynamic>{
         'type': 'start',
         'inbound_call_id': ?inboundCallId,
         // (barge-in) AEC 자기진단. 서버가 **세션마다** 끼어들기 확인 방식을 고르는 입력이다.
@@ -1513,7 +1517,14 @@ class NormalCallController extends Notifier<CallState> {
         // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
         // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
         'continues_call_id': ?_continuesCallId,
-      });
+      };
+      // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
+      //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
+      //   기억을 못 하는데, 그건 서버 탓으로도 보이기 때문이다. 요청서에까지
+      //   「클라는 이미 보내고 있습니다」라는 **틀린 문장**이 실려 백엔드로 갔다.
+      //   지우지 마라. 이 한 줄이 클라/서버 책임을 가른다(2026-08-24).
+      _log('start 송신: $startFrame');
+      _send(startFrame);
 
       _startAutoTalkIfEnabled();
 
@@ -1875,6 +1886,11 @@ class NormalCallController extends Notifier<CallState> {
     try {
       final base = await ref.read(normalcallRepositoryProvider).latestCallId();
       if (myGen != _gen) return;
+      // ⚠ 이 캡처는 소켓과 **경주한다.** 서버가 접속 시점에 통화 행을 만들면, 이 HTTP 가
+      //   늦게 도착할 때 기준값이 **이 통화 자신의 id** 가 되어 되짚기가 영영 실패한다.
+      //   (2026-08-24 실측에서는 이겼다 — 기준 1181 / 이 통화 1182.) 되짚기가 예비로
+      //   내려간 지금은 치명적이지 않지만, 로그로 남겨 두면 실패했을 때 바로 보인다.
+      _log('baseline 캡처: ${base ?? '(없음)'}');
       state = state.copyWith(baselineCallId: base);
     } catch (_) {
       // Recovery degrades to "newest id".
@@ -3818,6 +3834,20 @@ class NormalCallController extends Notifier<CallState> {
       case 'call_started':
         final cid = msg['character_id'];
         if (cid is int) state = state.copyWith(characterId: cid);
+        // ⭐ 서버는 **이 통화의 call_id 를 여기서 이미 알려준다.** 그런데 클라는
+        //   `character_id` 만 읽고 이 값을 버리고 있었다(2026-08-24 실기기 로그:
+        //   `{"type":"call_started","character_id":1,"call_id":"1182"}`).
+        //
+        //   그 결과 구간을 이어갈 때 실을 id 가 없어서, `GET /calls` 를 폴링해
+        //   "기준값보다 큰 첫 id" 로 **되짚어야** 했다([_recoverSegmentCallId]).
+        //   서버가 정답을 주고 있는데 추측으로 되짚고 있었던 셈이다 — 그 추측은
+        //   기준값 캡처가 소켓과 경주해서 **질 수 있고**, 지면 조용히 틀린다.
+        //
+        //   이제 이 값을 쓴다. 되짚기는 이 필드를 안 주는 서버를 위한 **예비**로만 남는다.
+        _serverCallId = normalizeCallId(msg['call_id']);
+        if (_serverCallId != null) {
+          _log('call_started: 이 구간의 call_id=$_serverCallId');
+        }
         // [진단] 캐스케이드가 이걸 보내기 시작했는지 실기기에서 가리는 줄이다
         // (00155-br2). 안 오면 화면이 대표 캐릭터로 폴백하는데, 그건 **조용히**
         // 일어나서 로그가 없으면 "왜 다른 얼굴이지"를 못 찾는다.
@@ -4317,7 +4347,8 @@ class NormalCallController extends Notifier<CallState> {
       //
       //   `await` 하지 않는 이유: 값은 사용자가 「계속」을 누른 **뒤에야** 필요하다.
       //   시트를 보는 동안(결제면 수십 초) 미리 돌려 두면 대기가 0 이 된다.
-      if (preservedCallId == null) {
+      // 서버가 `call_started` 로 id 를 줬다면 되짚을 게 없다 — 정답을 이미 갖고 있다.
+      if (_serverCallId == null && preservedCallId == null) {
         _pendingSegmentCallId = _recoverSegmentCallId(preservedBaseline, gen);
       }
 
@@ -4337,7 +4368,16 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   /// 방금 끝난 구간의 `call_id` 를 되짚는 중인 작업. [continueCall] 이 받아 간다.
+  ///
+  /// ⚠ **예비 경로다.** 서버가 `call_started` 로 id 를 주면([_serverCallId]) 이건 아예
+  ///   안 돈다. 그 필드를 안 주는 서버에서만 쓰인다.
   Future<int?>? _pendingSegmentCallId;
+
+  /// 서버가 `call_started` 로 알려준 **이 구간의** `call_id`.
+  ///
+  /// 구간을 이어갈 때 `continues_call_id` 로 실을 정답이다. 되짚기와 달리 추측이
+  /// 아니고 즉시 확정된다. 새 구간을 열 때마다 그 구간의 값으로 덮인다.
+  String? _serverCallId;
 
   /// 소켓을 닫아 버려 `call_ended` 를 못 받은 구간의 `call_id` 를 서버에서 되짚는다.
   ///
@@ -4405,9 +4445,11 @@ class NormalCallController extends Notifier<CallState> {
       // (`Future<int?>?` 를 그대로 await 하면 정적 타입이 `Object?` 로 뭉개져서 지역으로 푼다.)
       final pending = _pendingSegmentCallId;
       _pendingSegmentCallId = null;
-      var carriedId = state.callId;
-      // 되짚기는 **필요할 때만** 기다린다. `call_ended` 로 id 가 이미 왔다면 폴링을
-      // 붙들 이유가 없다(최대 3초를 공짜로 버리게 된다).
+      // 우선순위: 서버가 준 값 → `call_ended` 로 온 값 → 되짚은 값.
+      // 앞의 둘은 **확정된 사실**이고 마지막만 추측이다.
+      var carriedId = _serverCallId ?? state.callId;
+      // 되짚기는 **필요할 때만** 기다린다. 앞에서 이미 정해졌다면 폴링을 붙들 이유가
+      // 없다(최대 3초를 공짜로 버리게 된다).
       if (carriedId == null && pending != null) {
         carriedId = (await pending)?.toString();
       }
