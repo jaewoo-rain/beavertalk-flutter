@@ -32,6 +32,7 @@ import '../data/datasources/pcm_playback_control.dart';
 import '../../subscription/presentation/providers/subscription_providers.dart';
 import '../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../domain/entities/call_allowance.dart';
+import '../domain/entities/call_resume_status.dart';
 import '../domain/segment_call_id_recovery.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
@@ -1457,6 +1458,11 @@ class NormalCallController extends Notifier<CallState> {
       //   유실로) 안 왔을 때 **직전 구간의 id 가 남아** 다음 이어가기에 실린다 —
       //   서버가 엉뚱한 대화를 요약해 넣는다. 없는 편이 틀린 것보다 낫다.
       _serverCallId = null;
+      // ⛔ **여기서 붙잡아야 한다.** [continueCall] 의 `finally` 가 [_continuesCallId] 를
+      //   비우는데, `call_started` 는 그보다 늦게 올 수 있다(비동기 프레임이다).
+      //   그때 읽으면 늘 null 이라 **이어하기 성패를 영영 못 가린다.**
+      //   새 통화면 null 이 들어가 저절로 비워진다.
+      _askedContinueId = _continuesCallId;
       unawaited(_captureBaselineCallId(myGen));
 
       // Connect the WebSocket.
@@ -3842,7 +3848,30 @@ class NormalCallController extends Notifier<CallState> {
         //   이제 이 값을 쓴다. 되짚기는 이 필드를 안 주는 서버를 위한 **예비**로만 남는다.
         _serverCallId = normalizeCallId(msg['call_id']);
         if (_serverCallId != null) {
-          _log('call_started: 이 구간의 call_id=$_serverCallId');
+          // ⭐ **상태에도 싣는다.** 지금까지 [CallState.callId] 는 `call_ended` 로만
+          //   채워졌고, 클라가 먼저 끊는 경로(수동 종료·구간 경계)에서는 늘 null 이라
+          //   요약 화면이 `GET /calls` 를 최대 5회 폴링해 되짚어야 했다
+          //   (`call_finish.dart` `_recoverCallId`). 서버가 시작할 때 알려 주므로
+          //   그 폴링이 필요 없어진다 — 그 코드는 `callId == null` 일 때만 도는
+          //   구조라 **지우지 않아도 저절로 안 돈다**(구버전 서버용 폴백으로 남는다).
+          state = state.copyWith(callId: _serverCallId);
+
+          // ⭐ **이어졌는지 판별한다.** 백엔드: 「이어졌는지는 `call_started` 의
+          //   `call_id` 가 그대로인지로 판별하세요 — 번호가 바뀌었으면 새 통화입니다.」
+          //
+          //   ⛔ 사용자에게 알리지 않는다. 통화 자체는 정상으로 돌고, 「비버가 기억을
+          //     못 합니다」를 팝업으로 알리는 건 더 나쁘다. 이건 **개발자가 원인을
+          //     5초 만에 찾게** 하는 장치다 — 이 줄이 없어서 며칠을 헤맸다.
+          final asked = _askedContinueId;
+          if (asked != null && asked != _serverCallId) {
+            _log('⛔ 이어하기 실패 — $asked 로 이어달라 했는데 새 통화 $_serverCallId '
+                '가 열렸다. 서버 사유는 셋 중 하나다(본인 통화 아님 / 유효시간 5분 '
+                '초과 / 조각 상한 소진). 비버는 앞 대화를 기억하지 못한다');
+          } else if (asked != null) {
+            _log('✅ 이어하기 성공 — 같은 통화 $_serverCallId 로 이어졌다');
+          } else {
+            _log('call_started: 이 통화의 call_id=$_serverCallId');
+          }
         }
         // [진단] 캐스케이드가 이걸 보내기 시작했는지 실기기에서 가리는 줄이다
         // (00155-br2). 안 오면 화면이 대표 캐릭터로 폴백하는데, 그건 **조용히**
@@ -4311,20 +4340,9 @@ class NormalCallController extends Notifier<CallState> {
       if (state.phase != CallPhase.inCall) return;
 
       final used = state.segmentsUsed + 1;
-      final canExtend =
-          CallAllowance.canExtend(segmentsUsed: used, paidAccess: paid);
 
-      // 유료 상한(15분) 소진 → 시트를 띄우지 않는다. 누를 수 없는 버튼을 보여 주는
-      // 꼴이기 때문이다. **무료는 다르다** — 5분에 끝나도 구독 유도 시트를 봐야 한다.
-      if (!canExtend && paid) {
-        _log('구간 $used 소진 — 유료 상한(${CallAllowance.limitFor(paidAccess: true).inMinutes}분) 도달, 시트 없이 종료');
-        state = state.copyWith(segmentsUsed: used, paidCallTime: paid);
-        await hangUp();
-        return;
-      }
-
-      _log('구간 $used 끝 — 세션을 닫고 결정을 기다린다 '
-          '(유료=$paid, 연장가능=$canExtend)');
+      // ⛔ **이어갈 수 있는지는 서버가 정한다.** 판정을 [_teardown] **뒤로** 미룬 이유는
+      //   서버가 이 조각을 마감한 뒤라야 `fragment_count` 가 맞기 때문이다. 아래를 보라.
 
       // 요약 화면이 읽어야 하는 값들은 [_teardown] 이 지우므로 먼저 붙잡는다
       // ([_hangUp] 과 같은 이유·같은 방식).
@@ -4361,6 +4379,42 @@ class NormalCallController extends Notifier<CallState> {
         _pendingSegmentCallId = _recoverSegmentCallId(preservedBaseline, gen);
       }
 
+      // ⭐ **이어갈 수 있는지 서버에 묻는다.** 여기가 오늘(2026-08-24) 하루를 태운
+      //   구멍이다 — 앱은 「나는 Pro」라고 믿고 「Keep going?」 을 띄웠는데 서버는
+      //   Free 로 보고 조용히 새 통화로 떨어뜨렸다. 에러가 안 나서 화면상으로는
+      //   멀쩡히 이어진 것처럼 보이고 비버만 앞 대화를 잊었다.
+      //
+      // ⛔ [_teardown] **뒤에** 묻는 이유: 서버는 소켓이 닫혀야 이 조각을 마감한다.
+      //   먼저 물으면 `fragment_count` 가 하나 모자란 답이 와서, 상한에 닿았는데도
+      //   「이어갈 수 있다」로 읽는다.
+      //
+      // 못 받으면 로컬 계산으로 내려간다 — 서버가 구버전이거나 네트워크가 나가도
+      // 통화를 막지 않는다. **상한이 두 벌이 되는 게 아니라 1차/2차가 된다.**
+      final segmentId = _serverCallId ?? preservedCallId;
+      final resume = await _askResumeStatus(segmentId);
+      final canExtend = resume?.canResume ??
+          CallAllowance.canExtend(segmentsUsed: used, paidAccess: paid);
+      _log('구간 $used 끝 — 이어가기 ${canExtend ? "가능" : "불가"} '
+          '(판정=${resume != null ? "서버 $resume" : "로컬(유료=$paid)"})');
+
+      // 상한 소진 + 유료 → 시트를 띄우지 않는다. 누를 수 없는 버튼을 보여 줄 이유가
+      // 없다. **무료는 다르다** — 5분에 끝나도 구독 유도 시트를 봐야 한다.
+      //
+      // ⛔ 여기서 [hangUp] 을 부르면 안 된다. [_teardown] 이 이미 돌아 phase 가
+      //   `idle` 이라 [_hangUp] 이 **early-return 하고 `ended` 를 세우지 않는다** —
+      //   그러면 요약 화면이 안 열리고 통화가 허공에서 끝난다. 그래서 [_hangUp] 의
+      //   꼬리와 같은 모양으로 상태를 직접 만든다.
+      if (!canExtend && paid) {
+        _log('구간 $used 소진 — 시트 없이 종료');
+        state = CallState(
+          phase: CallPhase.ended,
+          callId: segmentId,
+          elapsedSec: preservedElapsed,
+          baselineCallId: preservedBaseline,
+        );
+        return;
+      }
+
       state = CallState(
         phase: CallPhase.awaitingContinue,
         callId: preservedCallId,
@@ -4376,11 +4430,78 @@ class NormalCallController extends Notifier<CallState> {
     }
   }
 
+  /// 「이 통화를 이어갈 수 있나」를 서버에 **한 번** 묻는다. 못 받으면 null.
+  ///
+  /// 짧은 상한을 건다 — 이 답을 기다리는 동안 사용자는 **소리도 화면 변화도 없는**
+  /// 상태로 앉아 있다(구간이 방금 끊겼다). 서버가 굼뜨면 로컬 계산으로 내려가는 편이
+  /// 낫다. 오래 기다려서 얻는 정확도보다 침묵이 더 비싸다.
+  Future<CallResumeStatus?> _askResumeStatus(String? callId) async {
+    final id = callId == null ? null : int.tryParse(callId);
+    if (id == null) return null;
+    try {
+      return await ref
+          .read(normalcallRepositoryProvider)
+          .getResumeStatus(id)
+          .timeout(_resumeAskTimeout);
+    } catch (e) {
+      _log('resume-status 못 받음($e) — 로컬 판정으로 간다');
+      return null;
+    }
+  }
+
+  /// 이어가기 판정을 기다리는 상한. 넘으면 로컬 계산으로 내려간다.
+  static const Duration _resumeAskTimeout = Duration(seconds: 3);
+
+  /// 다음 조각에 넘길 **요약이 준비될 때까지** 기다린다(`ready`).
+  ///
+  /// 백엔드: 「`ready` 가 true 가 된 뒤에 이어하면 비버가 앞 내용을 제대로 기억합니다.
+  /// false 인데 이어해도 동작은 합니다 — 서버가 그 자리에서 요약을 만듭니다. 다만
+  /// 통화 시작이 그만큼 늦습니다.」
+  ///
+  /// ⛔ **잠금이 아니다.** 상한을 넘으면 그냥 이어간다. 여기서 무한정 기다리면
+  ///   누를 수 있는 버튼을 눌렀는데 통화가 안 열리는 상태가 된다.
+  ///
+  /// 대개 즉시 끝난다 — 구간이 끝나고 사용자가 시트를 보는 동안(결제면 수십 초)
+  /// 서버가 이미 만들어 뒀기 때문이다(백엔드: 보통 1~2초).
+  Future<void> _waitResumeReady(String? callId) async {
+    final id = callId == null ? null : int.tryParse(callId);
+    if (id == null) return;
+    final repo = ref.read(normalcallRepositoryProvider);
+    final deadline = DateTime.now().add(_resumeReadyTimeout);
+    var asked = 0;
+    while (DateTime.now().isBefore(deadline)) {
+      asked++;
+      CallResumeStatus? s;
+      try {
+        s = await repo.getResumeStatus(id).timeout(_resumeAskTimeout);
+      } catch (_) {
+        return; // 못 물어보면 그냥 이어간다
+      }
+      if (s == null) return;
+      if (s.ready) {
+        if (asked > 1) _log('요약 준비됨 ($asked회 물어봄)');
+        return;
+      }
+      await Future<void>.delayed(_resumeReadyPoll);
+    }
+    _log('⚠ 요약이 아직 안 됐다 — 그대로 이어간다 (첫 말이 늦을 수 있다)');
+  }
+
+  /// `ready` 를 기다리는 상한과 간격.
+  static const Duration _resumeReadyTimeout = Duration(seconds: 6);
+  static const Duration _resumeReadyPoll = Duration(milliseconds: 500);
+
   /// 방금 끝난 구간의 `call_id` 를 되짚는 중인 작업. [continueCall] 이 받아 간다.
   ///
   /// ⚠ **예비 경로다.** 서버가 `call_started` 로 id 를 주면([_serverCallId]) 이건 아예
   ///   안 돈다. 그 필드를 안 주는 서버에서만 쓰인다.
   Future<int?>? _pendingSegmentCallId;
+
+  /// 이번 연결에서 **이어달라고 요청한** 직전 조각의 id. 이어하기 성패 판별용이다.
+  ///
+  /// [_continuesCallId] 와 따로 두는 이유는 그 값이 [continueCall] 의 `finally` 에서
+  /// 곧 비워지는데 `call_started` 는 그보다 늦게 올 수 있어서다.
+  String? _askedContinueId;
 
   /// 서버가 `call_started` 로 알려준 **이 구간의** `call_id`.
   ///
@@ -4466,6 +4587,13 @@ class NormalCallController extends Notifier<CallState> {
       // 되짚는 사이 사용자가 끊었을 수 있다(폴링이 최대 3초다).
       if (state.phase != CallPhase.awaitingContinue) {
         _log('되짚는 사이 통화가 끝났다 — 다음 구간을 열지 않는다');
+        return;
+      }
+      // 서버가 앞 조각 요약을 다 만든 뒤에 열어야 비버가 제대로 기억한다.
+      // 대개 이미 끝나 있어 즉시 통과한다(시트를 보는 시간이 그 시간이다).
+      await _waitResumeReady(carriedId);
+      if (state.phase != CallPhase.awaitingContinue) {
+        _log('요약을 기다리는 사이 통화가 끝났다 — 다음 구간을 열지 않는다');
         return;
       }
       // [_connect] 가 상태를 새 통화 것으로 갈아엎기 전에 붙잡는다([CallState] 는
