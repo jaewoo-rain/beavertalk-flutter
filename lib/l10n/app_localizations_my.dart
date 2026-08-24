@@ -1123,6 +1123,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get billingRestorePurchases => 'ဝယ်ယူမှုများ ပြန်လည်ရယူရန်';
 
   @override
+  String get billingRedeemCode => 'ကုဒ်အသုံးပြုရန်';
+
+  @override
   String get billingPaymentHistory => 'ငွေပေးချေမှု မှတ်တမ်း';
 
   @override

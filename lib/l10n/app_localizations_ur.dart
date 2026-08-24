@@ -1116,6 +1116,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get billingRestorePurchases => 'خریداریاں بحال کریں';
 
   @override
+  String get billingRedeemCode => 'کوڈ استعمال کریں';
+
+  @override
   String get billingPaymentHistory => 'ادائیگی کی تاریخ';
 
   @override

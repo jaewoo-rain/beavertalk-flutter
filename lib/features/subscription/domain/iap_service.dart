@@ -75,6 +75,44 @@ abstract final class IapProductIds {
   static bool isFreeCharacter(int serverId) =>
       freeCharacterSlugs.contains(characterSlugs[serverId]);
 
+  /// Store product id for a character, preferring the server's own slug.
+  ///
+  /// [productKey] is `CharacterSummary.product_key`. It wins over the built-in
+  /// table because the table only knows the characters that existed when this
+  /// build shipped: a character added server-side afterwards has no row here,
+  /// and [characterFor] would call it unbuyable when the store may well have
+  /// the product.
+  ///
+  /// **The server sends a bare slug** — `popo`, `rara`, `dudu`, `baba`,
+  /// `bibi`. Confirmed against the live API on 2026-08-24, so the prefix is
+  /// this method's job.
+  ///
+  /// The already-qualified shape (`bt_character_popo`) is still tolerated, and
+  /// deliberately so: prefixing a value that is already prefixed produces
+  /// `bt_character_bt_character_popo`, and the store answers that with a
+  /// silent absence rather than an error. The guard costs one comparison and
+  /// removes a failure mode that would look like "the product vanished".
+  ///
+  /// Returns null for free characters and when nothing identifies the product.
+  static String? characterForKey(String? productKey, int serverId) {
+    final key = productKey?.trim();
+    if (key == null || key.isEmpty) return characterFor(serverId);
+    const prefix = 'bt_character_';
+    final slug = key.startsWith(prefix) ? key.substring(prefix.length) : key;
+    if (slug.isEmpty || freeCharacterSlugs.contains(slug)) return null;
+    return character(slug);
+  }
+
+  /// Every character product that is actually sold.
+  ///
+  /// The free ones are excluded because they were never registered — asking
+  /// the store for `bt_character_baba` returns nothing and would look like an
+  /// outage rather than the deliberate absence it is.
+  static Set<String> get soldCharacters => {
+        for (final slug in characterSlugs.values)
+          if (!freeCharacterSlugs.contains(slug)) character(slug),
+      };
+
   /// Store product id for a server character id, or `null` when that character
   /// has no registered store product.
   ///
@@ -137,21 +175,41 @@ class IapProduct {
     required this.type,
     required this.localizedPrice,
     this.title,
+    this.rawPrice = 0,
+    this.currencyCode = '',
   });
 
-  /// Store product id.
+  /// Logical SKU — `bt_pro_yearly`, `bt_character_popo`.
+  ///
+  /// On iOS this is the App Store product id verbatim. On Android it is the
+  /// (subscription id, base plan id) pair collapsed by
+  /// [IapProductIds.logicalSkuFromPlay]; Play itself never returns this
+  /// string.
   final String id;
 
   /// Subscription or non-consumable.
   final IapProductType type;
 
-  /// The store's localized display price (`$15.99`). **Always displayed
-  /// verbatim** — v2 §6-4 forbids hardcoding character prices; the store is
-  /// the price authority. Mock values stand in until the catalog exists.
+  /// The store's localized display price (`$15.99`, `₩22,000`). **Always
+  /// displayed verbatim** — v2 §6-4: the store is the price authority.
+  ///
+  /// This is also what makes a console-side discount visible without an app
+  /// release. Schedule a price drop on App Store Connect and this string
+  /// changes on its own; quote [PlanPrices] instead and the screen keeps
+  /// showing full price while the member is charged less — a 3.1.2 mismatch
+  /// in the other direction.
   final String localizedPrice;
 
   /// Store display name, when provided.
   final String? title;
+
+  /// The same price as a number, in the store's currency. For comparisons
+  /// (is this cheaper than list?), never for display — formatting is
+  /// [localizedPrice]'s job.
+  final double rawPrice;
+
+  /// ISO-4217 code behind [rawPrice] (`USD`, `KRW`). Empty when unknown.
+  final String currencyCode;
 }
 
 /// What happened to a purchase, delivered on [IapService.purchases].
@@ -180,19 +238,43 @@ class IapPurchase {
     required this.type,
     required this.state,
     this.error,
+    this.transactionId = '',
+    this.purchaseToken = '',
+    this.isSandbox = false,
   });
 
-  /// Which product.
+  /// Which product — the logical SKU, not the raw store id.
   final String productId;
 
   /// Which shape of product.
   final IapProductType type;
 
   /// Outcome so far.
+  ///
+  /// ⚠ [IapPurchaseState.purchased] means **paid _and_ granted by our
+  /// server**, not merely "the store took the money". The rail withholds the
+  /// verdict until `POST /purchases/verify` answers, because a screen that
+  /// celebrates on the store's word alone promises access the backend has not
+  /// recorded.
   final IapPurchaseState state;
 
   /// Store error payload on [IapPurchaseState.failed].
   final Object? error;
+
+  /// Store transaction id. Empty on the mock rail.
+  final String transactionId;
+
+  /// The receipt the server re-verifies against the store: Play's
+  /// `purchaseToken`, or the App Store's signed JWS transaction.
+  ///
+  /// **Never trusted locally.** The client cannot tell a real receipt from a
+  /// forged one; it only carries it to the server, which asks Apple or Google
+  /// directly.
+  final String purchaseToken;
+
+  /// Whether the receipt came from a sandbox / test account. The server needs
+  /// it to pick which store endpoint to verify against.
+  final bool isSandbox;
 }
 
 /// The store billing seam every purchase UI talks to.
@@ -233,6 +315,22 @@ abstract class IapService {
   /// "I don't know" and "not eligible" lead to the same screen, and whoever
   /// wires a real SDK has to come here and say `true` on purpose.
   bool get reportsIntroEligibility;
+
+  /// Whether the device can transact at all — no store on this build, a
+  /// signed-out account, or purchases restricted by parental controls.
+  ///
+  /// False is not an error: it means the paywall's buy button leads nowhere
+  /// and should say so before taking a tap.
+  Future<bool> isAvailable();
+
+  /// Opens the store's offer-code redemption sheet, or returns false where the
+  /// platform has none.
+  ///
+  /// This is the app-side half of every console-issued discount: codes can be
+  /// generated at any time without review, but a member can only spend one if
+  /// the app gives them somewhere to type it. Shipping the entry point in the
+  /// binary is what keeps later discount campaigns off the review queue.
+  Future<bool> presentOfferCodeRedemption();
 }
 
 /// The stand-in rail until store products exist.
@@ -243,15 +341,17 @@ abstract class IapService {
 class MockIapService implements IapService {
   /// Creates a mock. [owned] is the set of products a restore replays.
   MockIapService({
-    List<IapProduct> catalog = defaultCatalog,
+    List<IapProduct>? catalog,
     List<IapPurchase> owned = const [],
     this.scriptedOutcome = IapPurchaseState.purchased,
-  })  : _catalog = catalog,
+  })  : _catalog = catalog ?? defaultCatalog,
         _owned = List.of(owned);
 
-  /// The demo catalog. Prices are mock stand-ins (design list prices) —
-  /// replaced by store-localized values the moment the real SDK lands.
-  static const defaultCatalog = [
+  /// The demo catalog. Prices are whatever [PlanPrices] currently answers —
+  /// the store's own values when a real rail has adopted them, list prices
+  /// otherwise. **Not `const`**: prices are resolved at read time now, which
+  /// is the whole point of the store being the authority.
+  static final defaultCatalog = [
     IapProduct(
         id: IapProductIds.proMonthly,
         type: IapProductType.subscription,
@@ -277,6 +377,12 @@ class MockIapService implements IapService {
   /// trial line off every screen until a real rail lands.
   @override
   bool get reportsIntroEligibility => false;
+
+  @override
+  Future<bool> isAvailable() async => true;
+
+  @override
+  Future<bool> presentOfferCodeRedemption() async => false;
 
   /// What the next [purchase] resolves to.
   IapPurchaseState scriptedOutcome;

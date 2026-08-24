@@ -88,16 +88,47 @@ class _PurchaseProcessingScreenState
     // Fire the purchase after the listener is attached. The cycle picks the
     // product: the paywall's annual selection and the OTO's yearly switch
     // used to be dropped here, quietly buying monthly every time.
-    unawaited(iap.getProducts(IapProductIds.subscriptions).then((products) {
-      final id = switch ((tier, request.annual)) {
-        (SubscriptionTier.max, true) => IapProductIds.maxYearly,
-        (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
-        (_, true) => IapProductIds.proYearly,
-        (_, false) => IapProductIds.proMonthly,
-      };
+    unawaited(_kick(iap, request));
+  }
+
+  /// Asks the store for the chosen product and starts the payment sheet.
+  ///
+  /// Every way this can go wrong ends on the failure sheet. This screen blocks
+  /// the back key — the flow is supposed to leave through the purchase stream
+  /// — so a store query that throws or comes back empty would otherwise strand
+  /// the member on a spinner with no way out. That was survivable against a
+  /// mock rail that could not fail; a real one goes offline.
+  Future<void> _kick(IapService iap, PurchaseRequest request) async {
+    final id = switch ((request.tier, request.annual)) {
+      (SubscriptionTier.max, true) => IapProductIds.maxYearly,
+      (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
+      (_, true) => IapProductIds.proYearly,
+      (_, false) => IapProductIds.proMonthly,
+    };
+    try {
+      final products = await iap.getProducts(IapProductIds.subscriptions);
       final product = products.where((p) => p.id == id).firstOrNull;
-      if (product != null) return iap.purchase(product);
-    }));
+      if (product == null) {
+        if (mounted) _onStoreError(request);
+        return;
+      }
+      await iap.purchase(product);
+    } catch (_) {
+      if (mounted) _onStoreError(request);
+    }
+  }
+
+  /// The store could not be asked, or does not sell this — `purchase_failed —
+  /// 스토어 오류`.
+  ///
+  /// Deliberately **not** the declined sheet. Nothing was declined: no payment
+  /// was ever attempted. Offering "update your payment method" here points the
+  /// member at a card that is perfectly fine and hides the real cause.
+  void _onStoreError(PurchaseRequest request) {
+    final navCtx = Navigator.of(context, rootNavigator: true).context;
+    Navigator.pop(context);
+    showSubscriptionOverlay(navCtx, SubscriptionOverlay.purchaseFailedStore,
+        retryTier: request.tier, retryAnnual: request.annual);
   }
 
   /// Back to the paywall beneath, then the matching `purchase_failed` sheet
@@ -391,8 +422,7 @@ class PlansErrorScreen extends StatelessWidget {
                   type: BtnType.secondaryFill,
                   size: BtnSize.s60,
                   text: l10n.billingRestorePurchases,
-                  onPressed: () => showSubscriptionOverlay(
-                      context, SubscriptionOverlay.restoreSuccess),
+                  onPressed: () => runRestoreFlow(context),
                 ),
                 const SizedBox(height: 6),
                 Text(

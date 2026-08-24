@@ -1124,6 +1124,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get billingRestorePurchases => 'I-restore ang mga binili';
 
   @override
+  String get billingRedeemCode => 'Mag-redeem ng code';
+
+  @override
   String get billingPaymentHistory => 'Kasaysayan ng bayad';
 
   @override

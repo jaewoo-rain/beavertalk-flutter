@@ -644,6 +644,10 @@
   "@billingRestorePurchases": {
     "description": "Billing slot 3."
   },
+  "billingRedeemCode": "Redeem a code",
+  "@billingRedeemCode": {
+    "description": "In-the-store group - opens the platform offer-code redemption sheet. The app-side half of every console-issued discount."
+  },
   "billingPaymentHistory": "Payment history",
   "@billingPaymentHistory": {
     "description": "Billing slot 4."

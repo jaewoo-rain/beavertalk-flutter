@@ -342,6 +342,7 @@
   "billingCompareAllPlans": "เปรียบเทียบแพ็กเกจทั้งหมด",
   "billingBuyACharacter": "ซื้อตัวละคร",
   "billingRestorePurchases": "กู้คืนการซื้อ",
+  "billingRedeemCode": "ใช้โค้ด",
   "billingPaymentHistory": "ประวัติการชำระเงิน",
   "billingManageInTheStore": "จัดการในสโตร์",
   "billingRefundHelp": "ความช่วยเหลือเรื่องการคืนเงิน",

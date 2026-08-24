@@ -127,7 +127,12 @@ void main() {
   });
 
   group('criterion 3 — the last row of every card draws no divider', () {
-    testWidgets('4-row and 3-row cards carry 3 + 2 hairlines', (tester) async {
+    // Both cards hold four rows now. The store group gained `Redeem a code`
+    // when the real IAP rail landed: a console-issued discount is only
+    // spendable if the binary already ships somewhere to spend it, so the row
+    // has to exist before submission rather than after the first campaign.
+    // ☞ Figma still draws three store rows — the canvas trails the code here.
+    testWidgets('two 4-row cards carry 3 + 3 hairlines', (tester) async {
       for (final state in manageStates) {
         await pump(tester, status(state));
         final hairlines = tester
@@ -137,9 +142,9 @@ void main() {
             .where((d) =>
                 d.border is Border && (d.border as Border).bottom.width == 0.5)
             .length;
-        expect(hairlines, 5,
+        expect(hairlines, 6,
             reason:
-                '$state: 4-row card → 3 dividers, 3-row card → 2 (spec §5-6)');
+                '$state: each 4-row card → 3 dividers (spec §5-6)');
       }
     });
   });

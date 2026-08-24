@@ -342,6 +342,7 @@
   "billingCompareAllPlans": "Comparar todos los planes",
   "billingBuyACharacter": "Comprar un personaje",
   "billingRestorePurchases": "Restaurar compras",
+  "billingRedeemCode": "Canjear un código",
   "billingPaymentHistory": "Historial de pagos",
   "billingManageInTheStore": "Gestionar en la tienda",
   "billingRefundHelp": "Ayuda con reembolsos",

@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/routes.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/subscription/domain/iap_service.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../components/molecules/benefit_row.dart';
 import '../../components/organisms/bottom_sheet.dart' show SheetAction;
 import '../../components/organisms/bottom_sheet_content.dart';
@@ -125,6 +129,67 @@ Future<void> showSubscriptionOverlay(
     ),
   );
 }
+
+/// `구매 복원` — the one implementation, for all five buttons that offer it.
+///
+/// ## Why this is shared
+///
+/// Restore is reachable from the billing list, the trial-expired notice, the
+/// paywall footer, the plans-error screen and the store-failure sheet. Every
+/// one of them used to open the success sheet directly — a mock rail's habit,
+/// harmless while nothing could actually be restored and a lie the moment the
+/// store is real. On a device with no purchases at all, five buttons cheerfully
+/// announced "Pro is back".
+///
+/// One entry point is what keeps the next new button honest: there is nowhere
+/// left to hand-roll a fake.
+///
+/// ## What it does
+///
+/// Asks the store to replay everything this account owns, counts what came
+/// back, and picks the sheet from that count. Nothing restored is a normal
+/// outcome, not an error — a member who never bought anything deserves a clear
+/// "there was nothing here", not a failure.
+Future<void> runRestoreFlow(BuildContext context) async {
+  // Two taps in flight would double-count and race the sheets.
+  if (_restoring) return;
+  _restoring = true;
+  // The container, not a widget's `ref`.
+  //
+  // Restore takes a second or two, and one of the callers is a bottom sheet
+  // that pops itself the moment it is tapped. Its `ref` is dead before the
+  // store answers — `Bad state: Cannot use "ref" after the widget was
+  // disposed`, observed on device — so the refresh never ran and no result
+  // sheet appeared. The container outlives every screen that can start this.
+  final container = ProviderScope.containerOf(context, listen: false);
+  final iap = container.read(iapServiceProvider);
+  var restored = 0;
+  final sub = iap.purchases.listen((p) {
+    if (p.state == IapPurchaseState.restored) restored++;
+  });
+  try {
+    await iap.restore();
+  } catch (_) {
+    // The store could not be reached. Fall through to the empty sheet: from
+    // the member's side "nothing came back" is what happened, and inventing a
+    // restore they did not get would be the worse lie.
+  } finally {
+    await sub.cancel();
+    _restoring = false;
+  }
+  container.invalidate(charactersProvider);
+  container.invalidate(ownedCharactersProvider);
+  container.invalidate(serverSubscriptionStatusProvider);
+  if (!context.mounted) return;
+  showSubscriptionOverlay(
+    context,
+    restored > 0
+        ? SubscriptionOverlay.restoreSuccess
+        : SubscriptionOverlay.restoreEmpty,
+  );
+}
+
+bool _restoring = false;
 
 class _OverlaySheet extends StatelessWidget {
   const _OverlaySheet({
@@ -489,10 +554,8 @@ class _OverlaySheet extends StatelessWidget {
                       arguments: (tier: retryTier, annual: retryAnnual)))),
           secondaryAction: SheetAction(
               label: l10n.billingRestorePurchases,
-              onPressed: () => _then(context, () {
-                    showSubscriptionOverlay(
-                        rootNav.context, SubscriptionOverlay.restoreSuccess);
-                  })),
+              onPressed: () =>
+                  _then(context, () => runRestoreFlow(rootNav.context))),
         );
       case SubscriptionOverlay.alreadySubscribed:
         return BottomSheetContent(

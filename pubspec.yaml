@@ -107,6 +107,12 @@ dependencies:
   crypto: ^3.0.7
   audio_session: ^0.2.4
   url_launcher: ^6.3.2
+  # 법무 고지(약관·처리방침)를 앱 안에서 띄운다. 문안은 노션이 정본이고 앱은
+  # 사본을 갖지 않는다 — 사본을 두면 웹만 갱신되고 앱이 구 문안을 계속 노출한다.
+  webview_flutter: ^4.14.1
+  in_app_purchase: ^3.3.0
+  in_app_purchase_android: ^0.5.2
+  in_app_purchase_storekit: ^0.4.11+1
 
 # 통화 음성 깨짐/버벅임(안드로이드) 대응 — flutter_pcm_sound 3.3.3 로컬 패치본을 쓴다.
 # pub 원본은 조각 하나 쓸 때마다 큐 전체를 O(n) 순회(그것도 메인스레드 feed 와 같은

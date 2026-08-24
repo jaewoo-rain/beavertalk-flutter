@@ -1117,6 +1117,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get billingRestorePurchases => 'Satın alımları geri yükle';
 
   @override
+  String get billingRedeemCode => 'Kod kullan';
+
+  @override
   String get billingPaymentHistory => 'Ödeme geçmişi';
 
   @override

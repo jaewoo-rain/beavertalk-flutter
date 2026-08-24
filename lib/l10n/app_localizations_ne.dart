@@ -1113,6 +1113,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get billingRestorePurchases => 'खरिदहरू पुनर्स्थापना';
 
   @override
+  String get billingRedeemCode => 'कोड प्रयोग गर्नुहोस्';
+
+  @override
   String get billingPaymentHistory => 'भुक्तानी इतिहास';
 
   @override

@@ -1091,6 +1091,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get billingRestorePurchases => '구매 복원';
 
   @override
+  String get billingRedeemCode => '코드 사용';
+
+  @override
   String get billingPaymentHistory => '결제 내역';
 
   @override

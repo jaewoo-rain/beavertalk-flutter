@@ -1115,6 +1115,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get billingRestorePurchases => 'Худалдан авалт сэргээх';
 
   @override
+  String get billingRedeemCode => 'Код ашиглах';
+
+  @override
   String get billingPaymentHistory => 'Төлбөрийн түүх';
 
   @override

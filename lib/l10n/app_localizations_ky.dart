@@ -1118,6 +1118,9 @@ class AppLocalizationsKy extends AppLocalizations {
   String get billingRestorePurchases => 'Сатып алууларды калыбына келтирүү';
 
   @override
+  String get billingRedeemCode => 'Кодду колдонуу';
+
+  @override
   String get billingPaymentHistory => 'Төлөм тарыхы';
 
   @override

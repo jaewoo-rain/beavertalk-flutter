@@ -1108,6 +1108,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get billingRestorePurchases => 'استعادة المشتريات';
 
   @override
+  String get billingRedeemCode => 'استخدام رمز';
+
+  @override
   String get billingPaymentHistory => 'سجل المدفوعات';
 
   @override

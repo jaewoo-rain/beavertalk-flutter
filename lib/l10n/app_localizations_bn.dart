@@ -1116,6 +1116,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get billingRestorePurchases => 'কেনাকাটা পুনরুদ্ধার';
 
   @override
+  String get billingRedeemCode => 'কোড ব্যবহার করুন';
+
+  @override
   String get billingPaymentHistory => 'পেমেন্ট ইতিহাস';
 
   @override

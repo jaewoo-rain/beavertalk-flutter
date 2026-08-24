@@ -9,6 +9,7 @@ class Character {
     required this.price,
     required this.effectivePrice,
     required this.isOwned,
+    this.productKey,
     this.description,
     this.backgroundStory,
     this.voiceUrl,
@@ -33,6 +34,18 @@ class Character {
 
   /// Whether the current member already owns this character.
   final bool isOwned;
+
+  /// The server's stable slug for this character (`product_key`).
+  ///
+  /// The store product id is built from this, never from [id]: store ids can
+  /// never be edited or reused once registered, while a database primary key
+  /// is free to change under a migration. It also means a character added
+  /// server-side after this build shipped is still buyable — the app no longer
+  /// has to carry a hand-written id table to know its slug.
+  ///
+  /// Null against a server that predates the field; the caller falls back to
+  /// the built-in table.
+  final String? productKey;
 
   /// Card description.
   ///

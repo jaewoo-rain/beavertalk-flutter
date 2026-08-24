@@ -120,7 +120,7 @@ class AvatarScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in discounted) ...[
-                        _discountCard(context, c),
+                        _discountCard(context, ref, c),
                         const SizedBox(height: AppSpacing.s12),
                       ],
                       const SizedBox(height: AppSpacing.s16),
@@ -134,7 +134,7 @@ class AvatarScreen extends ConsumerWidget {
                       _label(context, l10n.availableForPurchase),
                       const SizedBox(height: AppSpacing.s12),
                       for (final c in buyable) ...[
-                        _buyableCard(context, c),
+                        _buyableCard(context, ref, c),
                         const SizedBox(height: AppSpacing.s12),
                       ],
                     ],
@@ -203,7 +203,7 @@ class AvatarScreen extends ConsumerWidget {
   }
 
   /// A discounted catalog character.
-  Widget _discountCard(BuildContext context, Character c) {
+  Widget _discountCard(BuildContext context, WidgetRef ref, Character c) {
     final image = _imageFor(c.imageUrl, c.id);
     return CardBox(
       type: CardBoxType.purchaseDiscount,
@@ -216,7 +216,7 @@ class AvatarScreen extends ConsumerWidget {
       // omitted rather than rendering an empty strip.
       subtitle: c.tags.isEmpty ? null : c.tags.join('·'),
       price: _priceLabel(context, c.price),
-      discountPrice: _priceLabel(context, c.effectivePrice),
+      discountPrice: _chargedPrice(context, ref, c),
       action: _buyButton(context, () => _openDetail(
             context,
             AvatarDetailState.unownedDiscount,
@@ -228,7 +228,7 @@ class AvatarScreen extends ConsumerWidget {
             voiceUrl: c.voiceUrl,
             tags: c.tags,
             price: _priceLabel(context, c.price),
-            discountPrice: _priceLabel(context, c.effectivePrice),
+            discountPrice: _chargedPrice(context, ref, c),
             discountPercent: _discountPercent(c),
             effectivePriceMinor: c.effectivePrice,
           )),
@@ -260,7 +260,7 @@ class AvatarScreen extends ConsumerWidget {
   }
 
   /// A full-price (or free) buyable catalog character.
-  Widget _buyableCard(BuildContext context, Character c) {
+  Widget _buyableCard(BuildContext context, WidgetRef ref, Character c) {
     final image = _imageFor(c.imageUrl, c.id);
     return CardBox(
       type: CardBoxType.purchase,
@@ -272,7 +272,7 @@ class AvatarScreen extends ConsumerWidget {
       // actual traits. Null when the character has no tags, so the row is
       // omitted rather than rendering an empty strip.
       subtitle: c.tags.isEmpty ? null : c.tags.join('·'),
-      price: _catalogPrice(context, c),
+      price: _catalogPrice(context, ref, c),
       action: _buyButton(context, () => _openDetail(
             context,
             AvatarDetailState.unownedNormal,
@@ -283,7 +283,7 @@ class AvatarScreen extends ConsumerWidget {
             backgroundStory: c.backgroundStory,
             voiceUrl: c.voiceUrl,
             tags: c.tags,
-            price: _catalogPrice(context, c),
+            price: _catalogPrice(context, ref, c),
             // Null for a free character: there is no amount to report back to
             // the server, and reporting 0 against a stale catalog price is how
             // a price-mismatch rejection would appear out of nowhere.
@@ -394,10 +394,17 @@ class AvatarScreen extends ConsumerWidget {
       return;
     }
     // Store products are keyed by slug, not by the server's primary key
-    // (design doc §4-5). A character the server added after this build has no
-    // slug — and no registered store product either, so there is nothing to
-    // buy. Say so instead of sending the store an id it has never seen.
-    final productId = IapProductIds.characterFor(id);
+    // (design doc §4-5). The catalog carries the slug now (`product_key`), so
+    // the built-in table is only the fallback for an older server. When
+    // neither can name the product there is nothing registered to buy — say
+    // so instead of sending the store an id it has never seen.
+    final catalogEntry = ref
+        .read(charactersProvider)
+        .valueOrNull
+        ?.where((c) => c.id == id)
+        .firstOrNull;
+    final productId =
+        IapProductIds.characterForKey(catalogEntry?.productKey, id);
     if (productId == null) {
       ScaffoldMessenger.of(routeCtx)
         ..clearSnackBars()
@@ -416,7 +423,18 @@ class AvatarScreen extends ConsumerWidget {
     // listener would miss the verdict.
     final verdictFuture = iap.purchases.firstWhere((p) =>
         p.productId == product.id && p.state != IapPurchaseState.pending);
-    await iap.purchase(product);
+    try {
+      await iap.purchase(product);
+    } catch (_) {
+      // The store has no such product, or could not be reached. No sheet ever
+      // opened, so there is no verdict coming.
+      if (routeCtx.mounted) {
+        ScaffoldMessenger.of(routeCtx)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(l10n.iapCharacterFailedBody)));
+      }
+      return;
+    }
     final verdict = await verdictFuture;
     switch (verdict.state) {
       case IapPurchaseState.canceled:
@@ -433,36 +451,47 @@ class AvatarScreen extends ConsumerWidget {
       case IapPurchaseState.pending:
       case IapPurchaseState.purchased:
       case IapPurchaseState.restored:
-        break; // paid — deliver below.
+        break; // paid and granted — settle below.
     }
     // The store sheet was an async gap; the route may be gone.
     if (!routeCtx.mounted) return;
-    await _deliver(routeCtx, ref, id, expectedMinor);
+    // No server call here. A `purchased` verdict off the store rail already
+    // means `POST /purchases/verify` accepted the receipt and the server
+    // granted the character — that is what the rail withholds the verdict
+    // for. Calling `POST /characters/{id}/purchase` on top would bill the
+    // same character a second time in our own ledger.
+    _settle(routeCtx, ref);
   }
 
-  /// Records the acquisition on the server and closes the flow.
+  /// Refreshes what the purchase invalidated and closes the flow.
   ///
-  /// Two callers, one delivery: the paid path runs it once the store says the
-  /// money moved, the free path runs it directly because no money ever moves.
-  /// Keeping it in one place is what stops the free path from quietly missing
-  /// the cache invalidation or the success sheet.
+  /// The catalog's `is_owned` flips, the owned list gains a row, and the
+  /// server wrote a payment — so the history is stale too.
+  void _settle(BuildContext routeCtx, WidgetRef ref) {
+    ref.invalidate(charactersProvider);
+    ref.invalidate(ownedCharactersProvider);
+    ref.invalidate(paymentPageProvider);
+    if (!routeCtx.mounted) return;
+    // The detail route is about to pop — grab a context that survives it.
+    final navCtx = Navigator.of(routeCtx, rootNavigator: true).context;
+    Navigator.pop(routeCtx);
+    _showPurchaseSuccessSheet(navCtx);
+  }
+
+  /// Claims a **free** character on the server, then closes the flow.
+  ///
+  /// Only the free path reaches this now. Paid characters are granted by
+  /// `POST /purchases/verify` against the store receipt, which is the only
+  /// grant an App Store audit would accept; this endpoint takes the client's
+  /// word for the price and exists for the characters where no money moves.
   Future<void> _deliver(
       BuildContext routeCtx, WidgetRef ref, int id, int? expectedMinor) async {
     try {
       await ref
           .read(characterRepositoryProvider)
           .purchase(id, expectedPriceMinor: expectedMinor);
-      // The catalog's `is_owned` flips, the owned list gains a row, and the
-      // server writes a payment in the same transaction — so the history is
-      // stale too.
-      ref.invalidate(charactersProvider);
-      ref.invalidate(ownedCharactersProvider);
-      ref.invalidate(paymentPageProvider);
       if (!routeCtx.mounted) return;
-      // The detail route is about to pop — grab a context that survives it.
-      final navCtx = Navigator.of(routeCtx, rootNavigator: true).context;
-      Navigator.pop(routeCtx);
-      _showPurchaseSuccessSheet(navCtx);
+      _settle(routeCtx, ref);
     } on PriceChangedFailure catch (e) {
       // 가격이 바뀌었다 — 목록을 새로 받아 화면을 실제 가격으로 되돌리고, 사용자에게
       // 새 가격으로 살지 다시 묻는다. 확인하면 그 가격으로 재요청한다.
@@ -558,9 +587,31 @@ class AvatarScreen extends ConsumerWidget {
       c.isFree || IapProductIds.isFreeCharacter(c.id);
 
   /// The price a catalog card shows — `Free` for the included characters.
-  String _catalogPrice(BuildContext context, Character c) => _isFree(c)
-      ? AppLocalizations.of(context).priceFree
-      : _priceLabel(context, c.price);
+  String _catalogPrice(BuildContext context, WidgetRef ref, Character c) =>
+      _isFree(c)
+          ? AppLocalizations.of(context).priceFree
+          : _chargedPrice(context, ref, c);
+
+  /// What the member will actually be charged.
+  ///
+  /// The store wins when it has answered. It has to: the store is what takes
+  /// the money, and it is the only side that knows the member's storefront
+  /// currency or that a scheduled price change is in effect. Quoting the
+  /// server's number beside a different charge is an App Review 3.1.2
+  /// mismatch — and it is exactly what a console-side discount would cause.
+  ///
+  /// The server price stays the fallback for the first frame, for offline,
+  /// and for characters with no registered store product.
+  String _chargedPrice(BuildContext context, WidgetRef ref, Character c) {
+    final productId = IapProductIds.characterForKey(c.productKey, c.id);
+    if (productId != null) {
+      final products = ref.watch(storePricesProvider).valueOrNull;
+      final match =
+          products?.where((p) => p.id == productId).firstOrNull;
+      if (match != null) return match.localizedPrice;
+    }
+    return _priceLabel(context, c.effectivePrice);
+  }
 
   /// Network avatar when available, else a neutral placeholder.
   ///

@@ -1087,6 +1087,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get billingRestorePurchases => '恢复购买';
 
   @override
+  String get billingRedeemCode => '使用兑换码';
+
+  @override
   String get billingPaymentHistory => '付款记录';
 
   @override

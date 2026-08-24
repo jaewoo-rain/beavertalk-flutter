@@ -2218,6 +2218,12 @@ abstract class AppLocalizations {
   /// **'Restore purchases'**
   String get billingRestorePurchases;
 
+  /// In-the-store group - opens the platform offer-code redemption sheet. The app-side half of every console-issued discount.
+  ///
+  /// In en, this message translates to:
+  /// **'Redeem a code'**
+  String get billingRedeemCode;
+
   /// Billing slot 4.
   ///
   /// In en, this message translates to:

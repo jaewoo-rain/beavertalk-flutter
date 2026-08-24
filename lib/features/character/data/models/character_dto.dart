@@ -11,6 +11,7 @@ class CharacterDto {
     required this.price,
     required this.effectivePrice,
     required this.isOwned,
+    this.productKey,
     this.description,
     this.backgroundStory,
     this.voiceUrl,
@@ -24,6 +25,9 @@ class CharacterDto {
   final int price;
   final int effectivePrice;
   final bool isOwned;
+
+  /// `product_key` — the stable slug the store product id is built from.
+  final String? productKey;
   final String? description;
   final String? backgroundStory;
   final String? voiceUrl;
@@ -41,6 +45,7 @@ class CharacterDto {
       price: parseMoneyMinor(json['price']),
       effectivePrice: parseMoneyMinor(json['effective_price']),
       isOwned: json['is_owned'] as bool? ?? false,
+      productKey: (json['product_key'] as String?)?.trim(),
       description: json['description'] as String?,
       // `description` is a one-line catch-phrase; `background_story` is the
       // long-form story paragraph. They are separate server columns and the
@@ -78,6 +83,7 @@ class CharacterDto {
         price: price,
         effectivePrice: effectivePrice,
         isOwned: isOwned,
+        productKey: productKey,
         description: description,
         backgroundStory: backgroundStory,
         voiceUrl: voiceUrl,

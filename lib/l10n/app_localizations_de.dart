@@ -1130,6 +1130,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get billingRestorePurchases => 'Käufe wiederherstellen';
 
   @override
+  String get billingRedeemCode => 'Code einlösen';
+
+  @override
   String get billingPaymentHistory => 'Zahlungsverlauf';
 
   @override

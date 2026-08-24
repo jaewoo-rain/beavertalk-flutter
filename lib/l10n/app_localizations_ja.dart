@@ -1090,6 +1090,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get billingRestorePurchases => '購入を復元';
 
   @override
+  String get billingRedeemCode => 'コードを使う';
+
+  @override
   String get billingPaymentHistory => '支払い履歴';
 
   @override

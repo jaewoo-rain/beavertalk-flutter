@@ -50,6 +50,15 @@ abstract final class StoreSubscriptionLink {
     );
   }
 
+  /// Google Play's promo-code redemption page.
+  ///
+  /// Android's half of the offer-code story. Play has no in-app redemption
+  /// sheet the way StoreKit does, so a code is spent on this page in the Play
+  /// Store app instead — which is why the app asks the rail first and only
+  /// falls back here.
+  static final googlePlayRedeem =
+      Uri.parse('https://play.google.com/redeem');
+
   /// The right link for whichever platform is running.
   ///
   /// Defaults to the Play link off-device (desktop and web builds) so a

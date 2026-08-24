@@ -1118,6 +1118,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get billingRestorePurchases => 'Palauta ostot';
 
   @override
+  String get billingRedeemCode => 'Lunasta koodi';
+
+  @override
   String get billingPaymentHistory => 'Maksuhistoria';
 
   @override

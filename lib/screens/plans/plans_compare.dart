@@ -31,6 +31,11 @@ class PlansCompareScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     final tier = ref.watch(subscriptionStatusProvider).tier;
+    // Kicks the store catalog query and rebuilds this subtree when it lands.
+    // Child widgets read [PlanPrices] statically, so this one watch is what
+    // turns list prices into the member's real storefront prices — and what
+    // makes a console-side discount show up without an app release.
+    ref.watch(storePricesProvider);
 
     return AppScaffold(
       background: c.backgroundNormalNormal,

@@ -1126,6 +1126,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get billingRestorePurchases => 'Pulihkan pembelian';
 
   @override
+  String get billingRedeemCode => 'Tebus kod';
+
+  @override
   String get billingPaymentHistory => 'Sejarah pembayaran';
 
   @override
