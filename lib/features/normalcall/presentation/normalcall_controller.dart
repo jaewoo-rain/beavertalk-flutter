@@ -432,6 +432,10 @@ class NormalCallController extends Notifier<CallState> {
   /// (`_recordResponseTime` 은 턴의 첫 오디오마다 불린다).
   int _voicedAnchorConsumed = 0;
 
+  /// 위와 같은 목적이되 `turn_start` 전용. 두 계기가 **다른 시점**에 소비하므로
+  /// 한 필드를 겸직시키면 나중 것이 먼저 것을 굶긴다.
+  int _turnStartVoicedUsed = 0;
+
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
   static const Duration _listenHold = Duration(milliseconds: 900);
@@ -1651,6 +1655,7 @@ class NormalCallController extends Notifier<CallState> {
     _lastVoicedAtMs = 0;
     _frozenFirstVoicedAtMs = null;
     _voicedAnchorConsumed = 0;
+    _turnStartVoicedUsed = 0;
     _gatedLoudFrames = 0;
     // ⛔ 계측 앵커도 **통화 스코프**다. 서버 `call_started` 에서 잡으면 두 가지가 깨진다:
     //   ① 그 프레임 **전에** 일어난 일(마이크 개방·첫 롤업)이 버퍼 비우기에 함께 지워지고
@@ -3872,7 +3877,19 @@ class NormalCallController extends Notifier<CallState> {
         // [계측] 사용자 발화 끝 → 비버 턴 시작까지. 사장님이 「응답이 느리다」고 하신
         // 그 구간이다. 클라가 **프레임을 받은 시각**으로만 잰다(서버 내부 분해는 서버 몫).
         {
-          final endedAt = _userTurnEndAtMs;
+          var endedAt = _userTurnEndAtMs;
+          // ⛔ 실기기 실측(call 1206, 6턴)에서 이 값이 **전부 -1** 로 왔다. 원인은
+          //   `audible` 쪽과 **같은 뿌리**다 — `_userTurnEndAtMs` 도 `user_turn_end`
+          //   프레임에서만 채워지는데 라이브엔 그 프레임이 없다. 어제 audible 만
+          //   로컬 VAD 로 돌려놓고 이 줄을 같이 고치지 않아 반만 살아났다.
+          if (endedAt == null) {
+            final v = _lastVoicedAtMs;
+            // 같은 발화로 두 턴을 재지 않는다(비버가 연속으로 두 턴을 여는 경우).
+            if (v != 0 && v != _turnStartVoicedUsed) {
+              _turnStartVoicedUsed = v;
+              endedAt = v;
+            }
+          }
           if (endedAt != null) {
             _userTurnEndAtMs = null;
             final d = DateTime.now().millisecondsSinceEpoch - endedAt;

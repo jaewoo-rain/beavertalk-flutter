@@ -40,6 +40,10 @@ int diagClassRank(String name) {
       return 1; // 영상 내부 상태 — 굵은 사건(vid_talk)만 남으면 대략 읽힌다
     case 'mic_gate':
     case 'voice_on':
+    case 'voice_off':
+      // ⛔ 둘을 **같은 등급에 둔다.** 처음엔 `voice_off` 를 표에서 빠뜨려 기본 3등급이
+      //   됐고, 실기기 실측(call 1206)에서 **발화 끝만 보이고 시작은 안 보이는** 로그가
+      //   나왔다 — 짝이 없는 반쪽은 읽을 수 없다.
       return 2; // 보조 축
     default:
       return 3; // 턴·마커·언더런·소켓·요약 — 버리지 않는다
