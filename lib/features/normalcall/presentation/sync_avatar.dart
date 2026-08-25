@@ -60,6 +60,7 @@ class SyncAvatar extends StatefulWidget {
     this.idleKind,
     this.autoTempo = false,
     this.fallback,
+    this.onDiag,
   });
 
   /// Asset dir holding `idle.mp4`, `talk.mp4` and optional `emo_*.mp4`.
@@ -96,6 +97,16 @@ class SyncAvatar extends StatefulWidget {
 
   /// Shown until the clips are ready (and if they fail to load).
   final Widget? fallback;
+
+  /// [계측] 영상 쪽에서 일어난 일을 밖으로 흘린다. **UI 는 이걸로 아무것도 바꾸지 않는다.**
+  ///
+  /// ⛔ 왜 필요한가: 사장님이 실기기에서 보시는 증상 — 「웃는 게 두어 번 반복되다 갑자기
+  ///   멈추고, 말할 차례가 되니 듣는 영상으로 넘어간다」 — 은 **전부 이 위젯 안에서**
+  ///   일어난다. 그런데 이 위젯의 로그는 죄다 `kDebugMode` 뒤라 릴리즈에서 사라진다.
+  ///   서버는 마커를 보냈다는 것까지만 알고, 그게 화면에서 어떻게 됐는지는 아무도 모른다.
+  ///   ⇒ 그 구간을 잇는 유일한 실이다.
+  /// ⚠ 널이면 계측이 없을 뿐 동작은 같다(R5).
+  final void Function(String event, [Map<String, Object?>? fields])? onDiag;
 
   @override
   State<SyncAvatar> createState() => _SyncAvatarState();
@@ -396,6 +407,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _startTalking() {
     _talking = true;
+    widget.onDiag?.call('vid_talk', {'on': true, 'emo': _emoCode});
     if (kDebugMode) debugPrint('[avatar] TALK on (level ${widget.level.value})');
     // 컨트롤러는 이미 열려 있다 — 보이게 하고 재생만 켠다. 새 디코더도 seek도 없다.
     if (mounted) setState(() => _talkOpacity = 1);
@@ -405,6 +417,11 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _stopTalking() {
     _talking = false;
+    // ⚠ 여기서 `_emoOpacity` 가 **0 으로 뚝 떨어진다**(페이드 없음). 감정 클립이
+    //   `loop:true` 라 같은 동작을 반복하다 이 지점에서 잘리는 것이, 사장님이 보신
+    //   「웃다가 갑자기 멈춘다」의 그 순간이다. 고치지 않고 **시각만 남긴다** —
+    //   증상과 시각이 붙어야 처방을 고를 수 있다.
+    widget.onDiag?.call('vid_talk', {'on': false, 'emo': _emoCode});
     if (kDebugMode) debugPrint('[avatar] TALK off');
     if (mounted) {
       setState(() {
@@ -556,7 +573,14 @@ class _SyncAvatarState extends State<SyncAvatar> {
     if (_emoCode != code || _emo == null) {
       var next = _emoCache[code];
       if (next == null) {
-        if (_emoLoading) return;
+        if (_emoLoading) {
+          // ⛔ **여기서 감정 하나가 조용히 사라진다.** 앞 감정을 여는 중에 다음 마커가
+          //   오면 그냥 반환하고, 다시 시도하는 경로가 없다 — 그 감정은 영영 안 뜬다.
+          //   지금은 고치지 않고 **세기만 한다**(사장님 지시: 원인만). 이 수가 크면
+          //   「표정이 안 바뀐다」의 범인이 서버가 아니라 이 한 줄이다.
+          widget.onDiag?.call('vid_emo_drop', {'code': code});
+          return;
+        }
         _emoLoading = true;
         // ★감정은 **한 개만** 살려 둔다. 캐시를 쌓으면 idle·talk 까지 더해 디코더가
         // 최대 6개가 되고, 하드웨어 한계(2~3개)를 넘어 화면이 얼었다(2026-08-02 S8).
@@ -576,12 +600,14 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _emoCache[code] = next;
         _emo = next;
         _emoCode = code;
+        widget.onDiag?.call('vid_emo', {'code': code, 'cached': false});
         if (mounted) setState(() => _emoOpacity = 1);
         await _applyPlayback();
         return;
       }
       _emo = next;
       _emoCode = code;
+      widget.onDiag?.call('vid_emo', {'code': code, 'cached': true});
     }
     final e = _emo;
     if (e == null) return;

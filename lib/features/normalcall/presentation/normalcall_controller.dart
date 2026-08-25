@@ -28,6 +28,7 @@ import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/datasources/audio_route_probe.dart';
+import '../data/datasources/call_diag_sink.dart';
 import '../data/datasources/pcm_playback_control.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
@@ -426,6 +427,10 @@ class NormalCallController extends Notifier<CallState> {
 
   /// `user_turn_end` 시점에 **굳혀 둔** 첫 유성 시각. 그 뒤 리셋에 안 쓸리게 따로 둔다.
   int? _frozenFirstVoicedAtMs;
+
+  /// 라이브 폴백에서 **이미 소비한** 유성 앵커. 한 발화로 두 턴을 재지 않게 막는다
+  /// (`_recordResponseTime` 은 턴의 첫 오디오마다 불린다).
+  int _voicedAnchorConsumed = 0;
 
   /// 사용자 발화가 끊긴 뒤 [kIdleListen] 을 유지하는 시간.
   /// 문장 사이의 짧은 공백마다 끄덕임이 끊기면 오히려 산만하다.
@@ -900,6 +905,52 @@ class NormalCallController extends Notifier<CallState> {
   /// point of the "~76초에 음성이 튐" investigation).
   int? _logAnchorMs;
 
+  // ── [계측] 서버로 보내는 통화 진단 ────────────────────────────────────────
+  //
+  // ⛔⛔ **[_log] 와 같은 자리에 두되 같은 운명이 아니다.** [_log] 는 `kDebugMode` 뒤에
+  //   있어 **릴리즈 빌드에서 통째로 사라진다** — 사장님이 실기기로 겪는 증상이 로그에
+  //   한 줄도 안 남는 이유가 그것이다. 이 싱크는 그 게이트 **밖**이다.
+  // ⛔ 그렇다고 항상 떠드는 것도 아니다. 켜고 끄는 주인은 **서버**다
+  //   (`call_started.diag` = off | summary | full). 앱을 다시 배포하지 않고 끌 수 있어야
+  //   한다 — 계측이 문제를 일으켰을 때 유일한 탈출구가 그것이다.
+  late final CallDiagSink _diag = CallDiagSink(
+    send: _send,
+    micIsGated: () => _micGated,
+  );
+
+  /// 진단 이벤트 1건. 핫패스에서 불리므로 **여기서 문자열을 만들지 않는다.**
+  void _dg(String e, [Map<String, Object?>? f]) => _diag.add(e, fields: f);
+
+  /// [SyncAvatar] 가 흘리는 영상 계측을 받는다.
+  ///
+  /// ⛔ 위젯이 싱크를 직접 들고 있게 하지 않는다. 계측 정책(레벨·상한·전송 창)은 한
+  ///   곳에만 있어야 하고, 그 한 곳이 여기다 — 위젯은 「무슨 일이 있었는지」만 말한다.
+  void onAvatarDiag(String event, [Map<String, Object?>? fields]) =>
+      _dg(event, fields);
+
+  /// 통화 종료 직전 한 번 — 요약 1건을 얹고 남은 배치를 모두 밀어낸다.
+  ///
+  /// ⚠ 두 종료 경로(사용자 끊기 / 서버 `call_ended`)에서 **둘 다** 불릴 수 있다.
+  ///   그래도 안전하다 — 버퍼가 비면 [CallDiagSink.finish] 가 아무것도 안 보낸다.
+  void _flushDiagSummary() {
+    if (!_diag.enabled) return;
+    _dg('summary', {
+      'turns': _responseSamples.length,
+      'p50_ms': _responseMedianMs,
+      'sentences': _sentenceCount,
+      'cushion_ms': _cushionBytes ~/ 48,
+      'produced': _diag.buffer.produced,
+    });
+    _diag.finish();
+  }
+
+  /// 지금까지의 응답시간 중앙값(표본이 없으면 -1).
+  int get _responseMedianMs {
+    if (_responseSamples.isEmpty) return -1;
+    final sorted = [..._responseSamples]..sort();
+    return sorted[sorted.length ~/ 2];
+  }
+
   /// When the queue went empty *while the beaver was still speaking* — i.e. the
   /// server stopped feeding us mid-utterance. Cleared (and reported) when real
   /// audio resumes, which yields the stall duration: the number that decides
@@ -957,6 +1008,9 @@ class NormalCallController extends Notifier<CallState> {
   /// the WS around ~1 min — the "1분 경과 시 voice 끊김" symptom.
   Timer? _keepaliveTimer;
   static const Duration _keepaliveInterval = Duration(seconds: 15);
+
+  /// 마지막 `ping` 을 보낸 시각. `pong.s` 와 짝지어 **서버 시계 오프셋**을 잡는다.
+  int? _pingSentAtMs;
 
   /// True once a close is expected (hang-up / `call_ended` / teardown) so the
   /// socket's `onDone` isn't mistaken for an unexpected mid-call drop.
@@ -1596,6 +1650,13 @@ class NormalCallController extends Notifier<CallState> {
     _firstVoicedAtMs = null;
     _lastVoicedAtMs = 0;
     _frozenFirstVoicedAtMs = null;
+    _voicedAnchorConsumed = 0;
+    _gatedLoudFrames = 0;
+    // ⛔ 계측 앵커도 **통화 스코프**다. 서버 `call_started` 에서 잡으면 두 가지가 깨진다:
+    //   ① 그 프레임 **전에** 일어난 일(마이크 개방·첫 롤업)이 버퍼 비우기에 함께 지워지고
+    //   ② 이 컨트롤러는 재사용되므로, 두 번째 통화가 첫 통화의 버퍼·손실수를 물려받는다.
+    //   ⇒ 통화 리셋과 같은 자리에 둔다. `call_started` 는 **레벨만** 바꾼다.
+    _diag.start(_logAnchorMs!);
     _responseSamples.clear();
     responseSummary.value = '';
     _resumeFlushed = false;
@@ -1873,6 +1934,10 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   Future<void> _hangUp() async {
+    // ⭐ **소켓을 닫기 전에** 남은 계측을 밀어낸다. 여기서 안 보내면 통화의 마지막
+    //   구간 — 하필 「끊겼다」를 조사할 때 제일 보고 싶은 그 구간 — 이 통째로 사라진다.
+    //   `finish()` 는 마이크 창을 기다리지 않는다(기다릴 다음 창이 없다).
+    _flushDiagSummary();
     // Invalidate any in-flight start() so it can't re-establish the pipeline
     // after we tear it down here.
     _gen++;
@@ -1947,7 +2012,11 @@ class NormalCallController extends Notifier<CallState> {
       _micPrevAtUs = nowUs;
       // ⭐ [계측] **첫 유성 프레임 시각.** 정수 산술만 쓰고 할당이 없다 — 초당 45~90회
       //   도는 자리라 여기서 비싸지면 우리가 재려던 것을 우리가 흔든다.
-      _markVoicedIfLoud(bytes);
+      // ⚠ `gated:` 를 넘기는 이유 — 반이중 게이트가 닫혀 있는 동안에도 이 줄은 돈다.
+      //   그때 잡히는 큰 소리는 **비버 목소리가 AEC 를 새어 마이크로 돌아온 것**일 수
+      //   있어서, 그걸 「사용자가 입을 열었다」로 기록하면 응답시간의 원점이 통째로
+      //   앞당겨진다. 앵커는 열린 마이크에서만 잡고, 닫힌 쪽은 따로 센다.
+      _markVoicedIfLoud(bytes, gated: _micGated);
       // Half-duplex gate: while the beaver is speaking (or its audio tail is
       // still decaying), DROP the frame so the AI's voice picked up by the mic
       // is never echoed back to the server's STT (which caused the self-talk
@@ -2271,10 +2340,25 @@ class NormalCallController extends Notifier<CallState> {
   /// ⚠ 그리고 **메인 스레드가 막히면 이 값도 같이 는다.** 그건 결함이 아니라 우리가 재려는
   ///   대상이다 — 같은 통화의 `Skipped frames`·`Davey!` 와 함께 읽어야 한다.
   void _recordResponseTime(int sentAtMs, int? reported, int level, int take) {
-    final endedAt = _userTurnEndForAudioMs;
-    // 사용자 발화가 없던 턴(첫 인사·자동 대화)은 잴 대상이 아니다. 조용히 건너뛴다.
-    if (endedAt == null) return;
+    var endedAt = _userTurnEndForAudioMs;
     _userTurnEndForAudioMs = null;
+    // ⛔⛔ 이 자리가 **라이브에서 한 번도 안 돌던 이유**다 (2026-08-25 발견).
+    //   원점 `_userTurnEndForAudioMs` 는 `user_turn_end` 프레임에서만 채워지는데,
+    //   **그 프레임은 캐스케이드에만 있다.** 라이브에서는 영원히 null 이라 여기서 조용히
+    //   반환했고, 그래서 응답시간이 화면에도 서버에도 한 줄도 안 남았다. 로그가 조용한 것이
+    //   「빨라서」로 읽히던 그 함정 그대로다.
+    // ⇒ 라이브에서는 **로컬 VAD 의 마지막 유성 프레임**을 원점으로 쓴다. 서버가 「말이
+    //   끝났다」고 알려 주지 않으니, 말이 끝난 것을 아는 쪽은 여기뿐이다.
+    final bool localOrigin = endedAt == null;
+    if (localOrigin) {
+      final lastVoiced = _lastVoicedAtMs;
+      // 이 턴에 사용자가 입을 연 적이 없으면(첫 인사·자동 대화) 잴 대상이 아니다.
+      if (lastVoiced == 0 || _voicedAnchorConsumed == lastVoiced) return;
+      _voicedAnchorConsumed = lastVoiced;
+      _frozenFirstVoicedAtMs ??= _firstVoicedAtMs;
+      _firstVoicedAtMs = null;
+      endedAt = lastVoiced;
+    }
 
     final fedFrames = take ~/ 2;
     final int preDepthFrames;
@@ -2314,8 +2398,22 @@ class NormalCallController extends Notifier<CallState> {
         '${_responseSamples.length}턴 중앙값 ${median}ms';
     _log(measured ? line : '$line ⚠ 추정(네이티브 잔량 미제공)');
     responseSummary.value = measured ? line : '$line ⚠ 추정';
+    _dg('audible1', {
+      'turn': _currentTurnId,
+      'ms': responseMs,
+      'cushion_ms': cushionMs,
+      'speech_ms': speechToSoundMs,
+      'origin': localOrigin ? 'vad' : 'server',
+      if (!measured) 'est': true,
+    });
     _sendClientTiming(
-      audibleMs: responseMs,
+      // ⛔ **원점이 다르면 같은 이름으로 보내지 않는다.** 서버는 이 값을 자기 `첫소리`
+      //   기록에서 빼서 「클라 재생 몫」을 구하는데, 그 뺄셈은 두 값의 원점이 같을 때만
+      //   성립한다. 라이브의 로컬 VAD 원점을 `audible_ms` 로 실어 보내면 서버는 그것을
+      //   **모른 채** 빼서, 틀린 줄 모르는 숫자를 만든다 — 없는 것보다 나쁘다.
+      //   ⇒ 라이브에서는 -1(= 못 쟀음)을 보내고, 잰 값은 `speech_to_sound_ms` 로 간다.
+      //   그건 두 엔진에서 **정의가 같다**(로컬 VAD 첫 유성 → 첫 소리).
+      audibleMs: localOrigin ? -1 : responseMs,
       cushionMs: cushionMs,
       estimated: !measured,
       speechToSoundMs: speechToSoundMs,
@@ -2327,7 +2425,7 @@ class NormalCallController extends Notifier<CallState> {
   /// ⛔ **계측 전용이다.** 재생·마이크·턴 로직에 아무것도 안 건다.
   /// ⛔ 초당 45~90회 도는 자리라 **산술만** 한다(할당·파싱 없음) — 여기서 비싸지면
   ///   우리가 재려던 것을 우리가 흔든다.
-  void _markVoicedIfLoud(Uint8List bytes) {
+  void _markVoicedIfLoud(Uint8List bytes, {required bool gated}) {
     final n = bytes.length ~/ 2;
     if (n == 0) return;
     // PCM16 LE. 352 샘플 × 32768² 는 int64 안에서 안전하다.
@@ -2341,13 +2439,27 @@ class NormalCallController extends Notifier<CallState> {
     if (rms < _voicedRmsThreshold) return;
 
     final nowMs = DateTime.now().millisecondsSinceEpoch;
+    if (gated) {
+      // 마이크가 닫힌 동안의 큰 소리. 앵커는 **건드리지 않는다.**
+      // ⭐ 그래도 센다 — 이 값이 크면 「비버가 말하는 동안 학습자가 말을 걸고 있었다」는
+      //   뜻이고, 그건 「비버가 너무 길게 말한다」는 체감의 직접 증거다.
+      _gatedLoudFrames++;
+      return;
+    }
     // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
     if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
+      _dg('voice_off', {'dur_ms': _lastVoicedAtMs - (_firstVoicedAtMs ?? 0)});
       _firstVoicedAtMs = null;
     }
-    _firstVoicedAtMs ??= nowMs;
+    if (_firstVoicedAtMs == null) {
+      _firstVoicedAtMs = nowMs;
+      _dg('voice_on');
+    }
     _lastVoicedAtMs = nowMs;
   }
+
+  /// 마이크가 닫힌 동안 임계를 넘은 프레임 수(5초 롤업에서 비우고 다시 센다).
+  int _gatedLoudFrames = 0;
 
   /// 이 턴의 응답시간을 **서버로** 보낸다 — 턴당 1건.
   ///
@@ -2423,6 +2535,21 @@ class NormalCallController extends Notifier<CallState> {
           // 구버전 플러그인 — 계측만 없다.
         }
       }
+      // ⭐ [계측] 주기 롤업 + **직렬화·전송이 일어나는 유일한 자리**다.
+      //   핫패스(초당 45~90회)에서 JSON 을 만들면 재려던 지연을 우리가 만든다. 그래서
+      //   이미 도는 5초 타이머에 얹는다 — 새 타이머를 만들지 않는 것이 규율이다.
+      //   ⛔ 여기 [_diag.flush] 는 스스로 「마이크가 닫혀 있는가」를 보고 판단한다.
+      //     비버가 말하는 동안 업링크는 완전히 비어 있어, 그 창에 보내면 마이크 프레임을
+      //     **단 하나도 밀지 않는다.**
+      _dg('win', {
+        'ping_ms': pingMs,
+        'q': _queueLen,
+        'cushion_ms': _cushionBytes ~/ 48,
+        'gated_loud': _gatedLoudFrames,
+        'mk_wait': _pendingMarkers.length,
+      });
+      _gatedLoudFrames = 0;
+      _diag.flush();
       final elapsedMs = DateTime.now().millisecondsSinceEpoch - _callT0Ms;
       final fedBytes = _fedAudBytes + _fedSilFrames * 2;
       final pct = elapsedMs > 0 ? (fedBytes / 48000.0 * 1000 / elapsedMs * 100) : 0;
@@ -2732,6 +2859,9 @@ class NormalCallController extends Notifier<CallState> {
           _starveAtMs = null;
           _resumeFlushed = false;
           final gapMs = DateTime.now().millisecondsSinceEpoch - starvedAt;
+          // ⛔ 두 구멍을 **한 이름으로 부르지 않는다**(바로 위 주석의 그 사고). 처방이 다르다.
+          _dg(_turnFirstAudioFed ? 'gap_mid' : 'gap_head',
+              {'turn': _currentTurnId, 'ms': gapMs});
           _log(_turnFirstAudioFed
               ? 'audio resumed after ${gapMs}ms gap (발화중구멍)'
               : 'audio resumed after ${gapMs}ms gap (턴시작대기 — 이 턴의 첫 소리)');
@@ -2834,6 +2964,7 @@ class NormalCallController extends Notifier<CallState> {
               // First starve of this turn: the cushion was too small for the
               // deficit this call is running, so widen it for the turns ahead.
               _starveAtMs = DateTime.now().millisecondsSinceEpoch;
+              _dg('underrun', {'turn': _currentTurnId, 'cushion_ms': _cushionBytes ~/ 48});
               if (!_turnStarved) {
                 _turnStarved = true;
                 if (_cushionGrowthOff) {
@@ -3515,6 +3646,16 @@ class NormalCallController extends Notifier<CallState> {
       //   (24kHz·16bit = 48,000 B/s 고정). 타자기 속도가 여기서 나온다.
       serverBytes: sbRaw is int ? sbRaw : -1,
     ));
+    // ⭐ 마커 **도착**. 아래 [_log] 와 같은 사실을 적지만 운명이 다르다 — 저건 릴리즈에서
+    //   사라지고 이건 서버로 간다. 「감정이 도착은 했나」를 실기기에서 가르는 유일한 줄이다.
+    _dg('mk_rx', {
+      'seq': seq,
+      'emo': rawEmotion,
+      if (!knownLabel(rawEmotion)) 'unknown': true,
+      'at': _envAdded,
+      'played': _envPlayed,
+      'wait': _pendingMarkers.length,
+    });
     // [진단] 첫 실기기 통화에서 **서버 탓 / 앱 탓**을 가르는 줄이다.
     // 이 줄이 0건이면 서버가 안 보낸 것이고, 있는데 화면이 비면 앱 문제다.
     // ⭐ 모르는 라벨을 **로그에 드러낸다.** 표정은 그대로 무표정으로 두되(위 규약),
@@ -3709,6 +3850,18 @@ class NormalCallController extends Notifier<CallState> {
       case 'call_started':
         final cid = msg['character_id'];
         if (cid is int) state = state.copyWith(characterId: cid);
+        // ⛔ 지금까지 이 프레임의 `call_id` 를 **읽지도 않고 버렸다.** 서버는 처음부터
+        //   싣고 있었는데(`protocol.py` ServerCallStarted.call_id), 클라는 통화가
+        //   **끝난 뒤** `call_ended` 로만 id 를 알았다 — 그래서 통화 **중**에 보내는
+        //   계측을 서버 로그에서 그 통화에 붙일 방법이 없었다.
+        final startedId = normalizeCallId(msg['call_id']);
+        if (startedId != null) state = state.copyWith(callId: startedId);
+        // ⭐ 계측을 켜고 끄는 주인은 **서버**다. 앱 재배포 없이 끌 수 있어야 한다.
+        // ⛔ 여기서 [CallDiagSink.start] 를 부르지 마라 — 앵커는 통화 리셋에서 잡는다
+        //   (그 이유는 그 자리 주석에). 여기서 다시 잡으면 이 프레임 **전** 구간이 지워진다.
+        final diagLevel = msg['diag'];
+        if (diagLevel is String && diagLevel.isNotEmpty) _diag.level = diagLevel;
+        _dg('call_started', {'call': startedId, 'ch': cid});
         // [진단] 캐스케이드가 이걸 보내기 시작했는지 실기기에서 가리는 줄이다
         // (00155-br2). 안 오면 화면이 대표 캐릭터로 폴백하는데, 그건 **조용히**
         // 일어나서 로그가 없으면 "왜 다른 얼굴이지"를 못 찾는다.
@@ -3726,6 +3879,7 @@ class NormalCallController extends Notifier<CallState> {
             _turnStartDelayMs = d;
             _log('RESPONSE: user_turn_end → turn_start ${d}ms');
           }
+          _dg('turn_start', {'turn': msg['turn_id'], 'delay_ms': _turnStartDelayMs ?? -1});
         }
         // 새 비버 턴이 열렸다 = 취소 잔여 구간의 끝. 서버 불변식상 여기부터 도착하는
         // 오디오는 이 턴의 것이다.
@@ -3834,6 +3988,7 @@ class NormalCallController extends Notifier<CallState> {
         // Beaver turn finished generating. Clear the gate only once the
         // playback queue has also drained (+ hangover); see [_tryUngateMic].
         _turnEnded = true;
+        _dg('turn_end', {'turn': _currentTurnId, 'mk_wait': _pendingMarkers.length});
         // The beaver is done and the user is about to speak → start a fresh user
         // subtitle line so their next utterance accumulates from empty.
         state = state.copyWith(userSubtitle: '');
@@ -3888,6 +4043,7 @@ class NormalCallController extends Notifier<CallState> {
           callId: id,
           hint: null,
         );
+        _flushDiagSummary();
         _log('call_ended id=${id ?? '(없음 — 종료 화면이 복구 폴링으로 되짚는다)'} '
             '→ draining closing line');
         _scheduleClosingDrain();
@@ -3943,7 +4099,21 @@ class NormalCallController extends Notifier<CallState> {
           }
         }
       case 'pong':
-        break;
+        // ⭐ 서버가 자기 벽시계를 같이 준다(`ServerPong.s`). 없으면 클라 계측이 **기기
+        //   시계 위에만** 놓여, 서버 로그와 나란히 놓고 빼는 순간 기기 시계 오차가
+        //   그대로 「지연」으로 둔갑한다. 왕복의 절반을 편도로 보는 통상 근사.
+        {
+          final sv = msg['s'];
+          final sentAt = _pingSentAtMs;
+          if (sv is int && sentAt != null) {
+            final now = DateTime.now().millisecondsSinceEpoch;
+            final rttMs = now - sentAt;
+            final offset = sv + rttMs ~/ 2 - now;
+            _diag.serverClockOffsetMs = offset;
+            _dg('clock', {'rtt_ms': rttMs, 'off_ms': offset});
+          }
+          _pingSentAtMs = null;
+        }
 
       // ── 캐스케이드 통로 전용 프레임 ─────────────────────────────────────────
       case 'sentence':
@@ -4167,6 +4337,7 @@ class NormalCallController extends Notifier<CallState> {
   void _startKeepalive() {
     _keepaliveTimer?.cancel();
     _keepaliveTimer = Timer.periodic(_keepaliveInterval, (_) {
+      _pingSentAtMs = DateTime.now().millisecondsSinceEpoch;
       _send({'type': 'ping'});
     });
   }
