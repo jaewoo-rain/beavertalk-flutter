@@ -355,6 +355,8 @@ class _SyncAvatarState extends State<SyncAvatar> {
   ///
   /// ⛔ 트리에서 뺀 **다음 프레임에** 해제한다. 지금 그려지는 텍스처를 지우면 굳는다.
   Future<void> _freeEmoSlot(String why) async {
+    // ⚠ 미뤄 둔 감정은 자리를 비우는 순간 무효다 — 그 감정이 가리키던 맥락이 사라졌다.
+    _emoPending = null;
     if (_emoCache.isEmpty) return;
     _disarmEmoFinish();
     final stale = _emoCache.values.toList();
@@ -530,8 +532,18 @@ class _SyncAvatarState extends State<SyncAvatar> {
       _idle = next;
       _idleKind = kind;
     });
-    await _applyPlayback();
+    // ⛔⛔ **`_applyPlayback` 앞이다.** 예전엔 뒤에 있었고, 그 사이(재생 상태를 세 컨트롤러에
+    //   적용하는 await 여러 번)에 감정이 열리면 **디코더가 4개**가 됐다 —
+    //   idle옛것 + idle새것 + talk + 감정. 실측 call 1211 에서 5회:
+    //       +1 → 3 (idle_listen) → +1 → 4 (emo_sad) ⛔ → -1 → 3 (idle 옛것)
+    //   그 창에서는 옛것이 아직 [_retiring] 에 **들어가기 전**이라 감정 경로의
+    //   `_flushRetiring` 이 비울 것을 못 찾았다.
+    // ⭐ 여기로 옮기면 창이 사라진다. 안전한 이유: `setState` 로 `_idle` 이 이미 새것을
+    //   가리키므로 `stale` 은 **트리에서 빠졌고**, `_applyPlayback` 도 `stale` 을 안 만진다.
+    //   ⛔ v6.4 의 금지(«그려지는 중»인 것을 즉시 해제하지 마라)는 그대로다 —
+    //     `_retire` 는 즉시 해제가 아니라 **페이드 뒤 해제**를 예약할 뿐이다.
     _retire(stale, 'idle 옛것');
+    await _applyPlayback();
   }
 
   /// talk 클립을 다른 템포로 갈아끼운다.
@@ -560,13 +572,31 @@ class _SyncAvatarState extends State<SyncAvatar> {
       _talk = next;
       _talkTempo = tempo;
     });
-    await _applyPlayback();
+    // ⛔ 위 [_swapIdle] 과 같은 이유 — 옛것을 대기열에 **먼저** 넣는다.
+    //   (지금은 autoTempo 가 꺼져 있어 이 경로가 안 돌지만, 켜는 순간 같은 병이 난다.)
     _retire(stale, 'talk 옛것');
+    await _applyPlayback();
   }
 
   void _onEmotion() {
     if (!_ready) return;
     _syncEmotionLayer();
+  }
+
+  /// 앞 감정을 여는 동안 도착한 **가장 최근** 감정. 없으면 null.
+  ///
+  /// ⛔ 큐가 아니라 **한 칸**이다 — 표정은 누적값이 아니라 현재 상태다.
+  int? _emoPending;
+
+  /// 미뤄 둔 감정이 있으면 지금 적용한다.
+  ///
+  /// ⚠ 위젯의 **현재** 값과 다를 때만 돈다. 그 사이 서버가 또 바꿨다면
+  ///   `widget.emotion` 쪽이 최신이고, 그건 [_onEmotion] 이 이미 처리했다.
+  Future<void> _drainPendingEmo() async {
+    final pending = _emoPending;
+    _emoPending = null;
+    if (pending == null || pending == _emoCode) return;
+    await _syncEmotionLayer();
   }
 
   /// 지금 감시 중인 감정 클립과 그 리스너(중복 등록 방지용 참조).
@@ -637,11 +667,13 @@ class _SyncAvatarState extends State<SyncAvatar> {
       var next = _emoCache[code];
       if (next == null) {
         if (_emoLoading) {
-          // ⛔ **여기서 감정 하나가 조용히 사라진다.** 앞 감정을 여는 중에 다음 마커가
-          //   오면 그냥 반환하고, 다시 시도하는 경로가 없다 — 그 감정은 영영 안 뜬다.
-          //   지금은 고치지 않고 **세기만 한다**(사장님 지시: 원인만). 이 수가 크면
-          //   「표정이 안 바뀐다」의 범인이 서버가 아니라 이 한 줄이다.
-          widget.onDiag?.call('vid_emo_drop', {'code': code});
+          // ⭐ **버리지 않고 미룬다.** 예전엔 그냥 반환해서 그 감정이 영영 안 떴다 —
+          //   앞 감정을 여는 데 수백 ms 가 걸리므로, 그 사이 온 마커는 전부 사라졌다.
+          // ⛔ 큐로 쌓지 않는다. 표정은 **누적되는 값이 아니라 현재 상태**라, 밀린 것을
+          //   차례로 다 트는 것은 틀린 그림이다(happy→sad→happy 를 다 재생하면 마지막
+          //   문장에서 엉뚱한 얼굴이 남는다). ⇒ **최신 하나만** 들고 있다가 잇는다.
+          _emoPending = code;
+          widget.onDiag?.call('vid_emo_defer', {'code': code});
           return;
         }
         _emoLoading = true;
@@ -681,6 +713,8 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _armEmoFinish(next);
         if (mounted) setState(() => _emoOpacity = 1);
         await _applyPlayback();
+        // 여는 동안 다음 감정이 왔다면 지금 잇는다(위 [_emoPending] 참조).
+        await _drainPendingEmo();
         return;
       }
       _emo = next;
