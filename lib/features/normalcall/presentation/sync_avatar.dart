@@ -11,6 +11,7 @@ import 'avatar_view.dart'
         kEmotionSurprised,
         kEmotionSad,
         kEmotionAngry,
+        kEmotionLaugh,
         kIdleWait,
         kIdleListen,
         kIdleThink;
@@ -169,6 +170,9 @@ class _SyncAvatarState extends State<SyncAvatar> {
     kEmotionSurprised: 'emo_surprised',
     kEmotionSad: 'emo_sad',
     kEmotionAngry: 'emo_angry',
+    // ⭐ 파일명만 `emo_` 접두사가 없다 — 11종 세트에서 감정과 따로 만들어졌기 때문이다.
+    //   ⛔ 이름을 맞추려고 자산을 개명하지 마라. 5캐릭터 × 앱스토어 자산이 걸린다.
+    kEmotionLaugh: 'laugh',
   };
 
   /// 대기 클립 3종. **하나의 슬롯**에서 갈아끼운다(디코더 3개 한계).

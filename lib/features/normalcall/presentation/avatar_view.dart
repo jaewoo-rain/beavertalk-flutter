@@ -14,6 +14,12 @@ const int kEmotionSurprised = 2;
 const int kEmotionSad = 3;
 const int kEmotionAngry = 4;
 
+/// ⭐ **박장대소** — `happy`(미소·칭찬)와 다른 축이다.
+/// 재밌어서 크게 터지거나, 면박 주며 웃어젖힐 때(트래시토커 페르소나).
+/// ⚠ 자산은 2026-08-09 의 11종 세트에 **처음부터 있었는데** 배선이 안 돼 있었다
+///   (5캐릭터 전부 `laugh.mp4`, 3.5MB 가 안 쓰이고 실려 나가던 상태).
+const int kEmotionLaugh = 5;
+
 /// 비버가 말하지 않는 동안의 대기 상태. `idle` **슬롯 하나**에서 갈아끼운다.
 ///
 /// ★왜 나뉘었나 — 이전에는 「사용자가 말하는 중」과 「아무도 말 안 함」이 같은
@@ -27,6 +33,8 @@ const int kIdleThink = 2; // 응답을 기다리는 중 — `idle_think.mp4`(생
 /// Emotion code → sprite file stem within the character's asset dir.
 const Map<int, String> _emotionStem = {
   kEmotionHappy: 'e_happy',
+  // ⚠ 구세대 스프라이트에는 laugh 가 없다 — 이 표는 통화 화면이 안 쓴다(영상이 대체).
+  //   여기 추가하지 않는 것이 맞다. 없는 png 를 가리키면 조용히 폴백한다.
   kEmotionSurprised: 'e_surprised',
   kEmotionSad: 'e_sad',
   kEmotionAngry: 'e_angry',

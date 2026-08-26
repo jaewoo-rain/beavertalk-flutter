@@ -3643,6 +3643,12 @@ class NormalCallController extends Notifier<CallState> {
       case '화남':
       case '분노':
         return 4;
+      // ⭐ 박장대소. `happy` 와 **다른 축**이다 — 미소가 아니라 터져 나오는 웃음이다.
+      case 'laugh':
+      case 'laughing':
+      case '폭소':
+      case '박장대소':
+        return 5;
       default:
         return 0; // 모르는 값 — 표정을 안 바꾼다. [knownLabel] 이 이 경우를 드러낸다
     }
