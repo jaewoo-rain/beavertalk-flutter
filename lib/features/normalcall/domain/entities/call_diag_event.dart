@@ -37,6 +37,7 @@ int diagClassRank(String name) {
     case 'vid_dec':
     case 'vid_swap':
     case 'vid_emo':
+    case 'vid_emo_end':
       return 1; // 영상 내부 상태 — 굵은 사건(vid_talk)만 남으면 대략 읽힌다
     case 'mic_gate':
     case 'voice_on':

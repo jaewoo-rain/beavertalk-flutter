@@ -356,12 +356,16 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// ⛔ 트리에서 뺀 **다음 프레임에** 해제한다. 지금 그려지는 텍스처를 지우면 굳는다.
   Future<void> _freeEmoSlot(String why) async {
     if (_emoCache.isEmpty) return;
+    _disarmEmoFinish();
     final stale = _emoCache.values.toList();
     _emoCache.clear();
     _emoCode = 0;
     _emo = null;
     if (mounted) {
       setState(() => _emoOpacity = 0);
+      // ⛔ 위와 같은 이유 — 감정을 내린 순간부터 talk 이 멈춰 있다. 새 감정을 여는 데
+      //   수백 ms 가 걸리므로 그 사이 화면이 정지 프레임이 된다.
+      await _applyPlayback();
       // 참조를 끊은 뒤 한 프레임을 넘겨야 렌더러가 그 텍스처를 놓는다.
       await WidgetsBinding.instance.endOfFrame;
     }
@@ -565,13 +569,68 @@ class _SyncAvatarState extends State<SyncAvatar> {
     _syncEmotionLayer();
   }
 
+  /// 지금 감시 중인 감정 클립과 그 리스너(중복 등록 방지용 참조).
+  VideoPlayerController? _emoWatched;
+  VoidCallback? _emoFinishWatch;
+
+  /// 감정 클립이 **끝까지 재생되면** 스스로 내려가고 말하는 얼굴로 돌아간다.
+  ///
+  /// ⛔ `loop:false` 와 한 몸이다. 루프만 끄면 클립이 **마지막 프레임에 얼어붙어**
+  ///   그 턴 내내 남는다 — 반복되던 것이 정지 화면으로 바뀔 뿐 나아지지 않는다.
+  /// ⚠ 타이머로 재지 않는다. 클립 길이는 캐릭터·감정마다 다르고 디코더가 늦으면
+  ///   실제 재생이 더 걸린다. **컨트롤러가 알려주는 위치**가 유일하게 맞는 근거다.
+  void _armEmoFinish(VideoPlayerController c) {
+    _disarmEmoFinish();
+    void onTick() {
+      final v = c.value;
+      if (!v.isInitialized) return;
+      final dur = v.duration;
+      if (dur <= Duration.zero) return;
+      // 마지막 프레임 언저리에서 판정한다 — position 이 duration 에 정확히 안 닿는다.
+      if (v.position < dur - const Duration(milliseconds: 80)) return;
+      _disarmEmoFinish();
+      widget.onDiag?.call('vid_emo_end', {'code': _emoCode});
+      if (!mounted) return;
+      // 감정만 내린다. talk 은 [_applyPlayback] 이 다시 켠다 — 그게 「말하는 얼굴」이다.
+      setState(() => _emoOpacity = 0);
+      unawaited(_applyPlayback());
+    }
+    _emoWatched = c;
+    _emoFinishWatch = onTick;
+    c.addListener(onTick);
+  }
+
+  void _disarmEmoFinish() {
+    final w = _emoWatched;
+    final f = _emoFinishWatch;
+    _emoWatched = null;
+    _emoFinishWatch = null;
+    if (w != null && f != null) {
+      try {
+        w.removeListener(f);
+      } catch (_) {
+        // 이미 해제된 컨트롤러 — 무시한다(R5).
+      }
+    }
+  }
+
   /// Loads (once) and shows the clip for the current emotion while talking.
   Future<void> _syncEmotionLayer() async {
     if (!_ready) return; // don't contend with the idle/talk decoders warming up
     final code = widget.emotion.value;
     final name = _emoAsset[code];
     if (!_talking || name == null) {
-      if (_emoOpacity != 0 && mounted) setState(() => _emoOpacity = 0);
+      if (_emoOpacity != 0 && mounted) {
+        setState(() => _emoOpacity = 0);
+        // ⛔⛔ **여기서 talk 을 다시 켜야 한다.** [_applyPlayback] 이 감정을 보일 때
+        //   talk 을 `pause()` 해 두기 때문에(showTalk = _talking && !showEmo),
+        //   감정만 숨기면 그 밑에서 **멈춘 프레임**이 드러난다 — 소리는 계속 나는데
+        //   입이 안 움직인다. 사장님 실측: "표정 하고 갑자기 표정이 사라질 때가 있다,
+        //   표정 다 했으면 무표정이 아니라 말하는 표정이어야 하잖아"(2026-08-26).
+        // ⚠ 다시 켜는 곳이 [_startTalking]·[_stopTalking]·새 감정 열기 셋뿐이라,
+        //   `neutral` 마커부터 **그 턴이 끝날 때까지** 얼어 있었다(실측 8~13초).
+        await _applyPlayback();
+      }
       return;
     }
     if (_emoCode != code || _emo == null) {
@@ -603,7 +662,12 @@ class _SyncAvatarState extends State<SyncAvatar> {
         //   ⚠ `_swapIdle`·`_swapTalk` 은 이미 이걸 부른다(c37e8b4). **감정 경로만
         //     빠져 있었다** — 같은 수정에서 세 자리 중 하나를 놓친 것이다.
         await _flushRetiring('감정 열기');
-        next = await _open(name, loop: true, play: true);
+        // ⛔ **loop:false 다.** 예전엔 `loop:true` 라 감정이 그 턴 내내 같은 동작을
+        //   되풀이했다 — 사장님 실측: "웃다가 웃다가를 계속 반복하다가 문장이 끝날
+        //   때도 있고"(2026-08-25). 감정은 **그 문장의 반응**이지 턴 전체의 상태가
+        //   아니다. 한 번 보여주고 말하는 얼굴로 돌아간다.
+        //   ⇒ happy → talk → sad → talk (사장님이 정한 모델, 2026-08-26)
+        next = await _open(name, loop: false, play: true);
         _emoLoading = false;
         if (!mounted) {
           await _release(next, '감정 교체 중 unmount');
@@ -614,6 +678,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _emo = next;
         _emoCode = code;
         widget.onDiag?.call('vid_emo', {'code': code, 'cached': false});
+        _armEmoFinish(next);
         if (mounted) setState(() => _emoOpacity = 1);
         await _applyPlayback();
         return;
@@ -624,12 +689,21 @@ class _SyncAvatarState extends State<SyncAvatar> {
     }
     final e = _emo;
     if (e == null) return;
+    // ⭐ 캐시에서 다시 꺼낸 클립은 **끝에 멈춰 있다**(loop:false). 되감지 않으면
+    //   같은 감정이 두 번째로 왔을 때 마지막 프레임 한 장만 보이고 끝난다.
+    try {
+      await e.seekTo(Duration.zero);
+    } catch (_) {
+      // 이미 정리된 컨트롤러 — 아래 _applyPlayback 이 걸러 낸다.
+    }
+    _armEmoFinish(e);
     if (mounted) setState(() => _emoOpacity = 1);
     await _applyPlayback();
   }
 
   @override
   void dispose() {
+    _disarmEmoFinish();
     widget.level.removeListener(_onLevel);
     widget.speaking.removeListener(_onLevel);
     widget.emotion.removeListener(_onEmotion);
