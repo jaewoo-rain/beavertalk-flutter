@@ -189,6 +189,8 @@ class _SyncAvatarState extends State<SyncAvatar> {
   @override
   void initState() {
     super.initState();
+    // ⛔ [_diagSink] 참조 — 해제 뒤에도 디코더 반납을 남기려면 지금 받아야 한다.
+    _diagSink = widget.onDiag;
     widget.level.addListener(_onLevel);
     widget.emotion.addListener(_onEmotion);
     widget.speaking.addListener(_onLevel);
@@ -263,8 +265,42 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// ⇒ 규칙을 **셈으로** 바꾼다. 넘으면 로그에 남고, 로그가 곧 판정이다.
   static int _decoders = 0;
 
+  /// [widget.onDiag] 의 **해제 이후에도 쓸 수 있는** 사본.
+  ///
+  /// ⛔ [dispose] 가 `unawaited(_release(...))` 로 비동기 해제를 걸기 때문에,
+  ///   그 안에서 `widget` 을 만지면 이미 사라진 State 의 필드를 읽게 된다
+  ///   (디버에선 assert, 릴리즈엔 조용한 오동작). 통화 끝나는 순간의
+  ///   디코더 반납은 **가장 보고 싶은 구간**이라 그걸 버릴 수 없다.
+  ///   ⇒ 콜백을 initState 에서 미리 받아 둔다.
+  void Function(String, [Map<String, Object?>?])? _diagSink;
+
+  /// 디코더 수를 **서버로** 보낸다.
+  ///
+  /// ## ⛔⛔ 왜 고쳐야 했나 — 이 셀이 릴리즈에선 통째로 안 돌았다
+  ///
+  /// 이 셀은 「멈춤이 한계초과 때문인지 가릴 외부 증거」를 만들려고 지은 것인데
+  /// (2026-08-15), 정작 출력이 `kDebugMode` 안에 갇혀 있었다. 사장님이 쓰시는
+  /// **릴리즈 빌드에선 한 줄도 안 남는다.**
+  ///
+  /// 그래서 2026-08-27 실기기 멈춤(call 1224, 비버가 말하는 도중)을 조사할 때
+  /// 로그에 `vid_dec` 가 0건이었고, 나는 그 침묵을 「초과 없음」으로 읽었다.
+  /// **안 보내는 것과 없는 것을 구분할 수 없었다** — 계측이 스스로 거짓을 말한
+  /// 셀 중 또 하나다.
+  ///
+  /// ⚠ `n` 은 **이 앱 전체**의 살아 있는 컨트롤러 수다(static). 하드웨어 디코더는
+  ///   프로세스 단위 자원이라 그게 맞는 세기다.
+  void _diagDecoders(String name, String delta) {
+    _diagSink?.call('vid_dec', {
+      'n': _decoders,
+      'd': delta,
+      'name': name,
+      if (_decoders > 3) 'over': true,
+    });
+  }
+
   void _countOpen(String name) {
     _decoders++;
+    _diagDecoders(name, '+');
     if (kDebugMode) {
       debugPrint('[avatar] decoder +1 → $_decoders ($name)'
           '${_decoders > 3 ? '  ⛔ 한계초과' : ''}');
@@ -317,6 +353,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
       // 이미 정리된 컨트롤러 — 조용히 넘어간다.
     }
     _decoders--;
+    _diagDecoders(why, '-');
     if (kDebugMode) debugPrint('[avatar] decoder -1 → $_decoders ($why)');
   }
 

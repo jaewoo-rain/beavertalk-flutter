@@ -3318,6 +3318,8 @@ class NormalCallController extends Notifier<CallState> {
       _beaverAudioActive = false;
       avatarSpeaking.value = false;
       avatarLevel.value = 0.0;
+      // ⛔ 이 턴 재생이 끝났다 — 남은 마커는 다음 턴으로 넘기지 않는다.
+      _flushOrphanMarkers('turn_end+drained');
       _decayCushion();
       _log('mic OPEN — your turn (turn_end + drained)');
       _scheduleAutoTalk();
@@ -3341,6 +3343,7 @@ class NormalCallController extends Notifier<CallState> {
         _beaverAudioActive = false;
         avatarSpeaking.value = false;
         avatarLevel.value = 0.0;
+        _flushOrphanMarkers('idle drained');
         _decayCushion();
         _log('mic OPEN — your turn (idle drained)');
         _scheduleAutoTalk();
@@ -3757,7 +3760,63 @@ class NormalCallController extends Notifier<CallState> {
   /// 재생이 마커 위치에 닿았다 — 이제 화면을 바꾼다.
   void _fireDueMarkers() {
     while (_pendingMarkers.isNotEmpty && _pendingMarkers.first.at <= _envPlayed) {
-      final m = _pendingMarkers.removeAt(0);
+      _applyMarker(_pendingMarkers.removeAt(0), due: true);
+    }
+  }
+
+  /// 턴이 완전히 끝났는데 **아직 안 터진** 마커를 지금 비운다.
+  ///
+  /// ## ⛔⛔ 왜 필요한가 — 안 비우면 마커가 **다음 턴으로 새어 나간다**
+  ///
+  /// 마커는 시각이 아니라 **봉투 번호**(`at`)에 꽂히고 `_envPlayed >= at` 에서 터진다.
+  /// 그런데 `_envPlayed` 는 **턴마다 0으로 안 돌아간다.** 그래서 그 턴 재생이 `at` 에
+  /// 못 미친 채 끝나면 마커는 그대로 매달려 있다가, **다음 턴 오디오**가 그 번호를
+  /// 지날 때 터진다 — 엉뚱한 문장 위에서.
+  ///
+  /// 실측(call 1224, 2026-08-27 사장님 실기기):
+  ///
+  ///     74.95  mk_rx   seq=3 happy  at=1469  played=1465   ← 4칸(≈100ms) 모자랐다
+  ///     75.04  turn_end                                     ← 그 턴은 여기서 끝
+  ///     83.28  mk_fire seq=3        cur=918dcec5b5d7        ⛔ 8.3초 뒤 **다음 턴**
+  ///     85.25  vid_emo code=1(happy)                        ⛔ 엉뚱한 대사 위에 웃음
+  ///
+  /// 같은 통화에서 한 번 더 났고, 그때는 **두 개가 같은 밀리초에** 터져 앞의 `sad` 가
+  /// 뒤의 `happy` 에 즉시 덮여 사실상 안 보였다(seq6·seq7, 둘 다 `at=2625`).
+  ///
+  /// ⭐ **터뜨린다, 버리지 않는다.** `at` 과 `played` 의 차이는 대개 100ms 안쪽이라
+  ///   그 오디오는 **실제로 재생됐다** — 계상만 몇 칸 뒤처진 것이다. 버리면 그 조각의
+  ///   자막이 영영 안 뜬다. 감정 쪽은 이 시점에 이미 `_talking` 이 풀리므로
+  ///   [SyncAvatar] 가 알아서 안 그린다(`_syncEmotionLayer` 의 `!_talking` 갈래).
+  void _flushOrphanMarkers(String why) {
+    if (_pendingMarkers.isEmpty) return;
+    _dg('mk_orphan', {
+      'n': _pendingMarkers.length,
+      'why': why,
+      'played': _envPlayed,
+      'at': _pendingMarkers.first.at,
+      'turn': _pendingMarkers.first.turnId,
+    });
+    while (_pendingMarkers.isNotEmpty) {
+      _applyMarker(_pendingMarkers.removeAt(0), due: false);
+    }
+  }
+
+  /// 마커 하나를 화면에 반영한다. [_fireDueMarkers] 와 [_flushOrphanMarkers] 가 공유한다.
+  ///
+  /// ⛔ 본체를 하나로 둔다 — 예전에 같은 규칙을 두 곳에 나눠 적었다가 한쪽만 고쳐진
+  ///   사고를 이 파일에서만 두 번 겪었다(봉투 계상·디코더 셈).
+  void _applyMarker(
+    ({
+      int at,
+      String text,
+      int emotion,
+      int seq,
+      int serverBytes,
+      String turnId,
+    }) m, {
+    required bool due,
+  }) {
+    {
       // ⚠ **구간 ≠ 문장이다.** 코드스위칭 문장은 언어별로 쪼개져 마커가 2~3개 온다
       //   (실측: "Hey! How's your" / "한국어" / "study today?"). LLM 이 끊는 게 아니라
       //   **TTS 가 언어별로 나눈다**(목소리가 언어마다 다르다).
@@ -3790,6 +3849,7 @@ class NormalCallController extends Notifier<CallState> {
         'turn': m.turnId,
         'cur': _currentTurnId,
         'talking': _beaverAudioActive,
+        if (!due) 'orphan': true,
       });
       avatarEmotion.value = m.emotion;
     }
