@@ -590,6 +590,15 @@ class _SyncAvatarState extends State<SyncAvatar> {
         //   ⇒ 옛 감정을 **먼저 내리고**(트리에서 뺀 뒤 다음 프레임에 해제) 그다음에 연다.
         //   그 사이 화면은 talk 이 채운다 — 같은 발화의 기본 클립이라 튀지 않는다.
         await _freeEmoSlot('감정 교체 자리 확보');
+        // ⛔ **대기 중인 옛것도 비운다.** `_freeEmoSlot` 은 감정 캐시만 치우므로,
+        //   직전에 idle 을 갈아끼웠다면 그 옛 컨트롤러가 아직 [_retiring] 에 있다
+        //   ⇒ idle + talk + idle옛것 + 새감정 = **4개**. 하드 한계 2~3 초과다.
+        //   실측 call 1207 의 `decoder +1 → 4 ⛔한계초과` 2회가 정확히 이 자리다:
+        //     decoder +1 → 3 (idle_listen) → TALK on → +1 → 4 (emo_happy) ⛔
+        //     → -1 → 3 (idle 옛것)          ← 옛것이 그제서야 풀린다
+        //   ⚠ `_swapIdle`·`_swapTalk` 은 이미 이걸 부른다(c37e8b4). **감정 경로만
+        //     빠져 있었다** — 같은 수정에서 세 자리 중 하나를 놓친 것이다.
+        await _flushRetiring('감정 열기');
         next = await _open(name, loop: true, play: true);
         _emoLoading = false;
         if (!mounted) {

@@ -537,7 +537,17 @@ class NormalCallController extends Notifier<CallState> {
   void _clearEnvelope() => _dropEnvelopeFront(_envQueue.length);
 
   /// 아직 발화되지 않은 마커들. `at` 은 [_envPlayed] 가 그 값에 닿으면 터진다는 뜻.
-  final List<({int at, String text, int emotion, int seq, int serverBytes})>
+  final List<
+          ({
+            int at,
+            String text,
+            int emotion,
+            int seq,
+            int serverBytes,
+            // ⭐ **서버가 이 마커에 실어 준 턴.** 지금까지 받아 놓고 버렸다 —
+            //   그래서 「자기 턴에 떴는가」를 판정할 근거가 없었다.
+            String turnId,
+          })>
       _pendingMarkers = [];
 
   // ── dev 자동 대화 ─────────────────────────────────────────────────────────
@@ -923,7 +933,11 @@ class NormalCallController extends Notifier<CallState> {
   );
 
   /// 진단 이벤트 1건. 핫패스에서 불리므로 **여기서 문자열을 만들지 않는다.**
-  void _dg(String e, [Map<String, Object?>? f]) => _diag.add(e, fields: f);
+  ///
+  /// [atEpochMs] 는 **일어난 시각을 소급해 찍을 때**만 준다(예: `voice_off` 는 침묵이
+  /// 400ms 넘어야 알 수 있어, 아는 시각과 일어난 시각이 다르다).
+  void _dg(String e, [Map<String, Object?>? f, int? atEpochMs]) =>
+      _diag.add(e, fields: f, atEpochMs: atEpochMs);
 
   /// [SyncAvatar] 가 흘리는 영상 계측을 받는다.
   ///
@@ -2453,7 +2467,13 @@ class NormalCallController extends Notifier<CallState> {
     }
     // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
     if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
-      _dg('voice_off', {'dur_ms': _lastVoicedAtMs - (_firstVoicedAtMs ?? 0)});
+      // ⛔ **`t` 를 지금으로 찍지 마라.** 말이 끊긴 것은 `_lastVoicedAtMs` 이고 지금은
+      //   **다음 말이 시작된 시각**이다. 우리는 침묵이 400ms 넘어야 알 수 있으므로
+      //   여기서 소급해 기록한다. 실측 call 1207 에서 `voice_off t=92545` 다음 줄이
+      //   `voice_on t=92545` 로 **같은 시각**이었다 — 발화 사이 간격이 0으로 읽힌다.
+      _dg('voice_off',
+          {'dur_ms': _lastVoicedAtMs - (_firstVoicedAtMs ?? 0)},
+          _lastVoicedAtMs);
       _firstVoicedAtMs = null;
     }
     if (_firstVoicedAtMs == null) {
@@ -2721,7 +2741,16 @@ class NormalCallController extends Notifier<CallState> {
     // [_gateMic] clears `_turnEnded`) it survives all of that.
     final nowMs = DateTime.now().millisecondsSinceEpoch;
     final prevChunkMs = _lastChunkAtMs;
-    if (prevChunkMs != null && !_turnEnded && nowMs - prevChunkMs >= 250) {
+    // ⛔ `_turnFirstAudioFed` 를 같이 본다. `turn_start` 프레임이 이 줄보다 **먼저**
+    //   도착해 [_gateMic] 이 `_turnEnded=false` 로 돌려놓기 때문에, 그것만으로는
+    //   **턴 사이 침묵**(학습자가 말하는 9~21초)이 「발화 중 구멍」으로 찍힌다.
+    //   실측 call 1207: `turn_start` 와 `SERVER GAP 21238ms mid-utterance` 가 **같은
+    //   시각**에 나란히 찍혔다. 그 21초는 사용자가 말하던 시간이다.
+    //   ⇒ 「발화 중」은 **이 턴에 이미 소리가 나간 뒤**라야 성립한다.
+    if (prevChunkMs != null &&
+        !_turnEnded &&
+        _turnFirstAudioFed &&
+        nowMs - prevChunkMs >= 250) {
       _log('SERVER GAP ${nowMs - prevChunkMs}ms mid-utterance '
           '(mic was ${_micGated ? "closed" : "OPEN"})');
     }
@@ -3227,19 +3256,8 @@ class NormalCallController extends Notifier<CallState> {
   }
 
   void _gateMic() {
-    if (!_beaverAudioActive) {
-      // ⛔ **실제 게이트를 읽는다.** 예전엔 `_channelMode.gatesMic` 만 보고 찍어서,
-      //   서버가 `mic_always_open=false` 를 준 통화에서 **마이크는 닫혀 있는데 로그는
-      //   "열려 있다(barge-in)"** 고 말했다(실기기 확인, 2026-08-12).
-      //   `통로=live` 와 **같은 계열**이다 — 진단이 실제 상태를 안 본다.
-      // ⭐ 닫혔으면 **무엇이 막았는지**까지 찍는다. 안 그러면 "끼어들기가 안 된다"고 할 때
-      //   AEC 문제인지 서버 정책인지 통로인지 못 가른다.
-      _log(_micGated
-          ? 'mic GATED — ${micGateReason(
-              channelGates: _channelMode.gatesMic,
-              serverMicAlwaysOpen: _serverMicAlwaysOpen,
-            )}'
-          : 'beaver turn OPEN — mic stays open (barge-in)');
+    final freshTurn = !_beaverAudioActive;
+    if (freshTurn) {
       _turnStarved = false; // fresh turn: it hasn't starved yet
       // 새 턴은 아직 첫 소리를 안 냈다 → 지금부터 넣는 무음은 「턴 시작 대기」다.
       _turnFirstAudioFed = false;
@@ -3253,6 +3271,23 @@ class NormalCallController extends Notifier<CallState> {
     _turnEnded = false;
     _beaverAudioActive = true;
     avatarSpeaking.value = true;
+    // ⛔ **게이트를 세운 뒤에 찍는다.** 예전엔 이 로그가 위 `if` 블록 안에 있었는데,
+    //   그 자리에서는 `_beaverAudioActive` 가 **아직 false** 라 [_micGated] 가 언제나
+    //   false 를 돌려줬다 ⇒ 마이크가 닫히는 바로 그 순간에 **"열려 있다"고 찍었다.**
+    //   실측 call 1206·1207 에서 6턴 전부 "mic stays open (barge-in)" 이었는데
+    //   같은 통화의 `mic OPEN — your turn` 이 그 뒤에 나온다(= 닫혀 있었다는 증거).
+    //   ⚠ 이 파일 주석이 2026-08-12 에 **정확히 같은 병**을 경고해 뒀다("진단이 실제
+    //     상태를 안 본다"). 그때 고친 것은 판정 대상이었고, 판정 **시점**은 남아 있었다.
+    // ⭐ 닫혔으면 **무엇이 막았는지**까지 찍는다 — AEC·서버 정책·통로를 가르려면 필요하다.
+    if (freshTurn) {
+      _log(_micGated
+          ? 'mic GATED — ${micGateReason(
+              channelGates: _channelMode.gatesMic,
+              serverMicAlwaysOpen: _serverMicAlwaysOpen,
+            )}'
+          : 'beaver turn OPEN — mic stays open (barge-in)');
+      _dg('mic_gate', {'gated': _micGated, 'turn': _currentTurnId});
+    }
     // 비버가 말하기 시작했다 → 대기 상태를 기본으로 되돌린다. 말이 끝나 idle 이
     // 다시 보일 때 「듣는 중」이나 「생각 중」이 남아 있으면 대사와 어긋난다.
     _listenTimer?.cancel();
@@ -3643,6 +3678,7 @@ class NormalCallController extends Notifier<CallState> {
     final seq = seqRaw is int ? seqRaw : -1;
     final sbRaw = msg['server_bytes'];
     _pendingMarkers.add((
+      turnId: (msg['turn_id'] as String?) ?? '',
       at: _envAdded,
       text: text,
       emotion: emotionCode(rawEmotion),
@@ -3657,6 +3693,11 @@ class NormalCallController extends Notifier<CallState> {
       'seq': seq,
       'emo': rawEmotion,
       if (!knownLabel(rawEmotion)) 'unknown': true,
+      // ⭐ **마커가 실린 턴**(서버가 정한 것)과 **지금 열려 있는 턴**을 같이 남긴다.
+      //   둘이 다르면 그 마커는 자기 턴이 아닌 곳에서 발화된다 — 그게 「표정이 한 턴
+      //   늦는가」의 유일한 판정 근거다. 지금까지 둘 다 안 남겨 판정할 수 없었다.
+      'turn': msg['turn_id'],
+      'cur': _currentTurnId,
       'at': _envAdded,
       'played': _envPlayed,
       'wait': _pendingMarkers.length,
@@ -3734,6 +3775,16 @@ class NormalCallController extends Notifier<CallState> {
       }
       // ⛔ 감정은 **상태를 안 든다.** 서버가 매 마커에 이어붙인 결과를 이미 실어 준다.
       //   직전 값을 기억하면 `audio_cancel` 로 마커를 버릴 때 감정이 어긋난다.
+      // ⭐ **발화 시점**을 남긴다. `mk_rx`(도착) · `mk_fire`(발화) · `vid_emo`(화면)
+      //   셋을 나란히 놓아야 지연이 어디서 생기는지 갈린다 — 도착이 늦은 건지,
+      //   재생 위치를 기다린 건지, 디코더를 여느라 늦은 건지.
+      _dg('mk_fire', {
+        'seq': m.seq,
+        'emo': m.emotion,
+        'turn': m.turnId,
+        'cur': _currentTurnId,
+        'talking': _beaverAudioActive,
+      });
       avatarEmotion.value = m.emotion;
     }
   }
@@ -3752,7 +3803,10 @@ class NormalCallController extends Notifier<CallState> {
   double _revealRateFor(
     String text,
     int myServerBytes,
-    List<({int at, String text, int emotion, int seq, int serverBytes})> pending,
+    List<
+            ({int at, String text, int emotion, int seq, int serverBytes,
+              String turnId})>
+        pending,
   ) {
     // ① 다음 마커가 큐에 있으면 **차분이 곧 이 구간의 길이**다(추정 아님).
     //    실기기 로그가 이게 대부분 가능함을 보여 준다 — 우리가 최대 1.2초를 앞당겨
