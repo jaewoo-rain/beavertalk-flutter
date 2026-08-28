@@ -208,6 +208,9 @@ flutter:
     - assets/videos/
     - assets/icons/
     - assets/icons/3d/
+    # 조음 도해(발음 교정 시트) — Figma `Airflow / *` 22종을 scale 1.5 PNG 로.
+    # SVG 가 아닌 이유: 기류 발광이 LAYER_BLUR 라 flutter_svg 필터로 안 살아난다.
+    - assets/articulatory/
     # 영상통화 아바타 스프라이트(립싱크 크로스페이드 + 표정): 캐릭터별 입4단·눈감기·표정4.
     - assets/avatar/baba/
     - assets/avatar/bibi/

@@ -2169,4 +2169,13 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

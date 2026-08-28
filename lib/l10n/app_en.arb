@@ -1416,5 +1416,8 @@
   "callKeepGoingSubtitle": "Calls continue in 5-minute stretches. We'll check in again each time.",
   "@callKeepGoingSubtitle": {
     "description": "Five-minute sheet (paid) - body explaining calls run in 5-minute stretches."
-  }
+  },
+  "articulationSelectedWord": "Selected word",
+  "articulationYouSaid": "You said",
+  "articulationTargetSound": "Target"
 }

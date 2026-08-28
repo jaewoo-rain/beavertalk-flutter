@@ -4101,6 +4101,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Calls continue in 5-minute stretches. We\'ll check in again each time.'**
   String get callKeepGoingSubtitle;
+
+  /// No description provided for @articulationSelectedWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected word'**
+  String get articulationSelectedWord;
+
+  /// No description provided for @articulationYouSaid.
+  ///
+  /// In en, this message translates to:
+  /// **'You said'**
+  String get articulationYouSaid;
+
+  /// No description provided for @articulationTargetSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get articulationTargetSound;
 }
 
 class _AppLocalizationsDelegate

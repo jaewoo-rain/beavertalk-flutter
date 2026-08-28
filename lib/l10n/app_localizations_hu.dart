@@ -2187,4 +2187,13 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

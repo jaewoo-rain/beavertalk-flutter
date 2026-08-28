@@ -2164,4 +2164,13 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

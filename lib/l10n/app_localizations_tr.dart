@@ -2170,4 +2170,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

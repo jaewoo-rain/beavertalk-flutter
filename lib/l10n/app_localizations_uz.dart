@@ -2185,4 +2185,13 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

@@ -2170,4 +2170,13 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'ការហៅបន្តជា ៥ នាទីម្តង។ យើងនឹងសួរម្តងទៀតរាល់ពេល។';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

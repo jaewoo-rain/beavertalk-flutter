@@ -2098,4 +2098,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callKeepGoingSubtitle => '通话以5分钟为一段继续。每次都会再询问你。';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

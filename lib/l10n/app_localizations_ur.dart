@@ -2168,4 +2168,13 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

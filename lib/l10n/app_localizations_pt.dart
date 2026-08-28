@@ -2189,4 +2189,13 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'As chamadas seguem em blocos de 5 minutos. Vamos perguntar a cada vez.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

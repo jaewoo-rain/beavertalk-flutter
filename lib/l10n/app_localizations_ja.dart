@@ -2103,4 +2103,13 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callKeepGoingSubtitle => '通話は5分ごとに続きます。そのたびにお伺いします。';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

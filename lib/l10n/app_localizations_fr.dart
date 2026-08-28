@@ -2211,4 +2211,13 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Les appels se poursuivent par tranches de 5 minutes. On te redemandera à chaque fois.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

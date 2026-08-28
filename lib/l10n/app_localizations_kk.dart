@@ -2169,4 +2169,13 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

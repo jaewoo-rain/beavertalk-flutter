@@ -2192,4 +2192,13 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Panggilan diteruskan setiap 5 minit. Kami akan bertanya setiap kali.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

@@ -2170,4 +2170,13 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Calls continue in 5-minute stretches. We\'ll check in again each time.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

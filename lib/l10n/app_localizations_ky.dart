@@ -2174,4 +2174,13 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

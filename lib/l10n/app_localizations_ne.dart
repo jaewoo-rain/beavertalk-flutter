@@ -2161,4 +2161,13 @@ class AppLocalizationsNe extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'कल ५ मिनेटको खण्डमा जारी रहन्छ। हरेक पटक हामी फेरि सोध्नेछौं।';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

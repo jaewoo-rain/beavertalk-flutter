@@ -2164,4 +2164,13 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'कॉल 5 मिनट के हिस्सों में चलती है। हर बार हम फिर पूछेंगे।';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

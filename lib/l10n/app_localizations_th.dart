@@ -2160,4 +2160,13 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

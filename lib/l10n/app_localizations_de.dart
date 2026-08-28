@@ -2197,4 +2197,13 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

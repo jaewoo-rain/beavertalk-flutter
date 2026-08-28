@@ -2178,4 +2178,13 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

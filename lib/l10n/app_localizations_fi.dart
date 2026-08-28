@@ -2176,4 +2176,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

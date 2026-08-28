@@ -2182,4 +2182,13 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'ခေါ်ဆိုမှုများသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်သည်။ အကြိမ်တိုင်း ထပ်မေးပါမည်။';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

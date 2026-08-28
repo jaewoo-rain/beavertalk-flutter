@@ -2105,4 +2105,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get callKeepGoingSubtitle => '통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요.';
+
+  @override
+  String get articulationSelectedWord => '선택한 단어';
+
+  @override
+  String get articulationYouSaid => '내 발음';
+
+  @override
+  String get articulationTargetSound => '목표';
 }

@@ -2185,4 +2185,13 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

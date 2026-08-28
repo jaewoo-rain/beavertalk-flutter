@@ -657,5 +657,8 @@
   "callFreeEndedTitle": "무료 통화가 끝났어요",
   "callFreeEndedCta": "구독하고 계속 대화하기",
   "callKeepGoingTitle": "더 이어갈까요?",
-  "callKeepGoingSubtitle": "통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요."
+  "callKeepGoingSubtitle": "통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요.",
+  "articulationSelectedWord": "선택한 단어",
+  "articulationYouSaid": "내 발음",
+  "articulationTargetSound": "목표"
 }

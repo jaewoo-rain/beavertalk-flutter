@@ -2164,4 +2164,13 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

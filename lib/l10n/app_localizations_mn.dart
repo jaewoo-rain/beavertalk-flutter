@@ -2172,4 +2172,13 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }

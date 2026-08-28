@@ -16,6 +16,19 @@ import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
+import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/normalcall/presentation/avatar_view.dart'
+    show
+        avatarAssetDirFor,
+        kEmotionAngry,
+        kEmotionHappy,
+        kEmotionNeutral,
+        kIdleListen,
+        kIdleThink,
+        kIdleWait;
+import '../../features/normalcall/presentation/sync_avatar.dart';
+import '../../features/pronunciation/domain/phoneme_diagram.dart';
+import '../../features/pronunciation/presentation/articulation_sheet.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
@@ -77,6 +90,13 @@ const _kSlowScoring = Duration(seconds: 2);
 /// The result transition waits on `max(scoring, this)`.
 const _kMinScan = Duration(milliseconds: 1500);
 
+/// 반응 영상을 「정답」으로 볼 최소 총점.
+///
+/// 화면이 글자를 칠할 때 이미 쓰는 밴드(85 상 · 70 중 — `_gradeColor`)의 **중간
+/// 문턱을 그대로 빌린다**. 반응만 다른 자를 쓰면 문장은 초록인데 비버는 화내는,
+/// 화면과 얼굴이 어긋나는 상태가 생긴다.
+const int _kReactionPassScore = 70;
+
 /// The whole learning flow for a sentence sequence — Figma `screen/learning_intro`
 /// (`2117:20089`) through `learning_next` (`2117:20110`) — as **one screen**.
 ///
@@ -133,6 +153,24 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   final Set<int> _bookmarkInFlight = <int>{};
 
+  // ── 반응 영상 ─────────────────────────────────────────────────────────────
+  //
+  // 통화 화면과 **같은 클립·같은 위젯**([SyncAvatar])을 쓴다. 이 화면에서는 비버가
+  // 말하지 않으므로 입은 움직이지 않고, 국면([LearningPhase])이 클립을 고른다.
+
+  /// 음성 엔벨로프. 이 화면엔 비버 목소리가 없으므로 **항상 0** 이다.
+  final ValueNotifier<double> _avatarLevel = ValueNotifier<double>(0);
+
+  /// 발화 플래그. 평소 false 이고 **감정 클립을 내보내는 동안만** true 다 —
+  /// [SyncAvatar] 는 `_talking` 인 동안에만 `emo_*` 를 얹기 때문이다.
+  final ValueNotifier<bool> _avatarSpeaking = ValueNotifier<bool>(false);
+
+  /// 반응 감정 — 채점 직후 한 번 happy/angry 로 올렸다가 클립이 끝나면 내린다.
+  final ValueNotifier<int> _avatarEmotion = ValueNotifier<int>(kEmotionNeutral);
+
+  /// 대기 클립 종류 — 대기 / 듣는 중 / 생각 중. [_syncAvatarIdle] 이 국면에서 민다.
+  final ValueNotifier<int> _avatarIdleKind = ValueNotifier<int>(kIdleWait);
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -153,7 +191,177 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     _slowTimer?.cancel();
     _recorder.dispose();
     _player.dispose();
+    _avatarLevel.dispose();
+    _avatarSpeaking.dispose();
+    _avatarEmotion.dispose();
+    _avatarIdleKind.dispose();
     super.dispose();
+  }
+
+  // ── 반응 영상 ─────────────────────────────────────────────────────────────
+
+  /// 화면 국면을 **대기 클립**으로 옮긴다.
+  ///
+  /// 마이크가 열려 있으면 「듣는 얼굴」(`idle_listen`)이다 — 사용자가 말하는 동안
+  /// 비버가 가만히 있으면 「내 말을 듣고 있나」로 읽힌다. 채점 중에는 `idle_think`.
+  /// 자산이 없는 캐릭터는 [SyncAvatar] 가 조용히 `idle` 로 폴백한다.
+  void _syncAvatarIdle() {
+    switch (_phase) {
+      case LearningPhase.recording:
+        _avatarIdleKind.value = _recording ? kIdleListen : kIdleWait;
+      case LearningPhase.scoring:
+        _avatarIdleKind.value = kIdleThink;
+      case LearningPhase.result:
+      case LearningPhase.failed:
+        _avatarIdleKind.value = kIdleWait;
+    }
+  }
+
+  /// 채점 결과를 반응 영상 **한 번**으로 옮긴다 — 통과면 happy, 아니면 angry.
+  ///
+  /// 「오답」의 자는 총점만이 아니다. 총점이 문턱을 넘어도 **하** 등급 글자가 있으면
+  /// 화면은 그 글자를 빨갛게 칠하는데([_gradeColor]), 그때 비버가 웃으면 문장과
+  /// 얼굴이 서로 다른 말을 한다. 그래서 둘 중 하나라도 걸리면 angry 로 간다.
+  void _reactToFeedback(ReviewFeedback feedback) {
+    final hasLow =
+        feedback.charScores.any((c) => c.grade == CharGrade.low);
+    final passed = !hasLow &&
+        feedback.evaluation.totalScore >= _kReactionPassScore;
+    _avatarEmotion.value = passed ? kEmotionHappy : kEmotionAngry;
+    // 감정 클립은 `_talking` 인 동안에만 보인다 — [_onAvatarDiag] 가 되돌린다.
+    _avatarSpeaking.value = true;
+  }
+
+  /// [SyncAvatar] 가 흘리는 이벤트 중 **감정 클립이 끝났다**만 받는다.
+  ///
+  /// ⛔ 발화 플래그를 켠 채로 두면 감정 클립이 끝난 자리에 그 밑의 `talk.mp4`
+  ///    — 소리 없이 입만 움직이는 얼굴 — 이 드러난다. 반응은 한 번이고, 끝나면
+  ///    대기로 돌아가야 한다.
+  void _onAvatarDiag(String event, [Map<String, Object?>? fields]) {
+    if (event != 'vid_emo_end' || !mounted) return;
+    _avatarSpeaking.value = false;
+    _avatarEmotion.value = kEmotionNeutral;
+  }
+
+  // ── 단어 칩 · 발음 교정 시트 ──────────────────────────────────────────────
+
+  /// 채점된 글자를 **어절로 묶어** 칩 한 줄로 만든다.
+  ///
+  /// 칩은 **주의·오답 어절만** 만든다. 정답 어절까지 칩으로 내면 긴 문장에서 줄이
+  /// 터진다 — 코퍼스 최장 문장은 어절이 15개다. 정답 여부는 문장 자체의 글자 색이
+  /// 이미 말하므로 칩이 또 말할 필요가 없다.
+  ///
+  /// `charScores` 는 공백을 뺀 글자열과 1:1 이라고 보고 순서대로 소비한다.
+  List<Widget> _wordChips(BuildContext context, String korean) {
+    final scores = _feedback?.charScores ?? const <CharScore>[];
+    if (scores.isEmpty) return const [];
+    var cursor = 0;
+    final chips = <Widget>[];
+    for (final word in korean.split(RegExp(r'\s+'))) {
+      if (word.isEmpty) continue;
+      final taken = <CharScore>[];
+      for (var i = 0; i < word.characters.length; i++) {
+        if (cursor >= scores.length) break;
+        taken.add(scores[cursor++]);
+      }
+      if (taken.isEmpty) continue;
+      // 어절의 판정은 **가장 나쁜 글자**를 따른다. 평균을 내면 한 글자만 망가진
+      // 어절이 정답으로 접혀 교정 진입점이 사라진다.
+      taken.sort((x, y) => x.score.compareTo(y.score));
+      final worst = taken.first;
+      if (worst.grade == CharGrade.high) continue;
+      final diagram = diagramForSyllable(worst.char);
+      chips.add(_wordChip(context, word, worst, diagram));
+    }
+    return chips;
+  }
+
+  Widget _wordChip(
+    BuildContext context,
+    String word,
+    CharScore worst,
+    PhonemeDiagram? diagram,
+  ) {
+    final c = context.c;
+    final low = worst.grade == CharGrade.low;
+    final dot = low ? c.statusNegative : c.statusCautionary;
+    return GestureDetector(
+      onTap: diagram == null
+          ? null
+          : () => _openArticulation(word, diagram),
+      behavior: HitTestBehavior.opaque,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.s12,
+          vertical: 7,
+        ),
+        decoration: BoxDecoration(
+          color: low ? c.statusNegative6 : c.backgroundSurfaceAlternative,
+          border: Border.all(
+            color: low ? c.statusNegative : c.lineNeutral,
+            width: low ? 1.5 : 1,
+          ),
+          borderRadius: BorderRadius.circular(999),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
+            ),
+            const SizedBox(width: AppSpacing.s8),
+            Text(
+              word,
+              style: AppType.label2.b.copyWith(color: c.labelNormal),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// 칩을 누르면 발음 교정 시트가 열린다.
+  ///
+  /// 지금은 **목표 도해 한 컷**만 간다. 「무엇으로 잘못 냈는지」는 음소 인식이
+  /// 붙어야 알 수 있고, 그때 [ArticulationSheetData.current] 가 채워지면 시트가
+  /// 스스로 두 컷으로 바뀐다 — 화면 쪽은 안 고쳐도 된다.
+  void _openArticulation(String word, PhonemeDiagram target) {
+    showArticulationSheet(
+      context,
+      data: ArticulationSheetData(word: word, target: target),
+      onPlayNative: () {
+        Navigator.of(context).pop();
+        final args = ModalRoute.of(context)?.settings.arguments;
+        if (args is LearningArgs) _playStandard(args.sentences[_index]);
+      },
+    );
+  }
+
+  /// 반응 영상 밴드 — Figma `VideoBand`(375 폭 · 16:9 풀블리드, 아이콘줄 아래).
+  ///
+  /// 캐릭터에 클립이 없으면([avatarAssetDirFor] 가 null) **밴드째 접는다**. 정적
+  /// 이미지를 끼워 넣으면 16:9 자리만 차지하고 아무 상태도 말하지 않는다.
+  Widget _reactionBand() {
+    final dir = avatarAssetDirFor(
+      null,
+      ref.watch(selectedCharacterProvider)?.name,
+    );
+    if (dir == null) return const SizedBox.shrink();
+    return AspectRatio(
+      aspectRatio: 16 / 9,
+      child: ClipRect(
+        child: SyncAvatar(
+          assetDir: dir,
+          level: _avatarLevel,
+          speaking: _avatarSpeaking,
+          emotion: _avatarEmotion,
+          idleKind: _avatarIdleKind,
+          onDiag: _onAvatarDiag,
+        ),
+      ),
+    );
   }
 
   // ── Bookmark ──────────────────────────────────────────────────────────────
@@ -250,6 +458,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       await _recorder.start();
       if (!mounted) return;
       setState(() => _recording = true);
+      _syncAvatarIdle();
     } on StateError catch (e) {
       _snack(e.message);
     } catch (_) {
@@ -265,6 +474,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _phase = LearningPhase.scoring;
       _scoringSlow = false;
     });
+    _syncAvatarIdle();
     _slowTimer?.cancel();
     _slowTimer = Timer(_kSlowScoring, () {
       if (mounted) setState(() => _scoringSlow = true);
@@ -302,6 +512,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         _recordedWav = wav;
         _scoringSlow = false;
       });
+      _syncAvatarIdle();
+      _reactToFeedback(feedback);
     } on NetworkFailure {
       // `proto/E_failed`'s caption is "연결이 끊겼어요", true only when the request
       // never reached the server — `dio_error_mapper` already classifies exactly
@@ -324,6 +536,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _failMessage = message;
       _scoringSlow = false;
     });
+    _syncAvatarIdle();
   }
 
   /// Return to the recording state on an aborted score (e.g. too-short take),
@@ -335,6 +548,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _phase = LearningPhase.recording;
       _scoringSlow = false;
     });
+    _syncAvatarIdle();
   }
 
   /// "다시하기" (result) / retry (E_failed) — re-record the same sentence.
@@ -346,6 +560,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _failMessage = null;
       _recording = false;
     });
+    _syncAvatarIdle();
   }
 
   /// "다음" — advance to the next sentence in place, or push the session's
@@ -376,6 +591,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       _recording = false;
       _ttsUrl = null; // per-sentence TTS
     });
+    _syncAvatarIdle();
     _seedBookmarkFor(args.sentences[_index]);
   }
 
@@ -467,6 +683,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                     ],
                   ),
                 ),
+                const SizedBox(height: AppSpacing.s8),
+                // 반응 영상 — Figma `VideoBand`. 아이콘줄 바로 아래, 문장 위.
+                _reactionBand(),
                 // Sentence — shared position across phases. Its colouring
                 // cross-fades between plain (recording/scoring) and per-character
                 // tinted (result), so nothing slides; while scoring, ScanCursor
@@ -593,10 +812,23 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           ],
         );
       case LearningPhase.result:
+        final chips = _wordChips(context, sentence.korean);
         return Column(
           key: const ValueKey('result'),
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (chips.isNotEmpty) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+                child: Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: AppSpacing.s8,
+                  runSpacing: AppSpacing.s8,
+                  children: chips,
+                ),
+              ),
+              const SizedBox(height: AppSpacing.s16),
+            ],
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
               child: Row(

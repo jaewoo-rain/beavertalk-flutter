@@ -2176,4 +2176,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get callKeepGoingSubtitle =>
       'Звонки идут отрезками по 5 минут. Мы будем спрашивать каждый раз.';
+
+  @override
+  String get articulationSelectedWord => 'Selected word';
+
+  @override
+  String get articulationYouSaid => 'You said';
+
+  @override
+  String get articulationTargetSound => 'Target';
 }
