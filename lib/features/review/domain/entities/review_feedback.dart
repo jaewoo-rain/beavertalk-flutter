@@ -72,6 +72,31 @@ class CharScore {
   final CharGrade grade;
 }
 
+/// 한 음소의 오발음 — 목표 자모와 실제로 들린 자모.
+///
+/// 서버가 음소 단위 결과를 내려줄 때만 채워진다. 글자 점수(`char_scores`)는
+/// **얼마나 틀렸는지**만 말하고 **무엇으로 틀렸는지**는 말하지 않는다. 조음 도해의
+/// 「내 발음」 컷은 [actual] 이 있어야 그릴 수 있다.
+class PhonemeMiss {
+  /// Creates one phoneme mismatch.
+  const PhonemeMiss({
+    required this.charIndex,
+    required this.expected,
+    this.actual,
+  });
+
+  /// 문장에서 몇 번째 글자인지 — **공백을 뺀** 0-기준 인덱스. `char_scores` 와
+  /// 같은 자를 쓰므로 두 목록을 인덱스로 맞출 수 있다.
+  final int charIndex;
+
+  /// 목표 자모(예: 'ㄹ').
+  final String expected;
+
+  /// 실제로 들린 자모(예: 'ㄴ'). 인식기가 무엇인지 못 가르면 null —
+  /// 그때는 도해를 한 컷만 그린다.
+  final String? actual;
+}
+
 /// Full feedback for one pronunciation-review attempt.
 class ReviewFeedback {
   const ReviewFeedback({
@@ -82,6 +107,7 @@ class ReviewFeedback {
     this.voiceUrl,
     required this.evaluation,
     required this.charScores,
+    this.phonemeMisses = const <PhonemeMiss>[],
   });
 
   /// Server review id.
@@ -104,4 +130,8 @@ class ReviewFeedback {
 
   /// Per-character scores (may be empty).
   final List<CharScore> charScores;
+
+  /// 음소 단위 오발음. **서버가 안 주면 빈 목록**이고, 그때 조음 시트는 목표 도해
+  /// 한 컷만 그린다. 서버가 주기 시작하면 화면은 안 고쳐도 두 컷이 된다.
+  final List<PhonemeMiss> phonemeMisses;
 }

@@ -259,19 +259,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     final chips = <Widget>[];
     for (final word in korean.split(RegExp(r'\s+'))) {
       if (word.isEmpty) continue;
-      final taken = <CharScore>[];
+      final taken = <({int index, CharScore score})>[];
       for (var i = 0; i < word.characters.length; i++) {
         if (cursor >= scores.length) break;
-        taken.add(scores[cursor++]);
+        taken.add((index: cursor, score: scores[cursor]));
+        cursor++;
       }
       if (taken.isEmpty) continue;
       // 어절의 판정은 **가장 나쁜 글자**를 따른다. 평균을 내면 한 글자만 망가진
       // 어절이 정답으로 접혀 교정 진입점이 사라진다.
-      taken.sort((x, y) => x.score.compareTo(y.score));
+      taken.sort((x, y) => x.score.score.compareTo(y.score.score));
       final worst = taken.first;
-      if (worst.grade == CharGrade.high) continue;
-      final diagram = diagramForSyllable(worst.char);
-      chips.add(_wordChip(context, word, worst, diagram));
+      if (worst.score.grade == CharGrade.high) continue;
+      final diagram = diagramForSyllable(worst.score.char);
+      chips.add(_wordChip(context, word, worst.score, diagram, worst.index));
     }
     return chips;
   }
@@ -281,6 +282,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     String word,
     CharScore worst,
     PhonemeDiagram? diagram,
+    int charIndex,
   ) {
     final c = context.c;
     final low = worst.grade == CharGrade.low;
@@ -288,7 +290,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     return GestureDetector(
       onTap: diagram == null
           ? null
-          : () => _openArticulation(word, diagram),
+          : () => _openArticulation(word, diagram, charIndex),
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -324,13 +326,25 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   /// 칩을 누르면 발음 교정 시트가 열린다.
   ///
-  /// 지금은 **목표 도해 한 컷**만 간다. 「무엇으로 잘못 냈는지」는 음소 인식이
-  /// 붙어야 알 수 있고, 그때 [ArticulationSheetData.current] 가 채워지면 시트가
-  /// 스스로 두 컷으로 바뀐다 — 화면 쪽은 안 고쳐도 된다.
-  void _openArticulation(String word, PhonemeDiagram target) {
+  /// 「내 발음」 컷은 서버가 `phoneme_misses` 를 줄 때만 그린다. 안 주면 목표 한
+  /// 컷이다 — 무엇으로 잘못 냈는지 모르면서 두 컷을 그리면 도해가 거짓말을 한다.
+  /// 실제 발음 도해는 **목표와 같은 자리**(초성/종성)로 고른다.
+  void _openArticulation(String word, PhonemeDiagram target, int charIndex) {
+    PhonemeDiagram? current;
+    for (final miss in _feedback?.phonemeMisses ?? const <PhonemeMiss>[]) {
+      if (miss.charIndex != charIndex) continue;
+      final actual = miss.actual;
+      if (actual == null) break;
+      current = diagramForJamo(actual, isCoda: target.isCoda);
+      break;
+    }
     showArticulationSheet(
       context,
-      data: ArticulationSheetData(word: word, target: target),
+      data: ArticulationSheetData(
+        word: word,
+        target: target,
+        current: current,
+      ),
       onPlayNative: () {
         Navigator.of(context).pop();
         final args = ModalRoute.of(context)?.settings.arguments;

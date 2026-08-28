@@ -64,6 +64,36 @@ class CharScoreDto {
       );
 }
 
+/// Wire model for one entry of `phoneme_misses`.
+///
+/// 서버가 이 배열을 안 보내면 앱은 빈 목록으로 읽고 종전대로 동작한다 — 이 필드는
+/// **선택**이다.
+class PhonemeMissDto {
+  const PhonemeMissDto({
+    required this.charIndex,
+    required this.expected,
+    this.actual,
+  });
+
+  final int charIndex;
+  final String expected;
+  final String? actual;
+
+  factory PhonemeMissDto.fromJson(Map<String, dynamic> json) {
+    return PhonemeMissDto(
+      charIndex: PronScoreDto._toInt(json['char_index']),
+      expected: (json['expected'] as String?) ?? '',
+      actual: json['actual'] as String?,
+    );
+  }
+
+  PhonemeMiss toEntity() => PhonemeMiss(
+        charIndex: charIndex,
+        expected: expected,
+        actual: (actual?.isEmpty ?? true) ? null : actual,
+      );
+}
+
 /// Wire model for `POST /sentences/{id}/reviews/audio` (ReviewFeedback,
 /// snake_case payload).
 class ReviewFeedbackDto {
@@ -75,6 +105,7 @@ class ReviewFeedbackDto {
     this.voiceUrl,
     required this.evaluation,
     required this.charScores,
+    this.phonemeMisses = const <PhonemeMissDto>[],
   });
 
   final int reviewId;
@@ -84,11 +115,13 @@ class ReviewFeedbackDto {
   final String? voiceUrl;
   final PronScoreDto evaluation;
   final List<CharScoreDto> charScores;
+  final List<PhonemeMissDto> phonemeMisses;
 
   factory ReviewFeedbackDto.fromJson(Map<String, dynamic> json) {
     final evaluation =
         (json['evaluation'] as Map<String, dynamic>?) ?? const {};
     final charScores = (json['char_scores'] as List<dynamic>?) ?? const [];
+    final misses = (json['phoneme_misses'] as List<dynamic>?) ?? const [];
     return ReviewFeedbackDto(
       reviewId: (json['review_id'] as num?)?.toInt() ?? 0,
       sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,
@@ -99,6 +132,10 @@ class ReviewFeedbackDto {
       charScores: charScores
           .whereType<Map<String, dynamic>>()
           .map(CharScoreDto.fromJson)
+          .toList(),
+      phonemeMisses: misses
+          .whereType<Map<String, dynamic>>()
+          .map(PhonemeMissDto.fromJson)
           .toList(),
     );
   }
@@ -111,5 +148,6 @@ class ReviewFeedbackDto {
         voiceUrl: voiceUrl,
         evaluation: evaluation.toEntity(),
         charScores: charScores.map((c) => c.toEntity()).toList(),
+        phonemeMisses: phonemeMisses.map((m) => m.toEntity()).toList(),
       );
 }

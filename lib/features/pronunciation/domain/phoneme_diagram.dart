@@ -9,13 +9,21 @@ library;
 
 /// 한 음소의 도해 자산과, 그 음소를 사람이 읽는 이름.
 class PhonemeDiagram {
-  const PhonemeDiagram({required this.jamo, required this.asset});
+  const PhonemeDiagram({
+    required this.jamo,
+    required this.asset,
+    required this.isCoda,
+  });
 
   /// 자모 한 글자 — 시트 라벨에 그대로 쓴다(예: 'ㄹ').
   final String jamo;
 
   /// `assets/articulatory/*.png` 경로.
   final String asset;
+
+  /// 받침 자리인지. 실제 발음 도해를 고를 때 **목표와 같은 자리**를 써야 한다 —
+  /// 초성판과 종성판은 기류 그림이 다르므로 자리가 어긋나면 두 컷이 비교가 안 된다.
+  final bool isCoda;
 }
 
 const String _dir = 'assets/articulatory';
@@ -106,7 +114,7 @@ PhonemeDiagram? diagramForJamo(String jamo, {required bool isCoda}) {
       ? _codaStem[_codaNeutral[jamo] ?? jamo]
       : _onsetStem[jamo];
   if (stem == null) return null;
-  return PhonemeDiagram(jamo: jamo, asset: '$_dir/$stem.png');
+  return PhonemeDiagram(jamo: jamo, asset: '$_dir/$stem.png', isCoda: isCoda);
 }
 
 /// 한 글자에서 **도해로 보여줄 자모 하나**를 고른다.
