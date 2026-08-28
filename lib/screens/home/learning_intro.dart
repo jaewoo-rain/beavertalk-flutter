@@ -272,7 +272,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       final worst = taken.first;
       if (worst.score.grade == CharGrade.high) continue;
       final diagram = diagramForSyllable(worst.score.char);
-      chips.add(_wordChip(context, word, worst.score, diagram, worst.index));
+      chips.add(_wordChip(
+          context, word, worst.score, diagram, worst.index));
     }
     return chips;
   }
@@ -290,7 +291,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     return GestureDetector(
       onTap: diagram == null
           ? null
-          : () => _openArticulation(word, diagram, charIndex),
+          : () => _openArticulation(word, diagram, charIndex, worst.char),
       behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(
@@ -328,14 +329,28 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   ///
   /// 「내 발음」 컷은 서버가 `phoneme_misses` 를 줄 때만 그린다. 안 주면 목표 한
   /// 컷이다 — 무엇으로 잘못 냈는지 모르면서 두 컷을 그리면 도해가 거짓말을 한다.
-  /// 실제 발음 도해는 **목표와 같은 자리**(초성/종성)로 고른다.
-  void _openArticulation(String word, PhonemeDiagram target, int charIndex) {
+  ///
+  /// ★ 계열 선택은 [diagramPair] 에 맡긴다. 긴장도만 다른 쌍(ㄱ↔ㅋ)을 Airflow 로
+  ///   그리면 **같은 그림 두 장**이 나온다(실측 0.02%). 그 판단을 화면이 하지 않는다.
+  void _openArticulation(
+    String word,
+    PhonemeDiagram fallback,
+    int charIndex,
+    String char,
+  ) {
+    var target = fallback;
     PhonemeDiagram? current;
     for (final miss in _feedback?.phonemeMisses ?? const <PhonemeMiss>[]) {
       if (miss.charIndex != charIndex) continue;
-      final actual = miss.actual;
-      if (actual == null) break;
-      current = diagramForJamo(actual, isCoda: target.isCoda);
+      final parts = splitJamo(char);
+      final isCoda = parts != null &&
+          parts.coda.isNotEmpty &&
+          parts.coda == miss.expected;
+      final pair = diagramPair(miss.expected, miss.actual, isCoda: isCoda);
+      if (pair.target != null) {
+        target = pair.target!;
+        current = pair.current;
+      }
       break;
     }
     showArticulationSheet(
