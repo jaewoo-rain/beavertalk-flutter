@@ -42,8 +42,13 @@ class MicButton extends StatelessWidget {
 
   static const double _size = 96;
 
-  /// Reserved padding around the button so the reactive halo has room to grow
-  /// without shifting layout (max ring overshoot = [_maxHalo]).
+  /// 반응 헤일로가 버튼 면 밖으로 번지는 최대 반경.
+  ///
+  /// ⛔ **헤일로에 레이아웃을 내주지 마라.** 예전엔 녹음 중에만
+  ///    `_size + _maxHalo * 2`(=136) 짜리 박스를 둘러서, 마이크가 정지 버튼으로
+  ///    바뀌는 순간 위젯이 96→136 으로 커졌다. 그만큼 CTA 바가 높아지며 버튼이
+  ///    위로 밀려, **누른 자리와 다른 자리에 정지 버튼이 뜨는** 결함이 됐다.
+  ///    지금은 [OverflowBox] 로 띄워 칠하기만 한다 — 두 상태 모두 위젯은 96×96 다.
   static const double _maxHalo = 20;
 
   @override
@@ -56,23 +61,30 @@ class MicButton extends StatelessWidget {
 
     final clamped = lvl.clamp(0.0, 1.0);
     return SizedBox(
-      width: _size + _maxHalo * 2,
-      height: _size + _maxHalo * 2,
+      width: _size,
+      height: _size,
       child: Stack(
+        clipBehavior: Clip.none,
         alignment: Alignment.center,
         children: [
           // Expanding halo ring — grows and fades in with the input level.
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 90),
-            curve: Curves.easeOut,
-            width: _size + _maxHalo * clamped,
-            height: _size + _maxHalo * clamped,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: context.c.primaryHeavy.withValues(alpha: 0.14 * clamped),
+          // OverflowBox 라 96 밖으로 번져도 레이아웃 크기는 96 그대로다.
+          OverflowBox(
+            maxWidth: _size + _maxHalo,
+            maxHeight: _size + _maxHalo,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 90),
+              curve: Curves.easeOut,
+              width: _size + _maxHalo * clamped,
+              height: _size + _maxHalo * clamped,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: context.c.primaryHeavy.withValues(alpha: 0.14 * clamped),
+              ),
             ),
           ),
-          // Gentle scale of the button face itself (max +5%).
+          // Gentle scale of the button face itself (max +5%). Transform 이라
+          // 그려지는 크기만 커지고 레이아웃은 안 건드린다.
           AnimatedScale(
             duration: const Duration(milliseconds: 90),
             curve: Curves.easeOut,
