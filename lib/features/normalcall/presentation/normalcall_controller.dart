@@ -97,6 +97,47 @@ String buildCallSummaryLine({
     '${hintsDropped > 0 ? '(버림 $hintsDropped)' : ''} '
     '미발화마커=$pendingMarkers odd_frames=$oddFrames 통로=${channel.name}';
 
+/// 소켓이 열린 직후 보내는 `start` 프레임.
+///
+/// ⛔ **순수 함수로 빼 둔 이유가 있다.** 이 프레임의 결함은 전부 "필드가 조용히
+/// 빠졌다"였고, 그 셋 다 **화면상으로는 통화가 멀쩡해서** 실기기로도 안 보였다:
+///
+///   - `continues_call_id` 미전송 → 비버가 앞 구간을 잊는다(2026-08-24)
+///   - `inbound_call_id` 미전송   → 이어간 순간 **상대가 바뀐다**(2026-08-31)
+///
+/// 둘 다 `?` 스프레드가 null 인 값의 **필드 자체를 뺀** 결과다. 서버는 못 받은 걸
+/// 에러로 알리지 않고 조용히 폴백하므로, 여기가 테스트로 고정되지 않으면 다음에
+/// 또 같은 방식으로 샌다. 소켓 없이 검사할 수 있게 컨트롤러 밖에 둔다.
+///
+/// [inboundCallId] 는 **이어가는 구간에도 실려야 한다** — 서버는 이 값으로만 알람을
+/// 되짚어 그 알람의 캐릭터를 고른다(`continues_call_id` 로는 못 고른다).
+Map<String, dynamic> buildStartFrame({
+  required Map<String, dynamic> aec,
+  required int sampleRate,
+  required int numChannels,
+  String? inboundCallId,
+  String? continuesCallId,
+}) =>
+    <String, dynamic>{
+      'type': 'start',
+      // 수신통화(알람)에서 온 통화면 서버가 준 uuid 를 그대로 되돌려준다. 서버가
+      // 그걸로 알람 → 캐릭터를 되짚는다. 홈에서 건 전화는 null 이라 필드가 빠지고,
+      // 서버는 member.character_id(대표 캐릭터)를 쓴다.
+      'inbound_call_id': ?inboundCallId,
+      // (barge-in) AEC 자기진단. 서버가 **세션마다** 끼어들기 확인 방식을 고르는 입력이다.
+      'aec': aec,
+      // ⭐ 마이크 규격을 **명시한다**(2026-08-14). 지금까지 안 보냈고 서버는 기본값
+      //   16000Hz 를 가정했는데, 우연히 우리 레코더도 16000 이라 맞았을 뿐이다.
+      //   ⛔ 암묵 계약이라 취약하다 — 누가 레코더 상수를 바꾸면 서버는 모른 채 틀리고,
+      //     **에러가 안 나서 조용히 이상한 목소리가 된다.** 값이 한 곳에서 나오게 묶는다.
+      'sample_rate': sampleRate,
+      'num_channels': numChannels,
+      // 「Keep talking」 으로 이어진 구간이면 직전 구간의 id 를 싣는다. 서버가 그
+      // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
+      // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
+      'continues_call_id': ?continuesCallId,
+    };
+
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
 ///
 /// ⭐ [spanTicks] 가 양수면 그건 **이 조각이 실제로 차지하는 오디오 길이**다(다음 마커가
@@ -689,6 +730,28 @@ class NormalCallController extends Notifier<CallState> {
   /// CallKit call UUID backing this session, when there is one. [hangUp] ends it
   /// so the lock-screen call UI disappears together with the conversation.
   String? _callUuid;
+
+  /// 이 통화를 띄운 **알람의 통화 id**(수신통화만 있다. 서버가 푸시로 내려준 uuid).
+  ///
+  /// ## 왜 들고 있어야 하나 — 캐릭터가 여기 달려 있다
+  ///
+  /// 통화 캐릭터는 앱이 아니라 **서버가** 정한다(서버 `resolve_call_character`).
+  /// 폴백 사슬이 이렇다:
+  ///
+  ///     ① 수신통화  inbound_call_id → push_dispatch_log → alarm.character_id
+  ///     ② 그 외      member.character_id (사용자가 고른 대표 캐릭터)
+  ///
+  /// ⛔ **`continues_call_id` 는 그 판정에 안 들어간다.** 그래서 이어가는 구간이 이
+  ///   값 없이 열리면 서버는 알람을 되짚지 못하고 ② 로 떨어진다 — 알람 캐릭터로
+  ///   5분을 통화하다 「Keep talking」 한 순간 **대표 캐릭터로 바뀐다**(사장님 실기기
+  ///   2026-08-31: BABA → BIBI). 화면은 멀쩡히 이어져서 목소리와 아바타만 바뀐다.
+  ///
+  /// 예전엔 [start] 의 파라미터로 스쳐 지나갈 뿐이라 다음 구간에 실을 값이 없었다.
+  ///
+  /// ⛔ **[_teardown] 에서 지우지 마라.** 구간 경계의 [_reachSegmentEnd] 가 teardown 을
+  ///   먼저 돌리는데, 거기서 지우면 바로 뒤의 [continueCall] 이 읽을 값이 사라진다.
+  ///   [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
+  String? _inboundCallId;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -1414,6 +1477,9 @@ class NormalCallController extends Notifier<CallState> {
       _channelMode = callChannel ?? CallChannel.defaultChannel;
       _callkitOwnedAudio = callkitOwnedAudio;
       _callUuid = callUuid;
+      // ⭐ 이 통화가 어느 알람에서 왔는지를 **구간을 넘어 기억한다**([_inboundCallId]).
+      //   여기서 덮어쓰므로 새 통화(null 전달)에서는 저절로 비워진다.
+      _inboundCallId = inboundCallId;
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
@@ -1504,22 +1570,15 @@ class NormalCallController extends Notifier<CallState> {
       // 수신통화만 서버가 준 통화 id 를 `inbound_call_id` 로 되돌려주고, 서버가
       // 그걸로 알람을 되짚어 그 알람의 캐릭터를 쓴다. 홈에서 건 전화는 이 필드가
       // 없어 서버가 member.character_id 를 쓴다.
-      final startFrame = <String, dynamic>{
-        'type': 'start',
-        'inbound_call_id': ?inboundCallId,
-        // (barge-in) AEC 자기진단. 서버가 **세션마다** 끼어들기 확인 방식을 고르는 입력이다.
-        'aec': await _aecHint(),
-        // ⭐ 마이크 규격을 **명시한다**(2026-08-14). 지금까지 안 보냈고 서버는 기본값
-        //   16000Hz 를 가정했는데, 우연히 우리 레코더도 16000 이라 맞았을 뿐이다.
-        //   ⛔ 암묵 계약이라 취약하다 — 누가 레코더 상수를 바꾸면 서버는 모른 채 틀리고,
-        //     **에러가 안 나서 조용히 이상한 목소리가 된다.** 값이 한 곳에서 나오게 묶는다.
-        'sample_rate': _micSampleRate,
-        'num_channels': _micNumChannels,
-        // 「Keep talking」 으로 이어진 구간이면 직전 구간의 id 를 싣는다. 서버가 그
-        // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
-        // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
-        'continues_call_id': ?_continuesCallId,
-      };
+      // ⚠ 조립은 [buildStartFrame] 이 한다 — 필드가 조용히 빠지는 사고가 두 번
+      //   났고(그 문서 참조), 소켓 없이 테스트로 고정하기 위해 밖으로 뺐다.
+      final startFrame = buildStartFrame(
+        aec: await _aecHint(),
+        sampleRate: _micSampleRate,
+        numChannels: _micNumChannels,
+        inboundCallId: inboundCallId,
+        continuesCallId: _continuesCallId,
+      );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
       //   기억을 못 하는데, 그건 서버 탓으로도 보이기 때문이다. 요청서에까지
@@ -4599,11 +4658,16 @@ class NormalCallController extends Notifier<CallState> {
       // [_connect] 가 상태를 새 통화 것으로 갈아엎기 전에 붙잡는다([CallState] 는
       // 불변이라 참조만 들고 있으면 된다).
       final carried = state;
-      _log('구간 ${used + 1} 시작 — 직전 call_id=${_continuesCallId ?? '(없음)'}');
+      _log('구간 ${used + 1} 시작 — 직전 call_id=${_continuesCallId ?? '(없음)'} '
+          'inbound=${_inboundCallId ?? '(없음)'}');
 
+      // ⛔ [_inboundCallId] 를 **반드시 다시 싣는다.** null 을 주면 `?` 스프레드가
+      //   필드를 통째로 빼고, 서버는 알람을 되짚지 못해 대표 캐릭터로 떨어진다 —
+      //   이어간 순간 상대가 바뀐다(그 필드 문서 참조). 수신통화가 아니면 원래
+      //   null 이라 종전과 같다.
       final ok = await _connect(
         callUuid: null,
-        inboundCallId: null,
+        inboundCallId: _inboundCallId,
         callkitOwnedAudio: false,
         callChannel: carried.channel,
       );
@@ -4619,10 +4683,14 @@ class NormalCallController extends Notifier<CallState> {
       //    새 행을 만들고, [_captureBaselineCallId] 가 이 구간용 기준값을 새로 잡는다.
       //    옛 값을 얹으면 그 캡처와 경합하고, 수동 종료 시 복구 폴링이
       //    "기준값보다 큰 첫 id" 로 **직전 구간의 행**을 집을 수 있다.
+      //
+      // 캐릭터도 되살린다 — 서버의 `call_started` 가 곧 덮어쓰지만, 그 프레임이
+      // 오기 전까지 화면의 아바타·이름이 빈다(같은 상대와 계속 말하는 중인데).
       state = state.copyWith(
         elapsedSec: carried.elapsedSec,
         segmentsUsed: carried.segmentsUsed,
         paidCallTime: carried.paidCallTime,
+        characterId: carried.characterId,
       );
       await _startAudio();
     } finally {
