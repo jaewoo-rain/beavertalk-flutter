@@ -20,9 +20,9 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/normalcall/presentation/avatar_view.dart'
     show
         avatarAssetDirFor,
-        kEmotionAngry,
-        kEmotionHappy,
+        kEmotionLaugh,
         kEmotionNeutral,
+        kEmotionSad,
         kIdleListen,
         kIdleThink,
         kIdleWait;
@@ -169,8 +169,11 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// 음성 엔벨로프. 이 화면엔 비버 목소리가 없으므로 **항상 0** 이다.
   final ValueNotifier<double> _avatarLevel = ValueNotifier<double>(0);
 
-  /// 발화 플래그. 평소 false 이고 **감정 클립을 내보내는 동안만** true 다 —
-  /// [SyncAvatar] 는 `_talking` 인 동안에만 `emo_*` 를 얹기 때문이다.
+  /// 발화 플래그. 평소 false 이고 **감정 클립을 내보내는 동안만** true 다.
+  ///
+  /// ⛔ 이것만으로는 감정이 안 뜬다. [SyncAvatar] 의 발화 판정은 `speaking` 이 아니라
+  ///    **오디오 레벨**로 켜지는데 이 화면의 [_avatarLevel] 은 항상 0 이다.
+  ///    감정을 여는 것은 `silentEmotion: true` 쪽이다 — [_reactToFeedback] 참조.
   final ValueNotifier<bool> _avatarSpeaking = ValueNotifier<bool>(false);
 
   /// 반응 감정 — 채점 직후 한 번 happy/angry 로 올렸다가 클립이 끝나면 내린다.
@@ -225,18 +228,27 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
   }
 
-  /// 채점 결과를 반응 영상 **한 번**으로 옮긴다 — 통과면 happy, 아니면 angry.
+  /// 채점 결과를 반응 영상 **한 번**으로 옮긴다 — 통과면 laugh, 아니면 sad.
   ///
   /// 「오답」의 자는 총점만이 아니다. 총점이 문턱을 넘어도 **하** 등급 글자가 있으면
   /// 화면은 그 글자를 빨갛게 칠하는데([_gradeColor]), 그때 비버가 웃으면 문장과
-  /// 얼굴이 서로 다른 말을 한다. 그래서 둘 중 하나라도 걸리면 angry 로 간다.
+  /// 얼굴이 서로 다른 말을 한다. 그래서 둘 중 하나라도 걸리면 sad 로 간다.
+  ///
+  /// ⛔ happy·angry 가 아니다(2026-08-30 사용자 결정). 학습 반응은 **채점자의 감정**이
+  ///    아니라 **같이 기뻐하고 같이 아쉬워하는 짝의 감정**이다 — 맞히면 크게 웃고
+  ///    (`laugh`), 틀리면 화내는 게 아니라 아쉬워한다(`emo_sad`).
+  ///    자산은 5캐릭터 전부에 있고 `_emoAsset` 에 이미 매핑돼 있다.
   void _reactToFeedback(ReviewFeedback feedback) {
     final hasLow =
         feedback.charScores.any((c) => c.grade == CharGrade.low);
     final passed = !hasLow &&
         feedback.evaluation.totalScore >= _kReactionPassScore;
-    _avatarEmotion.value = passed ? kEmotionHappy : kEmotionAngry;
-    // 감정 클립은 `_talking` 인 동안에만 보인다 — [_onAvatarDiag] 가 되돌린다.
+    _avatarEmotion.value = passed ? kEmotionLaugh : kEmotionSad;
+    // ⛔ `speaking` 을 켠다고 감정이 뜨는 게 아니다. `SyncAvatar` 의 발화 판정은
+    //   **오디오 레벨**로만 켜지는데([_onLevel] 의 `audible`), 이 밴드는 무음이라
+    //   레벨이 0 에 머문다. 그래서 `silentEmotion: true` 로 게이트를 연다
+    //   (2026-08-30 이전에는 이 한 줄이 없어 정답/오답 클립이 한 번도 안 떴다).
+    //   이 값은 끝났을 때 되돌릴 짝을 맞추려고 둔다 — [_onAvatarDiag] 가 내린다.
     _avatarSpeaking.value = true;
   }
 
@@ -249,6 +261,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (event != 'vid_emo_end' || !mounted) return;
     _avatarSpeaking.value = false;
     _avatarEmotion.value = kEmotionNeutral;
+    // 대기 클립 교체를 **여기까지 미뤄 두었다** — 채점 직후에 바꾸면 감정 열기와
+    // 겹쳐 디코더가 넷이 된다. 채점 중 걸어 둔 `idle_think` 를 이제 `idle` 로 돌린다.
+    _syncAvatarIdle();
   }
 
   // ── 단어 칩 · 발음 교정 시트 ──────────────────────────────────────────────
@@ -395,6 +410,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           speaking: _avatarSpeaking,
           emotion: _avatarEmotion,
           idleKind: _avatarIdleKind,
+          // ⛔ 이 밴드는 **무음**이다. [_avatarLevel] 은 아무도 안 쓰므로 0 에 머물고,
+          //   `SyncAvatar` 의 발화 판정은 레벨로만 켜진다 — 그래서 기본 설정이면
+          //   감정 클립이 영영 안 뜬다. 반응 밴드의 존재 이유가 그 클립이므로 연다.
+          silentEmotion: true,
           onDiag: _onAvatarDiag,
         ),
       ),
@@ -549,7 +568,11 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
         _recordedWav = wav;
         _scoringSlow = false;
       });
-      _syncAvatarIdle();
+      // ⛔ 여기서 [_syncAvatarIdle] 을 부르지 마라. 대기 클립 교체와 감정 클립 열기가
+      //   **같은 순간에** 겹쳐 디코더가 4개가 된다(실기기 실측 2026-08-30:
+      //   `[avatar] decoder +1 → 4 (idle) ⛔ 한계초과`). 하드웨어 한계는 2~3 이고
+      //   넘으면 영상이 언다 — 2026-08-15 통화 멈춤이 그 자리였다.
+      //   대기 클립은 감정이 끝난 뒤 [_onAvatarDiag] 가 바꾼다.
       _reactToFeedback(feedback);
     } on NetworkFailure {
       // `proto/E_failed`'s caption is "연결이 끊겼어요", true only when the request

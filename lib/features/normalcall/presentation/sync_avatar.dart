@@ -60,6 +60,7 @@ class SyncAvatar extends StatefulWidget {
     this.tempo,
     this.idleKind,
     this.autoTempo = false,
+    this.silentEmotion = false,
     this.fallback,
     this.onDiag,
   });
@@ -95,6 +96,20 @@ class SyncAvatar extends StatefulWidget {
   /// **그 기준은 실통화 음성이 있어야 정한다**(서버 Vertex 1008 미해결).
   /// 그때까지는 켜지 마라 — 틀린 템포가 걸리느니 normal 고정이 낫다.
   final bool autoTempo;
+
+  /// 목소리 없이도 감정 클립을 튼다.
+  ///
+  /// 통화에서는 감정이 **발화에 얹히는 표정**이라 `_talking` 중에만 보이는 것이 맞다.
+  /// 그런데 학습 화면의 반응 밴드는 **소리가 없다** — 채점 결과를 얼굴 하나로만
+  /// 말한다. 거기서는 `level` 을 아무도 안 쓰므로 `_onLevel` 의
+  /// `audible`(`level > _onThreshold`)이 영영 거짓이고, `_startTalking` 이 안 불려
+  /// `_syncEmotionLayer` 가 `!_talking` 으로 즉시 빠져나간다.
+  /// ⇒ **정답/오답에 emo_happy·emo_angry 가 한 번도 안 떴다**(2026-08-30 실기기
+  ///   실측 — `[avatar] TALK on` 로그 0건, 로드된 클립은 idle·talk·idle_listen·
+  ///   idle_think 뿐).
+  ///
+  /// 기본값은 `false` — 통화 화면과 아바타 랩의 거동을 그대로 둔다.
+  final bool silentEmotion;
 
   /// Shown until the clips are ready (and if they fail to load).
   final Widget? fallback;
@@ -233,8 +248,12 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// 돌리면 서로를 굶겨 그림이 얼어붙는다(2026-08-02 S8 실기기에서 재현).
   /// 컨트롤러 자체는 살려 두므로 전환은 opacity + play() 한 번으로 끝난다.
   Future<void> _applyPlayback() async {
-    final showEmo = _talking && _emoOpacity > 0 && _emo != null;
+    // 무음 감정(학습 반응 밴드)에서는 `_talking` 이 영영 false 다 — 그때도 튼다.
+    final emoAllowed = _talking || widget.silentEmotion;
+    final showEmo = emoAllowed && _emoOpacity > 0 && _emo != null;
     final showTalk = _talking && !showEmo;
+    // ⚠ idle 은 감정 밑에서 **계속 돌린다.** 여기서 멈추면 감정이 페이드로 걷힐 때
+    //   그 밑이 정지 프레임으로 드러난다(같은 증상을 talk 쪽에서 이미 한 번 밟았다).
     await _setPlaying(_idle, !_talking);
     await _setPlaying(_talk, showTalk);
     for (final c in _emoCache.values) {
@@ -686,7 +705,9 @@ class _SyncAvatarState extends State<SyncAvatar> {
     if (!_ready) return; // don't contend with the idle/talk decoders warming up
     final code = widget.emotion.value;
     final name = _emoAsset[code];
-    if (!_talking || name == null) {
+    // [SyncAvatar.silentEmotion] 이면 발화 없이도 연다 — 학습 반응 밴드는 무음이다.
+    final gated = !_talking && !widget.silentEmotion;
+    if (gated || name == null) {
       if (_emoOpacity != 0 && mounted) {
         setState(() => _emoOpacity = 0);
         // ⛔⛔ **여기서 talk 을 다시 켜야 한다.** [_applyPlayback] 이 감정을 보일 때
