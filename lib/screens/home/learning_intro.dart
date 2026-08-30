@@ -90,6 +90,14 @@ const _kSlowScoring = Duration(seconds: 2);
 /// The result transition waits on `max(scoring, this)`.
 const _kMinScan = Duration(milliseconds: 1500);
 
+/// How far the scan cursor overhangs the sentence, top and bottom.
+///
+/// The frame draws an 84 bar (92 halo) over a 60-high sentence block, so the
+/// halo clears the text by 16 on each side. Expressing it as an overhang instead
+/// of a fixed height is what lets a 2-line sentence keep the same proportions:
+/// at 1 line this reproduces the frame's 84/92 exactly.
+const double _kScanOverhang = 16;
+
 /// 반응 영상을 「정답」으로 볼 최소 총점.
 ///
 /// 화면이 글자를 칠할 때 이미 쓰는 밴드(85 상 · 70 중 — `_gradeColor`)의 **중간
@@ -724,12 +732,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: AppSpacing.s20),
-                      child: Stack(
-                        alignment: Alignment.center,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
+                          // The cursor is stretched over the SENTENCE only, not
+                          // the whole block — a fixed 84 was measured off the
+                          // frame's 1-line sentence and stops covering the text
+                          // the moment it wraps to 2 lines.
+                          Stack(
+                            alignment: Alignment.center,
+                            clipBehavior: Clip.none,
                             children: [
+                              // Keeps the sweep the full column width even when
+                              // the sentence itself is short.
+                              const SizedBox(width: double.infinity),
                               AnimatedSwitcher(
                                 duration: const Duration(milliseconds: 250),
                                 child: isResult
@@ -747,17 +763,23 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                             color: context.c.labelStrong),
                                       ),
                               ),
-                              const SizedBox(height: AppSpacing.s8),
-                              Text(
-                                _feedback?.native ?? sentence.native,
-                                textAlign: TextAlign.center,
-                                style: AppType.body1.sb
-                                    .copyWith(color: context.c.labelNormal),
-                              ),
+                              if (scoring)
+                                const Positioned(
+                                  top: -_kScanOverhang,
+                                  bottom: -_kScanOverhang,
+                                  left: 0,
+                                  right: 0,
+                                  child: IgnorePointer(child: ScanCursor()),
+                                ),
                             ],
                           ),
-                          if (scoring)
-                            const IgnorePointer(child: ScanCursor(height: 84)),
+                          const SizedBox(height: AppSpacing.s8),
+                          Text(
+                            _feedback?.native ?? sentence.native,
+                            textAlign: TextAlign.center,
+                            style: AppType.body1.sb
+                                .copyWith(color: context.c.labelNormal),
+                          ),
                         ],
                       ),
                     ),
@@ -924,6 +946,30 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
 /// Renders the sentence character-by-character, each tinted by its grade. Falls
 /// back to a plain (un-tinted) sentence when no char scores exist.
+/// 원문 [text] 를 따라가며 [scoredChars] 를 순서대로 소비해, 글자마다 대응하는
+/// 채점 인덱스를 낸다. 대응이 없는 자리(공백·구두점)는 `-1`.
+///
+/// **왜 원문 기준인가** — 서버의 `char_scores` 는 채점한 글자만 담고 공백과 구두점을
+/// 뺀다. 그래서 그 목록을 그대로 이어붙이면 「저는 학생이에요.」가 화면에서
+/// 「저는학생이에요」가 된다(실측 2026-08-30 · review 208·209).
+///
+/// 정렬은 **순서대로 한 번만** 훑는다. 되돌아가서 맞추지 않으므로, 서버가 글자를
+/// 정규화해 원문과 어긋나면 그 지점부터 대응이 끊기고 `-1` 이 이어진다. 그 경우를
+/// 호출부가 알아볼 수 있도록 여기서는 판단하지 않고 인덱스만 낸다.
+List<int> alignScoresToText(String text, List<String> scoredChars) {
+  final out = <int>[];
+  var si = 0;
+  for (final ch in text.characters) {
+    if (si < scoredChars.length && scoredChars[si] == ch) {
+      out.add(si);
+      si++;
+    } else {
+      out.add(-1);
+    }
+  }
+  return out;
+}
+
 class _ScoredSentence extends StatelessWidget {
   const _ScoredSentence({
     super.key,
@@ -944,19 +990,47 @@ class _ScoredSentence extends StatelessWidget {
         style: base.copyWith(color: context.c.labelStrong),
       );
     }
+    // 원문을 따라가며 색을 입힌다. **`char_scores` 를 그대로 이어붙이면 안 된다** —
+    // 서버는 채점한 글자만 담고 공백·구두점을 빼므로, 그러면 「저는 학생이에요.」가
+    // 화면에서 「저는학생이에요」가 된다(실측 2026-08-30, review 208·209).
+    final strong = context.c.labelStrong;
+    final chars = fallbackText.characters.toList();
+    final align =
+        alignScoresToText(fallbackText, [for (final cs in charScores) cs.char]);
+    final spans = <TextSpan>[
+      for (var i = 0; i < chars.length; i++)
+        TextSpan(
+          text: chars[i],
+          style: base.copyWith(
+            color: align[i] < 0
+                ? strong
+                : _LearningIntroScreenState._gradeColor(
+                    context, charScores[align[i]]),
+          ),
+        ),
+    ];
+    final si = align.where((i) => i >= 0).length;
+    // 하나도 못 맞추면 원문과 채점이 서로 다른 문장이라는 뜻이다. 그때는 색을 통째로
+    // 포기하는 대신 예전처럼 채점된 글자를 잇는다 — 색이 정보의 본체이기 때문이다.
+    if (si == 0) {
+      return RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: [
+            for (final cs in charScores)
+              TextSpan(
+                text: cs.char,
+                style: base.copyWith(
+                  color: _LearningIntroScreenState._gradeColor(context, cs),
+                ),
+              ),
+          ],
+        ),
+      );
+    }
     return RichText(
       textAlign: TextAlign.center,
-      text: TextSpan(
-        children: [
-          for (final cs in charScores)
-            TextSpan(
-              text: cs.char,
-              style: base.copyWith(
-                color: _LearningIntroScreenState._gradeColor(context, cs),
-              ),
-            ),
-        ],
-      ),
+      text: TextSpan(children: spans),
     );
   }
 }
