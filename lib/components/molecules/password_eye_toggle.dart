@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../components/icons/app_icons.dart';
 import '../../theme/app_color_tokens.dart';
+import '../atoms/icon_toggle.dart';
 
 /// Password-field visibility toggle for an [InputField]'s `rightIcon` slot.
 ///
@@ -26,14 +27,20 @@ class PasswordEyeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    // hidden → slashed eye (eye-off); visible → open eye (eye-line). 20px
+    // matches the InputField's icon box (size56). Tinted to textSecondary.
+    //
+    // 🔴 탭 영역이 20×20 이다(권장 44). 이 위젯이 아니라 [InputField] 가
+    //    `rightIcon` 을 `SizedBox(iconSize)` 에 가둬서 생기는 상한이라, 여기서는
+    //    못 넓힌다 — 넓히려면 필드의 trailing 폭 배분을 바꿔야 하고 그건 시안 변경이다.
+    return IconToggle(
+      value: !obscured,
+      onIcon: AppIcons.eyeLine,
+      offIcon: AppIcons.eyeOff,
+      onColor: context.c.labelNormal,
+      offColor: context.c.labelNormal,
+      size: 20,
       onTap: onTap,
-      // hidden → slashed eye (eye-off); visible → open eye (eye-line). 20px
-      // matches the InputField's icon box (size56). Tinted to textSecondary.
-      child: obscured
-          ? AppIcons.eyeOff(size: 20, color: context.c.labelNormal)
-          : AppIcons.eyeLine(size: 20, color: context.c.labelNormal),
     );
   }
 }

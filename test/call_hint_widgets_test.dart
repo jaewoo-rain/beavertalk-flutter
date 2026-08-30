@@ -106,6 +106,33 @@ void main() {
     expect(got, false); // was active:true → toggles to false
   });
 
+  testWidgets('CallToggleButton 켜고 꺼도 상자 크기가 그대로다', (tester) async {
+    // 켜짐/꺼짐의 테두리 선언이 갈리면(`BorderSide.none` ↔ 1px) 상자가 상태에
+    // 따라 달라질 여지가 생긴다. 지금은 폭 1px 을 고정하고 색만 투명으로
+    // 보간하므로 그 여지가 없다 — 그 사실을 여기서 못 박는다.
+    // (통화 화면 버튼이 스스로 자리를 옮기면 눌러 놓고 딴 데를 누르게 된다.)
+    Widget build(bool active) => _host(
+          Center(
+            child: CallToggleButton(
+              icon: AppIcons.lightbulb,
+              active: active,
+              activeFill: const Color(0xFFD17600),
+              semanticLabel: 'Hint',
+              onChanged: (_) {},
+            ),
+          ),
+        );
+
+    await tester.pumpWidget(build(false));
+    final Size off = tester.getSize(find.byType(CallToggleButton));
+
+    await tester.pumpWidget(build(true));
+    await tester.pump(const Duration(milliseconds: 200));
+    final Size on = tester.getSize(find.byType(CallToggleButton));
+
+    expect(on, off, reason: '상태에 따라 버튼 크기가 달라지면 안 된다');
+  });
+
   testWidgets('SpeakingEqualizer builds and animates without throwing',
       (tester) async {
     await tester.pumpWidget(_host(const Center(child: SpeakingEqualizer())));

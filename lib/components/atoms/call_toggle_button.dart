@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 
 /// A 40×40 circular on/off toggle used in the in-call control row — the
@@ -52,7 +53,9 @@ class CallToggleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color fill = active ? activeFill : Colors.transparent;
+    // ⚠ 채움은 `active ? activeFill : transparent` 로 **미리 접지 마라.** 끌 때
+    //   목표색이 그 순간 투명이 되어 보간이 투명→투명이 되고, 채움만 한 프레임에
+    //   사라진다. 아래에서 [activeFill] 을 그대로 두고 t 로만 섞는다.
     // Active sits on the coloured [activeFill] and its glyph is always white
     // (staticWhite, not labelStrong — that flips to #000 in Light). Inactive is
     // a transparent chip, so the theme label colour is right there.
@@ -60,27 +63,41 @@ class CallToggleButton extends StatelessWidget {
         ? (activeGlyph ?? context.c.staticWhite)
         : context.c.labelNormal;
 
+    // 채움·테두리·글리프를 한 프레임에 갈면 잉크 물결만 남고 상태 변화가 안
+    // 읽힌다. [Material.color] 는 암시적 애니메이션이 없으므로 색을 직접
+    // 보간해서 넣는다.
     return Semantics(
       button: true,
       toggled: active,
       label: semanticLabel,
-      child: Material(
-        color: fill,
-        shape: CircleBorder(
-          side: active
-              ? BorderSide.none
-              : BorderSide(color: context.c.lineNeutral),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onChanged == null ? null : () => onChanged!(!active),
-          child: SizedBox(
-            width: _size,
-            height: _size,
-            child: Center(child: icon(size: _iconSize, color: glyph)),
-          ),
-        ),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: active ? 1 : 0),
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
+        builder: (context, t, _) {
+          final Color fillNow = Color.lerp(Colors.transparent, activeFill, t)!;
+          final Color lineNow =
+              Color.lerp(context.c.lineNeutral, Colors.transparent, t)!;
+          return Material(
+            color: fillNow,
+            shape: CircleBorder(side: BorderSide(color: lineNow)),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              customBorder: const CircleBorder(),
+              onTap: onChanged == null ? null : () => onChanged!(!active),
+              child: SizedBox(
+                width: _size,
+                height: _size,
+                child: Center(
+                  child: AnimatedGlyphColor(
+                    color: glyph,
+                    builder: (c) => icon(size: _iconSize, color: c),
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

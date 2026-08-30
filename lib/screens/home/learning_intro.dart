@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/icon_toggle.dart';
 import '../../components/atoms/mic_analysis.dart';
 import '../../components/atoms/mic_button.dart';
 import '../../components/atoms/record_circle_button.dart';
@@ -94,8 +95,15 @@ const _kMinScan = Duration(milliseconds: 1500);
 ///
 /// The frame draws an 84 bar (92 halo) over a 60-high sentence block, so the
 /// halo clears the text by 16 on each side. Expressing it as an overhang instead
-/// of a fixed height is what lets a 2-line sentence keep the same proportions:
-/// at 1 line this reproduces the frame's 84/92 exactly.
+/// of a fixed height is what holds that clearance at any line count.
+///
+/// It does **not** reproduce the frame's 84/92, and the earlier version of this
+/// comment claiming it did was wrong. Measured on an SM G950N (2026-08-30, at
+/// dpr 3): 1 line is 52/60, 2 lines 80/88. `heading2` carries a 28 line-height,
+/// so a 1-line block is 28 and 28 + 2*16 = 60 is the ceiling — 84/92 is out of
+/// reach by construction. The frame's 60 counts the native subtitle as well
+/// (28 + 8 + 24); the cursor here covers the Korean line **only**, which is
+/// deliberate — see the Stack in `build`.
 const double _kScanOverhang = 16;
 
 /// 반응 영상을 「정답」으로 볼 최소 총점.
@@ -724,19 +732,18 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         valueListenable: bookmarkedSentenceIds,
                         builder: (context, ids, _) {
                           final saved = ids.contains(sentence.id);
-                          return Semantics(
-                            button: true,
-                            label:
+                          // 글리프를 즉시 갈아 끼우면 눌린 티가 안 난다.
+                          // 색은 두 상태가 같으므로 움직이는 건 페이드와 팝뿐이다.
+                          return IconToggle(
+                            value: saved,
+                            onIcon: AppIcons.bookmarkFill,
+                            offIcon: AppIcons.bookmarkLine,
+                            onColor: context.c.labelStrong,
+                            offColor: context.c.labelStrong,
+                            size: 32,
+                            semanticLabel:
                                 saved ? l10n.unsaveSentence : l10n.saveSentence,
-                            child: GestureDetector(
-                              onTap: () => _toggleBookmark(sentence.id),
-                              behavior: HitTestBehavior.opaque,
-                              child: saved
-                                  ? AppIcons.bookmarkFill(
-                                      size: 32, color: context.c.labelStrong)
-                                  : AppIcons.bookmarkLine(
-                                      size: 32, color: context.c.labelStrong),
-                            ),
+                            onTap: () => _toggleBookmark(sentence.id),
                           );
                         },
                       ),

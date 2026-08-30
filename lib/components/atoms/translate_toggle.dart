@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 
@@ -46,7 +47,10 @@ class TranslateToggle extends StatelessWidget {
     final Color iconColor =
         active ? context.c.primaryNormal : context.c.labelNormal;
 
-    final Widget box = Container(
+    // 테두리와 글리프가 한 프레임에 갈리면 켠 티가 안 난다.
+    final Widget box = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       width: _size,
       height: _size,
       alignment: Alignment.center,
@@ -54,9 +58,9 @@ class TranslateToggle extends StatelessWidget {
         border: Border.all(color: stroke),
         borderRadius: BorderRadius.circular(AppRadius.xs),
       ),
-      child: AppIcons.translate(
-        size: _iconSize,
+      child: AnimatedGlyphColor(
         color: iconColor,
+        builder: (c) => AppIcons.translate(size: _iconSize, color: c),
       ),
     );
 

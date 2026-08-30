@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 
 /// ThumbsUp — a large selectable "like" atom.
@@ -49,7 +50,10 @@ class ThumbsUp extends StatelessWidget {
     final Color iconColor =
         active ? context.c.primaryNormal : context.c.labelNormal;
 
-    final Widget content = Container(
+    // 테두리·원 채움·글리프 셋이 한 프레임에 갈리면 눌린 티가 안 난다.
+    final Widget content = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       width: _width,
       height: _height,
       alignment: Alignment.center,
@@ -57,7 +61,9 @@ class ThumbsUp extends StatelessWidget {
         border: Border.all(color: outerStroke),
         borderRadius: BorderRadius.circular(_outerRadius),
       ),
-      child: Container(
+      child: AnimatedContainer(
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
         width: _innerSize,
         height: _innerSize,
         alignment: Alignment.center,
@@ -65,9 +71,9 @@ class ThumbsUp extends StatelessWidget {
           color: innerFill,
           shape: BoxShape.circle,
         ),
-        child: AppIcons.thumbsUp(
-          size: _iconSize,
+        child: AnimatedGlyphColor(
           color: iconColor,
+          builder: (c) => AppIcons.thumbsUp(size: _iconSize, color: c),
         ),
       ),
     );
