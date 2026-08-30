@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:beavertalk/features/pronunciation/domain/phoneme_diagram.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -130,5 +132,86 @@ void main() {
       }
       expect(missing, isEmpty);
     });
+
+    test('도해가 전부 애니메이션 WebP 다 — 정지 그림으로 되돌아가면 잡는다', () {
+      // 도해는 조음이 **움직이는** 것을 보여주는 그림이다. 누가 PNG 로 되돌리면
+      // 화면은 멀쩡히 뜨고 그림도 맞아서 눈으로는 회귀를 못 잡는다. 그래서
+      // 컨테이너를 직접 읽는다 — RIFF/WEBP 헤더에 `ANIM` 청크가 있어야 한다.
+      final files = Directory('assets/articulatory')
+          .listSync()
+          .whereType<File>()
+          .toList()
+        ..sort((a, b) => a.path.compareTo(b.path));
+      expect(files, isNotEmpty, reason: '자산 폴더가 비었다');
+
+      final wrong = <String>[];
+      for (final f in files) {
+        final name = f.uri.pathSegments.last;
+        if (!name.endsWith('.webp')) {
+          wrong.add('$name — webp 가 아니다');
+          continue;
+        }
+        final bytes = f.readAsBytesSync();
+        if (bytes.length < 64) {
+          wrong.add('$name — 너무 짧다(${bytes.length}B)');
+          continue;
+        }
+        final head = String.fromCharCodes(bytes.sublist(0, 64));
+        if (!head.startsWith('RIFF') || head.substring(8, 12) != 'WEBP') {
+          wrong.add('$name — WebP 컨테이너가 아니다');
+        } else if (!head.contains('ANIM')) {
+          wrong.add('$name — ANIM 청크가 없다(정지 이미지)');
+        }
+      }
+      expect(wrong, isEmpty, reason: wrong.join('\n'));
+    });
+
+    testWidgets('Flutter 코덱이 도해를 여러 프레임으로 읽고, 프레임이 서로 다르다',
+        (tester) async {
+      // 컨테이너에 `ANIM` 이 있는 것과 **Flutter 가 실제로 애니메이션으로 그리는
+      // 것**은 다른 주장이다. `Image.asset` 이 쓰는 바로 그 코덱에 물어본다.
+      //
+      // ⚠ `runAsync` 로 감싸야 한다. 위젯 테스트의 가짜 시계 위에서는 엔진
+      //    작업 큐가 돌지 않아 `toByteData` 의 Future 가 영영 안 끝난다(실측:
+      //    테스트가 그대로 매달림).
+      await tester.runAsync(() async {
+        for (final name in ['h', 'pl_n', 'ph_g', 'vw_a', 'sy_ban']) {
+          final bytes =
+              File('assets/articulatory/$name.webp').readAsBytesSync();
+          final codec = await ui.instantiateImageCodec(bytes);
+          expect(codec.frameCount, greaterThan(1),
+              reason: '$name.webp 이 한 프레임이면 도해가 안 움직인다');
+
+          // 프레임 수만으로는 부족하다 — 같은 그림 38장이어도 통과한다.
+          // 첫 프레임과 중간 프레임을 재 **움직임이 있는지**까지 본다.
+          final first = await _rgba(codec);
+          for (var i = 1; i < codec.frameCount ~/ 2; i++) {
+            await codec.getNextFrame();
+          }
+          final middle = await _rgba(codec);
+          expect(first.length, middle.length);
+          var diff = 0;
+          for (var i = 0; i < first.length; i += 4) {
+            if (first[i] != middle[i] ||
+                first[i + 1] != middle[i + 1] ||
+                first[i + 2] != middle[i + 2]) {
+              diff++;
+            }
+          }
+          expect(diff / (first.length / 4), greaterThan(0.01),
+              reason: '$name.webp 의 프레임이 서로 같다 — 정지 그림이나 다름없다');
+          codec.dispose();
+        }
+      });
+    });
   });
+}
+
+/// 코덱의 다음 프레임을 RGBA 바이트로 꺼낸다.
+Future<Uint8List> _rgba(ui.Codec codec) async {
+  final frame = await codec.getNextFrame();
+  final data =
+      await frame.image.toByteData(format: ui.ImageByteFormat.rawRgba);
+  frame.image.dispose();
+  return data!.buffer.asUint8List();
 }
