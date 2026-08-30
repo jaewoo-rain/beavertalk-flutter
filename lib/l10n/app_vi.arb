@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Cuộc gọi miễn phí đã kết thúc",
   "callFreeEndedCta": "Đăng ký và tiếp tục trò chuyện",
   "callKeepGoingTitle": "Tiếp tục nhé?",
-  "callKeepGoingSubtitle": "Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại."
+  "callKeepGoingSubtitle": "Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại.",
+  "articulationSelectedWord": "Từ đã chọn",
+  "articulationYouSaid": "Phát âm của bạn",
+  "articulationTargetSound": "Mục tiêu",
+  "articulationListenNative": "Nghe phát âm bản ngữ"
 }

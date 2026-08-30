@@ -2166,11 +2166,14 @@ class AppLocalizationsHi extends AppLocalizations {
       'कॉल 5 मिनट के हिस्सों में चलती है। हर बार हम फिर पूछेंगे।';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'चुना गया शब्द';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'आपका उच्चारण';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'लक्ष्य';
+
+  @override
+  String get articulationListenNative => 'मूल वक्ता का उच्चारण सुनें';
 }

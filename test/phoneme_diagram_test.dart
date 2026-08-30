@@ -57,9 +57,48 @@ void main() {
     });
 
     test('도해가 없는 음소는 두 컷을 포기하고 계열을 안 섞는다', () {
-      // ㄷ·ㅂ 는 Airflow 초성판이 없다. 방법이 달라 Place 로도 못 가므로 한 컷.
-      final r = diagramPair('ㄷ', 'ㄹ', isCoda: false);
+      // 모음 자리에 자음이 들린 경우. Airflow 에는 ㅏ 가, Vowel 에는 ㄴ 이 없다.
+      // 억지로 맞추면 모음 카드와 기류 카드를 나란히 놓게 되므로 한 컷만 낸다.
+      final r = diagramPair('ㅏ', 'ㄴ', isCoda: false);
+      expect(r.target?.series, DiagramSeries.vowel);
       expect(r.current, isNull, reason: '계열이 섞인 두 컷은 비교가 아니다');
+    });
+
+    test('ㄷ·ㅂ 초성이 Airflow 로 잡힌다 — 종성판을 빌려 쓰지 않는다', () {
+      // 2026-08-30 이전에는 이 두 자모만 Airflow 초성판이 없어 시트가 안 열렸다.
+      for (final pair in [('ㄷ', 'ㄹ'), ('ㅂ', 'ㄹ'), ('ㄷ', 'ㅁ'), ('ㅂ', 'ㄴ')]) {
+        final r = diagramPair(pair.$1, pair.$2, isCoda: false);
+        expect(r.target?.series, DiagramSeries.airflow);
+        expect(r.current?.series, DiagramSeries.airflow);
+        expect(r.target!.asset, isNot(r.current!.asset));
+      }
+      expect(
+        diagramForJamo('ㄷ', isCoda: false)!.asset,
+        isNot(diagramForJamo('ㄷ', isCoda: true)!.asset),
+        reason: '초성은 d.png · 종성은 d_coda.png — 자리마다 제 파일을 쓴다',
+      );
+    });
+
+    test('마찰음 위치 오류(ㅅ↔ㅎ)가 Place 로 잡힌다', () {
+      // Place/ㅎ(성문)이 들어오기 전에는 Airflow 로 떨어졌다.
+      final r = diagramPair('ㅅ', 'ㅎ', isCoda: false);
+      expect(r.target?.series, DiagramSeries.place);
+      expect(r.current?.series, DiagramSeries.place);
+      expect(r.target!.asset, isNot(r.current!.asset));
+    });
+  });
+
+  group('불변식', () {
+    test('완성형 한글 11,172자 전부 도해가 나온다 — 안 눌리는 칩이 없다', () {
+      // 도해가 null 이면 learning_intro 의 단어 칩이 onTap: null 이 돼
+      // **눌리지 않는 칩**이 된다. 화면에는 멀쩡히 보이므로 눈으로 못 잡는다.
+      final missing = <String>[];
+      for (var code = 0xAC00; code <= 0xD7A3; code++) {
+        final s = String.fromCharCode(code);
+        if (diagramForSyllable(s) == null) missing.add(s);
+      }
+      expect(missing, isEmpty,
+          reason: '도해 없는 음절: ${missing.take(20).join()} (총 ${missing.length}자)');
     });
   });
 

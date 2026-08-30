@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "ඔබේ නොමිලේ ඇමතුම අවසන් විය",
   "callFreeEndedCta": "දායක වී කතාබහ දිගටම කරන්න",
   "callKeepGoingTitle": "දිගටම කරන්නද?",
-  "callKeepGoingSubtitle": "ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු."
+  "callKeepGoingSubtitle": "ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු.",
+  "articulationSelectedWord": "තෝරාගත් වචනය",
+  "articulationYouSaid": "ඔබේ උච්චාරණය",
+  "articulationTargetSound": "ඉලක්කය",
+  "articulationListenNative": "ස්වදේශික උච්චාරණයට සවන් දෙන්න"
 }

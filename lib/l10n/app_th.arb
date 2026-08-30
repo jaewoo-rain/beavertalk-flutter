@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "สายฟรีของคุณหมดแล้ว",
   "callFreeEndedCta": "สมัครสมาชิกและคุยต่อ",
   "callKeepGoingTitle": "คุยต่อไหม",
-  "callKeepGoingSubtitle": "สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง"
+  "callKeepGoingSubtitle": "สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง",
+  "articulationSelectedWord": "คำที่เลือก",
+  "articulationYouSaid": "การออกเสียงของคุณ",
+  "articulationTargetSound": "เป้าหมาย",
+  "articulationListenNative": "ฟังการออกเสียงเจ้าของภาษา"
 }

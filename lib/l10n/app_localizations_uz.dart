@@ -2187,11 +2187,14 @@ class AppLocalizationsUz extends AppLocalizations {
       'Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Tanlangan so\'z';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Talaffuzingiz';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Maqsad';
+
+  @override
+  String get articulationListenNative => 'Ona tili talaffuzini eshitish';
 }

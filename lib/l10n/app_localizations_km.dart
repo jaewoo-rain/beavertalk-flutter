@@ -2172,11 +2172,14 @@ class AppLocalizationsKm extends AppLocalizations {
       'ការហៅបន្តជា ៥ នាទីម្តង។ យើងនឹងសួរម្តងទៀតរាល់ពេល។';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'ពាក្យដែលបានជ្រើស';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'ការបញ្ចេញសំឡេងរបស់អ្នក';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'គោលដៅ';
+
+  @override
+  String get articulationListenNative => 'ស្តាប់ការបញ្ចេញសំឡេងម្ចាស់ភាសា';
 }

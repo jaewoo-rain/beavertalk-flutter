@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Тегін қоңырауыңыз аяқталды",
   "callFreeEndedCta": "Жазылып, сөйлесуді жалғастырыңыз",
   "callKeepGoingTitle": "Жалғастырамыз ба?",
-  "callKeepGoingSubtitle": "Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз."
+  "callKeepGoingSubtitle": "Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз.",
+  "articulationSelectedWord": "Таңдалған сөз",
+  "articulationYouSaid": "Сіздің айтылымыңыз",
+  "articulationTargetSound": "Мақсат",
+  "articulationListenNative": "Ана тілі айтылымын тыңдау"
 }

@@ -2172,11 +2172,14 @@ class AppLocalizationsTr extends AppLocalizations {
       'Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Seçilen kelime';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Telaffuzunuz';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Hedef';
+
+  @override
+  String get articulationListenNative => 'Anadil telaffuzunu dinle';
 }

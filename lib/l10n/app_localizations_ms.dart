@@ -2194,11 +2194,14 @@ class AppLocalizationsMs extends AppLocalizations {
       'Panggilan diteruskan setiap 5 minit. Kami akan bertanya setiap kali.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Perkataan dipilih';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Sebutan anda';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Sasaran';
+
+  @override
+  String get articulationListenNative => 'Dengar sebutan penutur asli';
 }

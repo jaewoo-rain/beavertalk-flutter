@@ -2159,11 +2159,14 @@ class AppLocalizationsAr extends AppLocalizations {
       'تستمر المكالمات على دفعات من 5 دقائق. سنسألك في كل مرة.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'الكلمة المختارة';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'نطقك';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'الهدف';
+
+  @override
+  String get articulationListenNative => 'استمع إلى النطق الأصلي';
 }

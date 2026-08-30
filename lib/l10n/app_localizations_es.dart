@@ -2193,11 +2193,14 @@ class AppLocalizationsEs extends AppLocalizations {
       'Las llamadas continúan en tramos de 5 minutos. Te preguntaremos cada vez.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Palabra seleccionada';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Tu pronunciación';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Objetivo';
+
+  @override
+  String get articulationListenNative => 'Escuchar pronunciación nativa';
 }

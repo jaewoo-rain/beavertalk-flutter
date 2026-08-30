@@ -2187,11 +2187,14 @@ class AppLocalizationsFil extends AppLocalizations {
       'Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Napiling salita';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Ang bigkas mo';
 
   @override
   String get articulationTargetSound => 'Target';
+
+  @override
+  String get articulationListenNative => 'Pakinggan ang native na bigkas';
 }

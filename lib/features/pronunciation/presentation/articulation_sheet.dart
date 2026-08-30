@@ -281,9 +281,14 @@ class _ArticulationSheet extends StatelessWidget {
         const SizedBox(width: AppSpacing.s8),
         Expanded(
           flex: 3,
+          // ⚠ 라벨은 「원어민」인데 [onPlayNative] 가 실제로 트는 것은 문장의 표준
+          //   TTS 다(`learning_intro._playStandard`). 2026-08-30 에 시안(Figma
+          //   `Dialog/Articulation`)을 정본으로 삼기로 결정해 라벨을 맞춘 것이다.
+          //   원어민 녹음이 붙으면 재생 쪽을 바꾼다 — 라벨을 되돌리지 마라.
+          //   같은 화면 아래쪽의 `l10n.listenStandard` 버튼은 별개다(그쪽은 정직함).
           child: Button(
             type: BtnType.primaryFill,
-            text: l10n.listenStandard,
+            text: l10n.articulationListenNative,
             onPressed: onPlayNative,
           ),
         ),

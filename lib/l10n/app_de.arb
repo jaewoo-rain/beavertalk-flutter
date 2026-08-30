@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Dein kostenloser Anruf ist beendet",
   "callFreeEndedCta": "Abonnieren und weitersprechen",
   "callKeepGoingTitle": "Weitermachen?",
-  "callKeepGoingSubtitle": "Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach."
+  "callKeepGoingSubtitle": "Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach.",
+  "articulationSelectedWord": "Ausgewähltes Wort",
+  "articulationYouSaid": "Deine Aussprache",
+  "articulationTargetSound": "Ziel",
+  "articulationListenNative": "Muttersprachler anhören"
 }

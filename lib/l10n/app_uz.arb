@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Bepul qo‘ng‘irog‘ingiz tugadi",
   "callFreeEndedCta": "Obuna bo‘ling va suhbatni davom ettiring",
   "callKeepGoingTitle": "Davom etamizmi?",
-  "callKeepGoingSubtitle": "Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz."
+  "callKeepGoingSubtitle": "Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz.",
+  "articulationSelectedWord": "Tanlangan so'z",
+  "articulationYouSaid": "Talaffuzingiz",
+  "articulationTargetSound": "Maqsad",
+  "articulationListenNative": "Ona tili talaffuzini eshitish"
 }

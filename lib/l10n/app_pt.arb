@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Sua chamada gratuita terminou",
   "callFreeEndedCta": "Assine e continue conversando",
   "callKeepGoingTitle": "Vamos continuar?",
-  "callKeepGoingSubtitle": "As chamadas seguem em blocos de 5 minutos. Vamos perguntar a cada vez."
+  "callKeepGoingSubtitle": "As chamadas seguem em blocos de 5 minutos. Vamos perguntar a cada vez.",
+  "articulationSelectedWord": "Palavra selecionada",
+  "articulationYouSaid": "Sua pronúncia",
+  "articulationTargetSound": "Alvo",
+  "articulationListenNative": "Ouvir pronúncia nativa"
 }

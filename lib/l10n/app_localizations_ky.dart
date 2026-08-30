@@ -2176,11 +2176,14 @@ class AppLocalizationsKy extends AppLocalizations {
       'Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Тандалган сөз';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Сиздин айтылышыңыз';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Максат';
+
+  @override
+  String get articulationListenNative => 'Эне тилиндеги айтылышты угуу';
 }

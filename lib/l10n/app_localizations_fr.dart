@@ -2213,11 +2213,14 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les appels se poursuivent par tranches de 5 minutes. On te redemandera à chaque fois.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Mot sélectionné';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Votre prononciation';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Cible';
+
+  @override
+  String get articulationListenNative => 'Écouter un locuteur natif';
 }

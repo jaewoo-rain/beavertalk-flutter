@@ -2170,11 +2170,14 @@ class AppLocalizationsUr extends AppLocalizations {
       'کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'منتخب لفظ';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'آپ کا تلفظ';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'ہدف';
+
+  @override
+  String get articulationListenNative => 'مقامی تلفظ سنیں';
 }

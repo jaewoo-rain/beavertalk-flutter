@@ -2178,11 +2178,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Звонки идут отрезками по 5 минут. Мы будем спрашивать каждый раз.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Выбранное слово';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Ваше произношение';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Цель';
+
+  @override
+  String get articulationListenNative => 'Прослушать носителя языка';
 }

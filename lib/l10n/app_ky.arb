@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Акысыз чалууңуз аяктады",
   "callFreeEndedCta": "Жазылып, сүйлөшүүнү улантыңыз",
   "callKeepGoingTitle": "Улантабызбы?",
-  "callKeepGoingSubtitle": "Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз."
+  "callKeepGoingSubtitle": "Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз.",
+  "articulationSelectedWord": "Тандалган сөз",
+  "articulationYouSaid": "Сиздин айтылышыңыз",
+  "articulationTargetSound": "Максат",
+  "articulationListenNative": "Эне тилиндеги айтылышты угуу"
 }

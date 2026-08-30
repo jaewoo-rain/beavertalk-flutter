@@ -2184,11 +2184,14 @@ class AppLocalizationsMy extends AppLocalizations {
       'ခေါ်ဆိုမှုများသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်သည်။ အကြိမ်တိုင်း ထပ်မေးပါမည်။';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'ရွေးထားသော စကားလုံး';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'သင့်အသံထွက်';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'ပန်းတိုင်';
+
+  @override
+  String get articulationListenNative => 'ဇာတိအသံထွက် နားထောင်ရန်';
 }

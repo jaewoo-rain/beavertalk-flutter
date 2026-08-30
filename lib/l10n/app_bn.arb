@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "আপনার ফ্রি কল শেষ হয়েছে",
   "callFreeEndedCta": "সাবস্ক্রাইব করে কথা চালিয়ে যান",
   "callKeepGoingTitle": "চালিয়ে যাবেন?",
-  "callKeepGoingSubtitle": "কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।"
+  "callKeepGoingSubtitle": "কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।",
+  "articulationSelectedWord": "নির্বাচিত শব্দ",
+  "articulationYouSaid": "আপনার উচ্চারণ",
+  "articulationTargetSound": "লক্ষ্য",
+  "articulationListenNative": "নেটিভ উচ্চারণ শুনুন"
 }

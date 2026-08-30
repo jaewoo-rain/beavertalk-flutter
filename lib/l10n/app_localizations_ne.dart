@@ -2163,11 +2163,14 @@ class AppLocalizationsNe extends AppLocalizations {
       'कल ५ मिनेटको खण्डमा जारी रहन्छ। हरेक पटक हामी फेरि सोध्नेछौं।';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'छानिएको शब्द';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'तपाईंको उच्चारण';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'लक्ष्य';
+
+  @override
+  String get articulationListenNative => 'नेटिभ उच्चारण सुन्नुहोस्';
 }

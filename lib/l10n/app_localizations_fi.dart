@@ -2178,11 +2178,14 @@ class AppLocalizationsFi extends AppLocalizations {
       'Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Valittu sana';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Ääntämisesi';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Tavoite';
+
+  @override
+  String get articulationListenNative => 'Kuuntele äidinkielistä ääntämistä';
 }

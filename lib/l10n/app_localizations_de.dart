@@ -2199,11 +2199,14 @@ class AppLocalizationsDe extends AppLocalizations {
       'Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Ausgewähltes Wort';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Deine Aussprache';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Ziel';
+
+  @override
+  String get articulationListenNative => 'Muttersprachler anhören';
 }

@@ -2166,11 +2166,14 @@ class AppLocalizationsBn extends AppLocalizations {
       'কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'নির্বাচিত শব্দ';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'আপনার উচ্চারণ';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'লক্ষ্য';
+
+  @override
+  String get articulationListenNative => 'নেটিভ উচ্চারণ শুনুন';
 }

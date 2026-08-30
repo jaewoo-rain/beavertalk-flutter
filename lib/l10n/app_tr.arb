@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Ücretsiz aramanız sona erdi",
   "callFreeEndedCta": "Abone ol ve konuşmaya devam et",
   "callKeepGoingTitle": "Devam edelim mi?",
-  "callKeepGoingSubtitle": "Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız."
+  "callKeepGoingSubtitle": "Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız.",
+  "articulationSelectedWord": "Seçilen kelime",
+  "articulationYouSaid": "Telaffuzunuz",
+  "articulationTargetSound": "Hedef",
+  "articulationListenNative": "Anadil telaffuzunu dinle"
 }

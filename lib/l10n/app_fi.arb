@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Ilmainen puhelusi päättyi",
   "callFreeEndedCta": "Tilaa ja jatka juttelua",
   "callKeepGoingTitle": "Jatketaanko?",
-  "callKeepGoingSubtitle": "Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen."
+  "callKeepGoingSubtitle": "Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.",
+  "articulationSelectedWord": "Valittu sana",
+  "articulationYouSaid": "Ääntämisesi",
+  "articulationTargetSound": "Tavoite",
+  "articulationListenNative": "Kuuntele äidinkielistä ääntämistä"
 }

@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Az ingyenes hívásod véget ért",
   "callFreeEndedCta": "Fizess elő és beszélgess tovább",
   "callKeepGoingTitle": "Folytatjuk?",
-  "callKeepGoingSubtitle": "A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk."
+  "callKeepGoingSubtitle": "A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk.",
+  "articulationSelectedWord": "Kiválasztott szó",
+  "articulationYouSaid": "A kiejtésed",
+  "articulationTargetSound": "Cél",
+  "articulationListenNative": "Anyanyelvi kiejtés meghallgatása"
 }

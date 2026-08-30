@@ -2166,11 +2166,14 @@ class AppLocalizationsSi extends AppLocalizations {
       'ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'තෝරාගත් වචනය';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'ඔබේ උච්චාරණය';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'ඉලක්කය';
+
+  @override
+  String get articulationListenNative => 'ස්වදේශික උච්චාරණයට සවන් දෙන්න';
 }

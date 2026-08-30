@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "無料通話が終了しました",
   "callFreeEndedCta": "登録して会話を続ける",
   "callKeepGoingTitle": "続けますか？",
-  "callKeepGoingSubtitle": "通話は5分ごとに続きます。そのたびにお伺いします。"
+  "callKeepGoingSubtitle": "通話は5分ごとに続きます。そのたびにお伺いします。",
+  "articulationSelectedWord": "選んだ単語",
+  "articulationYouSaid": "あなたの発音",
+  "articulationTargetSound": "お手本",
+  "articulationListenNative": "ネイティブの発音を聞く"
 }

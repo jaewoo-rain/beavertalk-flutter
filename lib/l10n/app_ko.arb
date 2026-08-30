@@ -660,5 +660,6 @@
   "callKeepGoingSubtitle": "통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요.",
   "articulationSelectedWord": "선택한 단어",
   "articulationYouSaid": "내 발음",
-  "articulationTargetSound": "목표"
+  "articulationTargetSound": "목표",
+  "articulationListenNative": "원어민 발음 듣기"
 }

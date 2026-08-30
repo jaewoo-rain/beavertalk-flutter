@@ -2180,11 +2180,14 @@ class AppLocalizationsId extends AppLocalizations {
       'Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Kata terpilih';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Pelafalanmu';
 
   @override
   String get articulationTargetSound => 'Target';
+
+  @override
+  String get articulationListenNative => 'Dengarkan pelafalan penutur asli';
 }

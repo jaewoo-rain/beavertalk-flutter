@@ -2195,11 +2195,14 @@ class AppLocalizationsIt extends AppLocalizations {
       'Le chiamate proseguono a blocchi di 5 minuti. Te lo chiederemo ogni volta.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Parola selezionata';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'La tua pronuncia';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Obiettivo';
+
+  @override
+  String get articulationListenNative => 'Ascolta la pronuncia madrelingua';
 }

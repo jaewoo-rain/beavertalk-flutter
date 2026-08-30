@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Panggilan gratismu sudah habis",
   "callFreeEndedCta": "Berlangganan dan lanjut ngobrol",
   "callKeepGoingTitle": "Lanjut?",
-  "callKeepGoingSubtitle": "Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali."
+  "callKeepGoingSubtitle": "Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali.",
+  "articulationSelectedWord": "Kata terpilih",
+  "articulationYouSaid": "Pelafalanmu",
+  "articulationTargetSound": "Target",
+  "articulationListenNative": "Dengarkan pelafalan penutur asli"
 }

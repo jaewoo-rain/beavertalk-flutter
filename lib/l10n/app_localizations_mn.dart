@@ -2174,11 +2174,14 @@ class AppLocalizationsMn extends AppLocalizations {
       'Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Сонгосон үг';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Таны дуудлага';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Зорилт';
+
+  @override
+  String get articulationListenNative => 'Уугуул дуудлагыг сонсох';
 }

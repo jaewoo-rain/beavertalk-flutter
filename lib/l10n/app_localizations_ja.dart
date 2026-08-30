@@ -2105,11 +2105,14 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callKeepGoingSubtitle => '通話は5分ごとに続きます。そのたびにお伺いします。';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => '選んだ単語';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'あなたの発音';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'お手本';
+
+  @override
+  String get articulationListenNative => 'ネイティブの発音を聞く';
 }

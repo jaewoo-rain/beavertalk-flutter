@@ -2171,11 +2171,14 @@ class AppLocalizationsKk extends AppLocalizations {
       'Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Таңдалған сөз';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Сіздің айтылымыңыз';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Мақсат';
+
+  @override
+  String get articulationListenNative => 'Ана тілі айтылымын тыңдау';
 }

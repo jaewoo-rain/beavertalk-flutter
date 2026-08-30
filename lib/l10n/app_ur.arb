@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "آپ کی مفت کال ختم ہو گئی",
   "callFreeEndedCta": "سبسکرائب کریں اور بات جاری رکھیں",
   "callKeepGoingTitle": "جاری رکھیں؟",
-  "callKeepGoingSubtitle": "کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔"
+  "callKeepGoingSubtitle": "کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔",
+  "articulationSelectedWord": "منتخب لفظ",
+  "articulationYouSaid": "آپ کا تلفظ",
+  "articulationTargetSound": "ہدف",
+  "articulationListenNative": "مقامی تلفظ سنیں"
 }

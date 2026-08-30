@@ -2100,11 +2100,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callKeepGoingSubtitle => '通话以5分钟为一段继续。每次都会再询问你。';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => '所选单词';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => '你的发音';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => '目标';
+
+  @override
+  String get articulationListenNative => '听母语者发音';
 }

@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Naubos na ang libre mong tawag",
   "callFreeEndedCta": "Mag-subscribe at magpatuloy",
   "callKeepGoingTitle": "Ituloy pa?",
-  "callKeepGoingSubtitle": "Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon."
+  "callKeepGoingSubtitle": "Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon.",
+  "articulationSelectedWord": "Napiling salita",
+  "articulationYouSaid": "Ang bigkas mo",
+  "articulationTargetSound": "Target",
+  "articulationListenNative": "Pakinggan ang native na bigkas"
 }

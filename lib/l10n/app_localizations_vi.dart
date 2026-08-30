@@ -2171,11 +2171,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Từ đã chọn';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'Phát âm của bạn';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Mục tiêu';
+
+  @override
+  String get articulationListenNative => 'Nghe phát âm bản ngữ';
 }

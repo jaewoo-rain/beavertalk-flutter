@@ -1419,5 +1419,6 @@
   },
   "articulationSelectedWord": "Selected word",
   "articulationYouSaid": "You said",
-  "articulationTargetSound": "Target"
+  "articulationTargetSound": "Target",
+  "articulationListenNative": "Listen to a native speaker"
 }

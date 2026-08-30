@@ -2189,11 +2189,14 @@ class AppLocalizationsHu extends AppLocalizations {
       'A hívások 5 perces szakaszokban folytatódnak. Minden alkalommal rákérdezünk.';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'Kiválasztott szó';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'A kiejtésed';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'Cél';
+
+  @override
+  String get articulationListenNative => 'Anyanyelvi kiejtés meghallgatása';
 }

@@ -2162,11 +2162,14 @@ class AppLocalizationsTh extends AppLocalizations {
       'สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง';
 
   @override
-  String get articulationSelectedWord => 'Selected word';
+  String get articulationSelectedWord => 'คำที่เลือก';
 
   @override
-  String get articulationYouSaid => 'You said';
+  String get articulationYouSaid => 'การออกเสียงของคุณ';
 
   @override
-  String get articulationTargetSound => 'Target';
+  String get articulationTargetSound => 'เป้าหมาย';
+
+  @override
+  String get articulationListenNative => 'ฟังการออกเสียงเจ้าของภาษา';
 }

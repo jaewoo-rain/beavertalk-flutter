@@ -649,5 +649,9 @@
   "callFreeEndedTitle": "Таны үнэгүй дуудлага дууслаа",
   "callFreeEndedCta": "Захиалж яриагаа үргэлжлүүл",
   "callKeepGoingTitle": "Үргэлжлүүлэх үү?",
-  "callKeepGoingSubtitle": "Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна."
+  "callKeepGoingSubtitle": "Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна.",
+  "articulationSelectedWord": "Сонгосон үг",
+  "articulationYouSaid": "Таны дуудлага",
+  "articulationTargetSound": "Зорилт",
+  "articulationListenNative": "Уугуул дуудлагыг сонсох"
 }
