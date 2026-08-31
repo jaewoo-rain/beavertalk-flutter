@@ -1452,11 +1452,15 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// Returns true when the socket is up and the caller should proceed to
   /// [_startAudio]. Never touches playback, the mic, or the audio session.
+  /// [keepCallkitCall] 은 **이 연결이 같은 CallKit 콜을 이어받는가**다(구간 이어가기).
+  /// [_connect] 는 언제나 teardown-first 라, 이걸 안 넘기면 그 teardown 이 방금 살려
+  /// 둔 콜을 도로 끊는다 — 이어가는 순간 잠금화면 통화가 사라진다.
   Future<bool> _connect({
     required String? callUuid,
     required String? inboundCallId,
     required bool callkitOwnedAudio,
     CallChannel? callChannel,
+    bool keepCallkitCall = false,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1468,7 +1472,7 @@ class NormalCallController extends Notifier<CallState> {
     _starting = true;
     try {
       // teardown-first-then-connect → two sockets are structurally impossible.
-      await _teardown();
+      await _teardown(keepCallkitCall: keepCallkitCall);
       // Claim this start's generation AFTER the initial teardown. A hangUp() at
       // any await below bumps _gen, so `_stale(myGen)` aborts this start cleanly.
       final myGen = ++_gen;
@@ -4417,7 +4421,11 @@ class NormalCallController extends Notifier<CallState> {
       // [_hangUp] 이 올리는 [_gen] 이 그 외부 신호다.
       final gen = _gen;
       _expectClose = true;
-      await _teardown();
+      // ⭐ CallKit 콜은 **살려 둔다** — 대화는 아직 안 끝났다. 이걸 끊으면 그 ENDED 가
+      //   코디네이터를 거쳐 [hangUp] 으로 돌아와, 바로 아래 가드가 **우리가 끊은 것을
+      //   사용자가 끊은 것으로** 읽고 시트를 못 띄운다(iOS 잠금화면 통화가 5분에 죽던
+      //   원인). 살려 두면 잠금화면 UI·오디오 세션도 시트를 보는 동안 유지된다.
+      await _teardown(keepCallkitCall: true);
       if (_gen != gen) {
         _log('구간 종료 중 통화가 끊겼다 — 결정 대기로 덮지 않는다');
         return;
@@ -4465,6 +4473,10 @@ class NormalCallController extends Notifier<CallState> {
       //   꼬리와 같은 모양으로 상태를 직접 만든다.
       if (!canExtend && paid) {
         _log('구간 $used 소진 — 시트 없이 종료');
+        // ⛔ **여기서는 CallKit 콜을 끝내야 한다.** 위 [_teardown] 이 `keepCallkitCall`
+        //   로 살려 뒀는데, 이 갈래는 대화가 진짜로 끝나는 자리다. 안 끝내면 통화는
+        //   끝났는데 잠금화면에 통화 UI 가 타이머를 돌리며 남는다.
+        await _endCallkitCall();
         state = CallState(
           phase: CallPhase.ended,
           callId: segmentId,
@@ -4619,6 +4631,10 @@ class NormalCallController extends Notifier<CallState> {
     if (!CallAllowance.canExtend(
         segmentsUsed: used, paidAccess: state.paidCallTime)) {
       _log('continueCall 무시 — 상한을 이미 다 썼다 (구간 $used)');
+      // ⛔ 여기서도 CallKit 콜을 끝낸다. [_reachSegmentEnd] 가 경계에서 콜을 살려 두므로
+      //   ("대화가 아직 안 끝났다"), 이어가지 **않기로 확정된** 이 갈래에서 놓아 주지
+      //   않으면 잠금화면에 통화 UI 가 타이머를 돌리며 남는다.
+      await _endCallkitCall();
       return;
     }
     _continuing = true;
@@ -4665,11 +4681,20 @@ class NormalCallController extends Notifier<CallState> {
       //   필드를 통째로 빼고, 서버는 알람을 되짚지 못해 대표 캐릭터로 떨어진다 —
       //   이어간 순간 상대가 바뀐다(그 필드 문서 참조). 수신통화가 아니면 원래
       //   null 이라 종전과 같다.
+      //
+      // ⭐ CallKit 콜도 **그대로 이어받는다**(iOS 잠금화면). 새 콜을 만들지 않고 살려 둔
+      //   콜을 계속 쓴다 — 잠금 중 오디오 세션·백그라운드 실행·잠금화면 UI 가 전부 그
+      //   콜에 딸려 있어서, 여기서 놓으면 2구간이 무음이 된다.
+      //   [_callkitOwnedAudio] 를 그대로 넘기는 이유: [_startAudio] 가
+      //   `_callkitOwnedAudio && await _isCallKitAudioActive()` 로 **시스템이 세션을
+      //   아직 들고 있는지 검증**한다. 살아 있으면 우리가 덮어쓰지 않고, 죽었으면
+      //   직접 켠다. 안드로이드는 둘 다 null/false 라 종전과 같다.
       final ok = await _connect(
-        callUuid: null,
+        callUuid: _callUuid,
         inboundCallId: _inboundCallId,
-        callkitOwnedAudio: false,
+        callkitOwnedAudio: _callkitOwnedAudio,
         callChannel: carried.channel,
+        keepCallkitCall: true,
       );
       if (!ok) {
         _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');
@@ -4768,7 +4793,30 @@ class NormalCallController extends Notifier<CallState> {
   ///
   /// When [keepError] is true the phase is left untouched (an error phase was
   /// already set by the caller); otherwise it resets to [CallPhase.idle].
-  Future<void> _teardown({bool keepError = false}) async {
+  /// 이 세션을 떠받치던 CallKit 콜을 끝낸다. 없으면 아무 일도 안 한다.
+  ///
+  /// `_callUuid` 를 **먼저** 비우는 이유: 이 호출이 돌려주는 `ACTION_CALL_ENDED` 가
+  /// 다시 이쪽으로 들어와도 두 번 끝내지 않게 한다.
+  ///
+  /// ⚠ 그건 **컨트롤러 안에서만** 그렇다. `IncomingCallCoordinator` 는 자기
+  /// `_activeUuid` 를 따로 들고 있어서 이 ENDED 를 **사용자의 종료로 읽고**
+  /// [hangUp] 을 부른다(iOS). 그래서 대화가 계속돼야 하는 자리에서는 이 함수를
+  /// 아예 부르지 않는다 — [_teardown] 의 `keepCallkitCall` 을 보라.
+  Future<void> _endCallkitCall() async {
+    final callUuid = _callUuid;
+    _callUuid = null;
+    if (callUuid == null) return;
+    try {
+      await FlutterCallkitIncoming.endCall(callUuid);
+    } catch (_) {
+      // Already gone (user pressed End on the lock screen) — nothing to do.
+    }
+  }
+
+  Future<void> _teardown({
+    bool keepError = false,
+    bool keepCallkitCall = false,
+  }) async {
     // ⛔ **아래 리셋들보다 먼저** 붙잡는다. 요약 줄이 실제로 쓴 통로를 말해야 하는데,
     //   리셋이 통로를 기본값으로 되돌리므로 나중에 읽으면 거짓이 된다(실기기 확인).
     final endedChannel = _channelMode;
@@ -4781,15 +4829,17 @@ class NormalCallController extends Notifier<CallState> {
     // Safe on the [_connect] path too: _callUuid is still the PREVIOUS call's at
     // that point (it is assigned after this teardown), so a stale call gets
     // cleaned up rather than the new one.
-    final callUuid = _callUuid;
-    _callUuid = null; // cleared first: the ENDED event this triggers is a no-op
-    if (callUuid != null) {
-      try {
-        await FlutterCallkitIncoming.endCall(callUuid);
-      } catch (_) {
-        // Already gone (user pressed End on the lock screen) — nothing to do.
-      }
-    }
+    //
+    // ⛔ **[keepCallkitCall] 이면 손대지 않는다 — 5분 구간 경계다.** CallKit 콜은
+    //   「대화」를 뜻하지 「소켓」을 뜻하지 않는다(바로 위 주석의 "whole conversation"
+    //   이 그 말이다). 구간 경계는 소켓 사건이지 대화의 끝이 아닌데, 여기서 끊으면
+    //   iOS 잠금화면 통화가 **5분에 통째로 죽었다**:
+    //     이 endCall → `ACTION_CALL_ENDED` → 코디네이터가 **사용자의 종료로 읽고**
+    //     [hangUp] → `_gen++` → [_reachSegmentEnd] 가 자기 가드에 걸려 시트를 못 띄움.
+    //   덤으로 잠금 중 오디오 세션·백그라운드 실행이 그 콜에 딸려 있어, 이어가도
+    //   2구간이 무음이었다.
+    //   (안드로이드는 `_callUuid` 가 늘 null 이라 이 분기와 무관하다.)
+    if (!keepCallkitCall) await _endCallkitCall();
 
     _elapsedTimer?.cancel();
     _elapsedTimer = null;
