@@ -2112,7 +2112,4 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'お手本';
-
-  @override
-  String get articulationListenNative => 'ネイティブの発音を聞く';
 }

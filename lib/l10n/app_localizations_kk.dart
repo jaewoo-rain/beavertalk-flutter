@@ -2178,7 +2178,4 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Мақсат';
-
-  @override
-  String get articulationListenNative => 'Ана тілі айтылымын тыңдау';
 }

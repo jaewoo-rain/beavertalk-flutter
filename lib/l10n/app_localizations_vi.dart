@@ -2178,7 +2178,4 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Mục tiêu';
-
-  @override
-  String get articulationListenNative => 'Nghe phát âm bản ngữ';
 }

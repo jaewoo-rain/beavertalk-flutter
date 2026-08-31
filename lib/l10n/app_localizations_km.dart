@@ -2179,7 +2179,4 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'គោលដៅ';
-
-  @override
-  String get articulationListenNative => 'ស្តាប់ការបញ្ចេញសំឡេងម្ចាស់ភាសា';
 }

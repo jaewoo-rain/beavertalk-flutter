@@ -2169,7 +2169,4 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'เป้าหมาย';
-
-  @override
-  String get articulationListenNative => 'ฟังการออกเสียงเจ้าของภาษา';
 }

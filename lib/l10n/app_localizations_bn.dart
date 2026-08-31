@@ -2173,7 +2173,4 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'লক্ষ্য';
-
-  @override
-  String get articulationListenNative => 'নেটিভ উচ্চারণ শুনুন';
 }

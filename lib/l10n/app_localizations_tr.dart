@@ -2179,7 +2179,4 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Hedef';
-
-  @override
-  String get articulationListenNative => 'Anadil telaffuzunu dinle';
 }

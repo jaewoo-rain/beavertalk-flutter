@@ -2194,7 +2194,4 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Target';
-
-  @override
-  String get articulationListenNative => 'Pakinggan ang native na bigkas';
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../components/atoms/button.dart';
+import '../../../components/icons/app_icons.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_color_tokens.dart';
 import '../../../theme/app_spacing.dart';
@@ -269,6 +270,7 @@ class _ArticulationSheet extends StatelessWidget {
   }
 
   Widget _actions(BuildContext context, AppLocalizations l10n) {
+    final c = context.c;
     final close = Button(
       type: BtnType.secondaryFill,
       text: l10n.close,
@@ -281,15 +283,32 @@ class _ArticulationSheet extends StatelessWidget {
         const SizedBox(width: AppSpacing.s8),
         Expanded(
           flex: 3,
+          // ⛔ **문장형 라벨로 되돌리지 마라**(2026-08-31 사용자 결정).
+          //   이 칸의 라벨 가용 폭은 실측 **127.8dp**(라틴 약 9자)뿐이라
+          //   「원어민 발음 듣기」류의 문장은 30개 로케일 중 28곳에서 잘렸다.
+          //   실기기에서도 영어가 `Listen to a native spe…` 로 잘리는 것을 확인했다.
+          //   문구를 줄이는 것으로는 안 풀린다 — 2낱말 후보 30종을 재도 20곳이 넘쳤다.
+          //   그래서 **낱말 하나 + 볼륨 아이콘**으로 간다.
+          //
           // ⚠ 라벨은 「원어민」인데 [onPlayNative] 가 실제로 트는 것은 문장의 표준
-          //   TTS 다(`learning_intro._playStandard`). 2026-08-30 에 시안(Figma
-          //   `Dialog/Articulation`)을 정본으로 삼기로 결정해 라벨을 맞춘 것이다.
-          //   원어민 녹음이 붙으면 재생 쪽을 바꾼다 — 라벨을 되돌리지 마라.
-          //   같은 화면 아래쪽의 `l10n.listenStandard` 버튼은 별개다(그쪽은 정직함).
-          child: Button(
-            type: BtnType.primaryFill,
-            text: l10n.articulationListenNative,
-            onPressed: onPlayNative,
+          //   TTS 다(`learning_intro._playStandard`). 원어민 녹음이 붙으면 **재생
+          //   쪽을** 바꾼다.
+          //
+          // 아이콘을 왼쪽에 두는 것은 취향이 아니다 — 결과 화면의 `원어민` 버튼이
+          // **같은 동작**을 같은 모양으로 이미 쓰고 있다(`learning_intro`).
+          // 둘이 달라 보이면 다른 기능으로 읽힌다.
+          child: Semantics(
+            button: true,
+            label: l10n.nativeLabel,
+            child: Button(
+              type: BtnType.primaryFill,
+              // 라벨 없음 = 아이콘 전용. 이름은 위 [Semantics] 가 댄다.
+              text: '',
+              // `Button` 의 `_sizedIcon` 은 `IconTheme` 만 덮으므로 색을 직접 넘긴다
+              // (`AppIcons.*` 는 색을 인자로 받는다). primaryFill 의 전경은 On-Primary.
+              leftIcon: AppIcons.volume(size: 20, color: c.primaryOnPrimary),
+              onPressed: onPlayNative,
+            ),
           ),
         ),
       ],

@@ -2202,7 +2202,4 @@ class AppLocalizationsIt extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Obiettivo';
-
-  @override
-  String get articulationListenNative => 'Ascolta la pronuncia madrelingua';
 }

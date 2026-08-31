@@ -2185,7 +2185,4 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Tavoite';
-
-  @override
-  String get articulationListenNative => 'Kuuntele äidinkielistä ääntämistä';
 }

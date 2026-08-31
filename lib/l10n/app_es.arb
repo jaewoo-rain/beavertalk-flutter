@@ -652,6 +652,5 @@
   "callKeepGoingSubtitle": "Las llamadas continúan en tramos de 5 minutos. Te preguntaremos cada vez.",
   "articulationSelectedWord": "Palabra seleccionada",
   "articulationYouSaid": "Tu pronunciación",
-  "articulationTargetSound": "Objetivo",
-  "articulationListenNative": "Escuchar pronunciación nativa"
+  "articulationTargetSound": "Objetivo"
 }

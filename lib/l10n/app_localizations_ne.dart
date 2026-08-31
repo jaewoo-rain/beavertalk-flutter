@@ -2170,7 +2170,4 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'लक्ष्य';
-
-  @override
-  String get articulationListenNative => 'नेटिभ उच्चारण सुन्नुहोस्';
 }

@@ -2191,7 +2191,4 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'ပန်းတိုင်';
-
-  @override
-  String get articulationListenNative => 'ဇာတိအသံထွက် နားထောင်ရန်';
 }

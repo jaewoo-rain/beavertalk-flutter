@@ -2173,7 +2173,4 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'लक्ष्य';
-
-  @override
-  String get articulationListenNative => 'मूल वक्ता का उच्चारण सुनें';
 }

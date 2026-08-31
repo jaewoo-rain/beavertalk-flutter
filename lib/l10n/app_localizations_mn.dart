@@ -2181,7 +2181,4 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Зорилт';
-
-  @override
-  String get articulationListenNative => 'Уугуул дуудлагыг сонсох';
 }

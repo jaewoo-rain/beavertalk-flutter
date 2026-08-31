@@ -2173,7 +2173,4 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'ඉලක්කය';
-
-  @override
-  String get articulationListenNative => 'ස්වදේශික උච්චාරණයට සවන් දෙන්න';
 }

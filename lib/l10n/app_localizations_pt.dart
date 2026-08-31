@@ -2198,7 +2198,4 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Alvo';
-
-  @override
-  String get articulationListenNative => 'Ouvir pronúncia nativa';
 }

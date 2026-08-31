@@ -2177,7 +2177,4 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'ہدف';
-
-  @override
-  String get articulationListenNative => 'مقامی تلفظ سنیں';
 }

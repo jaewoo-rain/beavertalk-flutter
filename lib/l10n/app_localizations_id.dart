@@ -2187,7 +2187,4 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Target';
-
-  @override
-  String get articulationListenNative => 'Dengarkan pelafalan penutur asli';
 }

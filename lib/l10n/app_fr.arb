@@ -652,6 +652,5 @@
   "callKeepGoingSubtitle": "Les appels se poursuivent par tranches de 5 minutes. On te redemandera à chaque fois.",
   "articulationSelectedWord": "Mot sélectionné",
   "articulationYouSaid": "Votre prononciation",
-  "articulationTargetSound": "Cible",
-  "articulationListenNative": "Écouter un locuteur natif"
+  "articulationTargetSound": "Cible"
 }

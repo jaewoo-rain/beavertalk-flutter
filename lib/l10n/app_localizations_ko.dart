@@ -2114,7 +2114,4 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get articulationTargetSound => '목표';
-
-  @override
-  String get articulationListenNative => '원어민 발음 듣기';
 }

@@ -652,6 +652,5 @@
   "callKeepGoingSubtitle": "Звонки идут отрезками по 5 минут. Мы будем спрашивать каждый раз.",
   "articulationSelectedWord": "Выбранное слово",
   "articulationYouSaid": "Ваше произношение",
-  "articulationTargetSound": "Цель",
-  "articulationListenNative": "Прослушать носителя языка"
+  "articulationTargetSound": "Цель"
 }

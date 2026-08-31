@@ -2166,7 +2166,4 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'الهدف';
-
-  @override
-  String get articulationListenNative => 'استمع إلى النطق الأصلي';
 }

@@ -2201,7 +2201,4 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Sasaran';
-
-  @override
-  String get articulationListenNative => 'Dengar sebutan penutur asli';
 }

@@ -272,17 +272,23 @@ class Button extends StatelessWidget {
     if (leftIcon != null) {
       children.add(_sizedIcon(leftIcon!, spec.icon, fg));
     }
-    children.add(
-      Flexible(
-        child: Text(
-          text,
-          style: _textStyle().copyWith(color: fg),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          softWrap: false,
+    // 빈 [text] 는 **아이콘 전용 버튼**이다. 빈 `Text` 를 그대로 넣으면 폭 0 짜리
+    // 자식이 하나 남고 그 앞의 gap 4 때문에 아이콘이 2px 치우친다. 아예 뺀다.
+    // ⚠ 라벨이 없으면 스크린리더가 읽을 것도 없다 — 호출부가 [Semantics] 로
+    //   이름을 붙여야 한다.
+    if (text.isNotEmpty) {
+      children.add(
+        Flexible(
+          child: Text(
+            text,
+            style: _textStyle().copyWith(color: fg),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            softWrap: false,
+          ),
         ),
-      ),
-    );
+      );
+    }
     if (rightIcon != null) {
       children.add(_sizedIcon(rightIcon!, spec.icon, fg));
     }

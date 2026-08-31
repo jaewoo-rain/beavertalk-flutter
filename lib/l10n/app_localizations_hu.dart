@@ -2196,7 +2196,4 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Cél';
-
-  @override
-  String get articulationListenNative => 'Anyanyelvi kiejtés meghallgatása';
 }

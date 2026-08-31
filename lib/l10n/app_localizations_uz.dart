@@ -2194,7 +2194,4 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Maqsad';
-
-  @override
-  String get articulationListenNative => 'Ona tili talaffuzini eshitish';
 }

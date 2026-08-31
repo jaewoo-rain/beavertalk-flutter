@@ -4119,12 +4119,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target'**
   String get articulationTargetSound;
-
-  /// No description provided for @articulationListenNative.
-  ///
-  /// In en, this message translates to:
-  /// **'Listen to a native speaker'**
-  String get articulationListenNative;
 }
 
 class _AppLocalizationsDelegate

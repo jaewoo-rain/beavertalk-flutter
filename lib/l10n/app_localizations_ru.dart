@@ -2185,7 +2185,4 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Цель';
-
-  @override
-  String get articulationListenNative => 'Прослушать носителя языка';
 }

@@ -2200,7 +2200,4 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Objetivo';
-
-  @override
-  String get articulationListenNative => 'Escuchar pronunciación nativa';
 }

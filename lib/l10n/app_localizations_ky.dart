@@ -2183,7 +2183,4 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Максат';
-
-  @override
-  String get articulationListenNative => 'Эне тилиндеги айтылышты угуу';
 }

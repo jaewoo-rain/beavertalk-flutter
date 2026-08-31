@@ -2179,7 +2179,4 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Target';
-
-  @override
-  String get articulationListenNative => 'Listen to a native speaker';
 }

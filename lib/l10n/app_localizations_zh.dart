@@ -2107,7 +2107,4 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get articulationTargetSound => '目标';
-
-  @override
-  String get articulationListenNative => '听母语者发音';
 }

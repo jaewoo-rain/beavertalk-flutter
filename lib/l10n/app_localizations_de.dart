@@ -2206,7 +2206,4 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Ziel';
-
-  @override
-  String get articulationListenNative => 'Muttersprachler anhören';
 }

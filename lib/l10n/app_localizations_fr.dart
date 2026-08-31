@@ -2220,7 +2220,4 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Cible';
-
-  @override
-  String get articulationListenNative => 'Écouter un locuteur natif';
 }
