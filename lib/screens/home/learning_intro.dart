@@ -21,9 +21,9 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/normalcall/presentation/avatar_view.dart'
     show
         avatarAssetDirFor,
-        kEmotionLaugh,
+        kEmotionCrying,
+        kEmotionExciting,
         kEmotionNeutral,
-        kEmotionSad,
         kIdleListen,
         kIdleThink,
         kIdleWait;
@@ -243,15 +243,19 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// 얼굴이 서로 다른 말을 한다. 그래서 둘 중 하나라도 걸리면 sad 로 간다.
   ///
   /// ⛔ happy·angry 가 아니다(2026-08-30 사용자 결정). 학습 반응은 **채점자의 감정**이
-  ///    아니라 **같이 기뻐하고 같이 아쉬워하는 짝의 감정**이다 — 맞히면 크게 웃고
-  ///    (`laugh`), 틀리면 화내는 게 아니라 아쉬워한다(`emo_sad`).
-  ///    자산은 5캐릭터 전부에 있고 `_emoAsset` 에 이미 매핑돼 있다.
+  ///    아니라 **같이 기뻐하고 같이 아쉬워하는 짝의 감정**이다 — 맞히면 같이 신나고,
+  ///    틀리면 화내는 게 아니라 같이 운다.
+  ///
+  /// ⛔ 통화용 `emo_*`·`laugh` 로 되돌리지 마라(2026-08-31 사용자 결정). 그쪽은
+  ///    「말하면서 감정」으로 만들어져 **입이 움직인다** — 무발화 밴드에 얹으면
+  ///    소리 없이 입만 뻐끔거린다. `react_*` 는 표정·몸짓만 쓰는 전용 자산이다.
+  ///    5캐릭터 전부에 있고 [kEmotionExciting]·[kEmotionCrying] 로 매핑돼 있다.
   void _reactToFeedback(ReviewFeedback feedback) {
     final hasLow =
         feedback.charScores.any((c) => c.grade == CharGrade.low);
     final passed = !hasLow &&
         feedback.evaluation.totalScore >= _kReactionPassScore;
-    _avatarEmotion.value = passed ? kEmotionLaugh : kEmotionSad;
+    _avatarEmotion.value = passed ? kEmotionExciting : kEmotionCrying;
     // ⛔ `speaking` 을 켠다고 감정이 뜨는 게 아니다. `SyncAvatar` 의 발화 판정은
     //   **오디오 레벨**로만 켜지는데([_onLevel] 의 `audible`), 이 밴드는 무음이라
     //   레벨이 0 에 머문다. 그래서 `silentEmotion: true` 로 게이트를 연다
@@ -816,9 +820,33 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   ),
                 ),
                 // Bottom — the only part that changes shape per phase, cross-faded.
-                AnimatedSwitcher(
+                //
+                // ⛔ `layoutBuilder` 를 기본값으로 두지 마라. 기본 레이아웃은 나가는
+                //    자식과 들어오는 자식을 **가운데 정렬**로 겹쳐 놓는데, 분석·실패
+                //    단계는 캡션 한 줄이 위에 붙어 더 높다. 그래서 사라지는 마이크가
+                //    (높이차 ÷ 2)만큼 위로 떠오르며 지워진다 — 정지 버튼을 누른 자리와
+                //    스피너 자리가 어긋나 보이는 원인이다(실측 약 19dp).
+                //    마이크·스피너·재시도는 전부 묶음의 **맨 아래**에 있으므로
+                //    아래를 맞추면 세 단계의 앵커가 정확히 겹친다.
+                //
+                // [AnimatedSize] 는 높이 변화 자체를 나눠 준다. 없으면 캡션이 생기는
+                // 프레임에 위 문장 블록이 한 번에 튄다. 정렬을 같은 `bottomCenter` 로
+                // 둬야 커지는 방향이 위쪽이라 앵커가 안 움직인다.
+                AnimatedSize(
                   duration: const Duration(milliseconds: 250),
-                  child: _bottom(context, l10n, args, sentence),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.bottomCenter,
+                  child: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    layoutBuilder: (current, previous) => Stack(
+                      alignment: Alignment.bottomCenter,
+                      children: <Widget>[
+                        ...previous,
+                        ?current,
+                      ],
+                    ),
+                    child: _bottom(context, l10n, args, sentence),
+                  ),
                 ),
               ],
             ),
