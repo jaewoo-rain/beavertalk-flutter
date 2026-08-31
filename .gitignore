@@ -60,3 +60,7 @@ google-services.json
 packages/**/.gradle/
 # 자산 교체 전 백업 — 로컬 전용(레포에 영상 사본을 쌓지 않는다)
 backup_old_assets/
+
+# 로컬 전용 백업 — 공개 저장소라 .env 사본이 실수로 올라가면 그대로 유출이다
+*.bak
+.env.bak*
