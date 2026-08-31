@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 
 /// RatingButton — a circular icon toggle used for quick call ratings.
@@ -39,20 +40,29 @@ class RatingButton extends StatelessWidget {
       button: true,
       selected: selected,
       label: label,
-      child: Material(
-        color: selected ? context.c.primaryNormal : context.c.backgroundNormalAlternative,
-        shape: const CircleBorder(),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: SizedBox(
-            width: _size,
-            height: _size,
-            child: Center(
-              child: icon(
-                size: 28,
-                color: selected ? context.c.primaryOnPrimary : context.c.labelNormal,
+      // 채움과 글리프가 한 프레임에 갈리면 어느 쪽을 골랐는지 눈이 못 따라간다.
+      // 두 색 모두 실제 색이라(투명이 없다) 그대로 섞으면 된다.
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: selected ? 1 : 0),
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
+        builder: (context, t, _) => Material(
+          color: Color.lerp(context.c.backgroundNormalAlternative,
+              context.c.primaryNormal, t)!,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: SizedBox(
+              width: _size,
+              height: _size,
+              child: Center(
+                child: icon(
+                  size: 28,
+                  color: Color.lerp(context.c.labelNormal,
+                      context.c.primaryOnPrimary, t)!,
+                ),
               ),
             ),
           ),

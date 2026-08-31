@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -64,7 +65,10 @@ class AvatarCard extends StatelessWidget {
     final Color accent =
         active ? context.c.primaryNormal : context.c.labelNormal;
 
-    final card = Container(
+    // 채움·테두리·점·글자 넷이 한 프레임에 갈리던 자리다.
+    final card = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
         // `primary/normal-4` (4%), not the 10% this used to wash the selected
@@ -88,7 +92,9 @@ class AvatarCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Container(
+                AnimatedContainer(
+                  duration: AppMotion.medium,
+                  curve: AppMotion.toggle,
                   width: _dotSize,
                   height: _dotSize,
                   decoration: BoxDecoration(
@@ -98,13 +104,17 @@ class AvatarCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Flexible(
-                  child: Text(
-                    statusLabel!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: AnimatedDefaultTextStyle(
+                    duration: AppMotion.medium,
+                    curve: AppMotion.toggle,
                     // Caption 1 (12), not Label 1 (14) — measured on the alarm
                     // sheet's instances (`I3665:12415;164:13214`).
                     style: AppType.caption1.r.copyWith(color: accent),
+                    child: Text(
+                      statusLabel!,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_typography.dart';
 import '../icons/app_icons.dart';
 
@@ -140,25 +141,38 @@ class _Radio extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    if (!selected) {
-      return Container(
-        width: 22,
-        height: 22,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: c.lineNormal, width: 1.5),
-        ),
-      );
-    }
     // Check colour: On-Primary flips with the theme so the mint disc keeps its
     // mark visible in Light (#007A55 fill → white check); gold stays a
     // Static/Black mark on both modes, like every label on a gold face.
     final mark = tier == PlanRowTier.max ? c.staticBlack : c.primaryOnPrimary;
-    return Container(
-      width: 22,
-      height: 22,
-      decoration: BoxDecoration(shape: BoxShape.circle, color: accent),
-      child: Center(child: AppIcons.check(size: 16, color: mark)),
+    // ⚠ 두 상태를 `if (!selected) return ...` 로 가르면 위젯 자체가 통째로 갈려
+    //   보간할 대상이 없다. 하나의 트리로 두고 t 로만 섞는다 — 테두리는 색만
+    //   투명으로 빠지고(두께 1.5 고정), 채움은 차오르고, 체크는 페이드·팝으로 든다.
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(end: selected ? 1 : 0),
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
+      builder: (context, t, _) => Container(
+        width: 22,
+        height: 22,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: Color.lerp(const Color(0x00000000), accent, t),
+          border: Border.all(
+            color: Color.lerp(c.lineNormal, const Color(0x00000000), t)!,
+            width: 1.5,
+          ),
+        ),
+        child: Center(
+          child: Transform.scale(
+            scale: 0.6 + 0.4 * t,
+            child: Opacity(
+              opacity: t,
+              child: AppIcons.check(size: 16, color: mark),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

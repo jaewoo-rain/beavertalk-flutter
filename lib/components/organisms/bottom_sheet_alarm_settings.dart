@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
@@ -520,7 +521,10 @@ class _QuickStartCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final content = Container(
+    // 채움·테두리·아이콘·글자 넷이 한 프레임에 갈리던 자리다.
+    final content = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       // 91 in the frame; a min instead of a fixed height so a locale with a
       // longer preset name grows the card rather than overflowing it.
       constraints: const BoxConstraints(minHeight: 91),
@@ -529,7 +533,7 @@ class _QuickStartCard extends StatelessWidget {
         vertical: AppSpacing.s12,
       ),
       decoration: BoxDecoration(
-        color: selected ? context.c.primaryNormal4 : null,
+        color: selected ? context.c.primaryNormal4 : Colors.transparent,
         // 16. ⚠️ Figma's radius scale is shifted one step from [AppRadius]'s —
         // Figma `lg` is 16 where [AppRadius.lg] is 24. Read the number, not the
         // name.
@@ -543,9 +547,9 @@ class _QuickStartCard extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          icon(
-            size: 24,
+          AnimatedGlyphColor(
             color: selected ? context.c.primaryStrong : context.c.labelNormal,
+            builder: (c) => icon(size: 24, color: c),
           ),
           const SizedBox(height: 10), // no s10 token
           Text(
@@ -656,13 +660,19 @@ class _MeridiemSegment extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           onTap: onChanged == null ? null : () => onChanged!(value),
           child: Center(
-            child: Text(
-              label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            // 썸은 150ms 로 미끄러지는데 글자색만 한 프레임에 갈리면, 썸이 아직
+            // 오는 중인 칸이 먼저 어두워진다. 같은 150ms·easeOut 으로 맞춘다.
+            child: AnimatedDefaultTextStyle(
+              duration: const Duration(milliseconds: 150),
+              curve: Curves.easeOut,
               style: AppType.label2.r.copyWith(
                 // On the mint thumb the label must go dark, not white.
                 color: on ? context.c.primaryOnPrimary : context.c.labelNormal,
+              ),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),

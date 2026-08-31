@@ -2,6 +2,7 @@ import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -44,15 +45,21 @@ class CountrySelect extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget row = Container(
+    // ⚠ 테두리를 `selected ? Border.all(...) : null` 로 두면 두께가 0↔1 로 튀어
+    //   행 안쪽 폭이 1px 씩 흔들린다. 폭은 1 로 고정하고 **색만** 투명으로 섞는다.
+    final Widget row = AnimatedContainer(
+      duration: AppMotion.medium,
+      curve: AppMotion.toggle,
       height: 56,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: selected ? context.c.primaryNormal10 : Colors.transparent,
         borderRadius: BorderRadius.circular(AppRadius.md),
-        border: selected
-            ? Border.all(color: context.c.primaryNormal, width: 1)
-            : null,
+        border: Border.all(
+          color:
+              selected ? context.c.primaryNormal : const Color(0x00000000),
+          width: 1,
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -76,12 +83,22 @@ class CountrySelect extends StatelessWidget {
             ),
           ),
           // 24px trailing slot — check icon only when selected.
+          // 자리는 항상 24 를 차지하므로(레이아웃 불변) 체크만 페이드·팝으로 든다.
           SizedBox(
             width: 24,
             height: 24,
-            child: selected
-                ? AppIcons.check(size: 24, color: context.c.primaryNormal)
-                : null,
+            child: AnimatedScale(
+              duration: AppMotion.medium,
+              curve: AppMotion.toggle,
+              scale: selected ? 1 : 0.6,
+              child: AnimatedOpacity(
+                duration: AppMotion.medium,
+                curve: AppMotion.toggle,
+                opacity: selected ? 1 : 0,
+                child: AppIcons.check(
+                    size: 24, color: context.c.primaryNormal),
+              ),
+            ),
           ),
         ],
       ),

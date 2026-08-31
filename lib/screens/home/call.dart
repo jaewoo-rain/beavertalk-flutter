@@ -26,6 +26,7 @@ import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_motion.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
@@ -753,36 +754,53 @@ class _MicToggleButton extends StatelessWidget {
     final c = context.c;
     final glyph = muted ? c.staticWhite : c.labelNormal;
 
+    // 음소거는 통화 중에 **잘못 읽히면 안 되는** 상태다. 채움·테두리·글리프가
+    // 한 프레임에 갈리면 눌린 건지 화면이 튄 건지 구별이 안 된다. 사선은
+    // 좌하 → 우상으로 **그어지듯** 들어와, 무엇이 방금 켜졌는지 눈이 따라간다.
+    //
+    // ⚠ 채움을 `muted ? red : transparent` 로 미리 접지 마라 — 끌 때 목표색이
+    //   투명이 되어 보간이 투명→투명이 되고 채움만 한 프레임에 사라진다.
+    //   테두리도 폭을 1 로 고정하고 색만 섞는다(`BorderSide.none` 은 폭 0 이다).
     return Semantics(
       button: true,
       toggled: muted,
       label: semanticLabel,
-      child: Material(
-        color: muted ? c.accentBackgroundRed : Colors.transparent,
-        shape: CircleBorder(
-          side: muted ? BorderSide.none : BorderSide(color: c.lineNeutral),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: () => onChanged(!muted),
-          child: SizedBox(
-            width: _size,
-            height: _size,
-            child: Center(
-              child: SizedBox(
-                width: _iconSize,
-                height: _iconSize,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    AppIcons.mic(size: _iconSize, color: glyph),
-                    if (muted)
-                      CustomPaint(
-                        size: const Size.square(_iconSize),
-                        painter: _SlashPainter(color: glyph),
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: muted ? 1 : 0),
+        duration: AppMotion.medium,
+        curve: AppMotion.toggle,
+        builder: (context, t, _) => Material(
+          color: Color.lerp(Colors.transparent, c.accentBackgroundRed, t),
+          shape: CircleBorder(
+            side: BorderSide(
+              color: Color.lerp(c.lineNeutral, Colors.transparent, t)!,
+            ),
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: () => onChanged(!muted),
+            child: SizedBox(
+              width: _size,
+              height: _size,
+              child: Center(
+                child: SizedBox(
+                  width: _iconSize,
+                  height: _iconSize,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AppIcons.mic(
+                        size: _iconSize,
+                        color: Color.lerp(c.labelNormal, c.staticWhite, t)!,
                       ),
-                  ],
+                      if (t > 0)
+                        CustomPaint(
+                          size: const Size.square(_iconSize),
+                          painter: _SlashPainter(color: glyph, progress: t),
+                        ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -795,24 +813,27 @@ class _MicToggleButton extends StatelessWidget {
 
 /// 음소거 사선. 아이콘 자산에 `mic-off` 가 없어 위에 긋는다.
 class _SlashPainter extends CustomPainter {
-  const _SlashPainter({required this.color});
+  const _SlashPainter({required this.color, this.progress = 1});
 
   final Color color;
 
+  /// 사선을 어디까지 그었는지(0..1). 켤 때 좌하에서 우상으로 그어진다.
+  final double progress;
+
   @override
   void paint(Canvas canvas, Size size) {
+    if (progress <= 0) return;
     final p = Paint()
       ..color = color
       ..strokeWidth = 2
       ..strokeCap = StrokeCap.round;
     // 좌하 → 우상. 마이크 글리프를 가로지른다.
-    canvas.drawLine(
-      Offset(size.width * 0.18, size.height * 0.82),
-      Offset(size.width * 0.82, size.height * 0.18),
-      p,
-    );
+    final start = Offset(size.width * 0.18, size.height * 0.82);
+    final end = Offset(size.width * 0.82, size.height * 0.18);
+    canvas.drawLine(start, Offset.lerp(start, end, progress)!, p);
   }
 
   @override
-  bool shouldRepaint(_SlashPainter old) => old.color != color;
+  bool shouldRepaint(_SlashPainter old) =>
+      old.color != color || old.progress != progress;
 }
