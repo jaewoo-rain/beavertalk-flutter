@@ -17,7 +17,7 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
-import '../../features/normalcall/presentation/avatar_view.dart';
+import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/data/call_quota_mock.dart';
@@ -482,19 +482,18 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                       // [계측] 화면은 그대로다 — 영상 쪽에서 일어난
                                       // 일을 통화 계측 스트림에 얹기만 한다.
                                       onDiag: callNotifier.onAvatarDiag,
-                                      // A still image, NOT [BeaverAvatar].
+                                      // 정적 이미지다. SyncAvatar 가 idle·talk
+                                      // 클립을 여는 동안(안드로이드 100~300ms)
+                                      // 이걸 보여 준다.
                                       //
-                                      // SyncAvatar shows this while its idle/talk
-                                      // clips initialize (~100–300ms on Android),
-                                      // and BeaverAvatar is the sprite lip-sync
-                                      // renderer that the video approach replaced.
-                                      // Handing it back as the fallback meant every
-                                      // call opened with a few hundred ms of the
-                                      // retired renderer before the video took
-                                      // over — visibly a different avatar.
+                                      // 예전엔 여기에 스프라이트 렌더러를 물려
+                                      // 놓아, 통화를 열 때마다 **은퇴한 렌더러의
+                                      // 얼굴**이 몇백 ms 스쳤다 — 다른 아바타로
+                                      // 보였다. 그 렌더러는 2026-08-31 에 자산째
+                                      // 지웠다(53.2MB).
                                       //
-                                      // Same still the kDisableAvatarVideo path
-                                      // below uses, so the two agree.
+                                      // 아래 kDisableAvatarVideo 경로도 같은 정적
+                                      // 이미지를 쓰므로 둘이 어긋나지 않는다.
                                       fallback: _partnerStill(partnerImage),
                                     )
                                   : _partnerStill(partnerImage),

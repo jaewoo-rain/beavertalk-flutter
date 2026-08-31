@@ -18,7 +18,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
-import '../../features/normalcall/presentation/avatar_view.dart'
+import '../../features/normalcall/presentation/avatar_assets.dart'
     show
         avatarAssetDirFor,
         kEmotionCrying,

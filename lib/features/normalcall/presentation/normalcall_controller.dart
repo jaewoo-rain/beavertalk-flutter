@@ -33,7 +33,7 @@ import '../data/datasources/pcm_playback_control.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
-import 'avatar_view.dart' show kIdleWait, kIdleListen, kIdleThink;
+import 'avatar_assets.dart' show kIdleWait, kIdleListen, kIdleThink;
 import 'cascade_auto_talk.dart';
 import 'cascade_experiment.dart'
     show
@@ -353,12 +353,12 @@ class NormalCallController extends Notifier<CallState> {
   AppLocalizations get _l10n =>
       lookupAppLocalizations(ref.read(localeControllerProvider));
 
-  // ── Avatar lip-sync signals (video-call avatar; see avatar_view.dart) ───────
+  // ── Avatar lip-sync signals (video-call avatar; see avatar_assets.dart) ───────
   // Gemini Live returns raw PCM with no viseme timing, so the mouth is driven
   // from the audio envelope. These are published from the PCM *about to play*
   // (in [_onFeed] via [_takeArray]) — NOT from arrival time — because the
   // playback queue buffers seconds ahead, so arrival-time RMS would lead the
-  // sound. In-memory only; consumed by [BeaverAvatar]. Additive: the audio
+  // sound. In-memory only; consumed by the avatar renderer. Additive: the audio
   // pipeline itself is unchanged.
 
   /// Live mouth-open level, 0 (closed) .. 1 (wide), from the RMS of the audio

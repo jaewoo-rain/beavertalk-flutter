@@ -1,4 +1,4 @@
-import 'avatar_view.dart'
+import 'avatar_assets.dart'
     show kEmotionHappy, kEmotionSurprised, kEmotionSad, kEmotionAngry;
 
 /// Keyword lexicon for the (heuristic) emotion classifier. Keyed by the same

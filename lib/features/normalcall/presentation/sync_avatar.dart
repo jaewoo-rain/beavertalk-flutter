@@ -5,7 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:video_player/video_player.dart';
 
 import 'avatar_tempo.dart';
-import 'avatar_view.dart'
+import 'avatar_assets.dart'
     show
         kEmotionHappy,
         kEmotionSurprised,
@@ -76,7 +76,7 @@ class SyncAvatar extends StatefulWidget {
   /// True while the character holds the turn (keeps talking through pauses).
   final ValueListenable<bool> speaking;
 
-  /// Emotion code (see avatar_view k* constants) → optional reacting clip.
+  /// Emotion code (see `avatar_assets.dart` k* constants) → optional reacting clip.
   final ValueListenable<int> emotion;
 
   /// 발화 템포([kTalkSlow]/[kTalkNormal]/[kTalkFast]). 안 주면 [kTalkNormal] 고정.
