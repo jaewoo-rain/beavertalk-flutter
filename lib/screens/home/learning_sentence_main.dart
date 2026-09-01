@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -74,8 +75,7 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
           Gnb.main(onBack: _finish),
           Expanded(
             child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: ContentColumn(
                 child: PronunciationResult(
                   state: eval == null
                       ? PronunciationState.inactive
@@ -99,13 +99,13 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
               ),
             ),
           ),
-          Padding(
+          ContentColumn(
             // Bottom is the literal home-indicator gap (34), not an
             // AppSpacing token — this screen has no trailing SafeArea /
             // BottomCtaBar (unlike its learning_intro/learning_next
             // siblings), so it would otherwise sit flush against the
             // physical bottom edge on devices with viewPadding.bottom == 0.
-            padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 34),
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 34),
             child: SizedBox(
               width: double.infinity,
               child: Button(

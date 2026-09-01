@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -234,8 +235,7 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
             height: 56,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: ContentColumn(
                 child: GestureDetector(
                   onTap: () => _exitToRoot(context),
                   child: AppIcons.close(size: 28, color: c.commonWhiteAndDark),
@@ -244,39 +244,40 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              children: [
-                Container(
-                  width: 56,
-                  height: 56,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: c.primaryNormal14,
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  Container(
+                    width: 56,
+                    height: 56,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: c.primaryNormal14,
+                    ),
+                    child: AppIcons.check(size: 32, color: c.primaryNormal),
                   ),
-                  child: AppIcons.check(size: 32, color: c.primaryNormal),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                Text(
-                  _isMax ? l10n.successMaxTitle : l10n.successProTitle,
-                  style: AppType.title3.sb.copyWith(color: c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                Text(
-                  _isMax ? l10n.successMaxSub : l10n.successProSub,
-                  style: AppType.label1.r.copyWith(color: c.labelNormal),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                for (var i = 0; i < benefits.length; i++) ...[
-                  if (i > 0) const SizedBox(height: 14),
-                  BenefitRow(
-                    tier: _isMax ? BenefitTier.max : BenefitTier.pro,
-                    label: benefits[i],
+                  const SizedBox(height: AppSpacing.s24),
+                  Text(
+                    _isMax ? l10n.successMaxTitle : l10n.successProTitle,
+                    style: AppType.title3.sb.copyWith(color: c.labelStrong),
                   ),
+                  const SizedBox(height: AppSpacing.s24),
+                  Text(
+                    _isMax ? l10n.successMaxSub : l10n.successProSub,
+                    style: AppType.label1.r.copyWith(color: c.labelNormal),
+                  ),
+                  const SizedBox(height: AppSpacing.s24),
+                  for (var i = 0; i < benefits.length; i++) ...[
+                    if (i > 0) const SizedBox(height: 14),
+                    BenefitRow(
+                      tier: _isMax ? BenefitTier.max : BenefitTier.pro,
+                      label: benefits[i],
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           Container(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -36,36 +37,37 @@ class AvatarLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return SkeletonShimmer(
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, AppSpacing.s24),
-        children: [
-          Text(
-            l10n.avatarIntro,
-            style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-          ),
-          const SizedBox(height: AppSpacing.s24),
-          // 나의 통화 상대 · <count> (`3490:4133`, 131 wide all in).
-          const SizedBox(
-            height: 20,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Skeleton.bar(width: 131, height: 14),
+      child: ContentColumn(
+        child: ListView(
+          padding: const EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s24),
+          children: [
+            Text(
+              l10n.avatarIntro,
+              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
             ),
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          const _OwnedRow(),
-          const SizedBox(height: AppSpacing.s28),
-          _label(context, l10n.limitedDiscount),
-          const SizedBox(height: AppSpacing.s12),
-          const _CharacterCard(),
-          const SizedBox(height: AppSpacing.s16),
-          _label(context, l10n.availableForPurchase),
-          const SizedBox(height: AppSpacing.s12),
-          const _CharacterCard(),
-          const SizedBox(height: AppSpacing.s12),
-          const _CharacterCard(),
-        ],
+            const SizedBox(height: AppSpacing.s24),
+            // 나의 통화 상대 · <count> (`3490:4133`, 131 wide all in).
+            const SizedBox(
+              height: 20,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Skeleton.bar(width: 131, height: 14),
+              ),
+            ),
+            const SizedBox(height: AppSpacing.s12),
+            const _OwnedRow(),
+            const SizedBox(height: AppSpacing.s28),
+            _label(context, l10n.limitedDiscount),
+            const SizedBox(height: AppSpacing.s12),
+            const _CharacterCard(),
+            const SizedBox(height: AppSpacing.s16),
+            _label(context, l10n.availableForPurchase),
+            const SizedBox(height: AppSpacing.s12),
+            const _CharacterCard(),
+            const SizedBox(height: AppSpacing.s12),
+            const _CharacterCard(),
+          ],
+        ),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
@@ -84,9 +85,9 @@ class BottomSheetFeedback extends StatelessWidget {
   /// Called when the header close glyph is tapped.
   final VoidCallback? onClose;
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double _maxWidth = 430;
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   static const double _contentWidth = 335;
 
   @override
@@ -97,45 +98,42 @@ class BottomSheetFeedback extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _maxWidth),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _header(context),
-            // Options row.
-            Center(
-              child: SizedBox(
-                width: _contentWidth,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    for (int i = 0; i < options.length; i++) ...[
-                      if (i > 0) const SizedBox(width: 16),
-                      _OptionCard(
-                        icon: options[i].icon,
-                        selected: options[i].value == value,
-                        onTap: onChanged == null
-                            ? null
-                            : () => onChanged!(options[i].value),
-                      ),
-                    ],
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+          _header(context),
+          // Options row.
+          Center(
+            child: SizedBox(
+              width: _contentWidth,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  for (int i = 0; i < options.length; i++) ...[
+                    if (i > 0) const SizedBox(width: 16),
+                    _OptionCard(
+                      icon: options[i].icon,
+                      selected: options[i].value == value,
+                      onTap: onChanged == null
+                          ? null
+                          : () => onChanged!(options[i].value),
+                    ),
                   ],
-                ),
+                ],
               ),
             ),
-            _footer(context),
-          ],
-        ),
+          ),
+        _footer(context),
+        ],
       ),
     );
   }
 
   /// Header row: invisible spacer + close glyph (right-aligned).
   Widget _header(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 16),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 
@@ -91,30 +92,38 @@ class BottomNavBar extends StatelessWidget {
       explicitChildNodes: true,
       child: Material(
         color: Colors.transparent,
-        child: Container(
-          height: _barHeight,
-          decoration: BoxDecoration(
-            color: context.c.backgroundNormalNormal,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-          ),
-          // Top-aligned per Figma (inner row sits at y=13, height 60).
-          child: SafeArea(
-            top: false,
-            child: Padding(
-              padding: const EdgeInsets.only(top: 13),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var i = 0; i < items.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 40),
-                    _NavTab(
-                      item: items[i],
-                      active: items[i].key == activeKey,
-                      onTap: onTap,
-                    ),
-                  ],
-                ],
+        // 태블릿에서도 막대는 375를 넘지 않고 하단 중앙에 선다(Figma 규격 노트).
+        // 캡 밖은 화면색이 그대로 비친다 — 전폭으로 늘리면 24 라운드 코너가
+        // 810을 가로지르며 화면 하단을 통째로 잘라 보이게 만든다.
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: AppLayout.navBar),
+            child: Container(
+              height: _barHeight,
+              decoration: BoxDecoration(
+                color: context.c.backgroundNormalNormal,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+              ),
+              // Top-aligned per Figma (inner row sits at y=13, height 60).
+              child: SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 13),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (var i = 0; i < items.length; i++) ...[
+                        if (i > 0) const SizedBox(width: 40),
+                        _NavTab(
+                          item: items[i],
+                          active: items[i].key == activeKey,
+                          onTap: onTap,
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart' hide BottomSheet;
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
@@ -96,10 +97,9 @@ class BottomSheetDocument extends StatelessWidget {
   /// Close-button tap callback (top-right of the header).
   final VoidCallback? onClose;
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   // ── Per-size body spec, measured from Figma 175:18500 ──────────────────────
   static const Map<BottomSheetDocumentSize, _DocSpec> _specs = {
     BottomSheetDocumentSize.min:
@@ -134,7 +134,6 @@ class BottomSheetDocument extends StatelessWidget {
     }
 
     return Container(
-      constraints: const BoxConstraints(maxWidth: maxWidth),
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: context.c.backgroundElevatedAlternative,
@@ -194,38 +193,41 @@ class _Sub2Header extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    return DecoratedBox(
       decoration: BoxDecoration(
         color: context.c.backgroundElevatedAlternative,
         borderRadius:
             BorderRadius.vertical(top: Radius.circular(AppRadius.xl)),
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          // Leading spacer mirrors the trailing close icon (invisible in Figma).
-          const SizedBox(width: _iconBox, height: _iconBox),
-          Expanded(
-            child: Text(
-              title,
-              textAlign: TextAlign.center,
-              overflow: TextOverflow.ellipsis,
-              style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+      child: ContentColumn.document(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // Leading spacer mirrors the trailing close icon (invisible in
+            // Figma).
+            const SizedBox(width: _iconBox, height: _iconBox),
+            Expanded(
+              child: Text(
+                title,
+                textAlign: TextAlign.center,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+              ),
             ),
-          ),
-          SizedBox(
-            width: _iconBox,
-            height: _iconBox,
-            child: IconButton(
-              padding: EdgeInsets.zero,
-              iconSize: _iconBox,
-              onPressed: onClose,
-              icon: AppIcons.close(color: context.c.labelStrong),
+            SizedBox(
+              width: _iconBox,
+              height: _iconBox,
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                iconSize: _iconBox,
+                onPressed: onClose,
+                icon: AppIcons.close(color: context.c.labelStrong),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

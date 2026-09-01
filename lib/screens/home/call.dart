@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/call_toggle_button.dart';
@@ -378,11 +379,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         body: Column(
           children: [
             // Header — connected dot + name + live timer.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: AppSpacing.s12,
-              ),
+            ContentColumn(
+              gutter: 10,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -556,11 +555,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
               ),
             ),
             // Footer — hint/subtitle toggles + hang-up.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s32,
-                vertical: AppSpacing.s12,
-              ),
+            ContentColumn(
+              gutter: AppSpacing.s32,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
               child: Column(
                 children: [
                   // 힌트·자막은 **두 모드에서 같다** — 같은 기능, 같은 자리.

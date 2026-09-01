@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
 
 import '../../app/app_scaffold.dart';
@@ -251,9 +252,8 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
             right: 0,
             child: SizedBox(
               height: 56,
-              child: Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppSpacing.s20, vertical: 14),
+              child: ContentColumn(
+                padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [

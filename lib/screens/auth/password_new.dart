@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -103,62 +104,62 @@ class _PasswordNewScreenState extends ConsumerState<PasswordNewScreen> {
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    _email.isEmpty
-                        ? l10n.passwordNewDescription
-                        : l10n.passwordNewDescriptionEmail(_email),
-                    style: AppType.label1.r
-                        .copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s32),
-                  // ── New password ────────────────────────────────────────
-                  _Label(l10n.fieldNewPasswordLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _password,
-                    onChanged: (v) => setState(() => _password = v),
-                    hintText: l10n.newPasswordHint,
-                    obscureText: _obscurePassword,
-                    leftIcon:
-                        AppIcons.lock(size: 20, color: context.c.labelNormal),
-                    rightIcon: PasswordEyeToggle(
-                      obscured: _obscurePassword,
-                      onTap: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      _email.isEmpty
+                          ? l10n.passwordNewDescription
+                          : l10n.passwordNewDescriptionEmail(_email),
+                      style: AppType.label1.r
+                          .copyWith(color: context.c.labelNormal),
                     ),
-                  ),
-                  _ErrorText(_passwordError),
-                  const SizedBox(height: AppSpacing.s20),
-                  _Label(l10n.fieldConfirmNewPasswordLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _passwordConfirm,
-                    onChanged: (v) => setState(() => _passwordConfirm = v),
-                    hintText: l10n.confirmNewPasswordHint,
-                    obscureText: _obscureConfirm,
-                    leftIcon:
-                        AppIcons.lock(size: 20, color: context.c.labelNormal),
-                    rightIcon: PasswordEyeToggle(
-                      obscured: _obscureConfirm,
-                      onTap: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
+                    const SizedBox(height: AppSpacing.s32),
+                    // ── New password ────────────────────────────────────────
+                    _Label(l10n.fieldNewPasswordLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _password,
+                      onChanged: (v) => setState(() => _password = v),
+                      hintText: l10n.newPasswordHint,
+                      obscureText: _obscurePassword,
+                      leftIcon:
+                          AppIcons.lock(size: 20, color: context.c.labelNormal),
+                      rightIcon: PasswordEyeToggle(
+                        obscured: _obscurePassword,
+                        onTap: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
+                      ),
                     ),
-                  ),
-                  _ErrorText(_confirmError),
-                  _ErrorText(_error),
-                ],
+                    _ErrorText(_passwordError),
+                    const SizedBox(height: AppSpacing.s20),
+                    _Label(l10n.fieldConfirmNewPasswordLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _passwordConfirm,
+                      onChanged: (v) => setState(() => _passwordConfirm = v),
+                      hintText: l10n.confirmNewPasswordHint,
+                      obscureText: _obscureConfirm,
+                      leftIcon:
+                          AppIcons.lock(size: 20, color: context.c.labelNormal),
+                      rightIcon: PasswordEyeToggle(
+                        obscured: _obscureConfirm,
+                        onTap: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
+                      ),
+                    ),
+                    _ErrorText(_confirmError),
+                    _ErrorText(_error),
+                  ],
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s24),
             child: SizedBox(
               width: double.infinity,
               child: Button(

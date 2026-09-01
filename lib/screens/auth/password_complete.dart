@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../l10n/app_localizations.dart';
@@ -35,8 +36,9 @@ class PasswordCompleteScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            // 안내 문구는 480으로 묶는다 — 태블릿에서 한 줄이 화면을
+            // 가로지르면 눈이 다음 줄 첫 글자를 못 찾는다.
+            child: ContentColumn.narrow(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

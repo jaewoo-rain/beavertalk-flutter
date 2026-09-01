@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -77,45 +78,42 @@ class _PasswordMethodScreenState extends ConsumerState<PasswordMethodScreen> {
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
-                  AppSpacing.s24,
-                  AppSpacing.s20,
-                  AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.passwordMethodDescription,
-                    style: AppType.label1.r
-                        .copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s32),
-                  InputField(
-                    controller: _email,
-                    hintText: l10n.emailAddressHint,
-                    keyboardType: TextInputType.emailAddress,
-                    leftIcon: AppIcons.mail(color: context.c.labelStrong),
-                    onSubmitted: (_) => _send(),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: AppSpacing.s12),
-                    Padding(
-                      padding:
-                          const EdgeInsetsDirectional.only(start: AppSpacing.s4),
-                      child: Text(_error!,
-                          style: AppType.label2.r
-                              .copyWith(color: context.c.accentForegroundRed)),
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.passwordMethodDescription,
+                      style: AppType.label1.r
+                          .copyWith(color: context.c.labelNormal),
                     ),
+                    const SizedBox(height: AppSpacing.s32),
+                    InputField(
+                      controller: _email,
+                      hintText: l10n.emailAddressHint,
+                      keyboardType: TextInputType.emailAddress,
+                      leftIcon: AppIcons.mail(color: context.c.labelStrong),
+                      onSubmitted: (_) => _send(),
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: AppSpacing.s12),
+                      Padding(
+                        padding:
+                            const EdgeInsetsDirectional.only(start: AppSpacing.s4),
+                        child: Text(_error!,
+                            style: AppType.label2.r
+                                .copyWith(color: context.c.accentForegroundRed)),
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s24),
             child: SizedBox(
               width: double.infinity,
               child: Button(

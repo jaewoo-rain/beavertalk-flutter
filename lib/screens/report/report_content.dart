@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
@@ -246,8 +247,7 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
 
   /// 접수 완료 안내. 여기서 흐름이 끝나고 이전 화면으로 돌아간다.
   Widget _doneBody(AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+    return ContentColumn(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [

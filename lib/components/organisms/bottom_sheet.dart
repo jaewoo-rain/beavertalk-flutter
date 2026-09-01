@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
@@ -94,10 +95,9 @@ class BottomSheet extends StatelessWidget {
   /// Optional content rendered above the footer (inside the sheet body).
   final Widget? child;
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap. The
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   /// Footer top padding (Figma `12`).
   static const double _footerTop = 12;
 
@@ -110,7 +110,6 @@ class BottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: BoxDecoration(
         color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
@@ -120,12 +119,14 @@ class BottomSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           if (child != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(_footerH, 20, _footerH, 0),
-              child: child,
+            ContentColumn(
+              gutter: _footerH,
+              padding: const EdgeInsets.only(top: 20),
+              child: child!,
             ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(_footerH, _footerTop, _footerH, 0),
+          ContentColumn(
+            gutter: _footerH,
+            padding: const EdgeInsets.only(top: _footerTop),
             child: _footer(context),
           ),
           // Bottom safe-area inset — clears the real OS gesture bar (replaces

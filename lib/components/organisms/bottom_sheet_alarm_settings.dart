@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_motion.dart';
@@ -169,10 +170,9 @@ class BottomSheetAlarmSettings extends StatelessWidget {
   /// while storing to the Sun-indexed model the server/schedulers expect.
   static const List<int> _visualToDataIndex = [1, 2, 3, 4, 5, 6, 0];
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double _maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -182,50 +182,47 @@ class BottomSheetAlarmSettings extends StatelessWidget {
         top: Radius.circular(AppRadius.lg),
       ),
       clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: _maxWidth),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _header(context, l10n),
-            // The redesign made the body tall enough (quick-start cards, the
-            // time card, the partner row and the summary) that it no longer
-            // clears a short viewport — it overflowed a 600-high one by 73.
-            // Flexible + a scroll view keeps the sheet hugging its content
-            // wherever there is room, and scrolls instead of clipping where
-            // there isn't; the header and the save button stay put either way.
-            Flexible(
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _quickStartSection(context, l10n),
-                      const SizedBox(height: 20),
-                      _timeAndDaysCard(context, l10n),
-                      const SizedBox(height: 20),
-                      _partnerSection(context, l10n),
-                      const SizedBox(height: 20),
-                      _summary(context, l10n),
-                    ],
-                  ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+          _header(context, l10n),
+          // The redesign made the body tall enough (quick-start cards, the
+          // time card, the partner row and the summary) that it no longer
+          // clears a short viewport — it overflowed a 600-high one by 73.
+          // Flexible + a scroll view keeps the sheet hugging its content
+          // wherever there is room, and scrolls instead of clipping where
+          // there isn't; the header and the save button stay put either way.
+          Flexible(
+            child: SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _quickStartSection(context, l10n),
+                    const SizedBox(height: 20),
+                    _timeAndDaysCard(context, l10n),
+                    const SizedBox(height: 20),
+                    _partnerSection(context, l10n),
+                    const SizedBox(height: 20),
+                    _summary(context, l10n),
+                  ],
                 ),
               ),
             ),
-            _footer(context, l10n),
-          ],
-        ),
+          ),
+        _footer(context, l10n),
+        ],
       ),
     );
   }
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
   Widget _header(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         children: [
           const SizedBox(width: 28, height: 28),

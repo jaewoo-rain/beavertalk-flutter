@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -220,129 +221,126 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// The analysis screen with every unknown value stubbed (`3569:27503`).
   Widget _skeleton() {
     final l10n = AppLocalizations.of(context);
-    return SingleChildScrollView(
-      // Same padding as the analysis screen, so nothing shifts on hand-off.
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s20,
-        AppSpacing.s16,
-        AppSpacing.s20,
-        AppSpacing.s40,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── CallHeader (3569:27504) ────────────────────────────────
-          // Both lines are skeletons: the frame shows real meta here, but see
-          // the class doc — this screen has only a call id. The boxes keep the
-          // heights of the text they stand in for, so the gauge lands where it
-          // will sit once the result arrives.
-          const SizedBox(
-            height: 28,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Skeleton.bar(width: 210, height: 20),
+    return ContentColumn(
+      child: SingleChildScrollView(
+        // Same padding as the analysis screen, so nothing shifts on hand-off.
+        padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── CallHeader (3569:27504) ────────────────────────────────
+            // Both lines are skeletons: the frame shows real meta here, but see
+            // the class doc — this screen has only a call id. The boxes keep the
+            // heights of the text they stand in for, so the gauge lands where it
+            // will sit once the result arrives.
+            const SizedBox(
+              height: 28,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Skeleton.bar(width: 210, height: 20),
+              ),
             ),
-          ),
-          const SizedBox(height: 6), // no s6 token
-          const SizedBox(
-            height: 18,
-            child: Align(
-              alignment: Alignment.centerLeft,
-              child: Skeleton.bar(width: 200, height: 12),
+            const SizedBox(height: 6), // no s6 token
+            const SizedBox(
+              height: 18,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Skeleton.bar(width: 200, height: 12),
+              ),
             ),
-          ),
 
-          const SizedBox(height: AppSpacing.s24),
-          Center(
-            child: PronunciationResult(
-              state: PronunciationState.inactive,
-              score: 0,
-              metrics: [
-                PronunciationMetric(label: l10n.pronunciation, value: '-%'),
-                PronunciationMetric(label: l10n.fluency, value: '-%'),
-                PronunciationMetric(label: l10n.rhythm, value: '-%'),
-              ],
-            ),
-          ),
-
-          // ── Actions (3569:27509) ───────────────────────────────────
-          const SizedBox(height: AppSpacing.s24),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: l10n.review,
-            // Nothing to practice until the result lands.
-            disabled: true,
-            onPressed: () {},
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Button(
-            type: BtnType.primaryOutline,
-            size: BtnSize.s60,
-            text: l10n.pronunciationChallenge,
-            // The challenge needs nothing from this call, so it stays live.
-            onPressed: () =>
-                Navigator.pushNamed(context, Routes.pronunciationChallenge),
-          ),
-
-          // ── Section/BabaNote (3569:27512) ──────────────────────────
-          ..._section(
-            // A skeleton, not "…의 한마디": the label needs the partner's name.
-            label: const Skeleton.bar(width: 90, height: 15),
-            child: _card(
-              child: const Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Skeleton.circle(size: 32),
-                  SizedBox(width: AppSpacing.s12),
-                  Expanded(
-                    // The frame gives the two skeleton slots the line boxes of
-                    // the text they stand in for — Body 38 (`3569:27517`) and
-                    // Attribution 14 (`3569:27520`) — which is what makes the
-                    // card 90, exactly the loaded BabaNote's 88 + its 2px of
-                    // extra leading. Stacking the bars bare rendered 83.
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        SizedBox(
-                          height: 38,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Skeleton.bar(width: 255, height: 12),
-                              SizedBox(height: 6),
-                              Skeleton.bar(width: 150, height: 12),
-                            ],
-                          ),
-                        ),
-                        SizedBox(height: 6),
-                        SizedBox(
-                          height: 14,
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Skeleton.bar(width: 110, height: 9),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+            const SizedBox(height: AppSpacing.s24),
+            Center(
+              child: PronunciationResult(
+                state: PronunciationState.inactive,
+                score: 0,
+                metrics: [
+                  PronunciationMetric(label: l10n.pronunciation, value: '-%'),
+                  PronunciationMetric(label: l10n.fluency, value: '-%'),
+                  PronunciationMetric(label: l10n.rhythm, value: '-%'),
                 ],
               ),
             ),
-          ),
 
-          // ── Section/Expressions (3569:27534) ───────────────────────
-          ..._section(
-            // Countless here — the frame's label is 새로 배운 표현 with no number,
-            // since the count is exactly what is still loading.
-            label: Text(l10n.newExpressions, style: AppType.body2.m),
-            // One card, as the frame draws (`3569:27537` holds a single
-            // `Card/Expression-1`). It used to stack three; that promised a
-            // count the response hasn't given yet.
-            child: const CardLoading(),
-          ),
-        ],
+            // ── Actions (3569:27509) ───────────────────────────────────
+            const SizedBox(height: AppSpacing.s24),
+            Button(
+              type: BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: l10n.review,
+              // Nothing to practice until the result lands.
+              disabled: true,
+              onPressed: () {},
+            ),
+            const SizedBox(height: AppSpacing.s12),
+            Button(
+              type: BtnType.primaryOutline,
+              size: BtnSize.s60,
+              text: l10n.pronunciationChallenge,
+              // The challenge needs nothing from this call, so it stays live.
+              onPressed: () =>
+                  Navigator.pushNamed(context, Routes.pronunciationChallenge),
+            ),
+
+            // ── Section/BabaNote (3569:27512) ──────────────────────────
+            ..._section(
+              // A skeleton, not "…의 한마디": the label needs the partner's name.
+              label: const Skeleton.bar(width: 90, height: 15),
+              child: _card(
+                child: const Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Skeleton.circle(size: 32),
+                    SizedBox(width: AppSpacing.s12),
+                    Expanded(
+                      // The frame gives the two skeleton slots the line boxes of
+                      // the text they stand in for — Body 38 (`3569:27517`) and
+                      // Attribution 14 (`3569:27520`) — which is what makes the
+                      // card 90, exactly the loaded BabaNote's 88 + its 2px of
+                      // extra leading. Stacking the bars bare rendered 83.
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: 38,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Skeleton.bar(width: 255, height: 12),
+                                SizedBox(height: 6),
+                                Skeleton.bar(width: 150, height: 12),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 6),
+                          SizedBox(
+                            height: 14,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Skeleton.bar(width: 110, height: 9),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            // ── Section/Expressions (3569:27534) ───────────────────────
+            ..._section(
+              // Countless here — the frame's label is 새로 배운 표현 with no number,
+              // since the count is exactly what is still loading.
+              label: Text(l10n.newExpressions, style: AppType.body2.m),
+              // One card, as the frame draws (`3569:27537` holds a single
+              // `Card/Expression-1`). It used to stack three; that promised a
+              // count the response hasn't given yet.
+              child: const CardLoading(),
+            ),
+          ],
+        ),
       ),
     );
   }

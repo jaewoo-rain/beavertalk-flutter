@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Badge, Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
@@ -91,23 +92,24 @@ class _ManageBody extends StatelessWidget {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s32),
-              children: [
-                // Payment-trouble banner rides on top of everything —
-                // grace/hold only (spec §6-1), measured above the plan card.
-                if (state.showsPaymentFailureBanner) ...[
-                  _dangerBanner(context, l10n),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s32),
+                children: [
+                  // Payment-trouble banner rides on top of everything —
+                  // grace/hold only (spec §6-1), measured above the plan card.
+                  if (state.showsPaymentFailureBanner) ...[
+                    _dangerBanner(context, l10n),
+                    const SizedBox(height: AppSpacing.s24),
+                  ],
+                  _PlanCard(status: status),
+                  ..._upsell(context, l10n),
                   const SizedBox(height: AppSpacing.s24),
+                  _BillingList(status: status),
+                  const SizedBox(height: AppSpacing.s24),
+                  ..._notes(context, l10n),
                 ],
-                _PlanCard(status: status),
-                ..._upsell(context, l10n),
-                const SizedBox(height: AppSpacing.s24),
-                _BillingList(status: status),
-                const SizedBox(height: AppSpacing.s24),
-                ..._notes(context, l10n),
-              ],
+              ),
             ),
           ),
         ],

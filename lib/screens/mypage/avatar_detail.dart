@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
@@ -201,13 +202,8 @@ class AvatarDetailScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _heroImage(context),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.s20,
-                      AppSpacing.s16,
-                      AppSpacing.s20,
-                      AppSpacing.s24,
-                    ),
+                  ContentColumn(
+                    padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s24),
                     child: _content(context, l10n),
                   ),
                 ],
@@ -405,6 +401,7 @@ class AvatarDetailScreen extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onPlaySample,
+        // 카드 **안쪽** 패딩이다 — 화면 여백이 아니므로 폭을 따라가지 않는다.
         child: Padding(
           padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.s20, vertical: AppSpacing.s16),
@@ -592,9 +589,8 @@ class _AvatarDetailDemoState extends State<AvatarDetailDemo> {
       children: [
         ColoredBox(
           color: context.c.backgroundNormalDeep,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s20, vertical: AppSpacing.s12),
+          child: ContentColumn(
+            padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
             child: Row(
               children: [
                 Expanded(

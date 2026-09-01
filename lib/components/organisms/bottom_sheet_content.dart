@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
@@ -182,9 +183,9 @@ class BottomSheetContent extends StatelessWidget {
   /// dismiss; spec §7-2 forbids a closing action from changing any state.
   final SheetAction? secondaryAction;
 
-  /// Max sheet width — matches the legacy `BottomSheet.maxWidth` phone cap.
-  static const double maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   bool get _onCard => type != SheetContentType.none;
 
   @override
@@ -199,7 +200,6 @@ class BottomSheetContent extends StatelessWidget {
     final grabber = _onCard ? c.backgroundElevatedNormal : c.lineNormal;
 
     return Container(
-      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: BoxDecoration(
         color: bg,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -220,8 +220,7 @@ class BottomSheetContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          ContentColumn(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

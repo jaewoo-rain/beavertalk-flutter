@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart' hide Badge;
@@ -238,131 +239,128 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
           // the current screen, so there is no trailing action.
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s24,
-                AppSpacing.s20,
-                AppSpacing.s24,
-              ),
-              children: [
-                // Account — Figma `section/Account` (4514:4691), all four
-                // rows: Nickname (chevron → editor), Email, Login Method
-                // badge, Joined.
-                _section(l10n.accountSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group(_accountRows(l10n, member)),
-                const SizedBox(height: AppSpacing.s24),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  // Account — Figma `section/Account` (4514:4691), all four
+                  // rows: Nickname (chevron → editor), Email, Login Method
+                  // badge, Joined.
+                  _section(l10n.accountSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group(_accountRows(l10n, member)),
+                  const SizedBox(height: AppSpacing.s24),
 
-                _section(l10n.settingsSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  // User (UI) language — editable.
-                  _navRow(
-                    l10n.userLanguage,
-                    _langName(userLangId),
-                    onTap: () => _pickUserLanguage(userLangId),
-                  ),
-                  // Learning language — 시드된 언어 중 선택. 값은 서버
-                  // (member.target_language)가 소유한다. 통화 시작 시 서버가 이
-                  // 컬럼을 읽어 그 언어 코스로 진행한다(소켓은 안 보낸다).
-                  _navRow(
-                    l10n.learningLanguage,
-                    _learningName(learningLangId),
-                    onTap: () => _pickLearningLanguage(learningLangId),
-                  ),
-                  CardLine(
-                    type: CardLineType.defaultToggle,
-                    label: l10n.notificationLabel,
-                    checked: _notification,
-                    onChanged: (v) => setState(() => _notification = v),
-                    showDivider: false,
-                  ),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
+                  _section(l10n.settingsSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group([
+                    // User (UI) language — editable.
+                    _navRow(
+                      l10n.userLanguage,
+                      _langName(userLangId),
+                      onTap: () => _pickUserLanguage(userLangId),
+                    ),
+                    // Learning language — 시드된 언어 중 선택. 값은 서버
+                    // (member.target_language)가 소유한다. 통화 시작 시 서버가 이
+                    // 컬럼을 읽어 그 언어 코스로 진행한다(소켓은 안 보낸다).
+                    _navRow(
+                      l10n.learningLanguage,
+                      _learningName(learningLangId),
+                      onTap: () => _pickLearningLanguage(learningLangId),
+                    ),
+                    CardLine(
+                      type: CardLineType.defaultToggle,
+                      label: l10n.notificationLabel,
+                      checked: _notification,
+                      onChanged: (v) => setState(() => _notification = v),
+                      showDivider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: AppSpacing.s24),
 
-                _section(l10n.paymentSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  // Three rows, matching Figma `depth/main_mypage_settings`
-                  // (`4514:4684`): Subscription / Current Plan / Payment
-                  // History.
-                  //
-                  // Subscription and Current Plan are deliberately separate
-                  // destinations. The first opens the state-driven manage
-                  // screen; the second opens the plan comparison. They were
-                  // folded into one Current Plan row for a while, and the cost
-                  // was that [Routes.plansCompare] lost its entry point here —
-                  // the only way left to reach it was one level deeper, from
-                  // inside the manage screen.
-                  _navRow(
-                    l10n.subscriptionRow,
-                    '',
-                    onTap: () =>
-                        Navigator.pushNamed(context, Routes.subscription),
-                  ),
-                  _navRow(
-                    l10n.currentPlan,
-                    _planLabel(l10n),
-                    onTap: () =>
-                        Navigator.pushNamed(context, Routes.plansCompare),
-                  ),
-                  _navRow(
-                    l10n.paymentHistory,
-                    '',
-                    route: Routes.paymentHistory,
-                    divider: false,
-                  ),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
+                  _section(l10n.paymentSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group([
+                    // Three rows, matching Figma `depth/main_mypage_settings`
+                    // (`4514:4684`): Subscription / Current Plan / Payment
+                    // History.
+                    //
+                    // Subscription and Current Plan are deliberately separate
+                    // destinations. The first opens the state-driven manage
+                    // screen; the second opens the plan comparison. They were
+                    // folded into one Current Plan row for a while, and the cost
+                    // was that [Routes.plansCompare] lost its entry point here —
+                    // the only way left to reach it was one level deeper, from
+                    // inside the manage screen.
+                    _navRow(
+                      l10n.subscriptionRow,
+                      '',
+                      onTap: () =>
+                          Navigator.pushNamed(context, Routes.subscription),
+                    ),
+                    _navRow(
+                      l10n.currentPlan,
+                      _planLabel(l10n),
+                      onTap: () =>
+                          Navigator.pushNamed(context, Routes.plansCompare),
+                    ),
+                    _navRow(
+                      l10n.paymentHistory,
+                      '',
+                      route: Routes.paymentHistory,
+                      divider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: AppSpacing.s24),
 
-                _section(l10n.supportSection),
-                const SizedBox(height: AppSpacing.s16),
-                _group([
-                  _navRow(l10n.contactUs, ''),
-                  _navRow(l10n.termsOfService, '', route: Routes.terms),
-                  _navRow(l10n.privacyPolicy, '', route: Routes.privacy),
-                  // AI 생성 콘텐츠 신고 — Play 생성형 AI 정책이 요구하는 앱 내
-                  // 신고 경로다. 정책은 위치를 강제하지 않으므로 약관·처리방침과
-                  // 같은 고객지원 묶음에 둔다.
-                  _navRow(
-                    l10n.reportEntry,
-                    '',
-                    route: Routes.reportContent,
-                    divider: false,
-                  ),
-                ]),
-                const SizedBox(height: AppSpacing.s24),
+                  _section(l10n.supportSection),
+                  const SizedBox(height: AppSpacing.s16),
+                  _group([
+                    _navRow(l10n.contactUs, ''),
+                    _navRow(l10n.termsOfService, '', route: Routes.terms),
+                    _navRow(l10n.privacyPolicy, '', route: Routes.privacy),
+                    // AI 생성 콘텐츠 신고 — Play 생성형 AI 정책이 요구하는 앱 내
+                    // 신고 경로다. 정책은 위치를 강제하지 않으므로 약관·처리방침과
+                    // 같은 고객지원 묶음에 둔다.
+                    _navRow(
+                      l10n.reportEntry,
+                      '',
+                      route: Routes.reportContent,
+                      divider: false,
+                    ),
+                  ]),
+                  const SizedBox(height: AppSpacing.s24),
 
-                // log out — design-system secondary-fill Button (60).
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.logOut,
-                  onPressed: () =>
-                      ref.read(authControllerProvider.notifier).logout(),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                Center(
-                  child: InkWell(
-                    onTap: _confirmDeleteAccount,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s16,
-                        vertical: AppSpacing.s8,
-                      ),
-                      child: Text(
-                        l10n.deleteAccount,
-                        style: AppType.body1.r.copyWith(
-                          color: context.c.labelNormal,
+                  // log out — design-system secondary-fill Button (60).
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.logOut,
+                    onPressed: () =>
+                        ref.read(authControllerProvider.notifier).logout(),
+                  ),
+                  const SizedBox(height: AppSpacing.s16),
+                  Center(
+                    child: InkWell(
+                      onTap: _confirmDeleteAccount,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.s16,
+                          vertical: AppSpacing.s8,
+                        ),
+                        child: Text(
+                          l10n.deleteAccount,
+                          style: AppType.body1.r.copyWith(
+                            color: context.c.labelNormal,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                _version(),
-              ],
+                  const SizedBox(height: AppSpacing.s16),
+                  _version(),
+                ],
+              ),
             ),
           ),
         ],

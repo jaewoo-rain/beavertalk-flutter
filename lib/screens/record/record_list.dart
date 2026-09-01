@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/blur_up_image.dart';
@@ -59,13 +60,8 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
         children: [
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           // 기록 / 보관 tabs — pure in-page state, no navigation.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              AppSpacing.s20,
-              14,
-              AppSpacing.s20,
-              14,
-            ),
+          ContentColumn(
+            padding: const EdgeInsets.symmetric(vertical: 14),
             child: SegmentedTabs(
               labels: [l10n.tabRecords, l10n.tabArchive],
               activeIndex: _tab,
@@ -133,24 +129,30 @@ class _RecordsLoading extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return SkeletonShimmer(
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s4,
-          AppSpacing.s20,
-          AppSpacing.s24,
-        ),
-        children: [
-          Text(
-            l10n.callHistory,
-            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+      child: ContentColumn(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.s4,
+            bottom: AppSpacing.s24,
           ),
-          const SizedBox(height: 8),
-          for (var i = 0; i < 5; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.s12),
-            const CardBoxLoading(),
+          children: [
+            Text(
+              l10n.callHistory,
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+            ),
+            const SizedBox(height: 8),
+            const AdaptiveTiles(
+              stackedGap: AppSpacing.s12,
+              children: [
+                CardBoxLoading(),
+                CardBoxLoading(),
+                CardBoxLoading(),
+                CardBoxLoading(),
+                CardBoxLoading(),
+              ],
+            ),
           ],
-        ],
+        ),
       ),
     );
   }
@@ -179,55 +181,58 @@ class _RecordList extends StatelessWidget {
         }
         return false;
       },
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s4,
-          AppSpacing.s20,
-          AppSpacing.s24,
-        ),
-        children: [
-          Text(
-            l10n.callHistory,
-            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+      child: ContentColumn(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.s4,
+            bottom: AppSpacing.s24,
           ),
-          const SizedBox(height: 8),
-          for (var i = 0; i < records.length; i++) ...[
-            if (i > 0) const SizedBox(height: AppSpacing.s12),
-            InkWell(
-              borderRadius: BorderRadius.circular(8),
-              onTap: () => Navigator.pushNamed(
-                context,
-                Routes.analysisLoading,
-                arguments: records[i].callId,
-              ),
-              child: CardBox(
-                type: CardBoxType.record,
-                // Blur-in while the remote character avatar loads (CardBox clips
-                // this to a 64px circle).
-                avatar: BlurUpImage(
-                  image: _avatarFor(records[i].character.imageUrl),
+          children: [
+            Text(
+              l10n.callHistory,
+              style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+            ),
+            const SizedBox(height: 8),
+            AdaptiveTiles(
+              stackedGap: AppSpacing.s12,
+              children: [
+                for (final record in records)
+                  InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      Routes.analysisLoading,
+                      arguments: record.callId,
+                    ),
+                    child: CardBox(
+                      type: CardBoxType.record,
+                      // Blur-in while the remote character avatar loads
+                      // (CardBox clips this to a 64px circle).
+                      avatar: BlurUpImage(
+                        image: _avatarFor(record.character.imageUrl),
+                      ),
+                      title: record.character.name,
+                      subtitle: _subtitleFor(l10n, record.summary),
+                      meta: [
+                        _formatDate(record.callDate),
+                        _formatDuration(l10n, record.totalTime),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
+            if (state.isLoadingMore) ...[
+              const SizedBox(height: AppSpacing.s16),
+              const Center(
+                child: SizedBox(
+                  width: 24,
+                  height: 24,
+                  child: CircularProgressIndicator(strokeWidth: 2),
                 ),
-                title: records[i].character.name,
-                subtitle: _subtitleFor(l10n, records[i].summary),
-                meta: [
-                  _formatDate(records[i].callDate),
-                  _formatDuration(l10n, records[i].totalTime),
-                ],
               ),
-            ),
+            ],
           ],
-          if (state.isLoadingMore) ...[
-            const SizedBox(height: AppSpacing.s16),
-            const Center(
-              child: SizedBox(
-                width: 24,
-                height: 24,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -411,38 +416,42 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
 
   /// The populated list of bookmarked sentences.
   Widget _list(List<BookmarkSentence> saved) {
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s20,
-        AppSpacing.s4,
-        AppSpacing.s20,
-        AppSpacing.s24,
-      ),
-      children: [
-        Text(
-          AppLocalizations.of(context).mySavedExpressions,
-          style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+    return ContentColumn(
+      child: ListView(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.s4,
+          bottom: AppSpacing.s24,
         ),
-        const SizedBox(height: AppSpacing.s8),
-        for (var i = 0; i < saved.length; i++) ...[
-          if (i > 0) const SizedBox(height: AppSpacing.s12),
-          CardBookmark(
-            korean: saved[i].korean,
-            native: saved[i].native,
-            bookmarked: saved[i].isBookmarked,
-            onBookmarkTap: () => _toggleOff(saved[i].sentenceId),
-            onSpeakerTap: () => _speak(saved[i]),
-            // The frame's archive cards carry the same 연습하기 button as the
-            // analysis ones (`I3360:115;176:15497`); this tab was dropping it,
-            // which cost the archive its only visible way into practice (the
-            // whole-card tap does the same thing, but nothing said so) and left
-            // the card 12px shorter than [CardLoading] reserves for it.
-            actionText: AppLocalizations.of(context).practice,
-            onAction: () => _review(saved[i]),
-            onTap: () => _review(saved[i]),
+        children: [
+          Text(
+            AppLocalizations.of(context).mySavedExpressions,
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          AdaptiveTiles(
+            stackedGap: AppSpacing.s12,
+            children: [
+              for (final item in saved)
+                CardBookmark(
+                  korean: item.korean,
+                  native: item.native,
+                  bookmarked: item.isBookmarked,
+                  onBookmarkTap: () => _toggleOff(item.sentenceId),
+                  onSpeakerTap: () => _speak(item),
+                  // The frame's archive cards carry the same 연습하기 button as
+                  // the analysis ones (`I3360:115;176:15497`); this tab was
+                  // dropping it, which cost the archive its only visible way
+                  // into practice (the whole-card tap does the same thing, but
+                  // nothing said so) and left the card 12px shorter than
+                  // [CardLoading] reserves for it.
+                  actionText: AppLocalizations.of(context).practice,
+                  onAction: () => _review(item),
+                  onTap: () => _review(item),
+                ),
+            ],
           ),
         ],
-      ],
+      ),
     );
   }
 }
@@ -458,24 +467,24 @@ class _ArchiveLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SkeletonShimmer(
-    child: ListView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s20,
-        AppSpacing.s4,
-        AppSpacing.s20,
-        AppSpacing.s24,
-      ),
-      children: [
-        Text(
-          AppLocalizations.of(context).mySavedExpressions,
-          style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+    child: ContentColumn(
+      child: ListView(
+        padding: const EdgeInsets.only(
+          top: AppSpacing.s4,
+          bottom: AppSpacing.s24,
         ),
-        const SizedBox(height: AppSpacing.s8),
-        for (var i = 0; i < 3; i++) ...[
-          if (i > 0) const SizedBox(height: AppSpacing.s12),
-          const CardLoading(),
+        children: [
+          Text(
+            AppLocalizations.of(context).mySavedExpressions,
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          const AdaptiveTiles(
+            stackedGap: AppSpacing.s12,
+            children: [CardLoading(), CardLoading(), CardLoading()],
+          ),
         ],
-      ],
+      ),
     ),
   );
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -37,15 +38,13 @@ class PaymentHistoryLoading extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: AppSpacing.s24),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: _summaryCard(context, l10n),
             ),
             const SizedBox(height: AppSpacing.s8),
             _filterRow(context, l10n),
             const SizedBox(height: AppSpacing.s12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -106,32 +105,33 @@ class PaymentHistoryLoading extends StatelessWidget {
       l10n.filterSubscription,
       l10n.filterCharacter,
     ];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.s20,
-        vertical: 14,
-      ),
-      child: Row(
-        children: [
-          for (var i = 0; i < labels.length; i++) ...[
-            if (i > 0) const SizedBox(width: AppSpacing.s12),
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s16,
-                vertical: AppSpacing.s12,
+    // 칩 줄도 본문 컬럼 선에서 시작한다(정본 `Top Navigation` 은 x=105).
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (var i = 0; i < labels.length; i++) ...[
+              if (i > 0) const SizedBox(width: AppSpacing.s12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.s16,
+                  vertical: AppSpacing.s12,
+                ),
+                decoration: BoxDecoration(
+                  color: context.c.backgroundNormalAlternative,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Text(
+                  labels[i],
+                  style:
+                      AppType.label1.sb.copyWith(color: context.c.labelNormal),
+                ),
               ),
-              decoration: BoxDecoration(
-                color: context.c.backgroundNormalAlternative,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Text(
-                labels[i],
-                style: AppType.label1.sb.copyWith(color: context.c.labelNormal),
-              ),
-            ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

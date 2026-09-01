@@ -88,8 +88,10 @@ class PronunciationResult extends StatelessWidget {
     final bool active = state == PronunciationState.active;
     final double clamped = score.clamp(0, 100).toDouble();
 
+    // 폭은 부모(콘텐츠 컬럼)를 채운다 — 폰 335, 태블릿 600. 안의 게이지는
+    // [_gaugeWidth] 고정이라 커지지 않고 가운데 선다.
     return SizedBox(
-      width: 335,
+      width: double.infinity,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

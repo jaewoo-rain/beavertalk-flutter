@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
@@ -92,53 +93,53 @@ class _EditNicknameScreenState extends ConsumerState<EditNicknameScreen> {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              children: [
-                Text(l10n.nicknameLabel,
-                    style: AppType.label2.r.copyWith(color: c.labelNormal)),
-                const SizedBox(height: AppSpacing.s8),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: c.backgroundNormalAlternative,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: c.primaryNormal),
-                  ),
-                  child: TextField(
-                    controller: _controller,
-                    autofocus: true,
-                    maxLength: _maxLength,
-                    inputFormatters: [
-                      // English letters + digits, per the stated rule. The
-                      // same filter now guards onboarding, which used to set
-                      // this name unfiltered — that gap is how non-Latin
-                      // nicknames got in and then couldn't be edited here.
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'[a-zA-Z0-9]')),
-                    ],
-                    style: AppType.body1.r
-                        .copyWith(color: c.commonWhiteAndDark),
-                    decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      counterText: '',
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  Text(l10n.nicknameLabel,
+                      style: AppType.label2.r.copyWith(color: c.labelNormal)),
+                  const SizedBox(height: AppSpacing.s8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    decoration: BoxDecoration(
+                      color: c.backgroundNormalAlternative,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: c.primaryNormal),
+                    ),
+                    child: TextField(
+                      controller: _controller,
+                      autofocus: true,
+                      maxLength: _maxLength,
+                      inputFormatters: [
+                        // English letters + digits, per the stated rule. The
+                        // same filter now guards onboarding, which used to set
+                        // this name unfiltered — that gap is how non-Latin
+                        // nicknames got in and then couldn't be edited here.
+                        FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9]')),
+                      ],
+                      style: AppType.body1.r
+                          .copyWith(color: c.commonWhiteAndDark),
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        counterText: '',
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    '${_controller.text.length}/$_maxLength',
-                    style: AppType.label2.r.copyWith(color: c.labelNormal),
+                  const SizedBox(height: AppSpacing.s8),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      '${_controller.text.length}/$_maxLength',
+                      style: AppType.label2.r.copyWith(color: c.labelNormal),
+                    ),
                   ),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(l10n.nicknameRule,
-                    style: AppType.caption1.r.copyWith(color: c.labelNormal)),
-              ],
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(l10n.nicknameRule,
+                      style: AppType.caption1.r.copyWith(color: c.labelNormal)),
+                ],
+              ),
             ),
           ),
           Container(

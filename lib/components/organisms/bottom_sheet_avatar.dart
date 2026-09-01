@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
@@ -148,10 +149,9 @@ class BottomSheetAvatar extends StatelessWidget {
   /// Tap on the "샘플 목소리 듣기" card.
   final VoidCallback? onPlaySample;
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double maxWidth = 430;
-
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   /// `Atomic/Light Blue/60` — the owned-badge accent. No semantic token exists
   /// for this hue, so a raw hex is used here (reported in the handoff).
   static const Color _ownedBadgeColor = Color(0xFF3DC2FF);
@@ -169,7 +169,6 @@ class BottomSheetAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Container(
-      constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: BoxDecoration(
         color: context.c.backgroundElevatedAlternative,
         borderRadius: BorderRadius.only(
@@ -182,8 +181,7 @@ class BottomSheetAvatar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _header(context, l10n),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+          ContentColumn(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -208,8 +206,8 @@ class BottomSheetAvatar extends StatelessWidget {
 
   // ── Header (GNB sub-2: blank title, trailing close) ──────────────────────
   Widget _header(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         children: [
           const SizedBox(width: 28, height: 28), // leading spacer (opacity 0)

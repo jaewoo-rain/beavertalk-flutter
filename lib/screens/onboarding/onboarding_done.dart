@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../l10n/app_localizations.dart';
@@ -37,9 +38,7 @@ class OnboardingDoneScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: ContentColumn.narrow(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

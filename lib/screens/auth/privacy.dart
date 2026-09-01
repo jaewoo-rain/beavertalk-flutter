@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/legal/legal_urls.dart';
@@ -32,7 +33,12 @@ class PrivacyScreen extends StatelessWidget {
             title: l10n.privacyTitle,
             onBack: () => Navigator.of(context).maybePop(),
           ),
-          const Expanded(child: LegalWebView(url: kPrivacyPolicyUrl)),
+          // 법률 문서는 700(정본 규격: 좌우 여백 55).
+          const Expanded(
+            child: ContentColumn.document(
+              child: LegalWebView(url: kPrivacyPolicyUrl),
+            ),
+          ),
         ],
       ),
     );
