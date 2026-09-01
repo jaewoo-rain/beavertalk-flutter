@@ -12,7 +12,7 @@ import '../datasources/report_remote_data_source.dart';
 class ReportRepositoryImpl implements ReportRepository {
   /// [ds] 로 적재하고, [locale] 로 신고 당시 표시 언어를 남긴다.
   ReportRepositoryImpl(this._ds, {String? Function()? locale})
-      : _locale = locale;
+    : _locale = locale;
 
   final ReportRemoteDataSource _ds;
   final String? Function()? _locale;

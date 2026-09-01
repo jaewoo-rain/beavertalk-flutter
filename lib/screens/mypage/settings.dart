@@ -166,7 +166,9 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     if (picked == null || picked == currentCode || !mounted) return;
     final l10n = AppLocalizations.of(context);
     try {
-      await ref.read(authControllerProvider.notifier).updateTargetLanguage(picked);
+      await ref
+          .read(authControllerProvider.notifier)
+          .updateTargetLanguage(picked);
     } catch (e) {
       if (!mounted) return;
       final msg = e is AppException ? e.message : l10n.languageSaveFailed;
@@ -185,11 +187,13 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       description: l10n.deleteAccountBody,
       variant: DialogBasicVariant.twoHorizontal,
       primary: DialogAction(
-          label: l10n.cancel,
-          onPressed: () => Navigator.of(context).pop(false)),
+        label: l10n.cancel,
+        onPressed: () => Navigator.of(context).pop(false),
+      ),
       secondary: DialogAction(
-          label: l10n.delete,
-          onPressed: () => Navigator.of(context).pop(true)),
+        label: l10n.delete,
+        onPressed: () => Navigator.of(context).pop(true),
+      ),
     );
     if (confirmed != true || !mounted) return;
     try {
@@ -212,7 +216,8 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     // language when it maps to a known language, else English.
     final memberLang = member?.language;
     final matchedUiLang = mockLanguages.where(
-        (l) => memberLang != null && _langHead(l.id) == _langHead(memberLang));
+      (l) => memberLang != null && _langHead(l.id) == _langHead(memberLang),
+    );
     final userLangId =
         _userLangId ?? (matchedUiLang.isEmpty ? 'en' : matchedUiLang.first.id);
 
@@ -234,8 +239,12 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           Expanded(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
-                  AppSpacing.s20, AppSpacing.s24),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20,
+                AppSpacing.s24,
+                AppSpacing.s20,
+                AppSpacing.s24,
+              ),
               children: [
                 // Account — Figma `section/Account` (4514:4691), all four
                 // rows: Nickname (chevron → editor), Email, Login Method
@@ -286,14 +295,24 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                   // was that [Routes.plansCompare] lost its entry point here —
                   // the only way left to reach it was one level deeper, from
                   // inside the manage screen.
-                  _navRow(l10n.subscriptionRow, '',
-                      onTap: () =>
-                          Navigator.pushNamed(context, Routes.subscription)),
-                  _navRow(l10n.currentPlan, _planLabel(l10n),
-                      onTap: () =>
-                          Navigator.pushNamed(context, Routes.plansCompare)),
-                  _navRow(l10n.paymentHistory, '',
-                      route: Routes.paymentHistory, divider: false),
+                  _navRow(
+                    l10n.subscriptionRow,
+                    '',
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.subscription),
+                  ),
+                  _navRow(
+                    l10n.currentPlan,
+                    _planLabel(l10n),
+                    onTap: () =>
+                        Navigator.pushNamed(context, Routes.plansCompare),
+                  ),
+                  _navRow(
+                    l10n.paymentHistory,
+                    '',
+                    route: Routes.paymentHistory,
+                    divider: false,
+                  ),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
@@ -302,8 +321,16 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                 _group([
                   _navRow(l10n.contactUs, ''),
                   _navRow(l10n.termsOfService, '', route: Routes.terms),
-                  _navRow(l10n.privacyPolicy, '',
-                      route: Routes.privacy, divider: false),
+                  _navRow(l10n.privacyPolicy, '', route: Routes.privacy),
+                  // AI 생성 콘텐츠 신고 — Play 생성형 AI 정책이 요구하는 앱 내
+                  // 신고 경로다. 정책은 위치를 강제하지 않으므로 약관·처리방침과
+                  // 같은 고객지원 묶음에 둔다.
+                  _navRow(
+                    l10n.reportEntry,
+                    '',
+                    route: Routes.reportContent,
+                    divider: false,
+                  ),
                 ]),
                 const SizedBox(height: AppSpacing.s24),
 
@@ -321,11 +348,14 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                     onTap: _confirmDeleteAccount,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s16, vertical: AppSpacing.s8),
+                        horizontal: AppSpacing.s16,
+                        vertical: AppSpacing.s8,
+                      ),
                       child: Text(
                         l10n.deleteAccount,
-                        style: AppType.body1.r
-                            .copyWith(color: context.c.labelNormal),
+                        style: AppType.body1.r.copyWith(
+                          color: context.c.labelNormal,
+                        ),
                       ),
                     ),
                   ),
@@ -363,18 +393,21 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
 
     final rows = <Widget Function(bool last)>[
       (last) => _navRow(
-            l10n.nicknameLabel,
-            member?.name ?? '',
-            route: Routes.editNickname,
-            divider: !last,
-          ),
-      (last) => _infoRow(l10n.fieldEmailLabel, member?.email ?? '—',
-          divider: !last),
+        l10n.nicknameLabel,
+        member?.name ?? '',
+        route: Routes.editNickname,
+        divider: !last,
+      ),
+      (last) =>
+          _infoRow(l10n.fieldEmailLabel, member?.email ?? '—', divider: !last),
       if (provider != null && provider.isNotEmpty)
         (last) => _loginMethodRow(l10n, provider, divider: !last),
       if (joined != null)
-        (last) => _infoRow(l10n.joinedLabel, localizedFullDate(context, joined),
-            divider: !last),
+        (last) => _infoRow(
+          l10n.joinedLabel,
+          localizedFullDate(context, joined),
+          divider: !last,
+        ),
     ];
     return [
       for (var i = 0; i < rows.length; i++) rows[i](i == rows.length - 1),
@@ -391,8 +424,12 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
         decoration: divider
             ? BoxDecoration(
                 border: Border(
-                    bottom: BorderSide(
-                        color: context.c.lineAlternative, width: 0.5)))
+                  bottom: BorderSide(
+                    color: context.c.lineAlternative,
+                    width: 0.5,
+                  ),
+                ),
+              )
             : null,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -403,29 +440,34 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
             // an unbounded label is what blew the 320px sweep open.
             Flexible(
               flex: 2,
-              child: Text(label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      AppType.body1.r.copyWith(color: context.c.labelStrong)),
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+              ),
             ),
             const SizedBox(width: 8),
             Flexible(
               flex: 3,
-              child: Text(value,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style:
-                      AppType.body1.r.copyWith(color: context.c.labelNormal)),
+              child: Text(
+                value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.end,
+                style: AppType.body1.r.copyWith(color: context.c.labelNormal),
+              ),
             ),
           ],
         ),
       );
 
   /// Login-method row — label + positive Badge, per the Account card design.
-  Widget _loginMethodRow(AppLocalizations l10n, String method,
-      {bool divider = true}) {
+  Widget _loginMethodRow(
+    AppLocalizations l10n,
+    String method, {
+    bool divider = true,
+  }) {
     final label = switch (method.toLowerCase()) {
       'google' => 'Google',
       'kakao' => 'Kakao',
@@ -439,17 +481,23 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       decoration: divider
           ? BoxDecoration(
               border: Border(
-                  bottom: BorderSide(
-                      color: context.c.lineAlternative, width: 0.5)))
+                bottom: BorderSide(
+                  color: context.c.lineAlternative,
+                  width: 0.5,
+                ),
+              ),
+            )
           : null,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Flexible(
-            child: Text(l10n.loginMethodLabel,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppType.body1.r.copyWith(color: context.c.labelStrong)),
+            child: Text(
+              l10n.loginMethodLabel,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+            ),
           ),
           const SizedBox(width: 8),
           Badge(tone: BadgeTone.positive, label: label),
@@ -460,58 +508,69 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
 
   /// Section header (Body 1 SemiBold).
   Widget _section(String title) => Text(
-        title,
-        style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
-      );
+    title,
+    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+  );
 
   /// Wraps a section's rows in an elevated grouping card.
   Widget _group(List<Widget> rows) => Container(
-        padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.s12, vertical: AppSpacing.s8),
-        decoration: BoxDecoration(
-          color: context.c.backgroundSurfaceAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.sm), // 12
-        ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: rows),
-      );
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.s12,
+      vertical: AppSpacing.s8,
+    ),
+    decoration: BoxDecoration(
+      color: context.c.backgroundSurfaceAlternative,
+      borderRadius: BorderRadius.circular(AppRadius.sm), // 12
+    ),
+    child: Column(mainAxisSize: MainAxisSize.min, children: rows),
+  );
 
   /// A tappable label/value row with a trailing chevron.
   ///
   /// Provide either a named [route] (pushed on tap) or a custom [onTap]; [onTap]
   /// takes precedence. With neither, the row is inert.
-  Widget _navRow(String label, String value,
-          {String? route, VoidCallback? onTap, bool divider = true}) =>
-      InkWell(
-        onTap: onTap ??
-            (route == null ? null : () => Navigator.pushNamed(context, route)),
-        child: CardLine(
-          type: CardLineType.defaultRow,
-          label: label,
-          value: value.isEmpty ? null : value,
-          showDivider: divider,
-        ),
-      );
+  Widget _navRow(
+    String label,
+    String value, {
+    String? route,
+    VoidCallback? onTap,
+    bool divider = true,
+  }) => InkWell(
+    onTap:
+        onTap ??
+        (route == null ? null : () => Navigator.pushNamed(context, route)),
+    child: CardLine(
+      type: CardLineType.defaultRow,
+      label: label,
+      value: value.isEmpty ? null : value,
+      showDivider: divider,
+    ),
+  );
 
   /// "Beavertalk • v1.0.0" footer.
   Widget _version() => Center(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('Beavertalk',
-                style: AppType.body1.r.copyWith(color: context.c.labelNormal)),
-            const SizedBox(width: AppSpacing.s4),
-            Container(
-              width: AppSpacing.s4,
-              height: AppSpacing.s4,
-              decoration: BoxDecoration(
-                color: context.c.labelNormal,
-                shape: BoxShape.circle,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.s4),
-            Text('v1.0.0',
-                style: AppType.body1.r.copyWith(color: context.c.labelNormal)),
-          ],
+    child: Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          'Beavertalk',
+          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
         ),
-      );
+        const SizedBox(width: AppSpacing.s4),
+        Container(
+          width: AppSpacing.s4,
+          height: AppSpacing.s4,
+          decoration: BoxDecoration(
+            color: context.c.labelNormal,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: AppSpacing.s4),
+        Text(
+          'v1.0.0',
+          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
+        ),
+      ],
+    ),
+  );
 }

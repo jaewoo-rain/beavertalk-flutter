@@ -9,7 +9,6 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
-import '../../features/report/domain/entities/report_reason.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -54,10 +53,10 @@ enum _Rating {
 
   /// Localized accessible label.
   String label(AppLocalizations l10n) => switch (this) {
-        _Rating.bad => l10n.ratingBad,
-        _Rating.ok => l10n.ratingOkay,
-        _Rating.good => l10n.ratingGood,
-      };
+    _Rating.bad => l10n.ratingBad,
+    _Rating.ok => l10n.ratingOkay,
+    _Rating.good => l10n.ratingGood,
+  };
 }
 
 class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
@@ -164,11 +163,13 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         if (mounted) {
           ScaffoldMessenger.of(context)
             ..clearSnackBars()
-            ..showSnackBar(SnackBar(
-              content: Text(
-                AppLocalizations.of(context).ratingSubmitFailed(e.message),
+            ..showSnackBar(
+              SnackBar(
+                content: Text(
+                  AppLocalizations.of(context).ratingSubmitFailed(e.message),
+                ),
               ),
-            ));
+            );
         }
       } catch (_) {
         // Swallow any other error — rating is non-critical.
@@ -181,7 +182,9 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).callInfoNotFound)),
+          SnackBar(
+            content: Text(AppLocalizations.of(context).callInfoNotFound),
+          ),
         );
       Navigator.of(context).popUntil((r) => r.isFirst);
       return;
@@ -216,149 +219,128 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         Navigator.of(context).popUntil((r) => r.isFirst);
       },
       child: AppScaffold(
-      background: context.c.backgroundNormalNormal,
-      statusVariant: StatusBarVariant.whiteTransparent,
-      homeVariant: HomeIndicatorVariant.whiteTransparent,
-      // Figma `2296:26290`: 3 groups — avatar/name/duration (top), rating
-      // (middle), actions (bottom) — distributed space-between so they adapt to
-      // any device height (was fixed-y Positioned under the old 812 frame).
-      //
-      // `spaceBetween` alone assumed the three groups always fit. On a 320×640
-      // handset they do not once the copy is translated: French and Burmese
-      // overflowed the column by 12–14px (caught by `i18n_overflow_test` after
-      // its viewport was lowered from a 1400-tall canvas to a real phone).
-      //
-      // Same shape the old `payment_complete` screen used: scroll when the content is
-      // taller than the viewport, and `minHeight` + `IntrinsicHeight` so that
-      // when it *does* fit, `spaceBetween` still distributes across the full
-      // height exactly as before. No visual change on roomy screens.
-      body: LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: IntrinsicHeight(
-              child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s20, AppSpacing.s48, AppSpacing.s20, AppSpacing.s24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Avatar + name + call duration.
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: AppSpacing.s120,
-                  height: AppSpacing.s120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: context.c.backgroundNormalAlternative,
-                    image: DecorationImage(
-                      image: partnerImage,
-                      fit: BoxFit.cover,
-                    ),
+        background: context.c.backgroundNormalNormal,
+        statusVariant: StatusBarVariant.whiteTransparent,
+        homeVariant: HomeIndicatorVariant.whiteTransparent,
+        // Figma `2296:26290`: 3 groups — avatar/name/duration (top), rating
+        // (middle), actions (bottom) — distributed space-between so they adapt to
+        // any device height (was fixed-y Positioned under the old 812 frame).
+        //
+        // `spaceBetween` alone assumed the three groups always fit. On a 320×640
+        // handset they do not once the copy is translated: French and Burmese
+        // overflowed the column by 12–14px (caught by `i18n_overflow_test` after
+        // its viewport was lowered from a 1400-tall canvas to a real phone).
+        //
+        // Same shape the old `payment_complete` screen used: scroll when the content is
+        // taller than the viewport, and `minHeight` + `IntrinsicHeight` so that
+        // when it *does* fit, `spaceBetween` still distributes across the full
+        // height exactly as before. No visual change on roomy screens.
+        body: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: IntrinsicHeight(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s20,
+                    AppSpacing.s48,
+                    AppSpacing.s20,
+                    AppSpacing.s24,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Avatar + name + call duration.
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: AppSpacing.s120,
+                            height: AppSpacing.s120,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: context.c.backgroundNormalAlternative,
+                              image: DecorationImage(
+                                image: partnerImage,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.s16),
+                          Text(
+                            // Blank rather than a guessed name — see the same call in
+                            // `call.dart`.
+                            selectedChar?.name ?? '',
+                            style: AppType.title3.b.copyWith(
+                              color: context.c.labelStrong,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.s8),
+                          Text(
+                            l10n.callEndedDuration(
+                              _formatDuration(_durationSec),
+                            ),
+                            style: AppType.body1.r.copyWith(
+                              color: context.c.labelNormal,
+                            ),
+                          ),
+                        ],
+                      ),
+                      // Rating prompt + 3 rating cards.
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.callRatingPrompt,
+                            style: AppType.headline1.r.copyWith(
+                              color: context.c.labelStrong,
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.s32),
+                          Row(
+                            children: [
+                              _ratingCard(_Rating.bad),
+                              const SizedBox(width: AppSpacing.s16),
+                              _ratingCard(_Rating.ok),
+                              const SizedBox(width: AppSpacing.s16),
+                              _ratingCard(_Rating.good),
+                            ],
+                          ),
+                        ],
+                      ),
+                      // Actions — 홈으로 (secondary) / 대화 분석 바로가기 (primary).
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Button(
+                            type: BtnType.secondaryFill,
+                            size: BtnSize.s60,
+                            text: l10n.goHome,
+                            onPressed: () => Navigator.of(
+                              context,
+                            ).popUntil((r) => r.isFirst),
+                          ),
+                          const SizedBox(height: AppSpacing.s16),
+                          Button(
+                            type: BtnType.primaryFill,
+                            size: BtnSize.s60,
+                            text: _recovering
+                                ? l10n.loadingShort
+                                : l10n.viewAnalysis,
+                            disabled: _recovering,
+                            onPressed: _analyze,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: AppSpacing.s16),
-                Text(
-                  // Blank rather than a guessed name — see the same call in
-                  // `call.dart`.
-                  selectedChar?.name ?? '',
-                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.callEndedDuration(_formatDuration(_durationSec)),
-                  style:
-                      AppType.body1.r.copyWith(color: context.c.labelNormal),
-                ),
-              ],
-            ),
-            // Rating prompt + 3 rating cards.
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l10n.callRatingPrompt,
-                  style: AppType.headline1.r.copyWith(color: context.c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s32),
-                Row(
-                  children: [
-                    _ratingCard(_Rating.bad),
-                    const SizedBox(width: AppSpacing.s16),
-                    _ratingCard(_Rating.ok),
-                    const SizedBox(width: AppSpacing.s16),
-                    _ratingCard(_Rating.good),
-                  ],
-                ),
-              ],
-            ),
-            // Actions — 홈으로 (secondary) / 대화 분석 바로가기 (primary).
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.goHome,
-                  onPressed: () =>
-                      Navigator.of(context).popUntil((r) => r.isFirst),
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: _recovering ? l10n.loadingShort : l10n.viewAnalysis,
-                  disabled: _recovering,
-                  onPressed: _analyze,
-                ),
-                const SizedBox(height: AppSpacing.s16),
-                // AI 생성 콘텐츠 신고 진입점 — Google Play 생성형 AI 정책이
-                // "앱을 벗어나지 않고" 신고할 수 있는 경로를 의무화한다. 방금
-                // 끝난 통화가 대상이므로 [_callId] 를 함께 넘긴다.
-                //
-                // 낮은 위계로 둔 건 주행동(대화 분석)을 가리지 않기 위해서다.
-                // 정책은 신고 기능의 존재를 요구하지 버튼의 크기를 요구하지 않는다.
-                Semantics(
-                  button: true,
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      Routes.reportContent,
-                      arguments: (
-                        callId: _callId,
-                        source: ReportSource.callFinish,
-                      ),
-                    ),
-                    child: Padding(
-                      // 탭 타깃을 44dp 이상으로 만든다 — 글자만으로는 20dp다.
-                      padding: const EdgeInsets.symmetric(
-                          vertical: AppSpacing.s12),
-                      child: Text(
-                        l10n.reportEntry,
-                        textAlign: TextAlign.center,
-                        style: AppType.label1.r.copyWith(
-                          color: context.c.labelAlternative,
-                          decoration: TextDecoration.underline,
-                          decorationColor: context.c.labelAlternative,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
               ),
             ),
           ),
         ),
-      ),
       ),
     );
   }
@@ -381,7 +363,9 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(20), // radius/ml
               border: Border.all(
-                color: selected ? context.c.primaryNormal : context.c.lineNeutral,
+                color: selected
+                    ? context.c.primaryNormal
+                    : context.c.lineNeutral,
               ),
             ),
             alignment: Alignment.center,
@@ -390,13 +374,16 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               height: 56,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color:
-                    selected ? context.c.primaryNormal10 : context.c.backgroundElevatedAlternative,
+                color: selected
+                    ? context.c.primaryNormal10
+                    : context.c.backgroundElevatedAlternative,
               ),
               alignment: Alignment.center,
               child: r.icon(
                 size: 24,
-                color: selected ? context.c.primaryNormal : context.c.labelNormal,
+                color: selected
+                    ? context.c.primaryNormal
+                    : context.c.labelNormal,
               ),
             ),
           ),

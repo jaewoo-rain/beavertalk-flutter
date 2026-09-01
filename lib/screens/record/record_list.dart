@@ -5,7 +5,6 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/skeleton.dart';
-import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/molecules/card_box_loading.dart';
@@ -17,7 +16,6 @@ import '../../core/error/app_exception.dart';
 import '../../features/bookmark/domain/entities/bookmark_sentence.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
-import '../../features/report/domain/entities/report_reason.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/presentation/review_providers.dart';
@@ -59,41 +57,15 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Gnb.main(
-            title: '',
-            onBack: () => Navigator.pop(context),
-            // AI 생성 콘텐츠 신고 진입점 — Google Play 생성형 AI 정책이 "앱을
-            // 벗어나지 않고" 신고할 수 있는 경로를 의무화한다. 기록에서는 특정
-            // 통화를 지목하지 않으므로 callId 는 null 이다.
-            trailing: GestureDetector(
-              behavior: HitTestBehavior.opaque,
-              onTap: () => Navigator.pushNamed(
-                context,
-                Routes.reportContent,
-                arguments: (
-                  callId: null,
-                  source: ReportSource.recordList,
-                ),
-              ),
-              // 글자가 아니라 깃발 아이콘이다. 문구로 두면 폭이 로케일마다
-              // 달라져 320px 화면에서 GNB 가 터진다(네팔어 「रिपोर्ट गर्नुहोस्」가
-              // 5.4px 넘겨 i18n_overflow_test 가 잡았다). 아이콘은 폭이 고정이다.
-              child: Semantics(
-                button: true,
-                label: l10n.reportEntry,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s8, vertical: AppSpacing.s12),
-                  child: AppIcons.flag(
-                      size: 24, color: context.c.labelAlternative),
-                ),
-              ),
-            ),
-          ),
+          Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           // 기록 / 보관 tabs — pure in-page state, no navigation.
           Padding(
             padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 14, AppSpacing.s20, 14),
+              AppSpacing.s20,
+              14,
+              AppSpacing.s20,
+              14,
+            ),
             child: SegmentedTabs(
               labels: [l10n.tabRecords, l10n.tabArchive],
               activeIndex: _tab,
@@ -103,10 +75,7 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
           Expanded(
             child: IndexedStack(
               index: _tab,
-              children: const [
-                _RecordsBody(),
-                _ArchiveBody(),
-              ],
+              children: const [_RecordsBody(), _ArchiveBody()],
             ),
           ),
         ],
@@ -166,10 +135,16 @@ class _RecordsLoading extends StatelessWidget {
     return SkeletonShimmer(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
+          AppSpacing.s20,
+          AppSpacing.s4,
+          AppSpacing.s20,
+          AppSpacing.s24,
+        ),
         children: [
-          Text(l10n.callHistory,
-              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
+          Text(
+            l10n.callHistory,
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+          ),
           const SizedBox(height: 8),
           for (var i = 0; i < 5; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -206,10 +181,16 @@ class _RecordList extends StatelessWidget {
       },
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
+          AppSpacing.s20,
+          AppSpacing.s4,
+          AppSpacing.s20,
+          AppSpacing.s24,
+        ),
         children: [
-          Text(l10n.callHistory,
-              style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
+          Text(
+            l10n.callHistory,
+            style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+          ),
           const SizedBox(height: 8),
           for (var i = 0; i < records.length; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -224,8 +205,9 @@ class _RecordList extends StatelessWidget {
                 type: CardBoxType.record,
                 // Blur-in while the remote character avatar loads (CardBox clips
                 // this to a 64px circle).
-                avatar:
-                    BlurUpImage(image: _avatarFor(records[i].character.imageUrl)),
+                avatar: BlurUpImage(
+                  image: _avatarFor(records[i].character.imageUrl),
+                ),
                 title: records[i].character.name,
                 subtitle: _subtitleFor(l10n, records[i].summary),
                 meta: [
@@ -322,9 +304,9 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   /// Shows [message] as a snackbar.
   void _snack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(message)),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   /// Runs a mutation, surfacing any failure ([AppException]) as a snackbar.
@@ -341,13 +323,13 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   /// the tap always clears it (`is_bookmarked: false`); on success the controller
   /// invalidates the list and the row disappears.
   Future<void> _toggleOff(int sentenceId) => _run(() async {
-        await ref
-            .read(bookmarkToggleControllerProvider.notifier)
-            .toggleBookmark(sentenceId, false);
-        // Keep the shared in-memory store in sync so analysis/learning don't keep
-        // showing this sentence as bookmarked after it's un-saved here.
-        setBookmark(sentenceId, false);
-      });
+    await ref
+        .read(bookmarkToggleControllerProvider.notifier)
+        .toggleBookmark(sentenceId, false);
+    // Keep the shared in-memory store in sync so analysis/learning don't keep
+    // showing this sentence as bookmarked after it's un-saved here.
+    setBookmark(sentenceId, false);
+  });
 
   /// Plays the sentence's standard-pronunciation audio: uses the existing
   /// [BookmarkSentence.voiceUrl] when present, otherwise fetches it on demand
@@ -413,16 +395,17 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return ref.watch(bookmarkListProvider).when(
+    return ref
+        .watch(bookmarkListProvider)
+        .when(
           loading: () => const _ArchiveLoading(),
           error: (e, _) => NetworkErrorView(
             message: e is AppException && e.fromServer ? e.message : null,
             onRetry: () => ref.invalidate(bookmarkListProvider),
           ),
-          data: (saved) =>
-              saved.isEmpty
-                  ? EmptyScreen(body: l10n.noSavedSentences)
-                  : _list(saved),
+          data: (saved) => saved.isEmpty
+              ? EmptyScreen(body: l10n.noSavedSentences)
+              : _list(saved),
         );
   }
 
@@ -430,10 +413,16 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
   Widget _list(List<BookmarkSentence> saved) {
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
+        AppSpacing.s20,
+        AppSpacing.s4,
+        AppSpacing.s20,
+        AppSpacing.s24,
+      ),
       children: [
-        Text(AppLocalizations.of(context).mySavedExpressions,
-            style: AppType.body1.sb.copyWith(color: context.c.labelNormal)),
+        Text(
+          AppLocalizations.of(context).mySavedExpressions,
+          style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
+        ),
         const SizedBox(height: AppSpacing.s8),
         for (var i = 0; i < saved.length; i++) ...[
           if (i > 0) const SizedBox(height: AppSpacing.s12),
@@ -469,19 +458,24 @@ class _ArchiveLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SkeletonShimmer(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.s20, AppSpacing.s4, AppSpacing.s20, AppSpacing.s24),
-          children: [
-            Text(AppLocalizations.of(context).mySavedExpressions,
-                style:
-                    AppType.body1.sb.copyWith(color: context.c.labelNormal)),
-            const SizedBox(height: AppSpacing.s8),
-            for (var i = 0; i < 3; i++) ...[
-              if (i > 0) const SizedBox(height: AppSpacing.s12),
-              const CardLoading(),
-            ],
-          ],
+    child: ListView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s20,
+        AppSpacing.s4,
+        AppSpacing.s20,
+        AppSpacing.s24,
+      ),
+      children: [
+        Text(
+          AppLocalizations.of(context).mySavedExpressions,
+          style: AppType.body1.sb.copyWith(color: context.c.labelNormal),
         ),
-      );
+        const SizedBox(height: AppSpacing.s8),
+        for (var i = 0; i < 3; i++) ...[
+          if (i > 0) const SizedBox(height: AppSpacing.s12),
+          const CardLoading(),
+        ],
+      ],
+    ),
+  );
 }

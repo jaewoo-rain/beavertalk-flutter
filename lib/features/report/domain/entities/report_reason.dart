@@ -36,22 +36,27 @@ enum ReportReason {
 
   /// 화면에 보이는 번역 문구.
   String label(AppLocalizations l10n) => switch (this) {
-        ReportReason.sexual => l10n.reportReasonSexual,
-        ReportReason.hate => l10n.reportReasonHate,
-        ReportReason.violence => l10n.reportReasonViolence,
-        ReportReason.selfHarm => l10n.reportReasonSelfHarm,
-        ReportReason.misinformation => l10n.reportReasonMisinfo,
-        ReportReason.other => l10n.reportReasonOther,
-      };
+    ReportReason.sexual => l10n.reportReasonSexual,
+    ReportReason.hate => l10n.reportReasonHate,
+    ReportReason.violence => l10n.reportReasonViolence,
+    ReportReason.selfHarm => l10n.reportReasonSelfHarm,
+    ReportReason.misinformation => l10n.reportReasonMisinfo,
+    ReportReason.other => l10n.reportReasonOther,
+  };
 }
 
-/// 신고가 시작된 화면. 어디서 눌렀는지가 분류에 필요하다.
+/// 신고가 시작된 화면.
+///
+/// 진입점은 **마이페이지 설정 하나**다. Play 정책 원문은 "앱을 벗어나지 않고"
+/// 신고할 수 있어야 한다고만 요구하고 **위치를 강제하지 않는다** — 통화 화면이나
+/// 대화 기록에 달 필요가 없다. 약관·처리방침과 같은 줄에 두는 편이 찾기 쉽고
+/// 주행동을 가리지 않는다.
+///
+/// 값이 하나뿐이어도 열거로 남긴다 — 나중에 통화 맥락 진입점을 붙이면 저장된
+/// 신고를 출처로 가를 수 있어야 한다.
 enum ReportSource {
-  /// 통화 종료 화면.
-  callFinish('call_finish'),
-
-  /// 대화 기록 목록.
-  recordList('record_list');
+  /// 마이페이지 > 설정 > 고객지원.
+  myPage('my_page');
 
   const ReportSource(this.code);
 

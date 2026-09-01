@@ -21,13 +21,14 @@ create table if not exists public.content_report (
   reporter_uid uuid        not null default auth.uid()
                            references auth.users (id) on delete cascade,
 
-  -- 신고 대상 통화. 기록 목록에서 특정 통화를 지목하지 않고 신고하면 null.
+  -- 신고 대상 통화. 지금 진입점(마이페이지)은 통화 맥락이 없어 항상 null 이다.
+  -- 통화 맥락 진입점을 붙이면 그때 채운다.
   -- public.call 로 FK 를 걸지 않는다 — 그쪽은 alembic 소유라 결합을 만들지 않는다.
   call_id      bigint,
 
   -- 신고를 시작한 화면. ReportSource.code 와 1:1.
   source       text        not null
-                           check (source in ('call_finish', 'record_list')),
+                           check (source in ('my_page')),
 
   -- 신고 사유. ReportReason.code 와 1:1. **배포 후 코드값을 바꾸지 마라** —
   -- 이미 저장된 신고와 대조가 깨진다.

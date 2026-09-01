@@ -19,8 +19,8 @@ import '../../theme/app_typography.dart';
 
 /// 신고 화면에 넘기는 인자.
 ///
-/// 통화 종료 화면에서는 방금 끝난 통화의 `callId` 가 있고, 기록 목록에서는
-/// 특정 통화를 지목하지 않으므로 null 이다.
+/// 지금 진입점은 마이페이지 하나라 `callId` 는 항상 null 이다. 통화 맥락에서
+/// 여는 진입점을 붙이면 그때 통화 id 를 실어 보낸다.
 typedef ReportArgs = ({int? callId, ReportSource source});
 
 /// AI 생성 콘텐츠 신고 — Google Play 생성형 AI 정책 대응 화면.
@@ -59,7 +59,7 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
   bool _done = false;
 
   /// 라우트에서 읽은 인자.
-  ReportArgs _resolved = (callId: null, source: ReportSource.recordList);
+  ReportArgs _resolved = (callId: null, source: ReportSource.myPage);
 
   @override
   void didChangeDependencies() {

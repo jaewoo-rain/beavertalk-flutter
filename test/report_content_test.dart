@@ -65,10 +65,7 @@ void main() {
       ReportReason.values.map((r) => r.code).toList(),
       ['sexual', 'hate', 'violence', 'self_harm', 'misinformation', 'other'],
     );
-    expect(
-      ReportSource.values.map((s) => s.code).toList(),
-      ['call_finish', 'record_list'],
-    );
+    expect(ReportSource.values.map((s) => s.code).toList(), ['my_page']);
   });
 
   testWidgets('사유를 고르기 전에는 접수 버튼이 눌리지 않는다', (tester) async {
@@ -86,7 +83,7 @@ void main() {
       (tester) async {
     final repo = _FakeReportRepository();
     await tester.pumpWidget(
-      _app(repo, args: (callId: 42, source: ReportSource.callFinish)),
+      _app(repo, args: (callId: 42, source: ReportSource.myPage)),
     );
     await tester.pumpAndSettle();
 
@@ -98,7 +95,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repo.last?.reason, ReportReason.hate);
-    expect(repo.last?.source, ReportSource.callFinish);
+    expect(repo.last?.source, ReportSource.myPage);
     expect(repo.last?.callId, 42, reason: '통화 id 가 붙어야 검토가 가능하다');
     expect(repo.last?.detail, '캐릭터가 차별 발언을 했어요');
 
@@ -107,10 +104,10 @@ void main() {
     expect(find.text('Submit report'), findsNothing);
   });
 
-  testWidgets('기록 목록에서 들어오면 통화 id 없이 접수된다', (tester) async {
+  testWidgets('마이페이지에서 들어오면 통화 id 없이 접수된다', (tester) async {
     final repo = _FakeReportRepository();
     await tester.pumpWidget(
-      _app(repo, args: (callId: null, source: ReportSource.recordList)),
+      _app(repo, args: (callId: null, source: ReportSource.myPage)),
     );
     await tester.pumpAndSettle();
 
@@ -118,7 +115,7 @@ void main() {
     await tester.tap(find.text('Submit report'));
     await tester.pumpAndSettle();
 
-    expect(repo.last?.source, ReportSource.recordList);
+    expect(repo.last?.source, ReportSource.myPage);
     expect(repo.last?.callId, isNull);
   });
 
