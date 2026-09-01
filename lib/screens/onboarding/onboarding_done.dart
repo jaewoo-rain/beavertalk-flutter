@@ -74,12 +74,8 @@ class OnboardingDoneScreen extends StatelessWidget {
             ),
           ),
           // Figma `BottomSheet` two-button row: pt 12, px 20, gap 10.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s12,
-                AppSpacing.s20,
-                AppSpacing.s12),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
             child: Row(
               children: [
                 Expanded(

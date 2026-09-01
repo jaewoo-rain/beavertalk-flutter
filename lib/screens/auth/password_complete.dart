@@ -66,9 +66,8 @@ class PasswordCompleteScreen extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: 0, bottom: AppSpacing.s24),
             child: SizedBox(
               width: double.infinity,
               child: Button(

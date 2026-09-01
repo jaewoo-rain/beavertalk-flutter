@@ -224,40 +224,41 @@ class PlanChangeScreen extends ConsumerWidget {
   Widget _cta(BuildContext context, AppLocalizations l10n, AppColorTokens c,
       bool up) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: c.lineAlternative)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Button(
-            type: up ? BtnType.gold : BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: up ? l10n.ctaSwitchToMax : l10n.ctaSwitchToPro,
-            onPressed: () => Navigator.pushNamed(
-              context,
-              Routes.purchaseProcessing,
-              arguments:
-                  up ? SubscriptionTier.max : SubscriptionTier.pro,
-            ),
-          ),
-          const SizedBox(height: 6),
-          if (up)
-            Text(
-              l10n.upgradeCaption,
-              textAlign: TextAlign.center,
-              style: AppType.caption1.r.copyWith(color: c.labelNormal),
-            )
-          else
+      child: ContentColumn(
+        padding: const EdgeInsets.only(top: AppSpacing.s12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             Button(
-              type: BtnType.secondaryFill,
+              type: up ? BtnType.gold : BtnType.primaryFill,
               size: BtnSize.s60,
-              text: l10n.ctaKeepMax,
-              onPressed: () => Navigator.pop(context),
+              text: up ? l10n.ctaSwitchToMax : l10n.ctaSwitchToPro,
+              onPressed: () => Navigator.pushNamed(
+                context,
+                Routes.purchaseProcessing,
+                arguments:
+                    up ? SubscriptionTier.max : SubscriptionTier.pro,
+              ),
             ),
-        ],
+            const SizedBox(height: 6),
+            if (up)
+              Text(
+                l10n.upgradeCaption,
+                textAlign: TextAlign.center,
+                style: AppType.caption1.r.copyWith(color: c.labelNormal),
+              )
+            else
+              Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: l10n.ctaKeepMax,
+                onPressed: () => Navigator.pop(context),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -350,35 +351,36 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaSend,
-                  // TODO(server): submit the reason once an endpoint exists.
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaNotNow,
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.winbackCaption,
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaSend,
+                    // TODO(server): submit the reason once an endpoint exists.
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaNotNow,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    l10n.winbackCaption,
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

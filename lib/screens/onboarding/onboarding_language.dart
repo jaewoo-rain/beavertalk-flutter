@@ -67,27 +67,25 @@ class _OnboardingLanguageScreenState
             onBack: () => Navigator.pushNamed(context, Routes.signup),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
-                  AppSpacing.s24,
-                  AppSpacing.s20,
-                  AppSpacing.s24),
-              children: [
-                Text(
-                  l10n.onboardingLanguageTitle,
-                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s20),
-                // Content data (language names) is kept as-is, not localized.
-                for (final lang in mockLanguages)
-                  CountrySelect(
-                    name: lang.name,
-                    flag: countryFlag(lang.countryCode),
-                    selected: _selectedId == lang.id,
-                    onSelect: () => _select(lang.id),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  Text(
+                    l10n.onboardingLanguageTitle,
+                    style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                   ),
-              ],
+                  const SizedBox(height: AppSpacing.s20),
+                  // Content data (language names) is kept as-is, not localized.
+                  for (final lang in mockLanguages)
+                    CountrySelect(
+                      name: lang.name,
+                      flag: countryFlag(lang.countryCode),
+                      selected: _selectedId == lang.id,
+                      onSelect: () => _select(lang.id),
+                    ),
+                ],
+              ),
             ),
           ),
           ContentColumn(

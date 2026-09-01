@@ -383,6 +383,7 @@ class BottomSheetAvatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onPlaySample,
+        // 카드 **안쪽** 패딩이다 — 화면 여백이 아니므로 폭을 따라가지 않는다.
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
@@ -439,8 +440,8 @@ class BottomSheetAvatar extends StatelessWidget {
 
   // ── Footer buttons (60-size), per state ──────────────────────────────────
   Widget _footer(BuildContext context, AppLocalizations l10n) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+    return ContentColumn(
+      padding: const EdgeInsets.only(top: 12),
       child: _footerButtons(context, l10n),
     );
   }
@@ -549,8 +550,8 @@ class BottomSheetAvatarDemo extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             for (final (label, state) in _states) ...[
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+              ContentColumn(
+                padding: const EdgeInsets.only(bottom: 8),
                 child: Align(
                   alignment: Alignment.centerLeft,
                   child: Text(

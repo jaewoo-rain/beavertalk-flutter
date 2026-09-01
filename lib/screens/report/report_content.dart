@@ -151,42 +151,39 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
 
   /// 사유 선택 + 자유 입력 + 제출.
   Widget _formBody(AppLocalizations l10n) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s20,
-        AppSpacing.s8,
-        AppSpacing.s20,
-        AppSpacing.s24,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            l10n.reportPrompt,
-            style: AppType.title3.b.copyWith(color: context.c.labelStrong),
-          ),
-          const SizedBox(height: AppSpacing.s8),
-          Text(
-            l10n.reportGuide,
-            // 제목 아래 안내문 규격은 정본 화면(`screen/onborading_purpose`)과
-            // 같다 — Body 1 Regular · Label/Normal.
-            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-          ),
-          const SizedBox(height: AppSpacing.s24),
-          for (final r in ReportReason.values) ...[
-            _reasonRow(r, l10n),
+    return ContentColumn(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              l10n.reportPrompt,
+              style: AppType.title3.b.copyWith(color: context.c.labelStrong),
+            ),
             const SizedBox(height: AppSpacing.s8),
+            Text(
+              l10n.reportGuide,
+              // 제목 아래 안내문 규격은 정본 화면(`screen/onborading_purpose`)과
+              // 같다 — Body 1 Regular · Label/Normal.
+              style: AppType.body1.r.copyWith(color: context.c.labelNormal),
+            ),
+            const SizedBox(height: AppSpacing.s24),
+            for (final r in ReportReason.values) ...[
+              _reasonRow(r, l10n),
+              const SizedBox(height: AppSpacing.s8),
+            ],
+            const SizedBox(height: AppSpacing.s16),
+            TextArea(
+              controller: _detail,
+              hintText: l10n.reportDetailHint,
+              maxLength: 500,
+              minLines: 3,
+              maxLines: 6,
+              enabled: !_sending,
+            ),
           ],
-          const SizedBox(height: AppSpacing.s16),
-          TextArea(
-            controller: _detail,
-            hintText: l10n.reportDetailHint,
-            maxLength: 500,
-            minLines: 3,
-            maxLines: 6,
-            enabled: !_sending,
-          ),
-        ],
+        ),
       ),
     );
   }

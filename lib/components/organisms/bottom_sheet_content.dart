@@ -245,8 +245,8 @@ class BottomSheetContent extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: 12),
             child: SizedBox(
               width: double.infinity,
               child: Button(
@@ -258,8 +258,8 @@ class BottomSheetContent extends StatelessWidget {
             ),
           ),
           if (secondaryAction != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+            ContentColumn(
+              padding: const EdgeInsets.only(top: 12),
               child: SizedBox(
                 width: double.infinity,
                 child: Button(

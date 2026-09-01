@@ -591,30 +591,31 @@ class _TrialExpiredNotice extends StatelessWidget {
           // Sticky CTA — top hairline, 12px shelf, 6px between buttons, all
           // measured off the original.
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.seePlans,
-                  onPressed: () =>
-                      Navigator.pushNamed(context, Routes.plansCompare),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.billingRestorePurchases,
-                  onPressed: () => showSubscriptionOverlay(
-                      context, SubscriptionOverlay.restoreSuccess),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.seePlans,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.plansCompare),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.billingRestorePurchases,
+                    onPressed: () => showSubscriptionOverlay(
+                        context, SubscriptionOverlay.restoreSuccess),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

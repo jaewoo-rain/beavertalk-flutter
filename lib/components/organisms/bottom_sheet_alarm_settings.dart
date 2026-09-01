@@ -195,8 +195,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
           // there isn't; the header and the save button stay put either way.
           Flexible(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+              child: ContentColumn(
+                padding: const EdgeInsets.only(top: 16, bottom: 24),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -470,8 +470,8 @@ class BottomSheetAlarmSettings extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+        ContentColumn(
+          padding: const EdgeInsets.only(top: 12),
           child: SizedBox(
             width: double.infinity,
             child: Button(

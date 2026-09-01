@@ -143,19 +143,20 @@ class _EditNicknameScreenState extends ConsumerState<EditNicknameScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: SizedBox(
-              width: double.infinity,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.ctaSave,
-                onPressed: _valid && !_saving ? _save : null,
-                disabled: !_valid || _saving,
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: SizedBox(
+                width: double.infinity,
+                child: Button(
+                  type: BtnType.primaryFill,
+                  size: BtnSize.s60,
+                  text: l10n.ctaSave,
+                  onPressed: _valid && !_saving ? _save : null,
+                  disabled: !_valid || _saving,
+                ),
               ),
             ),
           ),

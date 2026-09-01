@@ -281,38 +281,39 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: _isMax ? BtnType.gold : BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: _isMax ? l10n.ctaStartAVideoCall : l10n.ctaStartACall,
-                  onPressed: () => _exitToRoot(context),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaSeeYourSubscription,
-                  // Drop the spent funnel (paywall → processing → success)
-                  // underneath: back from the manage screen should land on the
-                  // root, not replay a completed purchase.
-                  onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                      context, Routes.subscription, (route) => route.isFirst),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  _isMax ? l10n.successMaxCaption(PlanPrices.maxMonthly) : l10n.successProCaption(PlanPrices.proMonthly),
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: _isMax ? BtnType.gold : BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: _isMax ? l10n.ctaStartAVideoCall : l10n.ctaStartACall,
+                    onPressed: () => _exitToRoot(context),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaSeeYourSubscription,
+                    // Drop the spent funnel (paywall → processing → success)
+                    // underneath: back from the manage screen should land on the
+                    // root, not replay a completed purchase.
+                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                        context, Routes.subscription, (route) => route.isFirst),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _isMax ? l10n.successMaxCaption(PlanPrices.maxMonthly) : l10n.successProCaption(PlanPrices.proMonthly),
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(
@@ -372,36 +373,37 @@ class PlansErrorScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaTryAgain,
-                  onPressed: () => Navigator.pushReplacementNamed(
-                      context, Routes.plansCompare),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.billingRestorePurchases,
-                  onPressed: () => showSubscriptionOverlay(
-                      context, SubscriptionOverlay.restoreSuccess),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  l10n.plansErrorCaption,
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaTryAgain,
+                    onPressed: () => Navigator.pushReplacementNamed(
+                        context, Routes.plansCompare),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.billingRestorePurchases,
+                    onPressed: () => showSubscriptionOverlay(
+                        context, SubscriptionOverlay.restoreSuccess),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.plansErrorCaption,
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

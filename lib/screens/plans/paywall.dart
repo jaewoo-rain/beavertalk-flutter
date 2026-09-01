@@ -368,49 +368,50 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
   Widget _stickyCta(AppLocalizations l10n, AppColorTokens c) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: c.lineAlternative)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Button(
-            type: _isMax ? BtnType.gold : BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: _isMax ? l10n.ctaTurnOnVideo : l10n.ctaGoUnlimited,
-            // Tier AND cycle travel as the route argument — the tier alone
-            // was the "bought Max, screen said Pro" bug, and a dropped cycle
-            // meant the annual selection quietly bought monthly.
-            onPressed: () => Navigator.pushNamed(
-              context,
-              Routes.purchaseProcessing,
-              arguments: (
-                tier: _isMax ? SubscriptionTier.max : SubscriptionTier.pro,
-                annual: _cycle == _Cycle.annual,
+      child: ContentColumn(
+        padding: const EdgeInsets.only(top: AppSpacing.s12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Button(
+              type: _isMax ? BtnType.gold : BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: _isMax ? l10n.ctaTurnOnVideo : l10n.ctaGoUnlimited,
+              // Tier AND cycle travel as the route argument — the tier alone
+              // was the "bought Max, screen said Pro" bug, and a dropped cycle
+              // meant the annual selection quietly bought monthly.
+              onPressed: () => Navigator.pushNamed(
+                context,
+                Routes.purchaseProcessing,
+                arguments: (
+                  tier: _isMax ? SubscriptionTier.max : SubscriptionTier.pro,
+                  annual: _cycle == _Cycle.annual,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            _isMax
-                ? (_trialEligible ? l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly) : l10n.ctaCaptionMax(PlanPrices.maxMonthly))
-                : l10n.ctaCaptionPro(PlanPrices.proMonthly),
-            textAlign: TextAlign.center,
-            style: AppType.caption1.r.copyWith(color: c.labelNormal),
-          ),
-          // App Review 3.1.2 wants five things on the purchase screen: title,
-          // length, price, **that it auto-renews**, and how to cancel. The
-          // caption above carried four of them; this is the fifth. Its own
-          // line rather than an infix — spliced mid-sentence it reads wrong in
-          // half the locales.
-          Text(
-            l10n.ctaCaptionAutoRenew,
-            textAlign: TextAlign.center,
-            style: AppType.caption1.r.copyWith(color: c.labelAlternative),
-          ),
-        ],
+            const SizedBox(height: 6),
+            Text(
+              _isMax
+                  ? (_trialEligible ? l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly) : l10n.ctaCaptionMax(PlanPrices.maxMonthly))
+                  : l10n.ctaCaptionPro(PlanPrices.proMonthly),
+              textAlign: TextAlign.center,
+              style: AppType.caption1.r.copyWith(color: c.labelNormal),
+            ),
+            // App Review 3.1.2 wants five things on the purchase screen: title,
+            // length, price, **that it auto-renews**, and how to cancel. The
+            // caption above carried four of them; this is the fifth. Its own
+            // line rather than an infix — spliced mid-sentence it reads wrong in
+            // half the locales.
+            Text(
+              l10n.ctaCaptionAutoRenew,
+              textAlign: TextAlign.center,
+              style: AppType.caption1.r.copyWith(color: c.labelAlternative),
+            ),
+          ],
+        ),
       ),
     );
   }

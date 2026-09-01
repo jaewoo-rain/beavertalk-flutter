@@ -18,13 +18,23 @@ import 'theme/app_typography.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Portrait only. Every frame in the design is 375×812 portrait and nothing is
-  // laid out for a landscape box, so a rotation only breaks the screen.
+  // 세로 고정. 정본 프레임이 폰 375×812·태블릿 810×1080 전부 세로이고, 가로
+  // 상자로 그려 둔 화면이 하나도 없다.
   //
-  // Locked here rather than with `android:screenOrientation` in the manifest:
-  // one owner beats two, and the manifest route lets Android recreate the
-  // activity on rotation — which `MainActivity`'s MediaProjection recorder
-  // (`beavertalk/challenge_recorder`) would not survive mid-capture.
+  // 잠금은 **세 곳에 걸려 있다.** 예전에는 여기 한 곳뿐이었고 「한 주인이 둘보다
+  // 낫다」고 적혀 있었는데, 실측해 보니 그 한 주인이 두 경우에서 무시당했다:
+  //
+  //   1. 여기(런타임) — 폰과 Android 15 이하 태블릿을 덮는다.
+  //   2. `AndroidManifest.xml` 의 `screenOrientation="portrait"` + Android 16
+  //      대화면 opt-out 속성 — targetSdk 36 은 600dp 이상 화면에서 방향 제한을
+  //      통째로 무시한다. 런타임 호출도 같이 무시된다.
+  //   3. `ios/Runner/Info.plist` — `UIRequiresFullScreen` 이 없으면 iOS 가 앱을
+  //      멀티태스킹 지원으로 보고 이 호출을 무시한다(iPad 가 가로로 돌아갔다).
+  //
+  // 매니페스트 잠금이 액티비티를 재생성해 `MainActivity` 의 MediaProjection
+  // 녹화(`beavertalk/challenge_recorder`)를 끊을 걱정은 없다 — 창이 세로로
+  // 고정되면 회전 자체가 일어나지 않고, `configChanges` 가 이미
+  // `orientation|screenSize|smallestScreenSize|screenLayout` 을 잡고 있다.
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -131,6 +141,16 @@ class BeaverTalkApp extends ConsumerWidget {
       brightness: brightness,
       scaffoldBackgroundColor: tokens.backgroundNormalDeep,
       fontFamily: kFontFamily,
+      // 바텀시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+      // 컬럼으로 패딩」).
+      //
+      // Material 3 의 기본 `BottomSheetThemeData.constraints` 가 `maxWidth:
+      // 640` 이라, 우리 코드에서 캡을 다 걷어냈는데도 태블릿에서 시트만 640으로
+      // 좁아지고 좌우에 배경이 비쳤다(에뮬레이터 800dp 실측: 시트 폭 640.0).
+      // 빈 제약으로 덮어 그 캡을 없앤다.
+      bottomSheetTheme: const BottomSheetThemeData(
+        constraints: BoxConstraints(),
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: tokens.primaryNormal,
         brightness: brightness,

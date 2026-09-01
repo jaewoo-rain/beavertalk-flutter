@@ -177,12 +177,16 @@ class DialogBasic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: context.c.backgroundElevatedNormal,
-      borderRadius: BorderRadius.circular(AppRadius.xs),
-      clipBehavior: Clip.antiAlias,
-      // 카드 폭은 폰 335 → 태블릿 480(정본 「오버레이는 480 중앙 정렬」).
-      child: ContentColumn.narrow(
+    // 카드 폭은 폰 335 → 태블릿 480(정본 「오버레이는 480 중앙 정렬」).
+    //
+    // 폭 제한이 [Material] **바깥**에 있어야 한다. 안에 두면 배경과 둥근 모서리는
+    // 전폭으로 칠해지고 글자만 안으로 들어가, 카드가 아니라 화면을 가로지르는
+    // 띠가 된다(태블릿 렌더에서 실제로 그렇게 나왔다).
+    return ContentColumn.narrow(
+      child: Material(
+        color: context.c.backgroundElevatedNormal,
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+        clipBehavior: Clip.antiAlias,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: Column(
