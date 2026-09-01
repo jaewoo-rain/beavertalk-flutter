@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
+import '../../components/chrome/bottom_cta_bar.dart';
+import '../../components/atoms/checkbox.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/text_area.dart';
 import '../../components/organisms/gnb.dart';
@@ -84,7 +86,9 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
     if (reason == null || _sending) return;
     setState(() => _sending = true);
     try {
-      await ref.read(reportRepositoryProvider).submit(
+      await ref
+          .read(reportRepositoryProvider)
+          .submit(
             reason: reason,
             source: _resolved.source,
             callId: _resolved.callId,
@@ -113,6 +117,24 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
     final l10n = AppLocalizations.of(context);
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
+      // 하단 인셋은 [BottomCtaBar] 가 한 곳에서 정한다 — 화면이 저마다
+      // 패딩을 손으로 짜면 기기마다 어긋난다(그래서 이 컴포넌트가 생겼다).
+      bottomBar: BottomCtaBar(
+        child: _done
+            ? Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: l10n.confirm,
+                onPressed: () => Navigator.of(context).pop(),
+              )
+            : Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: _sending ? l10n.loadingShort : l10n.reportSubmit,
+                disabled: _reason == null || _sending,
+                onPressed: _submit,
+              ),
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -128,57 +150,43 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
 
   /// 사유 선택 + 자유 입력 + 제출.
   Widget _formBody(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, AppSpacing.s24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  l10n.reportPrompt,
-                  style:
-                      AppType.title3.b.copyWith(color: context.c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.reportGuide,
-                  style: AppType.body2.r
-                      .copyWith(color: context.c.labelAlternative),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                for (final r in ReportReason.values) ...[
-                  _reasonRow(r, l10n),
-                  const SizedBox(height: AppSpacing.s8),
-                ],
-                const SizedBox(height: AppSpacing.s16),
-                TextArea(
-                  controller: _detail,
-                  hintText: l10n.reportDetailHint,
-                  maxLength: 500,
-                  minLines: 3,
-                  maxLines: 6,
-                  enabled: !_sending,
-                ),
-              ],
-            ),
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s20,
+        AppSpacing.s8,
+        AppSpacing.s20,
+        AppSpacing.s24,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(
+            l10n.reportPrompt,
+            style: AppType.title3.b.copyWith(color: context.c.labelStrong),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
-          child: Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: _sending ? l10n.loadingShort : l10n.reportSubmit,
-            disabled: _reason == null || _sending,
-            onPressed: _submit,
+          const SizedBox(height: AppSpacing.s8),
+          Text(
+            l10n.reportGuide,
+            // 제목 아래 안내문 규격은 정본 화면(`screen/onborading_purpose`)과
+            // 같다 — Body 1 Regular · Label/Normal.
+            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
           ),
-        ),
-      ],
+          const SizedBox(height: AppSpacing.s24),
+          for (final r in ReportReason.values) ...[
+            _reasonRow(r, l10n),
+            const SizedBox(height: AppSpacing.s8),
+          ],
+          const SizedBox(height: AppSpacing.s16),
+          TextArea(
+            controller: _detail,
+            hintText: l10n.reportDetailHint,
+            maxLength: 500,
+            minLines: 3,
+            maxLines: 6,
+            enabled: !_sending,
+          ),
+        ],
+      ),
     );
   }
 
@@ -196,7 +204,9 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
           // 44dp 미만이면 탭 타깃 권고에 걸린다. 56으로 여유를 둔다.
           constraints: const BoxConstraints(minHeight: 56),
           padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.s16, vertical: AppSpacing.s12),
+            horizontal: AppSpacing.s16,
+            vertical: AppSpacing.s12,
+          ),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(AppRadius.md),
             // 테두리를 selected 여부로 통째로 없애면 두께가 0↔1 로 흔들려 1px
@@ -220,8 +230,13 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
                   ),
                 ),
               ),
-              if (selected)
-                AppIcons.check(size: 24, color: context.c.primaryNormal),
+              const SizedBox(width: AppSpacing.s8),
+              // 이 디자인 시스템의 선택 어포던스는 체크박스다(Select Card 와 동일).
+              // 고르기 전에도 보여야 「고를 수 있는 줄」로 읽힌다.
+              AppCheckbox(
+                value: selected,
+                onChanged: _sending ? null : (_) => setState(() => _reason = r),
+              ),
             ],
           ),
         ),
@@ -231,55 +246,35 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
 
   /// 접수 완료 안내. 여기서 흐름이 끝나고 이전 화면으로 돌아간다.
   Widget _doneBody(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: AppSpacing.s80,
-                  height: AppSpacing.s80,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: context.c.primaryNormal10,
-                  ),
-                  alignment: Alignment.center,
-                  child:
-                      AppIcons.check(size: 32, color: context.c.primaryNormal),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                Text(
-                  l10n.reportDoneTitle,
-                  textAlign: TextAlign.center,
-                  style:
-                      AppType.title3.b.copyWith(color: context.c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.reportDoneBody,
-                  textAlign: TextAlign.center,
-                  style: AppType.body2.r
-                      .copyWith(color: context.c.labelAlternative),
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: AppSpacing.s80,
+            height: AppSpacing.s80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: context.c.primaryNormal10,
             ),
+            alignment: Alignment.center,
+            child: AppIcons.check(size: 32, color: context.c.primaryNormal),
           ),
-        ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-              AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
-          child: Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: l10n.confirm,
-            onPressed: () => Navigator.of(context).pop(),
+          const SizedBox(height: AppSpacing.s24),
+          Text(
+            l10n.reportDoneTitle,
+            textAlign: TextAlign.center,
+            style: AppType.title3.b.copyWith(color: context.c.labelStrong),
           ),
-        ),
-      ],
+          const SizedBox(height: AppSpacing.s8),
+          Text(
+            l10n.reportDoneBody,
+            textAlign: TextAlign.center,
+            style: AppType.body2.r.copyWith(color: context.c.labelAlternative),
+          ),
+        ],
+      ),
     );
   }
 }
