@@ -660,5 +660,20 @@
   "callKeepGoingSubtitle": "통화는 5분씩 이어져요. 그때마다 다시 여쭤볼게요.",
   "articulationSelectedWord": "선택한 단어",
   "articulationYouSaid": "내 발음",
-  "articulationTargetSound": "목표"
+  "articulationTargetSound": "목표",
+  "reportEntry": "신고하기",
+  "reportTitle": "신고",
+  "reportPrompt": "어떤 문제가 있었나요?",
+  "reportGuide": "AI 캐릭터와의 대화에서 불쾌했던 내용을 알려주세요. 접수된 신고는 모두 검토해요.",
+  "reportReasonSexual": "성적인 내용",
+  "reportReasonHate": "혐오 · 차별 표현",
+  "reportReasonViolence": "폭력적이거나 위협적인 내용",
+  "reportReasonSelfHarm": "자해를 부추기는 내용",
+  "reportReasonMisinfo": "잘못된 정보",
+  "reportReasonOther": "그 밖의 문제",
+  "reportDetailHint": "어떤 일이 있었는지 적어주세요 (선택)",
+  "reportSubmit": "신고 접수",
+  "reportDoneTitle": "신고가 접수되었어요",
+  "reportDoneBody": "검토 후 필요한 조치를 취할게요. 비버톡을 안전하게 지켜주셔서 고맙습니다.",
+  "reportFailed": "신고를 접수하지 못했어요. 다시 시도해주세요."
 }

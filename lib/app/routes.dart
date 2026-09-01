@@ -49,6 +49,7 @@ import '../screens/alarm/alarm_add.dart';
 import '../screens/alarm/alarm_empty.dart';
 import '../screens/record/record_list.dart';
 import '../screens/record/record_empty.dart';
+import '../screens/report/report_content.dart';
 
 /// Route names for the design_app flows.
 abstract final class Routes {
@@ -130,6 +131,11 @@ abstract final class Routes {
   /// own the screen. The screen existed with no route for a while, which meant
   /// nothing could open it.
   static const networkError = '/network-error';
+
+  /// AI 생성 콘텐츠 신고. Google Play 생성형 AI 정책이 "앱을 벗어나지 않고"
+  /// 신고할 수 있는 경로를 의무화하므로 **제품 플로우의 필수 화면이다.**
+  /// 인자는 `ReportArgs`(`screens/report/report_content.dart`).
+  static const reportContent = '/report';
 
   static const gallery = '/gallery';
 
@@ -238,9 +244,11 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     // deep links and opens the same page pre-selected on the 보관 tab.
     Routes.recordsArchive: (_) => const RecordListScreen(initialTab: 1),
     Routes.recordsEmpty: (_) => const RecordEmptyScreen(),
+    Routes.reportContent: (_) => const ReportContentScreen(),
   };
 
   final names = <String, String>{
+    Routes.reportContent: '신고',
     Routes.onboarding: '온보딩 · 언어 선택',
     Routes.onboardingName: '온보딩 · 이름',
     Routes.onboardingReason: '온보딩 · 이유',

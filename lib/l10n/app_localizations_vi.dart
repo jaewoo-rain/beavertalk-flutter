@@ -2178,4 +2178,51 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Mục tiêu';
+
+  @override
+  String get reportEntry => 'Báo cáo';
+
+  @override
+  String get reportTitle => 'Báo cáo';
+
+  @override
+  String get reportPrompt => 'Bạn gặp vấn đề gì?';
+
+  @override
+  String get reportGuide =>
+      'Hãy cho chúng tôi biết nội dung nào của nhân vật AI khiến bạn khó chịu. Chúng tôi xem xét mọi báo cáo.';
+
+  @override
+  String get reportReasonSexual => 'Nội dung tình dục';
+
+  @override
+  String get reportReasonHate => 'Thù ghét hoặc phân biệt đối xử';
+
+  @override
+  String get reportReasonViolence => 'Nội dung bạo lực hoặc đe dọa';
+
+  @override
+  String get reportReasonSelfHarm => 'Khuyến khích tự làm hại bản thân';
+
+  @override
+  String get reportReasonMisinfo => 'Thông tin sai lệch';
+
+  @override
+  String get reportReasonOther => 'Vấn đề khác';
+
+  @override
+  String get reportDetailHint => 'Mô tả điều đã xảy ra (không bắt buộc)';
+
+  @override
+  String get reportSubmit => 'Gửi báo cáo';
+
+  @override
+  String get reportDoneTitle => 'Đã nhận được báo cáo của bạn';
+
+  @override
+  String get reportDoneBody =>
+      'Chúng tôi sẽ xem xét và xử lý nếu cần. Cảm ơn bạn đã giúp giữ an toàn cho BeaverTalk.';
+
+  @override
+  String get reportFailed => 'Không gửi được báo cáo. Vui lòng thử lại.';
 }

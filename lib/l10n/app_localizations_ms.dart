@@ -2201,4 +2201,51 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Sasaran';
+
+  @override
+  String get reportEntry => 'Lapor';
+
+  @override
+  String get reportTitle => 'Lapor';
+
+  @override
+  String get reportPrompt => 'Apakah masalahnya?';
+
+  @override
+  String get reportGuide =>
+      'Beritahu kami kandungan watak AI yang membuat anda tidak selesa. Kami menyemak setiap laporan.';
+
+  @override
+  String get reportReasonSexual => 'Kandungan seksual';
+
+  @override
+  String get reportReasonHate => 'Kebencian atau diskriminasi';
+
+  @override
+  String get reportReasonViolence => 'Kandungan ganas atau mengancam';
+
+  @override
+  String get reportReasonSelfHarm => 'Menggalakkan mencederakan diri';
+
+  @override
+  String get reportReasonMisinfo => 'Maklumat palsu';
+
+  @override
+  String get reportReasonOther => 'Masalah lain';
+
+  @override
+  String get reportDetailHint => 'Terangkan apa yang berlaku (pilihan)';
+
+  @override
+  String get reportSubmit => 'Hantar laporan';
+
+  @override
+  String get reportDoneTitle => 'Laporan anda telah diterima';
+
+  @override
+  String get reportDoneBody =>
+      'Kami akan menyemaknya dan mengambil tindakan jika perlu. Terima kasih kerana membantu memastikan BeaverTalk selamat.';
+
+  @override
+  String get reportFailed => 'Laporan tidak dapat dihantar. Sila cuba lagi.';
 }

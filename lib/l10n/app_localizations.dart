@@ -4119,6 +4119,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Target'**
   String get articulationTargetSound;
+
+  /// Entry affordance that opens the AI-content report screen. Shown on the call-finish screen and in the records list.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportEntry;
+
+  /// Title bar of the report screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportTitle;
+
+  /// Heading above the reason list. Asks what went wrong.
+  ///
+  /// In en, this message translates to:
+  /// **'What was the problem?'**
+  String get reportPrompt;
+
+  /// Sub-copy under the heading. Explains that the report is about the AI character's content and that every report is reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us what the AI character said that made you uncomfortable. We review every report.'**
+  String get reportGuide;
+
+  /// Report reason: sexual content.
+  ///
+  /// In en, this message translates to:
+  /// **'Sexual content'**
+  String get reportReasonSexual;
+
+  /// Report reason: hateful or discriminatory speech.
+  ///
+  /// In en, this message translates to:
+  /// **'Hate or discrimination'**
+  String get reportReasonHate;
+
+  /// Report reason: violent or threatening content.
+  ///
+  /// In en, this message translates to:
+  /// **'Violent or threatening content'**
+  String get reportReasonViolence;
+
+  /// Report reason: content that encourages self-harm.
+  ///
+  /// In en, this message translates to:
+  /// **'Encourages self-harm'**
+  String get reportReasonSelfHarm;
+
+  /// Report reason: false or misleading information.
+  ///
+  /// In en, this message translates to:
+  /// **'False information'**
+  String get reportReasonMisinfo;
+
+  /// Report reason: anything not covered by the other options.
+  ///
+  /// In en, this message translates to:
+  /// **'Something else'**
+  String get reportReasonOther;
+
+  /// Placeholder of the optional free-text field on the report screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe what happened (optional)'**
+  String get reportDetailHint;
+
+  /// Primary button that submits the report.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit report'**
+  String get reportSubmit;
+
+  /// Headline of the in-app confirmation shown after a report is accepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report has been received'**
+  String get reportDoneTitle;
+
+  /// Body of the confirmation. States that the report will be reviewed.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll review it and take action if needed. Thank you for helping keep BeaverTalk safe.'**
+  String get reportDoneBody;
+
+  /// Snackbar shown when submitting the report fails and the user should retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t submit your report. Please try again.'**
+  String get reportFailed;
 }
 
 class _AppLocalizationsDelegate

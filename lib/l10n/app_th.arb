@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "สายจะต่อเนื่องครั้งละ 5 นาที เราจะถามใหม่ทุกครั้ง",
   "articulationSelectedWord": "คำที่เลือก",
   "articulationYouSaid": "การออกเสียงของคุณ",
-  "articulationTargetSound": "เป้าหมาย"
+  "articulationTargetSound": "เป้าหมาย",
+  "reportEntry": "รายงาน",
+  "reportTitle": "รายงาน",
+  "reportPrompt": "เกิดปัญหาอะไรขึ้น?",
+  "reportGuide": "บอกเราว่าเนื้อหาใดจากตัวละคร AI ที่ทำให้คุณรู้สึกไม่สบายใจ เราตรวจสอบทุกรายงาน",
+  "reportReasonSexual": "เนื้อหาทางเพศ",
+  "reportReasonHate": "ความเกลียดชังหรือการเลือกปฏิบัติ",
+  "reportReasonViolence": "เนื้อหารุนแรงหรือข่มขู่",
+  "reportReasonSelfHarm": "ส่งเสริมการทำร้ายตัวเอง",
+  "reportReasonMisinfo": "ข้อมูลเท็จ",
+  "reportReasonOther": "ปัญหาอื่น",
+  "reportDetailHint": "อธิบายสิ่งที่เกิดขึ้น (ไม่บังคับ)",
+  "reportSubmit": "ส่งรายงาน",
+  "reportDoneTitle": "ได้รับรายงานของคุณแล้ว",
+  "reportDoneBody": "เราจะตรวจสอบและดำเนินการหากจำเป็น ขอบคุณที่ช่วยให้ BeaverTalk ปลอดภัย",
+  "reportFailed": "ส่งรายงานไม่สำเร็จ กรุณาลองอีกครั้ง"
 }

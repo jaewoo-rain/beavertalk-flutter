@@ -5,6 +5,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/card_box.dart';
 import '../../components/molecules/card_box_loading.dart';
@@ -16,6 +17,7 @@ import '../../core/error/app_exception.dart';
 import '../../features/bookmark/domain/entities/bookmark_sentence.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
+import '../../features/report/domain/entities/report_reason.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/presentation/review_providers.dart';
@@ -57,7 +59,37 @@ class _RecordListScreenState extends ConsumerState<RecordListScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Gnb.main(title: '', onBack: () => Navigator.pop(context)),
+          Gnb.main(
+            title: '',
+            onBack: () => Navigator.pop(context),
+            // AI 생성 콘텐츠 신고 진입점 — Google Play 생성형 AI 정책이 "앱을
+            // 벗어나지 않고" 신고할 수 있는 경로를 의무화한다. 기록에서는 특정
+            // 통화를 지목하지 않으므로 callId 는 null 이다.
+            trailing: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => Navigator.pushNamed(
+                context,
+                Routes.reportContent,
+                arguments: (
+                  callId: null,
+                  source: ReportSource.recordList,
+                ),
+              ),
+              // 글자가 아니라 깃발 아이콘이다. 문구로 두면 폭이 로케일마다
+              // 달라져 320px 화면에서 GNB 가 터진다(네팔어 「रिपोर्ट गर्नुहोस्」가
+              // 5.4px 넘겨 i18n_overflow_test 가 잡았다). 아이콘은 폭이 고정이다.
+              child: Semantics(
+                button: true,
+                label: l10n.reportEntry,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.s8, vertical: AppSpacing.s12),
+                  child: AppIcons.flag(
+                      size: 24, color: context.c.labelAlternative),
+                ),
+              ),
+            ),
+          ),
           // 기록 / 보관 tabs — pure in-page state, no navigation.
           Padding(
             padding: const EdgeInsets.fromLTRB(

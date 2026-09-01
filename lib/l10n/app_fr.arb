@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Les appels se poursuivent par tranches de 5 minutes. On te redemandera à chaque fois.",
   "articulationSelectedWord": "Mot sélectionné",
   "articulationYouSaid": "Votre prononciation",
-  "articulationTargetSound": "Cible"
+  "articulationTargetSound": "Cible",
+  "reportEntry": "Signaler",
+  "reportTitle": "Signaler",
+  "reportPrompt": "Quel était le problème ?",
+  "reportGuide": "Dites-nous quel contenu du personnage IA vous a mis mal à l'aise. Nous examinons chaque signalement.",
+  "reportReasonSexual": "Contenu sexuel",
+  "reportReasonHate": "Haine ou discrimination",
+  "reportReasonViolence": "Contenu violent ou menaçant",
+  "reportReasonSelfHarm": "Incite à l'automutilation",
+  "reportReasonMisinfo": "Fausses informations",
+  "reportReasonOther": "Autre problème",
+  "reportDetailHint": "Décrivez ce qui s'est passé (facultatif)",
+  "reportSubmit": "Envoyer le signalement",
+  "reportDoneTitle": "Votre signalement a bien été reçu",
+  "reportDoneBody": "Nous l'examinerons et agirons si nécessaire. Merci de contribuer à la sécurité de BeaverTalk.",
+  "reportFailed": "Impossible d'envoyer le signalement. Veuillez réessayer."
 }

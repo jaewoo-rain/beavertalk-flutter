@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Nagpapatuloy ang tawag kada 5 minuto. Magtatanong kami ulit sa bawat pagkakataon.",
   "articulationSelectedWord": "Napiling salita",
   "articulationYouSaid": "Ang bigkas mo",
-  "articulationTargetSound": "Target"
+  "articulationTargetSound": "Target",
+  "reportEntry": "I-report",
+  "reportTitle": "I-report",
+  "reportPrompt": "Ano ang naging problema?",
+  "reportGuide": "Sabihin sa amin kung anong sinabi ng AI character ang hindi mo nagustuhan. Sinusuri namin ang bawat report.",
+  "reportReasonSexual": "Sekswal na nilalaman",
+  "reportReasonHate": "Poot o diskriminasyon",
+  "reportReasonViolence": "Marahas o nagbabantang nilalaman",
+  "reportReasonSelfHarm": "Naghihikayat ng pananakit sa sarili",
+  "reportReasonMisinfo": "Maling impormasyon",
+  "reportReasonOther": "Iba pang problema",
+  "reportDetailHint": "Ilarawan ang nangyari (opsyonal)",
+  "reportSubmit": "Ipadala ang report",
+  "reportDoneTitle": "Natanggap na ang iyong report",
+  "reportDoneBody": "Susuriin namin ito at gagawa ng aksyon kung kailangan. Salamat sa pagtulong na panatilihing ligtas ang BeaverTalk.",
+  "reportFailed": "Hindi naipadala ang report. Subukan ulit."
 }

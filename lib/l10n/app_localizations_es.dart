@@ -2200,4 +2200,52 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Objetivo';
+
+  @override
+  String get reportEntry => 'Denunciar';
+
+  @override
+  String get reportTitle => 'Denunciar';
+
+  @override
+  String get reportPrompt => '¿Cuál fue el problema?';
+
+  @override
+  String get reportGuide =>
+      'Cuéntanos qué contenido del personaje de IA te incomodó. Revisamos todas las denuncias.';
+
+  @override
+  String get reportReasonSexual => 'Contenido sexual';
+
+  @override
+  String get reportReasonHate => 'Odio o discriminación';
+
+  @override
+  String get reportReasonViolence => 'Contenido violento o amenazante';
+
+  @override
+  String get reportReasonSelfHarm => 'Fomenta la autolesión';
+
+  @override
+  String get reportReasonMisinfo => 'Información falsa';
+
+  @override
+  String get reportReasonOther => 'Otro problema';
+
+  @override
+  String get reportDetailHint => 'Describe lo que pasó (opcional)';
+
+  @override
+  String get reportSubmit => 'Enviar denuncia';
+
+  @override
+  String get reportDoneTitle => 'Recibimos tu denuncia';
+
+  @override
+  String get reportDoneBody =>
+      'La revisaremos y tomaremos medidas si es necesario. Gracias por ayudar a mantener BeaverTalk seguro.';
+
+  @override
+  String get reportFailed =>
+      'No se pudo enviar la denuncia. Inténtalo de nuevo.';
 }

@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "কল ৫ মিনিট করে চলতে থাকে। প্রতিবার আমরা আবার জিজ্ঞাসা করব।",
   "articulationSelectedWord": "নির্বাচিত শব্দ",
   "articulationYouSaid": "আপনার উচ্চারণ",
-  "articulationTargetSound": "লক্ষ্য"
+  "articulationTargetSound": "লক্ষ্য",
+  "reportEntry": "রিপোর্ট করুন",
+  "reportTitle": "রিপোর্ট",
+  "reportPrompt": "কী সমস্যা হয়েছিল?",
+  "reportGuide": "AI চরিত্রের কোন কথা আপনাকে অস্বস্তিতে ফেলেছে তা জানান। আমরা প্রতিটি রিপোর্ট পর্যালোচনা করি।",
+  "reportReasonSexual": "যৌন বিষয়বস্তু",
+  "reportReasonHate": "ঘৃণা বা বৈষম্য",
+  "reportReasonViolence": "সহিংস বা হুমকিমূলক বিষয়বস্তু",
+  "reportReasonSelfHarm": "আত্মক্ষতিতে উৎসাহ দেয়",
+  "reportReasonMisinfo": "ভুল তথ্য",
+  "reportReasonOther": "অন্য কিছু",
+  "reportDetailHint": "কী ঘটেছে লিখুন (ঐচ্ছিক)",
+  "reportSubmit": "রিপোর্ট পাঠান",
+  "reportDoneTitle": "আপনার রিপোর্ট পেয়েছি",
+  "reportDoneBody": "আমরা এটি পর্যালোচনা করে প্রয়োজনীয় ব্যবস্থা নেব। BeaverTalk নিরাপদ রাখতে সাহায্য করার জন্য ধন্যবাদ।",
+  "reportFailed": "রিপোর্ট পাঠানো যায়নি। আবার চেষ্টা করুন।"
 }

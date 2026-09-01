@@ -2181,4 +2181,51 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Зорилт';
+
+  @override
+  String get reportEntry => 'Мэдэгдэх';
+
+  @override
+  String get reportTitle => 'Мэдэгдэл';
+
+  @override
+  String get reportPrompt => 'Ямар асуудал гарсан бэ?';
+
+  @override
+  String get reportGuide =>
+      'AI дүрийн ямар агуулга танд эвгүй санагдсаныг хэлнэ үү. Бид бүх мэдэгдлийг хянадаг.';
+
+  @override
+  String get reportReasonSexual => 'Бэлгийн агуулга';
+
+  @override
+  String get reportReasonHate => 'Үзэн ядалт эсвэл ялгаварлал';
+
+  @override
+  String get reportReasonViolence => 'Хүчирхийлэл эсвэл заналхийлэл';
+
+  @override
+  String get reportReasonSelfHarm => 'Өөрийгөө гэмтээхийг өдөөх';
+
+  @override
+  String get reportReasonMisinfo => 'Худал мэдээлэл';
+
+  @override
+  String get reportReasonOther => 'Бусад асуудал';
+
+  @override
+  String get reportDetailHint => 'Юу болсныг бичнэ үү (заавал биш)';
+
+  @override
+  String get reportSubmit => 'Мэдэгдэл илгээх';
+
+  @override
+  String get reportDoneTitle => 'Таны мэдэгдлийг хүлээн авлаа';
+
+  @override
+  String get reportDoneBody =>
+      'Хянаад шаардлагатай бол арга хэмжээ авна. BeaverTalk-ийг аюулгүй байлгахад тусалсанд баярлалаа.';
+
+  @override
+  String get reportFailed => 'Мэдэгдэл илгээж чадсангүй. Дахин оролдоно уу.';
 }

@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Қоңыраулар 5 минуттық бөліктермен жалғасады. Әр жолы қайта сұраймыз.",
   "articulationSelectedWord": "Таңдалған сөз",
   "articulationYouSaid": "Сіздің айтылымыңыз",
-  "articulationTargetSound": "Мақсат"
+  "articulationTargetSound": "Мақсат",
+  "reportEntry": "Шағымдану",
+  "reportTitle": "Шағым",
+  "reportPrompt": "Қандай мәселе болды?",
+  "reportGuide": "AI кейіпкерінің қандай сөзі сізді ыңғайсыздандырғанын айтыңыз. Әр шағымды қараймыз.",
+  "reportReasonSexual": "Сексуалдық мазмұн",
+  "reportReasonHate": "Өшпенділік немесе кемсіту",
+  "reportReasonViolence": "Зорлық-зомбылық немесе қоқан-лоққы",
+  "reportReasonSelfHarm": "Өзіне зиян келтіруге итермелейді",
+  "reportReasonMisinfo": "Жалған ақпарат",
+  "reportReasonOther": "Басқа мәселе",
+  "reportDetailHint": "Не болғанын жазыңыз (міндетті емес)",
+  "reportSubmit": "Шағым жіберу",
+  "reportDoneTitle": "Шағымыңыз қабылданды",
+  "reportDoneBody": "Қарап шығып, қажет болса шара қолданамыз. BeaverTalk қауіпсіздігіне көмектескеніңізге рақмет.",
+  "reportFailed": "Шағым жіберілмеді. Қайта көріңіз."
 }

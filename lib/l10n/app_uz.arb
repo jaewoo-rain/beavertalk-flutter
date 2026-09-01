@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Qo‘ng‘iroqlar 5 daqiqalik qismlarda davom etadi. Har safar qayta so‘raymiz.",
   "articulationSelectedWord": "Tanlangan so'z",
   "articulationYouSaid": "Talaffuzingiz",
-  "articulationTargetSound": "Maqsad"
+  "articulationTargetSound": "Maqsad",
+  "reportEntry": "Shikoyat",
+  "reportTitle": "Shikoyat",
+  "reportPrompt": "Qanday muammo yuz berdi?",
+  "reportGuide": "AI qahramonining qaysi gapi sizni bezovta qilganini ayting. Har bir shikoyatni ko'rib chiqamiz.",
+  "reportReasonSexual": "Jinsiy mazmun",
+  "reportReasonHate": "Nafrat yoki kamsitish",
+  "reportReasonViolence": "Zo'ravonlik yoki tahdid",
+  "reportReasonSelfHarm": "O'ziga zarar yetkazishga undaydi",
+  "reportReasonMisinfo": "Yolg'on ma'lumot",
+  "reportReasonOther": "Boshqa muammo",
+  "reportDetailHint": "Nima bo'lganini yozing (ixtiyoriy)",
+  "reportSubmit": "Shikoyat yuborish",
+  "reportDoneTitle": "Shikoyatingiz qabul qilindi",
+  "reportDoneBody": "Ko'rib chiqamiz va zarur bo'lsa chora ko'ramiz. BeaverTalk xavfsizligiga yordam berganingiz uchun rahmat.",
+  "reportFailed": "Shikoyat yuborilmadi. Qayta urinib ko'ring."
 }

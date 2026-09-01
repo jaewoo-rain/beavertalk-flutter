@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Puhelut jatkuvat 5 minuutin jaksoissa. Kysymme joka kerta uudelleen.",
   "articulationSelectedWord": "Valittu sana",
   "articulationYouSaid": "Ääntämisesi",
-  "articulationTargetSound": "Tavoite"
+  "articulationTargetSound": "Tavoite",
+  "reportEntry": "Ilmoita",
+  "reportTitle": "Ilmoitus",
+  "reportPrompt": "Mikä oli ongelmana?",
+  "reportGuide": "Kerro, mikä tekoälyhahmon sisältö häiritsi sinua. Käymme läpi jokaisen ilmoituksen.",
+  "reportReasonSexual": "Seksuaalinen sisältö",
+  "reportReasonHate": "Viha tai syrjintä",
+  "reportReasonViolence": "Väkivaltainen tai uhkaava sisältö",
+  "reportReasonSelfHarm": "Kannustaa itsensä vahingoittamiseen",
+  "reportReasonMisinfo": "Virheellistä tietoa",
+  "reportReasonOther": "Jokin muu",
+  "reportDetailHint": "Kuvaile, mitä tapahtui (valinnainen)",
+  "reportSubmit": "Lähetä ilmoitus",
+  "reportDoneTitle": "Ilmoituksesi on vastaanotettu",
+  "reportDoneBody": "Käymme sen läpi ja ryhdymme tarvittaviin toimiin. Kiitos, että pidät BeaverTalkin turvallisena.",
+  "reportFailed": "Ilmoitusta ei voitu lähettää. Yritä uudelleen."
 }

@@ -2169,4 +2169,51 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'เป้าหมาย';
+
+  @override
+  String get reportEntry => 'รายงาน';
+
+  @override
+  String get reportTitle => 'รายงาน';
+
+  @override
+  String get reportPrompt => 'เกิดปัญหาอะไรขึ้น?';
+
+  @override
+  String get reportGuide =>
+      'บอกเราว่าเนื้อหาใดจากตัวละคร AI ที่ทำให้คุณรู้สึกไม่สบายใจ เราตรวจสอบทุกรายงาน';
+
+  @override
+  String get reportReasonSexual => 'เนื้อหาทางเพศ';
+
+  @override
+  String get reportReasonHate => 'ความเกลียดชังหรือการเลือกปฏิบัติ';
+
+  @override
+  String get reportReasonViolence => 'เนื้อหารุนแรงหรือข่มขู่';
+
+  @override
+  String get reportReasonSelfHarm => 'ส่งเสริมการทำร้ายตัวเอง';
+
+  @override
+  String get reportReasonMisinfo => 'ข้อมูลเท็จ';
+
+  @override
+  String get reportReasonOther => 'ปัญหาอื่น';
+
+  @override
+  String get reportDetailHint => 'อธิบายสิ่งที่เกิดขึ้น (ไม่บังคับ)';
+
+  @override
+  String get reportSubmit => 'ส่งรายงาน';
+
+  @override
+  String get reportDoneTitle => 'ได้รับรายงานของคุณแล้ว';
+
+  @override
+  String get reportDoneBody =>
+      'เราจะตรวจสอบและดำเนินการหากจำเป็น ขอบคุณที่ช่วยให้ BeaverTalk ปลอดภัย';
+
+  @override
+  String get reportFailed => 'ส่งรายงานไม่สำเร็จ กรุณาลองอีกครั้ง';
 }

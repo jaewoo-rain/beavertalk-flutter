@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "ခေါ်ဆိုမှုများသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်သည်။ အကြိမ်တိုင်း ထပ်မေးပါမည်။",
   "articulationSelectedWord": "ရွေးထားသော စကားလုံး",
   "articulationYouSaid": "သင့်အသံထွက်",
-  "articulationTargetSound": "ပန်းတိုင်"
+  "articulationTargetSound": "ပန်းတိုင်",
+  "reportEntry": "သတင်းပို့ရန်",
+  "reportTitle": "တိုင်ကြားချက်",
+  "reportPrompt": "ဘာပြဿနာဖြစ်ခဲ့ပါသလဲ?",
+  "reportGuide": "AI ဇာတ်ကောင်၏ မည်သည့်အကြောင်းအရာက သင့်ကို အနှောင့်အယှက်ဖြစ်စေခဲ့ကြောင်း ပြောပြပါ။ တိုင်ကြားချက်တိုင်းကို စိစစ်ပါသည်။",
+  "reportReasonSexual": "လိင်ဆိုင်ရာ အကြောင်းအရာ",
+  "reportReasonHate": "အမုန်းတရား သို့မဟုတ် ခွဲခြားမှု",
+  "reportReasonViolence": "အကြမ်းဖက် သို့မဟုတ် ခြိမ်းခြောက်မှု",
+  "reportReasonSelfHarm": "မိမိကိုယ်ကို အန္တရာယ်ပြုရန် အားပေးမှု",
+  "reportReasonMisinfo": "မှားယွင်းသော သတင်းအချက်အလက်",
+  "reportReasonOther": "အခြားပြဿနာ",
+  "reportDetailHint": "ဘာဖြစ်ခဲ့သည်ကို ရေးပါ (ရွေးချယ်နိုင်)",
+  "reportSubmit": "တိုင်ကြားချက် ပို့ရန်",
+  "reportDoneTitle": "သင့်တိုင်ကြားချက်ကို လက်ခံရရှိပါပြီ",
+  "reportDoneBody": "စိစစ်ပြီး လိုအပ်ပါက အရေးယူပါမည်။ BeaverTalk ကို ဘေးကင်းစေရန် ကူညီပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။",
+  "reportFailed": "တိုင်ကြားချက် မပို့နိုင်ပါ။ ထပ်စမ်းကြည့်ပါ။"
 }

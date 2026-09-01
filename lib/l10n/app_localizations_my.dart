@@ -2191,4 +2191,51 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'ပန်းတိုင်';
+
+  @override
+  String get reportEntry => 'သတင်းပို့ရန်';
+
+  @override
+  String get reportTitle => 'တိုင်ကြားချက်';
+
+  @override
+  String get reportPrompt => 'ဘာပြဿနာဖြစ်ခဲ့ပါသလဲ?';
+
+  @override
+  String get reportGuide =>
+      'AI ဇာတ်ကောင်၏ မည်သည့်အကြောင်းအရာက သင့်ကို အနှောင့်အယှက်ဖြစ်စေခဲ့ကြောင်း ပြောပြပါ။ တိုင်ကြားချက်တိုင်းကို စိစစ်ပါသည်။';
+
+  @override
+  String get reportReasonSexual => 'လိင်ဆိုင်ရာ အကြောင်းအရာ';
+
+  @override
+  String get reportReasonHate => 'အမုန်းတရား သို့မဟုတ် ခွဲခြားမှု';
+
+  @override
+  String get reportReasonViolence => 'အကြမ်းဖက် သို့မဟုတ် ခြိမ်းခြောက်မှု';
+
+  @override
+  String get reportReasonSelfHarm => 'မိမိကိုယ်ကို အန္တရာယ်ပြုရန် အားပေးမှု';
+
+  @override
+  String get reportReasonMisinfo => 'မှားယွင်းသော သတင်းအချက်အလက်';
+
+  @override
+  String get reportReasonOther => 'အခြားပြဿနာ';
+
+  @override
+  String get reportDetailHint => 'ဘာဖြစ်ခဲ့သည်ကို ရေးပါ (ရွေးချယ်နိုင်)';
+
+  @override
+  String get reportSubmit => 'တိုင်ကြားချက် ပို့ရန်';
+
+  @override
+  String get reportDoneTitle => 'သင့်တိုင်ကြားချက်ကို လက်ခံရရှိပါပြီ';
+
+  @override
+  String get reportDoneBody =>
+      'စိစစ်ပြီး လိုအပ်ပါက အရေးယူပါမည်။ BeaverTalk ကို ဘေးကင်းစေရန် ကူညီပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။';
+
+  @override
+  String get reportFailed => 'တိုင်ကြားချက် မပို့နိုင်ပါ။ ထပ်စမ်းကြည့်ပါ။';
 }

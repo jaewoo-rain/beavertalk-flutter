@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "ការហៅបន្តជា ៥ នាទីម្តង។ យើងនឹងសួរម្តងទៀតរាល់ពេល។",
   "articulationSelectedWord": "ពាក្យដែលបានជ្រើស",
   "articulationYouSaid": "ការបញ្ចេញសំឡេងរបស់អ្នក",
-  "articulationTargetSound": "គោលដៅ"
+  "articulationTargetSound": "គោលដៅ",
+  "reportEntry": "រាយការណ៍",
+  "reportTitle": "រាយការណ៍",
+  "reportPrompt": "មានបញ្ហាអ្វី?",
+  "reportGuide": "សូមប្រាប់យើងពីខ្លឹមសាររបស់តួអង្គ AI ដែលធ្វើឱ្យអ្នកមិនស្រួល។ យើងពិនិត្យរាល់របាយការណ៍។",
+  "reportReasonSexual": "ខ្លឹមសារផ្លូវភេទ",
+  "reportReasonHate": "ការស្អប់ខ្ពើម ឬការរើសអើង",
+  "reportReasonViolence": "ខ្លឹមសារហិង្សា ឬគំរាមកំហែង",
+  "reportReasonSelfHarm": "លើកទឹកចិត្តឱ្យធ្វើបាបខ្លួនឯង",
+  "reportReasonMisinfo": "ព័ត៌មានមិនពិត",
+  "reportReasonOther": "បញ្ហាផ្សេងទៀត",
+  "reportDetailHint": "សរសេរអំពីអ្វីដែលបានកើតឡើង (ស្រេចចិត្ត)",
+  "reportSubmit": "ផ្ញើរបាយការណ៍",
+  "reportDoneTitle": "បានទទួលរបាយការណ៍របស់អ្នក",
+  "reportDoneBody": "យើងនឹងពិនិត្យ ហើយចាត់វិធានការបើចាំបាច់។ អរគុណដែលជួយរក្សា BeaverTalk ឱ្យមានសុវត្ថិភាព។",
+  "reportFailed": "មិនអាចផ្ញើរបាយការណ៍បានទេ។ សូមព្យាយាមម្តងទៀត។"
 }

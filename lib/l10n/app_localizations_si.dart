@@ -2173,4 +2173,51 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'ඉලක්කය';
+
+  @override
+  String get reportEntry => 'වාර්තා කරන්න';
+
+  @override
+  String get reportTitle => 'වාර්තාව';
+
+  @override
+  String get reportPrompt => 'ගැටලුව කුමක්ද?';
+
+  @override
+  String get reportGuide =>
+      'AI චරිතයේ කුමන දෙයක් ඔබට අපහසුතාවක් ඇති කළේද කියා කියන්න. අපි සෑම වාර්තාවක්ම සමාලෝචනය කරමු.';
+
+  @override
+  String get reportReasonSexual => 'ලිංගික අන්තර්ගතය';
+
+  @override
+  String get reportReasonHate => 'වෛරය හෝ වෙනස්කම්';
+
+  @override
+  String get reportReasonViolence => 'ප්‍රචණ්ඩ හෝ තර්ජනාත්මක අන්තර්ගතය';
+
+  @override
+  String get reportReasonSelfHarm => 'සිය-හානියට දිරිගැන්වීම';
+
+  @override
+  String get reportReasonMisinfo => 'වැරදි තොරතුරු';
+
+  @override
+  String get reportReasonOther => 'වෙනත් ගැටලුවක්';
+
+  @override
+  String get reportDetailHint => 'සිදු වූ දේ ලියන්න (විකල්ප)';
+
+  @override
+  String get reportSubmit => 'වාර්තාව යවන්න';
+
+  @override
+  String get reportDoneTitle => 'ඔබේ වාර්තාව ලැබුණා';
+
+  @override
+  String get reportDoneBody =>
+      'අපි එය සමාලෝචනය කර අවශ්‍ය නම් පියවර ගන්නෙමු. BeaverTalk ආරක්ෂිතව තබා ගැනීමට උදව් කිරීම ගැන ස්තූතියි.';
+
+  @override
+  String get reportFailed => 'වාර්තාව යැවීමට නොහැකි විය. නැවත උත්සාහ කරන්න.';
 }

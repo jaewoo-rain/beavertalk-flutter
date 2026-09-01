@@ -2194,4 +2194,51 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Maqsad';
+
+  @override
+  String get reportEntry => 'Shikoyat';
+
+  @override
+  String get reportTitle => 'Shikoyat';
+
+  @override
+  String get reportPrompt => 'Qanday muammo yuz berdi?';
+
+  @override
+  String get reportGuide =>
+      'AI qahramonining qaysi gapi sizni bezovta qilganini ayting. Har bir shikoyatni ko\'rib chiqamiz.';
+
+  @override
+  String get reportReasonSexual => 'Jinsiy mazmun';
+
+  @override
+  String get reportReasonHate => 'Nafrat yoki kamsitish';
+
+  @override
+  String get reportReasonViolence => 'Zo\'ravonlik yoki tahdid';
+
+  @override
+  String get reportReasonSelfHarm => 'O\'ziga zarar yetkazishga undaydi';
+
+  @override
+  String get reportReasonMisinfo => 'Yolg\'on ma\'lumot';
+
+  @override
+  String get reportReasonOther => 'Boshqa muammo';
+
+  @override
+  String get reportDetailHint => 'Nima bo\'lganini yozing (ixtiyoriy)';
+
+  @override
+  String get reportSubmit => 'Shikoyat yuborish';
+
+  @override
+  String get reportDoneTitle => 'Shikoyatingiz qabul qilindi';
+
+  @override
+  String get reportDoneBody =>
+      'Ko\'rib chiqamiz va zarur bo\'lsa chora ko\'ramiz. BeaverTalk xavfsizligiga yordam berganingiz uchun rahmat.';
+
+  @override
+  String get reportFailed => 'Shikoyat yuborilmadi. Qayta urinib ko\'ring.';
 }

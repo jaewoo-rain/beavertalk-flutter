@@ -2220,4 +2220,52 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Cible';
+
+  @override
+  String get reportEntry => 'Signaler';
+
+  @override
+  String get reportTitle => 'Signaler';
+
+  @override
+  String get reportPrompt => 'Quel était le problème ?';
+
+  @override
+  String get reportGuide =>
+      'Dites-nous quel contenu du personnage IA vous a mis mal à l\'aise. Nous examinons chaque signalement.';
+
+  @override
+  String get reportReasonSexual => 'Contenu sexuel';
+
+  @override
+  String get reportReasonHate => 'Haine ou discrimination';
+
+  @override
+  String get reportReasonViolence => 'Contenu violent ou menaçant';
+
+  @override
+  String get reportReasonSelfHarm => 'Incite à l\'automutilation';
+
+  @override
+  String get reportReasonMisinfo => 'Fausses informations';
+
+  @override
+  String get reportReasonOther => 'Autre problème';
+
+  @override
+  String get reportDetailHint => 'Décrivez ce qui s\'est passé (facultatif)';
+
+  @override
+  String get reportSubmit => 'Envoyer le signalement';
+
+  @override
+  String get reportDoneTitle => 'Votre signalement a bien été reçu';
+
+  @override
+  String get reportDoneBody =>
+      'Nous l\'examinerons et agirons si nécessaire. Merci de contribuer à la sécurité de BeaverTalk.';
+
+  @override
+  String get reportFailed =>
+      'Impossible d\'envoyer le signalement. Veuillez réessayer.';
 }

@@ -2107,4 +2107,49 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get articulationTargetSound => '目标';
+
+  @override
+  String get reportEntry => '举报';
+
+  @override
+  String get reportTitle => '举报';
+
+  @override
+  String get reportPrompt => '遇到了什么问题？';
+
+  @override
+  String get reportGuide => '请告诉我们 AI 角色的哪些内容让你感到不适。我们会审核每一条举报。';
+
+  @override
+  String get reportReasonSexual => '色情内容';
+
+  @override
+  String get reportReasonHate => '仇恨或歧视';
+
+  @override
+  String get reportReasonViolence => '暴力或威胁内容';
+
+  @override
+  String get reportReasonSelfHarm => '鼓励自残';
+
+  @override
+  String get reportReasonMisinfo => '虚假信息';
+
+  @override
+  String get reportReasonOther => '其他问题';
+
+  @override
+  String get reportDetailHint => '描述发生了什么（选填）';
+
+  @override
+  String get reportSubmit => '提交举报';
+
+  @override
+  String get reportDoneTitle => '已收到你的举报';
+
+  @override
+  String get reportDoneBody => '我们会审核并在必要时采取措施。感谢你帮助维护 BeaverTalk 的安全。';
+
+  @override
+  String get reportFailed => '举报提交失败，请重试。';
 }

@@ -2179,4 +2179,51 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'គោលដៅ';
+
+  @override
+  String get reportEntry => 'រាយការណ៍';
+
+  @override
+  String get reportTitle => 'រាយការណ៍';
+
+  @override
+  String get reportPrompt => 'មានបញ្ហាអ្វី?';
+
+  @override
+  String get reportGuide =>
+      'សូមប្រាប់យើងពីខ្លឹមសាររបស់តួអង្គ AI ដែលធ្វើឱ្យអ្នកមិនស្រួល។ យើងពិនិត្យរាល់របាយការណ៍។';
+
+  @override
+  String get reportReasonSexual => 'ខ្លឹមសារផ្លូវភេទ';
+
+  @override
+  String get reportReasonHate => 'ការស្អប់ខ្ពើម ឬការរើសអើង';
+
+  @override
+  String get reportReasonViolence => 'ខ្លឹមសារហិង្សា ឬគំរាមកំហែង';
+
+  @override
+  String get reportReasonSelfHarm => 'លើកទឹកចិត្តឱ្យធ្វើបាបខ្លួនឯង';
+
+  @override
+  String get reportReasonMisinfo => 'ព័ត៌មានមិនពិត';
+
+  @override
+  String get reportReasonOther => 'បញ្ហាផ្សេងទៀត';
+
+  @override
+  String get reportDetailHint => 'សរសេរអំពីអ្វីដែលបានកើតឡើង (ស្រេចចិត្ត)';
+
+  @override
+  String get reportSubmit => 'ផ្ញើរបាយការណ៍';
+
+  @override
+  String get reportDoneTitle => 'បានទទួលរបាយការណ៍របស់អ្នក';
+
+  @override
+  String get reportDoneBody =>
+      'យើងនឹងពិនិត្យ ហើយចាត់វិធានការបើចាំបាច់។ អរគុណដែលជួយរក្សា BeaverTalk ឱ្យមានសុវត្ថិភាព។';
+
+  @override
+  String get reportFailed => 'មិនអាចផ្ញើរបាយការណ៍បានទេ។ សូមព្យាយាមម្តងទៀត។';
 }

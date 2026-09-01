@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "通话以5分钟为一段继续。每次都会再询问你。",
   "articulationSelectedWord": "所选单词",
   "articulationYouSaid": "你的发音",
-  "articulationTargetSound": "目标"
+  "articulationTargetSound": "目标",
+  "reportEntry": "举报",
+  "reportTitle": "举报",
+  "reportPrompt": "遇到了什么问题？",
+  "reportGuide": "请告诉我们 AI 角色的哪些内容让你感到不适。我们会审核每一条举报。",
+  "reportReasonSexual": "色情内容",
+  "reportReasonHate": "仇恨或歧视",
+  "reportReasonViolence": "暴力或威胁内容",
+  "reportReasonSelfHarm": "鼓励自残",
+  "reportReasonMisinfo": "虚假信息",
+  "reportReasonOther": "其他问题",
+  "reportDetailHint": "描述发生了什么（选填）",
+  "reportSubmit": "提交举报",
+  "reportDoneTitle": "已收到你的举报",
+  "reportDoneBody": "我们会审核并在必要时采取措施。感谢你帮助维护 BeaverTalk 的安全。",
+  "reportFailed": "举报提交失败，请重试。"
 }

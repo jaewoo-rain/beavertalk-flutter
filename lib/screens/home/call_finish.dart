@@ -9,6 +9,7 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/report/domain/entities/report_reason.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -313,6 +314,41 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                   text: _recovering ? l10n.loadingShort : l10n.viewAnalysis,
                   disabled: _recovering,
                   onPressed: _analyze,
+                ),
+                const SizedBox(height: AppSpacing.s16),
+                // AI 생성 콘텐츠 신고 진입점 — Google Play 생성형 AI 정책이
+                // "앱을 벗어나지 않고" 신고할 수 있는 경로를 의무화한다. 방금
+                // 끝난 통화가 대상이므로 [_callId] 를 함께 넘긴다.
+                //
+                // 낮은 위계로 둔 건 주행동(대화 분석)을 가리지 않기 위해서다.
+                // 정책은 신고 기능의 존재를 요구하지 버튼의 크기를 요구하지 않는다.
+                Semantics(
+                  button: true,
+                  child: GestureDetector(
+                    behavior: HitTestBehavior.opaque,
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      Routes.reportContent,
+                      arguments: (
+                        callId: _callId,
+                        source: ReportSource.callFinish,
+                      ),
+                    ),
+                    child: Padding(
+                      // 탭 타깃을 44dp 이상으로 만든다 — 글자만으로는 20dp다.
+                      padding: const EdgeInsets.symmetric(
+                          vertical: AppSpacing.s12),
+                      child: Text(
+                        l10n.reportEntry,
+                        textAlign: TextAlign.center,
+                        style: AppType.label1.r.copyWith(
+                          color: context.c.labelAlternative,
+                          decoration: TextDecoration.underline,
+                          decorationColor: context.c.labelAlternative,
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),

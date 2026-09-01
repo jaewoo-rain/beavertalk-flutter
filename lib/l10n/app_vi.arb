@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Cuộc gọi tiếp tục theo từng đoạn 5 phút. Mỗi lần chúng tôi sẽ hỏi lại.",
   "articulationSelectedWord": "Từ đã chọn",
   "articulationYouSaid": "Phát âm của bạn",
-  "articulationTargetSound": "Mục tiêu"
+  "articulationTargetSound": "Mục tiêu",
+  "reportEntry": "Báo cáo",
+  "reportTitle": "Báo cáo",
+  "reportPrompt": "Bạn gặp vấn đề gì?",
+  "reportGuide": "Hãy cho chúng tôi biết nội dung nào của nhân vật AI khiến bạn khó chịu. Chúng tôi xem xét mọi báo cáo.",
+  "reportReasonSexual": "Nội dung tình dục",
+  "reportReasonHate": "Thù ghét hoặc phân biệt đối xử",
+  "reportReasonViolence": "Nội dung bạo lực hoặc đe dọa",
+  "reportReasonSelfHarm": "Khuyến khích tự làm hại bản thân",
+  "reportReasonMisinfo": "Thông tin sai lệch",
+  "reportReasonOther": "Vấn đề khác",
+  "reportDetailHint": "Mô tả điều đã xảy ra (không bắt buộc)",
+  "reportSubmit": "Gửi báo cáo",
+  "reportDoneTitle": "Đã nhận được báo cáo của bạn",
+  "reportDoneBody": "Chúng tôi sẽ xem xét và xử lý nếu cần. Cảm ơn bạn đã giúp giữ an toàn cho BeaverTalk.",
+  "reportFailed": "Không gửi được báo cáo. Vui lòng thử lại."
 }

@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Дуудлага 5 минут тутам үргэлжилнэ. Бид тухай бүр дахин асууна.",
   "articulationSelectedWord": "Сонгосон үг",
   "articulationYouSaid": "Таны дуудлага",
-  "articulationTargetSound": "Зорилт"
+  "articulationTargetSound": "Зорилт",
+  "reportEntry": "Мэдэгдэх",
+  "reportTitle": "Мэдэгдэл",
+  "reportPrompt": "Ямар асуудал гарсан бэ?",
+  "reportGuide": "AI дүрийн ямар агуулга танд эвгүй санагдсаныг хэлнэ үү. Бид бүх мэдэгдлийг хянадаг.",
+  "reportReasonSexual": "Бэлгийн агуулга",
+  "reportReasonHate": "Үзэн ядалт эсвэл ялгаварлал",
+  "reportReasonViolence": "Хүчирхийлэл эсвэл заналхийлэл",
+  "reportReasonSelfHarm": "Өөрийгөө гэмтээхийг өдөөх",
+  "reportReasonMisinfo": "Худал мэдээлэл",
+  "reportReasonOther": "Бусад асуудал",
+  "reportDetailHint": "Юу болсныг бичнэ үү (заавал биш)",
+  "reportSubmit": "Мэдэгдэл илгээх",
+  "reportDoneTitle": "Таны мэдэгдлийг хүлээн авлаа",
+  "reportDoneBody": "Хянаад шаардлагатай бол арга хэмжээ авна. BeaverTalk-ийг аюулгүй байлгахад тусалсанд баярлалаа.",
+  "reportFailed": "Мэдэгдэл илгээж чадсангүй. Дахин оролдоно уу."
 }

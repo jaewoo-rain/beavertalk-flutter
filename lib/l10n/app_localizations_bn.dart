@@ -2173,4 +2173,51 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'লক্ষ্য';
+
+  @override
+  String get reportEntry => 'রিপোর্ট করুন';
+
+  @override
+  String get reportTitle => 'রিপোর্ট';
+
+  @override
+  String get reportPrompt => 'কী সমস্যা হয়েছিল?';
+
+  @override
+  String get reportGuide =>
+      'AI চরিত্রের কোন কথা আপনাকে অস্বস্তিতে ফেলেছে তা জানান। আমরা প্রতিটি রিপোর্ট পর্যালোচনা করি।';
+
+  @override
+  String get reportReasonSexual => 'যৌন বিষয়বস্তু';
+
+  @override
+  String get reportReasonHate => 'ঘৃণা বা বৈষম্য';
+
+  @override
+  String get reportReasonViolence => 'সহিংস বা হুমকিমূলক বিষয়বস্তু';
+
+  @override
+  String get reportReasonSelfHarm => 'আত্মক্ষতিতে উৎসাহ দেয়';
+
+  @override
+  String get reportReasonMisinfo => 'ভুল তথ্য';
+
+  @override
+  String get reportReasonOther => 'অন্য কিছু';
+
+  @override
+  String get reportDetailHint => 'কী ঘটেছে লিখুন (ঐচ্ছিক)';
+
+  @override
+  String get reportSubmit => 'রিপোর্ট পাঠান';
+
+  @override
+  String get reportDoneTitle => 'আপনার রিপোর্ট পেয়েছি';
+
+  @override
+  String get reportDoneBody =>
+      'আমরা এটি পর্যালোচনা করে প্রয়োজনীয় ব্যবস্থা নেব। BeaverTalk নিরাপদ রাখতে সাহায্য করার জন্য ধন্যবাদ।';
+
+  @override
+  String get reportFailed => 'রিপোর্ট পাঠানো যায়নি। আবার চেষ্টা করুন।';
 }

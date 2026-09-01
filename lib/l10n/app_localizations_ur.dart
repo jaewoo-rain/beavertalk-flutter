@@ -2177,4 +2177,51 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'ہدف';
+
+  @override
+  String get reportEntry => 'رپورٹ کریں';
+
+  @override
+  String get reportTitle => 'رپورٹ';
+
+  @override
+  String get reportPrompt => 'کیا مسئلہ پیش آیا؟';
+
+  @override
+  String get reportGuide =>
+      'بتائیں کہ AI کردار کی کس بات سے آپ کو تکلیف ہوئی۔ ہم ہر رپورٹ کا جائزہ لیتے ہیں۔';
+
+  @override
+  String get reportReasonSexual => 'جنسی مواد';
+
+  @override
+  String get reportReasonHate => 'نفرت یا امتیاز';
+
+  @override
+  String get reportReasonViolence => 'پرتشدد یا دھمکی آمیز مواد';
+
+  @override
+  String get reportReasonSelfHarm => 'خود کو نقصان پہنچانے کی ترغیب';
+
+  @override
+  String get reportReasonMisinfo => 'غلط معلومات';
+
+  @override
+  String get reportReasonOther => 'کوئی اور مسئلہ';
+
+  @override
+  String get reportDetailHint => 'جو ہوا وہ لکھیں (اختیاری)';
+
+  @override
+  String get reportSubmit => 'رپورٹ بھیجیں';
+
+  @override
+  String get reportDoneTitle => 'آپ کی رپورٹ موصول ہو گئی';
+
+  @override
+  String get reportDoneBody =>
+      'ہم جائزہ لے کر ضرورت پڑنے پر کارروائی کریں گے۔ BeaverTalk کو محفوظ رکھنے میں مدد کا شکریہ۔';
+
+  @override
+  String get reportFailed => 'رپورٹ نہیں بھیجی جا سکی۔ دوبارہ کوشش کریں۔';
 }

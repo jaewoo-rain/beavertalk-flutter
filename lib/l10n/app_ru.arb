@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Звонки идут отрезками по 5 минут. Мы будем спрашивать каждый раз.",
   "articulationSelectedWord": "Выбранное слово",
   "articulationYouSaid": "Ваше произношение",
-  "articulationTargetSound": "Цель"
+  "articulationTargetSound": "Цель",
+  "reportEntry": "Пожаловаться",
+  "reportTitle": "Жалоба",
+  "reportPrompt": "В чём была проблема?",
+  "reportGuide": "Расскажите, какой контент ИИ-персонажа вас смутил. Мы рассматриваем каждую жалобу.",
+  "reportReasonSexual": "Сексуальный контент",
+  "reportReasonHate": "Ненависть или дискриминация",
+  "reportReasonViolence": "Насилие или угрозы",
+  "reportReasonSelfHarm": "Побуждение к самоповреждению",
+  "reportReasonMisinfo": "Ложная информация",
+  "reportReasonOther": "Другая проблема",
+  "reportDetailHint": "Опишите, что произошло (необязательно)",
+  "reportSubmit": "Отправить жалобу",
+  "reportDoneTitle": "Жалоба принята",
+  "reportDoneBody": "Мы рассмотрим её и примем меры при необходимости. Спасибо, что помогаете сохранять BeaverTalk безопасным.",
+  "reportFailed": "Не удалось отправить жалобу. Попробуйте ещё раз."
 }

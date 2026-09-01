@@ -2179,4 +2179,51 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Target';
+
+  @override
+  String get reportEntry => 'Report';
+
+  @override
+  String get reportTitle => 'Report';
+
+  @override
+  String get reportPrompt => 'What was the problem?';
+
+  @override
+  String get reportGuide =>
+      'Tell us what the AI character said that made you uncomfortable. We review every report.';
+
+  @override
+  String get reportReasonSexual => 'Sexual content';
+
+  @override
+  String get reportReasonHate => 'Hate or discrimination';
+
+  @override
+  String get reportReasonViolence => 'Violent or threatening content';
+
+  @override
+  String get reportReasonSelfHarm => 'Encourages self-harm';
+
+  @override
+  String get reportReasonMisinfo => 'False information';
+
+  @override
+  String get reportReasonOther => 'Something else';
+
+  @override
+  String get reportDetailHint => 'Describe what happened (optional)';
+
+  @override
+  String get reportSubmit => 'Submit report';
+
+  @override
+  String get reportDoneTitle => 'Your report has been received';
+
+  @override
+  String get reportDoneBody =>
+      'We\'ll review it and take action if needed. Thank you for helping keep BeaverTalk safe.';
+
+  @override
+  String get reportFailed => 'Couldn\'t submit your report. Please try again.';
 }

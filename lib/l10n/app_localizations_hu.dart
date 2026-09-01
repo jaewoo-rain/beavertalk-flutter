@@ -2196,4 +2196,52 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Cél';
+
+  @override
+  String get reportEntry => 'Jelentés';
+
+  @override
+  String get reportTitle => 'Jelentés';
+
+  @override
+  String get reportPrompt => 'Mi volt a probléma?';
+
+  @override
+  String get reportGuide =>
+      'Írd meg, az MI-karakter melyik tartalma zavart. Minden bejelentést átnézünk.';
+
+  @override
+  String get reportReasonSexual => 'Szexuális tartalom';
+
+  @override
+  String get reportReasonHate => 'Gyűlölet vagy diszkrimináció';
+
+  @override
+  String get reportReasonViolence => 'Erőszakos vagy fenyegető tartalom';
+
+  @override
+  String get reportReasonSelfHarm => 'Önbántalmazásra biztat';
+
+  @override
+  String get reportReasonMisinfo => 'Téves információ';
+
+  @override
+  String get reportReasonOther => 'Egyéb probléma';
+
+  @override
+  String get reportDetailHint => 'Írd le, mi történt (nem kötelező)';
+
+  @override
+  String get reportSubmit => 'Bejelentés küldése';
+
+  @override
+  String get reportDoneTitle => 'Megkaptuk a bejelentésed';
+
+  @override
+  String get reportDoneBody =>
+      'Átnézzük, és ha kell, intézkedünk. Köszönjük, hogy segítesz biztonságban tartani a BeaverTalkot.';
+
+  @override
+  String get reportFailed =>
+      'Nem sikerült elküldeni a bejelentést. Próbáld újra.';
 }

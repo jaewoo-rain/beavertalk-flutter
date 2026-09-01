@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "تستمر المكالمات على دفعات من 5 دقائق. سنسألك في كل مرة.",
   "articulationSelectedWord": "الكلمة المختارة",
   "articulationYouSaid": "نطقك",
-  "articulationTargetSound": "الهدف"
+  "articulationTargetSound": "الهدف",
+  "reportEntry": "إبلاغ",
+  "reportTitle": "إبلاغ",
+  "reportPrompt": "ما المشكلة التي واجهتها؟",
+  "reportGuide": "أخبرنا عن المحتوى الذي أزعجك من شخصية الذكاء الاصطناعي. نراجع كل بلاغ.",
+  "reportReasonSexual": "محتوى جنسي",
+  "reportReasonHate": "كراهية أو تمييز",
+  "reportReasonViolence": "محتوى عنيف أو تهديدي",
+  "reportReasonSelfHarm": "يشجع على إيذاء النفس",
+  "reportReasonMisinfo": "معلومات خاطئة",
+  "reportReasonOther": "مشكلة أخرى",
+  "reportDetailHint": "صف ما حدث (اختياري)",
+  "reportSubmit": "إرسال البلاغ",
+  "reportDoneTitle": "تم استلام بلاغك",
+  "reportDoneBody": "سنراجعه ونتخذ الإجراء اللازم. شكرًا لمساعدتك في الحفاظ على أمان BeaverTalk.",
+  "reportFailed": "تعذّر إرسال البلاغ. حاول مرة أخرى."
 }

@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Aramalar 5 dakikalık bölümler hâlinde sürer. Her seferinde tekrar soracağız.",
   "articulationSelectedWord": "Seçilen kelime",
   "articulationYouSaid": "Telaffuzunuz",
-  "articulationTargetSound": "Hedef"
+  "articulationTargetSound": "Hedef",
+  "reportEntry": "Bildir",
+  "reportTitle": "Bildir",
+  "reportPrompt": "Sorun neydi?",
+  "reportGuide": "Yapay zeka karakterinin hangi içeriğinin sizi rahatsız ettiğini bize bildirin. Her bildirimi inceliyoruz.",
+  "reportReasonSexual": "Cinsel içerik",
+  "reportReasonHate": "Nefret veya ayrımcılık",
+  "reportReasonViolence": "Şiddet içeren veya tehdit edici içerik",
+  "reportReasonSelfHarm": "Kendine zarar vermeyi teşvik ediyor",
+  "reportReasonMisinfo": "Yanlış bilgi",
+  "reportReasonOther": "Başka bir sorun",
+  "reportDetailHint": "Ne olduğunu yazın (isteğe bağlı)",
+  "reportSubmit": "Bildirimi gönder",
+  "reportDoneTitle": "Bildiriminiz alındı",
+  "reportDoneBody": "İnceleyip gerekirse işlem yapacağız. BeaverTalk'ı güvende tuttuğunuz için teşekkürler.",
+  "reportFailed": "Bildirim gönderilemedi. Lütfen tekrar deneyin."
 }

@@ -2183,4 +2183,51 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Максат';
+
+  @override
+  String get reportEntry => 'Даттануу';
+
+  @override
+  String get reportTitle => 'Даттануу';
+
+  @override
+  String get reportPrompt => 'Кандай көйгөй болду?';
+
+  @override
+  String get reportGuide =>
+      'AI каарманынын кайсы сөзү сизди ыңгайсыз кылганын айтыңыз. Ар бир кайрылууну карайбыз.';
+
+  @override
+  String get reportReasonSexual => 'Сексуалдык мазмун';
+
+  @override
+  String get reportReasonHate => 'Жек көрүү же кемсинтүү';
+
+  @override
+  String get reportReasonViolence => 'Зомбулук же коркутуу';
+
+  @override
+  String get reportReasonSelfHarm => 'Өзүнө зыян келтирүүгө түртөт';
+
+  @override
+  String get reportReasonMisinfo => 'Жалган маалымат';
+
+  @override
+  String get reportReasonOther => 'Башка көйгөй';
+
+  @override
+  String get reportDetailHint => 'Эмне болгонун жазыңыз (милдеттүү эмес)';
+
+  @override
+  String get reportSubmit => 'Даттануу жөнөтүү';
+
+  @override
+  String get reportDoneTitle => 'Кайрылууңуз кабыл алынды';
+
+  @override
+  String get reportDoneBody =>
+      'Карап чыгып, керек болсо чара көрөбүз. BeaverTalk коопсуздугуна жардам бергениңизге рахмат.';
+
+  @override
+  String get reportFailed => 'Даттануу жөнөтүлгөн жок. Кайра аракет кылыңыз.';
 }

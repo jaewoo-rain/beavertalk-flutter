@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "ඇමතුම් මිනිත්තු 5 බැගින් දිගටම යයි. සෑම වතාවකම නැවත අසන්නෙමු.",
   "articulationSelectedWord": "තෝරාගත් වචනය",
   "articulationYouSaid": "ඔබේ උච්චාරණය",
-  "articulationTargetSound": "ඉලක්කය"
+  "articulationTargetSound": "ඉලක්කය",
+  "reportEntry": "වාර්තා කරන්න",
+  "reportTitle": "වාර්තාව",
+  "reportPrompt": "ගැටලුව කුමක්ද?",
+  "reportGuide": "AI චරිතයේ කුමන දෙයක් ඔබට අපහසුතාවක් ඇති කළේද කියා කියන්න. අපි සෑම වාර්තාවක්ම සමාලෝචනය කරමු.",
+  "reportReasonSexual": "ලිංගික අන්තර්ගතය",
+  "reportReasonHate": "වෛරය හෝ වෙනස්කම්",
+  "reportReasonViolence": "ප්‍රචණ්ඩ හෝ තර්ජනාත්මක අන්තර්ගතය",
+  "reportReasonSelfHarm": "සිය-හානියට දිරිගැන්වීම",
+  "reportReasonMisinfo": "වැරදි තොරතුරු",
+  "reportReasonOther": "වෙනත් ගැටලුවක්",
+  "reportDetailHint": "සිදු වූ දේ ලියන්න (විකල්ප)",
+  "reportSubmit": "වාර්තාව යවන්න",
+  "reportDoneTitle": "ඔබේ වාර්තාව ලැබුණා",
+  "reportDoneBody": "අපි එය සමාලෝචනය කර අවශ්‍ය නම් පියවර ගන්නෙමු. BeaverTalk ආරක්ෂිතව තබා ගැනීමට උදව් කිරීම ගැන ස්තූතියි.",
+  "reportFailed": "වාර්තාව යැවීමට නොහැකි විය. නැවත උත්සාහ කරන්න."
 }

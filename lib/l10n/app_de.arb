@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Anrufe laufen in 5-Minuten-Abschnitten. Wir fragen jedes Mal nach.",
   "articulationSelectedWord": "Ausgewähltes Wort",
   "articulationYouSaid": "Deine Aussprache",
-  "articulationTargetSound": "Ziel"
+  "articulationTargetSound": "Ziel",
+  "reportEntry": "Melden",
+  "reportTitle": "Melden",
+  "reportPrompt": "Was war das Problem?",
+  "reportGuide": "Sag uns, welche Inhalte der KI-Figur dich gestört haben. Wir prüfen jede Meldung.",
+  "reportReasonSexual": "Sexuelle Inhalte",
+  "reportReasonHate": "Hass oder Diskriminierung",
+  "reportReasonViolence": "Gewalttätige oder bedrohliche Inhalte",
+  "reportReasonSelfHarm": "Ermutigt zu Selbstverletzung",
+  "reportReasonMisinfo": "Falsche Informationen",
+  "reportReasonOther": "Etwas anderes",
+  "reportDetailHint": "Beschreibe, was passiert ist (optional)",
+  "reportSubmit": "Meldung senden",
+  "reportDoneTitle": "Deine Meldung ist eingegangen",
+  "reportDoneBody": "Wir prüfen sie und ergreifen bei Bedarf Maßnahmen. Danke, dass du BeaverTalk sicher hältst.",
+  "reportFailed": "Meldung konnte nicht gesendet werden. Bitte versuche es erneut."
 }

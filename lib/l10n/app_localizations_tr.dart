@@ -2179,4 +2179,51 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Hedef';
+
+  @override
+  String get reportEntry => 'Bildir';
+
+  @override
+  String get reportTitle => 'Bildir';
+
+  @override
+  String get reportPrompt => 'Sorun neydi?';
+
+  @override
+  String get reportGuide =>
+      'Yapay zeka karakterinin hangi içeriğinin sizi rahatsız ettiğini bize bildirin. Her bildirimi inceliyoruz.';
+
+  @override
+  String get reportReasonSexual => 'Cinsel içerik';
+
+  @override
+  String get reportReasonHate => 'Nefret veya ayrımcılık';
+
+  @override
+  String get reportReasonViolence => 'Şiddet içeren veya tehdit edici içerik';
+
+  @override
+  String get reportReasonSelfHarm => 'Kendine zarar vermeyi teşvik ediyor';
+
+  @override
+  String get reportReasonMisinfo => 'Yanlış bilgi';
+
+  @override
+  String get reportReasonOther => 'Başka bir sorun';
+
+  @override
+  String get reportDetailHint => 'Ne olduğunu yazın (isteğe bağlı)';
+
+  @override
+  String get reportSubmit => 'Bildirimi gönder';
+
+  @override
+  String get reportDoneTitle => 'Bildiriminiz alındı';
+
+  @override
+  String get reportDoneBody =>
+      'İnceleyip gerekirse işlem yapacağız. BeaverTalk\'ı güvende tuttuğunuz için teşekkürler.';
+
+  @override
+  String get reportFailed => 'Bildirim gönderilemedi. Lütfen tekrar deneyin.';
 }

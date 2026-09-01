@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "کالیں 5 منٹ کے حصوں میں چلتی ہیں۔ ہر بار ہم دوبارہ پوچھیں گے۔",
   "articulationSelectedWord": "منتخب لفظ",
   "articulationYouSaid": "آپ کا تلفظ",
-  "articulationTargetSound": "ہدف"
+  "articulationTargetSound": "ہدف",
+  "reportEntry": "رپورٹ کریں",
+  "reportTitle": "رپورٹ",
+  "reportPrompt": "کیا مسئلہ پیش آیا؟",
+  "reportGuide": "بتائیں کہ AI کردار کی کس بات سے آپ کو تکلیف ہوئی۔ ہم ہر رپورٹ کا جائزہ لیتے ہیں۔",
+  "reportReasonSexual": "جنسی مواد",
+  "reportReasonHate": "نفرت یا امتیاز",
+  "reportReasonViolence": "پرتشدد یا دھمکی آمیز مواد",
+  "reportReasonSelfHarm": "خود کو نقصان پہنچانے کی ترغیب",
+  "reportReasonMisinfo": "غلط معلومات",
+  "reportReasonOther": "کوئی اور مسئلہ",
+  "reportDetailHint": "جو ہوا وہ لکھیں (اختیاری)",
+  "reportSubmit": "رپورٹ بھیجیں",
+  "reportDoneTitle": "آپ کی رپورٹ موصول ہو گئی",
+  "reportDoneBody": "ہم جائزہ لے کر ضرورت پڑنے پر کارروائی کریں گے۔ BeaverTalk کو محفوظ رکھنے میں مدد کا شکریہ۔",
+  "reportFailed": "رپورٹ نہیں بھیجی جا سکی۔ دوبارہ کوشش کریں۔"
 }

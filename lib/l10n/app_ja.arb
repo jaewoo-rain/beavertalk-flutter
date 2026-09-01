@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "通話は5分ごとに続きます。そのたびにお伺いします。",
   "articulationSelectedWord": "選んだ単語",
   "articulationYouSaid": "あなたの発音",
-  "articulationTargetSound": "お手本"
+  "articulationTargetSound": "お手本",
+  "reportEntry": "報告する",
+  "reportTitle": "報告",
+  "reportPrompt": "どんな問題がありましたか？",
+  "reportGuide": "AIキャラクターとの会話で不快に感じた内容をお知らせください。すべての報告を確認します。",
+  "reportReasonSexual": "性的な内容",
+  "reportReasonHate": "差別・ヘイト表現",
+  "reportReasonViolence": "暴力的・脅迫的な内容",
+  "reportReasonSelfHarm": "自傷を助長する内容",
+  "reportReasonMisinfo": "誤った情報",
+  "reportReasonOther": "その他の問題",
+  "reportDetailHint": "何があったか記入してください（任意）",
+  "reportSubmit": "報告を送信",
+  "reportDoneTitle": "報告を受け付けました",
+  "reportDoneBody": "確認のうえ、必要な対応を行います。BeaverTalkの安全にご協力いただきありがとうございます。",
+  "reportFailed": "報告を送信できませんでした。もう一度お試しください。"
 }

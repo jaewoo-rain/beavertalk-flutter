@@ -2206,4 +2206,52 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Ziel';
+
+  @override
+  String get reportEntry => 'Melden';
+
+  @override
+  String get reportTitle => 'Melden';
+
+  @override
+  String get reportPrompt => 'Was war das Problem?';
+
+  @override
+  String get reportGuide =>
+      'Sag uns, welche Inhalte der KI-Figur dich gestört haben. Wir prüfen jede Meldung.';
+
+  @override
+  String get reportReasonSexual => 'Sexuelle Inhalte';
+
+  @override
+  String get reportReasonHate => 'Hass oder Diskriminierung';
+
+  @override
+  String get reportReasonViolence => 'Gewalttätige oder bedrohliche Inhalte';
+
+  @override
+  String get reportReasonSelfHarm => 'Ermutigt zu Selbstverletzung';
+
+  @override
+  String get reportReasonMisinfo => 'Falsche Informationen';
+
+  @override
+  String get reportReasonOther => 'Etwas anderes';
+
+  @override
+  String get reportDetailHint => 'Beschreibe, was passiert ist (optional)';
+
+  @override
+  String get reportSubmit => 'Meldung senden';
+
+  @override
+  String get reportDoneTitle => 'Deine Meldung ist eingegangen';
+
+  @override
+  String get reportDoneBody =>
+      'Wir prüfen sie und ergreifen bei Bedarf Maßnahmen. Danke, dass du BeaverTalk sicher hältst.';
+
+  @override
+  String get reportFailed =>
+      'Meldung konnte nicht gesendet werden. Bitte versuche es erneut.';
 }

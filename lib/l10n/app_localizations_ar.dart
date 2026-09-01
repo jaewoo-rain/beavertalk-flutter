@@ -2166,4 +2166,51 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'الهدف';
+
+  @override
+  String get reportEntry => 'إبلاغ';
+
+  @override
+  String get reportTitle => 'إبلاغ';
+
+  @override
+  String get reportPrompt => 'ما المشكلة التي واجهتها؟';
+
+  @override
+  String get reportGuide =>
+      'أخبرنا عن المحتوى الذي أزعجك من شخصية الذكاء الاصطناعي. نراجع كل بلاغ.';
+
+  @override
+  String get reportReasonSexual => 'محتوى جنسي';
+
+  @override
+  String get reportReasonHate => 'كراهية أو تمييز';
+
+  @override
+  String get reportReasonViolence => 'محتوى عنيف أو تهديدي';
+
+  @override
+  String get reportReasonSelfHarm => 'يشجع على إيذاء النفس';
+
+  @override
+  String get reportReasonMisinfo => 'معلومات خاطئة';
+
+  @override
+  String get reportReasonOther => 'مشكلة أخرى';
+
+  @override
+  String get reportDetailHint => 'صف ما حدث (اختياري)';
+
+  @override
+  String get reportSubmit => 'إرسال البلاغ';
+
+  @override
+  String get reportDoneTitle => 'تم استلام بلاغك';
+
+  @override
+  String get reportDoneBody =>
+      'سنراجعه ونتخذ الإجراء اللازم. شكرًا لمساعدتك في الحفاظ على أمان BeaverTalk.';
+
+  @override
+  String get reportFailed => 'تعذّر إرسال البلاغ. حاول مرة أخرى.';
 }

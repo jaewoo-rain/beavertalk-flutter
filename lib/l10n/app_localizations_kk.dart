@@ -2178,4 +2178,51 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Мақсат';
+
+  @override
+  String get reportEntry => 'Шағымдану';
+
+  @override
+  String get reportTitle => 'Шағым';
+
+  @override
+  String get reportPrompt => 'Қандай мәселе болды?';
+
+  @override
+  String get reportGuide =>
+      'AI кейіпкерінің қандай сөзі сізді ыңғайсыздандырғанын айтыңыз. Әр шағымды қараймыз.';
+
+  @override
+  String get reportReasonSexual => 'Сексуалдық мазмұн';
+
+  @override
+  String get reportReasonHate => 'Өшпенділік немесе кемсіту';
+
+  @override
+  String get reportReasonViolence => 'Зорлық-зомбылық немесе қоқан-лоққы';
+
+  @override
+  String get reportReasonSelfHarm => 'Өзіне зиян келтіруге итермелейді';
+
+  @override
+  String get reportReasonMisinfo => 'Жалған ақпарат';
+
+  @override
+  String get reportReasonOther => 'Басқа мәселе';
+
+  @override
+  String get reportDetailHint => 'Не болғанын жазыңыз (міндетті емес)';
+
+  @override
+  String get reportSubmit => 'Шағым жіберу';
+
+  @override
+  String get reportDoneTitle => 'Шағымыңыз қабылданды';
+
+  @override
+  String get reportDoneBody =>
+      'Қарап шығып, қажет болса шара қолданамыз. BeaverTalk қауіпсіздігіне көмектескеніңізге рақмет.';
+
+  @override
+  String get reportFailed => 'Шағым жіберілмеді. Қайта көріңіз.';
 }

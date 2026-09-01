@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Las llamadas continúan en tramos de 5 minutos. Te preguntaremos cada vez.",
   "articulationSelectedWord": "Palabra seleccionada",
   "articulationYouSaid": "Tu pronunciación",
-  "articulationTargetSound": "Objetivo"
+  "articulationTargetSound": "Objetivo",
+  "reportEntry": "Denunciar",
+  "reportTitle": "Denunciar",
+  "reportPrompt": "¿Cuál fue el problema?",
+  "reportGuide": "Cuéntanos qué contenido del personaje de IA te incomodó. Revisamos todas las denuncias.",
+  "reportReasonSexual": "Contenido sexual",
+  "reportReasonHate": "Odio o discriminación",
+  "reportReasonViolence": "Contenido violento o amenazante",
+  "reportReasonSelfHarm": "Fomenta la autolesión",
+  "reportReasonMisinfo": "Información falsa",
+  "reportReasonOther": "Otro problema",
+  "reportDetailHint": "Describe lo que pasó (opcional)",
+  "reportSubmit": "Enviar denuncia",
+  "reportDoneTitle": "Recibimos tu denuncia",
+  "reportDoneBody": "La revisaremos y tomaremos medidas si es necesario. Gracias por ayudar a mantener BeaverTalk seguro.",
+  "reportFailed": "No se pudo enviar la denuncia. Inténtalo de nuevo."
 }

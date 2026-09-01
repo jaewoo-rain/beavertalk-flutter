@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Чалуулар 5 мүнөттүк бөлүктөр менен уланат. Ар жолу кайра сурайбыз.",
   "articulationSelectedWord": "Тандалган сөз",
   "articulationYouSaid": "Сиздин айтылышыңыз",
-  "articulationTargetSound": "Максат"
+  "articulationTargetSound": "Максат",
+  "reportEntry": "Даттануу",
+  "reportTitle": "Даттануу",
+  "reportPrompt": "Кандай көйгөй болду?",
+  "reportGuide": "AI каарманынын кайсы сөзү сизди ыңгайсыз кылганын айтыңыз. Ар бир кайрылууну карайбыз.",
+  "reportReasonSexual": "Сексуалдык мазмун",
+  "reportReasonHate": "Жек көрүү же кемсинтүү",
+  "reportReasonViolence": "Зомбулук же коркутуу",
+  "reportReasonSelfHarm": "Өзүнө зыян келтирүүгө түртөт",
+  "reportReasonMisinfo": "Жалган маалымат",
+  "reportReasonOther": "Башка көйгөй",
+  "reportDetailHint": "Эмне болгонун жазыңыз (милдеттүү эмес)",
+  "reportSubmit": "Даттануу жөнөтүү",
+  "reportDoneTitle": "Кайрылууңуз кабыл алынды",
+  "reportDoneBody": "Карап чыгып, керек болсо чара көрөбүз. BeaverTalk коопсуздугуна жардам бергениңизге рахмат.",
+  "reportFailed": "Даттануу жөнөтүлгөн жок. Кайра аракет кылыңыз."
 }

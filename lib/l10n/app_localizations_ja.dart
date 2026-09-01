@@ -2112,4 +2112,50 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'お手本';
+
+  @override
+  String get reportEntry => '報告する';
+
+  @override
+  String get reportTitle => '報告';
+
+  @override
+  String get reportPrompt => 'どんな問題がありましたか？';
+
+  @override
+  String get reportGuide => 'AIキャラクターとの会話で不快に感じた内容をお知らせください。すべての報告を確認します。';
+
+  @override
+  String get reportReasonSexual => '性的な内容';
+
+  @override
+  String get reportReasonHate => '差別・ヘイト表現';
+
+  @override
+  String get reportReasonViolence => '暴力的・脅迫的な内容';
+
+  @override
+  String get reportReasonSelfHarm => '自傷を助長する内容';
+
+  @override
+  String get reportReasonMisinfo => '誤った情報';
+
+  @override
+  String get reportReasonOther => 'その他の問題';
+
+  @override
+  String get reportDetailHint => '何があったか記入してください（任意）';
+
+  @override
+  String get reportSubmit => '報告を送信';
+
+  @override
+  String get reportDoneTitle => '報告を受け付けました';
+
+  @override
+  String get reportDoneBody =>
+      '確認のうえ、必要な対応を行います。BeaverTalkの安全にご協力いただきありがとうございます。';
+
+  @override
+  String get reportFailed => '報告を送信できませんでした。もう一度お試しください。';
 }

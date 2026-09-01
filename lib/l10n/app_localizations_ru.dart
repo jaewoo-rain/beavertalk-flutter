@@ -2185,4 +2185,51 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Цель';
+
+  @override
+  String get reportEntry => 'Пожаловаться';
+
+  @override
+  String get reportTitle => 'Жалоба';
+
+  @override
+  String get reportPrompt => 'В чём была проблема?';
+
+  @override
+  String get reportGuide =>
+      'Расскажите, какой контент ИИ-персонажа вас смутил. Мы рассматриваем каждую жалобу.';
+
+  @override
+  String get reportReasonSexual => 'Сексуальный контент';
+
+  @override
+  String get reportReasonHate => 'Ненависть или дискриминация';
+
+  @override
+  String get reportReasonViolence => 'Насилие или угрозы';
+
+  @override
+  String get reportReasonSelfHarm => 'Побуждение к самоповреждению';
+
+  @override
+  String get reportReasonMisinfo => 'Ложная информация';
+
+  @override
+  String get reportReasonOther => 'Другая проблема';
+
+  @override
+  String get reportDetailHint => 'Опишите, что произошло (необязательно)';
+
+  @override
+  String get reportSubmit => 'Отправить жалобу';
+
+  @override
+  String get reportDoneTitle => 'Жалоба принята';
+
+  @override
+  String get reportDoneBody =>
+      'Мы рассмотрим её и примем меры при необходимости. Спасибо, что помогаете сохранять BeaverTalk безопасным.';
+
+  @override
+  String get reportFailed => 'Не удалось отправить жалобу. Попробуйте ещё раз.';
 }

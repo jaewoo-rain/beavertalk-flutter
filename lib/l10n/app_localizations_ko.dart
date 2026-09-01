@@ -2114,4 +2114,49 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get articulationTargetSound => '목표';
+
+  @override
+  String get reportEntry => '신고하기';
+
+  @override
+  String get reportTitle => '신고';
+
+  @override
+  String get reportPrompt => '어떤 문제가 있었나요?';
+
+  @override
+  String get reportGuide => 'AI 캐릭터와의 대화에서 불쾌했던 내용을 알려주세요. 접수된 신고는 모두 검토해요.';
+
+  @override
+  String get reportReasonSexual => '성적인 내용';
+
+  @override
+  String get reportReasonHate => '혐오 · 차별 표현';
+
+  @override
+  String get reportReasonViolence => '폭력적이거나 위협적인 내용';
+
+  @override
+  String get reportReasonSelfHarm => '자해를 부추기는 내용';
+
+  @override
+  String get reportReasonMisinfo => '잘못된 정보';
+
+  @override
+  String get reportReasonOther => '그 밖의 문제';
+
+  @override
+  String get reportDetailHint => '어떤 일이 있었는지 적어주세요 (선택)';
+
+  @override
+  String get reportSubmit => '신고 접수';
+
+  @override
+  String get reportDoneTitle => '신고가 접수되었어요';
+
+  @override
+  String get reportDoneBody => '검토 후 필요한 조치를 취할게요. 비버톡을 안전하게 지켜주셔서 고맙습니다.';
+
+  @override
+  String get reportFailed => '신고를 접수하지 못했어요. 다시 시도해주세요.';
 }

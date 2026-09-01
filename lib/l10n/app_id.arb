@@ -652,5 +652,20 @@
   "callKeepGoingSubtitle": "Panggilan berlanjut per 5 menit. Kami akan bertanya lagi tiap kali.",
   "articulationSelectedWord": "Kata terpilih",
   "articulationYouSaid": "Pelafalanmu",
-  "articulationTargetSound": "Target"
+  "articulationTargetSound": "Target",
+  "reportEntry": "Laporkan",
+  "reportTitle": "Laporkan",
+  "reportPrompt": "Apa masalahnya?",
+  "reportGuide": "Beri tahu kami konten karakter AI yang membuat Anda tidak nyaman. Kami meninjau setiap laporan.",
+  "reportReasonSexual": "Konten seksual",
+  "reportReasonHate": "Kebencian atau diskriminasi",
+  "reportReasonViolence": "Konten kekerasan atau ancaman",
+  "reportReasonSelfHarm": "Mendorong menyakiti diri sendiri",
+  "reportReasonMisinfo": "Informasi salah",
+  "reportReasonOther": "Masalah lain",
+  "reportDetailHint": "Jelaskan apa yang terjadi (opsional)",
+  "reportSubmit": "Kirim laporan",
+  "reportDoneTitle": "Laporan Anda sudah kami terima",
+  "reportDoneBody": "Kami akan meninjaunya dan mengambil tindakan bila perlu. Terima kasih telah menjaga BeaverTalk tetap aman.",
+  "reportFailed": "Laporan gagal dikirim. Coba lagi."
 }

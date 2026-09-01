@@ -2185,4 +2185,51 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get articulationTargetSound => 'Tavoite';
+
+  @override
+  String get reportEntry => 'Ilmoita';
+
+  @override
+  String get reportTitle => 'Ilmoitus';
+
+  @override
+  String get reportPrompt => 'Mikä oli ongelmana?';
+
+  @override
+  String get reportGuide =>
+      'Kerro, mikä tekoälyhahmon sisältö häiritsi sinua. Käymme läpi jokaisen ilmoituksen.';
+
+  @override
+  String get reportReasonSexual => 'Seksuaalinen sisältö';
+
+  @override
+  String get reportReasonHate => 'Viha tai syrjintä';
+
+  @override
+  String get reportReasonViolence => 'Väkivaltainen tai uhkaava sisältö';
+
+  @override
+  String get reportReasonSelfHarm => 'Kannustaa itsensä vahingoittamiseen';
+
+  @override
+  String get reportReasonMisinfo => 'Virheellistä tietoa';
+
+  @override
+  String get reportReasonOther => 'Jokin muu';
+
+  @override
+  String get reportDetailHint => 'Kuvaile, mitä tapahtui (valinnainen)';
+
+  @override
+  String get reportSubmit => 'Lähetä ilmoitus';
+
+  @override
+  String get reportDoneTitle => 'Ilmoituksesi on vastaanotettu';
+
+  @override
+  String get reportDoneBody =>
+      'Käymme sen läpi ja ryhdymme tarvittaviin toimiin. Kiitos, että pidät BeaverTalkin turvallisena.';
+
+  @override
+  String get reportFailed => 'Ilmoitusta ei voitu lähettää. Yritä uudelleen.';
 }
