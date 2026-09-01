@@ -64,3 +64,10 @@ backup_old_assets/
 # 로컬 전용 백업 — 공개 저장소라 .env 사본이 실수로 올라가면 그대로 유출이다
 *.bak
 .env.bak*
+
+# 업로드 키스토어 — 잃으면 앱 업데이트가 영구 불가하고, 새면 위조 서명이 가능하다.
+# android/.gitignore 가 android/ 아래를 이미 막지만, 저장소 루트에 잘못 만드는
+# 사고를 대비해 여기서 한 번 더 막는다(실측: 루트 경로는 안 막히고 있었다).
+*.jks
+*.keystore
+key.properties

@@ -1,0 +1,10 @@
+# 업로드 키스토어 설정 예시. 실제 파일은 `android/key.properties` 로 만들고,
+# 저장소에 커밋하지 않는다(.gitignore 로 이중 차단됨).
+#
+# storeFile 은 `android/` 기준 상대경로다.
+# 아래 4개 값은 keytool 로 키스토어를 만들 때 정한 값과 정확히 같아야 한다.
+
+storeFile=app/upload-keystore.jks
+storePassword=여기에_키스토어_비밀번호
+keyAlias=upload
+keyPassword=여기에_키_비밀번호
