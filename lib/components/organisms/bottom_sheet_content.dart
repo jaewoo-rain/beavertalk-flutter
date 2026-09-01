@@ -193,16 +193,16 @@ class BottomSheetContent extends StatelessWidget {
     // The `none` sheet is a floating card (elevated surface, thin grabber);
     // the card forms sit on the screen background with a heavier grabber —
     // both pairs measured off the component set.
-    final bg =
-        _onCard ? c.backgroundNormalNormal : c.backgroundElevatedAlternative;
+    final bg = _onCard
+        ? c.backgroundNormalNormal
+        : c.backgroundElevatedAlternative;
     final grabber = _onCard ? c.backgroundElevatedNormal : c.lineNormal;
 
     return Container(
       constraints: const BoxConstraints(maxWidth: maxWidth),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(20)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -226,7 +226,7 @@ class BottomSheetContent extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (mark != null) ...[
-                  Center(child: _Mark(tone: mark!)),
+                  Center(child: ResultMark(tone: mark!)),
                   const SizedBox(height: 16),
                 ],
                 _header(context),
@@ -286,9 +286,9 @@ class BottomSheetContent extends StatelessWidget {
   Widget _header(BuildContext context) {
     final c = context.c;
     final big = type == SheetContentType.none || type == SheetContentType.video;
-    final titleStyle = (big ? AppType.heading2 : AppType.headline1)
-        .sb
-        .copyWith(color: c.labelStrong);
+    final titleStyle = (big ? AppType.heading2 : AppType.headline1).sb.copyWith(
+      color: c.labelStrong,
+    );
     return Column(
       children: [
         Text(title, textAlign: TextAlign.center, style: titleStyle),
@@ -346,14 +346,16 @@ class BottomSheetContent extends StatelessWidget {
                     children: [
                       Text(
                         p.name,
-                        style: AppType.label2.sb
-                            .copyWith(color: c.commonWhiteAndDark),
+                        style: AppType.label2.sb.copyWith(
+                          color: c.commonWhiteAndDark,
+                        ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         p.topic,
-                        style:
-                            AppType.caption1.r.copyWith(color: c.labelNormal),
+                        style: AppType.caption1.r.copyWith(
+                          color: c.labelNormal,
+                        ),
                       ),
                     ],
                   ),
@@ -525,9 +527,14 @@ class _DayCell extends StatelessWidget {
 }
 
 /// 56px result disc — Figma `Mark` (`4365:31487`).
-class _Mark extends StatelessWidget {
-  const _Mark({required this.tone});
+///
+/// 시트 밖에서도 쓴다 — 신고 접수 완료 화면(`screens/report/report_content.dart`)
+/// 이 같은 표식을 쓴다. 결과 표식은 이 하나뿐이니 화면마다 원을 새로 그리지 마라.
+class ResultMark extends StatelessWidget {
+  /// Creates the result disc.
+  const ResultMark({super.key, required this.tone});
 
+  /// Which disc to draw.
   final SheetMarkTone tone;
 
   @override

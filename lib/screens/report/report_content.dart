@@ -5,8 +5,8 @@ import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/atoms/checkbox.dart';
-import '../../components/icons/app_icons.dart';
 import '../../components/molecules/text_area.dart';
+import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/report/domain/entities/report_reason.dart';
@@ -251,16 +251,9 @@ class _ReportContentScreenState extends ConsumerState<ReportContentScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: AppSpacing.s80,
-            height: AppSpacing.s80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: context.c.primaryNormal10,
-            ),
-            alignment: Alignment.center,
-            child: AppIcons.check(size: 32, color: context.c.primaryNormal),
-          ),
+          // 결과 표식은 정본 컴포넌트 하나로 통일한다(Figma `Mark` 4365:31487).
+          // 화면마다 원을 새로 그리면 지름·톤이 갈린다.
+          const ResultMark(tone: SheetMarkTone.success),
           const SizedBox(height: AppSpacing.s24),
           Text(
             l10n.reportDoneTitle,
