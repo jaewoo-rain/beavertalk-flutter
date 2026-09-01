@@ -417,7 +417,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
   /// ⛔ 트리에서 뺀 **다음 프레임에** 해제한다. 지금 그려지는 텍스처를 지우면 굳는다.
   Future<void> _freeEmoSlot(String why) async {
     // ⚠ 미뤄 둔 감정은 자리를 비우는 순간 무효다 — 그 감정이 가리키던 맥락이 사라졌다.
-    _emoPending = null;
+    _emoQueue.clear();
     if (_emoCache.isEmpty) return;
     _disarmEmoFinish();
     final stale = _emoCache.values.toList();
@@ -488,6 +488,14 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _stopTalking() {
     _talking = false;
+    // ⛔ **밀린 감정은 버린다**(2026-09-01, 큐 도입과 한 몸).
+    //   큐는 「이 발화에 붙일 표정들」이다. 발화가 끝났으면 그 표정들이 붙을 데가 없다 —
+    //   그대로 두면 **말 없는 얼굴에 감정이 뜬다**(감정 클립 ~2초 × 최대 3개 = 6초).
+    //   ⚠ [SyncAvatar.silentEmotion](학습 반응 밴드)은 무음에도 감정을 쓰므로 예외다.
+    if (!widget.silentEmotion && _emoQueue.isNotEmpty) {
+      widget.onDiag?.call('vid_emo_drop', {'n': _emoQueue.length, 'why': 'talk_end'});
+      _emoQueue.clear();
+    }
     // ⚠ 여기서 `_emoOpacity` 가 **0 으로 뚝 떨어진다**(페이드 없음). 감정 클립이
     //   `loop:true` 라 같은 동작을 반복하다 이 지점에서 잘리는 것이, 사장님이 보신
     //   「웃다가 갑자기 멈춘다」의 그 순간이다. 고치지 않고 **시각만 남긴다** —
@@ -641,23 +649,59 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   void _onEmotion() {
     if (!_ready) return;
+    // ⭐⭐ **재생 중이면 덮지 않고 줄을 세운다**(2026-09-01).
+    //   `avatarEmotion` 은 값 하나짜리 노티파이어라, 마커가 연달아 오면 뒤엣것이
+    //   앞엣것을 덮는다. 여기서 큐로 받아야 **둘 다** 보여줄 수 있다.
+    //   ⚠ 「재생 중」의 판정은 불투명도다 — 클립이 화면에 떠 있으면 그것이 끝나고
+    //     [_armEmoFinish] 가 [_drainPendingEmo] 를 부를 때까지 기다린다.
+    if (_emoOpacity > 0 && _emo != null) {
+      _enqueueEmo(widget.emotion.value);
+      return;
+    }
     _syncEmotionLayer();
   }
 
-  /// 앞 감정을 여는 동안 도착한 **가장 최근** 감정. 없으면 null.
+  /// 아직 못 보여준 감정들. **먼저 온 순서대로** 재생한다.
   ///
-  /// ⛔ 큐가 아니라 **한 칸**이다 — 표정은 누적값이 아니라 현재 상태다.
-  int? _emoPending;
+  /// ## ⭐ 왜 한 칸이 아니라 큐인가 (2026-09-01 사장님 지시)
+  ///
+  /// 예전엔 「표정은 누적값이 아니라 현재 상태」라는 이유로 **가장 최근 하나만** 들고
+  /// 있었다. 그 전제는 감정이 드문드문 올 때만 맞다. 실제로는 모델이 **한 차례에 두 개를
+  /// 연달아** 부른다(실측 call 1252: `happy` → 0.5ms 뒤 `neutral`). 그러면 뒤엣것이
+  /// 앞엣것을 덮어 **아무 표정도 안 보인다** — 마커 8개가 왔는데 화면엔 3개만 떴다.
+  ///
+  /// ⇒ 덮지 않고 **순서대로 이어 재생**한다. `happy` 를 2초 보여주고 그다음 `neutral`.
+  ///   그게 서버가 보낸 것을 그대로 재현하는 유일한 방법이다.
+  ///
+  /// ⛔ **상한 [_emoQueueMax] 를 둔다.** 무한히 쌓으면 대사가 끝난 뒤에도 표정이 계속
+  ///   나와 말 없는 얼굴에 감정이 뜬다. 넘치면 **오래된 것부터 버린다** — 최신이 지금
+  ///   맥락에 가깝다.
+  final List<int> _emoQueue = <int>[];
 
-  /// 미뤄 둔 감정이 있으면 지금 적용한다.
+  /// 큐 상한. 감정 클립이 약 2초라 3개면 6초 — 한 차례 발화 길이의 상한쯤이다.
+  static const int _emoQueueMax = 3;
+
+  /// 큐에 하나 넣는다. 지금 보여줄 게 없으면 바로 재생을 건다.
+  void _enqueueEmo(int code) {
+    // ⚠ 직전 값과 같으면 넣지 않는다 — 같은 얼굴을 두 번 재생할 이유가 없다.
+    final last = _emoQueue.isNotEmpty ? _emoQueue.last : _emoCode;
+    if (code == last) return;
+    _emoQueue.add(code);
+    while (_emoQueue.length > _emoQueueMax) {
+      final dropped = _emoQueue.removeAt(0);
+      widget.onDiag?.call('vid_emo_drop', {'code': dropped, 'why': 'queue_full'});
+    }
+  }
+
+  /// 큐에서 다음 감정을 꺼내 재생한다. 비었으면 아무것도 안 한다.
   ///
-  /// ⚠ 위젯의 **현재** 값과 다를 때만 돈다. 그 사이 서버가 또 바꿨다면
+  /// ⚠ 위젯의 **현재** 값과 다를 때만 돈다 — 그 사이 서버가 또 바꿨다면
   ///   `widget.emotion` 쪽이 최신이고, 그건 [_onEmotion] 이 이미 처리했다.
   Future<void> _drainPendingEmo() async {
-    final pending = _emoPending;
-    _emoPending = null;
-    if (pending == null || pending == _emoCode) return;
-    await _syncEmotionLayer();
+    if (_emoQueue.isEmpty) return;
+    final next = _emoQueue.removeAt(0);
+    if (next == _emoCode) return await _drainPendingEmo();  // 같은 얼굴은 건너뛴다
+    await _syncEmotionLayer(override: next);
   }
 
   /// 지금 감시 중인 감정 클립과 그 리스너(중복 등록 방지용 참조).
@@ -684,7 +728,13 @@ class _SyncAvatarState extends State<SyncAvatar> {
       if (!mounted) return;
       // 감정만 내린다. talk 은 [_applyPlayback] 이 다시 켠다 — 그게 「말하는 얼굴」이다.
       setState(() => _emoOpacity = 0);
-      unawaited(_applyPlayback());
+      unawaited(() async {
+        await _applyPlayback();
+        // ⭐ **여기가 순서 재생의 이음매다**(2026-09-01). 클립이 끝까지 재생된 뒤에
+        //   다음 감정을 연다 — 그래야 `happy` 를 다 보여주고 `neutral` 로 넘어간다.
+        //   ⛔ 클립 도중에 다음 것을 열면 앞엣것이 잘린다(예전 「한 칸」이 그랬다).
+        await _drainPendingEmo();
+      }());
     }
     _emoWatched = c;
     _emoFinishWatch = onTick;
@@ -706,9 +756,11 @@ class _SyncAvatarState extends State<SyncAvatar> {
   }
 
   /// Loads (once) and shows the clip for the current emotion while talking.
-  Future<void> _syncEmotionLayer() async {
+  /// [override] 가 주어지면 위젯 값 대신 그것을 연다 — 큐에서 꺼낸 감정을 재생할 때다.
+  /// (위젯 값은 이미 큐의 **마지막** 것이라, 그걸 쓰면 중간 감정을 건너뛴다.)
+  Future<void> _syncEmotionLayer({int? override}) async {
     if (!_ready) return; // don't contend with the idle/talk decoders warming up
-    final code = widget.emotion.value;
+    final code = override ?? widget.emotion.value;
     final name = _emoAsset[code];
     // [SyncAvatar.silentEmotion] 이면 발화 없이도 연다 — 학습 반응 밴드는 무음이다.
     final gated = !_talking && !widget.silentEmotion;
@@ -730,12 +782,12 @@ class _SyncAvatarState extends State<SyncAvatar> {
       var next = _emoCache[code];
       if (next == null) {
         if (_emoLoading) {
-          // ⭐ **버리지 않고 미룬다.** 예전엔 그냥 반환해서 그 감정이 영영 안 떴다 —
-          //   앞 감정을 여는 데 수백 ms 가 걸리므로, 그 사이 온 마커는 전부 사라졌다.
-          // ⛔ 큐로 쌓지 않는다. 표정은 **누적되는 값이 아니라 현재 상태**라, 밀린 것을
-          //   차례로 다 트는 것은 틀린 그림이다(happy→sad→happy 를 다 재생하면 마지막
-          //   문장에서 엉뚱한 얼굴이 남는다). ⇒ **최신 하나만** 들고 있다가 잇는다.
-          _emoPending = code;
+          // ⭐ **버리지 않고 큐에 넣는다.** 앞 감정을 여는 데 수백 ms 가 걸리므로,
+          //   그 사이 온 마커를 버리면 영영 안 뜬다.
+          // ⚠ 2026-09-01 에 「한 칸」에서 **큐**로 바꿨다 — 모델이 한 차례에 두 개를
+          //   연달아 부르는 것이 실측됐고(call 1252), 한 칸이면 뒤엣것이 앞엣것을 덮어
+          //   아무 표정도 안 보였다. 상한은 [_emoQueueMax] 가 건다.
+          _enqueueEmo(code);
           widget.onDiag?.call('vid_emo_defer', {'code': code});
           return;
         }
@@ -776,7 +828,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _armEmoFinish(next);
         if (mounted) setState(() => _emoOpacity = 1);
         await _applyPlayback();
-        // 여는 동안 다음 감정이 왔다면 지금 잇는다(위 [_emoPending] 참조).
+        // 여는 동안 다음 감정이 왔다면 지금 잇는다(위 [_emoQueue] 참조).
         await _drainPendingEmo();
         return;
       }
