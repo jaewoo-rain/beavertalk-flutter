@@ -43,7 +43,10 @@ sealed class JoinResult {
 /// 참여했다.
 ///
 /// **이미 참여 중이었어도 이 결과다.** 서버가 기존 행을 그대로 돌려준다(멱등).
-/// 나갔다가 다시 들어오면 서버가 **옛 행을 되살린다** — 새 행이 아니다.
+///
+/// 🔴 **나갔다가 다시 들어오면 새 행이다.** `leave` 가 익명화로 `member_id` 를
+/// 비우기 때문에 `join` 이 옛 행을 찾지 못한다 — 서버가 의도한 동작이며
+/// 「새 행 = 새 동의」다. 앱이 「돌아오셨네요」 같은 복구를 기대하면 안 된다.
 class JoinSucceeded extends JoinResult {
   /// 참여 결과를 담는다.
   const JoinSucceeded(this.membership);
