@@ -63,8 +63,9 @@ void main() {
       await pumpMyPage(tester, tokens);
 
       final buttons = find.byType(Button).evaluate().toList();
-      // 레벨 테스트 다시하기 + 발음 학습하기.
-      expect(buttons, hasLength(2), reason: 'MyPage should render both CTAs');
+      // 레벨 테스트 다시하기 + 발음 학습하기 + 수업 카드(참여 코드 입력).
+      // 수업 카드는 숙제 진입점이라 목록을 못 받아도 참여 전 모습으로 늘 그린다.
+      expect(buttons, hasLength(3), reason: 'MyPage should render every CTA');
 
       for (final b in buttons) {
         expect(

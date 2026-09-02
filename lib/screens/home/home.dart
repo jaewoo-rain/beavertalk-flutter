@@ -15,6 +15,7 @@ import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../classroom/widgets/homework_home_banner.dart';
 
 /// Home — the post-login landing screen. Figma `screen/home` (`2117:23988`).
 ///
@@ -178,6 +179,13 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ),
+          // 숙제 진입 배너 — 하단 내비 바로 위(Figma `screen/main_home` y=588).
+          // 급한 숙제가 없으면 스스로 사라진다.
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: HomeworkHomeBanner(),
+          ),
+          const SizedBox(height: 18),
           // Bottom navigation — call tab is the center action.
           BottomNavBar(
             items: [

@@ -123,11 +123,9 @@ void main() {
 
   group('join', () {
     test('409 는 예외가 아니라 JoinClassFull 이다', () async {
-      final r = await _make(409, {'detail': '반 정원이 찼습니다.'}).repo.join(
-        joinCode: 'ABC123',
-        rosterName: '김학생',
-        shareConsent: true,
-      );
+      final r = await _make(409, {
+        'detail': '반 정원이 찼습니다.',
+      }).repo.join(joinCode: 'ABC123', rosterName: '김학생', shareConsent: true);
       expect(r, isA<JoinClassFull>());
     });
 

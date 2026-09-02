@@ -14,6 +14,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/features/classroom/domain/entities/classroom_assignment.dart';
+import 'package:beavertalk/screens/classroom/assignment_detail.dart';
+import 'package:beavertalk/screens/classroom/assignment_list.dart';
+import 'package:beavertalk/screens/classroom/join_code.dart';
+import 'package:beavertalk/screens/classroom/join_consent.dart';
+import 'package:beavertalk/screens/classroom/join_done.dart';
+import 'package:beavertalk/screens/classroom/join_profile.dart';
 
 import 'package:beavertalk/screens/alarm/alarm_add.dart';
 import 'package:beavertalk/screens/alarm/alarm_empty.dart';
@@ -132,6 +139,30 @@ void main() {
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
     'Permission': () => const PermissionScreen(),
+    // 숙제 — 참여 흐름과 목록·상세. 문안이 새로 들어온 영역이라 독일어에서
+    // 가장 먼저 깨진다(구현계획 §3.4 「폭 검수 기준 언어 = 독일어」).
+    'HwJoinCode': () => const JoinCodeScreen(),
+    'HwJoinProfile': () => const JoinProfileScreen(),
+    'HwJoinConsent': () => const JoinConsentScreen(),
+    'HwJoinDone': () => const JoinDoneScreen(),
+    'HwAssignmentList': () => const AssignmentListScreen(),
+    'HwAssignmentDetail': () => AssignmentDetailScreen(
+      assignment: ClassroomAssignment(
+        assignmentId: 1,
+        classroomName: 'TOPIK 1 A',
+        grade: 1,
+        chapter: 3,
+        activities: const [
+          AssignmentActivity.speaking,
+          AssignmentActivity.conversation,
+          AssignmentActivity.workbook,
+        ],
+        itemIds: const [],
+        dueAt: DateTime(2026, 12, 31),
+        overdue: false,
+        status: AssignmentStatus.notStarted,
+      ),
+    ),
   };
 
   // Narrow phone (iPhone SE / small Android). Horizontal overflow surfaces here.

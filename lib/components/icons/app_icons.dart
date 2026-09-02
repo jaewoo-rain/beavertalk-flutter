@@ -66,6 +66,27 @@ abstract final class AppIcons {
   static Widget settings({double size = 24, required Color color}) =>
       _glyph('settings', size, color);
 
+  // ── 숙제 과제 유형 ────────────────────────────────────────────
+  // 세 아이콘 모두 Figma ` ┗ Icon` 페이지의 Size=24 변이를 그대로 내보낸 것이다.
+  // 숙제 상세의 과제 카드가 유형을 이 셋으로 구분한다.
+
+  /// `sound-wave` (`5261:1431`) — 발음 과제.
+  ///
+  /// 발음용 아이콘을 새로 그리지 않았다 — 이미 음성 파형이라 새로 만들면
+  /// 라이브러리에 같은 뜻의 글리프가 둘이 된다.
+  static Widget soundWave({double size = 24, required Color color}) =>
+      _glyph('sound-wave', size, color);
+
+  /// `chat` (`5700:31203`) — 회화 과제. 2026-09-01 신규 제작 후 승격.
+  static Widget chat({double size = 24, required Color color}) =>
+      _glyph('chat', size, color);
+
+  /// `book` (`5700:31239`) — 워크북 과제. 2026-09-01 신규 제작 후 승격.
+  ///
+  /// `edit` 는 이 라이브러리에서 연필이 아니라 ⇄ 교환 글리프라 대체가 안 된다.
+  static Widget book({double size = 24, required Color color}) =>
+      _glyph('book', size, color);
+
   // ── Status / feedback ────────────────────────────────────────
   static Widget check({double size = 24, required Color color}) =>
       _glyph('check', size, color);

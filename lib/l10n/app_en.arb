@@ -1421,33 +1421,446 @@
   "articulationYouSaid": "You said",
   "articulationTargetSound": "Target",
   "reportEntry": "Report",
-  "@reportEntry": {"description": "Entry affordance that opens the AI-content report screen. Shown on the call-finish screen and in the records list."},
+  "@reportEntry": {
+    "description": "Entry affordance that opens the AI-content report screen. Shown on the call-finish screen and in the records list."
+  },
   "reportTitle": "Report",
-  "@reportTitle": {"description": "Title bar of the report screen."},
+  "@reportTitle": {
+    "description": "Title bar of the report screen."
+  },
   "reportPrompt": "What was the problem?",
-  "@reportPrompt": {"description": "Heading above the reason list. Asks what went wrong."},
+  "@reportPrompt": {
+    "description": "Heading above the reason list. Asks what went wrong."
+  },
   "reportGuide": "Tell us what the AI character said that made you uncomfortable. We review every report.",
-  "@reportGuide": {"description": "Sub-copy under the heading. Explains that the report is about the AI character's content and that every report is reviewed."},
+  "@reportGuide": {
+    "description": "Sub-copy under the heading. Explains that the report is about the AI character's content and that every report is reviewed."
+  },
   "reportReasonSexual": "Sexual content",
-  "@reportReasonSexual": {"description": "Report reason: sexual content."},
+  "@reportReasonSexual": {
+    "description": "Report reason: sexual content."
+  },
   "reportReasonHate": "Hate or discrimination",
-  "@reportReasonHate": {"description": "Report reason: hateful or discriminatory speech."},
+  "@reportReasonHate": {
+    "description": "Report reason: hateful or discriminatory speech."
+  },
   "reportReasonViolence": "Violent or threatening content",
-  "@reportReasonViolence": {"description": "Report reason: violent or threatening content."},
+  "@reportReasonViolence": {
+    "description": "Report reason: violent or threatening content."
+  },
   "reportReasonSelfHarm": "Encourages self-harm",
-  "@reportReasonSelfHarm": {"description": "Report reason: content that encourages self-harm."},
+  "@reportReasonSelfHarm": {
+    "description": "Report reason: content that encourages self-harm."
+  },
   "reportReasonMisinfo": "False information",
-  "@reportReasonMisinfo": {"description": "Report reason: false or misleading information."},
+  "@reportReasonMisinfo": {
+    "description": "Report reason: false or misleading information."
+  },
   "reportReasonOther": "Something else",
-  "@reportReasonOther": {"description": "Report reason: anything not covered by the other options."},
+  "@reportReasonOther": {
+    "description": "Report reason: anything not covered by the other options."
+  },
   "reportDetailHint": "Describe what happened (optional)",
-  "@reportDetailHint": {"description": "Placeholder of the optional free-text field on the report screen."},
+  "@reportDetailHint": {
+    "description": "Placeholder of the optional free-text field on the report screen."
+  },
   "reportSubmit": "Submit report",
-  "@reportSubmit": {"description": "Primary button that submits the report."},
+  "@reportSubmit": {
+    "description": "Primary button that submits the report."
+  },
   "reportDoneTitle": "Your report has been received",
-  "@reportDoneTitle": {"description": "Headline of the in-app confirmation shown after a report is accepted."},
+  "@reportDoneTitle": {
+    "description": "Headline of the in-app confirmation shown after a report is accepted."
+  },
   "reportDoneBody": "We'll review it and take action if needed. Thank you for helping keep BeaverTalk safe.",
-  "@reportDoneBody": {"description": "Body of the confirmation. States that the report will be reviewed."},
+  "@reportDoneBody": {
+    "description": "Body of the confirmation. States that the report will be reviewed."
+  },
   "reportFailed": "Couldn't submit your report. Please try again.",
-  "@reportFailed": {"description": "Snackbar shown when submitting the report fails and the user should retry."}
+  "@reportFailed": {
+    "description": "Snackbar shown when submitting the report fails and the user should retry."
+  },
+  "hwTitle": "Homework",
+  "@hwTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeTitle": "Enter your class code",
+  "@hwJoinCodeTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeSubtitle": "It is the 6-digit code from your teacher",
+  "@hwJoinCodeSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeLabel": "Class code",
+  "@hwJoinCodeLabel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinCodeHelp": "The code is not case-sensitive",
+  "@hwJoinCodeHelp": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmTitle": "Is this the right class?",
+  "@hwJoinConfirmTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmSubtitle": "If not, check the code again",
+  "@hwJoinConfirmSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldInstitution": "Institution",
+  "@hwJoinFieldInstitution": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldTeacher": "Teacher",
+  "@hwJoinFieldTeacher": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldLearners": "Learners",
+  "@hwJoinFieldLearners": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFieldTerm": "Term",
+  "@hwJoinFieldTerm": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmNote": "The class name is exactly as your teacher wrote it. We do not translate it.",
+  "@hwJoinConfirmNote": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmYes": "Yes, that is it",
+  "@hwJoinConfirmYes": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConfirmRetry": "Re-enter code",
+  "@hwJoinConfirmRetry": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinProfileTitle": "What name will you use in class?",
+  "@hwJoinProfileTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinProfileSubtitle": "Your teacher matches this with the roster",
+  "@hwJoinProfileSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinNameLabel": "Name",
+  "@hwJoinNameLabel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinNameHelp": "It can differ from your app name",
+  "@hwJoinNameHelp": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinStudentNoLabel": "Student ID (optional)",
+  "@hwJoinStudentNoLabel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinStudentNoHelp": "Your teacher uses it to match the roster",
+  "@hwJoinStudentNoHelp": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentTitle": "What your teacher sees",
+  "@hwJoinConsentTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentSubtitle": "You must agree to join the class",
+  "@hwJoinConsentSubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentSharedHeading": "Shared with your teacher",
+  "@hwJoinConsentSharedHeading": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared1": "Class name and student ID",
+  "@hwJoinConsentShared1": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared2": "Whether you did the homework",
+  "@hwJoinConsentShared2": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared3": "Sentences passed and missed",
+  "@hwJoinConsentShared3": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentShared4": "Assignment call length and summary",
+  "@hwJoinConsentShared4": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotSharedHeading": "Not shared",
+  "@hwJoinConsentNotSharedHeading": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared1": "Email and phone number",
+  "@hwJoinConsentNotShared1": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared2": "App name, profile and character",
+  "@hwJoinConsentNotShared2": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared3": "Nationality and first language",
+  "@hwJoinConsentNotShared3": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared4": "Calls and study outside the class",
+  "@hwJoinConsentNotShared4": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentNotShared5": "Subscription and payment details",
+  "@hwJoinConsentNotShared5": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentAgree": "I agree to the above",
+  "@hwJoinConsentAgree": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinConsentCta": "Agree and join",
+  "@hwJoinConsentCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneTitle": "You joined {className}",
+  "@hwJoinDoneTitle": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "className": {
+        "type": "String"
+      }
+    }
+  },
+  "hwJoinDoneSubtitle": "{count} assignments are waiting",
+  "@hwJoinDoneSubtitle": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hwJoinDoneNoAssignment": "No assignments yet",
+  "@hwJoinDoneNoAssignment": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneNextDue": "Next due",
+  "@hwJoinDoneNextDue": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneRosterName": "Your class name",
+  "@hwJoinDoneRosterName": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinDoneCta": "See homework",
+  "@hwJoinDoneCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorNotFound": "We could not find that code",
+  "@hwJoinErrorNotFound": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorNotFoundBody": "Please check the six digits again.",
+  "@hwJoinErrorNotFoundBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorExpired": "That code has expired",
+  "@hwJoinErrorExpired": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorExpiredBody": "Ask your teacher for a new code.",
+  "@hwJoinErrorExpiredBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorFull": "The class is full",
+  "@hwJoinErrorFull": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinErrorFullBody": "Please let your teacher know.",
+  "@hwJoinErrorFullBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwJoinFailed": "Could not join. Please try again in a moment.",
+  "@hwJoinFailed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSectionInProgress": "In progress",
+  "@hwSectionInProgress": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSectionUpcoming": "Upcoming",
+  "@hwSectionUpcoming": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSectionDone": "Done",
+  "@hwSectionDone": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveClassLink": "Leave the class",
+  "@hwLeaveClassLink": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwListEmptyTitle": "No homework yet",
+  "@hwListEmptyTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwListEmptyBody": "It will show up here when your teacher assigns it.",
+  "@hwListEmptyBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwListFailed": "Could not load your homework.",
+  "@hwListFailed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwRetry": "Try again",
+  "@hwRetry": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeDone": "Done",
+  "@hwBadgeDone": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeOverdue": "Not submitted",
+  "@hwBadgeOverdue": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeOverdueDays": "Not submitted, {days}d late",
+  "@hwBadgeOverdueDays": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hwBadgeDday": "D-{days}",
+  "@hwBadgeDday": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "hwBadgeDueToday": "Due today",
+  "@hwBadgeDueToday": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwActivitySpeaking": "Speaking",
+  "@hwActivitySpeaking": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwActivityConversation": "Conversation",
+  "@hwActivityConversation": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwActivityWorkbook": "Workbook",
+  "@hwActivityWorkbook": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwChapterLabel": "Chapter {chapter}",
+  "@hwChapterLabel": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "chapter": {
+        "type": "String"
+      }
+    }
+  },
+  "hwTaskSpeakingDesc": "Check your pronunciation score",
+  "@hwTaskSpeakingDesc": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwTaskConversationDesc": "Use what you learned in a real talk",
+  "@hwTaskConversationDesc": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwTaskWorkbookDesc": "Practice by writing in the workbook",
+  "@hwTaskWorkbookDesc": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwCtaStudy": "Start",
+  "@hwCtaStudy": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwCtaResult": "See result",
+  "@hwCtaResult": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwCtaDownload": "Download",
+  "@hwCtaDownload": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwSpeakingNoScore": "You have not done the speaking task yet",
+  "@hwSpeakingNoScore": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwWorkbookUnavailable": "The workbook file is not available yet.",
+  "@hwWorkbookUnavailable": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwDetailClosed": "This assignment is closed. You can no longer submit.",
+  "@hwDetailClosed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveTitle": "Leave the class?",
+  "@hwLeaveTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveBody": "Your teacher will no longer see your homework results.",
+  "@hwLeaveBody": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveConfirm": "Leave",
+  "@hwLeaveConfirm": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveCancel": "Stay",
+  "@hwLeaveCancel": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwLeaveFailed": "Could not leave the class.",
+  "@hwLeaveFailed": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwMyClass": "My class",
+  "@hwMyClass": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassEmptyTitle": "You have not joined a class",
+  "@hwClassEmptyTitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassEmptySubtitle": "Enter the code your teacher gave you",
+  "@hwClassEmptySubtitle": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassEmptyCta": "Enter class code",
+  "@hwClassEmptyCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwClassContinueCta": "Continue",
+  "@hwClassContinueCta": {
+    "description": "Homework (class join / assignments) copy"
+  },
+  "hwHomeBannerDueTomorrow": "{count} assignments are due tomorrow",
+  "@hwHomeBannerDueTomorrow": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hwHomeBannerOverdue": "You have {count} unsubmitted assignments",
+  "@hwHomeBannerOverdue": {
+    "description": "Homework (class join / assignments) copy",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "hwSpeakingUnavailable": "The sentences for this assignment are not available yet.",
+  "@hwSpeakingUnavailable": {
+    "description": "Homework (class join / assignments) copy"
+  }
 }

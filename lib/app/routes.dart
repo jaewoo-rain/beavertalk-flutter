@@ -50,6 +50,13 @@ import '../screens/alarm/alarm_empty.dart';
 import '../screens/record/record_list.dart';
 import '../screens/record/record_empty.dart';
 import '../screens/report/report_content.dart';
+import '../screens/classroom/join_code.dart';
+import '../screens/classroom/join_confirm.dart';
+import '../screens/classroom/join_profile.dart';
+import '../screens/classroom/join_consent.dart';
+import '../screens/classroom/join_done.dart';
+import '../screens/classroom/assignment_list.dart';
+import '../screens/classroom/assignment_detail.dart';
 
 /// Route names for the design_app flows.
 abstract final class Routes {
@@ -116,6 +123,33 @@ abstract final class Routes {
   static const purchaseSuccessMax = '/purchase/success-max';
   static const plansError = '/plans/error';
   static const winbackSurvey = '/winback-survey';
+
+  // ── 숙제 (반 참여 · 과제) ──
+  //
+  // 하단 내비에 숙제 탭을 만들지 않았다(구현계획 §2.4). 3탭이 이미 통화를
+  // 가운데 FAB 로 쓰고 있어 네 번째가 들어가면 그 축이 무너진다. 진입은 홈
+  // 배너와 마이페이지 수업 카드 두 곳이다.
+
+  /// A1 참여 코드 입력. 인자로 코드 문자열(딥링크)을 받을 수 있다.
+  static const classroomJoin = '/classroom/join';
+
+  /// A2 반 확인. 앞 화면이 조회한 결과를 초안에서 읽는다.
+  static const classroomJoinConfirm = '/classroom/join/confirm';
+
+  /// A3 반에서 쓸 이름·학번.
+  static const classroomJoinProfile = '/classroom/join/profile';
+
+  /// A4 공유 동의. **참여 요청은 여기서 보낸다.**
+  static const classroomJoinConsent = '/classroom/join/consent';
+
+  /// A5 참여 완료. 인자는 `ClassroomMembership`.
+  static const classroomJoinDone = '/classroom/join/done';
+
+  /// A6 숙제 목록.
+  static const assignments = '/assignments';
+
+  /// A7 숙제 상세. 인자는 `ClassroomAssignment`.
+  static const assignmentDetail = '/assignments/detail';
 
   // ── Payment / permission / error ──
   //
@@ -196,6 +230,13 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.terms: (_) => const TermsScreen(),
     Routes.privacy: (_) => const PrivacyScreen(),
     Routes.home: (_) => const HomeScreen(),
+    Routes.classroomJoin: (_) => const JoinCodeScreen(),
+    Routes.classroomJoinConfirm: (_) => const JoinConfirmScreen(),
+    Routes.classroomJoinProfile: (_) => const JoinProfileScreen(),
+    Routes.classroomJoinConsent: (_) => const JoinConsentScreen(),
+    Routes.classroomJoinDone: (_) => const JoinDoneScreen(),
+    Routes.assignments: (_) => const AssignmentListScreen(),
+    Routes.assignmentDetail: (_) => const AssignmentDetailScreen(),
     Routes.callLoading: (_) => const CallLoadingScreen(),
     Routes.call: (_) => const CallScreen(),
     Routes.callFinish: (_) => const CallFinishScreen(),

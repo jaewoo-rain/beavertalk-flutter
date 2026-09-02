@@ -58,6 +58,7 @@ class ClassroomAssignment {
   const ClassroomAssignment({
     required this.assignmentId,
     required this.classroomName,
+    this.classroomId,
     required this.grade,
     required this.chapter,
     required this.activities,
@@ -80,6 +81,7 @@ class ClassroomAssignment {
     return ClassroomAssignment(
       assignmentId: (json['assignment_id'] as num).toInt(),
       classroomName: json['classroom_name'] as String? ?? '',
+      classroomId: (json['classroom_id'] as num?)?.toInt(),
       grade: (json['grade'] as num?)?.toInt() ?? 0,
       chapter: (json['chapter'] as num?)?.toInt() ?? 0,
       activities: rawActivities is List
@@ -108,6 +110,17 @@ class ClassroomAssignment {
 
   /// 반 이름 원문. 한 학습자가 여러 반에 속할 수 있어 목록에서 구분자가 된다.
   final String classroomName;
+
+  /// 반 id.
+  ///
+  /// 🔴 **현재 서버 응답에 없다**(2026-09-02 `my/assignments` 실측). 반 나가기가
+  /// `DELETE /classrooms/{id}/leave` 로 id 를 요구하는데 목록만 봐서는 알 수
+  /// 없어, 참여 시점의 id 를 기기에 저장해 쓴다
+  /// (`data/datasources/joined_class_store.dart`).
+  ///
+  /// 서버가 이 필드를 채우면 저장분보다 이쪽을 먼저 쓴다 — 그러면 재설치 후에도
+  /// 나갈 수 있고, 반이 여럿일 때도 정확해진다.
+  final int? classroomId;
 
   /// 급수(1~6).
   final int grade;

@@ -4209,6 +4209,528 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t submit your report. Please try again.'**
   String get reportFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Homework'**
+  String get hwTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your class code'**
+  String get hwJoinCodeTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'It is the 6-digit code from your teacher'**
+  String get hwJoinCodeSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Class code'**
+  String get hwJoinCodeLabel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The code is not case-sensitive'**
+  String get hwJoinCodeHelp;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Is this the right class?'**
+  String get hwJoinConfirmTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'If not, check the code again'**
+  String get hwJoinConfirmSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Institution'**
+  String get hwJoinFieldInstitution;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Teacher'**
+  String get hwJoinFieldTeacher;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Learners'**
+  String get hwJoinFieldLearners;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Term'**
+  String get hwJoinFieldTerm;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The class name is exactly as your teacher wrote it. We do not translate it.'**
+  String get hwJoinConfirmNote;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, that is it'**
+  String get hwJoinConfirmYes;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter code'**
+  String get hwJoinConfirmRetry;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'What name will you use in class?'**
+  String get hwJoinProfileTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your teacher matches this with the roster'**
+  String get hwJoinProfileSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get hwJoinNameLabel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'It can differ from your app name'**
+  String get hwJoinNameHelp;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Student ID (optional)'**
+  String get hwJoinStudentNoLabel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your teacher uses it to match the roster'**
+  String get hwJoinStudentNoHelp;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'What your teacher sees'**
+  String get hwJoinConsentTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You must agree to join the class'**
+  String get hwJoinConsentSubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Shared with your teacher'**
+  String get hwJoinConsentSharedHeading;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Class name and student ID'**
+  String get hwJoinConsentShared1;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Whether you did the homework'**
+  String get hwJoinConsentShared2;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Sentences passed and missed'**
+  String get hwJoinConsentShared3;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment call length and summary'**
+  String get hwJoinConsentShared4;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Not shared'**
+  String get hwJoinConsentNotSharedHeading;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Email and phone number'**
+  String get hwJoinConsentNotShared1;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'App name, profile and character'**
+  String get hwJoinConsentNotShared2;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Nationality and first language'**
+  String get hwJoinConsentNotShared3;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Calls and study outside the class'**
+  String get hwJoinConsentNotShared4;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription and payment details'**
+  String get hwJoinConsentNotShared5;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the above'**
+  String get hwJoinConsentAgree;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Agree and join'**
+  String get hwJoinConsentCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You joined {className}'**
+  String hwJoinDoneTitle(String className);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'{count} assignments are waiting'**
+  String hwJoinDoneSubtitle(int count);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'No assignments yet'**
+  String get hwJoinDoneNoAssignment;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Next due'**
+  String get hwJoinDoneNextDue;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your class name'**
+  String get hwJoinDoneRosterName;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'See homework'**
+  String get hwJoinDoneCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'We could not find that code'**
+  String get hwJoinErrorNotFound;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Please check the six digits again.'**
+  String get hwJoinErrorNotFoundBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'That code has expired'**
+  String get hwJoinErrorExpired;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Ask your teacher for a new code.'**
+  String get hwJoinErrorExpiredBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The class is full'**
+  String get hwJoinErrorFull;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Please let your teacher know.'**
+  String get hwJoinErrorFullBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Could not join. Please try again in a moment.'**
+  String get hwJoinFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get hwSectionInProgress;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get hwSectionUpcoming;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hwSectionDone;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the class'**
+  String get hwLeaveClassLink;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'No homework yet'**
+  String get hwListEmptyTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'It will show up here when your teacher assigns it.'**
+  String get hwListEmptyBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your homework.'**
+  String get hwListFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get hwRetry;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get hwBadgeDone;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Not submitted'**
+  String get hwBadgeOverdue;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Not submitted, {days}d late'**
+  String hwBadgeOverdueDays(int days);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'D-{days}'**
+  String hwBadgeDday(int days);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Due today'**
+  String get hwBadgeDueToday;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking'**
+  String get hwActivitySpeaking;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get hwActivityConversation;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Workbook'**
+  String get hwActivityWorkbook;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Chapter {chapter}'**
+  String hwChapterLabel(String chapter);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Check your pronunciation score'**
+  String get hwTaskSpeakingDesc;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Use what you learned in a real talk'**
+  String get hwTaskConversationDesc;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Practice by writing in the workbook'**
+  String get hwTaskWorkbookDesc;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get hwCtaStudy;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'See result'**
+  String get hwCtaResult;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Download'**
+  String get hwCtaDownload;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You have not done the speaking task yet'**
+  String get hwSpeakingNoScore;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The workbook file is not available yet.'**
+  String get hwWorkbookUnavailable;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'This assignment is closed. You can no longer submit.'**
+  String get hwDetailClosed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Leave the class?'**
+  String get hwLeaveTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Your teacher will no longer see your homework results.'**
+  String get hwLeaveBody;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get hwLeaveConfirm;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Stay'**
+  String get hwLeaveCancel;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Could not leave the class.'**
+  String get hwLeaveFailed;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'My class'**
+  String get hwMyClass;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You have not joined a class'**
+  String get hwClassEmptyTitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the code your teacher gave you'**
+  String get hwClassEmptySubtitle;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Enter class code'**
+  String get hwClassEmptyCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get hwClassContinueCta;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'{count} assignments are due tomorrow'**
+  String hwHomeBannerDueTomorrow(int count);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} unsubmitted assignments'**
+  String hwHomeBannerOverdue(int count);
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'The sentences for this assignment are not available yet.'**
+  String get hwSpeakingUnavailable;
 }
 
 class _AppLocalizationsDelegate

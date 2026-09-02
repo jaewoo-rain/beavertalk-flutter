@@ -2234,4 +2234,285 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get reportFailed => 'Laporan gagal dikirim. Coba lagi.';
+
+  @override
+  String get hwTitle => 'Homework';
+
+  @override
+  String get hwJoinCodeTitle => 'Enter your class code';
+
+  @override
+  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+
+  @override
+  String get hwJoinCodeLabel => 'Class code';
+
+  @override
+  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+
+  @override
+  String get hwJoinConfirmTitle => 'Is this the right class?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+
+  @override
+  String get hwJoinFieldInstitution => 'Institution';
+
+  @override
+  String get hwJoinFieldTeacher => 'Teacher';
+
+  @override
+  String get hwJoinFieldLearners => 'Learners';
+
+  @override
+  String get hwJoinFieldTerm => 'Term';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'The class name is exactly as your teacher wrote it. We do not translate it.';
+
+  @override
+  String get hwJoinConfirmYes => 'Yes, that is it';
+
+  @override
+  String get hwJoinConfirmRetry => 'Re-enter code';
+
+  @override
+  String get hwJoinProfileTitle => 'What name will you use in class?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Your teacher matches this with the roster';
+
+  @override
+  String get hwJoinNameLabel => 'Name';
+
+  @override
+  String get hwJoinNameHelp => 'It can differ from your app name';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+
+  @override
+  String get hwJoinConsentTitle => 'What your teacher sees';
+
+  @override
+  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+
+  @override
+  String get hwJoinConsentShared1 => 'Class name and student ID';
+
+  @override
+  String get hwJoinConsentShared2 => 'Whether you did the homework';
+
+  @override
+  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+
+  @override
+  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Not shared';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'Email and phone number';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+
+  @override
+  String get hwJoinConsentAgree => 'I agree to the above';
+
+  @override
+  String get hwJoinConsentCta => 'Agree and join';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'You joined $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count assignments are waiting';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'No assignments yet';
+
+  @override
+  String get hwJoinDoneNextDue => 'Next due';
+
+  @override
+  String get hwJoinDoneRosterName => 'Your class name';
+
+  @override
+  String get hwJoinDoneCta => 'See homework';
+
+  @override
+  String get hwJoinErrorNotFound => 'We could not find that code';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+
+  @override
+  String get hwJoinErrorExpired => 'That code has expired';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+
+  @override
+  String get hwJoinErrorFull => 'The class is full';
+
+  @override
+  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+
+  @override
+  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+
+  @override
+  String get hwSectionInProgress => 'In progress';
+
+  @override
+  String get hwSectionUpcoming => 'Upcoming';
+
+  @override
+  String get hwSectionDone => 'Done';
+
+  @override
+  String get hwLeaveClassLink => 'Leave the class';
+
+  @override
+  String get hwListEmptyTitle => 'No homework yet';
+
+  @override
+  String get hwListEmptyBody =>
+      'It will show up here when your teacher assigns it.';
+
+  @override
+  String get hwListFailed => 'Could not load your homework.';
+
+  @override
+  String get hwRetry => 'Try again';
+
+  @override
+  String get hwBadgeDone => 'Done';
+
+  @override
+  String get hwBadgeOverdue => 'Not submitted';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Not submitted, ${days}d late';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Due today';
+
+  @override
+  String get hwActivitySpeaking => 'Speaking';
+
+  @override
+  String get hwActivityConversation => 'Conversation';
+
+  @override
+  String get hwActivityWorkbook => 'Workbook';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Chapter $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+
+  @override
+  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+
+  @override
+  String get hwCtaStudy => 'Start';
+
+  @override
+  String get hwCtaResult => 'See result';
+
+  @override
+  String get hwCtaDownload => 'Download';
+
+  @override
+  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+
+  @override
+  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+
+  @override
+  String get hwDetailClosed =>
+      'This assignment is closed. You can no longer submit.';
+
+  @override
+  String get hwLeaveTitle => 'Leave the class?';
+
+  @override
+  String get hwLeaveBody =>
+      'Your teacher will no longer see your homework results.';
+
+  @override
+  String get hwLeaveConfirm => 'Leave';
+
+  @override
+  String get hwLeaveCancel => 'Stay';
+
+  @override
+  String get hwLeaveFailed => 'Could not leave the class.';
+
+  @override
+  String get hwMyClass => 'My class';
+
+  @override
+  String get hwClassEmptyTitle => 'You have not joined a class';
+
+  @override
+  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+
+  @override
+  String get hwClassEmptyCta => 'Enter class code';
+
+  @override
+  String get hwClassContinueCta => 'Continue';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count assignments are due tomorrow';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'You have $count unsubmitted assignments';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'The sentences for this assignment are not available yet.';
 }

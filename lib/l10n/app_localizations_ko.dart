@@ -2159,4 +2159,279 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get reportFailed => '신고를 접수하지 못했어요. 다시 시도해주세요.';
+
+  @override
+  String get hwTitle => '숙제';
+
+  @override
+  String get hwJoinCodeTitle => '참여 코드를 입력하세요';
+
+  @override
+  String get hwJoinCodeSubtitle => '선생님이 알려준 6자리 코드예요';
+
+  @override
+  String get hwJoinCodeLabel => '참여 코드';
+
+  @override
+  String get hwJoinCodeHelp => '코드는 대소문자를 구분하지 않아요';
+
+  @override
+  String get hwJoinConfirmTitle => '이 반이 맞나요?';
+
+  @override
+  String get hwJoinConfirmSubtitle => '아니라면 코드를 다시 확인해 주세요';
+
+  @override
+  String get hwJoinFieldInstitution => '기관';
+
+  @override
+  String get hwJoinFieldTeacher => '선생님';
+
+  @override
+  String get hwJoinFieldLearners => '인원';
+
+  @override
+  String get hwJoinFieldTerm => '학기';
+
+  @override
+  String get hwJoinConfirmNote => '반 이름은 선생님이 쓴 그대로예요. 번역하지 않아요.';
+
+  @override
+  String get hwJoinConfirmYes => '네, 맞아요';
+
+  @override
+  String get hwJoinConfirmRetry => '코드 다시 입력';
+
+  @override
+  String get hwJoinProfileTitle => '반에서 쓸 이름을 알려주세요';
+
+  @override
+  String get hwJoinProfileSubtitle => '선생님이 출석부와 맞춰볼 이름이에요';
+
+  @override
+  String get hwJoinNameLabel => '이름';
+
+  @override
+  String get hwJoinNameHelp => '앱에서 쓰는 이름과 달라도 괜찮아요';
+
+  @override
+  String get hwJoinStudentNoLabel => '학번 (선택)';
+
+  @override
+  String get hwJoinStudentNoHelp => '선생님이 명단과 맞출 때 써요';
+
+  @override
+  String get hwJoinConsentTitle => '선생님에게 공유되는 것';
+
+  @override
+  String get hwJoinConsentSubtitle => '동의해야 반에 들어갈 수 있어요';
+
+  @override
+  String get hwJoinConsentSharedHeading => '선생님에게 공유돼요';
+
+  @override
+  String get hwJoinConsentShared1 => '반 이름 · 학번';
+
+  @override
+  String get hwJoinConsentShared2 => '숙제를 했는지 여부';
+
+  @override
+  String get hwJoinConsentShared3 => '통과한 문장 수 · 못 한 문장';
+
+  @override
+  String get hwJoinConsentShared4 => '과제 통화의 시간 · 요약';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => '공유되지 않아요';
+
+  @override
+  String get hwJoinConsentNotShared1 => '이메일 · 전화번호';
+
+  @override
+  String get hwJoinConsentNotShared2 => '앱 이름 · 프로필 · 캐릭터';
+
+  @override
+  String get hwJoinConsentNotShared3 => '국적 · 모국어';
+
+  @override
+  String get hwJoinConsentNotShared4 => '반 밖에서 한 통화와 학습';
+
+  @override
+  String get hwJoinConsentNotShared5 => '구독 · 결제 정보';
+
+  @override
+  String get hwJoinConsentAgree => '위 내용에 동의합니다';
+
+  @override
+  String get hwJoinConsentCta => '동의하고 참여하기';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '$className에 들어왔어요';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '숙제 $count개가 기다리고 있어요';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => '아직 받은 숙제가 없어요';
+
+  @override
+  String get hwJoinDoneNextDue => '가장 빠른 마감';
+
+  @override
+  String get hwJoinDoneRosterName => '반에서 쓸 이름';
+
+  @override
+  String get hwJoinDoneCta => '숙제 보러 가기';
+
+  @override
+  String get hwJoinErrorNotFound => '참여 코드를 찾을 수 없어요';
+
+  @override
+  String get hwJoinErrorNotFoundBody => '여섯 자리를 다시 확인해 주세요.';
+
+  @override
+  String get hwJoinErrorExpired => '기간이 지난 코드예요';
+
+  @override
+  String get hwJoinErrorExpiredBody => '선생님께 새 코드를 받아 주세요.';
+
+  @override
+  String get hwJoinErrorFull => '반 정원이 찼어요';
+
+  @override
+  String get hwJoinErrorFullBody => '선생님께 알려 주세요.';
+
+  @override
+  String get hwJoinFailed => '참여하지 못했어요. 잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get hwSectionInProgress => '진행 중';
+
+  @override
+  String get hwSectionUpcoming => '예정';
+
+  @override
+  String get hwSectionDone => '완료';
+
+  @override
+  String get hwLeaveClassLink => '교실에서 나가기';
+
+  @override
+  String get hwListEmptyTitle => '받은 숙제가 없어요';
+
+  @override
+  String get hwListEmptyBody => '선생님이 숙제를 내면 여기에 보여요.';
+
+  @override
+  String get hwListFailed => '숙제를 불러오지 못했어요.';
+
+  @override
+  String get hwRetry => '다시 시도';
+
+  @override
+  String get hwBadgeDone => '완료';
+
+  @override
+  String get hwBadgeOverdue => '미제출';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return '미제출 · $days일 지남';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => '오늘 마감';
+
+  @override
+  String get hwActivitySpeaking => '발음';
+
+  @override
+  String get hwActivityConversation => '회화';
+
+  @override
+  String get hwActivityWorkbook => '워크북';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Chapter $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => '나의 발음 점수를 확인해보세요';
+
+  @override
+  String get hwTaskConversationDesc => '배운 표현을 실제로 적용해봐요';
+
+  @override
+  String get hwTaskWorkbookDesc => '워크북에서 쓰면서 공부해요';
+
+  @override
+  String get hwCtaStudy => '학습하기';
+
+  @override
+  String get hwCtaResult => '학습결과';
+
+  @override
+  String get hwCtaDownload => '다운로드';
+
+  @override
+  String get hwSpeakingNoScore => '아직 발음을 하지 않았어요';
+
+  @override
+  String get hwWorkbookUnavailable => '워크북 파일이 아직 등록되지 않았어요.';
+
+  @override
+  String get hwDetailClosed => '마감된 과제예요. 더 이상 제출할 수 없어요.';
+
+  @override
+  String get hwLeaveTitle => '교실을 나갈까요?';
+
+  @override
+  String get hwLeaveBody => '선생님이 더 이상 숙제 결과를 볼 수 없어요.';
+
+  @override
+  String get hwLeaveConfirm => '나가기';
+
+  @override
+  String get hwLeaveCancel => '그대로 있기';
+
+  @override
+  String get hwLeaveFailed => '교실을 나가지 못했어요.';
+
+  @override
+  String get hwMyClass => '나의 수업';
+
+  @override
+  String get hwClassEmptyTitle => '아직 참여한 반이 없어요';
+
+  @override
+  String get hwClassEmptySubtitle => '선생님께 받은 코드를 입력해 보세요';
+
+  @override
+  String get hwClassEmptyCta => '참여 코드 입력';
+
+  @override
+  String get hwClassContinueCta => '이어서 하기';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '숙제 $count개가 내일 마감이에요';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '미제출 숙제가 $count개 있어요';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => '아직 이 과제의 문장을 받아올 수 없어요.';
 }

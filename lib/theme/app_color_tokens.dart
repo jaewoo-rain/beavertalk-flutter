@@ -30,6 +30,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.primaryNormal10,
     required this.primaryNormal4,
     required this.primaryOnPrimary,
+    required this.primaryForeground,
     required this.labelStrong,
     required this.labelNormal,
     required this.labelNeutral,
@@ -121,6 +122,14 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// `Primary/On-Primary` — text/glyphs **on** a primary fill.
   /// Dark #111111 / Light #FFFFFF.
   final Color primaryOnPrimary;
+
+  /// `Primary/Foreground` — 민트를 **글자·글리프 색으로** 쓸 때.
+  /// Dark #00FFB2 / Light #00593E.
+  ///
+  /// Dark 에서는 [primaryNormal] 과 같은 값이지만 Light 에서 갈린다
+  /// (#00593E vs #007A55) — 면을 칠하는 [primaryNormal] 을 글자에 돌려 쓰면
+  /// 라이트에서 대비가 낮아진다. 숙제 배지·칩·진행 링이 이 토큰을 쓴다.
+  final Color primaryForeground;
 
   // ── Label (text only) ──────────────────────────────────────
   /// `Label/Strong` — **the theme text colour. #FFFFFF in Dark, #000000 in
@@ -238,6 +247,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     primaryNormal10: Color(0x1A00FFB2),
     primaryNormal4: Color(0x0A00FFB2),
     primaryOnPrimary: Color(0xFF111111),
+    primaryForeground: Color(0xFF00FFB2),
     labelStrong: Color(0xFFFFFFFF),
     labelNormal: Color(0xFF9EA3B2),
     labelNeutral: Color(0xFF777C89),
@@ -323,6 +333,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     primaryNormal10: Color(0x1A008C62),
     primaryNormal4: Color(0x0A008C62),
     primaryOnPrimary: Color(0xFFFFFFFF),
+    primaryForeground: Color(0xFF00593E),
     labelStrong: Color(0xFF000000),
     labelNormal: Color(0xFF333333),
     labelNeutral: Color(0xFF505050),
@@ -403,6 +414,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? primaryNormal10,
     Color? primaryNormal4,
     Color? primaryOnPrimary,
+    Color? primaryForeground,
     Color? labelStrong,
     Color? labelNormal,
     Color? labelNeutral,
@@ -481,6 +493,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
         primaryNormal10: primaryNormal10 ?? this.primaryNormal10,
         primaryNormal4: primaryNormal4 ?? this.primaryNormal4,
         primaryOnPrimary: primaryOnPrimary ?? this.primaryOnPrimary,
+        primaryForeground: primaryForeground ?? this.primaryForeground,
         labelStrong: labelStrong ?? this.labelStrong,
         labelNormal: labelNormal ?? this.labelNormal,
         labelNeutral: labelNeutral ?? this.labelNeutral,
@@ -583,6 +596,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       primaryNormal10: c(primaryNormal10, other.primaryNormal10),
       primaryNormal4: c(primaryNormal4, other.primaryNormal4),
       primaryOnPrimary: c(primaryOnPrimary, other.primaryOnPrimary),
+      primaryForeground: c(primaryForeground, other.primaryForeground),
       labelStrong: c(labelStrong, other.labelStrong),
       labelNormal: c(labelNormal, other.labelNormal),
       labelNeutral: c(labelNeutral, other.labelNeutral),
