@@ -12,6 +12,24 @@ abstract final class ApiEndpoints {
   /// 성공하면 다음 통화가 자동으로 레벨테스트로 라우팅된다.
   static const membersMeLevelTestRetake = '/members/me/level-test/retake';
 
+  // ── Classroom (learner side) ──
+  /// A2 반 확인. 무인증. `?join_code=` 6자리.
+  static const classroomPreview = '/classrooms/preview';
+
+  /// A3 반 참여. `roster_name`·`student_no`·`share_consent` 를 보낸다.
+  static const classroomJoin = '/classrooms/join';
+
+  /// A6 내 과제 목록. 문안이 아니라 데이터만 내려온다.
+  static const classroomMyAssignments = '/classrooms/my/assignments';
+
+  /// DA1 반 나가기 = 공유 동의 철회. `/classrooms/{id}/leave`.
+  static String classroomLeave(int classroomId) =>
+      '/classrooms/$classroomId/leave';
+
+  /// B4 발음 과제 제출. `/classrooms/assignments/{id}/speaking`.
+  static String classroomSpeakingSubmit(int assignmentId) =>
+      '/classrooms/assignments/$assignmentId/speaking';
+
   // ── Calls ──
   /// 마이페이지 발음 카드 — 최근 N세션 발음 4지표 평균(`?sessions=`).
   static const callsPronunciationSummary = '/calls/pronunciation-summary';
