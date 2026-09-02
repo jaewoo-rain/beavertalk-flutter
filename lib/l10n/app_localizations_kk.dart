@@ -2509,4 +2509,9 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get hwBadgeClosed => 'Closed';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$passed of $total sentences passed';
+  }
 }

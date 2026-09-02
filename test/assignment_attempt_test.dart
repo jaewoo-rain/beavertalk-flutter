@@ -82,4 +82,41 @@ void main() {
     n.record(assignmentId: 9, itemId: 1, passed: true, totalScore: 90);
     expect(n.of(9), isNull);
   });
+
+  test('세부 지표도 평균을 낸다 — 상세 카드의 세 칸이 이 값이다', () {
+    final n = notifier();
+    n.start(assignmentId: 1, total: 2);
+    n.record(
+      assignmentId: 1,
+      itemId: 11,
+      passed: true,
+      totalScore: 90,
+      pronunciation: 88,
+      fluency: 92,
+      rhythm: 90,
+    );
+    n.record(
+      assignmentId: 1,
+      itemId: 12,
+      passed: true,
+      totalScore: 70,
+      pronunciation: 72,
+      fluency: 68,
+      rhythm: 70,
+    );
+
+    final a = n.of(1)!;
+    expect(a.averagePronunciation, 80);
+    expect(a.averageFluency, 80);
+    expect(a.averageRhythm, 80);
+  });
+
+  test('채점 전에는 세부 평균도 null 이다', () {
+    final n = notifier();
+    n.start(assignmentId: 1, total: 1);
+    final a = n.of(1)!;
+    expect(a.averagePronunciation, isNull);
+    expect(a.averageFluency, isNull);
+    expect(a.averageRhythm, isNull);
+  });
 }

@@ -590,6 +590,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                         // 두 곳이 되어 교사 화면과 어긋난다.
                         passed: s.passed,
                         totalScore: s.feedback.evaluation.totalScore,
+                        pronunciation: s.feedback.evaluation.pronunciation,
+                        fluency: s.feedback.evaluation.fluency,
+                        rhythm: s.feedback.evaluation.rhythm,
                       );
                   return s.feedback;
                 })

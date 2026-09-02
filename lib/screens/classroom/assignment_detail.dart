@@ -202,6 +202,9 @@ class _AssignmentDetailScreenState
     );
   }
 
+  /// 지표 한 칸 — 채점 전이면 `-`. 0 을 쓰면 「0점」으로 읽힌다.
+  static String _pct(int? value) => value == null ? '-' : '$value%';
+
   Widget _taskCard(
     BuildContext context,
     ClassroomAssignment a,
@@ -221,25 +224,29 @@ class _AssignmentDetailScreenState
           icon: AppIcons.soundWave,
           title: l10n.hwActivitySpeaking,
           badge: badge,
-          description: average == null ? l10n.hwTaskSpeakingDesc : null,
+          description: attempt == null
+              ? l10n.hwTaskSpeakingDesc
+              : l10n.hwSpeakingProgress(attempt.passed, attempt.total),
           result: PronunciationResult(
             score: (average ?? 0).toDouble(),
             state: average == null
                 ? PronunciationState.inactive
                 : PronunciationState.active,
             hint: average == null ? l10n.hwSpeakingNoScore : null,
+            // 시안의 세 칸은 발음·유창성·리듬이다. 과제 맥락이라고 다른 축을
+            // 끼워 넣으면 같은 컴포넌트가 화면마다 다른 뜻이 된다.
             metrics: [
               PronunciationMetric(
                 label: l10n.pronunciation,
-                value: average == null ? '-' : '$average%',
+                value: _pct(attempt?.averagePronunciation),
               ),
               PronunciationMetric(
-                label: l10n.hwBadgeDone,
-                value: attempt == null ? '-' : '${attempt.passed}',
+                label: l10n.fluency,
+                value: _pct(attempt?.averageFluency),
               ),
               PronunciationMetric(
-                label: l10n.hwActivitySpeaking,
-                value: attempt == null ? '-' : '${attempt.total}',
+                label: l10n.rhythm,
+                value: _pct(attempt?.averageRhythm),
               ),
             ],
           ),

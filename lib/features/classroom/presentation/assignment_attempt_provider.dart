@@ -15,6 +15,9 @@ class AssignmentAttempt {
     this.total = 0,
     this.passed = 0,
     this.scoreSum = 0,
+    this.pronSum = 0,
+    this.fluencySum = 0,
+    this.rhythmSum = 0,
     this.scored = 0,
     this.failedItemIds = const <int>[],
   });
@@ -31,6 +34,15 @@ class AssignmentAttempt {
   /// 채점된 총점의 합. 평균을 내기 위한 것이다.
   final int scoreSum;
 
+  /// 세부 지표의 합 — 상세 카드의 세 칸(발음·유창성·리듬)이 이것으로 그려진다.
+  final int pronSum;
+
+  /// 유창성 합.
+  final int fluencySum;
+
+  /// 리듬 합.
+  final int rhythmSum;
+
   /// 채점된 문장 수(합의 분모).
   final int scored;
 
@@ -40,17 +52,33 @@ class AssignmentAttempt {
   /// 평균 총점(0~100). 채점 이력이 없으면 null 이다 — 0 과 다르다.
   int? get averageScore => scored == 0 ? null : (scoreSum / scored).round();
 
+  /// 발음 평균. 채점 전이면 null.
+  int? get averagePronunciation =>
+      scored == 0 ? null : (pronSum / scored).round();
+
+  /// 유창성 평균. 채점 전이면 null.
+  int? get averageFluency => scored == 0 ? null : (fluencySum / scored).round();
+
+  /// 리듬 평균. 채점 전이면 null.
+  int? get averageRhythm => scored == 0 ? null : (rhythmSum / scored).round();
+
   /// 한 문장의 채점 결과를 더한 사본.
   AssignmentAttempt add({
     required int itemId,
     required bool itemPassed,
     required int totalScore,
+    int pronunciation = 0,
+    int fluency = 0,
+    int rhythm = 0,
   }) {
     return AssignmentAttempt(
       assignmentId: assignmentId,
       total: total,
       passed: passed + (itemPassed ? 1 : 0),
       scoreSum: scoreSum + totalScore,
+      pronSum: pronSum + pronunciation,
+      fluencySum: fluencySum + fluency,
+      rhythmSum: rhythmSum + rhythm,
       scored: scored + 1,
       failedItemIds: itemPassed
           ? failedItemIds
@@ -85,6 +113,9 @@ class AssignmentAttemptNotifier extends Notifier<Map<int, AssignmentAttempt>> {
     required int itemId,
     required bool passed,
     required int totalScore,
+    int pronunciation = 0,
+    int fluency = 0,
+    int rhythm = 0,
   }) {
     final current = state[assignmentId];
     if (current == null) return;
@@ -94,6 +125,9 @@ class AssignmentAttemptNotifier extends Notifier<Map<int, AssignmentAttempt>> {
         itemId: itemId,
         itemPassed: passed,
         totalScore: totalScore,
+        pronunciation: pronunciation,
+        fluency: fluency,
+        rhythm: rhythm,
       ),
     };
   }

@@ -2437,4 +2437,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hwBadgeClosed => '마감됨';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total문장 중 $passed문장 통과';
+  }
 }

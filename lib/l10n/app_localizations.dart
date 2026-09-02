@@ -4737,6 +4737,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Closed'**
   String get hwBadgeClosed;
+
+  /// Homework copy
+  ///
+  /// In en, this message translates to:
+  /// **'{passed} of {total} sentences passed'**
+  String hwSpeakingProgress(int passed, int total);
 }
 
 class _AppLocalizationsDelegate

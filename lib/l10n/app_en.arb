@@ -1866,5 +1866,17 @@
   "hwBadgeClosed": "Closed",
   "@hwBadgeClosed": {
     "description": "Homework (class join / assignments) copy"
+  },
+  "hwSpeakingProgress": "{passed} of {total} sentences passed",
+  "@hwSpeakingProgress": {
+    "description": "Homework copy",
+    "placeholders": {
+      "passed": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
   }
 }

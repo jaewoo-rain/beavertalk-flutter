@@ -51,10 +51,17 @@ Map<AssignmentBucket, List<ClassroomAssignment>> groupAssignments(
 ) {
   final overdue = <ClassroomAssignment>[];
   final urgent = <ClassroomAssignment>[];
+  // 닫힌 과제는 제출을 받지 않는다. 지우지는 않되 **맨 뒤로** 민다 — 할 수 없는
+  // 일이 할 수 있는 일 위에 있으면 목록이 거짓말을 한다.
+  final closed = <ClassroomAssignment>[];
   final upcoming = <ClassroomAssignment>[];
   final done = <ClassroomAssignment>[];
 
   for (final a in items) {
+    if (a.isClosed && a.status != AssignmentStatus.done) {
+      closed.add(a);
+      continue;
+    }
     switch (bucketOf(a, now)) {
       case AssignmentBucket.done:
         done.add(a);
@@ -69,9 +76,10 @@ Map<AssignmentBucket, List<ClassroomAssignment>> groupAssignments(
   urgent.sort((x, y) => x.dueAt.compareTo(y.dueAt));
   upcoming.sort((x, y) => x.dueAt.compareTo(y.dueAt));
   done.sort((x, y) => y.dueAt.compareTo(x.dueAt));
+  closed.sort((x, y) => y.dueAt.compareTo(x.dueAt));
 
   return {
-    AssignmentBucket.inProgress: [...overdue, ...urgent],
+    AssignmentBucket.inProgress: [...overdue, ...urgent, ...closed],
     AssignmentBucket.upcoming: upcoming,
     AssignmentBucket.done: done,
   };

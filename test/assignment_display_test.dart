@@ -120,4 +120,51 @@ void main() {
       expect(nextDueAssignment(items, _now), isNull);
     });
   });
+
+  group('닫힌 과제', () {
+    ClassroomAssignment closed({required int id, required int daysFromNow}) {
+      final a = _a(id: id, daysFromNow: daysFromNow);
+      return ClassroomAssignment(
+        assignmentId: a.assignmentId,
+        classroomName: a.classroomName,
+        grade: a.grade,
+        chapter: a.chapter,
+        activities: a.activities,
+        itemIds: a.itemIds,
+        dueAt: a.dueAt,
+        overdue: a.overdue,
+        status: a.status,
+        closedAt: _now,
+      );
+    }
+
+    test('할 수 있는 일 뒤로 밀린다 — 위에 두면 목록이 거짓말을 한다', () {
+      final g = groupAssignments([
+        closed(id: 1, daysFromNow: 2),
+        _a(id: 2, daysFromNow: -1, overdue: true),
+        _a(id: 3, daysFromNow: 2),
+      ], _now)[AssignmentBucket.inProgress]!;
+
+      // 미제출 → 임박 → 마감됨 순.
+      expect(g.map((a) => a.assignmentId).toList(), [2, 3, 1]);
+    });
+
+    test('끝낸 과제가 닫혀도 완료 칸에 남는다', () {
+      final a = ClassroomAssignment(
+        assignmentId: 9,
+        classroomName: 'A',
+        grade: 1,
+        chapter: 1,
+        activities: const [AssignmentActivity.speaking],
+        itemIds: const [],
+        dueAt: _now,
+        overdue: false,
+        status: AssignmentStatus.done,
+        closedAt: _now,
+      );
+      final g = groupAssignments([a], _now);
+      expect(g[AssignmentBucket.done]!.single.assignmentId, 9);
+      expect(g[AssignmentBucket.inProgress], isEmpty);
+    });
+  });
 }

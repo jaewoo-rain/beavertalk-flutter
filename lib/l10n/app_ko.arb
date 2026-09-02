@@ -763,5 +763,6 @@
   "hwHomeBannerDueTomorrow": "숙제 {count}개가 내일 마감이에요",
   "hwHomeBannerOverdue": "미제출 숙제가 {count}개 있어요",
   "hwSpeakingUnavailable": "아직 이 과제의 문장을 받아올 수 없어요.",
-  "hwBadgeClosed": "마감됨"
+  "hwBadgeClosed": "마감됨",
+  "hwSpeakingProgress": "{total}문장 중 {passed}문장 통과"
 }
