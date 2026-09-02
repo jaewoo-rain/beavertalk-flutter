@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import '../entities/assignment_item.dart';
 import '../entities/classroom_assignment.dart';
 import '../entities/classroom_membership.dart';
 import '../entities/join_preview.dart';
@@ -34,6 +37,21 @@ abstract interface class ClassroomRepository {
   /// 반 명단 정보는 파기되고 교사가 조회할 수 없게 된다. 앱 계정과 개인 학습
   /// 기록은 지워지지 않는다.
   Future<void> leave(int classroomId);
+
+  /// A7. 과제가 출제한 문장 목록. 순서는 출제 시점 그대로다.
+  ///
+  /// [locale] 은 뜻의 언어다. 서버가 요청 로케일 → 영어 → null 순으로 떨어뜨린다.
+  Future<AssignmentItems> assignmentItems(int assignmentId, {String? locale});
+
+  /// 과제 문장 1개를 채점한다. **서버가 아무것도 저장하지 않는다.**
+  ///
+  /// 통과 여부는 서버가 판정한 [AssignmentItemScore.passed] 를 그대로 쓴다 —
+  /// 앱이 점수로 다시 판정하면 경계가 두 곳이 된다.
+  Future<AssignmentItemScore> scoreItem({
+    required int assignmentId,
+    required int itemId,
+    required Uint8List wavBytes,
+  });
 
   /// B4. 발음 과제 결과를 제출한다.
   ///

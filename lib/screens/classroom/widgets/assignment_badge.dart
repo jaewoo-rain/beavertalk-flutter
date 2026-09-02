@@ -31,6 +31,15 @@ HomeworkBadge assignmentBadge(
     );
   }
 
+  // 닫힌 과제는 제출을 받지 않는다. 「D-2」로 그리면 아직 할 수 있다고 읽힌다.
+  // 완료 배지보다 뒤에 두는 이유 — 끝낸 과제가 닫혔으면 「완료」가 맞는 말이다.
+  if (a.isClosed) {
+    return HomeworkBadge(
+      tone: HomeworkBadgeTone.neutral,
+      label: l10n.hwBadgeClosed,
+    );
+  }
+
   final days = daysUntilDue(a.dueAt, at);
 
   if (a.overdue) {

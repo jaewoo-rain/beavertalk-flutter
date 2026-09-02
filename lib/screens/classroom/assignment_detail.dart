@@ -9,27 +9,26 @@ import '../../components/icons/app_icons.dart';
 import '../../components/molecules/card_task.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/error/app_exception.dart';
 import '../../features/classroom/domain/entities/classroom_assignment.dart';
+import '../../features/classroom/presentation/assignment_attempt_provider.dart';
+import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../home/learning_args.dart';
 import 'widgets/assignment_badge.dart';
 
 /// A7 숙제 상세 — Figma `screen/hw_detail`(`5685:6129`).
 ///
-/// 과제가 요구하는 활동을 카드로 늘어놓는다. 카드 순서는 서버가 준
-/// `activities` 순서를 그대로 따른다 — 앱이 다시 정렬하면 선생님이 낸 순서와
-/// 어긋난다.
+/// 과제가 요구하는 활동을 카드로 늘어놓는다. 순서는 서버가 준 `activities` 순서
+/// 그대로다 — 앱이 다시 정렬하면 선생님이 낸 순서와 어긋난다.
 ///
-/// 🔴 **발음과 워크북은 아직 실행할 수 없다.**
-/// - 발음 — 과제 문장 목록 엔드포인트(`GET .../items`)가 서버에 없다. 문장이
-///   없으면 `LearningArgs` 를 만들 수 없다.
-/// - 워크북 — `assignment.workbook_url` 컬럼이 아직 없다.
-///
-/// 눌리는 척하는 버튼을 두지 않고 **비활성 + 이유**로 그린다. 서버가 열리면
-/// 이 두 분기만 채우면 된다.
-class AssignmentDetailScreen extends ConsumerWidget {
+/// 발음은 문장 목록을 받아 `/learning/intro` 를 **과제 모드**로 연다. 끝나면
+/// 그 화면이 문장 수를 제출하고 여기로 돌아온다.
+class AssignmentDetailScreen extends ConsumerStatefulWidget {
   /// 화면을 만든다.
   const AssignmentDetailScreen({super.key, this.assignment});
 
@@ -37,13 +36,110 @@ class AssignmentDetailScreen extends ConsumerWidget {
   final ClassroomAssignment? assignment;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AssignmentDetailScreen> createState() =>
+      _AssignmentDetailScreenState();
+}
+
+class _AssignmentDetailScreenState
+    extends ConsumerState<AssignmentDetailScreen> {
+  ClassroomAssignment? _assignment;
+
+  /// 문장 목록을 받아오는 중이면 true — 두 번 누르는 것을 막는다.
+  bool _loadingItems = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_assignment != null) return;
+    final injected =
+        widget.assignment ?? ModalRoute.of(context)?.settings.arguments;
+    if (injected is ClassroomAssignment) _assignment = injected;
+  }
+
+  /// 발음 과제 시작 — 문장을 받아 학습 화면을 과제 모드로 연다.
+  Future<void> _startSpeaking(ClassroomAssignment a) async {
+    if (_loadingItems) return;
+    setState(() => _loadingItems = true);
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+
+    try {
+      final bundle = await ref
+          .read(classroomRepositoryProvider)
+          .assignmentItems(a.assignmentId, locale: locale);
+      if (!mounted) return;
+      setState(() => _loadingItems = false);
+
+      if (bundle.items.isEmpty) {
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text(l10n.hwSpeakingUnavailable)));
+        return;
+      }
+
+      await navigator.pushNamed(
+        Routes.learningIntro,
+        arguments: LearningArgs(
+          // 학습 화면은 `MockSentence` 로 말한다. 과제 문장의 id 는 **학습 항목
+          // id** 다 — 문장 id 가 아니다. 그래서 북마크가 꺼진다(origin 주석).
+          sentences: [
+            for (final item in bundle.items)
+              MockSentence(
+                id: item.itemId,
+                korean: item.readable,
+                native: item.meaning ?? '',
+                charScores: const [],
+                // 아직 채점 전이라 점수가 없다. 0 은 「0점」이 아니라 미채점이며,
+                // 화면은 녹음 단계에서 이 값을 그리지 않는다.
+                overall: 0,
+                pronunciation: 0,
+                fluency: 0,
+                rhythm: 0,
+              ),
+          ],
+          origin: LearningOrigin.assignment,
+          assignmentId: a.assignmentId,
+        ),
+      );
+      if (!mounted) return;
+      setState(() {});
+    } on AppException catch (e) {
+      if (!mounted) return;
+      setState(() => _loadingItems = false);
+      messenger
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              e.fromServer ? e.message : l10n.hwSpeakingUnavailable,
+            ),
+          ),
+        );
+    }
+  }
+
+  /// 워크북 열기 — 앱 밖 브라우저로 넘긴다.
+  Future<void> _openWorkbook(String url) async {
+    final uri = Uri.tryParse(url);
+    final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context);
+    if (uri == null) {
+      messenger.showSnackBar(
+        SnackBar(content: Text(l10n.hwWorkbookUnavailable)),
+      );
+      return;
+    }
+    // 앱 안에서 PDF 를 그리지 않는다 — 뷰어를 들이면 30 로케일 폰트가 따라온다.
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    final args = ModalRoute.of(context)?.settings.arguments;
-    final ClassroomAssignment? a =
-        assignment ?? (args is ClassroomAssignment ? args : null);
-
+    final a = _assignment;
     if (a == null) {
       return AppScaffold(
         background: c.backgroundNormalNormal,
@@ -83,6 +179,15 @@ class AssignmentDetailScreen extends ConsumerWidget {
                     assignmentBadge(context, a),
                   ],
                 ),
+                if (a.isClosed) ...[
+                  const SizedBox(height: AppSpacing.s12),
+                  Text(
+                    l10n.hwDetailClosed,
+                    style: AppType.caption1.r.copyWith(
+                      color: c.accentForegroundRed,
+                    ),
+                  ),
+                ],
                 const SizedBox(height: AppSpacing.s16),
                 for (final act in a.activities)
                   Padding(
@@ -103,34 +208,46 @@ class AssignmentDetailScreen extends ConsumerWidget {
     AssignmentActivity act,
   ) {
     final l10n = AppLocalizations.of(context);
+    final attempt = ref.watch(assignmentAttemptProvider)[a.assignmentId];
     final bool done = activityDone(a, act);
     final Widget? badge = done ? assignmentBadgeDone(context) : null;
 
     switch (act) {
       case AssignmentActivity.speaking:
+        // 방금 친 결과가 있으면 그 평균을 그린다. 서버는 과제 점수를 보관하지
+        // 않으므로 앱을 다시 켜면 사라진다 — 없는 점수를 주장하지 않는다.
+        final int? average = attempt?.averageScore;
         return CardTask(
           icon: AppIcons.soundWave,
           title: l10n.hwActivitySpeaking,
           badge: badge,
-          // 🔴 문장 목록 API 가 없어 실행할 수 없다. 이유를 설명에 적는다.
-          description: l10n.hwSpeakingUnavailable,
+          description: average == null ? l10n.hwTaskSpeakingDesc : null,
           result: PronunciationResult(
-            score: 0,
-            state: PronunciationState.inactive,
-            hint: l10n.hwSpeakingNoScore,
-            // 지표 세 칸은 값이 없어도 자리를 지킨다 — 칸이 사라지면 채점 뒤
-            // 카드 높이가 튄다.
+            score: (average ?? 0).toDouble(),
+            state: average == null
+                ? PronunciationState.inactive
+                : PronunciationState.active,
+            hint: average == null ? l10n.hwSpeakingNoScore : null,
             metrics: [
-              PronunciationMetric(label: l10n.pronunciation, value: '-'),
-              PronunciationMetric(label: l10n.fluency, value: '-'),
-              PronunciationMetric(label: l10n.rhythm, value: '-'),
+              PronunciationMetric(
+                label: l10n.pronunciation,
+                value: average == null ? '-' : '$average%',
+              ),
+              PronunciationMetric(
+                label: l10n.hwBadgeDone,
+                value: attempt == null ? '-' : '${attempt.passed}',
+              ),
+              PronunciationMetric(
+                label: l10n.hwActivitySpeaking,
+                value: attempt == null ? '-' : '${attempt.total}',
+              ),
             ],
           ),
           ctaLabel: done ? l10n.hwCtaResult : l10n.hwCtaStudy,
           ctaType: done ? BtnType.secondaryFill : BtnType.primaryFill,
-          // 문장 목록 API 가 없어 실행할 수 없다. 색만 살아 있으면 거짓말이다.
-          ctaDisabled: true,
-          onCta: null,
+          // 닫힌 과제는 제출을 받지 않는다. 읽게 해 놓고 마지막에 튕기지 않는다.
+          ctaDisabled: a.isClosed || _loadingItems,
+          onCta: () => _startSpeaking(a),
         );
 
       case AssignmentActivity.conversation:
@@ -141,35 +258,32 @@ class AssignmentDetailScreen extends ConsumerWidget {
           description: l10n.hwTaskConversationDesc,
           ctaLabel: done ? l10n.hwCtaResult : l10n.hwCtaStudy,
           ctaType: done ? BtnType.secondaryFill : BtnType.primaryFill,
+          ctaDisabled: a.isClosed,
           // 통화는 서버가 스스로 과제에 묶는다(`submission_service.link_call`).
-          // 앱은 평소 통화를 시작하기만 하면 된다.
-          onCta: () => Navigator.of(context).pushNamed(Routes.callLoading),
+          // 과제 id 는 통화 시작 메시지에 실려 목표 표현 주입에 쓰인다.
+          onCta: () => Navigator.of(
+            context,
+          ).pushNamed(Routes.callLoading, arguments: a.assignmentId),
         );
 
       case AssignmentActivity.workbook:
+        final url = a.workbookUrl;
         return CardTask(
           icon: AppIcons.book,
           title: l10n.hwActivityWorkbook,
-          // 🔴 `workbook_url` 이 서버 응답에 없다.
-          description: l10n.hwWorkbookUnavailable,
+          description: url == null
+              ? l10n.hwWorkbookUnavailable
+              : l10n.hwTaskWorkbookDesc,
           ctaLabel: l10n.hwCtaDownload,
           ctaType: BtnType.secondaryFill,
           ctaRightIcon: Builder(
             builder: (ctx) =>
                 AppIcons.externalLink(size: 20, color: ctx.c.labelStrong),
           ),
-          // `workbook_url` 이 없어 열 곳이 없다.
-          ctaDisabled: true,
-          onCta: null,
+          // 교사가 링크를 안 넣었으면 열 곳이 없다.
+          ctaDisabled: url == null,
+          onCta: url == null ? null : () => _openWorkbook(url),
         );
     }
-  }
-
-  /// 워크북 링크가 생기면 이 경로로 연다. 지금은 호출자가 없다.
-  static Future<void> openWorkbook(String url) async {
-    final uri = Uri.tryParse(url);
-    if (uri == null) return;
-    // 앱 안에서 PDF 를 그리지 않는다 — 뷰어를 들이면 30 로케일 폰트가 따라온다.
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 }

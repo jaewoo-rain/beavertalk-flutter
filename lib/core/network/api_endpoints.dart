@@ -26,6 +26,14 @@ abstract final class ApiEndpoints {
   static String classroomLeave(int classroomId) =>
       '/classrooms/$classroomId/leave';
 
+  /// A7 과제 문장 목록. `?locale=` 로 뜻의 언어를 고른다.
+  static String classroomAssignmentItems(int assignmentId) =>
+      '/classrooms/assignments/$assignmentId/items';
+
+  /// 과제 문장 1개의 무상태 채점(multipart `audio`).
+  static String classroomItemScore(int assignmentId, int itemId) =>
+      '/classrooms/assignments/$assignmentId/items/$itemId/score';
+
   /// B4 발음 과제 제출. `/classrooms/assignments/{id}/speaking`.
   static String classroomSpeakingSubmit(int assignmentId) =>
       '/classrooms/assignments/$assignmentId/speaking';

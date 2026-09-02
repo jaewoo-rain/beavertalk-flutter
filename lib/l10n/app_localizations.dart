@@ -4731,6 +4731,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The sentences for this assignment are not available yet.'**
   String get hwSpeakingUnavailable;
+
+  /// Homework (class join / assignments) copy
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get hwBadgeClosed;
 }
 
 class _AppLocalizationsDelegate

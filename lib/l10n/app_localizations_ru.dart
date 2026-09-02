@@ -2513,4 +2513,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get hwSpeakingUnavailable =>
       'The sentences for this assignment are not available yet.';
+
+  @override
+  String get hwBadgeClosed => 'Closed';
 }

@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
+import 'package:http_parser/http_parser.dart' show MediaType;
 
 import '../../../../core/network/api_endpoints.dart';
 
@@ -58,6 +61,40 @@ class ClassroomRemoteDataSource {
   /// DA1 반 나가기. 성공 시 204 라 본문이 없다.
   Future<void> leave(int classroomId) async {
     await _dio.delete<void>(ApiEndpoints.classroomLeave(classroomId));
+  }
+
+  /// A7 과제 문장 목록.
+  Future<Map<String, dynamic>> assignmentItems(
+    int assignmentId, {
+    String? locale,
+  }) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      ApiEndpoints.classroomAssignmentItems(assignmentId),
+      queryParameters: <String, dynamic>{
+        if (locale != null && locale.isNotEmpty) 'locale': locale,
+      },
+    );
+    return res.data ?? const <String, dynamic>{};
+  }
+
+  /// 과제 문장 1개 채점. 녹음은 완성된 WAV(PCM16/16k/mono)를 그대로 올린다.
+  Future<Map<String, dynamic>> scoreItem({
+    required int assignmentId,
+    required int itemId,
+    required Uint8List wavBytes,
+  }) async {
+    final form = FormData.fromMap({
+      'audio': MultipartFile.fromBytes(
+        wavBytes,
+        filename: 'assignment.wav',
+        contentType: MediaType('audio', 'wav'),
+      ),
+    });
+    final res = await _dio.post<Map<String, dynamic>>(
+      ApiEndpoints.classroomItemScore(assignmentId, itemId),
+      data: form,
+    );
+    return res.data ?? const <String, dynamic>{};
   }
 
   /// B4 발음 과제 제출.

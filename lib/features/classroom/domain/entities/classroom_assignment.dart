@@ -59,6 +59,8 @@ class ClassroomAssignment {
     required this.assignmentId,
     required this.classroomName,
     this.classroomId,
+    this.closedAt,
+    this.workbookUrl,
     required this.grade,
     required this.chapter,
     required this.activities,
@@ -82,6 +84,10 @@ class ClassroomAssignment {
       assignmentId: (json['assignment_id'] as num).toInt(),
       classroomName: json['classroom_name'] as String? ?? '',
       classroomId: (json['classroom_id'] as num?)?.toInt(),
+      closedAt: json['closed_at'] == null
+          ? null
+          : DateTime.parse(json['closed_at'] as String).toLocal(),
+      workbookUrl: json['workbook_url'] as String?,
       grade: (json['grade'] as num?)?.toInt() ?? 0,
       chapter: (json['chapter'] as num?)?.toInt() ?? 0,
       activities: rawActivities is List
@@ -121,6 +127,20 @@ class ClassroomAssignment {
   /// 서버가 이 필드를 채우면 저장분보다 이쪽을 먼저 쓴다 — 그러면 재설치 후에도
   /// 나갈 수 있고, 반이 여럿일 때도 정확해진다.
   final int? classroomId;
+
+  /// 과제가 닫힌 시각. null 이면 진행 중이다.
+  ///
+  /// **마감(`dueAt`)과 다르다.** 마감은 지나도 제출을 받지만 닫힌 과제는 받지
+  /// 않는다 — 화면이 둘을 같은 색으로 그리면 학습자가 헛수고를 한다.
+  final DateTime? closedAt;
+
+  /// 워크북 PDF 외부 링크. 교사가 넣지 않았으면 null 이다.
+  ///
+  /// 앱 안에서 열지 않는다 — 뷰어를 들이면 30 로케일 폰트가 따라온다.
+  final String? workbookUrl;
+
+  /// 닫혀서 더 제출할 수 없는 과제인지.
+  bool get isClosed => closedAt != null;
 
   /// 급수(1~6).
   final int grade;

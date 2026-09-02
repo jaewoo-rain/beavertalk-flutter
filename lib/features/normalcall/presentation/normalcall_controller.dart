@@ -1313,12 +1313,17 @@ class NormalCallController extends Notifier<CallState> {
   /// [callChannel] 은 이 통화가 붙을 통로다. 안 주면 [CallChannel.defaultChannel] —
   /// 즉 **호출부를 안 고치면 동작이 종전과 같다.** 나중에 서버가 통화 시작 응답으로
   /// 내려주면 그 값을 여기로 넘긴다(필드 계약은 아직 없다).
-  Future<void> start({String? inboundCallId, CallChannel? callChannel}) async {
+  Future<void> start({
+    String? inboundCallId,
+    CallChannel? callChannel,
+    int? assignmentId,
+  }) async {
     final ok = await _connect(
       callUuid: null,
       inboundCallId: inboundCallId,
       callkitOwnedAudio: false,
       callChannel: callChannel,
+      assignmentId: assignmentId,
     );
     if (!ok) return;
     await _startAudio();
@@ -1376,6 +1381,7 @@ class NormalCallController extends Notifier<CallState> {
     required String? inboundCallId,
     required bool callkitOwnedAudio,
     CallChannel? callChannel,
+    int? assignmentId,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1488,6 +1494,11 @@ class NormalCallController extends Notifier<CallState> {
         //     **에러가 안 나서 조용히 이상한 목소리가 된다.** 값이 한 곳에서 나오게 묶는다.
         'sample_rate': _micSampleRate,
         'num_channels': _micNumChannels,
+        // ⭐ 과제 통화 — 숙제 상세의 회화 카드에서 시작했을 때만 실린다. 서버가
+        //   이 과제의 목표 표현을 대화 유도에 주입한다.
+        //   ⛔ 통화의 성립 조건이 아니라 **재료**다. 서버는 자격이 없으면 조용히
+        //     무시하고 평소 선별로 진행한다 — 여기서 보냈다고 통화가 막히지 않는다.
+        'assignment_id': ?assignmentId,
       });
 
       _startAutoTalkIfEnabled();

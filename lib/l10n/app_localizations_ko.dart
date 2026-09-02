@@ -2434,4 +2434,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get hwSpeakingUnavailable => '아직 이 과제의 문장을 받아올 수 없어요.';
+
+  @override
+  String get hwBadgeClosed => '마감됨';
 }

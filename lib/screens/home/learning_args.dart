@@ -15,6 +15,17 @@ enum LearningOrigin {
   /// the session ends on the sentence result (`learning_main__word`,
   /// [Routes.learningSentenceMain]).
   sentence,
+
+  /// 숙제 상세의 발음 과제. 문장은 통화가 아니라 **과제 출제 스냅샷**에서 온다.
+  ///
+  /// 셋이 다르다.
+  /// - 채점 경로 — 과제 전용 무상태 엔드포인트를 쓴다. 통화 발화가 아니라
+  ///   `sentence` 행이 없고, 그 행은 `call_id` 가 NOT NULL 이라 만들 수도 없다.
+  /// - 북마크 — 끈다. 문장 id 가 아니라 학습 항목 id 라 그대로 누르면 **남의
+  ///   문장 id 로 서버를 때린다.**
+  /// - 끝난 뒤 — 결과 화면으로 가지 않고 숙제 상세로 돌아온다. 거기 과제 카드가
+  ///   방금 친 결과를 보여준다.
+  assignment,
 }
 
 /// Navigation payload shared across the learning flow
@@ -39,6 +50,7 @@ class LearningArgs {
     this.recordedWav,
     this.origin = LearningOrigin.sentence,
     this.callId,
+    this.assignmentId,
   });
 
   /// The sentence sequence for this session (1+ items).
@@ -66,6 +78,12 @@ class LearningArgs {
   /// (연습하기) origin. Like [origin], it must survive the whole sequence —
   /// it is only read at the end.
   final int? callId;
+
+  /// 이 세션이 수행하는 과제 id — [LearningOrigin.assignment] 일 때만 있다.
+  ///
+  /// [origin] 과 같은 이유로 세션 끝까지 살아 있어야 한다. 마지막 문장에서
+  /// 제출할 때 읽는다.
+  final int? assignmentId;
 
   /// Scored feedback for the current sentence's latest attempt, or null before
   /// the user has recorded.
@@ -96,6 +114,7 @@ class LearningArgs {
         index: index + 1,
         origin: origin,
         callId: callId,
+        assignmentId: assignmentId,
       );
 
   /// A copy carrying the freshly-scored [feedback] and [recordedWav].
@@ -107,5 +126,6 @@ class LearningArgs {
         recordedWav: recordedWav,
         origin: origin,
         callId: callId,
+        assignmentId: assignmentId,
       );
 }

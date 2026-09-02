@@ -88,6 +88,11 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         final arg = ModalRoute.of(context)?.settings.arguments;
         ref.read(normalCallControllerProvider.notifier).start(
               callChannel: arg is CallChannel ? arg : null,
+              // ⭐ 숙제 회화 과제에서 들어오면 과제 id(int)를 그대로 넘긴다.
+              //   ⛔ 예전에 이 자리의 int 는 **캐릭터 id** 였다(그리고 폴백 1 이
+              //     통화 60%를 엉뚱한 상대로 보냈다). 그 통로는 이미 닫혔고 지금
+              //     int 를 보내는 진입점은 숙제뿐이다 — 캐릭터로 해석되지 않는다.
+              assignmentId: arg is int ? arg : null,
             );
     }
   }

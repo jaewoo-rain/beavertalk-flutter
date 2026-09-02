@@ -17,6 +17,8 @@ import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
+import '../../features/classroom/presentation/assignment_attempt_provider.dart';
+import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart'
     show
@@ -198,6 +200,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (_initialized) return;
     _initialized = true;
     _index = args.index;
+    if (args.origin == LearningOrigin.assignment) {
+      // 과제 문장의 id 는 학습 항목 id 다 — 북마크 저장소(문장 id)와 축이 다르다.
+      // 씨딩하면 남의 문장이 저장된 것처럼 보인다.
+      final id = args.assignmentId;
+      if (id != null) {
+        // 이어 세면 통과 수가 출제 수를 넘는다. 세션마다 새로 연다.
+        Future.microtask(
+          () => ref
+              .read(assignmentAttemptProvider.notifier)
+              .start(assignmentId: id, total: args.sentences.length),
+        );
+      }
+      return;
+    }
     _seedBookmarkFor(args.sentences[_index]);
   }
 
@@ -251,10 +267,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   ///    소리 없이 입만 뻐끔거린다. `react_*` 는 표정·몸짓만 쓰는 전용 자산이다.
   ///    5캐릭터 전부에 있고 [kEmotionExciting]·[kEmotionCrying] 로 매핑돼 있다.
   void _reactToFeedback(ReviewFeedback feedback) {
-    final hasLow =
-        feedback.charScores.any((c) => c.grade == CharGrade.low);
-    final passed = !hasLow &&
-        feedback.evaluation.totalScore >= _kReactionPassScore;
+    final hasLow = feedback.charScores.any((c) => c.grade == CharGrade.low);
+    final passed =
+        !hasLow && feedback.evaluation.totalScore >= _kReactionPassScore;
     _avatarEmotion.value = passed ? kEmotionExciting : kEmotionCrying;
     // ⛔ `speaking` 을 켠다고 감정이 뜨는 게 아니다. `SyncAvatar` 의 발화 판정은
     //   **오디오 레벨**로만 켜지는데([_onLevel] 의 `audible`), 이 밴드는 무음이라
@@ -307,8 +322,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       final worst = taken.first;
       if (worst.score.grade == CharGrade.high) continue;
       final diagram = diagramForSyllable(worst.score.char);
-      chips.add(_wordChip(
-          context, word, worst.score, diagram, worst.index));
+      chips.add(_wordChip(context, word, worst.score, diagram, worst.index));
     }
     return chips;
   }
@@ -350,10 +364,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
               decoration: BoxDecoration(color: dot, shape: BoxShape.circle),
             ),
             const SizedBox(width: AppSpacing.s8),
-            Text(
-              word,
-              style: AppType.label2.b.copyWith(color: c.labelNormal),
-            ),
+            Text(word, style: AppType.label2.b.copyWith(color: c.labelNormal)),
           ],
         ),
       ),
@@ -378,9 +389,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     for (final miss in _feedback?.phonemeMisses ?? const <PhonemeMiss>[]) {
       if (miss.charIndex != charIndex) continue;
       final parts = splitJamo(char);
-      final isCoda = parts != null &&
-          parts.coda.isNotEmpty &&
-          parts.coda == miss.expected;
+      final isCoda =
+          parts != null && parts.coda.isNotEmpty && parts.coda == miss.expected;
       final pair = diagramPair(miss.expected, miss.actual, isCoda: isCoda);
       if (pair.target != null) {
         target = pair.target!;
@@ -390,11 +400,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     }
     showArticulationSheet(
       context,
-      data: ArticulationSheetData(
-        word: word,
-        target: target,
-        current: current,
-      ),
+      data: ArticulationSheetData(word: word, target: target, current: current),
       onPlayNative: () {
         Navigator.of(context).pop();
         final args = ModalRoute.of(context)?.settings.arguments;
@@ -471,7 +477,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingTts = true);
       try {
-        url = await ref.read(reviewRepositoryProvider).sentenceTtsUrl(sentence.id);
+        url = await ref
+            .read(reviewRepositoryProvider)
+            .sentenceTtsUrl(sentence.id);
         _ttsUrl = url;
       } on AppException catch (e) {
         _snack(e.message);
@@ -561,16 +569,45 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       // Start scoring and the minimum-scan floor together: total = max(scoring,
       // _kMinScan). A warm-server response still shows the scan for _kMinScan.
       // 복습(callReview)=공식점수 반영, 하나씩 연습(sentence)=미반영(데이터·채점은 저장).
-      final scoring = ref.read(reviewRepositoryProvider).submitAudio(
-            sentence.id,
-            wav,
-            applyScore: args.origin == LearningOrigin.callReview,
-          );
+      // 과제 발음은 **전용 무상태 경로**로 채점한다. 복습 경로는 `sentence` 행을
+      // 요구하는데 그 행은 `call_id` 가 NOT NULL 이라 통화부터 지어내야 한다.
+      final bool isAssignment = args.origin == LearningOrigin.assignment;
+      final Future<ReviewFeedback> scoring = isAssignment
+          ? ref
+                .read(classroomRepositoryProvider)
+                .scoreItem(
+                  assignmentId: args.assignmentId!,
+                  itemId: sentence.id,
+                  wavBytes: wav,
+                )
+                .then((s) {
+                  ref
+                      .read(assignmentAttemptProvider.notifier)
+                      .record(
+                        assignmentId: args.assignmentId!,
+                        itemId: s.itemId,
+                        // 통과 판정은 서버가 한다 — 앱이 점수로 다시 재면 경계가
+                        // 두 곳이 되어 교사 화면과 어긋난다.
+                        passed: s.passed,
+                        totalScore: s.feedback.evaluation.totalScore,
+                      );
+                  return s.feedback;
+                })
+          : ref
+                .read(reviewRepositoryProvider)
+                .submitAudio(
+                  sentence.id,
+                  wav,
+                  applyScore: args.origin == LearningOrigin.callReview,
+                );
       await Future<void>.delayed(_kMinScan);
       final feedback = await scoring;
 
-      // Feed the running average for the analysis gauge.
-      ref.read(reviewScoresProvider.notifier).record(feedback);
+      // Feed the running average for the analysis gauge. 과제는 통화 분석의
+      // 게이지가 아니라 과제 카드가 그리므로 넣지 않는다.
+      if (!isAssignment) {
+        ref.read(reviewScoresProvider.notifier).record(feedback);
+      }
 
       if (!mounted) return;
       _slowTimer?.cancel();
@@ -639,6 +676,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// result screen after the last one.
   void _next(LearningArgs args) {
     if (_index >= args.sentences.length - 1) {
+      if (args.origin == LearningOrigin.assignment) {
+        _finishAssignment(args);
+        return;
+      }
       Navigator.pushNamed(
         context,
         args.origin == LearningOrigin.callReview
@@ -665,6 +706,49 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     });
     _syncAvatarIdle();
     _seedBookmarkFor(args.sentences[_index]);
+  }
+
+  /// 과제 발음을 마친다 — 문장 수를 한 번 올리고 숙제 상세로 돌아간다.
+  ///
+  /// 결과 화면을 새로 만들지 않는다. 상세의 과제 카드가 방금 친 결과를 보여주는
+  /// 것이 시안(`숙제/TaskCard state=after`)이다.
+  ///
+  /// 🔴 제출에 실패해도 화면은 되돌린다. 학습자는 이미 다 읽었고, 다시 읽게 하는
+  /// 것보다 교사 쪽 숫자가 늦는 편이 낫다. 실패는 스낵바로만 알린다.
+  Future<void> _finishAssignment(LearningArgs args) async {
+    final l10n = AppLocalizations.of(context);
+    final id = args.assignmentId;
+    final attempt = id == null
+        ? null
+        : ref.read(assignmentAttemptProvider.notifier).of(id);
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+
+    if (id != null && attempt != null && attempt.scored > 0) {
+      try {
+        await ref
+            .read(classroomRepositoryProvider)
+            .submitSpeaking(
+              assignmentId: id,
+              // 🔴 점수가 아니라 **알아들은 문장 수**다.
+              passed: attempt.passed,
+              total: attempt.total,
+              // 비워 보내면 교사 화면의 「다시 가르칠 문장」이 영원히 빈다.
+              failedItemIds: attempt.failedItemIds,
+            );
+        ref.invalidate(myAssignmentsProvider);
+      } on AppException catch (e) {
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(e.fromServer ? e.message : l10n.hwJoinFailed),
+            ),
+          );
+      }
+    }
+    if (!mounted) return;
+    navigator.pop();
   }
 
   void _snack(String message) {
@@ -709,7 +793,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       body: Column(
         children: [
           Gnb.main2(
-            progress: GnbProgress(current: _index + 1, total: args.sentences.length),
+            progress: GnbProgress(
+              current: _index + 1,
+              total: args.sentences.length,
+            ),
             onClose: () => Navigator.pop(context),
           ),
           Expanded(
@@ -718,7 +805,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                 const SizedBox(height: AppSpacing.s16),
                 // Speaker / bookmark utility row — shared by every phase.
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s20,
+                  ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -729,28 +818,33 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                           onTap: () => _playStandard(sentence),
                           behavior: HitTestBehavior.opaque,
                           child: AppIcons.volume(
-                              size: 32, color: context.c.labelStrong),
+                            size: 32,
+                            color: context.c.labelStrong,
+                          ),
                         ),
                       ),
-                      ValueListenableBuilder<Set<int>>(
-                        valueListenable: bookmarkedSentenceIds,
-                        builder: (context, ids, _) {
-                          final saved = ids.contains(sentence.id);
-                          // 글리프를 즉시 갈아 끼우면 눌린 티가 안 난다.
-                          // 색은 두 상태가 같으므로 움직이는 건 페이드와 팝뿐이다.
-                          return IconToggle(
-                            value: saved,
-                            onIcon: AppIcons.bookmarkFill,
-                            offIcon: AppIcons.bookmarkLine,
-                            onColor: context.c.labelStrong,
-                            offColor: context.c.labelStrong,
-                            size: 32,
-                            semanticLabel:
-                                saved ? l10n.unsaveSentence : l10n.saveSentence,
-                            onTap: () => _toggleBookmark(sentence.id),
-                          );
-                        },
-                      ),
+                      // 과제 문장은 북마크할 수 없다 — id 축이 다르다(위 주석).
+                      if (args.origin != LearningOrigin.assignment)
+                        ValueListenableBuilder<Set<int>>(
+                          valueListenable: bookmarkedSentenceIds,
+                          builder: (context, ids, _) {
+                            final saved = ids.contains(sentence.id);
+                            // 글리프를 즉시 갈아 끼우면 눌린 티가 안 난다.
+                            // 색은 두 상태가 같으므로 움직이는 건 페이드와 팝뿐이다.
+                            return IconToggle(
+                              value: saved,
+                              onIcon: AppIcons.bookmarkFill,
+                              offIcon: AppIcons.bookmarkLine,
+                              onColor: context.c.labelStrong,
+                              offColor: context.c.labelStrong,
+                              size: 32,
+                              semanticLabel: saved
+                                  ? l10n.unsaveSentence
+                                  : l10n.saveSentence,
+                              onTap: () => _toggleBookmark(sentence.id),
+                            );
+                          },
+                        ),
                     ],
                   ),
                 ),
@@ -765,7 +859,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   child: Center(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s20),
+                        horizontal: AppSpacing.s20,
+                      ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -794,7 +889,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                                         key: const ValueKey('plain'),
                                         textAlign: TextAlign.center,
                                         style: AppType.heading2.sb.copyWith(
-                                            color: context.c.labelStrong),
+                                          color: context.c.labelStrong,
+                                        ),
                                       ),
                               ),
                               if (scoring)
@@ -811,8 +907,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                           Text(
                             _feedback?.native ?? sentence.native,
                             textAlign: TextAlign.center,
-                            style: AppType.body1.sb
-                                .copyWith(color: context.c.labelNormal),
+                            style: AppType.body1.sb.copyWith(
+                              color: context.c.labelNormal,
+                            ),
                           ),
                         ],
                       ),
@@ -840,10 +937,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                     duration: const Duration(milliseconds: 250),
                     layoutBuilder: (current, previous) => Stack(
                       alignment: Alignment.bottomCenter,
-                      children: <Widget>[
-                        ...previous,
-                        ?current,
-                      ],
+                      children: <Widget>[...previous, ?current],
                     ),
                     child: _bottom(context, l10n, args, sentence),
                   ),
@@ -859,16 +953,20 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// The caption between the sentence and the mic anchor — shared by scoring
   /// (`AnalyzingCaption` 3627:9708) and failed (E_failed 3627:9847).
   Widget _caption(BuildContext context, String text) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-        child: Text(
-          text,
-          textAlign: TextAlign.center,
-          style: AppType.label1.m.copyWith(color: context.c.labelNormal),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+    child: Text(
+      text,
+      textAlign: TextAlign.center,
+      style: AppType.label1.m.copyWith(color: context.c.labelNormal),
+    ),
+  );
 
-  Widget _bottom(BuildContext context, AppLocalizations l10n, LearningArgs args,
-      MockSentence sentence) {
+  Widget _bottom(
+    BuildContext context,
+    AppLocalizations l10n,
+    LearningArgs args,
+    MockSentence sentence,
+  ) {
     switch (_phase) {
       case LearningPhase.recording:
         return BottomCtaBar(
@@ -892,10 +990,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
             // `AnalyzingCaption` (`3627:9708`) — between the sentence and the
             // mic anchor.
             _caption(
-                context,
-                _scoringSlow
-                    ? l10n.analyzingTakingLonger
-                    : l10n.analyzingByWord),
+              context,
+              _scoringSlow ? l10n.analyzingTakingLonger : l10n.analyzingByWord,
+            ),
             const SizedBox(height: AppSpacing.s16),
             const BottomCtaBar(child: Center(child: MicAnalysis())),
           ],
@@ -948,7 +1045,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       size: BtnSize.s44,
                       text: l10n.nativeLabel,
                       leftIcon: AppIcons.volume(
-                          size: 20, color: context.c.labelStrong),
+                        size: 20,
+                        color: context.c.labelStrong,
+                      ),
                       onPressed: () => _playStandard(sentence),
                     ),
                   ),
@@ -959,14 +1058,18 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       size: BtnSize.s44,
                       text: l10n.meLabel,
                       leftIcon: AppIcons.volume(
-                          size: 20, color: context.c.labelStrong),
+                        size: 20,
+                        color: context.c.labelStrong,
+                      ),
                       onPressed: _playMe,
                     ),
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 36), // Native/Me → controls (Figma 36; no token)
+            const SizedBox(
+              height: 36,
+            ), // Native/Me → controls (Figma 36; no token)
             BottomCtaBar(
               child: Center(
                 child: Row(
@@ -986,7 +1089,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                       child: IconButton(
                         onPressed: () => _next(args),
                         icon: AppIcons.arrowForward(
-                            size: 32, color: context.c.primaryHeavy),
+                          size: 32,
+                          color: context.c.primaryHeavy,
+                        ),
                         iconSize: 32,
                         color: context.c.primaryHeavy,
                         tooltip: l10n.next,
@@ -1053,8 +1158,9 @@ class _ScoredSentence extends StatelessWidget {
     // 화면에서 「저는학생이에요」가 된다(실측 2026-08-30, review 208·209).
     final strong = context.c.labelStrong;
     final chars = fallbackText.characters.toList();
-    final align =
-        alignScoresToText(fallbackText, [for (final cs in charScores) cs.char]);
+    final align = alignScoresToText(fallbackText, [
+      for (final cs in charScores) cs.char,
+    ]);
     final spans = <TextSpan>[
       for (var i = 0; i < chars.length; i++)
         TextSpan(
@@ -1063,7 +1169,9 @@ class _ScoredSentence extends StatelessWidget {
             color: align[i] < 0
                 ? strong
                 : _LearningIntroScreenState._gradeColor(
-                    context, charScores[align[i]]),
+                    context,
+                    charScores[align[i]],
+                  ),
           ),
         ),
     ];

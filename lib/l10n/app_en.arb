@@ -1862,5 +1862,9 @@
   "hwSpeakingUnavailable": "The sentences for this assignment are not available yet.",
   "@hwSpeakingUnavailable": {
     "description": "Homework (class join / assignments) copy"
+  },
+  "hwBadgeClosed": "Closed",
+  "@hwBadgeClosed": {
+    "description": "Homework (class join / assignments) copy"
   }
 }

@@ -1,6 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 import '../../../../core/error/dio_error_mapper.dart';
+import '../../../review/data/models/review_feedback_dto.dart';
+import '../../domain/entities/assignment_item.dart';
 import '../../domain/entities/classroom_assignment.dart';
 import '../../domain/entities/classroom_membership.dart';
 import '../../domain/entities/join_preview.dart';
@@ -68,6 +72,52 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
           .whereType<Map<String, dynamic>>()
           .map(ClassroomAssignment.fromJson)
           .toList(growable: false);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<AssignmentItems> assignmentItems(
+    int assignmentId, {
+    String? locale,
+  }) async {
+    try {
+      return AssignmentItems.fromJson(
+        await _ds.assignmentItems(assignmentId, locale: locale),
+      );
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<AssignmentItemScore> scoreItem({
+    required int assignmentId,
+    required int itemId,
+    required Uint8List wavBytes,
+  }) async {
+    try {
+      final json = await _ds.scoreItem(
+        assignmentId: assignmentId,
+        itemId: itemId,
+        wavBytes: wavBytes,
+      );
+      // 채점 결과의 모양은 복습 채점과 같다 — 화면이 같은 위젯으로 그리도록
+      // 기존 DTO 를 그대로 재사용한다. 다만 저장하지 않으므로 id 가 없다.
+      final feedback = ReviewFeedbackDto.fromJson({
+        'review_id': 0,
+        'sentence_id': itemId,
+        'korean_sentence': json['ref_text'],
+        'evaluation': json['evaluation'],
+        'char_scores': json['char_scores'],
+      }).toEntity();
+      return AssignmentItemScore(
+        itemId: (json['item_id'] as num?)?.toInt() ?? itemId,
+        refText: json['ref_text'] as String? ?? '',
+        passed: json['passed'] as bool? ?? false,
+        feedback: feedback,
+      );
     } on DioException catch (e) {
       throw mapDioException(e);
     }

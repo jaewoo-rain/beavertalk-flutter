@@ -273,4 +273,97 @@ void main() {
       expect(a.activityCount, 2);
     });
   });
+
+  group('과제 문장 목록·채점', () {
+    test('문장 목록은 서버 순서를 그대로 지킨다', () async {
+      final r = await _make(200, {
+        'assignment_id': 3,
+        'grade': 1,
+        'chapter': 2,
+        'chapter_range': '그림 ~ 남편',
+        'closed': false,
+        'items': [
+          {'item_id': 21, 'seq': 41, 'surface': '그림', 'example': '그림을 봅니다.'},
+          {'item_id': 22, 'seq': 42, 'surface': '남편', 'meaning': 'husband'},
+        ],
+      }).repo.assignmentItems(3, locale: 'en');
+
+      expect(r.chapterRange, '그림 ~ 남편');
+      expect(r.items.map((e) => e.itemId).toList(), [21, 22]);
+      // 예문이 있으면 예문을, 없으면 표제어를 읽는다.
+      expect(r.items[0].readable, '그림을 봅니다.');
+      expect(r.items[1].readable, '남편');
+      // 뜻은 비어 있을 수 있다 — 표제어로 메우지 않는다.
+      expect(r.items[0].meaning, isNull);
+      expect(r.items[1].meaning, 'husband');
+    });
+
+    test('채점은 서버의 통과 판정을 그대로 쓴다', () async {
+      final made = _make(200, {
+        'item_id': 21,
+        'ref_text': '그림을 봅니다.',
+        'passed': false,
+        'evaluation': {
+          'total_score': 92,
+          'pronunciation': 90,
+          'fluency': 94,
+          'rhythm': 91,
+        },
+        'char_scores': [
+          {'char': '그', 'score': 90, 'grade': '상'},
+        ],
+      });
+      final s = await made.repo.scoreItem(
+        assignmentId: 3,
+        itemId: 21,
+        wavBytes: Uint8List.fromList(const [1, 2, 3]),
+      );
+
+      // 92 점이지만 서버가 통과로 안 봤다. 앱이 점수로 다시 재면 안 된다.
+      expect(s.passed, isFalse);
+      expect(s.itemId, 21);
+      expect(s.refText, '그림을 봅니다.');
+      expect(s.feedback.evaluation.totalScore, 92);
+      expect(s.feedback.charScores, hasLength(1));
+      expect(
+        made.adapter.lastRequest!.path,
+        '/classrooms/assignments/3/items/21/score',
+      );
+    });
+  });
+
+  group('ClassroomAssignment — 닫힘·워크북', () {
+    ClassroomAssignment parse(Map<String, dynamic> extra) {
+      return ClassroomAssignment.fromJson({
+        'assignment_id': 7,
+        'classroom_name': '초급 1반',
+        'grade': 1,
+        'chapter': 3,
+        'activities': ['workbook'],
+        'item_ids': <int>[],
+        'due_at': '2026-09-10T14:00:00Z',
+        'overdue': false,
+        'status': 'not_started',
+        ...extra,
+      });
+    }
+
+    test('닫힌 과제는 마감과 다르다', () {
+      expect(parse({}).isClosed, isFalse);
+      expect(parse({'closed_at': '2026-09-11T00:00:00Z'}).isClosed, isTrue);
+    });
+
+    test('워크북 링크가 없으면 null 이다', () {
+      expect(parse({}).workbookUrl, isNull);
+      expect(
+        parse({'workbook_url': 'https://drive.example/x.pdf'}).workbookUrl,
+        'https://drive.example/x.pdf',
+      );
+    });
+
+    test('반 id 를 서버가 주면 읽는다 — 나가기가 이 값을 요구한다', () {
+      expect(parse({}).classroomId, isNull);
+      expect(parse({'classroom_id': 42}).classroomId, 42);
+    });
+  });
 }
