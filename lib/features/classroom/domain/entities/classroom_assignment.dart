@@ -87,7 +87,11 @@ class ClassroomAssignment {
       closedAt: json['closed_at'] == null
           ? null
           : DateTime.parse(json['closed_at'] as String).toLocal(),
-      workbookUrl: json['workbook_url'] as String?,
+      // 🔴 워크북은 과제가 아니라 **챕터**에 붙는 자산이라 중첩 객체로 온다
+      // (급수·챕터 1권). 평평한 `workbook_url` 로 오던 초안은 폐기됐다.
+      workbookUrl: json['workbook'] is Map
+          ? (json['workbook'] as Map)['view_url'] as String?
+          : null,
       grade: (json['grade'] as num?)?.toInt() ?? 0,
       chapter: (json['chapter'] as num?)?.toInt() ?? 0,
       activities: rawActivities is List
@@ -134,7 +138,10 @@ class ClassroomAssignment {
   /// 않는다 — 화면이 둘을 같은 색으로 그리면 학습자가 헛수고를 한다.
   final DateTime? closedAt;
 
-  /// 워크북 PDF 외부 링크. 교사가 넣지 않았으면 null 이다.
+  /// 워크북 PDF 외부 링크(`workbook.view_url`). 없으면 null 이다.
+  ///
+  /// 워크북은 **급수·챕터 단위 자산**이라 과제별로 다르지 않다. 활동에 워크북이
+  /// 없거나 그 챕터의 PDF 가 아직 없으면 서버가 `workbook` 을 안 실어 준다.
   ///
   /// 앱 안에서 열지 않는다 — 뷰어를 들이면 30 로케일 폰트가 따라온다.
   final String? workbookUrl;

@@ -43,8 +43,8 @@ class _LeaveClassSheetState extends ConsumerState<_LeaveClassSheet> {
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
-    // 목록 응답에 `classroom_id` 가 없어 참여 때 적어 둔 값을 쓴다. 서버가 뒤에
-    // 필드를 채우면 과제에서 직접 읽는 쪽이 우선이다.
+    // 과제에서 직접 읽는 쪽이 우선이다. 기기에 적어 둔 값은 폴백 — 과제가
+    // 하나도 없는 반은 목록에 안 나타난다(「내 반 목록」 엔드포인트가 없다).
     final store = ref.read(joinedClassStoreProvider);
     final int? id =
         ref

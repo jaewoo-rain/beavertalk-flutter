@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/di/providers.dart';
+import '../../../core/network/env.dart';
 import '../data/datasources/classroom_remote_data_source.dart';
 import '../data/datasources/joined_class_store.dart';
 import '../data/repositories/classroom_repository_impl.dart';
@@ -8,10 +9,13 @@ import '../domain/entities/classroom_assignment.dart';
 import '../domain/repositories/classroom_repository.dart';
 
 /// 반 라우터 데이터 소스.
+///
+/// ⛔ [dioProvider] 가 아니라 [b2bDioProvider] 다 — 교실·과제는 분리된 B2B
+///    서비스에 있고, 앱 서버에는 `/classrooms/*` 경로가 하나도 없다.
 final classroomRemoteDataSourceProvider = Provider<ClassroomRemoteDataSource>((
   ref,
 ) {
-  return ClassroomRemoteDataSource(ref.watch(dioProvider));
+  return ClassroomRemoteDataSource(ref.watch(b2bDioProvider));
 });
 
 /// 참여한 반 id 저장소 — 목록 응답에 `classroom_id` 가 없어 필요하다.
@@ -32,5 +36,8 @@ final classroomRepositoryProvider = Provider<ClassroomRepository>((ref) {
 final myAssignmentsProvider = FutureProvider<List<ClassroomAssignment>>((
   ref,
 ) async {
+  // B2B 주소가 없는 빌드에서는 숙제가 통째로 꺼진 것이다. 여기서 빈 목록으로
+  // 끊는다 — 안 끊으면 [b2bDioProvider] 가 던지고 화면마다 오류로 번역된다.
+  if (!Env.hasB2bApi) return const <ClassroomAssignment>[];
   return ref.watch(classroomRepositoryProvider).myAssignments();
 });

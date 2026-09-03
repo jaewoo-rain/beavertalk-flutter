@@ -353,12 +353,27 @@ void main() {
       expect(parse({'closed_at': '2026-09-11T00:00:00Z'}).isClosed, isTrue);
     });
 
-    test('워크북 링크가 없으면 null 이다', () {
+    test('워크북은 챕터 자산이라 중첩 객체로 온다', () {
       expect(parse({}).workbookUrl, isNull);
       expect(
-        parse({'workbook_url': 'https://drive.example/x.pdf'}).workbookUrl,
+        parse({
+          'workbook': {
+            'grade': 1,
+            'chapter': 3,
+            'file_name': '1급_3과.pdf',
+            'view_url': 'https://drive.example/x.pdf',
+            'download_url': null,
+          },
+        }).workbookUrl,
         'https://drive.example/x.pdf',
       );
+    });
+
+    test('평평한 workbook_url 은 더 이상 읽지 않는다', () {
+      // 09-03 초안의 `assignment.workbook_url` 컬럼안은 폐기됐다. 서버가 그
+      // 모양으로 보내는 일이 없어야 하고, 와도 링크로 오인하지 않는다.
+      expect(parse({'workbook_url': 'https://drive.example/x.pdf'}).workbookUrl,
+          isNull);
     });
 
     test('반 id 를 서버가 주면 읽는다 — 나가기가 이 값을 요구한다', () {
