@@ -205,12 +205,15 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       // 씨딩하면 남의 문장이 저장된 것처럼 보인다.
       final id = args.assignmentId;
       if (id != null) {
-        // 이어 세면 통과 수가 출제 수를 넘는다. 세션마다 새로 연다.
-        Future.microtask(
-          () => ref
-              .read(assignmentAttemptProvider.notifier)
-              .start(assignmentId: id, total: args.sentences.length),
-        );
+        // 상세 화면이 서버 값으로 이미 되살려 뒀다(`restore`). **덮어쓰지 마라** —
+        // 여기서 `start` 를 부르면 중간에 나갔던 학습자의 이전 채점이 날아간다.
+        // 되살릴 것이 없었을 때만 빈 시도를 연다.
+        Future.microtask(() {
+          final notifier = ref.read(assignmentAttemptProvider.notifier);
+          if (notifier.of(id) == null) {
+            notifier.start(assignmentId: id, total: args.sentences.length);
+          }
+        });
       }
       return;
     }

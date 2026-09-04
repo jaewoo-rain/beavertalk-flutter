@@ -79,6 +79,12 @@ class _AssignmentDetailScreenState
         return;
       }
 
+      // 서버에 남은 채점으로 진행 상황을 되살린다. 중간에 나갔던 학습자는
+      // 여기서 이미 읽은 문장의 결과를 되찾는다.
+      ref
+          .read(assignmentAttemptProvider.notifier)
+          .restore(assignmentId: a.assignmentId, items: bundle.items);
+
       await navigator.pushNamed(
         Routes.learningIntro,
         arguments: LearningArgs(
@@ -89,7 +95,9 @@ class _AssignmentDetailScreenState
               MockSentence(
                 id: item.itemId,
                 korean: item.readable,
-                native: item.meaning ?? '',
+                // 🔴 `meaning` 이 아니다. 그건 **표제어** 뜻이라 예문 밑에 쓰면
+                //    「그 사람은 선생님이 아닙니다」 밑에 `person` 이 뜬다.
+                native: item.readableMeaning ?? '',
                 charScores: const [],
                 // 아직 채점 전이라 점수가 없다. 0 은 「0점」이 아니라 미채점이며,
                 // 화면은 녹음 단계에서 이 값을 그리지 않는다.
@@ -217,16 +225,20 @@ class _AssignmentDetailScreenState
 
     switch (act) {
       case AssignmentActivity.speaking:
-        // 방금 친 결과가 있으면 그 평균을 그린다. 서버는 과제 점수를 보관하지
-        // 않으므로 앱을 다시 켜면 사라진다 — 없는 점수를 주장하지 않는다.
+        // 평균은 이번에 연 시도에만 있다. 목록 응답은 문장 수만 주기 때문이다 —
+        // 없는 점수를 지어내지 않고 게이지를 비활성으로 둔다.
         final int? average = attempt?.averageScore;
+        // 진행 문장 수는 **서버 값도 쓴다.** 서버가 채점할 때마다 집계를
+        // 갱신하므로(2026-09-04~), 앱을 다시 켜도 「3 / 38」이 남는다.
+        final int? shownPassed = attempt?.passed ?? a.speakingPassed;
+        final int? shownTotal = attempt?.total ?? a.speakingTotal;
         return CardTask(
           icon: AppIcons.soundWave,
           title: l10n.hwActivitySpeaking,
           badge: badge,
-          description: attempt == null
+          description: (shownPassed == null || shownTotal == null)
               ? l10n.hwTaskSpeakingDesc
-              : l10n.hwSpeakingProgress(attempt.passed, attempt.total),
+              : l10n.hwSpeakingProgress(shownPassed, shownTotal),
           result: PronunciationResult(
             score: (average ?? 0).toDouble(),
             state: average == null

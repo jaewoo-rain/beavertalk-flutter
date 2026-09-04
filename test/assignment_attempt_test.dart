@@ -8,6 +8,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:beavertalk/features/classroom/domain/entities/assignment_item.dart';
 import 'package:beavertalk/features/classroom/presentation/assignment_attempt_provider.dart';
 
 void main() {
@@ -118,5 +119,88 @@ void main() {
     expect(a.averagePronunciation, isNull);
     expect(a.averageFluency, isNull);
     expect(a.averageRhythm, isNull);
+  });
+
+  // ── 서버 복원 (2026-09-04) ──
+  //
+  // 채점이 서버에 남는다. 세 문장 읽고 나갔다 들어온 학습자는 이전 결과를
+  // 되찾아야 하고, 같은 문장을 다시 읽으면 통과 수가 늘지 않아야 한다.
+
+  AssignmentItem item(int id, {AssignmentItemResult? score}) => AssignmentItem(
+    itemId: id,
+    surface: '단어$id',
+    example: '단어$id 를 씁니다.',
+    exampleMeaning: 'I use word $id.',
+    score: score,
+  );
+
+  test('서버에 남은 채점으로 되살린다', () {
+    final n = notifier();
+    n.restore(
+      assignmentId: 1,
+      items: [
+        item(11, score: const AssignmentItemResult(
+          itemId: 11, passed: true, totalScore: 90, pronunciation: 90,
+          fluency: 90, rhythm: 90,
+        )),
+        item(12, score: const AssignmentItemResult(
+          itemId: 12, passed: false, totalScore: 40,
+        )),
+        item(13), // 아직 안 읽은 문장
+      ],
+    );
+
+    final a = n.of(1)!;
+    expect(a.total, 3);      // 분모는 출제 수다
+    expect(a.scored, 2);     // 읽은 것은 둘
+    expect(a.passed, 1);
+    expect(a.failedItemIds, [12]);
+    expect(a.averageScore, 65);
+  });
+
+  test('되살릴 때 앱에만 있던 값을 이어 붙이지 않는다 — 서버가 정답이다', () {
+    final n = notifier();
+    n.start(assignmentId: 1, total: 2);
+    n.record(assignmentId: 1, itemId: 11, passed: true, totalScore: 90);
+
+    n.restore(assignmentId: 1, items: [item(11), item(12)]);
+    expect(n.of(1)!.scored, 0);
+  });
+
+  test('같은 문장을 다시 읽으면 덮어쓴다 — 통과 수가 출제 수를 넘지 않는다', () {
+    final n = notifier();
+    n.start(assignmentId: 1, total: 1);
+    n.record(assignmentId: 1, itemId: 11, passed: false, totalScore: 30);
+    n.record(assignmentId: 1, itemId: 11, passed: true, totalScore: 91);
+
+    final a = n.of(1)!;
+    expect(a.scored, 1);
+    expect(a.passed, 1);
+    expect(a.averageScore, 91);   // 앞의 30 이 남아 평균을 끌어내리지 않는다
+    expect(a.failedItemIds, isEmpty);
+  });
+
+  test('예문을 읽을 때는 예문 번역이 뜬다 — 표제어 뜻이 아니다', () {
+    // 🔴 「그 사람은 선생님이 아닙니다」 밑에 `person` 이 뜨던 어긋남.
+    const withExample = AssignmentItem(
+      itemId: 1,
+      surface: '사람',
+      example: '그 사람은 선생님이 아닙니다.',
+      meaning: 'person',
+      exampleMeaning: 'That person is not a teacher.',
+    );
+    expect(withExample.readable, '그 사람은 선생님이 아닙니다.');
+    expect(withExample.readableMeaning, 'That person is not a teacher.');
+
+    // 예문이 없어 표제어를 읽는다면 표제어 뜻이 맞다.
+    const wordOnly = AssignmentItem(itemId: 2, surface: '사람', meaning: 'person');
+    expect(wordOnly.readable, '사람');
+    expect(wordOnly.readableMeaning, 'person');
+
+    // 예문 번역이 없으면 **비운다.** 표제어 뜻으로 메우지 않는다.
+    const noTranslation = AssignmentItem(
+      itemId: 3, surface: '천', example: '이 가방은 천 원이에요.', meaning: 'thousand',
+    );
+    expect(noTranslation.readableMeaning, isNull);
   });
 }
