@@ -17,10 +17,13 @@ import '../../features/bookmark/presentation/providers/bookmark_toggle_controlle
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
+import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../features/normalcall/presentation/avatar_view.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
+import '../../features/review/data/audio_player.dart';
+import '../../features/review/presentation/review_providers.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -92,13 +95,96 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// on the wire, leaving glyph and server disagreeing).
   final Set<int> _hintBookmarkInFlight = <int>{};
 
+  /// Standard-pronunciation player for hint examples.
+  ///
+  /// ⚠ 통화 중 오디오 클라이언트가 **셋**이 된다 — 마이크(FlutterSoundRecorder),
+  /// 바바 재생(flutter_pcm_sound), 그리고 이것. 에코 되먹임(열린 마이크가 이 재생을
+  /// 사용자 발화로 듣는 것)과 안드로이드 오디오 세션 충돌은 **실기기 통화에서만
+  /// 갈린다.** 지금은 마이크 뮤트 같은 방어를 넣지 않았다 — 통화 흐름을 건드리는
+  /// 일이라 증상을 보고 정한다.
+  final ReviewAudioPlayer _hintPlayer = ReviewAudioPlayer();
+
+  /// `POST /sentences/{id}/tts` 응답 캐시 — 같은 예시를 다시 눌러도 왕복하지 않는다.
+  final Map<int, String> _hintTtsUrls = <int, String>{};
+
+  /// TTS 요청이 나가 있는 문장 — 두 번째 탭이 왕복을 중복시키는 것을 막는다.
+  final Set<int> _hintTtsInFlight = <int>{};
+
+  @override
+  void dispose() {
+    // 통화가 끝나도 플레이어가 열려 있으면 오디오 세션을 계속 붙들고 있다.
+    _hintPlayer.dispose();
+    super.dispose();
+  }
+
+  /// 힌트 예시의 표준 발음을 재생한다. `analysis.dart:_playSentence` 와 같은 경로다:
+  /// `POST /sentences/{id}/tts` 는 멱등이라 이미 있으면 그 url 을 돌려주고, 파이프라인의
+  /// TTS 가 실패했으면 그 자리에서 합성한다.
+  ///
+  /// 서버가 아직 `id` 를 안 보내면 **버튼을 숨기지 않고 이유를 말한다** — 카드에 속한
+  /// 컨트롤이 데이터가 없다고 사라지면 안 된다.
+  Future<void> _playHintExample(HintExample ex) async {
+    final l10n = AppLocalizations.of(context);
+    final id = ex.sentenceId;
+    if (id == null) {
+      _snack(l10n.standardAudioNotReady);
+      return;
+    }
+    final known = _hintTtsUrls[id];
+    if (known != null) {
+      await _playHintUrl(known, l10n);
+      return;
+    }
+    if (!_hintTtsInFlight.add(id)) return;
+    String? fetched;
+    try {
+      final url = await ref.read(reviewRepositoryProvider).sentenceTtsUrl(id);
+      fetched = (url == null || url.isEmpty || !url.startsWith('http'))
+          ? null
+          : url;
+    } catch (_) {
+      fetched = null; // transport/5xx — "아직 준비 안 됨"으로 보고한다.
+    } finally {
+      _hintTtsInFlight.remove(id);
+    }
+    if (!mounted) return;
+    if (fetched == null) {
+      _snack(l10n.standardAudioNotReady);
+      return;
+    }
+    _hintTtsUrls[id] = fetched;
+    await _playHintUrl(fetched, l10n);
+  }
+
+  Future<void> _playHintUrl(String url, AppLocalizations l10n) async {
+    try {
+      await _hintPlayer.playUrl(url);
+    } catch (_) {
+      if (mounted) _snack(l10n.standardAudioPlayError);
+    }
+  }
+
+  void _snack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   /// Saves/unsaves a hint example. Flips the shared in-memory store instantly
   /// so the glyph responds mid-call, then persists so 보관함 actually lists it.
   /// Reverts on failure — a filled glyph that the archive won't have is a lie.
   ///
   /// Mirrors `analysis.dart:_toggleBookmark`; the hint card is just another
   /// place the same sentence can be saved from.
-  Future<void> _toggleHintBookmark(int sentenceId) async {
+  /// 서버가 아직 `id` 를 안 보내면 버튼을 숨기는 대신 **이유를 말한다** — [_playHintExample]
+  /// 과 같은 원칙이다.
+  Future<void> _toggleHintBookmark(HintExample ex) async {
+    final sentenceId = ex.sentenceId;
+    if (sentenceId == null) {
+      _snack(AppLocalizations.of(context).saveSentenceFailed);
+      return;
+    }
     if (_hintBookmarkInFlight.contains(sentenceId)) return;
     _hintBookmarkInFlight.add(sentenceId);
     final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
@@ -109,13 +195,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           .toggleBookmark(sentenceId, willSave);
     } catch (_) {
       toggleBookmark(sentenceId); // revert
-      if (mounted) {
-        ScaffoldMessenger.of(context)
-          ..clearSnackBars()
-          ..showSnackBar(SnackBar(
-              content:
-                  Text(AppLocalizations.of(context).saveSentenceFailed)));
-      }
+      if (mounted) _snack(AppLocalizations.of(context).saveSentenceFailed);
     } finally {
       _hintBookmarkInFlight.remove(sentenceId);
     }
@@ -590,9 +670,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                   // screen.
                                   final ex = hint.examples[_suggestionIndex
                                       .clamp(0, hint.examples.length - 1)];
-                                  // No server id → no bookmark control. Until
-                                  // the server sends `id` the card looks exactly
-                                  // as it does today.
                                   final id = ex.sentenceId;
                                   return HintCard(
                                     examples: hint.examples,
@@ -600,9 +677,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                     index: _suggestionIndex,
                                     bookmarked:
                                         id != null && saved.contains(id),
-                                    onBookmarkTap: id == null
-                                        ? null
-                                        : () => _toggleHintBookmark(id),
+                                    // 둘 다 **항상** 넘긴다. id 가 없으면 버튼을
+                                    // 없애는 게 아니라 눌렀을 때 이유를 말한다.
+                                    onSpeak: () => _playHintExample(ex),
+                                    onBookmarkTap: () => _toggleHintBookmark(ex),
                                     onReveal: () {
                                       setState(
                                           () => _revealedTurnId = hint.turnId);
