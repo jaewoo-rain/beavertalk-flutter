@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,7 +55,41 @@ class _AssignmentDetailScreenState
     if (_assignment != null) return;
     final injected =
         widget.assignment ?? ModalRoute.of(context)?.settings.arguments;
-    if (injected is ClassroomAssignment) _assignment = injected;
+    if (injected is ClassroomAssignment) {
+      _assignment = injected;
+      unawaited(_restoreAttempt(injected));
+    }
+  }
+
+  /// 화면에 들어오자마자 서버 채점을 되살린다.
+  ///
+  /// 🔴 발음 카드의 게이지·발음/유창성/리듬은 **메모리의 집계**에서 나온다. 앱을
+  ///    껐다 켜면 그 집계가 비어, 「38문장 중 37문장 통과 · 완료」 옆에서 `-%` 와
+  ///    「아직 발음을 하지 않았어요」가 같이 뜬다(2026-09-04 실기기 실측).
+  ///    되살리기는 지금까지 **버튼을 눌렀을 때만** 돌았다.
+  ///
+  /// ⛔ 서버가 채점을 하나도 안 가졌으면 부르지 않는다 — 아직 아무것도 안 한
+  ///    학습자에게까지 네트워크를 태울 이유가 없다.
+  /// 실패는 조용히 넘긴다. 되살리기는 화면의 **덤**이고, 버튼을 누르면 어차피
+  /// 같은 호출이 다시 돈다.
+  Future<void> _restoreAttempt(ClassroomAssignment a) async {
+    if (a.speakingScored <= 0) return;
+    if (ref.read(assignmentAttemptProvider.notifier).of(a.assignmentId) !=
+        null) {
+      return;
+    }
+    final locale = Localizations.localeOf(context).languageCode;
+    try {
+      final bundle = await ref
+          .read(classroomRepositoryProvider)
+          .assignmentItems(a.assignmentId, locale: locale);
+      if (!mounted) return;
+      ref
+          .read(assignmentAttemptProvider.notifier)
+          .restore(assignmentId: a.assignmentId, items: bundle.items);
+    } on AppException {
+      // 조용히 넘긴다 — 카드가 예전처럼 `-` 를 그릴 뿐이다.
+    }
   }
 
   /// 다 읽은 과제의 결과를 연다.
@@ -322,7 +358,11 @@ class _AssignmentDetailScreenState
           title: l10n.hwActivityConversation,
           badge: badge,
           description: l10n.hwTaskConversationDesc,
-          ctaLabel: done ? l10n.hwCtaResult : l10n.hwCtaStudy,
+          // 🔴 발음과 달리 라벨을 「학습결과」로 바꾸지 않는다. 회화에는 볼 결과가
+          //    없다 — 과제 리포트(`assignmentReport`)는 **발음** 축이고, 통화 요약은
+          //    과제가 아니라 통화 한 건에 붙는다. 라벨만 바꾸면 눌렀을 때 결과 대신
+          //    통화가 또 걸린다(발음 카드가 예전에 그랬다). 끝난 것은 배지가 말한다.
+          ctaLabel: l10n.hwCtaStudy,
           ctaType: done ? BtnType.secondaryFill : BtnType.primaryFill,
           ctaDisabled: a.isClosed,
           // 통화는 서버가 스스로 과제에 묶는다(`submission_service.link_call`).
