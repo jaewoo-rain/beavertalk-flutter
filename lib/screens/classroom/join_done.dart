@@ -43,7 +43,8 @@ class _JoinDoneScreenState extends ConsumerState<JoinDoneScreen> {
   void initState() {
     super.initState();
     // 참여로 명단이 바뀌었다. 옛 목록을 그대로 쓰면 방금 들어온 반의 숙제가 없다.
-    Future.microtask(() => ref.invalidate(myAssignmentsProvider));
+    // 참여도 소속이 바뀐 것이다 — 나가기와 같은 함수를 쓴다.
+    Future.microtask(() => invalidateClassroomMembership(ref));
   }
 
   @override

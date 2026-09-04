@@ -55,6 +55,21 @@ final myClassroomsProvider = FutureProvider<List<JoinedClassroom>>((ref) async {
   return ref.watch(classroomRepositoryProvider).myClassrooms();
 });
 
+/// 반 소속이 바뀌었다 — **교실 축 캐시를 통째로 버린다.**
+///
+/// 🔴 하나만 버리지 마라. 참여·나가기는 두 축을 **동시에** 바꾼다.
+///    2026-09-04 실측: 나가기가 [myAssignmentsProvider] 만 버려서, 서버에서는
+///    이미 나갔는데(`left_at` 기록됨) 마이페이지 카드는 [myClassroomsProvider]
+///    의 옛 값을 들고 **반 이름을 계속 보여줬다.** 눌러서 들어가면 숙제만
+///    사라져 있었다 — 「나갔는데 안 나가진」 화면이다.
+///
+/// ⛔ 소속을 바꾸는 화면은 이 함수를 부른다. 개별 provider 를 골라 버리지 마라 —
+///    축이 하나 늘 때마다 호출부를 전부 고쳐야 하고, 그때 한 곳을 빠뜨린다.
+void invalidateClassroomMembership(WidgetRef ref) {
+  ref.invalidate(myAssignmentsProvider);
+  ref.invalidate(myClassroomsProvider);
+}
+
 /// 과제 발음 결과 요약. 세션 요약 화면이 읽는다.
 ///
 /// autoDispose: 화면을 벗어나면 버린다. 다시 들어오면 서버 값을 새로 읽어야

@@ -66,7 +66,9 @@ class _LeaveClassSheetState extends ConsumerState<_LeaveClassSheet> {
     try {
       await ref.read(classroomRepositoryProvider).leave(id);
       await store.clear();
-      ref.invalidate(myAssignmentsProvider);
+      // 🔴 **두 축을 같이 버린다.** 과제만 버리면 마이페이지 카드가 반 이름을
+      //    계속 들고 있어 「나갔는데 안 나가진」 화면이 된다(2026-09-04 실측).
+      invalidateClassroomMembership(ref);
       if (!mounted) return;
       navigator.pop();
       navigator.pushNamedAndRemoveUntil(Routes.mypage, (r) => r.isFirst);
