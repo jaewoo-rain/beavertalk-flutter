@@ -13,6 +13,7 @@ class HintExample {
     required this.korean,
     this.roman,
     required this.native,
+    this.sentenceId,
   });
 
   /// The Korean example sentence (always present, non-empty).
@@ -24,11 +25,28 @@ class HintExample {
   /// Native-language translation of [korean] (may be empty).
   final String native;
 
+  /// Server sentence id — what `PATCH /sentences/{id}/bookmark` takes. Null
+  /// when the server didn't send one, and then the hint card simply shows no
+  /// bookmark control (there is nothing to bookmark against).
+  final int? sentenceId;
+
   factory HintExample.fromJson(Map<String, dynamic> json) => HintExample(
         korean: (json['korean'] as String?)?.trim() ?? '',
         roman: (json['roman'] as String?)?.trim(),
         native: (json['native'] as String?)?.trim() ?? '',
+        sentenceId: _asId(json['id']),
       );
+
+  /// Reads an id that may arrive as int or as a numeric string.
+  ///
+  /// ⚠ **`as int?` 로 읽지 않는다** — 서버가 문자열로 보내면 TypeError 가 나고, 그건
+  /// WS 스트림 핸들러까지 올라가 **통화를 죽인다**. `turn_id` 에서 이미 겪은 함정이다.
+  /// 읽을 수 없으면 null 로 두고 북마크 버튼만 사라진다 — 통화는 그대로 간다.
+  static int? _asId(Object? raw) {
+    if (raw is int) return raw;
+    if (raw is String) return int.tryParse(raw.trim());
+    return null;
+  }
 }
 
 /// A dynamic hint for one beaver question turn: 1–3 [examples] the learner can

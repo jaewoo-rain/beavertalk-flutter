@@ -35,6 +35,21 @@ void main() {
       expect(hint.examples[1].roman, isNull);
     });
 
+    test('reads the example sentence id as int or numeric string', () {
+      final hint = HintData.fromJson({
+        'turn_id': 't1',
+        'examples': [
+          {'korean': '가요', 'native': 'go', 'id': 7},
+          {'korean': '와요', 'native': 'come', 'id': '9'},
+          {'korean': '자요', 'native': 'sleep'}, // no id yet — stays null
+          {'korean': '봐요', 'native': 'see', 'id': 'x'}, // junk → null, no throw
+        ],
+      });
+      expect(hint, isNotNull);
+      expect(hint!.examples.map((e) => e.sentenceId).toList(),
+          [7, 9, null, null]);
+    });
+
     test('returns null when no usable example', () {
       expect(
         HintData.fromJson({'turn_id': 't1', 'examples': []}),
@@ -86,6 +101,76 @@ void main() {
     expect(find.text('학교에 가요'), findsOneWidget);
     expect(find.text('hakgyoe gayo'), findsOneWidget);
     expect(find.text('school'), findsOneWidget);
+  });
+
+  testWidgets('HintCard full shows the bookmark control and reports taps',
+      (tester) async {
+    var taps = 0;
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        onBookmarkTap: () => taps++,
+      ),
+    ));
+    // Outline glyph + "save" label while unsaved.
+    final save = find.bySemanticsLabel('Save sentence');
+    expect(save, findsOneWidget);
+    expect(find.bySemanticsLabel('Remove saved sentence'), findsNothing);
+
+    await tester.tap(save);
+    await tester.pump();
+    expect(taps, 1);
+  });
+
+  testWidgets('HintCard bookmark control flips its label when saved',
+      (tester) async {
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        bookmarked: true,
+        onBookmarkTap: () {},
+      ),
+    ));
+    expect(find.bySemanticsLabel('Remove saved sentence'), findsOneWidget);
+    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
+  });
+
+  testWidgets('HintCard hides the bookmark control without a callback',
+      (tester) async {
+    // The server hasn't attached ids yet → the host passes null and the card
+    // must look exactly as it did before this feature.
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+      ),
+    ));
+    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
+  });
+
+  testWidgets('HintCard peek carries no bookmark control', (tester) async {
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: false,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        onBookmarkTap: () {},
+      ),
+    ));
+    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
   });
 
   testWidgets('CallToggleButton reports toggled value', (tester) async {
