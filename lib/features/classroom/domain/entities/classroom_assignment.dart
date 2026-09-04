@@ -222,7 +222,12 @@ class ClassroomAssignment {
       // 🔴 **읽은 수**로 판정한다. 맞힌 수(`speakingPassed`)로 재면 두 문장 틀린
       //    학습자는 다 읽고도 완료가 안 된다 — 숙제는 점수가 아니라 수행이다.
       AssignmentActivity.speaking => _met(speakingScored, speakingTotal),
-      AssignmentActivity.conversation => _met(conversationMet, conversationTotal),
+      // 🔴 **목표를 다 채우라는 뜻이 아니다**(2026-09-04 사용자 결정 — 「1개라도 쓰면
+      //    수행」). `conversationMet` 은 통화가 이 과제에 귀속될 때 서버가 채우는
+      //    값이라, **있다는 사실 자체**가 수행의 신호다. `met >= total` 로 재면 6분
+      //    통화 한 판에 목표 10개를 다 끼워 넣어야 해서 사실상 완료가 불가능하다.
+      //    n / 10 은 교사가 보는 **점수**이지 통과선이 아니다.
+      AssignmentActivity.conversation => conversationMet != null,
       // 「다운로드」를 누르면 앱이 서버에 알린다(2026-09-04 사용자 지시).
       // 그 전까지는 판정할 근거가 없어 false 다.
       AssignmentActivity.workbook => workbookOpenedAt != null,

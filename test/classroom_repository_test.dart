@@ -328,6 +328,31 @@ void main() {
       expect(a.completedActivityCount, 1);
       expect(a.activityCount, 3);
     });
+
+    test('회화는 목표를 다 못 채워도 통화가 귀속되면 수행이다', () {
+      // 🔴 2026-09-04 사용자 결정 — 「1개라도 쓰면 수행」. `conversation_met` 은
+      //    통화가 과제에 귀속될 때만 채워지므로 **있다는 사실**이 신호다.
+      //    `met >= total` 로 재던 시절엔 6분 통화에 목표 10개를 다 넣어야 했다.
+      ClassroomAssignment build(Object? met) => ClassroomAssignment.fromJson({
+        'assignment_id': 9,
+        'classroom_name': '초급 1반',
+        'grade': 1,
+        'chapter': 1,
+        'activities': ['conversation'],
+        'item_ids': <int>[],
+        'due_at': '2026-09-10T14:00:00Z',
+        'overdue': false,
+        'status': met == null ? 'not_started' : 'done',
+        'conversation_met': met,
+        'conversation_total': 10,
+      });
+
+      expect(build(null).isActivityDone(AssignmentActivity.conversation), isFalse);
+      // 따라 말하기만 해서 스스로 쓴 것이 0 이어도 수행이다.
+      expect(build(0).isActivityDone(AssignmentActivity.conversation), isTrue);
+      expect(build(3).isActivityDone(AssignmentActivity.conversation), isTrue);
+      expect(build(3).completedActivityCount, 1);
+    });
   });
 
   group('과제 문장 목록·채점', () {
