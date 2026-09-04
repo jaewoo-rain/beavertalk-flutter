@@ -21,6 +21,8 @@ import 'package:beavertalk/screens/classroom/join_code.dart';
 import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
+import 'package:beavertalk/components/molecules/card_homework.dart';
+import 'package:beavertalk/screens/classroom/widgets/assignment_badge.dart';
 
 import 'package:beavertalk/screens/alarm/alarm_add.dart';
 import 'package:beavertalk/screens/alarm/alarm_empty.dart';
@@ -147,21 +149,36 @@ void main() {
     'HwJoinDone': () => const JoinDoneScreen(),
     'HwAssignmentList': () => const AssignmentListScreen(),
     'HwAssignmentDetail': () => AssignmentDetailScreen(
-      assignment: ClassroomAssignment(
-        assignmentId: 1,
-        classroomName: 'TOPIK 1 A',
-        grade: 1,
-        chapter: 3,
-        activities: const [
-          AssignmentActivity.speaking,
-          AssignmentActivity.conversation,
-          AssignmentActivity.workbook,
-        ],
-        itemIds: const [],
-        dueAt: DateTime(2026, 12, 31),
-        overdue: false,
-        status: AssignmentStatus.notStarted,
-      ),
+      assignment: _assignment(status: AssignmentStatus.notStarted),
+    ),
+    // 🔴 **끝낸 과제도 본다.** 미수행 상태만 검사하면 완료 배지·수치·체크 칩이
+    //    한 번도 안 그려진다 — 2026-09-04 오버플로가 정확히 그 상태에서 났다.
+    'HwAssignmentDetailDone': () => AssignmentDetailScreen(
+      assignment: _assignment(status: AssignmentStatus.done, done: true),
+    ),
+    // 🔴 목록 화면은 이 하네스에서 **데이터가 없어 카드를 안 그린다.** 카드를 직접
+    //    띄워야 검사가 성립한다 — 활동 이름이 로케일마다 크게 다른 곳이 여기다
+    //    (ko 「발음」 2자 ↔ de 「Aussprache」 10자).
+    'HwHomeworkCard': () => Builder(
+      builder: (ctx) {
+        final a = _assignment(status: AssignmentStatus.done, done: true);
+        return Center(
+          child: CardHomework(
+            chapterLabel: AppLocalizations.of(ctx).hwChapterLabel('03'),
+            title: a.classroomName,
+            dimmed: true,
+            badge: assignmentBadge(ctx, a),
+            countLabel: '${a.completedActivityCount}/${a.activityCount}',
+            chips: [
+              for (final act in a.activities)
+                HomeworkCardChip(
+                  activityLabel(ctx, act),
+                  done: a.isActivityDone(act),
+                ),
+            ],
+          ),
+        );
+      },
     ),
   };
 
@@ -237,4 +254,32 @@ void main() {
           '${overflows.join('\n')}');
     }
   });
+}
+
+/// 검사용 과제 1건. 활동 셋을 다 담는다 — 칩이 가장 많이 붙는 경우다.
+ClassroomAssignment _assignment({
+  required AssignmentStatus status,
+  bool done = false,
+}) {
+  return ClassroomAssignment(
+    assignmentId: 1,
+    classroomName: 'TOPIK 1 A',
+    grade: 1,
+    chapter: 3,
+    activities: const [
+      AssignmentActivity.speaking,
+      AssignmentActivity.conversation,
+      AssignmentActivity.workbook,
+    ],
+    itemIds: const [],
+    dueAt: DateTime(2026, 12, 31),
+    overdue: false,
+    status: status,
+    speakingScored: done ? 38 : 0,
+    speakingPassed: done ? 37 : null,
+    speakingTotal: done ? 38 : null,
+    conversationMet: done ? 0 : null,
+    conversationTotal: done ? 10 : null,
+    workbookOpenedAt: done ? DateTime(2026, 9, 4) : null,
+  );
 }

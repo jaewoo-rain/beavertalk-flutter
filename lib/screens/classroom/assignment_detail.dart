@@ -91,8 +91,13 @@ class _AssignmentDetailScreenState
       ref
           .read(assignmentAttemptProvider.notifier)
           .restore(assignmentId: a.assignmentId, items: bundle.items);
-    } on AppException {
+    } catch (_) {
       // 조용히 넘긴다 — 카드가 예전처럼 `-` 를 그릴 뿐이다.
+      //
+      // 🔴 `on AppException` 으로 좁히지 마라. 이 호출은 **화면이 뜨자마자** 나가서
+      //    사용자가 시킨 적이 없는데, 좁히면 dio·env 초기화 실패 같은 다른 예외가
+      //    화면 밖으로 새어 나간다(위젯 검사 하네스가 그 경로에서 통째로 죽었다).
+      //    되살리기는 덤이고, 실패해도 버튼을 누르면 같은 호출이 다시 돈다.
     }
   }
 

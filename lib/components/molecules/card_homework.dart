@@ -75,7 +75,13 @@ class CardHomework extends StatelessWidget {
     return Pressable(
       onTap: onTap,
       child: Container(
-        height: height,
+        // 🔴 **고정 높이가 아니라 최소 높이다.** 칩 줄이 늘면 카드가 그만큼 자란다.
+        //    예전에는 `height: 116` 고정이라 칩이 한 줄을 넘는 순간 잘렸다 —
+        //    한국어(발음·회화·워크북)만 겨우 들어갔고 **나머지 29개 로케일이 전부
+        //    가로로 넘쳤다**(2026-09-04 실측, 320dp 기준).
+        //    ⛔ 같은 로케일·같은 활동 수면 높이가 같으므로 스펙 §8 이 걱정한
+        //      「상태별로 어긋나 리스트가 튀는」 일은 생기지 않는다.
+        constraints: const BoxConstraints(minHeight: height),
         padding: const EdgeInsets.symmetric(
           vertical: AppSpacing.s16,
           horizontal: AppSpacing.s20,
@@ -85,6 +91,9 @@ class CardHomework extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Column(
+          // 내용이 최소 높이보다 짧으면 spaceBetween 이 종전과 똑같이 벌려 준다.
+          // 길어지면 min 이 카드를 늘린다.
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -111,24 +120,28 @@ class CardHomework extends StatelessWidget {
               overflow: TextOverflow.ellipsis,
               style: AppType.label1.b.copyWith(color: titleColor),
             ),
-            SizedBox(
-              height: 22,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        for (final (i, chip) in chips.take(4).indexed) ...[
-                          if (i > 0) const SizedBox(width: AppSpacing.s4),
-                          HomeworkChip(label: chip.label, done: chip.done),
-                        ],
-                      ],
-                    ),
+            Row(
+              // 칩이 두 줄이 돼도 「n/m →」 는 첫 줄에 붙어 있어야 읽힌다.
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  // 🔴 **Row 가 아니라 Wrap 이다.** 활동 이름은 로케일마다 길이가
+                  //    크게 다르다(ko 「발음」 2자 ↔ de 「Aussprache」 10자).
+                  //    한 줄에 밀어 넣으면 잘린다 — 넘치면 줄을 바꾼다.
+                  child: Wrap(
+                    spacing: AppSpacing.s4,
+                    runSpacing: AppSpacing.s4,
+                    children: [
+                      for (final chip in chips.take(4))
+                        HomeworkChip(label: chip.label, done: chip.done),
+                    ],
                   ),
-                  const SizedBox(width: AppSpacing.s8),
-                  Row(
+                ),
+                const SizedBox(width: AppSpacing.s8),
+                // 칩 첫 줄(22)과 눈높이를 맞춘다.
+                SizedBox(
+                  height: 22,
+                  child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
@@ -141,8 +154,8 @@ class CardHomework extends StatelessWidget {
                       AppIcons.arrowRight(size: 16, color: c.labelNeutral),
                     ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),
