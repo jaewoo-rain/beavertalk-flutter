@@ -23,6 +23,7 @@ import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/review/data/audio_player.dart';
+import '../../features/review/data/speech_cache.dart';
 import '../../features/review/presentation/review_providers.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -104,11 +105,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// 일이라 증상을 보고 정한다.
   final ReviewAudioPlayer _hintPlayer = ReviewAudioPlayer();
 
-  /// `POST /sentences/{id}/tts` 응답 캐시 — 같은 예시를 다시 눌러도 왕복하지 않는다.
-  final Map<int, String> _hintTtsUrls = <int, String>{};
-
-  /// TTS 요청이 나가 있는 문장 — 두 번째 탭이 왕복을 중복시키는 것을 막는다.
-  final Set<int> _hintTtsInFlight = <int>{};
+  /// 합성 요청이 나가 있는 문장(캐시 키) — 두 번째 탭이 왕복을 중복시키는 것을 막는다.
+  /// 합성은 요금이 나가므로 중복 요청은 그냥 돈이 새는 것이다.
+  final Set<String> _hintSpeechInFlight = <String>{};
 
   @override
   void dispose() {
@@ -117,48 +116,53 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     super.dispose();
   }
 
-  /// 힌트 예시의 표준 발음을 재생한다. `analysis.dart:_playSentence` 와 같은 경로다:
-  /// `POST /sentences/{id}/tts` 는 멱등이라 이미 있으면 그 url 을 돌려주고, 파이프라인의
-  /// TTS 가 실패했으면 그 자리에서 합성한다.
+  /// 힌트 예시를 **캐릭터 목소리로** 읽어준다 — `POST /tts/speech` (백엔드 규약
+  /// 2026-09-04). 힌트 예시는 서버 DB 에 행이 없어 `sentence_id` 가 없으므로,
+  /// 분석 화면이 쓰는 `POST /sentences/{id}/tts` 는 여기서 쓸 수 없다.
   ///
-  /// 서버가 아직 `id` 를 안 보내면 **버튼을 숨기지 않고 이유를 말한다** — 카드에 속한
-  /// 컨트롤이 데이터가 없다고 사라지면 안 된다.
-  Future<void> _playHintExample(HintExample ex) async {
+  /// 응답은 **mp3 바이트 그 자체**다(URL 이 아니다). 받은 바이트는 캐시에 넣는다 —
+  /// 합성은 부를 때마다 요금이 나가고, 같은 예시를 다시 누르는 일이 잦다.
+  ///
+  /// [characterId] 는 **요청에 싣지 않는다** — 목소리는 서버가 회원 정보로 정한다.
+  /// 그런데도 받아 두는 이유는 **캐시 키**로 쓰기 위해서다: 캐릭터를 바꾸면 같은 문장도
+  /// 다른 목소리로 와야 하는데, 텍스트만 키로 쓰면 예전 목소리가 계속 재생된다.
+  ///
+  /// 실패는 전부 안내로 폴백한다. 특히 **503 은 백엔드의 외부 TTS 가 안 되는 상태**이며
+  /// (레포지토리가 null 로 내린다) 앱 잘못이 아니다 — 통화는 그대로 간다.
+  Future<void> _playHintExample(HintExample ex, int? characterId) async {
     final l10n = AppLocalizations.of(context);
-    final id = ex.sentenceId;
-    if (id == null) {
-      _snack(l10n.standardAudioNotReady);
+    final text = ex.korean.trim();
+    if (text.isEmpty) return;
+
+    final cache = ref.read(speechCacheProvider);
+    final key = SpeechCache.keyFor(text, characterId);
+    final cached = cache.get(key);
+    if (cached != null) {
+      await _playHintBytes(cached, l10n);
       return;
     }
-    final known = _hintTtsUrls[id];
-    if (known != null) {
-      await _playHintUrl(known, l10n);
-      return;
-    }
-    if (!_hintTtsInFlight.add(id)) return;
-    String? fetched;
+
+    if (!_hintSpeechInFlight.add(key)) return;
+    Uint8List? bytes;
     try {
-      final url = await ref.read(reviewRepositoryProvider).sentenceTtsUrl(id);
-      fetched = (url == null || url.isEmpty || !url.startsWith('http'))
-          ? null
-          : url;
+      bytes = await ref.read(reviewRepositoryProvider).speech(text);
     } catch (_) {
-      fetched = null; // transport/5xx — "아직 준비 안 됨"으로 보고한다.
+      bytes = null; // 전송 실패·기타 오류 — "아직 준비 안 됨"으로 보고한다.
     } finally {
-      _hintTtsInFlight.remove(id);
+      _hintSpeechInFlight.remove(key);
     }
     if (!mounted) return;
-    if (fetched == null) {
+    if (bytes == null || bytes.isEmpty) {
       _snack(l10n.standardAudioNotReady);
       return;
     }
-    _hintTtsUrls[id] = fetched;
-    await _playHintUrl(fetched, l10n);
+    cache.put(key, bytes);
+    await _playHintBytes(bytes, l10n);
   }
 
-  Future<void> _playHintUrl(String url, AppLocalizations l10n) async {
+  Future<void> _playHintBytes(Uint8List bytes, AppLocalizations l10n) async {
     try {
-      await _hintPlayer.playUrl(url);
+      await _hintPlayer.playMp3Bytes(bytes);
     } catch (_) {
       if (mounted) _snack(l10n.standardAudioPlayError);
     }
@@ -679,7 +683,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                         id != null && saved.contains(id),
                                     // 둘 다 **항상** 넘긴다. id 가 없으면 버튼을
                                     // 없애는 게 아니라 눌렀을 때 이유를 말한다.
-                                    onSpeak: () => _playHintExample(ex),
+                                    onSpeak: () =>
+                                        _playHintExample(ex, characterId),
                                     onBookmarkTap: () => _toggleHintBookmark(ex),
                                     onReveal: () {
                                       setState(
