@@ -41,4 +41,17 @@ class ReviewRepositoryImpl implements ReviewRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<Uint8List?> speech(String text) async {
+    try {
+      final bytes = await _remote.speechBytes(text);
+      return bytes.isEmpty ? null : bytes;
+    } on DioException catch (e) {
+      // 503 = 백엔드의 외부 TTS 가 안 될 때다("인터넷 오류니까 폴백해주세요").
+      // 예외로 올리지 않고 null 로 내려 호출부가 안내 문구로 폴백하게 한다.
+      if (e.response?.statusCode == 503) return null;
+      throw mapDioException(e);
+    }
+  }
 }

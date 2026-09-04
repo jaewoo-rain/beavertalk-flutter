@@ -23,4 +23,14 @@ abstract interface class ReviewRepository {
   /// (`POST /sentences/{id}/tts`). Returns a playable URL, or null when the
   /// server can't synthesize it. Throws [AppException] on transport failure.
   Future<String?> sentenceTtsUrl(int sentenceId);
+
+  /// Synthesizes **raw text** (`POST /tts/speech`) and returns the mp3 bytes —
+  /// for sentences with no row on the server, such as the in-call hint
+  /// examples. The voice is the member's own character, which the server
+  /// resolves from the token; no character is passed in.
+  ///
+  /// Returns null when the server couldn't synthesize (503 — its upstream TTS
+  /// is down; the caller falls back to a message). Throws [AppException] on
+  /// other failures.
+  Future<Uint8List?> speech(String text);
 }
