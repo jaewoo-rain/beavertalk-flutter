@@ -286,7 +286,7 @@ void main() {
         'due_at': '2026-09-10T14:00:00Z',
         'overdue': false,
         'status': openedAt == null ? 'not_started' : 'done',
-        if (openedAt != null) 'workbook_opened_at': openedAt,
+        'workbook_opened_at': ?openedAt,
       };
 
       final before = ClassroomAssignment.fromJson(row());

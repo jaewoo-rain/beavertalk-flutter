@@ -16,7 +16,6 @@ import 'package:beavertalk/app/routes.dart';
 import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/features/classroom/data/datasources/classroom_remote_data_source.dart';
 import 'package:beavertalk/features/classroom/data/repositories/classroom_repository_impl.dart';
-import 'package:beavertalk/features/classroom/domain/entities/classroom_membership.dart';
 import 'package:beavertalk/features/classroom/presentation/classroom_providers.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/classroom/join_code.dart';
@@ -50,18 +49,21 @@ class _RoutedAdapter implements HttpClientAdapter {
   void close({bool force = false}) {}
 }
 
-const _preview = {
+Map<String, Object?> _preview({required bool joined}) => {
   'classroom_id': 1,
   'name': '가족센터 테스트방',
   'target_grade': 1,
   'learner_count': 1,
   'capacity': 30,
+  // 서버가 토큰을 보고 채워 주는 값이다.
+  'already_member': joined,
+  'known_member': joined,
 };
 
 Future<List<String>> _run(WidgetTester tester, {required bool joined}) async {
   final dio = Dio(BaseOptions(baseUrl: 'https://b2b.test/api/v1'))
     ..httpClientAdapter = _RoutedAdapter({
-      'preview': _preview,
+      'preview': _preview(joined: joined),
       'classrooms/my': <Object>[],
     });
   final repo = ClassroomRepositoryImpl(ClassroomRemoteDataSource(dio));
@@ -71,14 +73,6 @@ Future<List<String>> _run(WidgetTester tester, {required bool joined}) async {
     ProviderScope(
       overrides: [
         classroomRepositoryProvider.overrideWithValue(repo),
-        // ⚠ 반 목록은 provider 로 준다. `myClassroomsProvider` 는 B2B 주소가 없는
-        //   빌드에서 빈 목록으로 끊는데(검사 하네스가 그 상태다) 그러면 이 화면의
-        //   판단이 아니라 환경이 결과를 정하게 된다.
-        myClassroomsProvider.overrideWith(
-          (ref) async => joined
-              ? const [JoinedClassroom(classroomId: 1, name: '가족센터 테스트방')]
-              : const <JoinedClassroom>[],
-        ),
       ],
       child: MaterialApp(
         locale: const Locale('en'),

@@ -60,21 +60,6 @@ class _JoinCodeScreenState extends ConsumerState<JoinCodeScreen> {
     }
   }
 
-  /// 이 반에 **지금 참여 중**인가. 반 목록이 정한다.
-  ///
-  /// 목록을 아직 못 받았으면 기다린다 — 여기서 성급히 false 로 떨어뜨리면
-  /// 이미 들어와 있는 학습자에게 이름을 다시 묻게 된다.
-  /// 조회가 실패하면 false 다. 건너뛰기는 **편의**이고, 못 건너뛰어도 원래
-  /// 흐름으로 참여가 되기 때문이다(서버가 기존 행을 그대로 돌려준다).
-  Future<bool> _alreadyJoined(int classroomId) async {
-    try {
-      final rooms = await ref.read(myClassroomsProvider.future);
-      return rooms.any((r) => r.classroomId == classroomId);
-    } catch (_) {
-      return false;
-    }
-  }
-
   Future<void> _next() async {
     if (_code.length != _length || _busy) return;
     setState(() {
@@ -89,18 +74,18 @@ class _JoinCodeScreenState extends ConsumerState<JoinCodeScreen> {
       if (!mounted) return;
       switch (result) {
         case JoinPreviewFound(:final preview):
-          // ⭐ **이미 이 반의 학습자면 참여 절차를 건너뛴다**(2026-09-04 사장님 지시).
+          // ⭐ **이미 이 반의 학습자면 참여 절차를 통째로 건너뛴다**(2026-09-04).
           //    이름·동의는 처음 들어올 때 받는 것이고, 이미 명단에 있는 사람에게
           //    다시 물으면 「기존 이름을 덮어쓸까」를 학습자가 판단하게 된다.
-          //    서버도 이 경우 기존 행을 그대로 돌려준다(`ClassroomService.join`).
           //
-          //    ⛔ 서버에 묻지 않는다 — `GET /classrooms/preview` 는 **인증 없는**
-          //      경로라 「누가 물었는지」를 모른다. 반 목록은 앱이 이미 갖고 있다.
-          //    ⚠ 나갔던 반은 여기 없다(`left_at` 을 서버가 거른다) — 재참여는
-          //      이름·동의를 새로 받는 것이 맞다(익명화로 옛 이름은 이미 없다).
+          //    판정은 **서버가 준 값**이다. `GET /classrooms/preview` 는 인증이
+          //    없어도 되지만, 토큰이 있으면 누구인지 보고 답한다.
+          //    ⛔ 반 목록 캐시로 판정하지 마라 — 방금 참여·나가기를 한 직후에는
+          //      그 캐시가 옛 값이라 반대로 답한다.
+          //    ⚠ 나갔던 반은 `alreadyMember` 가 아니다. 그쪽은 이름만 건너뛰고
+          //      동의는 새로 받는다(`join_confirm`).
           final navigator = Navigator.of(context);
-          if (await _alreadyJoined(preview.classroomId)) {
-            if (!mounted) return;
+          if (preview.alreadyMember) {
             setState(() => _busy = false);
             invalidateClassroomMembership(ref);
             await navigator.pushNamedAndRemoveUntil(

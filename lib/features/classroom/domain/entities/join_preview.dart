@@ -12,6 +12,9 @@ class JoinPreview {
     this.institution,
     this.teacherDisplayName,
     this.term,
+    this.alreadyMember = false,
+    this.knownMember = false,
+    this.rosterName,
   });
 
   /// `{"classroom_id": 1, "name": "...", ...}` 를 읽는다.
@@ -25,6 +28,10 @@ class JoinPreview {
       institution: json['institution'] as String?,
       teacherDisplayName: json['teacher_display_name'] as String?,
       term: json['term'] as String?,
+      // 토큰이 있을 때만 채워진다. 없으면 서버가 false·null 로 답한다.
+      alreadyMember: json['already_member'] as bool? ?? false,
+      knownMember: json['known_member'] as bool? ?? false,
+      rosterName: json['roster_name'] as String?,
     );
   }
 
@@ -42,6 +49,19 @@ class JoinPreview {
 
   /// 정원. 참여 시점에 [learnerCount] 가 이 값에 닿으면 409 가 난다.
   final int capacity;
+
+  /// 지금 이 반의 학습자인가. 참여 절차를 통째로 건너뛰는 근거다.
+  final bool alreadyMember;
+
+  /// 이 반에 **있었던 적이 있는가**(나간 경우 포함).
+  ///
+  /// ⭐ 나가기는 명단 행을 지우지 않고 `left_at` 만 찍는다(2026-09-04). 그래서
+  ///   다시 오는 사람에게 이름을 처음부터 다시 받지 않아도 된다 — 서버가 쓰던
+  ///   이름을 그대로 갖고 있다.
+  final bool knownMember;
+
+  /// 명단에 쓰던 이름. [knownMember] 일 때만 온다.
+  final String? rosterName;
 
   /// 기관명. 교사가 비워 둘 수 있다.
   final String? institution;

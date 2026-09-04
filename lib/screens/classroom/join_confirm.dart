@@ -49,8 +49,23 @@ class JoinConfirmScreen extends ConsumerWidget {
               type: BtnType.primaryFill,
               size: BtnSize.s60,
               text: l10n.hwJoinConfirmYes,
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(Routes.classroomJoinProfile),
+              // ⭐ **쓰던 이름이 있으면 이름 화면을 건너뛴다**(2026-09-04 사장님 지시).
+              //    나가기가 명단 행을 지우지 않으므로 서버가 그 이름을 그대로 갖고
+              //    있다 — 이미 아는 것을 다시 묻지 않는다.
+              //    ⛔ 동의는 건너뛰지 않는다. 나가기는 공유를 끊은 것이고, 다시
+              //      들어오는 것은 다시 공유하겠다는 뜻이라 새로 받아야 한다.
+              onPressed: () {
+                final known = preview.knownMember;
+                final name = preview.rosterName ?? '';
+                if (known && name.isNotEmpty) {
+                  ref
+                      .read(joinDraftProvider.notifier)
+                      .setProfile(rosterName: name, studentNo: '');
+                  Navigator.of(context).pushNamed(Routes.classroomJoinConsent);
+                  return;
+                }
+                Navigator.of(context).pushNamed(Routes.classroomJoinProfile);
+              },
             ),
             const SizedBox(height: AppSpacing.s12),
             Button(
