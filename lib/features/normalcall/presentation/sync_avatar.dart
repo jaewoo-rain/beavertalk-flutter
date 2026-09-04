@@ -415,6 +415,40 @@ class _SyncAvatarState extends State<SyncAvatar> {
   ///   먼저 내린다. 다음 발화에서 다시 열리고, 그때는 idle+talk+emo = 3 이다.
   ///
   /// ⛔ 트리에서 뺀 **다음 프레임에** 해제한다. 지금 그려지는 텍스처를 지우면 굳는다.
+  /// ⛔⛔ **감정이 떠 있는 동안 미뤄 둔 교체.** (2026-09-02)
+  ///
+  /// `_swapIdle`·`_swapTalk` 은 자리를 만들려고 [_freeEmoSlot] 을 부른다. 그 자체는
+  /// 옳지만, **재생 중인 감정을 죽인다.** idle 교체는 턴마다 세 번 일어나므로
+  /// (대기→듣기→생각→대기) 감정 클립이 열리자마자 잘렸다 —
+  /// 실측: 2.2초짜리가 **0.45~1.56초**에 끝났다(call 1252, `vid_emo_end` 5건 전부).
+  ///
+  /// ⭐ 그런데 감정이 떠 있는 동안 **idle 도 talk 도 화면에 없다**(감정이 덮는다).
+  ///   ⇒ 지금 갈아끼울 이유가 없다. 감정이 끝난 뒤에 하면 되고, 그러면
+  ///     디코더 4개 창도 함께 사라진다. 「자리를 뺏어서 여는」 문제가 아니라
+  ///     **「보이지도 않는 것 때문에 보이는 것을 죽인」** 문제였다.
+  int? _deferredIdleKind;
+  int? _deferredTalkTempo;
+
+  /// 감정이 내려간 자리에서 미뤄 둔 교체를 잇는다.
+  ///
+  /// ⚠ 다음 감정이 이어 열렸다면(큐) `_swapIdle` 이 스스로 다시 미룬다 —
+  ///   값은 그대로 남으므로 **다음 감정이 끝날 때 재시도된다.** 유실이 없다.
+  Future<void> _applyDeferredSwaps() async {
+    final k = _deferredIdleKind;
+    if (k != null) {
+      _deferredIdleKind = null;
+      await _swapIdle(k);
+    }
+    final t = _deferredTalkTempo;
+    if (t != null) {
+      _deferredTalkTempo = null;
+      await _swapTalk(t);
+    }
+  }
+
+  /// 지금 감정 클립이 **화면에 떠 있는가**. 떠 있으면 idle·talk 은 안 보인다.
+  bool get _emoOnScreen => _emo != null && _emoOpacity > 0;
+
   Future<void> _freeEmoSlot(String why) async {
     // ⚠ 미뤄 둔 감정은 자리를 비우는 순간 무효다 — 그 감정이 가리키던 맥락이 사라졌다.
     _emoQueue.clear();
@@ -509,6 +543,10 @@ class _SyncAvatarState extends State<SyncAvatar> {
       });
     }
     _applyPlayback();
+    // ⭐ 감정이 여기서 **뚝 내려간다** ⇒ 감정에 가려 미뤄 뒀던 idle·talk 교체가
+    //   고아가 된다. 발화가 끝나 다음 감정이 안 올 수도 있으므로 지금 잇는다.
+    //   ⛔ 안 이으면 대기 클립이 옛 kind 로 굳는다(듣기 자세로 멈춘 채 남는다).
+    unawaited(_applyDeferredSwaps());
     _settleTempo();
     _rewindTalk();
   }
@@ -586,6 +624,14 @@ class _SyncAvatarState extends State<SyncAvatar> {
     if (kind == _idleKind || _idleSwapping || !_ready) return;
     final name = _idleAsset[kind];
     if (name == null) return;
+    // ⛔ 감정이 떠 있으면 **미룬다.** 지금 갈아끼우면 아래 `_freeEmoSlot` 이
+    //   재생 중인 감정을 죽인다 — 그리고 idle 은 어차피 감정에 가려 안 보인다.
+    //   [_deferredIdleKind] 참조.
+    if (_emoOnScreen) {
+      _deferredIdleKind = kind;
+      widget.onDiag?.call('vid_idle_defer', {'kind': kind});
+      return;
+    }
     _idleSwapping = true;
     await _flushRetiring('idle 교체');
     await _freeEmoSlot('idle 교체 자리 확보');
@@ -626,6 +672,12 @@ class _SyncAvatarState extends State<SyncAvatar> {
     if (tempo == _talkTempo || _talkSwapping || !_ready) return;
     final name = _talkAsset[tempo];
     if (name == null) return;
+    // ⛔ idle 과 같은 이유로 미룬다 — talk 도 감정에 가려 안 보인다.
+    if (_emoOnScreen) {
+      _deferredTalkTempo = tempo;
+      widget.onDiag?.call('vid_talk_defer', {'tempo': tempo});
+      return;
+    }
     _talkSwapping = true;
     await _flushRetiring('talk 교체');
     await _freeEmoSlot('talk 교체 자리 확보');
@@ -734,6 +786,9 @@ class _SyncAvatarState extends State<SyncAvatar> {
         //   다음 감정을 연다 — 그래야 `happy` 를 다 보여주고 `neutral` 로 넘어간다.
         //   ⛔ 클립 도중에 다음 것을 열면 앞엣것이 잘린다(예전 「한 칸」이 그랬다).
         await _drainPendingEmo();
+        // ⭐ 큐까지 비었으면 미뤄 둔 idle·talk 교체를 지금 잇는다([_deferredIdleKind]).
+        //   다음 감정이 이어 열렸다면 `_swapIdle` 이 스스로 다시 미룬다.
+        await _applyDeferredSwaps();
       }());
     }
     _emoWatched = c;
