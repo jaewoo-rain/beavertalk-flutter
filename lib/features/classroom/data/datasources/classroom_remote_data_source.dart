@@ -77,6 +77,14 @@ class ClassroomRemoteDataSource {
     return res.data ?? const <String, dynamic>{};
   }
 
+  /// 과제 발음 결과 요약. 앱 서버의 통화 리포트와 같은 모양이다.
+  Future<Map<String, dynamic>> assignmentReport(int assignmentId) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      ApiEndpoints.classroomAssignmentReport(assignmentId),
+    );
+    return res.data ?? const <String, dynamic>{};
+  }
+
   /// 과제 예문의 원어민 음성 주소. 서버가 한 번 굽고 캐시한다.
   Future<Map<String, dynamic>> itemTts({
     required int assignmentId,

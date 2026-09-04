@@ -815,7 +815,16 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       navigator.pop();
       return;
     }
-    navigator.pushReplacementNamed(Routes.assignmentResult, arguments: id);
+    // 결과는 **기존 세션 요약 화면**이 그린다(2026-09-04 사용자 결정). 과제
+    // 전용 화면을 따로 만들었다가 폐기했다 — 학습자가 아는 화면과 달라진다.
+    navigator.pushReplacementNamed(
+      Routes.learningCallMain,
+      arguments: LearningArgs(
+        sentences: args.sentences,
+        origin: LearningOrigin.assignment,
+        assignmentId: id,
+      ),
+    );
   }
 
   void _snack(String message) {

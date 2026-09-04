@@ -8,6 +8,7 @@ import '../../components/atoms/button.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -51,15 +52,25 @@ class LearningCallMainScreen extends ConsumerWidget {
     // callId 는 복습 플로우가 LearningArgs 로 실어 온다(callReview origin).
     final args = ModalRoute.of(context)?.settings.arguments;
     final callId = args is LearningArgs ? args.callId : null;
-    if (callId == null) {
+    // 과제도 **이 화면**을 쓴다(2026-09-04 사용자 결정). 통화 리포트와 같은 모양을
+    // b2b 가 과제 축으로 내주므로, 어느 축인지에 따라 읽을 곳만 갈린다.
+    final assignmentId = args is LearningArgs && args.origin == LearningOrigin.assignment
+        ? args.assignmentId
+        : null;
+    if (callId == null && assignmentId == null) {
       return _errorView(context, l10n, null);
     }
-    return ref.watch(pronunciationReportProvider(callId)).when(
+    final report = assignmentId != null
+        ? ref.watch(assignmentReportProvider(assignmentId))
+        : ref.watch(pronunciationReportProvider(callId!));
+    return report.when(
           loading: () => const LearningCallMainLoadingScreen(),
           error: (_, _) => _errorView(
             context,
             l10n,
-            () => ref.invalidate(pronunciationReportProvider(callId)),
+            () => assignmentId != null
+                ? ref.invalidate(assignmentReportProvider(assignmentId))
+                : ref.invalidate(pronunciationReportProvider(callId!)),
           ),
           data: (s) => _content(context, l10n, s),
         );

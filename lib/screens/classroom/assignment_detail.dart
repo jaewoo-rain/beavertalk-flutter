@@ -77,8 +77,12 @@ class _AssignmentDetailScreenState
           .read(assignmentAttemptProvider.notifier)
           .restore(assignmentId: a.assignmentId, items: bundle.items);
       await navigator.pushNamed(
-        Routes.assignmentResult,
-        arguments: a.assignmentId,
+        Routes.learningCallMain,
+        arguments: LearningArgs(
+          sentences: const [],
+          origin: LearningOrigin.assignment,
+          assignmentId: a.assignmentId,
+        ),
       );
     } on AppException catch (e) {
       if (!mounted) return;

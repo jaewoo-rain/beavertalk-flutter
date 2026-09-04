@@ -7,6 +7,7 @@ import '../data/datasources/joined_class_store.dart';
 import '../data/repositories/classroom_repository_impl.dart';
 import '../domain/entities/classroom_assignment.dart';
 import '../domain/repositories/classroom_repository.dart';
+import '../../../screens/home/learning_summary.dart';
 
 /// 반 라우터 데이터 소스.
 ///
@@ -41,3 +42,13 @@ final myAssignmentsProvider = FutureProvider<List<ClassroomAssignment>>((
   if (!Env.hasB2bApi) return const <ClassroomAssignment>[];
   return ref.watch(classroomRepositoryProvider).myAssignments();
 });
+
+/// 과제 발음 결과 요약. 세션 요약 화면이 읽는다.
+///
+/// autoDispose: 화면을 벗어나면 버린다. 다시 들어오면 서버 값을 새로 읽어야
+/// 방금 채점한 문장이 반영된다.
+final assignmentReportProvider = FutureProvider.autoDispose
+    .family<LearningSummary, int>((ref, assignmentId) async {
+      return ref.watch(classroomRepositoryProvider).assignmentReport(assignmentId);
+    });
+

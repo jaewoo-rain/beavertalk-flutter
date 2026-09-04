@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import '../../../../screens/home/learning_summary.dart';
 import '../entities/assignment_item.dart';
 import '../entities/classroom_assignment.dart';
 import '../entities/classroom_membership.dart';
@@ -42,6 +43,12 @@ abstract interface class ClassroomRepository {
   ///
   /// [locale] 은 뜻의 언어다. 서버가 요청 로케일 → 영어 → null 순으로 떨어뜨린다.
   Future<AssignmentItems> assignmentItems(int assignmentId, {String? locale});
+
+  /// 과제 발음 결과 요약. 세션 요약 화면(`learning_call_main`)이 그대로 그린다.
+  ///
+  /// 앱 서버의 통화 리포트와 **같은 모양**이다 — 화면을 새로 만들지 않고 그
+  /// 화면을 쓰기로 했기 때문이다(2026-09-04).
+  Future<LearningSummary> assignmentReport(int assignmentId);
 
   /// 과제 예문의 원어민 음성 주소.
   ///

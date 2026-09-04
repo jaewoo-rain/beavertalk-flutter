@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/error/dio_error_mapper.dart';
 import '../../../review/data/models/review_feedback_dto.dart';
+import '../../../../screens/home/learning_summary.dart';
 import '../../domain/entities/assignment_item.dart';
 import '../../domain/entities/classroom_assignment.dart';
 import '../../domain/entities/classroom_membership.dart';
@@ -86,6 +87,15 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       return AssignmentItems.fromJson(
         await _ds.assignmentItems(assignmentId, locale: locale),
       );
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<LearningSummary> assignmentReport(int assignmentId) async {
+    try {
+      return LearningSummary.fromJson(await _ds.assignmentReport(assignmentId));
     } on DioException catch (e) {
       throw mapDioException(e);
     }
