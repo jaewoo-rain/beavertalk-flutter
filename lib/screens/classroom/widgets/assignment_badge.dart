@@ -94,7 +94,9 @@ String activityLabel(BuildContext context, AssignmentActivity activity) {
 /// 만들지 않았으므로 켤 근거가 없다.
 bool activityDone(ClassroomAssignment a, AssignmentActivity activity) {
   return switch (activity) {
-    AssignmentActivity.speaking => _met(a.speakingPassed, a.speakingTotal),
+    // 🔴 **읽은 수**로 판정한다. 맞힌 수(`speakingPassed`)로 재면 두 문장 틀린
+    //    학습자는 다 읽고도 완료가 안 된다 — 숙제는 점수가 아니라 수행이다.
+    AssignmentActivity.speaking => _met(a.speakingScored, a.speakingTotal),
     AssignmentActivity.conversation => _met(
       a.conversationMet,
       a.conversationTotal,

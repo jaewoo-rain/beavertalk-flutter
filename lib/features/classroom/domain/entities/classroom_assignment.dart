@@ -68,6 +68,7 @@ class ClassroomAssignment {
     required this.dueAt,
     required this.overdue,
     required this.status,
+    this.speakingScored = 0,
     this.speakingPassed,
     this.speakingTotal,
     this.conversationMet,
@@ -108,6 +109,7 @@ class ClassroomAssignment {
       dueAt: DateTime.parse(json['due_at'] as String).toLocal(),
       overdue: json['overdue'] as bool? ?? false,
       status: AssignmentStatus.fromCode(json['status'] as String?),
+      speakingScored: (json['speaking_scored'] as num?)?.toInt() ?? 0,
       speakingPassed: (json['speaking_passed'] as num?)?.toInt(),
       speakingTotal: (json['speaking_total'] as num?)?.toInt(),
       conversationMet: (json['conversation_met'] as num?)?.toInt(),
@@ -172,6 +174,12 @@ class ClassroomAssignment {
 
   /// 제출 상태.
   final AssignmentStatus status;
+
+  /// **읽은** 문장 수. 통과 여부와 무관하다.
+  ///
+  /// 🔴 완료 판정은 이 값으로 한다. [speakingPassed] 로 판정하면 두 문장 틀린
+  /// 학습자가 다 읽고도 영원히 「학습하기」를 본다(2026-09-04 실측 37/38).
+  final int speakingScored;
 
   /// 발음 통과 문장 수. 아직 제출 전이면 null 이다.
   ///

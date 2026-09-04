@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/features/classroom/domain/entities/classroom_assignment.dart';
 import 'package:beavertalk/features/classroom/presentation/assignment_display.dart';
+import 'package:beavertalk/screens/classroom/widgets/assignment_badge.dart';
 
 final DateTime _now = DateTime(2026, 9, 2, 10);
 
@@ -165,6 +166,47 @@ void main() {
       final g = groupAssignments([a], _now);
       expect(g[AssignmentBucket.done]!.single.assignmentId, 9);
       expect(g[AssignmentBucket.inProgress], isEmpty);
+    });
+  });
+
+
+  // ── 완료 판정 (2026-09-04) ──
+  //
+  // 🔴 맞힌 수로 재면 두 문장 틀린 학습자는 38문장을 다 읽고도 영원히
+  //    「학습하기」를 본다. 실측에서 37/38 통과인데 미완료로 떴다.
+  group('발음 완료 판정은 읽은 수로 한다', () {
+    ClassroomAssignment withSpeaking({
+      required int scored,
+      required int passed,
+      required int total,
+    }) => ClassroomAssignment(
+      assignmentId: 1,
+      classroomName: 'A반',
+      grade: 1,
+      chapter: 1,
+      activities: const [AssignmentActivity.speaking],
+      itemIds: const [],
+      dueAt: _now,
+      overdue: false,
+      status: AssignmentStatus.done,
+      speakingScored: scored,
+      speakingPassed: passed,
+      speakingTotal: total,
+    );
+
+    test('다 읽었으면 틀린 문장이 있어도 완료다', () {
+      final a = withSpeaking(scored: 38, passed: 36, total: 38);
+      expect(activityDone(a, AssignmentActivity.speaking), isTrue);
+    });
+
+    test('덜 읽었으면 완료가 아니다', () {
+      final a = withSpeaking(scored: 37, passed: 37, total: 38);
+      expect(activityDone(a, AssignmentActivity.speaking), isFalse);
+    });
+
+    test('아무것도 안 읽었으면 완료가 아니다', () {
+      final a = withSpeaking(scored: 0, passed: 0, total: 38);
+      expect(activityDone(a, AssignmentActivity.speaking), isFalse);
     });
   });
 }

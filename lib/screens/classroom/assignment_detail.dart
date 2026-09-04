@@ -56,6 +56,41 @@ class _AssignmentDetailScreenState
     if (injected is ClassroomAssignment) _assignment = injected;
   }
 
+  /// 다 읽은 과제의 결과를 연다.
+  ///
+  /// 서버에서 문장 묶음을 다시 받아 진행을 되살린 **뒤에** 연다. 앱을 껐다 켜면
+  /// 메모리의 집계가 비어 있어, 안 되살리면 결과 화면이 「-%」만 그린다.
+  Future<void> _showSpeakingResult(ClassroomAssignment a) async {
+    if (_loadingItems) return;
+    setState(() => _loadingItems = true);
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+    final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).languageCode;
+    try {
+      final bundle = await ref
+          .read(classroomRepositoryProvider)
+          .assignmentItems(a.assignmentId, locale: locale);
+      if (!mounted) return;
+      setState(() => _loadingItems = false);
+      ref
+          .read(assignmentAttemptProvider.notifier)
+          .restore(assignmentId: a.assignmentId, items: bundle.items);
+      await navigator.pushNamed(
+        Routes.assignmentResult,
+        arguments: a.assignmentId,
+      );
+    } on AppException catch (e) {
+      if (!mounted) return;
+      setState(() => _loadingItems = false);
+      messenger
+        ..clearSnackBars()
+        ..showSnackBar(
+          SnackBar(content: Text(e.fromServer ? e.message : l10n.hwJoinFailed)),
+        );
+    }
+  }
+
   /// 발음 과제 시작 — 문장을 받아 학습 화면을 과제 모드로 연다.
   Future<void> _startSpeaking(ClassroomAssignment a) async {
     if (_loadingItems) return;
@@ -271,8 +306,10 @@ class _AssignmentDetailScreenState
           ctaLabel: done ? l10n.hwCtaResult : l10n.hwCtaStudy,
           ctaType: done ? BtnType.secondaryFill : BtnType.primaryFill,
           // 닫힌 과제는 제출을 받지 않는다. 읽게 해 놓고 마지막에 튕기지 않는다.
-          ctaDisabled: a.isClosed || _loadingItems,
-          onCta: () => _startSpeaking(a),
+          // 🔴 다 읽은 과제는 **결과로 간다.** 예전에는 라벨만 「학습결과」로
+          //    바뀌고 눌러도 녹음 화면이 다시 열렸다.
+          ctaDisabled: (a.isClosed && !done) || _loadingItems,
+          onCta: () => done ? _showSpeakingResult(a) : _startSpeaking(a),
         );
 
       case AssignmentActivity.conversation:

@@ -807,7 +807,15 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       }
     }
     if (!mounted) return;
-    navigator.pop();
+    // 🔴 예전에는 여기서 그냥 pop 해 숙제 화면으로 떨어졌다. 38문장을 다 읽고도
+    //    결과를 못 보고 목록으로 튕기는 셈이라, 학습자는 자기가 몇 개를 통과했는지
+    //    알 수 없었다. 결과 화면으로 **바꿔 끼운다**(pushReplacement) — 뒤로
+    //    가기가 이미 해체된 녹음 화면으로 돌아가면 안 된다.
+    if (id == null) {
+      navigator.pop();
+      return;
+    }
+    navigator.pushReplacementNamed(Routes.assignmentResult, arguments: id);
   }
 
   void _snack(String message) {
