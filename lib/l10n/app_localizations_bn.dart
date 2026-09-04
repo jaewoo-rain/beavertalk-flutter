@@ -2108,6 +2108,26 @@ class AppLocalizationsBn extends AppLocalizations {
   String get unlockedWithMax => 'Max দিয়ে ব্যবহারযোগ্য';
 
   @override
+  String get fcEndedTitle => 'আপনার ফ্রি কল শেষ হয়েছে';
+
+  @override
+  String get fcEndedBody =>
+      'ফ্রি কল সর্বোচ্চ ৫ মিনিট চলে\nআরও বেশি কথা বলতে সাবস্ক্রাইব করুন';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'সাবস্ক্রাইব করে কথা চালিয়ে যান';
+
+  @override
+  String get kgTitle => 'চালিয়ে যাবেন?';
+
+  @override
+  String get kgBody =>
+      'কল ৫ মিনিট করে চলতে থাকে।\nপ্রতিবার আমরা আবার জিজ্ঞেস করব।';
+
+  @override
+  String get ctaKeepTalking => 'কথা চালিয়ে যান';
+
+  @override
   String get callModeSheetTitle => 'আপনি কীভাবে কথা বলতে চান?';
 
   @override

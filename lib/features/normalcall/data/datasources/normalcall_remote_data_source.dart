@@ -28,6 +28,16 @@ class NormalcallRemoteDataSource {
     return res.data?['status'] as String?;
   }
 
+  /// `GET /calls/{call_id}/resume-status` — 이 통화를 이어갈 수 있는지 서버에 묻는다.
+  ///
+  /// 남의 통화를 조회하면 서버가 **404** 를 준다(백엔드 문서 §2③). 리포지토리가
+  /// 그 경우를 null 로 눕힌다 — 이어가기를 못 할 뿐 통화를 막을 일은 아니다.
+  Future<Map<String, dynamic>?> getResumeStatus(int callId) async {
+    final res = await _dio
+        .get<Map<String, dynamic>>('/calls/$callId/resume-status');
+    return res.data;
+  }
+
   /// `GET /calls/{call_id}/result`.
   Future<CallResultDto> getResult(int callId) async {
     final res = await _dio.get<Map<String, dynamic>>('/calls/$callId/result');

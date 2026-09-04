@@ -1341,6 +1341,30 @@
   "@unlockedWithMax": {
     "description": "Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does."
   },
+  "fcEndedTitle": "Your free call has ended",
+  "@fcEndedTitle": {
+    "description": "Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option."
+  },
+  "fcEndedBody": "Free calls last up to 5 minutes\nSubscribe to keep talking for longer",
+  "@fcEndedBody": {
+    "description": "Body of the free 5-minute limit sheet. Two lines separated by a newline."
+  },
+  "ctaSubscribeKeepTalking": "Subscribe and keep talking",
+  "@ctaSubscribeKeepTalking": {
+    "description": "Primary CTA on the free 5-minute limit sheet. Opens the paywall."
+  },
+  "kgTitle": "Keep going?",
+  "@kgTitle": {
+    "description": "Title of the sheet shown to a PAID member every 5 minutes, asking whether to continue. Up to 15 minutes total."
+  },
+  "kgBody": "Calls continue in 5-minute stretches.\nWe'll check in again each time.",
+  "@kgBody": {
+    "description": "Body of the paid continue sheet. Two lines separated by a newline."
+  },
+  "ctaKeepTalking": "Keep talking",
+  "@ctaKeepTalking": {
+    "description": "Primary CTA on the paid continue sheet. Opens the next 5-minute segment."
+  },
   "callModeSheetTitle": "How do you want to talk?",
   "@callModeSheetTitle": {
     "description": "Mode sheet - heading. Asks how the learner wants to talk in this call."

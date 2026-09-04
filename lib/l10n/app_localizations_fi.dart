@@ -2119,6 +2119,26 @@ class AppLocalizationsFi extends AppLocalizations {
   String get unlockedWithMax => 'Käytettävissä Maxilla';
 
   @override
+  String get fcEndedTitle => 'Ilmainen puhelusi päättyi';
+
+  @override
+  String get fcEndedBody =>
+      'Ilmaiset puhelut kestävät enintään 5 minuuttia\nTilaa, niin voit jutella pidempään';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Tilaa ja jatka juttelua';
+
+  @override
+  String get kgTitle => 'Jatketaanko?';
+
+  @override
+  String get kgBody =>
+      'Puhelut jatkuvat 5 minuutin jaksoissa.\nKysymme sinulta joka kerta uudelleen.';
+
+  @override
+  String get ctaKeepTalking => 'Jatka juttelua';
+
+  @override
   String get callModeSheetTitle => 'Miten haluat jutella?';
 
   @override

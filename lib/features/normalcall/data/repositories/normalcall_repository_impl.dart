@@ -1,3 +1,4 @@
+import '../../domain/entities/call_resume_status.dart';
 import 'package:dio/dio.dart';
 
 import '../../../../core/error/dio_error_mapper.dart';
@@ -81,6 +82,21 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
       return dtos.map((d) => d.toEntity()).toList();
     } on DioException catch (e) {
       throw mapDioException(e);
+    }
+  }
+
+  @override
+  Future<CallResumeStatus?> getResumeStatus(int callId) async {
+    try {
+      final json = await _remote.getResumeStatus(callId);
+      if (json == null) return null;
+      return CallResumeStatus.fromJson(json);
+    } on DioException catch (_) {
+      // ⛔ **던지지 않는다.** 이걸 못 물어봤다고 통화를 막을 이유가 없다 — 호출부가
+      //   로컬 계산(`CallAllowance`)으로 내려간다. 404 는 **구버전 서버**이거나
+      //   **남의 통화**이고(백엔드 문서 §2③), 네트워크 실패도 마찬가지로 「모른다」다.
+      //   셋 다 null 이 맞는 답이라 사유로 가르지 않는다.
+      return null;
     }
   }
 

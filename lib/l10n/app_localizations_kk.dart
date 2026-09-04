@@ -2113,6 +2113,26 @@ class AppLocalizationsKk extends AppLocalizations {
   String get unlockedWithMax => 'Max-пен қолжетімді';
 
   @override
+  String get fcEndedTitle => 'Тегін қоңырауыңыз аяқталды';
+
+  @override
+  String get fcEndedBody =>
+      'Тегін қоңыраулар 5 минутқа дейін созылады\nҰзағырақ сөйлесу үшін жазылыңыз';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Жазылып, сөйлесуді жалғастыру';
+
+  @override
+  String get kgTitle => 'Жалғастырамыз ба?';
+
+  @override
+  String get kgBody =>
+      'Қоңыраулар 5 минуттық бөліктермен жалғасады.\nӘр жолы сізден қайта сұраймыз.';
+
+  @override
+  String get ctaKeepTalking => 'Сөйлесуді жалғастыру';
+
+  @override
   String get callModeSheetTitle => 'Қалай сөйлескіңіз келеді?';
 
   @override

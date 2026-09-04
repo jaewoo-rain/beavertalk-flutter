@@ -1,5 +1,6 @@
 import '../../../../screens/home/learning_summary.dart';
 import '../entities/call_result.dart';
+import '../entities/call_resume_status.dart';
 import '../entities/pron_summary.dart';
 
 /// Post-call analysis capabilities the app depends on. Implemented in the data
@@ -38,4 +39,15 @@ abstract interface class NormalcallRepository {
   /// from the socket. Capturing this as a baseline before a call, then polling
   /// for a larger id after, identifies the new call. Throws [AppException].
   Future<int?> latestCallId();
+
+  /// 이 통화를 **이어갈 수 있는지** 서버에 묻는다 (`GET /calls/{id}/resume-status`).
+  ///
+  /// 상한 판정의 **1차 권위**다. 클라도 [CallAllowance] 로 같은 계산을 할 수 있지만,
+  /// 「누가 유료인가」에 대한 판단이 서버와 다를 수 있고 **다를 때는 서버가 맞다** —
+  /// 이어가기를 실제로 허락하는 쪽이 서버이기 때문이다.
+  ///
+  /// 못 받으면 **null** 을 돌려준다(구버전 서버 404, 남의 통화 404, 네트워크 실패).
+  /// 호출부는 그때 로컬 계산으로 내려간다. **던지지 않는다** — 이걸 못 물어봤다고
+  /// 통화를 막을 이유는 없다.
+  Future<CallResumeStatus?> getResumeStatus(int callId);
 }

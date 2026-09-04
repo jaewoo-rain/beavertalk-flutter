@@ -2101,6 +2101,26 @@ class AppLocalizationsAr extends AppLocalizations {
   String get unlockedWithMax => 'متاح مع Max';
 
   @override
+  String get fcEndedTitle => 'انتهت مكالمتك المجانية';
+
+  @override
+  String get fcEndedBody =>
+      'المكالمات المجانية تصل إلى 5 دقائق\nاشترك لمواصلة الحديث لفترة أطول';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'اشترك وواصل الحديث';
+
+  @override
+  String get kgTitle => 'هل نكمل؟';
+
+  @override
+  String get kgBody =>
+      'تستمر المكالمات على فترات مدتها 5 دقائق.\nسنسألك مرة أخرى في كل مرة.';
+
+  @override
+  String get ctaKeepTalking => 'مواصلة الحديث';
+
+  @override
   String get callModeSheetTitle => 'كيف تريد أن تتحدث؟';
 
   @override

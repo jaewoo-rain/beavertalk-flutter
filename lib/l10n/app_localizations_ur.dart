@@ -2112,6 +2112,26 @@ class AppLocalizationsUr extends AppLocalizations {
   String get unlockedWithMax => 'Max کے ساتھ دستیاب';
 
   @override
+  String get fcEndedTitle => 'آپ کی مفت کال ختم ہو گئی';
+
+  @override
+  String get fcEndedBody =>
+      'مفت کالیں زیادہ سے زیادہ 5 منٹ کی ہوتی ہیں\nمزید بات کرنے کے لیے سبسکرائب کریں';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'سبسکرائب کریں اور بات جاری رکھیں';
+
+  @override
+  String get kgTitle => 'جاری رکھیں؟';
+
+  @override
+  String get kgBody =>
+      'کالیں 5 منٹ کے حصوں میں جاری رہتی ہیں۔\nہم ہر بار دوبارہ پوچھیں گے۔';
+
+  @override
+  String get ctaKeepTalking => 'بات جاری رکھیں';
+
+  @override
   String get callModeSheetTitle => 'آپ کیسے بات کرنا چاہتے ہیں؟';
 
   @override

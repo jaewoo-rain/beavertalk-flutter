@@ -2108,6 +2108,26 @@ class AppLocalizationsHi extends AppLocalizations {
   String get unlockedWithMax => 'Max के साथ उपलब्ध';
 
   @override
+  String get fcEndedTitle => 'आपकी मुफ़्त कॉल ख़त्म हो गई';
+
+  @override
+  String get fcEndedBody =>
+      'मुफ़्त कॉल 5 मिनट तक चलती है\nलंबी बातचीत के लिए सब्सक्राइब करें';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'सब्सक्राइब करें और बात जारी रखें';
+
+  @override
+  String get kgTitle => 'आगे बढ़ें?';
+
+  @override
+  String get kgBody =>
+      'कॉल 5-5 मिनट के हिस्सों में जारी रहती है।\nहर बार हम आपसे फिर पूछेंगे।';
+
+  @override
+  String get ctaKeepTalking => 'बात जारी रखें';
+
+  @override
   String get callModeSheetTitle => 'आप कैसे बात करना चाहते हैं?';
 
   @override

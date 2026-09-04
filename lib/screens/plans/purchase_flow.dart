@@ -9,6 +9,7 @@ import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/benefit_row.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/iap_service.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
@@ -69,6 +70,27 @@ class _PurchaseProcessingScreenState
           ref.read(sessionEntitlementProvider.notifier).state = tier;
           ref.invalidate(serverSubscriptionStatusProvider);
           ref.invalidate(subscriptionsProvider);
+          // 통화가 5분 시트에서 이 퍼널을 띄워 놓고 **기다리고 있는가.**
+          //
+          // 그렇다면 성공 화면(`depth/purchase_success_pro`)을 띄우지 않는다. 그 시안의
+          // primary CTA 는 「Start a call」이라 **이미 통화 중인 사람에게 성립하지 않고**,
+          // 애초에 통화 밖에서 결제한 사람을 위해 그려진 화면이다. 대신 통화 화면까지
+          // 되돌려 대화를 잇는다 — 시트 카피가 약속한 「keep talking」이 그 뜻이다.
+          //
+          // ⛔ 이 판정을 `sessionEntitlementProvider` 를 감시하는 쪽(통화 화면)에 두지
+          //   마라. 바로 위에서 그 provider 를 set 하고 **같은 동기 블록에서** 아래
+          //   네비게이션이 돌기 때문에, 리스너는 microtask 로 한 박자 늦게 깬다.
+          //   그러면 성공 화면이 한 번 번쩍이고 사라진다. 퍼널이 직접 갈라야 결정적이다.
+          final callParked = ref.read(normalCallControllerProvider).phase ==
+              CallPhase.awaitingContinue;
+          if (callParked) {
+            // `|| r.isFirst` 는 안전망이다 — [Navigator.popUntil] 은 술어가 끝내 참이
+            // 되지 않으면 **스택을 다 비운다.** 통화 화면이 어떤 이유로든 스택에
+            // 없을 때 결제한 사람을 빈 화면에 떨구는 것보다 홈이 낫다.
+            Navigator.of(context).popUntil(
+                (r) => r.settings.name == Routes.call || r.isFirst);
+            return;
+          }
           Navigator.pushReplacementNamed(
             context,
             tier == SubscriptionTier.max

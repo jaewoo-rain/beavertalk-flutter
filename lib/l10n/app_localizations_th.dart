@@ -2104,6 +2104,26 @@ class AppLocalizationsTh extends AppLocalizations {
   String get unlockedWithMax => 'ใช้ได้ด้วย Max';
 
   @override
+  String get fcEndedTitle => 'การโทรฟรีของคุณสิ้นสุดแล้ว';
+
+  @override
+  String get fcEndedBody =>
+      'การโทรฟรีใช้ได้สูงสุด 5 นาที\nสมัครสมาชิกเพื่อคุยต่อได้นานขึ้น';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'สมัครสมาชิกและคุยต่อ';
+
+  @override
+  String get kgTitle => 'คุยต่อไหม';
+
+  @override
+  String get kgBody =>
+      'การโทรจะดำเนินต่อครั้งละ 5 นาที\nเราจะถามคุณอีกทุกครั้ง';
+
+  @override
+  String get ctaKeepTalking => 'คุยต่อ';
+
+  @override
   String get callModeSheetTitle => 'อยากคุยแบบไหน';
 
   @override

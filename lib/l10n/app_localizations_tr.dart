@@ -2114,6 +2114,26 @@ class AppLocalizationsTr extends AppLocalizations {
   String get unlockedWithMax => 'Max ile kullanılabilir';
 
   @override
+  String get fcEndedTitle => 'Ücretsiz görüşmen sona erdi';
+
+  @override
+  String get fcEndedBody =>
+      'Ücretsiz görüşmeler en fazla 5 dakika sürer\nDaha uzun konuşmak için abone ol';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Abone ol ve konuşmaya devam et';
+
+  @override
+  String get kgTitle => 'Devam edelim mi?';
+
+  @override
+  String get kgBody =>
+      'Görüşmeler 5 dakikalık bölümler hâlinde sürer.\nHer seferinde sana tekrar soracağız.';
+
+  @override
+  String get ctaKeepTalking => 'Konuşmaya devam et';
+
+  @override
   String get callModeSheetTitle => 'Nasıl konuşmak istersin?';
 
   @override

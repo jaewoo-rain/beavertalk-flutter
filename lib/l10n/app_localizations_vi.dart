@@ -2113,6 +2113,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get unlockedWithMax => 'Có sẵn với Max';
 
   @override
+  String get fcEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';
+
+  @override
+  String get fcEndedBody =>
+      'Cuộc gọi miễn phí kéo dài tối đa 5 phút\nĐăng ký để trò chuyện lâu hơn';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Đăng ký và tiếp tục trò chuyện';
+
+  @override
+  String get kgTitle => 'Tiếp tục nhé?';
+
+  @override
+  String get kgBody =>
+      'Cuộc gọi tiếp tục theo từng đoạn 5 phút.\nChúng tôi sẽ hỏi lại mỗi lần.';
+
+  @override
+  String get ctaKeepTalking => 'Tiếp tục trò chuyện';
+
+  @override
   String get callModeSheetTitle => 'Bạn muốn trò chuyện thế nào?';
 
   @override

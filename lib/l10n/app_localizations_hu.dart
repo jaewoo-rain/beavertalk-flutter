@@ -2131,6 +2131,26 @@ class AppLocalizationsHu extends AppLocalizations {
   String get unlockedWithMax => 'Elérhető a Maxszal';
 
   @override
+  String get fcEndedTitle => 'A díjmentes hívásod véget ért';
+
+  @override
+  String get fcEndedBody =>
+      'A díjmentes hívások legfeljebb 5 percig tartanak\nElőfizetéssel tovább beszélgethetsz';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Előfizetés és beszélgetés folytatása';
+
+  @override
+  String get kgTitle => 'Folytatjuk?';
+
+  @override
+  String get kgBody =>
+      'A hívások 5 perces szakaszokban folytatódnak.\nMinden alkalommal rákérdezünk.';
+
+  @override
+  String get ctaKeepTalking => 'Beszélgetés folytatása';
+
+  @override
   String get callModeSheetTitle => 'Hogyan szeretnél beszélgetni?';
 
   @override

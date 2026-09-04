@@ -2118,6 +2118,26 @@ class AppLocalizationsKy extends AppLocalizations {
   String get unlockedWithMax => 'Max менен жеткиликтүү';
 
   @override
+  String get fcEndedTitle => 'Акысыз чалууңуз аяктады';
+
+  @override
+  String get fcEndedBody =>
+      'Акысыз чалуулар 5 мүнөткө чейин созулат\nУзагыраак сүйлөшүү үчүн жазылыңыз';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Жазылып, сүйлөшүүнү улантуу';
+
+  @override
+  String get kgTitle => 'Улантабызбы?';
+
+  @override
+  String get kgBody =>
+      'Чалуулар 5 мүнөттүк бөлүктөр менен уланат.\nАр жолу сизден кайра сурайбыз.';
+
+  @override
+  String get ctaKeepTalking => 'Сүйлөшүүнү улантуу';
+
+  @override
   String get callModeSheetTitle => 'Кантип сүйлөшкүңүз келет?';
 
   @override

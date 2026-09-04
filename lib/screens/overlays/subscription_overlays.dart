@@ -88,12 +88,32 @@ enum SubscriptionOverlay {
 
   /// `free_limit — 발음분석 소진` (§7-1, host: analysis).
   freeLimitCheck,
+
+  /// `free_call_ended` (`4952:18151`) — **무료 회원이 5분 구간을 다 썼다.**
+  ///
+  /// [freeLimitCall] 과 형제지만 뜻이 다르다: 저쪽은 "오늘 통화를 다 썼다"(하루 1통화),
+  /// 이쪽은 "이번 통화의 5분이 끝났다"다. 무료에는 연장이 없으므로 두 번째 버튼은
+  /// 통화 종료다.
+  freeCallEnded,
+
+  /// `keep_going` (`4952:18344`) — **유료 회원에게 5분마다 묻는다.**
+  ///
+  /// 통화당 15분(=5분 × 3구간)까지 이어갈 수 있고, 매 구간 끝에서 이 시트가 뜬다
+  /// (시안 카피: "Calls continue in 5-minute stretches. We'll check in again each
+  /// time."). 상한을 다 쓰면 이 시트를 띄우지 않고 통화를 끝낸다 — 누를 수 없는
+  /// 버튼을 보여 줄 이유가 없다.
+  keepGoing,
 }
 
 /// Shows [overlay] as a modal bottom sheet over the current screen.
 ///
 /// [expiresAt] feeds the sheets that quote a date (server value); [usage] and
 /// [scores] feed the free-limit sheets. Returns when the sheet closes.
+///
+/// [onContinue] / [onEndCall] 은 통화 구간 시트([SubscriptionOverlay.keepGoing],
+/// [SubscriptionOverlay.freeCallEnded]) 전용이다. 그 시트의 버튼은 **시트를 닫는 것
+/// 만으로 끝나지 않고 통화 자체를 움직여야 해서**, 다른 시트들과 달리 호출부의
+/// 동작을 받는다.
 Future<void> showSubscriptionOverlay(
   BuildContext context,
   SubscriptionOverlay overlay, {
@@ -105,13 +125,23 @@ Future<void> showSubscriptionOverlay(
   String? characterName,
   String? lastTopic,
   List<SheetRowData>? scores,
+  VoidCallback? onContinue,
+  VoidCallback? onEndCall,
+  VoidCallback? onSubscribe,
 }) {
+  // 통화 구간 시트는 **결정을 받아야 하는** 시트다. 딤을 눌러서 흘려보내면 통화가
+  // 결정을 기다리는 상태로 남는다(소리도 없고 화면도 안 바뀐다). 그래서 이 둘만
+  // 딤 탭·드래그로 닫히지 않게 한다.
+  final mustDecide = overlay == SubscriptionOverlay.keepGoing ||
+      overlay == SubscriptionOverlay.freeCallEnded;
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
     // Dim tap = close; pinned to the app scrim.
     barrierColor: context.c.materialDim,
     isScrollControlled: true,
+    isDismissible: !mustDecide,
+    enableDrag: !mustDecide,
     builder: (sheetCtx) => _OverlaySheet(
       overlay: overlay,
       expiresAt: expiresAt,
@@ -122,6 +152,9 @@ Future<void> showSubscriptionOverlay(
       characterName: characterName,
       lastTopic: lastTopic,
       scores: scores,
+      onContinue: onContinue,
+      onEndCall: onEndCall,
+      onSubscribe: onSubscribe,
     ),
   );
 }
@@ -137,6 +170,9 @@ class _OverlaySheet extends StatelessWidget {
     this.characterName,
     this.lastTopic,
     this.scores,
+    this.onContinue,
+    this.onEndCall,
+    this.onSubscribe,
   });
 
   final SubscriptionOverlay overlay;
@@ -154,6 +190,21 @@ class _OverlaySheet extends StatelessWidget {
   final String? characterName;
   final String? lastTopic;
   final List<SheetRowData>? scores;
+
+  /// 「Keep talking」 — 다음 5분 구간을 연다. 통화 구간 시트에서만 쓴다.
+  final VoidCallback? onContinue;
+
+  /// 「End Call」 — 통화를 끝낸다. 통화 구간 시트에서만 쓴다.
+  ///
+  /// ⚠ 이 버튼은 **시트만 닫으면 안 된다.** 통화는 결정을 기다리는 상태로 멈춰
+  ///   있으므로, 닫기만 하면 소리도 안 나고 화면도 안 바뀌는 상태에 갇힌다.
+  final VoidCallback? onEndCall;
+
+  /// 「Subscribe and keep talking」 — 통화를 끝내고 결제 화면으로.
+  ///
+  /// 안 주면 결제 화면으로 밀기만 한다(마이페이지 데모 허브처럼 통화가 없는 곳).
+  /// 통화 중에는 **반드시 넘겨야 한다** — 이유는 호출 지점 주석 참조.
+  final VoidCallback? onSubscribe;
 
   String _date(BuildContext context, DateTime? d) =>
       d == null ? '—' : localizedFullDate(context, d);
@@ -503,6 +554,53 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => pushAfterClose(Routes.subscription)),
           secondaryAction:
               SheetAction(label: l10n.ctaClose, onPressed: () => _close(context)),
+        );
+      // 무료 회원이 이번 통화의 5분을 다 썼다 — 연장은 없고 구독 유도만 있다.
+      // `freeLimitCall`(오늘 통화 소진)과 **레이아웃은 같고 문구·행동만 다르다.**
+      case SubscriptionOverlay.freeCallEnded:
+        return BottomSheetContent(
+          type: SheetContentType.preview,
+          title: l10n.fcEndedTitle,
+          body: l10n.fcEndedBody,
+          preview: SheetPreviewData(
+            avatar: avatar ?? const SizedBox.shrink(),
+            name: characterName ?? '',
+            // 통화 **중간**에 주제를 뽑는 기능이 아직 없다(`/calls/{id}/result` 는
+            // 종료 후 분석이다). 서버가 줄 수 있게 되면 [lastTopic] 으로 들어온다.
+            topic: lastTopic ?? '',
+            usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
+          ),
+          benefitLabel: l10n.flBenefitCalls,
+          benefitTier: BenefitTier.pro,
+          caption: l10n.flCaption(PlanPrices.proMonthly),
+          // ⛔ 여기서 직접 결제 화면으로 밀지 않는다. 통화를 끝내는 일과 화면을 옮기는
+          //    일이 **둘 다** 일어나야 하는데, 통화 종료는 화면의 요약 이동 리스너를
+          //    깨운다. 여기서 push 하면 그 리스너의 `pushReplacement` 가 방금 띄운
+          //    결제 화면을 덮어써서, 「구독하기」를 눌렀는데 요약 화면이 뜬다.
+          //    순서를 아는 건 호출부뿐이라 [onSubscribe] 로 넘긴다.
+          primaryAction: SheetAction(
+              label: l10n.ctaSubscribeKeepTalking,
+              onPressed: () => _then(
+                  context,
+                  onSubscribe ??
+                      () => rootNav.pushNamed(Routes.paywallProLimit,
+                          arguments: 'call'))),
+          secondaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
+        );
+      // 유료 회원에게 5분마다 묻는다. 상한(15분)을 다 쓰면 화면이 이 시트를 아예
+      // 띄우지 않는다 — 여기서 「Keep talking」 이 보이면 반드시 눌러지는 상태다.
+      case SubscriptionOverlay.keepGoing:
+        return BottomSheetContent(
+          title: l10n.kgTitle,
+          body: l10n.kgBody,
+          primaryAction: SheetAction(
+              label: l10n.ctaKeepTalking,
+              onPressed: () => _then(context, () => onContinue?.call())),
+          secondaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
         );
       case SubscriptionOverlay.freeLimitCall:
         return BottomSheetContent(

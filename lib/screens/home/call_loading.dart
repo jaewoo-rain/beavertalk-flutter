@@ -72,6 +72,10 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
       case CallPhase.ending:
         break; // 진행 중 — 리스너가 다음 전이를 받는다.
       case CallPhase.inCall:
+      // 5분 구간 시트를 띄운 채 앱이 재진입한 경우 — 통화 화면으로 돌려보낸다.
+      // 거기서 시트를 다시 세워 사용자가 「Keep talking」/「End Call」 을 고를 수 있다.
+      // `start()` 로 떨어지면 **이어가던 통화 위에 새 통화를 얹는다.**
+      case CallPhase.awaitingContinue:
         _goCall();
       case CallPhase.ended:
         _goFinish(s);
@@ -172,6 +176,9 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
       if (_navigated) return;
       switch (next.phase) {
         case CallPhase.inCall:
+        // 연결 화면에 머무는 사이 첫 5분 구간이 끝났다면(재진입 등) 통화 화면으로
+        // 보낸다 — 시트를 세울 수 있는 곳은 거기뿐이다.
+        case CallPhase.awaitingContinue:
           _goCall();
         // 연결 화면에 머무는 동안 통화가 끝날 수 있다(잠금화면 종료 버튼 등).
         // 그때는 요약 화면으로 보낸다 — 여기 남아 계속 돌면 통화가 안 끝난 것처럼 보인다.

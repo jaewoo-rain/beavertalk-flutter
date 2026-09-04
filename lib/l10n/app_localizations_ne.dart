@@ -2105,6 +2105,26 @@ class AppLocalizationsNe extends AppLocalizations {
   String get unlockedWithMax => 'Max सँग उपलब्ध';
 
   @override
+  String get fcEndedTitle => 'तपाईंको नि:शुल्क कल सकियो';
+
+  @override
+  String get fcEndedBody =>
+      'नि:शुल्क कल ५ मिनेटसम्म चल्छ\nलामो कुराकानीका लागि सदस्यता लिनुहोस्';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'सदस्यता लिई कुराकानी जारी राख्नुहोस्';
+
+  @override
+  String get kgTitle => 'जारी राख्ने?';
+
+  @override
+  String get kgBody =>
+      'कल ५-५ मिनेटका खण्डमा जारी रहन्छ।\nहरेक पटक हामी फेरि सोध्नेछौं।';
+
+  @override
+  String get ctaKeepTalking => 'कुराकानी जारी राख्नुहोस्';
+
+  @override
   String get callModeSheetTitle => 'तपाईं कसरी कुरा गर्न चाहनुहुन्छ?';
 
   @override

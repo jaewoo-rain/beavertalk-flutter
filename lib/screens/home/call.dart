@@ -11,20 +11,19 @@ import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
-import '../../components/organisms/bottom_sheet.dart' show SheetAction;
-import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
+import '../../features/normalcall/domain/entities/call_allowance.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
-import '../../features/normalcall/data/call_quota_mock.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_motion.dart';
 import '../../theme/app_spacing.dart';
@@ -74,11 +73,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   bool _navigated = false;
 
-  /// 5분 시트를 이번 구간에서 이미 띄웠는가.
+  /// 구간 시트가 떠 있는가 — 중복 표시 방어.
   ///
-  /// 경과시간은 매초 올라오므로 조건만으로 열면 **초마다 다시 뜬다**. 「이어가기」를
-  /// 누르면 다음 구간을 위해 [_limitShownAtSec] 를 갱신한다.
-  int? _limitShownAtSec;
+  /// `ref.listen` 은 빌드마다 다시 걸리고 상태도 여러 번 흐르므로, 이게 없으면
+  /// [CallPhase.awaitingContinue] 하나에 시트가 여러 장 쌓인다.
+  bool _segmentSheetOpen = false;
 
   /// turn_id of the hint the learner has revealed (peek → full). Ephemeral: a
   /// new hint carries a new turn_id, so the card auto-collapses.
@@ -150,78 +149,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
-  /// 통화 구간 시트 — **이어갈 수 있느냐**로 갈린다. 플랜으로 직접 가르지 않는다.
-  ///
-  /// | 시점 | 문구 | 1차 버튼 |
-  /// |---|---|---|
-  /// | 상한 미만(확인) | 더 이어갈까요? | 계속 통화하기 |
-  /// | 상한 도달 | 무료 통화가 끝났어요 | 구독하고 계속 대화하기 |
-  ///
-  /// 무료는 상한이 5분이라 첫 시트가 곧 종료 시트다. 유료는 상한이 15분이라
-  /// 5·10분에 확인만 받고, 15분에 닿으면 같은 자리에서 종료로 바뀐다.
-  ///
-  /// ⚠ **오디오를 멈추지 않는다** — 아직 못 한다. 서버가 5분에 세션을 붙들어 주는지
-  /// 확인되지 않았고(서버질문지 B-5·B-7), 클라가 임의로 끊으면 유료 사용자의 통화가
-  /// 사라진다. 지금은 **묻기만** 한다.
-  ///
-  /// ⚠ 한도 판정은 서버 권위다. 이 시트는 경과시간으로 **띄우기만** 하고, 실제로
-  /// 끊는 것은 서버의 `call_ended` 다.
-  Future<void> _showLimitSheet(int atSec) async {
-    final l10n = AppLocalizations.of(context);
-    final quota = ref.read(callQuotaProvider);
-    // 「이어갈 수 있는가」가 갈림돌이다. 상한에 닿았으면 유료여도 못 이어간다.
-    final canContinue = !quota.isCeiling(atSec);
-    final notifier = ref.read(normalCallControllerProvider.notifier);
-    setState(() => _limitShownAtSec = atSec);
-
-    // 시트를 읽는 동안 업링크와 경과시간을 멈춘다. 비버 재생은 그대로 둔다.
-    notifier.setSessionPaused(true);
-
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: context.c.materialDim,
-      isScrollControlled: true,
-      isDismissible: false,
-      enableDrag: false,
-      builder: (sheetCtx) => BottomSheetContent(
-        title: canContinue ? l10n.callKeepGoingTitle : l10n.callFreeEndedTitle,
-        body: canContinue ? l10n.callKeepGoingSubtitle : l10n.freePlanCallLimit,
-        primaryAction: SheetAction(
-          label: canContinue ? l10n.callExitKeep : l10n.callFreeEndedCta,
-          onPressed: () {
-            Navigator.of(sheetCtx).pop();
-            if (canContinue) return;
-            // 상한에 닿았으면 이 통화는 여기서 끝이다. 페이월로 보내기 **전에**
-            // 끊는다 — 안 끊으면 결제 화면을 보는 내내 세션이 살아 있다.
-            notifier.hangUp();
-            // v2 §2-3 ④ — 파는 것은 페이월, 사는 것은 OS 결제 시트다.
-            Navigator.pushNamed(context, Routes.paywallPro);
-          },
-        ),
-        secondaryAction: SheetAction(
-          label: l10n.endCall,
-          onPressed: () {
-            Navigator.of(sheetCtx).pop();
-            notifier.hangUp();
-          },
-        ),
-      ),
-    );
-
-    if (!mounted) return;
-    // 상한에 닿았는데도 아직 살아 있다면 **클라가 끊는다.**
-    //
-    // 서버가 끊는 것이 진짜 한도지만, 서버가 안 끊으면 세션이 무한정 돈다.
-    // 이중 안전장치다(2026-08-18 결정 Q3=②).
-    final phase = ref.read(normalCallControllerProvider).phase;
-    if (!canContinue && phase == CallPhase.inCall) {
-      notifier.hangUp();
-      return;
-    }
-    notifier.setSessionPaused(false);
-  }
-
   /// 통화가 끝나 이 화면을 떠난다.
   ///
   /// 잠금화면 통화였고 아직 잠겨 있으면 앱을 뒤로 보내고 [inApp] 은 실행하지 않는다.
@@ -265,6 +192,95 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       ),
     );
   }
+
+  /// 5분 구간이 끝났을 때 뜨는 시트 — 무료는 구독 유도, 유료는 「Keep going?」.
+  ///
+  /// 어느 시트인지는 [CallState.paidCallTime] 이 가른다. **화면이 구독 상태를 따로
+  /// 읽지 않는 이유**는, 그러면 판정이 두 벌이 되어 컨트롤러가 계산한 상한
+  /// (5분/15분)과 화면이 그리는 시트가 어긋날 수 있기 때문이다. 판정은 통화 시작
+  /// 시점에 컨트롤러가 한 번 하고, 화면은 그 결과를 그린다.
+  Future<void> _showSegmentSheet(
+    CallState s, {
+    required String characterName,
+    required ImageProvider? avatarImage,
+  }) async {
+    if (_navigated || _segmentSheetOpen) return;
+    _segmentSheetOpen = true;
+    final notifier = ref.read(normalCallControllerProvider.notifier);
+
+    // 시트가 닫혔는데 아무 것도 안 골랐다면(시스템 뒤로가기 등) 통화를 끝낸다.
+    // 안 그러면 소리도 없고 화면도 안 바뀌는 상태에 갇힌다.
+    var decided = false;
+    final used = s.segmentsUsed;
+    final limit = CallAllowance.limitFor(paidAccess: s.paidCallTime);
+
+    try {
+      await showSubscriptionOverlay(
+        context,
+        s.paidCallTime
+            ? SubscriptionOverlay.keepGoing
+            : SubscriptionOverlay.freeCallEnded,
+        characterName: characterName,
+        avatar: avatarImage == null
+            ? null
+            : Image(image: avatarImage, fit: BoxFit.cover),
+        // 「5:00 of 5:00 used」 — 무료 시트에만 쓰인다.
+        usage: (
+          used: _clock(CallAllowance.segment.inSeconds * used),
+          limit: _clock(limit.inSeconds),
+        ),
+        onContinue: () {
+          decided = true;
+          notifier.continueCall();
+        },
+        onEndCall: () {
+          decided = true;
+          notifier.hangUp();
+        },
+        // 결제 퍼널을 **이 화면 위에 얹는다.** 통화를 끊지도, 화면을 떠나지도 않는다.
+        //
+        // 시트 카피가 「Subscribe and keep talking」이라 결제가 끝나면 **대화가
+        // 이어져야 한다.** 그러려면 두 가지가 살아 있어야 한다:
+        //   1. [CallPhase.awaitingContinue] — [NormalCallController.continueCall] 의 입장권
+        //   2. [CallState.callId] — 다음 구간의 `continues_call_id`. 서버가 이 id 로
+        //      앞 구간을 요약해 주입하므로, 끊어 버리면 **비버가 방금 한 얘기를 잊는다**
+        // 예전처럼 `hangUp()` 을 먼저 부르면 둘 다 사라진다.
+        //
+        // ⛔ `pushReplacement` 를 쓰지 마라 — 통화 화면이 스택에서 빠지면 결제 뒤
+        //   돌아올 자리가 없어 홈으로 떨어진다(사장님 리포트의 그 증상).
+        //
+        // ⛔ `_navigated` 를 올리지 않는다. 이 화면은 **떠나지 않으므로** 요약 이동
+        //   리스너를 재울 이유가 없고, 재우면 이어서 진짜로 끊었을 때 요약으로 못 간다.
+        //
+        // 결제 성공이면 `purchase_flow` 가 성공 화면 대신 이 화면까지 팝해 주고,
+        // 취소·실패면 페이월이 그냥 pop 된다 — **두 경로 모두 이 await 로 돌아온다.**
+        // 어느 쪽이었는지는 [NormalCallController.resumeAfterPaywall] 이 구독 상태를
+        // 다시 읽어 판정한다(이어가기 / 통화 종료).
+        onSubscribe: () async {
+          decided = true;
+          await Navigator.of(context, rootNavigator: true)
+              .pushNamed(Routes.paywallProLimit, arguments: 'call');
+          if (!mounted) return;
+          final resumed = await notifier.resumeAfterPaywall();
+          if (!mounted || !resumed) return;
+          // 결제 성공 화면을 건너뛰었으므로(그 시안의 CTA 는 「Start a call」이라 통화
+          // 중엔 성립하지 않는다) **결제됐다는 사실만** 통화 위에 얹어 알린다.
+          // 기존 키를 재사용한다 — 새 문구를 만들면 30개 로케일이 따라와야 한다.
+          ScaffoldMessenger.of(context)
+            ..clearSnackBars()
+            ..showSnackBar(SnackBar(
+                content: Text(AppLocalizations.of(context).successProTitle)));
+        },
+      );
+      if (!decided) await notifier.hangUp();
+    } finally {
+      _segmentSheetOpen = false;
+    }
+  }
+
+  /// `초 → m:ss` — 시트의 사용량 줄(`5:00 of 5:00 used`)에 쓴다.
+  static String _clock(int seconds) =>
+      '${seconds ~/ 60}:${(seconds % 60).toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -314,19 +330,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       if (prev?.hint?.turnId != next.hint?.turnId && _suggestionIndex != 0) {
         setState(() => _suggestionIndex = 0);
       }
-      // 상한과 확인 시점은 **다른 축**이다(CallQuota 문서 참조).
-      //
-      //   무료   상한 5분  → 5분에 업셀 시트. 계속할 수 없다
-      //   유료   상한 15분 → 5·10분에 확인 시트. 15분은 서버가 끊는다
-      //
-      // 경과시간은 매초 오므로 **같은 초에 두 번 열지 않게** 막는다.
-      final q = ref.read(callQuotaProvider);
-      if (next.phase == CallPhase.inCall &&
-          _limitShownAtSec != next.elapsedSec &&
-          (q.isCheckIn(next.elapsedSec) || q.isCeiling(next.elapsedSec))) {
-        _showLimitSheet(next.elapsedSec);
-      }
-      if (next.phase == CallPhase.ended) {
+      // ⛔ **그 상태로 진입할 때만** 띄운다. `next.phase == awaitingContinue` 만 보면
+      //   결정을 기다리는 **동안의 다른 상태 변화**에도 시트가 다시 열린다 —
+      //   [NormalCallController.resumeAfterPaywall] 이 결제 확인 후 `paidCallTime` 을
+      //   굳히는 순간이 정확히 그렇다(phase 는 아직 `awaitingContinue`). 그러면
+      //   결제하고 돌아온 사람 앞에 시트가 **다시** 뜬다 — 그것도 `paidCallTime` 이
+      //   이제 true 라 무료 시트가 아니라 「Keep going?」 이, 방금 재개한 통화 위로.
+      //   `_segmentSheetOpen` 은 이걸 못 막는다 — 그 시점엔 이미 false 로 풀려 있다.
+      if (next.phase == CallPhase.awaitingContinue &&
+          prev?.phase != CallPhase.awaitingContinue) {
+        _showSegmentSheet(
+          next,
+          characterName: selectedChar?.name ?? '',
+          avatarImage: partnerImage,
+        );
+      } else if (next.phase == CallPhase.ended) {
         _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;

@@ -2125,6 +2125,26 @@ class AppLocalizationsMy extends AppLocalizations {
   String get unlockedWithMax => 'Max ဖြင့် ရနိုင်သည်';
 
   @override
+  String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';
+
+  @override
+  String get fcEndedBody =>
+      'အခမဲ့ခေါ်ဆိုမှုသည် ၅ မိနစ်အထိ ကြာပါသည်\nပိုမိုကြာရှည်စွာ စကားပြောရန် စာရင်းသွင်းပါ';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'စာရင်းသွင်းပြီး ဆက်ပြောပါ';
+
+  @override
+  String get kgTitle => 'ဆက်လုပ်မလား?';
+
+  @override
+  String get kgBody =>
+      'ခေါ်ဆိုမှုသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်ပါသည်။\nအကြိမ်တိုင်း ထပ်မံမေးပါမည်။';
+
+  @override
+  String get ctaKeepTalking => 'ဆက်ပြောပါ';
+
+  @override
   String get callModeSheetTitle => 'ဘယ်လိုစကားပြောချင်ပါသလဲ။';
 
   @override

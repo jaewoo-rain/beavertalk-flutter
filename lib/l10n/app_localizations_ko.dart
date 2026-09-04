@@ -2050,6 +2050,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unlockedWithMax => 'Max로 이용 가능';
 
   @override
+  String get fcEndedTitle => '무료 통화가 끝났어요';
+
+  @override
+  String get fcEndedBody => '무료 통화는 5분까지예요\n구독하면 더 길게 이어갈 수 있어요';
+
+  @override
+  String get ctaSubscribeKeepTalking => '구독하고 계속 대화하기';
+
+  @override
+  String get kgTitle => '더 이어갈까요?';
+
+  @override
+  String get kgBody => '통화는 5분씩 이어져요.\n5분마다 다시 여쭤볼게요.';
+
+  @override
+  String get ctaKeepTalking => '계속 대화하기';
+
+  @override
   String get callModeSheetTitle => '어떻게 대화할까요?';
 
   @override

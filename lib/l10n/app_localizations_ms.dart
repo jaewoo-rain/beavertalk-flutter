@@ -2134,6 +2134,26 @@ class AppLocalizationsMs extends AppLocalizations {
   String get unlockedWithMax => 'Tersedia dengan Max';
 
   @override
+  String get fcEndedTitle => 'Panggilan percuma anda telah tamat';
+
+  @override
+  String get fcEndedBody =>
+      'Panggilan percuma berlangsung sehingga 5 minit\nLanggan untuk terus berbual lebih lama';
+
+  @override
+  String get ctaSubscribeKeepTalking => 'Langgan dan terus berbual';
+
+  @override
+  String get kgTitle => 'Teruskan?';
+
+  @override
+  String get kgBody =>
+      'Panggilan diteruskan dalam sesi 5 minit.\nKami akan bertanya lagi setiap kali.';
+
+  @override
+  String get ctaKeepTalking => 'Terus berbual';
+
+  @override
   String get callModeSheetTitle => 'Bagaimana anda mahu bercakap?';
 
   @override
