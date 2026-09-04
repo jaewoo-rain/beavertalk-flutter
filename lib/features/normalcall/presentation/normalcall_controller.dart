@@ -2551,11 +2551,28 @@ class NormalCallController extends Notifier<CallState> {
       //   진단 타이머에 얹었다 — 같은 5초 창에서 feed 가 125회 도는데 여기에 1회를
       //   더하는 것이라 0.8% 다. 별도 주기로 자주 던지면 재려던 적체를 우리가 키운다.
       var pingMs = -1;
+      // ⭐⭐ [계측 2026-09-03] **안드로이드 메인 루퍼의 창 최대 지각(ms).**
+      //
+      //   ⛔ 왜 넣었나 — 우리는 5분 내내 **틀린 스레드를 재고 있었다.** 실측
+      //     (`통화로그.txt:3134`) 386초 지점에 `Choreographer: Skipped 139 frames`
+      //     (= 메인 2.3초 정지)가 찍힌 그 창에서 [_elLagMax] 는 **17ms** 였다.
+      //     두 값이 같은 스레드일 수 없다 ⇒ Dart 루프가 평평한 것은 메인의 무죄를
+      //     **한 번도 증명한 적이 없다.** 그런데 앱엔 메인을 재는 계기가 0개였다.
+      //
+      //   ⭐ 이 한 줄이 답할 질문: `빈채널왕복`(4ms→2,858ms, 지수 1.65)이 메인 적체를
+      //     그대로 받는가.
+      //         메인지각이 왕복을 따라간다 → 레코더가 메인을 물고 있다. 원인 확정
+      //         메인지각은 평평한데 왕복만 자란다 → 레코더 무죄. 엔진 메시징 쪽
+      //     ⚠ 판정선을 미리 못박는다: 300초 시점에서 두 값의 비가 0.8 이상이면 확정,
+      //       0.3 이하면 기각. 중간이면 판정 보류하고 표본을 더 모은다.
+      var mainLateMs = -1;
       if (_pcmActive) {
         final sw = Stopwatch()..start();
         try {
-          await FlutterPcmSound.ping();
+          final pong = await FlutterPcmSound.ping();
           pingMs = sw.elapsedMilliseconds;
+          final v = pong?['main_late_ms'];
+          if (v is int) mainLateMs = v;
         } catch (_) {
           // 구버전 플러그인 — 계측만 없다.
         }
@@ -2568,6 +2585,8 @@ class NormalCallController extends Notifier<CallState> {
       //     **단 하나도 밀지 않는다.**
       _dg('win', {
         'ping_ms': pingMs,
+        // ⭐ 서버로도 보낸다 — 로그캣이 없는 판에서도 대조할 수 있어야 한다.
+        'main_late_ms': mainLateMs,
         'q': _queueLen,
         'cushion_ms': _cushionBytes ~/ 48,
         'gated_loud': _gatedLoudFrames,
@@ -2594,7 +2613,9 @@ class NormalCallController extends Notifier<CallState> {
           'fed/elapsed ${pct.toStringAsFixed(0)}%, queue ${_queueLen}B'
           // 통로와 무관하게 찍는다 — 사장님 증상은 **라이브 5분**이다. 캐스케이드에서만
           // 재면 반쪽이라, 같은 줄에서 두 통로를 같은 방식으로 본다.
-          '${pingMs >= 0 ? ', 빈채널왕복 ${pingMs}ms' : ''}');
+          '${pingMs >= 0 ? ', 빈채널왕복 ${pingMs}ms' : ''}'
+          // ⭐ 두 숫자를 **같은 줄에** 둔다 — 나란히 있어야 눈으로 대조가 된다.
+          '${mainLateMs >= 0 ? ', 메인지각 ${mainLateMs}ms' : ''}');
       // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
       // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
       final minMs = _engineMinFrames == 1 << 30

@@ -75,6 +75,56 @@ public class FlutterPcmSoundPlugin implements
 
     private MethodChannel mMethodChannel;
     private Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+
+    // ⭐⭐ [계측 2026-09-03] **안드로이드 메인 루퍼 심박계.**
+    //
+    //   ⛔ 왜 필요한가 — 우리는 5분 내내 **틀린 스레드를 재고 있었다.**
+    //     실측(통화로그.txt): 386초 지점에 `Choreographer: Skipped 139 frames`(= 메인 2.3초
+    //     정지)가 찍힌 바로 그 창에서 Dart 이벤트루프 지연(`elLagMax`)은 **17ms** 였다.
+    //     두 값이 같은 스레드일 수 없다 ⇒ "Dart 가 평평하니 메인도 괜찮다"는 추론이
+    //     성립한 적이 없다. 그런데 앱에는 메인 루퍼를 재는 계기가 **하나도 없었다.**
+    //
+    //   ⭐ 이 프로브가 답하는 질문은 하나다:
+    //       `ping` 왕복(4ms→2,858ms, 지수 1.65)이 **메인 루퍼 적체를 그대로 받는가.**
+    //         따라간다 → 레코더가 메인을 물고 있는 것이 원인. 확정
+    //         안 따라간다 → 레코더 무죄. 범인은 엔진 메시징 쪽
+    //     에이전트 둘이 이 지점에서 정반대로 답했고 소스만으로는 못 갈렸다. 재서 끝낸다.
+    //
+    //   ⚠ **블로킹하지 않는다.** ping 안에서 메인을 기다리면 그 대기가 곧 ping 값이 되어
+    //     측정이 측정을 오염시킨다. 대신 20ms 자기재게시 프로브를 따로 돌려 «예정보다
+    //     얼마나 늦게 실행됐나»의 최대값을 모아 두고, ping 이 그걸 가져가며 리셋한다.
+    //   ⚠ 20ms 는 Dart 쪽 `_elProbeTimer`(normalcall_controller.dart)와 **일부러 같은 주기**다.
+    //     같은 주기로 재야 두 숫자를 나란히 놓고 읽을 수 있다.
+    private static final long MAIN_PROBE_PERIOD_MS = 20;
+    private long mainProbeMaxLateMs = 0;
+    private long mainProbeNextAtMs = 0;
+    private boolean mainProbeRunning = false;
+
+    private final Runnable mainProbe = new Runnable() {
+        @Override
+        public void run() {
+            if (!mainProbeRunning) return;
+            long now = SystemClock.uptimeMillis();
+            long late = now - mainProbeNextAtMs;   // 예정 시각 대비 지각
+            if (late > mainProbeMaxLateMs) mainProbeMaxLateMs = late;
+            // ⚠ 지각분을 더해 다음 예정을 잡는다 — 안 그러면 지각이 누적돼 계속 커진다.
+            mainProbeNextAtMs = now + MAIN_PROBE_PERIOD_MS;
+            mainThreadHandler.postAtTime(this, mainProbeNextAtMs);
+        }
+    };
+
+    private void startMainProbe() {
+        if (mainProbeRunning) return;
+        mainProbeRunning = true;
+        mainProbeMaxLateMs = 0;
+        mainProbeNextAtMs = SystemClock.uptimeMillis() + MAIN_PROBE_PERIOD_MS;
+        mainThreadHandler.postAtTime(mainProbe, mainProbeNextAtMs);
+    }
+
+    private void stopMainProbe() {
+        mainProbeRunning = false;
+        mainThreadHandler.removeCallbacks(mainProbe);
+    }
     private Thread playbackThread;
     private volatile boolean mShouldCleanup = false;
 
@@ -430,14 +480,24 @@ public class FlutterPcmSoundPlugin implements
                     playbackThread.start();
 
                     mDidSetup = true;
+                    // ⭐ [계측] 메인 루퍼 심박계를 통화와 같은 수명으로 돌린다(위 mainProbe 주석).
+                    startMainProbe();
 
                     result.success(true);
                     break;
                 }
                 case "ping": {
-                    // [계측] 아무 일도 안 한다. **플랫폼 채널 왕복 자체**를 재기 위한 것이다.
-                    // 이 값이 통화 내내 우상향하면 원인은 clear() 가 아니라 채널 적체다.
-                    result.success(null);
+                    // [계측] 핸들러 자체는 여전히 아무 일도 안 한다 — **채널 왕복**을 재려면
+                    // 여기서 일하면 안 된다.
+                    // ⭐ 다만 메인 루퍼 심박계가 모아 둔 «최대 지각»을 같이 실어 보낸다
+                    //   (위 mainProbe 주석 참조). 한 줄에서 두 숫자가 나와야
+                    //   «ping 이 메인 적체를 그대로 받는가»를 눈으로 대조할 수 있다.
+                    long mainLate = mainProbeMaxLateMs;
+                    mainProbeMaxLateMs = 0;             // 창마다 리셋(최대값 창 계측)
+                    Map<String, Object> pong = new HashMap<>();
+                    pong.put("main_late_ms", mainLate);
+                    pong.put("main_probe", mainProbeRunning);
+                    result.success(pong);
                     break;
                 }
                 case "feed": {
@@ -606,6 +666,7 @@ public class FlutterPcmSoundPlugin implements
                     break;
                 }
                 case "release": {
+                    stopMainProbe();   // ⭐ [계측] 심박계도 같이 내린다(통화 밖에선 안 돈다)
                     cleanup();
                     result.success(true);
                     break;

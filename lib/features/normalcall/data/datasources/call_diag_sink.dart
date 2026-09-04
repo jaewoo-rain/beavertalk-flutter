@@ -24,7 +24,14 @@ class CallDiagSink {
     required this.micIsGated,
     this.level = 'summary',
     this.maxFrameBytes = 2048,
-    this.maxBatches = 40,
+    // ⭐ 배치는 5초에 하나 나가므로 이 값이 곧 «계측이 덮는 통화 길이»다.
+    //   ⛔ 40 이면 **200초에서 계측이 조용히 멈춘다.** 그런데 우리가 쫓는 증상
+    //     (음성·영상 띄엄띄엄)은 1~2분부터 시작해 **후반으로 갈수록 심해진다** —
+    //     문제가 가장 심한 구간이 통째로 안 남는다. 실제로 이번 조사에서 200초 이후
+    //     `ping_ms`·`q` 를 서버에서 못 봐서 로그캣에 의존해야 했다.
+    //   ⇒ 200 = 약 16분. 5분 통화를 끝까지 덮는다. 서버 `_DIAG_MAX_BATCHES` 와 같은 값이다
+    //     (한쪽만 올리면 다른 쪽이 버린다 — 반드시 같이 움직여라).
+    this.maxBatches = 200,
     this.minGapMs = 2000,
   });
 

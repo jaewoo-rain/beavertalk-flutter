@@ -82,7 +82,15 @@ class FlutterPcmSound {
   /// ⭐ `clear()` 왕복만 보고 있으면 "`clear` 가 느린 것"과 "채널 전체가 밀리는 것"을
   /// 못 가른다. 이 호출은 네이티브에서 즉시 반환하므로, 이 값이 우상향하면 원인은
   /// **채널 적체**이고 `clear` 특유의 문제가 아니다.
-  static Future<void> ping() => _invokeMethod<dynamic>('ping');
+  /// ⭐ [계측 2026-09-03] 네이티브가 **메인 루퍼 심박계**의 「창 최대 지각(ms)」을 같이 준다.
+  ///   `{'main_late_ms': int, 'main_probe': bool}`. 자세한 근거는 네이티브
+  ///   `FlutterPcmSoundPlugin.mainProbe` 주석 참조.
+  /// ⚠ 옛 빌드(값을 안 주는 플러그인)와 섞일 수 있으므로 **null 을 허용**한다.
+  static Future<Map<String, dynamic>?> ping() async {
+    final r = await _invokeMethod<dynamic>('ping');
+    if (r is Map) return Map<String, dynamic>.from(r);
+    return null;
+  }
 
   /// set the threshold at which we call the
   /// feed callback. i.e. if we have less than X
