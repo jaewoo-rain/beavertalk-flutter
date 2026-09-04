@@ -203,4 +203,30 @@ void main() {
     );
     expect(noTranslation.readableMeaning, isNull);
   });
+
+  test('빠진 문장이 있으면 진행이 출제 수에 못 미친다 — 위치가 아니라 개수를 센다', () {
+    // 🔴 2026-09-04 실측: 38문장 중 1건(`동생`)이 채점 없이 건너뛰어졌다. 그때
+    //    머리글이 **위치**를 세고 있어 「6 / 38」로 보였고, 다 지워진 것처럼 읽혔다.
+    final n = notifier();
+    n.restore(
+      assignmentId: 1,
+      items: [
+        for (var i = 1; i <= 5; i++)
+          item(i, score: AssignmentItemResult(
+            itemId: i, passed: true, totalScore: 90,
+          )),
+        item(6),  // 건너뛴 자리
+        for (var i = 7; i <= 10; i++)
+          item(i, score: AssignmentItemResult(
+            itemId: i, passed: true, totalScore: 90,
+          )),
+      ],
+    );
+
+    final a = n.of(1)!;
+    expect(a.total, 10);
+    expect(a.scored, 9);      // 진행은 9 — 빈자리의 위치(6)가 아니다
+    expect(a.passed, 9);
+    expect(a.results.containsKey(6), isFalse);
+  });
 }

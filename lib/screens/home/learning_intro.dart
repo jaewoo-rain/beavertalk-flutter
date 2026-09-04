@@ -695,11 +695,26 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   /// "다음" — advance to the next sentence in place, or push the session's
   /// result screen after the last one.
   void _next(LearningArgs args) {
-    if (_index >= args.sentences.length - 1) {
-      if (args.origin == LearningOrigin.assignment) {
+    // 🔴 **결과 화면에서만 넘어간다.** 화살표를 두 번 빠르게 누르면 첫 탭이 다음
+    // 문장으로 넘기고 화면이 다시 그려지기 전에 두 번째가 또 넘겨, **문장 하나가
+    // 채점 없이 통째로 건너뛰어진다**(2026-09-04 실측: 38문장 중 `동생` 1건이
+    // 서버에 요청조차 안 갔다). 넘어간 자리는 조용히 비어서 나중에 「다 했는데
+    // 6까지밖에 안 됐다」로만 드러난다.
+    if (_phase != LearningPhase.result) return;
+
+    // 과제는 **아직 안 한 문장으로만** 넘어간다. 이어하기로 중간 빈자리에서 열린
+    // 학습자가 이미 읽은 문장을 끝까지 다시 눌러 지나가야 제출에 닿는 일을 막는다.
+    if (args.origin == LearningOrigin.assignment) {
+      final int? next = _nextUnscored(args);
+      if (next == null) {
         _finishAssignment(args);
-        return;
+      } else {
+        _goTo(args, next);
       }
+      return;
+    }
+
+    if (_index >= args.sentences.length - 1) {
       Navigator.pushNamed(
         context,
         args.origin == LearningOrigin.callReview
@@ -716,8 +731,32 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       );
       return;
     }
+    _goTo(args, _index + 1);
+  }
+
+  /// 아직 채점받지 않은 다음 문장의 자리. 없으면 null(= 마무리).
+  ///
+  /// 앞쪽 빈자리까지 훑는다 — 이어하기는 **뒤로** 열리므로, 뒤가 다 찼어도 앞에
+  /// 남은 문장이 있을 수 있다.
+  int? _nextUnscored(LearningArgs args) {
+    final id = args.assignmentId;
+    if (id == null) return null;
+    final done =
+        ref.read(assignmentAttemptProvider)[id]?.results.keys.toSet() ??
+        const <int>{};
+    for (var i = _index + 1; i < args.sentences.length; i++) {
+      if (!done.contains(args.sentences[i].id)) return i;
+    }
+    for (var i = 0; i < _index; i++) {
+      if (!done.contains(args.sentences[i].id)) return i;
+    }
+    return null;
+  }
+
+  /// [to] 번째 문장을 녹음 단계로 연다.
+  void _goTo(LearningArgs args, int to) {
     setState(() {
-      _index++;
+      _index = to;
       _phase = LearningPhase.recording;
       _feedback = null;
       _recordedWav = null;
@@ -813,8 +852,21 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       body: Column(
         children: [
           Gnb.main2(
+            // 과제는 **위치가 아니라 진행**을 센다. 숙제에서 알고 싶은 것은 「몇
+            // 번째 문장인가」가 아니라 「몇 개 했나」다. 이어하기로 중간에 열리면
+            // 위치는 진행을 잘못 말한다 — 37개를 읽고 6번 자리에서 열렸는데
+            // 머리글이 「6 / 38」이라 다 지워진 것처럼 보였다(2026-09-04).
+            // 그 외 흐름(연습·복습)은 처음부터 끝까지 한 번에 도니 위치 = 진행이다.
             progress: GnbProgress(
-              current: _index + 1,
+              current: args.origin == LearningOrigin.assignment
+                  ? (args.assignmentId != null
+                        ? (ref
+                                  .watch(assignmentAttemptProvider)[args
+                                      .assignmentId]
+                                  ?.scored ??
+                              0)
+                        : _index + 1)
+                  : _index + 1,
               total: args.sentences.length,
             ),
             onClose: () => Navigator.pop(context),
