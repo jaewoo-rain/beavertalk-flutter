@@ -6,6 +6,7 @@ import '../data/datasources/classroom_remote_data_source.dart';
 import '../data/datasources/joined_class_store.dart';
 import '../data/repositories/classroom_repository_impl.dart';
 import '../domain/entities/classroom_assignment.dart';
+import '../domain/entities/classroom_membership.dart';
 import '../domain/repositories/classroom_repository.dart';
 import '../../../screens/home/learning_summary.dart';
 
@@ -41,6 +42,17 @@ final myAssignmentsProvider = FutureProvider<List<ClassroomAssignment>>((
   // 끊는다 — 안 끊으면 [b2bDioProvider] 가 던지고 화면마다 오류로 번역된다.
   if (!Env.hasB2bApi) return const <ClassroomAssignment>[];
   return ref.watch(classroomRepositoryProvider).myAssignments();
+});
+
+/// 내가 참여한 반.
+///
+/// 🔴 **참여 여부를 [myAssignmentsProvider] 로 판정하지 마라.** 숙제를 다 끝내면
+/// 그 목록은 「할 일 없음」이 되고, 그것을 「반 없음」으로 읽으면 홈이 참여코드
+/// 입력으로 돌아간다 — 학습자가 앱을 켤 때마다 코드를 다시 치게 된다(2026-09-04).
+final myClassroomsProvider = FutureProvider<List<JoinedClassroom>>((ref) async {
+  // B2B 주소가 없는 빌드에서는 교실이 통째로 꺼진 것이다(숙제 목록과 같은 규약).
+  if (!Env.hasB2bApi) return const <JoinedClassroom>[];
+  return ref.watch(classroomRepositoryProvider).myClassrooms();
 });
 
 /// 과제 발음 결과 요약. 세션 요약 화면이 읽는다.

@@ -1,3 +1,51 @@
+/// 내가 참여한 반 — `GET /classrooms/my` 의 한 원소.
+///
+/// 🔴 **참여 여부를 숙제로 추측하지 마라.** 예전에는 「할 숙제가 있는가」로 반
+/// 유무를 판정해서, 숙제를 다 끝내면 홈이 「반에 참여하세요」로 돌아가고 학습자가
+/// 앱을 켤 때마다 참여코드를 다시 쳤다(2026-09-04). 참여는 서버에 남아 있는
+/// 사실이다.
+class JoinedClassroom {
+  /// 원소 하나를 담는다.
+  const JoinedClassroom({
+    required this.classroomId,
+    required this.name,
+    this.institution,
+    this.teacherDisplayName,
+    this.rosterName = '',
+    this.archived = false,
+  });
+
+  /// 응답을 읽는다.
+  factory JoinedClassroom.fromJson(Map<String, dynamic> json) {
+    return JoinedClassroom(
+      classroomId: (json['classroom_id'] as num).toInt(),
+      name: json['name'] as String? ?? '',
+      institution: json['institution'] as String?,
+      teacherDisplayName: json['teacher_display_name'] as String?,
+      rosterName: json['roster_name'] as String? ?? '',
+      archived: json['archived'] as bool? ?? false,
+    );
+  }
+
+  /// 반 id. 나가기에 쓴다.
+  final int classroomId;
+
+  /// 반 이름.
+  final String name;
+
+  /// 기관명. 없을 수 있다.
+  final String? institution;
+
+  /// 교사 표시 이름. 없을 수 있다.
+  final String? teacherDisplayName;
+
+  /// 반에서 쓰는 내 이름.
+  final String rosterName;
+
+  /// 교사가 보관한 반인지. 보관돼도 **내 반은 내 반이다**.
+  final bool archived;
+}
+
 /// 반 참여 결과 — `POST /classrooms/join` 응답.
 class ClassroomMembership {
   /// 응답 1건을 담는다.

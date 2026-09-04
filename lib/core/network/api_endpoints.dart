@@ -22,6 +22,10 @@ abstract final class ApiEndpoints {
   /// A6 내 과제 목록. 문안이 아니라 데이터만 내려온다.
   static const classroomMyAssignments = '/classrooms/my/assignments';
 
+  /// 내가 참여한 반. **과제가 없어도 나온다** — 참여 여부는 숙제로 추측할 것이
+  /// 아니다.
+  static const classroomMy = '/classrooms/my';
+
   /// DA1 반 나가기 = 공유 동의 철회. `/classrooms/{id}/leave`.
   static String classroomLeave(int classroomId) =>
       '/classrooms/$classroomId/leave';

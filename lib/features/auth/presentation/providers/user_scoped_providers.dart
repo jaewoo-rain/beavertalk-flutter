@@ -72,6 +72,9 @@ final List<ProviderOrFamily> userScopedProviders = <ProviderOrFamily>[
   // A 가 속한 반의 숙제 목록이 B 에게 보인다. 반 이름·챕터·마감이 전부
   // 기관에서 받은 값이라 남기면 남의 수업이 그대로 노출된다.
   myAssignmentsProvider,
+  // A 가 참여한 반이 B 에게 보인다. 반 이름·기관·교사명이 전부 기관에서 받은
+  // 값이라 남기면 남의 수업이 그대로 노출된다.
+  myClassroomsProvider,
   // A 가 입력하던 참여 코드·반에서 쓸 이름이 B 의 참여 화면에 프리필된다.
   joinDraftProvider,
   // A 가 방금 친 발음 과제 점수가 B 의 숙제 상세에 그려진다. 서버가 보관하지

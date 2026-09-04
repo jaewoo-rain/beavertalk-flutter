@@ -77,6 +77,12 @@ class ClassroomRemoteDataSource {
     return res.data ?? const <String, dynamic>{};
   }
 
+  /// 내가 참여한 반 목록.
+  Future<List<dynamic>> myClassrooms() async {
+    final res = await _dio.get<List<dynamic>>(ApiEndpoints.classroomMy);
+    return res.data ?? const <dynamic>[];
+  }
+
   /// 과제 발음 결과 요약. 앱 서버의 통화 리포트와 같은 모양이다.
   Future<Map<String, dynamic>> assignmentReport(int assignmentId) async {
     final res = await _dio.get<Map<String, dynamic>>(

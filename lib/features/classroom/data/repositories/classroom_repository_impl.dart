@@ -93,6 +93,18 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   }
 
   @override
+  Future<List<JoinedClassroom>> myClassrooms() async {
+    try {
+      return (await _ds.myClassrooms())
+          .whereType<Map<String, dynamic>>()
+          .map(JoinedClassroom.fromJson)
+          .toList(growable: false);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<LearningSummary> assignmentReport(int assignmentId) async {
     try {
       return LearningSummary.fromJson(await _ds.assignmentReport(assignmentId));
