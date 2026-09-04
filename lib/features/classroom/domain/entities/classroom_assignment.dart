@@ -198,27 +198,29 @@ class ClassroomAssignment {
   /// 이 과제가 요구하는 활동 수 — 리스트 카드의 분모다.
   int get activityCount => activities.length;
 
+  /// 활동 한 건이 끝났는지 — 칩의 체크·카드의 CTA·목록의 분자가 **모두 이걸 본다.**
+  ///
+  /// 🔴 판정을 두 벌 두지 마라. 예전에는 이 규칙이 두 곳에 있었고 발음이
+  ///    한쪽은 **읽은 수**, 다른 쪽은 **맞힌 수**였다 — 37 / 38 을 읽은 학습자의
+  ///    상세는 「완료」인데 목록 카드는 `0/3` 이었다(2026-09-04 실측).
+  ///
+  /// 워크북은 서버에 완료 신호가 없어 **항상 false** 다. 학습자가 체크하는 UI 를
+  /// 만들지 않았으므로 켤 근거가 없다.
+  bool isActivityDone(AssignmentActivity activity) {
+    return switch (activity) {
+      // 🔴 **읽은 수**로 판정한다. 맞힌 수(`speakingPassed`)로 재면 두 문장 틀린
+      //    학습자는 다 읽고도 완료가 안 된다 — 숙제는 점수가 아니라 수행이다.
+      AssignmentActivity.speaking => _met(speakingScored, speakingTotal),
+      AssignmentActivity.conversation => _met(conversationMet, conversationTotal),
+      AssignmentActivity.workbook => false,
+    };
+  }
+
   /// 끝난 활동 수 — 리스트 카드의 분자다.
   ///
   /// 워크북은 서버에 완료 신호가 없어 세지 않는다. 발음·회화만 증거로 판정한다.
-  int get completedActivityCount {
-    var done = 0;
-    for (final a in activities) {
-      switch (a) {
-        case AssignmentActivity.speaking:
-          final passed = speakingPassed;
-          final total = speakingTotal;
-          if (passed != null && total != null && total > 0 && passed >= total) {
-            done++;
-          }
-        case AssignmentActivity.conversation:
-          final met = conversationMet;
-          final total = conversationTotal;
-          if (met != null && total != null && total > 0 && met >= total) done++;
-        case AssignmentActivity.workbook:
-          break;
-      }
-    }
-    return done;
-  }
+  int get completedActivityCount => activities.where(isActivityDone).length;
+
+  static bool _met(int? done, int? total) =>
+      done != null && total != null && total > 0 && done >= total;
 }

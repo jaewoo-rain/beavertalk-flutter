@@ -229,39 +229,52 @@ class LearningCallMainScreen extends ConsumerWidget {
       );
 
   /// Section/OneFix (`3569:15113`).
-  List<Widget> _oneFix(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
+  ///
+  /// 🔴 **소리가 없으면 섹션째 안 그린다.** 서버는 근거가 없으면 이 칸을 비워 보낸다
+  ///    (다 맞았거나, 자모 점수가 아직 없거나). 예전에는 그래도 그려서 **빈 카드에
+  ///    빈 초록 알약**만 뜨는 화면이 됐다(2026-09-04 실기기 실측).
+  ///    ⛔ 자리를 채우려고 문구를 지어내지 마라 — 없는 분석을 만드는 셈이다.
+  List<Widget> _oneFix(BuildContext context, AppLocalizations l10n, LearningSummary s) {
+    if (s.hardestSound.isEmpty) return const [];
+    return _section(context,
         label: l10n.hardestSound,
-        child: _card(context, 
+        child: _card(context,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(s.hardestSound, style: AppType.headline1.b),
-              const SizedBox(height: 10), // no s10 token
-              Text(
-                s.hardestEvidence,
-                style:
-                    AppType.caption1.r.copyWith(color: context.c.labelNormal),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: AppSpacing.s8),
-                decoration: BoxDecoration(
-                  // Primary/Normal @ 8% — an alpha of the theme's primary, so it
-                  // flips with the mode (Dark #00FFB2 / Light #007A55).
-                  color: context.c.primaryNormal.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(AppRadius.xs),
+              // 근거·모국어 간섭은 따로 빈다 — 소리는 알아도 인용할 발화가 없을 수 있다.
+              if (s.hardestEvidence.isNotEmpty) ...[
+                const SizedBox(height: 10), // no s10 token
+                Text(
+                  s.hardestEvidence,
+                  style:
+                      AppType.caption1.r.copyWith(color: context.c.labelNormal),
                 ),
-                child: Text(
-                  s.l1Interference,
-                  style: AppType.caption1.r.copyWith(color: context.c.primaryNormal),
+              ],
+              if (s.l1Interference.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: AppSpacing.s8),
+                  decoration: BoxDecoration(
+                    // Primary/Normal @ 8% — an alpha of the theme's primary, so it
+                    // flips with the mode (Dark #00FFB2 / Light #007A55).
+                    color: context.c.primaryNormal.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(AppRadius.xs),
+                  ),
+                  child: Text(
+                    s.l1Interference,
+                    style: AppType.caption1.r.copyWith(color: context.c.primaryNormal),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
       );
+  }
 
   /// Section/Phonemes (`3569:15122`).
   List<Widget> _phonemes(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 

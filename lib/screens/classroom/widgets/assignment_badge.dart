@@ -90,20 +90,8 @@ String activityLabel(BuildContext context, AssignmentActivity activity) {
 
 /// 활동이 끝났는지 — 칩의 체크를 켤지 판정한다.
 ///
-/// 워크북은 서버에 완료 신호가 없어 **항상 false** 다. 사용자가 체크하는 UI 를
-/// 만들지 않았으므로 켤 근거가 없다.
-bool activityDone(ClassroomAssignment a, AssignmentActivity activity) {
-  return switch (activity) {
-    // 🔴 **읽은 수**로 판정한다. 맞힌 수(`speakingPassed`)로 재면 두 문장 틀린
-    //    학습자는 다 읽고도 완료가 안 된다 — 숙제는 점수가 아니라 수행이다.
-    AssignmentActivity.speaking => _met(a.speakingScored, a.speakingTotal),
-    AssignmentActivity.conversation => _met(
-      a.conversationMet,
-      a.conversationTotal,
-    ),
-    AssignmentActivity.workbook => false,
-  };
-}
-
-bool _met(int? done, int? total) =>
-    done != null && total != null && total > 0 && done >= total;
+/// ⛔ 규칙을 여기에 두지 마라. 정본은 `ClassroomAssignment.isActivityDone` 이고
+///    이 함수는 호출부 편의를 위한 얇은 위임이다. 예전에 판정이 두 벌이라
+///    상세는 「완료」인데 목록은 `0/3` 이었다(2026-09-04).
+bool activityDone(ClassroomAssignment a, AssignmentActivity activity) =>
+    a.isActivityDone(activity);

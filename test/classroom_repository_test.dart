@@ -253,7 +253,7 @@ void main() {
       expect(a.status, AssignmentStatus.done);
     });
 
-    test('발음이 전건 통과면 활동 1개가 끝난 것으로 센다', () {
+    test('발음을 다 읽으면 활동 1개가 끝난 것으로 센다', () {
       final a = ClassroomAssignment.fromJson({
         'assignment_id': 6,
         'classroom_name': '초급 1반',
@@ -264,6 +264,7 @@ void main() {
         'due_at': '2026-09-10T14:00:00Z',
         'overdue': false,
         'status': 'done',
+        'speaking_scored': 14,
         'speaking_passed': 14,
         'speaking_total': 14,
       });
@@ -271,6 +272,33 @@ void main() {
       // 워크북은 서버에 완료 신호가 없어 세지 않는다.
       expect(a.completedActivityCount, 1);
       expect(a.activityCount, 2);
+    });
+
+    test('두 문장 틀려도 다 읽었으면 센다 — 분자는 읽은 수다', () {
+      // 🔴 2026-09-04 실측. `speaking_passed` 로 세던 시절 상세는 「완료」인데
+      //    목록 카드는 `0/3` 이었다. 판정은 한 곳(`isActivityDone`)에만 둔다.
+      final a = ClassroomAssignment.fromJson({
+        'assignment_id': 7,
+        'classroom_name': '초급 1반',
+        'grade': 1,
+        'chapter': 1,
+        'activities': ['speaking', 'conversation', 'workbook'],
+        'item_ids': <int>[],
+        'due_at': '2026-09-10T14:00:00Z',
+        'overdue': false,
+        'status': 'in_progress',
+        'speaking_scored': 38,
+        'speaking_passed': 37,
+        'speaking_total': 38,
+        'conversation_met': null,
+        'conversation_total': 10,
+      });
+
+      expect(a.isActivityDone(AssignmentActivity.speaking), isTrue);
+      expect(a.isActivityDone(AssignmentActivity.conversation), isFalse);
+      expect(a.isActivityDone(AssignmentActivity.workbook), isFalse);
+      expect(a.completedActivityCount, 1);
+      expect(a.activityCount, 3);
     });
   });
 
