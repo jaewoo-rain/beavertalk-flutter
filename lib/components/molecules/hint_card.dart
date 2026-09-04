@@ -22,7 +22,10 @@ import '../icons/app_icons.dart';
 ///   example's Korean / romanization / native gloss.
 ///
 /// [onSpeak] is optional; when null the speaker button is hidden (no in-call TTS
-/// source is wired yet).
+/// source is wired yet). [onBookmarkTap] is likewise optional and only shown in
+/// **full** — the host passes null when the current example carries no server
+/// sentence id (nothing to bookmark against), so the control appears on its own
+/// the moment the server starts sending ids.
 class HintCard extends StatelessWidget {
   const HintCard({
     super.key,
@@ -32,6 +35,8 @@ class HintCard extends StatelessWidget {
     required this.onReveal,
     required this.onCycle,
     this.onSpeak,
+    this.bookmarked = false,
+    this.onBookmarkTap,
   });
 
   /// The 1–3 example answers.
@@ -51,6 +56,12 @@ class HintCard extends StatelessWidget {
 
   /// Optional: play the current example's audio. Hidden when null.
   final VoidCallback? onSpeak;
+
+  /// Whether the **current** example is bookmarked (filled vs outline glyph).
+  final bool bookmarked;
+
+  /// Optional: save/unsave the current example. Hidden when null.
+  final VoidCallback? onBookmarkTap;
 
   HintExample get _current =>
       examples[index.clamp(0, examples.length - 1)];
@@ -176,6 +187,10 @@ class HintCard extends StatelessWidget {
                   ],
                 ),
               ),
+              if (onBookmarkTap != null) ...[
+                const SizedBox(width: AppSpacing.s8),
+                _bookmarkButton(context, l10n),
+              ],
               if (onSpeak != null) ...[
                 const SizedBox(width: AppSpacing.s8),
                 _speakButton(context),
@@ -183,6 +198,36 @@ class HintCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  /// Save/unsave the current example — same 32px circle as the speaker button,
+  /// same glyph pair as `CardBookmark` so a saved hint reads identically to a
+  /// saved sentence elsewhere in the app.
+  Widget _bookmarkButton(BuildContext context, AppLocalizations l10n) {
+    return Semantics(
+      button: true,
+      label: bookmarked ? l10n.unsaveSentence : l10n.saveSentence,
+      child: Material(
+        color: context.c.backgroundElevatedNormal,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onBookmarkTap,
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: Center(
+              child: bookmarked
+                  ? AppIcons.bookmarkFill(
+                      size: 20, color: context.c.primaryNormal)
+                  : AppIcons.bookmarkLine(
+                      size: 20, color: context.c.labelStrong),
+            ),
+          ),
+        ),
       ),
     );
   }

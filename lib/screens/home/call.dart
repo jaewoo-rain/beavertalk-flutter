@@ -13,6 +13,7 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
@@ -23,6 +24,7 @@ import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../../mock/mock_data.dart';
 import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -84,6 +86,40 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   /// Currently shown suggestion index in the revealed hint; reset per new hint.
   int _suggestionIndex = 0;
+
+  /// Sentence ids with a bookmark write in flight — guards double taps (the
+  /// second tap would flip the local glyph back while the first write is still
+  /// on the wire, leaving glyph and server disagreeing).
+  final Set<int> _hintBookmarkInFlight = <int>{};
+
+  /// Saves/unsaves a hint example. Flips the shared in-memory store instantly
+  /// so the glyph responds mid-call, then persists so 보관함 actually lists it.
+  /// Reverts on failure — a filled glyph that the archive won't have is a lie.
+  ///
+  /// Mirrors `analysis.dart:_toggleBookmark`; the hint card is just another
+  /// place the same sentence can be saved from.
+  Future<void> _toggleHintBookmark(int sentenceId) async {
+    if (_hintBookmarkInFlight.contains(sentenceId)) return;
+    _hintBookmarkInFlight.add(sentenceId);
+    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
+    toggleBookmark(sentenceId); // optimistic local flip
+    try {
+      await ref
+          .read(bookmarkToggleControllerProvider.notifier)
+          .toggleBookmark(sentenceId, willSave);
+    } catch (_) {
+      toggleBookmark(sentenceId); // revert
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(
+              content:
+                  Text(AppLocalizations.of(context).saveSentenceFailed)));
+      }
+    } finally {
+      _hintBookmarkInFlight.remove(sentenceId);
+    }
+  }
 
   @override
   void initState() {
@@ -543,23 +579,47 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                               const SpeakingEqualizer(),
                             if (showHint) ...[
                               const SizedBox(height: AppSpacing.s24),
-                              HintCard(
-                                examples: hint.examples,
-                                revealed: _revealedTurnId == hint.turnId,
-                                index: _suggestionIndex,
-                                onReveal: () {
-                                  setState(() => _revealedTurnId = hint.turnId);
-                                  ref
-                                      .read(
-                                        normalCallControllerProvider.notifier,
-                                      )
-                                      .sendHintUsed(hint.turnId);
+                              // The bookmark glyph fills/empties from the shared
+                              // store, so it also reflects a save made elsewhere
+                              // for the same sentence.
+                              ValueListenableBuilder<Set<int>>(
+                                valueListenable: bookmarkedSentenceIds,
+                                builder: (context, saved, _) {
+                                  // Same clamp HintCard applies internally, so
+                                  // the glyph always belongs to the example on
+                                  // screen.
+                                  final ex = hint.examples[_suggestionIndex
+                                      .clamp(0, hint.examples.length - 1)];
+                                  // No server id → no bookmark control. Until
+                                  // the server sends `id` the card looks exactly
+                                  // as it does today.
+                                  final id = ex.sentenceId;
+                                  return HintCard(
+                                    examples: hint.examples,
+                                    revealed: _revealedTurnId == hint.turnId,
+                                    index: _suggestionIndex,
+                                    bookmarked:
+                                        id != null && saved.contains(id),
+                                    onBookmarkTap: id == null
+                                        ? null
+                                        : () => _toggleHintBookmark(id),
+                                    onReveal: () {
+                                      setState(
+                                          () => _revealedTurnId = hint.turnId);
+                                      ref
+                                          .read(
+                                            normalCallControllerProvider
+                                                .notifier,
+                                          )
+                                          .sendHintUsed(hint.turnId);
+                                    },
+                                    onCycle: () => setState(
+                                      () => _suggestionIndex =
+                                          (_suggestionIndex + 1) %
+                                          hint.examples.length,
+                                    ),
+                                  );
                                 },
-                                onCycle: () => setState(
-                                  () => _suggestionIndex =
-                                      (_suggestionIndex + 1) %
-                                      hint.examples.length,
-                                ),
                               ),
                             ],
                           ],
