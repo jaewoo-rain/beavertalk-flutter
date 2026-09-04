@@ -154,12 +154,13 @@ class _LabState extends State<_Lab> {
                   _section(
                     context,
                     'peek — 접힌 상태 (탭하면 펼쳐진다)',
-                    '책갈피 없음: 아직 "펼쳐 본" 표현이 아니다.',
+                    '스피커·책갈피가 여기에도 있다. 버튼을 눌러도 카드는 안 펼쳐진다.',
                     HintCard(
                       examples: _withIds,
                       revealed: _peekRevealed,
                       index: _peekIndex,
                       bookmarked: _isSaved(_withIds[_peekIndex]),
+                      onSpeak: () => _speak(_withIds[_peekIndex]),
                       onBookmarkTap: () => _toggle(_withIds[_peekIndex]),
                       onReveal: () => setState(() => _peekRevealed = true),
                       onCycle: () => setState(
@@ -168,14 +169,15 @@ class _LabState extends State<_Lab> {
                   ),
                   _section(
                     context,
-                    'full — 서버가 id 를 보낸 뒤 (이번 작업)',
-                    '오른쪽 책갈피를 탭 → 채워진다. ↻ 로 예시를 넘기면 '
-                        '책갈피도 그 예시 것으로 바뀐다.',
+                    'full — 서버가 id 를 보낸 뒤',
+                    '책갈피를 탭 → 채워진다. ↻ 로 예시를 넘기면 책갈피도 그 예시 '
+                        '것으로 바뀐다. 스피커는 실앱에서 표준 발음을 재생한다.',
                     HintCard(
                       examples: _withIds,
                       revealed: true,
                       index: _fullIndex,
                       bookmarked: _isSaved(_withIds[_fullIndex]),
+                      onSpeak: () => _speak(_withIds[_fullIndex]),
                       onBookmarkTap: () => _toggle(_withIds[_fullIndex]),
                       onReveal: () {},
                       onCycle: () => setState(
@@ -185,11 +187,14 @@ class _LabState extends State<_Lab> {
                   _section(
                     context,
                     'full — 지금 서버 (id 없음)',
-                    '책갈피 버튼이 아예 없다. 서버 배포 전 화면은 이 모양 그대로다.',
+                    '버튼은 **그대로 다 있다.** 눌러 보면 "아직 준비 안 됨"이라고 '
+                        '말한다 — 숨지 않는다.',
                     HintCard(
                       examples: _withoutIds,
                       revealed: true,
                       index: 0,
+                      onSpeak: () => _speak(_withoutIds[0]),
+                      onBookmarkTap: () => _toggle(_withoutIds[0]),
                       onReveal: () {},
                       onCycle: () {},
                     ),
@@ -209,11 +214,30 @@ class _LabState extends State<_Lab> {
       bookmarkedSentenceIds.value.contains(ex.sentenceId);
 
   /// 실화면과 달리 **서버를 안 탄다** — 인메모리 스토어만 뒤집는다.
+  /// id 가 없을 때 실앱이 내는 스낵바를 여기서도 똑같이 낸다.
   void _toggle(HintExample ex) {
     final id = ex.sentenceId;
-    if (id == null) return;
+    if (id == null) {
+      _snack(AppLocalizations.of(context).saveSentenceFailed);
+      return;
+    }
     toggleBookmark(id);
     setState(() {});
+  }
+
+  /// 실앱은 `POST /sentences/{id}/tts` 로 표준 발음을 받아 재생한다. 랩은 서버를
+  /// 안 타므로 **무엇이 재생될지만** 알린다 — id 가 없을 때의 안내는 실앱과 같다.
+  void _speak(HintExample ex) {
+    final l10n = AppLocalizations.of(context);
+    _snack(ex.sentenceId == null
+        ? l10n.standardAudioNotReady
+        : '재생: ${ex.korean} (sentence ${ex.sentenceId})');
+  }
+
+  void _snack(String message) {
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
   }
 
   Widget _controls(BuildContext context) {

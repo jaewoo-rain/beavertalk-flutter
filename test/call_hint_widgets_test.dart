@@ -143,10 +143,10 @@ void main() {
     expect(find.bySemanticsLabel('Save sentence'), findsNothing);
   });
 
-  testWidgets('HintCard hides the bookmark control without a callback',
+  testWidgets('HintCard draws both controls even with no callbacks',
       (tester) async {
-    // The server hasn't attached ids yet → the host passes null and the card
-    // must look exactly as it did before this feature.
+    // 데이터가 없다고 카드에 속한 컨트롤이 사라지면 안 된다 — 스피커가 정확히 그렇게
+    // 앱에서 한 번도 안 보였다(call.dart 가 onSpeak 을 안 넘겨서).
     await tester.pumpWidget(_host(
       HintCard(
         examples: examples,
@@ -156,21 +156,52 @@ void main() {
         onCycle: () {},
       ),
     ));
-    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
+    expect(find.bySemanticsLabel('Save sentence'), findsOneWidget);
+    expect(
+        find.bySemanticsLabel('Listen to standard pronunciation'),
+        findsOneWidget);
   });
 
-  testWidgets('HintCard peek carries no bookmark control', (tester) async {
+  testWidgets('HintCard peek carries both controls too', (tester) async {
+    var speaks = 0;
+    var reveals = 0;
     await tester.pumpWidget(_host(
       HintCard(
         examples: examples,
         revealed: false,
         index: 0,
-        onReveal: () {},
+        onReveal: () => reveals++,
         onCycle: () {},
+        onSpeak: () => speaks++,
         onBookmarkTap: () {},
       ),
     ));
-    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
+    expect(find.bySemanticsLabel('Save sentence'), findsOneWidget);
+    final speak = find.bySemanticsLabel('Listen to standard pronunciation');
+    expect(speak, findsOneWidget);
+
+    // peek 에서 버튼을 눌러도 카드가 펼쳐지지 않는다.
+    await tester.tap(speak);
+    await tester.pump();
+    expect(speaks, 1);
+    expect(reveals, 0);
+  });
+
+  testWidgets('HintCard full speaker reports taps', (tester) async {
+    var speaks = 0;
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        onSpeak: () => speaks++,
+      ),
+    ));
+    await tester.tap(find.bySemanticsLabel('Listen to standard pronunciation'));
+    await tester.pump();
+    expect(speaks, 1);
   });
 
   testWidgets('CallToggleButton reports toggled value', (tester) async {

@@ -21,11 +21,15 @@ import '../icons/app_icons.dart';
 ///   cycle control ([onCycle] advances 1→2→3, wrapping), and the current
 ///   example's Korean / romanization / native gloss.
 ///
-/// [onSpeak] is optional; when null the speaker button is hidden (no in-call TTS
-/// source is wired yet). [onBookmarkTap] is likewise optional and only shown in
-/// **full** — the host passes null when the current example carries no server
-/// sentence id (nothing to bookmark against), so the control appears on its own
-/// the moment the server starts sending ids.
+/// **Both controls — speaker and bookmark — are always drawn**, in peek and in
+/// full alike (Figma `card/hint` shows the speaker in both). They used to be
+/// gated on their callback being non-null, which is why the speaker never once
+/// appeared in the app: `call.dart` never passed [onSpeak]. A control that
+/// belongs to the card must not vanish because its data hasn't arrived — the
+/// host takes the tap and says why instead.
+///
+/// Tapping either control in **peek** does not expand the card: the buttons are
+/// their own tap targets inside the card's [InkWell].
 class HintCard extends StatelessWidget {
   const HintCard({
     super.key,
@@ -54,13 +58,14 @@ class HintCard extends StatelessWidget {
   /// Fired to advance to the next example (wraps at the end).
   final VoidCallback onCycle;
 
-  /// Optional: play the current example's audio. Hidden when null.
+  /// Plays the current example's audio. The button is drawn either way; a null
+  /// callback only makes it inert (hosts pass one that explains the failure).
   final VoidCallback? onSpeak;
 
   /// Whether the **current** example is bookmarked (filled vs outline glyph).
   final bool bookmarked;
 
-  /// Optional: save/unsave the current example. Hidden when null.
+  /// Saves/unsaves the current example. Drawn either way, as with [onSpeak].
   final VoidCallback? onBookmarkTap;
 
   HintExample get _current =>
@@ -102,10 +107,10 @@ class HintCard extends StatelessWidget {
               style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
             ),
           ),
-          if (onSpeak != null) ...[
-            const SizedBox(width: AppSpacing.s8),
-            _speakButton(context),
-          ],
+          const SizedBox(width: AppSpacing.s8),
+          _speakButton(context),
+          const SizedBox(width: AppSpacing.s8),
+          _bookmarkButton(context, AppLocalizations.of(context)),
           const SizedBox(width: AppSpacing.s8),
           // Expand affordance: chevron-right rotated to point up (no chevron-up
           // asset). Decorative — the whole card is the tap target.
@@ -187,14 +192,10 @@ class HintCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (onBookmarkTap != null) ...[
-                const SizedBox(width: AppSpacing.s8),
-                _bookmarkButton(context, l10n),
-              ],
-              if (onSpeak != null) ...[
-                const SizedBox(width: AppSpacing.s8),
-                _speakButton(context),
-              ],
+              const SizedBox(width: AppSpacing.s8),
+              _speakButton(context),
+              const SizedBox(width: AppSpacing.s8),
+              _bookmarkButton(context, l10n),
             ],
           ),
         ],
@@ -233,18 +234,22 @@ class HintCard extends StatelessWidget {
   }
 
   Widget _speakButton(BuildContext context) {
-    return Material(
-      color: context.c.backgroundElevatedNormal,
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        customBorder: const CircleBorder(),
-        onTap: onSpeak,
-        child: SizedBox(
-          width: 32,
-          height: 32,
-          child: Center(
-            child: AppIcons.volume(size: 20, color: context.c.labelStrong),
+    return Semantics(
+      button: true,
+      label: AppLocalizations.of(context).listenStandard,
+      child: Material(
+        color: context.c.backgroundElevatedNormal,
+        shape: const CircleBorder(),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onSpeak,
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: Center(
+              child: AppIcons.volume(size: 20, color: context.c.labelStrong),
+            ),
           ),
         ),
       ),
