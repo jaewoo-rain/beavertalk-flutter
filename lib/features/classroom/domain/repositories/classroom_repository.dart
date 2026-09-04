@@ -82,4 +82,11 @@ abstract interface class ClassroomRepository {
     required int total,
     List<int> failedItemIds,
   });
+
+  /// B4-b. 워크북을 열었다고 알린다.
+  ///
+  /// ⚠ 「열었다」이지 「풀었다」가 아니다 — PDF 는 앱 밖 브라우저가 연다. 서버가
+  /// 알 수 있는 것은 학습자가 「다운로드」를 눌렀다는 사실 하나뿐이다.
+  /// 멱등이라 여러 번 눌러도 처음 연 시각이 유지된다.
+  Future<void> openWorkbook(int assignmentId);
 }

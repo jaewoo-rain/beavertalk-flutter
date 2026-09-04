@@ -49,6 +49,10 @@ class _AssignmentDetailScreenState
   /// 문장 목록을 받아오는 중이면 true — 두 번 누르는 것을 막는다.
   bool _loadingItems = false;
 
+  /// 이 화면에서 워크북을 열었나. 서버 응답을 다시 받기 전까지 카드를 완료로
+  /// 그리기 위한 값이다 — 목록으로 돌아가면 서버 값(`workbookOpenedAt`)이 이긴다.
+  bool _workbookOpenedHere = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -210,7 +214,7 @@ class _AssignmentDetailScreenState
   }
 
   /// 워크북 열기 — 앱 밖 브라우저로 넘긴다.
-  Future<void> _openWorkbook(String url) async {
+  Future<void> _openWorkbook(int assignmentId, String url) async {
     final uri = Uri.tryParse(url);
     final messenger = ScaffoldMessenger.of(context);
     final l10n = AppLocalizations.of(context);
@@ -221,7 +225,20 @@ class _AssignmentDetailScreenState
       return;
     }
     // 앱 안에서 PDF 를 그리지 않는다 — 뷰어를 들이면 30 로케일 폰트가 따라온다.
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    final opened = await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!opened || !mounted) return;
+
+    // ⭐ 여는 데 성공했을 때만 수행으로 남긴다(2026-09-04 사용자 지시).
+    //    ⚠ 「열었다」이지 「풀었다」가 아니다 — 그 뒤는 Google Drive 의 몫이라 모른다.
+    //    🔴 실패해도 화면은 완료로 둔다. 학습자는 이미 열었고, 다시 누르게 하는 것보다
+    //       교사 쪽 숫자가 늦는 편이 낫다(발음 제출과 같은 방침).
+    setState(() => _workbookOpenedHere = true);
+    try {
+      await ref.read(classroomRepositoryProvider).openWorkbook(assignmentId);
+      ref.invalidate(myAssignmentsProvider);
+    } on AppException {
+      // 조용히 넘긴다 — 다음에 다시 누르면 그때 남는다.
+    }
   }
 
   @override
@@ -301,7 +318,9 @@ class _AssignmentDetailScreenState
   ) {
     final l10n = AppLocalizations.of(context);
     final attempt = ref.watch(assignmentAttemptProvider)[a.assignmentId];
-    final bool done = activityDone(a, act);
+    final bool done =
+        activityDone(a, act) ||
+        (act == AssignmentActivity.workbook && _workbookOpenedHere);
     final Widget? badge = done ? assignmentBadgeDone(context) : null;
 
     switch (act) {
@@ -377,6 +396,7 @@ class _AssignmentDetailScreenState
         return CardTask(
           icon: AppIcons.book,
           title: l10n.hwActivityWorkbook,
+          badge: badge,
           description: url == null
               ? l10n.hwWorkbookUnavailable
               : l10n.hwTaskWorkbookDesc,
@@ -388,7 +408,7 @@ class _AssignmentDetailScreenState
           ),
           // 교사가 링크를 안 넣었으면 열 곳이 없다.
           ctaDisabled: url == null,
-          onCta: url == null ? null : () => _openWorkbook(url),
+          onCta: url == null ? null : () => _openWorkbook(a.assignmentId, url),
         );
     }
   }

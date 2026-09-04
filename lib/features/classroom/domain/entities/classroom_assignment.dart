@@ -73,6 +73,7 @@ class ClassroomAssignment {
     this.speakingTotal,
     this.conversationMet,
     this.conversationTotal,
+    this.workbookOpenedAt,
   });
 
   /// 응답 원소를 읽는다.
@@ -114,6 +115,10 @@ class ClassroomAssignment {
       speakingTotal: (json['speaking_total'] as num?)?.toInt(),
       conversationMet: (json['conversation_met'] as num?)?.toInt(),
       conversationTotal: (json['conversation_total'] as num?)?.toInt(),
+      // 워크북은 서버가 「열었나」만 안다. 안 열었으면 아예 없는 값이다.
+      workbookOpenedAt: json['workbook_opened_at'] is String
+          ? DateTime.tryParse(json['workbook_opened_at'] as String)?.toLocal()
+          : null,
     );
   }
 
@@ -195,6 +200,13 @@ class ClassroomAssignment {
   /// 회화 목표 표현 수. 통화 전이면 null 이다.
   final int? conversationTotal;
 
+  /// 워크북을 처음 연 시각. 안 열었으면 null 이다.
+  ///
+  /// ⚠ 「열었다」이지 「풀었다」가 아니다 — PDF 는 Google Drive 가 연다. 서버가 아는
+  ///   것은 학습자가 「다운로드」를 눌렀다는 사실 하나뿐이고, 화면도 그 이상을
+  ///   말하면 안 된다.
+  final DateTime? workbookOpenedAt;
+
   /// 이 과제가 요구하는 활동 수 — 리스트 카드의 분모다.
   int get activityCount => activities.length;
 
@@ -204,21 +216,20 @@ class ClassroomAssignment {
   ///    한쪽은 **읽은 수**, 다른 쪽은 **맞힌 수**였다 — 37 / 38 을 읽은 학습자의
   ///    상세는 「완료」인데 목록 카드는 `0/3` 이었다(2026-09-04 실측).
   ///
-  /// 워크북은 서버에 완료 신호가 없어 **항상 false** 다. 학습자가 체크하는 UI 를
-  /// 만들지 않았으므로 켤 근거가 없다.
+  /// 워크북은 **연 시각**이 유일한 신호다. 앱이 「다운로드」를 누를 때 서버에 알린다.
   bool isActivityDone(AssignmentActivity activity) {
     return switch (activity) {
       // 🔴 **읽은 수**로 판정한다. 맞힌 수(`speakingPassed`)로 재면 두 문장 틀린
       //    학습자는 다 읽고도 완료가 안 된다 — 숙제는 점수가 아니라 수행이다.
       AssignmentActivity.speaking => _met(speakingScored, speakingTotal),
       AssignmentActivity.conversation => _met(conversationMet, conversationTotal),
-      AssignmentActivity.workbook => false,
+      // 「다운로드」를 누르면 앱이 서버에 알린다(2026-09-04 사용자 지시).
+      // 그 전까지는 판정할 근거가 없어 false 다.
+      AssignmentActivity.workbook => workbookOpenedAt != null,
     };
   }
 
   /// 끝난 활동 수 — 리스트 카드의 분자다.
-  ///
-  /// 워크북은 서버에 완료 신호가 없어 세지 않는다. 발음·회화만 증거로 판정한다.
   int get completedActivityCount => activities.where(isActivityDone).length;
 
   static bool _met(int? done, int? total) =>

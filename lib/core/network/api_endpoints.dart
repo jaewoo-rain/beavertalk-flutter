@@ -56,6 +56,10 @@ abstract final class ApiEndpoints {
   static String classroomSpeakingSubmit(int assignmentId) =>
       '/classrooms/assignments/$assignmentId/speaking';
 
+  /// 워크북을 열었다고 알린다 — 워크북 활동의 유일한 수행 신호다.
+  static String classroomWorkbookOpen(int assignmentId) =>
+      '/classrooms/assignments/$assignmentId/workbook';
+
   // ── Calls ──
   /// 마이페이지 발음 카드 — 최근 N세션 발음 4지표 평균(`?sessions=`).
   static const callsPronunciationSummary = '/calls/pronunciation-summary';

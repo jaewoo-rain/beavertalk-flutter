@@ -274,6 +274,34 @@ void main() {
       expect(a.activityCount, 2);
     });
 
+    test('워크북은 연 시각이 오면 수행으로 센다', () {
+      // 서버가 아는 것은 「열었다」뿐이다. 그 전에는 판정할 근거가 없어 false 다.
+      Map<String, dynamic> row({String? openedAt}) => {
+        'assignment_id': 8,
+        'classroom_name': '초급 1반',
+        'grade': 1,
+        'chapter': 1,
+        'activities': ['workbook'],
+        'item_ids': <int>[],
+        'due_at': '2026-09-10T14:00:00Z',
+        'overdue': false,
+        'status': openedAt == null ? 'not_started' : 'done',
+        if (openedAt != null) 'workbook_opened_at': openedAt,
+      };
+
+      final before = ClassroomAssignment.fromJson(row());
+      expect(before.workbookOpenedAt, isNull);
+      expect(before.isActivityDone(AssignmentActivity.workbook), isFalse);
+      expect(before.completedActivityCount, 0);
+
+      final after = ClassroomAssignment.fromJson(
+        row(openedAt: '2026-09-04T05:00:00Z'),
+      );
+      expect(after.workbookOpenedAt, isNotNull);
+      expect(after.isActivityDone(AssignmentActivity.workbook), isTrue);
+      expect(after.completedActivityCount, 1);
+    });
+
     test('두 문장 틀려도 다 읽었으면 센다 — 분자는 읽은 수다', () {
       // 🔴 2026-09-04 실측. `speaking_passed` 로 세던 시절 상세는 「완료」인데
       //    목록 카드는 `0/3` 이었다. 판정은 한 곳(`isActivityDone`)에만 둔다.

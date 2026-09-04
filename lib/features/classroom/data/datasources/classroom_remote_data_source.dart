@@ -122,6 +122,13 @@ class ClassroomRemoteDataSource {
     return res.data ?? const <String, dynamic>{};
   }
 
+  /// B4-b 워크북을 열었다고 알린다. 멱등이라 여러 번 눌러도 된다.
+  Future<void> openWorkbook(int assignmentId) async {
+    await _dio.post<Map<String, dynamic>>(
+      ApiEndpoints.classroomWorkbookOpen(assignmentId),
+    );
+  }
+
   /// B4 발음 과제 제출.
   Future<void> submitSpeaking({
     required int assignmentId,

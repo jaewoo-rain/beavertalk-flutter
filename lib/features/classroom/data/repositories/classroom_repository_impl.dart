@@ -186,4 +186,13 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<void> openWorkbook(int assignmentId) async {
+    try {
+      await _ds.openWorkbook(assignmentId);
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
 }
