@@ -8,6 +8,9 @@ import '../atoms/homework_chip.dart';
 import '../atoms/pressable.dart';
 import '../icons/app_icons.dart';
 
+/// 카드 안 블록 사이 간격. Figma 실측값이라 토큰이 없다(s8 도 s12 도 아니다).
+const double _gap = 10;
+
 /// 숙제 리스트 카드가 그리는 칩 1개.
 @immutable
 class HomeworkCardChip {
@@ -23,8 +26,13 @@ class HomeworkCardChip {
 
 /// 숙제 리스트 카드 — Figma `숙제/HomeworkCard`(`5671:5291`) 실측.
 ///
-/// 335×**116 고정**·r12·`Background/Elevated/Alternative`·패딩 16/20·간격 10.
-/// 높이를 Hug 로 두면 상태별로 어긋나 리스트 스크롤이 튄다(스펙 §8).
+/// 335×**Hug**·r12·`Background/Elevated/Alternative`·패딩 16/20·**간격 10**.
+///
+/// 🔴 **높이를 고정하지 마라**(2026-09-04 사장님 지시). 스펙은 116 고정이었으나
+///    활동 이름이 로케일마다 크게 달라(ko 「발음」 2자 ↔ de 「Aussprache」 10자)
+///    칩이 한 줄에 안 들어간다. 고정 높이에서 `spaceBetween` 으로 버티면 칩이
+///    두 줄이 되는 순간 **여유가 0 이 돼 블록끼리 다 붙는다**(실기기 실측).
+///    ⇒ 간격 10 을 **명시**하고 카드가 내용만큼 자라게 둔다.
 ///
 /// **카드 전체가 탭 영역이다.** 우측 화살표는 장식이며 별도 히트 영역을 만들지
 /// 않는다 — 116 은 44dp 탭 타깃을 이미 넘는다.
@@ -64,9 +72,6 @@ class CardHomework extends StatelessWidget {
   /// 카드 탭. null 이면 눌리지 않는다.
   final VoidCallback? onTap;
 
-  /// Figma 고정 높이.
-  static const double height = 116;
-
   @override
   Widget build(BuildContext context) {
     final c = context.c;
@@ -75,13 +80,6 @@ class CardHomework extends StatelessWidget {
     return Pressable(
       onTap: onTap,
       child: Container(
-        // 🔴 **고정 높이가 아니라 최소 높이다.** 칩 줄이 늘면 카드가 그만큼 자란다.
-        //    예전에는 `height: 116` 고정이라 칩이 한 줄을 넘는 순간 잘렸다 —
-        //    한국어(발음·회화·워크북)만 겨우 들어갔고 **나머지 29개 로케일이 전부
-        //    가로로 넘쳤다**(2026-09-04 실측, 320dp 기준).
-        //    ⛔ 같은 로케일·같은 활동 수면 높이가 같으므로 스펙 §8 이 걱정한
-        //      「상태별로 어긋나 리스트가 튀는」 일은 생기지 않는다.
-        constraints: const BoxConstraints(minHeight: height),
         padding: const EdgeInsets.symmetric(
           vertical: AppSpacing.s16,
           horizontal: AppSpacing.s20,
@@ -91,11 +89,10 @@ class CardHomework extends StatelessWidget {
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         child: Column(
-          // 내용이 최소 높이보다 짧으면 spaceBetween 이 종전과 똑같이 벌려 준다.
-          // 길어지면 min 이 카드를 늘린다.
+          // ⛔ `spaceBetween` 으로 벌리지 마라 — 남는 높이가 있을 때만 벌어진다.
+          //    내용이 꽉 차면 간격이 0 이 되어 블록끼리 붙는다.
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             SizedBox(
               height: 22,
@@ -114,12 +111,14 @@ class CardHomework extends StatelessWidget {
                 ],
               ),
             ),
+            const SizedBox(height: _gap),
             Text(
               title,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: AppType.label1.b.copyWith(color: titleColor),
             ),
+            const SizedBox(height: _gap),
             Row(
               // 칩이 두 줄이 돼도 「n/m →」 는 첫 줄에 붙어 있어야 읽힌다.
               crossAxisAlignment: CrossAxisAlignment.start,
