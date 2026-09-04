@@ -85,6 +85,11 @@ class _AssignmentDetailScreenState
           .read(assignmentAttemptProvider.notifier)
           .restore(assignmentId: a.assignmentId, items: bundle.items);
 
+      // 이어서 읽을 자리 = **아직 채점 안 된 첫 문장.** 점수만 되살리고 커서를
+      // 1번에 두면 학습자는 읽은 문장을 처음부터 다시 읽게 된다. 다 읽었으면
+      // 0 번으로 — 복습은 처음부터 도는 편이 자연스럽다.
+      final int resumeAt = bundle.items.indexWhere((i) => i.score == null);
+
       await navigator.pushNamed(
         Routes.learningIntro,
         arguments: LearningArgs(
@@ -107,6 +112,7 @@ class _AssignmentDetailScreenState
                 rhythm: 0,
               ),
           ],
+          index: resumeAt < 0 ? 0 : resumeAt,
           origin: LearningOrigin.assignment,
           assignmentId: a.assignmentId,
         ),

@@ -34,6 +34,13 @@ abstract final class ApiEndpoints {
   static String classroomItemScore(int assignmentId, int itemId) =>
       '/classrooms/assignments/$assignmentId/items/$itemId/score';
 
+  /// 과제 예문의 원어민 음성. `/classrooms/assignments/{id}/items/{itemId}/tts`.
+  ///
+  /// 🔴 앱 서버의 `/sentences/{id}/tts` 를 쓰면 안 된다 — 그쪽은 **통화 문장** 전용이고
+  /// 과제 문장의 id 는 학습 항목 id 라 남의 문장이 나온다.
+  static String classroomItemTts(int assignmentId, int itemId) =>
+      '/classrooms/assignments/$assignmentId/items/$itemId/tts';
+
   /// B4 발음 과제 제출. `/classrooms/assignments/{id}/speaking`.
   static String classroomSpeakingSubmit(int assignmentId) =>
       '/classrooms/assignments/$assignmentId/speaking';

@@ -92,6 +92,20 @@ class ClassroomRepositoryImpl implements ClassroomRepository {
   }
 
   @override
+  Future<String?> itemTtsUrl({
+    required int assignmentId,
+    required int itemId,
+  }) async {
+    try {
+      final json = await _ds.itemTts(assignmentId: assignmentId, itemId: itemId);
+      final url = json['voice_url'] as String?;
+      return (url != null && url.startsWith('http')) ? url : null;
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
+
+  @override
   Future<AssignmentItemScore> scoreItem({
     required int assignmentId,
     required int itemId,

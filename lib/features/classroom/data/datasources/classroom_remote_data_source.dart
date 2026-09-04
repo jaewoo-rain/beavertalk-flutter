@@ -77,6 +77,17 @@ class ClassroomRemoteDataSource {
     return res.data ?? const <String, dynamic>{};
   }
 
+  /// 과제 예문의 원어민 음성 주소. 서버가 한 번 굽고 캐시한다.
+  Future<Map<String, dynamic>> itemTts({
+    required int assignmentId,
+    required int itemId,
+  }) async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      ApiEndpoints.classroomItemTts(assignmentId, itemId),
+    );
+    return res.data ?? const <String, dynamic>{};
+  }
+
   /// 과제 문장 1개 채점. 녹음은 완성된 WAV(PCM16/16k/mono)를 그대로 올린다.
   Future<Map<String, dynamic>> scoreItem({
     required int assignmentId,

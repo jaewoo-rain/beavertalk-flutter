@@ -469,20 +469,34 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   // ── Audio ─────────────────────────────────────────────────────────────────
 
   /// Plays the current sentence's standard (native) pronunciation via the
-  /// server's on-demand TTS (`POST /sentences/{id}/tts`), cached after the first
-  /// fetch. Used by both the top speaker and the result's "Native" button.
+  /// server's on-demand TTS, cached after the first fetch. Used by both the top
+  /// speaker and the result's "Native" button.
+  ///
+  /// 🔴 **과제와 그 외는 서버가 다르다.** 앱 서버의 `/sentences/{id}/tts` 는 통화에서
+  /// 나온 문장 전용이고(`sentence.call_id` NOT NULL), 과제 문장의 id 는 문장 id 가
+  /// 아니라 **학습 항목 id** 다. 같은 id 로 부르면 남의 문장이 나오거나 404 다.
+  /// 그래서 과제는 b2b 의 항목 축 경로로 간다(2026-09-04).
   Future<void> _playStandard(MockSentence sentence) async {
     // Never play the standard audio while scoring or recording — it would bleed
     // into the take and skew the score.
     if (_phase == LearningPhase.scoring || _loadingTts || _recording) return;
     final l10n = AppLocalizations.of(context);
+    final args = ModalRoute.of(context)?.settings.arguments;
+    final int? assignmentId = (args is LearningArgs &&
+            args.origin == LearningOrigin.assignment)
+        ? args.assignmentId
+        : null;
     var url = _ttsUrl ?? sentence.voiceUrl;
     if (url == null || !url.startsWith('http')) {
       setState(() => _loadingTts = true);
       try {
-        url = await ref
-            .read(reviewRepositoryProvider)
-            .sentenceTtsUrl(sentence.id);
+        url = assignmentId != null
+            ? await ref
+                  .read(classroomRepositoryProvider)
+                  .itemTtsUrl(assignmentId: assignmentId, itemId: sentence.id)
+            : await ref
+                  .read(reviewRepositoryProvider)
+                  .sentenceTtsUrl(sentence.id);
         _ttsUrl = url;
       } on AppException catch (e) {
         _snack(e.message);

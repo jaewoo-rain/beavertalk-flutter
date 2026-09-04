@@ -43,7 +43,13 @@ abstract interface class ClassroomRepository {
   /// [locale] 은 뜻의 언어다. 서버가 요청 로케일 → 영어 → null 순으로 떨어뜨린다.
   Future<AssignmentItems> assignmentItems(int assignmentId, {String? locale});
 
-  /// 과제 문장 1개를 채점한다. **서버가 아무것도 저장하지 않는다.**
+  /// 과제 예문의 원어민 음성 주소.
+  ///
+  /// 🔴 서명 URL 이라 만료된다(7일). **굳혀 두지 말고 재생할 때마다 받아라** —
+  /// 서버는 이미 구운 오디오를 다시 서명해 줄 뿐이라 싸다.
+  Future<String?> itemTtsUrl({required int assignmentId, required int itemId});
+
+  /// 과제 문장 1개를 채점한다. **서버가 문장별로 저장한다**(2026-09-04~).
   ///
   /// 통과 여부는 서버가 판정한 [AssignmentItemScore.passed] 를 그대로 쓴다 —
   /// 앱이 점수로 다시 판정하면 경계가 두 곳이 된다.
