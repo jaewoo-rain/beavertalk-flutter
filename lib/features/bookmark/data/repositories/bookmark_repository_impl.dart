@@ -33,4 +33,22 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
       throw mapDioException(e);
     }
   }
+
+  @override
+  Future<BookmarkSentence> saveHintSentence({
+    required int callId,
+    required String korean,
+    required String native,
+  }) async {
+    try {
+      final dto = await _remote.saveFromHint(
+        callId: callId,
+        korean: korean,
+        native: native,
+      );
+      return dto.toEntity();
+    } on DioException catch (e) {
+      throw mapDioException(e);
+    }
+  }
 }

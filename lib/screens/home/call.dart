@@ -13,6 +13,7 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
@@ -91,10 +92,21 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// Currently shown suggestion index in the revealed hint; reset per new hint.
   int _suggestionIndex = 0;
 
-  /// Sentence ids with a bookmark write in flight — guards double taps (the
-  /// second tap would flip the local glyph back while the first write is still
-  /// on the wire, leaving glyph and server disagreeing).
-  final Set<int> _hintBookmarkInFlight = <int>{};
+  /// 담아 본 힌트 → 서버 문장 id. 키는 [_hintKey].
+  ///
+  /// 힌트에는 문장 id 가 없다 — 서버가 힌트 시점에 DB 를 안 건드리기 때문이다
+  /// ([HintExample] 참고). 🔖 를 **처음** 누를 때 `POST /sentences/from-hint` 가 문장을
+  /// 만들어 주고, 그 뒤로는 기존 즐겨찾기와 **완전히 같은 행**이라 토글도 같은 길
+  /// (`PATCH /sentences/{id}/bookmark`)로 간다.
+  final Map<String, int> _hintSentenceIds = <String, int>{};
+
+  /// 담기·토글이 나가 있는 힌트(키). 연타 방어이자, 아직 id 가 없는 **첫 담기 동안의
+  /// 낙관적 채움** 근거다 — 그 순간엔 채움을 판단할 id 자체가 없다.
+  final Set<String> _hintBookmarkInFlight = <String>{};
+
+  /// 힌트 담기의 신원 — 서버의 중복 판정과 같은 기준(통화 + 한국어 문장)으로 맞춘다.
+  /// 어긋나면 앱은 새 문장으로 알고 서버는 재사용해서, 글리프와 서버가 갈린다.
+  static String _hintKey(int callId, String korean) => '$callId|${korean.trim()}';
 
   /// Standard-pronunciation player for hint examples.
   ///
@@ -175,33 +187,67 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       ..showSnackBar(SnackBar(content: Text(message)));
   }
 
-  /// Saves/unsaves a hint example. Flips the shared in-memory store instantly
-  /// so the glyph responds mid-call, then persists so 보관함 actually lists it.
-  /// Reverts on failure — a filled glyph that the archive won't have is a lie.
+  /// 힌트 예시를 즐겨찾기에 담거나 뺀다 — **두 단계**다.
   ///
-  /// Mirrors `analysis.dart:_toggleBookmark`; the hint card is just another
-  /// place the same sentence can be saved from.
-  /// 서버가 아직 `id` 를 안 보내면 버튼을 숨기는 대신 **이유를 말한다** — [_playHintExample]
-  /// 과 같은 원칙이다.
-  Future<void> _toggleHintBookmark(HintExample ex) async {
-    final sentenceId = ex.sentenceId;
-    if (sentenceId == null) {
-      _snack(AppLocalizations.of(context).saveSentenceFailed);
+  /// 1. **처음 담을 때**: 힌트에는 문장 id 가 없으므로 `POST /sentences/from-hint` 가
+  ///    이 순간 문장을 만든다. 응답 문장은 이미 담긴 상태(`is_bookmarked=true`)다.
+  ///    ⛔ **같은 힌트를 다시 담아도 에러가 아니다** — 서버가 같은 행을 재사용해 200 에
+  ///      같은 id 를 준다. 그래서 실패 처리하지 않는다.
+  /// 2. **그 뒤**: 만들어진 문장은 기존 즐겨찾기와 **완전히 같은 행**이라
+  ///    `analysis.dart:_toggleBookmark` 와 같은 길로 토글한다(낙관적 반영 + 실패 복구).
+  ///
+  /// [callId] 는 이 통화의 서버 id. 없으면(연결 전·구버전 서버) 담을 수 없다 —
+  /// 버튼을 숨기는 대신 **이유를 말한다**([_playHintExample] 과 같은 원칙).
+  Future<void> _toggleHintBookmark(HintExample ex, int? callId) async {
+    final l10n = AppLocalizations.of(context);
+    final korean = ex.korean.trim();
+    if (callId == null || korean.isEmpty) {
+      _snack(l10n.saveSentenceFailed);
       return;
     }
-    if (_hintBookmarkInFlight.contains(sentenceId)) return;
-    _hintBookmarkInFlight.add(sentenceId);
-    final willSave = !bookmarkedSentenceIds.value.contains(sentenceId);
-    toggleBookmark(sentenceId); // optimistic local flip
+    final key = _hintKey(callId, korean);
+    if (!_hintBookmarkInFlight.add(key)) return;
+    setState(() {}); // 첫 담기 동안 글리프를 미리 채운다(아직 id 가 없다).
+
     try {
-      await ref
-          .read(bookmarkToggleControllerProvider.notifier)
-          .toggleBookmark(sentenceId, willSave);
+      final known = _hintSentenceIds[key];
+      if (known != null) {
+        // ── 이미 담아 본 문장 — 평범한 즐겨찾기 토글 ──
+        final willSave = !bookmarkedSentenceIds.value.contains(known);
+        toggleBookmark(known); // optimistic local flip
+        try {
+          await ref
+              .read(bookmarkToggleControllerProvider.notifier)
+              .toggleBookmark(known, willSave);
+        } catch (_) {
+          toggleBookmark(known); // revert
+          if (mounted) _snack(l10n.saveSentenceFailed);
+        }
+        return;
+      }
+
+      // ── 처음 담는다 — 이 순간 서버가 문장을 만든다 ──
+      // ⚠ 서버가 native 를 1자 이상 필수로 받는다. 비어 있으면 422 가 될 뿐이라
+      //   왕복하지 않고 여기서 이유를 말한다.
+      final native = ex.native.trim();
+      if (native.isEmpty) {
+        _snack(l10n.saveSentenceFailed);
+        return;
+      }
+      final saved = await ref.read(bookmarkRepositoryProvider).saveHintSentence(
+            callId: callId,
+            korean: korean,
+            native: native,
+          );
+      _hintSentenceIds[key] = saved.sentenceId;
+      setBookmark(saved.sentenceId, saved.isBookmarked);
+      // 보관함은 서버 목록을 다시 읽어야 이 문장이 보인다.
+      ref.invalidate(bookmarkListProvider);
     } catch (_) {
-      toggleBookmark(sentenceId); // revert
-      if (mounted) _snack(AppLocalizations.of(context).saveSentenceFailed);
+      if (mounted) _snack(l10n.saveSentenceFailed);
     } finally {
-      _hintBookmarkInFlight.remove(sentenceId);
+      _hintBookmarkInFlight.remove(key);
+      if (mounted) setState(() {});
     }
   }
 
@@ -428,6 +474,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
     final characterId = serverCharacterId ??
         ref.watch(myProfileProvider).valueOrNull?.characterId;
+    // 힌트를 담으려면 이 통화의 서버 id 가 필요하다(`POST /sentences/from-hint`).
+    // 상태는 문자열로 들고 있고 서버는 int 를 받는다 — 다른 자리와 같은 방식으로 판다.
+    // 연결 전에는 null 이고, 그때는 담기가 "저장하지 못했어요"로 폴백한다.
+    final hintCallId = int.tryParse(
+      ref.watch(normalCallControllerProvider.select((s) => s.callId)) ?? '',
+    );
     final selectedChar = ref.watch(characterByIdProvider(characterId));
     final selectedCharUrl = selectedChar?.imageUrl;
     // Null until the catalog resolves. Deliberately NOT defaulted to
@@ -674,18 +726,30 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                   // screen.
                                   final ex = hint.examples[_suggestionIndex
                                       .clamp(0, hint.examples.length - 1)];
-                                  final id = ex.sentenceId;
+                                  // 힌트에는 문장 id 가 없다 — 담은 뒤에야 생긴다.
+                                  // 그래서 채움은 두 근거를 본다: 이미 담아 본
+                                  // 문장의 서버 id, 그리고 **첫 담기가 나가 있는
+                                  // 동안**의 낙관적 채움(그땐 id 자체가 없다).
+                                  final key = hintCallId == null
+                                      ? null
+                                      : _hintKey(hintCallId, ex.korean);
+                                  final savedId =
+                                      key == null ? null : _hintSentenceIds[key];
+                                  final isSaved = savedId != null
+                                      ? saved.contains(savedId)
+                                      : key != null &&
+                                          _hintBookmarkInFlight.contains(key);
                                   return HintCard(
                                     examples: hint.examples,
                                     revealed: _revealedTurnId == hint.turnId,
                                     index: _suggestionIndex,
-                                    bookmarked:
-                                        id != null && saved.contains(id),
-                                    // 둘 다 **항상** 넘긴다. id 가 없으면 버튼을
-                                    // 없애는 게 아니라 눌렀을 때 이유를 말한다.
+                                    bookmarked: isSaved,
+                                    // 둘 다 **항상** 넘긴다. 부를 수 없는 상태면
+                                    // 버튼을 없애는 게 아니라 이유를 말한다.
                                     onSpeak: () =>
                                         _playHintExample(ex, characterId),
-                                    onBookmarkTap: () => _toggleHintBookmark(ex),
+                                    onBookmarkTap: () =>
+                                        _toggleHintBookmark(ex, hintCallId),
                                     onReveal: () {
                                       setState(
                                           () => _revealedTurnId = hint.turnId);

@@ -1,13 +1,12 @@
 // Hint-card LAB — 통화 없이 **힌트 카드만** 브라우저에 띄워 눈으로 본다.
 //
 // 왜 있나: 실제 힌트 카드는 통화가 붙고(로그인 + WS) 서버가 `hint` 프레임을 보낸
-// 뒤에야 화면에 나온다. 게다가 책갈피 버튼은 서버가 `examples[].id` 를 붙여야
-// 뜨는데 **아직 안 붙는다** — 그래서 실앱을 띄워도 지금은 볼 수가 없다.
+// 뒤에야 화면에 나온다 — 통화 없이는 눈으로 볼 방법이 없다.
 // 이 랩은 `HintCard` 를 실앱과 같은 테마·l10n 위에서 그대로 렌더한다.
 //
-// ⚠ 서버를 안 탄다. 책갈피 탭은 공유 인메모리 스토어([bookmarkedSentenceIds])만
-// 뒤집는다 — 여기서 잘 돌아간다고 `PATCH /sentences/{id}/bookmark` 배선이
-// 검증된 것은 아니다. 그건 실통화에서만 확인된다.
+// ⚠ 서버를 안 탄다. 실앱은 🔖 첫 탭에서 `POST /sentences/from-hint` 로 문장을 만들고
+// 그 뒤 `PATCH /sentences/{id}/bookmark` 로 토글하는데, 랩은 그 자리를 가짜 id 와
+// 인메모리 스토어로 대신한다 — 여기가 초록이어도 **배선이 검증된 것은 아니다.**
 //
 //   flutter run -d chrome --target lib/hint_card_lab_main.dart
 import 'package:flutter/material.dart';
@@ -21,34 +20,32 @@ import 'theme/app_color_tokens.dart';
 import 'theme/app_spacing.dart';
 import 'theme/app_typography.dart';
 
-/// 서버가 `id` 를 붙여 보낸 힌트 — 책갈피 버튼이 뜨는 쪽.
-const _withIds = <HintExample>[
+/// 서버가 보내는 그대로의 힌트 — **문장 id 가 없다.** 담는 순간에야 생긴다.
+const _examples = <HintExample>[
   HintExample(
     korean: '화장실이 어디예요?',
     roman: 'hwajangsiri eodiyeyo?',
     native: 'Where is the restroom?',
-    sentenceId: 101,
   ),
   HintExample(
     korean: '잠깐 다녀올게요.',
     roman: 'jamkkan danyeoolgeyo.',
     native: "I'll be right back.",
-    sentenceId: 102,
   ),
   HintExample(
     korean: '이따가 다시 얘기해요.',
     roman: 'ittaga dasi yaegihaeyo.',
     native: "Let's talk again later.",
-    sentenceId: 103,
   ),
 ];
 
-/// 지금 서버가 실제로 보내는 모양 — `id` 가 없다. 버튼이 없어야 정상이다.
-const _withoutIds = <HintExample>[
+/// `native` 가 빈 예시 — 서버 담기 API 가 이걸 **필수(1자 이상)** 로 받아서 담을 수 없다.
+/// 드물지만 모델이 뜻을 빼먹으면 실제로 생긴다.
+const _noNative = <HintExample>[
   HintExample(
     korean: '화장실이 어디예요?',
     roman: 'hwajangsiri eodiyeyo?',
-    native: 'Where is the restroom?',
+    native: '',
   ),
 ];
 
@@ -156,45 +153,45 @@ class _LabState extends State<_Lab> {
                     'peek — 접힌 상태 (탭하면 펼쳐진다)',
                     '스피커·책갈피가 여기에도 있다. 버튼을 눌러도 카드는 안 펼쳐진다.',
                     HintCard(
-                      examples: _withIds,
+                      examples: _examples,
                       revealed: _peekRevealed,
                       index: _peekIndex,
-                      bookmarked: _isSaved(_withIds[_peekIndex]),
-                      onSpeak: () => _speak(_withIds[_peekIndex]),
-                      onBookmarkTap: () => _toggle(_withIds[_peekIndex]),
+                      bookmarked: _isSaved(_examples[_peekIndex]),
+                      onSpeak: () => _speak(_examples[_peekIndex]),
+                      onBookmarkTap: () => _toggle(_examples[_peekIndex]),
                       onReveal: () => setState(() => _peekRevealed = true),
                       onCycle: () => setState(
-                          () => _peekIndex = (_peekIndex + 1) % _withIds.length),
+                          () => _peekIndex = (_peekIndex + 1) % _examples.length),
                     ),
                   ),
                   _section(
                     context,
-                    'full — 서버가 id 를 보낸 뒤',
-                    '책갈피를 탭 → 채워진다. ↻ 로 예시를 넘기면 책갈피도 그 예시 '
-                        '것으로 바뀐다. 스피커는 실앱에서 표준 발음을 재생한다.',
+                    'full — 펼친 상태',
+                    '책갈피를 탭 → 그 순간 문장이 만들어지고 채워진다. ↻ 로 예시를 '
+                        '넘기면 책갈피도 그 예시 것으로 바뀐다.',
                     HintCard(
-                      examples: _withIds,
+                      examples: _examples,
                       revealed: true,
                       index: _fullIndex,
-                      bookmarked: _isSaved(_withIds[_fullIndex]),
-                      onSpeak: () => _speak(_withIds[_fullIndex]),
-                      onBookmarkTap: () => _toggle(_withIds[_fullIndex]),
+                      bookmarked: _isSaved(_examples[_fullIndex]),
+                      onSpeak: () => _speak(_examples[_fullIndex]),
+                      onBookmarkTap: () => _toggle(_examples[_fullIndex]),
                       onReveal: () {},
                       onCycle: () => setState(
-                          () => _fullIndex = (_fullIndex + 1) % _withIds.length),
+                          () => _fullIndex = (_fullIndex + 1) % _examples.length),
                     ),
                   ),
                   _section(
                     context,
-                    'full — 지금 서버 (id 없음)',
-                    '버튼은 **그대로 다 있다.** 눌러 보면 "아직 준비 안 됨"이라고 '
-                        '말한다 — 숨지 않는다.',
+                    'full — native(뜻)가 빈 예시',
+                    '서버 담기 API 가 뜻을 필수로 받아 담을 수 없다. 버튼은 **그대로 '
+                        '다 있고** 눌러 보면 이유를 말한다 — 숨지 않는다.',
                     HintCard(
-                      examples: _withoutIds,
+                      examples: _noNative,
                       revealed: true,
                       index: 0,
-                      onSpeak: () => _speak(_withoutIds[0]),
-                      onBookmarkTap: () => _toggle(_withoutIds[0]),
+                      onSpeak: () => _speak(_noNative[0]),
+                      onBookmarkTap: () => _toggle(_noNative[0]),
                       onReveal: () {},
                       onCycle: () {},
                     ),
@@ -209,30 +206,40 @@ class _LabState extends State<_Lab> {
     );
   }
 
-  bool _isSaved(HintExample ex) =>
-      ex.sentenceId != null &&
-      bookmarkedSentenceIds.value.contains(ex.sentenceId);
+  /// 랩의 가짜 통화 id — 실앱은 서버가 준 `call_id` 를 쓴다.
+  static const _labCallId = 9999;
 
-  /// 실화면과 달리 **서버를 안 탄다** — 인메모리 스토어만 뒤집는다.
-  /// id 가 없을 때 실앱이 내는 스낵바를 여기서도 똑같이 낸다.
+  /// 담아 본 힌트 → 문장 id. 실앱과 같은 구조다(실앱은 서버가 id 를 준다).
+  final Map<String, int> _savedIds = <String, int>{};
+  int _nextFakeId = 500;
+
+  String _key(HintExample ex) => '$_labCallId|${ex.korean.trim()}';
+
+  bool _isSaved(HintExample ex) {
+    final id = _savedIds[_key(ex)];
+    return id != null && bookmarkedSentenceIds.value.contains(id);
+  }
+
+  /// 실화면과 달리 **서버를 안 탄다** — 첫 담기에서 서버가 문장을 만들어 주는 자리를
+  /// 가짜 id 로 대신하고, 그 뒤 토글만 인메모리 스토어로 흉내 낸다.
+  ///
+  /// 실앱은 여기서 `POST /sentences/from-hint` → `PATCH /sentences/{id}/bookmark` 로 간다.
   void _toggle(HintExample ex) {
-    final id = ex.sentenceId;
-    if (id == null) {
-      _snack(AppLocalizations.of(context).saveSentenceFailed);
+    final l10n = AppLocalizations.of(context);
+    // 서버가 native 를 필수로 받는다 — 실앱과 같은 안내를 낸다.
+    if (ex.native.trim().isEmpty) {
+      _snack(l10n.saveSentenceFailed);
       return;
     }
+    final key = _key(ex);
+    final id = _savedIds[key] ?? (_savedIds[key] = _nextFakeId++);
     toggleBookmark(id);
     setState(() {});
   }
 
-  /// 실앱은 `POST /sentences/{id}/tts` 로 표준 발음을 받아 재생한다. 랩은 서버를
-  /// 안 타므로 **무엇이 재생될지만** 알린다 — id 가 없을 때의 안내는 실앱과 같다.
-  void _speak(HintExample ex) {
-    final l10n = AppLocalizations.of(context);
-    _snack(ex.sentenceId == null
-        ? l10n.standardAudioNotReady
-        : '재생: ${ex.korean} (sentence ${ex.sentenceId})');
-  }
+  /// 실앱은 `POST /tts/speech` 로 캐릭터 목소리 mp3 를 받아 재생한다. 랩은 서버를 안
+  /// 타므로 **무엇이 재생될지만** 알린다.
+  void _speak(HintExample ex) => _snack('재생: ${ex.korean}');
 
   void _snack(String message) {
     ScaffoldMessenger.of(context)
