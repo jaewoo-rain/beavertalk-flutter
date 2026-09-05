@@ -542,6 +542,33 @@ class _SyncAvatarState extends State<SyncAvatar> {
         _emoOpacity = 0;
       });
     }
+    // ⛔⛔ **감정 클립을 여기서 확실히 끝낸다**(2026-09-05 실측).
+    //
+    //   증상: 2.2초짜리 감정이 `vid_emo_end` 까지 **최대 51.9초** 걸렸다(실측 c5:
+    //   10.6·14.9·16.2·17.8·26.0·51.9초). 열림 14건 중 2건은 아예 안 끝났다.
+    //
+    //   원인: [_applyPlayback] 은 `_talking` 일 때만 감정을 재생한다
+    //   (`emoAllowed = _talking || silentEmotion`). 발화가 클립보다 먼저 끝나면
+    //   (2.2초 클립인데 발화가 1.8초) **남은 0.4초에서 클립이 멈춘 채 굳는다.**
+    //   그런데 끝 판정은 `position >= duration - 80ms` 라 영영 안 온다 —
+    //   다음 발화가 시작돼 재생이 재개될 때까지. 그 간격이 곧 10~51초다.
+    //
+    //   ⚠ 화면은 멀쩡하다(`_emoOpacity=0` 이라 안 보인다). 새는 것은 **디코더**다 —
+    //     하드웨어 한계가 2~3개인데 끝나지 않은 감정이 계속 한 자리를 문다.
+    //
+    //   ⇒ 발화가 끝나면 감정도 **끝난 것으로 친다.** 감시자를 풀고 자리를 비운다.
+    //     ⛔ `silentEmotion`(학습 반응 밴드)은 예외다 — 거기선 `_talking` 이 영영
+    //       false 라 이 규칙을 적용하면 감정이 아예 안 뜬다.
+    if (!widget.silentEmotion) {
+      // ⚠ 계측을 남긴다. 이 자리에서 끝내면 [_armEmoFinish] 의 `vid_emo_end` 가 안 찍혀,
+      //   다음에 로그만 보면 «감정이 안 끝났다» 로 보인다(고쳐 놓고 못 알아본다).
+      //   `why` 로 두 경로를 가른다 — 'played'(끝까지 재생) vs 'talk_end'(발화가 먼저).
+      if (_emo != null) {
+        widget.onDiag?.call('vid_emo_end', {'code': _emoCode, 'why': 'talk_end'});
+      }
+      _disarmEmoFinish();
+      unawaited(_freeEmoSlot('발화 종료 — 감정 정리'));
+    }
     _applyPlayback();
     // ⭐ 감정이 여기서 **뚝 내려간다** ⇒ 감정에 가려 미뤄 뒀던 idle·talk 교체가
     //   고아가 된다. 발화가 끝나 다음 감정이 안 올 수도 있으므로 지금 잇는다.
@@ -776,7 +803,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
       // 마지막 프레임 언저리에서 판정한다 — position 이 duration 에 정확히 안 닿는다.
       if (v.position < dur - const Duration(milliseconds: 80)) return;
       _disarmEmoFinish();
-      widget.onDiag?.call('vid_emo_end', {'code': _emoCode});
+      widget.onDiag?.call('vid_emo_end', {'code': _emoCode, 'why': 'played'});
       if (!mounted) return;
       // 감정만 내린다. talk 은 [_applyPlayback] 이 다시 켠다 — 그게 「말하는 얼굴」이다.
       setState(() => _emoOpacity = 0);
