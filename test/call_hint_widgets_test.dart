@@ -35,19 +35,20 @@ void main() {
       expect(hint.examples[1].roman, isNull);
     });
 
-    test('reads the example sentence id as int or numeric string', () {
+    test('서버가 보내지 않는 필드는 무시한다 — 문장 id 는 힌트에 없다', () {
+      // 힌트 시점에 서버는 DB 를 안 건드린다(문장은 🔖 를 누를 때 생긴다).
+      // 낯선 키가 섞여 와도 파싱이 깨지지 않아야 통화가 안 죽는다.
       final hint = HintData.fromJson({
         'turn_id': 't1',
         'examples': [
           {'korean': '가요', 'native': 'go', 'id': 7},
-          {'korean': '와요', 'native': 'come', 'id': '9'},
-          {'korean': '자요', 'native': 'sleep'}, // no id yet — stays null
-          {'korean': '봐요', 'native': 'see', 'id': 'x'}, // junk → null, no throw
+          {'korean': '와요', 'native': 'come', 'id': 'x'},
         ],
       });
       expect(hint, isNotNull);
-      expect(hint!.examples.map((e) => e.sentenceId).toList(),
-          [7, 9, null, null]);
+      expect(hint!.examples.length, 2);
+      expect(hint.examples.first.korean, '가요');
+      expect(hint.examples.first.native, 'go');
     });
 
     test('returns null when no usable example', () {
