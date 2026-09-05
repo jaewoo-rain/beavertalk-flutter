@@ -24,6 +24,32 @@ enum AssignmentActivity {
   }
 }
 
+/// 과제의 출처. 서버 `assignment.source` 와 1:1 이다.
+enum AssignmentSource {
+  /// TOPIK 커리큘럼 챕터에서 자동으로 만들어진 과제. 급수·챕터가 있다.
+  curriculum('curriculum'),
+
+  /// 교사가 수업에서 다룬 문장·단어를 직접 적어 낸 과제.
+  ///
+  /// 🔴 **급수·챕터가 없다.** 챕터로 제목을 만들면 「Chapter 00」이 된다 —
+  ///    이 과제는 교사가 붙인 [ClassroomAssignment.title] 로 부른다.
+  manual('manual');
+
+  const AssignmentSource(this.code);
+
+  /// 서버가 쓰는 문자열.
+  final String code;
+
+  /// 서버 문자열을 enum 으로. 모르는 값은 [curriculum] 으로 떨어뜨린다 —
+  /// 서버가 출처를 안 실어 주던 시절의 응답도 그대로 읽힌다.
+  static AssignmentSource fromCode(String? code) {
+    for (final v in AssignmentSource.values) {
+      if (v.code == code) return v;
+    }
+    return curriculum;
+  }
+}
+
 /// 제출 상태. 서버 `submission.status` 체크 제약과 같다.
 enum AssignmentStatus {
   /// 아직 손대지 않음. 제출 행 자체가 없을 때도 이 값이다.
@@ -61,6 +87,8 @@ class ClassroomAssignment {
     this.classroomId,
     this.closedAt,
     this.workbookUrl,
+    this.source = AssignmentSource.curriculum,
+    this.title,
     required this.grade,
     required this.chapter,
     required this.activities,
@@ -94,6 +122,10 @@ class ClassroomAssignment {
       workbookUrl: json['workbook'] is Map
           ? (json['workbook'] as Map)['view_url'] as String?
           : null,
+      source: AssignmentSource.fromCode(json['source'] as String?),
+      title: json['title'] as String?,
+      // 직접 출제는 급수·챕터가 null 이다. 0 으로 떨어지지만 화면은 [displayTitle]
+      // 을 보므로 「Chapter 00」이 뜨지 않는다.
       grade: (json['grade'] as num?)?.toInt() ?? 0,
       chapter: (json['chapter'] as num?)?.toInt() ?? 0,
       activities: rawActivities is List
@@ -155,6 +187,19 @@ class ClassroomAssignment {
 
   /// 닫혀서 더 제출할 수 없는 과제인지.
   bool get isClosed => closedAt != null;
+
+  /// 과제의 출처.
+  final AssignmentSource source;
+
+  /// 교사가 붙인 과제 이름. 커리큘럼 과제는 null 이고 앱이 챕터로 제목을 만든다.
+  final String? title;
+
+  /// 챕터가 아니라 **교사가 적은 이름**으로 부르는 과제인지.
+  ///
+  /// 🔴 `source` 만 보면 안 된다 — 서버가 출처를 실어 주기 전 응답이나 이름이
+  ///    빈 과제가 있을 수 있다. 이름이 실제로 있을 때만 제목으로 부른다.
+  bool get hasOwnTitle =>
+      source == AssignmentSource.manual && (title?.trim().isNotEmpty ?? false);
 
   /// 급수(1~6).
   final int grade;

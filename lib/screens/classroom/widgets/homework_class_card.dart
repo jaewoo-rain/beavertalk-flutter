@@ -71,9 +71,7 @@ class HomeworkClassCard extends ConsumerWidget {
       //    반 이름을 쓴다 — 지어내지 않는다.
       institution: next.classroomName,
       badge: assignmentBadge(context, next),
-      chapterLabel: l10n.hwChapterLabel(
-        next.chapter.toString().padLeft(2, '0'),
-      ),
+      chapterLabel: assignmentTitleOf(next, l10n.hwChapterLabel),
       // 챕터 이름도 서버가 주지 않는다. 둘째 칸은 비워 둔다.
       chapterTitle: null,
       chips: [

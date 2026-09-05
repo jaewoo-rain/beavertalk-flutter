@@ -14,6 +14,7 @@ import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/classroom/domain/entities/classroom_assignment.dart';
 import '../../features/classroom/presentation/assignment_attempt_provider.dart';
+import '../../features/classroom/presentation/assignment_display.dart';
 import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -264,7 +265,7 @@ class _AssignmentDetailScreenState
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Gnb.main(
-            title: l10n.hwChapterLabel(a.chapter.toString().padLeft(2, '0')),
+            title: assignmentTitleOf(a, l10n.hwChapterLabel),
             onBack: () => Navigator.of(context).pop(),
           ),
           Expanded(

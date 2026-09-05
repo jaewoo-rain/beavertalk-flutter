@@ -31,6 +31,8 @@ ClassroomAssignment _a({
 }
 
 void main() {
+  _titleTests();
+
   group('daysUntilDue — 시각이 아니라 날짜로 센다', () {
     test('오늘 밤 마감은 0일이다', () {
       expect(daysUntilDue(DateTime(2026, 9, 2, 23), _now), 0);
@@ -207,6 +209,84 @@ void main() {
     test('아무것도 안 읽었으면 완료가 아니다', () {
       final a = withSpeaking(scored: 0, passed: 0, total: 38);
       expect(activityDone(a, AssignmentActivity.speaking), isFalse);
+    });
+  });
+}
+
+// ── 과제 이름 — 커리큘럼은 챕터로, 직접 출제는 교사가 붙인 이름으로 ──
+//
+// 🔴 직접 출제 과제는 급수·챕터가 **null** 이라 `?? 0` 으로 떨어진다. 챕터로
+//    제목을 만들면 세 화면(홈 카드·목록·상세)이 전부 「Chapter 00」을 그린다.
+void _titleTests() {
+  String chapterLabel(String n) => 'Chapter $n';
+
+  ClassroomAssignment make({
+    AssignmentSource source = AssignmentSource.curriculum,
+    String? title,
+    int chapter = 3,
+  }) => ClassroomAssignment(
+    assignmentId: 1,
+    classroomName: 'TOPIK 1급 A반',
+    source: source,
+    title: title,
+    grade: 1,
+    chapter: chapter,
+    activities: const [AssignmentActivity.speaking],
+    itemIds: const [],
+    dueAt: _now,
+    overdue: false,
+    status: AssignmentStatus.notStarted,
+  );
+
+  group('assignmentTitleOf', () {
+    test('커리큘럼 과제는 챕터로 부른다', () {
+      expect(assignmentTitleOf(make(), chapterLabel), 'Chapter 03');
+    });
+
+    test('직접 출제는 교사가 붙인 이름으로 부른다', () {
+      final a = make(
+        source: AssignmentSource.manual,
+        title: '9월 2주차 · 시장에서 쓰는 말',
+        chapter: 0,
+      );
+      expect(assignmentTitleOf(a, chapterLabel), '9월 2주차 · 시장에서 쓰는 말');
+    });
+
+    test('이름이 비면 챕터로 떨어진다 — 빈 제목을 그리지 않는다', () {
+      final a = make(source: AssignmentSource.manual, title: '   ');
+      expect(assignmentTitleOf(a, chapterLabel), 'Chapter 03');
+    });
+  });
+
+  group('fromJson', () {
+    Map<String, dynamic> base() => {
+      'assignment_id': 1,
+      'classroom_name': 'A반',
+      'activities': ['speaking'],
+      'due_at': '2026-09-06T14:00:00Z',
+    };
+
+    test('출처를 안 실어 주면 커리큘럼으로 읽는다 — 옛 응답도 그대로 돈다', () {
+      final a = ClassroomAssignment.fromJson(base());
+      expect(a.source, AssignmentSource.curriculum);
+      expect(a.hasOwnTitle, isFalse);
+    });
+
+    test('직접 출제는 급수·챕터가 null 이어도 제목으로 불린다', () {
+      final a = ClassroomAssignment.fromJson({
+        ...base(),
+        'source': 'manual',
+        'title': '시장에서 쓰는 말',
+        'grade': null,
+        'chapter': null,
+      });
+      expect(a.hasOwnTitle, isTrue);
+      expect(assignmentTitleOf(a, chapterLabel), '시장에서 쓰는 말');
+    });
+
+    test('모르는 출처는 커리큘럼으로 떨어진다 — 서버가 늘려도 앱이 안 죽는다', () {
+      final a = ClassroomAssignment.fromJson({...base(), 'source': 'imported'});
+      expect(a.source, AssignmentSource.curriculum);
     });
   });
 }

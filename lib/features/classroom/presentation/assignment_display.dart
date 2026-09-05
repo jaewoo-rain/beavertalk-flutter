@@ -1,5 +1,18 @@
 import '../domain/entities/classroom_assignment.dart';
 
+/// 과제를 부르는 이름.
+///
+/// 커리큘럼 과제는 앱이 챕터로 조립하고(`Chapter 03`), 직접 출제는 **교사가 붙인
+/// 이름**을 그대로 쓴다.
+///
+/// 🔴 규칙을 화면마다 두지 마라. 예전에는 홈 카드·목록·상세 셋이 각자 챕터로
+///    제목을 만들었고, 직접 출제 과제가 세 곳 모두에서 「Chapter 00」이 됐다
+///    (급수·챕터가 null 이라 0 으로 떨어진다).
+String assignmentTitleOf(ClassroomAssignment a, String Function(String) chapterLabel) {
+  if (a.hasOwnTitle) return a.title!.trim();
+  return chapterLabel(a.chapter.toString().padLeft(2, '0'));
+}
+
 /// 리스트에서 과제가 들어갈 칸.
 enum AssignmentBucket {
   /// 진행 중 — 미제출(마감 지남)과 마감 임박(D-3 이내)을 함께 담는다.

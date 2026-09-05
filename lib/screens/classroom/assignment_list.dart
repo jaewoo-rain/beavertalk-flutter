@@ -129,7 +129,7 @@ class _Body extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final done = a.status == AssignmentStatus.done;
     return CardHomework(
-      chapterLabel: l10n.hwChapterLabel(_two(a.chapter)),
+      chapterLabel: assignmentTitleOf(a, l10n.hwChapterLabel),
       // 🔴 서버가 챕터 이름을 주지 않는다(학습자용 라우트에 없다). 반 이름이
       //    둘째 줄에 오는 이유다 — 없는 값을 지어내지 않는다.
       title: a.classroomName,
@@ -149,8 +149,6 @@ class _Body extends StatelessWidget {
     );
   }
 
-  /// `Chapter 03` 처럼 두 자리로 맞춘다.
-  static String _two(int n) => n.toString().padLeft(2, '0');
 }
 
 /// 받은 숙제가 없다.
