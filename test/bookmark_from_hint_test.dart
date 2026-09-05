@@ -25,8 +25,11 @@ class _CaptureAdapter implements HttpClientAdapter {
   Object? lastData;
 
   @override
-  Future<ResponseBody> fetch(RequestOptions options, Stream<Uint8List>? _,
-      Future<void>? __) async {
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
     lastRequest = options;
     lastData = options.data;
     return ResponseBody.fromString(
