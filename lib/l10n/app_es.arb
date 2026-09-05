@@ -62,6 +62,7 @@
   "review": "Repaso",
   "pronunciationChallenge": "Desafío de pronunciación",
   "newExpressions": "Expresiones nuevas",
+  "hwConversationOnce": "La conversación solo se puede hacer una vez por tarea.",
   "usedExpressions": "Expresiones que usaste",
   "analysisResult": "Resultado del análisis",
   "noNewExpressions": "No hay expresiones nuevas en esta conversación.",

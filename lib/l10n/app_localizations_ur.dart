@@ -2443,6 +2443,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'ہر ہوم ورک میں گفتگو صرف ایک بار کی جا سکتی ہے۔';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

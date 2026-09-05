@@ -2435,6 +2435,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce => 'บทสนทนาทำได้ครั้งเดียวต่อการบ้านหนึ่งชิ้น';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

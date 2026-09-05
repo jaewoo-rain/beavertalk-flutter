@@ -62,6 +62,7 @@
   "review": "Überprüfung",
   "pronunciationChallenge": "Aussprache-Challenge",
   "newExpressions": "Neue Ausdrücke",
+  "hwConversationOnce": "Das Gespräch kann pro Hausaufgabe nur einmal geführt werden.",
   "usedExpressions": "Von dir verwendete Ausdrücke",
   "analysisResult": "Analyseergebnis",
   "noNewExpressions": "Keine neuen Ausdrücke aus diesem Gespräch.",

@@ -2439,6 +2439,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce => 'සංවාදය එක් ගෙදර වැඩක් සඳහා එක් වරක් පමණි.';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

@@ -2375,6 +2375,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get hwTaskConversationDesc => '배운 표현을 실제로 적용해봐요';
 
   @override
+  String get hwConversationOnce => '회화는 과제당 한 번만 할 수 있어요.';
+
+  @override
   String get hwTaskWorkbookDesc => '워크북에서 쓰면서 공부해요';
 
   @override

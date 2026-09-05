@@ -744,6 +744,7 @@
   "hwChapterLabel": "Chapter {chapter}",
   "hwTaskSpeakingDesc": "나의 발음 점수를 확인해보세요",
   "hwTaskConversationDesc": "배운 표현을 실제로 적용해봐요",
+  "hwConversationOnce": "회화는 과제당 한 번만 할 수 있어요.",
   "hwTaskWorkbookDesc": "워크북에서 쓰면서 공부해요",
   "hwCtaStudy": "학습하기",
   "hwCtaResult": "학습결과",

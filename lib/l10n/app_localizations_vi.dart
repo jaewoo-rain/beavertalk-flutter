@@ -2444,6 +2444,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'Cuộc trò chuyện chỉ thực hiện một lần cho mỗi bài tập.';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

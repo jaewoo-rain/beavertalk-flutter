@@ -2445,6 +2445,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'ការសន្ទនាធ្វើបានតែម្តងក្នុងកិច្ចការផ្ទះមួយ។';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

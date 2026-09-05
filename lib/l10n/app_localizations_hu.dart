@@ -2463,6 +2463,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'A beszélgetés házi feladatonként egyszer végezhető el.';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

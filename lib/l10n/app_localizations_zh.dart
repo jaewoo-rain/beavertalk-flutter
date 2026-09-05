@@ -2371,6 +2371,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce => '每份作业的对话只能进行一次。';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

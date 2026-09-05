@@ -2449,6 +2449,10 @@ class AppLocalizationsKy extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'Маек ар бир үй тапшырмасы боюнча бир жолу гана.';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

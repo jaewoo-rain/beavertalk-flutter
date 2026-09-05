@@ -382,14 +382,20 @@ class _AssignmentDetailScreenState
           icon: AppIcons.chat,
           title: l10n.hwActivityConversation,
           badge: badge,
-          description: l10n.hwTaskConversationDesc,
+          // ⭐ **회화는 과제당 한 번이다**(2026-09-04 사장님 결정). 끝냈으면 왜 못
+          //    누르는지 말해 준다 — 비활성만 시키면 고장으로 읽힌다.
+          description: done
+              ? l10n.hwConversationOnce
+              : l10n.hwTaskConversationDesc,
           // 🔴 발음과 달리 라벨을 「학습결과」로 바꾸지 않는다. 회화에는 볼 결과가
           //    없다 — 과제 리포트(`assignmentReport`)는 **발음** 축이고, 통화 요약은
           //    과제가 아니라 통화 한 건에 붙는다. 라벨만 바꾸면 눌렀을 때 결과 대신
           //    통화가 또 걸린다(발음 카드가 예전에 그랬다). 끝난 것은 배지가 말한다.
           ctaLabel: l10n.hwCtaStudy,
           ctaType: done ? BtnType.secondaryFill : BtnType.primaryFill,
-          ctaDisabled: a.isClosed,
+          // ⛔ 화면만 막는 것이 아니다. 서버도 이미 끝낸 과제엔 목표를 안 주고
+          //    두 번째 통화를 과제에 안 묶는다(b2b `link_call`·`conversation-goals`).
+          ctaDisabled: a.isClosed || done,
           // 통화는 서버가 스스로 과제에 묶는다(`submission_service.link_call`).
           // 과제 id 는 통화 시작 메시지에 실려 목표 표현 주입에 쓰인다.
           onCta: () => Navigator.of(

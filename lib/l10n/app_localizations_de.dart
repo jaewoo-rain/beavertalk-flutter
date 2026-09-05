@@ -2473,6 +2473,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'Das Gespräch kann pro Hausaufgabe nur einmal geführt werden.';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override

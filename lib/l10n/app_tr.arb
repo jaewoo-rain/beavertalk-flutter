@@ -62,6 +62,7 @@
   "review": "İnceleme",
   "pronunciationChallenge": "Telaffuz Mücadelesi",
   "newExpressions": "Yeni İfadeler",
+  "hwConversationOnce": "Konuşma her ödev için yalnızca bir kez yapılabilir.",
   "usedExpressions": "Kullandığın ifadeler",
   "analysisResult": "Analiz Sonucu",
   "noNewExpressions": "Bu konuşmadan yeni ifade çıkmadı.",

@@ -4618,6 +4618,12 @@ abstract class AppLocalizations {
   /// **'Use what you learned in a real talk'**
   String get hwTaskConversationDesc;
 
+  /// Homework detail, conversation card. Shown once the conversation is done — it can only be done once per assignment, so the button is disabled and this line says why.
+  ///
+  /// In en, this message translates to:
+  /// **'You can do the conversation once per homework.'**
+  String get hwConversationOnce;
+
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:

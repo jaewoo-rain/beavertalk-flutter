@@ -289,4 +289,35 @@ void _titleTests() {
       expect(a.source, AssignmentSource.curriculum);
     });
   });
+
+  group('회화는 과제당 한 번', () {
+    // ⭐ 2026-09-04 사장님 결정. 서버가 이미 잠근다(b2b `link_call` 이 두 번째 통화를
+    //   안 묶고, `conversation-goals` 가 끝난 과제에 목표를 안 준다). 화면은 그 규칙을
+    //   **보여 주기만** 한다 — 눌리는데 아무 일도 안 나는 것이 최악이다.
+    ClassroomAssignment build({int? met}) => ClassroomAssignment(
+      assignmentId: 1,
+      classroomName: 'A반',
+      grade: 1,
+      chapter: 1,
+      activities: const [AssignmentActivity.conversation],
+      itemIds: const [],
+      dueAt: DateTime.now().add(const Duration(days: 3)),
+      overdue: false,
+      status: met == null ? AssignmentStatus.notStarted : AssignmentStatus.done,
+      conversationMet: met,
+      conversationTotal: 10,
+    );
+
+    test('통화 전이면 아직 안 끝난 것이다', () {
+      expect(
+        build().isActivityDone(AssignmentActivity.conversation),
+        isFalse,
+      );
+    });
+
+    test('통화가 귀속되면 끝난 것이다 — 목표를 다 못 채워도', () {
+      expect(build(met: 0).isActivityDone(AssignmentActivity.conversation), isTrue);
+      expect(build(met: 3).isActivityDone(AssignmentActivity.conversation), isTrue);
+    });
+  });
 }

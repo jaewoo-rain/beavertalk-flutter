@@ -62,6 +62,7 @@
   "review": "Révision",
   "pronunciationChallenge": "Défi de prononciation",
   "newExpressions": "Nouvelles expressions",
+  "hwConversationOnce": "La conversation ne peut se faire qu'une fois par devoir.",
   "usedExpressions": "Expressions que vous avez utilisées",
   "analysisResult": "Résultat de l'analyse",
   "noNewExpressions": "Aucune nouvelle expression dans cette conversation.",

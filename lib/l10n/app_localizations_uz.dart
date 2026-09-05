@@ -2460,6 +2460,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwTaskConversationDesc => 'Use what you learned in a real talk';
 
   @override
+  String get hwConversationOnce =>
+      'Suhbatni har bir uy vazifasi uchun bir marta bajarish mumkin.';
+
+  @override
   String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
 
   @override
