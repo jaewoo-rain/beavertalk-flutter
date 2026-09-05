@@ -210,6 +210,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get newExpressions => 'Ungkapan Baharu';
 
   @override
+  String get usedExpressions => 'Ungkapan yang anda guna';
+
+  @override
   String get analysisResult => 'Keputusan Analisis';
 
   @override

@@ -210,6 +210,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newExpressions => 'Novas expressões';
 
   @override
+  String get usedExpressions => 'Expressões que você usou';
+
+  @override
   String get analysisResult => 'Resultado da análise';
 
   @override

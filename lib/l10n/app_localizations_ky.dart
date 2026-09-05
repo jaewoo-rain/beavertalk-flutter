@@ -210,6 +210,9 @@ class AppLocalizationsKy extends AppLocalizations {
   String get newExpressions => 'Жаңы сөз айкаштары';
 
   @override
+  String get usedExpressions => 'Сиз колдонгон сөз айкаштары';
+
+  @override
   String get analysisResult => 'Анализ жыйынтыгы';
 
   @override

@@ -211,6 +211,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get newExpressions => 'အသုံးအနှုန်းအသစ်များ';
 
   @override
+  String get usedExpressions => 'သင်သုံးခဲ့သော အသုံးအနှုန်းများ';
+
+  @override
   String get analysisResult => 'ဆန်းစစ်ချက် ရလဒ်';
 
   @override

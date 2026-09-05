@@ -212,6 +212,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newExpressions => 'Neue Ausdrücke';
 
   @override
+  String get usedExpressions => 'Von dir verwendete Ausdrücke';
+
+  @override
   String get analysisResult => 'Analyseergebnis';
 
   @override

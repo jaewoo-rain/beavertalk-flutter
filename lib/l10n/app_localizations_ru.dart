@@ -210,6 +210,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get newExpressions => 'Новые выражения';
 
   @override
+  String get usedExpressions => 'Выражения, которые вы использовали';
+
+  @override
   String get analysisResult => 'Результат анализа';
 
   @override

@@ -95,6 +95,7 @@ class CallResultDto {
     this.character,
     this.callSequence,
     this.note,
+    this.usedItems = const [],
   });
 
   final int callId;
@@ -107,6 +108,7 @@ class CallResultDto {
   final CallCharacterBriefDto? character;
   final int? callSequence;
   final CharacterNote? note;
+  final List<UsedItem> usedItems;
 
   factory CallResultDto.fromJson(Map<String, dynamic> json) {
     final average = (json['average'] as Map<String, dynamic>?) ?? const {};
@@ -124,6 +126,7 @@ class CallResultDto {
       character: _character(json['character']),
       callSequence: (json['call_sequence'] as num?)?.toInt(),
       note: _note(json['character_note']),
+      usedItems: _usedItems(json['used_items']),
     );
   }
 
@@ -140,6 +143,21 @@ class CallResultDto {
     if (value is! Map<String, dynamic>) return null;
     final text = _text(value['text']);
     return text == null ? null : CharacterNote(text: text);
+  }
+
+  /// 서버가 준 「이번 통화에서 쓴 표현」. 모양이 어긋난 원소는 조용히 버린다 —
+  /// 한 줄 때문에 결과 화면 전체가 안 뜨면 안 된다.
+  static List<UsedItem> _usedItems(Object? value) {
+    if (value is! List) return const [];
+    final out = <UsedItem>[];
+    for (final e in value) {
+      if (e is! Map<String, dynamic>) continue;
+      final id = (e['item_id'] as num?)?.toInt();
+      final surface = _text(e['surface']);
+      if (id == null || surface == null) continue;
+      out.add(UsedItem(itemId: id, surface: surface, quote: _text(e['quote'])));
+    }
+    return out;
   }
 
   /// A blank string is as absent as null — both must hide the section rather
@@ -161,6 +179,7 @@ class CallResultDto {
         character: character?.toEntity(),
         callSequence: callSequence,
         note: note,
+        usedItems: usedItems,
       );
 }
 

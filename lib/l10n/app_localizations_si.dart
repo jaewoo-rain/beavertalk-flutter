@@ -210,6 +210,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get newExpressions => 'නව වචන ප්‍රකාශන';
 
   @override
+  String get usedExpressions => 'ඔබ භාවිත කළ ප්‍රකාශන';
+
+  @override
   String get analysisResult => 'විශ්ලේෂණ ප්‍රතිඵලය';
 
   @override

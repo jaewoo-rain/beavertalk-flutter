@@ -209,6 +209,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get newExpressions => 'ឃ្លាថ្មី';
 
   @override
+  String get usedExpressions => 'ឃ្លាដែលអ្នកបានប្រើ';
+
+  @override
   String get analysisResult => 'លទ្ធផលវិភាគ';
 
   @override

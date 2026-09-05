@@ -75,6 +75,7 @@ class CallResult {
     this.character,
     this.callSequence,
     this.note,
+    this.usedItems = const [],
   });
 
   /// Server call id.
@@ -116,6 +117,16 @@ class CallResult {
   /// The partner's post-call remark, or null.
   final CharacterNote? note;
 
+  /// 이 통화에서 학습자가 **스스로 쓴** 커리큘럼 항목.
+  ///
+  /// ⭐ 「학습한 표현」([sentences])과 다른 것이다. 그쪽은 물어봤거나 고쳐 받았거나
+  ///   따라 말한 것이고, 이쪽은 **대화 중에 스스로 꺼내 쓴 것**이다. 자유대화를
+  ///   매끄럽게 하면 [sentences] 가 비는데(분석 지시문이 셋으로만 정의한다) 그때도
+  ///   보여줄 것이 있어야 한다 — 서버 체크판이 이미 잡아 둔 값이다.
+  ///
+  /// 비어 있으면 화면은 그 칸을 **안 그린다**. 근거가 없는 칸은 비운다.
+  final List<UsedItem> usedItems;
+
   /// Returns a copy with [callDate]/[totalTime] overridden — used to graft the
   /// date/duration (which the `/result` endpoint omits) from the call detail.
   CallResult copyWith({DateTime? callDate, int? totalTime}) => CallResult(
@@ -129,7 +140,23 @@ class CallResult {
         character: character,
         callSequence: callSequence,
         note: note,
+        usedItems: usedItems,
       );
+}
+
+/// 통화에서 스스로 쓴 항목 1건.
+class UsedItem {
+  /// 항목 하나를 담는다.
+  const UsedItem({required this.itemId, required this.surface, this.quote});
+
+  /// 커리큘럼 항목 id.
+  final int itemId;
+
+  /// 표면형(예: `가다`).
+  final String surface;
+
+  /// 학습자가 실제로 한 말. 서버가 인용을 못 남겼으면 null 이다 — 지어내지 않는다.
+  final String? quote;
 }
 
 /// A character as it appears in a call list summary (lightweight brief).

@@ -210,6 +210,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get newExpressions => 'Ungkapan Baru';
 
   @override
+  String get usedExpressions => 'Ungkapan yang kamu pakai';
+
+  @override
   String get analysisResult => 'Hasil Analisis';
 
   @override

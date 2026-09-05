@@ -62,6 +62,7 @@
   "review": "Дахин үзэх",
   "pronunciationChallenge": "Дуудлагын сорилт",
   "newExpressions": "Шинэ хэллэгүүд",
+  "usedExpressions": "Таны хэрэглэсэн хэллэгүүд",
   "analysisResult": "Дүн шинжилгээний үр дүн",
   "noNewExpressions": "Энэ ярианаас шинэ хэллэг олдсонгүй.",
   "practice": "Дадлага",

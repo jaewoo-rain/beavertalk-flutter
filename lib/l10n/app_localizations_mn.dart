@@ -209,6 +209,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get newExpressions => 'Шинэ хэллэгүүд';
 
   @override
+  String get usedExpressions => 'Таны хэрэглэсэн хэллэгүүд';
+
+  @override
   String get analysisResult => 'Дүн шинжилгээний үр дүн';
 
   @override

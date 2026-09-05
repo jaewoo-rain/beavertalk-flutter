@@ -207,6 +207,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get newExpressions => 'Yeni İfadeler';
 
   @override
+  String get usedExpressions => 'Kullandığın ifadeler';
+
+  @override
   String get analysisResult => 'Analiz Sonucu';
 
   @override

@@ -211,6 +211,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get newExpressions => 'Nuove espressioni';
 
   @override
+  String get usedExpressions => 'Espressioni che hai usato';
+
+  @override
   String get analysisResult => 'Risultato dell\'analisi';
 
   @override

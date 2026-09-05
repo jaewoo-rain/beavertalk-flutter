@@ -211,6 +211,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get newExpressions => 'Új kifejezések';
 
   @override
+  String get usedExpressions => 'Az általad használt kifejezések';
+
+  @override
   String get analysisResult => 'Elemzés eredménye';
 
   @override

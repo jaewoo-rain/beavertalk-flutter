@@ -209,6 +209,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get newExpressions => 'Жаңа сөз тіркестері';
 
   @override
+  String get usedExpressions => 'Сіз қолданған тіркестер';
+
+  @override
   String get analysisResult => 'Талдау нәтижесі';
 
   @override

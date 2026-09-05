@@ -206,6 +206,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get newExpressions => 'สำนวนใหม่';
 
   @override
+  String get usedExpressions => 'สำนวนที่คุณใช้';
+
+  @override
   String get analysisResult => 'ผลการวิเคราะห์';
 
   @override

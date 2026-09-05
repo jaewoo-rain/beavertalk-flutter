@@ -210,6 +210,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get newExpressions => 'نئے تاثرات';
 
   @override
+  String get usedExpressions => 'وہ جملے جو آپ نے استعمال کیے';
+
+  @override
   String get analysisResult => 'تجزیہ کا نتیجہ';
 
   @override

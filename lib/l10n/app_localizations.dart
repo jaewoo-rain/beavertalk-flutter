@@ -526,6 +526,12 @@ abstract class AppLocalizations {
   /// **'New Expressions'**
   String get newExpressions;
 
+  /// 통화 결과 화면의 「이번 통화에서 쓴 표현」 섹션 제목. 학습자가 대화 중 스스로 꺼내 쓴 커리큘럼 항목을 모은 칸이며, 물어보거나 고쳐 받은 「새로 배운 표현」과 다르다.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressions you used'**
+  String get usedExpressions;
+
   /// No description provided for @analysisResult.
   ///
   /// In en, this message translates to:

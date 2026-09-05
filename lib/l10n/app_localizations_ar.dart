@@ -211,6 +211,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newExpressions => 'تعبيرات جديدة';
 
   @override
+  String get usedExpressions => 'العبارات التي استخدمتها';
+
+  @override
   String get analysisResult => 'نتيجة التحليل';
 
   @override

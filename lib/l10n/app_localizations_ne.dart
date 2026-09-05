@@ -208,6 +208,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get newExpressions => 'नयाँ अभिव्यक्तिहरू';
 
   @override
+  String get usedExpressions => 'तपाईंले प्रयोग गर्नुभएका अभिव्यक्ति';
+
+  @override
   String get analysisResult => 'विश्लेषण नतिजा';
 
   @override

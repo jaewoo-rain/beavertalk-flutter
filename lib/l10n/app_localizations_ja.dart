@@ -203,6 +203,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get newExpressions => '新しい表現';
 
   @override
+  String get usedExpressions => '今回の通話で使った表現';
+
+  @override
   String get analysisResult => '分析結果';
 
   @override

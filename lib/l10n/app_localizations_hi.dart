@@ -208,6 +208,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get newExpressions => 'नए वाक्यांश';
 
   @override
+  String get usedExpressions => 'आपने जो अभिव्यक्तियाँ इस्तेमाल कीं';
+
+  @override
   String get analysisResult => 'विश्लेषण परिणाम';
 
   @override

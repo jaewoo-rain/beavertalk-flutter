@@ -209,6 +209,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get newExpressions => 'Yangi iboralar';
 
   @override
+  String get usedExpressions => 'Siz ishlatgan iboralar';
+
+  @override
   String get analysisResult => 'Tahlil natijasi';
 
   @override

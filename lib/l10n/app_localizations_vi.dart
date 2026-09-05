@@ -209,6 +209,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get newExpressions => 'Cách diễn đạt mới';
 
   @override
+  String get usedExpressions => 'Cách diễn đạt bạn đã dùng';
+
+  @override
   String get analysisResult => 'Kết quả phân tích';
 
   @override

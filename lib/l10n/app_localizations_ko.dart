@@ -204,6 +204,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get newExpressions => '새로 배운 표현';
 
   @override
+  String get usedExpressions => '이번 통화에서 쓴 표현';
+
+  @override
   String get analysisResult => '분석 결과';
 
   @override

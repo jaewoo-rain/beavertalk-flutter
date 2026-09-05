@@ -208,6 +208,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get newExpressions => 'নতুন অভিব্যক্তি';
 
   @override
+  String get usedExpressions => 'আপনি যে প্রকাশভঙ্গি ব্যবহার করেছেন';
+
+  @override
   String get analysisResult => 'বিশ্লেষণের ফলাফল';
 
   @override

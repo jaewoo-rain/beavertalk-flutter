@@ -203,6 +203,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newExpressions => '新表达';
 
   @override
+  String get usedExpressions => '本次通话中用到的表达';
+
+  @override
   String get analysisResult => '分析结果';
 
   @override

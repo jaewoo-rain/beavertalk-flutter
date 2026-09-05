@@ -62,6 +62,7 @@
   "review": "သုံးသပ်ချက်",
   "pronunciationChallenge": "အသံထွက် စိန်ခေါ်မှု",
   "newExpressions": "အသုံးအနှုန်းအသစ်များ",
+  "usedExpressions": "သင်သုံးခဲ့သော အသုံးအနှုန်းများ",
   "analysisResult": "ဆန်းစစ်ချက် ရလဒ်",
   "noNewExpressions": "ဤစကားဝိုင်းမှ အသုံးအနှုန်းအသစ် မရှိပါ။",
   "practice": "လေ့ကျင့်ရန်",

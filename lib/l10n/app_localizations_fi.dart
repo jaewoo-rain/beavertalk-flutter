@@ -210,6 +210,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get newExpressions => 'Uudet ilmaisut';
 
   @override
+  String get usedExpressions => 'Käyttämäsi ilmaukset';
+
+  @override
   String get analysisResult => 'Analyysin tulos';
 
   @override

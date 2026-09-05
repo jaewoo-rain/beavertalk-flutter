@@ -209,6 +209,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get newExpressions => 'Mga Bagong Ekspresyon';
 
   @override
+  String get usedExpressions => 'Mga ekspresyong ginamit mo';
+
+  @override
   String get analysisResult => 'Resulta ng Analysis';
 
   @override
