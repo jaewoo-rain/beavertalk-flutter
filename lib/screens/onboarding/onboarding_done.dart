@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../l10n/app_localizations.dart';
@@ -37,9 +38,7 @@ class OnboardingDoneScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Expanded(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: ContentColumn.narrow(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -75,12 +74,8 @@ class OnboardingDoneScreen extends StatelessWidget {
             ),
           ),
           // Figma `BottomSheet` two-button row: pt 12, px 20, gap 10.
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s12,
-                AppSpacing.s20,
-                AppSpacing.s12),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
             child: Row(
               children: [
                 Expanded(

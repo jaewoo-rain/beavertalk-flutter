@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart' hide Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart' show BadgeTone;
@@ -138,8 +139,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             height: 56,
             child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: ContentColumn(
                 child: GestureDetector(
                   onTap: _handleClose,
                   child: SizedBox(
@@ -155,57 +155,59 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              children: [
-                if (widget.variant == PaywallVariant.proLimit) ...[
-                  // Non-interactive by design: no chevron, no tap. The banner
-                  // states a fact; the CTA does the selling (spec §8-1).
-                  Banner(
-                    tone: BannerTone.neutral,
-                    title: _effectiveLimitKind(context) == LimitKind.call
-                        ? l10n.limitBannerCallTitle
-                        : l10n.limitBannerCheckTitle,
-                    sub: _effectiveLimitKind(context) == LimitKind.call
-                        ? l10n.limitBannerCallSub
-                        : l10n.limitBannerCheckSub,
-                    showChevron: false,
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                ],
-                ..._header(l10n, c),
-                const SizedBox(height: AppSpacing.s24),
-                _planCard(l10n, c),
-                if (_isMax) ...[
-                  const SizedBox(height: AppSpacing.s24),
-                  // Hero is a **video**, not a still. The file is a
-                  // placeholder to be swapped later, so [LoopingVideo] falls
-                  // back to a plain box rather than failing when the asset
-                  // is missing — dropping in a new mp4 at the same path is
-                  // the whole handover.
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: LoopingVideo(
-                      asset: 'assets/videos/paywall_max_hero.mp4',
-                      aspectRatio: 375 / 210.9375,
-                      placeholderColor: c.backgroundSurfaceAlternative,
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  if (widget.variant == PaywallVariant.proLimit) ...[
+                    // Non-interactive by design: no chevron, no tap. The banner
+                    // states a fact; the CTA does the selling (spec §8-1).
+                    Banner(
+                      tone: BannerTone.neutral,
+                      title: _effectiveLimitKind(context) == LimitKind.call
+                          ? l10n.limitBannerCallTitle
+                          : l10n.limitBannerCheckTitle,
+                      sub: _effectiveLimitKind(context) == LimitKind.call
+                          ? l10n.limitBannerCallSub
+                          : l10n.limitBannerCheckSub,
+                      showChevron: false,
                     ),
-                  ),
-                ],
-                const SizedBox(height: AppSpacing.s24),
-                ..._planRows(l10n),
-                const SizedBox(height: AppSpacing.s24),
-                Text(
-                  _isMax ? l10n.noteMaxCharacters : l10n.noteFairUse,
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-                if (!_isMax) ...[
+                    const SizedBox(height: AppSpacing.s24),
+                  ],
+                  ..._header(l10n, c),
                   const SizedBox(height: AppSpacing.s24),
-                  _footerLinks(l10n, c),
+                  _planCard(l10n, c),
+                  if (_isMax) ...[
+                    const SizedBox(height: AppSpacing.s24),
+                    // Hero is a **video**, not a still. The file is a
+                    // placeholder to be swapped later, so [LoopingVideo] falls
+                    // back to a plain box rather than failing when the asset
+                    // is missing — dropping in a new mp4 at the same path is
+                    // the whole handover.
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: LoopingVideo(
+                        asset: 'assets/videos/paywall_max_hero.mp4',
+                        // 375 / 210.9375 은 정확히 16:9 다. 폭을 따라 커진다.
+                        aspectRatio: AppLayout.videoAspect,
+                        placeholderColor: c.backgroundSurfaceAlternative,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: AppSpacing.s24),
+                  ..._planRows(l10n),
+                  const SizedBox(height: AppSpacing.s24),
+                  Text(
+                    _isMax ? l10n.noteMaxCharacters : l10n.noteFairUse,
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                  if (!_isMax) ...[
+                    const SizedBox(height: AppSpacing.s24),
+                    _footerLinks(l10n, c),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
           _stickyCta(l10n, c),
@@ -370,49 +372,50 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
   Widget _stickyCta(AppLocalizations l10n, AppColorTokens c) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: c.lineAlternative)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Button(
-            type: _isMax ? BtnType.gold : BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: _isMax ? l10n.ctaTurnOnVideo : l10n.ctaGoUnlimited,
-            // Tier AND cycle travel as the route argument — the tier alone
-            // was the "bought Max, screen said Pro" bug, and a dropped cycle
-            // meant the annual selection quietly bought monthly.
-            onPressed: () => Navigator.pushNamed(
-              context,
-              Routes.purchaseProcessing,
-              arguments: (
-                tier: _isMax ? SubscriptionTier.max : SubscriptionTier.pro,
-                annual: _cycle == _Cycle.annual,
+      child: ContentColumn(
+        padding: const EdgeInsets.only(top: AppSpacing.s12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Button(
+              type: _isMax ? BtnType.gold : BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: _isMax ? l10n.ctaTurnOnVideo : l10n.ctaGoUnlimited,
+              // Tier AND cycle travel as the route argument — the tier alone
+              // was the "bought Max, screen said Pro" bug, and a dropped cycle
+              // meant the annual selection quietly bought monthly.
+              onPressed: () => Navigator.pushNamed(
+                context,
+                Routes.purchaseProcessing,
+                arguments: (
+                  tier: _isMax ? SubscriptionTier.max : SubscriptionTier.pro,
+                  annual: _cycle == _Cycle.annual,
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 6),
-          Text(
-            _isMax
-                ? (_trialEligible ? l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly) : l10n.ctaCaptionMax(PlanPrices.maxMonthly))
-                : l10n.ctaCaptionPro(PlanPrices.proMonthly),
-            textAlign: TextAlign.center,
-            style: AppType.caption1.r.copyWith(color: c.labelNormal),
-          ),
-          // App Review 3.1.2 wants five things on the purchase screen: title,
-          // length, price, **that it auto-renews**, and how to cancel. The
-          // caption above carried four of them; this is the fifth. Its own
-          // line rather than an infix — spliced mid-sentence it reads wrong in
-          // half the locales.
-          Text(
-            l10n.ctaCaptionAutoRenew,
-            textAlign: TextAlign.center,
-            style: AppType.caption1.r.copyWith(color: c.labelAlternative),
-          ),
-        ],
+            const SizedBox(height: 6),
+            Text(
+              _isMax
+                  ? (_trialEligible ? l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly) : l10n.ctaCaptionMax(PlanPrices.maxMonthly))
+                  : l10n.ctaCaptionPro(PlanPrices.proMonthly),
+              textAlign: TextAlign.center,
+              style: AppType.caption1.r.copyWith(color: c.labelNormal),
+            ),
+            // App Review 3.1.2 wants five things on the purchase screen: title,
+            // length, price, **that it auto-renews**, and how to cancel. The
+            // caption above carried four of them; this is the fifth. Its own
+            // line rather than an infix — spliced mid-sentence it reads wrong in
+            // half the locales.
+            Text(
+              l10n.ctaCaptionAutoRenew,
+              textAlign: TextAlign.center,
+              style: AppType.caption1.r.copyWith(color: c.labelAlternative),
+            ),
+          ],
+        ),
       ),
     );
   }

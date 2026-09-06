@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/pressable.dart';
@@ -87,8 +88,8 @@ class HomeScreen extends ConsumerWidget {
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
           SizedBox(
             height: 56,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20, vertical: 14),
+            child: ContentColumn(
+              padding: const EdgeInsets.symmetric(vertical: 14),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [

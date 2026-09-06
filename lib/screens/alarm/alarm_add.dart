@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/bottom_sheet_alarm_settings.dart';
@@ -279,22 +280,26 @@ class _SheetMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 배경 띠는 전폭, 글만 콘텐츠 컬럼 — 색 면이 좁아지면 띠가 아니라 카드로
+    // 보인다.
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(20, 32, 20, 32),
       color: context.c.backgroundElevatedAlternative,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(message,
-              style: AppType.body2.r
-                  .copyWith(color: context.c.labelNormal)),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: onClose,
-            child: Text(AppLocalizations.of(context).close),
-          ),
-        ],
+      child: ContentColumn(
+        padding: const EdgeInsets.only(top: 32, bottom: 32),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(message,
+                style: AppType.body2.r
+                    .copyWith(color: context.c.labelNormal)),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: onClose,
+              child: Text(AppLocalizations.of(context).close),
+            ),
+          ],
+        ),
       ),
     );
   }

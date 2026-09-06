@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/pronunciation_result.dart';
@@ -184,9 +185,8 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
               ),
             ),
             // Footer/PrimaryAction (3583:34709) — the CTA's slot, held.
-            const Padding(
-              padding: EdgeInsets.fromLTRB(
-                  AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s20),
+            const ContentColumn(
+              padding: EdgeInsets.only(bottom: AppSpacing.s20),
               child: Skeleton.bar(height: 60),
             ),
           ],

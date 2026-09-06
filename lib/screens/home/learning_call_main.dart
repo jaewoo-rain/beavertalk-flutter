@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -163,9 +164,8 @@ class LearningCallMainScreen extends ConsumerWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s20),
+          ContentColumn(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s20),
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,

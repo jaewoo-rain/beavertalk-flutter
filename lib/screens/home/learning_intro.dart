@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 import 'dart:typed_data';
 
@@ -717,8 +718,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
               children: [
                 const SizedBox(height: AppSpacing.s16),
                 // Speaker / bookmark utility row — shared by every phase.
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+                ContentColumn(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -763,9 +763,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                 // sweeps over it.
                 Expanded(
                   child: Center(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s20),
+                    child: ContentColumn(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
@@ -858,8 +856,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
 
   /// The caption between the sentence and the mic anchor — shared by scoring
   /// (`AnalyzingCaption` 3627:9708) and failed (E_failed 3627:9847).
-  Widget _caption(BuildContext context, String text) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+  Widget _caption(BuildContext context, String text) => ContentColumn(
         child: Text(
           text,
           textAlign: TextAlign.center,
@@ -927,8 +924,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (chips.isNotEmpty) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              ContentColumn(
                 child: Wrap(
                   alignment: WrapAlignment.center,
                   spacing: AppSpacing.s8,
@@ -938,8 +934,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
               ),
               const SizedBox(height: AppSpacing.s16),
             ],
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: Row(
                 children: [
                   Expanded(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -61,12 +62,13 @@ class PlanChangeScreen extends ConsumerWidget {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              children: up
-                  ? _upgradeBody(context, l10n, c, date)
-                  : _downgradeBody(context, l10n, c, status, date),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: up
+                    ? _upgradeBody(context, l10n, c, date)
+                    : _downgradeBody(context, l10n, c, status, date),
+              ),
             ),
           ),
           _cta(context, l10n, c, up),
@@ -227,40 +229,41 @@ class PlanChangeScreen extends ConsumerWidget {
   Widget _cta(BuildContext context, AppLocalizations l10n, AppColorTokens c,
       bool up) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
       decoration: BoxDecoration(
         border: Border(top: BorderSide(color: c.lineAlternative)),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Button(
-            type: up ? BtnType.gold : BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: up ? l10n.ctaSwitchToMax : l10n.ctaSwitchToPro,
-            onPressed: () => Navigator.pushNamed(
-              context,
-              Routes.purchaseProcessing,
-              arguments:
-                  up ? SubscriptionTier.max : SubscriptionTier.pro,
-            ),
-          ),
-          const SizedBox(height: 6),
-          if (up)
-            Text(
-              l10n.upgradeCaption,
-              textAlign: TextAlign.center,
-              style: AppType.caption1.r.copyWith(color: c.labelNormal),
-            )
-          else
+      child: ContentColumn(
+        padding: const EdgeInsets.only(top: AppSpacing.s12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             Button(
-              type: BtnType.secondaryFill,
+              type: up ? BtnType.gold : BtnType.primaryFill,
               size: BtnSize.s60,
-              text: l10n.ctaKeepMax,
-              onPressed: () => Navigator.pop(context),
+              text: up ? l10n.ctaSwitchToMax : l10n.ctaSwitchToPro,
+              onPressed: () => Navigator.pushNamed(
+                context,
+                Routes.purchaseProcessing,
+                arguments:
+                    up ? SubscriptionTier.max : SubscriptionTier.pro,
+              ),
             ),
-        ],
+            const SizedBox(height: 6),
+            if (up)
+              Text(
+                l10n.upgradeCaption,
+                textAlign: TextAlign.center,
+                style: AppType.caption1.r.copyWith(color: c.labelNormal),
+              )
+            else
+              Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: l10n.ctaKeepMax,
+                onPressed: () => Navigator.pop(context),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -301,8 +304,7 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
             height: 56,
             child: Align(
               alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+              child: ContentColumn(
                 child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Padding(
@@ -317,71 +319,73 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              children: [
-                Text(l10n.winbackTitle,
-                    style: AppType.title3.sb.copyWith(color: c.labelStrong)),
-                const SizedBox(height: AppSpacing.s8),
-                Text(l10n.winbackSub,
-                    style: AppType.body2.r.copyWith(color: c.labelNormal)),
-                const SizedBox(height: AppSpacing.s24),
-                Text(l10n.winbackQuestion,
-                    style: AppType.body1.sb.copyWith(color: c.labelStrong)),
-                const SizedBox(height: AppSpacing.s16),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: c.backgroundSurfaceAlternative,
-                    borderRadius: BorderRadius.circular(12),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  Text(l10n.winbackTitle,
+                      style: AppType.title3.sb.copyWith(color: c.labelStrong)),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(l10n.winbackSub,
+                      style: AppType.body2.r.copyWith(color: c.labelNormal)),
+                  const SizedBox(height: AppSpacing.s24),
+                  Text(l10n.winbackQuestion,
+                      style: AppType.body1.sb.copyWith(color: c.labelStrong)),
+                  const SizedBox(height: AppSpacing.s16),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 8),
+                    decoration: BoxDecoration(
+                      color: c.backgroundSurfaceAlternative,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      children: [
+                        for (var i = 0; i < reasons.length; i++)
+                          _ReasonRow(
+                            label: reasons[i],
+                            selected: _selected == i,
+                            last: i == reasons.length - 1,
+                            onTap: () => setState(() => _selected = i),
+                          ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      for (var i = 0; i < reasons.length; i++)
-                        _ReasonRow(
-                          label: reasons[i],
-                          selected: _selected == i,
-                          last: i == reasons.length - 1,
-                          onTap: () => setState(() => _selected = i),
-                        ),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaSend,
-                  // TODO(server): submit the reason once an endpoint exists.
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.ctaNotNow,
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.winbackCaption,
-                  textAlign: TextAlign.center,
-                  style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaSend,
+                    // TODO(server): submit the reason once an endpoint exists.
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.ctaNotNow,
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    l10n.winbackCaption,
+                    textAlign: TextAlign.center,
+                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

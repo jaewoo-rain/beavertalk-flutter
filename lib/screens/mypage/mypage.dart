@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
@@ -116,20 +117,21 @@ class MyPageScreen extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
-                  AppSpacing.s20, AppSpacing.s24),
-              children: [
-                _accentCard(context, l10n, accentStats, avatar),
-                const SizedBox(height: AppSpacing.s24),
-                _levelCard(context, ref, l10n, level),
-                const SizedBox(height: AppSpacing.s24),
-                _pronunciationCard(context, l10n, pron, recentCalls),
-                if (kDebugMode) ...[
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  _accentCard(context, l10n, accentStats, avatar),
                   const SizedBox(height: AppSpacing.s24),
-                  _devToolsCard(context),
+                  _levelCard(context, ref, l10n, level),
+                  const SizedBox(height: AppSpacing.s24),
+                  _pronunciationCard(context, l10n, pron, recentCalls),
+                  if (kDebugMode) ...[
+                    const SizedBox(height: AppSpacing.s24),
+                    _devToolsCard(context),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ],

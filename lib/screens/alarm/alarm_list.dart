@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/skeleton.dart';
@@ -107,9 +108,13 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
               title: l10n.scheduleManagement,
               onBack: () => Navigator.pop(context)),
           // "Alarms" subheader with an add (+) action.
-          Padding(
+          // 좌 20 / 우 12 비대칭은 Figma 값이다(+ 버튼이 자체 패딩을 갖는다).
+          // 여백 12를 최소값으로 두고 왼쪽 8을 따로 얹어 폰에서는 20/12 그대로,
+          // 넓어지면 둘 다 105 선으로 간다.
+          ContentColumn(
+            gutter: 12,
             // 24 below the GNB (`3665:12005` sits at Body y24), not 8.
-            padding: const EdgeInsets.fromLTRB(20, 24, 12, 0),
+            padding: const EdgeInsets.only(left: 8, top: 24),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -147,8 +152,8 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
                   : _list(alarms),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+          ContentColumn(
+            padding: const EdgeInsets.only(bottom: 12),
             child: SizedBox(
               width: double.infinity,
               child: Button(
@@ -166,46 +171,48 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
 
   /// The scrollable alarm cards.
   Widget _list(List<Alarm> alarms) {
-    return ListView.separated(
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-      itemCount: alarms.length,
-      separatorBuilder: (_, _) => const SizedBox(height: 20),
-      itemBuilder: (context, i) {
-        final a = alarms[i];
-        final view = AlarmData.fromEntity(a);
-        final id = a.id;
-        return Dismissible(
-          key: ValueKey(id ?? i),
-          direction: DismissDirection.endToStart,
-          background: _deleteBackground(),
-          confirmDismiss: (_) async {
-            if (id == null) return false;
-            // Only let the card go if the server actually deleted it. The
-            // controller mutates state after a successful DELETE, so dismissing
-            // on failure would desync the list from itemCount and the alarm
-            // would reappear on the next refetch — still ringing meanwhile.
-            return _run(() =>
-                ref.read(alarmListControllerProvider.notifier).remove(id));
-          },
-          child: CardAlarm(
-            state: a.active ? CardAlarmState.active : CardAlarmState.inactive,
-            time: view.listLabel,
-            days: a.days,
-            userName: view.partnerName,
-            onTap: () => _edit(a),
-            onChanged: id == null
-                ? null
-                : (v) => _run(() => ref
-                    .read(alarmListControllerProvider.notifier)
-                    .toggleActive(id, v)),
-            onDayChange: id == null
-                ? null
-                : (idx, v) => _run(() => ref
-                    .read(alarmListControllerProvider.notifier)
-                    .toggleDay(id, idx, v)),
-          ),
-        );
-      },
+    return ContentColumn(
+      child: ListView.separated(
+        padding: const EdgeInsets.only(top: 16, bottom: 24),
+        itemCount: alarms.length,
+        separatorBuilder: (_, _) => const SizedBox(height: 20),
+        itemBuilder: (context, i) {
+          final a = alarms[i];
+          final view = AlarmData.fromEntity(a);
+          final id = a.id;
+          return Dismissible(
+            key: ValueKey(id ?? i),
+            direction: DismissDirection.endToStart,
+            background: _deleteBackground(),
+            confirmDismiss: (_) async {
+              if (id == null) return false;
+              // Only let the card go if the server actually deleted it. The
+              // controller mutates state after a successful DELETE, so dismissing
+              // on failure would desync the list from itemCount and the alarm
+              // would reappear on the next refetch — still ringing meanwhile.
+              return _run(() =>
+                  ref.read(alarmListControllerProvider.notifier).remove(id));
+            },
+            child: CardAlarm(
+              state: a.active ? CardAlarmState.active : CardAlarmState.inactive,
+              time: view.listLabel,
+              days: a.days,
+              userName: view.partnerName,
+              onTap: () => _edit(a),
+              onChanged: id == null
+                  ? null
+                  : (v) => _run(() => ref
+                      .read(alarmListControllerProvider.notifier)
+                      .toggleActive(id, v)),
+              onDayChange: id == null
+                  ? null
+                  : (idx, v) => _run(() => ref
+                      .read(alarmListControllerProvider.notifier)
+                      .toggleDay(id, idx, v)),
+            ),
+          );
+        },
+      ),
     );
   }
 
@@ -246,8 +253,8 @@ class _AlarmsLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const SkeletonShimmer(
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(20, 16, 20, 24),
+        child: ContentColumn(
+          padding: EdgeInsets.only(top: 16, bottom: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

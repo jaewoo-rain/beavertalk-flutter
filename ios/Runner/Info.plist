@@ -80,15 +80,20 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- iPad 세로 잠금은 이 키가 없으면 성립하지 않는다.
+
+	     이 키가 빠져 있으면 iOS 는 앱을 멀티태스킹(Split View) 지원으로 보고
+	     방향 제한을 무시한다 — 그래서 main.dart 의 setPreferredOrientations 를
+	     걸어 놨는데도 iPad 는 가로로 돌아갔다. 위 배열에서 가로를 빼는 것과
+	     이 키는 한 쌍이다: 멀티태스킹 지원 앱은 네 방향을 전부 선언해야 하므로
+	     둘 중 하나만 하면 어긋난다. -->
+	<key>UIRequiresFullScreen</key>
+	<true/>
 </dict>
 </plist>

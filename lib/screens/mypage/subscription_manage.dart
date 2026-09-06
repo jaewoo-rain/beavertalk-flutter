@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Badge, Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
@@ -96,23 +97,24 @@ class _ManageBody extends StatelessWidget {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s32),
-              children: [
-                // Payment-trouble banner rides on top of everything —
-                // grace/hold only (spec §6-1), measured above the plan card.
-                if (state.showsPaymentFailureBanner) ...[
-                  _dangerBanner(context, l10n),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s32),
+                children: [
+                  // Payment-trouble banner rides on top of everything —
+                  // grace/hold only (spec §6-1), measured above the plan card.
+                  if (state.showsPaymentFailureBanner) ...[
+                    _dangerBanner(context, l10n),
+                    const SizedBox(height: AppSpacing.s24),
+                  ],
+                  _PlanCard(status: status),
+                  ..._upsell(context, l10n),
                   const SizedBox(height: AppSpacing.s24),
+                  _BillingList(status: status),
+                  const SizedBox(height: AppSpacing.s24),
+                  ..._notes(context, l10n),
                 ],
-                _PlanCard(status: status),
-                ..._upsell(context, l10n),
-                const SizedBox(height: AppSpacing.s24),
-                _BillingList(status: status),
-                const SizedBox(height: AppSpacing.s24),
-                ..._notes(context, l10n),
-              ],
+              ),
             ),
           ),
         ],
@@ -655,29 +657,30 @@ class _TrialExpiredNotice extends StatelessWidget {
           // Sticky CTA — top hairline, 12px shelf, 6px between buttons, all
           // measured off the original.
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.seePlans,
-                  onPressed: () =>
-                      Navigator.pushNamed(context, Routes.plansCompare),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.billingRestorePurchases,
-                  onPressed: () => runRestoreFlow(context),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.seePlans,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.plansCompare),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.billingRestorePurchases,
+                    onPressed: () => runRestoreFlow(context),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

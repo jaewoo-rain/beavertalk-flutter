@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -24,8 +25,7 @@ class RecordEmptyScreen extends StatelessWidget {
           Gnb.main(title: '', onBack: () => Navigator.pop(context)),
           // Centered empty-state copy + CTA (Figma `2296:26201`).
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            child: ContentColumn(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,

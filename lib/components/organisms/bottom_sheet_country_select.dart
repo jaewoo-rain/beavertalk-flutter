@@ -1,6 +1,7 @@
 import 'package:country_flags/country_flags.dart';
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
@@ -113,10 +114,14 @@ class BottomSheetCountrySelect extends StatelessWidget {
   /// already provides its own bottom [SafeArea] (e.g. a real modal sheet).
   final bool showHomeIndicator;
 
-  /// Max sheet width — matches [AppScaffold]'s 430px phone-column cap; the
-  /// sheet otherwise fills its host width (Figma reference device: 375).
-  static const double _maxWidth = 430;
-  static const double _contentWidth = 335;
+  // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+  // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
+  // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
+  //
+  // 내용 폭 335 상수도 같이 지웠다. 그건 폰 375에서 좌우 20을 뺀 값이라
+  // [ContentColumn] 이 폭에서 다시 만든다(폰 335, 태블릿 600). 상수로 박아
+  // 두면 태블릿에서 640 시트 한가운데 335 짜리 버튼이 떠 있게 된다 —
+  // 에뮬레이터에서 실제로 그렇게 나왔다.
 
   /// The sheet never grows past this fraction of the screen height. A long list
   /// (e.g. the 24-language picker) would otherwise overflow its Column; capping
@@ -137,7 +142,7 @@ class BottomSheetCountrySelect extends StatelessWidget {
       ),
       clipBehavior: Clip.antiAlias,
       child: ConstrainedBox(
-        constraints: BoxConstraints(maxWidth: _maxWidth, maxHeight: maxHeight),
+        constraints: BoxConstraints(maxHeight: maxHeight),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -148,11 +153,11 @@ class BottomSheetCountrySelect extends StatelessWidget {
             // footer below stay pinned.
             Flexible(
               child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+                child: ContentColumn(
+                  padding: const EdgeInsets.only(top: 16, bottom: 24),
                   child: Center(
                     child: SizedBox(
-                      width: _contentWidth,
+                      width: double.infinity,
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -182,8 +187,8 @@ class BottomSheetCountrySelect extends StatelessWidget {
 
   /// GNB `sub-2` header: centered title, close glyph on the right.
   Widget _header(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
       child: Row(
         children: [
           // Invisible 28px spacer balancing the close glyph (centers title).
@@ -219,11 +224,11 @@ class BottomSheetCountrySelect extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+        ContentColumn(
+          padding: const EdgeInsets.only(top: 12),
           child: Center(
             child: SizedBox(
-              width: _contentWidth,
+              width: double.infinity,
               child: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,

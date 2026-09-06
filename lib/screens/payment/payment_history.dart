@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
@@ -81,8 +82,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: AppSpacing.s24),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+          ContentColumn(
             child: _summaryCard(l10n, page.monthTotal, locale),
           ),
           const SizedBox(height: AppSpacing.s8),
@@ -97,8 +97,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
               child: EmptyBlock(body: l10n.noPayments),
             )
           else
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+            ContentColumn(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -152,22 +151,22 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
   /// Filter chips (Figma `2117:20237`): fill `surface2` in both states — only
   /// the label colour changes.
   Widget _filterRow(AppLocalizations l10n) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.s20,
-        vertical: 14,
-      ),
-      child: Row(
-        children: [
-          for (final f in PaymentFilter.values) ...[
-            if (f != PaymentFilter.values.first)
-              const SizedBox(width: AppSpacing.s12),
-            _chip(_filterLabel(f, l10n), selected: _filter == f, onTap: () {
-              if (_filter != f) setState(() => _filter = f);
-            }),
+    // 칩 줄도 본문 컬럼 선에서 시작한다(정본 `Top Navigation` 은 x=105).
+    return ContentColumn(
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: [
+            for (final f in PaymentFilter.values) ...[
+              if (f != PaymentFilter.values.first)
+                const SizedBox(width: AppSpacing.s12),
+              _chip(_filterLabel(f, l10n), selected: _filter == f, onTap: () {
+                if (_filter != f) setState(() => _filter = f);
+              }),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }

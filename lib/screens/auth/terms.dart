@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/legal/legal_urls.dart';
@@ -37,7 +38,14 @@ class TermsScreen extends StatelessWidget {
             title: l10n.termsTitle,
             onBack: () => Navigator.of(context).maybePop(),
           ),
-          const Expanded(child: LegalWebView(url: kTermsOfUseUrl)),
+          // 법률 문서는 700(정본 규격: 좌우 여백 55). 본문 600보다 넓게 두는 건
+          // 조항 번호와 들여쓰기가 있는 글이라 줄바꿈이 잦으면 더 읽기 나쁘기
+          // 때문이다.
+          const Expanded(
+            child: ContentColumn.document(
+              child: LegalWebView(url: kTermsOfUseUrl),
+            ),
+          ),
         ],
       ),
     );
