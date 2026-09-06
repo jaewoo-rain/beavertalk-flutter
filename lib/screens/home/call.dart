@@ -229,13 +229,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       }
 
       // ── 처음 담는다 — 이 순간 서버가 문장을 만든다 ──
-      // ⚠ 서버가 native 를 1자 이상 필수로 받는다. 비어 있으면 422 가 될 뿐이라
-      //   왕복하지 않고 여기서 이유를 말한다.
-      final native = ex.native.trim();
-      if (native.isEmpty) {
-        _snack(l10n.saveSentenceFailed);
-        return;
-      }
+      // ⭐ `native`(뜻)는 **선택이다.** 서버가 2026-09-06 에 완화했다
+      //   (`schemas/sentence.py:44` `native: str | None = Field(default=None, …)`,
+      //    회귀 `tests/test_sentence_from_hint.py:239`).
+      //   ⛔ 예전 주석은 「1자 이상 필수」라며 여기서 막았는데, 그 전제가 이제 거짓이다.
+      //     사이드카가 뜻을 빼먹은 예시는 그 가드 때문에 **영영 못 담겼다** — 힌트 3개 중
+      //     1개만 뜻이 없어도 그 1개는 🔖 가 "저장 실패"만 냈다. 담을 값(한국어 문장)은
+      //     있는데도 그랬다.
+      //   ⇒ 비어 있으면 **필드를 안 보낸다**. 서버가 `native_sentence=None` 으로 담고
+      //     화면은 뜻 없이 한국어만 보여준다.
+      final nativeRaw = ex.native.trim();
+      final native = nativeRaw.isEmpty ? null : nativeRaw;
       final saved = await ref.read(bookmarkRepositoryProvider).saveHintSentence(
             callId: callId,
             korean: korean,

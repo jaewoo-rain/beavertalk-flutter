@@ -182,10 +182,13 @@ class HomeScreen extends ConsumerWidget {
           ),
           // 숙제 진입 배너 — 하단 내비 바로 위(Figma `screen/main_home` y=588).
           // 급한 숙제가 없으면 스스로 사라진다.
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-            child: HomeworkHomeBanner(),
-          ),
+          // ⛔ `Padding(horizontal: s20)` 이 아니라 [ContentColumn] 이다 — 같은 파일
+          //   헤더(위 [ContentColumn])와 **같은 밴드**에 서야 한다. 고정 20 이면
+          //   800dp 태블릿에서 헤더 100~700, 배너 20~780 으로 갈려 한 화면에 폭이
+          //   세 개가 된다(하단 탭바는 또 375 캡이다).
+          //   ⚠ 이 자리는 숙제 병합이 **새로 만든 블록**이라 충돌이 안 났고, 그래서
+          //     폭 규칙 검열을 그냥 통과했다. 새 블록을 넣을 땐 밴드부터 확인하라.
+          const ContentColumn(child: HomeworkHomeBanner()),
           const SizedBox(height: 18),
           // Bottom navigation — call tab is the center action.
           BottomNavBar(

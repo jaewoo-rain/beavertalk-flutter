@@ -45,15 +45,18 @@ class BookmarkRemoteDataSource {
   /// 재진입이 흔하니 실패로 다루면 안 된다.
   ///
   /// ⚠ 남의 `call_id` 는 **404** 다(403 아님 — 그 통화의 존재를 알려 주지 않는다).
-  /// `korean`·`native` 는 각각 1~500자 필수라 빈 값이면 422 다.
+  /// `korean` 은 1~500자 **필수**(빈 값이면 422). `native`(뜻)는 **선택**이다
+  /// (2026-09-06 서버 완화 — `schemas/sentence.py:44`). 사이드카가 뜻을 빼먹은
+  /// 예시도 담을 값(한국어 문장)이 있으므로 막지 않는다.
+  /// ⇒ 없으면 **필드째 안 보낸다**. 서버가 `native_sentence=None` 으로 저장한다.
   Future<SentenceOutDto> saveFromHint({
     required int callId,
     required String korean,
-    required String native,
+    String? native,
   }) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '/sentences/from-hint',
-      data: {'call_id': callId, 'korean': korean, 'native': native},
+      data: {'call_id': callId, 'korean': korean, 'native': ?native},
     );
     return SentenceOutDto.fromJson(res.data!);
   }

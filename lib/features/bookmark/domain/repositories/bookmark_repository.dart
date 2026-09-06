@@ -24,6 +24,6 @@ abstract interface class BookmarkRepository {
   Future<BookmarkSentence> saveHintSentence({
     required int callId,
     required String korean,
-    required String native,
+    String? native,
   });
 }

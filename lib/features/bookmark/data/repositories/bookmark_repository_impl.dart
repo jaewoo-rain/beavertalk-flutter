@@ -38,7 +38,7 @@ class BookmarkRepositoryImpl implements BookmarkRepository {
   Future<BookmarkSentence> saveHintSentence({
     required int callId,
     required String korean,
-    required String native,
+    String? native,
   }) async {
     try {
       final dto = await _remote.saveFromHint(

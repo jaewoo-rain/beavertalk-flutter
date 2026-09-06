@@ -514,9 +514,13 @@ class AvatarScreen extends ConsumerWidget {
     // predating that field. Neither available means no registered store
     // product either, so there is nothing to buy — say so instead of sending
     // the store an id it has never seen.
-    final productId = productKey.isNotEmpty
-        ? IapProductIds.character(productKey)
-        : IapProductIds.characterFor(id);
+    //
+    // ⭐ [IapProductIds.characterForKey] 를 쓴다 — 폴백 규칙은 위와 **같고**(빈 키면
+    //   id 표로 떨어진다) 가드가 셋 더 붙는다: `trim()`, 이미 붙은 `bt_character_`
+    //   접두를 또 붙이지 않기, 슬러그 기준 무료 판정.
+    //   ⛔ 접두 중복이 특히 조용하다 — `bt_character_bt_character_popo` 를 스토어는
+    //     에러가 아니라 **빈 응답**으로 답해서, 화면엔 "상품이 사라진 것"처럼 보인다.
+    final productId = IapProductIds.characterForKey(productKey, id);
     if (productId == null) {
       ScaffoldMessenger.of(routeCtx)
         ..clearSnackBars()
