@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../classroom/widgets/homework_class_card.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
 import '../../features/normalcall/presentation/build_flags.dart';
 import '../../features/normalcall/presentation/cascade_auto_talk.dart';
@@ -126,6 +127,9 @@ class MyPageScreen extends ConsumerWidget {
                   _levelCard(context, ref, l10n, level),
                   const SizedBox(height: AppSpacing.s24),
                   _pronunciationCard(context, l10n, pron, recentCalls),
+                  const SizedBox(height: AppSpacing.s24),
+                  // 숙제 진입점 — 형제 지표 카드 뒤 마지막 자리(Figma 실측).
+                  const HomeworkClassCard(),
                   if (kDebugMode) ...[
                     const SizedBox(height: AppSpacing.s24),
                     _devToolsCard(context),

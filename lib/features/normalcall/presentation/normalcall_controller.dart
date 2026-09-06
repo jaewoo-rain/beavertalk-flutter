@@ -123,6 +123,7 @@ Map<String, dynamic> buildStartFrame({
   required int numChannels,
   String? inboundCallId,
   String? continuesCallId,
+  int? assignmentId,
 }) =>
     <String, dynamic>{
       'type': 'start',
@@ -142,6 +143,11 @@ Map<String, dynamic> buildStartFrame({
       // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
       // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
       'continues_call_id': ?continuesCallId,
+      // ⭐ 과제 통화 — 숙제 상세의 회화 카드에서 시작했을 때만 실린다. 서버가
+      //   이 과제의 목표 표현을 대화 유도에 주입한다.
+      //   ⛔ 통화의 성립 조건이 아니라 **재료**다. 서버는 자격이 없으면 조용히
+      //     무시하고 평소 선별로 진행한다 — 여기서 보냈다고 통화가 막히지 않는다.
+      'assignment_id': ?assignmentId,
     };
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
@@ -1474,12 +1480,17 @@ class NormalCallController extends Notifier<CallState> {
   /// [callChannel] 은 이 통화가 붙을 통로다. 안 주면 [CallChannel.defaultChannel] —
   /// 즉 **호출부를 안 고치면 동작이 종전과 같다.** 나중에 서버가 통화 시작 응답으로
   /// 내려주면 그 값을 여기로 넘긴다(필드 계약은 아직 없다).
-  Future<void> start({String? inboundCallId, CallChannel? callChannel}) async {
+  Future<void> start({
+    String? inboundCallId,
+    CallChannel? callChannel,
+    int? assignmentId,
+  }) async {
     final ok = await _connect(
       callUuid: null,
       inboundCallId: inboundCallId,
       callkitOwnedAudio: false,
       callChannel: callChannel,
+      assignmentId: assignmentId,
     );
     if (!ok) return;
     await _startAudio();
@@ -1541,6 +1552,7 @@ class NormalCallController extends Notifier<CallState> {
     required bool callkitOwnedAudio,
     CallChannel? callChannel,
     bool keepCallkitCall = false,
+    int? assignmentId,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1662,6 +1674,7 @@ class NormalCallController extends Notifier<CallState> {
         numChannels: _micNumChannels,
         inboundCallId: inboundCallId,
         continuesCallId: _continuesCallId,
+        assignmentId: assignmentId,
       );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
