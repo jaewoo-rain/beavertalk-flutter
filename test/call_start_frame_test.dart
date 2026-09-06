@@ -6,6 +6,7 @@
 //
 //   - `continues_call_id` 미전송 → 비버가 앞 구간을 잊는다 (2026-08-24)
 //   - `inbound_call_id` 미전송   → 이어간 순간 **상대가 바뀐다** (2026-08-31)
+//   - `assignment_id` 미전송     → 2구간부터 **숙제 통화가 아니게 된다** (2026-09-06)
 //
 // 플랜: docs/2026-08-31_0516_carry-inbound-call-id-across-segments-plan.md
 
@@ -17,6 +18,7 @@ import 'package:beavertalk/features/normalcall/presentation/normalcall_controlle
 Map<String, dynamic> _frame({
   String? inboundCallId,
   String? continuesCallId,
+  int? assignmentId,
 }) =>
     buildStartFrame(
       aec: const {'mode': 'unknown'},
@@ -24,6 +26,7 @@ Map<String, dynamic> _frame({
       numChannels: 1,
       inboundCallId: inboundCallId,
       continuesCallId: continuesCallId,
+      assignmentId: assignmentId,
     );
 
 void main() {
@@ -82,6 +85,35 @@ void main() {
       final f = _frame();
 
       expect(f.containsKey('continues_call_id'), isFalse);
+    });
+  });
+
+  group('assignment_id — 숙제 통화라는 표식', () {
+    // ⛔ 서버가 이 값 하나로 **넷**을 바꾼다: 통화 언어를 ko 로 고정
+    //   (`call_session.py:438`) · 통화 길이를 5분 고정(`:1670`, 플랜·env·클라
+    //   override 를 전부 무시) · 과제 목표 표현 주입(`:1291`) · 과제 귀속.
+    //   빠지면 그 넷이 **한꺼번에** 평소 통화로 되돌아가는데 에러는 안 난다.
+    test('과제에서 시작한 통화에 실린다', () {
+      final f = _frame(assignmentId: 77);
+
+      expect(f['assignment_id'], 77);
+    });
+
+    test('평소 통화에는 필드 자체가 안 나간다', () {
+      final f = _frame();
+
+      expect(f.containsKey('assignment_id'), isFalse);
+    });
+
+    test('⭐ 이어가는 구간에도 같이 실린다 — 여기가 실제로 빠졌던 자리다', () {
+      // 2구간을 흉내낸다: 앞 구간을 이어가면서 과제도 그대로 들고 간다.
+      // ⚠ 서버는 `continues_call_id` 로 과제를 **못 되짚는다** — `call` 테이블에
+      //   `assignment_id` 컬럼이 없다. 클라가 매 조각 다시 싣는 것 말고 방법이 없다.
+      final f = _frame(continuesCallId: '1182', assignmentId: 77);
+
+      expect(f['continues_call_id'], '1182');
+      expect(f['assignment_id'], 77,
+          reason: '이어가는 구간에서 과제가 빠지면 숙제 통화가 평소 통화로 되돌아간다');
     });
   });
 }
