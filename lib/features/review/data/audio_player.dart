@@ -30,6 +30,17 @@ class ReviewAudioPlayer {
     );
   }
 
+  /// Plays mp3 bytes held in memory — `POST /tts/speech` answers with the audio
+  /// itself rather than a URL, so there is nothing to hand [playUrl].
+  ///
+  /// ⚠ [playBytes] is **not** interchangeable: it declares `pcm16WAV`, and mp3
+  /// bytes under that codec play as noise or not at all.
+  Future<void> playMp3Bytes(Uint8List mp3Bytes) async {
+    final player = await _ensureOpen();
+    await player.stopPlayer();
+    await player.startPlayer(fromDataBuffer: mp3Bytes, codec: Codec.mp3);
+  }
+
   /// Plays native audio from [url]. Throws on failure (e.g. an unplayable
   /// storage key); the caller treats playback as best-effort.
   Future<void> playUrl(String url) async {

@@ -8,6 +8,13 @@ library;
 
 /// One example answer inside a [HintData] — a Korean sentence plus its
 /// romanization and native-language gloss. `roman` may be null.
+/// ⛔ **문장 id 가 없다 — 서버가 힌트 시점에 DB 를 안 건드리기 때문이다**
+/// (사장님 결정 2026-09-05: "즐겨찾기 안해도 DB저장되면 너무 낭비인데?" — 5분 통화에
+/// 힌트 5회면 15행이 쌓이는데 대부분 아무도 안 담는다). 사이드카가 예시를 만들어 WS 로
+/// 쏘고 끝이라 서버 어디에도 저장되지 않는다.
+///
+/// ⇒ 🔖 를 **누른 그 순간** `POST /sentences/from-hint` 가 문장을 만들고 id 를 준다.
+/// 그래서 [korean]·[native] 를 그때 그대로 돌려보내야 한다 — 서버에는 대조할 원본이 없다.
 class HintExample {
   const HintExample({
     required this.korean,
@@ -19,9 +26,13 @@ class HintExample {
   final String korean;
 
   /// Revised-Romanization of [korean]; null when the server omitted it.
+  ///
+  /// ⚠ 담을 때는 보내지 않는다 — `Sentence` 에 대응 필드가 없다(서버 규약).
   final String? roman;
 
   /// Native-language translation of [korean] (may be empty).
+  ///
+  /// ⚠ 서버의 담기 API 는 이걸 **필수(1자 이상)** 로 받는다. 비어 있으면 담을 수 없다.
   final String native;
 
   factory HintExample.fromJson(Map<String, dynamic> json) => HintExample(
