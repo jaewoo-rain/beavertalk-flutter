@@ -1157,6 +1157,9 @@ class AppLocalizationsId extends AppLocalizations {
   String get billingRestorePurchases => 'Pulihkan pembelian';
 
   @override
+  String get billingRedeemCode => 'Tukarkan kode';
+
+  @override
   String get billingPaymentHistory => 'Riwayat pembayaran';
 
   @override

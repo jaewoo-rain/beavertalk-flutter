@@ -1151,6 +1151,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get billingRestorePurchases => 'กู้คืนการซื้อ';
 
   @override
+  String get billingRedeemCode => 'ใช้โค้ด';
+
+  @override
   String get billingPaymentHistory => 'ประวัติการชำระเงิน';
 
   @override

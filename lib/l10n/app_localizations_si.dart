@@ -1156,6 +1156,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get billingRestorePurchases => 'මිලදී ගැනීම් යළි ලබාගන්න';
 
   @override
+  String get billingRedeemCode => 'කේතය භාවිතා කරන්න';
+
+  @override
   String get billingPaymentHistory => 'ගෙවීම් ඉතිහාසය';
 
   @override

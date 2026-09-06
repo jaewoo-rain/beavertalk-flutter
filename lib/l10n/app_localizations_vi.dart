@@ -1156,6 +1156,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get billingRestorePurchases => 'Khôi phục mua hàng';
 
   @override
+  String get billingRedeemCode => 'Sử dụng mã';
+
+  @override
   String get billingPaymentHistory => 'Lịch sử thanh toán';
 
   @override

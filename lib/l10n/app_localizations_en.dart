@@ -1156,6 +1156,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get billingRestorePurchases => 'Restore purchases';
 
   @override
+  String get billingRedeemCode => 'Redeem a code';
+
+  @override
   String get billingPaymentHistory => 'Payment history';
 
   @override

@@ -116,6 +116,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
+    // Kicks the store catalog query and rebuilds this subtree when it lands.
+    // Child widgets read [PlanPrices] statically, so this one watch is what
+    // turns list prices into the member's real storefront prices — and what
+    // makes a console-side discount show up without an app release.
+    ref.watch(storePricesProvider);
 
     return PopScope(
       canPop: false,
@@ -323,8 +328,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         GestureDetector(
-          onTap: () => showSubscriptionOverlay(
-              context, SubscriptionOverlay.restoreSuccess),
+          onTap: () => runRestoreFlow(context),
           child: Padding(
             padding: const EdgeInsets.symmetric(
                 horizontal: 6, vertical: AppSpacing.s12),

@@ -96,4 +96,9 @@ final List<ProviderOrFamily> intentionallyNotUserScoped = <ProviderOrFamily>[
   bookmarkToggleControllerProvider,
   // 인증 상태 그 자체. 로그아웃 처리 중에 자기를 무효화하면 진행 중인 전이가 엉킨다.
   authControllerProvider,
+  // ⭐ **스토어 계정(기기) 스코프다 — 회원 스코프가 아니다.** 애플·구글이 매기는
+  // 가격은 우리 회원이 바뀌어도 그대로다(정하는 것은 스토어 계정의 지역이다).
+  // 지우면 다음 화면 진입마다 스토어 왕복을 한 번 더 하는데, 그 왕복은 실패해도
+  // 조용히 목록 가격으로 떨어지는 종류라(정의부 주석 참조) 이득 없이 느려지기만 한다.
+  storePricesProvider,
 ];

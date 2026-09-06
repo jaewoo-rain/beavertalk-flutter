@@ -1170,6 +1170,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get billingRestorePurchases => 'Vásárlások visszaállítása';
 
   @override
+  String get billingRedeemCode => 'Kód beváltása';
+
+  @override
   String get billingPaymentHistory => 'Fizetési előzmények';
 
   @override

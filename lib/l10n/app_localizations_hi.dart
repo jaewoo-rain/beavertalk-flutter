@@ -1154,6 +1154,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get billingRestorePurchases => 'खरीदारी रीस्टोर करें';
 
   @override
+  String get billingRedeemCode => 'कोड रिडीम करें';
+
+  @override
   String get billingPaymentHistory => 'भुगतान इतिहास';
 
   @override

@@ -1177,6 +1177,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get billingRestorePurchases => 'Restaurer les achats';
 
   @override
+  String get billingRedeemCode => 'Utiliser un code';
+
+  @override
   String get billingPaymentHistory => 'Historique des paiements';
 
   @override

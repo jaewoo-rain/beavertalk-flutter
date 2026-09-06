@@ -1158,6 +1158,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get billingRestorePurchases => 'ស្ដារការទិញ';
 
   @override
+  String get billingRedeemCode => 'ប្រើកូដ';
+
+  @override
   String get billingPaymentHistory => 'ប្រវត្តិការទូទាត់';
 
   @override

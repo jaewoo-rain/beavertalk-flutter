@@ -1,9 +1,13 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../data/store_iap_service.dart';
 import '../../domain/entities/subscription.dart';
 import '../../domain/entities/subscription_state.dart';
 import '../../domain/iap_service.dart';
+import '../../domain/plan_prices.dart';
 import '../../domain/subscription_status_resolver.dart';
+import 'purchase_providers.dart';
 import 'subscription_providers.dart';
 
 /// The resolver, injectable so tests can pin the clock.
@@ -15,11 +19,76 @@ final subscriptionStatusResolverProvider =
 /// The single billing seam — work order v2 §4-1.
 ///
 /// v1's `BillingRail` (store lane / in-house lane) is gone: one rail, two
-/// product types. [MockIapService] until store products are registered
-/// (v2 §7-4); the real SDK implementation replaces this one provider and
-/// nothing above it moves.
+/// product types. The store rail is the real one; the mock stands in wherever
+/// no store exists — web, desktop, widget tests, the demo hub.
+///
+/// **Not autoDispose, and read early.** The store replays transactions that
+/// finished while the app was dead (a purchase interrupted mid-sheet, a
+/// renewal charged off-device) onto its stream shortly after launch. The rail
+/// has to already be listening, and it must not be torn down between screens —
+/// disposing it mid-flight would drop a paid receipt on the floor.
 final iapServiceProvider = Provider<IapService>((ref) {
-  return MockIapService();
+  if (kIsWeb ||
+      (defaultTargetPlatform != TargetPlatform.iOS &&
+          defaultTargetPlatform != TargetPlatform.android)) {
+    return MockIapService();
+  }
+  final service = StoreIapService(server: ref.watch(purchaseRepositoryProvider));
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+/// Pulls the store catalog once and makes it the price of record.
+///
+/// Watch this from any screen that quotes a price. Two things happen:
+/// the query is kicked off, and the subtree rebuilds when it lands — which is
+/// how child widgets that read [PlanPrices] statically pick the store's
+/// numbers up without each one needing a `ref`.
+///
+/// Failure is not an error state here. A store that will not answer (offline,
+/// simulator, a build whose products are not approved yet) leaves the list
+/// prices in place, which is exactly what the screen would have shown anyway.
+final storePricesProvider = FutureProvider<List<IapProduct>>((ref) async {
+  final iap = ref.watch(iapServiceProvider);
+  if (!await iap.isAvailable()) return const [];
+  final products = await iap.getProducts({
+    ...IapProductIds.subscriptions,
+    ...IapProductIds.soldCharacters,
+  });
+  final byId = {for (final p in products) p.id: p};
+  StorePrice? at(String id) {
+    final p = byId[id];
+    return p == null
+        ? null
+        : StorePrice(
+            display: p.localizedPrice,
+            raw: p.rawPrice,
+            currencyCode: p.currencyCode,
+          );
+  }
+
+  final proMonthly = at(IapProductIds.proMonthly);
+  final proYearly = at(IapProductIds.proYearly);
+  final maxMonthly = at(IapProductIds.maxMonthly);
+  final maxYearly = at(IapProductIds.maxYearly);
+  if (proMonthly != null &&
+      proYearly != null &&
+      maxMonthly != null &&
+      maxYearly != null) {
+    final characters = products
+        .where((p) => p.type == IapProductType.nonConsumable && p.rawPrice > 0)
+        .toList()
+      ..sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
+    PlanPrices.adopt(
+      proMonthly: proMonthly,
+      proYearly: proYearly,
+      maxMonthly: maxMonthly,
+      maxYearly: maxYearly,
+      characterFrom:
+          characters.isEmpty ? null : at(characters.first.id),
+    );
+  }
+  return products;
 });
 
 /// **The** subscription status — what every subscription screen reads.

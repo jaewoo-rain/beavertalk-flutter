@@ -1163,6 +1163,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get billingRestorePurchases => 'Xaridlarni tiklash';
 
   @override
+  String get billingRedeemCode => 'Koddan foydalanish';
+
+  @override
   String get billingPaymentHistory => 'Toʻlovlar tarixi';
 
   @override

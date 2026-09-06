@@ -1152,6 +1152,9 @@ class AppLocalizationsKk extends AppLocalizations {
   String get billingRestorePurchases => 'Сатып алуларды қалпына келтіру';
 
   @override
+  String get billingRedeemCode => 'Кодты пайдалану';
+
+  @override
   String get billingPaymentHistory => 'Төлем тарихы';
 
   @override

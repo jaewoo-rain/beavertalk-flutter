@@ -1159,6 +1159,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get billingRestorePurchases => 'Восстановить покупки';
 
   @override
+  String get billingRedeemCode => 'Использовать код';
+
+  @override
   String get billingPaymentHistory => 'История платежей';
 
   @override

@@ -46,6 +46,11 @@ class PlanChangeScreen extends ConsumerWidget {
     final status = ref.watch(subscriptionStatusProvider);
     final date = _date(context, status.expiresAt);
     final up = direction == PlanChangeDirection.upgrade;
+    // Kicks the store catalog query and rebuilds this subtree when it lands.
+    // Child widgets read [PlanPrices] statically, so this one watch is what
+    // turns list prices into the member's real storefront prices — and what
+    // makes a console-side discount show up without an app release.
+    ref.watch(storePricesProvider);
 
     return AppScaffold(
       background: c.backgroundNormalNormal,
