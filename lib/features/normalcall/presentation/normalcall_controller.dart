@@ -21,6 +21,12 @@ import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sound/flutter_sound.dart';
+// ⭐ [2026-09-06] 안드로이드 통화 마이크는 이쪽이다. `flutter_sound` 는 캡처 루프에 전용
+//   스레드가 없어 메인 루퍼에 자기를 재게시하고, 그게 5분 통화에서 메인 지각을
+//   93ms → 282ms 로 키워 **영상**을 끊었다(마이크만 끈 대조판에서 31 → 28ms 로 평평).
+//   `record` 는 `RecordThread.kt:84` 에서 진짜 Thread 를 띄우고 메인으로는 전달만 한다.
+//   ⚠ 별칭을 쓴다 — 두 패키지가 `AudioSource`·`Codec` 같은 이름을 겹쳐 갖는다.
+import 'package:record/record.dart' as rec;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -702,7 +708,15 @@ class NormalCallController extends Notifier<CallState> {
   WebSocketChannel? _channel;
   StreamSubscription<dynamic>? _wsSub;
 
+  /// 통화 마이크 — **플랫폼마다 다른 구현이다.** 둘 중 하나만 살아 있다.
+  ///
+  ///     안드로이드   [_recRecorder]  (`record`)        ⭐ 전용 스레드
+  ///     그 외        [_recorder]     (`flutter_sound`)
+  ///
+  /// ⛔ 정리는 반드시 [_closeMicRecorders] 로 한다 — 한쪽만 닫으면 다음 통화에서
+  ///   «마이크가 이미 잡혀 있다» 로 열리지 않는데, 그때 나는 예외는 원인을 안 가리킨다.
   FlutterSoundRecorder? _recorder;
+  rec.AudioRecorder? _recRecorder;
 
   /// Native channel to force loudspeaker (speakerphone) routing during a call —
   /// see ios/Runner/AppDelegate.swift `beavertalk/audio`.
@@ -2177,9 +2191,17 @@ class NormalCallController extends Notifier<CallState> {
       _log('⚠ [실험] MIC_ALWAYS_GATED — 마이크는 열되 **업링크만** 통화 내내 막는다. '
           '프레임은 계속 채널을 건너온다(그게 이 실험의 요점이다). uplink_bytes 는 0 이 된다');
     }
-    final controller = StreamController<Uint8List>();
-    _micController = controller;
-    _micSub = controller.stream.listen((bytes) {
+    // ⭐ 스트림이 **null 일 수 있다** — MIC_TO_FILE 실험은 파일로 녹음하므로 프레임이
+    //   Dart 로 안 올라온다(그게 그 실험의 요점이다). 그때는 리스너를 안 붙인다.
+    final stream = await _openMicStream();
+    if (stream != null) _micSub = stream.listen(_onMicFrame);
+  }
+
+  /// 마이크 프레임 한 장을 계측하고, 게이트를 통과하면 소켓으로 보낸다.
+  ///
+  /// ⚠ 초당 45~90회 돈다 — 여기서 비싸지면 우리가 재려던 것을 우리가 흔든다.
+  void _onMicFrame(Uint8List bytes) {
+    {
       // Counted BEFORE the gate: this measures whether the recorder is capturing
       // at all, which is a different failure from "gated because the beaver is
       // speaking". [_armMicWatchdog] keys off it.
@@ -2241,8 +2263,22 @@ class NormalCallController extends Notifier<CallState> {
           _log('mic → sent $_micFramesSent frames (your voice flowing)');
         }
       }
-    });
+    }
+  }
 
+  /// 마이크를 열고 PCM16k 스트림을 돌려준다. 파일 녹음 실험이면 **null**.
+  ///
+  /// ## ⭐ 플랫폼마다 다른 플러그인을 쓴다 (2026-09-06)
+  ///
+  ///     안드로이드   `record`         전용 캡처 스레드 → 메인 루퍼를 안 막는다
+  ///     그 외        `flutter_sound`  기존 그대로
+  ///
+  /// ⚠ iOS 를 안 바꾼 이유가 있다 — 아래 [useVoiceProcessing] 의 헤드셋 분기는
+  ///   VoiceProcessingIO 를 직접 끄는 것이고, `record` 에는 **대응하는 스위치가 없다.**
+  ///   그걸 잃으면 AirPods 로 목소리가 안 잡히던 옛 결함이 되돌아온다. 그리고 지금
+  ///   고치려는 증상(영상 버벅임)은 안드로이드에서 잰 것이다 — 안 아픈 쪽을 같이
+  ///   수술할 이유가 없다.
+  Future<Stream<Uint8List>?> _openMicStream() async {
     // 마이크 열기 재시도: 잠금화면 accept 직후엔 (아직 잠금 해제/포그라운드 전환 중이거나)
     // 직전 CallKit 통화가 잡았던 오디오 세션(Android MODE_IN_COMMUNICATION·오디오 포커스)이
     // 아직 해제되기 전이라 AudioRecord 생성이 실패할 수 있다
@@ -2288,45 +2324,179 @@ class NormalCallController extends Notifier<CallState> {
       }
     }
 
+    final useRecord =
+        !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
     Object? lastError;
     for (var attempt = 1; attempt <= _micOpenMaxAttempts; attempt++) {
-      final recorder = FlutterSoundRecorder();
-      _recorder = recorder;
       try {
-        await recorder.openRecorder();
-        await recorder.startRecorder(
-          toFile: toFilePath,
-          toStream: toFilePath == null ? controller.sink : null,
-          codec: Codec.pcm16,
-          sampleRate: _micSampleRate,
-          numChannels: _micNumChannels,
-          enableVoiceProcessing: useVoiceProcessing,
-          // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
-          enableEchoCancellation: !CascadeMicNoAec.enabled,
-          // [AEC] 녹음 소스. 기본(`defaultSource` = MediaRecorder.AudioSource.DEFAULT)
-          // 은 **통화 경로가 아니다** — 플랫폼 AEC 는 통화 다운링크를 참조해 업링크에서
-          // 빼는 구조라, 재생만 통화 경로로 옮기고 여기가 DEFAULT 로 남으면 참조할 짝이
-          // 안 생겨 아무 효과가 없다. 재생 트랙과 **반드시 같은 플래그**를 본다.
-          audioSource: !kIsWeb &&
-                  defaultTargetPlatform == TargetPlatform.android
-              ? AudioSource.voice_communication
-              : AudioSource.defaultSource,
-        );
+        final stream = useRecord
+            ? await _openWithRecord(toFilePath)
+            : await _openWithFlutterSound(toFilePath, useVoiceProcessing);
         if (attempt > 1) _log('mic opened on retry (attempt $attempt)');
-        return; // 성공
+        return stream; // 성공
       } catch (e) {
         lastError = e;
         _log('mic open failed ($attempt/$_micOpenMaxAttempts): $e');
-        try {
-          await recorder.closeRecorder();
-        } catch (_) {}
-        _recorder = null;
+        // ⛔ 반쯤 열린 레코더를 그대로 두면 다음 시도가 «이미 잡혀 있다» 로 죽는다.
+        //   그때 나는 예외는 원인을 안 가리키므로 재시도가 통째로 무의미해진다.
+        await _closeMicRecorders();
         if (attempt < _micOpenMaxAttempts) {
           await Future<void>.delayed(_micOpenRetryDelay);
         }
       }
     }
     throw Exception('마이크를 열 수 없습니다(재시도 $_micOpenMaxAttempts회 실패): $lastError');
+  }
+
+  /// ⭐ 안드로이드 경로 — `record`. 캡처가 **전용 스레드**라 메인 루퍼를 안 막는다.
+  Future<Stream<Uint8List>?> _openWithRecord(String? toFilePath) async {
+    final recorder = rec.AudioRecorder();
+    _recRecorder = recorder;
+    // ⚠ `record` 는 자체 권한 판정을 갖는다. 통화 진입에서 이미 받아 뒀지만, 두 경로가
+    //   어긋나면 «권한은 있는데 녹음이 안 열린다» 가 되므로 여기서 한 번 더 확인한다.
+    if (!await recorder.hasPermission()) {
+      throw Exception('마이크 권한이 없습니다(record.hasPermission=false)');
+    }
+    final config = rec.RecordConfig(
+      encoder: rec.AudioEncoder.pcm16bits,
+      sampleRate: _micSampleRate,
+      numChannels: _micNumChannels,
+      // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
+      echoCancel: !CascadeMicNoAec.enabled,
+      noiseSuppress: !CascadeMicNoAec.enabled,
+      androidConfig: rec.AndroidRecordConfig(
+        // [AEC] 재생 트랙과 **반드시 같은 플래그**를 본다 — 플랫폼 AEC 는 통화
+        // 다운링크를 참조해 업링크에서 빼는 구조라, 여기가 DEFAULT 면 참조할 짝이
+        // 안 생겨 아무 효과가 없다.
+        // ⛔ **`MIC_NO_AEC` 에 물리지 마라.** 옛 flutter_sound 경로는 이 값을 토글과
+        //   무관하게 늘 `voice_communication` 으로 뒀다(`HEAD:…:2310-2313`). 여기에
+        //   토글을 물리면 그 실험이 「AEC 를 뺐다」가 아니라 「AEC+NS+캡처소스를 뺐다」가
+        //   되어, 이미 내린 «③ AEC 무죄» 판정과 **다른 실험**이 된다.
+        audioSource: rec.AndroidAudioSource.voiceCommunication,
+        // ⛔⛔ 아래 셋은 **일부러 기본값**이다. 라우팅은 우리가 이미
+        //   `MainActivity.setVoiceCallMode` 에서 잡는다(MODE_IN_COMMUNICATION +
+        //   스피커폰). `record` 가 같은 것을 또 만지면 둘이 싸운다.
+        //   ⭐ `modeNormal` 이 «모드를 건드리지 않는다» 는 뜻인 것을 소스로 확인했다 —
+        //     `AudioSessionManager.kt:58  if (config.audioManagerMode != MODE_NORMAL)`.
+        //     ⇒ 우리가 세운 MODE_IN_COMMUNICATION 이 그대로 남는다. 바꾸지 마라.
+        audioManagerMode: rec.AudioManagerMode.modeNormal,
+        speakerphone: false,
+        // ⚠ 기본이 true 다(=SCO 를 켠다). 지금 flutter_sound 경로는 SCO 를 안 만지므로,
+        //   false 로 둬야 **오늘과 같은 라우팅**이다. 블루투스 헤드셋 마이크는 별건이다.
+        manageBluetooth: false,
+      ),
+      // ⛔⛔ 기본값 `pause` 를 그대로 두면 **알림음 하나에 마이크가 죽고 안 돌아온다.**
+      //   `AudioRecorder.kt:37-40` 이 포커스 상실에 `pauseRecording()` 을 부르는데,
+      //   재개는 `PAUSE_RESUME` 일 때만 한다 — `pause` 는 그 분기를 안 탄다.
+      //   ⇒ 남은 통화 내내 벙어리가 되고, 워치독은 6초 1회라 못 잡는다.
+      //   ⚠ 게다가 flutter_sound 는 오디오 포커스를 **한 번도 안 만졌다**(android 전체에
+      //     `requestAudioFocus` 0건) — 즉 이건 교체가 새로 들여오는 위험이다.
+      //   `none` 이면 `AudioSessionManager.kt:52` 의 가드에 걸려 포커스 요청 자체가
+      //   안 나간다 ⇒ 옛 거동과 같아진다. 통화 세션은 우리가 관리한다.
+      audioInterruption: rec.AudioInterruptionMode.none,
+    );
+    if (toFilePath != null) {
+      await recorder.start(config, path: toFilePath);
+      _log('mic: record(파일) — AEC=${!CascadeMicNoAec.enabled}');
+      return null; // 파일 녹음 실험 — Dart 로 프레임이 안 올라온다
+    }
+    final stream = await recorder.startStream(config);
+    // ⭐ 어느 플러그인으로 열렸는지 로그에 남긴다. ⚠ 프레임 크기가 flutter_sound 의
+    //   704B(=22ms) 와 다를 수 있어, 도착 간격 계측(_micGapSumUs)의 기준자가 바뀐다 —
+    //   이 줄이 없으면 다음 사람이 옛 눈금으로 새 로그를 읽는다.
+    _log('mic: record(스트림) — 전용 스레드. AEC=${!CascadeMicNoAec.enabled}, '
+        '${_micSampleRate}Hz/${_micNumChannels}ch');
+    // ⛔⛔ **이 플러그인은 캡처 실패를 던지지 않는다.** `RecordThread.kt:113-115` 가
+    //   작업 스레드 안에서 `catch (ex) { onFailure(ex) }` 로 삼키고 `finally` 에서
+    //   래치를 내리므로, `startStream()` 은 **성공으로 완료된다** —
+    //   "AudioFlinger could not create record track" 도, 미지원 샘플레이트도 예외 0건이다.
+    //   ⇒ 위 재시도 루프가 이 경로에선 **한 번도 안 걸린다.** 그 사실을 알고도 안 적으면
+    //     다음 사람이 「재시도 6회가 있으니 괜찮다」고 믿는다.
+    //   ⇒ 최소한 **보이게** 만든다. 실제 복구는 [_armMicWatchdog] 가 맡는다(프레임 0건 감지).
+    return stream.handleError((Object e, StackTrace _) {
+      _log('⛔ mic(record) 스트림 에러: $e — 워치독이 재시작을 맡는다');
+    });
+  }
+
+  /// 그 밖의 플랫폼(주로 iOS) — 기존 `flutter_sound` 경로 그대로.
+  Future<Stream<Uint8List>?> _openWithFlutterSound(
+    String? toFilePath,
+    bool useVoiceProcessing,
+  ) async {
+    // ⭐ 파일 녹음이면 컨트롤러를 **아예 안 만든다.** 만들어 두면 리스너가 영영 안 붙고,
+    //   그 컨트롤러의 close() 는 끝나지 않는다(위 [_closeMicRecorders] ① 참조).
+    final controller = toFilePath == null ? StreamController<Uint8List>() : null;
+    _micController = controller;
+    final recorder = FlutterSoundRecorder();
+    _recorder = recorder;
+    await recorder.openRecorder();
+    await recorder.startRecorder(
+      toFile: toFilePath,
+      toStream: controller?.sink,
+      codec: Codec.pcm16,
+      sampleRate: _micSampleRate,
+      numChannels: _micNumChannels,
+      enableVoiceProcessing: useVoiceProcessing,
+      // [실험] 둘 다 꺼야 의미가 있다 — 하나만 끄면 플랫폼 AEC 가 남는다.
+      enableEchoCancellation: !CascadeMicNoAec.enabled,
+      audioSource: AudioSource.defaultSource,
+    );
+    return controller?.stream;
+  }
+
+  /// 정리 한 단계가 매달릴 수 있는 최대 시간. 넘으면 포기하고 다음 단계로 간다.
+  static const Duration _micCloseTimeout = Duration(seconds: 2);
+
+  /// 살아 있는 레코더를 **둘 다** 닫는다(어느 쪽이 열렸는지 호출부가 몰라도 되게).
+  ///
+  /// ## ⛔ 여기서 무서운 것은 예외가 아니라 **멈춤**이다
+  ///
+  /// 예외는 로그라도 남는다. 매달리면 통화 종료가 통째로 멈추고 화면만 돈다. 실제로
+  /// 매달릴 수 있는 자리가 셋이다:
+  ///
+  ///   ① 리스너가 **한 번도 안 붙은** `StreamController.close()` — Dart 명세상
+  ///      **영원히 안 끝난다**(`dart-sdk/lib/async/stream_controller.dart:272-274`:
+  ///      "If no one listens to a non-broadcast stream … this future will never complete").
+  ///      마이크 열기가 실패한 경로가 정확히 그 상태다 — 리스너는 열린 **뒤에** 붙는다.
+  ///   ② `record` 의 `stop()` — `AudioRecorder.kt:56-65` 에 스레드가 루프를 빠져나왔지만
+  ///      `onStop()` 전인 창이 있고, 그 창에 들어오면 `stopCb` 가 영영 안 불린다.
+  ///   ③ 그 상태에서 `_safeCall` 세마포어가 잡힌 채라 뒤이은 `dispose()` 도 갇힌다.
+  ///
+  /// ⇒ 모든 단계에 시간 상한을 건다. **그리고 실패를 삼키되 남긴다** — `stop` 실패는
+  ///   «네이티브가 마이크를 아직 쥐고 있다»는 뜻이고, 그게 바로 다음 통화가 안 열리는
+  ///   이유다. 단서를 지우면 그때 원인을 못 찾는다.
+  ///
+  /// ⚠ 이 함수는 `_micSub` 를 취소하지 **않는다** — 호출부가 먼저 취소해야 한다.
+  Future<void> _closeMicRecorders() async {
+    Future<void> step(String what, Future<void> Function() op) async {
+      try {
+        await op().timeout(_micCloseTimeout);
+      } on TimeoutException {
+        _log('⚠ 마이크 정리 지연 — $what 이 ${_micCloseTimeout.inSeconds}초 안에 '
+            '안 끝났다. 포기하고 넘어간다(다음 통화가 안 열리면 이 줄이 단서다)');
+      } catch (e) {
+        _log('⚠ 마이크 정리 실패($what): $e');
+      }
+    }
+
+    final fs = _recorder;
+    _recorder = null;
+    if (fs != null) {
+      await step('flutter_sound.stop', () => fs.stopRecorder());
+      await step('flutter_sound.close', () => fs.closeRecorder());
+    }
+
+    final rr = _recRecorder;
+    _recRecorder = null;
+    if (rr != null) {
+      await step('record.stop', () => rr.stop());
+      await step('record.dispose', () => rr.dispose());
+    }
+
+    final controller = _micController;
+    _micController = null;
+    if (controller != null) await step('mic controller.close', controller.close);
   }
 
   // ── Mic capture watchdog ──────────────────────────────────────────────────
@@ -2352,11 +2522,21 @@ class NormalCallController extends Notifier<CallState> {
   /// [실험] MIC_TO_FILE 이 만든 녹음 파일 경로. 통화 종료 시 지운다.
   String? _micProbeFile;
   Timer? _micWatchdogTimer;
-  bool _micRestarted = false;
+  int _micRestartCount = 0;
 
   /// How long a live recorder may produce nothing before it is presumed broken.
   /// Comfortably longer than the opening greeting's ramp-up.
   static const Duration _micWatchdogDelay = Duration(seconds: 6);
+
+  /// 워치독이 마이크를 다시 열어 보는 최대 횟수.
+  ///
+  /// ⛔ 예전엔 1회였다("never loop on a dead mic"). 그때는 `_openMicStream` 의 재시도
+  /// 6회가 앞을 막아 줬기 때문에 그걸로 충분했다. **`record` 에서는 그 재시도가 안 걸린다**
+  /// (캡처 실패를 안 던진다 — `_openWithRecord` 주석 참조) ⇒ 워치독이 **유일한 복구**다.
+  /// 1회로 두면 두 번 연속 실패한 통화는 5분 내내 무음이고, 화면·로그 어디에도 이유가 없다.
+  ///
+  /// ⚠ 그래도 무한은 아니다 — 정말 죽은 마이크에서 도는 것은 배터리만 먹는다.
+  static const int _micRestartMaxAttempts = 3;
 
   /// Arms the one-shot capture watchdog (see [_micFramesReceived]).
   void _armMicWatchdog() {
@@ -2366,21 +2546,29 @@ class NormalCallController extends Notifier<CallState> {
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = Timer(_micWatchdogDelay, () async {
       _micWatchdogTimer = null;
-      if (_micFramesReceived > 0 || _micRestarted) return;
+      if (_micFramesReceived > 0) return;
+      if (_micRestartCount >= _micRestartMaxAttempts) {
+        _log('⛔ mic 이 $_micRestartMaxAttempts 회 재시작에도 프레임 0건 — 포기한다. '
+            '이 통화는 학습자 목소리 없이 진행된다');
+        return;
+      }
       final phase = state.phase;
       if (phase != CallPhase.inCall && phase != CallPhase.connecting) return;
-      _micRestarted = true; // one attempt only — never loop on a dead mic
-      _log('mic captured nothing in ${_micWatchdogDelay.inSeconds}s → reopening');
+      _micRestartCount++;
+      _log('mic captured nothing in ${_micWatchdogDelay.inSeconds}s → reopening '
+          '($_micRestartCount/$_micRestartMaxAttempts)');
       await _logNativeAudio('mic-watchdog/before-restart');
       final myGen = _gen;
       try {
         await _restartMic();
       } catch (e) {
         _log('mic reopen failed: $e');
-        return;
       }
       if (myGen != _gen) return;
       await _logNativeAudio('mic-watchdog/after-restart');
+      // ⭐ 다시 무장한다. 재시작이 **성공했는지는 프레임이 오는가로만** 알 수 있다 —
+      //   `record` 는 열기 실패를 안 던지므로 「예외가 없었다」가 「열렸다」를 뜻하지 않는다.
+      _armMicWatchdog();
     });
   }
 
@@ -2388,15 +2576,7 @@ class NormalCallController extends Notifier<CallState> {
   Future<void> _restartMic() async {
     await _micSub?.cancel();
     _micSub = null;
-    try {
-      await _recorder?.stopRecorder();
-    } catch (_) {}
-    try {
-      await _recorder?.closeRecorder();
-    } catch (_) {}
-    _recorder = null;
-    await _micController?.close();
-    _micController = null;
+    await _closeMicRecorders();
     await _startMic();
   }
 
@@ -5258,20 +5438,12 @@ class NormalCallController extends Notifier<CallState> {
     _micWatchdogTimer?.cancel();
     _micWatchdogTimer = null;
     _micFramesReceived = 0;
-    _micRestarted = false;
+    _micRestartCount = 0;
 
     // Stop the mic first so no more bytes flow into a closing socket.
     await _micSub?.cancel();
     _micSub = null;
-    try {
-      await _recorder?.stopRecorder();
-    } catch (_) {}
-    try {
-      await _recorder?.closeRecorder();
-    } catch (_) {}
-    _recorder = null;
-    await _micController?.close();
-    _micController = null;
+    await _closeMicRecorders();
     // [실험] 계측용 녹음 파일은 남기지 않는다 — 6분치 PCM 이 통화마다 쌓인다.
     // 크기를 찍는 이유: 레코더가 **실제로 돌았는지**의 증거다(파일이 0B 면 ②③ 유지라는
     // 실험의 전제가 깨진 것이고, 그러면 곡선을 읽으면 안 된다).
