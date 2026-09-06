@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -155,45 +156,45 @@ class _JoinCodeScreenState extends ConsumerState<JoinCodeScreen> {
             onClose: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s8,
-                AppSpacing.s20,
-                AppSpacing.s24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  JoinStepHeader(
-                    title: l10n.hwJoinCodeTitle,
-                    subtitle: l10n.hwJoinCodeSubtitle,
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                  Text(
-                    l10n.hwJoinCodeLabel,
-                    style: AppType.label1.m.copyWith(color: c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  ClassCodeInput(
-                    length: _length,
-                    initialValue: _initial,
-                    enabled: !_busy,
-                    onChanged: (v) => setState(() {
-                      _code = v;
-                      _error = null;
-                    }),
-                  ),
-                  const SizedBox(height: AppSpacing.s8),
-                  Text(
-                    l10n.hwJoinCodeHelp,
-                    style: AppType.caption1.r.copyWith(color: c.labelNeutral),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: AppSpacing.s16),
-                    JoinErrorNote(title: _error!.title, body: _error!.body),
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.s8,
+                  bottom: AppSpacing.s24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    JoinStepHeader(
+                      title: l10n.hwJoinCodeTitle,
+                      subtitle: l10n.hwJoinCodeSubtitle,
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                    Text(
+                      l10n.hwJoinCodeLabel,
+                      style: AppType.label1.m.copyWith(color: c.labelNormal),
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    ClassCodeInput(
+                      length: _length,
+                      initialValue: _initial,
+                      enabled: !_busy,
+                      onChanged: (v) => setState(() {
+                        _code = v;
+                        _error = null;
+                      }),
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                    Text(
+                      l10n.hwJoinCodeHelp,
+                      style: AppType.caption1.r.copyWith(color: c.labelNeutral),
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: AppSpacing.s16),
+                      JoinErrorNote(title: _error!.title, body: _error!.body),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           ),

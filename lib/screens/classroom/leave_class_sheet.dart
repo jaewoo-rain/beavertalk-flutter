@@ -100,13 +100,11 @@ class _LeaveClassSheetState extends ConsumerState<_LeaveClassSheet> {
         label: l10n.hwLeaveCancel,
         onPressed: _busy ? null : () => Navigator.of(context).pop(),
       ),
+      // ⛔ 좌우 여백을 주지 마라 — `bt.BottomSheet` 의 child 슬롯이 이미
+      //   ContentColumn 으로 여백 주인이다(`bottom_sheet.dart:121`). 여기서 또 주면
+      //   더해져서 폰 40, 태블릿에선 콘텐츠 폭이 600 캡을 깬다.
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s8,
-          AppSpacing.s20,
-          0,
-        ),
+        padding: const EdgeInsets.only(top: AppSpacing.s8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,

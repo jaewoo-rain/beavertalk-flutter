@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -269,44 +270,46 @@ class _AssignmentDetailScreenState
             onBack: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s8,
-                AppSpacing.s20,
-                AppSpacing.s24,
-              ),
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        a.classroomName,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: AppType.label1.r.copyWith(color: c.labelNeutral),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.s8,
+                  bottom: AppSpacing.s24,
+                ),
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          a.classroomName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppType.label1.r.copyWith(
+                            color: c.labelNeutral,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      assignmentBadge(context, a),
+                    ],
+                  ),
+                  if (a.isClosed) ...[
+                    const SizedBox(height: AppSpacing.s12),
+                    Text(
+                      l10n.hwDetailClosed,
+                      style: AppType.caption1.r.copyWith(
+                        color: c.accentForegroundRed,
                       ),
                     ),
-                    const SizedBox(width: AppSpacing.s8),
-                    assignmentBadge(context, a),
                   ],
-                ),
-                if (a.isClosed) ...[
-                  const SizedBox(height: AppSpacing.s12),
-                  Text(
-                    l10n.hwDetailClosed,
-                    style: AppType.caption1.r.copyWith(
-                      color: c.accentForegroundRed,
+                  const SizedBox(height: AppSpacing.s16),
+                  for (final act in a.activities)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+                      child: _taskCard(context, a, act),
                     ),
-                  ),
                 ],
-                const SizedBox(height: AppSpacing.s16),
-                for (final act in a.activities)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: AppSpacing.s12),
-                    child: _taskCard(context, a, act),
-                  ),
-              ],
+              ),
             ),
           ),
         ],

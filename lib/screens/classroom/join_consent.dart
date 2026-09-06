@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -116,57 +117,57 @@ class _JoinConsentScreenState extends ConsumerState<JoinConsentScreen> {
             onClose: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s8,
-                AppSpacing.s20,
-                AppSpacing.s24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  JoinStepHeader(
-                    title: l10n.hwJoinConsentTitle,
-                    subtitle: l10n.hwJoinConsentSubtitle,
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  _heading(context, l10n.hwJoinConsentSharedHeading),
-                  _list(
-                    context,
-                    shared: true,
-                    items: [
-                      l10n.hwJoinConsentShared1,
-                      l10n.hwJoinConsentShared2,
-                      l10n.hwJoinConsentShared3,
-                      l10n.hwJoinConsentShared4,
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.s8,
+                  bottom: AppSpacing.s24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    JoinStepHeader(
+                      title: l10n.hwJoinConsentTitle,
+                      subtitle: l10n.hwJoinConsentSubtitle,
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    _heading(context, l10n.hwJoinConsentSharedHeading),
+                    _list(
+                      context,
+                      shared: true,
+                      items: [
+                        l10n.hwJoinConsentShared1,
+                        l10n.hwJoinConsentShared2,
+                        l10n.hwJoinConsentShared3,
+                        l10n.hwJoinConsentShared4,
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    _heading(context, l10n.hwJoinConsentNotSharedHeading),
+                    _list(
+                      context,
+                      shared: false,
+                      items: [
+                        l10n.hwJoinConsentNotShared1,
+                        l10n.hwJoinConsentNotShared2,
+                        l10n.hwJoinConsentNotShared3,
+                        l10n.hwJoinConsentNotShared4,
+                        l10n.hwJoinConsentNotShared5,
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    AppCheckbox(
+                      value: draft.consent,
+                      label: l10n.hwJoinConsentAgree,
+                      onChanged: (v) =>
+                          ref.read(joinDraftProvider.notifier).setConsent(v),
+                    ),
+                    if (_error != null) ...[
+                      const SizedBox(height: AppSpacing.s16),
+                      JoinErrorNote(title: _error!.title, body: _error!.body),
                     ],
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  _heading(context, l10n.hwJoinConsentNotSharedHeading),
-                  _list(
-                    context,
-                    shared: false,
-                    items: [
-                      l10n.hwJoinConsentNotShared1,
-                      l10n.hwJoinConsentNotShared2,
-                      l10n.hwJoinConsentNotShared3,
-                      l10n.hwJoinConsentNotShared4,
-                      l10n.hwJoinConsentNotShared5,
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  AppCheckbox(
-                    value: draft.consent,
-                    label: l10n.hwJoinConsentAgree,
-                    onChanged: (v) =>
-                        ref.read(joinDraftProvider.notifier).setConsent(v),
-                  ),
-                  if (_error != null) ...[
-                    const SizedBox(height: AppSpacing.s16),
-                    JoinErrorNote(title: _error!.title, body: _error!.body),
                   ],
-                ],
+                ),
               ),
             ),
           ),

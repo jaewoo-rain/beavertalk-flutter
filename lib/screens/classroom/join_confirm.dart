@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -85,48 +86,48 @@ class JoinConfirmScreen extends ConsumerWidget {
             onClose: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s8,
-                AppSpacing.s20,
-                AppSpacing.s24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  JoinStepHeader(
-                    title: l10n.hwJoinConfirmTitle,
-                    subtitle: l10n.hwJoinConfirmSubtitle,
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                  InfoRowsCard(
-                    title: preview.name,
-                    rows: [
-                      if (preview.institution != null)
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.s8,
+                  bottom: AppSpacing.s24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    JoinStepHeader(
+                      title: l10n.hwJoinConfirmTitle,
+                      subtitle: l10n.hwJoinConfirmSubtitle,
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                    InfoRowsCard(
+                      title: preview.name,
+                      rows: [
+                        if (preview.institution != null)
+                          InfoRow(
+                            l10n.hwJoinFieldInstitution,
+                            preview.institution!,
+                          ),
+                        if (preview.teacherDisplayName != null)
+                          InfoRow(
+                            l10n.hwJoinFieldTeacher,
+                            preview.teacherDisplayName!,
+                          ),
                         InfoRow(
-                          l10n.hwJoinFieldInstitution,
-                          preview.institution!,
+                          l10n.hwJoinFieldLearners,
+                          '${preview.learnerCount} / ${preview.capacity}',
                         ),
-                      if (preview.teacherDisplayName != null)
-                        InfoRow(
-                          l10n.hwJoinFieldTeacher,
-                          preview.teacherDisplayName!,
-                        ),
-                      InfoRow(
-                        l10n.hwJoinFieldLearners,
-                        '${preview.learnerCount} / ${preview.capacity}',
-                      ),
-                      if (preview.term != null)
-                        InfoRow(l10n.hwJoinFieldTerm, preview.term!),
-                    ],
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
-                  Text(
-                    l10n.hwJoinConfirmNote,
-                    style: AppType.caption1.r.copyWith(color: c.labelNeutral),
-                  ),
-                ],
+                        if (preview.term != null)
+                          InfoRow(l10n.hwJoinFieldTerm, preview.term!),
+                      ],
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                    Text(
+                      l10n.hwJoinConfirmNote,
+                      style: AppType.caption1.r.copyWith(color: c.labelNeutral),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

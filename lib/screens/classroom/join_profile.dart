@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -85,37 +86,37 @@ class _JoinProfileScreenState extends ConsumerState<JoinProfileScreen> {
             onClose: () => Navigator.of(context).pop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s8,
-                AppSpacing.s20,
-                AppSpacing.s24,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  JoinStepHeader(
-                    title: l10n.hwJoinProfileTitle,
-                    subtitle: l10n.hwJoinProfileSubtitle,
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                  _field(
-                    context,
-                    label: l10n.hwJoinNameLabel,
-                    help: l10n.hwJoinNameHelp,
-                    controller: _name,
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                  _field(
-                    context,
-                    label: l10n.hwJoinStudentNoLabel,
-                    help: l10n.hwJoinStudentNoHelp,
-                    controller: _studentNo,
-                    // 학번은 RTL 로케일에서도 왼쪽부터 읽는다(`10 §5`).
-                    ltr: true,
-                  ),
-                ],
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.s8,
+                  bottom: AppSpacing.s24,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    JoinStepHeader(
+                      title: l10n.hwJoinProfileTitle,
+                      subtitle: l10n.hwJoinProfileSubtitle,
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                    _field(
+                      context,
+                      label: l10n.hwJoinNameLabel,
+                      help: l10n.hwJoinNameHelp,
+                      controller: _name,
+                    ),
+                    const SizedBox(height: AppSpacing.s24),
+                    _field(
+                      context,
+                      label: l10n.hwJoinStudentNoLabel,
+                      help: l10n.hwJoinStudentNoHelp,
+                      controller: _studentNo,
+                      // 학번은 RTL 로케일에서도 왼쪽부터 읽는다(`10 §5`).
+                      ltr: true,
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -88,56 +89,57 @@ class _JoinDoneScreenState extends ConsumerState<JoinDoneScreen> {
         ),
       ),
       body: Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Center(
-                child: Container(
-                  width: 120,
-                  height: 120,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: c.primaryNormal14,
-                  ),
-                  child: Center(
-                    child: AppIcons.check(size: 56, color: c.primaryNormal),
+        child: ContentColumn.narrow(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Center(
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: c.primaryNormal14,
+                    ),
+                    child: Center(
+                      child: AppIcons.check(size: 56, color: c.primaryNormal),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.s20),
-              Text(
-                l10n.hwJoinDoneTitle(m?.classroomName ?? ''),
-                textAlign: TextAlign.center,
-                style: AppType.title3.b.copyWith(color: c.labelStrong),
-              ),
-              const SizedBox(height: AppSpacing.s8),
-              Text(
-                // 아직 목록을 못 받은 동안 「숙제가 없어요」라고 말하면 안 된다 —
-                // 곧 3개가 뜰 수도 있다. 값이 도착하기 전에는 줄을 비운다.
-                !assignments.hasValue
-                    ? ''
-                    : openCount == 0
-                    ? l10n.hwJoinDoneNoAssignment
-                    : l10n.hwJoinDoneSubtitle(openCount),
-                textAlign: TextAlign.center,
-                style: AppType.body1.r.copyWith(color: c.labelNormal),
-              ),
-              const SizedBox(height: AppSpacing.s20),
-              InfoRowsCard(
-                rows: [
-                  if (next != null)
-                    InfoRow(
-                      l10n.hwJoinDoneNextDue,
-                      localizedShortDate(context, next.dueAt),
-                    ),
-                  InfoRow(l10n.hwJoinDoneRosterName, m?.rosterName ?? ''),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.s24),
-            ],
+                const SizedBox(height: AppSpacing.s20),
+                Text(
+                  l10n.hwJoinDoneTitle(m?.classroomName ?? ''),
+                  textAlign: TextAlign.center,
+                  style: AppType.title3.b.copyWith(color: c.labelStrong),
+                ),
+                const SizedBox(height: AppSpacing.s8),
+                Text(
+                  // 아직 목록을 못 받은 동안 「숙제가 없어요」라고 말하면 안 된다 —
+                  // 곧 3개가 뜰 수도 있다. 값이 도착하기 전에는 줄을 비운다.
+                  !assignments.hasValue
+                      ? ''
+                      : openCount == 0
+                      ? l10n.hwJoinDoneNoAssignment
+                      : l10n.hwJoinDoneSubtitle(openCount),
+                  textAlign: TextAlign.center,
+                  style: AppType.body1.r.copyWith(color: c.labelNormal),
+                ),
+                const SizedBox(height: AppSpacing.s20),
+                InfoRowsCard(
+                  rows: [
+                    if (next != null)
+                      InfoRow(
+                        l10n.hwJoinDoneNextDue,
+                        localizedShortDate(context, next.dueAt),
+                      ),
+                    InfoRow(l10n.hwJoinDoneRosterName, m?.rosterName ?? ''),
+                  ],
+                ),
+                const SizedBox(height: AppSpacing.s24),
+              ],
+            ),
           ),
         ),
       ),

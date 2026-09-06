@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -83,44 +84,44 @@ class _Body extends StatelessWidget {
 
     return RefreshIndicator(
       onRefresh: onRefresh,
-      child: ListView(
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s8,
-          AppSpacing.s20,
-          AppSpacing.s24,
-        ),
-        children: [
-          for (final (title, list) in sections) ...[
-            Padding(
-              padding: const EdgeInsets.only(bottom: AppSpacing.s8),
-              child: Text(
-                title,
-                style: AppType.body1.b.copyWith(color: c.labelNormal),
-              ),
-            ),
-            for (final a in list)
+      child: ContentColumn(
+        child: ListView(
+          padding: const EdgeInsets.only(
+            top: AppSpacing.s8,
+            bottom: AppSpacing.s24,
+          ),
+          children: [
+            for (final (title, list) in sections) ...[
               Padding(
-                padding: const EdgeInsets.only(bottom: AppSpacing.s12),
-                child: _card(context, a),
-              ),
-            const SizedBox(height: AppSpacing.s12),
-          ],
-          const SizedBox(height: AppSpacing.s4),
-          Center(
-            child: GestureDetector(
-              onTap: () => showLeaveClassSheet(context),
-              behavior: HitTestBehavior.opaque,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+                padding: const EdgeInsets.only(bottom: AppSpacing.s8),
                 child: Text(
-                  l10n.hwLeaveClassLink,
-                  style: AppType.body1.r.copyWith(color: c.labelNormal),
+                  title,
+                  style: AppType.body1.b.copyWith(color: c.labelNormal),
+                ),
+              ),
+              for (final a in list)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+                  child: _card(context, a),
+                ),
+              const SizedBox(height: AppSpacing.s12),
+            ],
+            const SizedBox(height: AppSpacing.s4),
+            Center(
+              child: GestureDetector(
+                onTap: () => showLeaveClassSheet(context),
+                behavior: HitTestBehavior.opaque,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
+                  child: Text(
+                    l10n.hwLeaveClassLink,
+                    style: AppType.body1.r.copyWith(color: c.labelNormal),
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -148,7 +149,6 @@ class _Body extends StatelessWidget {
       ).pushNamed(Routes.assignmentDetail, arguments: a),
     );
   }
-
 }
 
 /// 받은 숙제가 없다.
@@ -160,8 +160,7 @@ class _Empty extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+      child: ContentColumn.narrow(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -193,8 +192,7 @@ class _Failed extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
+      child: ContentColumn.narrow(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

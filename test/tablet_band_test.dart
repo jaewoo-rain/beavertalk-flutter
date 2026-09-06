@@ -30,7 +30,13 @@ import 'package:beavertalk/screens/auth/password_code.dart';
 import 'package:beavertalk/screens/auth/password_complete.dart';
 import 'package:beavertalk/screens/auth/password_method.dart';
 import 'package:beavertalk/screens/auth/signup.dart';
+import 'package:beavertalk/screens/classroom/assignment_list.dart';
+import 'package:beavertalk/screens/classroom/join_code.dart';
+import 'package:beavertalk/screens/classroom/join_consent.dart';
+import 'package:beavertalk/screens/classroom/join_done.dart';
+import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
+import 'package:beavertalk/screens/home/home.dart';
 import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
@@ -78,6 +84,21 @@ void main() {
     'Permission': () => const PermissionScreen(),
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
+    // ⭐ 홈 — 2026-09-06 에 여기가 비어 있어서 숙제 배너가 밴드 밖(고정 20)으로
+    //   들어간 것을 아무도 못 잡았다. 홈은 새 블록이 제일 자주 붙는 화면이다.
+    'Home': () => const HomeScreen(),
+    // ⭐ 교실(B2B) — 병합 당시 8화면 전부 폭 적응 0건이었다. 맵에 없으면 같은 일이
+    //   또 조용히 통과한다.
+    'ClassroomAssignmentList': () => const AssignmentListScreen(),
+    'ClassroomJoinCode': () => const JoinCodeScreen(),
+    'ClassroomJoinProfile': () => const JoinProfileScreen(),
+    'ClassroomJoinConsent': () => const JoinConsentScreen(),
+    'ClassroomJoinDone': () => const JoinDoneScreen(),
+    // ⛔ 여기 없는 교실 화면 둘 — AssignmentDetail · JoinConfirm — 은 **뺀 게 아니라
+    //   못 넣은 것**이다. 데이터 없이 열면 방어 가지를 그린다(JoinConfirm 은
+    //   `preview == null` 이면 `SizedBox.shrink()`, AssignmentDetail 은 과제 객체가
+    //   없으면 본문을 안 그린다). 픽스처(과제 객체·joinDraftProvider 오버라이드)를
+    //   주입해야 실제 본문이 걸린다. ⇒ 그 둘의 폭은 지금 **아무도 안 지킨다.**
   };
 
   // 실제 안드로이드 태블릿 세로 폭. 에뮬레이터(2560×1600 @ dpr 2.0)의 세로가
