@@ -140,6 +140,9 @@ class _PronunciationChallengeScreenState
     if (useSentences) {
       _stt.sentenceMode = true;
       _stt.onTranscript = engine.tryPassSentence;
+      // Hint the recognizer with the sentences actually on the cards. Left at
+      // the default noun list it pulls a spoken sentence toward those nouns.
+      _stt.hints = sentences;
     } else {
       _stt.onToken = engine.tryPassToken;
     }

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:beavertalk/features/pronunciation_challenge/data/curated_word_source.dart';
+import 'package:beavertalk/features/pronunciation_challenge/data/stt_service.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_card.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_engine.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/game_config.dart';
@@ -206,6 +207,23 @@ void main() {
 
       // All three cards cleared — not just the first (the bug this fixes).
       expect(cards.map((c) => c.state), everyElement(CardState.pass));
+    });
+  });
+
+  group('recognizer hints', () {
+    test('default is the curated noun list (word mode)', () {
+      expect(SttService().hints, same(CuratedWordSource.words));
+    });
+
+    test('hints are replaceable with the active pool', () {
+      // Sentence rounds must hint the sentences. Left on the nouns the
+      // recognizer drags a spoken sentence toward them — measured on device:
+      // "저는 제니예요" came back as "내 재나요".
+      final stt = SttService();
+      final sentences = <String>['저는 학생이에요', '저는 선생님이에요'];
+      stt.hints = sentences;
+      expect(stt.hints, sentences);
+      expect(stt.hints, isNot(contains('가방')));
     });
   });
 

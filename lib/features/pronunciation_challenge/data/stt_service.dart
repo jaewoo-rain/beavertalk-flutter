@@ -126,6 +126,17 @@ class SttService {
   /// the full transcript is forwarded here instead of tokenizing to [onToken].
   bool Function(String transcript)? onTranscript;
 
+  /// Phrase hints sent to the recognizer in the `config` frame.
+  ///
+  /// Must be **what the player is about to say**. This used to be hard-wired to
+  /// [CuratedWordSource.words], so a sentence round told the recognizer to
+  /// expect 57 unrelated nouns and it dragged the transcript toward them —
+  /// measured 2026-09-08, "저는 제니예요" came back as "내 재나요" / "너는 제나".
+  ///
+  /// The server caps the list (200 in the reference implementation), so hand it
+  /// the active pool rather than everything.
+  List<String> hints = CuratedWordSource.words;
+
   /// Every transcript the server returns, verbatim, match or not.
   ///
   /// [onToken] / [onTranscript] only fire on a *match*, so with those alone a
@@ -297,7 +308,7 @@ class SttService {
       channel.sink.add(
         jsonEncode(<String, dynamic>{
           'type': 'config',
-          'words': CuratedWordSource.words,
+          'words': hints,
           'sampleRate': sampleRate,
         }),
       );
