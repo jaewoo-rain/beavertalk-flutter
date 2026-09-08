@@ -82,7 +82,18 @@ class SttService {
 
   /// How long to wait for the WS handshake + server `ready` before giving up
   /// and falling back to tap input.
-  static const Duration _connectTimeout = Duration(seconds: 4);
+  /// Budget for the socket to open, and again for the server's `ready`.
+  ///
+  /// Was 4s (web parity). The web can afford that: it opens its socket at the
+  /// mic-check step, long before play. This client only started connecting once
+  /// the round was already running, so a cold Cloud Run instance blew the
+  /// budget and the whole round silently fell back to tap — that is the failure
+  /// reported on 2026-09-08 (`TimeoutException after 0:00:04`), while the same
+  /// endpoint connected fine minutes later once warm.
+  ///
+  /// The connect now runs under the 3·2·1 countdown, so a longer budget costs
+  /// the player nothing in the common case and buys the cold start room.
+  static const Duration _connectTimeout = Duration(seconds: 10);
 
   /// Raw mic level (0..1, see [_rawLevel]) above which we count the frame as
   /// speech for voice-activity detection.

@@ -222,8 +222,8 @@ class _PronunciationChallengeScreenState
   }
 
   /// Start: initialize camera (backdrop) + STT (marks the platform capable; the
-  /// STT WebSocket connects at [_startPlaying]), then count down and play. Both
-  /// inits are best-effort and degrade gracefully.
+  /// STT WebSocket opens during the countdown, see [_beginCountdown]), then
+  /// count down and play. Both inits are best-effort and degrade gracefully.
   Future<void> _onStart() async {
     setState(() => _phase = _Phase.loading);
     // Camera + STT init concurrently. Neither can throw (both return bool).
@@ -242,19 +242,30 @@ class _PronunciationChallengeScreenState
       _phase = _Phase.countdown;
       _countdown = 3;
     });
+    // Open the recognizer NOW, in parallel with the count, and hand the pending
+    // future to [_startPlaying].
+    //
+    // The old order connected *after* `engine.start()`, so the handshake ran on
+    // the clock: a cold backend spent the first seconds of a 30-second round
+    // shaking hands, and if it outran the timeout the whole round silently fell
+    // back to tap. The web avoids this by calling `prepareStt()` before the
+    // game starts — "게임이 시작될 땐 이미 인식이 살아 있어야 한다". The 3·2·1
+    // (2.4s) is exactly the cover that was going unused.
+    final Future<bool> pendingStt =
+        sttReady ? _stt.startListening() : Future<bool>.value(false);
     // Mirror the web game's 800ms cadence (lines 399–404).
     _countdownTimer = Timer.periodic(const Duration(milliseconds: 800), (t) {
       _countdown--;
       if (_countdown <= 0) {
         t.cancel();
-        _startPlaying(sttReady: sttReady);
+        _startPlaying(pendingStt: pendingStt);
       } else {
         setState(() {});
       }
     });
   }
 
-  Future<void> _startPlaying({required bool sttReady}) async {
+  Future<void> _startPlaying({required Future<bool> pendingStt}) async {
     // Best-effort screen capture; started just before the engine so the whole
     // run is in-frame. Never blocks or fails the game.
     if (_recordEnabled && !_recorder.isRecording) {
@@ -264,13 +275,11 @@ class _PronunciationChallengeScreenState
     }
     _controller.engine.start();
     setState(() => _phase = _Phase.playing);
-    if (sttReady) {
-      // startListening also returns false if the mic is denied at capture time.
-      _sttActive = await _stt.startListening();
-      if (mounted) setState(() {});
-    } else {
-      _sttActive = false;
-    }
+    // Usually already settled by now (the countdown covered it). Resolves to
+    // false when the mic was denied at capture time or the socket never came
+    // up — either way the tap fallback is what stays armed.
+    _sttActive = await pendingStt;
+    if (mounted) setState(() {});
   }
 
   /// Tap fallback: only passes cards when STT is NOT the active input.
