@@ -87,6 +87,8 @@ dependencies:
   firebase_core: ^4.11.0
   firebase_messaging: ^16.4.1
   share_plus: ^12.0.2
+  # 갤러리 저장(발음 챌린지 결과 클립). share_plus 는 공유만 하고 저장은 못 한다.
+  gal: ^2.3.0
   flutter_localizations:
     sdk: flutter
   intl: ^0.20.2

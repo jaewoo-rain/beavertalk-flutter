@@ -114,9 +114,7 @@ class ChallengePainter extends CustomPainter {
     }
     _drawLateChip(canvas);
     _drawFlash(canvas);
-    _drawHeard(canvas);
     _drawHits(canvas);
-    _drawWatermark(canvas);
 
     canvas.restore();
   }
@@ -429,42 +427,7 @@ class ChallengePainter extends CustomPainter {
     );
   }
 
-  // ── watermark (Figma `screen/pron_late`, bottom centre) ─────────
-  //
-  // The clip is the point of this mode, and it gets consumed off-platform.
-  void _drawWatermark(Canvas canvas) {
-    if (!engine.running) return;
-    final tp = _layout(
-        'beavertalk.im', 30, FontWeight.w600, const Color(0x8CFFFFFF));
-    tp.paint(canvas, Offset(GameConfig.w / 2 - tp.width / 2, 1836));
-  }
 
-  // ── most recent transcript, right under the gate ────────────────
-  //
-  // The only HUD element still painted on the canvas. Everything else moved
-  // out to Flutter widgets above it (Figma `HUD/top` + `HUD/status`,
-  // 10_발음챌린지 · 앱 이식). This one stays because it is anchored to the
-  // gate, not to the screen edge — and because it is the only signal that
-  // separates "misheard" from "dead mic".
-  void _drawHeard(Canvas canvas) {
-    if (!engine.heardVisible) return;
-    final t = engine.lastHeard.characters.length > 18
-        ? '${engine.lastHeard.characters.take(18)}…'
-        : engine.lastHeard;
-    final tp = _layout(t, 32, FontWeight.w700, const Color(0xBFFFFFFF));
-    final cw = tp.width + 72;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(GameConfig.w / 2 - cw / 2, 1722, cw, 58),
-        const Radius.circular(29),
-      ),
-      Paint()..color = const Color(0x9E0A0E12), // rgba(10,14,18,.62)
-    );
-    tp.paint(
-      canvas,
-      Offset(GameConfig.w / 2 - tp.width / 2, 1751 - tp.height / 2),
-    );
-  }
 
   // ── hit texts (web drawHits, 1231–1239) ─────────────────────────────
   void _drawHits(Canvas canvas) {

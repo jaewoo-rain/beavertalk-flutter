@@ -237,40 +237,6 @@ void main() {
       expect(e.backlog, 1);
     });
 
-    test('a transcript shows even when it matches nothing', () {
-      // The whole point: being misheard has to look different from a dead mic.
-      final e = _seededEngine();
-      e.start();
-      final c = ChallengeCard(id: 1, word: '사과', k: 1.0);
-      e.cards
-        ..clear()
-        ..add(c);
-      expect(e.tryPassToken('바나나'), isFalse, reason: 'no card matches');
-      e.heard('바나나');
-      expect(e.lastHeard, '바나나');
-      expect(e.heardVisible, isTrue);
-      expect(c.state, CardState.live, reason: 'showing it must not clear it');
-    });
-
-    test('a transcript stops showing after heardTtl', () {
-      final e = _seededEngine();
-      e.start();
-      e.heard('사과');
-      e.update(ChallengeEngine.heardTtl / 2);
-      expect(e.heardVisible, isTrue);
-      e.update(ChallengeEngine.heardTtl);
-      expect(e.heardVisible, isFalse);
-    });
-
-    test('a fresh session clears the previous transcript', () {
-      final e = _seededEngine();
-      e.start();
-      e.heard('사과');
-      e.start();
-      expect(e.lastHeard, isEmpty);
-      expect(e.heardVisible, isFalse);
-    });
-
     test('tapPass passes the front-most in-zone card only', () {
       final e = _seededEngine();
       e.start();

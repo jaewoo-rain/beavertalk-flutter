@@ -1,14 +1,11 @@
 import 'dart:async';
 import '../../../theme/app_color_tokens.dart';
 import 'dart:io' show File;
-import 'dart:ui' as ui;
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -62,9 +59,8 @@ Color _stageInkMuted(BuildContext context) =>
 /// PHASE 2/3: live Korean STT (server Google Speech-to-Text over a single mic
 /// PCM capture streamed via WebSocket) is the primary input, with tap-to-pass
 /// kept as a fallback when STT is unavailable (web / denied mic / STT server
-/// unreachable). A
-/// front-camera selfie backdrop sits behind the canvas when available; the
-/// result panel shares a branded score-card image via `share_plus`.
+/// unreachable). A front-camera selfie backdrop sits behind the canvas when
+/// available; the result panel shares and saves the recorded clip.
 ///
 /// Everything degrades gracefully: with no mic, camera, model, or on web, the
 /// game is still fully playable via tap on the solid [_kStageBackground] and
@@ -85,7 +81,6 @@ class _PronunciationChallengeScreenState
   final SttService _stt = SttService();
   final ChallengeCameraService _camera = ChallengeCameraService();
   final ChallengeRecorder _recorder = ChallengeRecorder();
-  final GlobalKey _shareCardKey = GlobalKey();
 
   _Phase _phase = _Phase.start;
   int _countdown = 3;
@@ -95,7 +90,11 @@ class _PronunciationChallengeScreenState
   bool _sttActive = false;
 
   /// Whether the player opted to screen-record this run (start-panel toggle).
-  bool _recordEnabled = false;
+  ///
+  /// On by default: the clip is what this mode produces, and the share and
+  /// save actions both hang off it. Off by default meant most runs ended with
+  /// nothing to share.
+  bool _recordEnabled = true;
 
   /// Path of the recorded gameplay MP4, when a run was captured. Shared from
   /// the result panel in place of the score-card image.
@@ -149,10 +148,6 @@ class _PronunciationChallengeScreenState
     } else {
       _stt.onToken = engine.tryPassToken;
     }
-    // Both modes. The match callbacks above only fire on a hit, so on their own
-    // a misheard player sees nothing — this is what puts the recognition on
-    // screen whether or not it cleared a word.
-    _stt.onHeard = engine.heard;
     _controller.addListener(_onFrame);
     // Ticker runs continuously so the belt animates behind every panel.
     _controller.startTicker();
@@ -607,17 +602,38 @@ class _PronunciationChallengeScreenState
   }
 
   // ── panels ──────────────────────────────────────────────────────────
-  Widget _panelShell({required List<Widget> children}) {
+  /// Overlay panel: body centred, [actions] pinned to the bottom edge.
+  ///
+  /// Every panel in the design puts its buttons on the floor (`y=646`/`650`
+  /// of 812, above the home indicator) — not trailing the content. Centring
+  /// the whole column let the CTA float wherever the body happened to end,
+  /// so the start button and the pause buttons landed at different heights.
+  Widget _panelShell({
+    required List<Widget> children,
+    List<Widget> actions = const <Widget>[],
+  }) {
     return Positioned.fill(
       child: ColoredBox(
         color: const Color(0xD1080A0C), // rgba(8,10,12,.82)
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(AppSpacing.s24),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s20),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: children,
+              children: [
+                Expanded(
+                  child: Center(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: children,
+                      ),
+                    ),
+                  ),
+                ),
+                if (actions.isNotEmpty) ...actions,
+              ],
             ),
           ),
         ),
@@ -649,6 +665,8 @@ class _PronunciationChallengeScreenState
         // panel, so a label-width start button read as a different control in
         // the same overlay. _panelShell's Column is centre-aligned, so the
         // width has to come from here.
+      ],
+      actions: [
         SizedBox(
           width: double.infinity,
           child: Button(
@@ -658,9 +676,6 @@ class _PronunciationChallengeScreenState
             onPressed: _onStart,
           ),
         ),
-        // No caption under the CTA. The design's density pass cut all four
-        // bottom captions (시작·일시정지·결과·차단) — the permission wording
-        // now lives on the blocked screen, where it is actionable.
       ],
     );
   }
@@ -798,24 +813,33 @@ class _PronunciationChallengeScreenState
           style: AppType.label2.r.copyWith(color: _stageInkNormal(context)),
         ),
         const SizedBox(height: AppSpacing.s24),
-        // Clip preview + its share pill. Hidden entirely when nothing was
-        // recorded — an empty white card with a dead play button is worse than
-        // no card (the web hit exactly that on devices that cannot record).
-        if (_videoPath != null) ...[
+        // Clip + its own actions. All of it is gone when nothing was recorded:
+        // there is no clip to preview, share or save, and an empty white card
+        // with a dead play button is worse than no card.
+        if (_hasClip) ...[
           _clipPreview(context),
           const SizedBox(height: AppSpacing.s12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _clipAction(context, Icons.share, l10n.share, _shareResult),
+              const SizedBox(width: AppSpacing.s8),
+              _clipAction(context, Icons.download_rounded, l10n.save,
+                  _saveClipToGallery),
+            ],
+          ),
         ],
-        _sharePill(context, l10n),
-        const SizedBox(height: AppSpacing.s24),
         if (!_stt.isAvailable)
           Padding(
-            padding: const EdgeInsets.only(bottom: AppSpacing.s12),
+            padding: const EdgeInsets.only(top: AppSpacing.s16),
             child: Text(
               l10n.challengeSttFallback,
               textAlign: TextAlign.center,
               style: AppType.label2.r.copyWith(color: const Color(0xFFFFCF5C)),
             ),
           ),
+      ],
+      actions: [
         SizedBox(
           width: double.infinity,
           child: Button(
@@ -835,15 +859,45 @@ class _PronunciationChallengeScreenState
             onPressed: _replay,
           ),
         ),
-        // Off-screen: the branded PNG the share sheet actually sends.
-        Offstage(
-          child: RepaintBoundary(
-            key: _shareCardKey,
-            child: _shareCard(engine),
-          ),
-        ),
       ],
     );
+  }
+
+  /// Saves the recorded clip to the device gallery.
+  ///
+  /// Separate from share on purpose: sharing hands the file to another app and
+  /// leaves nothing behind, which is the wrong verb for "I want to keep this".
+  Future<void> _saveClipToGallery() async {
+    final path = _videoPath;
+    if (path == null || !File(path).existsSync()) return;
+    final l10n = AppLocalizations.of(context);
+    String message;
+    try {
+      // Ask only when we don't already hold it — on Android 33+ this is a
+      // no-op and the plugin writes through MediaStore.
+      if (!await Gal.hasAccess(toAlbum: true)) {
+        await Gal.requestAccess(toAlbum: true);
+      }
+      await Gal.putVideo(path, album: 'BeaverTalk');
+      message = l10n.saveDone;
+    } on GalException catch (e) {
+      debugPrint('gallery save failed: ${e.type}');
+      message = e.type == GalExceptionType.accessDenied
+          ? l10n.saveDeniedNote
+          : l10n.saveFailed;
+    } catch (e) {
+      debugPrint('gallery save failed: $e');
+      message = l10n.saveFailed;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// Whether this run left a clip to share or save.
+  bool get _hasClip {
+    final path = _videoPath;
+    return path != null && File(path).existsSync();
   }
 
   /// Paused — Figma `screen/pron_paused`.
@@ -897,7 +951,8 @@ class _PronunciationChallengeScreenState
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.s24),
+      ],
+      actions: [
         SizedBox(
           width: double.infinity,
           child: Button(
@@ -984,7 +1039,8 @@ class _PronunciationChallengeScreenState
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: _stageInkNormal(context)),
         ),
-        const SizedBox(height: AppSpacing.s24),
+      ],
+      actions: [
         SizedBox(
           width: double.infinity,
           child: Button(
@@ -1035,10 +1091,19 @@ class _PronunciationChallengeScreenState
     );
   }
 
-  /// Outline share pill — sits under the clip, not in the button stack.
-  Widget _sharePill(BuildContext context, AppLocalizations l10n) {
+  /// Outline pill under the clip — share and save both use this shape.
+  ///
+  /// They hang off the clip rather than joining the bottom stack: a third and
+  /// fourth full-width button would undo the design's density pass, and what
+  /// these act on is the clip sitting right above them.
+  Widget _clipAction(
+    BuildContext context,
+    IconData icon,
+    String label,
+    Future<void> Function() onTap,
+  ) {
     return OutlinedButton.icon(
-      onPressed: _shareResult,
+      onPressed: () => unawaited(onTap()),
       style: OutlinedButton.styleFrom(
         minimumSize: const Size(0, 48),
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -1047,131 +1112,49 @@ class _PronunciationChallengeScreenState
           borderRadius: BorderRadius.circular(24),
         ),
       ),
-      icon: Icon(Icons.share, size: 18, color: context.c.primaryNormal),
+      icon: Icon(icon, size: 18, color: context.c.primaryNormal),
       label: Text(
-        l10n.share,
+        label,
         style: AppType.body1.b.copyWith(color: context.c.primaryNormal),
       ),
     );
   }
 
-  Widget _shareCard(ChallengeEngine engine) {
-    return Container(
-      width: 300,
-      padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.s24,
-        vertical: AppSpacing.s24,
-      ),
-      decoration: BoxDecoration(
-        color: context.c.backgroundElevatedAlternative,
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0x1FFFFFFF)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'BEAVERTALK',
-            style: AppType.label1.b.copyWith(
-              color: context.c.primaryNormal,
-              letterSpacing: 1.5,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.s8),
-          Text(
-            engine.resultTitle,
-            textAlign: TextAlign.center,
-            style: AppType.title2.b.copyWith(color: context.c.labelStrong),
-          ),
-          const SizedBox(height: AppSpacing.s16),
-          Text(
-            _thousands(engine.score),
-            style: AppType.display1.b.copyWith(
-              color: context.c.primaryNormal,
-              fontSize: 56,
-              height: 1,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.s4),
-          Text(
-            'SCORE',
-            style: AppType.label2.b.copyWith(color: context.c.labelDisabled),
-          ),
-          const SizedBox(height: AppSpacing.s16),
-          Text(
-            'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}\n'
-            'Grade ${engine.grade}  ·  Accuracy '
-            '${(engine.accuracy * 100).round()}%',
-            textAlign: TextAlign.center,
-            style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-          ),
-          const SizedBox(height: AppSpacing.s8),
-          Text(
-            'beavertalk.im',
-            style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
-          ),
-        ],
-      ),
-    );
-  }
 
-  // ── share (score-card image + challenge copy) ───────────────────────
-  /// Web game `shareText()` (lines 596–598), with the player's real score.
-  String _shareText() {
-    return 'Think your Korean is good?\n\n'
-        'Beaver just proved you wrong.\n\n'
-        'His score: ${_thousands(_controller.engine.score)}\n\n'
-        'Yours?\n\n'
-        '👉 https://www.beavertalk.im';
-  }
-
+  /// Shares the recorded clip.
+  ///
+  /// Clip-only. The old branded-PNG fallback existed for runs with no
+  /// recording, but the share action is hidden in exactly that case, so the
+  /// fallback was unreachable — and it had gone silently broken: it captured
+  /// through an `Offstage` RepaintBoundary, which is never painted, so
+  /// `toImage()` had nothing to read.
   Future<void> _shareResult() async {
+    final path = _videoPath;
+    if (path == null || !File(path).existsSync()) return;
     try {
-      // Web can't write a temp file the same way; share text only there.
-      if (kIsWeb) {
-        await SharePlus.instance.share(ShareParams(text: _shareText()));
-        return;
-      }
-      // Prefer the recorded gameplay MP4 (camera + overlay) when a run was
-      // captured; fall back to the branded score-card image otherwise.
-      final videoPath = _videoPath;
-      if (videoPath != null && File(videoPath).existsSync()) {
-        await SharePlus.instance.share(
-          ShareParams(text: _shareText(), files: <XFile>[XFile(videoPath)]),
-        );
-        return;
-      }
-      final boundary = _shareCardKey.currentContext?.findRenderObject()
-          as RenderRepaintBoundary?;
-      if (boundary == null) {
-        await SharePlus.instance.share(ShareParams(text: _shareText()));
-        return;
-      }
-      final image = await boundary.toImage(pixelRatio: 3);
-      final bytes = await image.toByteData(format: ui.ImageByteFormat.png);
-      image.dispose();
-      if (bytes == null) {
-        await SharePlus.instance.share(ShareParams(text: _shareText()));
-        return;
-      }
-      final dir = await getTemporaryDirectory();
-      final file = File(
-        '${dir.path}/beavertalk_challenge_'
-        '${DateTime.now().millisecondsSinceEpoch}.png',
-      );
-      await file.writeAsBytes(bytes.buffer.asUint8List());
-      // Score-card image fallback: shown when the run wasn't screen-recorded
-      // (toggle off / consent denied / unsupported). The recorded-MP4 path
-      // above is the primary share when a clip exists.
       await SharePlus.instance.share(
-        ShareParams(text: _shareText(), files: <XFile>[XFile(file.path)]),
+        ShareParams(text: _shareText(), files: <XFile>[XFile(path)]),
       );
     } catch (e) {
       debugPrint('share failed: $e');
     }
   }
 
-  // ── difficulty toggle (Slow / Normal / Fast) ────────────────────────
+  /// Share copy — the web game's `shareText()`, with the real score.
+  String _shareText() {
+    return '''
+Think your Korean is good?
+
+Beaver just proved you wrong.
+
+His score: ${_thousands(_controller.engine.score)}
+
+Yours?
+
+👉 https://www.beavertalk.im'''
+        .trimLeft();
+  }
+
   Widget _difficultyToggle() {
     final l10n = AppLocalizations.of(context);
     return Column(

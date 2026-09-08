@@ -1932,5 +1932,8 @@
   "challengeBlockedTitle": "Can't use the camera",
   "challengeBlockedNote": "Turn on camera and mic access in Settings.",
   "challengeGoBack": "Go back",
-  "challengeOpenSettings": "Open Settings"
+  "challengeOpenSettings": "Open Settings",
+  "saveDone": "Saved to your gallery",
+  "saveFailed": "Couldn't save",
+  "saveDeniedNote": "Photo access is required"
 }

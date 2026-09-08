@@ -2613,4 +2613,13 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get challengeOpenSettings => 'Open Settings';
+
+  @override
+  String get saveDone => 'Saved to your gallery';
+
+  @override
+  String get saveFailed => 'Couldn\'t save';
+
+  @override
+  String get saveDeniedNote => 'Photo access is required';
 }

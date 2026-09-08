@@ -4887,6 +4887,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open Settings'**
   String get challengeOpenSettings;
+
+  /// No description provided for @saveDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved to your gallery'**
+  String get saveDone;
+
+  /// No description provided for @saveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save'**
+  String get saveFailed;
+
+  /// No description provided for @saveDeniedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo access is required'**
+  String get saveDeniedNote;
 }
 
 class _AppLocalizationsDelegate

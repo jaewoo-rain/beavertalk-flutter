@@ -2514,4 +2514,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get challengeOpenSettings => '설정 열기';
+
+  @override
+  String get saveDone => '갤러리에 저장했어요';
+
+  @override
+  String get saveFailed => '저장하지 못했어요';
+
+  @override
+  String get saveDeniedNote => '사진 접근 권한이 필요해요';
 }
