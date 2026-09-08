@@ -140,6 +140,28 @@ void main() {
       expect(sentenceMatch('바나나 주세요', '커피 주세요'), isFalse);
     });
 
+    test('a contracted subject still clears its card', () {
+      // Measured on device 2026-09-08: the recognizer renders "저는 선생님이에요"
+      // as "전 선생님이에요" — 저는 contracts to 전, which is ordinary Korean.
+      // Counting eojeols demanded a perfect hit on a two-eojeol sentence
+      // (ceil(2*0.7) == 2), so the player said it right and got nothing.
+      expect(sentenceMatch('전 선생님이에요', '저는 선생님이에요'), isTrue);
+      expect(sentenceMatch('전 학생이에요', '저는 학생이에요'), isTrue);
+    });
+
+    test('a different sentence sharing one eojeol does NOT clear it', () {
+      // The constraint that keeps the tolerance honest: these two cards sit on
+      // screen together, and they share "저는".
+      expect(sentenceMatch('저는 학생이에요', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('저는 선생님이에요', '저는 학생이에요'), isFalse);
+    });
+
+    test('a fragment does not clear the whole sentence', () {
+      expect(sentenceMatch('선생님', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('전 선생님이', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('저는', '저는 선생님이에요'), isFalse);
+    });
+
     test('eojeol coverage passes a mostly-right long sentence', () {
       // 4 eojeols, one mis-heard → 3/4 ≥ ceil(0.7*4)=3.
       expect(

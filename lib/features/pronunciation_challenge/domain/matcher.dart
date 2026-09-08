@@ -45,9 +45,20 @@ bool wordMatch(String tok, String target) {
 /// word). Two tiers:
 ///  1. the normalized transcript **contains** the normalized sentence
 ///     (spaces/punctuation ignored) — a clean full utterance;
-///  2. **eojeol coverage** — most of the sentence's words appear in the
-///     transcript, so a slightly mis-heard or partial utterance still passes
-///     (STT drops/garbles the odd word in a long sentence).
+///  2. **character-weighted eojeol coverage** — the matched eojeols must carry
+///     at least [_kSentenceCoverage] of the sentence's characters.
+///
+/// Coverage is weighted by length, not counted per eojeol, and that is the
+/// whole point. Counting eojeols gave a two-eojeol sentence no tolerance at
+/// all — `ceil(2 * 0.7) == 2` demands a perfect hit — so "저는 선생님이에요"
+/// failed whenever the recognizer contracted 저는 to 전, which it normally
+/// does (measured on device 2026-09-08).
+///
+/// Weighting by characters fixes that without opening the door to near
+/// misses: "전 선생님이에요" covers 6 of 8 characters (0.75, passes) while
+/// "저는 학생이에요" against the same target covers only 저는 — 2 of 8 (0.25,
+/// fails). Those two are exactly the cards that sit on screen together, so
+/// keeping them apart is the constraint that matters.
 bool sentenceMatch(String transcript, String sentence) {
   final t = norm(transcript);
   final s = norm(sentence);
@@ -59,10 +70,17 @@ bool sentenceMatch(String transcript, String sentence) {
       .where((w) => w.isNotEmpty)
       .toList();
   if (words.length < 2) return false;
-  final hit = words.where(t.contains).length;
-  final needed = (words.length * 0.7).ceil();
-  return hit >= needed;
+  var covered = 0;
+  var total = 0;
+  for (final w in words) {
+    total += w.length;
+    if (t.contains(w)) covered += w.length;
+  }
+  return total > 0 && covered / total >= _kSentenceCoverage;
 }
+
+/// Share of a sentence's characters that must be recognized for it to count.
+const double _kSentenceCoverage = 0.7;
 
 final RegExp _wordSplit = RegExp(r'\s+');
 
