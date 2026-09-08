@@ -13,7 +13,6 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../../app/app_scaffold.dart';
 import '../../../components/atoms/button.dart';
-import '../../../components/organisms/gnb.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/app_spacing.dart';
 import '../../../theme/app_typography.dart';
@@ -104,6 +103,9 @@ class _PronunciationChallengeScreenState
   /// Whether STT was actively driving input right before the app was
   /// backgrounded, so [_onAppResumed] knows whether to try restarting it.
   bool _sttActiveBeforePause = false;
+
+  /// The word the round will open with, shown during the countdown.
+  String? _firstWord;
 
   /// Guards the one-time [didChangeDependencies] setup (needs route args, which
   /// aren't available in [initState]).
@@ -244,6 +246,7 @@ class _PronunciationChallengeScreenState
     setState(() {
       _phase = _Phase.countdown;
       _countdown = 3;
+      _firstWord = _controller.engine.peekFirstWord();
     });
     // Open the recognizer NOW, in parallel with the count, and hand the pending
     // future to [_startPlaying].
@@ -312,20 +315,20 @@ class _PronunciationChallengeScreenState
 
   @override
   Widget build(BuildContext context) {
+    // The stage is bottom-anchored, not centred (Figma `GameCanvas
+    // (1080x1920 @ 0.347)` sits at y=145 and runs to the bottom edge). The two
+    // HUD rows live above it as widgets — the canvas no longer paints them.
     return AppScaffold(
-      background: context.c.backgroundNormalNormal,
-      body: Column(
+      background: _kStageBackground,
+      body: Stack(
         children: [
-          Gnb.main(
-            title: AppLocalizations.of(context).challengeTitle,
-            onBack: () => Navigator.pop(context),
-          ),
-          Expanded(
+          Positioned.fill(
             child: Stack(
               children: [
                 // ── 9:16 stage: camera backdrop + game canvas ──
-                Positioned.fill(
-                  child: Center(
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
                     child: AspectRatio(
                       aspectRatio: 9 / 16,
                       child: GestureDetector(
@@ -360,6 +363,10 @@ class _PronunciationChallengeScreenState
                     ),
                   ),
                 ),
+                // ── HUD rows (Figma `HUD/top` y=52, `HUD/status` y=104) ──
+                if (_phase == _Phase.playing) ..._hudRows(context),
+                // ── back, always reachable ──
+                _backButton(context),
                 // ── overlay panels ──
                 if (_phase == _Phase.start) _startPanel(),
                 if (_phase == _Phase.loading) _loadingPanel(),
@@ -370,6 +377,167 @@ class _PronunciationChallengeScreenState
           ),
         ],
       ),
+    );
+  }
+
+  /// Back control — 44dp, top-left of `HUD/top`.
+  ///
+  /// Replaces the app GNB on this screen. The design has no title bar: the
+  /// camera runs edge to edge and a solid header would cut the stage.
+  /// The web's 96px hit target is adjusted to 44dp here (규격 note).
+  Widget _backButton(BuildContext context) {
+    return Positioned(
+      left: 16,
+      top: 52,
+      child: SizedBox(
+        width: 44,
+        height: 44,
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back_ios_new,
+              size: 20, color: context.c.staticWhite),
+        ),
+      ),
+    );
+  }
+
+  /// The two HUD rows, as widgets above the canvas.
+  ///
+  /// They used to be painted into the 1080×1920 canvas at its bottom edge.
+  /// The design lifts them out: row one is timer + score, row two is the mic
+  /// gauge, the combo chip and the miss dots. Labels (SCORE / MIC / MISS) are
+  /// gone — "수치·게이지·점만 남김" — so the numbers carry themselves.
+  List<Widget> _hudRows(BuildContext context) {
+    final engine = _controller.engine;
+    final mm = (engine.sessionLeft / 60).floor();
+    final ss = (engine.sessionLeft % 60).floor();
+    return <Widget>[
+      // Row 1 — timer pill (centre) + score (right). Back sits at the left.
+      Positioned(
+        left: 16,
+        top: 52,
+        right: 16,
+        height: 44,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(width: 44), // the back button's slot
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+              decoration: BoxDecoration(
+                color: context.c.backgroundNormalDeep,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Text(
+                '$mm:${ss.toString().padLeft(2, '0')}',
+                style: AppType.heading1.b.copyWith(
+                  color: engine.sessionLeft <= 10
+                      ? const Color(0xFFFF7070)
+                      : context.c.commonWhiteAndDark,
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 44,
+              child: Text(
+                _thousands(engine.score),
+                textAlign: TextAlign.right,
+                style: AppType.heading1.b
+                    .copyWith(color: context.c.commonWhiteAndDark),
+              ),
+            ),
+          ],
+        ),
+      ),
+      // Row 2 — mic gauge · combo chip · miss dots.
+      Positioned(
+        left: 16,
+        top: 104,
+        right: 16,
+        height: 24,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            ValueListenableBuilder<double>(
+              valueListenable: _stt.micLevel,
+              builder: (context, level, _) => _micGauge(context, level),
+            ),
+            if (engine.combo > 1)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: context.c.primaryNormal,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                // Dark ink on the mint chip. Mint-on-mint was unreadable in the
+                // original — one of the defects the design run fixed.
+                child: Text(
+                  'COMBO ×${engine.combo}',
+                  style: AppType.caption1.b
+                      .copyWith(color: context.c.commonDarkAndWhite),
+                ),
+              )
+            else
+              const SizedBox.shrink(),
+            _missDots(context, engine),
+          ],
+        ),
+      ),
+    ];
+  }
+
+  /// Mic level: an 84×8 track that fills mint with the live level.
+  Widget _micGauge(BuildContext context, double level) {
+    return SizedBox(
+      width: 84,
+      height: 8,
+      child: Stack(
+        children: [
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: context.c.staticWhite,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: const SizedBox(width: 84, height: 8),
+          ),
+          FractionallySizedBox(
+            widthFactor: level.clamp(0.0, 1.0),
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.c.primaryNormal,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: const SizedBox(height: 8),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// One 8×8 dot per allowed miss; spent ones turn red.
+  Widget _missDots(BuildContext context, ChallengeEngine engine) {
+    final allow = engine.difficulty.missAllow;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        for (var i = 0; i < allow; i++) ...<Widget>[
+          if (i > 0) const SizedBox(width: 4),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: i < engine.backlog
+                  ? const Color(0xFFFF7070)
+                  : context.c.staticWhite,
+              borderRadius: BorderRadius.circular(3),
+            ),
+            child: const SizedBox(width: 8, height: 8),
+          ),
+        ],
+      ],
     );
   }
 
@@ -456,12 +624,9 @@ class _PronunciationChallengeScreenState
             onPressed: _onStart,
           ),
         ),
-        const SizedBox(height: AppSpacing.s8),
-        Text(
-          l10n.challengePermissionNote,
-          textAlign: TextAlign.center,
-          style: AppType.label2.r.copyWith(color: _stageInkMuted(context)),
-        ),
+        // No caption under the CTA. The design's density pass cut all four
+        // bottom captions (시작·일시정지·결과·차단) — the permission wording
+        // now lives on the blocked screen, where it is actionable.
       ],
     );
   }
@@ -526,13 +691,35 @@ class _PronunciationChallengeScreenState
       child: ColoredBox(
         color: const Color(0xD1080A0C),
         child: Center(
-          child: Text(
-            '$_countdown',
-            style: AppType.display1.b.copyWith(
-              color: _stageInk(context),
-              fontSize: 120,
-              height: 1,
-            ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                '$_countdown',
+                style: AppType.display1.b.copyWith(
+                  color: _stageInk(context),
+                  fontSize: 120,
+                  height: 1,
+                ),
+              ),
+              // The first word, previewed while the count runs. Reading it
+              // cold at k=0.25 is the hardest moment of the round; the design
+              // spends the countdown on it instead of on a readiness list.
+              if (_firstWord != null) ...[
+                const SizedBox(height: AppSpacing.s16),
+                Text(
+                  AppLocalizations.of(context).challengeFirstWord,
+                  style: AppType.label2.r
+                      .copyWith(color: _stageInkMuted(context)),
+                ),
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  _firstWord!,
+                  textAlign: TextAlign.center,
+                  style: AppType.title2.b.copyWith(color: _stageInk(context)),
+                ),
+              ],
+            ],
           ),
         ),
       ),

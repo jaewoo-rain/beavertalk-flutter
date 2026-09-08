@@ -544,10 +544,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      '구역 안의 카드를 한국어로 정확히 발음해서 통과하세요.\n마이크가 없나요? 화면을 탭해서도 플레이할 수 있어요.';
+      '30초 동안 다가오는 단어를 소리 내어 읽어요.\n마이크가 없나요? 화면을 탭해서도 플레이할 수 있어요.';
 
   @override
-  String get challengeStart => '카메라 및 마이크 시작';
+  String get challengeStart => '시작하기';
 
   @override
   String get challengePermissionNote => '전면 카메라와 마이크 접근 권한이 필요해요 (선택).';
@@ -2038,16 +2038,16 @@ class AppLocalizationsKo extends AppLocalizations {
   String get playAgain => '다시 하기';
 
   @override
-  String get difficultySlow => '느리게';
+  String get difficultySlow => '쉬움';
 
   @override
   String get difficultyNormal => '보통';
 
   @override
-  String get difficultyFast => '빠르게';
+  String get difficultyFast => '어려움';
 
   @override
-  String get difficultyLabel => '난이도';
+  String get difficultyLabel => '난이도를 선택하세요';
 
   @override
   String get connected => '연결됨';
@@ -2469,4 +2469,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String hwSpeakingProgress(int passed, int total) {
     return '$total문장 중 $passed문장 통과';
   }
+
+  @override
+  String get challengeFirstWord => '첫 단어';
 }

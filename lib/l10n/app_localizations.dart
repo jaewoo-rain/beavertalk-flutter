@@ -1177,13 +1177,13 @@ abstract class AppLocalizations {
   /// No description provided for @challengeIntro.
   ///
   /// In en, this message translates to:
-  /// **'Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.'**
+  /// **'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? You can also play by tapping the screen.'**
   String get challengeIntro;
 
   /// No description provided for @challengeStart.
   ///
   /// In en, this message translates to:
-  /// **'Start Camera & Mic'**
+  /// **'Start'**
   String get challengeStart;
 
   /// No description provided for @challengePermissionNote.
@@ -3967,7 +3967,7 @@ abstract class AppLocalizations {
   /// Pronunciation challenge difficulty - slow.
   ///
   /// In en, this message translates to:
-  /// **'Slow'**
+  /// **'Easy'**
   String get difficultySlow;
 
   /// Pronunciation challenge difficulty - normal.
@@ -3979,13 +3979,13 @@ abstract class AppLocalizations {
   /// Pronunciation challenge difficulty - fast.
   ///
   /// In en, this message translates to:
-  /// **'Fast'**
+  /// **'Hard'**
   String get difficultyFast;
 
   /// Pronunciation challenge - label above the difficulty toggle.
   ///
   /// In en, this message translates to:
-  /// **'Difficulty'**
+  /// **'Choose a difficulty'**
   String get difficultyLabel;
 
   /// Call header status - the call is live. Sibling of `connecting`.
@@ -4797,6 +4797,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{passed} of {total} sentences passed'**
   String hwSpeakingProgress(int passed, int total);
+
+  /// Countdown label above the previewed first word.
+  ///
+  /// In en, this message translates to:
+  /// **'First word'**
+  String get challengeFirstWord;
 }
 
 class _AppLocalizationsDelegate

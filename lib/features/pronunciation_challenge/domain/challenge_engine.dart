@@ -126,7 +126,10 @@ class ChallengeEngine {
   void start() {
     cards.clear();
     hitTexts.clear();
-    _words.reset();
+    // Keep the previewed word if the countdown already drew one, so the card
+    // the player sees first is the one they were just shown.
+    final opener = _peeked;
+    if (opener == null) _words.reset();
     score = 0;
     combo = 0;
     maxCombo = 0;
@@ -136,7 +139,26 @@ class ChallengeEngine {
     lastHeard = '';
     lastHeardAt = double.negativeInfinity;
     running = true;
+    if (opener != null) {
+      cards.add(ChallengeCard(id: _nextId++, word: opener));
+      _peeked = null;
+    }
   }
+
+  /// The word the next round will open with, without consuming it.
+  ///
+  /// The countdown previews it. Drawing it here and holding it means the very
+  /// first card is one the player has already read once — the opening word is
+  /// the only one that arrives with no warm-up.
+  String? peekFirstWord() {
+    if (_peeked == null) {
+      _words.reset();
+      _peeked = _words.draw().word;
+    }
+    return _peeked;
+  }
+
+  String? _peeked;
 
   /// Ends the session (idempotent).
   void endGame() {

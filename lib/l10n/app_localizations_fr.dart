@@ -2587,4 +2587,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String hwSpeakingProgress(int passed, int total) {
     return '$passed of $total sentences passed';
   }
+
+  @override
+  String get challengeFirstWord => 'First word';
 }

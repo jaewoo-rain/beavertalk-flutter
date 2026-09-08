@@ -170,8 +170,8 @@
   "playSampleVoice": "샘플 음성 재생",
   "useThisAvatar": "이걸로 선택",
   "challengeTitle": "발음 챌린지",
-  "challengeIntro": "구역 안의 카드를 한국어로 정확히 발음해서 통과하세요.\n마이크가 없나요? 화면을 탭해서도 플레이할 수 있어요.",
-  "challengeStart": "카메라 및 마이크 시작",
+  "challengeIntro": "30초 동안 다가오는 단어를 소리 내어 읽어요.\n마이크가 없나요? 화면을 탭해서도 플레이할 수 있어요.",
+  "challengeStart": "시작하기",
   "challengePermissionNote": "전면 카메라와 마이크 접근 권한이 필요해요 (선택).",
   "challengeLoadingTitle": "로딩 중…",
   "challengeLoadingNote": "처음 실행 시 한국어 음성 모델(약 82MB)을 다운로드해요.\n잠시만 기다려 주세요.",
@@ -635,10 +635,10 @@
   "takeLevelTest": "레벨 테스트 받기",
   "reviewToSeeScore": "복습하면 발음 점수가 나와요",
   "playAgain": "다시 하기",
-  "difficultySlow": "느리게",
+  "difficultySlow": "쉬움",
   "difficultyNormal": "보통",
-  "difficultyFast": "빠르게",
-  "difficultyLabel": "난이도",
+  "difficultyFast": "어려움",
+  "difficultyLabel": "난이도를 선택하세요",
   "connected": "연결됨",
   "unlockedWithMax": "Max로 이용 가능",
   "fcEndedTitle": "무료 통화가 끝났어요",
@@ -773,5 +773,6 @@
   "hwHomeBannerOverdue": "미제출 숙제가 {count}개 있어요",
   "hwSpeakingUnavailable": "아직 이 과제의 문장을 받아올 수 없어요.",
   "hwBadgeClosed": "마감됨",
-  "hwSpeakingProgress": "{total}문장 중 {passed}문장 통과"
+  "hwSpeakingProgress": "{total}문장 중 {passed}문장 통과",
+  "challengeFirstWord": "첫 단어"
 }

@@ -84,8 +84,9 @@ class ChallengePainter extends CustomPainter {
   static const Color _kWordLate = Color(0xFFFFB548); // Status/Cautionary-Surface
   static const Color _kWordMiss = Color(0xFFFF7070); // Status/Negative
 
-  /// HUD label grey (web `#9ea3b2`).
-  static const Color _kHudLabel = Color(0xFF9EA3B2);
+  /// Opacity of a word at [GameConfig.kSpawn], ramping to 1 at the judgment
+  /// point. The design samples it at 50% / 72% / 100%.
+  static const double _kFarAlpha = 0.5;
 
   /// Tunnel wedge / rail spread at the bottom edge (web lines 1116–1124).
   static const double _kRailLeft = -160;
@@ -112,8 +113,7 @@ class ChallengePainter extends CustomPainter {
       _drawWord(canvas, c);
     }
     _drawFlash(canvas);
-    _drawHud(canvas);
-    if (micLevel != null && engine.running) _drawMic(canvas);
+    _drawHeard(canvas);
     _drawHits(canvas);
 
     canvas.restore();
@@ -275,8 +275,19 @@ class ChallengePainter extends CustomPainter {
     final k = math.max(0.02, c.k);
     final size = GameConfig.wordSize(k);
     final y = GameConfig.wordY(k);
-    final a =
-        c.alpha.clamp(0.0, 1.0) * (c.state == CardState.grace ? 0.55 : 1.0);
+    // Depth fade (Figma `screen/pron_play`: 50% far, 72% mid, 100% at the
+    // gate). Distance has to read as distance — drawn at full opacity the
+    // queue looked like three words stacked, not one approaching.
+    final depth = c.state == CardState.live
+        ? _kFarAlpha +
+            (1 - _kFarAlpha) *
+                (((k - GameConfig.kSpawn) /
+                        (1 - GameConfig.kSpawn))
+                    .clamp(0.0, 1.0))
+        : 1.0;
+    final a = c.alpha.clamp(0.0, 1.0) *
+        depth *
+        (c.state == CardState.grace ? 0.55 : 1.0);
     if (a <= 0) return;
 
     final outlineColor = switch (c.state) {
@@ -371,35 +382,6 @@ class ChallengePainter extends CustomPainter {
     });
   }
 
-  // ── mic level gauge (web drawHUD mic block, lines 1211–1216) ────────
-  void _drawMic(Canvas canvas) {
-    final level = (micLevel?.value ?? 0).clamp(0.0, 1.0);
-    _text(
-      canvas,
-      'MIC',
-      x: 56,
-      y: 1802,
-      fontSize: 26,
-      weight: FontWeight.w600,
-      color: _kHudLabel,
-      align: _HAlign.left,
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(56, 1832, 340, 24),
-        const Radius.circular(12),
-      ),
-      Paint()..color = const Color(0x29FFFFFF),
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(56, 1832, math.max(10, 340 * level), 24),
-        const Radius.circular(12),
-      ),
-      Paint()..color = level > 0.03 ? _mint : const Color(0xFF777C89),
-    );
-  }
-
   // ── flash (web drawFlash, 1240–1243) ────────────────────────────────
   void _drawFlash(Canvas canvas) {
     const full = Rect.fromLTWH(0, 0, GameConfig.w, GameConfig.h);
@@ -415,138 +397,39 @@ class ChallengePainter extends CustomPainter {
       canvas.drawRect(
         full,
         Paint()
+          // 0.45, not the web's 0.22: the design calls for a wash that reads
+          // as a miss without erasing the scene (its own 100% did erase it).
           ..color = Color.fromRGBO(
-              255, 60, 60, (engine.flashMiss * 0.22).clamp(0.0, 1.0)),
+              255, 60, 60, (engine.flashMiss * 0.45).clamp(0.0, 1.0)),
       );
     }
   }
 
-  // ── HUD (web drawHUD, 1176–1230) ────────────────────────────────────
-  void _drawHud(Canvas canvas) {
-    final mm = (engine.sessionLeft / 60).floor();
-    final ss = (engine.sessionLeft % 60).floor();
-    final tstr = '$mm:${ss.toString().padLeft(2, '0')}';
-
-    // Timer pill (centre) + score (right). Back is a Flutter overlay, so it is
-    // not on the canvas.
+  // ── most recent transcript, right under the gate ────────────────
+  //
+  // The only HUD element still painted on the canvas. Everything else moved
+  // out to Flutter widgets above it (Figma `HUD/top` + `HUD/status`,
+  // 10_발음챌린지 · 앱 이식). This one stays because it is anchored to the
+  // gate, not to the screen edge — and because it is the only signal that
+  // separates "misheard" from "dead mic".
+  void _drawHeard(Canvas canvas) {
+    if (!engine.heardVisible) return;
+    final t = engine.lastHeard.characters.length > 18
+        ? '${engine.lastHeard.characters.take(18)}…'
+        : engine.lastHeard;
+    final tp = _layout(t, 32, FontWeight.w700, const Color(0xBFFFFFFF));
+    final cw = tp.width + 72;
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        const Rect.fromLTWH(GameConfig.w / 2 - 130, 52, 260, 92),
-        const Radius.circular(46),
+        Rect.fromLTWH(GameConfig.w / 2 - cw / 2, 1722, cw, 58),
+        const Radius.circular(29),
       ),
-      Paint()..color = const Color(0xB80A0E12), // rgba(10,14,18,.72)
+      Paint()..color = const Color(0x9E0A0E12), // rgba(10,14,18,.62)
     );
-    _text(
+    tp.paint(
       canvas,
-      tstr,
-      x: GameConfig.w / 2,
-      y: 100,
-      fontSize: 60,
-      weight: FontWeight.w900,
-      color: engine.sessionLeft <= 10 ? const Color(0xFFFF7070) : Colors.white,
+      Offset(GameConfig.w / 2 - tp.width / 2, 1751 - tp.height / 2),
     );
-
-    _text(
-      canvas,
-      'SCORE',
-      x: GameConfig.w - 56,
-      y: 70,
-      fontSize: 24,
-      weight: FontWeight.w600,
-      color: _kHudLabel,
-      align: _HAlign.right,
-    );
-    _text(
-      canvas,
-      _thousands(engine.score),
-      x: GameConfig.w - 56,
-      y: 118,
-      fontSize: 56,
-      weight: FontWeight.w900,
-      color: Colors.white,
-      align: _HAlign.right,
-    );
-
-    // Combo — the pill grows with the label.
-    if (engine.combo > 1) {
-      final tp = _layout('COMBO x${engine.combo}', 46, FontWeight.w900, _mint);
-      final pw = tp.width + 80;
-      final pill = RRect.fromRectAndRadius(
-        Rect.fromLTWH(GameConfig.w / 2 - pw / 2, 180, pw, 74),
-        const Radius.circular(37),
-      );
-      canvas.drawRRect(pill, Paint()..color = _mint.withValues(alpha: 0.14));
-      canvas.drawRRect(
-        pill,
-        Paint()
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 3
-          ..color = _mint.withValues(alpha: 0.5),
-      );
-      tp.paint(
-        canvas,
-        Offset(GameConfig.w / 2 - tp.width / 2, 218 - tp.height / 2),
-      );
-    }
-
-    // Most recent transcript, right under the gate. The old belt판 put this at
-    // screen centre (y=300), a thousand px from where the player is looking.
-    // This is the only feedback that distinguishes "misheard" from "dead mic",
-    // so it draws whether or not the text matched anything.
-    if (engine.heardVisible) {
-      final t = engine.lastHeard.characters.length > 18
-          ? '${engine.lastHeard.characters.take(18)}…'
-          : engine.lastHeard;
-      final tp = _layout(t, 32, FontWeight.w700, const Color(0xBFFFFFFF));
-      final cw = tp.width + 72;
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(GameConfig.w / 2 - cw / 2, 1722, cw, 58),
-          const Radius.circular(29),
-        ),
-        Paint()..color = const Color(0x9E0A0E12), // rgba(10,14,18,.62)
-      );
-      tp.paint(
-        canvas,
-        Offset(GameConfig.w / 2 - tp.width / 2, 1751 - tp.height / 2),
-      );
-    }
-
-    // Backlog — bottom right. The belt판 stacked MIC and MISS vertically and
-    // both were cramped; the tunnel splits them to opposite corners.
-    _text(
-      canvas,
-      'MISS',
-      x: GameConfig.w - 56,
-      y: 1802,
-      fontSize: 26,
-      weight: FontWeight.w600,
-      color: _kHudLabel,
-      align: _HAlign.right,
-    );
-    const slotW = 52.0;
-    const gap = 6.0;
-    // Slot count follows the difficulty (3 on fast, 5 on slow), so the row is
-    // the actual allowance rather than a fixed three.
-    final allow = engine.difficulty.missAllow;
-    final total = allow * slotW + (allow - 1) * gap;
-    for (var i = 0; i < allow; i++) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(
-            GameConfig.w - 56 - total + i * (slotW + gap),
-            1830,
-            slotW,
-            30,
-          ),
-          const Radius.circular(6),
-        ),
-        Paint()
-          ..color = i < engine.backlog
-              ? const Color(0xFFFF7070)
-              : const Color(0x2EFFFFFF),
-      );
-    }
   }
 
   // ── hit texts (web drawHits, 1231–1239) ─────────────────────────────
@@ -617,17 +500,6 @@ class ChallengePainter extends CustomPainter {
         dx = x - tp.width;
     }
     tp.paint(canvas, Offset(dx, y - tp.height / 2)); // baseline≈middle
-  }
-
-  /// Formats an int with thousands separators (`toLocaleString` parity).
-  String _thousands(int n) {
-    final s = n.toString();
-    final buf = StringBuffer();
-    for (var i = 0; i < s.length; i++) {
-      if (i > 0 && (s.length - i) % 3 == 0) buf.write(',');
-      buf.write(s[i]);
-    }
-    return buf.toString();
   }
 
   @override

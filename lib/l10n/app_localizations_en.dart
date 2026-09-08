@@ -560,10 +560,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.';
+      'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? You can also play by tapping the screen.';
 
   @override
-  String get challengeStart => 'Start Camera & Mic';
+  String get challengeStart => 'Start';
 
   @override
   String get challengePermissionNote =>
@@ -2102,16 +2102,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get playAgain => 'Play Again';
 
   @override
-  String get difficultySlow => 'Slow';
+  String get difficultySlow => 'Easy';
 
   @override
   String get difficultyNormal => 'Normal';
 
   @override
-  String get difficultyFast => 'Fast';
+  String get difficultyFast => 'Hard';
 
   @override
-  String get difficultyLabel => 'Difficulty';
+  String get difficultyLabel => 'Choose a difficulty';
 
   @override
   String get connected => 'Connected';
@@ -2545,4 +2545,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String hwSpeakingProgress(int passed, int total) {
     return '$passed of $total sentences passed';
   }
+
+  @override
+  String get challengeFirstWord => 'First word';
 }

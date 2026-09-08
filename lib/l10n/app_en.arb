@@ -294,8 +294,8 @@
   "playSampleVoice": "Play sample voice",
   "useThisAvatar": "Use This",
   "challengeTitle": "Pronunciation Challenge",
-  "challengeIntro": "Pronounce each card in the zone correctly in Korean to clear it.\nNo mic? You can also play by tapping the screen.",
-  "challengeStart": "Start Camera & Mic",
+  "challengeIntro": "Read each word aloud as it comes at you, for 30 seconds.\nNo mic? You can also play by tapping the screen.",
+  "challengeStart": "Start",
   "challengePermissionNote": "Front camera and mic access is required (optional).",
   "challengeLoadingTitle": "Loading…",
   "challengeLoadingNote": "Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.",
@@ -1325,7 +1325,7 @@
   "@playAgain": {
     "description": "Pronunciation challenge - restart the run from the result screen."
   },
-  "difficultySlow": "Slow",
+  "difficultySlow": "Easy",
   "@difficultySlow": {
     "description": "Pronunciation challenge difficulty - slow."
   },
@@ -1333,11 +1333,11 @@
   "@difficultyNormal": {
     "description": "Pronunciation challenge difficulty - normal."
   },
-  "difficultyFast": "Fast",
+  "difficultyFast": "Hard",
   "@difficultyFast": {
     "description": "Pronunciation challenge difficulty - fast."
   },
-  "difficultyLabel": "Difficulty",
+  "difficultyLabel": "Choose a difficulty",
   "@difficultyLabel": {
     "description": "Pronunciation challenge - label above the difficulty toggle."
   },
@@ -1914,5 +1914,9 @@
         "type": "int"
       }
     }
+  },
+  "challengeFirstWord": "First word",
+  "@challengeFirstWord": {
+    "description": "Countdown label above the previewed first word."
   }
 }

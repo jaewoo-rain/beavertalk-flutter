@@ -312,10 +312,15 @@ void main() {
         ),
       );
       await tester.pump();
-      // "Pronunciation Challenge" now appears twice (GNB title + start-panel
-      // heading, both bound to l10n.challengeTitle after the i18n sweep).
-      expect(find.text('Pronunciation Challenge'), findsNWidgets(2));
-      expect(find.text('Start Camera & Mic'), findsOneWidget); // start button
+      // Once, not twice: the design drops the GNB on this screen (the camera
+      // runs edge to edge and a solid header would cut the stage), so the
+      // start-panel heading is the only place the title appears.
+      expect(find.text('Pronunciation Challenge'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back_ios_new), findsOneWidget);
+      expect(find.text('Start'), findsOneWidget); // CTA, shortened by the design
+      expect(find.text('Choose a difficulty'), findsOneWidget);
+      expect(find.text('Easy'), findsOneWidget);
+      expect(find.text('Hard'), findsOneWidget);
     });
   });
 }
