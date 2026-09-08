@@ -501,6 +501,7 @@ class SttService {
   void _onPcm(Uint8List data) {
     final raw = _updateMicLevel(data);
     _maybeRolloverForSilence(raw);
+    _pcmHeartbeat(data.length, raw);
     final ws = _ws;
     // Don't push PCM before this stream's `config` frame (see [_configSent]) —
     // a binary-first frame makes the server default to 48 kHz and drop the round.
@@ -538,6 +539,35 @@ class SttService {
 
   /// Updates the smoothed [micLevel] gauge and returns the RAW (unsmoothed)
   /// 0..1 level for voice-activity detection.
+  /// Debug-only capture heartbeat: bytes actually forwarded and the level they
+  /// carried, once a second.
+  ///
+  /// Added because "socket open, no transcripts" is indistinguishable from
+  /// three different faults — no PCM produced, PCM produced but not sent, or
+  /// PCM sent but silent. Only numbers separate them, and silence in the log
+  /// had already been misread once in this feature.
+  void _pcmHeartbeat(int bytes, double level) {
+    if (!kDebugMode) return;
+    _pcmBytes += bytes;
+    _pcmChunks++;
+    if (level > _pcmPeak) _pcmPeak = level;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (_pcmLogMs == 0) _pcmLogMs = now;
+    if (now - _pcmLogMs < 1000) return;
+    debugPrint('STT pcm: $_pcmChunks청크 ${_pcmBytes}B/s '
+        'peak=${_pcmPeak.toStringAsFixed(3)} '
+        'ws=${_ws != null} config=$_configSent');
+    _pcmLogMs = now;
+    _pcmBytes = 0;
+    _pcmChunks = 0;
+    _pcmPeak = 0;
+  }
+
+  int _pcmBytes = 0;
+  int _pcmChunks = 0;
+  double _pcmPeak = 0;
+  int _pcmLogMs = 0;
+
   double _updateMicLevel(Uint8List data) {
     if (data.length < 2) return 0;
     final bytes = ByteData.sublistView(data);
