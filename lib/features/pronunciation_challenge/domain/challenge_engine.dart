@@ -40,7 +40,7 @@ class ChallengeEngine {
   /// Total words passed this session.
   int passCount = 0;
 
-  /// Number of missed words (session ends at [GameConfig.maxBacklog]).
+  /// Number of missed words (session ends at [Difficulty.missAllow]).
   int backlog = 0;
 
   /// Whether the session is actively running.
@@ -93,8 +93,34 @@ class ChallengeEngine {
     lastHeardAt = clock;
   }
 
-  /// Result title, mirroring the web game.
-  String get resultTitle => maxCombo >= 10 ? '🔥 Amazing!' : 'Nice!';
+  /// Words attempted this session: cleared plus missed.
+  int get attempts => passCount + backlog;
+
+  /// Share of attempts cleared, 0..1. Zero attempts reads as 0.
+  double get accuracy => attempts == 0 ? 0 : passCount / attempts;
+
+  /// Letter grade for the run (web `endGame`, line 964).
+  ///
+  /// `S` additionally requires volume — a single lucky clear is 100% accurate
+  /// and must not outrank a long clean run.
+  String get grade {
+    final acc = accuracy;
+    if (acc >= 0.9 && passCount >= 12) return 'S';
+    if (acc >= 0.75) return 'A';
+    if (acc >= 0.5) return 'B';
+    return 'C';
+  }
+
+  /// Result title, keyed to [grade] (web `praise`, line 965).
+  ///
+  /// The old title only looked at [maxCombo], so a run that missed nearly
+  /// everything still said "Nice!" as long as it strung three together.
+  String get resultTitle => switch (grade) {
+        'S' => 'Flawless!',
+        'A' => 'Great!',
+        'B' => 'Nice!',
+        _ => 'Keep going!',
+      };
 
   /// (Re)starts a session: resets all counters and the shuffle bag.
   void start() {
@@ -236,7 +262,7 @@ class ChallengeEngine {
       y: GameConfig.wordY(1) - 300,
       miss: true,
     ));
-    if (backlog >= GameConfig.maxBacklog) endGame();
+    if (backlog >= difficulty.missAllow) endGame();
   }
 
   /// The nearest judgeable word, or `null`. Drives the gate's "listening" glow

@@ -44,7 +44,8 @@ enum SttStatus {
 /// 웹 판과 한 가지가 다르다 — **Supabase 토큰이 필수**다. STT 는 과금이 있어 서버가
 /// 인증된 사용자만 받고, 토큰이 없거나 무효면 1008 로 즉시 닫는다. 웹 서버 쪽은 인증이
 /// 없어(origin 헤더만 확인) 토큰 없이도 붙었는데, 그 주소를 앱이 오래 들고 있었다.
-/// 주소는 [pronSttWsUrl] 이 `API_BASE_URL` 에서 유도한다 — 호스트를 따로 박지 않는다.
+/// 주소는 [pronSttWsUrl] 이 유도한다 — 호스트를 따로 박지 않는다. 기본은
+/// `API_BASE_URL` 이고, `.env` 에 `PRON_STT_BASE_URL` 이 있으면 그쪽이다.
 ///
 /// ## Protocol (`services/stt/stt_session.py`)
 /// * client→server: first text `{"type":"config","words":[…],"sampleRate":N}`,
@@ -195,6 +196,10 @@ class SttService {
     // 1) Mic permission — without it there's nothing to stream.
     try {
       if (!await _recorder!.hasPermission()) {
+        // This path used to return in silence, which made a denied mic look
+        // exactly like a working one that heard nothing — and the log stayed
+        // empty, so it looked like STT had connected fine.
+        debugPrint('SttService: 마이크 권한 없음 → tap fallback');
         status.value = SttStatus.unavailable;
         return false;
       }
@@ -300,7 +305,16 @@ class SttService {
 
       return await ready.future.timeout(_connectTimeout, onTimeout: () => false);
     } catch (e) {
+      // Name the most likely cause. A timeout here is almost never the
+      // network: `/pron/stt/ws` does not exist on the app backends (handshake
+      // measured 2026-09-08 — app server 403, beavertalk-web-api 101), so the
+      // socket never opens. See [Env.pronSttBaseUrl].
       debugPrint('STT ws connect failed → tap fallback: $e');
+      debugPrint('  주소: ${pronSttWsUrl('<token>')}');
+      if (e is TimeoutException) {
+        debugPrint('  타임아웃이면 대개 그 호스트에 라우트가 없는 것이다 — '
+            '.env 의 PRON_STT_BASE_URL 을 확인하라.');
+      }
       settle(false);
       return false;
     }

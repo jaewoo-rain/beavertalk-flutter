@@ -87,8 +87,12 @@ abstract final class GameConfig {
   /// A grace-window pass is worth less than an on-time one.
   static const double latePointRatio = 0.6;
 
-  /// Missing this many words ends the session.
-  static const int maxBacklog = 3;
+  /// Miss allowance at the hardest difficulty — the floor, and the value the
+  /// HUD sizes its widest slot row against.
+  ///
+  /// The live allowance is per-difficulty ([Difficulty.missAllow]); this is only
+  /// the minimum any difficulty can hand out.
+  static const int minMissAllow = 3;
 
   /// `k` → word font size.
   static double wordSize(double k) => wordSizeNear * k;
@@ -98,15 +102,22 @@ abstract final class GameConfig {
   static double wordY(double k) => vpY + (wordYNear - vpY) * k;
 }
 
-/// Difficulty presets. The value is the speed multiplier applied to how fast
-/// `k` grows and how fast the tunnel rungs approach (web `data-mult`).
+/// Difficulty presets: speed multiplier **and** miss allowance (web
+/// `DIFFICULTIES`, lines 334–338).
+///
+/// The allowance is not a constant. A flat three misses ends a beginner's run
+/// in about ten seconds, which leaves no clip worth sharing — and sharing is
+/// what this mode exists for. Slower difficulties buy more rope.
 enum Difficulty {
-  slow(0.6),
-  normal(1.0),
-  fast(1.8);
+  slow(0.6, 5),
+  normal(1.0, 4),
+  fast(1.8, 3);
 
-  const Difficulty(this.mult);
+  const Difficulty(this.mult, this.missAllow);
 
-  /// Speed multiplier for this difficulty.
+  /// Speed multiplier for how fast `k` grows and the rungs approach.
   final double mult;
+
+  /// Misses allowed before the session ends.
+  final int missAllow;
 }

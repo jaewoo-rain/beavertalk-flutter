@@ -620,7 +620,9 @@ class _PronunciationChallengeScreenState
           ),
           const SizedBox(height: AppSpacing.s16),
           Text(
-            'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}',
+            'Best Combo ${engine.maxCombo}  ·  Cleared ${engine.passCount}\n'
+            'Grade ${engine.grade}  ·  Accuracy '
+            '${(engine.accuracy * 100).round()}%',
             textAlign: TextAlign.center,
             style: AppType.body2.r.copyWith(color: context.c.labelNormal),
           ),

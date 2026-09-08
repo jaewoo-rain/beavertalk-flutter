@@ -526,9 +526,11 @@ class ChallengePainter extends CustomPainter {
     );
     const slotW = 52.0;
     const gap = 6.0;
-    const total =
-        GameConfig.maxBacklog * slotW + (GameConfig.maxBacklog - 1) * gap;
-    for (var i = 0; i < GameConfig.maxBacklog; i++) {
+    // Slot count follows the difficulty (3 on fast, 5 on slow), so the row is
+    // the actual allowance rather than a fixed three.
+    final allow = engine.difficulty.missAllow;
+    final total = allow * slotW + (allow - 1) * gap;
+    for (var i = 0; i < allow; i++) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
           Rect.fromLTWH(

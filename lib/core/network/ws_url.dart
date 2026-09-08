@@ -53,6 +53,12 @@ String callStreamWsUrl({required String token, required bool cascade}) =>
 /// the server (missing/invalid → 1008 close, which the client degrades to tap
 /// input).
 ///
+/// ⛔ **호스트가 통화와 다를 수 있다.** 이 라우트는 앱 백엔드에 없다(2026-09-08
+/// 핸드셰이크 실측: 앱 서버 403 · `beavertalk-web-api` 101). `.env` 의
+/// `PRON_STT_BASE_URL` 이 있으면 그쪽으로 붙고, 없으면 [normalcallWsUrl] 과 같은
+/// 호스트로 폴백한다 — 즉 **키가 없는 환경의 동작은 종전과 같다.**
+/// 자세한 사정과 기본값을 안 바꾼 이유는 [Env.pronSttBaseUrl] 에 있다.
+///
 /// Example: `https://host/api/v1` → `wss://host/api/v1/pron/stt/ws?token=…`.
 String pronSttWsUrl(String token) =>
-    '${_wsBase()}/pron/stt/ws?token=${Uri.encodeComponent(token)}';
+    '${_wsBase(Env.pronSttBaseUrl)}/pron/stt/ws?token=${Uri.encodeComponent(token)}';

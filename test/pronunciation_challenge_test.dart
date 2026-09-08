@@ -81,21 +81,64 @@ void main() {
       expect(e.score, 100 + 112);
     });
 
-    test('three misses end the game', () {
+    test('the miss allowance ends the game, and it follows difficulty', () {
+      // A flat three would end a beginner's run in ~10s and leave no clip.
+      for (final d in Difficulty.values) {
+        final e = _seededEngine();
+        e.difficulty = d;
+        e.start();
+        for (var i = 0; i < d.missAllow; i++) {
+          expect(e.running, isTrue,
+              reason: '$d must survive ${d.missAllow - 1} misses');
+          e.missCard(ChallengeCard(id: 1000 + i, word: 'x', k: 1.0));
+        }
+        expect(e.backlog, d.missAllow);
+        expect(e.running, isFalse);
+      }
+    });
+
+    test('grade and accuracy come from cleared vs attempted', () {
       final e = _seededEngine();
       e.start();
-      expect(e.running, isTrue);
-      for (var i = 0; i < GameConfig.maxBacklog; i++) {
-        expect(e.running, isTrue);
-        final c = ChallengeCard(
-          id: 1000 + i,
-          word: 'x',
-          k: 1.0,
-        );
-        e.missCard(c);
+      expect(e.accuracy, 0, reason: 'no attempts reads as zero, not NaN');
+      expect(e.grade, 'C');
+
+      // 8 cleared, 0 missed → 100% but only 8 attempts: A, not S.
+      for (var i = 0; i < 8; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
       }
-      expect(e.backlog, GameConfig.maxBacklog);
-      expect(e.running, isFalse);
+      expect(e.accuracy, 1.0);
+      expect(e.grade, 'A', reason: 'S needs volume, not just a clean streak');
+
+      // 12 cleared clears the volume bar.
+      for (var i = 8; i < 12; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      expect(e.grade, 'S');
+      expect(e.resultTitle, 'Flawless!');
+    });
+
+    test('a mostly-missed run does not read as a good one', () {
+      // The old title only looked at maxCombo, so three in a row said "Nice!"
+      // no matter how much was missed.
+      final e = _seededEngine();
+      e.difficulty = Difficulty.slow; // 5 misses of rope
+      e.start();
+      for (var i = 0; i < 3; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      expect(e.maxCombo, 3);
+      for (var i = 0; i < 4; i++) {
+        e.missCard(ChallengeCard(id: 100 + i, word: 'x', k: 1.0));
+      }
+      expect(e.accuracy, closeTo(3 / 7, 0.001));
+      expect(e.grade, 'C');
+      expect(e.resultTitle, 'Keep going!');
+    });
+
+    test('slow is more forgiving than fast', () {
+      expect(Difficulty.slow.missAllow, greaterThan(Difficulty.fast.missAllow));
+      expect(Difficulty.fast.missAllow, GameConfig.minMissAllow);
     });
 
     test('timer hitting zero ends the game', () {

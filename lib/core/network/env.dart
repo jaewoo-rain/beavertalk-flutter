@@ -89,6 +89,34 @@ abstract final class Env {
     return '${_withScheme(_trimTrailingSlash(value))}$apiPrefix';
   }
 
+  /// 발음 챌린지 STT 소켓 전담 백엔드. **비어 있으면 [apiBaseUrl] 을 그대로 쓴다.**
+  ///
+  /// ## 왜 이 스위치가 필요한가
+  ///
+  /// 2026-09-08 실측: `/api/v1/pron/stt/ws` 로 실제 WebSocket 핸드셰이크를 보내면
+  /// `beavertalk-web-api` 만 **101 Switching Protocols** 를 준다. 앱 백엔드 둘
+  /// (`app-api`·`app-demo-api`) 은 **403** 이다 — 라우트가 없다.
+  /// 그래서 주소가 [apiBaseUrl] 을 따라가는 현재 설정에서는 소켓이 영영 열리지 않고
+  /// 4초 뒤 타임아웃 → 조용히 탭 입력으로 내려앉는다.
+  ///
+  /// ⚠ **HTTP GET 으로는 이 판별이 안 된다.** FastAPI 의 WebSocket 라우트는 GET 에
+  /// 항상 404 를 준다. 앱 서버의 `/calls/stream` 이 401 을 주는 건 인증 미들웨어가
+  /// 라우팅보다 먼저 걸리기 때문이지 라우트 유무의 근거가 아니다. 판별하려면
+  /// `Upgrade: websocket` 핸드셰이크를 실제로 보내고 상태줄을 봐야 한다.
+  ///
+  /// ⛔ **기본값을 웹 백엔드로 바꾸지 않았다.** STT 를 앱 서버로 옮긴 것은 「토큰
+  /// 필수 = 과금 방어」 결정이었고(`test/ws_url_test.dart` 머리주석), 웹 백엔드는
+  /// 인증이 없어 토큰 없이도 핸드셰이크가 통과한다. 호스트를 되돌리는 것은 그 결정을
+  /// 뒤집는 일이라 코드가 임의로 할 수 없다. 이 키는 **결정이 내려졌을 때 코드 수정
+  /// 없이 꽂는 자리**다.
+  ///
+  /// ⚠ 이 키는 `.env` 에 있고 `.env` 는 gitignore 다 — 새 워크트리에 안 따라온다.
+  static String get pronSttBaseUrl {
+    final value = dotenv.maybeGet('PRON_STT_BASE_URL')?.trim();
+    if (value == null || value.isEmpty) return apiBaseUrl;
+    return '${_withScheme(_trimTrailingSlash(value))}$apiPrefix';
+  }
+
   /// B2B 교실·과제 전담 백엔드. **비어 있으면 숙제 기능이 통째로 꺼진다.**
   ///
   /// ## 왜 호스트가 갈리나

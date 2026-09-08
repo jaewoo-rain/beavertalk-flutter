@@ -59,6 +59,13 @@
     ⚠ 그 안의 **`CASCADE_API_BASE_URL`** 도 같이 챙겨라 — 캐스케이드 라우터는 **demo-api 에만** 있어서
     이 키가 없으면 캐스케이드 통화가 **운영으로 붙어 1008 로 즉시 끊긴다**. 화면에는 "연결 실패"로만
     보여서 원인이 안 드러난다. 라이브 통화·발음 STT 는 이 키를 안 본다(없어도 종전대로 동작).
+    ⚠ **`PRON_STT_BASE_URL`** 도 같은 종류다 — 발음 챌린지 STT 소켓만 다른 호스트로 보낸다.
+    2026-09-08 핸드셰이크 실측: `/api/v1/pron/stt/ws` 는 앱 백엔드 둘(`app-api`·`app-demo-api`)에서
+    **403**(라우트 없음)이고 `beavertalk-web-api` 에서만 **101** 이다. 키가 없으면 STT 가 앱 서버로
+    붙어 4초 뒤 타임아웃 → **조용히 탭 입력으로 내려앉는다**(화면에는 "음성 인식을 사용할 수 없어
+    탭 입력으로 플레이했어요"로만 보인다).
+    ⛔ 기본값을 웹 백엔드로 바꾸지 마라 — 앱 서버로 옮긴 것은 「토큰 필수 = 과금 방어」 결정이고
+    웹 백엔드는 인증이 없다. 호스트 변경은 사람이 결정해서 이 키로 꽂는다.
   - **`android/app/google-services.json`** (.gitignore:58) — 없으면 **APK 빌드가 깨진다** (`Execution failed for task ':app:processDebugGoogleServices' > File google-services.json is missing`).
     ⚠ **`flutter analyze` 와 `flutter test` 는 이걸 안 탄다** — 위젯테스트는 Dart VM 에서 돌아 Android 빌드 경로를 거치지 않는다. 그래서 **analyze·test 가 전부 그린인데 APK 만 안 나오는** 상태가 만들어진다(2026-08-05 실제 발생). 실기기 검증 직전에야 발견된다.
   ```
