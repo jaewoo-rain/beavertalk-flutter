@@ -170,7 +170,7 @@
   "playSampleVoice": "샘플 음성 재생",
   "useThisAvatar": "이걸로 선택",
   "challengeTitle": "발음 챌린지",
-  "challengeIntro": "30초 동안 다가오는 단어를 소리 내어 읽어요.\n마이크가 없나요? 화면을 탭해서도 플레이할 수 있어요.",
+  "challengeIntro": "30초 동안 다가오는 단어를 소리 내어 읽어요.\n마이크가 없으면 탭해서도 플레이할 수 있어요.",
   "challengeStart": "시작하기",
   "challengePermissionNote": "전면 카메라와 마이크 접근 권한이 필요해요 (선택).",
   "challengeLoadingTitle": "로딩 중…",

@@ -294,7 +294,7 @@
   "playSampleVoice": "Play sample voice",
   "useThisAvatar": "Use This",
   "challengeTitle": "Pronunciation Challenge",
-  "challengeIntro": "Read each word aloud as it comes at you, for 30 seconds.\nNo mic? You can also play by tapping the screen.",
+  "challengeIntro": "Read each word aloud as it comes at you, for 30 seconds.\nNo mic? Tap to play instead.",
   "challengeStart": "Start",
   "challengePermissionNote": "Front camera and mic access is required (optional).",
   "challengeLoadingTitle": "Loading…",

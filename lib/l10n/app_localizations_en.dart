@@ -560,7 +560,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? You can also play by tapping the screen.';
+      'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? Tap to play instead.';
 
   @override
   String get challengeStart => 'Start';

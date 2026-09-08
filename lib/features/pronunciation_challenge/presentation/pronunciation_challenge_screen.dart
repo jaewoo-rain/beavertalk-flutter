@@ -364,7 +364,18 @@ class _PronunciationChallengeScreenState
                   ),
                 ),
                 // ── HUD rows (Figma `HUD/top` y=52, `HUD/status` y=104) ──
-                if (_phase == _Phase.playing) ..._hudRows(context),
+                if (_phase == _Phase.playing)
+                  // Rebuilt every tick. The HUD reads engine state that the
+                  // ticker advances 60×/s, but `_onFrame` only calls setState
+                  // on a phase change — so as widgets these froze at whatever
+                  // the last rebuild held while the canvas kept running.
+                  Positioned.fill(
+                    child: ListenableBuilder(
+                      listenable: _controller,
+                      builder: (context, _) =>
+                          Stack(children: _hudRows(context)),
+                    ),
+                  ),
                 // ── back, always reachable ──
                 _backButton(context),
                 // ── overlay panels ──
@@ -439,14 +450,13 @@ class _PronunciationChallengeScreenState
                 ),
               ),
             ),
-            SizedBox(
-              width: 44,
-              child: Text(
-                _thousands(engine.score),
-                textAlign: TextAlign.right,
-                style: AppType.heading1.b
-                    .copyWith(color: context.c.commonWhiteAndDark),
-              ),
+            // Natural width, not a 44dp slot mirroring the back button —
+            // a five-digit score does not fit in one.
+            Text(
+              _thousands(engine.score),
+              textAlign: TextAlign.right,
+              style: AppType.heading1.b
+                  .copyWith(color: context.c.commonWhiteAndDark),
             ),
           ],
         ),

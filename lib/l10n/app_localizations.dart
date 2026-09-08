@@ -1177,7 +1177,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeIntro.
   ///
   /// In en, this message translates to:
-  /// **'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? You can also play by tapping the screen.'**
+  /// **'Read each word aloud as it comes at you, for 30 seconds.\nNo mic? Tap to play instead.'**
   String get challengeIntro;
 
   /// No description provided for @challengeStart.

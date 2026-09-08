@@ -544,7 +544,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get challengeIntro =>
-      '30초 동안 다가오는 단어를 소리 내어 읽어요.\n마이크가 없나요? 화면을 탭해서도 플레이할 수 있어요.';
+      '30초 동안 다가오는 단어를 소리 내어 읽어요.\n마이크가 없으면 탭해서도 플레이할 수 있어요.';
 
   @override
   String get challengeStart => '시작하기';
