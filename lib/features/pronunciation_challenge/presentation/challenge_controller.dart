@@ -32,9 +32,30 @@ class ChallengeController extends ChangeNotifier {
     if (!_ticker.isActive) _ticker.start();
   }
 
+  /// Whether the clock is held (pause panel showing).
+  ///
+  /// The ticker keeps running — the tunnel still animates behind the overlay,
+  /// which is what the design shows — but the engine stops advancing, so the
+  /// timer and the cards freeze where they were.
+  bool _clockHeld = false;
+
+  /// Holds the simulation without stopping the ticker.
+  void pauseClock() => _clockHeld = true;
+
+  /// Releases the hold. The next tick resumes from a fresh delta, so the time
+  /// spent paused is not charged to the round.
+  void resumeClock() {
+    _clockHeld = false;
+    _last = Duration.zero;
+  }
+
   void _onTick(Duration elapsed) {
     final rawDt = (elapsed - _last).inMicroseconds / 1e6;
     _last = elapsed;
+    if (_clockHeld) {
+      notifyListeners(); // keep the canvas live, just don't advance it
+      return;
+    }
     // KEEP the web game clamp (line 589): dt = min(0.05, delta).
     final dt = rawDt < 0.05 ? rawDt : 0.05;
     engine.update(dt);

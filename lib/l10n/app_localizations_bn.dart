@@ -2542,4 +2542,47 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get challengeFirstWord => 'First word';
+
+  @override
+  String get grade => 'Grade';
+
+  @override
+  String get accuracy => 'Accuracy';
+
+  @override
+  String get bestCombo => 'Best Combo';
+
+  @override
+  String get cleared => 'Cleared';
+
+  @override
+  String get challengeSeeAnalysis => 'See results';
+
+  @override
+  String get challengePaused => 'Paused';
+
+  @override
+  String get challengePausedNote => 'The timer and the recording both stopped.';
+
+  @override
+  String get challengeTimeLeft => 'Time left';
+
+  @override
+  String get challengeScoreLabel => 'Score';
+
+  @override
+  String get challengeResume => 'Resume';
+
+  @override
+  String get challengeBlockedTitle => 'Can\'t use the camera';
+
+  @override
+  String get challengeBlockedNote =>
+      'Turn on camera and mic access in Settings.';
+
+  @override
+  String get challengeGoBack => 'Go back';
+
+  @override
+  String get challengeOpenSettings => 'Open Settings';
 }

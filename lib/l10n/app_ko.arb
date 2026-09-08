@@ -774,5 +774,19 @@
   "hwSpeakingUnavailable": "아직 이 과제의 문장을 받아올 수 없어요.",
   "hwBadgeClosed": "마감됨",
   "hwSpeakingProgress": "{total}문장 중 {passed}문장 통과",
-  "challengeFirstWord": "첫 단어"
+  "challengeFirstWord": "첫 단어",
+  "grade": "등급",
+  "accuracy": "정확도",
+  "bestCombo": "최고 콤보",
+  "cleared": "클리어",
+  "challengeSeeAnalysis": "결과 보기",
+  "challengePaused": "일시정지",
+  "challengePausedNote": "타이머와 녹화가 함께 멈췄어요",
+  "challengeTimeLeft": "남은 시간",
+  "challengeScoreLabel": "점수",
+  "challengeResume": "이어서 하기",
+  "challengeBlockedTitle": "카메라를 쓸 수 없어요",
+  "challengeBlockedNote": "설정에서 카메라·마이크 권한을 켜 주세요",
+  "challengeGoBack": "돌아가기",
+  "challengeOpenSettings": "설정 열기"
 }

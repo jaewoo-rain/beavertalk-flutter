@@ -2472,4 +2472,46 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get challengeFirstWord => '첫 단어';
+
+  @override
+  String get grade => '등급';
+
+  @override
+  String get accuracy => '정확도';
+
+  @override
+  String get bestCombo => '최고 콤보';
+
+  @override
+  String get cleared => '클리어';
+
+  @override
+  String get challengeSeeAnalysis => '결과 보기';
+
+  @override
+  String get challengePaused => '일시정지';
+
+  @override
+  String get challengePausedNote => '타이머와 녹화가 함께 멈췄어요';
+
+  @override
+  String get challengeTimeLeft => '남은 시간';
+
+  @override
+  String get challengeScoreLabel => '점수';
+
+  @override
+  String get challengeResume => '이어서 하기';
+
+  @override
+  String get challengeBlockedTitle => '카메라를 쓸 수 없어요';
+
+  @override
+  String get challengeBlockedNote => '설정에서 카메라·마이크 권한을 켜 주세요';
+
+  @override
+  String get challengeGoBack => '돌아가기';
+
+  @override
+  String get challengeOpenSettings => '설정 열기';
 }

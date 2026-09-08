@@ -4803,6 +4803,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'First word'**
   String get challengeFirstWord;
+
+  /// No description provided for @grade.
+  ///
+  /// In en, this message translates to:
+  /// **'Grade'**
+  String get grade;
+
+  /// No description provided for @accuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get accuracy;
+
+  /// No description provided for @bestCombo.
+  ///
+  /// In en, this message translates to:
+  /// **'Best Combo'**
+  String get bestCombo;
+
+  /// No description provided for @cleared.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleared'**
+  String get cleared;
+
+  /// No description provided for @challengeSeeAnalysis.
+  ///
+  /// In en, this message translates to:
+  /// **'See results'**
+  String get challengeSeeAnalysis;
+
+  /// No description provided for @challengePaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get challengePaused;
+
+  /// No description provided for @challengePausedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The timer and the recording both stopped.'**
+  String get challengePausedNote;
+
+  /// No description provided for @challengeTimeLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Time left'**
+  String get challengeTimeLeft;
+
+  /// No description provided for @challengeScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get challengeScoreLabel;
+
+  /// No description provided for @challengeResume.
+  ///
+  /// In en, this message translates to:
+  /// **'Resume'**
+  String get challengeResume;
+
+  /// No description provided for @challengeBlockedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t use the camera'**
+  String get challengeBlockedTitle;
+
+  /// No description provided for @challengeBlockedNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on camera and mic access in Settings.'**
+  String get challengeBlockedNote;
+
+  /// No description provided for @challengeGoBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back'**
+  String get challengeGoBack;
+
+  /// No description provided for @challengeOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get challengeOpenSettings;
 }
 
 class _AppLocalizationsDelegate

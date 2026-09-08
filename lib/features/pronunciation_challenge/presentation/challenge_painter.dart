@@ -112,9 +112,11 @@ class ChallengePainter extends CustomPainter {
     for (final c in live) {
       _drawWord(canvas, c);
     }
+    _drawLateChip(canvas);
     _drawFlash(canvas);
     _drawHeard(canvas);
     _drawHits(canvas);
+    _drawWatermark(canvas);
 
     canvas.restore();
   }
@@ -403,6 +405,38 @@ class ChallengePainter extends CustomPainter {
               255, 60, 60, (engine.flashMiss * 0.45).clamp(0.0, 1.0)),
       );
     }
+  }
+
+  // ── LATE stamp (Figma `screen/pron_late`) ───────────────────────
+  //
+  // Sits on the gate's top-left corner while a word is in its grace window.
+  // Opaque, not the design's first pass at amber-10% with #111 ink — that was
+  // one of the two contrast defects the design run recorded.
+  void _drawLateChip(Canvas canvas) {
+    final late = engine.cards.any((c) => c.state == CardState.grace);
+    if (!late) return;
+    final tp = _layout('LATE OK', 34, FontWeight.w900, const Color(0xFF111111));
+    final w = tp.width + 40;
+    const h = 52.0;
+    final rect = Rect.fromLTWH(GameConfig.gateX + 8, GameConfig.gateY - h / 2, w, h);
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect, const Radius.circular(10)),
+      Paint()..color = _kWordLate,
+    );
+    tp.paint(
+      canvas,
+      Offset(rect.center.dx - tp.width / 2, rect.center.dy - tp.height / 2),
+    );
+  }
+
+  // ── watermark (Figma `screen/pron_late`, bottom centre) ─────────
+  //
+  // The clip is the point of this mode, and it gets consumed off-platform.
+  void _drawWatermark(Canvas canvas) {
+    if (!engine.running) return;
+    final tp = _layout(
+        'beavertalk.im', 30, FontWeight.w600, const Color(0x8CFFFFFF));
+    tp.paint(canvas, Offset(GameConfig.w / 2 - tp.width / 2, 1836));
   }
 
   // ── most recent transcript, right under the gate ────────────────

@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
 
 import '../../../app/app_scaffold.dart';
@@ -26,7 +27,7 @@ import 'challenge_controller.dart';
 import 'challenge_painter.dart';
 
 /// Screen phases (which overlay panel is shown over the live game canvas).
-enum _Phase { start, loading, countdown, playing, result }
+enum _Phase { start, loading, countdown, playing, paused, result, blocked }
 
 /// Background of the 9:16 game stage.
 ///
@@ -185,6 +186,13 @@ class _PronunciationChallengeScreenState
   /// and the mic stream would go silent anyway — release both cleanly rather
   /// than let them fail mid-operation.
   Future<void> _onAppPaused() async {
+    // Leaving the app pauses the round. Without this the clock kept running
+    // in the background and the player came back to a finished game — the
+    // web's equivalent was a hidden tab (기능 변형 note).
+    if (_phase == _Phase.playing) {
+      _controller.pauseClock();
+      if (mounted) setState(() => _phase = _Phase.paused);
+    }
     await _camera.pause();
     _sttActiveBeforePause = _sttActive;
     if (_sttActive) {
@@ -238,15 +246,21 @@ class _PronunciationChallengeScreenState
     ]);
     final sttReady = results[1];
     if (!mounted) return;
+    // Neither capture came up — that is the blocked case, and it has its own
+    // screen with the one action that can fix it.
+    if (!results[0] && !sttReady) {
+      setState(() => _phase = _Phase.blocked);
+      return;
+    }
     _beginCountdown(sttReady: sttReady);
   }
 
-  void _beginCountdown({required bool sttReady}) {
+  void _beginCountdown({required bool sttReady, bool resuming = false}) {
     _countdownTimer?.cancel();
     setState(() {
       _phase = _Phase.countdown;
       _countdown = 3;
-      _firstWord = _controller.engine.peekFirstWord();
+      _firstWord = resuming ? null : _controller.engine.peekFirstWord();
     });
     // Open the recognizer NOW, in parallel with the count, and hand the pending
     // future to [_startPlaying].
@@ -264,14 +278,15 @@ class _PronunciationChallengeScreenState
       _countdown--;
       if (_countdown <= 0) {
         t.cancel();
-        _startPlaying(pendingStt: pendingStt);
+        _startPlaying(pendingStt: pendingStt, resuming: resuming);
       } else {
         setState(() {});
       }
     });
   }
 
-  Future<void> _startPlaying({required Future<bool> pendingStt}) async {
+  Future<void> _startPlaying(
+      {required Future<bool> pendingStt, bool resuming = false}) async {
     // Best-effort screen capture; started just before the engine so the whole
     // run is in-frame. Never blocks or fails the game.
     if (_recordEnabled && !_recorder.isRecording) {
@@ -279,7 +294,8 @@ class _PronunciationChallengeScreenState
       await _recorder.start();
       if (!mounted) return;
     }
-    _controller.engine.start();
+    // A resume picks the same round back up; only a fresh run resets it.
+    if (!resuming) _controller.engine.start();
     setState(() => _phase = _Phase.playing);
     // Usually already settled by now (the countdown covered it). Resolves to
     // false when the mic was denied at capture time or the socket never came
@@ -293,6 +309,12 @@ class _PronunciationChallengeScreenState
     if (_phase == _Phase.playing && !_sttActive) {
       _controller.engine.tapPass();
     }
+  }
+
+  /// Resume from the pause panel: count back in, then let the clock run.
+  void _resumeFromPause() {
+    _controller.resumeClock();
+    _beginCountdown(sttReady: _stt.isAvailable, resuming: true);
   }
 
   /// Replay from the result panel (STT/camera already initialized).
@@ -382,7 +404,9 @@ class _PronunciationChallengeScreenState
                 if (_phase == _Phase.start) _startPanel(),
                 if (_phase == _Phase.loading) _loadingPanel(),
                 if (_phase == _Phase.countdown) _countdownPanel(),
+                if (_phase == _Phase.paused) _pausedPanel(),
                 if (_phase == _Phase.result) _resultPanel(),
+                if (_phase == _Phase.blocked) _blockedPanel(),
               ],
             ),
           ),
@@ -736,55 +760,301 @@ class _PronunciationChallengeScreenState
     );
   }
 
+  /// Result — Figma `screen/pron_result`.
+  ///
+  /// Score hero, then the clip with its own share pill, then the two-step
+  /// action stack. The design deliberately keeps share **on the clip** rather
+  /// than as a third full-width button: a third button would undo the density
+  /// pass, and what is being shared is the clip, so it reads better attached
+  /// to it.
   Widget _resultPanel() {
     final l10n = AppLocalizations.of(context);
     final engine = _controller.engine;
     return _panelShell(
       children: [
-        // Branded score card — captured to a PNG for sharing.
-        RepaintBoundary(
-          key: _shareCardKey,
-          child: _shareCard(engine),
+        Text(
+          'Score',
+          style: AppType.label1.b.copyWith(color: context.c.primaryNormal),
         ),
-        const SizedBox(height: AppSpacing.s16),
+        const SizedBox(height: AppSpacing.s4),
+        Text(
+          _thousands(engine.score),
+          style: AppType.display1.b.copyWith(
+            color: _stageInk(context),
+            fontSize: 40,
+            height: 1.2,
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s8),
+        // One line of substance, not a caption stack. The density pass cut
+        // labels; this is the run's actual outcome and the old title claimed
+        // "Nice!" for a run that missed nearly everything.
+        Text(
+          '${l10n.grade} ${engine.grade}  ·  ${l10n.accuracy} '
+          '${(engine.accuracy * 100).round()}%  ·  '
+          '${l10n.bestCombo} ${engine.maxCombo}  ·  '
+          '${l10n.cleared} ${engine.passCount}',
+          textAlign: TextAlign.center,
+          style: AppType.label2.r.copyWith(color: _stageInkNormal(context)),
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        // Clip preview + its share pill. Hidden entirely when nothing was
+        // recorded — an empty white card with a dead play button is worse than
+        // no card (the web hit exactly that on devices that cannot record).
+        if (_videoPath != null) ...[
+          _clipPreview(context),
+          const SizedBox(height: AppSpacing.s12),
+        ],
+        _sharePill(context, l10n),
+        const SizedBox(height: AppSpacing.s24),
         if (!_stt.isAvailable)
           Padding(
             padding: const EdgeInsets.only(bottom: AppSpacing.s12),
             child: Text(
-              AppLocalizations.of(context).challengeSttFallback,
+              l10n.challengeSttFallback,
               textAlign: TextAlign.center,
               style: AppType.label2.r.copyWith(color: const Color(0xFFFFCF5C)),
             ),
           ),
-        _difficultyToggle(),
-        const SizedBox(height: AppSpacing.s16),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Button(
-                type: BtnType.secondaryFill,
-                size: BtnSize.s60,
-                text: l10n.share,
-                onPressed: _shareResult,
-              ),
-            ),
-            const SizedBox(width: AppSpacing.s12),
-            Expanded(
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.playAgain,
-                onPressed: _replay,
-              ),
-            ),
-          ],
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.secondaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeSeeAnalysis,
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s12),
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.playAgain,
+            onPressed: _replay,
+          ),
+        ),
+        // Off-screen: the branded PNG the share sheet actually sends.
+        Offstage(
+          child: RepaintBoundary(
+            key: _shareCardKey,
+            child: _shareCard(engine),
+          ),
         ),
       ],
     );
   }
 
-  /// The shareable branded score card (also shown in the result panel).
+  /// Paused — Figma `screen/pron_paused`.
+  ///
+  /// Reached by leaving the app or taking a call (the web's trigger was a
+  /// hidden tab). The stats card exists so the round can be judged before
+  /// deciding whether to resume or bail.
+  Widget _pausedPanel() {
+    final l10n = AppLocalizations.of(context);
+    final engine = _controller.engine;
+    final mm = (engine.sessionLeft / 60).floor();
+    final ss = (engine.sessionLeft % 60).floor();
+    return _panelShell(
+      children: [
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _pauseBar(context),
+            const SizedBox(width: 9),
+            _pauseBar(context),
+          ],
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        Text(
+          l10n.challengePaused,
+          style: AppType.title2.b.copyWith(color: _stageInk(context)),
+        ),
+        const SizedBox(height: AppSpacing.s8),
+        Text(
+          l10n.challengePausedNote,
+          textAlign: TextAlign.center,
+          style: AppType.body2.r.copyWith(color: _stageInkNormal(context)),
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        Container(
+          height: 76,
+          decoration: BoxDecoration(
+            color: context.c.staticWhite,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: _pauseStat(context, l10n.challengeTimeLeft,
+                    '$mm:${ss.toString().padLeft(2, '0')}'),
+              ),
+              Expanded(
+                child: _pauseStat(context, l10n.challengeScoreLabel,
+                    _thousands(engine.score)),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.secondaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeSeeAnalysis,
+            onPressed: () {
+              _controller.engine.endGame();
+              setState(() => _phase = _Phase.result);
+            },
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s12),
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeResume,
+            onPressed: _resumeFromPause,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _pauseBar(BuildContext context) => DecoratedBox(
+        decoration: BoxDecoration(
+          color: context.c.primaryNormal,
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: const SizedBox(width: 10, height: 34),
+      );
+
+  Widget _pauseStat(BuildContext context, String label, String value) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(label,
+            style: AppType.caption2.b
+                .copyWith(color: context.c.labelNeutral)),
+        const SizedBox(height: 2),
+        Text(value,
+            style: AppType.heading1.b
+                .copyWith(color: context.c.commonDarkAndWhite)),
+      ],
+    );
+  }
+
+  /// Blocked — Figma `screen/pron_permission`.
+  ///
+  /// Shown when the mic or camera cannot be opened. The web's causes were
+  /// browser-shaped (in-app browser, address-bar lock); here they are a denied
+  /// permission or a camera another app already holds, so the fix is Settings.
+  Widget _blockedPanel() {
+    final l10n = AppLocalizations.of(context);
+    return _panelShell(
+      children: [
+        Container(
+          width: 72,
+          height: 72,
+          decoration: BoxDecoration(
+            color: context.c.primaryNormal,
+            shape: BoxShape.circle,
+          ),
+          alignment: Alignment.center,
+          // Dark ink, not mint: mint-on-mint was unreadable, one of the two
+          // contrast defects the design run called out.
+          child: Text(
+            '!',
+            style: AppType.title1.b
+                .copyWith(color: context.c.commonDarkAndWhite),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        Text(
+          l10n.challengeBlockedTitle,
+          textAlign: TextAlign.center,
+          style: AppType.title2.b.copyWith(color: _stageInk(context)),
+        ),
+        const SizedBox(height: AppSpacing.s8),
+        Text(
+          l10n.challengeBlockedNote,
+          textAlign: TextAlign.center,
+          style: AppType.body2.r.copyWith(color: _stageInkNormal(context)),
+        ),
+        const SizedBox(height: AppSpacing.s24),
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.secondaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeGoBack,
+            onPressed: () => Navigator.pop(context),
+          ),
+        ),
+        const SizedBox(height: AppSpacing.s8),
+        SizedBox(
+          width: double.infinity,
+          child: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.challengeOpenSettings,
+            onPressed: () => unawaited(openAppSettings()),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// The recorded clip, as a white card with a mint play button (88×148).
+  Widget _clipPreview(BuildContext context) {
+    return GestureDetector(
+      onTap: _shareResult,
+      child: Container(
+        width: 88,
+        height: 148,
+        decoration: BoxDecoration(
+          color: context.c.staticWhite,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Center(
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: context.c.primaryNormal,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(Icons.play_arrow_rounded,
+                size: 24, color: context.c.commonDarkAndWhite),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// Outline share pill — sits under the clip, not in the button stack.
+  Widget _sharePill(BuildContext context, AppLocalizations l10n) {
+    return OutlinedButton.icon(
+      onPressed: _shareResult,
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        side: BorderSide(color: context.c.primaryNormal),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24),
+        ),
+      ),
+      icon: Icon(Icons.share, size: 18, color: context.c.primaryNormal),
+      label: Text(
+        l10n.share,
+        style: AppType.body1.b.copyWith(color: context.c.primaryNormal),
+      ),
+    );
+  }
+
   Widget _shareCard(ChallengeEngine engine) {
     return Container(
       width: 300,
