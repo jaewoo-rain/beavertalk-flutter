@@ -73,9 +73,7 @@ void main() {
       final c2 = ChallengeCard(
         id: 999,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards.add(c2);
       e.passCard(c2);
@@ -92,9 +90,7 @@ void main() {
         final c = ChallengeCard(
           id: 1000 + i,
           word: 'x',
-          colorIndex: 0,
-          x: GameConfig.zoneCx,
-          y: GameConfig.beltY,
+          k: 1.0,
         );
         e.missCard(c);
       }
@@ -112,22 +108,90 @@ void main() {
       expect(e.running, isFalse);
     });
 
-    test('spawn spacing is respected (never closer than MIN_SPACING)', () {
+    test('spawn spacing is respected (never closer than K_SPACING)', () {
       final e = _seededEngine();
       e.start();
-      // Run ~10s of simulation at 60fps and check live-card spacing.
+      // Run ~10s of simulation at 60fps and check live-word depth spacing.
       for (var i = 0; i < 600; i++) {
         e.update(1 / 60);
         final live = e.cards.where((c) => c.state == CardState.live).toList()
-          ..sort((a, b) => a.x.compareTo(b.x));
-        for (var k = 1; k < live.length; k++) {
-          final gap = live[k].x - live[k - 1].x;
-          // Cards spawn at SPAWN_X only once the rightmost is >= MIN_SPACING
-          // away, so adjacent live cards are always at least that far apart
-          // (small float tolerance for one integration step).
-          expect(gap, greaterThanOrEqualTo(GameConfig.minSpacing - 5));
+          ..sort((a, b) => a.k.compareTo(b.k));
+        for (var n = 1; n < live.length; n++) {
+          final gap = live[n].k - live[n - 1].k;
+          // A word spawns at K_SPAWN only once the youngest live one is
+          // K_SPACING ahead, and every live word advances at the same rate, so
+          // that gap is preserved (small float tolerance for one step).
+          expect(gap, greaterThanOrEqualTo(GameConfig.kSpacing - 0.01));
         }
       }
+    });
+
+    test('overlap invariant: no two live words are within a 1.6 k-ratio', () {
+      // The real constraint behind K_SPACING. A word's half-height is
+      // ~0.57*size, so two words only clear each other above a k ratio of 1.6.
+      final e = _seededEngine();
+      e.start();
+      for (var i = 0; i < 900; i++) {
+        e.update(1 / 60);
+        final live = e.cards.where((c) => c.state == CardState.live).toList()
+          ..sort((a, b) => a.k.compareTo(b.k));
+        for (var n = 1; n < live.length; n++) {
+          expect(live[n].k / live[n - 1].k, greaterThanOrEqualTo(1.6));
+        }
+      }
+    });
+
+    test('a word past K_MISS freezes into grace, not a miss', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(id: 1, word: '사과', k: GameConfig.kMiss - 0.001);
+      e.cards
+        ..clear()
+        ..add(c);
+      e.update(1 / 30); // enough to carry it past kMiss
+      expect(c.state, CardState.grace);
+      expect(c.k, GameConfig.kMiss);
+      expect(e.backlog, 0, reason: 'grace must not count as a miss yet');
+    });
+
+    test('a grace word still passes, at the late-point ratio', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(
+        id: 1,
+        word: '사과',
+        k: GameConfig.kMiss,
+        state: CardState.grace,
+        graceLeft: GameConfig.graceSec,
+      );
+      e.cards
+        ..clear()
+        ..add(c);
+      expect(e.tryPassToken('사과'), isTrue);
+      expect(c.state, CardState.pass);
+      // 100 * 0.6 = 60, versus 100 for an on-time first pass.
+      expect(e.score, (100 * GameConfig.latePointRatio).round());
+      expect(e.hitTexts.single.sub, 'LATE');
+    });
+
+    test('grace running out is the miss', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(
+        id: 1,
+        word: '사과',
+        k: GameConfig.kMiss,
+        state: CardState.grace,
+        graceLeft: GameConfig.graceSec,
+      );
+      e.cards
+        ..clear()
+        ..add(c);
+      e.update(GameConfig.graceSec / 2);
+      expect(e.backlog, 0);
+      e.update(GameConfig.graceSec);
+      expect(c.state, CardState.miss);
+      expect(e.backlog, 1);
     });
 
     test('tapPass passes the front-most in-zone card only', () {
@@ -137,16 +201,12 @@ void main() {
       final near = ChallengeCard(
         id: 1,
         word: 'a',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       final far = ChallengeCard(
         id: 2,
         word: 'b',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + GameConfig.acceptMargin + 200,
-        y: GameConfig.beltY,
+        k: GameConfig.kSpawn, // far from the viewer → below kAccept
       );
       e.cards
         ..clear()

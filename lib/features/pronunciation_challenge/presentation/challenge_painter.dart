@@ -1,4 +1,5 @@
 import 'dart:math' as math;
+import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,8 +15,11 @@ import '../domain/game_config.dart';
 /// (`size.width / 1080`), so every draw call below keeps the web game's verbatim
 /// constants. Hosted inside an `AspectRatio(9/16)` so width/height stay in sync.
 ///
-/// Draw order mirrors the web game `render()` (lines 576–586):
-/// bg → belt → zone → non-live cards → live cards → flash → HUD → hit-texts.
+/// **원근 터널 판 (정본 시안 2026-08-31).** Words do not slide sideways on a
+/// belt and there are no wooden planks — a word is white text with a thick
+/// outline that grows out of the vanishing point straight at the viewer. Draw
+/// order mirrors the web game `render()` (lines 1245–1258): camera → tunnel →
+/// gate → dying words → live words (far first) → flash → HUD → hit-texts.
 class ChallengePainter extends CustomPainter {
   /// Creates the painter, repainting whenever [engine]'s controller notifies.
   ChallengePainter({
@@ -40,18 +44,6 @@ class ChallengePainter extends CustomPainter {
   /// Read on every frame so the gauge tracks without rebuilding the painter.
   final ValueListenable<double>? micLevel;
 
-  /// Card-colour palette (web game `CARD_COLORS`, line 212). Indexed by
-  /// [ChallengeCard.colorIndex]. Length must equal
-  /// `CuratedWordSource.paletteSize`.
-  static const List<Color> cardColors = <Color>[
-    Color(0xFFE4572E),
-    Color(0xFF2E86E4),
-    Color(0xFF00FFB2),
-    Color(0xFFE4B72E),
-    Color(0xFFB04FE6),
-    Color(0xFFE64F92),
-  ];
-
   /// `Primary/Normal` for the current mode, handed in by the widget — a
   /// painter has no context, and a `static` could only ever hold one mode.
   final Color _mint;
@@ -59,34 +51,45 @@ class ChallengePainter extends CustomPainter {
   /// `Background/Normal/Normal` for the current mode — the game canvas fill.
   final Color _background;
 
-  /// Per-word cache of the (outline, fill) layers — avoids re-layout each frame.
+  /// Cache of the (outline, fill) text layers, keyed by word, quantised font
+  /// size and outline colour.
+  ///
+  /// The tunnel scales text continuously, so this is bucketed rather than
+  /// one-entry-per-word: an unbucketed cache would grow without bound, and
+  /// laying the text out every frame would show up on a low-end device.
   static final Map<String, (TextPainter, TextPainter)> _wordCache =
       <String, (TextPainter, TextPainter)>{};
 
-  /// In-plane twist about the Z axis (radians) — the diagonal slant of the
-  /// floating sentence. Negative = counter-clockwise (reads upward to the
-  /// right). Flat rotation only (no 3D fold), per the chosen design.
-  static const double _kTextTilt = -0.38;
+  /// Font-size bucket (design px) for [_wordCache]. 6px steps are below the
+  /// eye's threshold at these sizes.
+  static const double _kSizeBucket = 6;
 
-  /// Wrap width (design px): the sentence lays out across multiple lines at this
-  /// width instead of shrinking onto one line, so long text stays readable.
-  static const double _kWrapWidth = 360;
+  /// Hard cap on [_wordCache] entries, cleared wholesale when exceeded.
+  ///
+  /// A passing word keeps growing (`k` accelerates past the viewer), so its
+  /// font size runs well past the judgment-point 190 and mints a fresh bucket
+  /// every 6px on the way out. Without this cap a 30s session leaves behind
+  /// four figures' worth of laid-out paragraphs — the exact shape of the
+  /// out-of-memory failure this game already hit once on the low-end device.
+  static const int _kWordCacheMax = 192;
 
-  /// Caps on the wrapped text block; only if it exceeds these does it scale down
-  /// (a very long sentence with many lines), so it never overruns the belt.
-  static const double _kMaxTextWidth = 360;
-  static const double _kMaxTextHeight = 470;
+  /// Above this size a word is on its way out of frame and no longer read, so
+  /// it reuses the judgment-point layout scaled by the canvas instead of
+  /// laying out a new one.
+  static const double _kMaxCachedSize = GameConfig.wordSizeNear;
 
-  /// Design-space font size of the floating card text.
-  static const double _kTextFontSize = 62;
+  /// Word fill / outline colours (web `WORD_FILL` … `WORD_MISS`, lines 350–353).
+  static const Color _kWordFill = Color(0xFFFFFFFF); // Static/White
+  static const Color _kWordOutline = Color(0xFF0B0F14); // Background/Normal/Deep
+  static const Color _kWordLate = Color(0xFFFFB548); // Status/Cautionary-Surface
+  static const Color _kWordMiss = Color(0xFFFF7070); // Status/Negative
 
-  /// Outline (stroke) width around the floating white text — keeps it legible
-  /// over the camera selfie / belt regardless of what's behind it.
-  static const double _kTextOutline = 11;
+  /// HUD label grey (web `#9ea3b2`).
+  static const Color _kHudLabel = Color(0xFF9EA3B2);
 
-  /// Fill + outline colours for the floating text (design A: white on dark).
-  static const Color _kTextFill = Color(0xFFFFFFFF);
-  static const Color _kTextOutlineColor = Color(0xFF0C0F14);
+  /// Tunnel wedge / rail spread at the bottom edge (web lines 1116–1124).
+  static const double _kRailLeft = -160;
+  static const double _kRailRight = 1240;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -94,15 +97,19 @@ class ChallengePainter extends CustomPainter {
     canvas.scale(size.width / GameConfig.w); // design space → widget space
 
     _drawBackground(canvas);
-    _drawBelt(canvas);
-    final listening =
-        engine.running && engine.frontmostInZoneCard() != null;
-    _drawZone(canvas, listening);
+    _drawTunnel(canvas);
+    final listening = engine.running && engine.frontmostInZoneCard() != null;
+    _drawGate(canvas, listening);
+    // Dying words (pass/miss/grace) go down first, live words on top, far
+    // before near. A grace word sits frozen at kMiss for 0.7s and can overlap
+    // the follower; this order keeps a dying word off the one being judged.
     for (final c in engine.cards) {
-      if (c.state != CardState.live) _drawCard(canvas, c);
+      if (c.state != CardState.live) _drawWord(canvas, c);
     }
-    for (final c in engine.cards) {
-      if (c.state == CardState.live) _drawCard(canvas, c);
+    final live = engine.cards.where((c) => c.state == CardState.live).toList()
+      ..sort((a, b) => a.k.compareTo(b.k));
+    for (final c in live) {
+      _drawWord(canvas, c);
     }
     _drawFlash(canvas);
     _drawHud(canvas);
@@ -123,151 +130,229 @@ class ChallengePainter extends CustomPainter {
     );
   }
 
-  // ── mic level gauge (web drawHUD mic indicator, lines 548–554) ──────
-  void _drawMic(Canvas canvas) {
-    final level = (micLevel?.value ?? 0).clamp(0.0, 1.0);
-    const micY = GameConfig.h - 215;
-    const micIconX = GameConfig.w / 2 - 108;
-    // Mint mic dot.
-    canvas.drawCircle(
-      const Offset(micIconX, micY),
-      32,
-      Paint()..color = _mint.withValues(alpha: 0.9),
-    );
-    // Level gauge.
-    const gw = 190.0;
-    const gx = micIconX + 52;
-    const gy = micY - 13;
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(gx, gy, gw * level, 26),
-        const Radius.circular(13),
-      ),
-      Paint()..color = _mint.withValues(alpha: 0.85),
-    );
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        const Rect.fromLTWH(gx, gy, gw, 26),
-        const Radius.circular(13),
-      ),
-      Paint()
-        ..style = PaintingStyle.stroke
-        ..strokeWidth = 2
-        ..color = const Color(0x40FFFFFF),
-    );
-  }
-
-  // ── belt (web game drawBelt, 491–503) ──────────────────────────────
-  void _drawBelt(Canvas canvas) {
-    final top = GameConfig.beltY + GameConfig.cardH / 2 - 20;
-    final bot = top + 330;
-
-    // Band.
-    canvas.drawRect(
-      Rect.fromLTWH(0, top, GameConfig.w, bot - top),
-      Paint()..color = const Color(0xFF20262C),
+  // ── tunnel (web drawTunnel, 1110–1136) ──────────────────────────────
+  void _drawTunnel(Canvas canvas) {
+    const vp = Offset(GameConfig.vpX, GameConfig.vpY);
+    // Both gradients run down Y only, matching
+    // `ctx.createLinearGradient(0, VP_Y, 0, H)`.
+    const gradientRect = Rect.fromLTRB(
+      0,
+      GameConfig.vpY,
+      GameConfig.w,
+      GameConfig.h,
     );
 
-    // Moving diagonal stripes (clipped to the band, minus the front edge).
-    canvas.save();
-    canvas.clipRect(Rect.fromLTWH(0, top, GameConfig.w, bot - top - 40));
-    final stripe = Paint()
-      ..color = const Color(0x0DFFFFFF) // rgba(255,255,255,.05)
-      ..strokeWidth = 26
-      ..style = PaintingStyle.stroke;
-    for (var x = -80 + engine.beltOffset; x < GameConfig.w + 120; x += 80) {
-      canvas.drawLine(Offset(x, top - 20), Offset(x - 60, bot), stripe);
-    }
-    canvas.restore();
-
-    // Red/white front edge.
-    final ey = bot - 40;
-    final edge = Paint();
-    for (var x = -40 + engine.beltOffset * .5;
-        x < GameConfig.w + 40;
-        x += 56) {
-      edge.color = ((x / 56).floor() % 2 == 0)
-          ? const Color(0xFFE23B3B)
-          : const Color(0xFFF2F2F2);
-      canvas.drawRect(Rect.fromLTWH(x, ey, 56, 40), edge);
-    }
-  }
-
-  // ── judgment zone (dashed; web game drawZone, 504–511) ──────────────
-  void _drawZone(Canvas canvas, bool listening) {
-    final x = GameConfig.zoneCx - GameConfig.zoneHalf;
-    final y = GameConfig.beltY - GameConfig.cardH / 2 - 16;
-    final w = GameConfig.zoneHalf * 2;
-    final h = GameConfig.cardH + 32;
-    final glow = listening
-        ? (0.5 + 0.5 * (math.sin(engine.clock * 1000 / 260)).abs())
-        : 0.25;
-    final rrect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(x, y, w, h),
-      const Radius.circular(26),
-    );
-    final base = Path()..addRRect(rrect);
+    // Floor wedge — fans out from the vanishing point to the bottom edge.
+    final wedge = Path()
+      ..moveTo(vp.dx, vp.dy)
+      ..lineTo(_kRailLeft, GameConfig.h)
+      ..lineTo(_kRailRight, GameConfig.h)
+      ..close();
     canvas.drawPath(
-      _dashPath(base, const <double>[18, 12]),
+      wedge,
+      Paint()
+        ..shader = LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: <Color>[
+            _mint.withValues(alpha: 0),
+            _mint.withValues(alpha: 0.030),
+            _mint.withValues(alpha: 0.085),
+          ],
+          stops: const <double>[0, 0.6, 1],
+        ).createShader(gradientRect),
+    );
+
+    // Rails.
+    final railPaint = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 4
+      ..shader = LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: <Color>[
+          _mint.withValues(alpha: 0.04),
+          _mint.withValues(alpha: 0.55),
+        ],
+      ).createShader(gradientRect);
+    for (final x2 in const <double>[_kRailLeft, _kRailRight]) {
+      canvas.drawLine(vp, Offset(x2, GameConfig.h), railPaint);
+    }
+
+    // Rungs — without these the tunnel reads as a still image. They accelerate
+    // toward the viewer (quadratic easing = perspective).
+    final rung = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 3;
+    for (var i = 0; i < 4; i++) {
+      final t = ((i / 4) + engine.rungPhase) % 1;
+      final e = t * t;
+      final y = GameConfig.vpY + (GameConfig.h - GameConfig.vpY) * e;
+      final half = 700 * e;
+      rung.color = _mint.withValues(alpha: 0.05 + e * 0.11);
+      canvas.drawLine(
+        Offset(GameConfig.vpX - half, y),
+        Offset(GameConfig.vpX + half, y),
+        rung,
+      );
+    }
+  }
+
+  // ── gate (web drawGate, 1137–1158) ──────────────────────────────────
+  void _drawGate(Canvas canvas, bool listening) {
+    final glow = listening
+        ? (0.5 + 0.5 * math.sin(engine.clock * 1000 / 260).abs())
+        : 0.25;
+    const l = GameConfig.gateX;
+    const t = GameConfig.gateY;
+    const r = GameConfig.gateX + GameConfig.gateW;
+    const b = GameConfig.gateY + GameConfig.gateH;
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(l, t, GameConfig.gateW, GameConfig.gateH),
+        const Radius.circular(32),
+      ),
       Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 6
-        ..color = _mint.withValues(alpha: (0.35 + glow * 0.6).clamp(0.0, 1.0)),
+        ..strokeWidth = listening ? 5 : 3
+        ..color = _mint.withValues(alpha: (0.18 + glow * 0.55).clamp(0.0, 1.0)),
+    );
+
+    // Corner brackets. A dashed rectangle was unreadable in a still frame, and
+    // the shared clip gets consumed as a thumbnail first.
+    final bracket = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 8
+      ..strokeCap = StrokeCap.round
+      ..color = _mint.withValues(alpha: (0.55 + glow * 0.40).clamp(0.0, 1.0));
+    const armLen = 70.0;
+    for (final corner in const <List<double>>[
+      <double>[l, t, 1, 1],
+      <double>[r, t, -1, 1],
+      <double>[l, b, 1, -1],
+      <double>[r, b, -1, -1],
+    ]) {
+      final cx = corner[0];
+      final cy = corner[1];
+      canvas.drawLine(
+        Offset(cx, cy),
+        Offset(cx + armLen * corner[2], cy),
+        bracket,
+      );
+      canvas.drawLine(
+        Offset(cx, cy),
+        Offset(cx, cy + armLen * corner[3]),
+        bracket,
+      );
+    }
+
+    // Glowing floor line. Canvas `shadowBlur` is roughly twice a Skia blur
+    // sigma, so the glow pass uses half the web's value.
+    final bw = listening ? 700.0 : 560.0;
+    final bh = listening ? 14.0 : 10.0;
+    final bar = RRect.fromRectAndRadius(
+      Rect.fromLTWH(GameConfig.vpX - bw / 2, b - bh, bw, bh),
+      Radius.circular(bh / 2),
+    );
+    canvas.drawRRect(
+      bar,
+      Paint()
+        ..color = _mint.withValues(alpha: listening ? 0.95 : 0.9)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, listening ? 30 : 17),
+    );
+    canvas.drawRRect(
+      bar,
+      Paint()..color = _mint.withValues(alpha: listening ? 0.95 : 0.9),
     );
   }
 
-  // ── card = floating outlined sentence (design A: white text + dark outline,
-  //    no plank; the word/sentence just floats on the belt, tilted on the Z
-  //    axis so it reads on a diagonal) ─────────────────────────────────────
-  void _drawCard(Canvas canvas, ChallengeCard c) {
-    final cy = c.state == CardState.live ? GameConfig.beltY : c.y;
-    final a = c.alpha.clamp(0.0, 1.0);
-    canvas.save();
-    canvas.translate(c.x, cy);
-    if (c.rot != 0) canvas.rotate(c.rot);
+  // ── word (web drawWord, 1159–1175) ──────────────────────────────────
+  //
+  // No plank: white fill over a thick dark outline, centred on the vanishing
+  // axis. Both size and Y come from `k`.
+  void _drawWord(Canvas canvas, ChallengeCard c) {
+    final k = math.max(0.02, c.k);
+    final size = GameConfig.wordSize(k);
+    final y = GameConfig.wordY(k);
+    final a =
+        c.alpha.clamp(0.0, 1.0) * (c.state == CardState.grace ? 0.55 : 1.0);
+    if (a <= 0) return;
 
-    final (outline, fill) = _wordLayers(c.word);
-    // Fade via a save-layer when passing/missing. Bounds are generous (the
-    // rotated text has no card box to clip to).
+    final outlineColor = switch (c.state) {
+      CardState.grace => _kWordLate,
+      CardState.miss => _kWordMiss,
+      _ => _kWordOutline,
+    };
+    final (outline, fill) = _wordLayers(c.word, size, outlineColor);
+    // Past the cache ceiling the layers stop growing, so the canvas carries the
+    // rest of the scale. Only a passing word gets here, on its way out of
+    // frame, where re-laying-out the glyphs would buy nothing.
+    final overshoot = size > _kMaxCachedSize ? size / _kMaxCachedSize : 1.0;
+
+    canvas.save();
+    canvas.translate(GameConfig.vpX, y);
+    if (overshoot > 1) canvas.scale(overshoot);
+
+    // Layer bounds hug the glyphs plus one font-size of slack (local coords, so
+    // the scale above applies to them too). The blur spreads about 3*sigma
+    // (= 66*k), which that slack covers. Full-width bounds made every glowing
+    // word a 2160px-wide blurred layer — the kind of per-frame cost that shows
+    // up on the low-end target device.
+    final pad = math.min(size, _kMaxCachedSize);
+    final bounds = Rect.fromCenter(
+      center: Offset.zero,
+      width: outline.width + pad * 2,
+      height: outline.height + pad * 2,
+    );
+    final at = Offset(-outline.width / 2, -outline.height / 2);
+
     final needLayer = a < 0.999;
     if (needLayer) {
       canvas.saveLayer(
-        Rect.fromCenter(center: Offset.zero, width: 460, height: 460),
+        bounds,
         Paint()..color = Color.fromRGBO(255, 255, 255, a),
       );
     }
-    canvas.save();
-    canvas.rotate(_kTextTilt); // twist the sentence onto its diagonal (Z axis)
-    // The text already wrapped to [_kWrapWidth]; only scale down if the wrapped
-    // block still overruns the width/height caps (a very long sentence).
-    final scale = math.min(
-      1.0,
-      math.min(
-        _kMaxTextWidth / outline.width,
-        _kMaxTextHeight / outline.height,
-      ),
-    );
-    if (scale < 1.0) canvas.scale(scale);
-    // Outline first (behind), then the white fill on top.
-    outline.paint(canvas, Offset(-outline.width / 2, -outline.height / 2));
+    // A word inside the accept range glows — that is the "speak now" cue.
+    if (c.state == CardState.live && k >= GameConfig.kAccept) {
+      canvas.saveLayer(
+        bounds,
+        Paint()
+          ..imageFilter = ImageFilter.blur(sigmaX: 22 * k, sigmaY: 22 * k),
+      );
+      outline.paint(canvas, at);
+      canvas.restore();
+    }
+    outline.paint(canvas, at);
     fill.paint(canvas, Offset(-fill.width / 2, -fill.height / 2));
-    canvas.restore();
     if (needLayer) canvas.restore();
-
     canvas.restore();
   }
 
-  /// Builds (and caches) the two text layers for [word]: a thick dark outline
-  /// and the white fill on top, so the floating text stays legible over the
-  /// camera selfie / belt.
-  (TextPainter, TextPainter) _wordLayers(String word) {
-    return _wordCache.putIfAbsent(word, () {
+  /// Builds (and caches) the two text layers for [word] at [size]: a thick
+  /// outline in [outlineColor] and the white fill on top.
+  ///
+  /// Long text wraps to the gate width instead of shrinking, so a learned
+  /// **sentence** stays readable at the judgment point.
+  (TextPainter, TextPainter) _wordLayers(
+    String word,
+    double size,
+    Color outlineColor,
+  ) {
+    final fontSize = math.max(
+      _kSizeBucket,
+      math.min(_kMaxCachedSize, (size / _kSizeBucket).round() * _kSizeBucket),
+    );
+    final key = '$word|$fontSize|${outlineColor.toARGB32()}';
+    if (_wordCache.length > _kWordCacheMax) _wordCache.clear();
+    return _wordCache.putIfAbsent(key, () {
       TextPainter make(Paint paint) => TextPainter(
             text: TextSpan(
               text: word,
               style: TextStyle(
                 fontFamily: kFontFamily,
-                fontSize: _kTextFontSize,
+                fontSize: fontSize,
                 fontWeight: FontWeight.w900,
                 height: 1.15,
                 foreground: paint,
@@ -275,20 +360,47 @@ class ChallengePainter extends CustomPainter {
             ),
             textAlign: TextAlign.center,
             textDirection: TextDirection.ltr,
-            // Wrap long sentences across lines (identical layout for both
-            // layers so the outline sits exactly under the fill).
-          )..layout(maxWidth: _kWrapWidth);
+          )..layout(maxWidth: GameConfig.gateW - 80);
       final outline = make(Paint()
         ..style = PaintingStyle.stroke
-        ..strokeWidth = _kTextOutline
+        ..strokeWidth = math.max(4, fontSize * 0.085)
         ..strokeJoin = StrokeJoin.round
-        ..color = _kTextOutlineColor);
-      final fill = make(Paint()..color = _kTextFill);
+        ..color = outlineColor);
+      final fill = make(Paint()..color = _kWordFill);
       return (outline, fill);
     });
   }
 
-  // ── flash (web game drawFlash, 571–574) ─────────────────────────────
+  // ── mic level gauge (web drawHUD mic block, lines 1211–1216) ────────
+  void _drawMic(Canvas canvas) {
+    final level = (micLevel?.value ?? 0).clamp(0.0, 1.0);
+    _text(
+      canvas,
+      'MIC',
+      x: 56,
+      y: 1802,
+      fontSize: 26,
+      weight: FontWeight.w600,
+      color: _kHudLabel,
+      align: _HAlign.left,
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        const Rect.fromLTWH(56, 1832, 340, 24),
+        const Radius.circular(12),
+      ),
+      Paint()..color = const Color(0x29FFFFFF),
+    );
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(56, 1832, math.max(10, 340 * level), 24),
+        const Radius.circular(12),
+      ),
+      Paint()..color = level > 0.03 ? _mint : const Color(0xFF777C89),
+    );
+  }
+
+  // ── flash (web drawFlash, 1240–1243) ────────────────────────────────
   void _drawFlash(Canvas canvas) {
     const full = Rect.fromLTWH(0, 0, GameConfig.w, GameConfig.h);
     if (engine.flashPass > 0) {
@@ -309,13 +421,14 @@ class ChallengePainter extends CustomPainter {
     }
   }
 
-  // ── HUD (timer / score / combo / backlog; web game drawHUD, 531–561) ─
+  // ── HUD (web drawHUD, 1176–1230) ────────────────────────────────────
   void _drawHud(Canvas canvas) {
     final mm = (engine.sessionLeft / 60).floor();
     final ss = (engine.sessionLeft % 60).floor();
     final tstr = '$mm:${ss.toString().padLeft(2, '0')}';
 
-    // Timer pill.
+    // Timer pill (centre) + score (right). Back is a Flutter overlay, so it is
+    // not on the canvas.
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         const Rect.fromLTWH(GameConfig.w / 2 - 130, 52, 260, 92),
@@ -329,61 +442,89 @@ class ChallengePainter extends CustomPainter {
       x: GameConfig.w / 2,
       y: 100,
       fontSize: 60,
-      weight: FontWeight.w800,
-      color: engine.sessionLeft <= 10 ? const Color(0xFFFF6B6B) : Colors.white,
+      weight: FontWeight.w900,
+      color: engine.sessionLeft <= 10 ? const Color(0xFFFF7070) : Colors.white,
     );
 
-    // Score (right aligned).
+    _text(
+      canvas,
+      'SCORE',
+      x: GameConfig.w - 56,
+      y: 70,
+      fontSize: 24,
+      weight: FontWeight.w600,
+      color: _kHudLabel,
+      align: _HAlign.right,
+    );
     _text(
       canvas,
       _thousands(engine.score),
       x: GameConfig.w - 56,
-      y: 100,
-      fontSize: 46,
-      weight: FontWeight.w800,
+      y: 118,
+      fontSize: 56,
+      weight: FontWeight.w900,
       color: Colors.white,
       align: _HAlign.right,
     );
 
-    // Combo.
+    // Combo — the pill grows with the label.
     if (engine.combo > 1) {
-      _text(
+      final tp = _layout('COMBO x${engine.combo}', 46, FontWeight.w900, _mint);
+      final pw = tp.width + 80;
+      final pill = RRect.fromRectAndRadius(
+        Rect.fromLTWH(GameConfig.w / 2 - pw / 2, 180, pw, 74),
+        const Radius.circular(37),
+      );
+      canvas.drawRRect(pill, Paint()..color = _mint.withValues(alpha: 0.14));
+      canvas.drawRRect(
+        pill,
+        Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 3
+          ..color = _mint.withValues(alpha: 0.5),
+      );
+      tp.paint(
         canvas,
-        'COMBO ×${engine.combo}',
-        x: GameConfig.w / 2,
-        y: 210,
-        fontSize: 48,
-        weight: FontWeight.w900,
-        color: _mint,
+        Offset(GameConfig.w / 2 - tp.width / 2, 218 - tp.height / 2),
       );
     }
 
-    // Backlog (MISS label + slots).
+    // Backlog — bottom right. The belt판 stacked MIC and MISS vertically and
+    // both were cramped; the tunnel splits them to opposite corners.
     _text(
       canvas,
       'MISS',
-      x: 56,
-      y: GameConfig.h - 70,
-      fontSize: 34,
-      weight: FontWeight.w800,
-      color: const Color(0xFFCFD6DC),
-      align: _HAlign.left,
+      x: GameConfig.w - 56,
+      y: 1802,
+      fontSize: 26,
+      weight: FontWeight.w600,
+      color: _kHudLabel,
+      align: _HAlign.right,
     );
+    const slotW = 52.0;
+    const gap = 6.0;
+    const total =
+        GameConfig.maxBacklog * slotW + (GameConfig.maxBacklog - 1) * gap;
     for (var i = 0; i < GameConfig.maxBacklog; i++) {
       canvas.drawRRect(
         RRect.fromRectAndRadius(
-          Rect.fromLTWH(170 + i * 54, GameConfig.h - 92, 44, 44),
-          const Radius.circular(10),
+          Rect.fromLTWH(
+            GameConfig.w - 56 - total + i * (slotW + gap),
+            1830,
+            slotW,
+            30,
+          ),
+          const Radius.circular(6),
         ),
         Paint()
           ..color = i < engine.backlog
-              ? const Color(0xFFFF5555)
-              : const Color(0x33FFFFFF),
+              ? const Color(0xFFFF7070)
+              : const Color(0x2EFFFFFF),
       );
     }
   }
 
-  // ── hit texts (web game drawHits, 562–570) ──────────────────────────
+  // ── hit texts (web drawHits, 1231–1239) ─────────────────────────────
   void _drawHits(Canvas canvas) {
     for (final h in engine.hitTexts) {
       final a = h.life.clamp(0.0, 1.0);
@@ -411,6 +552,25 @@ class ChallengePainter extends CustomPainter {
   }
 
   // ── helpers ─────────────────────────────────────────────────────────
+  TextPainter _layout(
+    String s,
+    double fontSize,
+    FontWeight weight,
+    Color color,
+  ) =>
+      TextPainter(
+        text: TextSpan(
+          text: s,
+          style: TextStyle(
+            fontFamily: kFontFamily,
+            fontSize: fontSize,
+            fontWeight: weight,
+            color: color,
+          ),
+        ),
+        textDirection: TextDirection.ltr,
+      )..layout();
+
   void _text(
     Canvas canvas,
     String s, {
@@ -421,18 +581,7 @@ class ChallengePainter extends CustomPainter {
     required Color color,
     _HAlign align = _HAlign.center,
   }) {
-    final tp = TextPainter(
-      text: TextSpan(
-        text: s,
-        style: TextStyle(
-          fontFamily: kFontFamily,
-          fontSize: fontSize,
-          fontWeight: weight,
-          color: color,
-        ),
-      ),
-      textDirection: TextDirection.ltr,
-    )..layout();
+    final tp = _layout(s, fontSize, weight, color);
     final double dx;
     switch (align) {
       case _HAlign.left:
@@ -454,25 +603,6 @@ class ChallengePainter extends CustomPainter {
       buf.write(s[i]);
     }
     return buf.toString();
-  }
-
-  /// Emulates `ctx.setLineDash([on, off])` by extracting dashed sub-paths.
-  Path _dashPath(Path source, List<double> pattern) {
-    final dest = Path();
-    for (final metric in source.computeMetrics()) {
-      var dist = 0.0;
-      var draw = true;
-      var idx = 0;
-      while (dist < metric.length) {
-        final len = pattern[idx % pattern.length];
-        final end = math.min(dist + len, metric.length);
-        if (draw) dest.addPath(metric.extractPath(dist, end), Offset.zero);
-        dist += len;
-        idx++;
-        draw = !draw;
-      }
-    }
-    return dest;
   }
 
   @override

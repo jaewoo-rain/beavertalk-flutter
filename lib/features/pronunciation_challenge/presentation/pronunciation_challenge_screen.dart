@@ -318,6 +318,14 @@ class _PronunciationChallengeScreenState
                         child: Stack(
                           fit: StackFit.expand,
                           children: [
+                            // Stage floor. The camera preview is fit-WIDTH, so
+                            // it leaves the bottom of the 9:16 stage uncovered;
+                            // without this the page background shows through
+                            // there and the tunnel's HUD row (MIC / MISS, at
+                            // design y 1802) lands on white in light mode. The
+                            // web fills the same gap with a dimmed copy of the
+                            // frame.
+                            const ColoredBox(color: _kStageBackground),
                             _cameraBackdrop(),
                             CustomPaint(
                               painter: ChallengePainter(

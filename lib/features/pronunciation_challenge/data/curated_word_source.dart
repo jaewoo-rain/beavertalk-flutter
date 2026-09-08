@@ -1,23 +1,20 @@
 import 'dart:math';
 
-/// A word drawn from the shuffle bag: the Korean word plus its palette index.
+/// A word drawn from the shuffle bag.
 class DrawnWord {
   /// Creates a drawn word.
-  const DrawnWord(this.word, this.colorIndex);
+  const DrawnWord(this.word);
 
   /// Korean word to pronounce.
   final String word;
-
-  /// Index into the card-colour palette.
-  final int colorIndex;
 }
 
 /// Supplies clean beginner Korean nouns via a shuffle bag (avoids clustering).
 ///
 /// The word list is the web game's `WORDS` (lines 204–211) **minus** its five
 /// profanities (씨발 · 병신 · 바보 · 멍청이 · 개새끼), topped up with common
-/// beginner nouns so the pool stays varied. Colour assignment mirrors the web
-/// game: `colorIndex = wordIndex % paletteSize` (line 270).
+/// beginner nouns so the pool stays varied. The web game's per-card colour index
+/// went away with the 원근 터널 판 — words are white-on-outline, not planks.
 class CuratedWordSource {
   /// Creates a source. Pass a seeded [random] for deterministic tests.
   ///
@@ -34,9 +31,6 @@ class CuratedWordSource {
   final Random _random;
   final List<String> _pool;
   final List<int> _bag = <int>[];
-
-  /// Number of colours in the card palette (see the painter's `cardColors`).
-  static const int paletteSize = 6;
 
   /// Curated beginner Korean nouns (profanities removed, beginner set added).
   static const List<String> words = <String>[
@@ -66,7 +60,7 @@ class CuratedWordSource {
       }
     }
     final idx = _bag.removeLast();
-    return DrawnWord(_pool[idx], idx % paletteSize);
+    return DrawnWord(_pool[idx]);
   }
 
   /// Empties the bag (called on a fresh game so words re-shuffle).

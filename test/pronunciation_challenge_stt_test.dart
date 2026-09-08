@@ -152,9 +152,7 @@ void main() {
       final card = ChallengeCard(
         id: 1,
         word: '저는 학생입니다',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards
         ..clear()
@@ -195,9 +193,7 @@ void main() {
           ChallengeCard(
             id: i + 1,
             word: w,
-            colorIndex: 0,
-            x: GameConfig.zoneCx,
-            y: GameConfig.beltY,
+            k: 1.0,
           ),
       ];
       e.cards
@@ -219,23 +215,17 @@ void main() {
       final near = ChallengeCard(
         id: 1,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       final behind = ChallengeCard(
         id: 2,
         word: '바다',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + 100,
-        y: GameConfig.beltY,
+        k: 0.8, // judgeable, but further out than `near`
       );
       final far = ChallengeCard(
         id: 3,
         word: '포도',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + GameConfig.acceptMargin + 200,
-        y: GameConfig.beltY,
+        k: GameConfig.kSpawn, // far from the viewer → below kAccept
       );
       e.cards
         ..clear()
@@ -260,9 +250,7 @@ void main() {
       final apple = ChallengeCard(
         id: 1,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards
         ..clear()
