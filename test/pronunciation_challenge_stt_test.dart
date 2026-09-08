@@ -209,6 +209,38 @@ void main() {
     });
   });
 
+  group('segmentByVocab (run-on speech)', () {
+    final vocab = buildVocabIndex(CuratedWordSource.words);
+
+    test('splits a run-on blob into vocabulary words, longest first', () {
+      // The recognizer returns continuous speech as one token: say "기차 책"
+      // and "기차책" arrives. Whitespace splitting alone finds nothing here.
+      expect(segmentByVocab('기차책', vocab), <String>['기차', '책']);
+      expect(segmentByVocab('머리가방', vocab), <String>['머리', '가방']);
+    });
+
+    test('skips particles and noise between words', () {
+      expect(segmentByVocab('머리는가방', vocab), <String>['머리', '가방']);
+    });
+
+    test('a lone word segments to itself', () {
+      expect(segmentByVocab('사과', vocab), <String>['사과']);
+    });
+
+    test('unknown text segments to nothing', () {
+      expect(segmentByVocab('와글와글', vocab), isEmpty);
+    });
+
+    test('clears the trailing word when only it is on screen', () {
+      // The failure the web comment calls out: with only "책" in the zone,
+      // wordMatch("기차책", "책") is false on every tier — exact no, prefix no
+      // ("기차책" does not start with "책"), lev 2. Segmentation is the only
+      // thing that rescues it.
+      expect(wordMatch('기차책', '책'), isFalse, reason: 'no tier catches this');
+      expect(segmentByVocab('기차책', vocab), contains('책'));
+    });
+  });
+
   group('ChallengeEngine.tryPassToken', () {
     test('passes only an exact, in-zone match (front-most first)', () {
       final e = _seededEngine()..start();

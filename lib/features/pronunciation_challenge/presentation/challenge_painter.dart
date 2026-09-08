@@ -489,6 +489,29 @@ class ChallengePainter extends CustomPainter {
       );
     }
 
+    // Most recent transcript, right under the gate. The old belt판 put this at
+    // screen centre (y=300), a thousand px from where the player is looking.
+    // This is the only feedback that distinguishes "misheard" from "dead mic",
+    // so it draws whether or not the text matched anything.
+    if (engine.heardVisible) {
+      final t = engine.lastHeard.characters.length > 18
+          ? '${engine.lastHeard.characters.take(18)}…'
+          : engine.lastHeard;
+      final tp = _layout(t, 32, FontWeight.w700, const Color(0xBFFFFFFF));
+      final cw = tp.width + 72;
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(GameConfig.w / 2 - cw / 2, 1722, cw, 58),
+          const Radius.circular(29),
+        ),
+        Paint()..color = const Color(0x9E0A0E12), // rgba(10,14,18,.62)
+      );
+      tp.paint(
+        canvas,
+        Offset(GameConfig.w / 2 - tp.width / 2, 1751 - tp.height / 2),
+      );
+    }
+
     // Backlog — bottom right. The belt판 stacked MIC and MISS vertically and
     // both were cramped; the tunnel splits them to opposite corners.
     _text(

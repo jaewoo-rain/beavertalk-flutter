@@ -67,6 +67,32 @@ class ChallengeEngine {
   /// Selected difficulty (read live each frame — can change between rounds).
   Difficulty difficulty = Difficulty.normal;
 
+  /// The most recent transcript the recognizer returned, matched or not.
+  ///
+  /// Shown under the gate for [heardTtl] seconds. Without it a misheard player
+  /// gets no signal at all: the word just fails to clear, which reads the same
+  /// as a dead mic. This is the only place the recognition is visible.
+  String lastHeard = '';
+
+  /// [clock] value when [lastHeard] arrived; negative means never.
+  double lastHeardAt = double.negativeInfinity;
+
+  /// How long a transcript stays on screen (seconds).
+  static const double heardTtl = 2.5;
+
+  /// Whether [lastHeard] should currently be drawn.
+  bool get heardVisible =>
+      lastHeard.isNotEmpty && (clock - lastHeardAt) < heardTtl;
+
+  /// Records a transcript for display. Judging happens separately — this fires
+  /// for every transcript, including the ones that match nothing.
+  void heard(String text) {
+    final t = text.trim();
+    if (t.isEmpty) return;
+    lastHeard = t;
+    lastHeardAt = clock;
+  }
+
   /// Result title, mirroring the web game.
   String get resultTitle => maxCombo >= 10 ? '🔥 Amazing!' : 'Nice!';
 
@@ -81,6 +107,8 @@ class ChallengeEngine {
     passCount = 0;
     backlog = 0;
     sessionLeft = GameConfig.sessionSec.toDouble();
+    lastHeard = '';
+    lastHeardAt = double.negativeInfinity;
     running = true;
   }
 

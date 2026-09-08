@@ -114,6 +114,14 @@ class SttService {
   /// the full transcript is forwarded here instead of tokenizing to [onToken].
   bool Function(String transcript)? onTranscript;
 
+  /// Every transcript the server returns, verbatim, match or not.
+  ///
+  /// [onToken] / [onTranscript] only fire on a *match*, so with those alone a
+  /// player who is being misheard sees nothing at all — the word simply fails
+  /// to clear, which looks identical to a dead mic. This hands the raw text to
+  /// the HUD so what was heard is on screen (web `lastHeard`, line 634).
+  void Function(String text)? onHeard;
+
   /// When `true`, cards are learned **sentences** (the player speaks the whole
   /// sentence). Widens the rollover timing so a multi-word utterance isn't cut
   /// mid-sentence, and routes matching through [onTranscript].
@@ -372,6 +380,17 @@ class SttService {
   /// card. [_clearedThisStream] stops an already-cleared word from firing again
   /// on Google's repeated partials or clearing a fresh same-word card.
   void _matchSpoken(String text) {
+    // Surface what was heard before judging it — feedback has to happen even
+    // when nothing matches, which is exactly the case worth showing.
+    final heard = text.trim();
+    if (heard.isNotEmpty) {
+      onHeard?.call(heard);
+      // Debug builds only: the on-screen pill is 2.5s and 18 chars, which is
+      // not enough to debug a run after the fact. Never in release — this is
+      // the user's speech.
+      if (kDebugMode) debugPrint('STT heard: "$heard"');
+    }
+
     // Sentence mode: match the WHOLE transcript against the in-zone sentence
     // cards (the player says a full learned sentence, not one word).
     if (sentenceMode) {
@@ -382,10 +401,26 @@ class SttService {
     if (cb == null) return;
     for (final raw in text.toLowerCase().split(_whitespace)) {
       final tok = norm(raw);
-      if (tok.isEmpty || _clearedThisStream.contains(tok)) continue;
-      if (cb(tok)) _clearedThisStream.add(tok);
+      if (tok.isEmpty) continue;
+      // Whitespace alone is not enough of a split: continuous speech comes back
+      // as one blob ("기차 책" → "기차책"), and one token only ever clears one
+      // card. Re-split against the vocabulary; fall back to the raw token when
+      // the split found nothing worth acting on (web `matchSpoken`, line 645).
+      final segs = segmentByVocab(tok, _vocab);
+      final parts = segs.length >= 2 ? segs : <String>[tok];
+      for (final part in parts) {
+        if (part.isEmpty || _clearedThisStream.contains(part)) continue;
+        if (cb(part)) _clearedThisStream.add(part);
+      }
     }
   }
+
+  /// Vocabulary index for [segmentByVocab], built once.
+  ///
+  /// The default curated list, not the active pool: in word mode the pool is
+  /// always this list, and in sentence mode segmentation is not used at all.
+  static final List<String> _vocab =
+      buildVocabIndex(CuratedWordSource.words);
 
   /// Stops the capture, tells the server to stop, and closes the socket.
   /// Idempotent.

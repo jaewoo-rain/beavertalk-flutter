@@ -1,8 +1,11 @@
-/// Word-matching helpers, ported from the web game (`norm`, `wordMatch`).
+/// Word-matching helpers, ported from the web game (`norm`, `lev`, `wordMatch`,
+/// `segmentByVocab`).
 ///
-/// Kept pure so the same normalization can back both the future speech-token
-/// path and unit tests. No fuzzy/Levenshtein tolerance — the reference uses an
-/// exact normalized match to minimise false positives.
+/// Kept pure so the same normalization backs the speech-token path and the unit
+/// tests. Matching is deliberately tolerant: recognizers almost never hand back
+/// an isolated noun in dictionary form, so exact-only matching clears almost
+/// nothing. See [wordMatch] for the tiers and [segmentByVocab] for run-on
+/// speech.
 library;
 
 /// Matches everything that is NOT a digit, ASCII letter, or Hangul syllable —
@@ -83,4 +86,53 @@ int _levenshtein(String a, String b) {
     curr = tmp;
   }
   return prev[n];
+}
+
+
+/// Builds the lookup [segmentByVocab] needs: every word normalized, deduped,
+/// and sorted **longest first** so a scan takes the longest match at each
+/// position ("기차책" → 기차 + 책, never 기 + 차책).
+List<String> buildVocabIndex(Iterable<String> words) {
+  final out = <String>{};
+  for (final w in words) {
+    final n = norm(w);
+    if (n.isNotEmpty) out.add(n);
+  }
+  final list = out.toList()..sort((a, b) => b.length.compareTo(a.length));
+  return List<String>.unmodifiable(list);
+}
+
+/// Re-splits a run-on token into game vocabulary, longest match first.
+///
+/// **This is what makes continuous speech playable.** A recognizer hands back
+///연속 발화 as one blob — say "기차 책" and it arrives as "기차책". One token
+/// only ever clears one card, so the second word was a guaranteed miss; worse,
+/// when only the trailing word was on screen the prefix tier in [wordMatch]
+/// did not fire either ("기차책" does not start with "책"), so nothing cleared
+/// at all.
+///
+/// Splitting against the whole vocabulary rather than the on-screen cards is
+/// deliberate: it also rescues "기차책" when only "책" is left.
+///
+/// [vocabSortedByLengthDesc] must come from [buildVocabIndex]. Characters that
+/// match nothing (particles, noise) are skipped one at a time.
+List<String> segmentByVocab(String tok, List<String> vocabSortedByLengthDesc) {
+  final out = <String>[];
+  var i = 0;
+  while (i < tok.length) {
+    String? hit;
+    for (final w in vocabSortedByLengthDesc) {
+      if (tok.startsWith(w, i)) {
+        hit = w; // sorted by length → the first hit is the longest
+        break;
+      }
+    }
+    if (hit != null) {
+      out.add(hit);
+      i += hit.length;
+    } else {
+      i++; // a particle or a stray character
+    }
+  }
+  return out;
 }

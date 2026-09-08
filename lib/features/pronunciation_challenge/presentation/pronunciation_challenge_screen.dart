@@ -143,6 +143,10 @@ class _PronunciationChallengeScreenState
     } else {
       _stt.onToken = engine.tryPassToken;
     }
+    // Both modes. The match callbacks above only fire on a hit, so on their own
+    // a misheard player sees nothing — this is what puts the recognition on
+    // screen whether or not it cleared a word.
+    _stt.onHeard = engine.heard;
     _controller.addListener(_onFrame);
     // Ticker runs continuously so the belt animates behind every panel.
     _controller.startTicker();
