@@ -2017,27 +2017,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaSave => 'Lưu';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Gói đăng ký';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Mua thành công';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'Nhân vật $name là của bạn mãi mãi.\nSẽ áp dụng ngay khi biên lai được xác nhận.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Về trang chủ';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Dùng ngay';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Thanh toán chưa hoàn tất';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Bạn có thể thử lại';
 
   @override
   String get paywallLeaveTitle => 'Nếu rời đi bây giờ, bạn sẽ chưa đăng ký';
@@ -2253,350 +2253,337 @@ class AppLocalizationsVi extends AppLocalizations {
   String get reportFailed => 'Không gửi được báo cáo. Vui lòng thử lại.';
 
   @override
-  String get hwTitle => 'Homework';
+  String get hwTitle => 'Bài tập';
 
   @override
-  String get hwJoinCodeTitle => 'Enter your class code';
+  String get hwJoinCodeTitle => 'Nhập mã lớp của bạn';
 
   @override
-  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+  String get hwJoinCodeSubtitle => 'Đây là mã 6 chữ số giáo viên đưa cho bạn';
 
   @override
-  String get hwJoinCodeLabel => 'Class code';
+  String get hwJoinCodeLabel => 'Mã lớp';
 
   @override
-  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+  String get hwJoinCodeHelp => 'Mã không phân biệt chữ hoa chữ thường';
 
   @override
-  String get hwJoinConfirmTitle => 'Is this the right class?';
+  String get hwJoinConfirmTitle => 'Đây có đúng lớp không?';
 
   @override
-  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+  String get hwJoinConfirmSubtitle => 'Nếu không, hãy kiểm tra lại mã';
 
   @override
-  String get hwJoinFieldInstitution => 'Institution';
+  String get hwJoinFieldInstitution => 'Cơ sở';
 
   @override
-  String get hwJoinFieldTeacher => 'Teacher';
+  String get hwJoinFieldTeacher => 'Giáo viên';
 
   @override
-  String get hwJoinFieldLearners => 'Learners';
+  String get hwJoinFieldLearners => 'Học viên';
 
   @override
-  String get hwJoinFieldTerm => 'Term';
+  String get hwJoinFieldTerm => 'Học kỳ';
 
   @override
   String get hwJoinConfirmNote =>
-      'The class name is exactly as your teacher wrote it. We do not translate it.';
+      'Tên lớp hiển thị đúng như giáo viên đã viết. Chúng tôi không dịch tên lớp.';
 
   @override
-  String get hwJoinConfirmYes => 'Yes, that is it';
+  String get hwJoinConfirmYes => 'Đúng rồi';
 
   @override
-  String get hwJoinConfirmRetry => 'Re-enter code';
+  String get hwJoinConfirmRetry => 'Nhập lại mã';
 
   @override
-  String get hwJoinProfileTitle => 'What name will you use in class?';
+  String get hwJoinProfileTitle => 'Bạn dùng tên nào trong lớp?';
 
   @override
   String get hwJoinProfileSubtitle =>
-      'Your teacher matches this with the roster';
+      'Giáo viên sẽ đối chiếu với danh sách lớp';
 
   @override
-  String get hwJoinNameLabel => 'Name';
+  String get hwJoinNameLabel => 'Tên';
 
   @override
-  String get hwJoinNameHelp => 'It can differ from your app name';
+  String get hwJoinNameHelp => 'Có thể khác với tên trong ứng dụng';
 
   @override
-  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+  String get hwJoinStudentNoLabel => 'Mã học viên (không bắt buộc)';
 
   @override
-  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+  String get hwJoinStudentNoHelp => 'Giáo viên dùng để đối chiếu danh sách lớp';
 
   @override
-  String get hwJoinConsentTitle => 'What your teacher sees';
+  String get hwJoinConsentTitle => 'Những gì giáo viên thấy được';
 
   @override
-  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+  String get hwJoinConsentSubtitle => 'Bạn cần đồng ý để tham gia lớp';
 
   @override
-  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+  String get hwJoinConsentSharedHeading => 'Chia sẻ với giáo viên';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'Tên lớp và mã học viên';
 
   @override
-  String get hwJoinConsentShared2 => 'Whether you did the homework';
+  String get hwJoinConsentShared2 => 'Bạn đã làm bài tập hay chưa';
 
   @override
-  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+  String get hwJoinConsentShared3 => 'Câu đã đạt và câu chưa đạt';
 
   @override
-  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+  String get hwJoinConsentShared4 => 'Thời lượng và tóm tắt cuộc gọi bài tập';
 
   @override
-  String get hwJoinConsentNotSharedHeading => 'Not shared';
+  String get hwJoinConsentNotSharedHeading => 'Không chia sẻ';
 
   @override
-  String get hwJoinConsentNotShared1 => 'Email and phone number';
+  String get hwJoinConsentNotShared1 => 'Email và số điện thoại';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 => 'Tên trong ứng dụng, hồ sơ và nhân vật';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => 'Quốc tịch và tiếng mẹ đẻ';
 
   @override
-  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+  String get hwJoinConsentNotShared4 => 'Cuộc gọi và việc học ngoài lớp';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+  String get hwJoinConsentNotShared5 => 'Thông tin đăng ký và thanh toán';
 
   @override
-  String get hwJoinConsentAgree => 'I agree to the above';
+  String get hwJoinConsentAgree => 'Tôi đồng ý với những điều trên';
 
   @override
-  String get hwJoinConsentCta => 'Agree and join';
+  String get hwJoinConsentCta => 'Đồng ý và tham gia';
 
   @override
   String hwJoinDoneTitle(String className) {
-    return 'You joined $className';
+    return 'Bạn đã tham gia $className';
   }
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    return 'Có $count bài tập đang chờ bạn';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'No assignments yet';
+  String get hwJoinDoneNoAssignment => 'Chưa có bài tập nào';
 
   @override
-  String get hwJoinDoneNextDue => 'Next due';
+  String get hwJoinDoneNextDue => 'Hạn kế tiếp';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'Tên của bạn trong lớp';
 
   @override
-  String get hwJoinDoneCta => 'See homework';
+  String get hwJoinDoneCta => 'Xem bài tập';
 
   @override
-  String get hwJoinErrorNotFound => 'We could not find that code';
+  String get hwJoinErrorNotFound => 'Không tìm thấy mã đó';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+  String get hwJoinErrorNotFoundBody => 'Vui lòng kiểm tra lại sáu chữ số.';
 
   @override
-  String get hwJoinErrorExpired => 'That code has expired';
+  String get hwJoinErrorExpired => 'Mã đó đã hết hạn';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+  String get hwJoinErrorExpiredBody => 'Hãy xin giáo viên một mã mới.';
 
   @override
-  String get hwJoinErrorFull => 'The class is full';
+  String get hwJoinErrorFull => 'Lớp đã đầy';
 
   @override
-  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+  String get hwJoinErrorFullBody => 'Vui lòng báo cho giáo viên của bạn.';
 
   @override
-  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+  String get hwJoinFailed =>
+      'Không tham gia được. Vui lòng thử lại sau giây lát.';
 
   @override
-  String get hwSectionInProgress => 'In progress';
+  String get hwSectionInProgress => 'Đang làm';
 
   @override
-  String get hwSectionUpcoming => 'Upcoming';
+  String get hwSectionUpcoming => 'Sắp tới';
 
   @override
-  String get hwSectionDone => 'Done';
+  String get hwSectionDone => 'Đã xong';
 
   @override
-  String get hwLeaveClassLink => 'Leave the class';
+  String get hwLeaveClassLink => 'Rời khỏi lớp';
 
   @override
-  String get hwListEmptyTitle => 'No homework yet';
+  String get hwListEmptyTitle => 'Chưa có bài tập nào';
 
   @override
-  String get hwListEmptyBody =>
-      'It will show up here when your teacher assigns it.';
+  String get hwListEmptyBody => 'Bài tập sẽ hiện ở đây khi giáo viên giao.';
 
   @override
-  String get hwListFailed => 'Could not load your homework.';
+  String get hwListFailed => 'Không tải được bài tập của bạn.';
 
   @override
-  String get hwRetry => 'Try again';
+  String get hwRetry => 'Thử lại';
 
   @override
-  String get hwBadgeDone => 'Done';
+  String get hwBadgeDone => 'Đã xong';
 
   @override
-  String get hwBadgeOverdue => 'Not submitted';
+  String get hwBadgeOverdue => 'Chưa nộp';
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'Not submitted, ${days}d late';
+    return 'Chưa nộp, trễ $days ngày';
   }
 
   @override
   String hwBadgeDday(int days) {
-    return 'D-$days';
+    return 'Còn $days ngày';
   }
 
   @override
-  String get hwBadgeDueToday => 'Due today';
+  String get hwBadgeDueToday => 'Hạn hôm nay';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'Nói';
 
   @override
-  String get hwActivityConversation => 'Conversation';
+  String get hwActivityConversation => 'Hội thoại';
 
   @override
-  String get hwActivityWorkbook => 'Workbook';
+  String get hwActivityWorkbook => 'Sách bài tập';
 
   @override
   String hwChapterLabel(String chapter) {
-    return 'Chapter $chapter';
+    return 'Bài $chapter';
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc => 'Kiểm tra điểm phát âm của bạn';
 
   @override
-  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+  String get hwTaskConversationDesc =>
+      'Dùng những gì đã học trong hội thoại thật';
 
   @override
   String get hwConversationOnce =>
       'Cuộc trò chuyện chỉ thực hiện một lần cho mỗi bài tập.';
 
   @override
-  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+  String get hwTaskWorkbookDesc => 'Luyện tập bằng cách viết vào sách bài tập';
 
   @override
-  String get hwCtaStudy => 'Start';
+  String get hwCtaStudy => 'Bắt đầu';
 
   @override
-  String get hwCtaResult => 'See result';
+  String get hwCtaResult => 'Xem kết quả';
 
   @override
-  String get hwCtaDownload => 'Download';
+  String get hwCtaDownload => 'Tải xuống';
 
   @override
-  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+  String get hwSpeakingNoScore => 'Bạn chưa làm phần nói';
 
   @override
-  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+  String get hwWorkbookUnavailable => 'Tệp sách bài tập chưa có sẵn.';
 
   @override
-  String get hwDetailClosed =>
-      'This assignment is closed. You can no longer submit.';
+  String get hwDetailClosed => 'Bài tập này đã đóng. Bạn không thể nộp thêm.';
 
   @override
-  String get hwLeaveTitle => 'Leave the class?';
+  String get hwLeaveTitle => 'Rời khỏi lớp?';
 
   @override
   String get hwLeaveBody =>
-      'Your teacher will no longer see your homework results.';
+      'Giáo viên sẽ không còn thấy kết quả bài tập của bạn.';
 
   @override
-  String get hwLeaveConfirm => 'Leave';
+  String get hwLeaveConfirm => 'Rời khỏi';
 
   @override
-  String get hwLeaveCancel => 'Stay';
+  String get hwLeaveCancel => 'Ở lại';
 
   @override
-  String get hwLeaveFailed => 'Could not leave the class.';
+  String get hwLeaveFailed => 'Không rời khỏi lớp được.';
 
   @override
-  String get hwMyClass => 'My class';
+  String get hwMyClass => 'Lớp của tôi';
 
   @override
-  String get hwClassEmptyTitle => 'You have not joined a class';
+  String get hwClassEmptyTitle => 'Bạn chưa tham gia lớp nào';
 
   @override
-  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+  String get hwClassEmptySubtitle => 'Nhập mã giáo viên đã đưa cho bạn';
 
   @override
-  String get hwClassEmptyCta => 'Enter class code';
+  String get hwClassEmptyCta => 'Nhập mã lớp';
 
   @override
-  String get hwClassContinueCta => 'Continue';
+  String get hwClassContinueCta => 'Tiếp tục';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    return '$count bài tập đến hạn vào ngày mai';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    return 'Bạn có $count bài tập chưa nộp';
   }
 
   @override
-  String get hwSpeakingUnavailable =>
-      'The sentences for this assignment are not available yet.';
+  String get hwSpeakingUnavailable => 'Các câu cho bài tập này chưa có sẵn.';
 
   @override
-  String get hwBadgeClosed => 'Closed';
+  String get hwBadgeClosed => 'Đã đóng';
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return 'Đạt $passed trên $total câu';
   }
 
   @override
-  String get challengeFirstWord => 'First word';
+  String get challengeFirstWord => 'Từ đầu tiên';
 
   @override
-  String get grade => 'Grade';
+  String get challengeSeeAnalysis => 'Xem kết quả';
 
   @override
-  String get accuracy => 'Accuracy';
+  String get challengePaused => 'Đã tạm dừng';
 
   @override
-  String get bestCombo => 'Best Combo';
+  String get challengePausedNote => 'Bộ đếm giờ và bản ghi đều đã dừng.';
 
   @override
-  String get cleared => 'Cleared';
+  String get challengeTimeLeft => 'Thời gian còn lại';
 
   @override
-  String get challengeSeeAnalysis => 'See results';
+  String get challengeScoreLabel => 'Điểm';
 
   @override
-  String get challengePaused => 'Paused';
+  String get challengeResume => 'Tiếp tục';
 
   @override
-  String get challengePausedNote => 'The timer and the recording both stopped.';
-
-  @override
-  String get challengeTimeLeft => 'Time left';
-
-  @override
-  String get challengeScoreLabel => 'Score';
-
-  @override
-  String get challengeResume => 'Resume';
-
-  @override
-  String get challengeBlockedTitle => 'Can\'t use the camera';
+  String get challengeBlockedTitle => 'Không dùng được máy ảnh';
 
   @override
   String get challengeBlockedNote =>
-      'Turn on camera and mic access in Settings.';
+      'Hãy bật quyền máy ảnh và micrô trong Cài đặt.';
 
   @override
-  String get challengeGoBack => 'Go back';
+  String get challengeGoBack => 'Quay lại';
 
   @override
-  String get challengeOpenSettings => 'Open Settings';
+  String get challengeOpenSettings => 'Mở Cài đặt';
 
   @override
-  String get saveDone => 'Saved to your gallery';
+  String get saveDone => 'Đã lưu vào thư viện';
 
   @override
-  String get saveFailed => 'Couldn\'t save';
+  String get saveFailed => 'Không lưu được';
 
   @override
-  String get saveDeniedNote => 'Photo access is required';
+  String get saveDeniedNote => 'Cần quyền truy cập ảnh';
 }

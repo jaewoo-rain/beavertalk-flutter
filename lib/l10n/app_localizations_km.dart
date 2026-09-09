@@ -1998,7 +1998,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get nicknameLabel => 'ឈ្មោះហៅក្រៅ';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'អ៊ីមែល';
 
   @override
   String get loginMethodLabel => 'របៀបចូល';
@@ -2016,27 +2016,27 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaSave => 'រក្សាទុក';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'ការជាវ';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'ការទិញបានបញ្ចប់';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'តួអង្គ $name ជារបស់អ្នកជារៀងរហូត។\nអនុវត្តភ្លាមៗនៅពេលបញ្ជាក់វិក្កយបត្រ។';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'ទៅទំព័រដើម';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'ប្រើឥឡូវនេះ';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'ការទូទាត់មិនបានសម្រេច';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'អ្នកអាចព្យាយាមម្តងទៀត';
 
   @override
   String get paywallLeaveTitle => 'បើចាកចេញឥឡូវ អ្នកនឹងមិនទាន់ជាវទេ';
@@ -2254,189 +2254,189 @@ class AppLocalizationsKm extends AppLocalizations {
   String get reportFailed => 'មិនអាចផ្ញើរបាយការណ៍បានទេ។ សូមព្យាយាមម្តងទៀត។';
 
   @override
-  String get hwTitle => 'Homework';
+  String get hwTitle => 'កិច្ចការផ្ទះ';
 
   @override
-  String get hwJoinCodeTitle => 'Enter your class code';
+  String get hwJoinCodeTitle => 'បញ្ចូលលេខកូដថ្នាក់របស់អ្នក';
 
   @override
-  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+  String get hwJoinCodeSubtitle => 'វាជាលេខកូដ ៦ ខ្ទង់ដែលគ្រូបានផ្ដល់ឱ្យ';
 
   @override
-  String get hwJoinCodeLabel => 'Class code';
+  String get hwJoinCodeLabel => 'លេខកូដថ្នាក់';
 
   @override
-  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+  String get hwJoinCodeHelp => 'លេខកូដមិនប្រកាន់អក្សរធំតូចទេ';
 
   @override
-  String get hwJoinConfirmTitle => 'Is this the right class?';
+  String get hwJoinConfirmTitle => 'តើនេះជាថ្នាក់ត្រឹមត្រូវទេ?';
 
   @override
-  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+  String get hwJoinConfirmSubtitle => 'បើមិនមែនទេ សូមពិនិត្យលេខកូដម្តងទៀត';
 
   @override
-  String get hwJoinFieldInstitution => 'Institution';
+  String get hwJoinFieldInstitution => 'ស្ថាប័ន';
 
   @override
-  String get hwJoinFieldTeacher => 'Teacher';
+  String get hwJoinFieldTeacher => 'គ្រូ';
 
   @override
-  String get hwJoinFieldLearners => 'Learners';
+  String get hwJoinFieldLearners => 'អ្នកសិក្សា';
 
   @override
-  String get hwJoinFieldTerm => 'Term';
+  String get hwJoinFieldTerm => 'វគ្គ';
 
   @override
   String get hwJoinConfirmNote =>
-      'The class name is exactly as your teacher wrote it. We do not translate it.';
+      'ឈ្មោះថ្នាក់បង្ហាញដូចគ្រូបានសរសេរ។ យើងមិនបកប្រែទេ។';
 
   @override
-  String get hwJoinConfirmYes => 'Yes, that is it';
+  String get hwJoinConfirmYes => 'បាទ/ចាស នេះហើយ';
 
   @override
-  String get hwJoinConfirmRetry => 'Re-enter code';
+  String get hwJoinConfirmRetry => 'បញ្ចូលលេខកូដម្តងទៀត';
 
   @override
-  String get hwJoinProfileTitle => 'What name will you use in class?';
+  String get hwJoinProfileTitle => 'តើអ្នកនឹងប្រើឈ្មោះអ្វីនៅក្នុងថ្នាក់?';
 
   @override
   String get hwJoinProfileSubtitle =>
-      'Your teacher matches this with the roster';
+      'គ្រូនឹងផ្ទៀងផ្ទាត់វាជាមួយបញ្ជីឈ្មោះថ្នាក់';
 
   @override
-  String get hwJoinNameLabel => 'Name';
+  String get hwJoinNameLabel => 'ឈ្មោះ';
 
   @override
-  String get hwJoinNameHelp => 'It can differ from your app name';
+  String get hwJoinNameHelp => 'អាចខុសពីឈ្មោះក្នុងកម្មវិធី';
 
   @override
-  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+  String get hwJoinStudentNoLabel => 'លេខសិស្ស (មិនចាំបាច់)';
 
   @override
-  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+  String get hwJoinStudentNoHelp => 'គ្រូប្រើវាដើម្បីផ្ទៀងផ្ទាត់បញ្ជីឈ្មោះ';
 
   @override
-  String get hwJoinConsentTitle => 'What your teacher sees';
+  String get hwJoinConsentTitle => 'អ្វីដែលគ្រូឃើញ';
 
   @override
-  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+  String get hwJoinConsentSubtitle => 'អ្នកត្រូវយល់ព្រមដើម្បីចូលរួមថ្នាក់';
 
   @override
-  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+  String get hwJoinConsentSharedHeading => 'ចែករំលែកជាមួយគ្រូ';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'ឈ្មោះថ្នាក់ និងលេខសិស្ស';
 
   @override
-  String get hwJoinConsentShared2 => 'Whether you did the homework';
+  String get hwJoinConsentShared2 => 'ថាតើអ្នកបានធ្វើកិច្ចការផ្ទះឬអត់';
 
   @override
-  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+  String get hwJoinConsentShared3 => 'ប្រយោគដែលជាប់ និងធ្លាក់';
 
   @override
-  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+  String get hwJoinConsentShared4 => 'រយៈពេល និងសេចក្ដីសង្ខេបនៃការហៅកិច្ចការ';
 
   @override
-  String get hwJoinConsentNotSharedHeading => 'Not shared';
+  String get hwJoinConsentNotSharedHeading => 'មិនចែករំលែក';
 
   @override
-  String get hwJoinConsentNotShared1 => 'Email and phone number';
+  String get hwJoinConsentNotShared1 => 'អ៊ីមែល និងលេខទូរស័ព្ទ';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 =>
+      'ឈ្មោះក្នុងកម្មវិធី ប្រវត្តិរូប និងតួអង្គ';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => 'សញ្ជាតិ និងភាសាកំណើត';
 
   @override
-  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+  String get hwJoinConsentNotShared4 => 'ការហៅ និងការសិក្សានៅក្រៅថ្នាក់';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+  String get hwJoinConsentNotShared5 => 'ព័ត៌មានការជាវ និងការទូទាត់';
 
   @override
-  String get hwJoinConsentAgree => 'I agree to the above';
+  String get hwJoinConsentAgree => 'ខ្ញុំយល់ព្រមតាមខាងលើ';
 
   @override
-  String get hwJoinConsentCta => 'Agree and join';
+  String get hwJoinConsentCta => 'យល់ព្រម និងចូលរួម';
 
   @override
   String hwJoinDoneTitle(String className) {
-    return 'You joined $className';
+    return 'អ្នកបានចូលរួម $className';
   }
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    return 'មានកិច្ចការ $count កំពុងរង់ចាំ';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'No assignments yet';
+  String get hwJoinDoneNoAssignment => 'មិនទាន់មានកិច្ចការទេ';
 
   @override
-  String get hwJoinDoneNextDue => 'Next due';
+  String get hwJoinDoneNextDue => 'កាលបរិច្ឆេទបន្ទាប់';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'ឈ្មោះរបស់អ្នកក្នុងថ្នាក់';
 
   @override
-  String get hwJoinDoneCta => 'See homework';
+  String get hwJoinDoneCta => 'មើលកិច្ចការផ្ទះ';
 
   @override
-  String get hwJoinErrorNotFound => 'We could not find that code';
+  String get hwJoinErrorNotFound => 'រកមិនឃើញលេខកូដនោះទេ';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+  String get hwJoinErrorNotFoundBody => 'សូមពិនិត្យលេខទាំងប្រាំមួយម្តងទៀត។';
 
   @override
-  String get hwJoinErrorExpired => 'That code has expired';
+  String get hwJoinErrorExpired => 'លេខកូដនោះផុតកំណត់ហើយ';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+  String get hwJoinErrorExpiredBody => 'សូមសុំលេខកូដថ្មីពីគ្រូ។';
 
   @override
-  String get hwJoinErrorFull => 'The class is full';
+  String get hwJoinErrorFull => 'ថ្នាក់ពេញហើយ';
 
   @override
-  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+  String get hwJoinErrorFullBody => 'សូមប្រាប់គ្រូរបស់អ្នក។';
 
   @override
-  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+  String get hwJoinFailed => 'មិនអាចចូលរួមបានទេ។ សូមព្យាយាមម្តងទៀតបន្តិចទៀត។';
 
   @override
-  String get hwSectionInProgress => 'In progress';
+  String get hwSectionInProgress => 'កំពុងដំណើរការ';
 
   @override
-  String get hwSectionUpcoming => 'Upcoming';
+  String get hwSectionUpcoming => 'នឹងមកដល់';
 
   @override
-  String get hwSectionDone => 'Done';
+  String get hwSectionDone => 'រួចរាល់';
 
   @override
-  String get hwLeaveClassLink => 'Leave the class';
+  String get hwLeaveClassLink => 'ចាកចេញពីថ្នាក់';
 
   @override
-  String get hwListEmptyTitle => 'No homework yet';
+  String get hwListEmptyTitle => 'មិនទាន់មានកិច្ចការផ្ទះទេ';
 
   @override
-  String get hwListEmptyBody =>
-      'It will show up here when your teacher assigns it.';
+  String get hwListEmptyBody => 'វានឹងបង្ហាញនៅទីនេះពេលគ្រូផ្ដល់ឱ្យ។';
 
   @override
-  String get hwListFailed => 'Could not load your homework.';
+  String get hwListFailed => 'មិនអាចផ្ទុកកិច្ចការផ្ទះបានទេ។';
 
   @override
-  String get hwRetry => 'Try again';
+  String get hwRetry => 'ព្យាយាមម្តងទៀត';
 
   @override
-  String get hwBadgeDone => 'Done';
+  String get hwBadgeDone => 'រួចរាល់';
 
   @override
-  String get hwBadgeOverdue => 'Not submitted';
+  String get hwBadgeOverdue => 'មិនទាន់ដាក់ស្នើ';
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'Not submitted, ${days}d late';
+    return 'មិនទាន់ដាក់ស្នើ យឺត $days ថ្ងៃ';
   }
 
   @override
@@ -2445,159 +2445,146 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get hwBadgeDueToday => 'Due today';
+  String get hwBadgeDueToday => 'ផុតកំណត់ថ្ងៃនេះ';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'និយាយ';
 
   @override
-  String get hwActivityConversation => 'Conversation';
+  String get hwActivityConversation => 'សន្ទនា';
 
   @override
-  String get hwActivityWorkbook => 'Workbook';
+  String get hwActivityWorkbook => 'សៀវភៅលំហាត់';
 
   @override
   String hwChapterLabel(String chapter) {
-    return 'Chapter $chapter';
+    return 'ជំពូក $chapter';
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc => 'ពិនិត្យពិន្ទុការបញ្ចេញសំឡេងរបស់អ្នក';
 
   @override
-  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+  String get hwTaskConversationDesc => 'ប្រើអ្វីដែលបានរៀនក្នុងការសន្ទនាពិត';
 
   @override
   String get hwConversationOnce =>
       'ការសន្ទនាធ្វើបានតែម្តងក្នុងកិច្ចការផ្ទះមួយ។';
 
   @override
-  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+  String get hwTaskWorkbookDesc => 'អនុវត្តដោយសរសេរក្នុងសៀវភៅលំហាត់';
 
   @override
-  String get hwCtaStudy => 'Start';
+  String get hwCtaStudy => 'ចាប់ផ្ដើម';
 
   @override
-  String get hwCtaResult => 'See result';
+  String get hwCtaResult => 'មើលលទ្ធផល';
 
   @override
-  String get hwCtaDownload => 'Download';
+  String get hwCtaDownload => 'ទាញយក';
 
   @override
-  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+  String get hwSpeakingNoScore => 'អ្នកមិនទាន់បានធ្វើកិច្ចការនិយាយទេ';
 
   @override
-  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+  String get hwWorkbookUnavailable => 'ឯកសារសៀវភៅលំហាត់មិនទាន់មានទេ។';
 
   @override
   String get hwDetailClosed =>
-      'This assignment is closed. You can no longer submit.';
+      'កិច្ចការនេះបានបិទហើយ។ អ្នកមិនអាចដាក់ស្នើបានទៀតទេ។';
 
   @override
-  String get hwLeaveTitle => 'Leave the class?';
+  String get hwLeaveTitle => 'ចាកចេញពីថ្នាក់?';
 
   @override
   String get hwLeaveBody =>
-      'Your teacher will no longer see your homework results.';
+      'គ្រូរបស់អ្នកនឹងលែងឃើញលទ្ធផលកិច្ចការផ្ទះរបស់អ្នកទៀតហើយ។';
 
   @override
-  String get hwLeaveConfirm => 'Leave';
+  String get hwLeaveConfirm => 'ចាកចេញ';
 
   @override
-  String get hwLeaveCancel => 'Stay';
+  String get hwLeaveCancel => 'នៅបន្ត';
 
   @override
-  String get hwLeaveFailed => 'Could not leave the class.';
+  String get hwLeaveFailed => 'មិនអាចចាកចេញពីថ្នាក់បានទេ។';
 
   @override
-  String get hwMyClass => 'My class';
+  String get hwMyClass => 'ថ្នាក់របស់ខ្ញុំ';
 
   @override
-  String get hwClassEmptyTitle => 'You have not joined a class';
+  String get hwClassEmptyTitle => 'អ្នកមិនទាន់ចូលរួមថ្នាក់ណាមួយទេ';
 
   @override
-  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+  String get hwClassEmptySubtitle => 'បញ្ចូលលេខកូដដែលគ្រូបានផ្ដល់ឱ្យ';
 
   @override
-  String get hwClassEmptyCta => 'Enter class code';
+  String get hwClassEmptyCta => 'បញ្ចូលលេខកូដថ្នាក់';
 
   @override
-  String get hwClassContinueCta => 'Continue';
+  String get hwClassContinueCta => 'បន្ត';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    return 'កិច្ចការ $count ផុតកំណត់ថ្ងៃស្អែក';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    return 'អ្នកមានកិច្ចការ $count ដែលមិនទាន់ដាក់ស្នើ';
   }
 
   @override
-  String get hwSpeakingUnavailable =>
-      'The sentences for this assignment are not available yet.';
+  String get hwSpeakingUnavailable => 'ប្រយោគសម្រាប់កិច្ចការនេះមិនទាន់មានទេ។';
 
   @override
-  String get hwBadgeClosed => 'Closed';
+  String get hwBadgeClosed => 'បិទ';
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return 'ជាប់ $passed ក្នុងចំណោម $total ប្រយោគ';
   }
 
   @override
-  String get challengeFirstWord => 'First word';
+  String get challengeFirstWord => 'ពាក្យទីមួយ';
 
   @override
-  String get grade => 'Grade';
+  String get challengeSeeAnalysis => 'មើលលទ្ធផល';
 
   @override
-  String get accuracy => 'Accuracy';
+  String get challengePaused => 'បានផ្អាក';
 
   @override
-  String get bestCombo => 'Best Combo';
+  String get challengePausedNote => 'នាឡិកា និងការថតបានឈប់ជាមួយគ្នា។';
 
   @override
-  String get cleared => 'Cleared';
+  String get challengeTimeLeft => 'ពេលនៅសល់';
 
   @override
-  String get challengeSeeAnalysis => 'See results';
+  String get challengeScoreLabel => 'ពិន្ទុ';
 
   @override
-  String get challengePaused => 'Paused';
+  String get challengeResume => 'បន្ត';
 
   @override
-  String get challengePausedNote => 'The timer and the recording both stopped.';
-
-  @override
-  String get challengeTimeLeft => 'Time left';
-
-  @override
-  String get challengeScoreLabel => 'Score';
-
-  @override
-  String get challengeResume => 'Resume';
-
-  @override
-  String get challengeBlockedTitle => 'Can\'t use the camera';
+  String get challengeBlockedTitle => 'មិនអាចប្រើកាមេរ៉ាបានទេ';
 
   @override
   String get challengeBlockedNote =>
-      'Turn on camera and mic access in Settings.';
+      'សូមបើកសិទ្ធិកាមេរ៉ា និងមីក្រូហ្វូននៅក្នុងការកំណត់។';
 
   @override
-  String get challengeGoBack => 'Go back';
+  String get challengeGoBack => 'ត្រឡប់ក្រោយ';
 
   @override
-  String get challengeOpenSettings => 'Open Settings';
+  String get challengeOpenSettings => 'បើកការកំណត់';
 
   @override
-  String get saveDone => 'Saved to your gallery';
+  String get saveDone => 'បានរក្សាទុកក្នុងវិចិត្រសាល';
 
   @override
-  String get saveFailed => 'Couldn\'t save';
+  String get saveFailed => 'មិនអាចរក្សាទុកបានទេ';
 
   @override
-  String get saveDeniedNote => 'Photo access is required';
+  String get saveDeniedNote => 'ត្រូវការសិទ្ធិចូលមើលរូបភាព';
 }

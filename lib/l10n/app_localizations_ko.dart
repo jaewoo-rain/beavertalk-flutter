@@ -1939,7 +1939,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get nicknameLabel => '닉네임';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => '이메일';
 
   @override
   String get loginMethodLabel => '로그인 방식';
@@ -1960,24 +1960,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get subscriptionRow => '구독';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => '구매 완료';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name 아바타가 영구 소장돼요.\n영수증이 확인되는 대로 적용돼요.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => '홈으로';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => '지금 사용하기';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => '결제가 완료되지 않았어요';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => '다시 시도할 수 있어요';
 
   @override
   String get paywallLeaveTitle => '지금 나가면 구독할 수 없어요';
@@ -2472,18 +2472,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get challengeFirstWord => '첫 단어';
-
-  @override
-  String get grade => '등급';
-
-  @override
-  String get accuracy => '정확도';
-
-  @override
-  String get bestCombo => '최고 콤보';
-
-  @override
-  String get cleared => '클리어';
 
   @override
   String get challengeSeeAnalysis => '결과 보기';

@@ -1919,10 +1919,6 @@
   "@challengeFirstWord": {
     "description": "Countdown label above the previewed first word."
   },
-  "grade": "Grade",
-  "accuracy": "Accuracy",
-  "bestCombo": "Best Combo",
-  "cleared": "Cleared",
   "challengeSeeAnalysis": "See results",
   "challengePaused": "Paused",
   "challengePausedNote": "The timer and the recording both stopped.",

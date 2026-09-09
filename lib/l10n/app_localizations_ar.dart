@@ -1987,7 +1987,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get nicknameLabel => 'الاسم المستعار';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'البريد الإلكتروني';
 
   @override
   String get loginMethodLabel => 'طريقة تسجيل الدخول';
@@ -2005,27 +2005,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ctaSave => 'حفظ';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'الاشتراك';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'اكتمل الشراء';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'الأفاتار $name لك إلى الأبد.\nيُطبَّق فور تأكيد الإيصال.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'إلى الرئيسية';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'استخدمه الآن';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'لم تكتمل عملية الدفع';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'يمكنك المحاولة مرة أخرى';
 
   @override
   String get paywallLeaveTitle => 'إذا غادرت الآن، فلن تكون مشتركًا';
@@ -2241,349 +2241,334 @@ class AppLocalizationsAr extends AppLocalizations {
   String get reportFailed => 'تعذّر إرسال البلاغ. حاول مرة أخرى.';
 
   @override
-  String get hwTitle => 'Homework';
+  String get hwTitle => 'الواجب';
 
   @override
-  String get hwJoinCodeTitle => 'Enter your class code';
+  String get hwJoinCodeTitle => 'أدخل رمز صفّك';
 
   @override
-  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+  String get hwJoinCodeSubtitle =>
+      'هو الرمز المكوّن من 6 أرقام الذي أعطاه لك معلّمك';
 
   @override
-  String get hwJoinCodeLabel => 'Class code';
+  String get hwJoinCodeLabel => 'رمز الصف';
 
   @override
-  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+  String get hwJoinCodeHelp => 'الرمز لا يفرّق بين الأحرف الكبيرة والصغيرة';
 
   @override
-  String get hwJoinConfirmTitle => 'Is this the right class?';
+  String get hwJoinConfirmTitle => 'هل هذا هو الصف الصحيح؟';
 
   @override
-  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+  String get hwJoinConfirmSubtitle => 'إن لم يكن كذلك، تحقّق من الرمز مرة أخرى';
 
   @override
-  String get hwJoinFieldInstitution => 'Institution';
+  String get hwJoinFieldInstitution => 'المؤسسة';
 
   @override
-  String get hwJoinFieldTeacher => 'Teacher';
+  String get hwJoinFieldTeacher => 'المعلّم';
 
   @override
-  String get hwJoinFieldLearners => 'Learners';
+  String get hwJoinFieldLearners => 'المتعلّمون';
 
   @override
-  String get hwJoinFieldTerm => 'Term';
+  String get hwJoinFieldTerm => 'الفصل';
 
   @override
   String get hwJoinConfirmNote =>
-      'The class name is exactly as your teacher wrote it. We do not translate it.';
+      'يظهر اسم الصف كما كتبه معلّمك تمامًا. نحن لا نترجمه.';
 
   @override
-  String get hwJoinConfirmYes => 'Yes, that is it';
+  String get hwJoinConfirmYes => 'نعم، هو هذا';
 
   @override
-  String get hwJoinConfirmRetry => 'Re-enter code';
+  String get hwJoinConfirmRetry => 'إعادة إدخال الرمز';
 
   @override
-  String get hwJoinProfileTitle => 'What name will you use in class?';
+  String get hwJoinProfileTitle => 'ما الاسم الذي ستستخدمه في الصف؟';
 
   @override
-  String get hwJoinProfileSubtitle =>
-      'Your teacher matches this with the roster';
+  String get hwJoinProfileSubtitle => 'يطابقه معلّمك مع كشف الأسماء';
 
   @override
-  String get hwJoinNameLabel => 'Name';
+  String get hwJoinNameLabel => 'الاسم';
 
   @override
-  String get hwJoinNameHelp => 'It can differ from your app name';
+  String get hwJoinNameHelp => 'يمكن أن يختلف عن اسمك في التطبيق';
 
   @override
-  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+  String get hwJoinStudentNoLabel => 'رقم الطالب (اختياري)';
 
   @override
-  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+  String get hwJoinStudentNoHelp => 'يستخدمه معلّمك لمطابقة كشف الأسماء';
 
   @override
-  String get hwJoinConsentTitle => 'What your teacher sees';
+  String get hwJoinConsentTitle => 'ما يراه معلّمك';
 
   @override
-  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+  String get hwJoinConsentSubtitle => 'عليك الموافقة للانضمام إلى الصف';
 
   @override
-  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+  String get hwJoinConsentSharedHeading => 'يُشارَك مع معلّمك';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'اسم الصف ورقم الطالب';
 
   @override
-  String get hwJoinConsentShared2 => 'Whether you did the homework';
+  String get hwJoinConsentShared2 => 'ما إذا كنت قد أنجزت الواجب';
 
   @override
-  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+  String get hwJoinConsentShared3 => 'الجمل التي نجحت فيها والتي أخفقت';
 
   @override
-  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+  String get hwJoinConsentShared4 => 'مدة مكالمة الواجب وملخّصها';
 
   @override
-  String get hwJoinConsentNotSharedHeading => 'Not shared';
+  String get hwJoinConsentNotSharedHeading => 'لا يُشارَك';
 
   @override
-  String get hwJoinConsentNotShared1 => 'Email and phone number';
+  String get hwJoinConsentNotShared1 => 'البريد الإلكتروني ورقم الهاتف';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 => 'اسم التطبيق والملف الشخصي والشخصية';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => 'الجنسية واللغة الأم';
 
   @override
-  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+  String get hwJoinConsentNotShared4 => 'المكالمات والدراسة خارج الصف';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+  String get hwJoinConsentNotShared5 => 'بيانات الاشتراك والدفع';
 
   @override
-  String get hwJoinConsentAgree => 'I agree to the above';
+  String get hwJoinConsentAgree => 'أوافق على ما سبق';
 
   @override
-  String get hwJoinConsentCta => 'Agree and join';
+  String get hwJoinConsentCta => 'الموافقة والانضمام';
 
   @override
   String hwJoinDoneTitle(String className) {
-    return 'You joined $className';
+    return 'انضممت إلى $className';
   }
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    return 'ينتظرك $count واجب';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'No assignments yet';
+  String get hwJoinDoneNoAssignment => 'لا توجد واجبات بعد';
 
   @override
-  String get hwJoinDoneNextDue => 'Next due';
+  String get hwJoinDoneNextDue => 'الموعد التالي';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'اسمك في الصف';
 
   @override
-  String get hwJoinDoneCta => 'See homework';
+  String get hwJoinDoneCta => 'عرض الواجبات';
 
   @override
-  String get hwJoinErrorNotFound => 'We could not find that code';
+  String get hwJoinErrorNotFound => 'لم نعثر على هذا الرمز';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+  String get hwJoinErrorNotFoundBody =>
+      'يُرجى التحقق من الأرقام الستة مرة أخرى.';
 
   @override
-  String get hwJoinErrorExpired => 'That code has expired';
+  String get hwJoinErrorExpired => 'انتهت صلاحية هذا الرمز';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+  String get hwJoinErrorExpiredBody => 'اطلب رمزًا جديدًا من معلّمك.';
 
   @override
-  String get hwJoinErrorFull => 'The class is full';
+  String get hwJoinErrorFull => 'الصف مكتمل';
 
   @override
-  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+  String get hwJoinErrorFullBody => 'يُرجى إبلاغ معلّمك.';
 
   @override
-  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+  String get hwJoinFailed => 'تعذّر الانضمام. حاول مرة أخرى بعد قليل.';
 
   @override
-  String get hwSectionInProgress => 'In progress';
+  String get hwSectionInProgress => 'قيد التنفيذ';
 
   @override
-  String get hwSectionUpcoming => 'Upcoming';
+  String get hwSectionUpcoming => 'قادم';
 
   @override
-  String get hwSectionDone => 'Done';
+  String get hwSectionDone => 'منجز';
 
   @override
-  String get hwLeaveClassLink => 'Leave the class';
+  String get hwLeaveClassLink => 'مغادرة الصف';
 
   @override
-  String get hwListEmptyTitle => 'No homework yet';
+  String get hwListEmptyTitle => 'لا توجد واجبات بعد';
 
   @override
-  String get hwListEmptyBody =>
-      'It will show up here when your teacher assigns it.';
+  String get hwListEmptyBody => 'ستظهر هنا عندما يكلّفك معلّمك بها.';
 
   @override
-  String get hwListFailed => 'Could not load your homework.';
+  String get hwListFailed => 'تعذّر تحميل واجباتك.';
 
   @override
-  String get hwRetry => 'Try again';
+  String get hwRetry => 'إعادة المحاولة';
 
   @override
-  String get hwBadgeDone => 'Done';
+  String get hwBadgeDone => 'منجز';
 
   @override
-  String get hwBadgeOverdue => 'Not submitted';
+  String get hwBadgeOverdue => 'لم يُسلَّم';
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'Not submitted, ${days}d late';
+    return 'لم يُسلَّم، متأخر $days يوم';
   }
 
   @override
   String hwBadgeDday(int days) {
-    return 'D-$days';
+    return 'باقٍ $days يوم';
   }
 
   @override
-  String get hwBadgeDueToday => 'Due today';
+  String get hwBadgeDueToday => 'موعده اليوم';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'المحادثة';
 
   @override
-  String get hwActivityConversation => 'Conversation';
+  String get hwActivityConversation => 'حوار';
 
   @override
-  String get hwActivityWorkbook => 'Workbook';
+  String get hwActivityWorkbook => 'كتاب التمارين';
 
   @override
   String hwChapterLabel(String chapter) {
-    return 'Chapter $chapter';
+    return 'الفصل $chapter';
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc => 'تحقّق من درجة نطقك';
 
   @override
-  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+  String get hwTaskConversationDesc => 'استخدم ما تعلّمته في حديث حقيقي';
 
   @override
   String get hwConversationOnce => 'المحادثة تُجرى مرة واحدة فقط لكل واجب.';
 
   @override
-  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+  String get hwTaskWorkbookDesc => 'تدرّب بالكتابة في كتاب التمارين';
 
   @override
-  String get hwCtaStudy => 'Start';
+  String get hwCtaStudy => 'ابدأ';
 
   @override
-  String get hwCtaResult => 'See result';
+  String get hwCtaResult => 'عرض النتيجة';
 
   @override
-  String get hwCtaDownload => 'Download';
+  String get hwCtaDownload => 'تنزيل';
 
   @override
-  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+  String get hwSpeakingNoScore => 'لم تنجز مهمة المحادثة بعد';
 
   @override
-  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+  String get hwWorkbookUnavailable => 'ملف كتاب التمارين غير متاح بعد.';
 
   @override
-  String get hwDetailClosed =>
-      'This assignment is closed. You can no longer submit.';
+  String get hwDetailClosed => 'أُغلق هذا الواجب. لم يعد بإمكانك التسليم.';
 
   @override
-  String get hwLeaveTitle => 'Leave the class?';
+  String get hwLeaveTitle => 'مغادرة الصف؟';
 
   @override
-  String get hwLeaveBody =>
-      'Your teacher will no longer see your homework results.';
+  String get hwLeaveBody => 'لن يرى معلّمك نتائج واجباتك بعد الآن.';
 
   @override
-  String get hwLeaveConfirm => 'Leave';
+  String get hwLeaveConfirm => 'مغادرة';
 
   @override
-  String get hwLeaveCancel => 'Stay';
+  String get hwLeaveCancel => 'البقاء';
 
   @override
-  String get hwLeaveFailed => 'Could not leave the class.';
+  String get hwLeaveFailed => 'تعذّرت مغادرة الصف.';
 
   @override
-  String get hwMyClass => 'My class';
+  String get hwMyClass => 'صفّي';
 
   @override
-  String get hwClassEmptyTitle => 'You have not joined a class';
+  String get hwClassEmptyTitle => 'لم تنضم إلى أي صف';
 
   @override
-  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+  String get hwClassEmptySubtitle => 'أدخل الرمز الذي أعطاه لك معلّمك';
 
   @override
-  String get hwClassEmptyCta => 'Enter class code';
+  String get hwClassEmptyCta => 'إدخال رمز الصف';
 
   @override
-  String get hwClassContinueCta => 'Continue';
+  String get hwClassContinueCta => 'متابعة';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    return '$count واجب موعده غدًا';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    return 'لديك $count واجب لم يُسلَّم';
   }
 
   @override
-  String get hwSpeakingUnavailable =>
-      'The sentences for this assignment are not available yet.';
+  String get hwSpeakingUnavailable => 'جمل هذا الواجب غير متاحة بعد.';
 
   @override
-  String get hwBadgeClosed => 'Closed';
+  String get hwBadgeClosed => 'مغلق';
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return 'نجحت في $passed من $total جملة';
   }
 
   @override
-  String get challengeFirstWord => 'First word';
+  String get challengeFirstWord => 'الكلمة الأولى';
 
   @override
-  String get grade => 'Grade';
+  String get challengeSeeAnalysis => 'عرض النتائج';
 
   @override
-  String get accuracy => 'Accuracy';
+  String get challengePaused => 'متوقف مؤقتًا';
 
   @override
-  String get bestCombo => 'Best Combo';
+  String get challengePausedNote => 'توقّف المؤقت والتسجيل معًا.';
 
   @override
-  String get cleared => 'Cleared';
+  String get challengeTimeLeft => 'الوقت المتبقي';
 
   @override
-  String get challengeSeeAnalysis => 'See results';
+  String get challengeScoreLabel => 'النقاط';
 
   @override
-  String get challengePaused => 'Paused';
+  String get challengeResume => 'متابعة';
 
   @override
-  String get challengePausedNote => 'The timer and the recording both stopped.';
-
-  @override
-  String get challengeTimeLeft => 'Time left';
-
-  @override
-  String get challengeScoreLabel => 'Score';
-
-  @override
-  String get challengeResume => 'Resume';
-
-  @override
-  String get challengeBlockedTitle => 'Can\'t use the camera';
+  String get challengeBlockedTitle => 'تعذّر استخدام الكاميرا';
 
   @override
   String get challengeBlockedNote =>
-      'Turn on camera and mic access in Settings.';
+      'فعّل إذن الكاميرا والميكروفون من الإعدادات.';
 
   @override
-  String get challengeGoBack => 'Go back';
+  String get challengeGoBack => 'رجوع';
 
   @override
-  String get challengeOpenSettings => 'Open Settings';
+  String get challengeOpenSettings => 'فتح الإعدادات';
 
   @override
-  String get saveDone => 'Saved to your gallery';
+  String get saveDone => 'تم الحفظ في المعرض';
 
   @override
-  String get saveFailed => 'Couldn\'t save';
+  String get saveFailed => 'تعذّر الحفظ';
 
   @override
-  String get saveDeniedNote => 'Photo access is required';
+  String get saveDeniedNote => 'يلزم إذن الوصول إلى الصور';
 }

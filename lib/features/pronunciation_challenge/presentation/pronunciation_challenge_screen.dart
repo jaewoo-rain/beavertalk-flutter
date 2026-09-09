@@ -91,10 +91,12 @@ class _PronunciationChallengeScreenState
 
   /// Whether the player opted to screen-record this run (start-panel toggle).
   ///
-  /// On by default: the clip is what this mode produces, and the share and
-  /// save actions both hang off it. Off by default meant most runs ended with
-  /// nothing to share.
-  bool _recordEnabled = true;
+  /// On by default where recording exists at all; forced off elsewhere.
+  ///
+  /// The clip is what this mode produces and both share and save hang off it,
+  /// so off-by-default left most runs with nothing. On iOS and web there is no
+  /// capture, so the flag stays false and the toggle is not offered.
+  bool _recordEnabled = ChallengeRecorder.isSupported;
 
   /// Path of the recorded gameplay MP4, when a run was captured. Shared from
   /// the result panel in place of the score-card image.
@@ -658,8 +660,10 @@ class _PronunciationChallengeScreenState
         ),
         const SizedBox(height: AppSpacing.s24),
         _difficultyToggle(),
-        const SizedBox(height: AppSpacing.s16),
-        _recordToggle(l10n),
+        if (ChallengeRecorder.isSupported) ...[
+          const SizedBox(height: AppSpacing.s16),
+          _recordToggle(l10n),
+        ],
         const SizedBox(height: AppSpacing.s24),
         // Fill, not hug: the result panel's CTAs are Row+Expanded and span the
         // panel, so a label-width start button read as a different control in
@@ -800,18 +804,9 @@ class _PronunciationChallengeScreenState
             height: 1.2,
           ),
         ),
-        const SizedBox(height: AppSpacing.s8),
-        // One line of substance, not a caption stack. The density pass cut
-        // labels; this is the run's actual outcome and the old title claimed
-        // "Nice!" for a run that missed nearly everything.
-        Text(
-          '${l10n.grade} ${engine.grade}  ·  ${l10n.accuracy} '
-          '${(engine.accuracy * 100).round()}%  ·  '
-          '${l10n.bestCombo} ${engine.maxCombo}  ·  '
-          '${l10n.cleared} ${engine.passCount}',
-          textAlign: TextAlign.center,
-          style: AppType.label2.r.copyWith(color: _stageInkNormal(context)),
-        ),
+        // Score alone. The design's hero is the number, and the stats line
+        // that sat here read as a caption stack — exactly what the density
+        // pass removed everywhere else.
         const SizedBox(height: AppSpacing.s24),
         // Clip + its own actions. All of it is gone when nothing was recorded:
         // there is no clip to preview, share or save, and an empty white card
@@ -845,7 +840,9 @@ class _PronunciationChallengeScreenState
           child: Button(
             type: BtnType.secondaryFill,
             size: BtnSize.s60,
-            text: l10n.challengeSeeAnalysis,
+            // 돌아가기, not 결과 보기: this IS the result. The pause panel
+            // keeps 결과 보기 because there the button ends the round.
+            text: l10n.challengeGoBack,
             onPressed: () => Navigator.pop(context),
           ),
         ),
@@ -878,7 +875,12 @@ class _PronunciationChallengeScreenState
       if (!await Gal.hasAccess(toAlbum: true)) {
         await Gal.requestAccess(toAlbum: true);
       }
-      await Gal.putVideo(path, album: 'BeaverTalk');
+      // No album. Naming one put the clip in `Pictures/BeaverTalk/` — a
+      // photo directory — where a device gallery does not necessarily surface
+      // a video (measured on the S8, 2026-09-09: the file and its MediaStore
+      // row both existed and the album still did not show up). Without it the
+      // plugin uses the platform's standard video location.
+      await Gal.putVideo(path);
       message = l10n.saveDone;
     } on GalException catch (e) {
       debugPrint('gallery save failed: ${e.type}');
@@ -890,8 +892,15 @@ class _PronunciationChallengeScreenState
       message = l10n.saveFailed;
     }
     if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
+    // Long enough to actually be read. At the default 4s the confirmation was
+    // gone before anyone looked, which reads as "nothing happened".
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        duration: const Duration(seconds: 6),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 
   /// Whether this run left a clip to share or save.

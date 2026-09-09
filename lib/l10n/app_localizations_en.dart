@@ -2550,18 +2550,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeFirstWord => 'First word';
 
   @override
-  String get grade => 'Grade';
-
-  @override
-  String get accuracy => 'Accuracy';
-
-  @override
-  String get bestCombo => 'Best Combo';
-
-  @override
-  String get cleared => 'Cleared';
-
-  @override
   String get challengeSeeAnalysis => 'See results';
 
   @override

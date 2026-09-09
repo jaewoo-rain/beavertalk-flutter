@@ -4804,30 +4804,6 @@ abstract class AppLocalizations {
   /// **'First word'**
   String get challengeFirstWord;
 
-  /// No description provided for @grade.
-  ///
-  /// In en, this message translates to:
-  /// **'Grade'**
-  String get grade;
-
-  /// No description provided for @accuracy.
-  ///
-  /// In en, this message translates to:
-  /// **'Accuracy'**
-  String get accuracy;
-
-  /// No description provided for @bestCombo.
-  ///
-  /// In en, this message translates to:
-  /// **'Best Combo'**
-  String get bestCombo;
-
-  /// No description provided for @cleared.
-  ///
-  /// In en, this message translates to:
-  /// **'Cleared'**
-  String get cleared;
-
   /// No description provided for @challengeSeeAnalysis.
   ///
   /// In en, this message translates to:

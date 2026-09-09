@@ -1937,7 +1937,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get nicknameLabel => 'ニックネーム';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'メール';
 
   @override
   String get loginMethodLabel => 'ログイン方法';
@@ -1955,27 +1955,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaSave => '保存';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'サブスクリプション';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => '購入完了';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name アバターがずっとあなたのものになります。\n領収の確認ができ次第、適用されます。';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'ホームへ';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => '今すぐ使う';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => '決済が完了しませんでした';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'もう一度お試しいただけます';
 
   @override
   String get paywallLeaveTitle => '今離れると、購読は開始されません';
@@ -2184,189 +2184,186 @@ class AppLocalizationsJa extends AppLocalizations {
   String get reportFailed => '報告を送信できませんでした。もう一度お試しください。';
 
   @override
-  String get hwTitle => 'Homework';
+  String get hwTitle => '宿題';
 
   @override
-  String get hwJoinCodeTitle => 'Enter your class code';
+  String get hwJoinCodeTitle => 'クラスコードを入力してください';
 
   @override
-  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+  String get hwJoinCodeSubtitle => '先生からもらった6桁のコードです';
 
   @override
-  String get hwJoinCodeLabel => 'Class code';
+  String get hwJoinCodeLabel => 'クラスコード';
 
   @override
-  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+  String get hwJoinCodeHelp => '大文字と小文字は区別しません';
 
   @override
-  String get hwJoinConfirmTitle => 'Is this the right class?';
+  String get hwJoinConfirmTitle => 'このクラスで合っていますか？';
 
   @override
-  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+  String get hwJoinConfirmSubtitle => '違う場合はコードをもう一度確認してください';
 
   @override
-  String get hwJoinFieldInstitution => 'Institution';
+  String get hwJoinFieldInstitution => '機関';
 
   @override
-  String get hwJoinFieldTeacher => 'Teacher';
+  String get hwJoinFieldTeacher => '先生';
 
   @override
-  String get hwJoinFieldLearners => 'Learners';
+  String get hwJoinFieldLearners => '学習者';
 
   @override
-  String get hwJoinFieldTerm => 'Term';
+  String get hwJoinFieldTerm => '期間';
 
   @override
-  String get hwJoinConfirmNote =>
-      'The class name is exactly as your teacher wrote it. We do not translate it.';
+  String get hwJoinConfirmNote => 'クラス名は先生が書いたとおりに表示します。翻訳はしません。';
 
   @override
-  String get hwJoinConfirmYes => 'Yes, that is it';
+  String get hwJoinConfirmYes => 'はい、これです';
 
   @override
-  String get hwJoinConfirmRetry => 'Re-enter code';
+  String get hwJoinConfirmRetry => 'コードを入力し直す';
 
   @override
-  String get hwJoinProfileTitle => 'What name will you use in class?';
+  String get hwJoinProfileTitle => 'クラスで使う名前は何ですか？';
 
   @override
-  String get hwJoinProfileSubtitle =>
-      'Your teacher matches this with the roster';
+  String get hwJoinProfileSubtitle => '先生が名簿と照らし合わせます';
 
   @override
-  String get hwJoinNameLabel => 'Name';
+  String get hwJoinNameLabel => '名前';
 
   @override
-  String get hwJoinNameHelp => 'It can differ from your app name';
+  String get hwJoinNameHelp => 'アプリの名前と違っていても大丈夫です';
 
   @override
-  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+  String get hwJoinStudentNoLabel => '学籍番号（任意）';
 
   @override
-  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+  String get hwJoinStudentNoHelp => '先生が名簿と照合するために使います';
 
   @override
-  String get hwJoinConsentTitle => 'What your teacher sees';
+  String get hwJoinConsentTitle => '先生に見える情報';
 
   @override
-  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+  String get hwJoinConsentSubtitle => 'クラスに参加するには同意が必要です';
 
   @override
-  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+  String get hwJoinConsentSharedHeading => '先生に共有されます';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'クラス名と学籍番号';
 
   @override
-  String get hwJoinConsentShared2 => 'Whether you did the homework';
+  String get hwJoinConsentShared2 => '宿題をしたかどうか';
 
   @override
-  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+  String get hwJoinConsentShared3 => '合格した文と外した文';
 
   @override
-  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+  String get hwJoinConsentShared4 => '課題通話の長さと要約';
 
   @override
-  String get hwJoinConsentNotSharedHeading => 'Not shared';
+  String get hwJoinConsentNotSharedHeading => '共有されません';
 
   @override
-  String get hwJoinConsentNotShared1 => 'Email and phone number';
+  String get hwJoinConsentNotShared1 => 'メールアドレスと電話番号';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 => 'アプリの名前・プロフィール・キャラクター';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => '国籍と母語';
 
   @override
-  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+  String get hwJoinConsentNotShared4 => 'クラス外の通話と学習';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+  String get hwJoinConsentNotShared5 => 'サブスクリプションと支払い情報';
 
   @override
-  String get hwJoinConsentAgree => 'I agree to the above';
+  String get hwJoinConsentAgree => '上記に同意します';
 
   @override
-  String get hwJoinConsentCta => 'Agree and join';
+  String get hwJoinConsentCta => '同意して参加';
 
   @override
   String hwJoinDoneTitle(String className) {
-    return 'You joined $className';
+    return '$className に参加しました';
   }
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    return '課題が $count 件あります';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'No assignments yet';
+  String get hwJoinDoneNoAssignment => 'まだ課題はありません';
 
   @override
-  String get hwJoinDoneNextDue => 'Next due';
+  String get hwJoinDoneNextDue => '次の締め切り';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'クラスでの名前';
 
   @override
-  String get hwJoinDoneCta => 'See homework';
+  String get hwJoinDoneCta => '宿題を見る';
 
   @override
-  String get hwJoinErrorNotFound => 'We could not find that code';
+  String get hwJoinErrorNotFound => 'そのコードが見つかりません';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+  String get hwJoinErrorNotFoundBody => '6桁をもう一度ご確認ください。';
 
   @override
-  String get hwJoinErrorExpired => 'That code has expired';
+  String get hwJoinErrorExpired => 'そのコードは期限切れです';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+  String get hwJoinErrorExpiredBody => '先生に新しいコードをもらってください。';
 
   @override
-  String get hwJoinErrorFull => 'The class is full';
+  String get hwJoinErrorFull => 'クラスが満員です';
 
   @override
-  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+  String get hwJoinErrorFullBody => '先生にお知らせください。';
 
   @override
-  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+  String get hwJoinFailed => '参加できませんでした。しばらくしてからもう一度お試しください。';
 
   @override
-  String get hwSectionInProgress => 'In progress';
+  String get hwSectionInProgress => '進行中';
 
   @override
-  String get hwSectionUpcoming => 'Upcoming';
+  String get hwSectionUpcoming => 'これから';
 
   @override
-  String get hwSectionDone => 'Done';
+  String get hwSectionDone => '完了';
 
   @override
-  String get hwLeaveClassLink => 'Leave the class';
+  String get hwLeaveClassLink => 'クラスを抜ける';
 
   @override
-  String get hwListEmptyTitle => 'No homework yet';
+  String get hwListEmptyTitle => 'まだ宿題はありません';
 
   @override
-  String get hwListEmptyBody =>
-      'It will show up here when your teacher assigns it.';
+  String get hwListEmptyBody => '先生が出したらここに表示されます。';
 
   @override
-  String get hwListFailed => 'Could not load your homework.';
+  String get hwListFailed => '宿題を読み込めませんでした。';
 
   @override
-  String get hwRetry => 'Try again';
+  String get hwRetry => '再試行';
 
   @override
-  String get hwBadgeDone => 'Done';
+  String get hwBadgeDone => '完了';
 
   @override
-  String get hwBadgeOverdue => 'Not submitted';
+  String get hwBadgeOverdue => '未提出';
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'Not submitted, ${days}d late';
+    return '未提出・$days日遅れ';
   }
 
   @override
@@ -2375,158 +2372,142 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get hwBadgeDueToday => 'Due today';
+  String get hwBadgeDueToday => '今日まで';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'スピーキング';
 
   @override
-  String get hwActivityConversation => 'Conversation';
+  String get hwActivityConversation => '会話';
 
   @override
-  String get hwActivityWorkbook => 'Workbook';
+  String get hwActivityWorkbook => 'ワークブック';
 
   @override
   String hwChapterLabel(String chapter) {
-    return 'Chapter $chapter';
+    return '第$chapter課';
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc => '発音スコアを確認しましょう';
 
   @override
-  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+  String get hwTaskConversationDesc => '学んだ表現を実際の会話で使ってみましょう';
 
   @override
   String get hwConversationOnce => '会話は宿題ごとに1回だけできます。';
 
   @override
-  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+  String get hwTaskWorkbookDesc => 'ワークブックに書いて練習しましょう';
 
   @override
-  String get hwCtaStudy => 'Start';
+  String get hwCtaStudy => 'はじめる';
 
   @override
-  String get hwCtaResult => 'See result';
+  String get hwCtaResult => '結果を見る';
 
   @override
-  String get hwCtaDownload => 'Download';
+  String get hwCtaDownload => 'ダウンロード';
 
   @override
-  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+  String get hwSpeakingNoScore => 'スピーキング課題はまだ行っていません';
 
   @override
-  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+  String get hwWorkbookUnavailable => 'ワークブックのファイルはまだ利用できません。';
 
   @override
-  String get hwDetailClosed =>
-      'This assignment is closed. You can no longer submit.';
+  String get hwDetailClosed => 'この課題は締め切られました。これ以上提出できません。';
 
   @override
-  String get hwLeaveTitle => 'Leave the class?';
+  String get hwLeaveTitle => 'クラスを抜けますか？';
 
   @override
-  String get hwLeaveBody =>
-      'Your teacher will no longer see your homework results.';
+  String get hwLeaveBody => '先生はあなたの宿題の結果を見られなくなります。';
 
   @override
-  String get hwLeaveConfirm => 'Leave';
+  String get hwLeaveConfirm => '抜ける';
 
   @override
-  String get hwLeaveCancel => 'Stay';
+  String get hwLeaveCancel => '残る';
 
   @override
-  String get hwLeaveFailed => 'Could not leave the class.';
+  String get hwLeaveFailed => 'クラスを抜けられませんでした。';
 
   @override
-  String get hwMyClass => 'My class';
+  String get hwMyClass => 'マイクラス';
 
   @override
-  String get hwClassEmptyTitle => 'You have not joined a class';
+  String get hwClassEmptyTitle => 'まだクラスに参加していません';
 
   @override
-  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+  String get hwClassEmptySubtitle => '先生からもらったコードを入力してください';
 
   @override
-  String get hwClassEmptyCta => 'Enter class code';
+  String get hwClassEmptyCta => 'クラスコードを入力';
 
   @override
-  String get hwClassContinueCta => 'Continue';
+  String get hwClassContinueCta => '続ける';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    return '明日締め切りの課題が $count 件あります';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    return '未提出の課題が $count 件あります';
   }
 
   @override
-  String get hwSpeakingUnavailable =>
-      'The sentences for this assignment are not available yet.';
+  String get hwSpeakingUnavailable => 'この課題の文はまだ利用できません。';
 
   @override
-  String get hwBadgeClosed => 'Closed';
+  String get hwBadgeClosed => '締め切り';
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total 文中 $passed 文 合格';
   }
 
   @override
-  String get challengeFirstWord => 'First word';
+  String get challengeFirstWord => '最初の単語';
 
   @override
-  String get grade => 'Grade';
+  String get challengeSeeAnalysis => '結果を見る';
 
   @override
-  String get accuracy => 'Accuracy';
+  String get challengePaused => '一時停止';
 
   @override
-  String get bestCombo => 'Best Combo';
+  String get challengePausedNote => 'タイマーと録画が一緒に止まりました';
 
   @override
-  String get cleared => 'Cleared';
+  String get challengeTimeLeft => '残り時間';
 
   @override
-  String get challengeSeeAnalysis => 'See results';
+  String get challengeScoreLabel => 'スコア';
 
   @override
-  String get challengePaused => 'Paused';
+  String get challengeResume => '続ける';
 
   @override
-  String get challengePausedNote => 'The timer and the recording both stopped.';
+  String get challengeBlockedTitle => 'カメラを使えません';
 
   @override
-  String get challengeTimeLeft => 'Time left';
+  String get challengeBlockedNote => '設定でカメラとマイクへのアクセスをオンにしてください';
 
   @override
-  String get challengeScoreLabel => 'Score';
+  String get challengeGoBack => '戻る';
 
   @override
-  String get challengeResume => 'Resume';
+  String get challengeOpenSettings => '設定を開く';
 
   @override
-  String get challengeBlockedTitle => 'Can\'t use the camera';
+  String get saveDone => 'ギャラリーに保存しました';
 
   @override
-  String get challengeBlockedNote =>
-      'Turn on camera and mic access in Settings.';
+  String get saveFailed => '保存できませんでした';
 
   @override
-  String get challengeGoBack => 'Go back';
-
-  @override
-  String get challengeOpenSettings => 'Open Settings';
-
-  @override
-  String get saveDone => 'Saved to your gallery';
-
-  @override
-  String get saveFailed => 'Couldn\'t save';
-
-  @override
-  String get saveDeniedNote => 'Photo access is required';
+  String get saveDeniedNote => '写真へのアクセス許可が必要です';
 }

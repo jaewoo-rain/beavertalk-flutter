@@ -775,10 +775,6 @@
   "hwBadgeClosed": "마감됨",
   "hwSpeakingProgress": "{total}문장 중 {passed}문장 통과",
   "challengeFirstWord": "첫 단어",
-  "grade": "등급",
-  "accuracy": "정확도",
-  "bestCombo": "최고 콤보",
-  "cleared": "클리어",
   "challengeSeeAnalysis": "결과 보기",
   "challengePaused": "일시정지",
   "challengePausedNote": "타이머와 녹화가 함께 멈췄어요",
@@ -791,5 +787,12 @@
   "challengeOpenSettings": "설정 열기",
   "saveDone": "갤러리에 저장했어요",
   "saveFailed": "저장하지 못했어요",
-  "saveDeniedNote": "사진 접근 권한이 필요해요"
+  "saveDeniedNote": "사진 접근 권한이 필요해요",
+  "emailLabel": "이메일",
+  "iapSuccessTitle": "구매 완료",
+  "iapSuccessBody": "{name} 아바타가 영구 소장돼요.\n영수증이 확인되는 대로 적용돼요.",
+  "ctaGoHome": "홈으로",
+  "ctaUseNow": "지금 사용하기",
+  "iapFailTitle": "결제가 완료되지 않았어요",
+  "iapFailBody": "다시 시도할 수 있어요"
 }

@@ -2015,7 +2015,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get nicknameLabel => 'Becenév';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-mail';
 
   @override
   String get loginMethodLabel => 'Bejelentkezési mód';
@@ -2033,27 +2033,27 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaSave => 'Mentés';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Előfizetés';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Vásárlás kész';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'A(z) $name avatar örökre a tiéd.\nA nyugta megerősítése után azonnal érvénybe lép.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Kezdőlapra';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Használom most';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'A fizetés nem sikerült';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Újra megpróbálhatod';
 
   @override
   String get paywallLeaveTitle => 'Ha most kilépsz, nem lesz előfizetésed';
@@ -2272,189 +2272,191 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem sikerült elküldeni a bejelentést. Próbáld újra.';
 
   @override
-  String get hwTitle => 'Homework';
+  String get hwTitle => 'Házi feladat';
 
   @override
-  String get hwJoinCodeTitle => 'Enter your class code';
+  String get hwJoinCodeTitle => 'Add meg az osztálykódod';
 
   @override
-  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+  String get hwJoinCodeSubtitle => 'Ez a tanárodtól kapott 6 jegyű kód';
 
   @override
-  String get hwJoinCodeLabel => 'Class code';
+  String get hwJoinCodeLabel => 'Osztálykód';
 
   @override
-  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+  String get hwJoinCodeHelp => 'A kód nem érzékeny a kis- és nagybetűkre';
 
   @override
-  String get hwJoinConfirmTitle => 'Is this the right class?';
+  String get hwJoinConfirmTitle => 'Ez a megfelelő osztály?';
 
   @override
-  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+  String get hwJoinConfirmSubtitle => 'Ha nem, ellenőrizd újra a kódot';
 
   @override
-  String get hwJoinFieldInstitution => 'Institution';
+  String get hwJoinFieldInstitution => 'Intézmény';
 
   @override
-  String get hwJoinFieldTeacher => 'Teacher';
+  String get hwJoinFieldTeacher => 'Tanár';
 
   @override
-  String get hwJoinFieldLearners => 'Learners';
+  String get hwJoinFieldLearners => 'Tanulók';
 
   @override
-  String get hwJoinFieldTerm => 'Term';
+  String get hwJoinFieldTerm => 'Időszak';
 
   @override
   String get hwJoinConfirmNote =>
-      'The class name is exactly as your teacher wrote it. We do not translate it.';
+      'Az osztály neve pontosan úgy jelenik meg, ahogy a tanárod írta. Nem fordítjuk le.';
 
   @override
-  String get hwJoinConfirmYes => 'Yes, that is it';
+  String get hwJoinConfirmYes => 'Igen, ez az';
 
   @override
-  String get hwJoinConfirmRetry => 'Re-enter code';
+  String get hwJoinConfirmRetry => 'Kód újra megadása';
 
   @override
-  String get hwJoinProfileTitle => 'What name will you use in class?';
+  String get hwJoinProfileTitle => 'Milyen nevet használsz az osztályban?';
 
   @override
-  String get hwJoinProfileSubtitle =>
-      'Your teacher matches this with the roster';
+  String get hwJoinProfileSubtitle => 'A tanárod ezt veti össze a névsorral';
 
   @override
-  String get hwJoinNameLabel => 'Name';
+  String get hwJoinNameLabel => 'Név';
 
   @override
-  String get hwJoinNameHelp => 'It can differ from your app name';
+  String get hwJoinNameHelp => 'Eltérhet az appban használt nevedtől';
 
   @override
-  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+  String get hwJoinStudentNoLabel => 'Tanulói azonosító (nem kötelező)';
 
   @override
-  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+  String get hwJoinStudentNoHelp => 'A tanárod ezzel veti össze a névsort';
 
   @override
-  String get hwJoinConsentTitle => 'What your teacher sees';
+  String get hwJoinConsentTitle => 'Amit a tanárod lát';
 
   @override
-  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+  String get hwJoinConsentSubtitle =>
+      'Az osztályhoz való csatlakozáshoz hozzájárulás szükséges';
 
   @override
-  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+  String get hwJoinConsentSharedHeading => 'Megosztva a tanároddal';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'Osztály neve és tanulói azonosító';
 
   @override
-  String get hwJoinConsentShared2 => 'Whether you did the homework';
+  String get hwJoinConsentShared2 => 'Elkészítetted-e a házi feladatot';
 
   @override
-  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+  String get hwJoinConsentShared3 => 'A teljesített és elrontott mondatok';
 
   @override
-  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+  String get hwJoinConsentShared4 => 'A feladathívás hossza és összefoglalója';
 
   @override
-  String get hwJoinConsentNotSharedHeading => 'Not shared';
+  String get hwJoinConsentNotSharedHeading => 'Nincs megosztva';
 
   @override
-  String get hwJoinConsentNotShared1 => 'Email and phone number';
+  String get hwJoinConsentNotShared1 => 'E-mail és telefonszám';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 => 'Appbeli név, profil és karakter';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => 'Állampolgárság és anyanyelv';
 
   @override
-  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+  String get hwJoinConsentNotShared4 =>
+      'Az osztályon kívüli hívások és tanulás';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+  String get hwJoinConsentNotShared5 => 'Előfizetési és fizetési adatok';
 
   @override
-  String get hwJoinConsentAgree => 'I agree to the above';
+  String get hwJoinConsentAgree => 'Elfogadom a fentieket';
 
   @override
-  String get hwJoinConsentCta => 'Agree and join';
+  String get hwJoinConsentCta => 'Elfogadom és csatlakozom';
 
   @override
   String hwJoinDoneTitle(String className) {
-    return 'You joined $className';
+    return 'Csatlakoztál ehhez: $className';
   }
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    return '$count feladat vár rád';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'No assignments yet';
+  String get hwJoinDoneNoAssignment => 'Még nincs feladat';
 
   @override
-  String get hwJoinDoneNextDue => 'Next due';
+  String get hwJoinDoneNextDue => 'Következő határidő';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'A neved az osztályban';
 
   @override
-  String get hwJoinDoneCta => 'See homework';
+  String get hwJoinDoneCta => 'Házi feladatok megtekintése';
 
   @override
-  String get hwJoinErrorNotFound => 'We could not find that code';
+  String get hwJoinErrorNotFound => 'Nem találtuk ezt a kódot';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+  String get hwJoinErrorNotFoundBody =>
+      'Kérjük, ellenőrizd újra a hat számjegyet.';
 
   @override
-  String get hwJoinErrorExpired => 'That code has expired';
+  String get hwJoinErrorExpired => 'Ez a kód lejárt';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+  String get hwJoinErrorExpiredBody => 'Kérj új kódot a tanárodtól.';
 
   @override
-  String get hwJoinErrorFull => 'The class is full';
+  String get hwJoinErrorFull => 'Az osztály megtelt';
 
   @override
-  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+  String get hwJoinErrorFullBody => 'Kérjük, szólj a tanárodnak.';
 
   @override
-  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+  String get hwJoinFailed =>
+      'Nem sikerült csatlakozni. Próbáld újra egy pillanat múlva.';
 
   @override
-  String get hwSectionInProgress => 'In progress';
+  String get hwSectionInProgress => 'Folyamatban';
 
   @override
-  String get hwSectionUpcoming => 'Upcoming';
+  String get hwSectionUpcoming => 'Közelgő';
 
   @override
-  String get hwSectionDone => 'Done';
+  String get hwSectionDone => 'Kész';
 
   @override
-  String get hwLeaveClassLink => 'Leave the class';
+  String get hwLeaveClassLink => 'Kilépés az osztályból';
 
   @override
-  String get hwListEmptyTitle => 'No homework yet';
+  String get hwListEmptyTitle => 'Még nincs házi feladat';
 
   @override
-  String get hwListEmptyBody =>
-      'It will show up here when your teacher assigns it.';
+  String get hwListEmptyBody => 'Itt jelenik meg, amint a tanárod kiadja.';
 
   @override
-  String get hwListFailed => 'Could not load your homework.';
+  String get hwListFailed => 'Nem sikerült betölteni a házi feladataidat.';
 
   @override
-  String get hwRetry => 'Try again';
+  String get hwRetry => 'Újra';
 
   @override
-  String get hwBadgeDone => 'Done';
+  String get hwBadgeDone => 'Kész';
 
   @override
-  String get hwBadgeOverdue => 'Not submitted';
+  String get hwBadgeOverdue => 'Nincs beadva';
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'Not submitted, ${days}d late';
+    return 'Nincs beadva, $days nap késés';
   }
 
   @override
@@ -2463,159 +2465,147 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get hwBadgeDueToday => 'Due today';
+  String get hwBadgeDueToday => 'Ma esedékes';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'Beszéd';
 
   @override
-  String get hwActivityConversation => 'Conversation';
+  String get hwActivityConversation => 'Beszélgetés';
 
   @override
-  String get hwActivityWorkbook => 'Workbook';
+  String get hwActivityWorkbook => 'Munkafüzet';
 
   @override
   String hwChapterLabel(String chapter) {
-    return 'Chapter $chapter';
+    return '$chapter. fejezet';
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc => 'Nézd meg a kiejtési pontszámodat';
 
   @override
-  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+  String get hwTaskConversationDesc =>
+      'Használd a tanultakat valódi beszélgetésben';
 
   @override
   String get hwConversationOnce =>
       'A beszélgetés házi feladatonként egyszer végezhető el.';
 
   @override
-  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+  String get hwTaskWorkbookDesc => 'Gyakorolj írással a munkafüzetben';
 
   @override
-  String get hwCtaStudy => 'Start';
+  String get hwCtaStudy => 'Kezdés';
 
   @override
-  String get hwCtaResult => 'See result';
+  String get hwCtaResult => 'Eredmény megtekintése';
 
   @override
-  String get hwCtaDownload => 'Download';
+  String get hwCtaDownload => 'Letöltés';
 
   @override
-  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+  String get hwSpeakingNoScore => 'Még nem csináltad meg a beszédfeladatot';
 
   @override
-  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+  String get hwWorkbookUnavailable => 'A munkafüzet fájlja még nem érhető el.';
 
   @override
-  String get hwDetailClosed =>
-      'This assignment is closed. You can no longer submit.';
+  String get hwDetailClosed => 'Ez a feladat lezárult. Már nem tudsz beadni.';
 
   @override
-  String get hwLeaveTitle => 'Leave the class?';
+  String get hwLeaveTitle => 'Kilépsz az osztályból?';
 
   @override
   String get hwLeaveBody =>
-      'Your teacher will no longer see your homework results.';
+      'A tanárod többé nem látja a házi feladataid eredményeit.';
 
   @override
-  String get hwLeaveConfirm => 'Leave';
+  String get hwLeaveConfirm => 'Kilépés';
 
   @override
-  String get hwLeaveCancel => 'Stay';
+  String get hwLeaveCancel => 'Maradok';
 
   @override
-  String get hwLeaveFailed => 'Could not leave the class.';
+  String get hwLeaveFailed => 'Nem sikerült kilépni az osztályból.';
 
   @override
-  String get hwMyClass => 'My class';
+  String get hwMyClass => 'Az osztályom';
 
   @override
-  String get hwClassEmptyTitle => 'You have not joined a class';
+  String get hwClassEmptyTitle => 'Még nem csatlakoztál osztályhoz';
 
   @override
-  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+  String get hwClassEmptySubtitle => 'Add meg a tanárodtól kapott kódot';
 
   @override
-  String get hwClassEmptyCta => 'Enter class code';
+  String get hwClassEmptyCta => 'Osztálykód megadása';
 
   @override
-  String get hwClassContinueCta => 'Continue';
+  String get hwClassContinueCta => 'Tovább';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    return '$count feladat holnap esedékes';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    return '$count beadatlan feladatod van';
   }
 
   @override
   String get hwSpeakingUnavailable =>
-      'The sentences for this assignment are not available yet.';
+      'Ehhez a feladathoz még nincsenek mondatok.';
 
   @override
-  String get hwBadgeClosed => 'Closed';
+  String get hwBadgeClosed => 'Lezárva';
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$total mondatból $passed teljesítve';
   }
 
   @override
-  String get challengeFirstWord => 'First word';
+  String get challengeFirstWord => 'Első szó';
 
   @override
-  String get grade => 'Grade';
+  String get challengeSeeAnalysis => 'Eredmények megtekintése';
 
   @override
-  String get accuracy => 'Accuracy';
+  String get challengePaused => 'Szüneteltetve';
 
   @override
-  String get bestCombo => 'Best Combo';
+  String get challengePausedNote => 'Az időzítő és a felvétel együtt állt le.';
 
   @override
-  String get cleared => 'Cleared';
+  String get challengeTimeLeft => 'Hátralévő idő';
 
   @override
-  String get challengeSeeAnalysis => 'See results';
+  String get challengeScoreLabel => 'Pontszám';
 
   @override
-  String get challengePaused => 'Paused';
+  String get challengeResume => 'Folytatás';
 
   @override
-  String get challengePausedNote => 'The timer and the recording both stopped.';
-
-  @override
-  String get challengeTimeLeft => 'Time left';
-
-  @override
-  String get challengeScoreLabel => 'Score';
-
-  @override
-  String get challengeResume => 'Resume';
-
-  @override
-  String get challengeBlockedTitle => 'Can\'t use the camera';
+  String get challengeBlockedTitle => 'A kamera nem használható';
 
   @override
   String get challengeBlockedNote =>
-      'Turn on camera and mic access in Settings.';
+      'Kapcsold be a kamera- és mikrofonhozzáférést a Beállításokban.';
 
   @override
-  String get challengeGoBack => 'Go back';
+  String get challengeGoBack => 'Vissza';
 
   @override
-  String get challengeOpenSettings => 'Open Settings';
+  String get challengeOpenSettings => 'Beállítások megnyitása';
 
   @override
-  String get saveDone => 'Saved to your gallery';
+  String get saveDone => 'Elmentve a galériába';
 
   @override
-  String get saveFailed => 'Couldn\'t save';
+  String get saveFailed => 'Nem sikerült menteni';
 
   @override
-  String get saveDeniedNote => 'Photo access is required';
+  String get saveDeniedNote => 'Fotókhoz való hozzáférés szükséges';
 }

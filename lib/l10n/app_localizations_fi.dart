@@ -2002,7 +2002,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get nicknameLabel => 'Nimimerkki';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'Sähköposti';
 
   @override
   String get loginMethodLabel => 'Kirjautumistapa';
@@ -2021,27 +2021,27 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaSave => 'Tallenna';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Tilaus';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Osto valmis';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'Avatar $name on sinun ikuisesti.\nOtetaan käyttöön heti, kun kuitti vahvistuu.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Etusivulle';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Käytä nyt';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Maksu ei mennyt läpi';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Voit yrittää uudelleen';
 
   @override
   String get paywallLeaveTitle => 'Jos poistut nyt, tilausta ei tehdä';
@@ -2260,189 +2260,192 @@ class AppLocalizationsFi extends AppLocalizations {
   String get reportFailed => 'Ilmoitusta ei voitu lähettää. Yritä uudelleen.';
 
   @override
-  String get hwTitle => 'Homework';
+  String get hwTitle => 'Kotitehtävät';
 
   @override
-  String get hwJoinCodeTitle => 'Enter your class code';
+  String get hwJoinCodeTitle => 'Syötä luokkakoodisi';
 
   @override
-  String get hwJoinCodeSubtitle => 'It is the 6-digit code from your teacher';
+  String get hwJoinCodeSubtitle =>
+      'Se on opettajaltasi saatu 6-numeroinen koodi';
 
   @override
-  String get hwJoinCodeLabel => 'Class code';
+  String get hwJoinCodeLabel => 'Luokkakoodi';
 
   @override
-  String get hwJoinCodeHelp => 'The code is not case-sensitive';
+  String get hwJoinCodeHelp => 'Koodi ei erottele isoja ja pieniä kirjaimia';
 
   @override
-  String get hwJoinConfirmTitle => 'Is this the right class?';
+  String get hwJoinConfirmTitle => 'Onko tämä oikea luokka?';
 
   @override
-  String get hwJoinConfirmSubtitle => 'If not, check the code again';
+  String get hwJoinConfirmSubtitle => 'Jos ei, tarkista koodi uudelleen';
 
   @override
-  String get hwJoinFieldInstitution => 'Institution';
+  String get hwJoinFieldInstitution => 'Oppilaitos';
 
   @override
-  String get hwJoinFieldTeacher => 'Teacher';
+  String get hwJoinFieldTeacher => 'Opettaja';
 
   @override
-  String get hwJoinFieldLearners => 'Learners';
+  String get hwJoinFieldLearners => 'Oppijat';
 
   @override
-  String get hwJoinFieldTerm => 'Term';
+  String get hwJoinFieldTerm => 'Jakso';
 
   @override
   String get hwJoinConfirmNote =>
-      'The class name is exactly as your teacher wrote it. We do not translate it.';
+      'Luokan nimi näkyy juuri niin kuin opettajasi sen kirjoitti. Emme käännä sitä.';
 
   @override
-  String get hwJoinConfirmYes => 'Yes, that is it';
+  String get hwJoinConfirmYes => 'Kyllä, tämä se on';
 
   @override
-  String get hwJoinConfirmRetry => 'Re-enter code';
+  String get hwJoinConfirmRetry => 'Syötä koodi uudelleen';
 
   @override
-  String get hwJoinProfileTitle => 'What name will you use in class?';
+  String get hwJoinProfileTitle => 'Mitä nimeä käytät luokassa?';
 
   @override
-  String get hwJoinProfileSubtitle =>
-      'Your teacher matches this with the roster';
+  String get hwJoinProfileSubtitle => 'Opettajasi vertaa sitä luokkalistaan';
 
   @override
-  String get hwJoinNameLabel => 'Name';
+  String get hwJoinNameLabel => 'Nimi';
 
   @override
-  String get hwJoinNameHelp => 'It can differ from your app name';
+  String get hwJoinNameHelp => 'Se voi olla eri kuin nimesi sovelluksessa';
 
   @override
-  String get hwJoinStudentNoLabel => 'Student ID (optional)';
+  String get hwJoinStudentNoLabel => 'Opiskelijanumero (valinnainen)';
 
   @override
-  String get hwJoinStudentNoHelp => 'Your teacher uses it to match the roster';
+  String get hwJoinStudentNoHelp =>
+      'Opettajasi käyttää sitä luokkalistan kanssa';
 
   @override
-  String get hwJoinConsentTitle => 'What your teacher sees';
+  String get hwJoinConsentTitle => 'Mitä opettajasi näkee';
 
   @override
-  String get hwJoinConsentSubtitle => 'You must agree to join the class';
+  String get hwJoinConsentSubtitle =>
+      'Sinun on hyväksyttävä liittyäksesi luokkaan';
 
   @override
-  String get hwJoinConsentSharedHeading => 'Shared with your teacher';
+  String get hwJoinConsentSharedHeading => 'Jaetaan opettajallesi';
 
   @override
-  String get hwJoinConsentShared1 => 'Class name and student ID';
+  String get hwJoinConsentShared1 => 'Luokan nimi ja opiskelijanumero';
 
   @override
-  String get hwJoinConsentShared2 => 'Whether you did the homework';
+  String get hwJoinConsentShared2 => 'Teitkö kotitehtävän';
 
   @override
-  String get hwJoinConsentShared3 => 'Sentences passed and missed';
+  String get hwJoinConsentShared3 => 'Läpäistyt ja epäonnistuneet lauseet';
 
   @override
-  String get hwJoinConsentShared4 => 'Assignment call length and summary';
+  String get hwJoinConsentShared4 => 'Tehtäväpuhelun kesto ja tiivistelmä';
 
   @override
-  String get hwJoinConsentNotSharedHeading => 'Not shared';
+  String get hwJoinConsentNotSharedHeading => 'Ei jaeta';
 
   @override
-  String get hwJoinConsentNotShared1 => 'Email and phone number';
+  String get hwJoinConsentNotShared1 => 'Sähköposti ja puhelinnumero';
 
   @override
-  String get hwJoinConsentNotShared2 => 'App name, profile and character';
+  String get hwJoinConsentNotShared2 => 'Sovelluksen nimi, profiili ja hahmo';
 
   @override
-  String get hwJoinConsentNotShared3 => 'Nationality and first language';
+  String get hwJoinConsentNotShared3 => 'Kansalaisuus ja äidinkieli';
 
   @override
-  String get hwJoinConsentNotShared4 => 'Calls and study outside the class';
+  String get hwJoinConsentNotShared4 =>
+      'Puhelut ja opiskelu luokan ulkopuolella';
 
   @override
-  String get hwJoinConsentNotShared5 => 'Subscription and payment details';
+  String get hwJoinConsentNotShared5 => 'Tilaus- ja maksutiedot';
 
   @override
-  String get hwJoinConsentAgree => 'I agree to the above';
+  String get hwJoinConsentAgree => 'Hyväksyn yllä olevan';
 
   @override
-  String get hwJoinConsentCta => 'Agree and join';
+  String get hwJoinConsentCta => 'Hyväksy ja liity';
 
   @override
   String hwJoinDoneTitle(String className) {
-    return 'You joined $className';
+    return 'Liityit luokkaan $className';
   }
 
   @override
   String hwJoinDoneSubtitle(int count) {
-    return '$count assignments are waiting';
+    return '$count tehtävää odottaa';
   }
 
   @override
-  String get hwJoinDoneNoAssignment => 'No assignments yet';
+  String get hwJoinDoneNoAssignment => 'Ei vielä tehtäviä';
 
   @override
-  String get hwJoinDoneNextDue => 'Next due';
+  String get hwJoinDoneNextDue => 'Seuraava määräaika';
 
   @override
-  String get hwJoinDoneRosterName => 'Your class name';
+  String get hwJoinDoneRosterName => 'Nimesi luokassa';
 
   @override
-  String get hwJoinDoneCta => 'See homework';
+  String get hwJoinDoneCta => 'Katso kotitehtävät';
 
   @override
-  String get hwJoinErrorNotFound => 'We could not find that code';
+  String get hwJoinErrorNotFound => 'Koodia ei löytynyt';
 
   @override
-  String get hwJoinErrorNotFoundBody => 'Please check the six digits again.';
+  String get hwJoinErrorNotFoundBody => 'Tarkista kuusi numeroa uudelleen.';
 
   @override
-  String get hwJoinErrorExpired => 'That code has expired';
+  String get hwJoinErrorExpired => 'Koodi on vanhentunut';
 
   @override
-  String get hwJoinErrorExpiredBody => 'Ask your teacher for a new code.';
+  String get hwJoinErrorExpiredBody => 'Pyydä opettajaltasi uusi koodi.';
 
   @override
-  String get hwJoinErrorFull => 'The class is full';
+  String get hwJoinErrorFull => 'Luokka on täynnä';
 
   @override
-  String get hwJoinErrorFullBody => 'Please let your teacher know.';
+  String get hwJoinErrorFullBody => 'Kerro asiasta opettajallesi.';
 
   @override
-  String get hwJoinFailed => 'Could not join. Please try again in a moment.';
+  String get hwJoinFailed =>
+      'Liittyminen ei onnistunut. Yritä hetken kuluttua uudelleen.';
 
   @override
-  String get hwSectionInProgress => 'In progress';
+  String get hwSectionInProgress => 'Käynnissä';
 
   @override
-  String get hwSectionUpcoming => 'Upcoming';
+  String get hwSectionUpcoming => 'Tulossa';
 
   @override
-  String get hwSectionDone => 'Done';
+  String get hwSectionDone => 'Valmis';
 
   @override
-  String get hwLeaveClassLink => 'Leave the class';
+  String get hwLeaveClassLink => 'Poistu luokasta';
 
   @override
-  String get hwListEmptyTitle => 'No homework yet';
+  String get hwListEmptyTitle => 'Ei vielä kotitehtäviä';
 
   @override
-  String get hwListEmptyBody =>
-      'It will show up here when your teacher assigns it.';
+  String get hwListEmptyBody => 'Ne näkyvät tässä, kun opettajasi antaa niitä.';
 
   @override
-  String get hwListFailed => 'Could not load your homework.';
+  String get hwListFailed => 'Kotitehtäviä ei voitu ladata.';
 
   @override
-  String get hwRetry => 'Try again';
+  String get hwRetry => 'Yritä uudelleen';
 
   @override
-  String get hwBadgeDone => 'Done';
+  String get hwBadgeDone => 'Valmis';
 
   @override
-  String get hwBadgeOverdue => 'Not submitted';
+  String get hwBadgeOverdue => 'Palauttamatta';
 
   @override
   String hwBadgeOverdueDays(int days) {
-    return 'Not submitted, ${days}d late';
+    return 'Palauttamatta, $days vrk myöhässä';
   }
 
   @override
@@ -2451,159 +2454,147 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get hwBadgeDueToday => 'Due today';
+  String get hwBadgeDueToday => 'Määräaika tänään';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'Puhuminen';
 
   @override
-  String get hwActivityConversation => 'Conversation';
+  String get hwActivityConversation => 'Keskustelu';
 
   @override
-  String get hwActivityWorkbook => 'Workbook';
+  String get hwActivityWorkbook => 'Työkirja';
 
   @override
   String hwChapterLabel(String chapter) {
-    return 'Chapter $chapter';
+    return 'Luku $chapter';
   }
 
   @override
-  String get hwTaskSpeakingDesc => 'Check your pronunciation score';
+  String get hwTaskSpeakingDesc => 'Tarkista ääntämispisteesi';
 
   @override
-  String get hwTaskConversationDesc => 'Use what you learned in a real talk';
+  String get hwTaskConversationDesc => 'Käytä oppimaasi oikeassa keskustelussa';
 
   @override
   String get hwConversationOnce =>
       'Keskustelun voi käydä kerran per kotitehtävä.';
 
   @override
-  String get hwTaskWorkbookDesc => 'Practice by writing in the workbook';
+  String get hwTaskWorkbookDesc => 'Harjoittele kirjoittamalla työkirjaan';
 
   @override
-  String get hwCtaStudy => 'Start';
+  String get hwCtaStudy => 'Aloita';
 
   @override
-  String get hwCtaResult => 'See result';
+  String get hwCtaResult => 'Katso tulos';
 
   @override
-  String get hwCtaDownload => 'Download';
+  String get hwCtaDownload => 'Lataa';
 
   @override
-  String get hwSpeakingNoScore => 'You have not done the speaking task yet';
+  String get hwSpeakingNoScore => 'Et ole vielä tehnyt puhetehtävää';
 
   @override
-  String get hwWorkbookUnavailable => 'The workbook file is not available yet.';
+  String get hwWorkbookUnavailable =>
+      'Työkirjatiedosto ei ole vielä saatavilla.';
 
   @override
   String get hwDetailClosed =>
-      'This assignment is closed. You can no longer submit.';
+      'Tämä tehtävä on suljettu. Et voi enää palauttaa.';
 
   @override
-  String get hwLeaveTitle => 'Leave the class?';
+  String get hwLeaveTitle => 'Poistutaanko luokasta?';
 
   @override
-  String get hwLeaveBody =>
-      'Your teacher will no longer see your homework results.';
+  String get hwLeaveBody => 'Opettajasi ei enää näe kotitehtäviesi tuloksia.';
 
   @override
-  String get hwLeaveConfirm => 'Leave';
+  String get hwLeaveConfirm => 'Poistu';
 
   @override
-  String get hwLeaveCancel => 'Stay';
+  String get hwLeaveCancel => 'Jää';
 
   @override
-  String get hwLeaveFailed => 'Could not leave the class.';
+  String get hwLeaveFailed => 'Luokasta ei voitu poistua.';
 
   @override
-  String get hwMyClass => 'My class';
+  String get hwMyClass => 'Oma luokka';
 
   @override
-  String get hwClassEmptyTitle => 'You have not joined a class';
+  String get hwClassEmptyTitle => 'Et ole liittynyt luokkaan';
 
   @override
-  String get hwClassEmptySubtitle => 'Enter the code your teacher gave you';
+  String get hwClassEmptySubtitle => 'Syötä opettajaltasi saama koodi';
 
   @override
-  String get hwClassEmptyCta => 'Enter class code';
+  String get hwClassEmptyCta => 'Syötä luokkakoodi';
 
   @override
-  String get hwClassContinueCta => 'Continue';
+  String get hwClassContinueCta => 'Jatka';
 
   @override
   String hwHomeBannerDueTomorrow(int count) {
-    return '$count assignments are due tomorrow';
+    return '$count tehtävän määräaika on huomenna';
   }
 
   @override
   String hwHomeBannerOverdue(int count) {
-    return 'You have $count unsubmitted assignments';
+    return 'Sinulla on $count palauttamatonta tehtävää';
   }
 
   @override
   String get hwSpeakingUnavailable =>
-      'The sentences for this assignment are not available yet.';
+      'Tämän tehtävän lauseet eivät ole vielä saatavilla.';
 
   @override
-  String get hwBadgeClosed => 'Closed';
+  String get hwBadgeClosed => 'Suljettu';
 
   @override
   String hwSpeakingProgress(int passed, int total) {
-    return '$passed of $total sentences passed';
+    return '$passed/$total lausetta läpäisty';
   }
 
   @override
-  String get challengeFirstWord => 'First word';
+  String get challengeFirstWord => 'Ensimmäinen sana';
 
   @override
-  String get grade => 'Grade';
+  String get challengeSeeAnalysis => 'Katso tulokset';
 
   @override
-  String get accuracy => 'Accuracy';
+  String get challengePaused => 'Keskeytetty';
 
   @override
-  String get bestCombo => 'Best Combo';
+  String get challengePausedNote => 'Ajastin ja tallennus pysähtyivät yhdessä.';
 
   @override
-  String get cleared => 'Cleared';
+  String get challengeTimeLeft => 'Aikaa jäljellä';
 
   @override
-  String get challengeSeeAnalysis => 'See results';
+  String get challengeScoreLabel => 'Pisteet';
 
   @override
-  String get challengePaused => 'Paused';
+  String get challengeResume => 'Jatka';
 
   @override
-  String get challengePausedNote => 'The timer and the recording both stopped.';
-
-  @override
-  String get challengeTimeLeft => 'Time left';
-
-  @override
-  String get challengeScoreLabel => 'Score';
-
-  @override
-  String get challengeResume => 'Resume';
-
-  @override
-  String get challengeBlockedTitle => 'Can\'t use the camera';
+  String get challengeBlockedTitle => 'Kameraa ei voi käyttää';
 
   @override
   String get challengeBlockedNote =>
-      'Turn on camera and mic access in Settings.';
+      'Ota kameran ja mikrofonin käyttöoikeus käyttöön asetuksissa.';
 
   @override
-  String get challengeGoBack => 'Go back';
+  String get challengeGoBack => 'Takaisin';
 
   @override
-  String get challengeOpenSettings => 'Open Settings';
+  String get challengeOpenSettings => 'Avaa asetukset';
 
   @override
-  String get saveDone => 'Saved to your gallery';
+  String get saveDone => 'Tallennettu galleriaan';
 
   @override
-  String get saveFailed => 'Couldn\'t save';
+  String get saveFailed => 'Tallennus epäonnistui';
 
   @override
-  String get saveDeniedNote => 'Photo access is required';
+  String get saveDeniedNote => 'Kuvien käyttöoikeus vaaditaan';
 }
