@@ -60,23 +60,49 @@ class InfoRowsCard extends StatelessWidget {
           for (final row in rows)
             SizedBox(
               height: 56,
-              child: Row(
-                children: [
-                  Text(
-                    row.label,
-                    style: AppType.label1.r.copyWith(color: c.labelNormal),
-                  ),
-                  const SizedBox(width: AppSpacing.s12),
-                  Expanded(
-                    child: Text(
-                      row.value,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.right,
-                      style: AppType.label1.m.copyWith(color: c.labelStrong),
-                    ),
-                  ),
-                ],
+              child: LayoutBuilder(
+                builder: (context, box) {
+                  // 라벨은 **자기 폭만큼** 쓰되 행의 55% 를 넘지 못한다.
+                  //
+                  // 예전엔 라벨이 flex 밖에 있어 폭 제한이 아예 없었다. 번역이 길면
+                  // 라벨 하나가 행 전체를 먹고 값의 [Expanded] 가 음수 공간을 받아
+                  // 오버플로가 났다(320dp 실측: uz 13px · vi 70px — 「Tên của bạn
+                  // trong lớp」 이 240 폭에서 298 을 요구했다).
+                  //
+                  // ⛔ 양쪽을 [Flexible] 로 바꾸는 방식은 쓰지 않았다. 그러면 자유
+                  //    공간이 need 와 무관하게 50/50 으로 갈려, 라벨이 짧을 때도 값이
+                  //    절반에 갇힌다 — `card_line.dart` 가 같은 이유로 그 구조를
+                  //    버렸고(기관명이 「전북대학교 언어…」로 잘렸다), 여기 값에는
+                  //    기관명·선생님 이름처럼 긴 서버 문자열이 들어온다.
+                  //
+                  // 상한만 씌우면 라벨이 짧은 흔한 경우의 배분이 **종전과 동일**하다.
+                  final labelCap = box.maxWidth * 0.55;
+                  return Row(
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxWidth: labelCap),
+                        child: Text(
+                          row.label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              AppType.label1.r.copyWith(color: c.labelNormal),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.s12),
+                      Expanded(
+                        child: Text(
+                          row.value,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style:
+                              AppType.label1.m.copyWith(color: c.labelStrong),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
         ],

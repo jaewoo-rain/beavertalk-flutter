@@ -86,6 +86,9 @@ class _PronunciationChallengeScreenState
   int _countdown = 3;
   Timer? _countdownTimer;
 
+  /// 클립 카드의 렌더. iPad 공유 시트 팝오버의 기준 사각형을 여기서 뽑는다.
+  final GlobalKey _clipCardKey = GlobalKey();
+
   /// Whether STT is driving input this round (false → tap fallback active).
   bool _sttActive = false;
 
@@ -1078,6 +1081,7 @@ class _PronunciationChallengeScreenState
     return GestureDetector(
       onTap: _shareResult,
       child: Container(
+        key: _clipCardKey,
         width: 88,
         height: 148,
         decoration: BoxDecoration(
@@ -1142,11 +1146,27 @@ class _PronunciationChallengeScreenState
     if (path == null || !File(path).existsSync()) return;
     try {
       await SharePlus.instance.share(
-        ShareParams(text: _shareText(), files: <XFile>[XFile(path)]),
+        ShareParams(
+          text: _shareText(),
+          files: <XFile>[XFile(path)],
+          // iPad·Mac 는 공유 시트를 팝오버로 띄우고 **기준 사각형을 요구한다.**
+          // 안 주면 시트가 뜰 자리를 못 정한다. 폰에서는 무시되는 값이다.
+          sharePositionOrigin: _shareOrigin(),
+        ),
       );
     } catch (e) {
       debugPrint('share failed: $e');
     }
+  }
+
+  /// 공유 시트 팝오버의 기준 사각형(iPad·Mac 전용, 그 외 무시).
+  ///
+  /// 클립 카드의 화면 좌표를 준다 — 시트가 공유 대상에서 자라나는 게 맞다.
+  /// 렌더가 아직 없으면 `null` 을 돌려 플러그인 기본값에 맡긴다(던지지 않는다).
+  Rect? _shareOrigin() {
+    final box = _clipCardKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
   }
 
   /// Share copy — the web game's `shareText()`, with the real score.

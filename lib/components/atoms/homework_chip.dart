@@ -35,6 +35,17 @@ class HomeworkChip extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
+      // 칩 하나가 한 줄보다 길면 **[Wrap] 이 못 구한다.**
+      //
+      // 칩들은 `card_homework`·`card_class` 에서 [Wrap] 에 담긴다. Wrap 은 자식
+      // **사이에서만** 줄을 바꾼다 — 자식 하나가 한 줄 폭을 넘으면 그 자식이
+      // 그대로 넘친다. 라벨은 로케일 차가 큰 자리라(ko 「워크북」 4자 ↔ my
+      // 「လေ့ကျင့်ခန်းစာအုပ်」) 실제로 넘쳤다(320dp 실측: 제약 201.1 에 218.1 요구
+      // → 17px 초과).
+      //
+      // Wrap 자식은 유한한 maxWidth 를 받으므로 [Flexible] 이 성립한다
+      // (무제약 자리에 놓이는 `HomeworkBadge` 와 다르다 — 그쪽은 폭 상한을
+      // 스스로 진다).
       child: Row(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -43,7 +54,14 @@ class HomeworkChip extends StatelessWidget {
             AppIcons.check(size: 12, color: fg),
             const SizedBox(width: 2),
           ],
-          Text(label, style: AppType.caption2.m.copyWith(color: fg)),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppType.caption2.m.copyWith(color: fg),
+            ),
+          ),
         ],
       ),
     );

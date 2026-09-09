@@ -23,7 +23,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
     <application
-        android:label="beavertalk"
+        android:label="BeaverTalk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <!-- 세로 고정을 대화면에서도 유지한다.
