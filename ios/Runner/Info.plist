@@ -4,6 +4,10 @@
 <dict>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>발음 챌린지 결과 영상을 사진 앱에 저장하기 위해 사용해요.</string>
+	<!-- gal 이 사진 앱 읽기 API 도 링크한다. Add 키만 두면 Apple 처리 단계에서
+	     90683(Missing purpose string)으로 빌드가 반려된다. 앱이 읽지 않아도 키는 필요하다. -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>발음 챌린지 결과 영상을 사진 앱에 저장하기 위해 사용해요.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
