@@ -86,6 +86,18 @@ class _JoinConsentScreenState extends ConsumerState<JoinConsentScreen> {
           body: l10n.hwJoinErrorFullBody,
         );
       });
+    } catch (e) {
+      // 🔴 [AppException] 밖의 실패도 여기서 멈춰 세운다 — 안 그러면 `_busy` 가
+      //    true 로 굳어 「참여하기」가 영영 꺼진다(`join_code.dart` 와 같은 사고).
+      if (!mounted) return;
+      debugPrint('[join] join failed: $e');
+      setState(() {
+        _busy = false;
+        _error = (
+          title: l10n.hwJoinFailed,
+          body: l10n.hwJoinErrorFullBody,
+        );
+      });
     }
   }
 

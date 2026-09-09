@@ -126,6 +126,24 @@ class _JoinCodeScreenState extends ConsumerState<JoinCodeScreen> {
           body: l10n.hwJoinErrorNotFoundBody,
         );
       });
+    } catch (e) {
+      // 🔴 **[AppException] 만 잡으면 화면이 얼어붙는다**(2026-09-09 iOS 실기기).
+      //    `B2B_API_BASE_URL` 이 없는 빌드에서는 `b2bDioProvider` 가 [StateError]
+      //    를 던지는데, 그것이 여기를 그냥 빠져나가면 `_busy` 가 true 로 굳어
+      //    「다음」 버튼이 영영 꺼진다 — 오류 한 줄 없이 막다른 길이 된다.
+      //    응답 모양이 바뀌어 파싱이 던질 때도 같은 일이 난다.
+      //
+      // ⛔ 이 갈래를 지우지 마라. 설정 누락·계약 변경은 **반드시 일어나고**,
+      //    그때 학습자에게 보여야 할 것은 얼어붙은 버튼이 아니라 문구다.
+      if (!mounted) return;
+      debugPrint('[join] preview failed: $e');
+      setState(() {
+        _busy = false;
+        _error = (
+          title: l10n.hwJoinFailed,
+          body: l10n.hwJoinErrorNotFoundBody,
+        );
+      });
     }
   }
 

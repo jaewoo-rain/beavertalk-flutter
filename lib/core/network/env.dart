@@ -133,12 +133,24 @@ abstract final class Env {
   /// 없는 경로를 두드려 404 를 「반이 없다」로 오독하게 된다. 비면 `null` 을 주고
   /// 숙제 진입점(홈 배너·마이페이지 수업 카드)이 조용히 사라진다.
   ///
-  /// ⚠ 이 키는 `.env` 에 있고 `.env` 는 gitignore 다 — **새 워크트리에 안 따라온다.**
+  /// ⚠ 이 키는 `.env` 에 있고 `.env` 는 gitignore 다 — **새 워크트리·새 기기에
+  /// 안 따라온다.** 2026-09-09 실기기(iOS) 사고가 이것이었다: 맥에서 빌드한
+  /// 아이폰 앱의 `.env` 가 9/2 분리 이전 사본이라 이 키만 없었고, 다른 기능은
+  /// 전부 멀쩡한 채 참여코드 화면만 죽었다.
+  ///
+  /// ⭐ 그래서 `--dart-define=B2B_API_BASE_URL=...` 도 받는다. `.env` 를 못 옮기는
+  /// 빌드(CI·다른 기기)에서 유일하게 쓸 수 있는 통로다. 우선순위는 [apiBaseUrl] 과
+  /// 같다 — `.env` 가 먼저고, 없으면 dart-define 이다.
   static String? get b2bApiBaseUrl {
-    final value = _dotenvValue('B2B_API_BASE_URL');
+    final value = _dotenvValue('B2B_API_BASE_URL') ??
+        (_b2bOverride.isNotEmpty ? _b2bOverride : null);
     if (value == null) return null;
     return '${_withScheme(_trimTrailingSlash(value))}$apiPrefix';
   }
+
+  /// B2B 호스트의 빌드타임 주입값. `.env` 가 없을 때만 쓰인다.
+  static const String _b2bOverride =
+      String.fromEnvironment('B2B_API_BASE_URL', defaultValue: '');
 
   /// 숙제 기능을 켤 수 있는가. 화면은 이 값만 보고 진입점을 그린다.
   static bool get hasB2bApi => b2bApiBaseUrl != null;
