@@ -7,6 +7,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../classroom/widgets/homework_class_card.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../features/normalcall/presentation/build_flags.dart';
 import '../../features/normalcall/presentation/cascade_auto_talk.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
@@ -178,6 +179,27 @@ class MyPageScreen extends ConsumerWidget {
                 '통화 후 분석이 정상 동작하는지는 아직 확인되지 않았습니다.',
             route: Routes.callLoading,
             arguments: CallChannel.cascade,
+          ),
+          // ── 코스 통화 진입점 ────────────────────────────────────────────
+          // ⭐ 통로(캐스케이드)와 **다른 축**이다 — 소켓은 라이브 그대로 `/calls/stream`
+          //   이고, `start` 프레임의 `call_type` 만 달라진다([CallCourse] 참조).
+          _devRow(
+            context,
+            title: '표현학습 통화',
+            description: '18개 표현을 드릴하고 3개마다 퀴즈를 냅니다(끝에 오답퀴즈). '
+                '소켓은 일반 통화와 같은 운영 서버입니다 — 통화 종류만 바뀝니다. '
+                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
+            route: Routes.callLoading,
+            arguments: CallCourse.expression,
+          ),
+          _devRow(
+            context,
+            title: '프리토킹 통화',
+            description: '100% 학습 언어로 자유대화합니다(학습 항목 주입 없음). '
+                '소켓은 일반 통화와 같은 운영 서버입니다 — 통화 종류만 바뀝니다. '
+                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
+            route: Routes.callLoading,
+            arguments: CallCourse.freetalk,
           ),
           // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
           //   다음 단계가 "하나씩 다시 켜기"라 빌드 없이 껐다 켰다 할 수 있어야 한다.

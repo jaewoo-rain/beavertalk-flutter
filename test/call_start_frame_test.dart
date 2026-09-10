@@ -8,10 +8,15 @@
 //   - `inbound_call_id` 미전송   → 이어간 순간 **상대가 바뀐다** (2026-08-31)
 //   - `assignment_id` 미전송     → 2구간부터 **숙제 통화가 아니게 된다** (2026-09-06)
 //
+// `call_type` 도 같은 자리에 앉는다(2026-09-10). 다만 이쪽은 반대 방향의 위험도 있다 —
+// **안 보내야 할 때 보내면** 서버의 자동 라우팅(D11)을 덮어쓰고, 값이 틀리면 pydantic
+// Literal 검증에서 422 가 나 **통화가 아예 안 열린다**. 그래서 양쪽을 다 잠근다.
+//
 // 플랜: docs/2026-08-31_0516_carry-inbound-call-id-across-segments-plan.md
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:beavertalk/features/normalcall/domain/entities/call_course.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
 
 /// 실제 호출부와 같은 규격(`_micSampleRate` / `_micNumChannels`).
@@ -19,6 +24,7 @@ Map<String, dynamic> _frame({
   String? inboundCallId,
   String? continuesCallId,
   int? assignmentId,
+  String? callType,
 }) =>
     buildStartFrame(
       aec: const {'mode': 'unknown'},
@@ -27,6 +33,7 @@ Map<String, dynamic> _frame({
       inboundCallId: inboundCallId,
       continuesCallId: continuesCallId,
       assignmentId: assignmentId,
+      callType: callType,
     );
 
 void main() {
@@ -114,6 +121,51 @@ void main() {
       expect(f['continues_call_id'], '1182');
       expect(f['assignment_id'], 77,
           reason: '이어가는 구간에서 과제가 빠지면 숙제 통화가 평소 통화로 되돌아간다');
+    });
+  });
+
+  group('call_type — 무엇을 하는 통화인가', () {
+    // ⭐ **필드가 없는 것**이 기본 동작이다. 서버는 값이 없으면 스스로 판단한다
+    //   (D11 자동 라우팅: `member.korean_level` 미확정이면 레벨테스트).
+    //   빈 문자열이나 `'normal'` 을 보내면 그 판단을 **덮어쓴다.**
+    test('⭐ 안 주면 필드 자체가 안 나간다 — 기존 통화 동작 보존의 핵심', () {
+      final f = _frame();
+
+      expect(f.containsKey('call_type'), isFalse,
+          reason: '값이 실리면 서버의 자동 라우팅을 덮어쓴다');
+    });
+
+    test('표현학습이면 expression 이 실린다', () {
+      final f = _frame(callType: CallCourse.expression.wireValue);
+
+      expect(f['call_type'], 'expression');
+    });
+
+    test('프리토킹이면 freetalk 이 실린다', () {
+      final f = _frame(callType: CallCourse.freetalk.wireValue);
+
+      expect(f['call_type'], 'freetalk');
+    });
+
+    test('⛔ 와이어 값은 서버 Literal 과 **글자 그대로** 같아야 한다', () {
+      // `protocol.py:105` — Literal["normal","level_test","expression","freetalk"].
+      // pydantic Literal 이라 오타 하나면 **422 로 통화가 아예 안 열린다.**
+      // enum 이름을 바꾸면 여기서 걸린다.
+      expect(CallCourse.values.map((c) => c.wireValue).toList(),
+          ['expression', 'freetalk']);
+    });
+
+    test('⭐ 이어가는 구간에도 같이 실린다 — assignment_id 가 정확히 여기서 샜다', () {
+      // 2구간을 흉내낸다. 컨트롤러는 이 값을 지역 인자가 아니라 **필드**로 들고
+      // 있어야 여기까지 온다 — 인자로 두면 재연결이 안 넘겨 null 이 된다.
+      final f = _frame(
+        continuesCallId: '1182',
+        callType: CallCourse.expression.wireValue,
+      );
+
+      expect(f['continues_call_id'], '1182');
+      expect(f['call_type'], 'expression',
+          reason: '빠지면 2구간부터 표현학습이 평소 통화로 되돌아간다');
     });
   });
 }
