@@ -405,8 +405,22 @@ import flutter_callkit_incoming
     guard type == .voIP else { completion(); return }
     let dict = payload.dictionaryPayload
     let id = dict["id"] as? String ?? UUID().uuidString
-    let nameCaller = dict["nameCaller"] as? String ?? "비버 튜터"
-    let handle = dict["handle"] as? String ?? "한국어 통화"
+    // 서버가 문구를 안 실어 보내면 **앱이 마지막으로 저장한 번역**을 쓴다.
+    //
+    // 이 핸들러는 Dart 가 깨어나기 전에 돌기 때문에(iOS 13+ 는 VoIP 푸시마다
+    // 즉시 통화를 보고하지 않으면 앱을 죽인다) ARB 를 읽을 수 없다. 그래서
+    // `StandaloneL10n` 이 번역을 만들 때마다 이 두 값을 UserDefaults 로
+    // 미러링해 둔다. SharedPreferences 는 iOS 에서 NSUserDefaults 이고 키에
+    // `flutter.` 접두가 붙는다.
+    //
+    // 미러가 아직 없으면(첫 실행 등) 종전 한국어 리터럴로 떨어진다.
+    let defaults = UserDefaults.standard
+    let fallbackCaller =
+      defaults.string(forKey: "flutter.call_caller_fallback") ?? "비버 튜터"
+    let fallbackHandle =
+      defaults.string(forKey: "flutter.call_handle") ?? "한국어 통화"
+    let nameCaller = dict["nameCaller"] as? String ?? fallbackCaller
+    let handle = dict["handle"] as? String ?? fallbackHandle
     let isVideo = dict["isVideo"] as? Bool ?? false
     let data = flutter_callkit_incoming.Data(
       id: id, nameCaller: nameCaller, handle: handle, type: isVideo ? 1 : 0)

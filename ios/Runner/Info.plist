@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>발음 챌린지 결과 영상을 사진 앱에 저장하기 위해 사용해요.</string>
+	<!-- gal 이 사진 앱 읽기 API 도 링크한다. Add 키만 두면 Apple 처리 단계에서
+	     90683(Missing purpose string)으로 빌드가 반려된다. 앱이 읽지 않아도 키는 필요하다. -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>발음 챌린지 결과 영상을 사진 앱에 저장하기 위해 사용해요.</string>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
@@ -9,7 +15,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Beavertalk</string>
+	<string>BeaverTalk</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -80,15 +86,20 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- iPad 세로 잠금은 이 키가 없으면 성립하지 않는다.
+
+	     이 키가 빠져 있으면 iOS 는 앱을 멀티태스킹(Split View) 지원으로 보고
+	     방향 제한을 무시한다 — 그래서 main.dart 의 setPreferredOrientations 를
+	     걸어 놨는데도 iPad 는 가로로 돌아갔다. 위 배열에서 가로를 빼는 것과
+	     이 키는 한 쌍이다: 멀티태스킹 지원 앱은 네 방향을 전부 선언해야 하므로
+	     둘 중 하나만 하면 어긋난다. -->
+	<key>UIRequiresFullScreen</key>
+	<true/>
 </dict>
 </plist>

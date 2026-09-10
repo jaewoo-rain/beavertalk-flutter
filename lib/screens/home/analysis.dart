@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -299,72 +300,70 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         ? result.summary!
         : l10n.analysisResult;
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.fromLTRB(
-        AppSpacing.s20,
-        AppSpacing.s16,
-        AppSpacing.s20,
-        AppSpacing.s40,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // ── CallHeader (3474:457) ──────────────────────────────────
-          Text(title, style: AppType.heading2.m),
-          ..._metaLine(l10n, result),
+    return ContentColumn(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ── CallHeader (3474:457) ──────────────────────────────────
+            Text(title, style: AppType.heading2.m),
+            ..._metaLine(l10n, result),
 
-          const SizedBox(height: AppSpacing.s24),
-          Center(
-            child: PronunciationResult(
-              // Empty (no practice yet) → inactive gauge ("-%").
-              state: total == null
-                  ? PronunciationState.inactive
-                  : PronunciationState.active,
-              score: total ?? 0,
-              // Why the gauge reads -%. Injected here rather than baked into
-              // the component: mypage shares it and its reason is different.
-              hint: total == null ? l10n.reviewToSeeScore : null,
-              metrics: [
-                PronunciationMetric(
-                  label: l10n.pronunciation,
-                  value: _pct(pronunciation),
-                ),
-                PronunciationMetric(label: l10n.fluency, value: _pct(fluency)),
-                PronunciationMetric(label: l10n.rhythm, value: _pct(rhythm)),
-              ],
+            const SizedBox(height: AppSpacing.s24),
+            Center(
+              child: PronunciationResult(
+                // Empty (no practice yet) → inactive gauge ("-%").
+                state: total == null
+                    ? PronunciationState.inactive
+                    : PronunciationState.active,
+                score: total ?? 0,
+                // Why the gauge reads -%. Injected here rather than baked into
+                // the component: mypage shares it and its reason is different.
+                hint: total == null ? l10n.reviewToSeeScore : null,
+                metrics: [
+                  PronunciationMetric(
+                    label: l10n.pronunciation,
+                    value: _pct(pronunciation),
+                  ),
+                  PronunciationMetric(label: l10n.fluency, value: _pct(fluency)),
+                  PronunciationMetric(label: l10n.rhythm, value: _pct(rhythm)),
+                ],
+              ),
             ),
-          ),
 
-          // ── Actions (`3583:34442`) ─────────────────────────────────
-          const SizedBox(height: AppSpacing.s24),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: l10n.review,
-            // Nothing to practice → nothing for the button to do.
-            disabled: _learningSentences.isEmpty,
-            onPressed: () => _startLearning(_learningSentences),
-          ),
-          const SizedBox(height: AppSpacing.s12),
-          Button(
-            type: BtnType.primaryOutline,
-            size: BtnSize.s60,
-            text: l10n.pronunciationChallenge,
-            // Feed this call's learned sentences to the challenge so its cards
-            // are what the user just practised (not the default word list).
-            onPressed: () => Navigator.pushNamed(
-              context,
-              Routes.pronunciationChallenge,
-              arguments: _learningSentences
-                  .map((s) => s.korean)
-                  .where((k) => k.trim().isNotEmpty)
-                  .toList(growable: false),
+            // ── Actions (`3583:34442`) ─────────────────────────────────
+            const SizedBox(height: AppSpacing.s24),
+            Button(
+              type: BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: l10n.review,
+              // Nothing to practice → nothing for the button to do.
+              disabled: _learningSentences.isEmpty,
+              onPressed: () => _startLearning(_learningSentences),
             ),
-          ),
+            const SizedBox(height: AppSpacing.s12),
+            Button(
+              type: BtnType.primaryOutline,
+              size: BtnSize.s60,
+              text: l10n.pronunciationChallenge,
+              // Feed this call's learned sentences to the challenge so its cards
+              // are what the user just practised (not the default word list).
+              onPressed: () => Navigator.pushNamed(
+                context,
+                Routes.pronunciationChallenge,
+                arguments: _learningSentences
+                    .map((s) => s.korean)
+                    .where((k) => k.trim().isNotEmpty)
+                    .toList(growable: false),
+              ),
+            ),
 
-          ..._babaNote(l10n, result),
-          ..._expressions(l10n, result),
-        ],
+            ..._babaNote(l10n, result),
+            ..._usedItems(l10n, result),
+            ..._expressions(l10n, result),
+          ],
+        ),
       ),
     );
   }
@@ -452,6 +451,48 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       (imageUrl != null && imageUrl.isNotEmpty)
           ? NetworkImage(imageUrl)
           : beaverImage;
+
+  /// 이번 통화에서 **스스로 쓴 표현**.
+  ///
+  /// ⭐ 2026-09-04 신설. 아래 「학습한 표현」은 물어봤거나 고쳐 받았거나 따라 말한
+  ///   것만 센다(분석 지시문이 그렇게 정의한다). 자유대화를 매끄럽게 하면 셋 다
+  ///   해당이 없어 결과 화면이 통째로 비었다 — 대화를 **잘할수록** 빈다.
+  ///   서버 체크판은 그때도 항목을 잡아 두고 있었다. 있는 값을 보여 줄 뿐이다.
+  ///
+  /// ⛔ 비면 섹션째 안 그린다. 빈 카드를 놓으면 「없다」를 두 번 말하게 된다
+  ///   (바로 아래 「학습한 표현」이 이미 빈 상태를 그린다).
+  /// ⛔ 등급(E1·E2·E3)은 내부 축이라 화면에 내지 않는다. 서버가 이미 걸러 보낸다.
+  List<Widget> _usedItems(AppLocalizations l10n, CallResult result) {
+    final items = result.usedItems;
+    if (items.isEmpty) return const [];
+    return _section(
+      label: l10n.usedExpressions,
+      child: _card(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (var i = 0; i < items.length; i++) ...[
+              if (i > 0) const SizedBox(height: AppSpacing.s12),
+              Text(
+                items[i].surface,
+                style: AppType.body1.b.copyWith(color: context.c.labelStrong),
+              ),
+              // 인용은 학습자 자신의 말이다. 없으면 줄을 안 그린다.
+              if ((items[i].quote ?? '').trim().isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.s4),
+                Text(
+                  items[i].quote!,
+                  style: AppType.caption1.r.copyWith(
+                    color: context.c.labelNormal,
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
 
   /// Section/Expressions (`3583:34462`) — one `Card-Bookmark` per sentence
   /// (`3583:34466`–`3583:34468`), each with a speaker, a bookmark toggle and a

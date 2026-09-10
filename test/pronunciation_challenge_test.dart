@@ -73,9 +73,7 @@ void main() {
       final c2 = ChallengeCard(
         id: 999,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards.add(c2);
       e.passCard(c2);
@@ -83,23 +81,64 @@ void main() {
       expect(e.score, 100 + 112);
     });
 
-    test('three misses end the game', () {
+    test('the miss allowance ends the game, and it follows difficulty', () {
+      // A flat three would end a beginner's run in ~10s and leave no clip.
+      for (final d in Difficulty.values) {
+        final e = _seededEngine();
+        e.difficulty = d;
+        e.start();
+        for (var i = 0; i < d.missAllow; i++) {
+          expect(e.running, isTrue,
+              reason: '$d must survive ${d.missAllow - 1} misses');
+          e.missCard(ChallengeCard(id: 1000 + i, word: 'x', k: 1.0));
+        }
+        expect(e.backlog, d.missAllow);
+        expect(e.running, isFalse);
+      }
+    });
+
+    test('grade and accuracy come from cleared vs attempted', () {
       final e = _seededEngine();
       e.start();
-      expect(e.running, isTrue);
-      for (var i = 0; i < GameConfig.maxBacklog; i++) {
-        expect(e.running, isTrue);
-        final c = ChallengeCard(
-          id: 1000 + i,
-          word: 'x',
-          colorIndex: 0,
-          x: GameConfig.zoneCx,
-          y: GameConfig.beltY,
-        );
-        e.missCard(c);
+      expect(e.accuracy, 0, reason: 'no attempts reads as zero, not NaN');
+      expect(e.grade, 'C');
+
+      // 8 cleared, 0 missed → 100% but only 8 attempts: A, not S.
+      for (var i = 0; i < 8; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
       }
-      expect(e.backlog, GameConfig.maxBacklog);
-      expect(e.running, isFalse);
+      expect(e.accuracy, 1.0);
+      expect(e.grade, 'A', reason: 'S needs volume, not just a clean streak');
+
+      // 12 cleared clears the volume bar.
+      for (var i = 8; i < 12; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      expect(e.grade, 'S');
+      expect(e.resultTitle, 'Flawless!');
+    });
+
+    test('a mostly-missed run does not read as a good one', () {
+      // The old title only looked at maxCombo, so three in a row said "Nice!"
+      // no matter how much was missed.
+      final e = _seededEngine();
+      e.difficulty = Difficulty.slow; // 5 misses of rope
+      e.start();
+      for (var i = 0; i < 3; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      expect(e.maxCombo, 3);
+      for (var i = 0; i < 4; i++) {
+        e.missCard(ChallengeCard(id: 100 + i, word: 'x', k: 1.0));
+      }
+      expect(e.accuracy, closeTo(3 / 7, 0.001));
+      expect(e.grade, 'C');
+      expect(e.resultTitle, 'Keep going!');
+    });
+
+    test('slow is more forgiving than fast', () {
+      expect(Difficulty.slow.missAllow, greaterThan(Difficulty.fast.missAllow));
+      expect(Difficulty.fast.missAllow, GameConfig.minMissAllow);
     });
 
     test('timer hitting zero ends the game', () {
@@ -112,22 +151,90 @@ void main() {
       expect(e.running, isFalse);
     });
 
-    test('spawn spacing is respected (never closer than MIN_SPACING)', () {
+    test('spawn spacing is respected (never closer than K_SPACING)', () {
       final e = _seededEngine();
       e.start();
-      // Run ~10s of simulation at 60fps and check live-card spacing.
+      // Run ~10s of simulation at 60fps and check live-word depth spacing.
       for (var i = 0; i < 600; i++) {
         e.update(1 / 60);
         final live = e.cards.where((c) => c.state == CardState.live).toList()
-          ..sort((a, b) => a.x.compareTo(b.x));
-        for (var k = 1; k < live.length; k++) {
-          final gap = live[k].x - live[k - 1].x;
-          // Cards spawn at SPAWN_X only once the rightmost is >= MIN_SPACING
-          // away, so adjacent live cards are always at least that far apart
-          // (small float tolerance for one integration step).
-          expect(gap, greaterThanOrEqualTo(GameConfig.minSpacing - 5));
+          ..sort((a, b) => a.k.compareTo(b.k));
+        for (var n = 1; n < live.length; n++) {
+          final gap = live[n].k - live[n - 1].k;
+          // A word spawns at K_SPAWN only once the youngest live one is
+          // K_SPACING ahead, and every live word advances at the same rate, so
+          // that gap is preserved (small float tolerance for one step).
+          expect(gap, greaterThanOrEqualTo(GameConfig.kSpacing - 0.01));
         }
       }
+    });
+
+    test('overlap invariant: no two live words are within a 1.6 k-ratio', () {
+      // The real constraint behind K_SPACING. A word's half-height is
+      // ~0.57*size, so two words only clear each other above a k ratio of 1.6.
+      final e = _seededEngine();
+      e.start();
+      for (var i = 0; i < 900; i++) {
+        e.update(1 / 60);
+        final live = e.cards.where((c) => c.state == CardState.live).toList()
+          ..sort((a, b) => a.k.compareTo(b.k));
+        for (var n = 1; n < live.length; n++) {
+          expect(live[n].k / live[n - 1].k, greaterThanOrEqualTo(1.6));
+        }
+      }
+    });
+
+    test('a word past K_MISS freezes into grace, not a miss', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(id: 1, word: '사과', k: GameConfig.kMiss - 0.001);
+      e.cards
+        ..clear()
+        ..add(c);
+      e.update(1 / 30); // enough to carry it past kMiss
+      expect(c.state, CardState.grace);
+      expect(c.k, GameConfig.kMiss);
+      expect(e.backlog, 0, reason: 'grace must not count as a miss yet');
+    });
+
+    test('a grace word still passes, at the late-point ratio', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(
+        id: 1,
+        word: '사과',
+        k: GameConfig.kMiss,
+        state: CardState.grace,
+        graceLeft: GameConfig.graceSec,
+      );
+      e.cards
+        ..clear()
+        ..add(c);
+      expect(e.tryPassToken('사과'), isTrue);
+      expect(c.state, CardState.pass);
+      // 100 * 0.6 = 60, versus 100 for an on-time first pass.
+      expect(e.score, (100 * GameConfig.latePointRatio).round());
+      expect(e.hitTexts.single.sub, 'LATE');
+    });
+
+    test('grace running out is the miss', () {
+      final e = _seededEngine();
+      e.start();
+      final c = ChallengeCard(
+        id: 1,
+        word: '사과',
+        k: GameConfig.kMiss,
+        state: CardState.grace,
+        graceLeft: GameConfig.graceSec,
+      );
+      e.cards
+        ..clear()
+        ..add(c);
+      e.update(GameConfig.graceSec / 2);
+      expect(e.backlog, 0);
+      e.update(GameConfig.graceSec);
+      expect(c.state, CardState.miss);
+      expect(e.backlog, 1);
     });
 
     test('tapPass passes the front-most in-zone card only', () {
@@ -137,16 +244,12 @@ void main() {
       final near = ChallengeCard(
         id: 1,
         word: 'a',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       final far = ChallengeCard(
         id: 2,
         word: 'b',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + GameConfig.acceptMargin + 200,
-        y: GameConfig.beltY,
+        k: GameConfig.kSpawn, // far from the viewer → below kAccept
       );
       e.cards
         ..clear()
@@ -175,10 +278,15 @@ void main() {
         ),
       );
       await tester.pump();
-      // "Pronunciation Challenge" now appears twice (GNB title + start-panel
-      // heading, both bound to l10n.challengeTitle after the i18n sweep).
-      expect(find.text('Pronunciation Challenge'), findsNWidgets(2));
-      expect(find.text('Start Camera & Mic'), findsOneWidget); // start button
+      // Once, not twice: the design drops the GNB on this screen (the camera
+      // runs edge to edge and a solid header would cut the stage), so the
+      // start-panel heading is the only place the title appears.
+      expect(find.text('Pronunciation Challenge'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_back_ios_new), findsOneWidget);
+      expect(find.text('Start'), findsOneWidget); // CTA, shortened by the design
+      expect(find.text('Choose a difficulty'), findsOneWidget);
+      expect(find.text('Easy'), findsOneWidget);
+      expect(find.text('Hard'), findsOneWidget);
     });
   });
 }

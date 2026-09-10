@@ -211,6 +211,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get newExpressions => 'အသုံးအနှုန်းအသစ်များ';
 
   @override
+  String get usedExpressions => 'သင်သုံးခဲ့သော အသုံးအနှုန်းများ';
+
+  @override
   String get analysisResult => 'ဆန်းစစ်ချက် ရလဒ်';
 
   @override
@@ -1165,6 +1168,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get billingRestorePurchases => 'ဝယ်ယူမှုများ ပြန်လည်ရယူရန်';
 
   @override
+  String get billingRedeemCode => 'ကုဒ်အသုံးပြုရန်';
+
+  @override
   String get billingPaymentHistory => 'ငွေပေးချေမှု မှတ်တမ်း';
 
   @override
@@ -2004,7 +2010,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get nicknameLabel => 'အမည်ပြောင်';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'အီးမေးလ်';
 
   @override
   String get loginMethodLabel => 'လော့ဂ်အင်နည်းလမ်း';
@@ -2022,27 +2028,27 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaSave => 'သိမ်းရန်';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'အသင်းဝင်မှု';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'ဝယ်ယူမှု ပြီးဆုံးပါပြီ';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name အဝတာ သည် အမြဲတမ်း သင့်ဟာ ဖြစ်ပါပြီ။\nငွေလက်ခံဖြတ်ပိုင်း အတည်ပြုသည်နှင့် ချက်ချင်း အသုံးပြုနိုင်ပါမည်။';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'ပင်မသို့';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'ယခု သုံးရန်';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'ငွေပေးချေမှု မအောင်မြင်ပါ';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'ထပ်မံ ကြိုးစားနိုင်ပါသည်';
 
   @override
   String get paywallLeaveTitle => 'ယခုထွက်လျှင် စာရင်းသွင်းပြီးမည်မဟုတ်ပါ';
@@ -2258,4 +2264,370 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get reportFailed => 'တိုင်ကြားချက် မပို့နိုင်ပါ။ ထပ်စမ်းကြည့်ပါ။';
+
+  @override
+  String get hwTitle => 'အိမ်စာ';
+
+  @override
+  String get hwJoinCodeTitle => 'သင့်အတန်းကုဒ်ကို ထည့်ပါ';
+
+  @override
+  String get hwJoinCodeSubtitle => 'ဆရာ/ဆရာမ ပေးထားသော ၆ လုံးကုဒ် ဖြစ်သည်';
+
+  @override
+  String get hwJoinCodeLabel => 'အတန်းကုဒ်';
+
+  @override
+  String get hwJoinCodeHelp => 'ကုဒ်တွင် စာလုံးအကြီးအသေး မခွဲပါ';
+
+  @override
+  String get hwJoinConfirmTitle => 'ဤအတန်း မှန်ပါသလား';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'မမှန်ပါက ကုဒ်ကို ထပ်စစ်ပါ';
+
+  @override
+  String get hwJoinFieldInstitution => 'အဖွဲ့အစည်း';
+
+  @override
+  String get hwJoinFieldTeacher => 'ဆရာ/ဆရာမ';
+
+  @override
+  String get hwJoinFieldLearners => 'သင်ယူသူများ';
+
+  @override
+  String get hwJoinFieldTerm => 'သင်တန်းကာလ';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'အတန်းအမည်ကို ဆရာရေးသည့်အတိုင်း အတိအကျ ဖော်ပြပါသည်။ ဘာသာမပြန်ပါ။';
+
+  @override
+  String get hwJoinConfirmYes => 'ဟုတ်ကဲ့၊ ဤအတန်းပါ';
+
+  @override
+  String get hwJoinConfirmRetry => 'ကုဒ် ပြန်ထည့်ရန်';
+
+  @override
+  String get hwJoinProfileTitle => 'အတန်းတွင် မည်သည့်အမည် သုံးမည်နည်း';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'ဆရာက အတန်းစာရင်းနှင့် တိုက်ဆိုင်စစ်ပါမည်';
+
+  @override
+  String get hwJoinNameLabel => 'အမည်';
+
+  @override
+  String get hwJoinNameHelp => 'အက်ပ်အမည်နှင့် ကွဲပြားနိုင်ပါသည်';
+
+  @override
+  String get hwJoinStudentNoLabel => 'ကျောင်းသားနံပါတ် (ရွေးချယ်နိုင်)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'ဆရာက အတန်းစာရင်း တိုက်ဆိုင်ရန် သုံးပါသည်';
+
+  @override
+  String get hwJoinConsentTitle => 'ဆရာ မြင်နိုင်သည့်အရာ';
+
+  @override
+  String get hwJoinConsentSubtitle => 'အတန်းသို့ ဝင်ရန် သဘောတူရပါမည်';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'ဆရာနှင့် မျှဝေသည်';
+
+  @override
+  String get hwJoinConsentShared1 => 'အတန်းအမည်နှင့် ကျောင်းသားနံပါတ်';
+
+  @override
+  String get hwJoinConsentShared2 => 'အိမ်စာ လုပ်ခဲ့ခြင်း ရှိ၊ မရှိ';
+
+  @override
+  String get hwJoinConsentShared3 => 'အောင်မြင်သော နှင့် လွဲချော်သော ဝါကျများ';
+
+  @override
+  String get hwJoinConsentShared4 =>
+      'အိမ်စာခေါ်ဆိုမှု ကြာချိန်နှင့် အကျဉ်းချုပ်';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'မမျှဝေပါ';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'အီးမေးလ်နှင့် ဖုန်းနံပါတ်';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'အက်ပ်အမည်၊ ပရိုဖိုင်နှင့် ဇာတ်ကောင်';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'နိုင်ငံသားနှင့် မိခင်ဘာသာစကား';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'အတန်းပြင်ပ ခေါ်ဆိုမှုနှင့် လေ့လာမှု';
+
+  @override
+  String get hwJoinConsentNotShared5 =>
+      'အသင်းဝင်မှုနှင့် ငွေပေးချေမှု အချက်အလက်';
+
+  @override
+  String get hwJoinConsentAgree => 'အထက်ပါတို့ကို သဘောတူပါသည်';
+
+  @override
+  String get hwJoinConsentCta => 'သဘောတူ၍ ဝင်ရန်';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '$className သို့ ဝင်ရောက်ပြီးပါပြီ';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return 'အိမ်စာ $count ခု စောင့်နေပါသည်';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'အိမ်စာ မရှိသေးပါ';
+
+  @override
+  String get hwJoinDoneNextDue => 'နောက်ထပ် သတ်မှတ်ရက်';
+
+  @override
+  String get hwJoinDoneRosterName => 'အတန်းတွင် သင့်အမည်';
+
+  @override
+  String get hwJoinDoneCta => 'အိမ်စာ ကြည့်ရန်';
+
+  @override
+  String get hwJoinErrorNotFound => 'ထိုကုဒ်ကို ရှာမတွေ့ပါ';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'ဂဏန်းခြောက်လုံးကို ထပ်စစ်ပါ။';
+
+  @override
+  String get hwJoinErrorExpired => 'ထိုကုဒ် သက်တမ်းကုန်သွားပါပြီ';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'ဆရာထံမှ ကုဒ်အသစ် တောင်းပါ။';
+
+  @override
+  String get hwJoinErrorFull => 'အတန်း ပြည့်နေပါပြီ';
+
+  @override
+  String get hwJoinErrorFullBody => 'ဆရာအား အကြောင်းကြားပါ။';
+
+  @override
+  String get hwJoinFailed => 'ဝင်ရောက်၍ မရပါ။ ခဏနေ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get hwSectionInProgress => 'လုပ်ဆောင်နေဆဲ';
+
+  @override
+  String get hwSectionUpcoming => 'လာမည့်';
+
+  @override
+  String get hwSectionDone => 'ပြီးဆုံး';
+
+  @override
+  String get hwLeaveClassLink => 'အတန်းမှ ထွက်ရန်';
+
+  @override
+  String get hwListEmptyTitle => 'အိမ်စာ မရှိသေးပါ';
+
+  @override
+  String get hwListEmptyBody => 'ဆရာ ပေးသည့်အခါ ဤနေရာတွင် ပေါ်ပါမည်။';
+
+  @override
+  String get hwListFailed => 'အိမ်စာကို ဖွင့်၍မရပါ။';
+
+  @override
+  String get hwRetry => 'ထပ်ကြိုးစားရန်';
+
+  @override
+  String get hwBadgeDone => 'ပြီးဆုံး';
+
+  @override
+  String get hwBadgeOverdue => 'မတင်ပြရသေး';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'မတင်ပြရသေး၊ $days ရက် နောက်ကျ';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'ယနေ့ သတ်မှတ်ရက်';
+
+  @override
+  String get hwActivitySpeaking => 'စကားပြော';
+
+  @override
+  String get hwActivityConversation => 'စကားဝိုင်း';
+
+  @override
+  String get hwActivityWorkbook => 'လေ့ကျင့်ခန်းစာအုပ်';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'အခန်း $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'သင့်အသံထွက် ရမှတ်ကို စစ်ကြည့်ပါ';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'သင်ယူထားသည်ကို တကယ့်စကားဝိုင်းတွင် သုံးပါ';
+
+  @override
+  String get hwConversationOnce =>
+      'စကားပြောကို အိမ်စာတစ်ခုလျှင် တစ်ကြိမ်သာ လုပ်နိုင်ပါသည်။';
+
+  @override
+  String get hwTaskWorkbookDesc => 'လေ့ကျင့်ခန်းစာအုပ်တွင် ရေးပြီး လေ့ကျင့်ပါ';
+
+  @override
+  String get hwCtaStudy => 'စတင်ရန်';
+
+  @override
+  String get hwCtaResult => 'ရလဒ် ကြည့်ရန်';
+
+  @override
+  String get hwCtaDownload => 'ဒေါင်းလုဒ်';
+
+  @override
+  String get hwSpeakingNoScore => 'စကားပြော လုပ်ငန်းကို မလုပ်ရသေးပါ';
+
+  @override
+  String get hwWorkbookUnavailable => 'လေ့ကျင့်ခန်းစာအုပ် ဖိုင် မရနိုင်သေးပါ။';
+
+  @override
+  String get hwDetailClosed => 'ဤအိမ်စာ ပိတ်သွားပါပြီ။ ထပ်မံ တင်ပြ၍ မရတော့ပါ။';
+
+  @override
+  String get hwLeaveTitle => 'အတန်းမှ ထွက်မလား';
+
+  @override
+  String get hwLeaveBody =>
+      'ဆရာသည် သင့်အိမ်စာ ရလဒ်များကို နောက်ထပ် မမြင်တော့ပါ။';
+
+  @override
+  String get hwLeaveConfirm => 'ထွက်ရန်';
+
+  @override
+  String get hwLeaveCancel => 'ဆက်နေရန်';
+
+  @override
+  String get hwLeaveFailed => 'အတန်းမှ ထွက်၍ မရပါ။';
+
+  @override
+  String get hwMyClass => 'ကျွန်ုပ်၏ အတန်း';
+
+  @override
+  String get hwClassEmptyTitle => 'မည်သည့်အတန်းမှ မဝင်ရသေးပါ';
+
+  @override
+  String get hwClassEmptySubtitle => 'ဆရာပေးထားသော ကုဒ်ကို ထည့်ပါ';
+
+  @override
+  String get hwClassEmptyCta => 'အတန်းကုဒ် ထည့်ရန်';
+
+  @override
+  String get hwClassContinueCta => 'ဆက်လက်';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return 'အိမ်စာ $count ခု မနက်ဖြန် သတ်မှတ်ရက်';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'မတင်ပြရသေးသော အိမ်စာ $count ခု ရှိပါသည်';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'ဤအိမ်စာအတွက် ဝါကျများ မရနိုင်သေးပါ။';
+
+  @override
+  String get hwBadgeClosed => 'ပိတ်ထား';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return 'ဝါကျ $total ခုအနက် $passed ခု အောင်မြင်';
+  }
+
+  @override
+  String get challengeFirstWord => 'ပထမစကားလုံး';
+
+  @override
+  String get challengeSeeAnalysis => 'ရလဒ်များ ကြည့်ရန်';
+
+  @override
+  String get challengePaused => 'ခေတ္တရပ်ထားသည်';
+
+  @override
+  String get challengePausedNote =>
+      'အချိန်တိုင်းနှင့် အသံဖမ်းခြင်း အတူရပ်သွားပါပြီ။';
+
+  @override
+  String get challengeTimeLeft => 'ကျန်ချိန်';
+
+  @override
+  String get challengeScoreLabel => 'ရမှတ်';
+
+  @override
+  String get challengeResume => 'ဆက်လုပ်ရန်';
+
+  @override
+  String get challengeBlockedTitle => 'ကင်မရာ သုံး၍မရပါ';
+
+  @override
+  String get challengeBlockedNote =>
+      'ဆက်တင်တွင် ကင်မရာနှင့် မိုက်ခွင့်ပြုချက်ကို ဖွင့်ပါ။';
+
+  @override
+  String get challengeGoBack => 'ပြန်သွားရန်';
+
+  @override
+  String get challengeOpenSettings => 'ဆက်တင် ဖွင့်ရန်';
+
+  @override
+  String get saveDone => 'ဓာတ်ပုံပြခန်းသို့ သိမ်းပြီးပါပြီ';
+
+  @override
+  String get saveFailed => 'မသိမ်းနိုင်ပါ';
+
+  @override
+  String get saveDeniedNote => 'ဓာတ်ပုံ ခွင့်ပြုချက် လိုအပ်သည်';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ဆရာ';
+
+  @override
+  String get callIncomingHandle => 'ကိုရီးယားစကား ခေါ်ဆိုမှု';
+
+  @override
+  String get callMissedTitle => 'လွတ်သွားသော ခေါ်ဆိုမှု';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver ထံမှ လွတ်သွားသော ခေါ်ဆိုမှုကို အကြောင်းကြားပါသည်။';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name က သင့်ကို ခေါ်ခဲ့သည်';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'ခေါ်ဆိုမှုများ လက်ခံရန် အကြောင်းကြားချက် ခွင့်ပြုချက် လိုအပ်သည်။';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။';
 }

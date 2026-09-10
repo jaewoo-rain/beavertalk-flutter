@@ -2,8 +2,10 @@ import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../classroom/widgets/homework_class_card.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
 import '../../features/normalcall/presentation/build_flags.dart';
 import '../../features/normalcall/presentation/cascade_auto_talk.dart';
@@ -116,20 +118,24 @@ class MyPageScreen extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20, AppSpacing.s24,
-                  AppSpacing.s20, AppSpacing.s24),
-              children: [
-                _accentCard(context, l10n, accentStats, avatar),
-                const SizedBox(height: AppSpacing.s24),
-                _levelCard(context, ref, l10n, level),
-                const SizedBox(height: AppSpacing.s24),
-                _pronunciationCard(context, l10n, pron, recentCalls),
-                if (kDebugMode) ...[
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  _accentCard(context, l10n, accentStats, avatar),
                   const SizedBox(height: AppSpacing.s24),
-                  _devToolsCard(context),
+                  _levelCard(context, ref, l10n, level),
+                  const SizedBox(height: AppSpacing.s24),
+                  _pronunciationCard(context, l10n, pron, recentCalls),
+                  const SizedBox(height: AppSpacing.s24),
+                  // 숙제 진입점 — 형제 지표 카드 뒤 마지막 자리(Figma 실측).
+                  const HomeworkClassCard(),
+                  if (kDebugMode) ...[
+                    const SizedBox(height: AppSpacing.s24),
+                    _devToolsCard(context),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ],

@@ -210,6 +210,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get newExpressions => 'Novas expressões';
 
   @override
+  String get usedExpressions => 'Expressões que você usou';
+
+  @override
   String get analysisResult => 'Resultado da análise';
 
   @override
@@ -1167,6 +1170,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get billingRestorePurchases => 'Restaurar compras';
 
   @override
+  String get billingRedeemCode => 'Resgatar um código';
+
+  @override
   String get billingPaymentHistory => 'Histórico de pagamentos';
 
   @override
@@ -2010,7 +2016,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get nicknameLabel => 'Apelido';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-mail';
 
   @override
   String get loginMethodLabel => 'Método de login';
@@ -2029,27 +2035,27 @@ class AppLocalizationsPt extends AppLocalizations {
   String get ctaSave => 'Salvar';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Assinatura';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Compra concluída';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'O avatar $name é seu para sempre.\nAplicado assim que o recibo for confirmado.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Ir para o início';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Usar agora';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'O pagamento não foi concluído';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Você pode tentar de novo';
 
   @override
   String get paywallLeaveTitle => 'Se sair agora, você não estará assinando';
@@ -2266,4 +2272,374 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get reportFailed =>
       'Não foi possível enviar a denúncia. Tente novamente.';
+
+  @override
+  String get hwTitle => 'Tarefas';
+
+  @override
+  String get hwJoinCodeTitle => 'Digite o código da sua turma';
+
+  @override
+  String get hwJoinCodeSubtitle =>
+      'É o código de 6 dígitos que seu professor deu';
+
+  @override
+  String get hwJoinCodeLabel => 'Código da turma';
+
+  @override
+  String get hwJoinCodeHelp =>
+      'O código não diferencia maiúsculas de minúsculas';
+
+  @override
+  String get hwJoinConfirmTitle => 'É esta a turma certa?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Se não for, confira o código de novo';
+
+  @override
+  String get hwJoinFieldInstitution => 'Instituição';
+
+  @override
+  String get hwJoinFieldTeacher => 'Professor';
+
+  @override
+  String get hwJoinFieldLearners => 'Alunos';
+
+  @override
+  String get hwJoinFieldTerm => 'Período';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'O nome da turma aparece exatamente como o professor escreveu. Não traduzimos.';
+
+  @override
+  String get hwJoinConfirmYes => 'Sim, é esta';
+
+  @override
+  String get hwJoinConfirmRetry => 'Digitar o código de novo';
+
+  @override
+  String get hwJoinProfileTitle => 'Que nome você vai usar na turma?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Seu professor compara com a lista da turma';
+
+  @override
+  String get hwJoinNameLabel => 'Nome';
+
+  @override
+  String get hwJoinNameHelp => 'Pode ser diferente do nome no app';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Matrícula (opcional)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'Seu professor usa para conferir a lista';
+
+  @override
+  String get hwJoinConsentTitle => 'O que seu professor vê';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Você precisa concordar para entrar na turma';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Compartilhado com seu professor';
+
+  @override
+  String get hwJoinConsentShared1 => 'Nome da turma e matrícula';
+
+  @override
+  String get hwJoinConsentShared2 => 'Se você fez a tarefa';
+
+  @override
+  String get hwJoinConsentShared3 => 'Frases aprovadas e erradas';
+
+  @override
+  String get hwJoinConsentShared4 => 'Duração e resumo da chamada da tarefa';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Não compartilhado';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'E-mail e telefone';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Nome no app, perfil e personagem';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Nacionalidade e língua materna';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'Chamadas e estudo fora da turma';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Dados de assinatura e pagamento';
+
+  @override
+  String get hwJoinConsentAgree => 'Concordo com o acima';
+
+  @override
+  String get hwJoinConsentCta => 'Concordar e entrar';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Você entrou em $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count tarefas estão esperando';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Ainda não há tarefas';
+
+  @override
+  String get hwJoinDoneNextDue => 'Próximo prazo';
+
+  @override
+  String get hwJoinDoneRosterName => 'Seu nome na turma';
+
+  @override
+  String get hwJoinDoneCta => 'Ver tarefas';
+
+  @override
+  String get hwJoinErrorNotFound => 'Não encontramos esse código';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Confira os seis dígitos novamente.';
+
+  @override
+  String get hwJoinErrorExpired => 'Esse código expirou';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Peça um código novo ao seu professor.';
+
+  @override
+  String get hwJoinErrorFull => 'A turma está cheia';
+
+  @override
+  String get hwJoinErrorFullBody => 'Avise seu professor.';
+
+  @override
+  String get hwJoinFailed =>
+      'Não foi possível entrar. Tente de novo em instantes.';
+
+  @override
+  String get hwSectionInProgress => 'Em andamento';
+
+  @override
+  String get hwSectionUpcoming => 'A seguir';
+
+  @override
+  String get hwSectionDone => 'Concluídas';
+
+  @override
+  String get hwLeaveClassLink => 'Sair da turma';
+
+  @override
+  String get hwListEmptyTitle => 'Ainda não há tarefas';
+
+  @override
+  String get hwListEmptyBody =>
+      'Vão aparecer aqui quando seu professor passar.';
+
+  @override
+  String get hwListFailed => 'Não foi possível carregar suas tarefas.';
+
+  @override
+  String get hwRetry => 'Tentar de novo';
+
+  @override
+  String get hwBadgeDone => 'Concluída';
+
+  @override
+  String get hwBadgeOverdue => 'Não entregue';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Não entregue, $days d de atraso';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Vence hoje';
+
+  @override
+  String get hwActivitySpeaking => 'Fala';
+
+  @override
+  String get hwActivityConversation => 'Conversa';
+
+  @override
+  String get hwActivityWorkbook => 'Caderno';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Capítulo $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Confira sua nota de pronúncia';
+
+  @override
+  String get hwTaskConversationDesc => 'Use o que aprendeu numa conversa real';
+
+  @override
+  String get hwConversationOnce =>
+      'A conversa só pode ser feita uma vez por tarefa.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Pratique escrevendo no caderno';
+
+  @override
+  String get hwCtaStudy => 'Começar';
+
+  @override
+  String get hwCtaResult => 'Ver resultado';
+
+  @override
+  String get hwCtaDownload => 'Baixar';
+
+  @override
+  String get hwSpeakingNoScore => 'Você ainda não fez a tarefa de fala';
+
+  @override
+  String get hwWorkbookUnavailable =>
+      'O arquivo do caderno ainda não está disponível.';
+
+  @override
+  String get hwDetailClosed =>
+      'Esta tarefa está encerrada. Você não pode mais entregar.';
+
+  @override
+  String get hwLeaveTitle => 'Sair da turma?';
+
+  @override
+  String get hwLeaveBody =>
+      'Seu professor deixará de ver os resultados das suas tarefas.';
+
+  @override
+  String get hwLeaveConfirm => 'Sair';
+
+  @override
+  String get hwLeaveCancel => 'Ficar';
+
+  @override
+  String get hwLeaveFailed => 'Não foi possível sair da turma.';
+
+  @override
+  String get hwMyClass => 'Minha turma';
+
+  @override
+  String get hwClassEmptyTitle => 'Você não entrou em nenhuma turma';
+
+  @override
+  String get hwClassEmptySubtitle => 'Digite o código que seu professor deu';
+
+  @override
+  String get hwClassEmptyCta => 'Digitar código da turma';
+
+  @override
+  String get hwClassContinueCta => 'Continuar';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count tarefas vencem amanhã';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Você tem $count tarefas não entregues';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'As frases desta tarefa ainda não estão disponíveis.';
+
+  @override
+  String get hwBadgeClosed => 'Encerrada';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$passed de $total frases aprovadas';
+  }
+
+  @override
+  String get challengeFirstWord => 'Primeira palavra';
+
+  @override
+  String get challengeSeeAnalysis => 'Ver resultados';
+
+  @override
+  String get challengePaused => 'Pausado';
+
+  @override
+  String get challengePausedNote => 'O cronômetro e a gravação pararam juntos.';
+
+  @override
+  String get challengeTimeLeft => 'Tempo restante';
+
+  @override
+  String get challengeScoreLabel => 'Pontuação';
+
+  @override
+  String get challengeResume => 'Continuar';
+
+  @override
+  String get challengeBlockedTitle => 'Não é possível usar a câmera';
+
+  @override
+  String get challengeBlockedNote =>
+      'Ative o acesso à câmera e ao microfone nos Ajustes.';
+
+  @override
+  String get challengeGoBack => 'Voltar';
+
+  @override
+  String get challengeOpenSettings => 'Abrir Ajustes';
+
+  @override
+  String get saveDone => 'Salvo na sua galeria';
+
+  @override
+  String get saveFailed => 'Não foi possível salvar';
+
+  @override
+  String get saveDeniedNote => 'É necessário acesso às fotos';
+
+  @override
+  String get callIncomingCallerFallback => 'Tutor Beaver';
+
+  @override
+  String get callIncomingHandle => 'Chamada em coreano';
+
+  @override
+  String get callMissedTitle => 'Chamada perdida';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Avisa quando você perde uma chamada do Beaver.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name tentou ligar para você';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'É preciso permitir notificações para receber chamadas.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Permita as notificações nos Ajustes.';
 }

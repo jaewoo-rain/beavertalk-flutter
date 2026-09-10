@@ -209,6 +209,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get newExpressions => 'Yangi iboralar';
 
   @override
+  String get usedExpressions => 'Siz ishlatgan iboralar';
+
+  @override
   String get analysisResult => 'Tahlil natijasi';
 
   @override
@@ -1163,6 +1166,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get billingRestorePurchases => 'Xaridlarni tiklash';
 
   @override
+  String get billingRedeemCode => 'Koddan foydalanish';
+
+  @override
   String get billingPaymentHistory => 'Toʻlovlar tarixi';
 
   @override
@@ -2006,7 +2012,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nicknameLabel => 'Taxallus';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-pochta';
 
   @override
   String get loginMethodLabel => 'Kirish usuli';
@@ -2024,27 +2030,27 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaSave => 'Saqlash';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Obuna';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Xarid yakunlandi';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name avatari abadiy sizniki.\nChek tasdiqlangach darhol qoʻllanadi.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Bosh sahifaga';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Hozir ishlatish';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Toʻlov amalga oshmadi';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Qayta urinib koʻrishingiz mumkin';
 
   @override
   String get paywallLeaveTitle => 'Hozir chiqsangiz, obuna boʻlmaysiz';
@@ -2262,4 +2268,373 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get reportFailed => 'Shikoyat yuborilmadi. Qayta urinib ko\'ring.';
+
+  @override
+  String get hwTitle => 'Uyga vazifa';
+
+  @override
+  String get hwJoinCodeTitle => 'Sinf kodingizni kiriting';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Bu oʻqituvchingiz bergan 6 xonali kod';
+
+  @override
+  String get hwJoinCodeLabel => 'Sinf kodi';
+
+  @override
+  String get hwJoinCodeHelp => 'Kodda katta-kichik harf farq qilmaydi';
+
+  @override
+  String get hwJoinConfirmTitle => 'Shu sinfmi?';
+
+  @override
+  String get hwJoinConfirmSubtitle =>
+      'Agar boshqa boʻlsa, kodni qayta tekshiring';
+
+  @override
+  String get hwJoinFieldInstitution => 'Muassasa';
+
+  @override
+  String get hwJoinFieldTeacher => 'Oʻqituvchi';
+
+  @override
+  String get hwJoinFieldLearners => 'Oʻquvchilar';
+
+  @override
+  String get hwJoinFieldTerm => 'Davr';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Sinf nomi oʻqituvchi yozgani kabi koʻrsatiladi. Biz uni tarjima qilmaymiz.';
+
+  @override
+  String get hwJoinConfirmYes => 'Ha, shu';
+
+  @override
+  String get hwJoinConfirmRetry => 'Kodni qayta kiritish';
+
+  @override
+  String get hwJoinProfileTitle => 'Sinfda qaysi ismdan foydalanasiz?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Oʻqituvchi buni sinf roʻyxati bilan solishtiradi';
+
+  @override
+  String get hwJoinNameLabel => 'Ism';
+
+  @override
+  String get hwJoinNameHelp => 'Ilovadagi ismingizdan farq qilishi mumkin';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Talaba raqami (ixtiyoriy)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'Oʻqituvchi roʻyxatni solishtirish uchun ishlatadi';
+
+  @override
+  String get hwJoinConsentTitle => 'Oʻqituvchingiz nimani koʻradi';
+
+  @override
+  String get hwJoinConsentSubtitle => 'Sinfga qoʻshilish uchun rozilik kerak';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Oʻqituvchi bilan ulashiladi';
+
+  @override
+  String get hwJoinConsentShared1 => 'Sinf nomi va talaba raqami';
+
+  @override
+  String get hwJoinConsentShared2 => 'Uyga vazifani bajarganingiz';
+
+  @override
+  String get hwJoinConsentShared3 => 'Oʻtgan va oʻtmagan gaplar';
+
+  @override
+  String get hwJoinConsentShared4 =>
+      'Vazifa qoʻngʻirogʻining davomiyligi va xulosasi';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Ulashilmaydi';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'E-pochta va telefon raqami';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Ilovadagi ism, profil va qahramon';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Fuqarolik va ona tili';
+
+  @override
+  String get hwJoinConsentNotShared4 =>
+      'Sinfdan tashqari qoʻngʻiroqlar va oʻqish';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Obuna va toʻlov maʼlumotlari';
+
+  @override
+  String get hwJoinConsentAgree => 'Yuqoridagilarga roziman';
+
+  @override
+  String get hwJoinConsentCta => 'Rozi boʻlib qoʻshilish';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Siz $className sinfiga qoʻshildingiz';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count ta vazifa kutmoqda';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Hozircha vazifa yoʻq';
+
+  @override
+  String get hwJoinDoneNextDue => 'Keyingi muddat';
+
+  @override
+  String get hwJoinDoneRosterName => 'Sinfdagi ismingiz';
+
+  @override
+  String get hwJoinDoneCta => 'Vazifalarni koʻrish';
+
+  @override
+  String get hwJoinErrorNotFound => 'Bunday kod topilmadi';
+
+  @override
+  String get hwJoinErrorNotFoundBody =>
+      'Iltimos, olti raqamni qayta tekshiring.';
+
+  @override
+  String get hwJoinErrorExpired => 'Bu kod muddati tugagan';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Oʻqituvchingizdan yangi kod soʻrang.';
+
+  @override
+  String get hwJoinErrorFull => 'Sinf toʻlgan';
+
+  @override
+  String get hwJoinErrorFullBody => 'Iltimos, oʻqituvchingizga xabar bering.';
+
+  @override
+  String get hwJoinFailed =>
+      'Qoʻshilib boʻlmadi. Birozdan soʻng qayta urinib koʻring.';
+
+  @override
+  String get hwSectionInProgress => 'Bajarilmoqda';
+
+  @override
+  String get hwSectionUpcoming => 'Yaqinda';
+
+  @override
+  String get hwSectionDone => 'Bajarildi';
+
+  @override
+  String get hwLeaveClassLink => 'Sinfdan chiqish';
+
+  @override
+  String get hwListEmptyTitle => 'Hozircha uyga vazifa yoʻq';
+
+  @override
+  String get hwListEmptyBody => 'Oʻqituvchingiz bergach shu yerda koʻrinadi.';
+
+  @override
+  String get hwListFailed => 'Vazifalaringiz yuklanmadi.';
+
+  @override
+  String get hwRetry => 'Qayta urinish';
+
+  @override
+  String get hwBadgeDone => 'Bajarildi';
+
+  @override
+  String get hwBadgeOverdue => 'Topshirilmagan';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Topshirilmagan, $days kun kechikdi';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Muddati bugun';
+
+  @override
+  String get hwActivitySpeaking => 'Gapirish';
+
+  @override
+  String get hwActivityConversation => 'Suhbat';
+
+  @override
+  String get hwActivityWorkbook => 'Mashq daftari';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '$chapter-bob';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Talaffuz ballingizni tekshiring';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Oʻrganganingizni haqiqiy suhbatda ishlating';
+
+  @override
+  String get hwConversationOnce =>
+      'Suhbatni har bir uy vazifasi uchun bir marta bajarish mumkin.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Mashq daftariga yozib mashq qiling';
+
+  @override
+  String get hwCtaStudy => 'Boshlash';
+
+  @override
+  String get hwCtaResult => 'Natijani koʻrish';
+
+  @override
+  String get hwCtaDownload => 'Yuklab olish';
+
+  @override
+  String get hwSpeakingNoScore => 'Gapirish vazifasini hali bajarmadingiz';
+
+  @override
+  String get hwWorkbookUnavailable => 'Mashq daftari fayli hali mavjud emas.';
+
+  @override
+  String get hwDetailClosed => 'Bu vazifa yopilgan. Endi topshira olmaysiz.';
+
+  @override
+  String get hwLeaveTitle => 'Sinfdan chiqasizmi?';
+
+  @override
+  String get hwLeaveBody =>
+      'Oʻqituvchingiz endi vazifa natijalaringizni koʻrmaydi.';
+
+  @override
+  String get hwLeaveConfirm => 'Chiqish';
+
+  @override
+  String get hwLeaveCancel => 'Qolish';
+
+  @override
+  String get hwLeaveFailed => 'Sinfdan chiqib boʻlmadi.';
+
+  @override
+  String get hwMyClass => 'Mening sinfim';
+
+  @override
+  String get hwClassEmptyTitle => 'Siz hech qanday sinfga qoʻshilmagansiz';
+
+  @override
+  String get hwClassEmptySubtitle => 'Oʻqituvchingiz bergan kodni kiriting';
+
+  @override
+  String get hwClassEmptyCta => 'Sinf kodini kiritish';
+
+  @override
+  String get hwClassContinueCta => 'Davom etish';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count ta vazifa muddati ertaga';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Sizda $count ta topshirilmagan vazifa bor';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'Bu vazifaning gaplari hali mavjud emas.';
+
+  @override
+  String get hwBadgeClosed => 'Yopiq';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total tadan $passed ta gap oʻtdi';
+  }
+
+  @override
+  String get challengeFirstWord => 'Birinchi soʻz';
+
+  @override
+  String get challengeSeeAnalysis => 'Natijalarni koʻrish';
+
+  @override
+  String get challengePaused => 'Toʻxtatildi';
+
+  @override
+  String get challengePausedNote => 'Taymer va yozuv birga toʻxtadi.';
+
+  @override
+  String get challengeTimeLeft => 'Qolgan vaqt';
+
+  @override
+  String get challengeScoreLabel => 'Ball';
+
+  @override
+  String get challengeResume => 'Davom ettirish';
+
+  @override
+  String get challengeBlockedTitle => 'Kameradan foydalanib boʻlmaydi';
+
+  @override
+  String get challengeBlockedNote =>
+      'Sozlamalarda kamera va mikrofonga ruxsatni yoqing.';
+
+  @override
+  String get challengeGoBack => 'Orqaga';
+
+  @override
+  String get challengeOpenSettings => 'Sozlamalarni ochish';
+
+  @override
+  String get saveDone => 'Galereyaga saqlandi';
+
+  @override
+  String get saveFailed => 'Saqlanmadi';
+
+  @override
+  String get saveDeniedNote => 'Suratlarga ruxsat kerak';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ustoz';
+
+  @override
+  String get callIncomingHandle => 'Koreys tilida qoʻngʻiroq';
+
+  @override
+  String get callMissedTitle => 'Javobsiz qoʻngʻiroq';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver dan javobsiz qoʻngʻiroq boʻlsa xabar beradi.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name sizga qoʻngʻiroq qildi';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Qoʻngʻiroqlarni qabul qilish uchun bildirishnoma ruxsati kerak.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Sozlamalarda bildirishnomalarga ruxsat bering.';
 }

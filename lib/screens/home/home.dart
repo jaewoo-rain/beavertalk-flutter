@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/pressable.dart';
@@ -15,6 +16,7 @@ import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../classroom/widgets/homework_home_banner.dart';
 
 /// Home — the post-login landing screen. Figma `screen/home` (`2117:23988`).
 ///
@@ -87,8 +89,8 @@ class HomeScreen extends ConsumerWidget {
           // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
           SizedBox(
             height: 56,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20, vertical: 14),
+            child: ContentColumn(
+              padding: const EdgeInsets.symmetric(vertical: 14),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -178,6 +180,16 @@ class HomeScreen extends ConsumerWidget {
               ],
             ),
           ),
+          // 숙제 진입 배너 — 하단 내비 바로 위(Figma `screen/main_home` y=588).
+          // 급한 숙제가 없으면 스스로 사라진다.
+          // ⛔ `Padding(horizontal: s20)` 이 아니라 [ContentColumn] 이다 — 같은 파일
+          //   헤더(위 [ContentColumn])와 **같은 밴드**에 서야 한다. 고정 20 이면
+          //   800dp 태블릿에서 헤더 100~700, 배너 20~780 으로 갈려 한 화면에 폭이
+          //   세 개가 된다(하단 탭바는 또 375 캡이다).
+          //   ⚠ 이 자리는 숙제 병합이 **새로 만든 블록**이라 충돌이 안 났고, 그래서
+          //     폭 규칙 검열을 그냥 통과했다. 새 블록을 넣을 땐 밴드부터 확인하라.
+          const ContentColumn(child: HomeworkHomeBanner()),
+          const SizedBox(height: 18),
           // Bottom navigation — call tab is the center action.
           BottomNavBar(
             items: [

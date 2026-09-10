@@ -209,6 +209,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get newExpressions => 'Шинэ хэллэгүүд';
 
   @override
+  String get usedExpressions => 'Таны хэрэглэсэн хэллэгүүд';
+
+  @override
   String get analysisResult => 'Дүн шинжилгээний үр дүн';
 
   @override
@@ -1155,6 +1158,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get billingRestorePurchases => 'Худалдан авалт сэргээх';
 
   @override
+  String get billingRedeemCode => 'Код ашиглах';
+
+  @override
   String get billingPaymentHistory => 'Төлбөрийн түүх';
 
   @override
@@ -1994,7 +2000,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get nicknameLabel => 'Хоч нэр';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'И-мэйл';
 
   @override
   String get loginMethodLabel => 'Нэвтрэх арга';
@@ -2012,27 +2018,27 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaSave => 'Хадгалах';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Захиалга';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Худалдан авалт дууслаа';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name дүр үүрд таных боллоо.\nБаримт баталгаажмагц шууд идэвхжинэ.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Нүүр рүү';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Одоо ашиглах';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Төлбөр гүйцэтгэгдсэнгүй';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Дахин оролдож болно';
 
   @override
   String get paywallLeaveTitle => 'Одоо гарвал захиалга хийгдэхгүй';
@@ -2248,4 +2254,370 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get reportFailed => 'Мэдэгдэл илгээж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get hwTitle => 'Гэрийн даалгавар';
+
+  @override
+  String get hwJoinCodeTitle => 'Ангийнхаа кодыг оруулна уу';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Энэ бол багшаас өгсөн 6 оронтой код';
+
+  @override
+  String get hwJoinCodeLabel => 'Ангийн код';
+
+  @override
+  String get hwJoinCodeHelp => 'Код том жижиг үсэг ялгадаггүй';
+
+  @override
+  String get hwJoinConfirmTitle => 'Энэ зөв анги мөн үү?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Хэрэв биш бол кодоо дахин шалгана уу';
+
+  @override
+  String get hwJoinFieldInstitution => 'Байгууллага';
+
+  @override
+  String get hwJoinFieldTeacher => 'Багш';
+
+  @override
+  String get hwJoinFieldLearners => 'Суралцагчид';
+
+  @override
+  String get hwJoinFieldTerm => 'Хугацаа';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Ангийн нэрийг багшийн бичсэнээр яг хэвээр харуулна. Бид орчуулдаггүй.';
+
+  @override
+  String get hwJoinConfirmYes => 'Тийм, энэ мөн';
+
+  @override
+  String get hwJoinConfirmRetry => 'Кодыг дахин оруулах';
+
+  @override
+  String get hwJoinProfileTitle => 'Ангид ямар нэр ашиглах вэ?';
+
+  @override
+  String get hwJoinProfileSubtitle => 'Багш үүнийг ангийн жагсаалттай тулгана';
+
+  @override
+  String get hwJoinNameLabel => 'Нэр';
+
+  @override
+  String get hwJoinNameHelp => 'Апп дахь нэрээс өөр байж болно';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Оюутны дугаар (заавал биш)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'Багш ангийн жагсаалт тулгахад ашиглана';
+
+  @override
+  String get hwJoinConsentTitle => 'Багш юуг харах вэ';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Ангид элсэхийн тулд зөвшөөрөл өгөх шаардлагатай';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Багштай хуваалцана';
+
+  @override
+  String get hwJoinConsentShared1 => 'Ангийн нэр ба оюутны дугаар';
+
+  @override
+  String get hwJoinConsentShared2 => 'Даалгавраа хийсэн эсэх';
+
+  @override
+  String get hwJoinConsentShared3 => 'Давсан ба алдсан өгүүлбэрүүд';
+
+  @override
+  String get hwJoinConsentShared4 =>
+      'Даалгаврын дуудлагын үргэлжлэх хугацаа ба хураангуй';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Хуваалцахгүй';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'И-мэйл ба утасны дугаар';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Апп дахь нэр, профайл ба дүр';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Иргэншил ба төрөлх хэл';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'Ангиас гадуурх дуудлага ба суралцалт';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Захиалга ба төлбөрийн мэдээлэл';
+
+  @override
+  String get hwJoinConsentAgree => 'Би дээрхтэй санал нийлж байна';
+
+  @override
+  String get hwJoinConsentCta => 'Зөвшөөрч элсэх';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Та $className ангид элслээ';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count даалгавар хүлээж байна';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Одоогоор даалгавар алга';
+
+  @override
+  String get hwJoinDoneNextDue => 'Дараагийн эцсийн хугацаа';
+
+  @override
+  String get hwJoinDoneRosterName => 'Ангид байгаа таны нэр';
+
+  @override
+  String get hwJoinDoneCta => 'Даалгавар харах';
+
+  @override
+  String get hwJoinErrorNotFound => 'Ийм код олдсонгүй';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Зургаан оронг дахин шалгана уу.';
+
+  @override
+  String get hwJoinErrorExpired => 'Энэ кодын хугацаа дууссан';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Багшаасаа шинэ код аваарай.';
+
+  @override
+  String get hwJoinErrorFull => 'Анги дүүрсэн';
+
+  @override
+  String get hwJoinErrorFullBody => 'Багшдаа мэдэгдэнэ үү.';
+
+  @override
+  String get hwJoinFailed =>
+      'Элсэж чадсангүй. Хэсэг хүлээгээд дахин оролдоно уу.';
+
+  @override
+  String get hwSectionInProgress => 'Хийгдэж байна';
+
+  @override
+  String get hwSectionUpcoming => 'Удахгүй';
+
+  @override
+  String get hwSectionDone => 'Дууссан';
+
+  @override
+  String get hwLeaveClassLink => 'Ангиас гарах';
+
+  @override
+  String get hwListEmptyTitle => 'Одоогоор даалгавар алга';
+
+  @override
+  String get hwListEmptyBody => 'Багш өгмөгц энд харагдана.';
+
+  @override
+  String get hwListFailed => 'Даалгаврыг ачаалж чадсангүй.';
+
+  @override
+  String get hwRetry => 'Дахин оролдох';
+
+  @override
+  String get hwBadgeDone => 'Дууссан';
+
+  @override
+  String get hwBadgeOverdue => 'Илгээгээгүй';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Илгээгээгүй, $days хоног хоцорсон';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Өнөөдөр дуусна';
+
+  @override
+  String get hwActivitySpeaking => 'Ярих';
+
+  @override
+  String get hwActivityConversation => 'Яриа';
+
+  @override
+  String get hwActivityWorkbook => 'Дасгалын дэвтэр';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '$chapter-р бүлэг';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Дуудлагын оноогоо шалгаарай';
+
+  @override
+  String get hwTaskConversationDesc => 'Сурсанаа жинхэнэ ярианд хэрэглээрэй';
+
+  @override
+  String get hwConversationOnce => 'Ярианы даалгаврыг нэг удаа хийж болно.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Дасгалын дэвтэрт бичиж дасгал хийгээрэй';
+
+  @override
+  String get hwCtaStudy => 'Эхлэх';
+
+  @override
+  String get hwCtaResult => 'Үр дүн харах';
+
+  @override
+  String get hwCtaDownload => 'Татах';
+
+  @override
+  String get hwSpeakingNoScore =>
+      'Та ярианы даалгаврыг хараахан хийгээгүй байна';
+
+  @override
+  String get hwWorkbookUnavailable =>
+      'Дасгалын дэвтрийн файл хараахан бэлэн болоогүй.';
+
+  @override
+  String get hwDetailClosed =>
+      'Энэ даалгавар хаагдсан. Та дахин илгээх боломжгүй.';
+
+  @override
+  String get hwLeaveTitle => 'Ангиас гарах уу?';
+
+  @override
+  String get hwLeaveBody => 'Багш таны даалгаврын үр дүнг цаашид харахгүй.';
+
+  @override
+  String get hwLeaveConfirm => 'Гарах';
+
+  @override
+  String get hwLeaveCancel => 'Үлдэх';
+
+  @override
+  String get hwLeaveFailed => 'Ангиас гарч чадсангүй.';
+
+  @override
+  String get hwMyClass => 'Миний анги';
+
+  @override
+  String get hwClassEmptyTitle => 'Та ямар ч ангид элсээгүй байна';
+
+  @override
+  String get hwClassEmptySubtitle => 'Багшаас өгсөн кодоо оруулна уу';
+
+  @override
+  String get hwClassEmptyCta => 'Ангийн код оруулах';
+
+  @override
+  String get hwClassContinueCta => 'Үргэлжлүүлэх';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count даалгаврын хугацаа маргааш дуусна';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Танд илгээгээгүй $count даалгавар байна';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'Энэ даалгаврын өгүүлбэрүүд хараахан бэлэн болоогүй.';
+
+  @override
+  String get hwBadgeClosed => 'Хаагдсан';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total-аас $passed өгүүлбэр давсан';
+  }
+
+  @override
+  String get challengeFirstWord => 'Эхний үг';
+
+  @override
+  String get challengeSeeAnalysis => 'Үр дүнг харах';
+
+  @override
+  String get challengePaused => 'Түр зогссон';
+
+  @override
+  String get challengePausedNote => 'Цаг тоолуур ба бичлэг хамт зогслоо.';
+
+  @override
+  String get challengeTimeLeft => 'Үлдсэн хугацаа';
+
+  @override
+  String get challengeScoreLabel => 'Оноо';
+
+  @override
+  String get challengeResume => 'Үргэлжлүүлэх';
+
+  @override
+  String get challengeBlockedTitle => 'Камер ашиглах боломжгүй';
+
+  @override
+  String get challengeBlockedNote =>
+      'Тохиргоо хэсэгт камер, микрофоны зөвшөөрлийг асаана уу.';
+
+  @override
+  String get challengeGoBack => 'Буцах';
+
+  @override
+  String get challengeOpenSettings => 'Тохиргоог нээх';
+
+  @override
+  String get saveDone => 'Галерейд хадгаллаа';
+
+  @override
+  String get saveFailed => 'Хадгалж чадсангүй';
+
+  @override
+  String get saveDeniedNote => 'Зургийн зөвшөөрөл шаардлагатай';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver багш';
+
+  @override
+  String get callIncomingHandle => 'Солонгос хэлний дуудлага';
+
+  @override
+  String get callMissedTitle => 'Аваагүй дуудлага';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver-ийн аваагүй дуудлагыг мэдэгдэнэ.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name танд залгасан';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Дуудлага хүлээн авахад мэдэгдлийн зөвшөөрөл шаардлагатай.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү.';
 }

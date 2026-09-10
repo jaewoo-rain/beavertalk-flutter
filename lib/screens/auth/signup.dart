@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
@@ -116,77 +117,78 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         children: [
           Gnb.main(title: l10n.signUp, onBack: () => Navigator.pop(context)),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  // ── Email ───────────────────────────────────────────────
-                  _FieldLabel(l10n.fieldEmailLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _email,
-                    onChanged: (v) => setState(() => _email = v),
-                    hintText: l10n.emailHint,
-                    keyboardType: TextInputType.emailAddress,
-                    leftIcon: MailIcon(
-                        size: 20, color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s20),
-                  // ── Password ────────────────────────────────────────────
-                  _FieldLabel(l10n.fieldPasswordLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _password,
-                    onChanged: (v) => setState(() => _password = v),
-                    hintText: l10n.passwordHint,
-                    obscureText: _obscurePassword,
-                    leftIcon:
-                        AppIcons.lock(size: 20, color: context.c.labelNormal),
-                    rightIcon: PasswordEyeToggle(
-                      obscured: _obscurePassword,
-                      onTap: () => setState(
-                          () => _obscurePassword = !_obscurePassword),
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // ── Email ───────────────────────────────────────────────
+                    _FieldLabel(l10n.fieldEmailLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _email,
+                      onChanged: (v) => setState(() => _email = v),
+                      hintText: l10n.emailHint,
+                      keyboardType: TextInputType.emailAddress,
+                      leftIcon: MailIcon(
+                          size: 20, color: context.c.labelNormal),
                     ),
-                  ),
-                  _ErrorText(_passwordError),
-                  const SizedBox(height: AppSpacing.s20),
-                  // ── Password confirm ────────────────────────────────────
-                  _FieldLabel(l10n.fieldConfirmPasswordLabel),
-                  const SizedBox(height: AppSpacing.s8),
-                  InputField(
-                    value: _passwordConfirm,
-                    onChanged: (v) => setState(() => _passwordConfirm = v),
-                    hintText: l10n.confirmPasswordHint,
-                    obscureText: _obscureConfirm,
-                    leftIcon:
-                        AppIcons.lock(size: 20, color: context.c.labelNormal),
-                    rightIcon: PasswordEyeToggle(
-                      obscured: _obscureConfirm,
-                      onTap: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
+                    const SizedBox(height: AppSpacing.s20),
+                    // ── Password ────────────────────────────────────────────
+                    _FieldLabel(l10n.fieldPasswordLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _password,
+                      onChanged: (v) => setState(() => _password = v),
+                      hintText: l10n.passwordHint,
+                      obscureText: _obscurePassword,
+                      leftIcon:
+                          AppIcons.lock(size: 20, color: context.c.labelNormal),
+                      rightIcon: PasswordEyeToggle(
+                        obscured: _obscurePassword,
+                        onTap: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
+                      ),
                     ),
-                  ),
-                  _ErrorText(_confirmError),
-                  // ── Server / validation error ───────────────────────────
-                  _ErrorText(_error),
-                  const SizedBox(height: AppSpacing.s32),
-                  // ── Signup (auto-logs in; AuthGate routes to onboarding) ─
-                  Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: _submitting ? l10n.signupSigningUp : l10n.signUp,
-                    disabled: _submitting || !_canSubmit,
-                    onPressed: _signup,
-                  ),
-                  const SizedBox(height: AppSpacing.s48),
-                  // ── Social sign-up row (Kakao / Google / Apple) ─────────
-                  _SocialButtonRow(onPressed: _socialSignup),
-                  const SizedBox(height: AppSpacing.s24),
-                  // ── Login prompt ────────────────────────────────────────
-                  Center(child: _LoginPrompt(onLogin: _goLogin)),
-                ],
+                    _ErrorText(_passwordError),
+                    const SizedBox(height: AppSpacing.s20),
+                    // ── Password confirm ────────────────────────────────────
+                    _FieldLabel(l10n.fieldConfirmPasswordLabel),
+                    const SizedBox(height: AppSpacing.s8),
+                    InputField(
+                      value: _passwordConfirm,
+                      onChanged: (v) => setState(() => _passwordConfirm = v),
+                      hintText: l10n.confirmPasswordHint,
+                      obscureText: _obscureConfirm,
+                      leftIcon:
+                          AppIcons.lock(size: 20, color: context.c.labelNormal),
+                      rightIcon: PasswordEyeToggle(
+                        obscured: _obscureConfirm,
+                        onTap: () =>
+                            setState(() => _obscureConfirm = !_obscureConfirm),
+                      ),
+                    ),
+                    _ErrorText(_confirmError),
+                    // ── Server / validation error ───────────────────────────
+                    _ErrorText(_error),
+                    const SizedBox(height: AppSpacing.s32),
+                    // ── Signup (auto-logs in; AuthGate routes to onboarding) ─
+                    Button(
+                      type: BtnType.primaryFill,
+                      size: BtnSize.s60,
+                      text: _submitting ? l10n.signupSigningUp : l10n.signUp,
+                      disabled: _submitting || !_canSubmit,
+                      onPressed: _signup,
+                    ),
+                    const SizedBox(height: AppSpacing.s48),
+                    // ── Social sign-up row (Kakao / Google / Apple) ─────────
+                    _SocialButtonRow(onPressed: _socialSignup),
+                    const SizedBox(height: AppSpacing.s24),
+                    // ── Login prompt ────────────────────────────────────────
+                    Center(child: _LoginPrompt(onLogin: _goLogin)),
+                  ],
+                ),
               ),
             ),
           ),

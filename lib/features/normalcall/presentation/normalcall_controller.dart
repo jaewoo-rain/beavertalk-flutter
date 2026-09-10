@@ -123,6 +123,7 @@ Map<String, dynamic> buildStartFrame({
   required int numChannels,
   String? inboundCallId,
   String? continuesCallId,
+  int? assignmentId,
 }) =>
     <String, dynamic>{
       'type': 'start',
@@ -142,6 +143,11 @@ Map<String, dynamic> buildStartFrame({
       // 대화를 요약해 새 세션에 넣어 줘야 비버가 앞 구간을 기억한다.
       // 첫 구간에는 null 이라 `?` 로 빠진다 — 필드 자체가 안 나간다.
       'continues_call_id': ?continuesCallId,
+      // ⭐ 과제 통화 — 숙제 상세의 회화 카드에서 시작했을 때만 실린다. 서버가
+      //   이 과제의 목표 표현을 대화 유도에 주입한다.
+      //   ⛔ 통화의 성립 조건이 아니라 **재료**다. 서버는 자격이 없으면 조용히
+      //     무시하고 평소 선별로 진행한다 — 여기서 보냈다고 통화가 막히지 않는다.
+      'assignment_id': ?assignmentId,
     };
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
@@ -779,6 +785,21 @@ class NormalCallController extends Notifier<CallState> {
   ///   먼저 돌리는데, 거기서 지우면 바로 뒤의 [continueCall] 이 읽을 값이 사라진다.
   ///   [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
   String? _inboundCallId;
+
+  /// 이 통화가 수행하는 **과제 id**. [_inboundCallId] 와 **같은 이유로 필드**다.
+  ///
+  /// ⛔ 지역 인자로만 두면 「Keep talking」 2구간부터 `assignment_id` 가 빠지고,
+  ///   서버가 그 값으로 하던 네 가지가 **한꺼번에 되돌아간다**:
+  ///   통화 언어 ko 고정(`call_session.py:438`) · 5분 고정(`:1670`) ·
+  ///   과제 목표 표현 주입(`:1291`) · 과제 귀속(link_call).
+  ///   ⚠ 에러가 안 난다. 통화는 멀쩡히 이어지고 화면도 정상이라 아무도 모른다 —
+  ///     이 프레임이 이미 두 번 겪은(`continues_call_id`·`inbound_call_id`)
+  ///     「필드가 조용히 빠지는」 패턴 그대로다.
+  ///   ⚠ 서버는 앞 조각에서 과제를 **못 되짚는다** — `call` 테이블에 `assignment_id`
+  ///     컬럼이 없고, 이어하기 검증도 과제를 승계하지 않는다(2026-09-06 확인).
+  ///     즉 클라가 매 조각마다 다시 싣는 것 말고는 방법이 없다.
+  /// [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
+  int? _assignmentId;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -1474,12 +1495,17 @@ class NormalCallController extends Notifier<CallState> {
   /// [callChannel] 은 이 통화가 붙을 통로다. 안 주면 [CallChannel.defaultChannel] —
   /// 즉 **호출부를 안 고치면 동작이 종전과 같다.** 나중에 서버가 통화 시작 응답으로
   /// 내려주면 그 값을 여기로 넘긴다(필드 계약은 아직 없다).
-  Future<void> start({String? inboundCallId, CallChannel? callChannel}) async {
+  Future<void> start({
+    String? inboundCallId,
+    CallChannel? callChannel,
+    int? assignmentId,
+  }) async {
     final ok = await _connect(
       callUuid: null,
       inboundCallId: inboundCallId,
       callkitOwnedAudio: false,
       callChannel: callChannel,
+      assignmentId: assignmentId,
     );
     if (!ok) return;
     await _startAudio();
@@ -1541,6 +1567,7 @@ class NormalCallController extends Notifier<CallState> {
     required bool callkitOwnedAudio,
     CallChannel? callChannel,
     bool keepCallkitCall = false,
+    int? assignmentId,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1564,6 +1591,8 @@ class NormalCallController extends Notifier<CallState> {
       // ⭐ 이 통화가 어느 알람에서 왔는지를 **구간을 넘어 기억한다**([_inboundCallId]).
       //   여기서 덮어쓰므로 새 통화(null 전달)에서는 저절로 비워진다.
       _inboundCallId = inboundCallId;
+      // ⭐ 과제도 **구간을 넘어 기억한다** — 이유는 [_assignmentId] 참조.
+      _assignmentId = assignmentId;
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
@@ -1662,6 +1691,9 @@ class NormalCallController extends Notifier<CallState> {
         numChannels: _micNumChannels,
         inboundCallId: inboundCallId,
         continuesCallId: _continuesCallId,
+        // ⚠ 인자가 아니라 **필드**에서 읽는다. 이어가기 재연결은 인자를 안 넘기므로
+        //   인자를 쓰면 2구간부터 null 이 된다.
+        assignmentId: _assignmentId,
       );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
@@ -5203,6 +5235,9 @@ class NormalCallController extends Notifier<CallState> {
         callkitOwnedAudio: _callkitOwnedAudio,
         callChannel: carried.channel,
         keepCallkitCall: true,
+        // ⛔ [_inboundCallId] 와 같은 이유로 **반드시 다시 싣는다.** 빠지면 2구간부터
+        //   서버가 이 통화를 과제로 안 보고 언어·길이·재료가 전부 되돌아간다.
+        assignmentId: _assignmentId,
       );
       if (!ok) {
         _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');

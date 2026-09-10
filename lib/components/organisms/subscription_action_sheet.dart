@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -111,7 +112,6 @@ class SubscriptionActionSheet extends StatelessWidget {
     };
 
     return Container(
-      constraints: const BoxConstraints(maxWidth: 430),
       decoration: BoxDecoration(
         color: c.backgroundElevatedAlternative,
         borderRadius:
@@ -122,9 +122,8 @@ class SubscriptionActionSheet extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // GNB: balanced 28px slots, real close on the right (measured).
-          Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s20, vertical: 14),
+          ContentColumn(
+            padding: const EdgeInsets.symmetric(vertical: 14),
             child: Row(
               children: [
                 const SizedBox(width: 28),
@@ -144,9 +143,8 @@ class SubscriptionActionSheet extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                AppSpacing.s16, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -192,9 +190,8 @@ class SubscriptionActionSheet extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 0),
             child: SizedBox(
               width: double.infinity,
               child: Button(
@@ -206,9 +203,8 @@ class SubscriptionActionSheet extends StatelessWidget {
             ),
           ),
           if (secondaryAction != null)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
+            ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 0),
               child: SizedBox(
                 width: double.infinity,
                 child: Button(

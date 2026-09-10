@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:beavertalk/features/pronunciation_challenge/data/curated_word_source.dart';
+import 'package:beavertalk/features/pronunciation_challenge/data/stt_service.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_card.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_engine.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/game_config.dart';
@@ -139,6 +140,28 @@ void main() {
       expect(sentenceMatch('바나나 주세요', '커피 주세요'), isFalse);
     });
 
+    test('a contracted subject still clears its card', () {
+      // Measured on device 2026-09-08: the recognizer renders "저는 선생님이에요"
+      // as "전 선생님이에요" — 저는 contracts to 전, which is ordinary Korean.
+      // Counting eojeols demanded a perfect hit on a two-eojeol sentence
+      // (ceil(2*0.7) == 2), so the player said it right and got nothing.
+      expect(sentenceMatch('전 선생님이에요', '저는 선생님이에요'), isTrue);
+      expect(sentenceMatch('전 학생이에요', '저는 학생이에요'), isTrue);
+    });
+
+    test('a different sentence sharing one eojeol does NOT clear it', () {
+      // The constraint that keeps the tolerance honest: these two cards sit on
+      // screen together, and they share "저는".
+      expect(sentenceMatch('저는 학생이에요', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('저는 선생님이에요', '저는 학생이에요'), isFalse);
+    });
+
+    test('a fragment does not clear the whole sentence', () {
+      expect(sentenceMatch('선생님', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('전 선생님이', '저는 선생님이에요'), isFalse);
+      expect(sentenceMatch('저는', '저는 선생님이에요'), isFalse);
+    });
+
     test('eojeol coverage passes a mostly-right long sentence', () {
       // 4 eojeols, one mis-heard → 3/4 ≥ ceil(0.7*4)=3.
       expect(
@@ -152,9 +175,7 @@ void main() {
       final card = ChallengeCard(
         id: 1,
         word: '저는 학생입니다',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards
         ..clear()
@@ -195,9 +216,7 @@ void main() {
           ChallengeCard(
             id: i + 1,
             word: w,
-            colorIndex: 0,
-            x: GameConfig.zoneCx,
-            y: GameConfig.beltY,
+            k: 1.0,
           ),
       ];
       e.cards
@@ -213,29 +232,72 @@ void main() {
     });
   });
 
+  group('recognizer hints', () {
+    test('default is the curated noun list (word mode)', () {
+      expect(SttService().hints, same(CuratedWordSource.words));
+    });
+
+    test('hints are replaceable with the active pool', () {
+      // Sentence rounds must hint the sentences. Left on the nouns the
+      // recognizer drags a spoken sentence toward them — measured on device:
+      // "저는 제니예요" came back as "내 재나요".
+      final stt = SttService();
+      final sentences = <String>['저는 학생이에요', '저는 선생님이에요'];
+      stt.hints = sentences;
+      expect(stt.hints, sentences);
+      expect(stt.hints, isNot(contains('가방')));
+    });
+  });
+
+  group('segmentByVocab (run-on speech)', () {
+    final vocab = buildVocabIndex(CuratedWordSource.words);
+
+    test('splits a run-on blob into vocabulary words, longest first', () {
+      // The recognizer returns continuous speech as one token: say "기차 책"
+      // and "기차책" arrives. Whitespace splitting alone finds nothing here.
+      expect(segmentByVocab('기차책', vocab), <String>['기차', '책']);
+      expect(segmentByVocab('머리가방', vocab), <String>['머리', '가방']);
+    });
+
+    test('skips particles and noise between words', () {
+      expect(segmentByVocab('머리는가방', vocab), <String>['머리', '가방']);
+    });
+
+    test('a lone word segments to itself', () {
+      expect(segmentByVocab('사과', vocab), <String>['사과']);
+    });
+
+    test('unknown text segments to nothing', () {
+      expect(segmentByVocab('와글와글', vocab), isEmpty);
+    });
+
+    test('clears the trailing word when only it is on screen', () {
+      // The failure the web comment calls out: with only "책" in the zone,
+      // wordMatch("기차책", "책") is false on every tier — exact no, prefix no
+      // ("기차책" does not start with "책"), lev 2. Segmentation is the only
+      // thing that rescues it.
+      expect(wordMatch('기차책', '책'), isFalse, reason: 'no tier catches this');
+      expect(segmentByVocab('기차책', vocab), contains('책'));
+    });
+  });
+
   group('ChallengeEngine.tryPassToken', () {
     test('passes only an exact, in-zone match (front-most first)', () {
       final e = _seededEngine()..start();
       final near = ChallengeCard(
         id: 1,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       final behind = ChallengeCard(
         id: 2,
         word: '바다',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + 100,
-        y: GameConfig.beltY,
+        k: 0.8, // judgeable, but further out than `near`
       );
       final far = ChallengeCard(
         id: 3,
         word: '포도',
-        colorIndex: 0,
-        x: GameConfig.zoneCx + GameConfig.acceptMargin + 200,
-        y: GameConfig.beltY,
+        k: GameConfig.kSpawn, // far from the viewer → below kAccept
       );
       e.cards
         ..clear()
@@ -260,9 +322,7 @@ void main() {
       final apple = ChallengeCard(
         id: 1,
         word: '사과',
-        colorIndex: 0,
-        x: GameConfig.zoneCx,
-        y: GameConfig.beltY,
+        k: 1.0, // at the judgment point
       );
       e.cards
         ..clear()

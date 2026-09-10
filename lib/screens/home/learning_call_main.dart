@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
+import '../../features/classroom/presentation/classroom_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -41,6 +43,18 @@ import 'learning_summary.dart';
 /// ([LearningSummary.fromJson]) — [LearningCallMainLoadingScreen] while it
 /// loads, a retry on error. 문장별·통과·최근 세션은 실집계, 소리별 정확도·가장
 /// 어려웠던 소리는 아직 서버 목값(음소 채점 모델 도입 전). See `learning_summary.dart`.
+/// 문장별 결과를 전부 펼쳤는지.
+///
+/// 과제는 한 챕터가 40문장이라 표가 화면을 통째로 밀어낸다. 기본은 5줄만 보이고
+/// 머리글의 「n개 전체 보기」로 펼친다.
+///
+/// autoDispose: 화면을 벗어나면 접힌 상태로 돌아간다. 다시 들어왔을 때 펼쳐져
+/// 있으면 위쪽 게이지가 안 보인다.
+final _sentencesExpandedProvider = StateProvider.autoDispose<bool>((ref) => false);
+
+/// 접었을 때 보여줄 문장 수.
+const int _kSentencePreview = 5;
+
 class LearningCallMainScreen extends ConsumerWidget {
   /// Creates the learning session summary screen.
   const LearningCallMainScreen({super.key});
@@ -51,17 +65,27 @@ class LearningCallMainScreen extends ConsumerWidget {
     // callId 는 복습 플로우가 LearningArgs 로 실어 온다(callReview origin).
     final args = ModalRoute.of(context)?.settings.arguments;
     final callId = args is LearningArgs ? args.callId : null;
-    if (callId == null) {
+    // 과제도 **이 화면**을 쓴다(2026-09-04 사용자 결정). 통화 리포트와 같은 모양을
+    // b2b 가 과제 축으로 내주므로, 어느 축인지에 따라 읽을 곳만 갈린다.
+    final assignmentId = args is LearningArgs && args.origin == LearningOrigin.assignment
+        ? args.assignmentId
+        : null;
+    if (callId == null && assignmentId == null) {
       return _errorView(context, l10n, null);
     }
-    return ref.watch(pronunciationReportProvider(callId)).when(
+    final report = assignmentId != null
+        ? ref.watch(assignmentReportProvider(assignmentId))
+        : ref.watch(pronunciationReportProvider(callId!));
+    return report.when(
           loading: () => const LearningCallMainLoadingScreen(),
           error: (_, _) => _errorView(
             context,
             l10n,
-            () => ref.invalidate(pronunciationReportProvider(callId)),
+            () => assignmentId != null
+                ? ref.invalidate(assignmentReportProvider(assignmentId))
+                : ref.invalidate(pronunciationReportProvider(callId!)),
           ),
-          data: (s) => _content(context, l10n, s),
+          data: (s) => _content(context, ref, l10n, s),
         );
   }
 
@@ -106,8 +130,8 @@ class LearningCallMainScreen extends ConsumerWidget {
     );
   }
 
-  Widget _content(
-      BuildContext context, AppLocalizations l10n, LearningSummary s) {
+  Widget _content(BuildContext context, WidgetRef ref, AppLocalizations l10n,
+      LearningSummary s) {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: Column(
@@ -157,15 +181,14 @@ class LearningCallMainScreen extends ConsumerWidget {
                   ),
                   ..._oneFix(context, l10n, s),
                   ..._phonemes(context, l10n, s),
-                  ..._sentences(context, l10n, s),
+                  ..._sentences(context, ref, l10n, s),
                   ..._trend(context, l10n, s),
                 ],
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s20),
+          ContentColumn(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s20),
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
@@ -206,39 +229,52 @@ class LearningCallMainScreen extends ConsumerWidget {
       );
 
   /// Section/OneFix (`3569:15113`).
-  List<Widget> _oneFix(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
+  ///
+  /// 🔴 **소리가 없으면 섹션째 안 그린다.** 서버는 근거가 없으면 이 칸을 비워 보낸다
+  ///    (다 맞았거나, 자모 점수가 아직 없거나). 예전에는 그래도 그려서 **빈 카드에
+  ///    빈 초록 알약**만 뜨는 화면이 됐다(2026-09-04 실기기 실측).
+  ///    ⛔ 자리를 채우려고 문구를 지어내지 마라 — 없는 분석을 만드는 셈이다.
+  List<Widget> _oneFix(BuildContext context, AppLocalizations l10n, LearningSummary s) {
+    if (s.hardestSound.isEmpty) return const [];
+    return _section(context,
         label: l10n.hardestSound,
-        child: _card(context, 
+        child: _card(context,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(s.hardestSound, style: AppType.headline1.b),
-              const SizedBox(height: 10), // no s10 token
-              Text(
-                s.hardestEvidence,
-                style:
-                    AppType.caption1.r.copyWith(color: context.c.labelNormal),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 10, vertical: AppSpacing.s8),
-                decoration: BoxDecoration(
-                  // Primary/Normal @ 8% — an alpha of the theme's primary, so it
-                  // flips with the mode (Dark #00FFB2 / Light #007A55).
-                  color: context.c.primaryNormal.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(AppRadius.xs),
+              // 근거·모국어 간섭은 따로 빈다 — 소리는 알아도 인용할 발화가 없을 수 있다.
+              if (s.hardestEvidence.isNotEmpty) ...[
+                const SizedBox(height: 10), // no s10 token
+                Text(
+                  s.hardestEvidence,
+                  style:
+                      AppType.caption1.r.copyWith(color: context.c.labelNormal),
                 ),
-                child: Text(
-                  s.l1Interference,
-                  style: AppType.caption1.r.copyWith(color: context.c.primaryNormal),
+              ],
+              if (s.l1Interference.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: AppSpacing.s8),
+                  decoration: BoxDecoration(
+                    // Primary/Normal @ 8% — an alpha of the theme's primary, so it
+                    // flips with the mode (Dark #00FFB2 / Light #007A55).
+                    color: context.c.primaryNormal.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(AppRadius.xs),
+                  ),
+                  child: Text(
+                    s.l1Interference,
+                    style: AppType.caption1.r.copyWith(color: context.c.primaryNormal),
+                  ),
                 ),
-              ),
+              ],
             ],
           ),
         ),
       );
+  }
 
   /// Section/Phonemes (`3569:15122`).
   List<Widget> _phonemes(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
@@ -271,35 +307,58 @@ class LearningCallMainScreen extends ConsumerWidget {
       );
 
   /// Section/Sentences (`3569:15156`).
-  List<Widget> _sentences(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
-        label: l10n.sentenceResults,
-        // Counts the whole session, not the rows shown — the table is a preview
-        // and this is the way into the rest.
-        trailing: Text(
-          l10n.viewAllSentences(s.total),
-          style: AppType.caption2.m.copyWith(color: context.c.primaryNormal),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        child: _table(context, 
-          header: [
-            _Cell.flex(l10n.colSentence),
-            _Cell.fixed(l10n.colPronunciation, 36),
-            _Cell.fixed(l10n.colFluency, 36),
-            _Cell.fixed(l10n.colRhythm, 36),
-          ],
-          rows: [
-            for (final x in s.sentences)
-              [
-                _Cell.flex(x.sentence, style: _rowName(context)),
-                _Cell.fixed('${x.pronunciation}', 36, style: _rowValue(context)),
-                _Cell.fixed('${x.fluency}', 36, style: _rowValue(context)),
-                _Cell.fixed('${x.rhythm}', 36, style: _rowValue(context)),
-              ],
-          ],
-          emptyLabel: l10n.noSentencesYet,
-        ),
-      );
+  List<Widget> _sentences(BuildContext context, WidgetRef ref,
+      AppLocalizations l10n, LearningSummary s) {
+    final expanded = ref.watch(_sentencesExpandedProvider);
+    // 🔴 5줄을 넘길 때만 접는다. 세 문장짜리 표에 「전체 보기」가 붙으면 눌러도
+    //    아무 일이 안 일어난다.
+    final foldable = s.sentences.length > _kSentencePreview;
+    final shown = expanded || !foldable
+        ? s.sentences
+        : s.sentences.take(_kSentencePreview).toList();
+
+    return _section(
+      context,
+      label: l10n.sentenceResults,
+      // 세는 것은 이 세션 전체다 — 지금 보이는 줄 수가 아니다. 그게 이 버튼이
+      // 무엇을 열어 주는지 말한다.
+      trailing: foldable
+          ? GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => ref
+                  .read(_sentencesExpandedProvider.notifier)
+                  .update((v) => !v),
+              child: Text(
+                expanded ? l10n.close : l10n.viewAllSentences(s.total),
+                textAlign: TextAlign.end,
+                style:
+                    AppType.caption2.m.copyWith(color: context.c.primaryNormal),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            )
+          : null,
+      child: _table(
+        context,
+        header: [
+          _Cell.flex(l10n.colSentence),
+          _Cell.fixed(l10n.colPronunciation, 36),
+          _Cell.fixed(l10n.colFluency, 36),
+          _Cell.fixed(l10n.colRhythm, 36),
+        ],
+        rows: [
+          for (final x in shown)
+            [
+              _Cell.flex(x.sentence, style: _rowName(context)),
+              _Cell.fixed('${x.pronunciation}', 36, style: _rowValue(context)),
+              _Cell.fixed('${x.fluency}', 36, style: _rowValue(context)),
+              _Cell.fixed('${x.rhythm}', 36, style: _rowValue(context)),
+            ],
+        ],
+        emptyLabel: l10n.noSentencesYet,
+      ),
+    );
+  }
 
   /// Section/Trend (`3569:15190`) — the chart, then the same data as a table.
   List<Widget> _trend(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 

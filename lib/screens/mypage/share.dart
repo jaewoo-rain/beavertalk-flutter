@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_share_profile.dart';
@@ -22,8 +23,8 @@ class ShareScreen extends StatelessWidget {
         children: [
           Positioned.fill(child: Dim(onTap: () => Navigator.pop(context))),
           Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+            // 오버레이는 480 중앙 정렬(정본 규격).
+            child: ContentColumn.narrow(
               child: DialogShareProfile(
                 imageProvider: beaverImage,
                 caption: l10n.accentSoundsLike,

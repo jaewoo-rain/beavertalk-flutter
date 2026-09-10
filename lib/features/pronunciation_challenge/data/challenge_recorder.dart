@@ -46,6 +46,16 @@ class ChallengeRecorder {
 
   bool _disposed = false;
 
+  /// Whether this platform can screen-record at all.
+  ///
+  /// Android only — the capture goes through `MediaProjection`. iOS would need
+  /// ReplayKit and a broadcast extension, which is not built. Knowing this
+  /// **before** a run lets the start panel drop the record toggle instead of
+  /// offering a switch that cannot do anything, and the result panel then
+  /// simply has no clip to show.
+  static bool get isSupported =>
+      !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
   /// Whether a capture is currently running.
   bool get isRecording => status.value == RecorderStatus.recording;
 

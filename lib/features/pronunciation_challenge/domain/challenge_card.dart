@@ -1,64 +1,63 @@
+import 'game_config.dart';
+
 /// Lifecycle state of a [ChallengeCard].
 enum CardState {
-  /// Riding the belt leftward, awaiting a pass.
+  /// Growing out of the vanishing point toward the judgment point.
   live,
 
-  /// Passed — launched up-and-right, tumbling and fading out.
+  /// Past [GameConfig.kMiss] and frozen there, still accepting speech for
+  /// [GameConfig.graceSec] — the window that absorbs server-STT latency. Drawn
+  /// dimmed, in the "late" colour.
+  grace,
+
+  /// Passed — keeps growing past the viewer and fades out.
   pass,
 
-  /// Missed — dropped down, fading out.
+  /// Missed — drifts on and fades out in the miss colour.
   miss,
 }
 
-/// A single word card in the Pronunciation Challenge.
+/// A single word in the Pronunciation Challenge tunnel.
 ///
-/// Mutable on purpose: the engine advances position / velocity / rotation /
-/// alpha in place each frame (mirrors the plain-object cards in the web game).
+/// Mutable on purpose: the engine advances progress / velocity / alpha in place
+/// each frame (mirrors the plain-object cards in the web game).
+///
+/// There is no X or Y here. In the tunnel model a word's entire position is
+/// [k] — the screen scale — and the painter derives both size and Y from it
+/// via [GameConfig.wordSize] / [GameConfig.wordY].
 class ChallengeCard {
-  /// Creates a card. Live cards start on the belt ([y] defaults to the belt Y
-  /// passed by the engine).
+  /// Creates a word. Live words start at [GameConfig.kSpawn].
   ChallengeCard({
     required this.id,
     required this.word,
-    required this.colorIndex,
-    required this.x,
-    required this.y,
+    this.k = GameConfig.kSpawn,
     this.state = CardState.live,
-    this.vx = 0,
-    this.vy = 0,
-    this.rot = 0,
+    this.vk = 0,
     this.alpha = 1,
+    this.graceLeft = 0,
   });
 
   /// Unique, monotonically increasing id.
   final int id;
 
-  /// The Korean word to pronounce.
+  /// The Korean word or sentence to pronounce.
   final String word;
 
-  /// Index into the card-colour palette (see the painter).
-  final int colorIndex;
-
-  /// Centre X in design space.
-  double x;
-
-  /// Centre Y in design space.
-  double y;
+  /// Progress toward the viewer, and the word's screen scale. `k == 1` is the
+  /// judgment point; [GameConfig.kSpawn] is where it appears.
+  double k;
 
   /// Current lifecycle state.
   CardState state;
 
-  /// Horizontal velocity (px/s) — used while tumbling.
-  double vx;
-
-  /// Vertical velocity (px/s) — used while tumbling / dropping.
-  double vy;
-
-  /// Rotation in radians — used while tumbling.
-  double rot;
+  /// Rate of change of [k] while dying (pass accelerates, miss drifts).
+  double vk;
 
   /// Opacity 0..1.
   double alpha;
+
+  /// Seconds left in the grace window; only meaningful in [CardState.grace].
+  double graceLeft;
 }
 
 /// A short-lived floating text (e.g. `+112`, `COMBO ×3`, `MISS`) spawned on a

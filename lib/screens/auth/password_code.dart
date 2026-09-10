@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -133,63 +134,63 @@ class _PasswordCodeScreenState extends ConsumerState<PasswordCodeScreen> {
             onBack: () => Navigator.of(context).maybePop(),
           ),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20, AppSpacing.s24, AppSpacing.s20, AppSpacing.s24),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Text(
-                    l10n.passwordCodeDescription,
-                    style: AppType.label1.r
-                        .copyWith(color: context.c.labelNormal),
-                  ),
-                  const SizedBox(height: AppSpacing.s32),
-                  OtpInput(
-                    length: 6,
-                    onChanged: (v) => setState(() => _code = v),
-                  ),
-                  const SizedBox(height: AppSpacing.s32),
-                  Row(
-                    children: [
-                      // Wrap lets the prompt + resend flow to a second line if
-                      // the localized text grows; the timer stays at the end.
-                      Expanded(
-                        child: Wrap(
-                          spacing: 6, // Figma 6px gap (no AppSpacing token)
-                          children: [
-                            Text(
-                              l10n.passwordCodeNoCode,
-                              style: AppType.label1.r
-                                  .copyWith(color: context.c.labelNormal),
-                            ),
-                            GestureDetector(
-                              onTap: _resend,
-                              child: Text(
-                                l10n.passwordCodeResend,
-                                style: AppType.label1.sb
-                                    .copyWith(color: context.c.primaryNormal),
+            child: ContentColumn(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.passwordCodeDescription,
+                      style: AppType.label1.r
+                          .copyWith(color: context.c.labelNormal),
+                    ),
+                    const SizedBox(height: AppSpacing.s32),
+                    OtpInput(
+                      length: 6,
+                      onChanged: (v) => setState(() => _code = v),
+                    ),
+                    const SizedBox(height: AppSpacing.s32),
+                    Row(
+                      children: [
+                        // Wrap lets the prompt + resend flow to a second line if
+                        // the localized text grows; the timer stays at the end.
+                        Expanded(
+                          child: Wrap(
+                            spacing: 6, // Figma 6px gap (no AppSpacing token)
+                            children: [
+                              Text(
+                                l10n.passwordCodeNoCode,
+                                style: AppType.label1.r
+                                    .copyWith(color: context.c.labelNormal),
                               ),
-                            ),
-                          ],
+                              GestureDetector(
+                                onTap: _resend,
+                                child: Text(
+                                  l10n.passwordCodeResend,
+                                  style: AppType.label1.sb
+                                      .copyWith(color: context.c.primaryNormal),
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: AppSpacing.s8),
-                      Text(
-                        _clock,
-                        style: AppType.label1.r
-                            .copyWith(color: context.c.labelDisabled),
-                      ),
-                    ],
-                  ),
-                  _ErrorText(_error),
-                ],
+                        const SizedBox(width: AppSpacing.s8),
+                        Text(
+                          _clock,
+                          style: AppType.label1.r
+                              .copyWith(color: context.c.labelDisabled),
+                        ),
+                      ],
+                    ),
+                    _ErrorText(_error),
+                  ],
+                ),
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, 0, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(bottom: AppSpacing.s24),
             child: SizedBox(
               width: double.infinity,
               child: Button(

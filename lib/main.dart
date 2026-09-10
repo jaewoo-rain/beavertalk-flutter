@@ -12,19 +12,30 @@ import 'app/push_bootstrap.dart';
 import 'app/routes.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/network/supabase_config.dart';
+import 'features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'l10n/app_localizations.dart';
 import 'theme/app_color_tokens.dart';
 import 'theme/app_typography.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Portrait only. Every frame in the design is 375×812 portrait and nothing is
-  // laid out for a landscape box, so a rotation only breaks the screen.
+  // 세로 고정. 정본 프레임이 폰 375×812·태블릿 810×1080 전부 세로이고, 가로
+  // 상자로 그려 둔 화면이 하나도 없다.
   //
-  // Locked here rather than with `android:screenOrientation` in the manifest:
-  // one owner beats two, and the manifest route lets Android recreate the
-  // activity on rotation — which `MainActivity`'s MediaProjection recorder
-  // (`beavertalk/challenge_recorder`) would not survive mid-capture.
+  // 잠금은 **세 곳에 걸려 있다.** 예전에는 여기 한 곳뿐이었고 「한 주인이 둘보다
+  // 낫다」고 적혀 있었는데, 실측해 보니 그 한 주인이 두 경우에서 무시당했다:
+  //
+  //   1. 여기(런타임) — 폰과 Android 15 이하 태블릿을 덮는다.
+  //   2. `AndroidManifest.xml` 의 `screenOrientation="portrait"` + Android 16
+  //      대화면 opt-out 속성 — targetSdk 36 은 600dp 이상 화면에서 방향 제한을
+  //      통째로 무시한다. 런타임 호출도 같이 무시된다.
+  //   3. `ios/Runner/Info.plist` — `UIRequiresFullScreen` 이 없으면 iOS 가 앱을
+  //      멀티태스킹 지원으로 보고 이 호출을 무시한다(iPad 가 가로로 돌아갔다).
+  //
+  // 매니페스트 잠금이 액티비티를 재생성해 `MainActivity` 의 MediaProjection
+  // 녹화(`beavertalk/challenge_recorder`)를 끊을 걱정은 없다 — 창이 세로로
+  // 고정되면 회전 자체가 일어나지 않고, `configChanges` 가 이미
+  // `orientation|screenSize|smallestScreenSize|screenLayout` 을 잡고 있다.
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
@@ -61,6 +72,13 @@ Future<void> main() async {
       child: const BeaverTalkApp(),
     ),
   );
+  // 결제 레일을 앱 시작 시점에 세운다 — 화면이 열릴 때가 아니라.
+  //
+  // 스토어는 **앱이 죽어 있는 동안 끝난 거래**를 실행 직후 스트림으로 재전달한다.
+  // 결제 시트 도중 앱이 내려간 구매, 기기 밖에서 갱신된 구독, 검증에 실패해 살려 둔
+  // 영수증이 전부 여기로 온다. 구독 화면을 처음 열 때 레일을 만들면 그 사이에 흘러간
+  // 이벤트를 통째로 놓치고, 돈은 빠졌는데 권한이 없는 회원이 남는다.
+  container.read(iapServiceProvider);
   // 인바운드 콜(비버가 거는 전화) 로컬 트리거 초기화. 앱 시작을 막지 않도록
   // fire-and-forget(+ 내부 try/catch, kInboundCallEnabled/!kIsWeb 가드).
   unawaited(initIncomingCallLocal(container));
@@ -131,6 +149,16 @@ class BeaverTalkApp extends ConsumerWidget {
       brightness: brightness,
       scaffoldBackgroundColor: tokens.backgroundNormalDeep,
       fontFamily: kFontFamily,
+      // 바텀시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
+      // 컬럼으로 패딩」).
+      //
+      // Material 3 의 기본 `BottomSheetThemeData.constraints` 가 `maxWidth:
+      // 640` 이라, 우리 코드에서 캡을 다 걷어냈는데도 태블릿에서 시트만 640으로
+      // 좁아지고 좌우에 배경이 비쳤다(에뮬레이터 800dp 실측: 시트 폭 640.0).
+      // 빈 제약으로 덮어 그 캡을 없앤다.
+      bottomSheetTheme: const BottomSheetThemeData(
+        constraints: BoxConstraints(),
+      ),
       colorScheme: ColorScheme.fromSeed(
         seedColor: tokens.primaryNormal,
         brightness: brightness,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
@@ -187,8 +188,9 @@ class Gnb extends StatelessWidget {
   /// When omitted, a balancing transparent spacer keeps the title centered.
   final Widget? trailing;
 
-  /// Horizontal padding for row variants (Figma `20`).
-  static const double _hPad = 20;
+  // 좌우 패딩(Figma `20`)은 상수가 아니라 [ContentColumn] 이 준다. 폰에서는
+  // 그대로 20이고, 넓어지면 헤더 내용이 본문 컬럼과 같은 선에 선다(태블릿
+  // 810에서 105). 막대 **배경은** 전폭 그대로다 — 좁아지는 건 패딩뿐이다.
 
   /// Vertical padding for row variants (Figma `14`).
   static const double _vPad = 14;
@@ -222,10 +224,6 @@ class Gnb extends StatelessWidget {
         content = _buildSub2(context);
     }
 
-    final padding = type == GnbType.sub
-        ? const EdgeInsets.symmetric(horizontal: 10, vertical: 12)
-        : const EdgeInsets.symmetric(horizontal: _hPad, vertical: _vPad);
-
     return Semantics(
       container: true,
       header: true,
@@ -233,7 +231,18 @@ class Gnb extends StatelessWidget {
         color: _background(context),
         child: SafeArea(
           bottom: false,
-          child: Padding(padding: padding, child: content),
+          // sub 은 가운데 정렬된 열이라 폭이 늘어도 제자리다 — Figma 값 10을
+          // 그대로 둔다. 나머지 행 변형만 본문 컬럼 선에 맞춘다(태블릿 105).
+          child: type == GnbType.sub
+              ? Padding(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 10, vertical: 12),
+                  child: content,
+                )
+              : ContentColumn(
+                  padding: const EdgeInsets.symmetric(vertical: _vPad),
+                  child: content,
+                ),
         ),
       ),
     );

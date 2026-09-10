@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -279,78 +280,82 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       // centered in the 375 frame). The 76px top matches the design's
       // vertical position: the (empty/hidden) 56px GNB + 20px body inset,
       // so the avatar lands at screen y≈120 as in node 2117:19693.
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(
-            AppSpacing.s40,
-            76, // Figma top offset (no AppSpacing token)
-            AppSpacing.s40,
-            AppSpacing.s24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Brand block: circular beaver avatar + wordmark ──────────
-            const _LogoBlock(),
-            // Figma: wordmark bottom → first social button ≈ 46px.
-            const SizedBox(height: 46), // Figma 46px gap (no AppSpacing token)
-            // ── Social sign-in buttons ──────────────────────────────────
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s60,
-              text: l10n.loginContinueWithKakao,
-              leftIcon: const KakaoIcon(size: 24),
-              disabled: _kakaoBusy,
-              onPressed: _kakaoLogin,
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            // Google: custom button (matches Kakao/Apple) wired to the real
-            // Google sign-in flow.
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s60,
-              text: l10n.loginContinueWithGoogle,
-              leftIcon: const GoogleIcon(size: 24),
-              disabled: _googleBusy,
-              onPressed: _googleLogin,
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s60,
-              text: l10n.loginContinueWithFacebook,
-              leftIcon: const FacebookIcon(size: 24),
-              disabled: _facebookBusy,
-              onPressed: _facebookLogin,
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s60,
-              text: l10n.loginContinueWithApple,
-              leftIcon: const AppleIcon(size: 24),
-              disabled: _appleBusy,
-              onPressed: _appleLogin,
-            ),
-            const SizedBox(height: AppSpacing.s16),
-            // ── "or" divider ────────────────────────────────────────────
-            const _OrDivider(),
-            const SizedBox(height: AppSpacing.s16),
-            // ── Email login (primary) ───────────────────────────────────
-            Button(
-              type: BtnType.primaryFill,
-              size: BtnSize.s60,
-              text: l10n.loginContinueWithEmail,
-              leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
-              onPressed: _emailLogin,
-            ),
-            // Figma: email button → signup prompt = 16px.
-            const SizedBox(height: AppSpacing.s16),
-            // ── Signup prompt + terms notice ────────────────────────────
-            _SignupPrompt(
-              onSignup: _goSignup,
-              onTerms: _goTerms,
-              onPrivacy: _goPrivacy,
-            ),
-          ],
+      // 로그인만 여백이 40이다(버튼 295가 375 안에 중앙 정렬). 넓어지면 여백이
+      // 105까지 자라 다른 화면과 같은 선에 선다 — 40은 **최소값**으로만 남는다.
+      body: ContentColumn(
+        gutter: AppSpacing.s40,
+        padding: const EdgeInsets.only(
+          top: 76, // Figma top offset (no AppSpacing token)
+          bottom: AppSpacing.s24,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // ── Brand block: circular beaver avatar + wordmark ──────────
+              const _LogoBlock(),
+              // Figma: wordmark bottom → first social button ≈ 46px.
+              const SizedBox(height: 46), // Figma 46px gap (no AppSpacing token)
+              // ── Social sign-in buttons ──────────────────────────────────
+              Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: l10n.loginContinueWithKakao,
+                leftIcon: const KakaoIcon(size: 24),
+                disabled: _kakaoBusy,
+                onPressed: _kakaoLogin,
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              // Google: custom button (matches Kakao/Apple) wired to the real
+              // Google sign-in flow.
+              Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: l10n.loginContinueWithGoogle,
+                leftIcon: const GoogleIcon(size: 24),
+                disabled: _googleBusy,
+                onPressed: _googleLogin,
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: l10n.loginContinueWithFacebook,
+                leftIcon: const FacebookIcon(size: 24),
+                disabled: _facebookBusy,
+                onPressed: _facebookLogin,
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              Button(
+                type: BtnType.secondaryFill,
+                size: BtnSize.s60,
+                text: l10n.loginContinueWithApple,
+                leftIcon: const AppleIcon(size: 24),
+                disabled: _appleBusy,
+                onPressed: _appleLogin,
+              ),
+              const SizedBox(height: AppSpacing.s16),
+              // ── "or" divider ────────────────────────────────────────────
+              const _OrDivider(),
+              const SizedBox(height: AppSpacing.s16),
+              // ── Email login (primary) ───────────────────────────────────
+              Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: l10n.loginContinueWithEmail,
+                leftIcon: MailIcon(size: 24, color: context.c.primaryOnPrimary),
+                onPressed: _emailLogin,
+              ),
+              // Figma: email button → signup prompt = 16px.
+              const SizedBox(height: AppSpacing.s16),
+              // ── Signup prompt + terms notice ────────────────────────────
+              _SignupPrompt(
+                onSignup: _goSignup,
+                onTerms: _goTerms,
+                onPrivacy: _goPrivacy,
+              ),
+            ],
+          ),
         ),
       ),
     );

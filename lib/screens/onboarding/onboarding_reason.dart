@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -83,58 +84,52 @@ class _OnboardingReasonScreenState
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
-                  AppSpacing.s24,
-                  AppSpacing.s20,
-                  AppSpacing.s24),
-              children: [
-                Text(
-                  l10n.onboardingReasonTitle,
-                  style: AppType.title3.b.copyWith(color: context.c.labelStrong),
-                ),
-                const SizedBox(height: AppSpacing.s8),
-                Text(
-                  l10n.onboardingReasonSubtitle,
-                  style:
-                      AppType.body1.r.copyWith(color: context.c.labelNormal),
-                ),
-                const SizedBox(height: AppSpacing.s24),
-                // Reason copy is localized by id (the mock data holds Korean
-                // fallbacks); the emoji icon stays as-is.
-                for (int i = 0; i < mockReasons.length; i++) ...[
-                  if (i > 0) const SizedBox(height: AppSpacing.s12),
-                  SelectCard(
-                    title: _reasonTitle(context, mockReasons[i].id) ??
-                        mockReasons[i].title,
-                    description: _reasonDesc(context, mockReasons[i].id) ??
-                        mockReasons[i].description,
-                    icon: Text(
-                      mockReasons[i].icon,
-                      style: const TextStyle(fontSize: 22),
-                    ),
-                    checked: selected.contains(mockReasons[i].id),
-                    onChanged: (_) => ref
-                        .read(signupDraftProvider.notifier)
-                        .toggleReason(mockReasons[i].id),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
+                children: [
+                  Text(
+                    l10n.onboardingReasonTitle,
+                    style: AppType.title3.b.copyWith(color: context.c.labelStrong),
                   ),
+                  const SizedBox(height: AppSpacing.s8),
+                  Text(
+                    l10n.onboardingReasonSubtitle,
+                    style:
+                        AppType.body1.r.copyWith(color: context.c.labelNormal),
+                  ),
+                  const SizedBox(height: AppSpacing.s24),
+                  // Reason copy is localized by id (the mock data holds Korean
+                  // fallbacks); the emoji icon stays as-is.
+                  for (int i = 0; i < mockReasons.length; i++) ...[
+                    if (i > 0) const SizedBox(height: AppSpacing.s12),
+                    SelectCard(
+                      title: _reasonTitle(context, mockReasons[i].id) ??
+                          mockReasons[i].title,
+                      description: _reasonDesc(context, mockReasons[i].id) ??
+                          mockReasons[i].description,
+                      icon: Text(
+                        mockReasons[i].icon,
+                        style: const TextStyle(fontSize: 22),
+                      ),
+                      checked: selected.contains(mockReasons[i].id),
+                      onChanged: (_) => ref
+                          .read(signupDraftProvider.notifier)
+                          .toggleReason(mockReasons[i].id),
+                    ),
+                  ],
+                  if (_error != null) ...[
+                    const SizedBox(height: AppSpacing.s16),
+                    Text(_error!,
+                        style:
+                            AppType.label2.r.copyWith(color: context.c.accentForegroundRed)),
+                  ],
                 ],
-                if (_error != null) ...[
-                  const SizedBox(height: AppSpacing.s16),
-                  Text(_error!,
-                      style:
-                          AppType.label2.r.copyWith(color: context.c.accentForegroundRed)),
-                ],
-              ],
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s12,
-                AppSpacing.s20,
-                AppSpacing.s12),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
             child: SizedBox(
               width: double.infinity,
               child: Button(

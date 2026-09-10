@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
@@ -98,8 +99,9 @@ class DialogBasic extends StatelessWidget {
   /// Convenience secondary action (used when [actions] is null).
   final DialogAction? secondary;
 
-  /// Figma card width.
-  static const double _width = 335;
+  // Figma 카드 폭 335는 상수로 남기지 않았다. 그건 **폰 375에서** 좌우 20을 뺀
+  // 값이고, [ContentColumn.narrow] 가 같은 값을 폭에서 다시 만든다(폰 335,
+  // 태블릿 480). 두 곳에 적어 두면 한쪽만 고쳐진다.
 
   /// Resolves the effective actions from [actions] or [primary]/[secondary].
   ///
@@ -175,12 +177,16 @@ class DialogBasic extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: context.c.backgroundElevatedNormal,
-      borderRadius: BorderRadius.circular(AppRadius.xs),
-      clipBehavior: Clip.antiAlias,
-      child: SizedBox(
-        width: _width,
+    // 카드 폭은 폰 335 → 태블릿 480(정본 「오버레이는 480 중앙 정렬」).
+    //
+    // 폭 제한이 [Material] **바깥**에 있어야 한다. 안에 두면 배경과 둥근 모서리는
+    // 전폭으로 칠해지고 글자만 안으로 들어가, 카드가 아니라 화면을 가로지르는
+    // 띠가 된다(태블릿 렌더에서 실제로 그렇게 나왔다).
+    return ContentColumn.narrow(
+      child: Material(
+        color: context.c.backgroundElevatedNormal,
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+        clipBehavior: Clip.antiAlias,
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
           child: Column(
@@ -195,7 +201,8 @@ class DialogBasic extends StatelessWidget {
                   Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+                    style:
+                        AppType.body1.sb.copyWith(color: context.c.labelStrong),
                   ),
                   if (description != null && description!.isNotEmpty) ...[
                     const SizedBox(height: 8),

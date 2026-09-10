@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -31,9 +32,8 @@ class PermissionScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           // ── Header ──
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s32, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s32, bottom: AppSpacing.s24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -50,9 +50,8 @@ class PermissionScreen extends StatelessWidget {
           // ── Permission rows ──
           Expanded(
             child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                    AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, 0),
+              child: ContentColumn(
+                padding: const EdgeInsets.only(top: AppSpacing.s8, bottom: 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
@@ -72,9 +71,8 @@ class PermissionScreen extends StatelessWidget {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, AppSpacing.s24),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s24),
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,

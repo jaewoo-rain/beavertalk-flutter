@@ -2,6 +2,7 @@ import 'package:flutter/material.dart' hide Badge, Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
@@ -39,6 +40,11 @@ class SubscriptionManageScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Kicks the store catalog query and rebuilds this subtree when it lands.
+    // Child widgets read [PlanPrices] statically, so this one watch is what
+    // turns list prices into the member's real storefront prices — and what
+    // makes a console-side discount show up without an app release.
+    ref.watch(storePricesProvider);
     final status = ref.watch(subscriptionStatusProvider);
     if (status.state == SubscriptionState.expired) {
       return _TrialExpiredNotice(status: status);
@@ -91,23 +97,24 @@ class _ManageBody extends StatelessWidget {
             onBack: () => Navigator.pop(context),
           ),
           Expanded(
-            child: ListView(
-              padding: const EdgeInsets.fromLTRB(AppSpacing.s20,
-                  AppSpacing.s24, AppSpacing.s20, AppSpacing.s32),
-              children: [
-                // Payment-trouble banner rides on top of everything —
-                // grace/hold only (spec §6-1), measured above the plan card.
-                if (state.showsPaymentFailureBanner) ...[
-                  _dangerBanner(context, l10n),
+            child: ContentColumn(
+              child: ListView(
+                padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s32),
+                children: [
+                  // Payment-trouble banner rides on top of everything —
+                  // grace/hold only (spec §6-1), measured above the plan card.
+                  if (state.showsPaymentFailureBanner) ...[
+                    _dangerBanner(context, l10n),
+                    const SizedBox(height: AppSpacing.s24),
+                  ],
+                  _PlanCard(status: status),
+                  ..._upsell(context, l10n),
                   const SizedBox(height: AppSpacing.s24),
+                  _BillingList(status: status),
+                  const SizedBox(height: AppSpacing.s24),
+                  ..._notes(context, l10n),
                 ],
-                _PlanCard(status: status),
-                ..._upsell(context, l10n),
-                const SizedBox(height: AppSpacing.s24),
-                _BillingList(status: status),
-                const SizedBox(height: AppSpacing.s24),
-                ..._notes(context, l10n),
-              ],
+              ),
             ),
           ),
         ],
@@ -369,10 +376,7 @@ class _BillingList extends StatelessWidget {
             label: l10n.billingBuyACharacter,
             destination: BillingDestination.characterOffer,
           ),
-          _BillingRow(
-            label: l10n.billingRestorePurchases,
-            destination: state.restoreDestination,
-          ),
+          const _RestoreRow(),
           _BillingRow(
             label: l10n.billingPaymentHistory,
             destination: BillingDestination.paymentHistory,
@@ -395,6 +399,7 @@ class _BillingList extends StatelessWidget {
             destination: BillingDestination.refundHelp,
             external: true,
           ),
+          const _RedeemCodeRow(),
           _BillingRow(
             label: slotLabel(state.statusSlotLabel),
             destination: state.statusSlotDestination,
@@ -422,6 +427,60 @@ class _BillingList extends StatelessWidget {
       );
 }
 
+/// `구매 복원` — the row that actually restores.
+///
+/// It used to open the success or the empty sheet straight from the state
+/// machine, which was fine against a mock rail and is not fine now: App Review
+/// rejects a non-consumable app whose restore does not restore, and a member
+/// on a new phone has no other way back to characters they own. So this asks
+/// the store, counts what came back, and only then picks the sheet.
+class _RestoreRow extends ConsumerStatefulWidget {
+  const _RestoreRow();
+
+  @override
+  ConsumerState<_RestoreRow> createState() => _RestoreRowState();
+}
+
+class _RestoreRowState extends ConsumerState<_RestoreRow> {
+  @override
+  Widget build(BuildContext context) {
+    return _BillingRow(
+      label: AppLocalizations.of(context).billingRestorePurchases,
+      onTap: () => runRestoreFlow(context),
+    );
+  }
+}
+
+/// `코드 사용` — opens the platform's offer-code redemption.
+///
+/// The app-side half of every discount the console can issue. Codes can be
+/// generated and campaigns started at any time without an app review, but only
+/// if the binary already has somewhere to spend one; without this row a
+/// discount campaign drags a release behind it.
+///
+/// StoreKit raises a sheet in-app. Play has no equivalent, so the rail says so
+/// and the member goes to Play's redemption page instead.
+class _RedeemCodeRow extends ConsumerWidget {
+  const _RedeemCodeRow();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _BillingRow(
+      label: AppLocalizations.of(context).billingRedeemCode,
+      external: true,
+      onTap: () async {
+        final opened =
+            await ref.read(iapServiceProvider).presentOfferCodeRedemption();
+        if (opened) return;
+        await launchUrl(
+          StoreSubscriptionLink.googlePlayRedeem,
+          mode: LaunchMode.externalApplication,
+        );
+      },
+    );
+  }
+}
+
 /// Store-group rows whose labels are fixed (not slot-driven).
 enum _StoreRowLabel { manage, refund }
 
@@ -431,7 +490,8 @@ class _BillingRow extends StatelessWidget {
   const _BillingRow({
     required this.label,
     this.labelKey,
-    required this.destination,
+    this.destination,
+    this.onTap,
     this.external = false,
     this.last = false,
     this.expiresAt,
@@ -439,7 +499,13 @@ class _BillingRow extends StatelessWidget {
 
   final String? label;
   final _StoreRowLabel? labelKey;
-  final BillingDestination destination;
+
+  /// Where the row goes. Null only when [onTap] does the work instead —
+  /// the rows that talk to the store rail rather than navigate.
+  final BillingDestination? destination;
+
+  /// Overrides [destination]. For rows whose tap is an action, not a route.
+  final VoidCallback? onTap;
   final bool external;
   final bool last;
 
@@ -456,7 +522,7 @@ class _BillingRow extends StatelessWidget {
           _StoreRowLabel.refund => l10n.billingRefundHelp,
         };
     return GestureDetector(
-      onTap: () => _open(context),
+      onTap: onTap ?? () => _open(context),
       behavior: HitTestBehavior.opaque,
       child: Container(
         height: 56,
@@ -494,6 +560,8 @@ class _BillingRow extends StatelessWidget {
   /// Routes a [BillingDestination]. Screens push; overlays present as modal
   /// sheets over this screen (spec §7 — the background stays put).
   void _open(BuildContext context) {
+    final destination = this.destination;
+    if (destination == null) return;
     switch (destination) {
       case BillingDestination.manageInStore:
         // The store's own subscription page — external by definition. Product
@@ -589,30 +657,30 @@ class _TrialExpiredNotice extends StatelessWidget {
           // Sticky CTA — top hairline, 12px shelf, 6px between buttons, all
           // measured off the original.
           Container(
-            padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20, AppSpacing.s12, AppSpacing.s20, 0),
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: c.lineAlternative)),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Button(
-                  type: BtnType.primaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.seePlans,
-                  onPressed: () =>
-                      Navigator.pushNamed(context, Routes.plansCompare),
-                ),
-                const SizedBox(height: 6),
-                Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: l10n.billingRestorePurchases,
-                  onPressed: () => showSubscriptionOverlay(
-                      context, SubscriptionOverlay.restoreSuccess),
-                ),
-              ],
+            child: ContentColumn(
+              padding: const EdgeInsets.only(top: AppSpacing.s12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Button(
+                    type: BtnType.primaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.seePlans,
+                    onPressed: () =>
+                        Navigator.pushNamed(context, Routes.plansCompare),
+                  ),
+                  const SizedBox(height: 6),
+                  Button(
+                    type: BtnType.secondaryFill,
+                    size: BtnSize.s60,
+                    text: l10n.billingRestorePurchases,
+                    onPressed: () => runRestoreFlow(context),
+                  ),
+                ],
+              ),
             ),
           ),
           const SafeArea(

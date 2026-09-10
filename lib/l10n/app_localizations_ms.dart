@@ -210,6 +210,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get newExpressions => 'Ungkapan Baharu';
 
   @override
+  String get usedExpressions => 'Ungkapan yang anda guna';
+
+  @override
   String get analysisResult => 'Keputusan Analisis';
 
   @override
@@ -1167,6 +1170,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get billingRestorePurchases => 'Pulihkan pembelian';
 
   @override
+  String get billingRedeemCode => 'Tebus kod';
+
+  @override
   String get billingPaymentHistory => 'Sejarah pembayaran';
 
   @override
@@ -2011,7 +2017,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get nicknameLabel => 'Nama panggilan';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-mel';
 
   @override
   String get loginMethodLabel => 'Kaedah log masuk';
@@ -2030,27 +2036,27 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ctaSave => 'Simpan';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Langganan';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Pembelian selesai';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'Avatar $name milik anda selamanya.\nDigunakan sebaik sahaja resit disahkan.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Ke laman utama';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Guna sekarang';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Pembayaran tidak berjaya';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Anda boleh cuba lagi';
 
   @override
   String get paywallLeaveTitle => 'Jika keluar sekarang, anda tidak melanggan';
@@ -2268,4 +2274,373 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get reportFailed => 'Laporan tidak dapat dihantar. Sila cuba lagi.';
+
+  @override
+  String get hwTitle => 'Kerja rumah';
+
+  @override
+  String get hwJoinCodeTitle => 'Masukkan kod kelas anda';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Ia kod 6 digit daripada guru anda';
+
+  @override
+  String get hwJoinCodeLabel => 'Kod kelas';
+
+  @override
+  String get hwJoinCodeHelp => 'Kod tidak membezakan huruf besar dan kecil';
+
+  @override
+  String get hwJoinConfirmTitle => 'Adakah ini kelas yang betul?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Jika bukan, semak kod sekali lagi';
+
+  @override
+  String get hwJoinFieldInstitution => 'Institusi';
+
+  @override
+  String get hwJoinFieldTeacher => 'Guru';
+
+  @override
+  String get hwJoinFieldLearners => 'Pelajar';
+
+  @override
+  String get hwJoinFieldTerm => 'Penggal';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Nama kelas dipaparkan tepat seperti yang ditulis guru anda. Kami tidak menterjemahkannya.';
+
+  @override
+  String get hwJoinConfirmYes => 'Ya, ini dia';
+
+  @override
+  String get hwJoinConfirmRetry => 'Masukkan kod semula';
+
+  @override
+  String get hwJoinProfileTitle => 'Nama apa yang anda guna dalam kelas?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Guru anda memadankannya dengan senarai kelas';
+
+  @override
+  String get hwJoinNameLabel => 'Nama';
+
+  @override
+  String get hwJoinNameHelp => 'Boleh berbeza daripada nama dalam apl';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Nombor pelajar (pilihan)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'Guru anda menggunakannya untuk memadankan senarai kelas';
+
+  @override
+  String get hwJoinConsentTitle => 'Apa yang guru anda lihat';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Anda perlu bersetuju untuk menyertai kelas';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Dikongsi dengan guru anda';
+
+  @override
+  String get hwJoinConsentShared1 => 'Nama kelas dan nombor pelajar';
+
+  @override
+  String get hwJoinConsentShared2 => 'Sama ada anda buat kerja rumah';
+
+  @override
+  String get hwJoinConsentShared3 => 'Ayat yang lulus dan gagal';
+
+  @override
+  String get hwJoinConsentShared4 => 'Tempoh dan ringkasan panggilan tugasan';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Tidak dikongsi';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'E-mel dan nombor telefon';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Nama apl, profil dan watak';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Kewarganegaraan dan bahasa ibunda';
+
+  @override
+  String get hwJoinConsentNotShared4 =>
+      'Panggilan dan pembelajaran di luar kelas';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Butiran langganan dan pembayaran';
+
+  @override
+  String get hwJoinConsentAgree => 'Saya bersetuju dengan perkara di atas';
+
+  @override
+  String get hwJoinConsentCta => 'Setuju dan sertai';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Anda menyertai $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count tugasan sedang menunggu';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Belum ada tugasan';
+
+  @override
+  String get hwJoinDoneNextDue => 'Tarikh akhir seterusnya';
+
+  @override
+  String get hwJoinDoneRosterName => 'Nama anda dalam kelas';
+
+  @override
+  String get hwJoinDoneCta => 'Lihat kerja rumah';
+
+  @override
+  String get hwJoinErrorNotFound => 'Kod itu tidak dijumpai';
+
+  @override
+  String get hwJoinErrorNotFoundBody =>
+      'Sila semak enam digit itu sekali lagi.';
+
+  @override
+  String get hwJoinErrorExpired => 'Kod itu telah luput';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Minta kod baharu daripada guru anda.';
+
+  @override
+  String get hwJoinErrorFull => 'Kelas sudah penuh';
+
+  @override
+  String get hwJoinErrorFullBody => 'Sila maklumkan guru anda.';
+
+  @override
+  String get hwJoinFailed => 'Gagal menyertai. Cuba lagi sebentar nanti.';
+
+  @override
+  String get hwSectionInProgress => 'Sedang berjalan';
+
+  @override
+  String get hwSectionUpcoming => 'Akan datang';
+
+  @override
+  String get hwSectionDone => 'Selesai';
+
+  @override
+  String get hwLeaveClassLink => 'Keluar dari kelas';
+
+  @override
+  String get hwListEmptyTitle => 'Belum ada kerja rumah';
+
+  @override
+  String get hwListEmptyBody =>
+      'Ia akan muncul di sini apabila guru anda memberikannya.';
+
+  @override
+  String get hwListFailed => 'Tidak dapat memuatkan kerja rumah anda.';
+
+  @override
+  String get hwRetry => 'Cuba lagi';
+
+  @override
+  String get hwBadgeDone => 'Selesai';
+
+  @override
+  String get hwBadgeOverdue => 'Belum dihantar';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Belum dihantar, lewat $days hari';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'H-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Tarikh akhir hari ini';
+
+  @override
+  String get hwActivitySpeaking => 'Pertuturan';
+
+  @override
+  String get hwActivityConversation => 'Perbualan';
+
+  @override
+  String get hwActivityWorkbook => 'Buku kerja';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Bab $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Semak skor sebutan anda';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Gunakan apa yang anda pelajari dalam perbualan sebenar';
+
+  @override
+  String get hwConversationOnce =>
+      'Perbualan hanya boleh dibuat sekali bagi setiap kerja rumah.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Berlatih dengan menulis dalam buku kerja';
+
+  @override
+  String get hwCtaStudy => 'Mula';
+
+  @override
+  String get hwCtaResult => 'Lihat keputusan';
+
+  @override
+  String get hwCtaDownload => 'Muat turun';
+
+  @override
+  String get hwSpeakingNoScore => 'Anda belum membuat tugasan pertuturan';
+
+  @override
+  String get hwWorkbookUnavailable => 'Fail buku kerja belum tersedia.';
+
+  @override
+  String get hwDetailClosed =>
+      'Tugasan ini telah ditutup. Anda tidak boleh menghantar lagi.';
+
+  @override
+  String get hwLeaveTitle => 'Keluar dari kelas?';
+
+  @override
+  String get hwLeaveBody =>
+      'Guru anda tidak akan melihat keputusan kerja rumah anda lagi.';
+
+  @override
+  String get hwLeaveConfirm => 'Keluar';
+
+  @override
+  String get hwLeaveCancel => 'Kekal';
+
+  @override
+  String get hwLeaveFailed => 'Tidak dapat keluar dari kelas.';
+
+  @override
+  String get hwMyClass => 'Kelas saya';
+
+  @override
+  String get hwClassEmptyTitle => 'Anda belum menyertai mana-mana kelas';
+
+  @override
+  String get hwClassEmptySubtitle => 'Masukkan kod yang diberikan guru anda';
+
+  @override
+  String get hwClassEmptyCta => 'Masukkan kod kelas';
+
+  @override
+  String get hwClassContinueCta => 'Teruskan';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count tugasan perlu dihantar esok';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Anda ada $count tugasan yang belum dihantar';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'Ayat untuk tugasan ini belum tersedia.';
+
+  @override
+  String get hwBadgeClosed => 'Ditutup';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$passed daripada $total ayat lulus';
+  }
+
+  @override
+  String get challengeFirstWord => 'Perkataan pertama';
+
+  @override
+  String get challengeSeeAnalysis => 'Lihat keputusan';
+
+  @override
+  String get challengePaused => 'Dijeda';
+
+  @override
+  String get challengePausedNote => 'Pemasa dan rakaman berhenti serentak.';
+
+  @override
+  String get challengeTimeLeft => 'Baki masa';
+
+  @override
+  String get challengeScoreLabel => 'Skor';
+
+  @override
+  String get challengeResume => 'Sambung';
+
+  @override
+  String get challengeBlockedTitle => 'Kamera tidak boleh digunakan';
+
+  @override
+  String get challengeBlockedNote =>
+      'Hidupkan akses kamera dan mikrofon dalam Tetapan.';
+
+  @override
+  String get challengeGoBack => 'Kembali';
+
+  @override
+  String get challengeOpenSettings => 'Buka Tetapan';
+
+  @override
+  String get saveDone => 'Disimpan ke galeri';
+
+  @override
+  String get saveFailed => 'Gagal disimpan';
+
+  @override
+  String get saveDeniedNote => 'Akses foto diperlukan';
+
+  @override
+  String get callIncomingCallerFallback => 'Tutor Beaver';
+
+  @override
+  String get callIncomingHandle => 'Panggilan bahasa Korea';
+
+  @override
+  String get callMissedTitle => 'Panggilan tidak dijawab';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Memberitahu anda apabila terlepas panggilan daripada Beaver.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name cuba menghubungi anda';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Kebenaran pemberitahuan diperlukan untuk menerima panggilan.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Benarkan pemberitahuan dalam Tetapan.';
 }

@@ -209,6 +209,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get newExpressions => 'Cách diễn đạt mới';
 
   @override
+  String get usedExpressions => 'Cách diễn đạt bạn đã dùng';
+
+  @override
   String get analysisResult => 'Kết quả phân tích';
 
   @override
@@ -1156,6 +1159,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get billingRestorePurchases => 'Khôi phục mua hàng';
 
   @override
+  String get billingRedeemCode => 'Sử dụng mã';
+
+  @override
   String get billingPaymentHistory => 'Lịch sử thanh toán';
 
   @override
@@ -2011,27 +2017,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaSave => 'Lưu';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Gói đăng ký';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Mua thành công';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'Nhân vật $name là của bạn mãi mãi.\nSẽ áp dụng ngay khi biên lai được xác nhận.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Về trang chủ';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Dùng ngay';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'Thanh toán chưa hoàn tất';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Bạn có thể thử lại';
 
   @override
   String get paywallLeaveTitle => 'Nếu rời đi bây giờ, bạn sẽ chưa đăng ký';
@@ -2245,4 +2251,368 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get reportFailed => 'Không gửi được báo cáo. Vui lòng thử lại.';
+
+  @override
+  String get hwTitle => 'Bài tập';
+
+  @override
+  String get hwJoinCodeTitle => 'Nhập mã lớp của bạn';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Đây là mã 6 chữ số giáo viên đưa cho bạn';
+
+  @override
+  String get hwJoinCodeLabel => 'Mã lớp';
+
+  @override
+  String get hwJoinCodeHelp => 'Mã không phân biệt chữ hoa chữ thường';
+
+  @override
+  String get hwJoinConfirmTitle => 'Đây có đúng lớp không?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Nếu không, hãy kiểm tra lại mã';
+
+  @override
+  String get hwJoinFieldInstitution => 'Cơ sở';
+
+  @override
+  String get hwJoinFieldTeacher => 'Giáo viên';
+
+  @override
+  String get hwJoinFieldLearners => 'Học viên';
+
+  @override
+  String get hwJoinFieldTerm => 'Học kỳ';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Tên lớp hiển thị đúng như giáo viên đã viết. Chúng tôi không dịch tên lớp.';
+
+  @override
+  String get hwJoinConfirmYes => 'Đúng rồi';
+
+  @override
+  String get hwJoinConfirmRetry => 'Nhập lại mã';
+
+  @override
+  String get hwJoinProfileTitle => 'Bạn dùng tên nào trong lớp?';
+
+  @override
+  String get hwJoinProfileSubtitle =>
+      'Giáo viên sẽ đối chiếu với danh sách lớp';
+
+  @override
+  String get hwJoinNameLabel => 'Tên';
+
+  @override
+  String get hwJoinNameHelp => 'Có thể khác với tên trong ứng dụng';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Mã học viên (không bắt buộc)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'Giáo viên dùng để đối chiếu danh sách lớp';
+
+  @override
+  String get hwJoinConsentTitle => 'Những gì giáo viên thấy được';
+
+  @override
+  String get hwJoinConsentSubtitle => 'Bạn cần đồng ý để tham gia lớp';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Chia sẻ với giáo viên';
+
+  @override
+  String get hwJoinConsentShared1 => 'Tên lớp và mã học viên';
+
+  @override
+  String get hwJoinConsentShared2 => 'Bạn đã làm bài tập hay chưa';
+
+  @override
+  String get hwJoinConsentShared3 => 'Câu đã đạt và câu chưa đạt';
+
+  @override
+  String get hwJoinConsentShared4 => 'Thời lượng và tóm tắt cuộc gọi bài tập';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Không chia sẻ';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'Email và số điện thoại';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Tên trong ứng dụng, hồ sơ và nhân vật';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Quốc tịch và tiếng mẹ đẻ';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'Cuộc gọi và việc học ngoài lớp';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Thông tin đăng ký và thanh toán';
+
+  @override
+  String get hwJoinConsentAgree => 'Tôi đồng ý với những điều trên';
+
+  @override
+  String get hwJoinConsentCta => 'Đồng ý và tham gia';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Bạn đã tham gia $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return 'Có $count bài tập đang chờ bạn';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Chưa có bài tập nào';
+
+  @override
+  String get hwJoinDoneNextDue => 'Hạn kế tiếp';
+
+  @override
+  String get hwJoinDoneRosterName => 'Tên của bạn trong lớp';
+
+  @override
+  String get hwJoinDoneCta => 'Xem bài tập';
+
+  @override
+  String get hwJoinErrorNotFound => 'Không tìm thấy mã đó';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'Vui lòng kiểm tra lại sáu chữ số.';
+
+  @override
+  String get hwJoinErrorExpired => 'Mã đó đã hết hạn';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Hãy xin giáo viên một mã mới.';
+
+  @override
+  String get hwJoinErrorFull => 'Lớp đã đầy';
+
+  @override
+  String get hwJoinErrorFullBody => 'Vui lòng báo cho giáo viên của bạn.';
+
+  @override
+  String get hwJoinFailed =>
+      'Không tham gia được. Vui lòng thử lại sau giây lát.';
+
+  @override
+  String get hwSectionInProgress => 'Đang làm';
+
+  @override
+  String get hwSectionUpcoming => 'Sắp tới';
+
+  @override
+  String get hwSectionDone => 'Đã xong';
+
+  @override
+  String get hwLeaveClassLink => 'Rời khỏi lớp';
+
+  @override
+  String get hwListEmptyTitle => 'Chưa có bài tập nào';
+
+  @override
+  String get hwListEmptyBody => 'Bài tập sẽ hiện ở đây khi giáo viên giao.';
+
+  @override
+  String get hwListFailed => 'Không tải được bài tập của bạn.';
+
+  @override
+  String get hwRetry => 'Thử lại';
+
+  @override
+  String get hwBadgeDone => 'Đã xong';
+
+  @override
+  String get hwBadgeOverdue => 'Chưa nộp';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Chưa nộp, trễ $days ngày';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Hạn hôm nay';
+
+  @override
+  String get hwActivitySpeaking => 'Nói';
+
+  @override
+  String get hwActivityConversation => 'Hội thoại';
+
+  @override
+  String get hwActivityWorkbook => 'Sách bài tập';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'Bài $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Kiểm tra điểm phát âm của bạn';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Dùng những gì đã học trong hội thoại thật';
+
+  @override
+  String get hwConversationOnce =>
+      'Cuộc trò chuyện chỉ thực hiện một lần cho mỗi bài tập.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Luyện tập bằng cách viết vào sách bài tập';
+
+  @override
+  String get hwCtaStudy => 'Bắt đầu';
+
+  @override
+  String get hwCtaResult => 'Xem kết quả';
+
+  @override
+  String get hwCtaDownload => 'Tải xuống';
+
+  @override
+  String get hwSpeakingNoScore => 'Bạn chưa làm phần nói';
+
+  @override
+  String get hwWorkbookUnavailable => 'Tệp sách bài tập chưa có sẵn.';
+
+  @override
+  String get hwDetailClosed => 'Bài tập này đã đóng. Bạn không thể nộp thêm.';
+
+  @override
+  String get hwLeaveTitle => 'Rời khỏi lớp?';
+
+  @override
+  String get hwLeaveBody =>
+      'Giáo viên sẽ không còn thấy kết quả bài tập của bạn.';
+
+  @override
+  String get hwLeaveConfirm => 'Rời khỏi';
+
+  @override
+  String get hwLeaveCancel => 'Ở lại';
+
+  @override
+  String get hwLeaveFailed => 'Không rời khỏi lớp được.';
+
+  @override
+  String get hwMyClass => 'Lớp của tôi';
+
+  @override
+  String get hwClassEmptyTitle => 'Bạn chưa tham gia lớp nào';
+
+  @override
+  String get hwClassEmptySubtitle => 'Nhập mã giáo viên đã đưa cho bạn';
+
+  @override
+  String get hwClassEmptyCta => 'Nhập mã lớp';
+
+  @override
+  String get hwClassContinueCta => 'Tiếp tục';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count bài tập đến hạn vào ngày mai';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'Bạn có $count bài tập chưa nộp';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'Các câu cho bài tập này chưa có sẵn.';
+
+  @override
+  String get hwBadgeClosed => 'Đã đóng';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return 'Đạt $passed trên $total câu';
+  }
+
+  @override
+  String get challengeFirstWord => 'Từ đầu tiên';
+
+  @override
+  String get challengeSeeAnalysis => 'Xem kết quả';
+
+  @override
+  String get challengePaused => 'Đã tạm dừng';
+
+  @override
+  String get challengePausedNote => 'Bộ đếm giờ và bản ghi đều đã dừng.';
+
+  @override
+  String get challengeTimeLeft => 'Thời gian còn lại';
+
+  @override
+  String get challengeScoreLabel => 'Điểm';
+
+  @override
+  String get challengeResume => 'Tiếp tục';
+
+  @override
+  String get challengeBlockedTitle => 'Không dùng được máy ảnh';
+
+  @override
+  String get challengeBlockedNote =>
+      'Hãy bật quyền máy ảnh và micrô trong Cài đặt.';
+
+  @override
+  String get challengeGoBack => 'Quay lại';
+
+  @override
+  String get challengeOpenSettings => 'Mở Cài đặt';
+
+  @override
+  String get saveDone => 'Đã lưu vào thư viện';
+
+  @override
+  String get saveFailed => 'Không lưu được';
+
+  @override
+  String get saveDeniedNote => 'Cần quyền truy cập ảnh';
+
+  @override
+  String get callIncomingCallerFallback => 'Gia sư Hải ly';
+
+  @override
+  String get callIncomingHandle => 'Cuộc gọi tiếng Hàn';
+
+  @override
+  String get callMissedTitle => 'Cuộc gọi nhỡ';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Báo cho bạn khi bỏ lỡ cuộc gọi từ Hải ly.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name đã gọi cho bạn';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Hải ly';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Cần quyền thông báo để nhận cuộc gọi.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Hãy cho phép thông báo trong Cài đặt.';
 }

@@ -203,6 +203,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newExpressions => '新表达';
 
   @override
+  String get usedExpressions => '本次通话中用到的表达';
+
+  @override
   String get analysisResult => '分析结果';
 
   @override
@@ -1123,6 +1126,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get billingRestorePurchases => '恢复购买';
 
   @override
+  String get billingRedeemCode => '使用兑换码';
+
+  @override
   String get billingPaymentHistory => '付款记录';
 
   @override
@@ -1926,7 +1932,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get nicknameLabel => '昵称';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => '邮箱';
 
   @override
   String get loginMethodLabel => '登录方式';
@@ -1944,27 +1950,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaSave => '保存';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => '订阅';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => '购买完成';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name 形象将永久属于你。\n收据确认后立即生效。';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => '回到首页';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => '立即使用';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => '支付未完成';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => '你可以再试一次';
 
   @override
   String get paywallLeaveTitle => '现在离开将无法完成订阅';
@@ -2170,4 +2176,358 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get reportFailed => '举报提交失败，请重试。';
+
+  @override
+  String get hwTitle => '作业';
+
+  @override
+  String get hwJoinCodeTitle => '请输入班级代码';
+
+  @override
+  String get hwJoinCodeSubtitle => '这是老师给你的 6 位代码';
+
+  @override
+  String get hwJoinCodeLabel => '班级代码';
+
+  @override
+  String get hwJoinCodeHelp => '不区分大小写';
+
+  @override
+  String get hwJoinConfirmTitle => '是这个班级吗？';
+
+  @override
+  String get hwJoinConfirmSubtitle => '如果不是，请再确认一次代码';
+
+  @override
+  String get hwJoinFieldInstitution => '机构';
+
+  @override
+  String get hwJoinFieldTeacher => '老师';
+
+  @override
+  String get hwJoinFieldLearners => '学习者';
+
+  @override
+  String get hwJoinFieldTerm => '学期';
+
+  @override
+  String get hwJoinConfirmNote => '班级名称按老师填写的原样显示，我们不做翻译。';
+
+  @override
+  String get hwJoinConfirmYes => '对，就是这个';
+
+  @override
+  String get hwJoinConfirmRetry => '重新输入代码';
+
+  @override
+  String get hwJoinProfileTitle => '你在班级里使用什么名字？';
+
+  @override
+  String get hwJoinProfileSubtitle => '老师会用它对照名单';
+
+  @override
+  String get hwJoinNameLabel => '姓名';
+
+  @override
+  String get hwJoinNameHelp => '可以和应用里的名字不同';
+
+  @override
+  String get hwJoinStudentNoLabel => '学号（选填）';
+
+  @override
+  String get hwJoinStudentNoHelp => '老师用它对照名单';
+
+  @override
+  String get hwJoinConsentTitle => '老师能看到的内容';
+
+  @override
+  String get hwJoinConsentSubtitle => '加入班级需要你同意';
+
+  @override
+  String get hwJoinConsentSharedHeading => '会分享给老师';
+
+  @override
+  String get hwJoinConsentShared1 => '班级名称和学号';
+
+  @override
+  String get hwJoinConsentShared2 => '是否完成了作业';
+
+  @override
+  String get hwJoinConsentShared3 => '通过和未通过的句子';
+
+  @override
+  String get hwJoinConsentShared4 => '作业通话时长和摘要';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => '不会分享';
+
+  @override
+  String get hwJoinConsentNotShared1 => '邮箱和电话号码';
+
+  @override
+  String get hwJoinConsentNotShared2 => '应用名称、个人资料和角色';
+
+  @override
+  String get hwJoinConsentNotShared3 => '国籍和母语';
+
+  @override
+  String get hwJoinConsentNotShared4 => '班级以外的通话和学习';
+
+  @override
+  String get hwJoinConsentNotShared5 => '订阅和支付信息';
+
+  @override
+  String get hwJoinConsentAgree => '我同意以上内容';
+
+  @override
+  String get hwJoinConsentCta => '同意并加入';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return '你已加入 $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '有 $count 个作业在等你';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => '还没有作业';
+
+  @override
+  String get hwJoinDoneNextDue => '下次截止';
+
+  @override
+  String get hwJoinDoneRosterName => '你在班级里的名字';
+
+  @override
+  String get hwJoinDoneCta => '查看作业';
+
+  @override
+  String get hwJoinErrorNotFound => '找不到该代码';
+
+  @override
+  String get hwJoinErrorNotFoundBody => '请再确认这 6 位数字。';
+
+  @override
+  String get hwJoinErrorExpired => '该代码已过期';
+
+  @override
+  String get hwJoinErrorExpiredBody => '请向老师索取新代码。';
+
+  @override
+  String get hwJoinErrorFull => '班级已满';
+
+  @override
+  String get hwJoinErrorFullBody => '请告知你的老师。';
+
+  @override
+  String get hwJoinFailed => '加入失败，请稍后再试。';
+
+  @override
+  String get hwSectionInProgress => '进行中';
+
+  @override
+  String get hwSectionUpcoming => '即将开始';
+
+  @override
+  String get hwSectionDone => '已完成';
+
+  @override
+  String get hwLeaveClassLink => '退出班级';
+
+  @override
+  String get hwListEmptyTitle => '还没有作业';
+
+  @override
+  String get hwListEmptyBody => '老师布置后会显示在这里。';
+
+  @override
+  String get hwListFailed => '无法加载作业。';
+
+  @override
+  String get hwRetry => '重试';
+
+  @override
+  String get hwBadgeDone => '已完成';
+
+  @override
+  String get hwBadgeOverdue => '未提交';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return '未提交，逾期 $days 天';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => '今天截止';
+
+  @override
+  String get hwActivitySpeaking => '口语';
+
+  @override
+  String get hwActivityConversation => '对话';
+
+  @override
+  String get hwActivityWorkbook => '练习册';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '第 $chapter 课';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => '确认你的发音得分';
+
+  @override
+  String get hwTaskConversationDesc => '把学到的用在真实对话里';
+
+  @override
+  String get hwConversationOnce => '每份作业的对话只能进行一次。';
+
+  @override
+  String get hwTaskWorkbookDesc => '在练习册上书写练习';
+
+  @override
+  String get hwCtaStudy => '开始';
+
+  @override
+  String get hwCtaResult => '查看结果';
+
+  @override
+  String get hwCtaDownload => '下载';
+
+  @override
+  String get hwSpeakingNoScore => '你还没做口语作业';
+
+  @override
+  String get hwWorkbookUnavailable => '练习册文件尚未提供。';
+
+  @override
+  String get hwDetailClosed => '该作业已截止，无法再提交。';
+
+  @override
+  String get hwLeaveTitle => '要退出班级吗？';
+
+  @override
+  String get hwLeaveBody => '老师将不再看到你的作业结果。';
+
+  @override
+  String get hwLeaveConfirm => '退出';
+
+  @override
+  String get hwLeaveCancel => '留下';
+
+  @override
+  String get hwLeaveFailed => '无法退出班级。';
+
+  @override
+  String get hwMyClass => '我的班级';
+
+  @override
+  String get hwClassEmptyTitle => '你还没有加入班级';
+
+  @override
+  String get hwClassEmptySubtitle => '请输入老师给你的代码';
+
+  @override
+  String get hwClassEmptyCta => '输入班级代码';
+
+  @override
+  String get hwClassContinueCta => '继续';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '有 $count 个作业明天截止';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '你有 $count 个作业未提交';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => '该作业的句子尚未提供。';
+
+  @override
+  String get hwBadgeClosed => '已截止';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total 句中通过 $passed 句';
+  }
+
+  @override
+  String get challengeFirstWord => '第一个词';
+
+  @override
+  String get challengeSeeAnalysis => '查看结果';
+
+  @override
+  String get challengePaused => '已暂停';
+
+  @override
+  String get challengePausedNote => '计时和录制都已停止';
+
+  @override
+  String get challengeTimeLeft => '剩余时间';
+
+  @override
+  String get challengeScoreLabel => '分数';
+
+  @override
+  String get challengeResume => '继续';
+
+  @override
+  String get challengeBlockedTitle => '无法使用相机';
+
+  @override
+  String get challengeBlockedNote => '请在设置中开启相机和麦克风权限';
+
+  @override
+  String get challengeGoBack => '返回';
+
+  @override
+  String get challengeOpenSettings => '打开设置';
+
+  @override
+  String get saveDone => '已保存到相册';
+
+  @override
+  String get saveFailed => '保存失败';
+
+  @override
+  String get saveDeniedNote => '需要照片访问权限';
+
+  @override
+  String get callIncomingCallerFallback => '海狸老师';
+
+  @override
+  String get callIncomingHandle => '韩语通话';
+
+  @override
+  String get callMissedTitle => '未接来电';
+
+  @override
+  String get callMissedChannelDescription => '提醒你错过的海狸来电。';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name给你打过电话';
+  }
+
+  @override
+  String get callBeaverFallbackName => '海狸';
+
+  @override
+  String get callNotifPermissionRationale => '需要通知权限才能接收来电。';
+
+  @override
+  String get callNotifPermissionRequired => '请在设置中允许通知。';
 }

@@ -210,6 +210,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get newExpressions => 'نئے تاثرات';
 
   @override
+  String get usedExpressions => 'وہ جملے جو آپ نے استعمال کیے';
+
+  @override
   String get analysisResult => 'تجزیہ کا نتیجہ';
 
   @override
@@ -1157,6 +1160,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get billingRestorePurchases => 'خریداریاں بحال کریں';
 
   @override
+  String get billingRedeemCode => 'کوڈ استعمال کریں';
+
+  @override
   String get billingPaymentHistory => 'ادائیگی کی تاریخ';
 
   @override
@@ -1991,7 +1997,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get nicknameLabel => 'عرفی نام';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'ای میل';
 
   @override
   String get loginMethodLabel => 'لاگ ان کا طریقہ';
@@ -2009,27 +2015,27 @@ class AppLocalizationsUr extends AppLocalizations {
   String get ctaSave => 'محفوظ کریں';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'سبسکرپشن';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'خریداری مکمل';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return '$name اوتار ہمیشہ کے لیے آپ کا ہے۔\nرسید کی تصدیق ہوتے ہی لاگو ہو جائے گا۔';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'ہوم پر جائیں';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'ابھی استعمال کریں';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'ادائیگی مکمل نہیں ہوئی';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'آپ دوبارہ کوشش کر سکتے ہیں';
 
   @override
   String get paywallLeaveTitle => 'اگر آپ ابھی چلے گئے تو سبسکرپشن نہیں ہوگی';
@@ -2244,4 +2250,370 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get reportFailed => 'رپورٹ نہیں بھیجی جا سکی۔ دوبارہ کوشش کریں۔';
+
+  @override
+  String get hwTitle => 'ہوم ورک';
+
+  @override
+  String get hwJoinCodeTitle => 'اپنا کلاس کوڈ درج کریں';
+
+  @override
+  String get hwJoinCodeSubtitle =>
+      'یہ آپ کے استاد کا دیا ہوا 6 ہندسوں کا کوڈ ہے';
+
+  @override
+  String get hwJoinCodeLabel => 'کلاس کوڈ';
+
+  @override
+  String get hwJoinCodeHelp => 'کوڈ میں بڑے چھوٹے حروف کا فرق نہیں';
+
+  @override
+  String get hwJoinConfirmTitle => 'کیا یہی صحیح کلاس ہے؟';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'اگر نہیں تو کوڈ دوبارہ دیکھیں';
+
+  @override
+  String get hwJoinFieldInstitution => 'ادارہ';
+
+  @override
+  String get hwJoinFieldTeacher => 'استاد';
+
+  @override
+  String get hwJoinFieldLearners => 'طلبہ';
+
+  @override
+  String get hwJoinFieldTerm => 'مدت';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'کلاس کا نام بالکل ویسا دکھایا جاتا ہے جیسا استاد نے لکھا۔ ہم اس کا ترجمہ نہیں کرتے۔';
+
+  @override
+  String get hwJoinConfirmYes => 'جی ہاں، یہی ہے';
+
+  @override
+  String get hwJoinConfirmRetry => 'کوڈ دوبارہ درج کریں';
+
+  @override
+  String get hwJoinProfileTitle => 'کلاس میں آپ کون سا نام استعمال کریں گے؟';
+
+  @override
+  String get hwJoinProfileSubtitle => 'استاد اسے کلاس کی فہرست سے ملاتے ہیں';
+
+  @override
+  String get hwJoinNameLabel => 'نام';
+
+  @override
+  String get hwJoinNameHelp => 'یہ ایپ کے نام سے مختلف ہو سکتا ہے';
+
+  @override
+  String get hwJoinStudentNoLabel => 'طالب علم نمبر (اختیاری)';
+
+  @override
+  String get hwJoinStudentNoHelp =>
+      'استاد اسے فہرست ملانے کے لیے استعمال کرتے ہیں';
+
+  @override
+  String get hwJoinConsentTitle => 'آپ کے استاد کو کیا نظر آتا ہے';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'کلاس میں شامل ہونے کے لیے رضامندی ضروری ہے';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'استاد کے ساتھ شیئر کیا جاتا ہے';
+
+  @override
+  String get hwJoinConsentShared1 => 'کلاس کا نام اور طالب علم نمبر';
+
+  @override
+  String get hwJoinConsentShared2 => 'آپ نے ہوم ورک کیا یا نہیں';
+
+  @override
+  String get hwJoinConsentShared3 => 'کامیاب اور ناکام جملے';
+
+  @override
+  String get hwJoinConsentShared4 => 'اسائنمنٹ کال کا دورانیہ اور خلاصہ';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'شیئر نہیں کیا جاتا';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'ای میل اور فون نمبر';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'ایپ کا نام، پروفائل اور کردار';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'قومیت اور مادری زبان';
+
+  @override
+  String get hwJoinConsentNotShared4 => 'کلاس سے باہر کی کالیں اور مطالعہ';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'سبسکرپشن اور ادائیگی کی تفصیلات';
+
+  @override
+  String get hwJoinConsentAgree => 'میں مندرجہ بالا سے متفق ہوں';
+
+  @override
+  String get hwJoinConsentCta => 'متفق ہو کر شامل ہوں';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'آپ $className میں شامل ہو گئے';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count اسائنمنٹ آپ کے منتظر ہیں';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'ابھی کوئی اسائنمنٹ نہیں';
+
+  @override
+  String get hwJoinDoneNextDue => 'اگلی آخری تاریخ';
+
+  @override
+  String get hwJoinDoneRosterName => 'کلاس میں آپ کا نام';
+
+  @override
+  String get hwJoinDoneCta => 'ہوم ورک دیکھیں';
+
+  @override
+  String get hwJoinErrorNotFound => 'وہ کوڈ نہیں ملا';
+
+  @override
+  String get hwJoinErrorNotFoundBody => 'براہ کرم چھ ہندسے دوبارہ دیکھیں۔';
+
+  @override
+  String get hwJoinErrorExpired => 'اس کوڈ کی مدت ختم ہو گئی';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'اپنے استاد سے نیا کوڈ لیں۔';
+
+  @override
+  String get hwJoinErrorFull => 'کلاس بھر چکی ہے';
+
+  @override
+  String get hwJoinErrorFullBody => 'براہ کرم اپنے استاد کو بتائیں۔';
+
+  @override
+  String get hwJoinFailed =>
+      'شامل نہیں ہو سکے۔ تھوڑی دیر بعد دوبارہ کوشش کریں۔';
+
+  @override
+  String get hwSectionInProgress => 'جاری';
+
+  @override
+  String get hwSectionUpcoming => 'آنے والے';
+
+  @override
+  String get hwSectionDone => 'مکمل';
+
+  @override
+  String get hwLeaveClassLink => 'کلاس چھوڑیں';
+
+  @override
+  String get hwListEmptyTitle => 'ابھی کوئی ہوم ورک نہیں';
+
+  @override
+  String get hwListEmptyBody => 'جب استاد دیں گے تو یہاں نظر آئے گا۔';
+
+  @override
+  String get hwListFailed => 'آپ کا ہوم ورک لوڈ نہیں ہو سکا۔';
+
+  @override
+  String get hwRetry => 'دوبارہ کوشش کریں';
+
+  @override
+  String get hwBadgeDone => 'مکمل';
+
+  @override
+  String get hwBadgeOverdue => 'جمع نہیں کرایا';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'جمع نہیں، $days دن تاخیر';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'آج آخری دن';
+
+  @override
+  String get hwActivitySpeaking => 'بول چال';
+
+  @override
+  String get hwActivityConversation => 'گفتگو';
+
+  @override
+  String get hwActivityWorkbook => 'ورک بک';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return 'باب $chapter';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'اپنے تلفظ کا اسکور دیکھیں';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'جو سیکھا اسے حقیقی گفتگو میں استعمال کریں';
+
+  @override
+  String get hwConversationOnce =>
+      'ہر ہوم ورک میں گفتگو صرف ایک بار کی جا سکتی ہے۔';
+
+  @override
+  String get hwTaskWorkbookDesc => 'ورک بک میں لکھ کر مشق کریں';
+
+  @override
+  String get hwCtaStudy => 'شروع کریں';
+
+  @override
+  String get hwCtaResult => 'نتیجہ دیکھیں';
+
+  @override
+  String get hwCtaDownload => 'ڈاؤن لوڈ';
+
+  @override
+  String get hwSpeakingNoScore => 'آپ نے ابھی بول چال کا کام نہیں کیا';
+
+  @override
+  String get hwWorkbookUnavailable => 'ورک بک کی فائل ابھی دستیاب نہیں۔';
+
+  @override
+  String get hwDetailClosed =>
+      'یہ اسائنمنٹ بند ہو چکا ہے۔ اب جمع نہیں کرا سکتے۔';
+
+  @override
+  String get hwLeaveTitle => 'کلاس چھوڑ دیں؟';
+
+  @override
+  String get hwLeaveBody =>
+      'آپ کے استاد اب آپ کے ہوم ورک کے نتائج نہیں دیکھ سکیں گے۔';
+
+  @override
+  String get hwLeaveConfirm => 'چھوڑیں';
+
+  @override
+  String get hwLeaveCancel => 'رہیں';
+
+  @override
+  String get hwLeaveFailed => 'کلاس نہیں چھوڑی جا سکی۔';
+
+  @override
+  String get hwMyClass => 'میری کلاس';
+
+  @override
+  String get hwClassEmptyTitle => 'آپ کسی کلاس میں شامل نہیں ہوئے';
+
+  @override
+  String get hwClassEmptySubtitle => 'استاد کا دیا ہوا کوڈ درج کریں';
+
+  @override
+  String get hwClassEmptyCta => 'کلاس کوڈ درج کریں';
+
+  @override
+  String get hwClassContinueCta => 'جاری رکھیں';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count اسائنمنٹ کل جمع کرانے ہیں';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return 'آپ کے $count اسائنمنٹ جمع نہیں ہوئے';
+  }
+
+  @override
+  String get hwSpeakingUnavailable => 'اس اسائنمنٹ کے جملے ابھی دستیاب نہیں۔';
+
+  @override
+  String get hwBadgeClosed => 'بند';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total میں سے $passed جملے کامیاب';
+  }
+
+  @override
+  String get challengeFirstWord => 'پہلا لفظ';
+
+  @override
+  String get challengeSeeAnalysis => 'نتائج دیکھیں';
+
+  @override
+  String get challengePaused => 'رکا ہوا';
+
+  @override
+  String get challengePausedNote => 'ٹائمر اور ریکارڈنگ دونوں رک گئے۔';
+
+  @override
+  String get challengeTimeLeft => 'باقی وقت';
+
+  @override
+  String get challengeScoreLabel => 'اسکور';
+
+  @override
+  String get challengeResume => 'جاری رکھیں';
+
+  @override
+  String get challengeBlockedTitle => 'کیمرا استعمال نہیں ہو سکتا';
+
+  @override
+  String get challengeBlockedNote =>
+      'سیٹنگز میں کیمرا اور مائیک کی اجازت آن کریں۔';
+
+  @override
+  String get challengeGoBack => 'واپس جائیں';
+
+  @override
+  String get challengeOpenSettings => 'سیٹنگز کھولیں';
+
+  @override
+  String get saveDone => 'گیلری میں محفوظ ہو گیا';
+
+  @override
+  String get saveFailed => 'محفوظ نہیں ہو سکا';
+
+  @override
+  String get saveDeniedNote => 'تصاویر تک رسائی درکار ہے';
+
+  @override
+  String get callIncomingCallerFallback => 'بیور ٹیوٹر';
+
+  @override
+  String get callIncomingHandle => 'کورین کال';
+
+  @override
+  String get callMissedTitle => 'مسڈ کال';
+
+  @override
+  String get callMissedChannelDescription =>
+      'بیور کی چھوٹی ہوئی کال کے بارے میں بتاتا ہے۔';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name نے آپ کو کال کی تھی';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'بیور';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'کالیں وصول کرنے کے لیے اطلاعات کی اجازت درکار ہے۔';
+
+  @override
+  String get callNotifPermissionRequired => 'ترتیبات میں اطلاعات کی اجازت دیں۔';
 }

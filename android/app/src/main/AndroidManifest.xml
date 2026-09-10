@@ -2,6 +2,11 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- INTERNET is required by the Pronunciation Challenge server STT (streams
          mic PCM to the web backend's /api/v1/pron/stt/ws over a WebSocket). -->
+    <!-- 발음 챌린지 결과 클립을 갤러리에 저장(gal). Android 29 이하만 필요하고
+         30+ 는 MediaStore 로 권한 없이 쓴다. -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29"
+        tools:replace="android:maxSdkVersion" />
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <!-- 발음 챌린지 — 전면 카메라 셀피 배경 (camera 플러그인) -->
@@ -18,9 +23,22 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
     <application
-        android:label="beavertalk"
+        android:label="BeaverTalk"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+        <!-- 세로 고정을 대화면에서도 유지한다.
+
+             targetSdk 36(Android 16)부터 OS 는 **600dp 이상 화면에서
+             screenOrientation·resizeableActivity·화면비 제한을 전부 무시한다.**
+             그래서 이 속성이 없으면 태블릿에서는 매니페스트의 portrait 도,
+             main.dart 의 setPreferredOrientations 도 먹지 않는다 — 정확히
+             막으려던 경우만 빠져나간다.
+
+             targetSdk 37 까지만 유효한 한시 opt-out 이다. 그 전에 가로 레이아웃을
+             그리거나 세로 고정을 포기하는 결정이 필요하다. -->
+        <property
+            android:name="android.window.PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY"
+            android:value="true" />
         <!-- taskAffinity는 **지정하지 않는다**(기본값 = 패키지명). 과거 여기 있던
              android:taskAffinity="" 는 의도 없이 들어간 것으로 확인됐고(재우님), CallKit
              수락 경로를 깨뜨렸다: 빈 어피니티는 MainActivity를 다른 액티비티와 다른 태스크에
@@ -37,6 +55,7 @@
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"

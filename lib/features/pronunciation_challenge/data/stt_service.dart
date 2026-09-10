@@ -44,7 +44,8 @@ enum SttStatus {
 /// 웹 판과 한 가지가 다르다 — **Supabase 토큰이 필수**다. STT 는 과금이 있어 서버가
 /// 인증된 사용자만 받고, 토큰이 없거나 무효면 1008 로 즉시 닫는다. 웹 서버 쪽은 인증이
 /// 없어(origin 헤더만 확인) 토큰 없이도 붙었는데, 그 주소를 앱이 오래 들고 있었다.
-/// 주소는 [pronSttWsUrl] 이 `API_BASE_URL` 에서 유도한다 — 호스트를 따로 박지 않는다.
+/// 주소는 [pronSttWsUrl] 이 유도한다 — 호스트를 따로 박지 않는다. 기본은
+/// `API_BASE_URL` 이고, `.env` 에 `PRON_STT_BASE_URL` 이 있으면 그쪽이다.
 ///
 /// ## Protocol (`services/stt/stt_session.py`)
 /// * client→server: first text `{"type":"config","words":[…],"sampleRate":N}`,
@@ -81,7 +82,18 @@ class SttService {
 
   /// How long to wait for the WS handshake + server `ready` before giving up
   /// and falling back to tap input.
-  static const Duration _connectTimeout = Duration(seconds: 4);
+  /// Budget for the socket to open, and again for the server's `ready`.
+  ///
+  /// Was 4s (web parity). The web can afford that: it opens its socket at the
+  /// mic-check step, long before play. This client only started connecting once
+  /// the round was already running, so a cold Cloud Run instance blew the
+  /// budget and the whole round silently fell back to tap — that is the failure
+  /// reported on 2026-09-08 (`TimeoutException after 0:00:04`), while the same
+  /// endpoint connected fine minutes later once warm.
+  ///
+  /// The connect now runs under the 3·2·1 countdown, so a longer budget costs
+  /// the player nothing in the common case and buys the cold start room.
+  static const Duration _connectTimeout = Duration(seconds: 10);
 
   /// Raw mic level (0..1, see [_rawLevel]) above which we count the frame as
   /// speech for voice-activity detection.
@@ -113,6 +125,25 @@ class SttService {
   /// to pass a card for the whole spoken transcript. When [sentenceMode] is set,
   /// the full transcript is forwarded here instead of tokenizing to [onToken].
   bool Function(String transcript)? onTranscript;
+
+  /// Phrase hints sent to the recognizer in the `config` frame.
+  ///
+  /// Must be **what the player is about to say**. This used to be hard-wired to
+  /// [CuratedWordSource.words], so a sentence round told the recognizer to
+  /// expect 57 unrelated nouns and it dragged the transcript toward them —
+  /// measured 2026-09-08, "저는 제니예요" came back as "내 재나요" / "너는 제나".
+  ///
+  /// The server caps the list (200 in the reference implementation), so hand it
+  /// the active pool rather than everything.
+  List<String> hints = CuratedWordSource.words;
+
+  /// Every transcript the server returns, verbatim, match or not.
+  ///
+  /// [onToken] / [onTranscript] only fire on a *match*, so with those alone a
+  /// player who is being misheard sees nothing at all — the word simply fails
+  /// to clear, which looks identical to a dead mic. This hands the raw text to
+  /// the HUD so what was heard is on screen (web `lastHeard`, line 634).
+  void Function(String text)? onHeard;
 
   /// When `true`, cards are learned **sentences** (the player speaks the whole
   /// sentence). Widens the rollover timing so a multi-word utterance isn't cut
@@ -187,6 +218,10 @@ class SttService {
     // 1) Mic permission — without it there's nothing to stream.
     try {
       if (!await _recorder!.hasPermission()) {
+        // This path used to return in silence, which made a denied mic look
+        // exactly like a working one that heard nothing — and the log stayed
+        // empty, so it looked like STT had connected fine.
+        debugPrint('SttService: 마이크 권한 없음 → tap fallback');
         status.value = SttStatus.unavailable;
         return false;
       }
@@ -273,7 +308,7 @@ class SttService {
       channel.sink.add(
         jsonEncode(<String, dynamic>{
           'type': 'config',
-          'words': CuratedWordSource.words,
+          'words': hints,
           'sampleRate': sampleRate,
         }),
       );
@@ -292,7 +327,16 @@ class SttService {
 
       return await ready.future.timeout(_connectTimeout, onTimeout: () => false);
     } catch (e) {
+      // Name the most likely cause. A timeout here is almost never the
+      // network: `/pron/stt/ws` does not exist on the app backends (handshake
+      // measured 2026-09-08 — app server 403, beavertalk-web-api 101), so the
+      // socket never opens. See [Env.pronSttBaseUrl].
       debugPrint('STT ws connect failed → tap fallback: $e');
+      debugPrint('  주소: ${pronSttWsUrl('<token>')}');
+      if (e is TimeoutException) {
+        debugPrint('  타임아웃이면 대개 그 호스트에 라우트가 없는 것이다 — '
+            '.env 의 PRON_STT_BASE_URL 을 확인하라.');
+      }
       settle(false);
       return false;
     }
@@ -372,6 +416,17 @@ class SttService {
   /// card. [_clearedThisStream] stops an already-cleared word from firing again
   /// on Google's repeated partials or clearing a fresh same-word card.
   void _matchSpoken(String text) {
+    // Surface what was heard before judging it — feedback has to happen even
+    // when nothing matches, which is exactly the case worth showing.
+    final heard = text.trim();
+    if (heard.isNotEmpty) {
+      onHeard?.call(heard);
+      // Debug builds only: the on-screen pill is 2.5s and 18 chars, which is
+      // not enough to debug a run after the fact. Never in release — this is
+      // the user's speech.
+      if (kDebugMode) debugPrint('STT heard: "$heard"');
+    }
+
     // Sentence mode: match the WHOLE transcript against the in-zone sentence
     // cards (the player says a full learned sentence, not one word).
     if (sentenceMode) {
@@ -382,10 +437,26 @@ class SttService {
     if (cb == null) return;
     for (final raw in text.toLowerCase().split(_whitespace)) {
       final tok = norm(raw);
-      if (tok.isEmpty || _clearedThisStream.contains(tok)) continue;
-      if (cb(tok)) _clearedThisStream.add(tok);
+      if (tok.isEmpty) continue;
+      // Whitespace alone is not enough of a split: continuous speech comes back
+      // as one blob ("기차 책" → "기차책"), and one token only ever clears one
+      // card. Re-split against the vocabulary; fall back to the raw token when
+      // the split found nothing worth acting on (web `matchSpoken`, line 645).
+      final segs = segmentByVocab(tok, _vocab);
+      final parts = segs.length >= 2 ? segs : <String>[tok];
+      for (final part in parts) {
+        if (part.isEmpty || _clearedThisStream.contains(part)) continue;
+        if (cb(part)) _clearedThisStream.add(part);
+      }
     }
   }
+
+  /// Vocabulary index for [segmentByVocab], built once.
+  ///
+  /// The default curated list, not the active pool: in word mode the pool is
+  /// always this list, and in sentence mode segmentation is not used at all.
+  static final List<String> _vocab =
+      buildVocabIndex(CuratedWordSource.words);
 
   /// Stops the capture, tells the server to stop, and closes the socket.
   /// Idempotent.
@@ -441,6 +512,7 @@ class SttService {
   void _onPcm(Uint8List data) {
     final raw = _updateMicLevel(data);
     _maybeRolloverForSilence(raw);
+    _pcmHeartbeat(data.length, raw);
     final ws = _ws;
     // Don't push PCM before this stream's `config` frame (see [_configSent]) —
     // a binary-first frame makes the server default to 48 kHz and drop the round.
@@ -478,6 +550,35 @@ class SttService {
 
   /// Updates the smoothed [micLevel] gauge and returns the RAW (unsmoothed)
   /// 0..1 level for voice-activity detection.
+  /// Debug-only capture heartbeat: bytes actually forwarded and the level they
+  /// carried, once a second.
+  ///
+  /// Added because "socket open, no transcripts" is indistinguishable from
+  /// three different faults — no PCM produced, PCM produced but not sent, or
+  /// PCM sent but silent. Only numbers separate them, and silence in the log
+  /// had already been misread once in this feature.
+  void _pcmHeartbeat(int bytes, double level) {
+    if (!kDebugMode) return;
+    _pcmBytes += bytes;
+    _pcmChunks++;
+    if (level > _pcmPeak) _pcmPeak = level;
+    final now = DateTime.now().millisecondsSinceEpoch;
+    if (_pcmLogMs == 0) _pcmLogMs = now;
+    if (now - _pcmLogMs < 1000) return;
+    debugPrint('STT pcm: $_pcmChunks청크 ${_pcmBytes}B/s '
+        'peak=${_pcmPeak.toStringAsFixed(3)} '
+        'ws=${_ws != null} config=$_configSent');
+    _pcmLogMs = now;
+    _pcmBytes = 0;
+    _pcmChunks = 0;
+    _pcmPeak = 0;
+  }
+
+  int _pcmBytes = 0;
+  int _pcmChunks = 0;
+  double _pcmPeak = 0;
+  int _pcmLogMs = 0;
+
   double _updateMicLevel(Uint8List data) {
     if (data.length < 2) return 0;
     final bytes = ByteData.sublistView(data);

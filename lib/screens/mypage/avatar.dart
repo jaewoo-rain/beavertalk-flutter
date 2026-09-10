@@ -1,3 +1,4 @@
+import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -102,72 +103,78 @@ class AvatarScreen extends ConsumerWidget {
                     .where((c) => !c.isUnlocked && !c.hasDiscount)
                     .toList();
 
-                return ListView(
-                  padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.s20, AppSpacing.s8, AppSpacing.s20, AppSpacing.s24),
-                  children: [
-                    Text(
-                      l10n.avatarIntro,
-                      style: AppType.body2.r
-                          .copyWith(color: context.c.labelNormal),
-                    ),
-                    const SizedBox(height: AppSpacing.s24),
-                    if (owned.isNotEmpty) ...[
-                      _label(context, l10n.myPartnersOwned(owned.length)),
-                      const SizedBox(height: AppSpacing.s12),
-                      _ownedRow(context, owned, activeId),
-                      const SizedBox(height: AppSpacing.s28),
-                    ],
-                    // 구매한 것 바로 아래 — "지금 고를 수 있는 것"이 화면 위쪽에
-                    // 모이게 한다. 원래 증상이 "고를 수가 없다" 였고, 이 목록이
-                    // 생기기 전에는 고를 수 있는 캐릭터가 구매 목록에 섞여 있었다.
-                    if (unlockedByMax.isNotEmpty) ...[
-                      _label(context, l10n.unlockedWithMax),
-                      const SizedBox(height: AppSpacing.s12),
-                      _maxUnlockedRow(context, unlockedByMax, activeId),
-                      const SizedBox(height: AppSpacing.s28),
-                    ],
-                    if (discounted.isNotEmpty) ...[
-                      // Figma: 섹션 헤더 우측에 마감 카운트다운(🕐 16:54:23).
-                      // 할인이 여러 건이면 **가장 먼저 끝나는** 것을 보여준다 — 섹션 전체가
-                      // "한정"인 이유가 그 마감이기 때문.
-                      _label(
-                        context,
-                        l10n.limitedDiscount,
-                        trailingWidget: _earliestDeadline(discounted) == null
-                            ? null
-                            : _DiscountCountdown(
-                                endsAt: _earliestDeadline(discounted)!),
+                return ContentColumn(
+                  child: ListView(
+                    padding: const EdgeInsets.only(
+                        top: AppSpacing.s8, bottom: AppSpacing.s24),
+                    children: [
+                      Text(
+                        l10n.avatarIntro,
+                        style: AppType.body2.r
+                            .copyWith(color: context.c.labelNormal),
                       ),
-                      const SizedBox(height: AppSpacing.s12),
-                      for (final c in discounted) ...[
-                        _discountCard(context, c),
+                      const SizedBox(height: AppSpacing.s24),
+                      if (owned.isNotEmpty) ...[
+                        _label(context, l10n.myPartnersOwned(owned.length)),
                         const SizedBox(height: AppSpacing.s12),
+                        _ownedRow(context, owned, activeId),
+                        const SizedBox(height: AppSpacing.s28),
                       ],
-                      const SizedBox(height: AppSpacing.s16),
-                    ],
-                    if (buyable.isNotEmpty) ...[
-                      // Figma `2117:20381` / v2 `3360:20447`: "구매 가능".
-                      // This used to reuse `l10n.available` ("이용 가능"), which
-                      // reads as "you can use these" — so unowned, paid
-                      // characters looked selectable. That key belongs to the
-                      // sheet's status chip; the section needs its own.
-                      _label(context, l10n.availableForPurchase),
-                      const SizedBox(height: AppSpacing.s12),
-                      for (final c in buyable) ...[
-                        _buyableCard(context, c),
+                      // 구매한 것 바로 아래 — "지금 고를 수 있는 것"이 화면 위쪽에
+                      // 모이게 한다. 원래 증상이 "고를 수가 없다" 였고, 이 목록이
+                      // 생기기 전에는 고를 수 있는 캐릭터가 구매 목록에 섞여 있었다.
+                      if (unlockedByMax.isNotEmpty) ...[
+                        _label(context, l10n.unlockedWithMax),
                         const SizedBox(height: AppSpacing.s12),
+                        _maxUnlockedRow(context, unlockedByMax, activeId),
+                        const SizedBox(height: AppSpacing.s28),
                       ],
+                      if (discounted.isNotEmpty) ...[
+                        // Figma: 섹션 헤더 우측에 마감 카운트다운(🕐 16:54:23).
+                        // 할인이 여러 건이면 **가장 먼저 끝나는** 것을 보여준다 — 섹션 전체가
+                        // "한정"인 이유가 그 마감이기 때문.
+                        _label(
+                          context,
+                          l10n.limitedDiscount,
+                          trailingWidget: _earliestDeadline(discounted) == null
+                              ? null
+                              : _DiscountCountdown(
+                                  endsAt: _earliestDeadline(discounted)!),
+                        ),
+                        const SizedBox(height: AppSpacing.s12),
+                        for (final c in discounted) ...[
+                          _discountCard(context, c),
+                          const SizedBox(height: AppSpacing.s12),
+                        ],
+                        const SizedBox(height: AppSpacing.s16),
+                      ],
+                      if (buyable.isNotEmpty) ...[
+                        // Figma `2117:20381` / v2 `3360:20447`: "구매 가능".
+                        // This used to reuse `l10n.available` ("이용 가능"), which
+                        // reads as "you can use these" — so unowned, paid
+                        // characters looked selectable. That key belongs to the
+                        // sheet's status chip; the section needs its own.
+                        _label(context, l10n.availableForPurchase),
+                        const SizedBox(height: AppSpacing.s12),
+                        // 넓어지면 2열이 된다 — 정본 태블릿 `main_change_avatar`
+                        // 의 구매 가능 섹션이 290 + 20 + 290 이다.
+                        AdaptiveTiles(
+                          stackedGap: AppSpacing.s12,
+                          children: [
+                            for (final c in buyable) _buyableCard(context, c),
+                          ],
+                        ),
+                      ],
+                      if (owned.isEmpty &&
+                          unlockedByMax.isEmpty &&
+                          discounted.isEmpty &&
+                          buyable.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: AppSpacing.s40),
+                          child: EmptyBlock(body: l10n.noCharactersToShow),
+                        ),
                     ],
-                    if (owned.isEmpty &&
-                        unlockedByMax.isEmpty &&
-                        discounted.isEmpty &&
-                        buyable.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: AppSpacing.s40),
-                        child: EmptyBlock(body: l10n.noCharactersToShow),
-                      ),
-                  ],
+                  ),
                 );
               },
             ),
@@ -507,9 +514,13 @@ class AvatarScreen extends ConsumerWidget {
     // predating that field. Neither available means no registered store
     // product either, so there is nothing to buy — say so instead of sending
     // the store an id it has never seen.
-    final productId = productKey.isNotEmpty
-        ? IapProductIds.character(productKey)
-        : IapProductIds.characterFor(id);
+    //
+    // ⭐ [IapProductIds.characterForKey] 를 쓴다 — 폴백 규칙은 위와 **같고**(빈 키면
+    //   id 표로 떨어진다) 가드가 셋 더 붙는다: `trim()`, 이미 붙은 `bt_character_`
+    //   접두를 또 붙이지 않기, 슬러그 기준 무료 판정.
+    //   ⛔ 접두 중복이 특히 조용하다 — `bt_character_bt_character_popo` 를 스토어는
+    //     에러가 아니라 **빈 응답**으로 답해서, 화면엔 "상품이 사라진 것"처럼 보인다.
+    final productId = IapProductIds.characterForKey(productKey, id);
     if (productId == null) {
       ScaffoldMessenger.of(routeCtx)
         ..clearSnackBars()

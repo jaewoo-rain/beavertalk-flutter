@@ -10,6 +10,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../../app/navigation.dart';
 import '../../../app/routes.dart';
+import '../../../core/i18n/standalone_l10n.dart';
 import '../../normalcall/presentation/normalcall_controller.dart';
 import '../data/models/incoming_call_payload_dto.dart';
 import '../domain/entities/incoming_call_payload.dart';
@@ -178,8 +179,12 @@ class IncomingCallCoordinator with WidgetsBindingObserver {
         await callkit.endCall(callKitParams.id);
       case CallEventActionCallTimeout(:final id):
         // 타임아웃 이벤트엔 이름이 없어서(id만), 표시 시점에 기억해 둔 실제
-        // 캐릭터명을 쓴다(없으면 '비버'로 폴백).
-        await _onTimeout(uuid: id, name: callkit.nameFor(id) ?? '비버');
+        // 캐릭터명을 쓴다. 없으면 저장된 UI 언어의 「비버」로 폴백한다.
+        await _onTimeout(
+          uuid: id,
+          name: callkit.nameFor(id) ??
+              (await StandaloneL10n.load()).callBeaverFallbackName,
+        );
       case CallEventActionCallEnded(:final callKitParams):
         await _onEnded(callKitParams.id);
       case CallEventActionCallToggleAudioSession(:final isActive):

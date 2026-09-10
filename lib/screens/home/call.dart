@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/call_toggle_button.dart';
@@ -13,16 +14,23 @@ import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
+import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
+import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
+import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
+import '../../features/review/data/audio_player.dart';
+import '../../features/review/data/speech_cache.dart';
+import '../../features/review/presentation/review_providers.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
+import '../../mock/mock_data.dart';
 import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_motion.dart';
@@ -85,6 +93,169 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   /// Currently shown suggestion index in the revealed hint; reset per new hint.
   int _suggestionIndex = 0;
+
+  /// 담아 본 힌트 → 서버 문장 id. 키는 [_hintKey].
+  ///
+  /// 힌트에는 문장 id 가 없다 — 서버가 힌트 시점에 DB 를 안 건드리기 때문이다
+  /// ([HintExample] 참고). 🔖 를 **처음** 누를 때 `POST /sentences/from-hint` 가 문장을
+  /// 만들어 주고, 그 뒤로는 기존 즐겨찾기와 **완전히 같은 행**이라 토글도 같은 길
+  /// (`PATCH /sentences/{id}/bookmark`)로 간다.
+  final Map<String, int> _hintSentenceIds = <String, int>{};
+
+  /// 담기·토글이 나가 있는 힌트(키). 연타 방어이자, 아직 id 가 없는 **첫 담기 동안의
+  /// 낙관적 채움** 근거다 — 그 순간엔 채움을 판단할 id 자체가 없다.
+  final Set<String> _hintBookmarkInFlight = <String>{};
+
+  /// 힌트 담기의 신원 — 서버의 중복 판정과 같은 기준(통화 + 한국어 문장)으로 맞춘다.
+  /// 어긋나면 앱은 새 문장으로 알고 서버는 재사용해서, 글리프와 서버가 갈린다.
+  static String _hintKey(int callId, String korean) => '$callId|${korean.trim()}';
+
+  /// Standard-pronunciation player for hint examples.
+  ///
+  /// ⚠ 통화 중 오디오 클라이언트가 **셋**이 된다 — 마이크(FlutterSoundRecorder),
+  /// 바바 재생(flutter_pcm_sound), 그리고 이것. 에코 되먹임(열린 마이크가 이 재생을
+  /// 사용자 발화로 듣는 것)과 안드로이드 오디오 세션 충돌은 **실기기 통화에서만
+  /// 갈린다.** 지금은 마이크 뮤트 같은 방어를 넣지 않았다 — 통화 흐름을 건드리는
+  /// 일이라 증상을 보고 정한다.
+  final ReviewAudioPlayer _hintPlayer = ReviewAudioPlayer();
+
+  /// 합성 요청이 나가 있는 문장(캐시 키) — 두 번째 탭이 왕복을 중복시키는 것을 막는다.
+  /// 합성은 요금이 나가므로 중복 요청은 그냥 돈이 새는 것이다.
+  final Set<String> _hintSpeechInFlight = <String>{};
+
+  @override
+  void dispose() {
+    // 통화가 끝나도 플레이어가 열려 있으면 오디오 세션을 계속 붙들고 있다.
+    _hintPlayer.dispose();
+    super.dispose();
+  }
+
+  /// 힌트 예시를 **캐릭터 목소리로** 읽어준다 — `POST /tts/speech` (백엔드 규약
+  /// 2026-09-04). 힌트 예시는 서버 DB 에 행이 없어 `sentence_id` 가 없으므로,
+  /// 분석 화면이 쓰는 `POST /sentences/{id}/tts` 는 여기서 쓸 수 없다.
+  ///
+  /// 응답은 **mp3 바이트 그 자체**다(URL 이 아니다). 받은 바이트는 캐시에 넣는다 —
+  /// 합성은 부를 때마다 요금이 나가고, 같은 예시를 다시 누르는 일이 잦다.
+  ///
+  /// [characterId] 는 **요청에 싣지 않는다** — 목소리는 서버가 회원 정보로 정한다.
+  /// 그런데도 받아 두는 이유는 **캐시 키**로 쓰기 위해서다: 캐릭터를 바꾸면 같은 문장도
+  /// 다른 목소리로 와야 하는데, 텍스트만 키로 쓰면 예전 목소리가 계속 재생된다.
+  ///
+  /// 실패는 전부 안내로 폴백한다. 특히 **503 은 백엔드의 외부 TTS 가 안 되는 상태**이며
+  /// (레포지토리가 null 로 내린다) 앱 잘못이 아니다 — 통화는 그대로 간다.
+  Future<void> _playHintExample(HintExample ex, int? characterId) async {
+    final l10n = AppLocalizations.of(context);
+    final text = ex.korean.trim();
+    if (text.isEmpty) return;
+
+    final cache = ref.read(speechCacheProvider);
+    final key = SpeechCache.keyFor(text, characterId);
+    final cached = cache.get(key);
+    if (cached != null) {
+      await _playHintBytes(cached, l10n);
+      return;
+    }
+
+    if (!_hintSpeechInFlight.add(key)) return;
+    Uint8List? bytes;
+    try {
+      bytes = await ref.read(reviewRepositoryProvider).speech(text);
+    } catch (_) {
+      bytes = null; // 전송 실패·기타 오류 — "아직 준비 안 됨"으로 보고한다.
+    } finally {
+      _hintSpeechInFlight.remove(key);
+    }
+    if (!mounted) return;
+    if (bytes == null || bytes.isEmpty) {
+      _snack(l10n.standardAudioNotReady);
+      return;
+    }
+    cache.put(key, bytes);
+    await _playHintBytes(bytes, l10n);
+  }
+
+  Future<void> _playHintBytes(Uint8List bytes, AppLocalizations l10n) async {
+    try {
+      await _hintPlayer.playMp3Bytes(bytes);
+    } catch (_) {
+      if (mounted) _snack(l10n.standardAudioPlayError);
+    }
+  }
+
+  void _snack(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  /// 힌트 예시를 즐겨찾기에 담거나 뺀다 — **두 단계**다.
+  ///
+  /// 1. **처음 담을 때**: 힌트에는 문장 id 가 없으므로 `POST /sentences/from-hint` 가
+  ///    이 순간 문장을 만든다. 응답 문장은 이미 담긴 상태(`is_bookmarked=true`)다.
+  ///    ⛔ **같은 힌트를 다시 담아도 에러가 아니다** — 서버가 같은 행을 재사용해 200 에
+  ///      같은 id 를 준다. 그래서 실패 처리하지 않는다.
+  /// 2. **그 뒤**: 만들어진 문장은 기존 즐겨찾기와 **완전히 같은 행**이라
+  ///    `analysis.dart:_toggleBookmark` 와 같은 길로 토글한다(낙관적 반영 + 실패 복구).
+  ///
+  /// [callId] 는 이 통화의 서버 id. 없으면(연결 전·구버전 서버) 담을 수 없다 —
+  /// 버튼을 숨기는 대신 **이유를 말한다**([_playHintExample] 과 같은 원칙).
+  Future<void> _toggleHintBookmark(HintExample ex, int? callId) async {
+    final l10n = AppLocalizations.of(context);
+    final korean = ex.korean.trim();
+    if (callId == null || korean.isEmpty) {
+      _snack(l10n.saveSentenceFailed);
+      return;
+    }
+    final key = _hintKey(callId, korean);
+    if (!_hintBookmarkInFlight.add(key)) return;
+    setState(() {}); // 첫 담기 동안 글리프를 미리 채운다(아직 id 가 없다).
+
+    try {
+      final known = _hintSentenceIds[key];
+      if (known != null) {
+        // ── 이미 담아 본 문장 — 평범한 즐겨찾기 토글 ──
+        final willSave = !bookmarkedSentenceIds.value.contains(known);
+        toggleBookmark(known); // optimistic local flip
+        try {
+          await ref
+              .read(bookmarkToggleControllerProvider.notifier)
+              .toggleBookmark(known, willSave);
+        } catch (_) {
+          toggleBookmark(known); // revert
+          if (mounted) _snack(l10n.saveSentenceFailed);
+        }
+        return;
+      }
+
+      // ── 처음 담는다 — 이 순간 서버가 문장을 만든다 ──
+      // ⭐ `native`(뜻)는 **선택이다.** 서버가 2026-09-06 에 완화했다
+      //   (`schemas/sentence.py:44` `native: str | None = Field(default=None, …)`,
+      //    회귀 `tests/test_sentence_from_hint.py:239`).
+      //   ⛔ 예전 주석은 「1자 이상 필수」라며 여기서 막았는데, 그 전제가 이제 거짓이다.
+      //     사이드카가 뜻을 빼먹은 예시는 그 가드 때문에 **영영 못 담겼다** — 힌트 3개 중
+      //     1개만 뜻이 없어도 그 1개는 🔖 가 "저장 실패"만 냈다. 담을 값(한국어 문장)은
+      //     있는데도 그랬다.
+      //   ⇒ 비어 있으면 **필드를 안 보낸다**. 서버가 `native_sentence=None` 으로 담고
+      //     화면은 뜻 없이 한국어만 보여준다.
+      final nativeRaw = ex.native.trim();
+      final native = nativeRaw.isEmpty ? null : nativeRaw;
+      final saved = await ref.read(bookmarkRepositoryProvider).saveHintSentence(
+            callId: callId,
+            korean: korean,
+            native: native,
+          );
+      _hintSentenceIds[key] = saved.sentenceId;
+      setBookmark(saved.sentenceId, saved.isBookmarked);
+      // 보관함은 서버 목록을 다시 읽어야 이 문장이 보인다.
+      ref.invalidate(bookmarkListProvider);
+    } catch (_) {
+      if (mounted) _snack(l10n.saveSentenceFailed);
+    } finally {
+      _hintBookmarkInFlight.remove(key);
+      if (mounted) setState(() {});
+    }
+  }
 
   @override
   void initState() {
@@ -309,6 +480,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
     final characterId = serverCharacterId ??
         ref.watch(myProfileProvider).valueOrNull?.characterId;
+    // 힌트를 담으려면 이 통화의 서버 id 가 필요하다(`POST /sentences/from-hint`).
+    // 상태는 문자열로 들고 있고 서버는 int 를 받는다 — 다른 자리와 같은 방식으로 판다.
+    // 연결 전에는 null 이고, 그때는 담기가 "저장하지 못했어요"로 폴백한다.
+    final hintCallId = int.tryParse(
+      ref.watch(normalCallControllerProvider.select((s) => s.callId)) ?? '',
+    );
     final selectedChar = ref.watch(characterByIdProvider(characterId));
     final selectedCharUrl = selectedChar?.imageUrl;
     // Null until the catalog resolves. Deliberately NOT defaulted to
@@ -396,11 +573,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
         body: Column(
           children: [
             // Header — connected dot + name + live timer.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 10,
-                vertical: AppSpacing.s12,
-              ),
+            ContentColumn(
+              gutter: 10,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -546,23 +721,58 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                               const SpeakingEqualizer(),
                             if (showHint) ...[
                               const SizedBox(height: AppSpacing.s24),
-                              HintCard(
-                                examples: hint.examples,
-                                revealed: _revealedTurnId == hint.turnId,
-                                index: _suggestionIndex,
-                                onReveal: () {
-                                  setState(() => _revealedTurnId = hint.turnId);
-                                  ref
-                                      .read(
-                                        normalCallControllerProvider.notifier,
-                                      )
-                                      .sendHintUsed(hint.turnId);
+                              // The bookmark glyph fills/empties from the shared
+                              // store, so it also reflects a save made elsewhere
+                              // for the same sentence.
+                              ValueListenableBuilder<Set<int>>(
+                                valueListenable: bookmarkedSentenceIds,
+                                builder: (context, saved, _) {
+                                  // Same clamp HintCard applies internally, so
+                                  // the glyph always belongs to the example on
+                                  // screen.
+                                  final ex = hint.examples[_suggestionIndex
+                                      .clamp(0, hint.examples.length - 1)];
+                                  // 힌트에는 문장 id 가 없다 — 담은 뒤에야 생긴다.
+                                  // 그래서 채움은 두 근거를 본다: 이미 담아 본
+                                  // 문장의 서버 id, 그리고 **첫 담기가 나가 있는
+                                  // 동안**의 낙관적 채움(그땐 id 자체가 없다).
+                                  final key = hintCallId == null
+                                      ? null
+                                      : _hintKey(hintCallId, ex.korean);
+                                  final savedId =
+                                      key == null ? null : _hintSentenceIds[key];
+                                  final isSaved = savedId != null
+                                      ? saved.contains(savedId)
+                                      : key != null &&
+                                          _hintBookmarkInFlight.contains(key);
+                                  return HintCard(
+                                    examples: hint.examples,
+                                    revealed: _revealedTurnId == hint.turnId,
+                                    index: _suggestionIndex,
+                                    bookmarked: isSaved,
+                                    // 둘 다 **항상** 넘긴다. 부를 수 없는 상태면
+                                    // 버튼을 없애는 게 아니라 이유를 말한다.
+                                    onSpeak: () =>
+                                        _playHintExample(ex, characterId),
+                                    onBookmarkTap: () =>
+                                        _toggleHintBookmark(ex, hintCallId),
+                                    onReveal: () {
+                                      setState(
+                                          () => _revealedTurnId = hint.turnId);
+                                      ref
+                                          .read(
+                                            normalCallControllerProvider
+                                                .notifier,
+                                          )
+                                          .sendHintUsed(hint.turnId);
+                                    },
+                                    onCycle: () => setState(
+                                      () => _suggestionIndex =
+                                          (_suggestionIndex + 1) %
+                                          hint.examples.length,
+                                    ),
+                                  );
                                 },
-                                onCycle: () => setState(
-                                  () => _suggestionIndex =
-                                      (_suggestionIndex + 1) %
-                                      hint.examples.length,
-                                ),
                               ),
                             ],
                           ],
@@ -574,11 +784,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
               ),
             ),
             // Footer — hint/subtitle toggles + hang-up.
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s32,
-                vertical: AppSpacing.s12,
-              ),
+            ContentColumn(
+              gutter: AppSpacing.s32,
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
               child: Column(
                 children: [
                   // 힌트·자막은 **두 모드에서 같다** — 같은 기능, 같은 자리.

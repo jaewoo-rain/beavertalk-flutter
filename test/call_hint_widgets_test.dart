@@ -35,6 +35,22 @@ void main() {
       expect(hint.examples[1].roman, isNull);
     });
 
+    test('서버가 보내지 않는 필드는 무시한다 — 문장 id 는 힌트에 없다', () {
+      // 힌트 시점에 서버는 DB 를 안 건드린다(문장은 🔖 를 누를 때 생긴다).
+      // 낯선 키가 섞여 와도 파싱이 깨지지 않아야 통화가 안 죽는다.
+      final hint = HintData.fromJson({
+        'turn_id': 't1',
+        'examples': [
+          {'korean': '가요', 'native': 'go', 'id': 7},
+          {'korean': '와요', 'native': 'come', 'id': 'x'},
+        ],
+      });
+      expect(hint, isNotNull);
+      expect(hint!.examples.length, 2);
+      expect(hint.examples.first.korean, '가요');
+      expect(hint.examples.first.native, 'go');
+    });
+
     test('returns null when no usable example', () {
       expect(
         HintData.fromJson({'turn_id': 't1', 'examples': []}),
@@ -86,6 +102,107 @@ void main() {
     expect(find.text('학교에 가요'), findsOneWidget);
     expect(find.text('hakgyoe gayo'), findsOneWidget);
     expect(find.text('school'), findsOneWidget);
+  });
+
+  testWidgets('HintCard full shows the bookmark control and reports taps',
+      (tester) async {
+    var taps = 0;
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        onBookmarkTap: () => taps++,
+      ),
+    ));
+    // Outline glyph + "save" label while unsaved.
+    final save = find.bySemanticsLabel('Save sentence');
+    expect(save, findsOneWidget);
+    expect(find.bySemanticsLabel('Remove saved sentence'), findsNothing);
+
+    await tester.tap(save);
+    await tester.pump();
+    expect(taps, 1);
+  });
+
+  testWidgets('HintCard bookmark control flips its label when saved',
+      (tester) async {
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        bookmarked: true,
+        onBookmarkTap: () {},
+      ),
+    ));
+    expect(find.bySemanticsLabel('Remove saved sentence'), findsOneWidget);
+    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
+  });
+
+  testWidgets('HintCard draws both controls even with no callbacks',
+      (tester) async {
+    // 데이터가 없다고 카드에 속한 컨트롤이 사라지면 안 된다 — 스피커가 정확히 그렇게
+    // 앱에서 한 번도 안 보였다(call.dart 가 onSpeak 을 안 넘겨서).
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+      ),
+    ));
+    expect(find.bySemanticsLabel('Save sentence'), findsOneWidget);
+    expect(
+        find.bySemanticsLabel('Listen to standard pronunciation'),
+        findsOneWidget);
+  });
+
+  testWidgets('HintCard peek carries both controls too', (tester) async {
+    var speaks = 0;
+    var reveals = 0;
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: false,
+        index: 0,
+        onReveal: () => reveals++,
+        onCycle: () {},
+        onSpeak: () => speaks++,
+        onBookmarkTap: () {},
+      ),
+    ));
+    expect(find.bySemanticsLabel('Save sentence'), findsOneWidget);
+    final speak = find.bySemanticsLabel('Listen to standard pronunciation');
+    expect(speak, findsOneWidget);
+
+    // peek 에서 버튼을 눌러도 카드가 펼쳐지지 않는다.
+    await tester.tap(speak);
+    await tester.pump();
+    expect(speaks, 1);
+    expect(reveals, 0);
+  });
+
+  testWidgets('HintCard full speaker reports taps', (tester) async {
+    var speaks = 0;
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: true,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        onSpeak: () => speaks++,
+      ),
+    ));
+    await tester.tap(find.bySemanticsLabel('Listen to standard pronunciation'));
+    await tester.pump();
+    expect(speaks, 1);
   });
 
   testWidgets('CallToggleButton reports toggled value', (tester) async {

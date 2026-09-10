@@ -139,12 +139,26 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
     );
   }
 
+  /// 공유 시트 팝오버의 기준 사각형(iPad·Mac 전용, 그 외 무시).
+  ///
+  /// 카드 자체의 화면 좌표를 준다 — 시트가 공유하는 대상에서 자라나는 게 맞다.
+  /// 렌더가 아직 없으면 `null` 을 돌려 플러그인 기본값에 맡긴다(던지지 않는다).
+  Rect? _shareOrigin() {
+    final box = _cardKey.currentContext?.findRenderObject() as RenderBox?;
+    if (box == null || !box.hasSize) return null;
+    return box.localToGlobal(Offset.zero) & box.size;
+  }
+
   /// Rasterizes the card and shares it as a PNG (+ [DialogShareProfile.shareText]).
   /// Degrades to text-only on any failure; never throws.
   Future<void> _shareCardImage() async {
     if (_sharing) return;
     setState(() => _sharing = true);
     final text = widget.shareText;
+    // iPad·Mac 는 공유 시트를 팝오버로 띄우고 **기준 사각형을 요구한다.** 안 주면
+    // 시트가 뜰 자리를 못 정한다. 폰에서는 무시되는 값이라 분기하지 않는다.
+    // 심사자는 iPad 로도 테스트하므로 이 경로가 폰에서만 검증된 채 나가면 안 된다.
+    final origin = _shareOrigin();
     try {
       final boundary =
           _cardKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
@@ -161,17 +175,25 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
         );
         await file.writeAsBytes(bytes.buffer.asUint8List());
         await SharePlus.instance.share(
-          ShareParams(text: text, files: <XFile>[XFile(file.path)]),
+          ShareParams(
+            text: text,
+            files: <XFile>[XFile(file.path)],
+            sharePositionOrigin: origin,
+          ),
         );
       } else if (text != null) {
         // Capture unavailable → share the caption alone rather than nothing.
-        await SharePlus.instance.share(ShareParams(text: text));
+        await SharePlus.instance.share(
+          ShareParams(text: text, sharePositionOrigin: origin),
+        );
       }
     } catch (e) {
       debugPrint('share card failed → text fallback: $e');
       if (text != null) {
         try {
-          await SharePlus.instance.share(ShareParams(text: text));
+          await SharePlus.instance.share(
+            ShareParams(text: text, sharePositionOrigin: origin),
+          );
         } catch (_) {}
       }
     } finally {

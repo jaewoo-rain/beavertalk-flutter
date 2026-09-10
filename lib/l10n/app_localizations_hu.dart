@@ -211,6 +211,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get newExpressions => 'Új kifejezések';
 
   @override
+  String get usedExpressions => 'Az általad használt kifejezések';
+
+  @override
   String get analysisResult => 'Elemzés eredménye';
 
   @override
@@ -1170,6 +1173,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get billingRestorePurchases => 'Vásárlások visszaállítása';
 
   @override
+  String get billingRedeemCode => 'Kód beváltása';
+
+  @override
   String get billingPaymentHistory => 'Fizetési előzmények';
 
   @override
@@ -2009,7 +2015,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get nicknameLabel => 'Becenév';
 
   @override
-  String get emailLabel => 'Email';
+  String get emailLabel => 'E-mail';
 
   @override
   String get loginMethodLabel => 'Bejelentkezési mód';
@@ -2027,27 +2033,27 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaSave => 'Mentés';
 
   @override
-  String get subscriptionRow => 'Subscription';
+  String get subscriptionRow => 'Előfizetés';
 
   @override
-  String get iapSuccessTitle => 'Purchase complete';
+  String get iapSuccessTitle => 'Vásárlás kész';
 
   @override
   String iapSuccessBody(String name) {
-    return 'The $name avatar is yours forever.\nApplied as soon as the receipt clears.';
+    return 'A(z) $name avatar örökre a tiéd.\nA nyugta megerősítése után azonnal érvénybe lép.';
   }
 
   @override
-  String get ctaGoHome => 'Home';
+  String get ctaGoHome => 'Kezdőlapra';
 
   @override
-  String get ctaUseNow => 'Use it now';
+  String get ctaUseNow => 'Használom most';
 
   @override
-  String get iapFailTitle => 'The payment didn\'t go through';
+  String get iapFailTitle => 'A fizetés nem sikerült';
 
   @override
-  String get iapFailBody => 'You can try again';
+  String get iapFailBody => 'Újra megpróbálhatod';
 
   @override
   String get paywallLeaveTitle => 'Ha most kilépsz, nem lesz előfizetésed';
@@ -2264,4 +2270,371 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get reportFailed =>
       'Nem sikerült elküldeni a bejelentést. Próbáld újra.';
+
+  @override
+  String get hwTitle => 'Házi feladat';
+
+  @override
+  String get hwJoinCodeTitle => 'Add meg az osztálykódod';
+
+  @override
+  String get hwJoinCodeSubtitle => 'Ez a tanárodtól kapott 6 jegyű kód';
+
+  @override
+  String get hwJoinCodeLabel => 'Osztálykód';
+
+  @override
+  String get hwJoinCodeHelp => 'A kód nem érzékeny a kis- és nagybetűkre';
+
+  @override
+  String get hwJoinConfirmTitle => 'Ez a megfelelő osztály?';
+
+  @override
+  String get hwJoinConfirmSubtitle => 'Ha nem, ellenőrizd újra a kódot';
+
+  @override
+  String get hwJoinFieldInstitution => 'Intézmény';
+
+  @override
+  String get hwJoinFieldTeacher => 'Tanár';
+
+  @override
+  String get hwJoinFieldLearners => 'Tanulók';
+
+  @override
+  String get hwJoinFieldTerm => 'Időszak';
+
+  @override
+  String get hwJoinConfirmNote =>
+      'Az osztály neve pontosan úgy jelenik meg, ahogy a tanárod írta. Nem fordítjuk le.';
+
+  @override
+  String get hwJoinConfirmYes => 'Igen, ez az';
+
+  @override
+  String get hwJoinConfirmRetry => 'Kód újra megadása';
+
+  @override
+  String get hwJoinProfileTitle => 'Milyen nevet használsz az osztályban?';
+
+  @override
+  String get hwJoinProfileSubtitle => 'A tanárod ezt veti össze a névsorral';
+
+  @override
+  String get hwJoinNameLabel => 'Név';
+
+  @override
+  String get hwJoinNameHelp => 'Eltérhet az appban használt nevedtől';
+
+  @override
+  String get hwJoinStudentNoLabel => 'Tanulói azonosító (nem kötelező)';
+
+  @override
+  String get hwJoinStudentNoHelp => 'A tanárod ezzel veti össze a névsort';
+
+  @override
+  String get hwJoinConsentTitle => 'Amit a tanárod lát';
+
+  @override
+  String get hwJoinConsentSubtitle =>
+      'Az osztályhoz való csatlakozáshoz hozzájárulás szükséges';
+
+  @override
+  String get hwJoinConsentSharedHeading => 'Megosztva a tanároddal';
+
+  @override
+  String get hwJoinConsentShared1 => 'Osztály neve és tanulói azonosító';
+
+  @override
+  String get hwJoinConsentShared2 => 'Elkészítetted-e a házi feladatot';
+
+  @override
+  String get hwJoinConsentShared3 => 'A teljesített és elrontott mondatok';
+
+  @override
+  String get hwJoinConsentShared4 => 'A feladathívás hossza és összefoglalója';
+
+  @override
+  String get hwJoinConsentNotSharedHeading => 'Nincs megosztva';
+
+  @override
+  String get hwJoinConsentNotShared1 => 'E-mail és telefonszám';
+
+  @override
+  String get hwJoinConsentNotShared2 => 'Appbeli név, profil és karakter';
+
+  @override
+  String get hwJoinConsentNotShared3 => 'Állampolgárság és anyanyelv';
+
+  @override
+  String get hwJoinConsentNotShared4 =>
+      'Az osztályon kívüli hívások és tanulás';
+
+  @override
+  String get hwJoinConsentNotShared5 => 'Előfizetési és fizetési adatok';
+
+  @override
+  String get hwJoinConsentAgree => 'Elfogadom a fentieket';
+
+  @override
+  String get hwJoinConsentCta => 'Elfogadom és csatlakozom';
+
+  @override
+  String hwJoinDoneTitle(String className) {
+    return 'Csatlakoztál ehhez: $className';
+  }
+
+  @override
+  String hwJoinDoneSubtitle(int count) {
+    return '$count feladat vár rád';
+  }
+
+  @override
+  String get hwJoinDoneNoAssignment => 'Még nincs feladat';
+
+  @override
+  String get hwJoinDoneNextDue => 'Következő határidő';
+
+  @override
+  String get hwJoinDoneRosterName => 'A neved az osztályban';
+
+  @override
+  String get hwJoinDoneCta => 'Házi feladatok megtekintése';
+
+  @override
+  String get hwJoinErrorNotFound => 'Nem találtuk ezt a kódot';
+
+  @override
+  String get hwJoinErrorNotFoundBody =>
+      'Kérjük, ellenőrizd újra a hat számjegyet.';
+
+  @override
+  String get hwJoinErrorExpired => 'Ez a kód lejárt';
+
+  @override
+  String get hwJoinErrorExpiredBody => 'Kérj új kódot a tanárodtól.';
+
+  @override
+  String get hwJoinErrorFull => 'Az osztály megtelt';
+
+  @override
+  String get hwJoinErrorFullBody => 'Kérjük, szólj a tanárodnak.';
+
+  @override
+  String get hwJoinFailed =>
+      'Nem sikerült csatlakozni. Próbáld újra egy pillanat múlva.';
+
+  @override
+  String get hwSectionInProgress => 'Folyamatban';
+
+  @override
+  String get hwSectionUpcoming => 'Közelgő';
+
+  @override
+  String get hwSectionDone => 'Kész';
+
+  @override
+  String get hwLeaveClassLink => 'Kilépés az osztályból';
+
+  @override
+  String get hwListEmptyTitle => 'Még nincs házi feladat';
+
+  @override
+  String get hwListEmptyBody => 'Itt jelenik meg, amint a tanárod kiadja.';
+
+  @override
+  String get hwListFailed => 'Nem sikerült betölteni a házi feladataidat.';
+
+  @override
+  String get hwRetry => 'Újra';
+
+  @override
+  String get hwBadgeDone => 'Kész';
+
+  @override
+  String get hwBadgeOverdue => 'Nincs beadva';
+
+  @override
+  String hwBadgeOverdueDays(int days) {
+    return 'Nincs beadva, $days nap késés';
+  }
+
+  @override
+  String hwBadgeDday(int days) {
+    return 'D-$days';
+  }
+
+  @override
+  String get hwBadgeDueToday => 'Ma esedékes';
+
+  @override
+  String get hwActivitySpeaking => 'Beszéd';
+
+  @override
+  String get hwActivityConversation => 'Beszélgetés';
+
+  @override
+  String get hwActivityWorkbook => 'Munkafüzet';
+
+  @override
+  String hwChapterLabel(String chapter) {
+    return '$chapter. fejezet';
+  }
+
+  @override
+  String get hwTaskSpeakingDesc => 'Nézd meg a kiejtési pontszámodat';
+
+  @override
+  String get hwTaskConversationDesc =>
+      'Használd a tanultakat valódi beszélgetésben';
+
+  @override
+  String get hwConversationOnce =>
+      'A beszélgetés házi feladatonként egyszer végezhető el.';
+
+  @override
+  String get hwTaskWorkbookDesc => 'Gyakorolj írással a munkafüzetben';
+
+  @override
+  String get hwCtaStudy => 'Kezdés';
+
+  @override
+  String get hwCtaResult => 'Eredmény megtekintése';
+
+  @override
+  String get hwCtaDownload => 'Letöltés';
+
+  @override
+  String get hwSpeakingNoScore => 'Még nem csináltad meg a beszédfeladatot';
+
+  @override
+  String get hwWorkbookUnavailable => 'A munkafüzet fájlja még nem érhető el.';
+
+  @override
+  String get hwDetailClosed => 'Ez a feladat lezárult. Már nem tudsz beadni.';
+
+  @override
+  String get hwLeaveTitle => 'Kilépsz az osztályból?';
+
+  @override
+  String get hwLeaveBody =>
+      'A tanárod többé nem látja a házi feladataid eredményeit.';
+
+  @override
+  String get hwLeaveConfirm => 'Kilépés';
+
+  @override
+  String get hwLeaveCancel => 'Maradok';
+
+  @override
+  String get hwLeaveFailed => 'Nem sikerült kilépni az osztályból.';
+
+  @override
+  String get hwMyClass => 'Az osztályom';
+
+  @override
+  String get hwClassEmptyTitle => 'Még nem csatlakoztál osztályhoz';
+
+  @override
+  String get hwClassEmptySubtitle => 'Add meg a tanárodtól kapott kódot';
+
+  @override
+  String get hwClassEmptyCta => 'Osztálykód megadása';
+
+  @override
+  String get hwClassContinueCta => 'Tovább';
+
+  @override
+  String hwHomeBannerDueTomorrow(int count) {
+    return '$count feladat holnap esedékes';
+  }
+
+  @override
+  String hwHomeBannerOverdue(int count) {
+    return '$count beadatlan feladatod van';
+  }
+
+  @override
+  String get hwSpeakingUnavailable =>
+      'Ehhez a feladathoz még nincsenek mondatok.';
+
+  @override
+  String get hwBadgeClosed => 'Lezárva';
+
+  @override
+  String hwSpeakingProgress(int passed, int total) {
+    return '$total mondatból $passed teljesítve';
+  }
+
+  @override
+  String get challengeFirstWord => 'Első szó';
+
+  @override
+  String get challengeSeeAnalysis => 'Eredmények megtekintése';
+
+  @override
+  String get challengePaused => 'Szüneteltetve';
+
+  @override
+  String get challengePausedNote => 'Az időzítő és a felvétel együtt állt le.';
+
+  @override
+  String get challengeTimeLeft => 'Hátralévő idő';
+
+  @override
+  String get challengeScoreLabel => 'Pontszám';
+
+  @override
+  String get challengeResume => 'Folytatás';
+
+  @override
+  String get challengeBlockedTitle => 'A kamera nem használható';
+
+  @override
+  String get challengeBlockedNote =>
+      'Kapcsold be a kamera- és mikrofonhozzáférést a Beállításokban.';
+
+  @override
+  String get challengeGoBack => 'Vissza';
+
+  @override
+  String get challengeOpenSettings => 'Beállítások megnyitása';
+
+  @override
+  String get saveDone => 'Elmentve a galériába';
+
+  @override
+  String get saveFailed => 'Nem sikerült menteni';
+
+  @override
+  String get saveDeniedNote => 'Fotókhoz való hozzáférés szükséges';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver oktató';
+
+  @override
+  String get callIncomingHandle => 'Koreai hívás';
+
+  @override
+  String get callMissedTitle => 'Nem fogadott hívás';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Szól, ha lemaradsz Beaver hívásáról.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name hívni próbált';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'A hívások fogadásához értesítési engedély kell.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Engedélyezd az értesítéseket a Beállításokban.';
 }
