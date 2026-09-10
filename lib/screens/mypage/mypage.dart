@@ -58,6 +58,28 @@ abstract final class _Fallback {
   static const int levelMax = 13;
 }
 
+/// 코스 통화(표현학습·프리토킹) 진입점에 붙는 **시한부** 경고.
+///
+/// ## ⛔ 지울 조건 — 서버 배포. 그 전에는 지우지 마라
+///
+/// 클라는 `start` 프레임에 `call_type: "expression" | "freetalk"` 를 싣는데,
+/// **지금 떠 있는 서버는 그 값을 모른다**(2026-09-10 bt-back 확인):
+///
+/// ```
+/// origin/dev  · origin/main   protocol.py  Literal["normal", "level_test"]
+/// origin/feat/expression-course = docs 커밋 1건뿐 (코드 8커밋은 로컬 워크트리에만)
+/// app-api 리비전 00137-47h · 이미지 태그 backend-split   ← expression 이전
+/// ```
+///
+/// pydantic `Literal` 검증이라 **모르는 값은 422 로 튕기고 통화가 아예 안 열린다.**
+/// ⚠ 그리고 화면에는 「연결 실패」로만 보인다 — 원인이 안 드러난다. 이 줄이 없으면
+///   누르는 사람이 **앱 결함으로 읽는다.** 그게 이 상수가 있는 이유 전부다.
+///
+/// ⇒ `feat/expression-course` 가 앱이 붙는 서버에 배포되면 **이 상수와 두 참조를
+///   같이 지운다.** 남겨 두면 다음 사람이 영구 제약으로 읽는다.
+const String _kCourseUndeployed =
+    '⚠ 서버 배포 전입니다 — 지금 누르면 연결 실패합니다(배포되면 이 줄은 사라집니다). ';
+
 /// My page — Figma `screen/main_mypage` (Dark `3360:20181`, Light `3703:46474`).
 ///
 /// The redesign turned this screen into an **analysis dashboard**: three cards
@@ -183,10 +205,14 @@ class MyPageScreen extends ConsumerWidget {
           // ── 코스 통화 진입점 ────────────────────────────────────────────
           // ⭐ 통로(캐스케이드)와 **다른 축**이다 — 소켓은 라이브 그대로 `/calls/stream`
           //   이고, `start` 프레임의 `call_type` 만 달라진다([CallCourse] 참조).
+          //
+          // ⛔ **[_kCourseUndeployed] 를 지울 조건은 서버 배포다.** 아래 두 줄에 붙은
+          //   그 경고는 **영구 제약이 아니라 시한부 안내**다. 조건은 아래 상수 주석에 적어 뒀다.
           _devRow(
             context,
             title: '표현학습 통화',
-            description: '18개 표현을 드릴하고 3개마다 퀴즈를 냅니다(끝에 오답퀴즈). '
+            description: '$_kCourseUndeployed'
+                '18개 표현을 드릴하고 3개마다 퀴즈를 냅니다(끝에 오답퀴즈). '
                 '소켓은 일반 통화와 같은 운영 서버입니다 — 통화 종류만 바뀝니다. '
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
@@ -195,7 +221,8 @@ class MyPageScreen extends ConsumerWidget {
           _devRow(
             context,
             title: '프리토킹 통화',
-            description: '100% 학습 언어로 자유대화합니다(학습 항목 주입 없음). '
+            description: '$_kCourseUndeployed'
+                '100% 학습 언어로 자유대화합니다(학습 항목 주입 없음). '
                 '소켓은 일반 통화와 같은 운영 서버입니다 — 통화 종류만 바뀝니다. '
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
