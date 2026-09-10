@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Сізде тапсырылмаған {count} тапсырма бар",
   "hwSpeakingUnavailable": "Бұл тапсырманың сөйлемдері әзірге қолжетімсіз.",
   "hwBadgeClosed": "Жабық",
-  "hwSpeakingProgress": "{total} сөйлемнің {passed} өтті"
+  "hwSpeakingProgress": "{total} сөйлемнің {passed} өтті",
+  "callIncomingCallerFallback": "Beaver ұстаз",
+  "callIncomingHandle": "Корей тілінде қоңырау",
+  "callMissedTitle": "Жауапсыз қоңырау",
+  "callMissedChannelDescription": "Beaver қоңырауын өткізіп алғаныңызды хабарлайды.",
+  "callMissedBody": "{name} сізге қоңырау шалды",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Қоңырау қабылдау үшін хабарландыру рұқсаты қажет.",
+  "callNotifPermissionRequired": "Параметрлерде хабарландыруға рұқсат беріңіз."
 }

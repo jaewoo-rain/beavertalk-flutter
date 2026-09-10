@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Sinulla on {count} palauttamatonta tehtävää",
   "hwSpeakingUnavailable": "Tämän tehtävän lauseet eivät ole vielä saatavilla.",
   "hwBadgeClosed": "Suljettu",
-  "hwSpeakingProgress": "{passed}/{total} lausetta läpäisty"
+  "hwSpeakingProgress": "{passed}/{total} lausetta läpäisty",
+  "callIncomingCallerFallback": "Beaver-ohjaaja",
+  "callIncomingHandle": "Korean kielen puhelu",
+  "callMissedTitle": "Vastaamaton puhelu",
+  "callMissedChannelDescription": "Kertoo, kun et ehdi vastata Beaver:n puheluun.",
+  "callMissedBody": "{name} yritti soittaa sinulle",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Puheluiden vastaanottamiseen tarvitaan ilmoituslupa.",
+  "callNotifPermissionRequired": "Salli ilmoitukset asetuksissa."
 }

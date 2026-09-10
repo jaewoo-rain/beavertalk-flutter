@@ -1931,5 +1931,42 @@
   "challengeOpenSettings": "Open Settings",
   "saveDone": "Saved to your gallery",
   "saveFailed": "Couldn't save",
-  "saveDeniedNote": "Photo access is required"
+  "saveDeniedNote": "Photo access is required",
+  "callIncomingCallerFallback": "Beaver Tutor",
+  "@callIncomingCallerFallback": {
+    "description": "CallKit incoming-call caller name when the server sends no character name."
+  },
+  "callIncomingHandle": "Korean call",
+  "@callIncomingHandle": {
+    "description": "CallKit incoming-call handle line (what the call is about)."
+  },
+  "callMissedTitle": "Missed call",
+  "@callMissedTitle": {
+    "description": "Missed-call notification title, ticker, subtitle and Android channel name."
+  },
+  "callMissedChannelDescription": "Tells you when you miss a call from Beaver.",
+  "@callMissedChannelDescription": {
+    "description": "Android notification channel description for missed calls."
+  },
+  "callMissedBody": "{name} tried to call you",
+  "@callMissedBody": {
+    "description": "Missed-call notification body.",
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "callBeaverFallbackName": "Beaver",
+  "@callBeaverFallbackName": {
+    "description": "Caller name used when no character name is known."
+  },
+  "callNotifPermissionRationale": "Notification access is needed to receive calls.",
+  "@callNotifPermissionRationale": {
+    "description": "Rationale shown before asking for notification permission."
+  },
+  "callNotifPermissionRequired": "Please allow notifications in Settings.",
+  "@callNotifPermissionRequired": {
+    "description": "Shown when notification permission was denied."
+  }
 }

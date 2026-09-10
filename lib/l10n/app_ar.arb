@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "لديك {count} واجب لم يُسلَّم",
   "hwSpeakingUnavailable": "جمل هذا الواجب غير متاحة بعد.",
   "hwBadgeClosed": "مغلق",
-  "hwSpeakingProgress": "نجحت في {passed} من {total} جملة"
+  "hwSpeakingProgress": "نجحت في {passed} من {total} جملة",
+  "callIncomingCallerFallback": "المعلّم بيفر",
+  "callIncomingHandle": "مكالمة بالكورية",
+  "callMissedTitle": "مكالمة فائتة",
+  "callMissedChannelDescription": "يخبرك عند تفويت مكالمة من بيفر.",
+  "callMissedBody": "حاول {name} الاتصال بك",
+  "callBeaverFallbackName": "بيفر",
+  "callNotifPermissionRationale": "إذن الإشعارات مطلوب لاستقبال المكالمات.",
+  "callNotifPermissionRequired": "يرجى السماح بالإشعارات في الإعدادات."
 }

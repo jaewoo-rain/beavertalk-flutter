@@ -2504,4 +2504,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get saveDeniedNote => '需要照片访问权限';
+
+  @override
+  String get callIncomingCallerFallback => '海狸老师';
+
+  @override
+  String get callIncomingHandle => '韩语通话';
+
+  @override
+  String get callMissedTitle => '未接来电';
+
+  @override
+  String get callMissedChannelDescription => '提醒你错过的海狸来电。';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name给你打过电话';
+  }
+
+  @override
+  String get callBeaverFallbackName => '海狸';
+
+  @override
+  String get callNotifPermissionRationale => '需要通知权限才能接收来电。';
+
+  @override
+  String get callNotifPermissionRequired => '请在设置中允许通知。';
 }

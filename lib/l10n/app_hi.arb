@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "आपके {count} होमवर्क जमा नहीं हुए",
   "hwSpeakingUnavailable": "इस होमवर्क के वाक्य अभी उपलब्ध नहीं हैं।",
   "hwBadgeClosed": "बंद",
-  "hwSpeakingProgress": "{total} में से {passed} वाक्य पास"
+  "hwSpeakingProgress": "{total} में से {passed} वाक्य पास",
+  "callIncomingCallerFallback": "बीवर ट्यूटर",
+  "callIncomingHandle": "कोरियाई कॉल",
+  "callMissedTitle": "छूटी हुई कॉल",
+  "callMissedChannelDescription": "बीवर की छूटी हुई कॉल के बारे में बताता है।",
+  "callMissedBody": "{name} ने आपको कॉल किया था",
+  "callBeaverFallbackName": "बीवर",
+  "callNotifPermissionRationale": "कॉल पाने के लिए सूचना की अनुमति ज़रूरी है।",
+  "callNotifPermissionRequired": "सेटिंग में सूचनाओं की अनुमति दें।"
 }

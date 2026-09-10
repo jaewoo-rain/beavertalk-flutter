@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Você tem {count} tarefas não entregues",
   "hwSpeakingUnavailable": "As frases desta tarefa ainda não estão disponíveis.",
   "hwBadgeClosed": "Encerrada",
-  "hwSpeakingProgress": "{passed} de {total} frases aprovadas"
+  "hwSpeakingProgress": "{passed} de {total} frases aprovadas",
+  "callIncomingCallerFallback": "Tutor Beaver",
+  "callIncomingHandle": "Chamada em coreano",
+  "callMissedTitle": "Chamada perdida",
+  "callMissedChannelDescription": "Avisa quando você perde uma chamada do Beaver.",
+  "callMissedBody": "{name} tentou ligar para você",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "É preciso permitir notificações para receber chamadas.",
+  "callNotifPermissionRequired": "Permita as notificações nos Ajustes."
 }

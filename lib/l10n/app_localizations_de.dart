@@ -2628,4 +2628,33 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Zugriff auf Fotos ist erforderlich';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver-Tutor';
+
+  @override
+  String get callIncomingHandle => 'Koreanisch-Anruf';
+
+  @override
+  String get callMissedTitle => 'Verpasster Anruf';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Meldet dir verpasste Anrufe von Beaver.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name hat versucht, dich anzurufen';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Für eingehende Anrufe wird die Mitteilungsberechtigung benötigt.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Erlaube Mitteilungen in den Einstellungen.';
 }

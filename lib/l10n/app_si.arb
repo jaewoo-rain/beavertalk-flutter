@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "ඔබට ඉදිරිපත් නොකළ පැවරුම් {count}ක් තිබේ",
   "hwSpeakingUnavailable": "මෙම පැවරුමේ වාක්‍ය තවම නොමැත.",
   "hwBadgeClosed": "වසා ඇත",
-  "hwSpeakingProgress": "වාක්‍ය {total}න් {passed}ක් සමත්"
+  "hwSpeakingProgress": "වාක්‍ය {total}න් {passed}ක් සමත්",
+  "callIncomingCallerFallback": "Beaver ගුරු",
+  "callIncomingHandle": "කොරියානු ඇමතුම",
+  "callMissedTitle": "මඟ හැරුණු ඇමතුම",
+  "callMissedChannelDescription": "Beaver ගෙන් මඟ හැරුණු ඇමතුම් ගැන දැනුම් දෙයි.",
+  "callMissedBody": "{name} ඔබට ඇමතුමක් දුන්නා",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "ඇමතුම් ලබා ගැනීමට දැනුම්දීම් අවසරය අවශ්‍යයි.",
+  "callNotifPermissionRequired": "සැකසුම් තුළ දැනුම්දීම්වලට අවසර දෙන්න."
 }

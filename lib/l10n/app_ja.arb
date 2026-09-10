@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "未提出の課題が {count} 件あります",
   "hwSpeakingUnavailable": "この課題の文はまだ利用できません。",
   "hwBadgeClosed": "締め切り",
-  "hwSpeakingProgress": "{total} 文中 {passed} 文 合格"
+  "hwSpeakingProgress": "{total} 文中 {passed} 文 合格",
+  "callIncomingCallerFallback": "ビーバー先生",
+  "callIncomingHandle": "韓国語通話",
+  "callMissedTitle": "不在着信",
+  "callMissedChannelDescription": "ビーバーからの不在着信をお知らせします。",
+  "callMissedBody": "{name}から電話がありました",
+  "callBeaverFallbackName": "ビーバー",
+  "callNotifPermissionRationale": "着信を受け取るには通知の許可が必要です。",
+  "callNotifPermissionRequired": "設定で通知を許可してください。"
 }

@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "คุณมีการบ้านที่ยังไม่ส่ง {count} ชิ้น",
   "hwSpeakingUnavailable": "ยังไม่มีประโยคสำหรับการบ้านนี้",
   "hwBadgeClosed": "ปิดแล้ว",
-  "hwSpeakingProgress": "ผ่าน {passed} จาก {total} ประโยค"
+  "hwSpeakingProgress": "ผ่าน {passed} จาก {total} ประโยค",
+  "callIncomingCallerFallback": "ติวเตอร์บีเวอร์",
+  "callIncomingHandle": "สายภาษาเกาหลี",
+  "callMissedTitle": "สายที่ไม่ได้รับ",
+  "callMissedChannelDescription": "แจ้งเตือนเมื่อคุณพลาดสายจากบีเวอร์",
+  "callMissedBody": "{name} โทรหาคุณ",
+  "callBeaverFallbackName": "บีเวอร์",
+  "callNotifPermissionRationale": "ต้องอนุญาตการแจ้งเตือนเพื่อรับสาย",
+  "callNotifPermissionRequired": "โปรดอนุญาตการแจ้งเตือนในการตั้งค่า"
 }

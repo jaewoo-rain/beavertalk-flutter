@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "你有 {count} 个作业未提交",
   "hwSpeakingUnavailable": "该作业的句子尚未提供。",
   "hwBadgeClosed": "已截止",
-  "hwSpeakingProgress": "{total} 句中通过 {passed} 句"
+  "hwSpeakingProgress": "{total} 句中通过 {passed} 句",
+  "callIncomingCallerFallback": "海狸老师",
+  "callIncomingHandle": "韩语通话",
+  "callMissedTitle": "未接来电",
+  "callMissedChannelDescription": "提醒你错过的海狸来电。",
+  "callMissedBody": "{name}给你打过电话",
+  "callBeaverFallbackName": "海狸",
+  "callNotifPermissionRationale": "需要通知权限才能接收来电。",
+  "callNotifPermissionRequired": "请在设置中允许通知。"
 }

@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "У вас несданных заданий: {count}",
   "hwSpeakingUnavailable": "Фразы для этого задания пока недоступны.",
   "hwBadgeClosed": "Закрыто",
-  "hwSpeakingProgress": "Пройдено {passed} из {total} фраз"
+  "hwSpeakingProgress": "Пройдено {passed} из {total} фраз",
+  "callIncomingCallerFallback": "Преподаватель Бивер",
+  "callIncomingHandle": "Звонок на корейском",
+  "callMissedTitle": "Пропущенный вызов",
+  "callMissedChannelDescription": "Сообщает о пропущенных звонках от Бивер.",
+  "callMissedBody": "{name} пытался вам позвонить",
+  "callBeaverFallbackName": "Бивер",
+  "callNotifPermissionRationale": "Для приёма звонков нужно разрешение на уведомления.",
+  "callNotifPermissionRequired": "Разрешите уведомления в настройках."
 }

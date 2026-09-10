@@ -2610,4 +2610,33 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Kailangan ng access sa mga larawan';
+
+  @override
+  String get callIncomingCallerFallback => 'Tutor na Beaver';
+
+  @override
+  String get callIncomingHandle => 'Tawag sa Korean';
+
+  @override
+  String get callMissedTitle => 'Hindi nasagot na tawag';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Ipinapaalam kapag may hindi mong nasagot na tawag mula kay Beaver.';
+
+  @override
+  String callMissedBody(String name) {
+    return 'Tinawagan ka ni $name';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Kailangan ng pahintulot sa notification para makatanggap ng tawag.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Payagan ang mga notification sa Settings.';
 }

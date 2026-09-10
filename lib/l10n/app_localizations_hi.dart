@@ -2584,4 +2584,32 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'फ़ोटो की अनुमति चाहिए';
+
+  @override
+  String get callIncomingCallerFallback => 'बीवर ट्यूटर';
+
+  @override
+  String get callIncomingHandle => 'कोरियाई कॉल';
+
+  @override
+  String get callMissedTitle => 'छूटी हुई कॉल';
+
+  @override
+  String get callMissedChannelDescription =>
+      'बीवर की छूटी हुई कॉल के बारे में बताता है।';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name ने आपको कॉल किया था';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'बीवर';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'कॉल पाने के लिए सूचना की अनुमति ज़रूरी है।';
+
+  @override
+  String get callNotifPermissionRequired => 'सेटिंग में सूचनाओं की अनुमति दें।';
 }

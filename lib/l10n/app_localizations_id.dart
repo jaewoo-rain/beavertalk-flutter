@@ -2596,4 +2596,32 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Izin akses foto diperlukan';
+
+  @override
+  String get callIncomingCallerFallback => 'Tutor Beaver';
+
+  @override
+  String get callIncomingHandle => 'Panggilan bahasa Korea';
+
+  @override
+  String get callMissedTitle => 'Panggilan tak terjawab';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Memberi tahu saat kamu melewatkan panggilan dari Beaver.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name mencoba meneleponmu';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Izin notifikasi diperlukan untuk menerima panggilan.';
+
+  @override
+  String get callNotifPermissionRequired => 'Izinkan notifikasi di Pengaturan.';
 }

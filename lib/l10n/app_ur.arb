@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "آپ کے {count} اسائنمنٹ جمع نہیں ہوئے",
   "hwSpeakingUnavailable": "اس اسائنمنٹ کے جملے ابھی دستیاب نہیں۔",
   "hwBadgeClosed": "بند",
-  "hwSpeakingProgress": "{total} میں سے {passed} جملے کامیاب"
+  "hwSpeakingProgress": "{total} میں سے {passed} جملے کامیاب",
+  "callIncomingCallerFallback": "بیور ٹیوٹر",
+  "callIncomingHandle": "کورین کال",
+  "callMissedTitle": "مسڈ کال",
+  "callMissedChannelDescription": "بیور کی چھوٹی ہوئی کال کے بارے میں بتاتا ہے۔",
+  "callMissedBody": "{name} نے آپ کو کال کی تھی",
+  "callBeaverFallbackName": "بیور",
+  "callNotifPermissionRationale": "کالیں وصول کرنے کے لیے اطلاعات کی اجازت درکار ہے۔",
+  "callNotifPermissionRequired": "ترتیبات میں اطلاعات کی اجازت دیں۔"
 }

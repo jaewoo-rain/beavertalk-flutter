@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "तपाईंका {count} वटा गृहकार्य बुझाइएका छैनन्",
   "hwSpeakingUnavailable": "यो गृहकार्यका वाक्यहरू अझै उपलब्ध छैनन्।",
   "hwBadgeClosed": "बन्द",
-  "hwSpeakingProgress": "{total} मध्ये {passed} वाक्य पास"
+  "hwSpeakingProgress": "{total} मध्ये {passed} वाक्य पास",
+  "callIncomingCallerFallback": "Beaver शिक्षक",
+  "callIncomingHandle": "कोरियाली कल",
+  "callMissedTitle": "छुटेको कल",
+  "callMissedChannelDescription": "Beaver को छुटेको कलबारे जानकारी दिन्छ।",
+  "callMissedBody": "{name} ले तपाईंलाई कल गरेको थियो",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "कल प्राप्त गर्न सूचनाको अनुमति चाहिन्छ।",
+  "callNotifPermissionRequired": "सेटिङमा सूचनालाई अनुमति दिनुहोस्।"
 }

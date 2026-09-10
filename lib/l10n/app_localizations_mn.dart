@@ -2591,4 +2591,33 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Зургийн зөвшөөрөл шаардлагатай';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver багш';
+
+  @override
+  String get callIncomingHandle => 'Солонгос хэлний дуудлага';
+
+  @override
+  String get callMissedTitle => 'Аваагүй дуудлага';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver-ийн аваагүй дуудлагыг мэдэгдэнэ.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name танд залгасан';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Дуудлага хүлээн авахад мэдэгдлийн зөвшөөрөл шаардлагатай.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү.';
 }

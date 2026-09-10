@@ -2511,4 +2511,30 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get saveDeniedNote => '사진 접근 권한이 필요해요';
+
+  @override
+  String get callIncomingCallerFallback => '비버 튜터';
+
+  @override
+  String get callIncomingHandle => '한국어 통화';
+
+  @override
+  String get callMissedTitle => '부재중 전화';
+
+  @override
+  String get callMissedChannelDescription => '받지 못한 비버의 전화를 알려줘요.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name에게서 전화가 왔어요';
+  }
+
+  @override
+  String get callBeaverFallbackName => '비버';
+
+  @override
+  String get callNotifPermissionRationale => '전화 수신 알림을 받으려면 알림 권한이 필요해요.';
+
+  @override
+  String get callNotifPermissionRequired => '설정에서 알림 권한을 허용해 주세요.';
 }

@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Сизде тапшырылбаган {count} тапшырма бар",
   "hwSpeakingUnavailable": "Бул тапшырманын сүйлөмдөрү азырынча жеткиликсиз.",
   "hwBadgeClosed": "Жабык",
-  "hwSpeakingProgress": "{total} сүйлөмдүн {passed} өттү"
+  "hwSpeakingProgress": "{total} сүйлөмдүн {passed} өттү",
+  "callIncomingCallerFallback": "Beaver мугалим",
+  "callIncomingHandle": "Корей тилинде чалуу",
+  "callMissedTitle": "Жооп берилбеген чалуу",
+  "callMissedChannelDescription": "Beaver чалуусун өткөрүп жибергениңизди билдирет.",
+  "callMissedBody": "{name} сизге чалды",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Чалууларды кабыл алуу үчүн билдирме уруксаты керек.",
+  "callNotifPermissionRequired": "Жөндөөлөрдөн билдирмелерге уруксат бериңиз."
 }

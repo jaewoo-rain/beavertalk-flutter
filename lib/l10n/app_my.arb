@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "မတင်ပြရသေးသော အိမ်စာ {count} ခု ရှိပါသည်",
   "hwSpeakingUnavailable": "ဤအိမ်စာအတွက် ဝါကျများ မရနိုင်သေးပါ။",
   "hwBadgeClosed": "ပိတ်ထား",
-  "hwSpeakingProgress": "ဝါကျ {total} ခုအနက် {passed} ခု အောင်မြင်"
+  "hwSpeakingProgress": "ဝါကျ {total} ခုအနက် {passed} ခု အောင်မြင်",
+  "callIncomingCallerFallback": "Beaver ဆရာ",
+  "callIncomingHandle": "ကိုရီးယားစကား ခေါ်ဆိုမှု",
+  "callMissedTitle": "လွတ်သွားသော ခေါ်ဆိုမှု",
+  "callMissedChannelDescription": "Beaver ထံမှ လွတ်သွားသော ခေါ်ဆိုမှုကို အကြောင်းကြားပါသည်။",
+  "callMissedBody": "{name} က သင့်ကို ခေါ်ခဲ့သည်",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "ခေါ်ဆိုမှုများ လက်ခံရန် အကြောင်းကြားချက် ခွင့်ပြုချက် လိုအပ်သည်။",
+  "callNotifPermissionRequired": "ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။"
 }

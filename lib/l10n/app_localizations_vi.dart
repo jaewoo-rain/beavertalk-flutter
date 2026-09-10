@@ -2586,4 +2586,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Cần quyền truy cập ảnh';
+
+  @override
+  String get callIncomingCallerFallback => 'Gia sư Hải ly';
+
+  @override
+  String get callIncomingHandle => 'Cuộc gọi tiếng Hàn';
+
+  @override
+  String get callMissedTitle => 'Cuộc gọi nhỡ';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Báo cho bạn khi bỏ lỡ cuộc gọi từ Hải ly.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name đã gọi cho bạn';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Hải ly';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Cần quyền thông báo để nhận cuộc gọi.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Hãy cho phép thông báo trong Cài đặt.';
 }

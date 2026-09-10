@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Bạn có {count} bài tập chưa nộp",
   "hwSpeakingUnavailable": "Các câu cho bài tập này chưa có sẵn.",
   "hwBadgeClosed": "Đã đóng",
-  "hwSpeakingProgress": "Đạt {passed} trên {total} câu"
+  "hwSpeakingProgress": "Đạt {passed} trên {total} câu",
+  "callIncomingCallerFallback": "Gia sư Hải ly",
+  "callIncomingHandle": "Cuộc gọi tiếng Hàn",
+  "callMissedTitle": "Cuộc gọi nhỡ",
+  "callMissedChannelDescription": "Báo cho bạn khi bỏ lỡ cuộc gọi từ Hải ly.",
+  "callMissedBody": "{name} đã gọi cho bạn",
+  "callBeaverFallbackName": "Hải ly",
+  "callNotifPermissionRationale": "Cần quyền thông báo để nhận cuộc gọi.",
+  "callNotifPermissionRequired": "Hãy cho phép thông báo trong Cài đặt."
 }

@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "{count} teslim edilmemiş ödevin var",
   "hwSpeakingUnavailable": "Bu ödevin cümleleri henüz hazır değil.",
   "hwBadgeClosed": "Kapandı",
-  "hwSpeakingProgress": "{total} cümleden {passed} tanesi geçti"
+  "hwSpeakingProgress": "{total} cümleden {passed} tanesi geçti",
+  "callIncomingCallerFallback": "Beaver Öğretmen",
+  "callIncomingHandle": "Korece görüşme",
+  "callMissedTitle": "Cevapsız arama",
+  "callMissedChannelDescription": "Beaver aramalarını kaçırdığında haber verir.",
+  "callMissedBody": "{name} seni aramaya çalıştı",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Aramaları almak için bildirim izni gerekiyor.",
+  "callNotifPermissionRequired": "Ayarlardan bildirimlere izin verin."
 }

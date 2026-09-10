@@ -2597,4 +2597,32 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Kuvien käyttöoikeus vaaditaan';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver-ohjaaja';
+
+  @override
+  String get callIncomingHandle => 'Korean kielen puhelu';
+
+  @override
+  String get callMissedTitle => 'Vastaamaton puhelu';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Kertoo, kun et ehdi vastata Beaver:n puheluun.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name yritti soittaa sinulle';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Puheluiden vastaanottamiseen tarvitaan ilmoituslupa.';
+
+  @override
+  String get callNotifPermissionRequired => 'Salli ilmoitukset asetuksissa.';
 }

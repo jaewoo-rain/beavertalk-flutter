@@ -2587,4 +2587,33 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Fotoğraf erişimi gerekli';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver Öğretmen';
+
+  @override
+  String get callIncomingHandle => 'Korece görüşme';
+
+  @override
+  String get callMissedTitle => 'Cevapsız arama';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver aramalarını kaçırdığında haber verir.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name seni aramaya çalıştı';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Aramaları almak için bildirim izni gerekiyor.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Ayarlardan bildirimlere izin verin.';
 }

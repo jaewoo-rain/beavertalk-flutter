@@ -2577,4 +2577,33 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'ඡායාරූප වෙත ප්‍රවේශය අවශ්‍යයි';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ගුරු';
+
+  @override
+  String get callIncomingHandle => 'කොරියානු ඇමතුම';
+
+  @override
+  String get callMissedTitle => 'මඟ හැරුණු ඇමතුම';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver ගෙන් මඟ හැරුණු ඇමතුම් ගැන දැනුම් දෙයි.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name ඔබට ඇමතුමක් දුන්නා';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'ඇමතුම් ලබා ගැනීමට දැනුම්දීම් අවසරය අවශ්‍යයි.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'සැකසුම් තුළ දැනුම්දීම්වලට අවසර දෙන්න.';
 }

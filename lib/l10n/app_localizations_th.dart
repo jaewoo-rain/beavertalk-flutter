@@ -2571,4 +2571,33 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'ต้องมีสิทธิ์เข้าถึงรูปภาพ';
+
+  @override
+  String get callIncomingCallerFallback => 'ติวเตอร์บีเวอร์';
+
+  @override
+  String get callIncomingHandle => 'สายภาษาเกาหลี';
+
+  @override
+  String get callMissedTitle => 'สายที่ไม่ได้รับ';
+
+  @override
+  String get callMissedChannelDescription =>
+      'แจ้งเตือนเมื่อคุณพลาดสายจากบีเวอร์';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name โทรหาคุณ';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'บีเวอร์';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'ต้องอนุญาตการแจ้งเตือนเพื่อรับสาย';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'โปรดอนุญาตการแจ้งเตือนในการตั้งค่า';
 }

@@ -2571,4 +2571,32 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'يلزم إذن الوصول إلى الصور';
+
+  @override
+  String get callIncomingCallerFallback => 'المعلّم بيفر';
+
+  @override
+  String get callIncomingHandle => 'مكالمة بالكورية';
+
+  @override
+  String get callMissedTitle => 'مكالمة فائتة';
+
+  @override
+  String get callMissedChannelDescription => 'يخبرك عند تفويت مكالمة من بيفر.';
+
+  @override
+  String callMissedBody(String name) {
+    return 'حاول $name الاتصال بك';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'بيفر';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'إذن الإشعارات مطلوب لاستقبال المكالمات.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'يرجى السماح بالإشعارات في الإعدادات.';
 }

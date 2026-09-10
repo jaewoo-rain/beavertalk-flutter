@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "May {count} kang hindi naipasang takdang-aralin",
   "hwSpeakingUnavailable": "Wala pa ang mga pangungusap para sa takdang-aralin na ito.",
   "hwBadgeClosed": "Sarado",
-  "hwSpeakingProgress": "{passed} sa {total} na pangungusap ang pumasa"
+  "hwSpeakingProgress": "{passed} sa {total} na pangungusap ang pumasa",
+  "callIncomingCallerFallback": "Tutor na Beaver",
+  "callIncomingHandle": "Tawag sa Korean",
+  "callMissedTitle": "Hindi nasagot na tawag",
+  "callMissedChannelDescription": "Ipinapaalam kapag may hindi mong nasagot na tawag mula kay Beaver.",
+  "callMissedBody": "Tinawagan ka ni {name}",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Kailangan ng pahintulot sa notification para makatanggap ng tawag.",
+  "callNotifPermissionRequired": "Payagan ang mga notification sa Settings."
 }

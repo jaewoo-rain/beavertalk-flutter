@@ -2580,4 +2580,32 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'फोटोको अनुमति चाहिन्छ';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver शिक्षक';
+
+  @override
+  String get callIncomingHandle => 'कोरियाली कल';
+
+  @override
+  String get callMissedTitle => 'छुटेको कल';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver को छुटेको कलबारे जानकारी दिन्छ।';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name ले तपाईंलाई कल गरेको थियो';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'कल प्राप्त गर्न सूचनाको अनुमति चाहिन्छ।';
+
+  @override
+  String get callNotifPermissionRequired => 'सेटिङमा सूचनालाई अनुमति दिनुहोस्।';
 }

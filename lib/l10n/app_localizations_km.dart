@@ -2587,4 +2587,33 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'ត្រូវការសិទ្ធិចូលមើលរូបភាព';
+
+  @override
+  String get callIncomingCallerFallback => 'គ្រូ Beaver';
+
+  @override
+  String get callIncomingHandle => 'ការហៅជាភាសាកូរ៉េ';
+
+  @override
+  String get callMissedTitle => 'ការហៅដែលខកខាន';
+
+  @override
+  String get callMissedChannelDescription =>
+      'ជូនដំណឹងពេលអ្នកខកខានការហៅពី Beaver។';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name បានហៅអ្នក';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'ត្រូវការការអនុញ្ញាតជូនដំណឹង ដើម្បីទទួលការហៅ។';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'សូមអនុញ្ញាតការជូនដំណឹងក្នុងការកំណត់។';
 }

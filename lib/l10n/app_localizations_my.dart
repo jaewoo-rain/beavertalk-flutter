@@ -2601,4 +2601,33 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'ဓာတ်ပုံ ခွင့်ပြုချက် လိုအပ်သည်';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ဆရာ';
+
+  @override
+  String get callIncomingHandle => 'ကိုရီးယားစကား ခေါ်ဆိုမှု';
+
+  @override
+  String get callMissedTitle => 'လွတ်သွားသော ခေါ်ဆိုမှု';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver ထံမှ လွတ်သွားသော ခေါ်ဆိုမှုကို အကြောင်းကြားပါသည်။';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name က သင့်ကို ခေါ်ခဲ့သည်';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'ခေါ်ဆိုမှုများ လက်ခံရန် အကြောင်းကြားချက် ခွင့်ပြုချက် လိုအပ်သည်။';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။';
 }

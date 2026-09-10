@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "আপনার {count}টি অ্যাসাইনমেন্ট জমা হয়নি",
   "hwSpeakingUnavailable": "এই অ্যাসাইনমেন্টের বাক্যগুলো এখনও পাওয়া যাচ্ছে না।",
   "hwBadgeClosed": "বন্ধ",
-  "hwSpeakingProgress": "{total}টির মধ্যে {passed}টি বাক্য উত্তীর্ণ"
+  "hwSpeakingProgress": "{total}টির মধ্যে {passed}টি বাক্য উত্তীর্ণ",
+  "callIncomingCallerFallback": "Beaver টিউটর",
+  "callIncomingHandle": "কোরিয়ান কল",
+  "callMissedTitle": "মিসড কল",
+  "callMissedChannelDescription": "Beaver-এর মিসড কল সম্পর্কে জানায়।",
+  "callMissedBody": "{name} আপনাকে কল করেছিল",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "কল পেতে নোটিফিকেশনের অনুমতি প্রয়োজন।",
+  "callNotifPermissionRequired": "সেটিংসে নোটিফিকেশন চালু করুন।"
 }

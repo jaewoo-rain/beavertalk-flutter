@@ -4,6 +4,7 @@ import 'package:flutter/services.dart' show MethodChannel;
 import 'package:flutter_callkit_incoming/entities/entities.dart';
 import 'package:flutter_callkit_incoming/flutter_callkit_incoming.dart';
 
+import '../../../core/i18n/standalone_l10n.dart';
 import '../domain/entities/incoming_call_payload.dart';
 
 /// `flutter_callkit_incoming` 얇은 래퍼(상태 없음).
@@ -36,7 +37,10 @@ class CallkitService {
     IncomingCallPayload p, {
     int durationMs = 60000,
   }) async {
-    final nameCaller = p.characterName ?? '비버 튜터';
+    // 문구는 저장된 UI 언어를 따른다. 이 자리에는 BuildContext 가 없다 —
+    // FCM 백그라운드·PushKit 콜드스타트에서 불린다.
+    final l10n = await StandaloneL10n.load();
+    final nameCaller = p.characterName ?? l10n.callIncomingCallerFallback;
     if (_names.length > 200) _names.clear();
     _names[p.callUuid] = nameCaller;
     final params = CallKitParams(
@@ -44,7 +48,7 @@ class CallkitService {
       nameCaller: nameCaller,
       appName: 'BeaverTalk',
       avatar: p.imageUrl,
-      handle: '한국어 통화',
+      handle: l10n.callIncomingHandle,
       // 0 = 음성 통화(1 = 영상). 이번 단계는 음성만.
       type: 0,
       // 네이티브 타임아웃(ms). 이 시간 안에 받지 않으면 actionCallTimeout.
@@ -53,10 +57,10 @@ class CallkitService {
       extra: <String, dynamic>{'characterId': p.characterId},
       // Android 부재중 알림 문구(플러그인 자체 배너). 별도 배너는
       // missed_call_notifier가 담당하지만, 플랫폼 기본 표기도 켜 둔다.
-      missedCallNotification: const NotificationParams(
+      missedCallNotification: NotificationParams(
         showNotification: true,
         isShowCallback: false,
-        subtitle: '부재중 전화',
+        subtitle: l10n.callMissedTitle,
       ),
       android: const AndroidParams(
         isCustomNotification: true,
@@ -179,9 +183,10 @@ class CallkitService {
   /// 알림 권한(Android 13+/iOS)을 요청한다. 실패해도 무시.
   Future<void> requestNotificationPermission() async {
     try {
+      final l10n = await StandaloneL10n.load();
       await FlutterCallkitIncoming.requestNotificationPermission({
-        'rationaleMessagePermission': '전화 수신 알림을 받으려면 알림 권한이 필요해요.',
-        'postNotificationMessageRequired': '설정에서 알림 권한을 허용해 주세요.',
+        'rationaleMessagePermission': l10n.callNotifPermissionRationale,
+        'postNotificationMessageRequired': l10n.callNotifPermissionRequired,
       });
     } catch (_) {}
   }

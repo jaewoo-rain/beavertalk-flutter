@@ -2582,4 +2582,32 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'ছবির অনুমতি দরকার';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver টিউটর';
+
+  @override
+  String get callIncomingHandle => 'কোরিয়ান কল';
+
+  @override
+  String get callMissedTitle => 'মিসড কল';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver-এর মিসড কল সম্পর্কে জানায়।';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name আপনাকে কল করেছিল';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'কল পেতে নোটিফিকেশনের অনুমতি প্রয়োজন।';
+
+  @override
+  String get callNotifPermissionRequired => 'সেটিংসে নোটিফিকেশন চালু করুন।';
 }

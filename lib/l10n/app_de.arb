@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Du hast {count} nicht abgegebene Aufgaben",
   "hwSpeakingUnavailable": "Die Sätze für diese Aufgabe sind noch nicht verfügbar.",
   "hwBadgeClosed": "Geschlossen",
-  "hwSpeakingProgress": "{passed} von {total} Sätzen bestanden"
+  "hwSpeakingProgress": "{passed} von {total} Sätzen bestanden",
+  "callIncomingCallerFallback": "Beaver-Tutor",
+  "callIncomingHandle": "Koreanisch-Anruf",
+  "callMissedTitle": "Verpasster Anruf",
+  "callMissedChannelDescription": "Meldet dir verpasste Anrufe von Beaver.",
+  "callMissedBody": "{name} hat versucht, dich anzurufen",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Für eingehende Anrufe wird die Mitteilungsberechtigung benötigt.",
+  "callNotifPermissionRequired": "Erlaube Mitteilungen in den Einstellungen."
 }

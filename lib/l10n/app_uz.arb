@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Sizda {count} ta topshirilmagan vazifa bor",
   "hwSpeakingUnavailable": "Bu vazifaning gaplari hali mavjud emas.",
   "hwBadgeClosed": "Yopiq",
-  "hwSpeakingProgress": "{total} tadan {passed} ta gap oʻtdi"
+  "hwSpeakingProgress": "{total} tadan {passed} ta gap oʻtdi",
+  "callIncomingCallerFallback": "Beaver ustoz",
+  "callIncomingHandle": "Koreys tilida qoʻngʻiroq",
+  "callMissedTitle": "Javobsiz qoʻngʻiroq",
+  "callMissedChannelDescription": "Beaver dan javobsiz qoʻngʻiroq boʻlsa xabar beradi.",
+  "callMissedBody": "{name} sizga qoʻngʻiroq qildi",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Qoʻngʻiroqlarni qabul qilish uchun bildirishnoma ruxsati kerak.",
+  "callNotifPermissionRequired": "Sozlamalarda bildirishnomalarga ruxsat bering."
 }

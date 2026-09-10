@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Kamu punya {count} tugas yang belum dikumpulkan",
   "hwSpeakingUnavailable": "Kalimat untuk tugas ini belum tersedia.",
   "hwBadgeClosed": "Ditutup",
-  "hwSpeakingProgress": "{passed} dari {total} kalimat lulus"
+  "hwSpeakingProgress": "{passed} dari {total} kalimat lulus",
+  "callIncomingCallerFallback": "Tutor Beaver",
+  "callIncomingHandle": "Panggilan bahasa Korea",
+  "callMissedTitle": "Panggilan tak terjawab",
+  "callMissedChannelDescription": "Memberi tahu saat kamu melewatkan panggilan dari Beaver.",
+  "callMissedBody": "{name} mencoba meneleponmu",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Izin notifikasi diperlukan untuk menerima panggilan.",
+  "callNotifPermissionRequired": "Izinkan notifikasi di Pengaturan."
 }

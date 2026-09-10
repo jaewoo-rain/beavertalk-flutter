@@ -2597,4 +2597,33 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Нужен доступ к фото';
+
+  @override
+  String get callIncomingCallerFallback => 'Преподаватель Бивер';
+
+  @override
+  String get callIncomingHandle => 'Звонок на корейском';
+
+  @override
+  String get callMissedTitle => 'Пропущенный вызов';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Сообщает о пропущенных звонках от Бивер.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name пытался вам позвонить';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Бивер';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Для приёма звонков нужно разрешение на уведомления.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Разрешите уведомления в настройках.';
 }

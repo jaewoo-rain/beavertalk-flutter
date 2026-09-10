@@ -4881,6 +4881,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Photo access is required'**
   String get saveDeniedNote;
+
+  /// CallKit incoming-call caller name when the server sends no character name.
+  ///
+  /// In en, this message translates to:
+  /// **'Beaver Tutor'**
+  String get callIncomingCallerFallback;
+
+  /// CallKit incoming-call handle line (what the call is about).
+  ///
+  /// In en, this message translates to:
+  /// **'Korean call'**
+  String get callIncomingHandle;
+
+  /// Missed-call notification title, ticker, subtitle and Android channel name.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed call'**
+  String get callMissedTitle;
+
+  /// Android notification channel description for missed calls.
+  ///
+  /// In en, this message translates to:
+  /// **'Tells you when you miss a call from Beaver.'**
+  String get callMissedChannelDescription;
+
+  /// Missed-call notification body.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} tried to call you'**
+  String callMissedBody(String name);
+
+  /// Caller name used when no character name is known.
+  ///
+  /// In en, this message translates to:
+  /// **'Beaver'**
+  String get callBeaverFallbackName;
+
+  /// Rationale shown before asking for notification permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification access is needed to receive calls.'**
+  String get callNotifPermissionRationale;
+
+  /// Shown when notification permission was denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Please allow notifications in Settings.'**
+  String get callNotifPermissionRequired;
 }
 
 class _AppLocalizationsDelegate

@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "អ្នកមានកិច្ចការ {count} ដែលមិនទាន់ដាក់ស្នើ",
   "hwSpeakingUnavailable": "ប្រយោគសម្រាប់កិច្ចការនេះមិនទាន់មានទេ។",
   "hwBadgeClosed": "បិទ",
-  "hwSpeakingProgress": "ជាប់ {passed} ក្នុងចំណោម {total} ប្រយោគ"
+  "hwSpeakingProgress": "ជាប់ {passed} ក្នុងចំណោម {total} ប្រយោគ",
+  "callIncomingCallerFallback": "គ្រូ Beaver",
+  "callIncomingHandle": "ការហៅជាភាសាកូរ៉េ",
+  "callMissedTitle": "ការហៅដែលខកខាន",
+  "callMissedChannelDescription": "ជូនដំណឹងពេលអ្នកខកខានការហៅពី Beaver។",
+  "callMissedBody": "{name} បានហៅអ្នក",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "ត្រូវការការអនុញ្ញាតជូនដំណឹង ដើម្បីទទួលការហៅ។",
+  "callNotifPermissionRequired": "សូមអនុញ្ញាតការជូនដំណឹងក្នុងការកំណត់។"
 }

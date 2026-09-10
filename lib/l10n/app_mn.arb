@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "Танд илгээгээгүй {count} даалгавар байна",
   "hwSpeakingUnavailable": "Энэ даалгаврын өгүүлбэрүүд хараахан бэлэн болоогүй.",
   "hwBadgeClosed": "Хаагдсан",
-  "hwSpeakingProgress": "{total}-аас {passed} өгүүлбэр давсан"
+  "hwSpeakingProgress": "{total}-аас {passed} өгүүлбэр давсан",
+  "callIncomingCallerFallback": "Beaver багш",
+  "callIncomingHandle": "Солонгос хэлний дуудлага",
+  "callMissedTitle": "Аваагүй дуудлага",
+  "callMissedChannelDescription": "Beaver-ийн аваагүй дуудлагыг мэдэгдэнэ.",
+  "callMissedBody": "{name} танд залгасан",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "Дуудлага хүлээн авахад мэдэгдлийн зөвшөөрөл шаардлагатай.",
+  "callNotifPermissionRequired": "Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү."
 }

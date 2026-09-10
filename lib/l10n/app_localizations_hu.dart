@@ -2608,4 +2608,33 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Fotókhoz való hozzáférés szükséges';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver oktató';
+
+  @override
+  String get callIncomingHandle => 'Koreai hívás';
+
+  @override
+  String get callMissedTitle => 'Nem fogadott hívás';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Szól, ha lemaradsz Beaver hívásáról.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name hívni próbált';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'A hívások fogadásához értesítési engedély kell.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Engedélyezd az értesítéseket a Beállításokban.';
 }

@@ -2608,4 +2608,33 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'Suratlarga ruxsat kerak';
+
+  @override
+  String get callIncomingCallerFallback => 'Beaver ustoz';
+
+  @override
+  String get callIncomingHandle => 'Koreys tilida qoʻngʻiroq';
+
+  @override
+  String get callMissedTitle => 'Javobsiz qoʻngʻiroq';
+
+  @override
+  String get callMissedChannelDescription =>
+      'Beaver dan javobsiz qoʻngʻiroq boʻlsa xabar beradi.';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name sizga qoʻngʻiroq qildi';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'Beaver';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'Qoʻngʻiroqlarni qabul qilish uchun bildirishnoma ruxsati kerak.';
+
+  @override
+  String get callNotifPermissionRequired =>
+      'Sozlamalarda bildirishnomalarga ruxsat bering.';
 }

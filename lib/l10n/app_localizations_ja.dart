@@ -2510,4 +2510,30 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get saveDeniedNote => '写真へのアクセス許可が必要です';
+
+  @override
+  String get callIncomingCallerFallback => 'ビーバー先生';
+
+  @override
+  String get callIncomingHandle => '韓国語通話';
+
+  @override
+  String get callMissedTitle => '不在着信';
+
+  @override
+  String get callMissedChannelDescription => 'ビーバーからの不在着信をお知らせします。';
+
+  @override
+  String callMissedBody(String name) {
+    return '$nameから電話がありました';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'ビーバー';
+
+  @override
+  String get callNotifPermissionRationale => '着信を受け取るには通知の許可が必要です。';
+
+  @override
+  String get callNotifPermissionRequired => '設定で通知を許可してください。';
 }

@@ -787,5 +787,13 @@
   "hwHomeBannerOverdue": "{count} beadatlan feladatod van",
   "hwSpeakingUnavailable": "Ehhez a feladathoz még nincsenek mondatok.",
   "hwBadgeClosed": "Lezárva",
-  "hwSpeakingProgress": "{total} mondatból {passed} teljesítve"
+  "hwSpeakingProgress": "{total} mondatból {passed} teljesítve",
+  "callIncomingCallerFallback": "Beaver oktató",
+  "callIncomingHandle": "Koreai hívás",
+  "callMissedTitle": "Nem fogadott hívás",
+  "callMissedChannelDescription": "Szól, ha lemaradsz Beaver hívásáról.",
+  "callMissedBody": "{name} hívni próbált",
+  "callBeaverFallbackName": "Beaver",
+  "callNotifPermissionRationale": "A hívások fogadásához értesítési engedély kell.",
+  "callNotifPermissionRequired": "Engedélyezd az értesítéseket a Beállításokban."
 }

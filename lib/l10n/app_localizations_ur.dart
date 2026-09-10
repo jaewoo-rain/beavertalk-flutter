@@ -2588,4 +2588,32 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get saveDeniedNote => 'تصاویر تک رسائی درکار ہے';
+
+  @override
+  String get callIncomingCallerFallback => 'بیور ٹیوٹر';
+
+  @override
+  String get callIncomingHandle => 'کورین کال';
+
+  @override
+  String get callMissedTitle => 'مسڈ کال';
+
+  @override
+  String get callMissedChannelDescription =>
+      'بیور کی چھوٹی ہوئی کال کے بارے میں بتاتا ہے۔';
+
+  @override
+  String callMissedBody(String name) {
+    return '$name نے آپ کو کال کی تھی';
+  }
+
+  @override
+  String get callBeaverFallbackName => 'بیور';
+
+  @override
+  String get callNotifPermissionRationale =>
+      'کالیں وصول کرنے کے لیے اطلاعات کی اجازت درکار ہے۔';
+
+  @override
+  String get callNotifPermissionRequired => 'ترتیبات میں اطلاعات کی اجازت دیں۔';
 }
