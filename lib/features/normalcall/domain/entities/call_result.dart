@@ -76,6 +76,7 @@ class CallResult {
     this.callSequence,
     this.note,
     this.usedItems = const [],
+    this.quizItems = const [],
   });
 
   /// Server call id.
@@ -127,6 +128,18 @@ class CallResult {
   /// 비어 있으면 화면은 그 칸을 **안 그린다**. 근거가 없는 칸은 비운다.
   final List<UsedItem> usedItems;
 
+  /// **표현학습** 통화에서 다룬 표현과 그 퀴즈 결과.
+  ///
+  /// ⭐ [usedItems] 와 **동시에 차지 않는다** — 두 칸은 서로 다른 코스의 것이다.
+  ///   표현학습은 `item_evidence` 사슬을 안 쓰므로 [usedItems] 가 비고, 대신 이것이
+  ///   찬다(서버 `CallResult.quiz_items` 주석). 다른 콜타입에서는 빈 배열이다.
+  ///
+  /// ⚠ [QuizItem.passed] 가 false 인 것은 «틀렸다» 가 **아니다** — «아직 못 뗐다» 다.
+  ///   드릴만 하고 퀴즈까지 못 간 항목도 false 로 온다(다음 통화 앞으로 온다).
+  ///
+  /// 비어 있으면 화면은 그 칸을 **안 그린다**.
+  final List<QuizItem> quizItems;
+
   /// Returns a copy with [callDate]/[totalTime] overridden — used to graft the
   /// date/duration (which the `/result` endpoint omits) from the call detail.
   CallResult copyWith({DateTime? callDate, int? totalTime}) => CallResult(
@@ -141,7 +154,40 @@ class CallResult {
         callSequence: callSequence,
         note: note,
         usedItems: usedItems,
+        quizItems: quizItems,
       );
+}
+
+/// 표현학습에서 다룬 표현 1건과 그 퀴즈 결과.
+class QuizItem {
+  /// 항목 하나를 담는다.
+  const QuizItem({
+    required this.itemId,
+    required this.surface,
+    this.meaning,
+    required this.passed,
+    this.failed = false,
+  });
+
+  /// 커리큘럼 항목 id.
+  final int itemId;
+
+  /// 표면형(예: `안녕히 가세요`).
+  final String surface;
+
+  /// 학습자 모국어 뜻. 옛 통화(2026-09-10 이전 스냅샷)에는 없다 → null.
+  final String? meaning;
+
+  /// 이 통화에서 퀴즈를 **통과**했나. → «맞혔어요»
+  final bool passed;
+
+  /// 이 통화의 퀴즈에서 **틀렸나**(정답 공개를 받았다). → «다시 볼 표현»
+  ///
+  /// ⭐ [passed]·[failed] 둘 다 false 면 **아직 퀴즈를 안 본 것**이다 — 드릴만 하고
+  ///   퀴즈까지 못 간 항목. 그건 «틀렸다» 가 아니라 «다음에 이어서» 다.
+  /// ⚠ `!passed` 로 대신하지 마라 — 위 둘을 가르는 유일한 칸이다. [passed] 면 항상
+  ///   false 다(단조). 옛 스냅샷엔 키가 없어 false 로 온다.
+  final bool failed;
 }
 
 /// 통화에서 스스로 쓴 항목 1건.
