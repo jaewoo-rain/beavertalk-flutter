@@ -61,6 +61,12 @@ import flutter_callkit_incoming
     // pins the session output to the earpiece(receiver); Dart calls this after
     // the mic pipeline is up to force the loudspeaker — unless a headset/AirPods
     // is connected, in which case we clear the override and keep that route.
+    // 발음 챌린지 화면 녹화. Android 의 MediaProjection 과 같은 채널 규약
+    // (`start` → Bool, `stop` → 파일 경로 or nil)을 ReplayKit 으로 구현한다.
+    if let messenger = engineBridge.pluginRegistry
+      .registrar(forPlugin: "BeaverChallengeRecorder")?.messenger() {
+      challengeRecorder.register(with: messenger)
+    }
     if let messenger = engineBridge.pluginRegistry
       .registrar(forPlugin: "BeaverAudioRoute")?.messenger() {
       let channel = FlutterMethodChannel(
@@ -229,6 +235,11 @@ import flutter_callkit_incoming
 
   /// `beavertalk/audio` — kept so route changes can be pushed to Dart.
   private var audioChannel: FlutterMethodChannel?
+
+  // 발음 챌린지 화면 녹화(ReplayKit 인앱 녹화). 채널 핸들러를 들고 있어야
+  // 하므로 인스턴스 프로퍼티다 — 지역 변수로 두면 즉시 해제되어 Dart 의
+  // `start` 호출이 영영 응답을 못 받는다.
+  private let challengeRecorder = ChallengeRecorder()
 
   private func startCallAudioRouting() {
     let session = AVAudioSession.sharedInstance()

@@ -22,6 +22,9 @@
     <!-- 통화 진행 중 포그라운드 서비스(마이크) -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <!-- 발음 챌린지 화면 녹화. Android 14(API 34)부터 MediaProjection 은 이 형식의
+         포그라운드 서비스가 떠 있어야만 getMediaProjection() 을 허용한다. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
     <application
         android:label="BeaverTalk"
         android:name="${applicationName}"
@@ -99,6 +102,13 @@
         <meta-data
             android:name="flutter_deeplinking_enabled"
             android:value="false" />
+        <!-- 발음 챌린지 화면 녹화 중에만 뜬다. 캡처는 액티비티가 쥔
+             MediaProjection 이 하고, 이 서비스는 API 34+ 가 요구하는 권한
+             상태를 만드는 역할만 한다(ScreenCaptureService 참조). -->
+        <service
+            android:name=".ScreenCaptureService"
+            android:exported="false"
+            android:foregroundServiceType="mediaProjection" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

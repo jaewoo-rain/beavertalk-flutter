@@ -32,12 +32,12 @@ import java.io.File
  * SURFACE video source to capture the composited screen (live camera texture +
  * game canvas) — the one path that captures external textures, which
  * `RenderRepaintBoundary.toImage()` cannot. Video only, by design: opening the
- * mic here would contend with the Vosk STT capture that drives the game.
+ * mic here would contend with the server-STT mic capture that drives the game.
  *
- * Works on API 26–33 without a foreground service. API 34+ additionally
- * requires a mediaProjection foreground service before `getMediaProjection`;
- * that path is not wired yet (TODO) — on 34+ `start` fails gracefully and the
- * game falls back to the score-card image share.
+ * API 26~33 은 포그라운드 서비스 없이 돌아간다. API 34+ 는 `getMediaProjection`
+ * 앞에 mediaProjection 형식의 포그라운드 서비스를 요구하므로
+ * [ScreenCaptureService] 를 먼저 띄우고, 그 서비스가 `startForeground()` 를
+ * 마쳤다는 통지를 받은 뒤에야 캡처를 시작한다.
  */
 class MainActivity : FlutterActivity() {
     private val channelName = "beavertalk/challenge_recorder"
@@ -426,11 +426,6 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun onStart(result: MethodChannel.Result) {
-        // API 34+ needs a mediaProjection foreground service first; not wired.
-        if (Build.VERSION.SDK_INT >= 34) {
-            result.success(false)
-            return
-        }
         if (recorder != null) {
             result.success(false)
             return
@@ -460,13 +455,61 @@ class MainActivity : FlutterActivity() {
             pending?.success(false)
             return
         }
-        val ok = try {
-            beginRecording(resultCode, data)
-        } catch (e: Exception) {
-            teardown()
-            false
+        // Android 14(API 34)+ : getMediaProjection() 은 mediaProjection 형식의
+        // 포그라운드 서비스가 **이미 떠 있을 때만** 허용된다. 서비스 시작은
+        // 비동기라 startForeground() 완료 통지를 받고 나서 캡처로 넘어간다.
+        if (Build.VERSION.SDK_INT >= 34) {
+            awaitCaptureService { started ->
+                if (!started) {
+                    ScreenCaptureService.stop(this)
+                    pending.success(false)
+                } else {
+                    pending.success(runBeginRecording(resultCode, data))
+                }
+            }
+        } else {
+            pending.success(runBeginRecording(resultCode, data))
         }
-        pending.success(ok)
+    }
+
+    /** [beginRecording] 을 감싸 실패 시 확보한 자원을 반드시 되돌린다. */
+    private fun runBeginRecording(resultCode: Int, data: Intent): Boolean = try {
+        beginRecording(resultCode, data)
+    } catch (e: Exception) {
+        teardown()
+        false
+    }
+
+    /**
+     * [ScreenCaptureService] 를 띄우고 `startForeground()` 가 끝났다는 통지를
+     * 기다린다. 통지는 메인 스레드에서 **한 번만** 온다.
+     *
+     * 3초 안에 통지가 없으면 실패로 본다. 알림이 막혔거나 서비스가 못 뜬 상황인데,
+     * 그대로 `getMediaProjection()` 을 부르면 SecurityException 으로 앱이 죽는다.
+     * 클립 하나를 포기하는 편이 낫다 — 녹화는 없어도 되는 덤이고, 게임은 계속된다.
+     */
+    private fun awaitCaptureService(onResult: (Boolean) -> Unit) {
+        val handler = Handler(Looper.getMainLooper())
+        var settled = false
+        val settle = fun(ok: Boolean) {
+            if (settled) return
+            settled = true
+            ScreenCaptureService.onForeground = null
+            onResult(ok)
+        }
+        val timeout = Runnable { settle(false) }
+        ScreenCaptureService.onForeground = {
+            handler.removeCallbacks(timeout)
+            settle(true)
+        }
+        try {
+            ScreenCaptureService.start(this)
+        } catch (e: Exception) {
+            handler.removeCallbacks(timeout)
+            settle(false)
+            return
+        }
+        handler.postDelayed(timeout, 3_000)
     }
 
     private fun beginRecording(resultCode: Int, data: Intent): Boolean {
@@ -561,6 +604,9 @@ class MainActivity : FlutterActivity() {
         virtualDisplay = null
         projection = null
         projectionCallback = null
+        // 권한 상태를 만드는 것 말고는 할 일이 없는 서비스다 — 캡처가 끝나면
+        // 바로 내린다. API 34 미만에서는 띄운 적이 없어 무해한 no-op 이다.
+        try { ScreenCaptureService.stop(this) } catch (_: Exception) {}
         tearingDown = false
     }
 
