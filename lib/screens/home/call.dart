@@ -543,7 +543,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     // 판정은 CascadeExperiment.enabledFor 한 곳에서만 — 릴리즈에서는 항상 켬이다.
     final channel =
         ref.watch(normalCallControllerProvider.select((s) => s.channel));
-    final showHint = hintOn &&
+    // ⭐ 코스 통화(표현학습·프리토킹)에는 힌트가 **없다** — 서버가 그 코스에는 `hint`
+    //   프레임을 안 보낸다(사장님 결정 2026-09-12). 그러면 토글은 「눌러도 아무것도
+    //   안 나오는 버튼」이라 UI 자체를 뺀다. 카드와 토글이 **같은 한 판정**을 본다.
+    //   일반 통화·레벨테스트(course == null)는 한 글자도 안 바뀐다.
+    final course =
+        ref.watch(normalCallControllerProvider.select((s) => s.course));
+    final hintsAvailable = course == null;
+    final showHint = hintsAvailable &&
+        hintOn &&
         hint != null &&
         CascadeExperiment.enabledFor(channel, CascadeExperiment.hints);
     final showAvatarVideo = !kDisableAvatarVideo &&
@@ -794,16 +802,19 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      CallToggleButton(
-                        icon: AppIcons.lightbulb,
-                        active: hintOn,
-                        activeFill: context.c.accentActive,
-                        semanticLabel: 'Hint',
-                        onChanged: (v) => ref
-                            .read(normalCallControllerProvider.notifier)
-                            .setHintOn(v),
-                      ),
-                      const SizedBox(width: AppSpacing.s8),
+                      // 코스 통화엔 힌트가 없으니 토글도 없다(위 [hintsAvailable]).
+                      if (hintsAvailable) ...[
+                        CallToggleButton(
+                          icon: AppIcons.lightbulb,
+                          active: hintOn,
+                          activeFill: context.c.accentActive,
+                          semanticLabel: 'Hint',
+                          onChanged: (v) => ref
+                              .read(normalCallControllerProvider.notifier)
+                              .setHintOn(v),
+                        ),
+                        const SizedBox(width: AppSpacing.s8),
+                      ],
                       CallToggleButton(
                         icon: AppIcons.cc,
                         active: subtitleOn,

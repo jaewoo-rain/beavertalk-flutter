@@ -305,6 +305,7 @@ class CallState {
     this.hintOn = true,
     this.beaverPreparing = false,
     this.channel = CallChannel.live,
+    this.course,
     this.segmentsUsed = 0,
     this.paidCallTime = false,
     this.micMuted = false,
@@ -372,6 +373,16 @@ class CallState {
   /// 그대로 둘 수 있다(격리 실험의 대조군 유지 — [CascadeExperiment]).
   final CallChannel channel;
 
+  /// 이 통화의 **코스**(표현학습·프리토킹). 일반 통화·레벨테스트는 null.
+  ///
+  /// 화면이 이걸 알아야 코스 통화에서 힌트 UI 를 가릴 수 있다 — 서버가 그 코스에는
+  /// `hint` 프레임을 안 보내므로(사장님 결정 2026-09-12), 켤 수 있는 토글을 두면
+  /// 「눌러도 아무것도 안 나오는 버튼」이 된다.
+  /// ⛔ 컨트롤러의 `_callCourse` 를 public getter 로 내지 않고 여기로 싣는 이유:
+  ///   `avoid_public_notifier_properties` — Notifier 의 공개 API 는 `state` 하나다.
+  ///   [channel] 이 같은 이유로 여기 있다.
+  final CallCourse? course;
+
   /// 지금까지 **끝낸** 5분 구간의 수. 0 = 첫 구간 진행 중, 1 = 첫 5분을 마쳤다.
   ///
   /// 통화는 5분 세션을 이어 붙여 만든다([CallAllowance]). 한 소켓이 15분을 버티는 게
@@ -424,6 +435,7 @@ class CallState {
     bool? hintOn,
     bool? beaverPreparing,
     CallChannel? channel,
+    CallCourse? course,
     int? segmentsUsed,
     bool? paidCallTime,
     bool? micMuted,
@@ -443,6 +455,7 @@ class CallState {
       hintOn: hintOn ?? this.hintOn,
       beaverPreparing: beaverPreparing ?? this.beaverPreparing,
       channel: channel ?? this.channel,
+      course: course ?? this.course,
       segmentsUsed: segmentsUsed ?? this.segmentsUsed,
       paidCallTime: paidCallTime ?? this.paidCallTime,
       micMuted: micMuted ?? this.micMuted,
@@ -1621,7 +1634,11 @@ class NormalCallController extends Notifier<CallState> {
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
-      state = CallState(phase: CallPhase.connecting, channel: _channelMode);
+      state = CallState(
+        phase: CallPhase.connecting,
+        channel: _channelMode,
+        course: _callCourse,
+      );
 
       // Every failure below tears down with keepError so the error phase SURVIVES
       // for the UI to react to. A plain _teardown() resets the state to idle,
@@ -4981,6 +4998,9 @@ class NormalCallController extends Notifier<CallState> {
       final preservedBaseline = state.baselineCallId;
       final preservedCharacter = state.characterId;
       final preservedChannel = state.channel;
+      // 코스도 시트 동안 유지한다 — 안 하면 5분 시트가 떠 있는 사이 화면 밑에서
+      // 힌트 토글이 다시 나타난다(코스 통화엔 힌트가 없다).
+      final preservedCourse = state.course;
 
       // [_teardown] 은 CallKit 통화를 끝내고, 그 `ACTION_CALL_ENDED` 가 코디네이터를
       // 거쳐 [hangUp] 으로 되돌아올 수 있다(잠금화면 통화). 그 사이 사용자가 끊었다면
@@ -5060,6 +5080,7 @@ class NormalCallController extends Notifier<CallState> {
         baselineCallId: preservedBaseline,
         characterId: preservedCharacter,
         channel: preservedChannel,
+        course: preservedCourse,
         segmentsUsed: used,
         paidCallTime: paid,
       );
