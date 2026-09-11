@@ -211,6 +211,20 @@ class AppLocalizationsNe extends AppLocalizations {
   String get usedExpressions => 'तपाईंले प्रयोग गर्नुभएका अभिव्यक्ति';
 
   @override
+  String quizExpressionsCount(int count) {
+    return 'Expressions you learned $count';
+  }
+
+  @override
+  String get quizPassed => 'Got it';
+
+  @override
+  String get quizFailed => 'Review again';
+
+  @override
+  String get quizPending => 'Continue next time';
+
+  @override
   String get analysisResult => 'विश्लेषण नतिजा';
 
   @override

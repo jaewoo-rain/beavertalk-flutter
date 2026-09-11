@@ -96,6 +96,7 @@ class CallResultDto {
     this.callSequence,
     this.note,
     this.usedItems = const [],
+    this.quizItems = const [],
   });
 
   final int callId;
@@ -109,6 +110,7 @@ class CallResultDto {
   final int? callSequence;
   final CharacterNote? note;
   final List<UsedItem> usedItems;
+  final List<QuizItem> quizItems;
 
   factory CallResultDto.fromJson(Map<String, dynamic> json) {
     final average = (json['average'] as Map<String, dynamic>?) ?? const {};
@@ -127,6 +129,7 @@ class CallResultDto {
       callSequence: (json['call_sequence'] as num?)?.toInt(),
       note: _note(json['character_note']),
       usedItems: _usedItems(json['used_items']),
+      quizItems: _quizItems(json['quiz_items']),
     );
   }
 
@@ -160,6 +163,35 @@ class CallResultDto {
     return out;
   }
 
+  /// 표현학습 퀴즈 결과(`quiz_items`). [_usedItems] 와 같은 규율 — 모양이 어긋난
+  /// 원소는 조용히 버리고, 키가 없으면 빈 목록이다(옛 응답·다른 콜타입).
+  ///
+  /// 서버 스키마(`CallResultQuizItem`, 9cbea87):
+  ///   `item_id:int · surface:str · meaning:str|null · passed:bool · failed:bool`
+  /// `meaning` 은 옛 스냅샷에서 null, `failed` 는 옛 스냅샷에서 키가 없다 — 둘 다
+  /// 없으면 null/false 로 두고 결과 파싱을 멈추지 않는다.
+  /// ⛔ `failed` 를 `!passed` 로 채우지 마라. 서버가 «퀴즈에서 틀림»(failed) 과
+  ///   «아직 퀴즈 안 봄»(passed=false·failed=false) 을 가르는 유일한 칸이 이것이다.
+  ///   `passed` 면 항상 `failed=false` 다(단조).
+  static List<QuizItem> _quizItems(Object? value) {
+    if (value is! List) return const [];
+    final out = <QuizItem>[];
+    for (final e in value) {
+      if (e is! Map<String, dynamic>) continue;
+      final id = (e['item_id'] as num?)?.toInt();
+      final surface = _text(e['surface']);
+      if (id == null || surface == null) continue;
+      out.add(QuizItem(
+        itemId: id,
+        surface: surface,
+        meaning: _text(e['meaning']),
+        passed: e['passed'] == true,
+        failed: e['failed'] == true,
+      ));
+    }
+    return out;
+  }
+
   /// A blank string is as absent as null — both must hide the section rather
   /// than render an empty card.
   static String? _text(Object? value) {
@@ -180,6 +212,7 @@ class CallResultDto {
         callSequence: callSequence,
         note: note,
         usedItems: usedItems,
+        quizItems: quizItems,
       );
 }
 

@@ -532,6 +532,30 @@ abstract class AppLocalizations {
   /// **'Expressions you used'**
   String get usedExpressions;
 
+  /// 표현학습 통화 결과 화면의 「이번에 배운 표현 N개」 섹션 제목. 그 통화에서 드릴한 표현과 퀴즈 결과를 모은 칸이다. quiz_items 가 비어 있지 않을 때만 그린다.
+  ///
+  /// In en, this message translates to:
+  /// **'Expressions you learned {count}'**
+  String quizExpressionsCount(int count);
+
+  /// 표현학습 결과 배지 — 이 통화의 퀴즈를 통과한 표현(passed=true).
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get quizPassed;
+
+  /// 표현학습 결과 배지 — 이 통화의 퀴즈에서 틀린 표현(failed=true).
+  ///
+  /// In en, this message translates to:
+  /// **'Review again'**
+  String get quizFailed;
+
+  /// 표현학습 결과 배지 — 드릴은 했지만 아직 퀴즈를 안 본 표현(passed=false·failed=false). 틀린 것이 아니다. 다음 통화 맨 앞으로 이어진다.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue next time'**
+  String get quizPending;
+
   /// No description provided for @analysisResult.
   ///
   /// In en, this message translates to:

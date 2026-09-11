@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/adaptive.dart';
 import '../../features/normalcall/domain/entities/call_channel.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -98,6 +99,11 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
               //     통화 60%를 엉뚱한 상대로 보냈다). 그 통로는 이미 닫혔고 지금
               //     int 를 보내는 진입점은 숙제뿐이다 — 캐릭터로 해석되지 않는다.
               assignmentId: arg is int ? arg : null,
+              // ⭐ 코스(표현학습·프리토킹)로 들어오면 그걸 싣는다. 세 검사가 전부
+              //   `is` 라 **서로 배타적이고**, 아무것도 아니면 셋 다 null 이다 —
+              //   그래서 기존 진입점(홈·기록·온보딩완료·수신통화)의 동작이
+              //   한 글자도 안 바뀐다.
+              callCourse: arg is CallCourse ? arg : null,
             );
     }
   }

@@ -211,6 +211,20 @@ class AppLocalizationsBn extends AppLocalizations {
   String get usedExpressions => 'আপনি যে প্রকাশভঙ্গি ব্যবহার করেছেন';
 
   @override
+  String quizExpressionsCount(int count) {
+    return 'Expressions you learned $count';
+  }
+
+  @override
+  String get quizPassed => 'Got it';
+
+  @override
+  String get quizFailed => 'Review again';
+
+  @override
+  String get quizPending => 'Continue next time';
+
+  @override
   String get analysisResult => 'বিশ্লেষণের ফলাফল';
 
   @override

@@ -42,6 +42,7 @@ import '../domain/entities/call_allowance.dart';
 import '../domain/entities/call_resume_status.dart';
 import '../domain/segment_call_id_recovery.dart';
 import '../domain/entities/call_channel.dart';
+import '../domain/entities/call_course.dart';
 import '../domain/entities/call_hint.dart';
 import '../domain/entities/playback_ledger.dart';
 import 'avatar_assets.dart' show kIdleWait, kIdleListen, kIdleThink;
@@ -124,6 +125,7 @@ Map<String, dynamic> buildStartFrame({
   String? inboundCallId,
   String? continuesCallId,
   int? assignmentId,
+  String? callType,
 }) =>
     <String, dynamic>{
       'type': 'start',
@@ -148,6 +150,11 @@ Map<String, dynamic> buildStartFrame({
       //   ⛔ 통화의 성립 조건이 아니라 **재료**다. 서버는 자격이 없으면 조용히
       //     무시하고 평소 선별로 진행한다 — 여기서 보냈다고 통화가 막히지 않는다.
       'assignment_id': ?assignmentId,
+      // 이 통화가 **무엇을 하는 통화인가**(표현학습·프리토킹). [CallCourse] 참조.
+      // ⭐ null 이면 `?` 가 **필드를 통째로 뺀다** — 그래야 서버의 자동 라우팅
+      //   (D11: 레벨 미확정이면 레벨테스트)이 그대로 돈다.
+      // ⛔ 빈 문자열이나 `'normal'` 을 대신 넣지 마라. 그건 그 판단을 **덮어쓴다.**
+      'call_type': ?callType,
     };
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
@@ -298,6 +305,7 @@ class CallState {
     this.hintOn = true,
     this.beaverPreparing = false,
     this.channel = CallChannel.live,
+    this.course,
     this.segmentsUsed = 0,
     this.paidCallTime = false,
     this.micMuted = false,
@@ -365,6 +373,16 @@ class CallState {
   /// 그대로 둘 수 있다(격리 실험의 대조군 유지 — [CascadeExperiment]).
   final CallChannel channel;
 
+  /// 이 통화의 **코스**(표현학습·프리토킹). 일반 통화·레벨테스트는 null.
+  ///
+  /// 화면이 이걸 알아야 코스 통화에서 힌트 UI 를 가릴 수 있다 — 서버가 그 코스에는
+  /// `hint` 프레임을 안 보내므로(사장님 결정 2026-09-12), 켤 수 있는 토글을 두면
+  /// 「눌러도 아무것도 안 나오는 버튼」이 된다.
+  /// ⛔ 컨트롤러의 `_callCourse` 를 public getter 로 내지 않고 여기로 싣는 이유:
+  ///   `avoid_public_notifier_properties` — Notifier 의 공개 API 는 `state` 하나다.
+  ///   [channel] 이 같은 이유로 여기 있다.
+  final CallCourse? course;
+
   /// 지금까지 **끝낸** 5분 구간의 수. 0 = 첫 구간 진행 중, 1 = 첫 5분을 마쳤다.
   ///
   /// 통화는 5분 세션을 이어 붙여 만든다([CallAllowance]). 한 소켓이 15분을 버티는 게
@@ -417,6 +435,7 @@ class CallState {
     bool? hintOn,
     bool? beaverPreparing,
     CallChannel? channel,
+    CallCourse? course,
     int? segmentsUsed,
     bool? paidCallTime,
     bool? micMuted,
@@ -436,6 +455,7 @@ class CallState {
       hintOn: hintOn ?? this.hintOn,
       beaverPreparing: beaverPreparing ?? this.beaverPreparing,
       channel: channel ?? this.channel,
+      course: course ?? this.course,
       segmentsUsed: segmentsUsed ?? this.segmentsUsed,
       paidCallTime: paidCallTime ?? this.paidCallTime,
       micMuted: micMuted ?? this.micMuted,
@@ -800,6 +820,15 @@ class NormalCallController extends Notifier<CallState> {
   ///     즉 클라가 매 조각마다 다시 싣는 것 말고는 방법이 없다.
   /// [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
   int? _assignmentId;
+
+  /// 이 통화가 수행하는 **코스**(표현학습·프리토킹). [_assignmentId] 와 **같은 이유로
+  /// 필드**다 — 「Keep talking」 재연결이 `start` 프레임을 다시 조립하는데, 지역 인자로
+  /// 두면 **2구간부터 null 이 되어** 평소 통화로 되돌아간다. 그리고 그때 **에러가 안 난다.**
+  ///
+  /// ⛔ 이 프레임이 같은 방식으로 이미 세 번 샜다 — `continues_call_id`(2026-08-24) ·
+  ///   `inbound_call_id`(2026-08-31) · `assignment_id`(2026-09-06). 네 번째를 만들지 마라.
+  /// [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
+  CallCourse? _callCourse;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -1495,10 +1524,15 @@ class NormalCallController extends Notifier<CallState> {
   /// [callChannel] 은 이 통화가 붙을 통로다. 안 주면 [CallChannel.defaultChannel] —
   /// 즉 **호출부를 안 고치면 동작이 종전과 같다.** 나중에 서버가 통화 시작 응답으로
   /// 내려주면 그 값을 여기로 넘긴다(필드 계약은 아직 없다).
+  ///
+  /// [callCourse] 는 이 통화가 **무엇을 하는 통화인가**다(표현학습·프리토킹).
+  /// 안 주면 null → `start` 프레임에서 `call_type` 필드가 통째로 빠지고 **서버가
+  /// 판단한다.** 즉 기존 진입점의 동작은 한 글자도 안 바뀐다([CallCourse] 참조).
   Future<void> start({
     String? inboundCallId,
     CallChannel? callChannel,
     int? assignmentId,
+    CallCourse? callCourse,
   }) async {
     final ok = await _connect(
       callUuid: null,
@@ -1506,6 +1540,7 @@ class NormalCallController extends Notifier<CallState> {
       callkitOwnedAudio: false,
       callChannel: callChannel,
       assignmentId: assignmentId,
+      callCourse: callCourse,
     );
     if (!ok) return;
     await _startAudio();
@@ -1568,6 +1603,7 @@ class NormalCallController extends Notifier<CallState> {
     CallChannel? callChannel,
     bool keepCallkitCall = false,
     int? assignmentId,
+    CallCourse? callCourse,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1593,10 +1629,16 @@ class NormalCallController extends Notifier<CallState> {
       _inboundCallId = inboundCallId;
       // ⭐ 과제도 **구간을 넘어 기억한다** — 이유는 [_assignmentId] 참조.
       _assignmentId = assignmentId;
+      // ⭐ 코스도 **구간을 넘어 기억한다** — 이유는 [_callCourse] 참조.
+      _callCourse = callCourse;
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
-      state = CallState(phase: CallPhase.connecting, channel: _channelMode);
+      state = CallState(
+        phase: CallPhase.connecting,
+        channel: _channelMode,
+        course: _callCourse,
+      );
 
       // Every failure below tears down with keepError so the error phase SURVIVES
       // for the UI to react to. A plain _teardown() resets the state to idle,
@@ -1694,6 +1736,8 @@ class NormalCallController extends Notifier<CallState> {
         // ⚠ 인자가 아니라 **필드**에서 읽는다. 이어가기 재연결은 인자를 안 넘기므로
         //   인자를 쓰면 2구간부터 null 이 된다.
         assignmentId: _assignmentId,
+        // ⚠ 같은 이유로 **필드**에서 읽는다([_callCourse]).
+        callType: _callCourse?.wireValue,
       );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
@@ -4954,6 +4998,9 @@ class NormalCallController extends Notifier<CallState> {
       final preservedBaseline = state.baselineCallId;
       final preservedCharacter = state.characterId;
       final preservedChannel = state.channel;
+      // 코스도 시트 동안 유지한다 — 안 하면 5분 시트가 떠 있는 사이 화면 밑에서
+      // 힌트 토글이 다시 나타난다(코스 통화엔 힌트가 없다).
+      final preservedCourse = state.course;
 
       // [_teardown] 은 CallKit 통화를 끝내고, 그 `ACTION_CALL_ENDED` 가 코디네이터를
       // 거쳐 [hangUp] 으로 되돌아올 수 있다(잠금화면 통화). 그 사이 사용자가 끊었다면
@@ -5033,6 +5080,7 @@ class NormalCallController extends Notifier<CallState> {
         baselineCallId: preservedBaseline,
         characterId: preservedCharacter,
         channel: preservedChannel,
+        course: preservedCourse,
         segmentsUsed: used,
         paidCallTime: paid,
       );
@@ -5238,6 +5286,9 @@ class NormalCallController extends Notifier<CallState> {
         // ⛔ [_inboundCallId] 와 같은 이유로 **반드시 다시 싣는다.** 빠지면 2구간부터
         //   서버가 이 통화를 과제로 안 보고 언어·길이·재료가 전부 되돌아간다.
         assignmentId: _assignmentId,
+        // ⛔ 코스도 **반드시 다시 싣는다.** 빠지면 2구간부터 표현학습·프리토킹이
+        //   평소 통화로 되돌아간다 — `assignment_id` 가 정확히 이렇게 샜다(2026-09-06).
+        callCourse: _callCourse,
       );
       if (!ok) {
         _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');

@@ -212,6 +212,20 @@ class AppLocalizationsFil extends AppLocalizations {
   String get usedExpressions => 'Mga ekspresyong ginamit mo';
 
   @override
+  String quizExpressionsCount(int count) {
+    return 'Expressions you learned $count';
+  }
+
+  @override
+  String get quizPassed => 'Got it';
+
+  @override
+  String get quizFailed => 'Review again';
+
+  @override
+  String get quizPending => 'Continue next time';
+
+  @override
   String get analysisResult => 'Resulta ng Analysis';
 
   @override

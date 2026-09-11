@@ -213,6 +213,20 @@ class AppLocalizationsFi extends AppLocalizations {
   String get usedExpressions => 'Käyttämäsi ilmaukset';
 
   @override
+  String quizExpressionsCount(int count) {
+    return 'Expressions you learned $count';
+  }
+
+  @override
+  String get quizPassed => 'Got it';
+
+  @override
+  String get quizFailed => 'Review again';
+
+  @override
+  String get quizPending => 'Continue next time';
+
+  @override
   String get analysisResult => 'Analyysin tulos';
 
   @override

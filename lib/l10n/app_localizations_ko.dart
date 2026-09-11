@@ -207,6 +207,20 @@ class AppLocalizationsKo extends AppLocalizations {
   String get usedExpressions => '이번 통화에서 쓴 표현';
 
   @override
+  String quizExpressionsCount(int count) {
+    return '이번에 배운 표현 $count개';
+  }
+
+  @override
+  String get quizPassed => '맞혔어요';
+
+  @override
+  String get quizFailed => '다시 볼 표현';
+
+  @override
+  String get quizPending => '다음에 이어서';
+
+  @override
   String get analysisResult => '분석 결과';
 
   @override

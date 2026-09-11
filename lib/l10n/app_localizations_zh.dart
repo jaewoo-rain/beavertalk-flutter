@@ -206,6 +206,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get usedExpressions => '本次通话中用到的表达';
 
   @override
+  String quizExpressionsCount(int count) {
+    return 'Expressions you learned $count';
+  }
+
+  @override
+  String get quizPassed => 'Got it';
+
+  @override
+  String get quizFailed => 'Review again';
+
+  @override
+  String get quizPending => 'Continue next time';
+
+  @override
   String get analysisResult => '分析结果';
 
   @override
