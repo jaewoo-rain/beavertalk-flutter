@@ -298,7 +298,7 @@
   "challengeStart": "Start",
   "challengePermissionNote": "Front camera and mic access is required (optional).",
   "challengeLoadingTitle": "Loading…",
-  "challengeLoadingNote": "Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.",
+  "challengeLoadingNote": "Getting the camera and microphone ready.",
   "challengeSttFallback": "Speech recognition wasn't available, so you played with tap input.",
   "reasonTravelTitle": "Speaking while traveling",
   "reasonTravelDesc": "Chat confidently with locals",

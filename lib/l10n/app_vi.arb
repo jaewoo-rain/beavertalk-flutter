@@ -175,7 +175,7 @@
   "challengeStart": "Bật camera & micrô",
   "challengePermissionNote": "Cần quyền truy cập camera trước và micrô (tùy chọn).",
   "challengeLoadingTitle": "Đang tải…",
-  "challengeLoadingNote": "Đang tải mô hình giọng nói tiếng Hàn (~82MB) trong lần chạy đầu tiên.\nVui lòng chờ một lát.",
+  "challengeLoadingNote": "Đang chuẩn bị máy ảnh và micrô.",
   "challengeSttFallback": "Nhận dạng giọng nói không khả dụng, nên bạn đã chơi bằng cách chạm.",
   "reasonTravelTitle": "Nói chuyện khi đi du lịch",
   "reasonTravelDesc": "Tự tin trò chuyện với người bản địa",

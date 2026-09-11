@@ -175,7 +175,7 @@
   "challengeStart": "Kamera és mikrofon indítása",
   "challengePermissionNote": "Az elülső kamera és a mikrofon hozzáférése szükséges (opcionális).",
   "challengeLoadingTitle": "Betöltés…",
-  "challengeLoadingNote": "A koreai beszédfelismerő modell (~82 MB) letöltése az első indításkor.\nKérjük, várj egy kicsit.",
+  "challengeLoadingNote": "A kamera és a mikrofon előkészítése folyamatban.",
   "challengeSttFallback": "A beszédfelismerés nem volt elérhető, ezért koppintással játszottál.",
   "reasonTravelTitle": "Beszéd utazás közben",
   "reasonTravelDesc": "Beszélgess magabiztosan a helyiekkel",

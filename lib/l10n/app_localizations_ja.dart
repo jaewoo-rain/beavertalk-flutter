@@ -555,8 +555,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get challengeLoadingTitle => '読み込み中…';
 
   @override
-  String get challengeLoadingNote =>
-      '初回は韓国語の音声モデル（約82MB）をダウンロードします。\n少々お待ちください。';
+  String get challengeLoadingNote => 'カメラとマイクを準備しています。';
 
   @override
   String get challengeSttFallback => '音声認識が利用できなかったため、タップ入力でプレイしました。';

@@ -586,8 +586,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get challengeLoadingTitle => 'Wird geladen…';
 
   @override
-  String get challengeLoadingNote =>
-      'Beim ersten Start wird das koreanische Sprachmodell (~82MB) heruntergeladen.\nBitte warte einen Moment.';
+  String get challengeLoadingNote => 'Kamera und Mikrofon werden vorbereitet.';
 
   @override
   String get challengeSttFallback =>

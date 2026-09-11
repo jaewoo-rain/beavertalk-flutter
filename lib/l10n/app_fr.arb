@@ -175,7 +175,7 @@
   "challengeStart": "Activer caméra et micro",
   "challengePermissionNote": "L'accès à la caméra avant et au micro est requis (facultatif).",
   "challengeLoadingTitle": "Chargement…",
-  "challengeLoadingNote": "Téléchargement du modèle vocal coréen (~82 Mo) au premier lancement.\nVeuillez patienter un instant.",
+  "challengeLoadingNote": "Préparation de la caméra et du microphone.",
   "challengeSttFallback": "La reconnaissance vocale n'était pas disponible, vous avez donc joué avec la saisie tactile.",
   "reasonTravelTitle": "Parler en voyage",
   "reasonTravelDesc": "Discutez avec assurance avec les habitants",

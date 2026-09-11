@@ -573,8 +573,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get challengeLoadingTitle => 'Loading…';
 
   @override
-  String get challengeLoadingNote =>
-      'Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.';
+  String get challengeLoadingNote => 'Getting the camera and microphone ready.';
 
   @override
   String get challengeSttFallback =>

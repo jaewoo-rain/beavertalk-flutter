@@ -175,7 +175,7 @@
   "challengeStart": "Kamera va mikrofonni yoqish",
   "challengePermissionNote": "Old kamera va mikrofonga ruxsat talab qilinadi (ixtiyoriy).",
   "challengeLoadingTitle": "Yuklanmoqda…",
-  "challengeLoadingNote": "Birinchi ishga tushirishda koreys nutq modeli (~82MB) yuklab olinmoqda.\nBiroz kuting.",
+  "challengeLoadingNote": "Kamera va mikrofon tayyorlanmoqda.",
   "challengeSttFallback": "Nutqni aniqlash mavjud emas edi, shuning uchun ekranga bosib oʻynadingiz.",
   "reasonTravelTitle": "Sayohat paytida gaplashish",
   "reasonTravelDesc": "Mahalliy aholi bilan ishonch bilan suhbatlashing",

@@ -581,7 +581,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'ပထမဆုံးအကြိမ် ဖွင့်ချိန်တွင် ကိုရီးယား အသံအသိအမှတ်ပြု မော်ဒယ် (~82MB) ကို ဒေါင်းလုတ်ဆွဲနေပါသည်။\nခဏစောင့်ပါ။';
+      'ကင်မရာနှင့် မိုက်ခရိုဖုန်းကို ပြင်ဆင်နေသည်။';
 
   @override
   String get challengeSttFallback =>

@@ -568,8 +568,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get challengeLoadingTitle => 'กำลังโหลด…';
 
   @override
-  String get challengeLoadingNote =>
-      'กำลังดาวน์โหลดโมเดลเสียงภาษาเกาหลี (~82MB) ในการรันครั้งแรก\nโปรดรอสักครู่';
+  String get challengeLoadingNote => 'กำลังเตรียมกล้องและไมโครโฟน';
 
   @override
   String get challengeSttFallback =>

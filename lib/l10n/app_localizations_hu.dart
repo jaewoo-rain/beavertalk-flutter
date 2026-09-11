@@ -583,7 +583,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'A koreai beszédfelismerő modell (~82 MB) letöltése az első indításkor.\nKérjük, várj egy kicsit.';
+      'A kamera és a mikrofon előkészítése folyamatban.';
 
   @override
   String get challengeSttFallback =>

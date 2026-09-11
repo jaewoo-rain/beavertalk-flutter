@@ -175,7 +175,7 @@
   "challengeStart": "Mulakan Kamera & Mikrofon",
   "challengePermissionNote": "Akses kamera depan dan mikrofon diperlukan (pilihan).",
   "challengeLoadingTitle": "Memuatkan…",
-  "challengeLoadingNote": "Memuat turun model pertuturan Korea (~82MB) pada larian pertama.\nSila tunggu sebentar.",
+  "challengeLoadingNote": "Menyediakan kamera dan mikrofon.",
   "challengeSttFallback": "Pengecaman suara tidak tersedia, jadi anda bermain dengan input ketik.",
   "reasonTravelTitle": "Bertutur semasa mengembara",
   "reasonTravelDesc": "Berbual dengan yakin bersama penduduk tempatan",

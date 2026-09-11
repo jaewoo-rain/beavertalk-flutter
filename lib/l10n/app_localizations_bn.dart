@@ -574,7 +574,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'প্রথমবার চালু করার সময় কোরিয়ান স্পিচ মডেল (~৮২MB) ডাউনলোড হচ্ছে।\nঅনুগ্রহ করে একটু অপেক্ষা করুন।';
+      'ক্যামেরা ও মাইক্রোফোন প্রস্তুত করা হচ্ছে।';
 
   @override
   String get challengeSttFallback =>

@@ -574,8 +574,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get challengeLoadingTitle => 'Ачаалж байна…';
 
   @override
-  String get challengeLoadingNote =>
-      'Анх удаа ажиллуулахад Солонгос хэлний загварыг (~82MB) татаж байна.\nТэвчээртэй хүлээнэ үү.';
+  String get challengeLoadingNote => 'Камер болон микрофоныг бэлтгэж байна.';
 
   @override
   String get challengeSttFallback =>

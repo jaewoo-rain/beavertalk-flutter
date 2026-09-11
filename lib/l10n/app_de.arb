@@ -175,7 +175,7 @@
   "challengeStart": "Kamera & Mikrofon starten",
   "challengePermissionNote": "Zugriff auf Frontkamera und Mikrofon ist erforderlich (optional).",
   "challengeLoadingTitle": "Wird geladen…",
-  "challengeLoadingNote": "Beim ersten Start wird das koreanische Sprachmodell (~82MB) heruntergeladen.\nBitte warte einen Moment.",
+  "challengeLoadingNote": "Kamera und Mikrofon werden vorbereitet.",
   "challengeSttFallback": "Die Spracherkennung war nicht verfügbar, daher hast du mit Tipp-Eingabe gespielt.",
   "reasonTravelTitle": "Sprechen auf Reisen",
   "reasonTravelDesc": "Selbstbewusst mit Einheimischen sprechen",

@@ -175,7 +175,7 @@
   "challengeStart": "Kamera ve Mikrofonu Başlat",
   "challengePermissionNote": "Ön kamera ve mikrofon erişimi gereklidir (isteğe bağlı).",
   "challengeLoadingTitle": "Yükleniyor…",
-  "challengeLoadingNote": "İlk çalıştırmada Korece konuşma modeli indiriliyor (~82MB).\nLütfen bir süre bekleyin.",
+  "challengeLoadingNote": "Kamera ve mikrofon hazırlanıyor.",
   "challengeSttFallback": "Konuşma tanıma kullanılamadığı için dokunma girişiyle oynadınız.",
   "reasonTravelTitle": "Seyahat ederken konuşma",
   "reasonTravelDesc": "Yerel halkla kendinden emin sohbet edin",

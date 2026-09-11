@@ -577,8 +577,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get challengeLoadingTitle => 'Ladataan…';
 
   @override
-  String get challengeLoadingNote =>
-      'Ladataan korean puhemallia (~82 Mt) ensimmäisellä käyttökerralla.\nOdota hetki.';
+  String get challengeLoadingNote => 'Valmistellaan kameraa ja mikrofonia.';
 
   @override
   String get challengeSttFallback =>

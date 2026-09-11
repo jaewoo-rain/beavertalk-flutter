@@ -553,7 +553,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get challengeLoadingTitle => '加载中…';
 
   @override
-  String get challengeLoadingNote => '首次运行会下载韩语语音模型（约 82MB）。\n请稍候片刻。';
+  String get challengeLoadingNote => '正在准备摄像头和麦克风。';
 
   @override
   String get challengeSttFallback => '语音识别不可用，因此你使用了点击输入来游玩。';

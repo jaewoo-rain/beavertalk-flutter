@@ -579,8 +579,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get challengeLoadingTitle => 'Naglo-load…';
 
   @override
-  String get challengeLoadingNote =>
-      'Dina-download ang Korean speech model (~82MB) sa unang pagpapatakbo.\nPakihintay lang.';
+  String get challengeLoadingNote => 'Inihahanda ang camera at mikropono.';
 
   @override
   String get challengeSttFallback =>

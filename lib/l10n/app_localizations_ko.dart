@@ -556,8 +556,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get challengeLoadingTitle => '로딩 중…';
 
   @override
-  String get challengeLoadingNote =>
-      '처음 실행 시 한국어 음성 모델(약 82MB)을 다운로드해요.\n잠시만 기다려 주세요.';
+  String get challengeLoadingNote => '카메라와 마이크를 준비하고 있어요.';
 
   @override
   String get challengeSttFallback => '음성 인식을 사용할 수 없어 탭 입력으로 플레이했어요.';

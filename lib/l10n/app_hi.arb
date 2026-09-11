@@ -175,7 +175,7 @@
   "challengeStart": "कैमरा और माइक शुरू करें",
   "challengePermissionNote": "फ्रंट कैमरा और माइक एक्सेस आवश्यक है (वैकल्पिक)।",
   "challengeLoadingTitle": "लोड हो रहा है…",
-  "challengeLoadingNote": "पहली बार चलाने पर कोरियाई स्पीच मॉडल (~82MB) डाउनलोड हो रहा है।\nकृपया थोड़ा प्रतीक्षा करें।",
+  "challengeLoadingNote": "कैमरा और माइक्रोफ़ोन तैयार किए जा रहे हैं।",
   "challengeSttFallback": "स्पीच पहचान उपलब्ध नहीं थी, इसलिए आपने टैप इनपुट से खेला।",
   "reasonTravelTitle": "यात्रा के दौरान बोलना",
   "reasonTravelDesc": "स्थानीय लोगों से आत्मविश्वास से बात करें",

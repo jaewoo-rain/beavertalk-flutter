@@ -175,7 +175,7 @@
   "challengeStart": "Mulai Kamera & Mikrofon",
   "challengePermissionNote": "Akses kamera depan dan mikrofon diperlukan (opsional).",
   "challengeLoadingTitle": "Memuat…",
-  "challengeLoadingNote": "Mengunduh model suara Korea (~82MB) saat pertama kali dijalankan.\nMohon tunggu sebentar.",
+  "challengeLoadingNote": "Menyiapkan kamera dan mikrofon.",
   "challengeSttFallback": "Pengenalan suara tidak tersedia, jadi kamu bermain dengan input ketuk.",
   "reasonTravelTitle": "Berbicara saat bepergian",
   "reasonTravelDesc": "Mengobrol percaya diri dengan penduduk lokal",

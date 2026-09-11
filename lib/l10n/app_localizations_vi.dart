@@ -573,8 +573,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get challengeLoadingTitle => 'Đang tải…';
 
   @override
-  String get challengeLoadingNote =>
-      'Đang tải mô hình giọng nói tiếng Hàn (~82MB) trong lần chạy đầu tiên.\nVui lòng chờ một lát.';
+  String get challengeLoadingNote => 'Đang chuẩn bị máy ảnh và micrô.';
 
   @override
   String get challengeSttFallback =>

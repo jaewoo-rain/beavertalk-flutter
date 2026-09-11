@@ -572,7 +572,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'पहली बार चलाने पर कोरियाई स्पीच मॉडल (~82MB) डाउनलोड हो रहा है।\nकृपया थोड़ा प्रतीक्षा करें।';
+      'कैमरा और माइक्रोफ़ोन तैयार किए जा रहे हैं।';
 
   @override
   String get challengeSttFallback =>

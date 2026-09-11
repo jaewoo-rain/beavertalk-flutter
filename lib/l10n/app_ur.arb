@@ -175,7 +175,7 @@
   "challengeStart": "کیمرہ اور مائیک شروع کریں",
   "challengePermissionNote": "فرنٹ کیمرہ اور مائیک تک رسائی درکار ہے (اختیاری)۔",
   "challengeLoadingTitle": "لوڈ ہو رہا ہے…",
-  "challengeLoadingNote": "پہلی بار چلانے پر کوریائی اسپیچ ماڈل (~82MB) ڈاؤن لوڈ ہو رہا ہے۔\nبراہ کرم تھوڑی دیر انتظار کریں۔",
+  "challengeLoadingNote": "کیمرہ اور مائیکروفون تیار کیے جا رہے ہیں۔",
   "challengeSttFallback": "اسپیچ ریکگنیشن دستیاب نہیں تھی، اس لیے آپ نے ٹیپ ان پٹ سے کھیلا۔",
   "reasonTravelTitle": "سفر کے دوران بات چیت",
   "reasonTravelDesc": "مقامی لوگوں سے اعتماد کے ساتھ بات کریں",

@@ -574,8 +574,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get challengeLoadingTitle => 'កំពុងផ្ទុក…';
 
   @override
-  String get challengeLoadingNote =>
-      'កំពុងទាញយកម៉ូដែលសំឡេងកូរ៉េ (~82MB) នៅពេលដំណើរការដំបូង។\nសូមរង់ចាំបន្តិច។';
+  String get challengeLoadingNote => 'កំពុងរៀបចំកាមេរ៉ា និងមីក្រូហ្វូន។';
 
   @override
   String get challengeSttFallback =>

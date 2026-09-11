@@ -570,8 +570,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get challengeLoadingTitle => 'جارٍ التحميل…';
 
   @override
-  String get challengeLoadingNote =>
-      'جارٍ تنزيل نموذج التعرف على الكلام الكوري (~82 ميجابايت) عند التشغيل الأول.\nيرجى الانتظار قليلاً.';
+  String get challengeLoadingNote => 'جارٍ تجهيز الكاميرا والميكروفون.';
 
   @override
   String get challengeSttFallback =>

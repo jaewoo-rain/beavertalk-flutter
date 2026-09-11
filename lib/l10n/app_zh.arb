@@ -175,7 +175,7 @@
   "challengeStart": "开启相机和麦克风",
   "challengePermissionNote": "需要前置相机和麦克风权限（可选）。",
   "challengeLoadingTitle": "加载中…",
-  "challengeLoadingNote": "首次运行会下载韩语语音模型（约 82MB）。\n请稍候片刻。",
+  "challengeLoadingNote": "正在准备摄像头和麦克风。",
   "challengeSttFallback": "语音识别不可用，因此你使用了点击输入来游玩。",
   "reasonTravelTitle": "旅行中开口说",
   "reasonTravelDesc": "自信地与当地人交流",

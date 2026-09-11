@@ -572,8 +572,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get challengeLoadingTitle => 'Yükleniyor…';
 
   @override
-  String get challengeLoadingNote =>
-      'İlk çalıştırmada Korece konuşma modeli indiriliyor (~82MB).\nLütfen bir süre bekleyin.';
+  String get challengeLoadingNote => 'Kamera ve mikrofon hazırlanıyor.';
 
   @override
   String get challengeSttFallback =>

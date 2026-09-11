@@ -575,8 +575,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get challengeLoadingTitle => 'Загрузка…';
 
   @override
-  String get challengeLoadingNote =>
-      'При первом запуске загружается корейская речевая модель (~82 МБ).\nПожалуйста, подождите немного.';
+  String get challengeLoadingNote => 'Подготавливаем камеру и микрофон.';
 
   @override
   String get challengeSttFallback =>

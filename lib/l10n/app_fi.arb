@@ -175,7 +175,7 @@
   "challengeStart": "Käynnistä kamera ja mikrofoni",
   "challengePermissionNote": "Etukameran ja mikrofonin käyttöoikeus vaaditaan (valinnainen).",
   "challengeLoadingTitle": "Ladataan…",
-  "challengeLoadingNote": "Ladataan korean puhemallia (~82 Mt) ensimmäisellä käyttökerralla.\nOdota hetki.",
+  "challengeLoadingNote": "Valmistellaan kameraa ja mikrofonia.",
   "challengeSttFallback": "Puheentunnistus ei ollut käytettävissä, joten pelasit napautuksilla.",
   "reasonTravelTitle": "Puhuminen matkustaessa",
   "reasonTravelDesc": "Keskustele itsevarmasti paikallisten kanssa",

@@ -568,8 +568,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get challengeLoadingTitle => 'लोड हुँदैछ…';
 
   @override
-  String get challengeLoadingNote =>
-      'पहिलो पटक चलाउँदा कोरियन स्पिच मोडेल (~82MB) डाउनलोड हुँदैछ।\nकृपया केही समय पर्खनुहोस्।';
+  String get challengeLoadingNote => 'क्यामेरा र माइक्रोफोन तयार गर्दै।';
 
   @override
   String get challengeSttFallback =>

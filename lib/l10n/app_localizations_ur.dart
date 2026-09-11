@@ -575,7 +575,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get challengeLoadingNote =>
-      'پہلی بار چلانے پر کوریائی اسپیچ ماڈل (~82MB) ڈاؤن لوڈ ہو رہا ہے۔\nبراہ کرم تھوڑی دیر انتظار کریں۔';
+      'کیمرہ اور مائیکروفون تیار کیے جا رہے ہیں۔';
 
   @override
   String get challengeSttFallback =>

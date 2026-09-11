@@ -574,8 +574,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get challengeLoadingTitle => 'පූරණය වෙමින්…';
 
   @override
-  String get challengeLoadingNote =>
-      'පළමු වතාවේ ධාවනයේදී කොරියානු කථන ආකෘතිය (~82MB) බාගත වේ.\nකරුණාකර මොහොතක් රැඳී සිටින්න.';
+  String get challengeLoadingNote => 'කැමරාව සහ මයික්‍රෆෝනය සූදානම් කරමින්.';
 
   @override
   String get challengeSttFallback =>

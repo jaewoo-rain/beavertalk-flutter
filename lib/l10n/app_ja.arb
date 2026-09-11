@@ -175,7 +175,7 @@
   "challengeStart": "カメラとマイクを開始",
   "challengePermissionNote": "前面カメラとマイクへのアクセスが必要です（任意）。",
   "challengeLoadingTitle": "読み込み中…",
-  "challengeLoadingNote": "初回は韓国語の音声モデル（約82MB）をダウンロードします。\n少々お待ちください。",
+  "challengeLoadingNote": "カメラとマイクを準備しています。",
   "challengeSttFallback": "音声認識が利用できなかったため、タップ入力でプレイしました。",
   "reasonTravelTitle": "旅行で話す",
   "reasonTravelDesc": "現地で自信を持って会話",

@@ -175,7 +175,7 @@
   "challengeStart": "Камер, микрофон эхлүүлэх",
   "challengePermissionNote": "Урд камер болон микрофоны зөвшөөрөл шаардлагатай (сонголт).",
   "challengeLoadingTitle": "Ачаалж байна…",
-  "challengeLoadingNote": "Анх удаа ажиллуулахад Солонгос хэлний загварыг (~82MB) татаж байна.\nТэвчээртэй хүлээнэ үү.",
+  "challengeLoadingNote": "Камер болон микрофоныг бэлтгэж байна.",
   "challengeSttFallback": "Дуу хоолойн танилт боломжгүй тул та товшилтоор тоглолоо.",
   "reasonTravelTitle": "Аялахдаа ярих",
   "reasonTravelDesc": "Орон нутгийн хүмүүстэй итгэлтэй ярилц",

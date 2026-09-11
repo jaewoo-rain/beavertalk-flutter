@@ -175,7 +175,7 @@
   "challengeStart": "Activar cámara y micrófono",
   "challengePermissionNote": "Se requiere acceso a la cámara frontal y al micrófono (opcional).",
   "challengeLoadingTitle": "Cargando…",
-  "challengeLoadingNote": "Descargando el modelo de voz en coreano (~82MB) en el primer uso.\nEspera un momento.",
+  "challengeLoadingNote": "Preparando la cámara y el micrófono.",
   "challengeSttFallback": "El reconocimiento de voz no estaba disponible, así que jugaste tocando la pantalla.",
   "reasonTravelTitle": "Hablar mientras viajas",
   "reasonTravelDesc": "Conversa con confianza con los locales",

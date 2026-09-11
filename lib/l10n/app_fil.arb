@@ -175,7 +175,7 @@
   "challengeStart": "Simulan ang Camera at Mic",
   "challengePermissionNote": "Kailangan ang access sa front camera at mic (opsyonal).",
   "challengeLoadingTitle": "Naglo-load…",
-  "challengeLoadingNote": "Dina-download ang Korean speech model (~82MB) sa unang pagpapatakbo.\nPakihintay lang.",
+  "challengeLoadingNote": "Inihahanda ang camera at mikropono.",
   "challengeSttFallback": "Hindi available ang speech recognition, kaya naglaro ka gamit ang tap input.",
   "reasonTravelTitle": "Pagsasalita habang naglalakbay",
   "reasonTravelDesc": "Makipag-usap nang may tiwala sa mga lokal",

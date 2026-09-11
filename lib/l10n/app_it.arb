@@ -175,7 +175,7 @@
   "challengeStart": "Avvia fotocamera e microfono",
   "challengePermissionNote": "È richiesto l'accesso alla fotocamera anteriore e al microfono (facoltativo).",
   "challengeLoadingTitle": "Caricamento…",
-  "challengeLoadingNote": "Al primo avvio scarichiamo il modello vocale coreano (~82MB).\nAttendi un momento.",
+  "challengeLoadingNote": "Preparazione di fotocamera e microfono.",
   "challengeSttFallback": "Il riconoscimento vocale non era disponibile, quindi hai giocato con l'input a tocco.",
   "reasonTravelTitle": "Parlare in viaggio",
   "reasonTravelDesc": "Chiacchiera con sicurezza con i locali",

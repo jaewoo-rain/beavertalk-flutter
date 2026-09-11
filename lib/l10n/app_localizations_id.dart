@@ -574,8 +574,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get challengeLoadingTitle => 'Memuat…';
 
   @override
-  String get challengeLoadingNote =>
-      'Mengunduh model suara Korea (~82MB) saat pertama kali dijalankan.\nMohon tunggu sebentar.';
+  String get challengeLoadingNote => 'Menyiapkan kamera dan mikrofon.';
 
   @override
   String get challengeSttFallback =>

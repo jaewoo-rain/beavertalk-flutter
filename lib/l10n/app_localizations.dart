@@ -1201,7 +1201,7 @@ abstract class AppLocalizations {
   /// No description provided for @challengeLoadingNote.
   ///
   /// In en, this message translates to:
-  /// **'Downloading the Korean speech model (~82MB) on first run.\nPlease wait a moment.'**
+  /// **'Getting the camera and microphone ready.'**
   String get challengeLoadingNote;
 
   /// No description provided for @challengeSttFallback.

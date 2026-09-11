@@ -175,7 +175,7 @@
   "challengeStart": "Ativar câmera e microfone",
   "challengePermissionNote": "É necessário acesso à câmera frontal e ao microfone (opcional).",
   "challengeLoadingTitle": "Carregando…",
-  "challengeLoadingNote": "Baixando o modelo de fala em coreano (~82 MB) na primeira execução.\nAguarde um momento.",
+  "challengeLoadingNote": "Preparando a câmera e o microfone.",
   "challengeSttFallback": "O reconhecimento de fala não estava disponível, então você jogou com toques na tela.",
   "reasonTravelTitle": "Falar durante viagens",
   "reasonTravelDesc": "Converse com confiança com os moradores locais",

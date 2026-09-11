@@ -579,8 +579,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get challengeLoadingTitle => 'Memuatkan…';
 
   @override
-  String get challengeLoadingNote =>
-      'Memuat turun model pertuturan Korea (~82MB) pada larian pertama.\nSila tunggu sebentar.';
+  String get challengeLoadingNote => 'Menyediakan kamera dan mikrofon.';
 
   @override
   String get challengeSttFallback =>

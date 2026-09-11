@@ -576,8 +576,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get challengeLoadingTitle => 'Yuklanmoqda…';
 
   @override
-  String get challengeLoadingNote =>
-      'Birinchi ishga tushirishda koreys nutq modeli (~82MB) yuklab olinmoqda.\nBiroz kuting.';
+  String get challengeLoadingNote => 'Kamera va mikrofon tayyorlanmoqda.';
 
   @override
   String get challengeSttFallback =>

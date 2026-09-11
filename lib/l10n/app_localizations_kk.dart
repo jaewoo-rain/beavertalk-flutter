@@ -569,8 +569,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get challengeLoadingTitle => 'Жүктелуде…';
 
   @override
-  String get challengeLoadingNote =>
-      'Алғашқы іске қосуда корей тілі моделі (~82МБ) жүктеліп жатыр.\nСәл күте тұрыңыз.';
+  String get challengeLoadingNote => 'Камера мен микрофон дайындалып жатыр.';
 
   @override
   String get challengeSttFallback =>
