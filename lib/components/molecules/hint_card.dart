@@ -124,16 +124,23 @@ class HintCard extends StatelessWidget {
     );
   }
 
+  /// 정본 `card/hint · state=full` 은 **3행**이다 — 머리행 / 본문행 / 액션행.
+  ///
+  /// 종전에는 2행이었고 스피커·북마크가 본문 텍스트 **오른쪽에 인라인**으로
+  /// 붙어 있었다. 그래서 한국어 줄이 길어지면 텍스트 폭이 버튼에 먹혀 일찍
+  /// 줄바꿈됐다. 버튼을 제 행으로 내리면 본문이 카드 폭을 온전히 쓴다.
   Widget _full(BuildContext context, AppLocalizations l10n) {
     final ex = _current;
     return Padding(
+      // 정본은 상 12 / 좌·우·하 14 다. 14 는 `AppSpacing` 에 없는 값이라
+      // s16 을 쓴다 — 규약이 스케일 밖 숫자를 금한다(작업지시 §9).
       padding: const EdgeInsets.fromLTRB(
           AppSpacing.s16, AppSpacing.s12, AppSpacing.s16, AppSpacing.s16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Header: "Hint" + counter/cycle.
+          // ── row/top — 좌 [Hint] · 우 [사이클][N/3] ──────────
           Row(
             children: [
               // Non-flex: the short "Hint" label must not share flex with the
@@ -148,10 +155,7 @@ class HintCard extends StatelessWidget {
               ),
               const Spacer(),
               if (examples.length > 1) ...[
-                Text('${index + 1}/${examples.length}',
-                    style: AppType.caption2.r
-                        .copyWith(color: context.c.labelNormal)),
-                const SizedBox(width: AppSpacing.s4),
+                // 정본 순서는 [아이콘][N/3] 이다. 종전은 반대였다.
                 Semantics(
                   button: true,
                   label: l10n.nextHint,
@@ -162,43 +166,95 @@ class HintCard extends StatelessWidget {
                         size: 16, color: context.c.labelNormal),
                   ),
                 ),
+                const SizedBox(width: AppSpacing.s4),
+                Text('${index + 1}/${examples.length}',
+                    style: AppType.caption2.r
+                        .copyWith(color: context.c.labelNormal)),
               ],
             ],
           ),
           const SizedBox(height: AppSpacing.s8),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          // ── row/body — 텍스트만. 버튼은 아래 액션행으로 내려갔다 ──
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(ex.korean,
-                        style: AppType.body1.sb
-                            .copyWith(color: context.c.labelStrong)),
-                    if (ex.roman != null && ex.roman!.isNotEmpty) ...[
-                      const SizedBox(height: AppSpacing.s2),
-                      Text(ex.roman!,
-                          style: AppType.caption1.r
-                              .copyWith(color: context.c.labelNormal)),
-                    ],
-                    if (ex.native.isNotEmpty) ...[
-                      const SizedBox(height: AppSpacing.s2),
-                      Text(ex.native,
-                          style: AppType.caption1.r
-                              .copyWith(color: context.c.labelNormal)),
-                    ],
-                  ],
-                ),
+              Text(ex.korean,
+                  style: AppType.body1.sb
+                      .copyWith(color: context.c.labelStrong)),
+              if (ex.roman != null && ex.roman!.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.s4),
+                Text(ex.roman!,
+                    style: AppType.caption1.r
+                        .copyWith(color: context.c.labelNormal)),
+              ],
+              if (ex.native.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.s4),
+                Text(ex.native,
+                    style: AppType.caption1.r
+                        .copyWith(color: context.c.labelNormal)),
+              ],
+            ],
+          ),
+          const SizedBox(height: AppSpacing.s8),
+          // ── 액션행 — 우측 정렬, [스피커][북마크] ────────────
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _outlinedAction(
+                context,
+                semanticLabel: l10n.listenStandard,
+                onTap: onSpeak,
+                icon: AppIcons.volume(size: 20, color: context.c.labelNormal),
               ),
               const SizedBox(width: AppSpacing.s8),
-              _speakButton(context),
-              const SizedBox(width: AppSpacing.s8),
-              _bookmarkButton(context, l10n),
+              _outlinedAction(
+                context,
+                semanticLabel:
+                    bookmarked ? l10n.unsaveSentence : l10n.saveSentence,
+                onTap: onBookmarkTap,
+                icon: bookmarked
+                    ? AppIcons.bookmarkFill(
+                        size: 20, color: context.c.primaryNormal)
+                    : AppIcons.bookmarkLine(
+                        size: 20, color: context.c.labelNormal),
+              ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  /// `full` 의 액션 버튼 — **채움 없이 테두리만** 두른 32 원형.
+  ///
+  /// `peek` 의 [_speakButton]·[_bookmarkButton] 과 겉모습이 다르다. peek 은
+  /// 정본이 안 바뀌었으므로 종전 채움 원을 그대로 둔다 — 두 경로를 한
+  /// 위젯으로 합치면 peek 이 같이 변한다.
+  Widget _outlinedAction(
+    BuildContext context, {
+    required String semanticLabel,
+    required Widget icon,
+    required VoidCallback? onTap,
+  }) {
+    return Semantics(
+      button: true,
+      label: semanticLabel,
+      child: Material(
+        color: Colors.transparent,
+        shape: CircleBorder(
+          side: BorderSide(color: context.c.lineNeutral),
+        ),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onTap,
+          child: SizedBox(
+            width: 32,
+            height: 32,
+            child: Center(child: icon),
+          ),
+        ),
       ),
     );
   }

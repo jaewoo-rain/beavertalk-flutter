@@ -71,7 +71,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// the equalizer. Not an [AppSpacing] step — the design uses the gap to park
   /// the feed at a fixed distance above the caption, so rounding it to s60/s72
   /// visibly moves the feed.
-  static const double _feedToCaptionGap = 70;
+  /// 영상 하단 → 자막 상단 간격.
+  ///
+  /// Figma Body 의 `itemSpacing` 이고 정본 22장 전건이 16이다. 70 은 구
+  /// `SPACE_BETWEEN` 배치가 남긴 값으로, 자막을 영상에서 떼어 놓고 있었다.
+  static const double _feedToCaptionGap = AppSpacing.s16;
 
   // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
   //   기본은 false(아바타 ON) — 제품 그대로의 부하에서 재생이 버티는지가 판정 기준이다.
@@ -643,7 +647,12 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 child: SingleChildScrollView(
                   // No horizontal padding here — the feed is full-bleed; only
                   // the caption block below is inset.
-                  padding: const EdgeInsets.only(bottom: AppSpacing.s24),
+                  // 힌트 on 이면 0 — 카드 바닥이 푸터 상단에 밀착해야 한다
+                  // (정본: 카드 바닥 = 푸터 상단, 모바일 586 · 태블릿 854).
+                  // off 면 s24 를 남긴다 — 자막이 푸터에 붙으면 안 된다.
+                  padding: EdgeInsets.only(
+                    bottom: showHint ? 0 : AppSpacing.s24,
+                  ),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -704,10 +713,19 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       ),
                       const SizedBox(height: _feedToCaptionGap),
                       // Caption slot + hint card.
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.s32,
-                        ),
+                      //
+                      // 자막과 힌트 카드는 **같은 컬럼을 공유한다** — 좌우
+                      // 경계가 어긋나면 카드가 자막 밖으로 튀어나와 보인다.
+                      // `Padding(horizontal: s32)` 은 폰 375 에서 311(정본값)
+                      // 을 주지만 태블릿 810 에서 746 이 되어 본문 폭 규약을
+                      // 벗어났다. `ContentColumn` 은 같은 폰 값을 유지하면서
+                      // 넓은 폭에서 캡 600 에 멈춘다.
+                      //
+                      // 정본 태블릿 값은 536 이나, 캡을 새로 열지 않기로 했다
+                      // (작업지시 §3.2-A) — `tablet_band_test` 가 막는 「폭
+                      // 발명」이고 폰에서는 두 선택지가 같은 311 이다.
+                      ContentColumn(
+                        gutter: AppSpacing.s32,
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -728,7 +746,8 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                             else
                               const SpeakingEqualizer(),
                             if (showHint) ...[
-                              const SizedBox(height: AppSpacing.s24),
+                              // 정본 카드 상단 432 · 자막 하단 414.94 → 16.
+                              const SizedBox(height: AppSpacing.s16),
                               // The bookmark glyph fills/empties from the shared
                               // store, so it also reflects a save made elsewhere
                               // for the same sentence.
