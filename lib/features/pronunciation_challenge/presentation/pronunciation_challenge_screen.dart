@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gal/gal.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:video_player/video_player.dart';
 
 import '../../../app/app_scaffold.dart';
 import '../../../components/atoms/button.dart';
@@ -1078,29 +1079,10 @@ class _PronunciationChallengeScreenState
 
   /// The recorded clip, as a white card with a mint play button (88×148).
   Widget _clipPreview(BuildContext context) {
-    return GestureDetector(
-      onTap: _shareResult,
-      child: Container(
-        key: _clipCardKey,
-        width: 88,
-        height: 148,
-        decoration: BoxDecoration(
-          color: context.c.staticWhite,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Center(
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: context.c.primaryNormal,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.play_arrow_rounded,
-                size: 24, color: context.c.commonDarkAndWhite),
-          ),
-        ),
-      ),
+    return _ClipPreview(
+      key: ValueKey<String>(_videoPath ?? ''),
+      cardKey: _clipCardKey,
+      path: _videoPath!,
     );
   }
 
@@ -1227,5 +1209,153 @@ Yours?
       buf.write(s[i]);
     }
     return buf.toString();
+  }
+}
+
+
+/// 결과 패널의 클립 미리보기 — **실제 녹화 영상**이다.
+///
+/// 종전에는 흰 사각형에 재생 아이콘만 그린 목업이었다. 클립이 이 모드의
+/// 산출물인데, 미리보기가 빈 카드라 방금 찍힌 것이 무엇인지 확인할 방법이
+/// 없었고 재생 버튼은 아무 데도 이어지지 않았다(탭하면 공유 시트가 떴다 —
+/// 재생 아이콘이 약속하는 동작이 아니다).
+///
+/// 이제 첫 프레임을 띄우고, 탭하면 카드 안에서 재생한다. 클립은 설계상
+/// 무음이므로 소리 걱정은 없다. 디코드에 실패하면 종전의 흰 카드로 되돌아간다
+/// — 공유·저장은 파일만 있으면 되므로 미리보기가 죽어도 기능은 산다.
+///
+/// 크기(88×148)는 Figma 정본값이라 건드리지 않았다.
+class _ClipPreview extends StatefulWidget {
+  const _ClipPreview({
+    super.key,
+    required this.cardKey,
+    required this.path,
+  });
+
+  /// 공유 시트 팝오버의 기준 사각형을 재는 렌더 키(iPad·Mac).
+  final GlobalKey cardKey;
+
+  /// 녹화된 mp4 경로.
+  final String path;
+
+  @override
+  State<_ClipPreview> createState() => _ClipPreviewState();
+}
+
+class _ClipPreviewState extends State<_ClipPreview> {
+  VideoPlayerController? _controller;
+  bool _ready = false;
+
+  static const double _w = 88;
+  static const double _h = 148;
+  static const double _radius = 16;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_open());
+  }
+
+  Future<void> _open() async {
+    final file = File(widget.path);
+    if (!file.existsSync()) return;
+    final c = VideoPlayerController.file(file);
+    try {
+      await c.initialize();
+      await c.setVolume(0); // 클립은 무음 녹화다. 명시해 둔다.
+    } catch (e) {
+      // 디코드 불가 — 흰 카드로 남는다. 공유·저장은 그대로 동작한다.
+      debugPrint('clip preview decode failed: $e');
+      await c.dispose();
+      return;
+    }
+    if (!mounted) {
+      await c.dispose();
+      return;
+    }
+    // 끝까지 재생되면 첫 프레임으로 되돌려 다시 누를 수 있게 한다.
+    c.addListener(_onTick);
+    setState(() {
+      _controller = c;
+      _ready = true;
+    });
+  }
+
+  void _onTick() {
+    final c = _controller;
+    if (c == null || !mounted) return;
+    final v = c.value;
+    if (v.isInitialized && !v.isPlaying && v.position >= v.duration) {
+      unawaited(c.seekTo(Duration.zero));
+    }
+    setState(() {}); // 재생 여부에 따라 오버레이를 갈아 끼운다
+  }
+
+  Future<void> _toggle() async {
+    final c = _controller;
+    if (c == null) return;
+    if (c.value.isPlaying) {
+      await c.pause();
+    } else {
+      if (c.value.position >= c.value.duration) await c.seekTo(Duration.zero);
+      await c.play();
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_onTick);
+    _controller?.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final c = _controller;
+    final playing = _ready && c != null && c.value.isPlaying;
+    return GestureDetector(
+      onTap: _ready ? _toggle : null,
+      child: Container(
+        key: widget.cardKey,
+        width: _w,
+        height: _h,
+        clipBehavior: Clip.antiAlias,
+        decoration: BoxDecoration(
+          color: context.c.staticWhite,
+          borderRadius: BorderRadius.circular(_radius),
+        ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            // 세로 카드를 꽉 채운다. 녹화는 화면비(9:19.5 등)가 카드와 달라
+            // cover 로 잘라야 레터박스가 안 생긴다.
+            if (_ready && c != null)
+              FittedBox(
+                fit: BoxFit.cover,
+                clipBehavior: Clip.hardEdge,
+                child: SizedBox(
+                  width: c.value.size.width,
+                  height: c.value.size.height,
+                  child: VideoPlayer(c),
+                ),
+              ),
+            // 재생 중에는 화면을 가리지 않게 오버레이를 걷는다.
+            if (!playing)
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: context.c.primaryNormal,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(Icons.play_arrow_rounded,
+                      size: 24, color: context.c.commonDarkAndWhite),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 }
