@@ -467,6 +467,29 @@ class AppLocalizationsMn extends AppLocalizations {
   String get navStats => 'Статистик';
 
   @override
+  String get homeCourseExpression => 'Хэллэг';
+
+  @override
+  String get homeCourseFreetalk => 'Чөлөөт яриа';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Чөлөөт яриа хүртэл $count хэллэг үлдлээ';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Сурсанаа ашиглан чөлөөтэй ярилцаарай';
+
+  @override
+  String get homeLevelPending => 'Түвшин тодорхойгүй';
+
+  @override
+  String get homeNoLevelTitle => 'Танд одоогоор түвшин алга';
+
+  @override
+  String get homeNoLevelNote => 'Эхний дуудлагаа дуусгавал түвшин гарна';
+
+  @override
   String get myPage => 'Миний хуудас';
 
   @override

@@ -468,6 +468,30 @@ class AppLocalizationsUr extends AppLocalizations {
   String get navStats => 'اعداد و شمار';
 
   @override
+  String get homeCourseExpression => 'اظہار';
+
+  @override
+  String get homeCourseFreetalk => 'آزاد گفتگو';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'آزاد گفتگو تک $count اظہار باقی';
+  }
+
+  @override
+  String get homeFreetalkNote =>
+      'جو سیکھا ہے اسے استعمال کرکے آزادانہ بات کریں';
+
+  @override
+  String get homeLevelPending => 'لیول طے نہیں';
+
+  @override
+  String get homeNoLevelTitle => 'آپ کا لیول ابھی نہیں ہے';
+
+  @override
+  String get homeNoLevelNote => 'پہلی کال مکمل کریں تو لیول مل جائے گا';
+
+  @override
   String get myPage => 'میرا صفحہ';
 
   @override

@@ -463,6 +463,30 @@ class AppLocalizationsNe extends AppLocalizations {
   String get navStats => 'तथ्याङ्क';
 
   @override
+  String get homeCourseExpression => 'अभिव्यक्ति';
+
+  @override
+  String get homeCourseFreetalk => 'स्वतन्त्र कुराकानी';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'स्वतन्त्र कुराकानीसम्म $count अभिव्यक्ति बाँकी';
+  }
+
+  @override
+  String get homeFreetalkNote =>
+      'सिकेको प्रयोग गरी स्वतन्त्र रूपमा कुरा गर्नुहोस्';
+
+  @override
+  String get homeLevelPending => 'स्तर निर्धारित छैन';
+
+  @override
+  String get homeNoLevelTitle => 'तपाईंको स्तर अझै छैन';
+
+  @override
+  String get homeNoLevelNote => 'पहिलो कल सकेपछि स्तर आउँछ';
+
+  @override
   String get myPage => 'मेरो पेज';
 
   @override

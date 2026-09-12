@@ -468,6 +468,29 @@ class AppLocalizationsSi extends AppLocalizations {
   String get navStats => 'සංඛ්‍යාලේඛන';
 
   @override
+  String get homeCourseExpression => 'ප්‍රකාශන';
+
+  @override
+  String get homeCourseFreetalk => 'නිදහස් කතාව';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'නිදහස් කතාව දක්වා ප්‍රකාශන $countක් ඉතිරියි';
+  }
+
+  @override
+  String get homeFreetalkNote => 'ඉගෙන ගත් දේ භාවිතා කර නිදහසේ කතා කරන්න';
+
+  @override
+  String get homeLevelPending => 'මට්ටම නිශ්චිත නැත';
+
+  @override
+  String get homeNoLevelTitle => 'ඔබට තවම මට්ටමක් නැත';
+
+  @override
+  String get homeNoLevelNote => 'පළමු ඇමතුම අවසන් කළ විට මට්ටම ලැබේ';
+
+  @override
   String get myPage => 'මගේ පිටුව';
 
   @override

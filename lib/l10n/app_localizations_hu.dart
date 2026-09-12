@@ -474,6 +474,29 @@ class AppLocalizationsHu extends AppLocalizations {
   String get navStats => 'Statisztika';
 
   @override
+  String get homeCourseExpression => 'Kifejezések';
+
+  @override
+  String get homeCourseFreetalk => 'Szabad beszélgetés';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Még $count kifejezés a szabad beszélgetésig';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Használd a tanultakat és beszélj szabadon';
+
+  @override
+  String get homeLevelPending => 'Szint nincs meg';
+
+  @override
+  String get homeNoLevelTitle => 'Még nincs szinted';
+
+  @override
+  String get homeNoLevelNote => 'Fejezd be az első hívást, és megkapod';
+
+  @override
   String get myPage => 'Saját oldal';
 
   @override

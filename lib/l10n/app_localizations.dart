@@ -1000,6 +1000,48 @@ abstract class AppLocalizations {
   /// **'Stats'**
   String get navStats;
 
+  /// Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Expression'**
+  String get homeCourseExpression;
+
+  /// Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`.
+  ///
+  /// In en, this message translates to:
+  /// **'Free talk'**
+  String get homeCourseFreetalk;
+
+  /// Home learning-status block, third line: how many expressions remain before free talk unlocks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} expressions left until free talk'**
+  String homeExpressionsLeft(int count);
+
+  /// Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Use what you learned and talk freely'**
+  String get homeFreetalkNote;
+
+  /// Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge.
+  ///
+  /// In en, this message translates to:
+  /// **'Level pending'**
+  String get homeLevelPending;
+
+  /// Home learning-status block, second line when no level is assigned.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have a level yet'**
+  String get homeNoLevelTitle;
+
+  /// Home learning-status block, third line when no level is assigned — how to get one.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish your first call to get one'**
+  String get homeNoLevelNote;
+
   /// No description provided for @myPage.
   ///
   /// In en, this message translates to:

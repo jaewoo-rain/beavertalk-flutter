@@ -32,6 +32,15 @@ class Skeleton extends StatelessWidget {
       : _shape = BoxShape.rectangle,
         _radius = _boxRadius;
 
+  /// A pill placeholder — the slot a [Badge] leaves behind (`skeleton-pill`).
+  ///
+  /// Fully rounded, so it reads as a pill rather than a text line. A
+  /// [Skeleton.bar] at this height keeps its 4px corners and looks like a
+  /// button, not a badge.
+  const Skeleton.pill({super.key, required double this.width, required this.height})
+      : _shape = BoxShape.rectangle,
+        _radius = _pillRadius;
+
   /// An avatar placeholder.
   const Skeleton.circle({super.key, required double size})
       : width = size,
@@ -52,6 +61,11 @@ class Skeleton extends StatelessWidget {
   /// so neither has a token — and neither is a caller's choice, so they stay
   /// private: which one you get follows from the constructor you pick.
   static const double _barRadius = 4, _boxRadius = 6;
+
+  /// `skeleton-pill` 은 정본이 13 을 준다 — [Badge] 반지름과 같은 값이다.
+  /// 위 둘과 달리 「반쯤 둥근 사각형」이 아니라 **높이의 절반**이 목적이라,
+  /// 배지 높이(26)가 바뀌면 이 값도 따라가야 한다.
+  static const double _pillRadius = 13;
 
   @override
   Widget build(BuildContext context) {

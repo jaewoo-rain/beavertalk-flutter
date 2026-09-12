@@ -467,6 +467,29 @@ class AppLocalizationsKm extends AppLocalizations {
   String get navStats => 'ស្ថិតិ';
 
   @override
+  String get homeCourseExpression => 'កន្សោម';
+
+  @override
+  String get homeCourseFreetalk => 'សន្ទនាសេរី';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'នៅសល់កន្សោម $count រហូតដល់សន្ទនាសេរី';
+  }
+
+  @override
+  String get homeFreetalkNote => 'ប្រើអ្វីដែលរៀនរួច ហើយសន្ទនាដោយសេរី';
+
+  @override
+  String get homeLevelPending => 'មិនទាន់មានកម្រិត';
+
+  @override
+  String get homeNoLevelTitle => 'អ្នកមិនទាន់មានកម្រិតទេ';
+
+  @override
+  String get homeNoLevelNote => 'បញ្ចប់ការហៅទូរស័ព្ទដំបូង នោះនឹងមានកម្រិត';
+
+  @override
   String get myPage => 'ទំព័ររបស់ខ្ញុំ';
 
   @override

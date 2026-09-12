@@ -265,3 +265,76 @@ const mockCallResult = MockCallResult(
   overall: 98, pronunciation: 96, fluency: 91, rhythm: 91,
   sentences: mockSentences,
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 홈 학습 현황 (Home/GNB · Figma `5925:26645`)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// 홈 상단이 무엇을 안내하고 있는가 — Figma 컴포넌트 세트 `Home/GNB` 의
+/// `Property 1` 변형 3종에 1:1 대응한다.
+enum HomeCourseKind {
+  /// `GNB/표현학습` — 단원 배지 + 주제 + 「자유 회화까지 표현 N개 남음」.
+  expression,
+
+  /// `GNB/자유회화` — 단원 배지 + 주제 + 「배운 표현을 바탕으로…」.
+  ///
+  /// 표현을 다 익혀 카운트다운이 끝난 상태다. 배지·주제 줄은 표현학습과 같고
+  /// 셋째 줄만 안내로 바뀐다.
+  freetalk,
+
+  /// `GNB/레벨미정` — 중립 배지 「레벨 미정」 + 「아직 레벨이 없어요」.
+  ///
+  /// 단원도 주제도 없다. 레벨이 정해지기 전에는 커리큘럼 위치 자체가 없어서다.
+  noLevel,
+}
+
+/// 홈 상단 학습 현황 한 덩어리.
+///
+/// ⚠ **전부 목이다.** 서버 계약이 아직 없다(`api_endpoints.dart` 에 커리큘럼
+/// 엔드포인트가 없고, `LevelSummary` 는 마이페이지용 레벨 숫자만 준다).
+/// 사용자가 「서버에서 받는 것을 모두 목데이터로 처리해 나중에 내가 넣겠다」고
+/// 정했다(2026-09-12) — 실 연동 시 이 클래스를 도메인 엔티티로 옮기고
+/// [mockHomeCourse] 를 provider 로 갈아끼우면 화면은 그대로 둘 수 있다.
+class MockHomeCourse {
+  /// 학습 현황을 만든다.
+  const MockHomeCourse({
+    required this.kind,
+    this.unitCode,
+    this.topic,
+    this.expressionsLeft,
+  });
+
+  /// 어떤 변형을 그릴지.
+  final HomeCourseKind kind;
+
+  /// 단원 코드(`A1-01`). [HomeCourseKind.noLevel] 에서는 null 이다 —
+  /// 그 변형은 배지에 「레벨 미정」을 대신 넣는다.
+  final String? unitCode;
+
+  /// 이번 단원의 주제 한 줄. noLevel 에서는 null.
+  final String? topic;
+
+  /// 자유 회화까지 남은 표현 수. [HomeCourseKind.expression] 에서만 쓴다.
+  final int? expressionsLeft;
+}
+
+/// 홈 상단 목데이터 — Figma `GNB/표현학습` 실측값 그대로.
+///
+/// 다른 변형을 눈으로 보려면 이 상수를 [mockHomeCourseFreetalk] ·
+/// [mockHomeCourseNoLevel] 로 바꿔 끼운다.
+const mockHomeCourse = MockHomeCourse(
+  kind: HomeCourseKind.expression,
+  unitCode: 'A1-01',
+  topic: '처음 만난 반 친구와 이름과 나라 말하기',
+  expressionsLeft: 14,
+);
+
+/// `GNB/자유회화` 변형 목 — 표현을 다 익힌 뒤.
+const mockHomeCourseFreetalk = MockHomeCourse(
+  kind: HomeCourseKind.freetalk,
+  unitCode: 'A1-01',
+  topic: '처음 만난 반 친구와 이름과 나라 말하기',
+);
+
+/// `GNB/레벨미정` 변형 목 — 레벨테스트 전.
+const mockHomeCourseNoLevel = MockHomeCourse(kind: HomeCourseKind.noLevel);

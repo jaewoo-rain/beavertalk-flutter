@@ -452,6 +452,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get navStats => '统计';
 
   @override
+  String get homeCourseExpression => '表达学习';
+
+  @override
+  String get homeCourseFreetalk => '自由对话';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '距离自由对话还剩 $count 个表达';
+  }
+
+  @override
+  String get homeFreetalkNote => '用学过的表达自由交流吧';
+
+  @override
+  String get homeLevelPending => '等级未定';
+
+  @override
+  String get homeNoLevelTitle => '还没有等级';
+
+  @override
+  String get homeNoLevelNote => '完成第一次通话就会有等级';
+
+  @override
   String get myPage => '我的';
 
   @override

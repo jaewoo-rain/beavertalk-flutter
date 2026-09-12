@@ -472,6 +472,29 @@ class AppLocalizationsMy extends AppLocalizations {
   String get navStats => 'စာရင်းအင်း';
 
   @override
+  String get homeCourseExpression => 'အသုံးအနှုန်း';
+
+  @override
+  String get homeCourseFreetalk => 'လွတ်လပ်စကားပြော';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'လွတ်လပ်စကားပြောအထိ အသုံးအနှုန်း $count ခုကျန်';
+  }
+
+  @override
+  String get homeFreetalkNote => 'သင်ယူထားသည်ကို သုံး၍ လွတ်လပ်စွာ စကားပြောပါ';
+
+  @override
+  String get homeLevelPending => 'အဆင့် မသတ်မှတ်ရသေး';
+
+  @override
+  String get homeNoLevelTitle => 'သင့်မှာ အဆင့် မရှိသေးပါ';
+
+  @override
+  String get homeNoLevelNote => 'ပထမဆုံးခေါ်ဆိုမှုပြီးလျှင် အဆင့်ရပါမည်';
+
+  @override
   String get myPage => 'ကျွန်ုပ်၏စာမျက်နှာ';
 
   @override

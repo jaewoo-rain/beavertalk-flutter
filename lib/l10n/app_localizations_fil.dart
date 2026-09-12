@@ -471,6 +471,29 @@ class AppLocalizationsFil extends AppLocalizations {
   String get navStats => 'Stats';
 
   @override
+  String get homeCourseExpression => 'Ekspresyon';
+
+  @override
+  String get homeCourseFreetalk => 'Malayang usapan';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '$count ekspresyon na lang bago ang malayang usapan';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Gamitin ang natutunan at malayang mag-usap';
+
+  @override
+  String get homeLevelPending => 'Wala pang level';
+
+  @override
+  String get homeNoLevelTitle => 'Wala ka pang level';
+
+  @override
+  String get homeNoLevelNote => 'Tapusin ang unang tawag para makakuha';
+
+  @override
   String get myPage => 'Aking Page';
 
   @override

@@ -467,6 +467,29 @@ class AppLocalizationsVi extends AppLocalizations {
   String get navStats => 'Thống kê';
 
   @override
+  String get homeCourseExpression => 'Mẫu câu';
+
+  @override
+  String get homeCourseFreetalk => 'Trò chuyện tự do';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Còn $count mẫu câu nữa đến trò chuyện tự do';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Dùng những gì đã học và trò chuyện tự do';
+
+  @override
+  String get homeLevelPending => 'Chưa có cấp độ';
+
+  @override
+  String get homeNoLevelTitle => 'Bạn chưa có cấp độ';
+
+  @override
+  String get homeNoLevelNote => 'Hoàn thành cuộc gọi đầu tiên để nhận cấp độ';
+
+  @override
   String get myPage => 'Trang của tôi';
 
   @override

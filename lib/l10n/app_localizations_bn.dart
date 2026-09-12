@@ -467,6 +467,29 @@ class AppLocalizationsBn extends AppLocalizations {
   String get navStats => 'পরিসংখ্যান';
 
   @override
+  String get homeCourseExpression => 'অভিব্যক্তি';
+
+  @override
+  String get homeCourseFreetalk => 'মুক্ত আলাপ';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'মুক্ত আলাপ পর্যন্ত আরও $countটি অভিব্যক্তি';
+  }
+
+  @override
+  String get homeFreetalkNote => 'যা শিখেছেন তা দিয়ে স্বাধীনভাবে কথা বলুন';
+
+  @override
+  String get homeLevelPending => 'লেভেল নির্ধারিত নয়';
+
+  @override
+  String get homeNoLevelTitle => 'আপনার এখনও লেভেল নেই';
+
+  @override
+  String get homeNoLevelNote => 'প্রথম কল শেষ করলে লেভেল পাবেন';
+
+  @override
   String get myPage => 'আমার পেজ';
 
   @override

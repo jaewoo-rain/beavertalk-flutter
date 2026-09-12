@@ -465,6 +465,29 @@ class AppLocalizationsTr extends AppLocalizations {
   String get navStats => 'İstatistikler';
 
   @override
+  String get homeCourseExpression => 'İfadeler';
+
+  @override
+  String get homeCourseFreetalk => 'Serbest sohbet';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Serbest sohbete $count ifade kaldı';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Öğrendiklerini kullanarak serbestçe konuş';
+
+  @override
+  String get homeLevelPending => 'Seviye belirsiz';
+
+  @override
+  String get homeNoLevelTitle => 'Henüz bir seviyen yok';
+
+  @override
+  String get homeNoLevelNote => 'İlk aramanı tamamla, seviyen belirlensin';
+
+  @override
   String get myPage => 'Sayfam';
 
   @override

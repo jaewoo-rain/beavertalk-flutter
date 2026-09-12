@@ -22,6 +22,8 @@ import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
+import 'package:beavertalk/components/organisms/home_gnb.dart';
+import 'package:beavertalk/mock/mock_data.dart';
 import 'package:beavertalk/screens/classroom/widgets/assignment_badge.dart';
 
 import 'package:beavertalk/screens/alarm/alarm_add.dart';
@@ -180,6 +182,15 @@ void main() {
         );
       },
     ),
+    // 🔴 홈 학습 현황은 **한 줄로 잘리는 텍스트가 셋**이라 로케일 길이에 가장
+    //    민감하다. 화면(HomeScreen)은 이 하네스에서 프로바이더가 없어 못 그리니
+    //    블록을 직접 띄운다 — 세 변형 전부. 문구가 변형마다 다르기 때문이다.
+    'HomeGnbExpression': () =>
+        const Center(child: HomeGnb(course: mockHomeCourse)),
+    'HomeGnbFreetalk': () =>
+        const Center(child: HomeGnb(course: mockHomeCourseFreetalk)),
+    'HomeGnbNoLevel': () =>
+        const Center(child: HomeGnb(course: mockHomeCourseNoLevel)),
   };
 
   // Narrow phone (iPhone SE / small Android). Horizontal overflow surfaces here.

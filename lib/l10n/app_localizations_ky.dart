@@ -466,6 +466,29 @@ class AppLocalizationsKy extends AppLocalizations {
   String get navStats => 'Статистика';
 
   @override
+  String get homeCourseExpression => 'Сөз айкаштары';
+
+  @override
+  String get homeCourseFreetalk => 'Эркин маек';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Эркин маекке $count сөз айкашы калды';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Үйрөнгөнүңүздү колдонуп эркин сүйлөшүңүз';
+
+  @override
+  String get homeLevelPending => 'Деңгээл белгисиз';
+
+  @override
+  String get homeNoLevelTitle => 'Сизде азырынча деңгээл жок';
+
+  @override
+  String get homeNoLevelNote => 'Биринчи чалууну аяктасаңыз, деңгээл чыгат';
+
+  @override
   String get myPage => 'Менин баракчам';
 
   @override

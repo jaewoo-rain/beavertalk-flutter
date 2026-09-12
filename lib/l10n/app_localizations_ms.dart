@@ -471,6 +471,30 @@ class AppLocalizationsMs extends AppLocalizations {
   String get navStats => 'Statistik';
 
   @override
+  String get homeCourseExpression => 'Ungkapan';
+
+  @override
+  String get homeCourseFreetalk => 'Sembang bebas';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '$count ungkapan lagi sebelum sembang bebas';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Gunakan yang dipelajari dan bersembang bebas';
+
+  @override
+  String get homeLevelPending => 'Tahap belum ada';
+
+  @override
+  String get homeNoLevelTitle => 'Anda belum ada tahap';
+
+  @override
+  String get homeNoLevelNote =>
+      'Selesaikan panggilan pertama untuk mendapatkannya';
+
+  @override
   String get myPage => 'Halaman Saya';
 
   @override

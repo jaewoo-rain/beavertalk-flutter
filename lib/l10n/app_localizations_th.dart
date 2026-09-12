@@ -461,6 +461,29 @@ class AppLocalizationsTh extends AppLocalizations {
   String get navStats => 'สถิติ';
 
   @override
+  String get homeCourseExpression => 'สำนวน';
+
+  @override
+  String get homeCourseFreetalk => 'สนทนาอิสระ';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'เหลืออีก $count สำนวนก่อนสนทนาอิสระ';
+  }
+
+  @override
+  String get homeFreetalkNote => 'ใช้สิ่งที่เรียนมาคุยได้อย่างอิสระ';
+
+  @override
+  String get homeLevelPending => 'ยังไม่มีระดับ';
+
+  @override
+  String get homeNoLevelTitle => 'คุณยังไม่มีระดับ';
+
+  @override
+  String get homeNoLevelNote => 'จบสายแรกแล้วจะได้ระดับ';
+
+  @override
   String get myPage => 'หน้าของฉัน';
 
   @override

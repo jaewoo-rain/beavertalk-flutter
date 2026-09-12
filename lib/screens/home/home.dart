@@ -9,6 +9,7 @@ import '../../components/atoms/pressable.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
+import '../../components/organisms/home_gnb.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -126,7 +127,26 @@ class HomeScreen extends ConsumerWidget {
           Expanded(
             child: Column(
               children: [
-                const SizedBox(height: 37),
+                // 학습 현황 — Figma `Home/GNB`(`5925:26645`). 헤더 바로 아래
+                // 붙고, 히어로와는 16 을 띄운다(정본 abs 100~192 · 히어로 208).
+                //
+                // 종전의 `SizedBox(height: 37)` 자리다. 그 37 은 히어로를 내리는
+                // 여백일 뿐이었고, 이제 이 블록(92) + 간격 16 = 108 이 그 일을
+                // 대신한다.
+                //
+                // ⚠ **내용은 전부 목이다.** 서버 계약이 아직 없다 —
+                // `api_endpoints.dart` 에 커리큘럼 엔드포인트가 없고
+                // `LevelSummary` 는 마이페이지용 레벨 숫자만 준다. 사용자가
+                // 나중에 직접 연결하기로 했다(2026-09-12). 그때 이 한 줄의
+                // 인자만 provider 로 갈면 된다.
+                //
+                // 아바타와 **같은 [heroLoading] 을 쓴다.** 둘이 따로 놀면 한쪽만
+                // 먼저 차올라 화면이 두 번 바뀐다.
+                if (heroLoading)
+                  const HomeGnbSkeleton()
+                else
+                  const HomeGnb(course: mockHomeCourse),
+                const SizedBox(height: AppSpacing.s16),
                 if (heroLoading)
                   // Same footprint as [HeroAvatar] so nothing shifts when the
                   // real image lands. Not tappable: there is nothing to change

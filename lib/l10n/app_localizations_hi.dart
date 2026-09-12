@@ -465,6 +465,30 @@ class AppLocalizationsHi extends AppLocalizations {
   String get navStats => 'आँकड़े';
 
   @override
+  String get homeCourseExpression => 'अभिव्यक्ति';
+
+  @override
+  String get homeCourseFreetalk => 'मुक्त बातचीत';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'मुक्त बातचीत तक $count अभिव्यक्तियाँ बाकी';
+  }
+
+  @override
+  String get homeFreetalkNote =>
+      'जो सीखा है उसका उपयोग करके स्वतंत्र रूप से बात करें';
+
+  @override
+  String get homeLevelPending => 'स्तर तय नहीं';
+
+  @override
+  String get homeNoLevelTitle => 'आपका स्तर अभी नहीं है';
+
+  @override
+  String get homeNoLevelNote => 'पहली कॉल पूरी करें और स्तर पाएँ';
+
+  @override
   String get myPage => 'मेरा पेज';
 
   @override

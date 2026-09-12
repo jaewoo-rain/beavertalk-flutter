@@ -453,6 +453,29 @@ class AppLocalizationsJa extends AppLocalizations {
   String get navStats => '統計';
 
   @override
+  String get homeCourseExpression => '表現学習';
+
+  @override
+  String get homeCourseFreetalk => 'フリートーク';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'フリートークまで表現あと$count個';
+  }
+
+  @override
+  String get homeFreetalkNote => '学んだ表現を使って自由に話してみましょう';
+
+  @override
+  String get homeLevelPending => 'レベル未定';
+
+  @override
+  String get homeNoLevelTitle => 'まだレベルがありません';
+
+  @override
+  String get homeNoLevelNote => '最初の通話を終えるとレベルが出ます';
+
+  @override
   String get myPage => 'マイページ';
 
   @override

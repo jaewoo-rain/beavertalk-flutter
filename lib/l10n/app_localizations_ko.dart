@@ -454,6 +454,29 @@ class AppLocalizationsKo extends AppLocalizations {
   String get navStats => '통계';
 
   @override
+  String get homeCourseExpression => '표현학습';
+
+  @override
+  String get homeCourseFreetalk => '자유회화';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return '자유 회화까지 표현 $count개 남음';
+  }
+
+  @override
+  String get homeFreetalkNote => '배운 표현을 바탕으로 자유롭게 대화해보세요';
+
+  @override
+  String get homeLevelPending => '레벨 미정';
+
+  @override
+  String get homeNoLevelTitle => '아직 레벨이 없어요';
+
+  @override
+  String get homeNoLevelNote => '첫 통화를 마치면 레벨이 나와요';
+
+  @override
   String get myPage => '마이페이지';
 
   @override

@@ -473,6 +473,29 @@ class AppLocalizationsEs extends AppLocalizations {
   String get navStats => 'Estadísticas';
 
   @override
+  String get homeCourseExpression => 'Expresiones';
+
+  @override
+  String get homeCourseFreetalk => 'Charla libre';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Faltan $count expresiones para la charla libre';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Usa lo aprendido y habla con libertad';
+
+  @override
+  String get homeLevelPending => 'Nivel pendiente';
+
+  @override
+  String get homeNoLevelTitle => 'Aún no tienes un nivel';
+
+  @override
+  String get homeNoLevelNote => 'Completa tu primera llamada para obtenerlo';
+
+  @override
   String get myPage => 'Mi página';
 
   @override

@@ -467,6 +467,29 @@ class AppLocalizationsRu extends AppLocalizations {
   String get navStats => 'Статистика';
 
   @override
+  String get homeCourseExpression => 'Выражения';
+
+  @override
+  String get homeCourseFreetalk => 'Свободная беседа';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'До свободной беседы осталось выражений: $count';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Используйте изученное и говорите свободно';
+
+  @override
+  String get homeLevelPending => 'Без уровня';
+
+  @override
+  String get homeNoLevelTitle => 'У вас пока нет уровня';
+
+  @override
+  String get homeNoLevelNote => 'Завершите первый звонок, и он появится';
+
+  @override
   String get myPage => 'Профиль';
 
   @override

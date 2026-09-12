@@ -469,6 +469,31 @@ class AppLocalizationsUz extends AppLocalizations {
   String get navStats => 'Statistika';
 
   @override
+  String get homeCourseExpression => 'Iboralar';
+
+  @override
+  String get homeCourseFreetalk => 'Erkin suhbat';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Erkin suhbatgacha $count ta ibora qoldi';
+  }
+
+  @override
+  String get homeFreetalkNote =>
+      'O‘rganganingizdan foydalanib erkin suhbatlashing';
+
+  @override
+  String get homeLevelPending => 'Daraja aniqlanmagan';
+
+  @override
+  String get homeNoLevelTitle => 'Sizda hali daraja yo‘q';
+
+  @override
+  String get homeNoLevelNote =>
+      'Birinchi qo‘ng‘iroqni yakunlasangiz daraja chiqadi';
+
+  @override
   String get myPage => 'Mening sahifam';
 
   @override

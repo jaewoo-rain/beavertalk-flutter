@@ -470,6 +470,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get navStats => 'Tilastot';
 
   @override
+  String get homeCourseExpression => 'Ilmaukset';
+
+  @override
+  String get homeCourseFreetalk => 'Vapaa keskustelu';
+
+  @override
+  String homeExpressionsLeft(int count) {
+    return 'Vapaaseen keskusteluun $count ilmausta jäljellä';
+  }
+
+  @override
+  String get homeFreetalkNote => 'Käytä oppimaasi ja puhu vapaasti';
+
+  @override
+  String get homeLevelPending => 'Taso avoinna';
+
+  @override
+  String get homeNoLevelTitle => 'Sinulla ei ole vielä tasoa';
+
+  @override
+  String get homeNoLevelNote => 'Suorita ensimmäinen puhelu, niin saat tason';
+
+  @override
   String get myPage => 'Oma sivu';
 
   @override
