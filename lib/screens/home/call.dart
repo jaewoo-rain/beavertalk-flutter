@@ -19,6 +19,7 @@ import '../../features/bookmark/presentation/providers/bookmark_toggle_controlle
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/domain/entities/call_allowance.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
@@ -547,13 +548,19 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     // 판정은 CascadeExperiment.enabledFor 한 곳에서만 — 릴리즈에서는 항상 켬이다.
     final channel =
         ref.watch(normalCallControllerProvider.select((s) => s.channel));
-    // ⭐ 코스 통화(표현학습·프리토킹)에는 힌트가 **없다** — 서버가 그 코스에는 `hint`
-    //   프레임을 안 보낸다(사장님 결정 2026-09-12). 그러면 토글은 「눌러도 아무것도
-    //   안 나오는 버튼」이라 UI 자체를 뺀다. 카드와 토글이 **같은 한 판정**을 본다.
-    //   일반 통화·레벨테스트(course == null)는 한 글자도 안 바뀐다.
+    // ⭐ **표현학습만** 힌트가 없다 — 서버가 그 코스에는 `hint` 프레임을 안 보낸다.
+    //   그러면 토글은 「눌러도 아무것도 안 나오는 버튼」이라 UI 자체를 뺀다.
+    //   프리토킹은 일반 통화와 **같은** 힌트 상자다(ServerHint → 접힌 카드 → 열람 시
+    //   hint_used) — `auto` 로 시작해 `call_started.course` 가 freetalk 으로 온 경우도
+    //   같다(사장님 결정 2026-09-12: 프리토킹엔 힌트가 보여야 한다. 처음엔 두 코스 다
+    //   가렸었다). 카드와 토글이 **같은 한 판정**을 본다. 일반 통화·레벨테스트
+    //   (course == null)는 한 글자도 안 바뀐다.
+    // ⚠ `auto` 는 `call_started` 전까지 잠깐 그대로 남는데, 그 사이 힌트는 오지 않으니
+    //   보이는 차이가 없다. 판정을 «expression 이 아니면» 으로 두는 이유다 — 「null 이거나
+    //   freetalk 이면」 으로 쓰면 auto 순간에 토글이 깜빡 사라졌다 돌아온다.
     final course =
         ref.watch(normalCallControllerProvider.select((s) => s.course));
-    final hintsAvailable = course == null;
+    final hintsAvailable = course != CallCourse.expression;
     final showHint = hintsAvailable &&
         hintOn &&
         hint != null &&
@@ -821,7 +828,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      // 코스 통화엔 힌트가 없으니 토글도 없다(위 [hintsAvailable]).
+                      // 표현학습엔 힌트가 없으니 토글도 없다(위 [hintsAvailable]).
                       if (hintsAvailable) ...[
                         CallToggleButton(
                           icon: AppIcons.lightbulb,

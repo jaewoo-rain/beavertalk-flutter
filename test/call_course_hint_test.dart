@@ -1,11 +1,12 @@
-// 코스 통화(표현학습·프리토킹)에는 힌트 UI 가 없다 — 사장님 결정(2026-09-12).
+// **표현학습**에만 힌트 UI 가 없다 — 사장님 결정(2026-09-12, 같은 날 두 번).
 //
-// 서버가 그 코스에는 `hint` 프레임을 안 보낸다. 토글을 그대로 두면 「눌러도 아무것도
-// 안 나오는 버튼」이 된다. 그래서 화면이 [CallState.course] 를 보고 힌트 토글과 힌트
-// 카드를 **아예 안 그린다.** 자막 토글·마이크·끊기는 그대로다.
+// 처음엔 코스 통화 둘(표현학습·프리토킹) 다 가렸는데(11c420b), 사장님이 「프리토킹엔
+// 힌트가 보여야 한다」 로 바꾸셨다. 서버는 표현학습에만 `hint` 프레임을 안 보낸다 —
+// 토글을 그대로 두면 「눌러도 아무것도 안 나오는 버튼」이 된다. 프리토킹은 일반 통화와
+// 같은 힌트 상자(ServerHint → 접힌 카드 → 열람 시 hint_used)다. 자막·마이크·끊기는 그대로.
 //
-// ⭐ 두 방향을 다 잠근다 — 코스 통화에서 없어지는 것만이 아니라, **일반 통화에서 그대로
-//   있는 것**도. 후자가 빠지면 이 조건을 잘못 뒤집어도 초록이 뜬다.
+// ⭐ 세 방향을 다 잠근다 — 표현학습에서 없어지는 것, **프리토킹에서 있는 것**, 일반
+//   통화에서 그대로 있는 것. 뒤의 둘이 빠지면 조건을 «course != null» 로 되돌려도 초록이다.
 //
 // 하네스는 call_screen_layout_test 와 같다(고정 [CallState] 스텁 · Max 플랜).
 
@@ -89,12 +90,22 @@ void main() {
     expect(_subtitleToggle, findsOneWidget, reason: '자막은 코스와 무관하다');
   });
 
-  testWidgets('course=freetalk — 표현학습과 같다', (tester) async {
+  testWidgets('⭐ course=freetalk — 일반 통화와 **같이** 힌트 토글·카드가 있다',
+      (tester) async {
+    // 처음 판(11c420b)은 여기서 findsNothing 이었다. 사장님이 뒤집으셨다.
     await _pump(tester, course: CallCourse.freetalk);
 
-    expect(_hintToggle, findsNothing);
-    expect(find.byType(HintCard), findsNothing);
+    expect(_hintToggle, findsOneWidget, reason: '프리토킹엔 힌트가 보여야 한다');
+    expect(find.byType(HintCard), findsOneWidget);
     expect(_subtitleToggle, findsOneWidget);
+  });
+
+  testWidgets('course=auto(call_started 전) — 가리지 않는다. 깜빡임 방지', (tester) async {
+    // auto 는 call_started.course 가 오기 전까지 잠깐 남는 요청 값이다. 이 순간 가리면
+    // freetalk 으로 풀릴 때 토글이 사라졌다 돌아온다. 그 사이 힌트는 안 오니 보여도 무해.
+    await _pump(tester, course: CallCourse.auto);
+
+    expect(_hintToggle, findsOneWidget);
   });
 
   testWidgets('course=null(일반 통화) — 힌트 토글과 카드가 **그대로** 있다',
