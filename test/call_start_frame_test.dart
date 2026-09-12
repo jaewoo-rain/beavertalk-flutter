@@ -25,6 +25,7 @@ Map<String, dynamic> _frame({
   String? continuesCallId,
   int? assignmentId,
   String? callType,
+  bool forceCourse = false,
 }) =>
     buildStartFrame(
       aec: const {'mode': 'unknown'},
@@ -34,6 +35,7 @@ Map<String, dynamic> _frame({
       continuesCallId: continuesCallId,
       assignmentId: assignmentId,
       callType: callType,
+      forceCourse: forceCourse,
     );
 
 void main() {
@@ -160,6 +162,28 @@ void main() {
       final f = _frame(callType: CallCourse.auto.wireValue);
 
       expect(f['call_type'], 'auto');
+    });
+  });
+
+  group('force_course — QA 잠금 우회(개발자 도구 프리토킹 버튼만)', () {
+    // 서버 계약: ClientStart.force_course: bool = False. admin 만 COURSE_LOCKED 우회.
+    test('⭐ 기본은 키 자체가 없다 — 자동·표현학습·제품 진입점 전부', () {
+      expect(_frame().containsKey('force_course'), isFalse);
+      expect(_frame(callType: 'expression').containsKey('force_course'), isFalse);
+      expect(_frame(callType: 'auto').containsKey('force_course'), isFalse);
+    });
+
+    test('켜면 true 가 실린다', () {
+      final f = _frame(callType: 'freetalk', forceCourse: true);
+
+      expect(f['force_course'], isTrue);
+      expect(f['call_type'], 'freetalk');
+    });
+
+    test('이어가는 구간에도 같이 실린다 — 필드 규율', () {
+      final f = _frame(continuesCallId: '1182', callType: 'freetalk', forceCourse: true);
+
+      expect(f['force_course'], isTrue);
     });
 
     test('⭐ 이어가는 구간에도 같이 실린다 — assignment_id 가 정확히 여기서 샜다', () {

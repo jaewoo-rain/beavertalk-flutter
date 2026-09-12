@@ -126,6 +126,7 @@ Map<String, dynamic> buildStartFrame({
   String? continuesCallId,
   int? assignmentId,
   String? callType,
+  bool forceCourse = false,
 }) =>
     <String, dynamic>{
       'type': 'start',
@@ -155,6 +156,11 @@ Map<String, dynamic> buildStartFrame({
       //   (D11: 레벨 미확정이면 레벨테스트)이 그대로 돈다.
       // ⛔ 빈 문자열이나 `'normal'` 을 대신 넣지 마라. 그건 그 판단을 **덮어쓴다.**
       'call_type': ?callType,
+      // QA 용 잠금 우회(개발자 도구 «프리토킹 통화» 버튼만). admin 계정만 서버가 받아
+      // `COURSE_LOCKED` 를 우회하고 진도는 안 바꾼다 — user 면 무시된다.
+      // ⭐ false 면 **키 자체가 안 나간다** — 서버 기본값(False)과 같고, 옛 서버는 extra=ignore
+      //   라 있어도 버리지만 굳이 보낼 이유가 없다.
+      if (forceCourse) 'force_course': true,
     };
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
@@ -829,6 +835,10 @@ class NormalCallController extends Notifier<CallState> {
   ///   `inbound_call_id`(2026-08-31) · `assignment_id`(2026-09-06). 네 번째를 만들지 마라.
   /// [_connect] 가 연결마다 덮어쓰므로 새 통화(null 전달)에서 저절로 비워진다.
   CallCourse? _callCourse;
+
+  /// QA 잠금 우회 플래그. [_callCourse] 와 **같은 이유로 필드**다 — 「Keep talking」
+  /// 재연결이 `start` 를 다시 조립할 때 인자로는 안 넘어간다.
+  bool _forceCourse = false;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -1533,6 +1543,7 @@ class NormalCallController extends Notifier<CallState> {
     CallChannel? callChannel,
     int? assignmentId,
     CallCourse? callCourse,
+    bool forceCourse = false,
   }) async {
     final ok = await _connect(
       callUuid: null,
@@ -1541,6 +1552,7 @@ class NormalCallController extends Notifier<CallState> {
       callChannel: callChannel,
       assignmentId: assignmentId,
       callCourse: callCourse,
+      forceCourse: forceCourse,
     );
     if (!ok) return;
     await _startAudio();
@@ -1604,6 +1616,7 @@ class NormalCallController extends Notifier<CallState> {
     bool keepCallkitCall = false,
     int? assignmentId,
     CallCourse? callCourse,
+    bool forceCourse = false,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1631,6 +1644,7 @@ class NormalCallController extends Notifier<CallState> {
       _assignmentId = assignmentId;
       // ⭐ 코스도 **구간을 넘어 기억한다** — 이유는 [_callCourse] 참조.
       _callCourse = callCourse;
+      _forceCourse = forceCourse;
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
@@ -1738,6 +1752,7 @@ class NormalCallController extends Notifier<CallState> {
         assignmentId: _assignmentId,
         // ⚠ 같은 이유로 **필드**에서 읽는다([_callCourse]).
         callType: _callCourse?.wireValue,
+        forceCourse: _forceCourse,
       );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
@@ -5304,6 +5319,7 @@ class NormalCallController extends Notifier<CallState> {
         // ⛔ 코스도 **반드시 다시 싣는다.** 빠지면 2구간부터 표현학습·프리토킹이
         //   평소 통화로 되돌아간다 — `assignment_id` 가 정확히 이렇게 샜다(2026-09-06).
         callCourse: _callCourse,
+        forceCourse: _forceCourse,
       );
       if (!ok) {
         _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');

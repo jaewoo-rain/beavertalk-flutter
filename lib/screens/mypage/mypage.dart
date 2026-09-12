@@ -58,6 +58,16 @@ abstract final class _Fallback {
   static const int levelMax = 13;
 }
 
+/// 개발자 도구의 **옛 항목**(캐스케이드 통화·아바타/힌트 토글·취소/에코 리그·계측 토글
+/// 6개·컴포넌트 갤러리·빌드 정보 줄)을 그릴지.
+///
+/// ⛔ 2026-09-12 사장님: 「코스 버튼 3개만」. 화면에서만 내렸다 — 코드·리그·토글·라우트는
+///   한 줄도 지우지 않았다. 다시 필요해지면 이 값만 true 로 돌린다.
+/// ⚠ 빌드 정보 줄(`BUILD_TAG`·토글 요약·응답시간)도 같이 내렸다. 「남길 것」 목록에 없었다.
+///   실기기에서 «이 APK 가 무엇인지» 를 못 보게 되는 대가가 있다 — 필요하면 이 줄만 따로
+///   되살린다.
+const bool _kLegacyDevTools = false;
+
 /// My page — Figma `screen/main_mypage` (Dark `3360:20181`, Light `3703:46474`).
 ///
 /// The redesign turned this screen into an **analysis dashboard**: three cards
@@ -169,17 +179,21 @@ class MyPageScreen extends ConsumerWidget {
           //   요청했는데 끼어들기가 한 번도 안 걸렸고, 원인은 폰에 깔린 APK 가
           //   `ANDROID_VOICE_AUDIO` 없이 빌드된 것이었다. **그걸 확인할 방법이 화면에
           //   없어서** 반나절을 왕복했다(외부라 USB 도 못 썼다). 안 보이는 상태가 원인이다.
-          _buildInfoRow(context),
-          _devRow(
-            context,
-            title: '캐스케이드 통화 (테스트 서버)',
-            description: '실험 통로입니다 — 소켓만 데모 서버로 붙고, 일반 통화(라이브)는 '
-                '운영 서버 그대로입니다. '
-                '⚠ 두 서버가 같은 DB 를 쓰므로 이 통화도 실서비스 데이터에 그대로 쌓입니다. '
-                '통화 후 분석이 정상 동작하는지는 아직 확인되지 않았습니다.',
-            route: Routes.callLoading,
-            arguments: CallChannel.cascade,
-          ),
+          // ⛔ 2026-09-12 사장님: 「코스 버튼 3개만」. 아래는 화면에서만 내렸다 — 코드·리그·토글은
+          //   그대로다([_kLegacyDevTools] 를 true 로 돌리면 전부 돌아온다).
+          if (_kLegacyDevTools) ...[
+            _buildInfoRow(context),
+            _devRow(
+              context,
+              title: '캐스케이드 통화 (테스트 서버)',
+              description: '실험 통로입니다 — 소켓만 데모 서버로 붙고, 일반 통화(라이브)는 '
+                  '운영 서버 그대로입니다. '
+                  '⚠ 두 서버가 같은 DB 를 쓰므로 이 통화도 실서비스 데이터에 그대로 쌓입니다. '
+                  '통화 후 분석이 정상 동작하는지는 아직 확인되지 않았습니다.',
+              route: Routes.callLoading,
+              arguments: CallChannel.cascade,
+            ),
+          ],
           // ── 코스 통화 진입점 ────────────────────────────────────────────
           // ⭐ 통로(캐스케이드)와 **다른 축**이다 — 소켓은 라이브 그대로 `/calls/stream`
           //   이고, `start` 프레임의 `call_type` 만 달라진다([CallCourse] 참조).
@@ -203,7 +217,13 @@ class MyPageScreen extends ConsumerWidget {
                 '소켓은 일반 통화와 같은 운영 서버입니다 — 통화 종류만 바뀝니다. '
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
-            arguments: CallCourse.freetalk,
+            // ⭐ QA 우회 — 이 버튼만 `force_course: true` 를 싣는다(자동·표현학습은 안 싣는다).
+            //   admin 계정이면 서버가 `COURSE_LOCKED` 를 우회하고 진도는 안 바꾼다.
+            //   user 계정이면 무시되어 지금처럼 잠김 스낵바다. [CourseCallRequest] 참조.
+            arguments: const CourseCallRequest(
+              CallCourse.freetalk,
+              forceCourse: true,
+            ),
           ),
           _devRow(
             context,
@@ -215,94 +235,97 @@ class MyPageScreen extends ConsumerWidget {
             route: Routes.callLoading,
             arguments: CallCourse.auto,
           ),
-          // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
-          //   다음 단계가 "하나씩 다시 켜기"라 빌드 없이 껐다 켰다 할 수 있어야 한다.
-          _devSwitch(
-            context,
-            title: '└ 아바타 영상',
-            description: '끄면 정적 이미지만. ExoPlayer/SurfaceView 가 안드로이드 '
-                'UI 스레드를 막는지 보는 스위치입니다 — 제1 용의자.',
-            flag: CascadeExperiment.avatarVideo,
-          ),
-          _devSwitch(
-            context,
-            title: '└ 힌트 카드',
-            description: '끄면 힌트를 안 그립니다.',
-            flag: CascadeExperiment.hints,
-          ),
-          _devRow(
-            context,
-            title: '취소 배관 리그',
-            description: '끼어들기(audio_cancel) 수신부터 소리가 실제로 멎기까지 몇 ms 걸리는지 '
-                '반복 측정합니다. 서버 없이 클라 안에서 프레임을 주입합니다.',
-            route: Routes.cancelRig,
-          ),
-          _devRow(
-            context,
-            title: '에코 측정 리그',
-            description: '스피커폰·이어폰에서 비버 소리가 마이크로 얼마나 되돌아오는지 잽니다. '
-                '서버 에코 임계값을 정하는 실측 도구입니다.',
-            route: Routes.echoRig,
-          ),
-          // ── 계측 토글 ──────────────────────────────────────────────────
-          // ⛔ 예전엔 전부 `--dart-define` 이었다. 끄고 켤 때마다 **APK 를 구워야 했고**,
-          //   그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다. 2026-08-14 에
-          //   그것 때문에 반나절을 태웠다 — 서버는 마이크를 열라는데 클라가 거부했고,
-          //   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다.
-          // ⚠ **오디오 세션에 관계된 것은 다음 통화부터** 먹는다(통화 중에 바꿔도 안 바뀐다).
-          //   그 사실을 각 설명에 적는다 — 안 적으면 「토글했는데 안 바뀐다」가 된다.
-          _devSwitch(
-            context,
-            title: '└ 자동 대화',
-            description: '사람 없이 문장을 주입해 통화를 채웁니다(12분 뒤 자동 종료). '
-                '⚠ STT 를 안 타므로 **끊김 곡선 전용**이고 응답시간 측정에 쓰면 안 됩니다. '
-                '다음 통화부터 적용.',
-            flag: CascadeAutoTalk.toggle,
-          ),
-          _devSwitch(
-            context,
-            title: '└ 업링크 차단',
-            description: '마이크는 열되 **서버로 보내는 것만** 막습니다. 레코더·AEC 는 그대로 '
-                '돌아서 오디오 세션이 안 흔들립니다. ⛔ 내 목소리가 서버에 안 갑니다. '
-                '다음 통화부터 적용.',
-            flag: CascadeMicAlwaysGated.toggle,
-          ),
-          _devSwitch(
-            context,
-            title: '└ 쿠션 성장 끔',
-            description: '지터 쿠션이 자라지 않게 고정합니다. 끊김이 얼마나 늘어나는지 '
-                '재는 용도입니다(쿠션은 모든 대답의 첫 소리를 그만큼 늦춥니다). '
-                '다음 통화부터 적용.',
-            flag: CascadeCushionGrowthOff.toggle,
-          ),
-          _devSwitch(
-            context,
-            title: '└ 마이크 끔',
-            description: '레코더를 **아예 열지 않습니다**(게이팅과 다릅니다 — 게이팅은 '
-                '프레임을 받은 뒤 버립니다). ⛔ 내 목소리가 서버에 안 갑니다. '
-                '다음 통화부터 적용.',
-            flag: CascadeMicOff.toggle,
-          ),
-          _devSwitch(
-            context,
-            title: '└ 파일 녹음',
-            description: '스트림 대신 파일로 녹음합니다 — 레코더는 돌되 프레임이 앱으로 '
-                '안 올라옵니다. ⛔ 내 목소리가 서버에 안 갑니다. 다음 통화부터 적용.',
-            flag: CascadeMicToFile.toggle,
-          ),
-          _devSwitch(
-            context,
-            title: '└ AEC 끔',
-            description: '에코 제거·음성처리를 끄고 마이크를 엽니다. ⚠ 스피커폰에서 비버가 '
-                '자기 목소리에 끊길 수 있습니다. 다음 통화부터 적용.',
-            flag: CascadeMicNoAec.toggle,
-          ),
-          _devRow(
-            context,
-            title: '컴포넌트 갤러리',
-            description: '디자인 시스템 컴포넌트 미리보기.',
-            route: Routes.gallery,
-          ),
+          // ⛔ 2026-09-12 사장님: 「코스 버튼 3개만」 — 위와 같은 이유로 화면에서만 내렸다.
+          if (_kLegacyDevTools) ...[
+            // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
+            //   다음 단계가 "하나씩 다시 켜기"라 빌드 없이 껐다 켰다 할 수 있어야 한다.
+            _devSwitch(
+              context,
+              title: '└ 아바타 영상',
+              description: '끄면 정적 이미지만. ExoPlayer/SurfaceView 가 안드로이드 '
+                  'UI 스레드를 막는지 보는 스위치입니다 — 제1 용의자.',
+              flag: CascadeExperiment.avatarVideo,
+            ),
+            _devSwitch(
+              context,
+              title: '└ 힌트 카드',
+              description: '끄면 힌트를 안 그립니다.',
+              flag: CascadeExperiment.hints,
+            ),
+            _devRow(
+              context,
+              title: '취소 배관 리그',
+              description: '끼어들기(audio_cancel) 수신부터 소리가 실제로 멎기까지 몇 ms 걸리는지 '
+                  '반복 측정합니다. 서버 없이 클라 안에서 프레임을 주입합니다.',
+              route: Routes.cancelRig,
+            ),
+            _devRow(
+              context,
+              title: '에코 측정 리그',
+              description: '스피커폰·이어폰에서 비버 소리가 마이크로 얼마나 되돌아오는지 잽니다. '
+                  '서버 에코 임계값을 정하는 실측 도구입니다.',
+              route: Routes.echoRig,
+            ),
+            // ── 계측 토글 ──────────────────────────────────────────────────
+            // ⛔ 예전엔 전부 `--dart-define` 이었다. 끄고 켤 때마다 **APK 를 구워야 했고**,
+            //   그래서 「지금 폰에 깔린 게 어느 빌드냐」를 아무도 못 가렸다. 2026-08-14 에
+            //   그것 때문에 반나절을 태웠다 — 서버는 마이크를 열라는데 클라가 거부했고,
+            //   원인이 빌드 플래그라는 걸 화면에서 볼 방법이 없었다.
+            // ⚠ **오디오 세션에 관계된 것은 다음 통화부터** 먹는다(통화 중에 바꿔도 안 바뀐다).
+            //   그 사실을 각 설명에 적는다 — 안 적으면 「토글했는데 안 바뀐다」가 된다.
+            _devSwitch(
+              context,
+              title: '└ 자동 대화',
+              description: '사람 없이 문장을 주입해 통화를 채웁니다(12분 뒤 자동 종료). '
+                  '⚠ STT 를 안 타므로 **끊김 곡선 전용**이고 응답시간 측정에 쓰면 안 됩니다. '
+                  '다음 통화부터 적용.',
+              flag: CascadeAutoTalk.toggle,
+            ),
+            _devSwitch(
+              context,
+              title: '└ 업링크 차단',
+              description: '마이크는 열되 **서버로 보내는 것만** 막습니다. 레코더·AEC 는 그대로 '
+                  '돌아서 오디오 세션이 안 흔들립니다. ⛔ 내 목소리가 서버에 안 갑니다. '
+                  '다음 통화부터 적용.',
+              flag: CascadeMicAlwaysGated.toggle,
+            ),
+            _devSwitch(
+              context,
+              title: '└ 쿠션 성장 끔',
+              description: '지터 쿠션이 자라지 않게 고정합니다. 끊김이 얼마나 늘어나는지 '
+                  '재는 용도입니다(쿠션은 모든 대답의 첫 소리를 그만큼 늦춥니다). '
+                  '다음 통화부터 적용.',
+              flag: CascadeCushionGrowthOff.toggle,
+            ),
+            _devSwitch(
+              context,
+              title: '└ 마이크 끔',
+              description: '레코더를 **아예 열지 않습니다**(게이팅과 다릅니다 — 게이팅은 '
+                  '프레임을 받은 뒤 버립니다). ⛔ 내 목소리가 서버에 안 갑니다. '
+                  '다음 통화부터 적용.',
+              flag: CascadeMicOff.toggle,
+            ),
+            _devSwitch(
+              context,
+              title: '└ 파일 녹음',
+              description: '스트림 대신 파일로 녹음합니다 — 레코더는 돌되 프레임이 앱으로 '
+                  '안 올라옵니다. ⛔ 내 목소리가 서버에 안 갑니다. 다음 통화부터 적용.',
+              flag: CascadeMicToFile.toggle,
+            ),
+            _devSwitch(
+              context,
+              title: '└ AEC 끔',
+              description: '에코 제거·음성처리를 끄고 마이크를 엽니다. ⚠ 스피커폰에서 비버가 '
+                  '자기 목소리에 끊길 수 있습니다. 다음 통화부터 적용.',
+              flag: CascadeMicNoAec.toggle,
+            ),
+            _devRow(
+              context,
+              title: '컴포넌트 갤러리',
+              description: '디자인 시스템 컴포넌트 미리보기.',
+              route: Routes.gallery,
+            ),
+          ],
         ],
       );
 

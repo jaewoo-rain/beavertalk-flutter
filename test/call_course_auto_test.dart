@@ -149,6 +149,46 @@ void main() {
           reason: '세 번째 버튼이 카드에 있다');
     });
 
+    testWidgets('⛔ 개발자 카드는 진도 한 줄 + 코스 버튼 3개만 — 옛 항목은 안 그린다',
+        (tester) async {
+      // 2026-09-12 사장님: 「코스 버튼 3개만」. 코드는 남기고 화면에서만 내렸다
+      // (mypage.dart _kLegacyDevTools). 다시 그리게 되면 여기서 걸린다.
+      tester.view.physicalSize = const Size(375, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(host(AsyncData(CurMe.fromJson({
+        'lesson': {'no': 1, 'code': 'A1-T01-1', 'level_no': 1},
+        'status': 'learning',
+        'items_total': 18,
+        'items_drilled': 0,
+        'open': {'expression': true, 'freetalk': false},
+        'next_course': 'expression',
+      }))));
+      await tester.pump(const Duration(milliseconds: 32));
+      tester.takeException();
+
+      // 남는 것 — 4개
+      expect(find.textContaining('차시 1 A1-T01-1'), findsOneWidget);
+      expect(find.text('표현학습 통화'), findsOneWidget);
+      expect(find.text('프리토킹 통화'), findsOneWidget);
+      expect(find.text('자동 통화 (auto)'), findsOneWidget);
+      // 빠지는 것 — 화면에 없어야 한다
+      for (final gone in [
+        '캐스케이드 통화 (테스트 서버)',
+        '└ 아바타 영상',
+        '└ 힌트 카드',
+        '취소 배관 리그',
+        '에코 측정 리그',
+        '└ 자동 대화',
+        '└ 마이크 끔',
+        '컴포넌트 갤러리',
+      ]) {
+        expect(find.text(gone), findsNothing, reason: '$gone 은 화면에서 내렸다');
+      }
+      expect(find.textContaining('빌드 '), findsNothing,
+          reason: '빌드 정보 줄도 「남길 것」 목록에 없어 같이 내렸다');
+    });
+
     testWidgets('실패도 글자로 보인다 — 개발자 도구는 조용히 비우지 않는다', (tester) async {
       tester.view.physicalSize = const Size(375, 2400);
       tester.view.devicePixelRatio = 1.0;

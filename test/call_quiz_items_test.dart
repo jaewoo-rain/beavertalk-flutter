@@ -1,4 +1,8 @@
-// 통화 결과의 「이번에 배운 표현」 — 표현학습 `quiz_items` 파싱과 표시.
+// 통화 결과의 표현학습 `quiz_items` — **파싱은 하고 표시는 안 한다.**
+//
+// ⚠ 2026-09-12 사장님 결정으로 결과 화면의 퀴즈 섹션(7f70c29)을 내렸다. 서버 필드는
+//   그대로 오므로 파싱·엔티티는 남긴다(다음 판에서 다시 쓸 수 있게). 아래 «결과 화면»
+//   group 이 «안 그린다» 를 잠근다.
 //
 // ⭐ 왜 생겼나(2026-09-11). 표현학습은 `item_evidence` 사슬을 안 쓰므로 「이번 통화에서
 //   쓴 표현」(`used_items`)이 **빈다** — 승급이 «퀴즈 통과» 로 갈아탔다(D12). 그 자리에
@@ -12,11 +16,10 @@
 //   안 봄»(둘 다 false) 을 `failed` 로만 가른다. 화면이 `!passed` 를 «다시 볼 표현» 으로
 //   내면 드릴만 한 표현에 틀렸다고 말하는 셈이다 — 그래서 배지 판정도 여기서 잠근다.
 
-import 'package:flutter/material.dart' hide Badge;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:beavertalk/components/atoms/badge.dart';
 import 'package:beavertalk/features/normalcall/data/models/call_result_dto.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_result.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
@@ -127,13 +130,11 @@ void main() {
           ),
         );
 
-    /// 우리 [Badge] 아톰 중 이 문안을 단 것.
-    Finder badge(String label) => find.byWidgetPredicate(
-          (w) => w is Badge && w.label == label,
-        );
-
-    testWidgets('quizItems 가 있으면 «이번에 배운 표현 N개» 헤더와 배지 3종을 그린다',
+    testWidgets('⛔ quizItems 가 있어도 결과 화면은 그리지 않는다 — 사장님 결정 2026-09-12',
         (tester) async {
+      // 7f70c29 가 넣은 「이번에 배운 표현 N개」+배지 섹션을 화면에서 내렸다. 서버 응답
+      // 필드는 그대로 오고 파싱도 남아 있다(위 group) — **표시만** 0 이다. 다시 그리게
+      // 되면 이 시험이 먼저 빨간불을 낸다.
       await tester.pumpWidget(host(result(const [
         QuizItem(itemId: 1, surface: '안녕히 가세요', meaning: '작별', passed: true),
         QuizItem(itemId: 2, surface: '물', passed: false, failed: true),
@@ -141,22 +142,18 @@ void main() {
       ])));
       await tester.pumpAndSettle();
 
-      expect(find.text('이번에 배운 표현 3개'), findsOneWidget);
-      expect(find.text('안녕히 가세요'), findsOneWidget);
-      expect(find.text('작별'), findsOneWidget, reason: '뜻이 있으면 표면형 아래 그린다');
-      // 배지 판정 — passed → 맞혔어요 · failed → 다시 볼 표현 · 둘 다 아니면 다음에 이어서.
-      expect(badge('맞혔어요'), findsOneWidget);
-      expect(badge('다시 볼 표현'), findsOneWidget);
-      expect(badge('다음에 이어서'), findsOneWidget,
-          reason: 'passed=false·failed=false 는 «틀렸다» 가 아니다');
+      expect(find.textContaining('이번에 배운 표현'), findsNothing);
+      expect(find.text('안녕히 가세요'), findsNothing);
+      expect(find.text('맞혔어요'), findsNothing);
+      expect(find.text('다시 볼 표현'), findsNothing);
+      expect(find.text('다음에 이어서'), findsNothing);
     });
 
-    testWidgets('quizItems 가 비면 헤더를 안 그린다 — 기존 결과 화면 그대로', (tester) async {
+    testWidgets('quizItems 가 비어도 마찬가지 — 일반 통화 결과 화면 그대로', (tester) async {
       await tester.pumpWidget(host(result(const [])));
       await tester.pumpAndSettle();
 
       expect(find.textContaining('이번에 배운 표현'), findsNothing);
-      expect(find.byType(Badge), findsNothing);
     });
   });
 }

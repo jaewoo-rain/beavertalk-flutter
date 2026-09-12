@@ -72,3 +72,26 @@ enum CallCourse {
     return null;
   }
 }
+
+/// 코스 통화 **요청** — 라우트 인자. 코스 + QA 용 잠금 우회 플래그.
+///
+/// ⭐ [forceCourse] 는 코스의 속성이 아니라 **개발자 도구 버튼의 속성**이다. 그래서
+///   [CallCourse] 에 값을 더하지 않고 요청 객체로 감싼다 — 「프리토킹이면 무조건 우회」로
+///   묶어 두면 나중에 제품 진입점이 프리토킹을 걸 때도 우회가 따라간다.
+///
+/// 서버 계약(`ClientStart.force_course: bool = False`, expr-build 작업 중): admin 계정만
+/// `COURSE_LOCKED` 를 우회하고 진도는 바꾸지 않는다. user 계정이면 서버가 무시하고
+/// 지금처럼 `COURSE_LOCKED` 스낵바다. ⚠ 배포 전 서버는 `extra=ignore` 라 이 키를 조용히
+/// 버린다(protocol.py:192) — 보내도 422 가 나지 않는다.
+///
+/// `call_loading` 은 인자가 이것이든 맨 [CallCourse] 든 둘 다 받는다.
+class CourseCallRequest {
+  /// 요청을 만든다. [forceCourse] 기본 false = 플래그가 프레임에서 빠진다.
+  const CourseCallRequest(this.course, {this.forceCourse = false});
+
+  /// 걸 코스.
+  final CallCourse course;
+
+  /// 잠금 우회(QA). true 일 때만 `start.force_course: true` 가 실린다.
+  final bool forceCourse;
+}

@@ -1,12 +1,11 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart' hide Badge;
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/empty_state.dart';
@@ -362,7 +361,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
 
             ..._babaNote(l10n, result),
             ..._usedItems(l10n, result),
-            ..._quizItems(l10n, result),
             ..._expressions(l10n, result),
           ],
         ),
@@ -494,76 +492,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         ),
       ),
     );
-  }
-
-  /// **표현학습** 통화에서 배운 표현과 퀴즈 결과.
-  ///
-  /// ⭐ 2026-09-11 신설. 표현학습은 위 [_usedItems] 의 `item_evidence` 사슬을 안 쓰므로
-  ///   그 칸이 빈다 — 대신 서버가 통화 종료 시점에 적어 둔 퀴즈 스냅샷을 그린다.
-  ///   두 칸은 **동시에 차지 않는다**(서로 다른 코스의 것이다). 다른 콜타입에서는
-  ///   `quizItems` 가 비어 이 섹션이 아예 안 그려진다 — 기존 화면은 그대로다.
-  ///
-  /// 행 스타일은 [_usedItems] 를 그대로 따른다(표면형 Body1 Bold · 보조 줄 Caption1).
-  /// 배지는 [Badge] 아톰의 기존 세 톤이다 — 새 색을 만들지 않는다.
-  ///
-  /// ⚠ 배지 판정은 **[QuizItem.failed] 를 본다.** `!passed` 로 «다시 볼 표현» 을 내면
-  ///   드릴만 하고 퀴즈까지 못 간 표현에 «틀렸다» 고 말하는 셈이다. 그건 «다음에 이어서» 다.
-  List<Widget> _quizItems(AppLocalizations l10n, CallResult result) {
-    final items = result.quizItems;
-    if (items.isEmpty) return const [];
-    return _section(
-      label: l10n.quizExpressionsCount(items.length),
-      child: _card(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            for (var i = 0; i < items.length; i++) ...[
-              if (i > 0) const SizedBox(height: AppSpacing.s12),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          items[i].surface,
-                          style: AppType.body1.b
-                              .copyWith(color: context.c.labelStrong),
-                        ),
-                        // 뜻은 옛 통화(9/10 이전 스냅샷)엔 없다. 없으면 줄을 안 그린다.
-                        if ((items[i].meaning ?? '').trim().isNotEmpty) ...[
-                          const SizedBox(height: AppSpacing.s4),
-                          Text(
-                            items[i].meaning!,
-                            style: AppType.caption1.r
-                                .copyWith(color: context.c.labelNormal),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: AppSpacing.s12),
-                  _quizBadge(l10n, items[i]),
-                ],
-              ),
-            ],
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// 퀴즈 결과 배지 3종. 순서가 판정이다 — `passed` 면 `failed` 는 항상 false 지만
-  /// (서버 단조) 그 불변식에 기대지 않고 `passed` 를 먼저 본다.
-  Widget _quizBadge(AppLocalizations l10n, QuizItem item) {
-    if (item.passed) {
-      return Badge(tone: BadgeTone.positive, label: l10n.quizPassed);
-    }
-    if (item.failed) {
-      return Badge(tone: BadgeTone.negative, label: l10n.quizFailed);
-    }
-    return Badge(tone: BadgeTone.neutral, label: l10n.quizPending);
   }
 
   /// Section/Expressions (`3583:34462`) — one `Card-Bookmark` per sentence
