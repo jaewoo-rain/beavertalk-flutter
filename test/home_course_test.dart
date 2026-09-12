@@ -44,7 +44,7 @@ void main() {
       final c = HomeCourse.fromCurMe(CurMe.fromJson(_json()));
 
       expect(c.kind, HomeCourseKind.expression);
-      expect(c.unitCode, 'A1-T01-1');
+      expect(c.unitCode, 'A1-1'); // A1-T01-1 에서 상황 칸을 뺀다
       expect(c.topic, '처음 만난 반 친구와 이름과 나라 말하기');
       expect(c.expressionsLeft, 14); // 18 - 4
     });
@@ -56,7 +56,7 @@ void main() {
 
       expect(c.kind, HomeCourseKind.freetalk);
       // 자유회화에서도 단원과 주제는 계속 보인다 — 바뀌는 건 셋째 줄뿐이다.
-      expect(c.unitCode, 'A1-T01-1');
+      expect(c.unitCode, 'A1-1');
       expect(c.topic, isNotEmpty);
     });
 
@@ -98,6 +98,23 @@ void main() {
 
       // 「표현 -2개 남음」은 나오면 안 된다.
       expect(c.expressionsLeft, 0);
+    });
+  });
+
+  group('HomeCourse.badgeCode', () {
+    test('상황 칸을 뺀다 — 레벨과 순번만 남는다', () {
+      expect(HomeCourse.badgeCode('A1-T01-1'), 'A1-1');
+      expect(HomeCourse.badgeCode('A1-T03-12'), 'A1-12');
+      expect(HomeCourse.badgeCode('B2-T10-7'), 'B2-7');
+    });
+
+    test('칸이 셋이 아니면 손대지 않는다', () {
+      // 🔴 서버가 코드 모양을 바꿨을 때 엉뚱한 조각을 이어 붙이면 **틀린 차시
+      //    번호**가 된다. 맞는 긴 번호보다 나쁘다.
+      expect(HomeCourse.badgeCode('A1-1'), 'A1-1');
+      expect(HomeCourse.badgeCode('A1'), 'A1');
+      expect(HomeCourse.badgeCode('A1-T01-1-x'), 'A1-T01-1-x');
+      expect(HomeCourse.badgeCode(''), '');
     });
   });
 }

@@ -59,10 +59,7 @@ class HomeCourse {
       return const HomeCourse(kind: HomeCourseKind.noLevel);
     }
     return HomeCourse(
-      // ⚠ 서버 코드는 `A1-T01-1`(레벨-상황-순번)이고 Figma 배지는 `A1-01` 이다.
-      //   둘을 잇는 규칙이 문서에 없어 **서버 값을 그대로 쓴다** — 자리수를
-      //   맞추자고 규칙을 지어내면 순번이 상황번호로 읽히는 식으로 틀린다.
-      unitCode: lesson.code,
+      unitCode: badgeCode(lesson.code),
       // `topic` 은 `cur_topic.name`, `situation` 은 상황 한 줄이다. 정본 2행이
       // 「처음 만난 반 친구와…」처럼 상황문에 가깝지만, 주제가 있으면 그쪽이
       // 차시를 더 정확히 가리킨다.
@@ -72,6 +69,26 @@ class HomeCourse {
           ? HomeCourseKind.freetalk
           : HomeCourseKind.expression,
     );
+  }
+
+  /// 배지에 찍을 차시 코드 — 서버 코드에서 **상황 칸을 뺀다.**
+  ///
+  /// 서버는 `A1-T01-1`(레벨-상황-순번)로 차시를 식별하지만, 배지는 26px 알약
+  /// 하나라 세 칸을 다 담으면 길다. 학습자에게 의미 있는 것은 **레벨과 순번**
+  /// 이고 상황 번호(`T01`)는 내부 식별자다 — 그것만 떨어뜨린다.
+  ///
+  /// ```
+  /// A1-T01-1  →  A1-1
+  /// A1-T03-12 →  A1-12
+  /// ```
+  ///
+  /// 칸이 셋이 아니면 **손대지 않는다.** 서버가 코드 모양을 바꿨을 때 엉뚱한
+  /// 조각을 이어 붙이느니 원문을 보이는 편이 낫다 — 틀린 차시 번호는 맞는
+  /// 긴 번호보다 나쁘다.
+  static String badgeCode(String code) {
+    final parts = code.split('-');
+    if (parts.length != 3) return code;
+    return '${parts.first}-${parts.last}';
   }
 
   /// 어떤 변형을 그릴지.
