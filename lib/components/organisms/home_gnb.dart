@@ -1,12 +1,92 @@
 import 'package:flutter/material.dart' hide Badge;
 
+import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/domain/entities/cur_me.dart';
 import '../../l10n/app_localizations.dart';
-import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/badge.dart';
 import '../atoms/skeleton.dart';
+
+/// 홈 상단이 무엇을 안내하고 있는가 — Figma 컴포넌트 세트 `Home/GNB` 의
+/// `Property 1` 변형 3종에 1:1 대응한다.
+enum HomeCourseKind {
+  /// `GNB/표현학습` — 단원 배지 + 주제 + 「자유 회화까지 표현 N개 남음」.
+  expression,
+
+  /// `GNB/자유회화` — 단원 배지 + 주제 + 「배운 표현을 바탕으로…」.
+  ///
+  /// 표현을 다 익혀 카운트다운이 끝난 상태다. 배지·주제 줄은 표현학습과 같고
+  /// 셋째 줄만 안내로 바뀐다.
+  freetalk,
+
+  /// `GNB/레벨미정` — 중립 배지 「레벨 미정」 + 「아직 레벨이 없어요」.
+  ///
+  /// 단원도 주제도 없다. 레벨이 정해지기 전에는 커리큘럼 위치 자체가 없어서다.
+  noLevel,
+}
+
+/// [HomeGnb] 가 그리는 한 덩어리 — 서버 [CurMe] 의 화면용 축약.
+///
+/// 엔티티를 그대로 받지 않는 이유는 **변형 판정을 한 곳에 모으기 위해서**다.
+/// 「레벨이 없다」는 `CurMe` 에 필드로 오지 않고 *차시가 비어 있는 것*으로만
+/// 드러나는데(아래 [HomeCourse.fromCurMe] 참조), 그 해석이 위젯 빌드 안에
+/// 흩어지면 세 줄이 각자 다른 판단을 하게 된다.
+class HomeCourse {
+  /// 학습 현황을 만든다.
+  const HomeCourse({
+    required this.kind,
+    this.unitCode,
+    this.topic,
+    this.expressionsLeft,
+  });
+
+  /// 커리큘럼 위치가 아직 없는 회원 — 서버가 `/cur/me` 에 **404** 로 답하는
+  /// 경우다. 응답 본문이 없으니 [fromCurMe] 로는 만들 수 없어 상수로 둔다.
+  static const noLevel = HomeCourse(kind: HomeCourseKind.noLevel);
+
+  /// 서버 응답에서 화면 값을 뽑는다.
+  ///
+  /// **레벨 미정 판정** — `CurMe` 에는 「레벨 없음」 플래그가 없다. 차시가 없으면
+  /// `CurLesson.fromJson` 이 전 필드를 기본값(`code: ''` · `levelNo: 0`)으로
+  /// 채우므로, 그 빈 차시가 곧 「아직 커리큘럼 위치가 없다」는 뜻이다.
+  /// `LevelSummary.needsLevelTest` 로도 같은 판정이 되지만 요청이 하나 더 는다 —
+  /// 홈이 그리는 것은 *커리큘럼 위치*이지 레벨 숫자가 아니라서 이쪽이 맞다.
+  factory HomeCourse.fromCurMe(CurMe me) {
+    final lesson = me.lesson;
+    if (lesson.code.isEmpty || lesson.levelNo == 0) {
+      return const HomeCourse(kind: HomeCourseKind.noLevel);
+    }
+    return HomeCourse(
+      // ⚠ 서버 코드는 `A1-T01-1`(레벨-상황-순번)이고 Figma 배지는 `A1-01` 이다.
+      //   둘을 잇는 규칙이 문서에 없어 **서버 값을 그대로 쓴다** — 자리수를
+      //   맞추자고 규칙을 지어내면 순번이 상황번호로 읽히는 식으로 틀린다.
+      unitCode: lesson.code,
+      // `topic` 은 `cur_topic.name`, `situation` 은 상황 한 줄이다. 정본 2행이
+      // 「처음 만난 반 친구와…」처럼 상황문에 가깝지만, 주제가 있으면 그쪽이
+      // 차시를 더 정확히 가리킨다.
+      topic: lesson.topic ?? lesson.situation,
+      expressionsLeft: me.itemsLeft,
+      kind: me.nextCourse == CallCourse.freetalk
+          ? HomeCourseKind.freetalk
+          : HomeCourseKind.expression,
+    );
+  }
+
+  /// 어떤 변형을 그릴지.
+  final HomeCourseKind kind;
+
+  /// 단원 코드. [HomeCourseKind.noLevel] 에서는 null 이다 — 그 변형은 배지에
+  /// 「레벨 미정」을 대신 넣는다.
+  final String? unitCode;
+
+  /// 이번 단원의 주제 한 줄. noLevel 에서는 null.
+  final String? topic;
+
+  /// 자유 회화까지 남은 표현 수. [HomeCourseKind.expression] 에서만 쓴다.
+  final int? expressionsLeft;
+}
 
 /// 홈 상단 학습 현황 — Figma `Home/GNB` 컴포넌트 세트 (`5925:26645`).
 ///
@@ -31,8 +111,8 @@ class HomeGnb extends StatelessWidget {
   /// 학습 현황 블록을 만든다.
   const HomeGnb({super.key, required this.course});
 
-  /// 그릴 내용. 지금은 전부 목이다([MockHomeCourse] 참조).
-  final MockHomeCourse course;
+  /// 그릴 내용. 화면이 [HomeCourse.fromCurMe] 로 서버 응답에서 뽑아 넘긴다.
+  final HomeCourse course;
 
   /// 정본 높이. 로딩 스켈레톤([HomeGnbSkeleton])과 같은 값을 써서 데이터가
   /// 늦게 와도 히어로가 튀지 않는다.

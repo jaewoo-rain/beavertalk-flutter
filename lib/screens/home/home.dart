@@ -10,6 +10,8 @@ import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/home_gnb.dart';
+import '../../core/error/app_exception.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -134,18 +136,35 @@ class HomeScreen extends ConsumerWidget {
                 // 여백일 뿐이었고, 이제 이 블록(92) + 간격 16 = 108 이 그 일을
                 // 대신한다.
                 //
-                // ⚠ **내용은 전부 목이다.** 서버 계약이 아직 없다 —
-                // `api_endpoints.dart` 에 커리큘럼 엔드포인트가 없고
-                // `LevelSummary` 는 마이페이지용 레벨 숫자만 준다. 사용자가
-                // 나중에 직접 연결하기로 했다(2026-09-12). 그때 이 한 줄의
-                // 인자만 provider 로 갈면 된다.
+                // 값은 서버가 준다 — `GET /cur/me`([curMeProvider]).
                 //
-                // 아바타와 **같은 [heroLoading] 을 쓴다.** 둘이 따로 놀면 한쪽만
-                // 먼저 차올라 화면이 두 번 바뀐다.
-                if (heroLoading)
-                  const HomeGnbSkeleton()
-                else
-                  const HomeGnb(course: mockHomeCourse),
+                // ⛔ 아바타의 [heroLoading] 과 **겹치지 않는다.** 둘은 다른
+                //   요청이라(캐릭터 카탈로그 vs 커리큘럼) 도착 시각이 다르고,
+                //   하나로 묶으면 늦은 쪽이 빠른 쪽을 잡아 둔다.
+                //
+                // ★**404 는 실패가 아니다.** 커리큘럼이 아직 안 붙은 회원에게
+                //   서버는 차시를 **안 주는 것**으로 답한다(실측 2026-09-12:
+                //   레벨 Stage 1 인 계정이 `/cur/me` 에서 `NotFoundFailure`).
+                //   그러니 그건 「레벨 미정」 변형 그대로다 — 빈 칸으로 두면
+                //   커리큘럼 시작 전인 회원의 홈이 영영 비어 있게 된다.
+                //
+                // 그 밖의 실패는 **자리만 남기고 아무 말도 안 한다.** 셔머를 계속
+                // 돌리면 「영영 안 끝나는 로딩」이 되고, 레벨미정으로 떨어뜨리면
+                // 네트워크가 끊겼을 뿐인 사용자에게 레벨이 없다고 거짓말한다.
+                // 높이를 유지하는 것은 아래 히어로가 안 튀게 하기 위해서다.
+                ref.watch(curMeProvider).when(
+                      loading: () => const HomeGnbSkeleton(),
+                      error: (e, _) {
+                        if (e is NotFoundFailure) {
+                          return const HomeGnb(course: HomeCourse.noLevel);
+                        }
+                        // 조용히 삼키면 「블록이 왜 비었지」를 화면만 보고는
+                        // 가릴 수 없다 — 이 화면에서 실제로 그 일을 겪었다.
+                        debugPrint('홈 학습 현황 조회 실패 → 빈 칸: $e');
+                        return const SizedBox(height: HomeGnb.height);
+                      },
+                      data: (me) => HomeGnb(course: HomeCourse.fromCurMe(me)),
+                    ),
                 const SizedBox(height: AppSpacing.s16),
                 if (heroLoading)
                   // Same footprint as [HeroAvatar] so nothing shifts when the
