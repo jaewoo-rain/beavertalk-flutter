@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -639,30 +641,47 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 ],
               ),
             ),
-            // Body — the feed, the caption slot and the hint card are ONE
-            // bottom-anchored block, not a feed pinned to the top with the rest
-            // hanging below it.
+            // Body — **영상은 고정, 자막·힌트만 스크롤한다.**
             //
-            // That is what the four Figma variants encode: the feed starts at
-            // y=279 with hints off and y=140 with them on, i.e. the hint card
-            // pushes the feed *up* by its own height rather than opening a gap
-            // under a fixed feed. Scrollable so a long subtitle plus a card can
-            // never overflow on a short screen.
+            // 종전엔 셋이 한 덩어리로 스크롤 뷰 안에 있었다. 그래서 스크롤하면
+            // 영상까지 따라 움직였고, 내용이 뷰포트를 넘으면(긴 자막 + 펼친 힌트
+            // 카드) 스크롤 뷰가 **위에서부터** 보여 줘 카드 아래가 잘렸다 —
+            // 실기기에서 재현된 증상이다(2026-09-12, 자막 4줄).
+            //
+            // 이제 영상은 스크롤 뷰 밖에 서고, 자막·힌트만 제 칸에서 스크롤한다.
+            //
+            // **영상은 남는 칸의 가운데**다. 자막·힌트가 작으면(둘 다 꺼진 통화)
+            // 남는 칸이 커져 영상이 화면 한가운데로 온다 — 종전 하단 정렬과 같은
+            // 그림이다. 자막이 길어지면 그 칸이 줄어 영상이 위로 올라가되,
+            // **스크롤에는 딸려가지 않는다.**
+            //
+            // ⚠ 2026-09-12 0105 작업지시 §3.1 은 A(하단 정렬 유지)였고
+            //   `call_screen_layout_test` 의 「the hint card pushes the feed up」
+            //   이 그 결정을 지키고 있었다. 사용자가 고정으로 번복했다.
             Expanded(
-              child: Align(
-                alignment: Alignment.bottomCenter,
-                child: SingleChildScrollView(
-                  // No horizontal padding here — the feed is full-bleed; only
-                  // the caption block below is inset.
-                  // 힌트 on 이면 0 — 카드 바닥이 푸터 상단에 밀착해야 한다
-                  // (정본: 카드 바닥 = 푸터 상단, 모바일 586 · 태블릿 854).
-                  // off 면 s24 를 남긴다 — 자막이 푸터에 붙으면 안 된다.
-                  padding: EdgeInsets.only(
-                    bottom: showHint ? 0 : AppSpacing.s24,
-                  ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  // 자막·힌트 칸의 상한 — **남는 높이에서 영상 몫을 뺀 값**이다.
+                  //
+                  // 비율(예: 60%)을 쓰면 기기마다 영상이 잘리거나 자막이 일찍
+                  // 스크롤된다. 영상이 실제로 요구하는 높이를 빼면 둘 다 사라진다 —
+                  // 자막이 짧으면 상한에 안 닿아 영상이 가운데 남고, 길면 상한에서
+                  // 멈춰 스크롤로 넘어간다.
+                  final feedHeight = avatarIsVideo
+                      ? math.min(constraints.maxWidth, _avatarMaxWidth) * 9 / 16
+                      : _stillAvatarSize + _CircularStill.maxHalo * 2;
+                  final captionMax = math.max(
+                    0.0,
+                    constraints.maxHeight - feedHeight - _feedToCaptionGap,
+                  );
+                  return Column(
                     children: [
+                      // ── 영상 — 스크롤 밖. 남는 칸 가운데 ─────
+                      Expanded(
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
                       // 아바타 — **플랜이 표현을 가른다**(Figma 04_통화).
                       //
                       //   Max      전폭 16:9 영상 밴드
@@ -718,8 +737,27 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           ),
                         ),
                       ),
+                            ],
+                          ),
+                        ),
+                      ),
                       const SizedBox(height: _feedToCaptionGap),
-                      // Caption slot + hint card.
+                      // ── 자막 + 힌트 — **이 칸만 스크롤한다** ──────
+                      //
+                      // `reverse: true` 라 내용이 칸을 넘으면 **아래쪽부터**
+                      // 보인다. 힌트 카드가 맨 아래라, 넘칠 때 잘리는 쪽은
+                      // 카드가 아니라 자막 윗줄이어야 한다 — 종전은 반대였다.
+                      ConstrainedBox(
+                        constraints: BoxConstraints(maxHeight: captionMax),
+                        child: SingleChildScrollView(
+                          reverse: true,
+                          // 힌트 on 이면 0 — 카드 바닥이 푸터 상단에 밀착해야
+                          // 한다(정본: 카드 바닥 = 푸터 상단).
+                          // off 면 s24 — 자막이 푸터에 붙지 않게 한다.
+                          padding: EdgeInsets.only(
+                            bottom: showHint ? 0 : AppSpacing.s24,
+                          ),
+                          child:
                       //
                       // 자막과 힌트 카드는 **같은 컬럼을 공유한다** — 좌우
                       // 경계가 어긋나면 카드가 자막 밖으로 튀어나와 보인다.
@@ -812,9 +850,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                           ],
                         ),
                       ),
+                        ),
+                      ),
                     ],
-                  ),
-                ),
+                  );
+                },
               ),
             ),
             // Footer — hint/subtitle toggles + hang-up.
@@ -927,7 +967,10 @@ class _CircularStill extends StatelessWidget {
   final ValueListenable<double>? level;
 
   /// 헤일로가 최대로 퍼지는 폭. 이만큼을 미리 비워 둬야 퍼질 때 레이아웃이 안 밀린다.
-  static const double _maxHalo = 28;
+  ///
+  /// 본문이 영상 칸의 높이를 계산할 때도 쓴다 — 원형 아바타의 실제 점유 높이는
+  /// [_stillAvatarSize] 가 아니라 `크기 + 이 값 * 2` 다.
+  static const double maxHalo = 28;
 
   @override
   Widget build(BuildContext context) {
@@ -946,8 +989,8 @@ class _CircularStill extends StatelessWidget {
 
     return Center(
       child: SizedBox(
-        width: size + _maxHalo * 2,
-        height: size + _maxHalo * 2,
+        width: size + maxHalo * 2,
+        height: size + maxHalo * 2,
         child: ValueListenableBuilder<double>(
           valueListenable: lv,
           builder: (context, raw, _) {
@@ -957,9 +1000,9 @@ class _CircularStill extends StatelessWidget {
               alignment: Alignment.center,
               children: [
                 // 바깥 파문 — 크게 퍼지고 옅다.
-                _halo(size + _maxHalo * 2 * v, c.primaryHeavy, 0.10 * v),
+                _halo(size + maxHalo * 2 * v, c.primaryHeavy, 0.10 * v),
                 // 안쪽 파문 — 링에 붙어 따라다닌다.
-                _halo(size + _maxHalo * 1.1 * v, c.primaryHeavy, 0.18 * v),
+                _halo(size + maxHalo * 1.1 * v, c.primaryHeavy, 0.18 * v),
                 ring,
               ],
             );
