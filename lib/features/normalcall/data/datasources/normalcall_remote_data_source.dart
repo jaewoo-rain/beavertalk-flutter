@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_endpoints.dart';
 import '../../../../screens/home/learning_summary.dart';
+import '../../domain/entities/cur_me.dart';
 import '../../domain/entities/pron_summary.dart';
 import '../models/call_result_dto.dart';
 
@@ -62,6 +63,12 @@ class NormalcallRemoteDataSource {
       queryParameters: {'sessions': sessions},
     );
     return PronSummary.fromJson(res.data ?? const {});
+  }
+
+  /// `GET /cur/me` — 내 커리큘럼 위치(현재 차시·진도·`auto` 가 정할 코스).
+  Future<CurMe> getCurMe() async {
+    final res = await _dio.get<Map<String, dynamic>>(ApiEndpoints.curMe);
+    return CurMe.fromJson(res.data ?? const {});
   }
 
   /// `GET /calls/{call_id}` — call detail. The `/result` endpoint omits

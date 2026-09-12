@@ -183,6 +183,10 @@ class MyPageScreen extends ConsumerWidget {
           // ── 코스 통화 진입점 ────────────────────────────────────────────
           // ⭐ 통로(캐스케이드)와 **다른 축**이다 — 소켓은 라이브 그대로 `/calls/stream`
           //   이고, `start` 프레임의 `call_type` 만 달라진다([CallCourse] 참조).
+          //
+          // 그 위 한 줄은 `GET /cur/me` — 지금 어느 차시에 있고 «자동» 을 누르면 서버가
+          // 무엇을 정할지. 홈 «이번 통화» 카드의 dev 판이다(디자인은 별건).
+          const _CurMeLine(),
           _devRow(
             context,
             title: '표현학습 통화',
@@ -200,6 +204,16 @@ class MyPageScreen extends ConsumerWidget {
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
             arguments: CallCourse.freetalk,
+          ),
+          _devRow(
+            context,
+            title: '자동 통화 (auto)',
+            description: '서버가 진도로 코스를 정합니다 — 표현학습을 다 드릴하면 다음은 '
+                '프리토킹, 프리토킹 1회 뒤 다음 차시 표현학습. 실제 코스는 '
+                'call_started.course 로 내려와 위 줄의 «다음» 과 같아야 합니다. '
+                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
+            route: Routes.callLoading,
+            arguments: CallCourse.auto,
           ),
           // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
           //   다음 단계가 "하나씩 다시 켜기"라 빌드 없이 껐다 켰다 할 수 있어야 한다.
@@ -869,4 +883,38 @@ class MyPageScreen extends ConsumerWidget {
     Navigator.pushNamed(context, Routes.analysisLoading,
         arguments: analysable.callId);
   }
+}
+
+/// `GET /cur/me` 한 줄 — 개발자 도구용. «차시 4 A1-T01-1 · 남은 2 · 다음: 프리토킹».
+///
+/// ⭐ 로딩·실패도 **글자로** 보인다. 개발자 도구는 「왜 안 보이나」를 화면에서 바로
+///   가려야 하는 자리라 조용히 비우지 않는다(마이페이지의 제품 카드들과 다른 규율).
+class _CurMeLine extends ConsumerWidget {
+  const _CurMeLine();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final style = AppType.label1.r.copyWith(color: context.c.labelNormal);
+    final cur = ref.watch(curMeProvider);
+    final text = cur.when(
+      loading: () => '커리큘럼: 불러오는 중…',
+      error: (e, _) => '커리큘럼 조회 실패: $e',
+      data: (m) => '차시 ${m.lesson.no} ${m.lesson.code}'
+          ' · 남은 ${m.itemsLeft}/${m.itemsTotal}'
+          ' · 상태 ${m.status}'
+          ' · 다음: ${_courseLabel(m.nextCourse)}'
+          '${m.openFreetalk ? '' : ' · 프리토킹 잠김'}',
+    );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+      child: Text(text, style: style),
+    );
+  }
+
+  static String _courseLabel(CallCourse? c) => switch (c) {
+        CallCourse.expression => '표현학습',
+        CallCourse.freetalk => '프리토킹',
+        CallCourse.auto => '자동',
+        null => '(모름)',
+      };
 }

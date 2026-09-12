@@ -148,11 +148,18 @@ void main() {
     });
 
     test('⛔ 와이어 값은 서버 Literal 과 **글자 그대로** 같아야 한다', () {
-      // `protocol.py:105` — Literal["normal","level_test","expression","freetalk"].
+      // `protocol.py:107`(a652cdc) —
+      //   Literal["normal","level_test","expression","freetalk","auto"].
       // pydantic Literal 이라 오타 하나면 **422 로 통화가 아예 안 열린다.**
       // enum 이름을 바꾸면 여기서 걸린다.
       expect(CallCourse.values.map((c) => c.wireValue).toList(),
-          ['expression', 'freetalk']);
+          ['expression', 'freetalk', 'auto']);
+    });
+
+    test('자동이면 auto 가 실린다 — 서버가 진도로 코스를 정한다', () {
+      final f = _frame(callType: CallCourse.auto.wireValue);
+
+      expect(f['call_type'], 'auto');
     });
 
     test('⭐ 이어가는 구간에도 같이 실린다 — assignment_id 가 정확히 여기서 샜다', () {

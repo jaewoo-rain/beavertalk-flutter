@@ -63,4 +63,8 @@ abstract final class ApiEndpoints {
   // ── Calls ──
   /// 마이페이지 발음 카드 — 최근 N세션 발음 4지표 평균(`?sessions=`).
   static const callsPronunciationSummary = '/calls/pronunciation-summary';
+
+  // ── Curriculum (2단계) ──
+  /// 내 커리큘럼 위치 한 장 — 현재 차시·진도·`auto` 로 걸면 정해질 코스.
+  static const curMe = '/cur/me';
 }

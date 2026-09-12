@@ -5,6 +5,7 @@ import '../../../screens/home/learning_summary.dart';
 import '../data/datasources/normalcall_remote_data_source.dart';
 import '../data/repositories/normalcall_repository_impl.dart';
 import '../domain/entities/call_result.dart';
+import '../domain/entities/cur_me.dart';
 import '../domain/entities/pron_summary.dart';
 import '../domain/repositories/normalcall_repository.dart';
 
@@ -108,4 +109,11 @@ final pronunciationReportProvider =
 final pronunciationSummaryProvider =
     FutureProvider.autoDispose<PronSummary>((ref) async {
   return ref.watch(normalcallRepositoryProvider).getPronunciationSummary();
+});
+
+/// 내 커리큘럼 위치(`GET /cur/me`) — 개발자 도구의 한 줄, 나중엔 홈 «이번 통화» 카드.
+///
+/// autoDispose: 통화마다 진도가 바뀌므로 화면을 벗어나면 버리고 다시 읽는다.
+final curMeProvider = FutureProvider.autoDispose<CurMe>((ref) async {
+  return ref.watch(normalcallRepositoryProvider).getCurMe();
 });

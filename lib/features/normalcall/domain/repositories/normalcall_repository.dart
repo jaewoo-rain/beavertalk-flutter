@@ -1,6 +1,7 @@
 import '../../../../screens/home/learning_summary.dart';
 import '../entities/call_result.dart';
 import '../entities/call_resume_status.dart';
+import '../entities/cur_me.dart';
 import '../entities/pron_summary.dart';
 
 /// Post-call analysis capabilities the app depends on. Implemented in the data
@@ -28,6 +29,9 @@ abstract interface class NormalcallRepository {
   /// "세션"은 **점수가 있는** 통화다. 통화만 하고 발음 챌린지를 안 누른 통화는
   /// 세지 않으므로, 통화를 여러 번 했어도 결과가 비어 있을 수 있다.
   Future<PronSummary> getPronunciationSummary({int sessions});
+
+  /// `GET /cur/me` — 내 커리큘럼 위치 한 장(커리큘럼 2단계).
+  Future<CurMe> getCurMe();
 
   /// `GET /calls` — past calls for the record list (newest first).
   Future<List<CallSummary>> listCalls({int? limit, int? offset});

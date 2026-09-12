@@ -4435,6 +4435,21 @@ class NormalCallController extends Notifier<CallState> {
       case 'call_started':
         final cid = msg['character_id'];
         if (cid is int) state = state.copyWith(characterId: cid);
+        // ⭐ 서버가 정한 **이 통화의 코스**(커리큘럼 2단계). `auto` 로 걸면 버튼 값이
+        //   없으니 여기서만 알 수 있고, 명시 버튼(expression/freetalk)이어도 **서버가
+        //   정본**이라 오면 덮어쓴다. 힌트 UI 가림·결과 화면 배지가 [CallState.course]
+        //   를 보므로 이 줄이 빠지면 auto 통화는 코스 없는 통화로 그려진다.
+        //   옛 서버·일반·레벨테스트는 키 자체가 없다 → 그대로 둔다(버튼 값 유지).
+        {
+          final course = CallCourse.fromWire(msg['course']);
+          if (course != null) {
+            state = state.copyWith(course: course);
+            _log('call_started: course=${course.wireValue}'
+                '${_callCourse == CallCourse.auto ? ' (auto → 서버 결정)' : ''}');
+          } else if (msg.containsKey('course')) {
+            _log('⚠ call_started: course=${msg['course']} ⛔모르는값 — 코스 없음으로 둔다');
+          }
+        }
         // ⭐ 서버는 **이 통화의 call_id 를 여기서 이미 알려준다.** 그런데 클라는
         //   `character_id` 만 읽고 이 값을 버리고 있었다(2026-08-24 실기기 로그:
         //   `{"type":"call_started","character_id":1,"call_id":"1182"}`).
