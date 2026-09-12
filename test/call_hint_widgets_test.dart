@@ -163,8 +163,58 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets('HintCard peek carries both controls too', (tester) async {
-    var speaks = 0;
+  // 2026-09-12 정본(`card/hint` `3229:56`)에서 **peek 은 듣기·저장을 내려놓았다.**
+  // 접힌 카드가 하는 일은 「무슨 문장인지 힐끗 본다」 하나이고, 70px 한 줄에
+  // 버튼 셋이 붙어 정작 문장 폭을 먹고 있었다. 종전 테스트는 그 셋이 다 있다고
+  // 단언했으므로 계약과 함께 갈아 끼운다.
+  testWidgets('HintCard peek 은 머리행과 문장만 보여 준다 — 듣기·저장은 없다',
+      (tester) async {
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: false,
+        index: 0,
+        onReveal: () {},
+        onCycle: () {},
+        onSpeak: () {},
+        onBookmarkTap: () {},
+      ),
+    ));
+
+    // 머리행은 full 과 같다 — 접혀 있어도 몇 번째인지 알 수 있어야 한다.
+    expect(find.text('Hint'), findsOneWidget);
+    expect(find.text('1/3'), findsOneWidget);
+    // 문장 한 줄만. 상세는 감춰 둔다.
+    expect(find.text('화장실에 가요'), findsOneWidget);
+    expect(find.text('hwajangsire gayo'), findsNothing);
+    // 듣기·저장은 펼친 뒤의 행동이다.
+    expect(find.bySemanticsLabel('Listen to standard pronunciation'),
+        findsNothing);
+    expect(find.bySemanticsLabel('Save sentence'), findsNothing);
+  });
+
+  testWidgets('HintCard peek 은 첫 예문이 아니라 현재 예문을 보여 준다',
+      (tester) async {
+    // 🔴 종전엔 `examples.first` 를 그렸다 — 사이클을 돌리고 접으면 1번으로
+    //    되돌아가 보여, 접힌 카드가 지금 몇 번째인지 거짓말을 했다.
+    await tester.pumpWidget(_host(
+      HintCard(
+        examples: examples,
+        revealed: false,
+        index: 1,
+        onReveal: () {},
+        onCycle: () {},
+      ),
+    ));
+
+    expect(find.text('학교에 가요'), findsOneWidget);
+    expect(find.text('화장실에 가요'), findsNothing);
+    expect(find.text('2/3'), findsOneWidget);
+  });
+
+  testWidgets('HintCard peek 의 사이클을 눌러도 카드가 펼쳐지지 않는다',
+      (tester) async {
+    var cycles = 0;
     var reveals = 0;
     await tester.pumpWidget(_host(
       HintCard(
@@ -172,19 +222,14 @@ void main() {
         revealed: false,
         index: 0,
         onReveal: () => reveals++,
-        onCycle: () {},
-        onSpeak: () => speaks++,
-        onBookmarkTap: () {},
+        onCycle: () => cycles++,
       ),
     ));
-    expect(find.bySemanticsLabel('Save sentence'), findsOneWidget);
-    final speak = find.bySemanticsLabel('Listen to standard pronunciation');
-    expect(speak, findsOneWidget);
 
-    // peek 에서 버튼을 눌러도 카드가 펼쳐지지 않는다.
-    await tester.tap(speak);
+    // 카드 전체가 펼치기 타깃이라, 안쪽 버튼이 탭을 먼저 먹는지가 관건이다.
+    await tester.tap(find.bySemanticsLabel('Next hint 1/3'));
     await tester.pump();
-    expect(speaks, 1);
+    expect(cycles, 1);
     expect(reveals, 0);
   });
 
