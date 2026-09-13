@@ -580,6 +580,13 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     //   Max 를 **부여**하는 판단이 아니라 **표현**을 고르는 자리라 tier 로 충분하다.
     final avatarIsVideo =
         ref.watch(subscriptionStatusProvider).tier == SubscriptionTier.max;
+    // 티어가 아직 안 왔으면 **둘 중 아무것도 그리지 않는다.**
+    //
+    // `subscriptionStatusProvider` 는 모르는 동안 `none`(=Free)으로 떨어진다.
+    // 허용을 정할 때는 그게 옳지만(제한 쪽이 안전하다) 표현을 고를 때는 틀린
+    // 모습을 단언하는 것이다 — Max 사용자가 원형 아바타를 보다가 16:9 영상
+    // 밴드로 화면이 뒤바뀌었다(2026-09-12 실기기 확인).
+    final avatarUnknown = ref.watch(subscriptionTierUnknownProvider);
 
     return PopScope(
       canPop: false,
@@ -667,7 +674,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   // 스크롤된다. 영상이 실제로 요구하는 높이를 빼면 둘 다 사라진다 —
                   // 자막이 짧으면 상한에 안 닿아 영상이 가운데 남고, 길면 상한에서
                   // 멈춰 스크롤로 넘어간다.
-                  final feedHeight = avatarIsVideo
+                  // 로딩 자리는 16:9 로 잡는다 — Max 면 영상이 그대로 채워
+                  // 변화가 없고, Free 면 원형으로 줄며 아래가 26px 올라온다.
+                  // 지금처럼 모양이 통째로 뒤바뀌는 것보다 훨씬 작다.
+                  final feedHeight = (avatarIsVideo || avatarUnknown)
                       ? math.min(constraints.maxWidth, _avatarMaxWidth) * 9 / 16
                       : _stillAvatarSize + _CircularStill.maxHalo * 2;
                   final captionMax = math.max(
@@ -693,7 +703,29 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                       // ⚠ [showAvatarVideo] 와 혼동하지 마라. 그건 안드로이드
                       //   오디오 끊김 격리 실험용 디버그 플래그이지 플랜이 아니다.
                       //   둘 다 참이어야 영상이 나간다.
-                      if (!avatarIsVideo)
+                      // ── 티어 미상 — 셔머로 자리를 잡아 둔다 ─────
+                      //
+                      // 새 시각 언어를 만들지 않았다. 이 파일은 **이미**
+                      // 「아바타를 아직 모를 때」를 16:9 셔머로 답한다
+                      // ([_partnerStill] 의 null 경로). 티어를 모를 때도 같은
+                      // 것을 쓰면 관용이 하나로 남는다.
+                      //
+                      // 셔머는 콘텐츠가 아니라 **로딩**으로 읽힌다. 종전이
+                      // 나빴던 이유는 진짜 아바타 사진을 Free 모양으로 깔아
+                      // 진짜 Free 상태와 구분이 안 됐던 것이다.
+                      if (avatarUnknown)
+                        Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              maxWidth: _avatarMaxWidth,
+                            ),
+                            child: AspectRatio(
+                              aspectRatio: 16 / 9,
+                              child: ClipRect(child: _partnerStill(null)),
+                            ),
+                          ),
+                        )
+                      else if (!avatarIsVideo)
                         _CircularStill(
                           size: _stillAvatarSize,
                           level: callNotifier.avatarLevel,
@@ -718,9 +750,29 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                       // [계측] 화면은 그대로다 — 영상 쪽에서 일어난
                                       // 일을 통화 계측 스트림에 얹기만 한다.
                                       onDiag: callNotifier.onAvatarDiag,
-                                      // 정적 이미지다. SyncAvatar 가 idle·talk
-                                      // 클립을 여는 동안(안드로이드 100~300ms)
-                                      // 이걸 보여 준다.
+                                      // **여는 동안에는 은은한 면만 깐다.**
+                                      //
+                                      // 정지컷은 안 쓴다 — 100~300ms 동안 얼굴을
+                                      // 깔면 통화를 열 때마다 확대된 채 깜빡인다
+                                      // (2026-09-12 실기기 확인).
+                                      //
+                                      // 그렇다고 완전히 비우면 밴드가 페이지
+                                      // 배경과 같은 색이라 **자리가 있는지조차
+                                      // 안 보이고**, 그러다 밝은 영상이 툭
+                                      // 나타난다. 「늦다」보다 「튄다」로 읽히는
+                                      // 이유가 그것이다. 그릇을 먼저 세워 두면
+                                      // 눈이 「차오른다」로 읽는다
+                                      // (등장 페이드는 `SyncAvatar._appear`).
+                                      //
+                                      // 이 `fallback` 은 이제 **못 열었을 때만**
+                                      // 쓴다. 지우면 영상이 안 열리는 기기에서
+                                      // Max 사용자가 검은 칸만 보게 된다 —
+                                      // 대체 영상으로 때울 수도 없다. 자산이
+                                      // 없거나(이름이 5종 밖) 디코더가 모자란
+                                      // 상황이라 다른 클립도 같이 실패한다.
+                                      // 남의 캐릭터 영상을 대신 트는 것은
+                                      // `avatarAssetDirFor` 가 막으려던 바로
+                                      // 그 사고다(틀린 얼굴).
                                       //
                                       // 예전엔 여기에 스프라이트 렌더러를 물려
                                       // 놓아, 통화를 열 때마다 **은퇴한 렌더러의
@@ -730,6 +782,10 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                                       //
                                       // 아래 kDisableAvatarVideo 경로도 같은 정적
                                       // 이미지를 쓰므로 둘이 어긋나지 않는다.
+                                      loading: ColoredBox(
+                                        color: context
+                                            .c.backgroundElevatedAlternative,
+                                      ),
                                       fallback: _partnerStill(partnerImage),
                                     )
                                   : _partnerStill(partnerImage),

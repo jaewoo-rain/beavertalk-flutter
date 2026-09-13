@@ -64,6 +64,7 @@ class SyncAvatar extends StatefulWidget {
     this.autoTempo = false,
     this.silentEmotion = false,
     this.fallback,
+    this.loading,
     this.onDiag,
   });
 
@@ -113,8 +114,18 @@ class SyncAvatar extends StatefulWidget {
   /// 기본값은 `false` — 통화 화면과 아바타 랩의 거동을 그대로 둔다.
   final bool silentEmotion;
 
-  /// Shown until the clips are ready (and if they fail to load).
+  /// 클립을 **못 열었을 때** 보여 줄 것(영구 폴백).
+  ///
+  /// ⛔ 로딩 중에는 쓰지 않는다 — 그건 [loading] 이다. 종전에는 둘이 한 인자라
+  ///   100~300ms 의 여는 시간에도 이 정지컷이 깔려, 통화를 열 때마다 캐릭터
+  ///   얼굴이 확대된 채 깜빡였다(2026-09-12 실기기 확인).
   final Widget? fallback;
+
+  /// 클립을 **여는 동안** 보여 줄 것. 생략하면 빈 칸이다.
+  ///
+  /// 여는 시간은 안드로이드에서 100~300ms 라, 무엇을 깔든 깜빡임으로 읽힌다.
+  /// 그래서 통화 화면은 이걸 안 넘긴다 — 잠깐 비어 있는 편이 낫다.
+  final Widget? loading;
 
   /// [계측] 영상 쪽에서 일어난 일을 밖으로 흘린다. **UI 는 이걸로 아무것도 바꾸지 않는다.**
   ///
@@ -147,6 +158,10 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   /// Visible layers (cross-faded).
   double _talkOpacity = 0;
+
+  /// 클립이 처음 붙을 때 0 → 1 로 올린다. 한 번 1 이 되면 다시 내려가지 않는다 —
+  /// 감정·템포 교체는 각자의 페이드를 쓰고, 이건 **최초 등장** 전용이다.
+  double _appearOpacity = 0;
   double _emoOpacity = 0;
 
   /// True while the talking clip should be on screen.
@@ -165,6 +180,14 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   /// Silence this long ends the talking clip.
   static const Duration _hangover = Duration(milliseconds: 180);
+
+  /// 첫 클립이 열렸을 때 **들어오는** 페이드.
+  ///
+  /// 클립 여는 데 100~300ms 가 걸리는 건 못 줄인다(디코더 초기화다). 줄일 수 있는
+  /// 것은 **그 끝이 얼마나 튀는가**다 — 종전엔 빈 칸에서 영상이 전부 불투명하게
+  /// 툭 나타나, 「늦다」보다 「갑자기 튄다」로 읽혔다. 180ms 면 눈이 「차오른다」로
+  /// 읽고, idle↔talk 전환([_fadeIn]·[_fadeOut])과도 같은 결이다.
+  static const Duration _appear = Duration(milliseconds: 180);
 
   static const Map<int, String> _talkAsset = {
     kTalkSlow: 'talk_slow',
@@ -221,30 +244,94 @@ class _SyncAvatarState extends State<SyncAvatar> {
     _load();
   }
 
+  /// 대기 클립을 연다. 자산이 없는 캐릭터는 기본 `idle` 로 되돌린다.
+  Future<VideoPlayerController?> _loadIdle() async {
+    final c = await _open(_idleAsset[_idleKind] ?? 'idle',
+        loop: true, play: true);
+    if (c != null || _idleKind == kIdleWait) return c;
+    _idleKind = kIdleWait;
+    return _open('idle', loop: true, play: true);
+  }
+
+  /// 발화 클립을 연다. 템포 자산이 없는 캐릭터(아직 `talk.mp4` 하나뿐인 bibi 등)는
+  /// 기본으로 되돌린다.
+  Future<VideoPlayerController?> _loadTalk() async {
+    final c = await _open(_talkAsset[_talkTempo] ?? 'talk',
+        loop: true, play: true);
+    if (c != null || _talkTempo == kTalkNormal) return c;
+    _talkTempo = kTalkNormal;
+    return _open('talk', loop: true, play: true);
+  }
+
   Future<void> _load() async {
     // 컨트롤러는 둘 다 열어 둔다(초기화 유지 = 전환이 즉시다). 다만 **재생은 보이는
     // 쪽만** 한다 — 아래 _applyPlayback 참조.
-    _idle = await _open(_idleAsset[_idleKind] ?? 'idle', loop: true, play: true);
-    // 대기 자산이 없는 캐릭터는 기본 idle 로 되돌린다(talk 템포와 같은 폴백).
-    if (_idle == null && _idleKind != kIdleWait) {
-      _idleKind = kIdleWait;
-      _idle = await _open('idle', loop: true, play: true);
+    //
+    // ## 둘을 나란히 열고, 대기 클립이 오면 곧바로 그린다
+    //
+    // 종전엔 `idle` 을 await 하고 그 다음 `talk` 을 await 한 뒤에야 화면을 열었다.
+    // 한 클립 여는 데 안드로이드에서 100~300ms 라, 통화를 열 때마다 **둘을 더한
+    // 만큼** 빈 칸이었다. 그런데 `_ready` 는 원래 `_idle != null || _talk != null`
+    // 이다 — 하나만 있어도 그릴 수 있다는 뜻인데, 코드가 굳이 둘을 다 기다렸다.
+    //
+    // 그래서 ① 두 요청을 동시에 띄우고 ② 대기 클립이 도착하는 즉시 화면을 연다.
+    // 발화 클립은 뒤에서 마저 열려 `_talk` 슬롯에 들어간다 — 말을 시작하기 전에는
+    // 쓰이지 않으므로 늦게 와도 보이는 것이 없다.
+    //
+    // ⚠ 디코더 동시 개수는 **늘지 않는다.** 종전에도 끝나면 둘 다 열려 있었다
+    //   (한계는 2~3개 — [_freeEmotionSlot] 주석). 여는 시점만 겹친다.
+    final idleFuture = _loadIdle();
+    final talkFuture = _loadTalk();
+
+    _idle = await idleFuture;
+    if (!mounted) {
+      // 위젯이 사라졌으면 뒤따라오는 발화 클립까지 반납한다 — 안 하면 디코더가
+      // 새는데, 그 증상은 **다음 통화에서** 그림이 얼어붙는 것으로 나타난다.
+      unawaited(talkFuture.then((c) => c?.dispose()));
+      return;
     }
-    _talk = await _open(_talkAsset[_talkTempo] ?? 'talk', loop: true, play: true);
-    // 템포 자산이 없는 캐릭터(아직 talk.mp4 하나뿐인 bibi 등)는 기본으로 되돌린다.
-    if (_talk == null && _talkTempo != kTalkNormal) {
-      _talkTempo = kTalkNormal;
-      _talk = await _open('talk', loop: true, play: true);
+    if (_idle != null) {
+      // 대기 클립만으로 화면을 연다. 발화 클립은 아래에서 계속 기다린다.
+      setState(() {
+        _ready = true;
+        if (_talking) _talkOpacity = 1;
+      });
+      _armAppear();
+      await _applyPlayback();
     }
+
+    _talk = await talkFuture;
     if (!mounted) return;
+    // 실패를 조용히 삼키지 않는다. `_open` 이 `catch (_)` 로 먹기 때문에, 이
+    // 한 줄이 없으면 「영상이 안 뜬다」가 자산 문제인지 디코더 부족인지 화면만
+    // 보고는 가릴 수 없다 — 이 저장소에서 이미 세 번 겪은 실패 모드다.
+    if (_idle == null && _talk == null) {
+      debugPrint('SyncAvatar: idle·talk 둘 다 못 열었다 → 정지컷 폴백 '
+          '(assetDir=${widget.assetDir})');
+    }
     setState(() {
+      // 대기 클립이 이미 열었으면 여기선 그대로 참이다.
       _ready = _idle != null || _talk != null;
       _failed = !_ready;
       // Apply whatever state the voice already asked for while we were loading.
       if (_ready && _talking) _talkOpacity = 1;
     });
+    if (_ready) _armAppear();
     if (_ready && _talking) _syncEmotionLayer();
     await _applyPlayback();
+  }
+
+  /// 등장 페이드를 건다 — **다음 프레임**에 올린다.
+  ///
+  /// 같은 프레임에 1 로 두면 [AnimatedOpacity] 가 시작값과 끝값을 같게 보아
+  /// 애니메이션을 건너뛴다(그러면 종전처럼 툭 나타난다). 한 프레임 뒤에 올려야
+  /// 0 → 1 이 실제로 보간된다.
+  void _armAppear() {
+    if (_appearOpacity == 1) return;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      setState(() => _appearOpacity = 1);
+    });
   }
 
   /// 화면에 보이는 클립만 재생한다.
@@ -974,8 +1061,15 @@ class _SyncAvatarState extends State<SyncAvatar> {
 
   @override
   Widget build(BuildContext context) {
-    if (_failed || !_ready) return widget.fallback ?? const SizedBox.expand();
-    return ClipRect(
+    // 로딩과 실패를 **가른다.** 종전엔 한 줄이라 잠깐 여는 동안에도 영구 폴백이
+    // 깔렸다 — 그게 통화 진입 때 얼굴이 깜빡이던 원인이다.
+    if (_failed) return widget.fallback ?? const SizedBox.expand();
+    if (!_ready) return widget.loading ?? const SizedBox.expand();
+    return AnimatedOpacity(
+      opacity: _appearOpacity,
+      duration: _appear,
+      curve: Curves.easeOut,
+      child: ClipRect(
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -995,6 +1089,7 @@ class _SyncAvatarState extends State<SyncAvatar> {
               child: _cover(_emo!),
             ),
         ],
+      ),
       ),
     );
   }
