@@ -76,6 +76,44 @@ bool isFinalFragment({
   return segmentsUsed + 1 >= maxFragmentsLocal;
 }
 
+/// «5:00 뒤 사용자가 **정말** 말했나» — 전환 트리거의 증거 두 가지를 모은다.
+///
+/// 라이브에는 `user_turn_end` 프레임이 없다(양쪽 다 안 보낸다). 그래서 로컬 VAD 로
+/// 봤는데, 그것만으로는 **주변 소음**이 표시를 세우고 서버 무음 넛지의 `turn_end` 에서
+/// 전환이 새어 나간다. 서버가 라이브에서 학습자 전사를 `input_transcript{text}` 로
+/// 내려주므로 둘을 **AND** 로 묶는다:
+///
+///   voiced      — 게이트가 열린 채 유성 프레임(로컬 RMS VAD)
+///   transcript  — 비어 있지 않은 `input_transcript` 수신
+///
+/// ⚠ 3.1 은 학습자 전사의 마지막 조각을 비버 응답과 **같이** 내보내므로(protocol.py
+///   ClientDiag 주석) 전사가 응답 `turn_end` 직전에 도착할 수 있다. 그래서 판정은
+///   프레임이 올 때가 아니라 **`turn_end` 시점에** [confirmed] 를 읽는다 — 순서 무관.
+class UserSpeechEvidence {
+  bool _voiced = false;
+  bool _transcript = false;
+
+  /// 게이트 열린 채 유성 프레임이 왔다.
+  void onVoiced() => _voiced = true;
+
+  /// `input_transcript` 가 왔다. 공백뿐이면 세지 않는다.
+  void onTranscript(String? text) {
+    if (text != null && text.trim().isNotEmpty) _transcript = true;
+  }
+
+  /// 둘 다 있어야 «사용자가 말했다». 소음만·전사만으로는 안 선다.
+  bool get confirmed => _voiced && _transcript;
+
+  bool get voiced => _voiced;
+  bool get transcript => _transcript;
+
+  /// 새 대기 구간·전환 뒤에 비운다.
+  void reset() {
+    _voiced = false;
+    _transcript = false;
+  }
+}
+
 /// 소켓이 아직 안 열린 사이의 마이크 PCM 을 담아 두는 프리버퍼(F3).
 ///
 /// 조각 전환 중 재생이 끝나 마이크가 열렸는데 새 소켓의 `call_started` 가 아직이면,

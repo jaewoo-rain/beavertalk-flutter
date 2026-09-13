@@ -870,9 +870,10 @@ class NormalCallController extends Notifier<CallState> {
   ///   pendingFinal → (사용자 발화 뒤 turn_end) 종료 드레인(재연결 없음)
   _FragmentSwitch _fragmentSwitch = _FragmentSwitch.none;
 
-  /// 5:00 뒤 사용자가 **말했나**(`user_turn_end`). 전환은 «사용자 발화 → 비버 응답
-  /// turn_end» 에서만 한다 — 5:00 에 비버가 말하던 중이면 그 turn_end 로는 안 바꾼다.
-  bool _userSpokeSincePending = false;
+  /// 5:00 뒤 사용자가 **말했나** — 로컬 VAD 유성 AND 비어 있지 않은 `input_transcript`.
+  /// 전환은 «사용자 발화 → 비버 응답 turn_end» 에서만 한다 — 5:00 에 비버가 말하던
+  /// 중이면 그 turn_end 로는 안 바꾸고, 소음만·전사만으로도 안 바꾼다.
+  final UserSpeechEvidence _speechSincePending = UserSpeechEvidence();
 
   /// 소켓이 아직 안 열린 사이의 마이크 PCM(F3). `call_started` 뒤 순서대로 흘린다.
   final MicPrebuffer _micPrebuffer = MicPrebuffer();
@@ -2996,11 +2997,12 @@ class NormalCallController extends Notifier<CallState> {
     //   아무도 안 보낸다**(2026-08-25 주석·서버 protocol.py ClientDiag 독스트링). 거기
     //   걸어 두면 라이브에서 전환이 영원히 안 일어난다. 말이 끝난 것을 아는 쪽은
     //   이 로컬 VAD 뿐이다 — 응답시간 원점과 같은 근거.
-    if (!_userSpokeSincePending &&
+    // 소음만으로는 안 선다 — 전사(input_transcript)와 AND 다([UserSpeechEvidence]).
+    if (!_speechSincePending.voiced &&
         (_fragmentSwitch == _FragmentSwitch.pending ||
             _fragmentSwitch == _FragmentSwitch.pendingFinal)) {
-      _userSpokeSincePending = true;
-      _log('조각 전환 대기 중 사용자 발화 감지(로컬 VAD) — 이 응답의 turn_end 에서 전환');
+      _speechSincePending.onVoiced();
+      _log('조각 전환 대기 중 유성 프레임(로컬 VAD) — 전사까지 오면 다음 turn_end 에서 전환');
     }
     // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
     if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
@@ -4729,6 +4731,12 @@ class NormalCallController extends Notifier<CallState> {
         // the user starts speaking.
         {
           final delta = msg['text'] as String?;
+          // 끊김 없는 전환의 두 번째 증거 — 학습자 전사가 왔다(소음이면 안 온다).
+          // 3.1 은 이 조각이 응답 turn_end 직전에 올 수 있어 판정은 turn_end 에서 한다.
+          if (_fragmentSwitch == _FragmentSwitch.pending ||
+              _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+            _speechSincePending.onTranscript(delta);
+          }
           if (delta != null && delta.isNotEmpty) {
             // [계측] 이 사용자 턴의 **첫 전사 델타**가 도착한 시각. `user_turn_start`
             // 부터의 간격이 곧 「내 말이 글자로 뜨기까지」다 — 자동 대화(`__test_say`)
@@ -4753,7 +4761,8 @@ class NormalCallController extends Notifier<CallState> {
         _tryUngateMic();
         // 끊김 없는 조각 전환 — 5:00 뒤 «사용자 발화 → 이 응답» 이 끝났다. 재생 큐는
         // 그대로 두고 소켓만 갈아 끼운다(pending) / 응답까지 하고 끝낸다(pendingFinal).
-        if (_userSpokeSincePending) {
+        // 판정은 여기서 — 전사가 turn_end 직전에 도착해도(3.1) 순서 문제가 없다.
+        if (_speechSincePending.confirmed) {
           if (_fragmentSwitch == _FragmentSwitch.pending) {
             unawaited(_performSeamlessSwitch());
           } else if (_fragmentSwitch == _FragmentSwitch.pendingFinal) {
@@ -4796,7 +4805,9 @@ class NormalCallController extends Notifier<CallState> {
           // [_markVoicedIfLoud](로컬 VAD)가 같은 표시를 세운다 — 그쪽이 제품 경로다.
           if (_fragmentSwitch == _FragmentSwitch.pending ||
               _fragmentSwitch == _FragmentSwitch.pendingFinal) {
-            _userSpokeSincePending = true;
+            _speechSincePending
+              ..onVoiced()
+              ..onTranscript('user_turn_end');
           }
         }
       case 'call_ended':
@@ -5138,12 +5149,12 @@ class NormalCallController extends Notifier<CallState> {
         unawaited(_reachSegmentEnd());
       case FragmentBoundaryAction.seamless:
         _fragmentSwitch = _FragmentSwitch.pending;
-        _userSpokeSincePending = false;
+        _speechSincePending.reset();
         _log('조각 ${state.segmentsUsed + 1} 5:00 도달 — 끊김 없는 전환 대기 '
             '(다음 «사용자 발화 → turn_end» 에 소켓만 교체, 시트 없음, 타이머 누적)');
       case FragmentBoundaryAction.finalClose:
         _fragmentSwitch = _FragmentSwitch.pendingFinal;
-        _userSpokeSincePending = false;
+        _speechSincePending.reset();
         _log('마지막 조각 ${state.segmentsUsed + 1} 상한 도달 — 다음 «사용자 발화 → '
             'turn_end» 에 응답까지 하고 종료(재연결 없음)');
     }
@@ -5256,7 +5267,7 @@ class NormalCallController extends Notifier<CallState> {
     if (_fragmentSwitch != _FragmentSwitch.pending) return;
     if (state.phase != CallPhase.inCall) return;
     _fragmentSwitch = _FragmentSwitch.switching;
-    _userSpokeSincePending = false;
+    _speechSincePending.reset();
     final gen = _gen;
     final carried = _serverCallId ?? state.callId;
     final endedFragment = state.segmentsUsed + 1;
@@ -5336,7 +5347,7 @@ class NormalCallController extends Notifier<CallState> {
     if (_fragmentSwitch != _FragmentSwitch.pendingFinal) return;
     if (state.phase != CallPhase.inCall) return;
     _fragmentSwitch = _FragmentSwitch.none;
-    _userSpokeSincePending = false;
+    _speechSincePending.reset();
     final id = _serverCallId ?? state.callId;
     _log('마지막 조각 응답 끝 — 소켓 닫고 재생을 비운 뒤 결과 화면(재연결 없음)');
     _expectClose = true;
@@ -5854,7 +5865,7 @@ class NormalCallController extends Notifier<CallState> {
     // 자기-대화 루프다. [_connect] 가 이 teardown **뒤에** 새 값을 넣는다.
     _channelMode = CallChannel.defaultChannel;
     _fragmentSwitch = _FragmentSwitch.none;
-    _userSpokeSincePending = false;
+    _speechSincePending.reset();
     _micPrebuffer.clear();
     _serverFragmentIndex = null;
     _serverMaxFragments = null;

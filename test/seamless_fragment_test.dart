@@ -168,6 +168,50 @@ void main() {
     });
   });
 
+  group('⑥ 사용자 발화 증거 — 소음만·전사만으로는 전환하지 않는다', () {
+    // 라이브엔 user_turn_end 가 없다(양쪽 다 안 보낸다). 로컬 VAD 만 쓰면 주변 소음이
+    // 표시를 세우고 서버 무음 넛지의 turn_end 에서 전환이 샌다. 그래서 «VAD 유성 AND
+    // 비어 있지 않은 input_transcript» 를 turn_end 시점에 읽는다.
+    test('소음만(VAD 유성, 전사 없음) → 안 선다', () {
+      final e = UserSpeechEvidence()..onVoiced();
+      expect(e.confirmed, isFalse, reason: '무음 넛지 turn_end 로 새면 안 된다');
+    });
+
+    test('전사만(VAD 유성 없음) → 안 선다', () {
+      final e = UserSpeechEvidence()..onTranscript('안녕하세요');
+      expect(e.confirmed, isFalse);
+    });
+
+    test('둘 다 → 선다. 순서는 무관(3.1 은 전사가 turn_end 직전에 올 수 있다)', () {
+      final a = UserSpeechEvidence()
+        ..onVoiced()
+        ..onTranscript('안녕하세요');
+      expect(a.confirmed, isTrue);
+      final b = UserSpeechEvidence()
+        ..onTranscript('안녕하세요')
+        ..onVoiced();
+      expect(b.confirmed, isTrue, reason: '전사가 먼저 와도 같다');
+    });
+
+    test('공백뿐인 전사·null 은 전사로 안 친다', () {
+      final e = UserSpeechEvidence()
+        ..onVoiced()
+        ..onTranscript('   ')
+        ..onTranscript(null);
+      expect(e.confirmed, isFalse);
+    });
+
+    test('reset 뒤엔 둘 다 다시 모아야 한다 — 다음 대기 구간', () {
+      final e = UserSpeechEvidence()
+        ..onVoiced()
+        ..onTranscript('네')
+        ..reset();
+      expect(e.confirmed, isFalse);
+      e.onTranscript('네');
+      expect(e.confirmed, isFalse, reason: '옛 유성이 남아 있으면 안 된다');
+    });
+  });
+
   group('⑤ Free — 종전 «이어하기» 시트 그대로', () {
     test('Free 5:00 → sheet (seamless 아님)', () {
       expect(_at(300, paid: false), FragmentBoundaryAction.sheet);
