@@ -66,8 +66,23 @@ class Badge extends StatelessWidget {
         color: bg,
         borderRadius: BorderRadius.circular(13),
       ),
-      alignment: Alignment.center,
-      child: Text(label, style: AppType.caption1.sb.copyWith(color: fg)),
+      // ⛔ `Container` 의 `alignment:` 를 쓰지 마라 — **폭을 꽉 채운다.**
+      //   그 인자는 자식을 `Align` 으로 감싸는데, `Align` 은 폭 제약이 있으면
+      //   최대치까지 늘어난다. `Row(mainAxisSize: min)` 안에서는 가로 제약이
+      //   없어 hug 처럼 보이지만, `Wrap` 처럼 폭을 주는 부모에 넣으면 알약이
+      //   화면을 가로지른다(홈 학습 현황에서 실제로 났다, 2026-09-13).
+      //
+      //   `widthFactor: 1` 이 그 차이다 — 가로는 내용만큼(hug), 세로는
+      //   `minHeight` 26 까지 늘어나 글자를 가운데 둔다.
+      child: Align(
+        alignment: Alignment.center,
+        widthFactor: 1,
+        // 폭이 모자라면 **줄바꿈한다** — 자르지 않는다. `Text` 의 기본 거동이다.
+        // `maxLines: 1` + 줄임표를 붙였다가 되돌렸다(2026-09-13): 배지가 나르는
+        // 것은 차시 코드·상태처럼 **잘리면 뜻이 사라지는 짧은 말**이라, 자리를
+        // 못 만들면 줄을 늘리는 편이 맞다.
+        child: Text(label, style: AppType.caption1.sb.copyWith(color: fg)),
+      ),
     );
   }
 }
