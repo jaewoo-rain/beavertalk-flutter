@@ -147,6 +147,76 @@ class UserSpeechEvidence {
   }
 }
 
+/// 마이크 프레임 하나가 갈 곳.
+enum MicFrameRoute {
+  /// 지금 소켓으로 보낸다.
+  socket,
+
+  /// 프리버퍼에 쌓는다 — 조각 전환 중.
+  prebuffer,
+
+  /// 버린다 — 소켓이 없고 전환 중도 아니다(종전 동작).
+  drop,
+}
+
+/// 마이크 프레임의 목적지 — **전환 중이면 소켓이 살아 있어도 프리버퍼다.**
+///
+/// qa-fable 2차(2026-09-14): `fragment_saved` 를 기다리는 동안 옛 `_channel` 이 아직
+/// 살아 있어(서버 펌프는 이미 내려감) 게이트 열린 뒤 첫 발화가 죽은 소켓으로 갔다.
+/// 프리버퍼 분기가 `_channel == null` 일 때만이었기 때문이다. 그래서 전환 상태를
+/// **소켓 검사보다 먼저** 본다 — 순서가 곧 규칙이라 함수로 뺐다.
+MicFrameRoute micFrameRoute({required bool switching, required bool socketOpen}) {
+  if (switching) return MicFrameRoute.prebuffer;
+  if (socketOpen) return MicFrameRoute.socket;
+  return MicFrameRoute.drop;
+}
+
+/// `fragment_end` 를 보낸 뒤 서버의 `fragment_saved` 를 기다리는 자리 — **끝나기 전엔
+/// 다음 단계(재연결·드레인·teardown)로 못 간다.**
+///
+/// 세 가지로 끝난다: 서버가 `fragment_saved{call_id}` 를 줬다 / 상한이 지났다(구서버·
+/// 지연 — 종전 폴백) / 통화가 끊겨 teardown 이 접었다. 뒤의 둘은 둘 다 null 이지만
+/// **뜻이 다르다** — 타임아웃만 계측(diag)에 남긴다. 상한을 조정할 근거가 그 수다.
+///
+/// codex 2차(2026-09-14): 마지막 조각이 `fragment_end` 를 보내 놓고 바로 드레인을 시작해,
+/// 오디오 큐가 비어 있으면 300ms 뒤 teardown 이 이 대기를 접고 소켓을 닫았다. 서버는
+/// disconnect 경로로도 저장하니 데이터는 안 잃지만 계약이 어긋난다. 그래서 드레인은
+/// [isSettled] 뒤에만 시작한다(재생 중이면 어차피 겹친다).
+class FragmentSavedWait {
+  String? _savedId;
+  bool _settled = false;
+  bool _timedOut = false;
+
+  /// 서버가 저장을 끝냈다.
+  void complete(String? savedCallId) {
+    if (_settled) return;
+    _settled = true;
+    _savedId = savedCallId;
+  }
+
+  /// 상한이 지났다 — 종전 폴백으로 간다. 계측 대상.
+  void timeout() {
+    if (_settled) return;
+    _settled = true;
+    _timedOut = true;
+  }
+
+  /// 통화가 끊겨 접혔다(teardown). 타임아웃이 아니다 — 계측에 안 센다.
+  void abandon() {
+    if (_settled) return;
+    _settled = true;
+  }
+
+  /// 다음 단계로 가도 되나.
+  bool get isSettled => _settled;
+
+  /// 타임아웃으로 끝났나(diag 용).
+  bool get timedOut => _timedOut;
+
+  /// 서버가 알려 준 저장된 call_id. 타임아웃·접힘이면 null.
+  String? get savedId => _savedId;
+}
+
 /// 소켓이 아직 안 열린 사이의 마이크 PCM 을 담아 두는 프리버퍼(F3).
 ///
 /// 조각 전환 중 재생이 끝나 마이크가 열렸는데 새 소켓의 `call_started` 가 아직이면,

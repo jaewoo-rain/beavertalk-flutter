@@ -256,6 +256,58 @@ void main() {
     });
   });
 
+  group('⑦ 마지막 조각 — fragment_saved 수신·타임아웃 뒤에만 드레인(teardown 0)', () {
+    // codex 2차: 마지막 조각이 fragment_end 를 보내 놓고 바로 드레인을 시작해, 오디오 큐가
+    // 비어 있으면 300ms 뒤 teardown 이 대기를 접고 소켓을 닫았다. 드레인은 «끝난 뒤» 다.
+    test('끝나기 전엔 다음 단계로 못 간다', () {
+      final w = FragmentSavedWait();
+      expect(w.isSettled, isFalse, reason: 'saved 전 teardown/드레인 0');
+    });
+
+    test('fragment_saved → 끝남 + 저장된 call_id', () {
+      final w = FragmentSavedWait()..complete('1570');
+      expect(w.isSettled, isTrue);
+      expect(w.savedId, '1570');
+      expect(w.timedOut, isFalse);
+    });
+
+    test('타임아웃 → 끝남 + timedOut(계측 대상) · savedId null', () {
+      final w = FragmentSavedWait()..timeout();
+      expect(w.isSettled, isTrue);
+      expect(w.timedOut, isTrue, reason: '이 수가 쌓이면 상한(5초)이나 서버 저장을 본다');
+      expect(w.savedId, isNull);
+    });
+
+    test('teardown 이 접은 것은 타임아웃이 아니다 — 계측에 안 센다', () {
+      final w = FragmentSavedWait()..abandon();
+      expect(w.isSettled, isTrue);
+      expect(w.timedOut, isFalse);
+    });
+
+    test('한 번 끝나면 뒤늦은 답이 덮지 않는다', () {
+      final w = FragmentSavedWait()..timeout()..complete('1570');
+      expect(w.timedOut, isTrue);
+      expect(w.savedId, isNull, reason: '이미 폴백을 탔다 — 늦은 saved 는 무시');
+    });
+  });
+
+  group('⑧ 마이크 프레임 목적지 — 전환 중이면 소켓이 살아 있어도 프리버퍼', () {
+    // qa-fable 2차: fragment_saved 를 기다리는 동안 옛 소켓이 살아 있어 첫 발화가 죽은
+    // 소켓으로 갔다. 전환 상태를 소켓 검사보다 먼저 본다.
+    test('⛔ switching 중 + 소켓 열림 → 프리버퍼(옛 소켓은 시체다)', () {
+      expect(micFrameRoute(switching: true, socketOpen: true), MicFrameRoute.prebuffer);
+    });
+
+    test('switching 중 + 소켓 없음 → 프리버퍼', () {
+      expect(micFrameRoute(switching: true, socketOpen: false), MicFrameRoute.prebuffer);
+    });
+
+    test('평소: 소켓 있으면 소켓, 없으면 버림(종전 동작)', () {
+      expect(micFrameRoute(switching: false, socketOpen: true), MicFrameRoute.socket);
+      expect(micFrameRoute(switching: false, socketOpen: false), MicFrameRoute.drop);
+    });
+  });
+
   group('⑤ Free — 종전 «이어하기» 시트 그대로', () {
     test('Free 5:00 → sheet (seamless 아님)', () {
       expect(_at(300, paid: false), FragmentBoundaryAction.sheet);
