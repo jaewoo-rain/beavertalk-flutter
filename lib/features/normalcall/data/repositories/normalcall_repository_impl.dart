@@ -105,9 +105,9 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
   }
 
   @override
-  Future<CallResumeStatus?> getResumeStatus(int callId) async {
+  Future<CallResumeStatus?> getResumeStatus(int callId, {String? planOverride}) async {
     try {
-      final json = await _remote.getResumeStatus(callId);
+      final json = await _remote.getResumeStatus(callId, planOverride: planOverride);
       if (json == null) return null;
       return CallResumeStatus.fromJson(json);
     } on DioException catch (_) {

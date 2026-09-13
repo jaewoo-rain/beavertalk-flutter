@@ -56,5 +56,8 @@ abstract interface class NormalcallRepository {
   /// 못 받으면 **null** 을 돌려준다(구버전 서버 404, 남의 통화 404, 네트워크 실패).
   /// 호출부는 그때 로컬 계산으로 내려간다. **던지지 않는다** — 이걸 못 물어봤다고
   /// 통화를 막을 이유는 없다.
-  Future<CallResumeStatus?> getResumeStatus(int callId);
+  ///
+  /// [planOverride] 는 QA 플랜 흉내 통화에서만 준다(`?plan_override=free|pro|max`, admin 만
+  /// 유효) — 이어하기 판정이 그 플랜 조각 상한을 따르게.
+  Future<CallResumeStatus?> getResumeStatus(int callId, {String? planOverride});
 }

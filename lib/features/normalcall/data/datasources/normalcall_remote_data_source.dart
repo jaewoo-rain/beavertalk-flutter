@@ -34,9 +34,19 @@ class NormalcallRemoteDataSource {
   ///
   /// 남의 통화를 조회하면 서버가 **404** 를 준다(백엔드 문서 §2③). 리포지토리가
   /// 그 경우를 null 로 눕힌다 — 이어가기를 못 할 뿐 통화를 막을 일은 아니다.
-  Future<Map<String, dynamic>?> getResumeStatus(int callId) async {
-    final res = await _dio
-        .get<Map<String, dynamic>>('/calls/$callId/resume-status');
+  ///
+  /// [planOverride] 가 있으면 `?plan_override=` 를 붙인다 — 서버(admin 만)가 그 플랜의
+  /// 조각 상한으로 `can_resume`·`max_fragments` 를 답한다. 없으면 쿼리 자체가 빠진다.
+  Future<Map<String, dynamic>?> getResumeStatus(
+    int callId, {
+    String? planOverride,
+  }) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/calls/$callId/resume-status',
+      queryParameters: planOverride == null
+          ? null
+          : <String, dynamic>{'plan_override': planOverride},
+    );
     return res.data;
   }
 

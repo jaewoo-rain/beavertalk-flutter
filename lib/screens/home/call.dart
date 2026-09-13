@@ -583,15 +583,27 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     //   경로가 없다 — 가정은 늘 제한 쪽으로 떨어진다. 여기서 `!isPlanInferred` 를
     //   덧붙이면 **서버가 확인해 준 Max 사용자까지** 스틸로 내려가 없던 손해가 생긴다.
     //   Max 를 **부여**하는 판단이 아니라 **표현**을 고르는 자리라 tier 로 충분하다.
-    final avatarIsVideo =
-        ref.watch(subscriptionStatusProvider).tier == SubscriptionTier.max;
+    //
+    // ⭐ **플랜 흉내(QA)가 있으면 그것이 이긴다**(사장님 지시 2026-09-13). 서버는 이미
+    //   `plan_override` 대로 엔진을 골랐다 — Max 는 영상·3.1, Free/Pro 는 음성·2.5.
+    //   화면이 구독 티어만 보면 Free 계정의 «Max 로 통화» 가 **원형 스틸에 Max 목소리**
+    //   가 되고, Max 계정의 «Free 로 통화» 는 **영상 밴드에 Free 목소리** 가 된다.
+    //   override 는 [CallState.planOverride] 로 통화 시작 때 확정되므로 「모르는 동안」
+    //   이 없다 — 아래 [avatarUnknown] 도 그때는 false 다.
+    final planOverride =
+        ref.watch(normalCallControllerProvider.select((s) => s.planOverride));
+    final avatarIsVideo = planOverride != null
+        ? planOverride == PlanOverride.max
+        : ref.watch(subscriptionStatusProvider).tier == SubscriptionTier.max;
     // 티어가 아직 안 왔으면 **둘 중 아무것도 그리지 않는다.**
     //
     // `subscriptionStatusProvider` 는 모르는 동안 `none`(=Free)으로 떨어진다.
     // 허용을 정할 때는 그게 옳지만(제한 쪽이 안전하다) 표현을 고를 때는 틀린
     // 모습을 단언하는 것이다 — Max 사용자가 원형 아바타를 보다가 16:9 영상
     // 밴드로 화면이 뒤바뀌었다(2026-09-12 실기기 확인).
-    final avatarUnknown = ref.watch(subscriptionTierUnknownProvider);
+    // override 통화는 플랜을 이미 아니 「모름」이 아니다.
+    final avatarUnknown =
+        planOverride == null && ref.watch(subscriptionTierUnknownProvider);
 
     return PopScope(
       canPop: false,

@@ -316,6 +316,7 @@ class CallState {
     this.beaverPreparing = false,
     this.channel = CallChannel.live,
     this.course,
+    this.planOverride,
     this.segmentsUsed = 0,
     this.paidCallTime = false,
     this.micMuted = false,
@@ -393,6 +394,15 @@ class CallState {
   ///   [channel] 이 같은 이유로 여기 있다.
   final CallCourse? course;
 
+  /// 이 통화의 **플랜 흉내**(QA). null 이면 구독 플랜 그대로.
+  ///
+  /// 화면이 이걸 알아야 영상/음성 UI 를 서버 엔진과 맞출 수 있다 — 서버는 이미
+  /// override 플랜대로 엔진(영상·3.1 / 음성·2.5)을 고르는데, 화면이 구독 티어만 보면
+  /// Free 계정의 «Max 로 통화» 가 원형 스틸에 Max 목소리가 되고 그 반대는 영상 밴드에
+  /// Free 목소리가 된다(사장님 지시 2026-09-13: 화면을 그 선택에 맞춰라).
+  /// [course] 와 같은 이유로 state 에 싣는다(컨트롤러 공개 getter 금지).
+  final PlanOverride? planOverride;
+
   /// 지금까지 **끝낸** 5분 구간의 수. 0 = 첫 구간 진행 중, 1 = 첫 5분을 마쳤다.
   ///
   /// 통화는 5분 세션을 이어 붙여 만든다([CallAllowance]). 한 소켓이 15분을 버티는 게
@@ -446,6 +456,7 @@ class CallState {
     bool? beaverPreparing,
     CallChannel? channel,
     CallCourse? course,
+    PlanOverride? planOverride,
     int? segmentsUsed,
     bool? paidCallTime,
     bool? micMuted,
@@ -466,6 +477,7 @@ class CallState {
       beaverPreparing: beaverPreparing ?? this.beaverPreparing,
       channel: channel ?? this.channel,
       course: course ?? this.course,
+      planOverride: planOverride ?? this.planOverride,
       segmentsUsed: segmentsUsed ?? this.segmentsUsed,
       paidCallTime: paidCallTime ?? this.paidCallTime,
       micMuted: micMuted ?? this.micMuted,
@@ -1663,6 +1675,7 @@ class NormalCallController extends Notifier<CallState> {
         phase: CallPhase.connecting,
         channel: _channelMode,
         course: _callCourse,
+        planOverride: _planOverride,
       );
 
       // Every failure below tears down with keepError so the error phase SURVIVES
@@ -5025,7 +5038,13 @@ class NormalCallController extends Notifier<CallState> {
     // 경로라, 이걸 뒤로 미루면 경계에서 이 함수가 두 번 돈다.
     _continuing = true;
     try {
-      final paid = await (_paidAccess ??= _resolvePaidAccess());
+      // ⭐ 플랜 흉내(QA) 통화면 유료 여부도 **그 플랜**으로 본다(Free 만 무료). 이 값은
+      //   서버가 답을 안 줄 때의 이어가기 폴백이면서, 시트의 모양(paidCallTime — Free 면
+      //   구독 유도)을 정한다. 서버 판정(resume-status ?plan_override=)과 같은 기준이어야
+      //   화면과 서버가 한 통화에서 다른 플랜을 말하지 않는다.
+      final paid = _planOverride != null
+          ? _planOverride != PlanOverride.free
+          : await (_paidAccess ??= _resolvePaidAccess());
       if (state.phase != CallPhase.inCall) return;
 
       final used = state.segmentsUsed + 1;
@@ -5043,6 +5062,7 @@ class NormalCallController extends Notifier<CallState> {
       // 코스도 시트 동안 유지한다 — 안 하면 5분 시트가 떠 있는 사이 화면 밑에서
       // 힌트 토글이 다시 나타난다(코스 통화엔 힌트가 없다).
       final preservedCourse = state.course;
+      final preservedPlan = state.planOverride; // 시트 동안 영상/음성 모양을 유지한다
 
       // [_teardown] 은 CallKit 통화를 끝내고, 그 `ACTION_CALL_ENDED` 가 코디네이터를
       // 거쳐 [hangUp] 으로 되돌아올 수 있다(잠금화면 통화). 그 사이 사용자가 끊었다면
@@ -5123,6 +5143,7 @@ class NormalCallController extends Notifier<CallState> {
         characterId: preservedCharacter,
         channel: preservedChannel,
         course: preservedCourse,
+        planOverride: preservedPlan,
         segmentsUsed: used,
         paidCallTime: paid,
       );
@@ -5142,7 +5163,10 @@ class NormalCallController extends Notifier<CallState> {
     try {
       return await ref
           .read(normalcallRepositoryProvider)
-          .getResumeStatus(id)
+          // ⭐ override 로 시작한 통화면 이어하기 판정도 그 플랜 기준(Free 1 / Pro·Max 3
+          //   조각)으로 받는다. 안 실으면 서버가 구독 플랜으로 답해 화면 시트와 조각2
+          //   start(plan_override 재전송)가 어긋난다. admin 만 유효, 배포 전엔 무시된다.
+          .getResumeStatus(id, planOverride: _planOverride?.wireValue)
           .timeout(_resumeAskTimeout);
     } catch (e) {
       _log('resume-status 못 받음($e) — 로컬 판정으로 간다');
