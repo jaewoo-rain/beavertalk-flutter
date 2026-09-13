@@ -66,6 +66,18 @@ abstract final class Env {
     return '${_withScheme(_trimTrailingSlash(host))}$apiPrefix';
   }
 
+  /// [apiBaseUrl] 에서 `/api/v1` 을 뗀 **루트**. 서버의 `/__dev/*` 도구는 여기 붙는다
+  /// (`main.py` 가 라우터 밖에서 `@app.post("/__dev/…")` 로 연다 — API_PREFIX 를 안 탄다).
+  ///
+  /// dio 는 요청 경로가 절대 URL 이면 `baseUrl` 을 무시하므로, 호출부는 이걸로 절대 URL 을
+  /// 만들어 보낸다. 인증 인터셉터는 경로를 안 보고 Bearer 를 붙인다.
+  static String get apiRootUrl => stripApiPrefix(apiBaseUrl);
+
+  /// [base] 끝의 [apiPrefix] 를 뗀다. 없으면 그대로. 순수 함수 — dotenv 없이 시험한다.
+  static String stripApiPrefix(String base) => base.endsWith(apiPrefix)
+      ? base.substring(0, base.length - apiPrefix.length)
+      : base;
+
   /// 캐스케이드(STT→LLM→TTS) 전용 백엔드. **키가 없으면 [apiBaseUrl] 로 폴백한다.**
   ///
   /// ## 왜 통로마다 호스트가 갈리나

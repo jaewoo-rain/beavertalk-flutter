@@ -33,6 +33,9 @@ abstract interface class NormalcallRepository {
   /// `GET /cur/me` — 내 커리큘럼 위치 한 장(커리큘럼 2단계).
   Future<CurMe> getCurMe();
 
+  /// `POST /__dev/cur-reset` — 내 진도를 지우고 차시 1 로(dev 도구, admin 전용).
+  Future<CurResetResult> resetCurriculum();
+
   /// `GET /calls` — past calls for the record list (newest first).
   Future<List<CallSummary>> listCalls({int? limit, int? offset});
 

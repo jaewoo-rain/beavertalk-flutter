@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 
 import '../../../../core/network/api_endpoints.dart';
+import '../../../../core/network/env.dart';
 import '../../../../screens/home/learning_summary.dart';
 import '../../domain/entities/cur_me.dart';
 import '../../domain/entities/pron_summary.dart';
@@ -69,6 +70,18 @@ class NormalcallRemoteDataSource {
   Future<CurMe> getCurMe() async {
     final res = await _dio.get<Map<String, dynamic>>(ApiEndpoints.curMe);
     return CurMe.fromJson(res.data ?? const {});
+  }
+
+  /// `POST /__dev/cur-reset` — 내 커리큘럼 2단계 진도 백지화(dev 도구).
+  ///
+  /// ⚠ **루트 경로**다. `/api/v1` 아래가 아니라 `Env.apiRootUrl` 로 절대 URL 을 만들어
+  /// 보낸다(dio 는 절대 URL 이면 baseUrl 을 무시한다). body `{}` = 본인·차시 1.
+  Future<CurResetResult> resetCurriculum() async {
+    final res = await _dio.post<Map<String, dynamic>>(
+      '${Env.apiRootUrl}${ApiEndpoints.devCurReset}',
+      data: const <String, dynamic>{},
+    );
+    return CurResetResult.fromJson(res.data ?? const {});
   }
 
   /// `GET /calls/{call_id}` — call detail. The `/result` endpoint omits

@@ -17,6 +17,7 @@ import '../../components/icons/app_icons.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/level_progress.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -326,6 +327,10 @@ class MyPageScreen extends ConsumerWidget {
               route: Routes.gallery,
             ),
           ],
+          // ── 파괴적 도구 — 맨 아래 ────────────────────────────────────────
+          // 사장님 지시(2026-09-13). 카드 끝에 두는 이유: 실수로 눌리기 가장 어려운
+          // 자리다(위 개발자 카드 자체가 스크롤 맨 아래인 것과 같은 논리).
+          const _CurResetRow(),
         ],
       );
 
@@ -940,4 +945,109 @@ class _CurMeLine extends ConsumerWidget {
         CallCourse.auto => '자동',
         null => '(모름)',
       };
+}
+
+/// 「내 배운 기록 삭제」 — `POST /__dev/cur-reset`. 표현학습·프리토킹 진도(차시·항목·
+/// 커리큘럼 귀속)를 지우고 차시 1 로 돌린다. **통화 기록·분석은 남는다**(서버가 `call`
+/// 행을 보존한다 — 감사 기록).
+///
+/// - 확인 다이얼로그를 거친다(취소가 기본 자리).
+/// - 진행 중엔 버튼이 죽는다 — 더블탭이 두 번 지우는 건 무해하지만, 두 번째 응답이
+///   첫 스낵바를 덮어 「뭐가 됐는지」 를 흐린다.
+/// - 성공하면 [curMeProvider] 를 무효화해 위 진도 한 줄이 «차시 1» 로 즉시 바뀐다.
+/// - 403(`ADMIN_ONLY` — user 계정)·그 밖의 실패는 서버 메시지를 스낵바로. 앱이 만든
+///   문구로 바꾸지 않는다 — 「관리자 전용」 이 「실패했어요」 로 뭉개지면 원인을 못 본다.
+class _CurResetRow extends ConsumerStatefulWidget {
+  const _CurResetRow();
+
+  @override
+  ConsumerState<_CurResetRow> createState() => _CurResetRowState();
+}
+
+class _CurResetRowState extends ConsumerState<_CurResetRow> {
+  bool _busy = false;
+
+  Future<void> _confirmAndReset() async {
+    if (_busy) return;
+    final confirmed = await showDialogBasic<bool>(
+      context,
+      title: '배운 기록을 지울까요?',
+      description: '표현학습·프리토킹 진도(차시·항목 기록)를 지우고 차시 1 부터 다시 '
+          '시작합니다. 통화 기록·분석은 남습니다.',
+      variant: DialogBasicVariant.twoHorizontal,
+      primary: DialogAction(
+        label: '취소',
+        onPressed: () => Navigator.of(context).pop(false),
+      ),
+      secondary: DialogAction(
+        label: '삭제',
+        onPressed: () => Navigator.of(context).pop(true),
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _busy = true);
+    String msg;
+    try {
+      final r = await ref.read(normalcallRepositoryProvider).resetCurriculum();
+      // 진도 한 줄을 새로 읽는다 — 서버가 방금 차시 1 로 돌렸다.
+      ref.invalidate(curMeProvider);
+      msg = '차시 ${r.lessonCode} 부터 다시 시작';
+    } catch (e) {
+      // 403 ADMIN_ONLY 의 「관리자 전용 기능입니다.」 가 여기로 온다(서버 문구 그대로).
+      msg = e is AppException ? e.message : '삭제에 실패했어요: $e';
+    }
+    if (!mounted) return;
+    setState(() => _busy = false);
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // 파괴적 동작 — 빨간 글자·빨간 휴지통. 기존 토큰(accentForegroundRed)만 쓴다.
+    final red = context.c.accentForegroundRed;
+    final dim = context.c.labelAssistive;
+    return InkWell(
+      onTap: _busy ? null : _confirmAndReset,
+      borderRadius: BorderRadius.circular(AppRadius.xs),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('내 배운 기록 삭제',
+                      style: AppType.body1.sb.copyWith(color: _busy ? dim : red)),
+                  const SizedBox(height: AppSpacing.s4),
+                  Text(
+                    _busy
+                        ? '지우는 중…'
+                        : '표현학습·프리토킹 진도를 지우고 차시 1 부터. '
+                            '통화 기록·분석은 남습니다. 관리자 계정 전용.',
+                    style: AppType.label1.r.copyWith(color: context.c.labelNormal),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: AppSpacing.s12),
+            Padding(
+              padding: const EdgeInsets.only(top: AppSpacing.s4),
+              child: _busy
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : AppIcons.trash(size: 20, color: red),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

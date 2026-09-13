@@ -67,4 +67,9 @@ abstract final class ApiEndpoints {
   // ── Curriculum (2단계) ──
   /// 내 커리큘럼 위치 한 장 — 현재 차시·진도·`auto` 로 걸면 정해질 코스.
   static const curMe = '/cur/me';
+
+  // ── Dev tools (루트 경로 — `/api/v1` 밖) ──
+  /// 커리큘럼 2단계 진도 백지화. ⚠ `Env.apiRootUrl` 에 붙인다 — `/api/v1` 아래가 아니다.
+  /// `CurrentAdmin` 전용: user 계정은 403 `ADMIN_ONLY`.
+  static const devCurReset = '/__dev/cur-reset';
 }

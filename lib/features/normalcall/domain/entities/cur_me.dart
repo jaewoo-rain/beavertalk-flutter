@@ -67,6 +67,39 @@ class CurMe {
   }
 }
 
+/// `POST /__dev/cur-reset` 응답 — 진도를 지운 뒤 서 있는 자리.
+///
+/// 서버(`main.py dev_cur_reset`): `{member_id, lesson: {no, code}, deleted_calls}`.
+/// `cur_member_item / cur_member_lesson / cur_call` 을 지우고 포인터를 차시 1 로 둔다.
+/// **통화 이력(`call` 행)은 보존한다** — 감사 기록. 그래서 다이얼로그 문구가 「통화
+/// 기록·분석은 남습니다」다.
+class CurResetResult {
+  const CurResetResult({
+    required this.memberId,
+    required this.lessonNo,
+    required this.lessonCode,
+    required this.deletedCalls,
+  });
+
+  final int memberId;
+  final int lessonNo;
+  final String lessonCode;
+
+  /// 지운 `cur_call` 행 수(통화 이력이 아니라 **커리큘럼 귀속 행**이다).
+  final int deletedCalls;
+
+  factory CurResetResult.fromJson(Map<String, dynamic> json) {
+    final lesson = json['lesson'];
+    final l = lesson is Map<String, dynamic> ? lesson : const <String, dynamic>{};
+    return CurResetResult(
+      memberId: (json['member_id'] as num?)?.toInt() ?? 0,
+      lessonNo: (l['no'] as num?)?.toInt() ?? 0,
+      lessonCode: (l['code'] as String?) ?? '',
+      deletedCalls: (json['deleted_calls'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
 /// 현재 차시.
 class CurLesson {
   const CurLesson({
