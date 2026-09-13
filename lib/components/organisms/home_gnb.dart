@@ -202,9 +202,9 @@ class HomeGnb extends StatelessWidget {
             // 그러면 좁은 화면·큰 글자 배율에서 한 줄에 못 들어갈 수 있다.
             // 그때 잘라 내는 대신 **다음 줄로 흘린다.**
             //
-            // Wrap 이 자식에게 줄 폭을 최대치로 주므로, 배지 안 텍스트의
-            // ellipsis 는 「배지 혼자서도 한 줄을 넘길 때」만 발동한다 — 즉
-            // 평소엔 hug 이고 극단에서만 마지막 안전판이 된다.
+            // 배지 자체는 내용만큼만 잡는다([Badge] 의 `widthFactor: 1`).
+            // 그래도 폭이 모자라면 배지 **안의 글자**가 줄바꿈한다 — 어느
+            // 단계에서도 잘라 내지 않는다.
             Wrap(
               alignment: WrapAlignment.center,
               crossAxisAlignment: WrapCrossAlignment.center,

@@ -143,6 +143,16 @@ void main() {
       expect(badge.height, 26);
     });
 
+    testWidgets('커리큘럼 준비 중 — 배율 1.5 에서 넘치지 않는다', (tester) async {
+      // 원격이 더한 변형(`unavailable`). 「준비 중」 문구는 로케일마다 길이가
+      // 크게 다르므로 다른 변형과 같은 규칙으로 건다.
+      expect(
+        await _overflows(tester, const HomeGnb(course: _unavailable),
+            size: _narrow, textScale: 1.5),
+        isEmpty,
+      );
+    });
+
     testWidgets('스켈레톤 — 배율 1.5 에서 넘치지 않는다', (tester) async {
       expect(
         await _overflows(tester, const HomeGnbSkeleton(),
@@ -169,6 +179,9 @@ const _longCode = HomeCourse(
 );
 
 const _noLevel = HomeCourse(kind: HomeCourseKind.noLevel);
+
+const _unavailable =
+    HomeCourse(kind: HomeCourseKind.unavailable, language: 'ja');
 
 /// 서버 주제는 길이를 앱이 통제하지 못한다 — 한 줄에 안 들어가는 경우.
 const _longTopic = HomeCourse(
