@@ -76,9 +76,14 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// visibly moves the feed.
   /// 영상 하단 → 자막 상단 간격.
   ///
-  /// Figma Body 의 `itemSpacing` 이고 정본 22장 전건이 16이다. 70 은 구
-  /// `SPACE_BETWEEN` 배치가 남긴 값으로, 자막을 영상에서 떼어 놓고 있었다.
-  static const double _feedToCaptionGap = AppSpacing.s16;
+  /// 정본(Figma Body `itemSpacing`)은 16이고 22장 전건이 그렇다. **그런데 실기기
+  /// 에서는 붙어 보인다** — 정본은 영상이 375 폭에 211 높이인 프레임이고, 실제
+  /// 기기에서는 밴드가 더 크게 자라 자막을 밀어 올리기 때문이다. 사장님이
+  /// 2026-09-13 에 32 로 정했다.
+  ///
+  /// ⚠ 이 값을 **정본 16 으로 되돌리지 마라.** 정본과 어긋난 것은 알고 한
+  ///   선택이다(문서 `2026-09-12_0105` §4.3 의 16 을 대체한다).
+  static const double _feedToCaptionGap = AppSpacing.s32;
 
   // DEBUG(audio-glitch): true면 아바타 비디오(SyncAvatar/ExoPlayer)를 끄고 정적 이미지만.
   //   기본은 false(아바타 ON) — 제품 그대로의 부하에서 재생이 버티는지가 판정 기준이다.
@@ -679,16 +684,26 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                   // 지금처럼 모양이 통째로 뒤바뀌는 것보다 훨씬 작다.
                   final feedHeight = (avatarIsVideo || avatarUnknown)
                       ? math.min(constraints.maxWidth, _avatarMaxWidth) * 9 / 16
-                      : _stillAvatarSize + _CircularStill.maxHalo * 2;
+                      // 원형은 이제 헤일로를 **레이아웃에 안 넣는다**
+                      // ([_CircularStill.maxHalo] 주석) — 점유 높이는 지름뿐이다.
+                      : _stillAvatarSize;
                   final captionMax = math.max(
                     0.0,
                     constraints.maxHeight - feedHeight - _feedToCaptionGap,
                   );
                   return Column(
+                    // **덩어리째 가운데 놓는다.**
+                    //
+                    // 종전엔 영상만 `Expanded(Center(...))` 로 가운데 두고 그
+                    // 아래에 16 을 붙였다. 그러면 영상 **밑에 남는 여백**이 그
+                    // 16 에 더해져, 실제로는 16 보다 훨씬 멀어 보였다
+                    // (2026-09-13 지적). 영상·간격·자막을 한 덩어리로 묶어
+                    // 가운데 놓으면 간격이 정확히 16 이고, 자막·힌트가 꺼져
+                    // 덩어리가 작을 때는 그 덩어리가 화면 가운데에 온다.
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // ── 영상 — 스크롤 밖. 남는 칸 가운데 ─────
-                      Expanded(
-                        child: Center(
+                      // ── 영상 — 스크롤 밖 ──────────────────────
+                      Center(
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
@@ -796,7 +811,6 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                             ],
                           ),
                         ),
-                      ),
                       const SizedBox(height: _feedToCaptionGap),
                       // ── 자막 + 힌트 — **이 칸만 스크롤한다** ──────
                       //
@@ -1022,11 +1036,21 @@ class _CircularStill extends StatelessWidget {
   /// 비버 음성 레벨(0~1). null 이면 헤일로 없이 정지 상태로 그린다.
   final ValueListenable<double>? level;
 
-  /// 헤일로가 최대로 퍼지는 폭. 이만큼을 미리 비워 둬야 퍼질 때 레이아웃이 안 밀린다.
+  /// 헤일로가 최대로 퍼지는 폭.
   ///
-  /// 본문이 영상 칸의 높이를 계산할 때도 쓴다 — 원형 아바타의 실제 점유 높이는
-  /// [_stillAvatarSize] 가 아니라 `크기 + 이 값 * 2` 다.
+  /// ⛔ **레이아웃을 먹지 않는다.** 종전엔 `크기 + 이 값 * 2` 짜리 상자를 잡아
+  ///   미리 비워 뒀는데, 그 여백이 아래 자막과의 간격에 **그대로 더해졌다** —
+  ///   16 을 줬는데 28 이 붙어 44 로 보였다(2026-09-13 지적). 파문은 칠하는
+  ///   것이지 자리를 차지하는 것이 아니므로 [OverflowBox] 로 상자 밖에 그린다.
+  ///   퍼져도 레이아웃이 안 밀리는 것은 그대로다.
   static const double maxHalo = 28;
+
+  /// 링 불투명도.
+  ///
+  /// `primaryHeavy` 를 꽉 칠하면 민트 테두리가 사진보다 세게 읽혀 아바타가
+  /// 아니라 링이 주인공이 된다(2026-09-13 지적). 얼굴을 감싸는 윤곽으로만
+  /// 남도록 낮춘다 — 색은 그대로 두고 짙기만 내린다.
+  static const double _ringOpacity = 0.55;
 
   @override
   Widget build(BuildContext context) {
@@ -1035,7 +1059,10 @@ class _CircularStill extends StatelessWidget {
       height: size,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: context.c.primaryHeavy, width: 4),
+        border: Border.all(
+          color: context.c.primaryHeavy.withValues(alpha: _ringOpacity),
+          width: 3,
+        ),
       ),
       child: ClipOval(child: child),
     );
@@ -1044,9 +1071,10 @@ class _CircularStill extends StatelessWidget {
     if (lv == null) return Center(child: ring);
 
     return Center(
+      // 상자는 아바타 크기 그대로다. 파문만 밖으로 나간다.
       child: SizedBox(
-        width: size + maxHalo * 2,
-        height: size + maxHalo * 2,
+        width: size,
+        height: size,
         child: ValueListenableBuilder<double>(
           valueListenable: lv,
           builder: (context, raw, _) {
@@ -1054,11 +1082,22 @@ class _CircularStill extends StatelessWidget {
             final c = context.c;
             return Stack(
               alignment: Alignment.center,
+              // 파문이 상자를 넘어 그려져야 한다 — 자르면 사각으로 잘린다.
+              clipBehavior: Clip.none,
               children: [
-                // 바깥 파문 — 크게 퍼지고 옅다.
-                _halo(size + maxHalo * 2 * v, c.primaryHeavy, 0.10 * v),
-                // 안쪽 파문 — 링에 붙어 따라다닌다.
-                _halo(size + maxHalo * 1.1 * v, c.primaryHeavy, 0.18 * v),
+                OverflowBox(
+                  maxWidth: size + maxHalo * 2,
+                  maxHeight: size + maxHalo * 2,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      // 바깥 파문 — 크게 퍼지고 옅다.
+                      _halo(size + maxHalo * 2 * v, c.primaryHeavy, 0.10 * v),
+                      // 안쪽 파문 — 링에 붙어 따라다닌다.
+                      _halo(size + maxHalo * 1.1 * v, c.primaryHeavy, 0.18 * v),
+                    ],
+                  ),
+                ),
                 ring,
               ],
             );
