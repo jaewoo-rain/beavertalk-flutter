@@ -2991,6 +2991,17 @@ class NormalCallController extends Notifier<CallState> {
       _gatedLoudFrames++;
       return;
     }
+    // 끊김 없는 조각 전환 — 5:00 뒤 사용자가 **실제로 말했다**(게이트 열린 채 유성 프레임).
+    // ⛔ `user_turn_end` 프레임에 걸지 마라: 그건 캐스케이드에만 있고 **라이브에서는
+    //   아무도 안 보낸다**(2026-08-25 주석·서버 protocol.py ClientDiag 독스트링). 거기
+    //   걸어 두면 라이브에서 전환이 영원히 안 일어난다. 말이 끝난 것을 아는 쪽은
+    //   이 로컬 VAD 뿐이다 — 응답시간 원점과 같은 근거.
+    if (!_userSpokeSincePending &&
+        (_fragmentSwitch == _FragmentSwitch.pending ||
+            _fragmentSwitch == _FragmentSwitch.pendingFinal)) {
+      _userSpokeSincePending = true;
+      _log('조각 전환 대기 중 사용자 발화 감지(로컬 VAD) — 이 응답의 turn_end 에서 전환');
+    }
     // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
     if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
       // ⛔ **`t` 를 지금으로 찍지 마라.** 말이 끊긴 것은 `_lastVoicedAtMs` 이고 지금은
@@ -4780,8 +4791,9 @@ class NormalCallController extends Notifier<CallState> {
           _frozenFirstVoicedAtMs = _firstVoicedAtMs;
           _firstVoicedAtMs = null;
           _userTurnStartAtMs = null;
-          // 끊김 없는 전환: 5:00 뒤 첫 사용자 발화가 끝났다 — 이 발화의 응답 turn_end
-          // 에서 소켓을 갈아 끼운다(그 전의 turn_end 는 5:00 에 말하던 비버의 것).
+          // 끊김 없는 전환: 5:00 뒤 사용자 발화가 끝났다 — 이 발화의 응답 turn_end 에서
+          // 소켓을 갈아 끼운다. ⚠ 이 프레임은 **캐스케이드에만** 온다. 라이브는
+          // [_markVoicedIfLoud](로컬 VAD)가 같은 표시를 세운다 — 그쪽이 제품 경로다.
           if (_fragmentSwitch == _FragmentSwitch.pending ||
               _fragmentSwitch == _FragmentSwitch.pendingFinal) {
             _userSpokeSincePending = true;
