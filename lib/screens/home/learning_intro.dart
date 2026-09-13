@@ -939,117 +939,106 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   ),
                 ),
                 const SizedBox(height: AppSpacing.s8),
-                // 영상 + 문장 + 번역을 **한 덩어리로** 남는 칸 가운데 놓는다.
+                // 반응 영상 — Figma `VideoBand`. 아이콘줄 바로 아래, 문장 위.
                 //
-                // ⛔ 반응 영상을 고정 16:9 로 두지 마라. 360 폭에서 **202dp** 를
-                //   먹어 이 화면에서 가장 큰 덩어리인데, 그러면 문장·번역이 쓸 칸이
-                //   **남는 것으로만** 정해진다. 번역이 두 줄로 흘르는 로케일(ru·de)에서
-                //   결과 단계 칩이 두 줄까지 가면 칸이 모자라 **문장 블록이 아래로
-                //   넘쳤다**(실기기 2026-09-13 ru · bottom overflowed by 37px).
+                // **상단 고정이다**(사장님 2026-09-13). 한때 문장과 한 덩어리로
+                // 가운데 정렬했는데, 여유가 있는 화면에서 영상이 내려와 보였다.
+                _reactionBand(),
+                // 문장 · 번역 · 발음 배지 — 남는 칸 **가운데**. 셋이 같이 스크롤한다.
                 //
-                // 영상은 장식이고 문장은 본문이다 — 모자라면 **영상이 먼저 줄어든다.**
-                //   [Flexible] 이 이 Column 의 **유일한 flex** 라 부족분을 전부 여기서
-                //   흡수하고(`AspectRatio` 가 높이에 맞춰 폭을 줄인다), 문장 블록은
-                //   제 높이를 그대로 지킨다. 남으면 16:9 에서 멈추고 남은 여백은 가운데
-                //   정렬이 위아래로 나눈다 — 종전 그림 그대로다.
+                // 셋 다 높이를 앱이 통제하지 못한다 — 문장은 서버 문장이고, 번역은
+                // 로케일마다 길이가 다르고(ru·de 는 두 줄), 배지는 틀린 어절 수만큼
+                // 늘어 줄바꿈한다. 종전엔 `Center` 하나였고, 영상이 202dp 를 고정으로
+                // 먹은 뒤 남은 칸이 모자라면 **그대로 넘쳤다**(실기기 2026-09-13 ru ·
+                // bottom overflowed by 37px). 이제 잘리는 대신 흘러간다.
+                //
+                // `minHeight` 를 뷰포트에 맞춰 두는 이유: 스크롤 뷰 안의 `Center` 는
+                // **자식이 뷰포트만 할 때만** 가운데로 간다. 안 걸어 두면 내용이 짧을
+                // 때 위로 붙어, 넘치지 않는 평소 화면의 그림이 바뀐다.
+                //
+                // 세로 여백 [_kScanOverhang] 은 채점 중 스캔 커서가 문장 위아래로
+                // 삐져나오는 몫이다. 스크롤 뷰는 제 칸 밖을 자르므로 미리 비워 둔다.
                 Expanded(
                   child: LayoutBuilder(
-                    builder: (context, constraints) => Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        // Figma `VideoBand`. 아이콘줄 바로 아래, 문장 위.
-                        Flexible(child: _reactionBand()),
-                        // 문장 · 번역 · 발음 배지는 **한 칸에서 같이 스크롤한다**
-                        // (사장님 지시 2026-09-13).
-                        //
-                        // 셋 다 높이를 앱이 통제하지 못한다 — 문장은 서버 문장이고,
-                        // 번역은 로케일마다 길이가 다르고(ru·de 는 두 줄), 배지는 틀린
-                        // 어절 수만큼 늘어 줄바꿈한다. 잘라 내지 않고 흘려보낸다.
-                        //
-                        // 상한을 이 칸 전체로 두는 이유: 이 자식은 flex 가 아니라
-                        // **자연 높이**로 서야 위의 [Flexible] 영상이 「남는 만큼」을
-                        // 정확히 받는다. 상한이 없으면 Column 이 무한 높이를 줘서
-                        // 스크롤이 성립하지 않는다.
-                        //
-                        // 세로 여백 [_kScanOverhang] 은 채점 중 스캔 커서가 문장
-                        // 위아래로 삐져나오는 몫이다. 스크롤 뷰는 제 칸 밖을 자르므로
-                        // 미리 비워 두지 않으면 커서 끝이 잘린다.
-                        ConstrainedBox(
-                          constraints:
-                              BoxConstraints(maxHeight: constraints.maxHeight),
-                          child: SingleChildScrollView(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: _kScanOverhang,
-                            ),
-                            child: ContentColumn(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  // The cursor is stretched over the SENTENCE only, not
-                                  // the whole block — a fixed 84 was measured off the
-                                  // frame's 1-line sentence and stops covering the text
-                                  // the moment it wraps to 2 lines.
-                                  Stack(
-                                    alignment: Alignment.center,
-                                    clipBehavior: Clip.none,
-                                    children: [
-                                      // Keeps the sweep the full column width even when
-                                      // the sentence itself is short.
-                                      const SizedBox(width: double.infinity),
-                                      AnimatedSwitcher(
-                                        duration: const Duration(milliseconds: 250),
-                                        child: isResult
-                                            ? _ScoredSentence(
-                                                key: const ValueKey('scored'),
-                                                charScores:
-                                                    _feedback?.charScores ?? const [],
-                                                fallbackText: sentence.korean,
-                                              )
-                                            : Text(
-                                                sentence.korean,
-                                                key: const ValueKey('plain'),
-                                                textAlign: TextAlign.center,
-                                                style: AppType.heading2.sb.copyWith(
-                                                  color: context.c.labelStrong,
-                                                ),
+                    builder: (context, constraints) => SingleChildScrollView(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: _kScanOverhang,
+                      ),
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minHeight: constraints.maxHeight > _kScanOverhang * 2
+                              ? constraints.maxHeight - _kScanOverhang * 2
+                              : 0,
+                        ),
+                        child: Center(
+                          child: ContentColumn(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // The cursor is stretched over the SENTENCE only, not
+                                // the whole block — a fixed 84 was measured off the
+                                // frame's 1-line sentence and stops covering the text
+                                // the moment it wraps to 2 lines.
+                                Stack(
+                                  alignment: Alignment.center,
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    // Keeps the sweep the full column width even when
+                                    // the sentence itself is short.
+                                    const SizedBox(width: double.infinity),
+                                    AnimatedSwitcher(
+                                      duration: const Duration(milliseconds: 250),
+                                      child: isResult
+                                          ? _ScoredSentence(
+                                              key: const ValueKey('scored'),
+                                              charScores:
+                                                  _feedback?.charScores ?? const [],
+                                              fallbackText: sentence.korean,
+                                            )
+                                          : Text(
+                                              sentence.korean,
+                                              key: const ValueKey('plain'),
+                                              textAlign: TextAlign.center,
+                                              style: AppType.heading2.sb.copyWith(
+                                                color: context.c.labelStrong,
                                               ),
+                                            ),
+                                    ),
+                                    if (scoring)
+                                      const Positioned(
+                                        top: -_kScanOverhang,
+                                        bottom: -_kScanOverhang,
+                                        left: 0,
+                                        right: 0,
+                                        child: IgnorePointer(child: ScanCursor()),
                                       ),
-                                      if (scoring)
-                                        const Positioned(
-                                          top: -_kScanOverhang,
-                                          bottom: -_kScanOverhang,
-                                          left: 0,
-                                          right: 0,
-                                          child: IgnorePointer(child: ScanCursor()),
-                                        ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: AppSpacing.s8),
-                                  Text(
-                                    _feedback?.native ?? sentence.native,
-                                    textAlign: TextAlign.center,
-                                    style: AppType.body1.sb.copyWith(
-                                      color: context.c.labelNormal,
-                                    ),
-                                  ),
-                                  // 틀린 어절 배지. 종전엔 하단 묶음에 있어서
-                                  // 문장·번역과 따로 놀았고, 두 줄로 늘면 위 칸을
-                                  // 밀어 **문장 블록을 넘치게 했다.**
-                                  if (chips.isNotEmpty) ...[
-                                    const SizedBox(height: AppSpacing.s16),
-                                    Wrap(
-                                      alignment: WrapAlignment.center,
-                                      spacing: AppSpacing.s8,
-                                      runSpacing: AppSpacing.s8,
-                                      children: chips,
-                                    ),
                                   ],
+                                ),
+                                const SizedBox(height: AppSpacing.s8),
+                                Text(
+                                  _feedback?.native ?? sentence.native,
+                                  textAlign: TextAlign.center,
+                                  style: AppType.body1.sb.copyWith(
+                                    color: context.c.labelNormal,
+                                  ),
+                                ),
+                                // 틀린 어절 배지. 종전엔 하단 묶음에 있어서
+                                // 문장·번역과 따로 놀았고, 두 줄로 늘면 위 칸을
+                                // 밀어 **문장 블록을 넘치게 했다.**
+                                if (chips.isNotEmpty) ...[
+                                  const SizedBox(height: AppSpacing.s16),
+                                  Wrap(
+                                    alignment: WrapAlignment.center,
+                                    spacing: AppSpacing.s8,
+                                    runSpacing: AppSpacing.s8,
+                                    children: chips,
+                                  ),
                                 ],
-                              ),
+                              ],
                             ),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
