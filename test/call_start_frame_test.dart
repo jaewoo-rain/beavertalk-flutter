@@ -26,6 +26,7 @@ Map<String, dynamic> _frame({
   int? assignmentId,
   String? callType,
   bool forceCourse = false,
+  String? planOverride,
 }) =>
     buildStartFrame(
       aec: const {'mode': 'unknown'},
@@ -36,6 +37,7 @@ Map<String, dynamic> _frame({
       assignmentId: assignmentId,
       callType: callType,
       forceCourse: forceCourse,
+      planOverride: planOverride,
     );
 
 void main() {
@@ -184,6 +186,41 @@ void main() {
       final f = _frame(continuesCallId: '1182', callType: 'freetalk', forceCourse: true);
 
       expect(f['force_course'], isTrue);
+    });
+  });
+
+  group('plan_override — QA 플랜 강제(개발자 도구 «Max/Free 로 통화»)', () {
+    // 서버 계약: ClientStart.plan_override Literal["free","pro","max"] | None.
+    // admin 만 유효, user 는 무시. 배포 전엔 extra=ignore 로 조용히 버려진다.
+    test('⭐ 기본은 키 자체가 없다 — 홈·표현학습·프리토킹·일반 전부', () {
+      expect(_frame().containsKey('plan_override'), isFalse);
+      expect(_frame(callType: 'auto').containsKey('plan_override'), isFalse);
+      expect(_frame(callType: 'freetalk', forceCourse: true).containsKey('plan_override'),
+          isFalse);
+    });
+
+    test('Max/Free 버튼은 auto 코스 + 그 플랜이 실린다', () {
+      final max = _frame(callType: 'auto', planOverride: PlanOverride.max.wireValue);
+      expect(max['call_type'], 'auto');
+      expect(max['plan_override'], 'max');
+
+      final free = _frame(callType: 'auto', planOverride: PlanOverride.free.wireValue);
+      expect(free['plan_override'], 'free');
+    });
+
+    test('⛔ 와이어 값은 서버 Literal 과 글자 그대로', () {
+      expect(PlanOverride.values.map((p) => p.wireValue).toList(), ['free', 'pro', 'max']);
+    });
+
+    test('이어가는 구간에도 같이 실린다 — 안 그러면 2구간부터 구독 플랜 엔진으로 돌아간다', () {
+      final f = _frame(
+        continuesCallId: '1182',
+        callType: 'auto',
+        planOverride: PlanOverride.max.wireValue,
+      );
+
+      expect(f['continues_call_id'], '1182');
+      expect(f['plan_override'], 'max');
     });
 
     test('⭐ 이어가는 구간에도 같이 실린다 — assignment_id 가 정확히 여기서 샜다', () {

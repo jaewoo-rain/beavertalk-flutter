@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_bookmark.dart';
@@ -276,7 +277,12 @@ Widget _recordsEmpty(BuildContext context) {
     title: l10n.noCallRecords,
     body: l10n.noCallRecordsBody,
     ctaText: l10n.startCall,
-    onCta: () => Navigator.pushNamed(context, Routes.callLoading),
+    // ⭐ 홈 전화 버튼과 같은 auto 코스(2026-09-13).
+    onCta: () => Navigator.pushNamed(
+      context,
+      Routes.callLoading,
+      arguments: const CourseCallRequest(CallCourse.auto),
+    ),
   );
 }
 

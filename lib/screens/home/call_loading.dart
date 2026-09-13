@@ -111,6 +111,7 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                 _ => null,
               },
               forceCourse: arg is CourseCallRequest && arg.forceCourse,
+              planOverride: arg is CourseCallRequest ? arg.planOverride : null,
             );
     }
   }

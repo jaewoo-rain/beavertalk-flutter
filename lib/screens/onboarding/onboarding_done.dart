@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
@@ -26,8 +27,15 @@ class OnboardingDoneScreen extends StatelessWidget {
       Navigator.of(context).popUntil((r) => r.isFirst);
 
   /// Jumps straight into the call flow, clearing this screen from the stack.
-  void _startCall(BuildContext context) => Navigator.of(context)
-      .pushNamedAndRemoveUntil(Routes.callLoading, (r) => r.isFirst);
+  ///
+  /// ⭐ 홈 전화 버튼과 같이 **`auto` 코스**다(사장님 결정 2026-09-13) — 서버가 진도로
+  ///   코스를 정한다. 제품 진입점은 전부 auto 로 모은다; 옛 경로(call_type 미전송)는
+  ///   개발자 도구 «일반 통화» 와 수신·레벨테스트만 쓴다.
+  void _startCall(BuildContext context) => Navigator.of(context).pushNamedAndRemoveUntil(
+        Routes.callLoading,
+        (r) => r.isFirst,
+        arguments: const CourseCallRequest(CallCourse.auto),
+      );
 
   @override
   Widget build(BuildContext context) {

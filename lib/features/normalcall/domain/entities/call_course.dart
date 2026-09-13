@@ -86,12 +86,38 @@ enum CallCourse {
 ///
 /// `call_loading` 은 인자가 이것이든 맨 [CallCourse] 든 둘 다 받는다.
 class CourseCallRequest {
-  /// 요청을 만든다. [forceCourse] 기본 false = 플래그가 프레임에서 빠진다.
-  const CourseCallRequest(this.course, {this.forceCourse = false});
+  /// 요청을 만든다. [forceCourse] 기본 false · [planOverride] 기본 null = 둘 다
+  /// 프레임에서 빠진다.
+  const CourseCallRequest(
+    this.course, {
+    this.forceCourse = false,
+    this.planOverride,
+  });
 
   /// 걸 코스.
   final CallCourse course;
 
   /// 잠금 우회(QA). true 일 때만 `start.force_course: true` 가 실린다.
   final bool forceCourse;
+
+  /// 이 통화만 다른 플랜의 엔진으로(QA). null 이면 키가 빠진다. [PlanOverride] 참조.
+  final PlanOverride? planOverride;
+}
+
+/// `start.plan_override` — **구독과 무관하게 이 통화만** 그 플랜의 엔진으로 연다(QA).
+///
+/// 서버 계약(`ClientStart.plan_override: Literal["free","pro","max"] | None`, expr-build
+/// 작업 중): admin 계정만 유효, user 는 무시. Max = 영상·AI Studio 3.1, Free = 음성·
+/// Vertex 2.5. ⚠ 배포 전 서버는 `extra=ignore` 라 키를 조용히 버린다(protocol.py:192).
+///
+/// ⭐ [CallCourse]·[forceCourse] 와 같은 규율 — 2구간 재연결에도 **같은 값을 다시 싣는다**
+///   (컨트롤러 필드 `_planOverride`). 안 그러면 「Keep talking」 뒤 엔진이 구독 플랜으로
+///   되돌아가 QA 가 반쪽이 된다.
+enum PlanOverride {
+  free,
+  pro,
+  max;
+
+  /// 서버로 보내는 문자열. enum 이름과 같게 맞춰 뒀다.
+  String get wireValue => name;
 }

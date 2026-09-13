@@ -238,6 +238,34 @@ class MyPageScreen extends ConsumerWidget {
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
           ),
+          // ── 플랜 강제(QA) — auto 코스 + start.plan_override ────────────────
+          // 서버 계약 ClientStart.plan_override Literal free|pro|max(expr-build 작업 중).
+          // admin 만 유효, user 는 무시. 배포 전엔 extra=ignore 로 조용히 버려진다.
+          // 2구간 재연결에도 같은 값을 다시 싣는다([PlanOverride] 참조).
+          _devRow(
+            context,
+            title: 'Max 로 통화',
+            description: '구독과 무관하게 이 통화만 Max(영상·3.1) 엔진으로 — 관리자 계정만. '
+                '코스는 자동(auto). '
+                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
+            route: Routes.callLoading,
+            arguments: const CourseCallRequest(
+              CallCourse.auto,
+              planOverride: PlanOverride.max,
+            ),
+          ),
+          _devRow(
+            context,
+            title: 'Free 로 통화',
+            description: '구독과 무관하게 이 통화만 Free(음성·2.5) 엔진으로 — 관리자 계정만. '
+                '코스는 자동(auto). '
+                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
+            route: Routes.callLoading,
+            arguments: const CourseCallRequest(
+              CallCourse.auto,
+              planOverride: PlanOverride.free,
+            ),
+          ),
           // ⛔ 2026-09-12 사장님: 「코스 버튼 3개만」 — 위와 같은 이유로 화면에서만 내렸다.
           if (_kLegacyDevTools) ...[
             // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).

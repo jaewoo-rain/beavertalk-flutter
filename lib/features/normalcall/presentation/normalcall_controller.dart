@@ -127,6 +127,7 @@ Map<String, dynamic> buildStartFrame({
   int? assignmentId,
   String? callType,
   bool forceCourse = false,
+  String? planOverride,
 }) =>
     <String, dynamic>{
       'type': 'start',
@@ -161,6 +162,9 @@ Map<String, dynamic> buildStartFrame({
       // ⭐ false 면 **키 자체가 안 나간다** — 서버 기본값(False)과 같고, 옛 서버는 extra=ignore
       //   라 있어도 버리지만 굳이 보낼 이유가 없다.
       if (forceCourse) 'force_course': true,
+      // QA 용 플랜 강제(개발자 도구 «Max/Free 로 통화»). admin 만 유효, user 는 무시.
+      // null 이면 키 자체가 빠진다 — 서버 기본값(None)과 같다. [PlanOverride] 참조.
+      'plan_override': ?planOverride,
     };
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
@@ -839,6 +843,9 @@ class NormalCallController extends Notifier<CallState> {
   /// QA 잠금 우회 플래그. [_callCourse] 와 **같은 이유로 필드**다 — 「Keep talking」
   /// 재연결이 `start` 를 다시 조립할 때 인자로는 안 넘어간다.
   bool _forceCourse = false;
+
+  /// QA 플랜 강제. [_forceCourse] 와 같은 이유로 필드 — 2구간 재연결에 다시 싣는다.
+  PlanOverride? _planOverride;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -1544,6 +1551,7 @@ class NormalCallController extends Notifier<CallState> {
     int? assignmentId,
     CallCourse? callCourse,
     bool forceCourse = false,
+    PlanOverride? planOverride,
   }) async {
     final ok = await _connect(
       callUuid: null,
@@ -1553,6 +1561,7 @@ class NormalCallController extends Notifier<CallState> {
       assignmentId: assignmentId,
       callCourse: callCourse,
       forceCourse: forceCourse,
+      planOverride: planOverride,
     );
     if (!ok) return;
     await _startAudio();
@@ -1617,6 +1626,7 @@ class NormalCallController extends Notifier<CallState> {
     int? assignmentId,
     CallCourse? callCourse,
     bool forceCourse = false,
+    PlanOverride? planOverride,
   }) async {
     if (_starting) return false;
     final phase = state.phase;
@@ -1645,6 +1655,7 @@ class NormalCallController extends Notifier<CallState> {
       // ⭐ 코스도 **구간을 넘어 기억한다** — 이유는 [_callCourse] 참조.
       _callCourse = callCourse;
       _forceCourse = forceCourse;
+      _planOverride = planOverride;
       _callkitAudioReady = false;
       _sessionStartedAt = DateTime.now();
       _gotFirstAudio = false;
@@ -1753,6 +1764,7 @@ class NormalCallController extends Notifier<CallState> {
         // ⚠ 같은 이유로 **필드**에서 읽는다([_callCourse]).
         callType: _callCourse?.wireValue,
         forceCourse: _forceCourse,
+        planOverride: _planOverride?.wireValue,
       );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
@@ -5320,6 +5332,8 @@ class NormalCallController extends Notifier<CallState> {
         //   평소 통화로 되돌아간다 — `assignment_id` 가 정확히 이렇게 샜다(2026-09-06).
         callCourse: _callCourse,
         forceCourse: _forceCourse,
+        // ⛔ 플랜 강제도 다시 싣는다 — 안 그러면 2구간부터 구독 플랜 엔진으로 되돌아간다.
+        planOverride: _planOverride,
       );
       if (!ok) {
         _log('⛔ 다음 구간 연결 실패 — 통화를 끝낸다');

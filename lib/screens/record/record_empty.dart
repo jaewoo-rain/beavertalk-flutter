@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../components/atoms/button.dart';
 import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
@@ -48,8 +49,12 @@ class RecordEmptyScreen extends StatelessWidget {
                     type: BtnType.primaryFill,
                     size: BtnSize.s60,
                     text: l10n.startCall,
-                    onPressed: () =>
-                        Navigator.pushNamed(context, Routes.callLoading),
+                    // ⭐ 홈 전화 버튼과 같은 auto 코스(2026-09-13).
+                    onPressed: () => Navigator.pushNamed(
+                      context,
+                      Routes.callLoading,
+                      arguments: const CourseCallRequest(CallCourse.auto),
+                    ),
                   ),
                 ],
               ),
