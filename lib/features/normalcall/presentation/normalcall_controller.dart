@@ -888,8 +888,18 @@ class NormalCallController extends Notifier<CallState> {
   /// 재연결 시도 횟수. 2회 실패면 기존 «이어하기» 시트로 폴백(계획 §5).
   int _switchAttempts = 0;
 
+  /// 전환을 시작한 시점의 세대 — aecHint 왕복 사이에 끊겼는지 본다.
+  int _genAtSwitchStart = -1;
+
   /// 새 소켓의 `call_started` 를 기다리는 자리.
   Completer<bool>? _fragmentReady;
+
+  /// `fragment_end` 뒤 서버의 `fragment_saved` 를 기다리는 자리(값 = 저장된 call_id).
+  Completer<String?>? _fragmentSaved;
+
+  /// `fragment_saved` 를 기다리는 상한. 구서버는 이 프레임을 모르니 넘기면 종전처럼
+  /// close + 300ms 로 간다(계약 폴백).
+  static const Duration _fragmentSavedTimeout = Duration(seconds: 3);
 
   /// 재연결 시도당 기다리는 상한.
   static const Duration _fragmentReadyTimeout = Duration(seconds: 8);
@@ -2982,6 +2992,22 @@ class NormalCallController extends Notifier<CallState> {
       sumSq += v * v;
     }
     final rms = math.sqrt(sumSq / n) / 32768.0;
+    // 끊김 없는 조각 전환의 첫 증거 — **연속** 유성 프레임(한 프레임 기침·문소리는 안 침).
+    // gated·조용한 프레임도 넣는다: 연속을 끊는 것이 이 판정의 핵심이다.
+    // ⛔ `user_turn_end` 에 걸지 마라 — 라이브엔 그 프레임이 없다(양쪽 다 안 보낸다).
+    if (_fragmentSwitch == _FragmentSwitch.pending ||
+        _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+      final first = _speechSincePending.onFrame(
+        loud: rms >= _voicedRmsThreshold,
+        gated: gated,
+      );
+      if (first) {
+        // 임계 조정 근거 — 몇 프레임 연속에서 섰나. 소음만이면 전사가 안 와 안 바뀐다.
+        _dg('switch_voiced', {'run': _speechSincePending.longestRun});
+        _log('조각 전환 대기 중 연속 유성 ${_speechSincePending.longestRun}프레임(로컬 VAD) '
+            '— 전사까지 오면 다음 turn_end 에서 전환');
+      }
+    }
     if (rms < _voicedRmsThreshold) return;
 
     final nowMs = DateTime.now().millisecondsSinceEpoch;
@@ -2997,13 +3023,6 @@ class NormalCallController extends Notifier<CallState> {
     //   아무도 안 보낸다**(2026-08-25 주석·서버 protocol.py ClientDiag 독스트링). 거기
     //   걸어 두면 라이브에서 전환이 영원히 안 일어난다. 말이 끝난 것을 아는 쪽은
     //   이 로컬 VAD 뿐이다 — 응답시간 원점과 같은 근거.
-    // 소음만으로는 안 선다 — 전사(input_transcript)와 AND 다([UserSpeechEvidence]).
-    if (!_speechSincePending.voiced &&
-        (_fragmentSwitch == _FragmentSwitch.pending ||
-            _fragmentSwitch == _FragmentSwitch.pendingFinal)) {
-      _speechSincePending.onVoiced();
-      _log('조각 전환 대기 중 유성 프레임(로컬 VAD) — 전사까지 오면 다음 turn_end 에서 전환');
-    }
     // 충분히 조용했으면 **새 발화**의 시작으로 본다(웹 데모와 같은 규율).
     if (_firstVoicedAtMs != null && nowMs - _lastVoicedAtMs > _voicedResetMs) {
       // ⛔ **`t` 를 지금으로 찍지 마라.** 말이 끊긴 것은 `_lastVoicedAtMs` 이고 지금은
@@ -4616,6 +4635,18 @@ class NormalCallController extends Notifier<CallState> {
         if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(true);
         break;
 
+      case 'fragment_saved':
+        // 끊김 없는 조각 전환 — 우리가 보낸 `fragment_end` 에 서버가 조각 저장(마지막
+        // 판정 LLM ≤2s + 꼬리)을 **끝냈다**고 답한 것. 이 뒤에 서버가 소켓을 닫는다.
+        // QA(2026-09-14): 300ms 만 기다리고 재연결하니 조각2 가 조각1 꼬리를 못 보고
+        // 통과 항목을 다시 냈다(실측 1447: 1,626ms). 그래서 이 프레임을 기다린다.
+        {
+          final id = normalizeCallId(msg['call_id']);
+          final fi = msg['fragment_index'];
+          _log('fragment_saved: call_id=$id fragment=${fi ?? '?'}');
+          if (!(_fragmentSaved?.isCompleted ?? true)) _fragmentSaved!.complete(id);
+        }
+
       case 'turn_start':
         // [계측] 사용자 발화 끝 → 비버 턴 시작까지. 사장님이 「응답이 느리다」고 하신
         // 그 구간이다. 클라가 **프레임을 받은 시각**으로만 잰다(서버 내부 분해는 서버 몫).
@@ -5203,6 +5234,28 @@ class NormalCallController extends Notifier<CallState> {
     _channel = null;
   }
 
+  /// `fragment_end` 를 보내고 서버의 `fragment_saved` 를 기다린 뒤 소켓을 정리한다.
+  ///
+  /// 반환: 서버가 알려 준 저장된 call_id(다음 조각의 `continues_call_id`). 구서버·타임아웃
+  /// 이면 null — 호출자가 종전 폴백(close + 300ms)으로 간다.
+  /// ⚠ `fragment_end` 를 보낸 통화엔 서버가 `call_ended` 를 보내지 않는다 — 종료는 우리가
+  ///   끈다(마지막 조각은 [_finishFinalFragment] 의 드레인 경로).
+  Future<String?> _endFragmentAndWaitSaved() async {
+    if (_channel == null) return null;
+    final waiter = _fragmentSaved = Completer<String?>();
+    _send(const {'type': 'fragment_end'});
+    _log('fragment_end 송신 — 서버 저장 완료(fragment_saved) 대기(상한 ${_fragmentSavedTimeout.inSeconds}s)');
+    String? saved;
+    try {
+      saved = await waiter.future.timeout(_fragmentSavedTimeout, onTimeout: () => null);
+    } finally {
+      if (identical(_fragmentSaved, waiter)) _fragmentSaved = null;
+    }
+    // 서버가 닫았든(saved) 안 닫았든(구서버) 우리 쪽 구독·keepalive 는 여기서 정리한다.
+    await _closeSocketOnly();
+    return saved;
+  }
+
   /// 새 조각의 소켓을 연다 — [_connect] 의 소켓 부분만. 성공 = `call_started` 수신.
   ///
   /// 오디오·마이크·상태는 건드리지 않는다. start 프레임은 같은 코스·플랜·과제에
@@ -5213,6 +5266,16 @@ class NormalCallController extends Notifier<CallState> {
       _log('⛔ 조각 재연결 — 토큰 없음');
       return false;
     }
+    // ⛔ P1-B(QA 2026-09-14): 순서가 생명이다. 예전엔 `_channel = channel` → listen →
+    //   `await _aecHint()`(플랫폼 왕복) → start 였다. 그 await 동안 게이트가 열려 있으면
+    //   마이크 콜백이 `_channel.sink.add(바이너리)` 를 **start 보다 먼저** 보내고, 서버
+    //   start 창(6프레임)이 바이너리를 세어 «start 없는 새 통화» 로 떨어진다 — 짧은
+    //   응답(«Right.») 뒤엔 게이트가 이미 열려 있어 거의 매번 났다.
+    //   ⇒ ① aecHint 는 채널을 만들기 **전**에 받는다 ② `_channel` 대입은 start 를
+    //     보낸 **뒤**다 — 그 사이 마이크 프레임은 `_channel == null` 이라 프리버퍼로
+    //     가고, call_started 뒤 flush 되어 start 다음에 도착한다.
+    final aec = await _aecHint();
+    if (_gen != _genAtSwitchStart) return false;
     final ready = _fragmentReady = Completer<bool>();
     _expectClose = false;
     _serverCallId = null;
@@ -5221,7 +5284,6 @@ class NormalCallController extends Notifier<CallState> {
     try {
       final url = callStreamWsUrl(token: token, cascade: _channelMode.isCascade);
       final channel = WebSocketChannel.connect(Uri.parse(url));
-      _channel = channel;
       _wsSub = channel.stream.listen(
         _onWsData,
         onDone: _onWsDone,
@@ -5229,7 +5291,7 @@ class NormalCallController extends Notifier<CallState> {
         cancelOnError: false,
       );
       final startFrame = buildStartFrame(
-        aec: await _aecHint(),
+        aec: aec,
         sampleRate: _micSampleRate,
         numChannels: _micNumChannels,
         inboundCallId: _inboundCallId,
@@ -5241,7 +5303,8 @@ class NormalCallController extends Notifier<CallState> {
         silentResume: true,
       );
       _log('조각 재연결 start 송신: $startFrame');
-      _send(startFrame);
+      channel.sink.add(jsonEncode(startFrame)); // ← 이 소켓의 **첫** 프레임이어야 한다
+      _channel = channel; // 이제부터 마이크가 이 소켓으로 간다(start 뒤)
       final ok = await ready.future.timeout(
         _fragmentReadyTimeout,
         onTimeout: () => false,
@@ -5268,13 +5331,17 @@ class NormalCallController extends Notifier<CallState> {
     if (state.phase != CallPhase.inCall) return;
     _fragmentSwitch = _FragmentSwitch.switching;
     _speechSincePending.reset();
-    final gen = _gen;
-    final carried = _serverCallId ?? state.callId;
+    final gen = _genAtSwitchStart = _gen;
     final endedFragment = state.segmentsUsed + 1;
-    _log('조각 $endedFragment 종료 — 소켓만 닫는다(재생 큐 유지 · call_id=$carried)');
+    // ① 서버에 «이 조각 끝» 을 알리고 저장 완료(`fragment_saved`)를 기다린다. 재생은
+    //    그대로 돈다. 서버는 저장 뒤 소켓을 닫는다 — 그 close 는 기대된 것이다.
+    //    구서버(프레임을 모름)면 3초 안에 답이 없으니 종전처럼 close + 300ms.
     _expectClose = true;
-    await _closeSocketOnly();
+    final saved = await _endFragmentAndWaitSaved();
     if (_gen != gen) return; // 그새 끊었다
+    final carried = saved ?? _serverCallId ?? state.callId;
+    _log('조각 $endedFragment 종료 — 소켓 닫음(재생 큐 유지 · call_id=$carried · '
+        '저장 확인 ${saved != null ? "받음" : "없음→폴백 300ms"})');
     // 조각 수는 여기서 올린다 — 다음 경계가 (n+1)×5분이 되게. elapsedSec 은 안 건드린다.
     state = state.copyWith(segmentsUsed: endedFragment);
     if (carried == null) {
@@ -5283,8 +5350,10 @@ class NormalCallController extends Notifier<CallState> {
       return;
     }
     _fragmentSwitch = _FragmentSwitch.reconnecting;
-    // 서버가 조각을 저장할 시간(≥300ms). 재생 중이라 체감 0.
-    await Future<void>.delayed(_fragmentCloseSettle);
+    if (saved == null) {
+      // 구서버 폴백 — 저장 시간을 조금이라도 준다(계획 §2 의 원안).
+      await Future<void>.delayed(_fragmentCloseSettle);
+    }
     if (_gen != gen) return;
     _switchAttempts = 0;
     while (_switchAttempts < 2) {
@@ -5304,14 +5373,19 @@ class NormalCallController extends Notifier<CallState> {
     await _fallbackToSheet();
   }
 
-  /// 프리버퍼를 순서대로 흘린다(F3). 게이팅 중이면 버린다 — 게이트는 새 소켓에도 적용된다.
+  /// 프리버퍼를 순서대로 흘린다(F3).
+  ///
+  /// ⛔ 지금의 [_micGated] 를 **보지 않는다.** 버퍼의 프레임은 잡을 때 게이트가 열려
+  ///   있던 것이다 — flush 시점 게이트로 다시 거르면 비버가 막 말을 시작한 순간 사용자의
+  ///   첫 문장이 통째로 사라진다(codex 리뷰 2026-09-14). [MicPrebuffer.takeForFlush]
+  ///   에 게이트 입력이 없는 것이 그 규칙의 구조다.
   void _flushMicPrebuffer() {
     if (_micPrebuffer.isEmpty) return;
-    final frames = _micPrebuffer.drain();
     final ch = _channel;
-    if (ch == null || _micGated) {
-      _log('프리버퍼 ${frames.length}프레임 버림 '
-          '(소켓 ${ch == null ? "없음" : "있음"} · 게이트 $_micGated)');
+    final pending = _micPrebuffer.length;
+    final frames = _micPrebuffer.takeForFlush(socketOpen: ch != null);
+    if (ch == null) {
+      _log('프리버퍼 $pending프레임 버림 (소켓 없음)');
       return;
     }
     var bytes = 0;
@@ -5349,9 +5423,13 @@ class NormalCallController extends Notifier<CallState> {
     _fragmentSwitch = _FragmentSwitch.none;
     _speechSincePending.reset();
     final id = _serverCallId ?? state.callId;
-    _log('마지막 조각 응답 끝 — 소켓 닫고 재생을 비운 뒤 결과 화면(재연결 없음)');
+    _log('마지막 조각 응답 끝 — fragment_end 로 저장을 끝내고 재생을 비운 뒤 결과 화면(재연결 없음)');
     _expectClose = true;
-    unawaited(_closeSocketOnly());
+    // 마지막 조각도 서버가 꼬리를 저장해야 한다 — `fragment_end` → `fragment_saved` 뒤 close.
+    // 서버는 이 통화에 `call_ended` 를 안 보내므로 종료는 여기서 우리가 끈다.
+    unawaited(_endFragmentAndWaitSaved().then((saved) {
+      if (saved != null) _log('마지막 조각 저장 확인: call_id=$saved');
+    }));
     state = state.copyWith(phase: CallPhase.ending, callId: id, hint: null);
     _flushDiagSummary();
     _scheduleClosingDrain();
@@ -5872,6 +5950,8 @@ class NormalCallController extends Notifier<CallState> {
     _switchAttempts = 0;
     if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
     _fragmentReady = null;
+    if (!(_fragmentSaved?.isCompleted ?? true)) _fragmentSaved!.complete(null);
+    _fragmentSaved = null;
     // 서버가 준 세션 정책도 통화 스코프다. 남기면 다음 통화가 **이전 서버 답**으로
     // 마이크를 연다 — 그 통화의 서버는 다르게 말했을 수 있다.
     _serverMicAlwaysOpen = false;

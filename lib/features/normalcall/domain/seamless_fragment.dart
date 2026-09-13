@@ -90,10 +90,38 @@ bool isFinalFragment({
 ///   ClientDiag 주석) 전사가 응답 `turn_end` 직전에 도착할 수 있다. 그래서 판정은
 ///   프레임이 올 때가 아니라 **`turn_end` 시점에** [confirmed] 를 읽는다 — 순서 무관.
 class UserSpeechEvidence {
+  /// [minVoicedRun] — 유성으로 치려면 **연속** 몇 프레임이 임계를 넘어야 하나.
+  /// 기침·문소리 같은 한 프레임짜리 오탐을 거른다(QA 2026-09-14). 프레임이 80ms 면
+  /// 2 = 160ms. 미탐(작은 목소리)은 전사와 AND 라 그대로 두고 계측으로 본다.
+  UserSpeechEvidence({this.minVoicedRun = 2});
+
+  final int minVoicedRun;
+
   bool _voiced = false;
   bool _transcript = false;
+  int _run = 0;
+  int _longestRun = 0;
 
-  /// 게이트 열린 채 유성 프레임이 왔다.
+  /// 마이크 프레임 하나. [loud] = RMS ≥ 임계, [gated] = 마이크 닫힘(비버 발화 중).
+  ///
+  /// ⛔ gated 프레임은 표시를 세우지 않고 **연속도 끊는다** — 그 소리는 비버 목소리의
+  ///   되먹임이거나 끼어들기다. 조용한 프레임도 연속을 끊는다.
+  /// 반환: 이 프레임으로 유성 표시가 **처음** 섰으면 true(계측용).
+  bool onFrame({required bool loud, required bool gated}) {
+    if (gated || !loud) {
+      _run = 0;
+      return false;
+    }
+    _run++;
+    if (_run > _longestRun) _longestRun = _run;
+    if (!_voiced && _run >= minVoicedRun) {
+      _voiced = true;
+      return true;
+    }
+    return false;
+  }
+
+  /// 유성 표시를 바로 세운다 — 캐스케이드의 `user_turn_end`(서버 판정) 같은 확정 신호용.
   void onVoiced() => _voiced = true;
 
   /// `input_transcript` 가 왔다. 공백뿐이면 세지 않는다.
@@ -107,10 +135,15 @@ class UserSpeechEvidence {
   bool get voiced => _voiced;
   bool get transcript => _transcript;
 
+  /// 지금까지 가장 길었던 연속 유성 프레임 수 — 임계 조정의 근거(diag).
+  int get longestRun => _longestRun;
+
   /// 새 대기 구간·전환 뒤에 비운다.
   void reset() {
     _voiced = false;
     _transcript = false;
+    _run = 0;
+    _longestRun = 0;
   }
 }
 
@@ -164,5 +197,19 @@ class MicPrebuffer {
   void clear() {
     _frames.clear();
     _bytes = 0;
+  }
+
+  /// flush 할 프레임 — 소켓이 열려 있으면 전부(순서 유지), 아니면 버리고 빈 목록.
+  ///
+  /// ⛔ **게이트 입력이 없다 — 일부러다.** 버퍼에 든 프레임은 «게이트 열린 채 잡힌 것»
+  ///   이다(컨트롤러가 잡을 때 [_micGated] 를 봤다). flush 시점의 게이트로 다시 거르면
+  ///   비버가 막 말을 시작한 순간 사용자의 첫 문장이 통째로 사라진다(codex 리뷰
+  ///   2026-09-14). 게이트는 잡을 때만 본다.
+  List<Uint8List> takeForFlush({required bool socketOpen}) {
+    if (!socketOpen) {
+      clear();
+      return const [];
+    }
+    return drain();
   }
 }

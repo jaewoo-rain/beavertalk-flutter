@@ -2,6 +2,8 @@
 //
 //   ① 전환 타이밍  — 5:00 에 시트가 아니라 «대기»; 경계는 (segmentsUsed+1)×5분
 //   ② 재생 유지    — 소켓만 닫는 start 프레임 규약(silent_resume + continues_call_id).
+//                    경계 계약(QA 2026-09-14): close 전에 fragment_end → fragment_saved
+//                    를 기다린다(3초 상한, 구서버는 종전 close+300ms) — 컨트롤러 몫.
 //                    ⚠ 재생 큐가 실제로 살아남는 것(F2)은 컨트롤러 _closeSocketOnly 가
 //                    _teardown 을 안 타는 코드 경로로 보장한다 — 소켓·오디오 없이는 자동
 //                    시험이 안 되어 여기서는 **프레임 규약**만 잠근다. 실기기 QA 항목.
@@ -130,6 +132,24 @@ void main() {
       expect(b.length, 1);
     });
 
+    test('⛔ flush 는 게이트를 보지 않는다 — 입력 자체가 없다(잡을 때만 본다)', () {
+      // codex 리뷰(2026-09-14): 옛 flush 는 그 시점의 _micGated 를 보고 통째로 버렸다.
+      // 버퍼의 프레임은 게이트 열린 채 잡힌 것이라, 비버가 막 말을 시작한 순간에 flush
+      // 되면 사용자의 첫 문장이 사라졌다. takeForFlush 에는 게이트 매개변수가 없다.
+      final b = MicPrebuffer()
+        ..push(_frame(1))
+        ..push(_frame(2));
+      final out = b.takeForFlush(socketOpen: true);
+      expect(out.map((f) => f[0]).toList(), [1, 2]);
+      expect(b.isEmpty, isTrue);
+    });
+
+    test('소켓이 없으면 flush 는 버린다 — 보낼 곳이 없다', () {
+      final b = MicPrebuffer()..push(_frame(1));
+      expect(b.takeForFlush(socketOpen: false), isEmpty);
+      expect(b.isEmpty, isTrue);
+    });
+
     test('clear 는 버린다(전환 실패·종료)', () {
       final b = MicPrebuffer()..push(_frame(1));
       b.clear();
@@ -199,6 +219,30 @@ void main() {
         ..onTranscript('   ')
         ..onTranscript(null);
       expect(e.confirmed, isFalse);
+    });
+
+    test('⛔ gated 프레임(비버 발화 중)은 표시를 세우지 않고 연속도 끊는다', () {
+      final e = UserSpeechEvidence(minVoicedRun: 2);
+      e.onFrame(loud: true, gated: true);
+      e.onFrame(loud: true, gated: true);
+      e.onFrame(loud: true, gated: true);
+      expect(e.voiced, isFalse, reason: '비버 목소리 되먹임·끼어들기는 사용자 발화가 아니다');
+      // 게이트가 열린 뒤 한 프레임만 크면 아직 아니다 — 앞의 gated 연속은 안 세어졌다.
+      e.onFrame(loud: true, gated: false);
+      expect(e.voiced, isFalse);
+    });
+
+    test('한 프레임짜리 기침·문소리는 안 세운다 — 연속 2프레임부터', () {
+      final e = UserSpeechEvidence(minVoicedRun: 2);
+      expect(e.onFrame(loud: true, gated: false), isFalse);
+      e.onFrame(loud: false, gated: false); // 끊김
+      expect(e.onFrame(loud: true, gated: false), isFalse);
+      expect(e.voiced, isFalse, reason: '큰 소리가 두 번이어도 연속이 아니면 아니다');
+
+      expect(e.onFrame(loud: true, gated: false), isTrue, reason: '연속 2프레임 — 처음 섰다');
+      expect(e.voiced, isTrue);
+      expect(e.onFrame(loud: true, gated: false), isFalse, reason: '두 번째부터는 false(계측용 1회)');
+      expect(e.longestRun, 3, reason: '임계 조정 근거');
     });
 
     test('reset 뒤엔 둘 다 다시 모아야 한다 — 다음 대기 구간', () {
