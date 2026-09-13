@@ -1,0 +1,130 @@
+/// 끊김 없는 5분 조각 전환(Pro·Max) — 순수 정책과 마이크 프리버퍼.
+///
+/// 계획: 서버 워크트리 `docs/plans/2026-09-13-끊김없는-조각-전환.md` §2·§3 F1~F6.
+/// 사장님 결정(2026-09-13): 5:00 뒤 시트 없음(타이머 누적) · 그 뒤 첫 «사용자 발화 →
+/// 비버 응답 turn_end» 에서 소켓만 뒤에서 갈아 끼움 · 조각2 첫 턴은 비버가 기다림 ·
+/// 마지막 조각은 응답까지 하고 종료(재연결 없음) · Free 는 기존 5분 시트 그대로.
+///
+/// 컨트롤러가 소켓·재생·마이크를 실제로 다루고, **판정과 버퍼**는 여기에 둬서 소켓 없이
+/// 시험한다(F6). `buildStartFrame` 을 밖으로 뺀 것과 같은 이유다.
+library;
+
+import 'dart:collection';
+import 'dart:typed_data';
+
+import 'entities/call_allowance.dart';
+import 'entities/call_course.dart';
+
+/// 5분 경계에 닿았을 때 무엇을 할지.
+enum FragmentBoundaryAction {
+  /// 아직 경계 전.
+  none,
+
+  /// 기존 «이어하기» 시트 — Free, 또는 끊김 없는 전환 대상이 아닌 코스(일반 통화는 다음 단계).
+  /// **픽셀·프레임 종전과 동일.**
+  sheet,
+
+  /// 끊김 없는 전환 대기 — 아무 표시 없이 타이머 누적, 다음 «사용자 발화 → turn_end» 에
+  /// 소켓만 갈아 끼운다.
+  seamless,
+
+  /// 마지막 조각 — 같은 규칙으로 응답이 끝나면 close 하고 결과 화면. 재연결 없음.
+  finalClose,
+}
+
+/// 5분 경계 판정. 매초 틱마다 부른다.
+///
+/// [segmentsUsed] 는 **끝낸** 조각 수(첫 조각 진행 중 = 0). [elapsedSec] 은 조각을 건너
+/// 누적된 값이라 경계는 `(segmentsUsed + 1) × 5분` 이다.
+/// [maxFragments] 는 서버 `call_started.max_fragments` 가 있으면 그것, 없으면 로컬
+/// [CallAllowance.segmentsFor].
+FragmentBoundaryAction fragmentBoundaryAction({
+  required int elapsedSec,
+  required int segmentsUsed,
+  required bool paidAccess,
+  required bool seamlessEligible,
+  required int maxFragments,
+}) {
+  final boundary = CallAllowance.segment.inSeconds * (segmentsUsed + 1);
+  if (elapsedSec < boundary) return FragmentBoundaryAction.none;
+  // Free 는 종전 시트. 유료라도 전환 대상이 아닌 코스(일반 통화·레벨테스트)는 종전대로.
+  if (!paidAccess || !seamlessEligible) return FragmentBoundaryAction.sheet;
+  // 지금 끝나는 조각이 마지막이면 다음은 없다 — 응답 뒤 close.
+  final endingFragment = segmentsUsed + 1;
+  if (endingFragment >= maxFragments) return FragmentBoundaryAction.finalClose;
+  return FragmentBoundaryAction.seamless;
+}
+
+/// 이 코스가 끊김 없는 전환 대상인가 — 표현학습·프리토킹 먼저(사장님 결정 5).
+/// 일반 통화(null)·레벨테스트는 같은 코드로 **다음 단계**라 아직 false.
+bool seamlessEligibleCourse(CallCourse? course) =>
+    course == CallCourse.expression || course == CallCourse.freetalk;
+
+/// 재연결 뒤 마지막 조각인지 — 서버 값이 있으면 그것, 없으면 로컬 카운트.
+///
+/// 서버 `call_started` 에 `fragment_index`·`max_fragments`(S4, Optional) 가 오면 그걸로
+/// 판단하고, 안 오면 `segmentsUsed + 1 >= maxFragmentsLocal`.
+bool isFinalFragment({
+  required int? serverFragmentIndex,
+  required int? serverMaxFragments,
+  required int segmentsUsed,
+  required int maxFragmentsLocal,
+}) {
+  if (serverFragmentIndex != null && serverMaxFragments != null) {
+    return serverFragmentIndex >= serverMaxFragments;
+  }
+  return segmentsUsed + 1 >= maxFragmentsLocal;
+}
+
+/// 소켓이 아직 안 열린 사이의 마이크 PCM 을 담아 두는 프리버퍼(F3).
+///
+/// 조각 전환 중 재생이 끝나 마이크가 열렸는데 새 소켓의 `call_started` 가 아직이면,
+/// 프레임을 버리지 않고 여기 쌓았다가 열린 뒤 **순서대로** 흘려보낸다 — 마이크 열림 뒤
+/// 첫 발화 유실 0(수용 기준). 상한을 넘으면 **오래된 것부터** 버린다: 5초 넘게 쌓였다면
+/// 그 앞부분은 이미 대화 맥락에서 멀고, 최근 것을 살려야 첫 문장의 끝이 남는다.
+class MicPrebuffer {
+  /// [maxBytes] 기본 5초 — 16kHz · 16bit · mono = 32,000 B/s.
+  MicPrebuffer({this.maxBytes = 5 * 32000});
+
+  /// 상한(바이트). 넘으면 오래된 프레임부터 버린다.
+  final int maxBytes;
+
+  final Queue<Uint8List> _frames = Queue<Uint8List>();
+  int _bytes = 0;
+  int _dropped = 0;
+
+  /// 쌓인 바이트.
+  int get bytes => _bytes;
+
+  /// 쌓인 프레임 수.
+  int get length => _frames.length;
+
+  /// 상한 때문에 버린 프레임 수(누적). 로그·시험용.
+  int get droppedFrames => _dropped;
+
+  bool get isEmpty => _frames.isEmpty;
+
+  /// 프레임을 넣는다. 상한을 넘으면 앞에서부터 버린다.
+  void push(Uint8List frame) {
+    _frames.addLast(frame);
+    _bytes += frame.length;
+    while (_bytes > maxBytes && _frames.length > 1) {
+      _bytes -= _frames.removeFirst().length;
+      _dropped++;
+    }
+  }
+
+  /// 전부 꺼낸다(순서 유지). 버퍼는 빈다.
+  List<Uint8List> drain() {
+    final out = List<Uint8List>.from(_frames, growable: false);
+    _frames.clear();
+    _bytes = 0;
+    return out;
+  }
+
+  /// 버린다(전환 실패·통화 종료).
+  void clear() {
+    _frames.clear();
+    _bytes = 0;
+  }
+}
