@@ -317,8 +317,8 @@ class CallState {
     this.errorMsg,
     this.hint,
     this.teachingPlan = const [],
-    this.subtitleOn = true,
-    this.hintOn = true,
+    this.subtitleOn = false,
+    this.hintOn = false,
     this.beaverPreparing = false,
     this.channel = CallChannel.live,
     this.course,
@@ -370,12 +370,17 @@ class CallState {
   /// a future teaching-card screen — not rendered by `screen/call_main`.
   final List<TeachingItem> teachingPlan;
 
-  /// Whether the subtitle (caption) is shown. When false the speaking
-  /// equalizer replaces it. UI preference; resets to true each call.
+  /// 자막을 보여 주는가. false 면 자리에 [SpeakingEqualizer] 가 대신 선다.
+  ///
+  /// **통화마다 꺼진 채로 시작한다**(2026-09-13 결정). 화면 보조 장치는 필요할
+  /// 때 켜는 것이지 기본으로 깔고 시작하는 것이 아니다 — 먼저 듣게 하고, 안
+  /// 들리면 그때 켠다. 종전 기본값은 true 였다.
   final bool subtitleOn;
 
-  /// Whether the hint affordance is enabled. When false the hint card is hidden
-  /// even if a hint has arrived. UI preference; resets to true each call.
+  /// 힌트 어포던스를 쓰는가. false 면 힌트가 도착해도 카드를 안 띄운다.
+  ///
+  /// [subtitleOn] 과 같은 이유로 **꺼진 채로 시작한다** — 먼저 떠올려 보게 하는
+  /// 것이 힌트의 목적이고, 처음부터 펼쳐 두면 그 목적이 사라진다.
   final bool hintOn;
 
   /// 서버가 대답을 만드는 중인가(`beaver_preparing`). **캐스케이드 통로 전용**이고

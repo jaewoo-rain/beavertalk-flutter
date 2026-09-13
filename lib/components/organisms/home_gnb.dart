@@ -148,8 +148,12 @@ class HomeGnb extends StatelessWidget {
   /// 그릴 내용. 화면이 [HomeCourse.fromCurMe] 로 서버 응답에서 뽑아 넘긴다.
   final HomeCourse course;
 
-  /// 정본 높이. 로딩 스켈레톤([HomeGnbSkeleton])과 같은 값을 써서 데이터가
-  /// 늦게 와도 히어로가 튀지 않는다.
+  /// 정본 높이 — **최소값이다, 고정이 아니다.**
+  ///
+  /// 로딩 스켈레톤([HomeGnbSkeleton])과 같은 값을 써서 데이터가 늦게 와도
+  /// 히어로가 튀지 않는다. 다만 고정으로 두면 안 된다: 내용이 26+8+18+8+16=76
+  /// 에 패딩 16 을 더해 **정확히 92** 라 여유가 0이고, 사용자가 시스템 글자
+  /// 크기를 키우면 그대로 넘쳤다(실측: 배율 1.3 에서 10px · 2.0 에서 40px).
   static const double height = 92;
 
   @override
@@ -178,8 +182,10 @@ class HomeGnb extends StatelessWidget {
       HomeCourseKind.unavailable => l10n.homeCurriculumPendingNote,
     };
 
-    return SizedBox(
-      height: height,
+    return ConstrainedBox(
+      // 최소 92 — 평소엔 정확히 그 높이라 히어로가 안 움직이고, 글자 배율이
+      // 크면 넘치는 대신 **자란다.**
+      constraints: const BoxConstraints(minHeight: height),
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: AppSpacing.s32,
@@ -190,45 +196,60 @@ class HomeGnb extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             // ── 1행 — 배지 + 학습 종류 ──────────────────────────────
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
+            //
+            // `Row` 가 아니라 [Wrap] 이다. **배지는 내용만큼(hug)** 잡아야 하고
+            // (`Flexible` 로 줄이면 `A1-1` 같은 짧은 코드가 잘릴 수 있다),
+            // 그러면 좁은 화면·큰 글자 배율에서 한 줄에 못 들어갈 수 있다.
+            // 그때 잘라 내는 대신 **다음 줄로 흘린다.**
+            //
+            // 배지 자체는 내용만큼만 잡는다([Badge] 의 `widthFactor: 1`).
+            // 그래도 폭이 모자라면 배지 **안의 글자**가 줄바꿈한다 — 어느
+            // 단계에서도 잘라 내지 않는다.
+            Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: AppSpacing.s8,
+              // 줄이 넘어갔을 때의 줄 간격. 가로 간격(8)보다 좁게 둬야 두 줄이
+              // 한 덩어리로 읽힌다.
+              runSpacing: AppSpacing.s4,
               children: [
+                // 레벨이 없으면 단원 코드 대신 상태를 말한다. 중립 톤인 것이
+                // 중요하다 — 민트는 「진행 중인 커리큘럼」의 색이라, 없는
+                // 단원에 쓰면 있는 것처럼 읽힌다.
                 Badge(
-                  // 레벨이 없으면 단원 코드 대신 상태를 말한다. 중립 톤인 것이
-                  // 중요하다 — 민트는 「진행 중인 커리큘럼」의 색이라, 없는
-                  // 단원에 쓰면 있는 것처럼 읽힌다.
                   tone: noLevel ? BadgeTone.neutral : BadgeTone.brand,
+                  // 원격이 `unavailable`(커리큘럼 준비 중)을 더했다 — 그쪽을
+                  // 살린다. 내 변경은 배지를 **감싸는 방식**이지 라벨이 아니다.
                   label: switch (course.kind) {
                     HomeCourseKind.noLevel => l10n.homeLevelPending,
-                    HomeCourseKind.unavailable => l10n.homeCurriculumPendingBadge,
+                    HomeCourseKind.unavailable =>
+                      l10n.homeCurriculumPendingBadge,
                     _ => course.unitCode ?? '',
                   },
                 ),
                 // 레벨 미정에는 오른쪽 라벨이 없다(정본에서 hidden).
-                if (!noLevel) ...[
-                  const SizedBox(width: AppSpacing.s8),
-                  Flexible(
-                    child: Text(
-                      course.kind == HomeCourseKind.freetalk
-                          ? l10n.homeCourseFreetalk
-                          : l10n.homeCourseExpression,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppType.caption1.b
-                          .copyWith(color: c.primaryNormal),
-                    ),
+                if (!noLevel)
+                  Text(
+                    course.kind == HomeCourseKind.freetalk
+                        ? l10n.homeCourseFreetalk
+                        : l10n.homeCourseExpression,
+                    style:
+                        AppType.caption1.b.copyWith(color: c.primaryNormal),
                   ),
-                ],
               ],
             ),
             const SizedBox(height: AppSpacing.s8),
             // ── 2행 — 주제 ─────────────────────────────────────────
+            //
+            // **글자가 길어지면 줄바꿈한다 — 자르지 않는다.**
+            //
+            // 주제는 서버 문자열이라 길이를 앱이 통제하지 못한다. 한 줄로 자르면
+            // 어느 단원인지 못 읽는 경우가 생긴다. `maxLines` 를 안 거는 것이
+            // `Text` 의 기본이고, 블록은 [HomeGnb.height] 를 **최소**로만 쓰므로
+            // 줄이 늘면 그만큼 자란다.
             Text(
               title,
               textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: AppType.label2.b.copyWith(color: c.labelNormal),
             ),
             const SizedBox(height: AppSpacing.s8),
@@ -236,8 +257,6 @@ class HomeGnb extends StatelessWidget {
             Text(
               note,
               textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: AppType.caption1.r.copyWith(color: c.labelAlternative),
             ),
           ],
@@ -258,8 +277,10 @@ class HomeGnbSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: HomeGnb.height,
+    return ConstrainedBox(
+      // 본체와 같은 규칙 — 최소 92. 셔머는 글자가 아니라 안 자라지만, 두 상태가
+      // 같은 제약을 쓰는 편이 나중에 어긋나지 않는다.
+      constraints: const BoxConstraints(minHeight: HomeGnb.height),
       child: SkeletonShimmer(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

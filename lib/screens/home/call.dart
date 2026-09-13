@@ -939,54 +939,64 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                 },
               ),
             ),
-            // Footer — hint/subtitle toggles + hang-up.
+            // Footer — Figma `footer/main_call`(`5958:17701`). 실측 2026-09-13.
+            //
+            // **한 줄이다.** 종전엔 토글 3개를 오른쪽에 몰고 종료 버튼을 32 아래
+            // 가운데 따로 뒀다(2행). 정본은 힌트·자막·마이크·종료를 한 줄에
+            // 고르게 펴고, 넷 다 **56** 원형이다(종료도 60 → 56).
+            //
+            // 가로는 `justify-between` 이라 `spaceBetween` 으로 옮긴다. 정본
+            // 좌우 여백이 32 라 `ContentColumn(gutter: s32)` 이 그대로 맞고,
+            // 세로 여백은 16 이다(종전 12).
             ContentColumn(
               gutter: AppSpacing.s32,
-              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s12),
-              child: Column(
+              padding: const EdgeInsets.symmetric(vertical: AppSpacing.s16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 힌트·자막은 **두 모드에서 같다** — 같은 기능, 같은 자리.
-                  // 통로에 따라 달라지는 것은 그 오른쪽의 마이크와 중앙 버튼뿐이다.
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      // 표현학습엔 힌트가 없으니 토글도 없다(위 [hintsAvailable]).
-                      if (hintsAvailable) ...[
-                        CallToggleButton(
-                          icon: AppIcons.lightbulb,
-                          active: hintOn,
-                          activeFill: context.c.accentActive,
-                          semanticLabel: 'Hint',
-                          onChanged: (v) => ref
-                              .read(normalCallControllerProvider.notifier)
-                              .setHintOn(v),
-                        ),
-                        const SizedBox(width: AppSpacing.s8),
-                      ],
-                      CallToggleButton(
-                        icon: AppIcons.cc,
-                        active: subtitleOn,
-                        activeFill: context.c.backgroundNormalAlternative,
-                        // The subtitle fill flips with the theme, so its glyph
-                        // must too (a white glyph vanishes on Light).
-                        activeGlyph: context.c.labelStrong,
-                        semanticLabel: 'Subtitle',
-                        onChanged: (v) => ref
-                            .read(normalCallControllerProvider.notifier)
-                            .setSubtitleOn(v),
-                      ),
-                      const SizedBox(width: AppSpacing.s8),
-                      _MicToggleButton(
-                        muted: micMuted,
-                        semanticLabel:
-                            micMuted ? l10n.callMicUnmute : l10n.callMicMute,
-                        onChanged: (m) => ref
-                            .read(normalCallControllerProvider.notifier)
-                            .setMicMuted(m),
-                      ),
-                    ],
+                  // 표현학습엔 힌트가 없으니 토글도 없다(위 [hintsAvailable]).
+                  // 그때는 셋이 같은 규칙으로 다시 퍼진다.
+                  if (hintsAvailable)
+                    CallToggleButton(
+                      icon: AppIcons.lightbulb,
+                      active: hintOn,
+                      // `Accent/Active` — Light #FF9200 · Dark #D17600.
+                      activeFill: context.c.accentActive,
+                      // 실측은 `Static/White` 다.
+                      //
+                      // ⚠ 컴포넌트 **설명문**에는 「Static/Black 아이콘」이라고
+                      //   적혀 있는데 실제 변형(`4953:19282`)은 흰색이다. 설명이
+                      //   낡았다 — 값은 변형에서 읽는다.
+                      activeGlyph: context.c.staticWhite,
+                      semanticLabel: 'Hint',
+                      onChanged: (v) => ref
+                          .read(normalCallControllerProvider.notifier)
+                          .setHintOn(v),
+                    ),
+                  CallToggleButton(
+                    icon: AppIcons.cc,
+                    active: subtitleOn,
+                    // 실측(`4986:19722`)은 **`Label/Neutral`** 면 + 흰 글리프다
+                    // (Light #505050 · Dark #777C89). 민트가 아니다 — 자막은
+                    // 힌트처럼 강조할 기능이 아니라 **켜짐만 보이면 되는** 토글
+                    // 이라, 무채색 면으로 한 단계 눌러 둔 것이다.
+                    //
+                    // ⚠ 설명문의 「Primary/Normal 면 + On-Primary」는 낡았다.
+                    activeFill: context.c.labelNeutral,
+                    activeGlyph: context.c.staticWhite,
+                    semanticLabel: 'Subtitle',
+                    onChanged: (v) => ref
+                        .read(normalCallControllerProvider.notifier)
+                        .setSubtitleOn(v),
                   ),
-                  const SizedBox(height: AppSpacing.s32),
+                  _MicToggleButton(
+                    muted: micMuted,
+                    semanticLabel:
+                        micMuted ? l10n.callMicUnmute : l10n.callMicMute,
+                    onChanged: (m) => ref
+                        .read(normalCallControllerProvider.notifier)
+                        .setMicMuted(m),
+                  ),
                   Semantics(
                     button: true,
                     label: l10n.callExitConfirm,
@@ -998,11 +1008,11 @@ class _CallScreenState extends ConsumerState<CallScreen> {
                         customBorder: const CircleBorder(),
                         onTap: _confirmEnd,
                         child: SizedBox(
-                          width: AppSpacing.s60,
-                          height: AppSpacing.s60,
+                          width: 56,
+                          height: 56,
                           child: Center(
                             child: AppIcons.callEnd(
-                              size: 32,
+                              size: 28,
                               color: context.c.staticWhite,
                             ),
                           ),
@@ -1158,13 +1168,24 @@ class _MicToggleButton extends StatelessWidget {
   /// 새 음소거 값으로 호출된다(누르면 반전).
   final ValueChanged<bool> onChanged;
 
-  static const double _size = 40;
-  static const double _iconSize = 24;
+  static const double _size = 56;
+  static const double _iconSize = 28;
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final glyph = muted ? c.staticWhite : c.labelNormal;
+    // 정본 실측(`4986:19703` on · `4986:19707` off) — **면은 두 상태가 같다.**
+    //
+    //   on (송출 중) : `Fill/Alternative` 면 + `Icon/Normal` 마이크
+    //   off(음소거)  : 같은 면 + `Icon/Assistive` 로 **흐려진** 마이크
+    //                 + `Status/Negative` 빨간 사선
+    //
+    // 면을 안 바꾼다는 것이 핵심이다. 음소거는 「버튼이 바뀐 상태」가 아니라
+    // 「마이크가 꺼진 상태」라, 말하는 쪽(글리프)만 달라진다. 빨강은 사선에만
+    // 쓴다 — 면에 칠하면 옆 종료 버튼과 같은 색이 되어 「끊김」으로 읽힌다.
+    //
+    // `Icon/Assistive` 는 앱에 그 이름이 없다. `labelAssistive` 가 Light
+    // #808080 로 같은 값이다(`Icon/Normal`→`labelNormal` 과 같은 매핑).
 
     // 음소거는 통화 중에 **잘못 읽히면 안 되는** 상태다. 채움·테두리·글리프가
     // 한 프레임에 갈리면 눌린 건지 화면이 튄 건지 구별이 안 된다. 사선은
@@ -1182,12 +1203,9 @@ class _MicToggleButton extends StatelessWidget {
         duration: AppMotion.medium,
         curve: AppMotion.toggle,
         builder: (context, t, _) => Material(
-          color: Color.lerp(Colors.transparent, c.accentBackgroundRed, t),
-          shape: CircleBorder(
-            side: BorderSide(
-              color: Color.lerp(c.lineNeutral, Colors.transparent, t)!,
-            ),
-          ),
+          // 면은 두 상태가 같다(정본) — 보간할 것이 없다.
+          color: c.fillAlternative,
+          shape: const CircleBorder(),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             customBorder: const CircleBorder(),
@@ -1204,12 +1222,17 @@ class _MicToggleButton extends StatelessWidget {
                     children: [
                       AppIcons.mic(
                         size: _iconSize,
-                        color: Color.lerp(c.labelNormal, c.staticWhite, t)!,
+                        // 음소거로 갈수록 흐려진다.
+                        color: Color.lerp(c.labelNormal, c.labelAssistive, t)!,
                       ),
                       if (t > 0)
                         CustomPaint(
                           size: const Size.square(_iconSize),
-                          painter: _SlashPainter(color: glyph, progress: t),
+                          // 사선만 빨강이다 — 정본 `Status/Negative`.
+                          painter: _SlashPainter(
+                            color: c.statusNegative,
+                            progress: t,
+                          ),
                         ),
                     ],
                   ),

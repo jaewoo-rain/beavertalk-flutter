@@ -159,7 +159,12 @@ class HomeScreen extends ConsumerWidget {
           // Hero — avatar + change badge + title, pinned near the top (Figma
           // body top 37), horizontally centered.
           Expanded(
-            child: Column(
+            // 글자 배율을 키우면 학습 현황 블록이 자란다(고정 92 가 아니라
+            // **최소** 92 다). 그때 이 칸이 모자라면 이번엔 화면이 넘치므로,
+            // 넘치는 대신 스크롤로 흡수한다 — 평소 배율에서는 내용이 칸보다
+            // 작아 스크롤이 생기지 않고 보이는 것도 종전과 같다.
+            child: SingleChildScrollView(
+              child: Column(
               children: [
                 // 학습 현황 — Figma `Home/GNB`(`5925:26645`). 헤더 바로 아래
                 // 붙고, 히어로와는 16 을 띄운다(정본 abs 100~192 · 히어로 208).
@@ -220,10 +225,13 @@ class HomeScreen extends ConsumerWidget {
                 // placeholder until the profile lands, because
                 // [characterName] answers a null id with 'Bibi'. That is a
                 // guess: a Baba user would read their partner as Bibi for as
-                // long as the request takes, then watch it change. The box
-                // keeps Title 3's 32 line-height so nothing shifts.
+                // long as the request takes, then watch it change.
+                //
+                // 상자 높이는 글자의 줄높이와 **같이 간다** — Body 1 은 24 다
+                // (Title 3 이던 시절엔 32 였다). 안 맞추면 셔머와 실제 이름의
+                // 자리가 달라져 데이터가 올 때 한 번 튄다.
                 SizedBox(
-                  height: 32,
+                  height: 24,
                   // Shares [heroLoading] with the avatar above so the two never
                   // disagree. The old `isLoading && !hasValue` released this
                   // the moment the profile returned, which is earlier than the
@@ -231,7 +239,7 @@ class HomeScreen extends ConsumerWidget {
                   child: heroLoading
                       ? const SkeletonShimmer(
                           child: Center(
-                            child: Skeleton.bar(width: 170, height: 22),
+                            child: Skeleton.bar(width: 120, height: 16),
                           ),
                         )
                       : Center(
@@ -242,13 +250,16 @@ class HomeScreen extends ConsumerWidget {
                             // `?? characterName(id)` fallback is gone with it —
                             // that was the guess that printed "Bibi".
                             selected.name,
-                            // Figma `2296:26390` — Title 3 / Bold (24px).
+                            // 24 → 16(Body 1 / Bold). 사용자 지시 2026-09-13 —
+                            // 위에 학습 현황 블록이 생기면서 이름이 그만큼 세게
+                            // 읽힐 이유가 없어졌다.
                             style:
-                                AppType.title3.b.copyWith(color: context.c.labelStrong),
+                                AppType.body1.b.copyWith(color: context.c.labelStrong),
                           ),
                         ),
                 ),
               ],
+            ),
             ),
           ),
           // 숙제 진입 배너 — 하단 내비 바로 위(Figma `screen/main_home` y=588).
