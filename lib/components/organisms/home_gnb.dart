@@ -3,6 +3,7 @@ import 'package:flutter/material.dart' hide Badge;
 import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../features/normalcall/domain/entities/cur_me.dart';
 import '../../l10n/app_localizations.dart';
+import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -25,6 +26,13 @@ enum HomeCourseKind {
   ///
   /// 단원도 주제도 없다. 레벨이 정해지기 전에는 커리큘럼 위치 자체가 없어서다.
   noLevel,
+
+  /// 학습 언어에 **커리큘럼이 아직 없다**(`/cur/me`.`available == false`) —
+  /// 「{언어} 커리큘럼은 준비 중이에요 · 일반 표현학습으로 통화해요」.
+  ///
+  /// [noLevel] 과 다르다: 그쪽은 *이 회원*의 위치가 없는 것이고, 이쪽은 *그 언어*에
+  /// 위치라는 게 아직 없는 것이다. 첫 통화를 해도 안 생긴다 — 안내가 달라야 한다.
+  unavailable,
 }
 
 /// [HomeGnb] 가 그리는 한 덩어리 — 서버 [CurMe] 의 화면용 축약.
@@ -40,6 +48,7 @@ class HomeCourse {
     this.unitCode,
     this.topic,
     this.expressionsLeft,
+    this.language,
   });
 
   /// 커리큘럼 위치가 아직 없는 회원 — 서버가 `/cur/me` 에 **404** 로 답하는
@@ -54,6 +63,11 @@ class HomeCourse {
   /// `LevelSummary.needsLevelTest` 로도 같은 판정이 되지만 요청이 하나 더 는다 —
   /// 홈이 그리는 것은 *커리큘럼 위치*이지 레벨 숫자가 아니라서 이쪽이 맞다.
   factory HomeCourse.fromCurMe(CurMe me) {
+    // 언어에 커리큘럼이 없다 — 차시가 비어 있는 것과 겉모습은 같지만 뜻이 다르다.
+    // 이 판정을 먼저 두는 이유: 아래 «빈 차시 = 레벨 미정» 과 겹치기 때문이다.
+    if (!me.available) {
+      return HomeCourse(kind: HomeCourseKind.unavailable, language: me.language);
+    }
     final lesson = me.lesson;
     if (lesson.code.isEmpty || lesson.levelNo == 0) {
       return const HomeCourse(kind: HomeCourseKind.noLevel);
@@ -101,6 +115,9 @@ class HomeCourse {
   /// 이번 단원의 주제 한 줄. noLevel 에서는 null.
   final String? topic;
 
+  /// 커리큘럼이 없는 학습 언어(ISO 639-1). [HomeCourseKind.unavailable] 에서만 쓴다.
+  final String? language;
+
   /// 자유 회화까지 남은 표현 수. [HomeCourseKind.expression] 에서만 쓴다.
   final int? expressionsLeft;
 }
@@ -139,10 +156,18 @@ class HomeGnb extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    final noLevel = course.kind == HomeCourseKind.noLevel;
+    // 「위치 없음」 계열 둘 — 레벨 미정·언어 준비 중. 배지가 중립이고 오른쪽 라벨이
+    // 없는 모양은 같고, 세 줄의 말만 다르다.
+    final noLevel = course.kind == HomeCourseKind.noLevel ||
+        course.kind == HomeCourseKind.unavailable;
 
-    // 2행(주제) — 레벨이 없으면 커리큘럼 위치가 없으니 안내 문구로 바뀐다.
-    final title = noLevel ? l10n.homeNoLevelTitle : (course.topic ?? '');
+    // 2행(주제) — 위치가 없으면 커리큘럼 위치가 없으니 안내 문구로 바뀐다.
+    final title = switch (course.kind) {
+      HomeCourseKind.noLevel => l10n.homeNoLevelTitle,
+      HomeCourseKind.unavailable =>
+        l10n.homeCurriculumPendingTitle(languageLabel(course.language)),
+      _ => course.topic ?? '',
+    };
 
     // 3행 — 변형마다 다른 말을 한다.
     final note = switch (course.kind) {
@@ -150,6 +175,7 @@ class HomeGnb extends StatelessWidget {
         l10n.homeExpressionsLeft(course.expressionsLeft ?? 0),
       HomeCourseKind.freetalk => l10n.homeFreetalkNote,
       HomeCourseKind.noLevel => l10n.homeNoLevelNote,
+      HomeCourseKind.unavailable => l10n.homeCurriculumPendingNote,
     };
 
     return SizedBox(
@@ -173,9 +199,11 @@ class HomeGnb extends StatelessWidget {
                   // 중요하다 — 민트는 「진행 중인 커리큘럼」의 색이라, 없는
                   // 단원에 쓰면 있는 것처럼 읽힌다.
                   tone: noLevel ? BadgeTone.neutral : BadgeTone.brand,
-                  label: noLevel
-                      ? l10n.homeLevelPending
-                      : (course.unitCode ?? ''),
+                  label: switch (course.kind) {
+                    HomeCourseKind.noLevel => l10n.homeLevelPending,
+                    HomeCourseKind.unavailable => l10n.homeCurriculumPendingBadge,
+                    _ => course.unitCode ?? '',
+                  },
                 ),
                 // 레벨 미정에는 오른쪽 라벨이 없다(정본에서 hidden).
                 if (!noLevel) ...[
@@ -255,4 +283,19 @@ class HomeGnbSkeleton extends StatelessWidget {
       ),
     );
   }
+}
+
+/// ISO 639-1 코드 → 화면에 쓸 언어 이름(그 언어의 자기 이름). 목록에 없거나 null 이면
+/// 코드를 대문자로 그대로(«EN») — 지어내지 않는다.
+///
+/// 설정 화면의 학습 언어 선택지([mockLanguages])와 같은 표를 본다 — 두 화면이 한 언어를
+/// 다르게 부르면 안 된다.
+String languageLabel(String? code) {
+  if (code == null || code.isEmpty) return '';
+  final id = code.split('-').first.toLowerCase();
+  // 목록 id 가 `ko-KR` 처럼 BCP-47 인 항목이 있어 양쪽 다 첫 서브태그로 맞춘다.
+  for (final l in mockLanguages) {
+    if (l.id.split('-').first.toLowerCase() == id) return l.name;
+  }
+  return id.toUpperCase();
 }

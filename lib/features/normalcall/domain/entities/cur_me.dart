@@ -15,6 +15,14 @@ import 'call_course.dart';
 ///   (`expression_done`) 프리토킹, 아니면 표현학습. 홈 «이번 통화» 카드가 그릴 값이고,
 ///   지금은 개발자 도구가 한 줄로 보여 준다.
 /// ⚠ [open.freetalk] 이 false 인데 프리토킹을 명시로 걸면 서버가 `COURSE_LOCKED` 로 닫는다.
+///
+/// ## 커리큘럼이 없는 언어 (2026-09-13 계약 추가)
+///
+/// `language`(ISO 639-1, 회원 `target_language` 를 서버가 푼 값) · `available`.
+/// [available] 이 false 면 `lesson`·`status` 가 **null**, items 0, open 둘 다 false,
+/// `next_course = expression`. 사장님 계정(target=en)이 운영 `/cur/me` 에서 500 을 받던
+/// 것이 이 계약으로 고쳐진다 — 앱은 여기서 죽지 않고 «준비 중» 을 그린다.
+/// ⚠ 두 키가 **없으면(구서버)** available=true 로 본다 — 종전 동작.
 class CurMe {
   const CurMe({
     required this.lesson,
@@ -24,9 +32,18 @@ class CurMe {
     required this.openExpression,
     required this.openFreetalk,
     required this.nextCourse,
+    this.language,
+    this.available = true,
   });
 
+  /// 현재 차시. [available] 이 false 면 서버가 null 을 주고, 여기선 빈 [CurLesson] 이다.
   final CurLesson lesson;
+
+  /// 학습 언어(ISO 639-1). 구서버는 안 준다 → null.
+  final String? language;
+
+  /// 이 언어에 커리큘럼이 **있나.** false 면 [lesson]·[status] 가 비고 홈은 «준비 중».
+  final bool available;
 
   /// `learning` · `expression_done` · `freetalk_done`. 모르는 값은 그대로 문자열로 둔다.
   final String status;
@@ -63,6 +80,9 @@ class CurMe {
           open is Map<String, dynamic> && open['expression'] == true,
       openFreetalk: open is Map<String, dynamic> && open['freetalk'] == true,
       nextCourse: CallCourse.fromWire(json['next_course']),
+      language: (json['language'] as String?)?.trim(),
+      // 키가 없으면(구서버) true — 종전 동작. false 는 명시적으로 왔을 때만.
+      available: json['available'] is bool ? json['available'] as bool : true,
     );
   }
 }

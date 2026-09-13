@@ -957,11 +957,14 @@ class _CurMeLine extends ConsumerWidget {
     final text = cur.when(
       loading: () => '커리큘럼: 불러오는 중…',
       error: (e, _) => '커리큘럼 조회 실패: $e',
-      data: (m) => '차시 ${m.lesson.no} ${m.lesson.code}'
-          ' · 남은 ${m.itemsLeft}/${m.itemsTotal}'
-          ' · 상태 ${m.status}'
-          ' · 다음: ${_courseLabel(m.nextCourse)}'
-          '${m.openFreetalk ? '' : ' · 프리토킹 잠김'}',
+      data: (m) => !m.available
+          // 언어에 커리큘럼이 없다(available=false) — 차시·상태가 null 로 온다.
+          ? '커리큘럼 준비 중 (${m.language ?? '언어 미상'}) · 다음: ${_courseLabel(m.nextCourse)}'
+          : '차시 ${m.lesson.no} ${m.lesson.code}'
+              ' · 남은 ${m.itemsLeft}/${m.itemsTotal}'
+              ' · 상태 ${m.status}'
+              ' · 다음: ${_courseLabel(m.nextCourse)}'
+              '${m.openFreetalk ? '' : ' · 프리토킹 잠김'}',
     );
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),

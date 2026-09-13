@@ -490,6 +490,18 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeNoLevelNote => 'Завершите первый звонок, и он появится';
 
   @override
+  String get homeCurriculumPendingBadge => 'Coming soon';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language curriculum is on its way';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'You\'ll practice general expressions on your calls';
+
+  @override
   String get myPage => 'Профиль';
 
   @override

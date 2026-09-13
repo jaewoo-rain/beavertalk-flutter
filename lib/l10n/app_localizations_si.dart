@@ -491,6 +491,18 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeNoLevelNote => 'පළමු ඇමතුම අවසන් කළ විට මට්ටම ලැබේ';
 
   @override
+  String get homeCurriculumPendingBadge => 'Coming soon';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language curriculum is on its way';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'You\'ll practice general expressions on your calls';
+
+  @override
   String get myPage => 'මගේ පිටුව';
 
   @override

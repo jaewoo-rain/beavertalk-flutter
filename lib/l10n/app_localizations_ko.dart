@@ -477,6 +477,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeNoLevelNote => '첫 통화를 마치면 레벨이 나와요';
 
   @override
+  String get homeCurriculumPendingBadge => '준비 중';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language 커리큘럼은 준비 중이에요';
+  }
+
+  @override
+  String get homeCurriculumPendingNote => '일반 표현학습으로 통화해요';
+
+  @override
   String get myPage => '마이페이지';
 
   @override

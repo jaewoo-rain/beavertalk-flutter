@@ -178,6 +178,14 @@ class HintCard extends StatelessWidget {
               Text(ex.korean,
                   style:
                       AppType.body1.b.copyWith(color: context.c.labelStrong)),
+              // 읽기(가나) — 일본어만 온다. 표면형 바로 아래, 로마자와 같은 작은 글씨.
+              // 없으면 이 블록째 없어 다른 언어 화면은 픽셀이 안 바뀐다.
+              if (ex.reading != null && ex.reading!.isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.s4),
+                Text(ex.reading!,
+                    style: AppType.caption1.r
+                        .copyWith(color: context.c.labelNeutral)),
+              ],
               if (ex.roman != null && ex.roman!.isNotEmpty) ...[
                 const SizedBox(height: AppSpacing.s4),
                 Text(ex.roman!,

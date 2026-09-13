@@ -476,6 +476,18 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeNoLevelNote => '最初の通話を終えるとレベルが出ます';
 
   @override
+  String get homeCurriculumPendingBadge => 'Coming soon';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language curriculum is on its way';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'You\'ll practice general expressions on your calls';
+
+  @override
   String get myPage => 'マイページ';
 
   @override

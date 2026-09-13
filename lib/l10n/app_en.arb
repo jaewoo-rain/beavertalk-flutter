@@ -279,6 +279,15 @@
   "homeNoLevelTitle": "You don't have a level yet",
   "@homeNoLevelTitle": {"description": "Home learning-status block, second line when no level is assigned."},
   "homeNoLevelNote": "Finish your first call to get one",
+  "homeCurriculumPendingBadge": "Coming soon",
+  "@homeCurriculumPendingBadge": {"description": "Home learning-status badge when the member's learning language has no curriculum yet (/cur/me available=false). Neutral tone."},
+  "homeCurriculumPendingTitle": "{language} curriculum is on its way",
+  "@homeCurriculumPendingTitle": {
+    "description": "Home learning-status block, second line when the learning language has no curriculum yet. {language} is the language's own name (e.g. English, 日本語).",
+    "placeholders": {"language": {"type": "String"}}
+  },
+  "homeCurriculumPendingNote": "You'll practice general expressions on your calls",
+  "@homeCurriculumPendingNote": {"description": "Home learning-status block, third line when the learning language has no curriculum yet — what the call will do instead."},
   "@homeNoLevelNote": {"description": "Home learning-status block, third line when no level is assigned — how to get one."},
   "myPage": "My Page",
   "languageSaveFailed": "Couldn't save your language.",

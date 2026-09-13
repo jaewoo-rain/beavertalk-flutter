@@ -490,6 +490,18 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeNoLevelNote => 'প্রথম কল শেষ করলে লেভেল পাবেন';
 
   @override
+  String get homeCurriculumPendingBadge => 'Coming soon';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language curriculum is on its way';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'You\'ll practice general expressions on your calls';
+
+  @override
   String get myPage => 'আমার পেজ';
 
   @override

@@ -19,6 +19,7 @@ class HintExample {
   const HintExample({
     required this.korean,
     this.roman,
+    this.reading,
     required this.native,
   });
 
@@ -30,6 +31,11 @@ class HintExample {
   /// ⚠ 담을 때는 보내지 않는다 — `Sentence` 에 대응 필드가 없다(서버 규약).
   final String? roman;
 
+  /// 표면형의 **읽기**(가나). 학습 언어가 일본어일 때만 온다 — 다른 언어는 키 자체가
+  /// 없어 null 이다. 카드가 표면형 아래 작은 글씨로 그린다; null 이면 아무것도 안 그려
+  /// 한국어 화면은 픽셀이 안 바뀐다.
+  final String? reading;
+
   /// Native-language translation of [korean] (may be empty).
   ///
   /// ⚠ 서버의 담기 API 는 이걸 **필수(1자 이상)** 로 받는다. 비어 있으면 담을 수 없다.
@@ -38,6 +44,7 @@ class HintExample {
   factory HintExample.fromJson(Map<String, dynamic> json) => HintExample(
         korean: (json['korean'] as String?)?.trim() ?? '',
         roman: (json['roman'] as String?)?.trim(),
+        reading: (json['reading'] as String?)?.trim(),
         native: (json['native'] as String?)?.trim() ?? '',
       );
 }

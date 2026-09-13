@@ -1042,6 +1042,24 @@ abstract class AppLocalizations {
   /// **'Finish your first call to get one'**
   String get homeNoLevelNote;
 
+  /// Home learning-status badge when the member's learning language has no curriculum yet (/cur/me available=false). Neutral tone.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get homeCurriculumPendingBadge;
+
+  /// Home learning-status block, second line when the learning language has no curriculum yet. {language} is the language's own name (e.g. English, 日本語).
+  ///
+  /// In en, this message translates to:
+  /// **'{language} curriculum is on its way'**
+  String homeCurriculumPendingTitle(String language);
+
+  /// Home learning-status block, third line when the learning language has no curriculum yet — what the call will do instead.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll practice general expressions on your calls'**
+  String get homeCurriculumPendingNote;
+
   /// No description provided for @myPage.
   ///
   /// In en, this message translates to:

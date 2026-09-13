@@ -497,6 +497,18 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeNoLevelNote => 'Fejezd be az első hívást, és megkapod';
 
   @override
+  String get homeCurriculumPendingBadge => 'Coming soon';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language curriculum is on its way';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'You\'ll practice general expressions on your calls';
+
+  @override
   String get myPage => 'Saját oldal';
 
   @override

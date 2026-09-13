@@ -488,6 +488,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeNoLevelNote => 'İlk aramanı tamamla, seviyen belirlensin';
 
   @override
+  String get homeCurriculumPendingBadge => 'Coming soon';
+
+  @override
+  String homeCurriculumPendingTitle(String language) {
+    return '$language curriculum is on its way';
+  }
+
+  @override
+  String get homeCurriculumPendingNote =>
+      'You\'ll practice general expressions on your calls';
+
+  @override
   String get myPage => 'Sayfam';
 
   @override
