@@ -226,15 +226,17 @@ class MyPageScreen extends ConsumerWidget {
               forceCourse: true,
             ),
           ),
+          // ⭐ «자동(auto)» 는 이제 **홈의 전화 버튼**이다(2026-09-13). 여기는 대신 옛
+          //   일반 통화 — 인자를 안 실어 call_type 이 프레임에서 빠지고 서버 D11 이
+          //   라우팅한다(레벨 미확정이면 레벨테스트). 옛 경로를 걸 유일한 자리다.
           _devRow(
             context,
-            title: '자동 통화 (auto)',
-            description: '서버가 진도로 코스를 정합니다 — 표현학습을 다 드릴하면 다음은 '
-                '프리토킹, 프리토킹 1회 뒤 다음 차시 표현학습. 실제 코스는 '
-                'call_started.course 로 내려와 위 줄의 «다음» 과 같아야 합니다. '
+            title: '일반 통화 (normal)',
+            description: '옛 일반 통화 — 학습 항목 주입·레벨 시스템. call_type 을 안 보내 '
+                '서버 D11 이 라우팅합니다(레벨 미확정이면 레벨테스트). 자동(auto)은 '
+                '홈의 전화 버튼이 겁니다. '
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
-            arguments: CallCourse.auto,
           ),
           // ⛔ 2026-09-12 사장님: 「코스 버튼 3개만」 — 위와 같은 이유로 화면에서만 내렸다.
           if (_kLegacyDevTools) ...[

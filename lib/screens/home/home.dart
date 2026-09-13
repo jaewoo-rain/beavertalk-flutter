@@ -11,6 +11,8 @@ import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/home_gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
@@ -39,9 +41,17 @@ class HomeScreen extends ConsumerWidget {
   /// Diameter of the hero beaver avatar (Figma improved `2296:26379`).
   static const double _avatarSize = 120;
 
-  /// Requests the mic permission, then enters the call flow with the member's
-  /// representative character id (falling back to `1` / 비비). When permission is
+  /// Requests the mic permission, then enters the call flow. When permission is
   /// denied the call is blocked and the user is guided to settings/mic_denied.
+  ///
+  /// ⭐ **`auto` 코스로 건다**(사장님 결정 2026-09-13). 서버가 진도로 이번 통화의
+  ///   코스(표현학습/프리토킹)를 정하고 `call_started.course` 로 알린다 — 위 학습 현황
+  ///   블록이 그리는 «이번 통화»(`/cur/me`.`next_course`)와 **같은 판정**이다(서버가
+  ///   그 필드를 «auto 로 걸면 정할 코스» 로 정의한다). 힌트 가림 등 코스별 UI 는
+  ///   `call_started.course` 로 이미 갈린다.
+  ///   ⛔ 여기만이다. 수신(알림) 통화·레벨테스트·숙제·기록 화면의 진입점은 종전 그대로
+  ///     (`call_type` 미전송 = 서버 D11 라우팅).
+  /// 캐릭터는 서버가 정한다(member.character_id) — 인자에 싣지 않는다.
   Future<void> _startCall(BuildContext context, WidgetRef ref) async {
     final status = await Permission.microphone.request();
     if (!context.mounted) return;
@@ -50,12 +60,34 @@ class HomeScreen extends ConsumerWidget {
       return;
     }
     if (!context.mounted) return;
-    // 캐릭터는 서버가 정한다(member.character_id) — 인자를 싣지 않는다.
-    Navigator.pushNamed(context, Routes.callLoading);
+    Navigator.pushNamed(
+      context,
+      Routes.callLoading,
+      arguments: const CourseCallRequest(CallCourse.auto),
+    );
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ⭐ 통화가 끝나면 학습 현황을 **다시 읽는다.** 홈은 첫 라우트라 통화 내내 살아
+    //   있고, [curMeProvider] 는 autoDispose 여도 홈이 붙들고 있어 안 버려진다 — 그러면
+    //   통화로 진도가 바뀌어도 «이번 통화» 가 옛 값(예: 표현학습)을 그대로 보여 주고,
+    //   다음 통화는 서버가 프리토킹으로 연다. 표시와 실제가 어긋나는 유일한 구멍이라
+    //   여기서 막는다. 판정은 「통화 중이었다가 통화가 아니게 됐다」 한 가지다.
+    ref.listen<CallPhase>(
+      normalCallControllerProvider.select((s) => s.phase),
+      (prev, next) {
+        const live = {
+          CallPhase.connecting,
+          CallPhase.inCall,
+          CallPhase.awaitingContinue,
+          CallPhase.ending,
+        };
+        if (live.contains(prev) && !live.contains(next)) {
+          ref.invalidate(curMeProvider);
+        }
+      },
+    );
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: _buildHome(context, ref),

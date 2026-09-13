@@ -145,8 +145,8 @@ void main() {
         find.text('차시 4 A1-T01-1 · 남은 2/18 · 상태 learning · 다음: 표현학습 · 프리토킹 잠김'),
         findsOneWidget,
       );
-      expect(find.text('자동 통화 (auto)'), findsOneWidget,
-          reason: '세 번째 버튼이 카드에 있다');
+      expect(find.text('일반 통화 (normal)'), findsOneWidget,
+          reason: '세 번째 버튼 — auto 는 홈 전화 버튼으로 갔다(2026-09-13)');
     });
 
     testWidgets('⛔ 개발자 카드는 진도 한 줄 + 코스 버튼 3개만 — 옛 항목은 안 그린다',
@@ -171,7 +171,7 @@ void main() {
       expect(find.textContaining('차시 1 A1-T01-1'), findsOneWidget);
       expect(find.text('표현학습 통화'), findsOneWidget);
       expect(find.text('프리토킹 통화'), findsOneWidget);
-      expect(find.text('자동 통화 (auto)'), findsOneWidget);
+      expect(find.text('일반 통화 (normal)'), findsOneWidget);
       // 빠지는 것 — 화면에 없어야 한다
       for (final gone in [
         '캐스케이드 통화 (테스트 서버)',
