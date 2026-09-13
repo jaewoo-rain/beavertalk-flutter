@@ -143,6 +143,33 @@ final subscriptionStatusProvider =
   );
 });
 
+/// 티어를 **아직 모르는가** — 두 소스가 다 답하기 전인 구간.
+///
+/// [subscriptionStatusProvider] 는 이 구간을 [SubscriptionStatus.none] 으로
+/// 뭉갠다. 그건 「모르면 제한 쪽」이라는 옳은 기본값이지만, **표현을 고르는
+/// 자리에서는 거짓말이 된다** — 통화 화면이 Max 사용자에게 Free 의 원형 아바타를
+/// 띄웠다가 응답이 오면 16:9 영상 밴드로 뒤바꿨다(2026-09-12 실기기 확인).
+///
+/// 그래서 **판정용이 아니라 표현용**이다. 무엇을 허용할지는 여전히
+/// [subscriptionStatusProvider] 가 정한다 — 여기를 보고 기능을 열지 마라.
+/// 「지금 그려도 되는가」만 묻는 자리다.
+///
+/// 두 소스 중 **하나라도** 답하면(성공이든 실패든) false 다. 둘 다 에러여도
+/// 답은 답이므로 영영 로딩으로 남는 경로는 없다.
+///
+/// ⛔ **`isLoading` 으로 재지 마라 — 「모른다」와 「다시 물어보는 중」이 섞인다.**
+///   결제가 끝나면 `serverSubscriptionStatusProvider` 를 invalidate 하는데
+///   (`purchase_flow` · `subscription_overlays`), 그때 Riverpod 은 **이전 값을 들고
+///   있는 채로** `isLoading` 을 다시 올린다. `isLoading` 을 보면 그 순간을 「모름」
+///   으로 읽어, **통화 중 Max 를 결제한 사람의 아바타가 셔머로 사라졌다가** 돌아온다.
+///   답을 한 번이라도 받았는지(`hasValue || hasError`)가 우리가 묻고 싶은 것이다.
+final subscriptionTierUnknownProvider = Provider.autoDispose<bool>((ref) {
+  final server = ref.watch(serverSubscriptionStatusProvider);
+  final rows = ref.watch(subscriptionsProvider);
+  bool answered(AsyncValue<Object?> v) => v.hasValue || v.hasError;
+  return !answered(server) && !answered(rows);
+});
+
 /// The subscription tier bought on the IAP rail **in this session**, recorded
 /// off the purchase stream by the processing screen.
 ///

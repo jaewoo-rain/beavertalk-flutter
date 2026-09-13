@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:beavertalk/components/atoms/speaking_equalizer.dart';
+import 'package:beavertalk/components/atoms/skeleton.dart';
 import 'package:beavertalk/components/molecules/hint_card.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_hint.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
@@ -73,6 +74,9 @@ Future<void> _pumpCall(
   required bool subtitleOn,
   required bool hintOn,
   SubscriptionStatus status = _max,
+  // 기본은 **티어를 안다**. 모르는 구간은 아바타 자리를 셔머로 채우므로,
+  // 여기를 안 고정하면 다른 케이스들이 우연히 그 분기를 타고 아바타를 못 찾는다.
+  bool tierUnknown = false,
 }) async {
   final state = CallState(
     phase: CallPhase.inCall,
@@ -90,6 +94,7 @@ Future<void> _pumpCall(
         normalCallControllerProvider
             .overrideWith(() => _StubCallController(state)),
         subscriptionStatusProvider.overrideWithValue(status),
+        subscriptionTierUnknownProvider.overrideWithValue(tierUnknown),
       ],
       child: MaterialApp(
         localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -148,6 +153,23 @@ void main() {
     await _pumpCall(tester, subtitleOn: true, hintOn: false, status: _max);
     expect(find.byType(AspectRatio), findsWidgets);
     expect(find.byType(ClipOval), findsNothing);
+  });
+
+  // 🔴 티어가 오기 전에 Free 모습을 그리면, Max 사용자가 원형 아바타를 보다가
+  //    16:9 영상 밴드로 화면이 뒤바뀐다(2026-09-12 실기기 확인). 그 구간에는
+  //    **둘 중 아무것도 단언하지 않는다.**
+  testWidgets('avatar: 티어를 모르는 동안에는 Free 도 Max 도 그리지 않는다',
+      (tester) async {
+    _useFigmaFrame(tester);
+    await _pumpCall(tester,
+        subtitleOn: true, hintOn: false, status: _free, tierUnknown: true);
+
+    // Free 의 원형이 나오면 안 된다 — 티어를 아직 모르기 때문이다.
+    expect(find.byType(ClipOval), findsNothing);
+    // 자리는 16:9 로 잡아 둔다. 확정되면 Max 는 그대로 채우고 Free 만 줄어든다.
+    expect(find.byType(AspectRatio), findsWidgets);
+    // 로딩은 셔머로 말한다 — 콘텐츠가 아니라는 신호다.
+    expect(find.byType(SkeletonShimmer), findsWidgets);
   });
 
   testWidgets('avatar: Free falls back to the circular still', (tester) async {

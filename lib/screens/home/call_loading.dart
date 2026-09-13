@@ -12,6 +12,7 @@ import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../features/incoming_call/services/lockscreen_call_service.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -189,6 +190,22 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // 구독 조회를 **여기서** 띄운다 — 통화 화면이 아니라.
+    //
+    // `serverSubscriptionStatusProvider` 는 autoDispose 인데 이 앱에서 그걸 보는
+    // 화면은 마이페이지·플랜·결제뿐이다. 그래서 통화 화면이 마운트되는 순간이
+    // 이 요청의 **콜드 스타트**였고, 응답이 오기 전에는 티어가 `none`(=Free)으로
+    // 떨어져 Max 사용자가 원형 아바타를 보다가 16:9 영상 밴드로 화면이
+    // 뒤바뀌었다(2026-09-12 실기기 확인).
+    //
+    // 이 화면은 소켓 연결과 서버 첫 인사말을 기다리느라 **이미 1~3초** 머문다.
+    // 그 시간에 구독 조회를 같이 끝내면 통화 화면은 켜질 때 이미 알고 있다.
+    // `pushReplacement` 로 넘어가므로 리스너가 끊기기 전에 다음 화면이 붙어
+    // 캐시가 살아서 건너간다.
+    //
+    // ⚠ 값을 쓰지 않고 **구독만 건다.** 여기서 티어로 무엇을 가르지 않는다 —
+    //   이 화면은 플랜과 무관하고, 판정은 통화 화면과 컨트롤러의 몫이다.
+    ref.watch(serverSubscriptionStatusProvider);
     // React to phase transitions.
     ref.listen<CallState>(normalCallControllerProvider, (prev, next) {
       if (_navigated) return;
