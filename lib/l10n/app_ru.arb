@@ -802,5 +802,6 @@
   "callMissedBody": "{name} пытался вам позвонить",
   "callBeaverFallbackName": "Бивер",
   "callNotifPermissionRationale": "Для приёма звонков нужно разрешение на уведомления.",
-  "callNotifPermissionRequired": "Разрешите уведомления в настройках."
+  "callNotifPermissionRequired": "Разрешите уведомления в настройках.",
+  "callHintLockedTitle": "В режиме «Изучение» подсказки недоступны"
 }

@@ -802,5 +802,6 @@
   "callMissedBody": "Tinawagan ka ni {name}",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Kailangan ng pahintulot sa notification para makatanggap ng tawag.",
-  "callNotifPermissionRequired": "Payagan ang mga notification sa Settings."
+  "callNotifPermissionRequired": "Payagan ang mga notification sa Settings.",
+  "callHintLockedTitle": "Hindi available ang hint sa Pag-aaral"
 }

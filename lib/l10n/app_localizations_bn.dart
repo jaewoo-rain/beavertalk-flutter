@@ -2659,4 +2659,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => 'সেটিংসে নোটিফিকেশন চালু করুন।';
+
+  @override
+  String get callHintLockedTitle => 'অনুশীলন মোডে ইঙ্গিত ব্যবহার করা যায় না';
 }

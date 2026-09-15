@@ -32,6 +32,7 @@ class CallToggleButton extends StatelessWidget {
     required this.semanticLabel,
     this.onChanged,
     this.activeGlyph,
+    this.inactiveGlyph,
     this.size = 56,
   });
 
@@ -56,6 +57,13 @@ class CallToggleButton extends StatelessWidget {
   /// which is light in Light mode and would swallow a white glyph).
   final Color? activeGlyph;
 
+  /// Glyph colour while off. Defaults to `Icon/Normal`(= `labelNormal`).
+  ///
+  /// 기능을 **쓸 수 없는** 자리(표현학습의 힌트)는 `Label/Disabled` 를 넘긴다.
+  /// 면은 off 그대로(`Fill/Alternative`) 두고 글리프만 내린다 — Figma
+  /// `tooltip/hint_locked` 시안(2026-09-15)의 비활성 표현이다.
+  final Color? inactiveGlyph;
+
   /// 지름. 정본 변형은 40·56 이고 `footer/main_call` 은 **56** 이다.
   final double size;
 
@@ -73,7 +81,7 @@ class CallToggleButton extends StatelessWidget {
     // 현황 블록도 같은 매핑이다).
     final Color glyph = active
         ? (activeGlyph ?? context.c.staticWhite)
-        : context.c.labelNormal;
+        : (inactiveGlyph ?? context.c.labelNormal);
 
     // 채움·테두리·글리프를 한 프레임에 갈면 잉크 물결만 남고 상태 변화가 안
     // 읽힌다. [Material.color] 는 암시적 애니메이션이 없으므로 색을 직접

@@ -2690,4 +2690,8 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Permita as notificações nos Ajustes.';
+
+  @override
+  String get callHintLockedTitle =>
+      'As dicas não estão disponíveis no modo Estudo';
 }

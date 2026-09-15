@@ -2648,4 +2648,7 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'โปรดอนุญาตการแจ้งเตือนในการตั้งค่า';
+
+  @override
+  String get callHintLockedTitle => 'ไม่สามารถใช้คำใบ้ในโหมดเรียนรู้ได้';
 }

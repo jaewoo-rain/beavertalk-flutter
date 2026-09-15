@@ -2698,4 +2698,8 @@ class AppLocalizationsIt extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Consenti le notifiche nelle Impostazioni.';
+
+  @override
+  String get callHintLockedTitle =>
+      'I suggerimenti non sono disponibili in Studio';
 }

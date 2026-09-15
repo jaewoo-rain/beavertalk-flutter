@@ -2012,5 +2012,9 @@
   "callNotifPermissionRequired": "Please allow notifications in Settings.",
   "@callNotifPermissionRequired": {
     "description": "Shown when notification permission was denied."
+  },
+  "callHintLockedTitle": "Hints aren't available in Study",
+  "@callHintLockedTitle": {
+    "description": "Call screen - speech bubble above the hint button, shown when the learner taps it during a Study (callModeStudy) call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Keep the course name identical to callModeStudy."
   }
 }

@@ -2692,4 +2692,7 @@ class AppLocalizationsMs extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Benarkan pemberitahuan dalam Tetapan.';
+
+  @override
+  String get callHintLockedTitle => 'Petunjuk tidak tersedia dalam mod Belajar';
 }

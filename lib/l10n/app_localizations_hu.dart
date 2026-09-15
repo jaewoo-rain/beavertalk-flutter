@@ -2686,4 +2686,7 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Engedélyezd az értesítéseket a Beállításokban.';
+
+  @override
+  String get callHintLockedTitle => 'Tanulás módban nem érhetők el tippek';
 }

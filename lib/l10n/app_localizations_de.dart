@@ -2706,4 +2706,8 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Erlaube Mitteilungen in den Einstellungen.';
+
+  @override
+  String get callHintLockedTitle =>
+      'Im Modus „Lernen“ sind keine Hinweise verfügbar';
 }

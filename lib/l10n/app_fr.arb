@@ -802,5 +802,6 @@
   "callMissedBody": "{name} a essayé de vous appeler",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Les notifications sont nécessaires pour recevoir les appels.",
-  "callNotifPermissionRequired": "Autorisez les notifications dans Réglages."
+  "callNotifPermissionRequired": "Autorisez les notifications dans Réglages.",
+  "callHintLockedTitle": "Les indices ne sont pas disponibles en mode Étude"
 }

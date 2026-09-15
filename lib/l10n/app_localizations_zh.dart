@@ -2579,4 +2579,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => '请在设置中允许通知。';
+
+  @override
+  String get callHintLockedTitle => '表达学习中无法使用提示';
 }

@@ -802,5 +802,6 @@
   "callMissedBody": "{name} نے آپ کو کال کی تھی",
   "callBeaverFallbackName": "بیور",
   "callNotifPermissionRationale": "کالیں وصول کرنے کے لیے اطلاعات کی اجازت درکار ہے۔",
-  "callNotifPermissionRequired": "ترتیبات میں اطلاعات کی اجازت دیں۔"
+  "callNotifPermissionRequired": "ترتیبات میں اطلاعات کی اجازت دیں۔",
+  "callHintLockedTitle": "مشق موڈ میں اشارے دستیاب نہیں ہیں"
 }

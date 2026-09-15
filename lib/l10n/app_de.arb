@@ -802,5 +802,6 @@
   "callMissedBody": "{name} hat versucht, dich anzurufen",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Für eingehende Anrufe wird die Mitteilungsberechtigung benötigt.",
-  "callNotifPermissionRequired": "Erlaube Mitteilungen in den Einstellungen."
+  "callNotifPermissionRequired": "Erlaube Mitteilungen in den Einstellungen.",
+  "callHintLockedTitle": "Im Modus „Lernen“ sind keine Hinweise verfügbar"
 }

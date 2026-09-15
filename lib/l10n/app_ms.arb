@@ -802,5 +802,6 @@
   "callMissedBody": "{name} cuba menghubungi anda",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Kebenaran pemberitahuan diperlukan untuk menerima panggilan.",
-  "callNotifPermissionRequired": "Benarkan pemberitahuan dalam Tetapan."
+  "callNotifPermissionRequired": "Benarkan pemberitahuan dalam Tetapan.",
+  "callHintLockedTitle": "Petunjuk tidak tersedia dalam mod Belajar"
 }

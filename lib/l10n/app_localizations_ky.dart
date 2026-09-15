@@ -2674,4 +2674,7 @@ class AppLocalizationsKy extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Жөндөөлөрдөн билдирмелерге уруксат бериңиз.';
+
+  @override
+  String get callHintLockedTitle => 'Үйрөнүү режиминде кеп жеткиликсиз';
 }

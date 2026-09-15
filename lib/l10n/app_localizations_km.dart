@@ -2664,4 +2664,7 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'សូមអនុញ្ញាតការជូនដំណឹងក្នុងការកំណត់។';
+
+  @override
+  String get callHintLockedTitle => 'មិនអាចប្រើជំនួយក្នុងការសិក្សាបានទេ';
 }

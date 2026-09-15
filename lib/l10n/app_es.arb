@@ -802,5 +802,6 @@
   "callMissedBody": "{name} intentó llamarte",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Se necesita permiso de notificaciones para recibir llamadas.",
-  "callNotifPermissionRequired": "Permite las notificaciones en Ajustes."
+  "callNotifPermissionRequired": "Permite las notificaciones en Ajustes.",
+  "callHintLockedTitle": "Las pistas no están disponibles en Estudio"
 }

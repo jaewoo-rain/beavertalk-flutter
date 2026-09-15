@@ -2687,4 +2687,8 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Sozlamalarda bildirishnomalarga ruxsat bering.';
+
+  @override
+  String get callHintLockedTitle =>
+      'O‘rganish rejimida maslahatlar mavjud emas';
 }

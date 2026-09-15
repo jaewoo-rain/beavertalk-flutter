@@ -802,5 +802,6 @@
   "callMissedBody": "{name} ले तपाईंलाई कल गरेको थियो",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "कल प्राप्त गर्न सूचनाको अनुमति चाहिन्छ।",
-  "callNotifPermissionRequired": "सेटिङमा सूचनालाई अनुमति दिनुहोस्।"
+  "callNotifPermissionRequired": "सेटिङमा सूचनालाई अनुमति दिनुहोस्।",
+  "callHintLockedTitle": "अभ्यास मोडमा सङ्केत उपलब्ध छैन"
 }

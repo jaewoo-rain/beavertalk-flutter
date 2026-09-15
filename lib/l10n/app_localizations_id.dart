@@ -2674,4 +2674,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => 'Izinkan notifikasi di Pengaturan.';
+
+  @override
+  String get callHintLockedTitle => 'Petunjuk tidak tersedia di mode Belajar';
 }

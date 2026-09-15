@@ -2584,4 +2584,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => '설정에서 알림 권한을 허용해 주세요.';
+
+  @override
+  String get callHintLockedTitle => '표현 학습에서는 힌트를 쓸 수 없어요';
 }

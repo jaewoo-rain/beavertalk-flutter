@@ -2668,4 +2668,7 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү.';
+
+  @override
+  String get callHintLockedTitle => 'Суралцах горимд зөвлөмж ашиглах боломжгүй';
 }

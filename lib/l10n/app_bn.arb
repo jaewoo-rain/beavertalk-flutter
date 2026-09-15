@@ -802,5 +802,6 @@
   "callMissedBody": "{name} আপনাকে কল করেছিল",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "কল পেতে নোটিফিকেশনের অনুমতি প্রয়োজন।",
-  "callNotifPermissionRequired": "সেটিংসে নোটিফিকেশন চালু করুন।"
+  "callNotifPermissionRequired": "সেটিংসে নোটিফিকেশন চালু করুন।",
+  "callHintLockedTitle": "অনুশীলন মোডে ইঙ্গিত ব্যবহার করা যায় না"
 }

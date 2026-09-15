@@ -2663,4 +2663,7 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Hãy cho phép thông báo trong Cài đặt.';
+
+  @override
+  String get callHintLockedTitle => 'Không dùng được gợi ý trong Học biểu đạt';
 }

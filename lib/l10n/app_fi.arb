@@ -802,5 +802,6 @@
   "callMissedBody": "{name} yritti soittaa sinulle",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Puheluiden vastaanottamiseen tarvitaan ilmoituslupa.",
-  "callNotifPermissionRequired": "Salli ilmoitukset asetuksissa."
+  "callNotifPermissionRequired": "Salli ilmoitukset asetuksissa.",
+  "callHintLockedTitle": "Vihjeet eivät ole käytettävissä Opiskelu-tilassa"
 }

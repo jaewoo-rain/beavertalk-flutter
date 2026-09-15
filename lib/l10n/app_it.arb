@@ -802,5 +802,6 @@
   "callMissedBody": "{name} ha provato a chiamarti",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Serve il permesso per le notifiche per ricevere chiamate.",
-  "callNotifPermissionRequired": "Consenti le notifiche nelle Impostazioni."
+  "callNotifPermissionRequired": "Consenti le notifiche nelle Impostazioni.",
+  "callHintLockedTitle": "I suggerimenti non sono disponibili in Studio"
 }

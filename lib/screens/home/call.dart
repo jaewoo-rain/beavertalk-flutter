@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,6 +16,7 @@ import '../../components/icons/app_icons.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/molecules/hint_card.dart';
+import '../../components/molecules/tooltip_bubble.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/bookmark/presentation/providers/bookmark_providers.dart';
@@ -135,8 +138,65 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// 합성은 요금이 나가므로 중복 요청은 그냥 돈이 새는 것이다.
   final Set<String> _hintSpeechInFlight = <String>{};
 
+  /// 표현학습에서 힌트 버튼을 눌렀을 때 뜨는 말풍선(Figma `tooltip/hint_locked`
+  /// `5986:9297`)이 떠 있는가.
+  ///
+  /// 사장님 결정(2026-09-15): 표현학습에서도 힌트 버튼을 **숨기지 않는다.** 서버가
+  /// 그 코스엔 힌트를 안 보내므로 버튼은 토글이 아니라 이 안내를 띄운다.
+  bool _hintLockedVisible = false;
+
+  /// 말풍선 자동 닫힘 타이머. 떠 있는 동안 다시 누르면 새로 건다(중복 노출 없음).
+  Timer? _hintLockedTimer;
+
+  /// 말풍선 유지 시간.
+  ///
+  /// 처음엔 `SnackBar` 기본값(4초)이었는데 사장님이 「더 빨리 사라졌으면」
+  /// (2026-09-15)이라 2.5초로 줄였다. 가장 긴 문구(fr 49자)도 이 안에 읽힌다.
+  static const Duration _hintLockedDwell = Duration(milliseconds: 2500);
+
+  /// 말풍선이 힌트 버튼보다 앞서 시작하는 거리(시안: 말풍선 x20 · 버튼 x32).
+  static const double _hintBubbleInset = 12;
+
+  void _showHintLocked() {
+    _hintLockedTimer?.cancel();
+    _hintLockedTimer = Timer(_hintLockedDwell, _hideHintLocked);
+    if (!_hintLockedVisible) setState(() => _hintLockedVisible = true);
+  }
+
+  void _hideHintLocked() {
+    _hintLockedTimer?.cancel();
+    _hintLockedTimer = null;
+    if (_hintLockedVisible && mounted) {
+      setState(() => _hintLockedVisible = false);
+    }
+  }
+
+  /// 힌트 버튼 칸 — 전역 탭이 버튼 위였는지 가리는 데 쓴다.
+  final GlobalKey _hintButtonKey = GlobalKey();
+
+  /// 화면 **어디든** 누르면 말풍선을 닫는다(푸터의 다른 버튼 포함).
+  ///
+  /// 스캐폴드를 [Listener] 로 감싸는 대신 전역 포인터 경로를 쓴다 — 감싸면 빌드
+  /// 트리 전체가 한 단계 들여쓰기되어 변경이 수백 줄로 번진다.
+  ///
+  /// ⚠ **힌트 버튼 위의 탭은 건너뛴다.** 여기서 닫으면 손가락이 닿아 있는 동안
+  ///   퇴장 모션이 돌고, 손을 뗄 때 다시 등장해 말풍선이 한 번 깜빡인다. 버튼
+  ///   탭은 [_showHintLocked] 가 타이머만 새로 건다.
+  void _onGlobalPointer(PointerEvent event) {
+    if (event is! PointerDownEvent || !_hintLockedVisible) return;
+    final box = _hintButtonKey.currentContext?.findRenderObject();
+    if (box is RenderBox &&
+        box.hasSize &&
+        (box.localToGlobal(Offset.zero) & box.size).contains(event.position)) {
+      return;
+    }
+    _hideHintLocked();
+  }
+
   @override
   void dispose() {
+    GestureBinding.instance.pointerRouter.removeGlobalRoute(_onGlobalPointer);
+    _hintLockedTimer?.cancel();
     // 통화가 끝나도 플레이어가 열려 있으면 오디오 세션을 계속 붙들고 있다.
     _hintPlayer.dispose();
     super.dispose();
@@ -272,6 +332,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   @override
   void initState() {
     super.initState();
+    GestureBinding.instance.pointerRouter.addGlobalRoute(_onGlobalPointer);
     // Catch up on a transition that landed before this screen mounted. `ref.listen`
     // only fires on *change*, so a call that ended during the route push would
     // otherwise strand the user on a frozen live-call screen.
@@ -556,7 +617,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final channel =
         ref.watch(normalCallControllerProvider.select((s) => s.channel));
     // ⭐ **표현학습만** 힌트가 없다 — 서버가 그 코스에는 `hint` 프레임을 안 보낸다.
-    //   그러면 토글은 「눌러도 아무것도 안 나오는 버튼」이라 UI 자체를 뺀다.
+    //   버튼은 **그대로 두고**, 누르면 「표현 학습에서는 힌트를 쓸 수 없어요」 말풍선을
+    //   띄운다(사장님 결정 2026-09-15). 종전엔 UI 자체를 뺐는데, 그러면 왜 힌트가
+    //   없는지 설명할 길이 없었다.
     //   프리토킹은 일반 통화와 **같은** 힌트 상자다(ServerHint → 접힌 카드 → 열람 시
     //   hint_used) — `auto` 로 시작해 `call_started.course` 가 freetalk 으로 온 경우도
     //   같다(사장님 결정 2026-09-12: 프리토킹엔 힌트가 보여야 한다. 처음엔 두 코스 다
@@ -568,6 +631,19 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final course =
         ref.watch(normalCallControllerProvider.select((s) => s.course));
     final hintsAvailable = course != CallCourse.expression;
+    // 표현학습 말풍선의 폭 상한 — 화면 끝을 넘지 않게 화면폭에서 역산한다.
+    // 푸터는 `ContentColumn(gutter: s32)` 이고 폭 상한이 [AppLayout.content] 라,
+    // 힌트 버튼 시작이 max(32, (w − content)/2) 이다. 말풍선은 거기서
+    // [_hintBubbleInset] 만큼 앞서 시작한다(폰 x20).
+    final screenWidth = MediaQuery.sizeOf(context).width;
+    final hintBubbleMaxWidth = TooltipBubble.maxWidthFor(
+      available: screenWidth,
+      start: math.max(
+            AppSpacing.s32,
+            (screenWidth - AppLayout.content) / 2,
+          ) -
+          _hintBubbleInset,
+    );
     final showHint = hintsAvailable &&
         hintOn &&
         hint != null &&
@@ -954,25 +1030,70 @@ class _CallScreenState extends ConsumerState<CallScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // 표현학습엔 힌트가 없으니 토글도 없다(위 [hintsAvailable]).
-                  // 그때는 셋이 같은 규칙으로 다시 퍼진다.
-                  if (hintsAvailable)
-                    CallToggleButton(
-                      icon: AppIcons.lightbulb,
-                      active: hintOn,
-                      // `Accent/Active` — Light #FF9200 · Dark #D17600.
-                      activeFill: context.c.accentActive,
-                      // 실측은 `Static/White` 다.
-                      //
-                      // ⚠ 컴포넌트 **설명문**에는 「Static/Black 아이콘」이라고
-                      //   적혀 있는데 실제 변형(`4953:19282`)은 흰색이다. 설명이
-                      //   낡았다 — 값은 변형에서 읽는다.
-                      activeGlyph: context.c.staticWhite,
-                      semanticLabel: 'Hint',
-                      onChanged: (v) => ref
-                          .read(normalCallControllerProvider.notifier)
-                          .setHintOn(v),
-                    ),
+                  // 힌트 버튼은 코스와 무관하게 **항상** 있다(2026-09-15).
+                  // 표현학습([hintsAvailable] false)에서는 토글이 아니라 안내다 —
+                  // 글리프만 `Label/Disabled` 로 내리고, 누르면 말풍선을 띄운다.
+                  //
+                  // 말풍선은 버튼 칸의 [Stack] 에 **넘치게** 붙인다(Clip.none).
+                  // 레이아웃을 먹지 않으니 네 버튼의 간격은 그대로다. 위치는 시안
+                  // 실측: 말풍선 x20 · 버튼 x32 → 시작 −12, 버튼 위 6 → 아래 56+6.
+                  // 방향성([PositionedDirectional])이라 RTL 에서도 버튼을 가리킨다.
+                  Stack(
+                    key: _hintButtonKey,
+                    clipBehavior: Clip.none,
+                    children: [
+                      CallToggleButton(
+                        icon: AppIcons.lightbulb,
+                        active: hintsAvailable && hintOn,
+                        // `Accent/Active` — Light #FF9200 · Dark #D17600.
+                        activeFill: context.c.accentActive,
+                        // 실측은 `Static/White` 다.
+                        //
+                        // ⚠ 컴포넌트 **설명문**에는 「Static/Black 아이콘」이라고
+                        //   적혀 있는데 실제 변형(`4953:19282`)은 흰색이다. 설명이
+                        //   낡았다 — 값은 변형에서 읽는다.
+                        activeGlyph: context.c.staticWhite,
+                        inactiveGlyph:
+                            hintsAvailable ? null : context.c.labelDisabled,
+                        semanticLabel: 'Hint',
+                        onChanged: hintsAvailable
+                            ? (v) => ref
+                                .read(normalCallControllerProvider.notifier)
+                                .setHintOn(v)
+                            : (_) => _showHintLocked(),
+                      ),
+                      PositionedDirectional(
+                        start: -_hintBubbleInset,
+                        bottom: 56 + 6,
+                        child: IgnorePointer(
+                          child: AnimatedSwitcher(
+                            // 등장은 짧게(medium · enter), 퇴장은 길고 부드럽게
+                            // (page · toggle) — 「사라질 때 자연스럽게」(09-15).
+                            duration: AppMotion.medium,
+                            reverseDuration: AppMotion.page,
+                            switchInCurve: AppMotion.enter,
+                            switchOutCurve: AppMotion.toggle,
+                            transitionBuilder: TooltipBubble.transition,
+                            // 기본 배치는 가운데 정렬이다. 줄 수가 달라 높이가 다른
+                            // 말풍선이 겹칠 때도 꼬리 자리가 흔들리지 않게 시작·아래에
+                            // 붙인다.
+                            layoutBuilder: (current, previous) => Stack(
+                              clipBehavior: Clip.none,
+                              alignment: AlignmentDirectional.bottomStart,
+                              children: [...previous, ?current],
+                            ),
+                            child: !hintsAvailable && _hintLockedVisible
+                                ? TooltipBubble(
+                                    key: const ValueKey('hint-locked'),
+                                    message: l10n.callHintLockedTitle,
+                                    maxWidth: hintBubbleMaxWidth,
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                   CallToggleButton(
                     icon: AppIcons.cc,
                     active: subtitleOn,

@@ -2697,4 +2697,8 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Permite las notificaciones en Ajustes.';
+
+  @override
+  String get callHintLockedTitle =>
+      'Las pistas no están disponibles en Estudio';
 }

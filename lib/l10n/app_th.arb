@@ -802,5 +802,6 @@
   "callMissedBody": "{name} โทรหาคุณ",
   "callBeaverFallbackName": "บีเวอร์",
   "callNotifPermissionRationale": "ต้องอนุญาตการแจ้งเตือนเพื่อรับสาย",
-  "callNotifPermissionRequired": "โปรดอนุญาตการแจ้งเตือนในการตั้งค่า"
+  "callNotifPermissionRequired": "โปรดอนุญาตการแจ้งเตือนในการตั้งค่า",
+  "callHintLockedTitle": "ไม่สามารถใช้คำใบ้ในโหมดเรียนรู้ได้"
 }

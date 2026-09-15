@@ -802,5 +802,6 @@
   "callMissedBody": "{name} đã gọi cho bạn",
   "callBeaverFallbackName": "Hải ly",
   "callNotifPermissionRationale": "Cần quyền thông báo để nhận cuộc gọi.",
-  "callNotifPermissionRequired": "Hãy cho phép thông báo trong Cài đặt."
+  "callNotifPermissionRequired": "Hãy cho phép thông báo trong Cài đặt.",
+  "callHintLockedTitle": "Không dùng được gợi ý trong Học biểu đạt"
 }
