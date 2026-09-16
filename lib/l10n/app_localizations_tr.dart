@@ -2664,4 +2664,7 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Ayarlardan bildirimlere izin verin.';
+
+  @override
+  String get callHintLockedTitle => 'Çalışma modunda ipucu kullanılamaz';
 }

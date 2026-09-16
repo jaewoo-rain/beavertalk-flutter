@@ -2673,4 +2673,8 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => 'Salli ilmoitukset asetuksissa.';
+
+  @override
+  String get callHintLockedTitle =>
+      'Vihjeet eivät ole käytettävissä Opiskelu-tilassa';
 }

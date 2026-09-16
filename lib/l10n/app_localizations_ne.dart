@@ -2657,4 +2657,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => 'सेटिङमा सूचनालाई अनुमति दिनुहोस्।';
+
+  @override
+  String get callHintLockedTitle => 'अभ्यास मोडमा सङ्केत उपलब्ध छैन';
 }

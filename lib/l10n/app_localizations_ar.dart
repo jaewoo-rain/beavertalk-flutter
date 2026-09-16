@@ -2647,4 +2647,7 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'يرجى السماح بالإشعارات في الإعدادات.';
+
+  @override
+  String get callHintLockedTitle => 'التلميحات غير متاحة في وضع التعلّم';
 }

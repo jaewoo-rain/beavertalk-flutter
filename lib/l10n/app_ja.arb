@@ -802,5 +802,6 @@
   "callMissedBody": "{name}から電話がありました",
   "callBeaverFallbackName": "ビーバー",
   "callNotifPermissionRationale": "着信を受け取るには通知の許可が必要です。",
-  "callNotifPermissionRequired": "設定で通知を許可してください。"
+  "callNotifPermissionRequired": "設定で通知を許可してください。",
+  "callHintLockedTitle": "表現学習ではヒントを使えません"
 }

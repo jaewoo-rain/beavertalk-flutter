@@ -802,5 +802,6 @@
   "callMissedBody": "{name}给你打过电话",
   "callBeaverFallbackName": "海狸",
   "callNotifPermissionRationale": "需要通知权限才能接收来电。",
-  "callNotifPermissionRequired": "请在设置中允许通知。"
+  "callNotifPermissionRequired": "请在设置中允许通知。",
+  "callHintLockedTitle": "表达学习中无法使用提示"
 }

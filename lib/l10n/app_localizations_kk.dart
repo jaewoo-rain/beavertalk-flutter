@@ -2666,4 +2666,7 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Параметрлерде хабарландыруға рұқсат беріңіз.';
+
+  @override
+  String get callHintLockedTitle => 'Оқу режимінде кеңестер қолжетімсіз';
 }

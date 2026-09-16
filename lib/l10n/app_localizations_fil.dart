@@ -2687,4 +2687,7 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Payagan ang mga notification sa Settings.';
+
+  @override
+  String get callHintLockedTitle => 'Hindi available ang hint sa Pag-aaral';
 }

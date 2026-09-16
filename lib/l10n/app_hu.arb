@@ -802,5 +802,6 @@
   "callMissedBody": "{name} hívni próbált",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "A hívások fogadásához értesítési engedély kell.",
-  "callNotifPermissionRequired": "Engedélyezd az értesítéseket a Beállításokban."
+  "callNotifPermissionRequired": "Engedélyezd az értesítéseket a Beállításokban.",
+  "callHintLockedTitle": "Tanulás módban nem érhetők el tippek"
 }

@@ -802,5 +802,6 @@
   "callMissedBody": "{name} сизге чалды",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Чалууларды кабыл алуу үчүн билдирме уруксаты керек.",
-  "callNotifPermissionRequired": "Жөндөөлөрдөн билдирмелерге уруксат бериңиз."
+  "callNotifPermissionRequired": "Жөндөөлөрдөн билдирмелерге уруксат бериңиз.",
+  "callHintLockedTitle": "Үйрөнүү режиминде кеп жеткиликсиз"
 }

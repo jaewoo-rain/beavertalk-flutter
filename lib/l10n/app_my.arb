@@ -802,5 +802,6 @@
   "callMissedBody": "{name} က သင့်ကို ခေါ်ခဲ့သည်",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "ခေါ်ဆိုမှုများ လက်ခံရန် အကြောင်းကြားချက် ခွင့်ပြုချက် လိုအပ်သည်။",
-  "callNotifPermissionRequired": "ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။"
+  "callNotifPermissionRequired": "ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။",
+  "callHintLockedTitle": "လေ့လာခြင်းတွင် အကြံပြုချက်ကို အသုံးမပြုနိုင်ပါ"
 }

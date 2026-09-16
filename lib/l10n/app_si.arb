@@ -802,5 +802,6 @@
   "callMissedBody": "{name} ඔබට ඇමතුමක් දුන්නා",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "ඇමතුම් ලබා ගැනීමට දැනුම්දීම් අවසරය අවශ්‍යයි.",
-  "callNotifPermissionRequired": "සැකසුම් තුළ දැනුම්දීම්වලට අවසර දෙන්න."
+  "callNotifPermissionRequired": "සැකසුම් තුළ දැනුම්දීම්වලට අවසර දෙන්න.",
+  "callHintLockedTitle": "ඉගෙනීම් ප්‍රකාරයේදී ඉඟි භාවිත කළ නොහැක"
 }

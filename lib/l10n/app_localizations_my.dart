@@ -2679,4 +2679,8 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'ဆက်တင်တွင် အကြောင်းကြားချက်များကို ခွင့်ပြုပါ။';
+
+  @override
+  String get callHintLockedTitle =>
+      'လေ့လာခြင်းတွင် အကြံပြုချက်ကို အသုံးမပြုနိုင်ပါ';
 }

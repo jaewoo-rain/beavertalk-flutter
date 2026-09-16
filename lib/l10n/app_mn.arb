@@ -802,5 +802,6 @@
   "callMissedBody": "{name} танд залгасан",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Дуудлага хүлээн авахад мэдэгдлийн зөвшөөрөл шаардлагатай.",
-  "callNotifPermissionRequired": "Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү."
+  "callNotifPermissionRequired": "Тохиргоо хэсэгт мэдэгдлийг зөвшөөрнө үү.",
+  "callHintLockedTitle": "Суралцах горимд зөвлөмж ашиглах боломжгүй"
 }

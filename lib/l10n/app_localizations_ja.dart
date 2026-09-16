@@ -2584,4 +2584,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => '設定で通知を許可してください。';
+
+  @override
+  String get callHintLockedTitle => '表現学習ではヒントを使えません';
 }

@@ -2720,4 +2720,8 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Autorisez les notifications dans Réglages.';
+
+  @override
+  String get callHintLockedTitle =>
+      'Les indices ne sont pas disponibles en mode Étude';
 }

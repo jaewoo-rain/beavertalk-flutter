@@ -802,5 +802,6 @@
   "callMissedBody": "{name} sizga qoʻngʻiroq qildi",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Qoʻngʻiroqlarni qabul qilish uchun bildirishnoma ruxsati kerak.",
-  "callNotifPermissionRequired": "Sozlamalarda bildirishnomalarga ruxsat bering."
+  "callNotifPermissionRequired": "Sozlamalarda bildirishnomalarga ruxsat bering.",
+  "callHintLockedTitle": "O‘rganish rejimida maslahatlar mavjud emas"
 }

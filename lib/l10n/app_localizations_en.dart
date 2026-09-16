@@ -2665,4 +2665,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Please allow notifications in Settings.';
+
+  @override
+  String get callHintLockedTitle => 'Hints aren\'t available in Study';
 }

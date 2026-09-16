@@ -802,5 +802,6 @@
   "callMissedBody": "{name} ने आपको कॉल किया था",
   "callBeaverFallbackName": "बीवर",
   "callNotifPermissionRationale": "कॉल पाने के लिए सूचना की अनुमति ज़रूरी है।",
-  "callNotifPermissionRequired": "सेटिंग में सूचनाओं की अनुमति दें।"
+  "callNotifPermissionRequired": "सेटिंग में सूचनाओं की अनुमति दें।",
+  "callHintLockedTitle": "अभ्यास मोड में संकेत उपलब्ध नहीं हैं"
 }

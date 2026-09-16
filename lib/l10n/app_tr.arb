@@ -802,5 +802,6 @@
   "callMissedBody": "{name} seni aramaya çalıştı",
   "callBeaverFallbackName": "Beaver",
   "callNotifPermissionRationale": "Aramaları almak için bildirim izni gerekiyor.",
-  "callNotifPermissionRequired": "Ayarlardan bildirimlere izin verin."
+  "callNotifPermissionRequired": "Ayarlardan bildirimlere izin verin.",
+  "callHintLockedTitle": "Çalışma modunda ipucu kullanılamaz"
 }

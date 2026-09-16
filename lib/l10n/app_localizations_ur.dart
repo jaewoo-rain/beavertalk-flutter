@@ -2666,4 +2666,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => 'ترتیبات میں اطلاعات کی اجازت دیں۔';
+
+  @override
+  String get callHintLockedTitle => 'مشق موڈ میں اشارے دستیاب نہیں ہیں';
 }

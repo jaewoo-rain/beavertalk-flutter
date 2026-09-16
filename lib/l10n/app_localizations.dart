@@ -5013,6 +5013,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please allow notifications in Settings.'**
   String get callNotifPermissionRequired;
+
+  /// Call screen - speech bubble above the hint button, shown when the learner taps it during a Study (callModeStudy) call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Keep the course name identical to callModeStudy.
+  ///
+  /// In en, this message translates to:
+  /// **'Hints aren\'t available in Study'**
+  String get callHintLockedTitle;
 }
 
 class _AppLocalizationsDelegate

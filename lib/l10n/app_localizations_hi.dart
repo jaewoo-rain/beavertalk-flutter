@@ -2662,4 +2662,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get callNotifPermissionRequired => 'सेटिंग में सूचनाओं की अनुमति दें।';
+
+  @override
+  String get callHintLockedTitle => 'अभ्यास मोड में संकेत उपलब्ध नहीं हैं';
 }

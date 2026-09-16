@@ -2674,4 +2674,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'Разрешите уведомления в настройках.';
+
+  @override
+  String get callHintLockedTitle => 'В режиме «Изучение» подсказки недоступны';
 }

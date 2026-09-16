@@ -2654,4 +2654,7 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get callNotifPermissionRequired =>
       'සැකසුම් තුළ දැනුම්දීම්වලට අවසර දෙන්න.';
+
+  @override
+  String get callHintLockedTitle => 'ඉගෙනීම් ප්‍රකාරයේදී ඉඟි භාවිත කළ නොහැක';
 }
