@@ -106,22 +106,70 @@ void main() {
     });
   });
 
-  group('개발자 도구 «Max/Free 로 통화»', () {
-    testWidgets('Max — auto + plan_override max, force 없음', (tester) async {
-      final call = await _tapAndCollect(tester, const MyPageScreen(), 'Max 로 통화',
+  group('개발자 도구 «플랜 × 코스» 6칸', () {
+    // 사장님 지시(2026-09-19): 옛 «Max 로 통화 / Free 로 통화» 2개를 6개로 대체.
+    // 한 칸이 세 값을 싣는다 — plan_override · call_type(명시) · force_course(프리토킹만).
+    // ⛔ 여기 문안은 화면의 칸 이름 그대로다. 라벨을 바꾸면 이 시험이 먼저 빨간불을 낸다.
+    Future<CourseCallRequest> tap(WidgetTester tester, String label) async {
+      final call = await _tapAndCollect(tester, const MyPageScreen(), label,
           size: const Size(375, 2400));
-      final r = call.single.arguments as CourseCallRequest;
-      expect(r.course, CallCourse.auto);
+      expect(call, hasLength(1), reason: '한 번 눌렀으면 한 번만 간다');
+      return call.single.arguments as CourseCallRequest;
+    }
+
+    testWidgets('Max · 표현학습 — max + expression, force 없음', (tester) async {
+      final r = await tap(tester, 'Max · 표현학습');
       expect(r.planOverride, PlanOverride.max);
+      expect(r.course, CallCourse.expression);
+      expect(r.forceCourse, isFalse, reason: '표현학습은 원래 안 잠긴다');
+    });
+
+    testWidgets('Max · 프리토킹 — max + freetalk + force', (tester) async {
+      final r = await tap(tester, 'Max · 프리토킹');
+      expect(r.planOverride, PlanOverride.max);
+      expect(r.course, CallCourse.freetalk);
+      expect(r.forceCourse, isTrue, reason: '그 차시 표현학습이 안 끝나도 열려야 한다');
+    });
+
+    testWidgets('Pro · 표현학습 — pro + expression, force 없음', (tester) async {
+      final r = await tap(tester, 'Pro · 표현학습');
+      expect(r.planOverride, PlanOverride.pro);
+      expect(r.course, CallCourse.expression);
       expect(r.forceCourse, isFalse);
     });
 
-    testWidgets('Free — auto + plan_override free', (tester) async {
-      final call = await _tapAndCollect(tester, const MyPageScreen(), 'Free 로 통화',
-          size: const Size(375, 2400));
-      final r = call.single.arguments as CourseCallRequest;
-      expect(r.course, CallCourse.auto);
+    testWidgets('Pro · 프리토킹 — pro + freetalk + force', (tester) async {
+      final r = await tap(tester, 'Pro · 프리토킹');
+      expect(r.planOverride, PlanOverride.pro);
+      expect(r.course, CallCourse.freetalk);
+      expect(r.forceCourse, isTrue);
+    });
+
+    testWidgets('Free · 표현학습 — free + expression, force 없음', (tester) async {
+      final r = await tap(tester, 'Free · 표현학습');
       expect(r.planOverride, PlanOverride.free);
+      expect(r.course, CallCourse.expression);
+      expect(r.forceCourse, isFalse);
+    });
+
+    testWidgets('Free · 프리토킹 — free + freetalk + force', (tester) async {
+      final r = await tap(tester, 'Free · 프리토킹');
+      expect(r.planOverride, PlanOverride.free);
+      expect(r.course, CallCourse.freetalk);
+      expect(r.forceCourse, isTrue);
+    });
+
+    testWidgets('옛 두 버튼은 사라졌다', (tester) async {
+      final pushed = <RouteSettings>[];
+      tester.view.physicalSize = const Size(375, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(_host(const MyPageScreen(), pushed));
+      await tester.pump(const Duration(milliseconds: 32));
+      tester.takeException();
+
+      expect(find.text('Max 로 통화'), findsNothing);
+      expect(find.text('Free 로 통화'), findsNothing);
     });
 
     testWidgets('다른 버튼엔 plan 없음 — 일반 통화는 인자 자체가 없다', (tester) async {

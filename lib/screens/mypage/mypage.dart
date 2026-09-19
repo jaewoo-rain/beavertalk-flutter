@@ -69,6 +69,22 @@ abstract final class _Fallback {
 ///   되살린다.
 const bool _kLegacyDevTools = false;
 
+/// 플랜 × 코스 행렬의 **행 순서** — 사장님 표기대로 위에서 아래로 Max·Pro·Free.
+const List<PlanOverride> _devMatrixPlans = [
+  PlanOverride.max,
+  PlanOverride.pro,
+  PlanOverride.free,
+];
+
+/// 코스 이름 한 곳 — 진도 한 줄([_CurMeLine])과 행렬 칸이 같은 표를 본다.
+/// 두 벌로 두면 코스를 늘렸을 때 한쪽만 낡는다.
+String _courseLabel(CallCourse? c) => switch (c) {
+      CallCourse.expression => '표현학습',
+      CallCourse.freetalk => '프리토킹',
+      CallCourse.auto => '자동',
+      null => '(모름)',
+    };
+
 /// My page — Figma `screen/main_mypage` (Dark `3360:20181`, Light `3703:46474`).
 ///
 /// The redesign turned this screen into an **analysis dashboard**: three cards
@@ -238,34 +254,8 @@ class MyPageScreen extends ConsumerWidget {
                 '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
             route: Routes.callLoading,
           ),
-          // ── 플랜 강제(QA) — auto 코스 + start.plan_override ────────────────
-          // 서버 계약 ClientStart.plan_override Literal free|pro|max(expr-build 작업 중).
-          // admin 만 유효, user 는 무시. 배포 전엔 extra=ignore 로 조용히 버려진다.
-          // 2구간 재연결에도 같은 값을 다시 싣는다([PlanOverride] 참조).
-          _devRow(
-            context,
-            title: 'Max 로 통화',
-            description: '구독과 무관하게 이 통화만 Max(영상·3.1) 엔진으로 — 관리자 계정만. '
-                '코스는 자동(auto). '
-                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
-            route: Routes.callLoading,
-            arguments: const CourseCallRequest(
-              CallCourse.auto,
-              planOverride: PlanOverride.max,
-            ),
-          ),
-          _devRow(
-            context,
-            title: 'Free 로 통화',
-            description: '구독과 무관하게 이 통화만 Free(음성·2.5) 엔진으로 — 관리자 계정만. '
-                '코스는 자동(auto). '
-                '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
-            route: Routes.callLoading,
-            arguments: const CourseCallRequest(
-              CallCourse.auto,
-              planOverride: PlanOverride.free,
-            ),
-          ),
+          // ── 플랜 × 코스 (QA) — 6칸 ────────────────────────────────────
+          _devCallMatrix(context),
           // ⛔ 2026-09-12 사장님: 「코스 버튼 3개만」 — 위와 같은 이유로 화면에서만 내렸다.
           if (_kLegacyDevTools) ...[
             // ⭐ 격리 실험 스위치 — **캐스케이드에만** 걸린다(라이브는 제품 그대로 = 대조군).
@@ -476,6 +466,102 @@ class MyPageScreen extends ConsumerWidget {
       ),
     );
   }
+
+  /// 플랜 × 코스 6칸(QA) — «Max·표현학습» 부터 «Free·프리토킹» 까지.
+  ///
+  /// 사장님 지시(2026-09-19): 옛 «Max 로 통화 / Free 로 통화» 2개를 이 6개로 대체한다.
+  /// 두 축이 곱해지는 자리라 **행렬로 그린다** — 목록으로 늘어놓으면 6줄이 서로 비슷해
+  /// 무엇이 빠졌는지 눈으로 못 센다. 세로가 플랜, 가로가 코스다.
+  ///
+  /// 보내는 것(한 줄에 셋):
+  /// - `plan_override` — free|pro|max. **admin 만 유효**하고 엔진·조각 수만 바꾼다.
+  /// - `call_type` — `expression`|`freetalk` 을 **명시**한다(auto 아님 · 서버가 안 고른다).
+  /// - `force_course` — **프리토킹에만** true. 그 차시 표현학습이 안 끝났어도 열린다
+  ///   (`COURSE_LOCKED` 우회, 진도 무영향). 표현학습은 원래 안 잠기므로 안 보낸다.
+  ///
+  /// ⛔ 홈의 제품 진입점(auto)은 이 표와 **무관하다** — 거긴 서버가 코스를 정한다.
+  Widget _devCallMatrix(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('플랜 × 코스 통화',
+                style: AppType.body1.sb.copyWith(color: context.c.labelStrong)),
+            const SizedBox(height: AppSpacing.s4),
+            Text(
+              '구독과 무관하게 이 통화만 그 플랜 엔진으로 겁니다 — 관리자 계정만 먹습니다. '
+              'Max 는 영상·3.1, Pro·Free 는 음성·2.5. 프리토킹은 잠금을 우회합니다. '
+              '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
+              style: AppType.label1.r.copyWith(color: context.c.labelNormal),
+            ),
+            const SizedBox(height: AppSpacing.s12),
+            // 사장님 표기 순서대로 Max → Pro → Free(위에서 아래로 상위 플랜).
+            // ⛔ `PlanOverride.values` 를 그대로 쓰지 마라 — 그건 와이어 값의 순서다.
+            for (final plan in _devMatrixPlans) ...[
+              if (plan != _devMatrixPlans.first)
+                const SizedBox(height: AppSpacing.s8),
+              Row(
+                children: [
+                  Expanded(
+                    child: _devCallCell(context, plan, CallCourse.expression),
+                  ),
+                  const SizedBox(width: AppSpacing.s8),
+                  Expanded(
+                    child: _devCallCell(context, plan, CallCourse.freetalk),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      );
+
+  /// 행렬의 한 칸. 문안은 **시험이 탭하는 이름**이라 바꾸면 시험도 같이 고친다.
+  Widget _devCallCell(
+    BuildContext context,
+    PlanOverride plan,
+    CallCourse course,
+  ) {
+    final label = '${_planLabel(plan)} · ${_courseLabel(course)}';
+    return InkWell(
+      onTap: () => Navigator.pushNamed(
+        context,
+        Routes.callLoading,
+        arguments: CourseCallRequest(
+          course,
+          planOverride: plan,
+          // 프리토킹만 잠금 우회. 표현학습은 원래 안 잠긴다.
+          forceCourse: course == CallCourse.freetalk,
+        ),
+      ),
+      borderRadius: BorderRadius.circular(AppRadius.xs),
+      child: Container(
+        // Expanded 안이라 폭은 이미 정해졌다 — alignment 는 **글자만** 가운데로 둔다
+        // (Container(alignment:) 가 폭을 늘리는 함정은 폭 제약이 없을 때의 얘기다).
+        alignment: Alignment.center,
+        padding: const EdgeInsets.symmetric(
+          vertical: AppSpacing.s12,
+          horizontal: AppSpacing.s8,
+        ),
+        decoration: BoxDecoration(
+          color: context.c.backgroundElevatedNormal,
+          borderRadius: BorderRadius.circular(AppRadius.xs),
+        ),
+        // 배율이 커지면 두 줄로 흐른다 — 높이가 고정이 아니라 넘치지 않는다.
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: AppType.label1.r.copyWith(color: context.c.labelStrong),
+        ),
+      ),
+    );
+  }
+
+  static String _planLabel(PlanOverride plan) => switch (plan) {
+        PlanOverride.free => 'Free',
+        PlanOverride.pro => 'Pro',
+        PlanOverride.max => 'Max',
+      };
 
   Widget _devRow(
     BuildContext context, {
@@ -972,12 +1058,6 @@ class _CurMeLine extends ConsumerWidget {
     );
   }
 
-  static String _courseLabel(CallCourse? c) => switch (c) {
-        CallCourse.expression => '표현학습',
-        CallCourse.freetalk => '프리토킹',
-        CallCourse.auto => '자동',
-        null => '(모름)',
-      };
 }
 
 /// 「내 배운 기록 삭제」 — `POST /__dev/cur-reset`. 표현학습·프리토킹 진도(차시·항목·
