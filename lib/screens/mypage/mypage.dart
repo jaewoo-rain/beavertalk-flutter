@@ -13,6 +13,7 @@ import '../../features/normalcall/presentation/cascade_auto_talk.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/progress_bar.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/level_progress.dart';
@@ -111,8 +112,12 @@ class MyPageScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     // Accent (nationality) breakdown from GET /members/me/profile. Empty until
     // it loads or when the member has no classification yet.
-    final accentStats =
-        ref.watch(myAccentProvider).valueOrNull?.stats ?? const <AccentStat>[];
+    // ⚠ 로딩과 「데이터 없음」을 가른다. `valueOrNull` 은 **로딩 중에도 null** 이라
+    //   예전엔 응답이 오기 전 찰나에 「억양 데이터가 없어요」가 그대로 보였다.
+    //   있는 사람에게 없다고 말하면 기능이 고장 난 것으로 읽힌다.
+    final accentAsync = ref.watch(myAccentProvider);
+    final accentLoading = accentAsync.isLoading && !accentAsync.hasValue;
+    final accentStats = accentAsync.valueOrNull?.stats ?? const <AccentStat>[];
     // Watched, not read on tap: `callListProvider` is autoDispose, so a bare
     // `ref.read` inside the button handler would find it uninitialised and the
     // 발음 학습하기 CTA would always take the records fallback. Watching it here
@@ -150,7 +155,8 @@ class MyPageScreen extends ConsumerWidget {
               child: ListView(
                 padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s24),
                 children: [
-                  _accentCard(context, l10n, accentStats, avatar),
+                  _accentCard(context, l10n, accentStats, avatar,
+                      loading: accentLoading),
                   const SizedBox(height: AppSpacing.s24),
                   _levelCard(context, ref, l10n, level),
                   const SizedBox(height: AppSpacing.s24),
@@ -618,8 +624,9 @@ class MyPageScreen extends ConsumerWidget {
     BuildContext context,
     AppLocalizations l10n,
     List<AccentStat> stats,
-    ImageProvider avatar,
-  ) =>
+    ImageProvider avatar, {
+    bool loading = false,
+  }) =>
       _card(
         context,
         header: _cardHeader(
@@ -648,7 +655,17 @@ class MyPageScreen extends ConsumerWidget {
             child: AppIcons.share(color: context.c.labelNormal),
           ),
         ),
-        children: stats.isEmpty
+        children: loading
+            // 아직 모른다 — 「없다」가 아니라 «채워지는 중»을 보인다.
+            // 예전엔 로딩 중에도 빈 상태 문구가 그대로 떠서, 억양이 있는 회원에게도
+            // 「억양 데이터가 없어요」가 보였다(2026-09-21 실기기 확인).
+            ? const [
+                Center(child: Skeleton.circle(size: AppSpacing.s80)),
+                Center(child: Skeleton.bar(width: 120, height: 20)),
+                Skeleton.bar(height: 16),
+                Skeleton.bar(height: 16),
+              ]
+            : stats.isEmpty
             // `screen/main_mypage__null_all` (4849:8301): the header and its
             // share action stay, the body says why it is blank. The old shape
             // drew the avatar over a lone em dash, which reads as a value the
@@ -658,6 +675,18 @@ class MyPageScreen extends ConsumerWidget {
                   title: l10n.noAccentDataTitle,
                   body: l10n.noAccentDataBody,
                   scale: EmptyScale.card,
+                ),
+                // Figma E1 — 억양 분석 전에도 버튼은 **보이되 눌리지 않는다.**
+                // 숨기면 기능이 없는 줄 알고, 눌리게 두면 빈 목록으로 떨어진다.
+                const SizedBox(height: AppSpacing.s8),
+                const Button(
+                  // ⛔ secondaryFill 을 쓰지 마라 — 그 면색이 카드 자신의 색과 같아서
+                  //    다크에서 버튼이 통째로 사라진다(mypage_surface_contrast_test 가
+                  //    잡는 바로 그 결함). 카드 안 CTA 는 전부 secondaryElevated 다.
+                  type: BtnType.secondaryElevated,
+                  size: BtnSize.s60,
+                  text: '취약 발음 학습하기',
+                  disabled: true,
                 ),
               ]
             : [
@@ -688,6 +717,19 @@ class MyPageScreen extends ConsumerWidget {
               value: stats[i].percent.toDouble(),
               active: i == 0,
             ),
+          // 취약 발음 학습 진입(Figma 01). 공유 아이콘은 헤더에 **그대로 둔다** —
+          // 사용자 지시로 되살린 것이라 이 버튼이 그 자리를 뺏지 않는다.
+          //
+          // 억양 분석 전이면 누를 수 없다(Figma E1). 분석 결과가 없으면 국적별 목록이
+          // 통째로 비어서, 들어가 봐야 빈 화면만 보게 된다.
+          const SizedBox(height: AppSpacing.s8),
+          Button(
+            // 위와 같은 이유로 secondaryElevated. 카드 면색과 같은 버튼은 안 보인다.
+            type: BtnType.secondaryElevated,
+            size: BtnSize.s60,
+            text: '취약 발음 학습하기',
+            onPressed: () => Navigator.of(context).pushNamed(Routes.weakSounds),
+          ),
         ],
       );
 

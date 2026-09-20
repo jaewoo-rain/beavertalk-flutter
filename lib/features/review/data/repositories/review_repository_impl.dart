@@ -43,9 +43,9 @@ class ReviewRepositoryImpl implements ReviewRepository {
   }
 
   @override
-  Future<Uint8List?> speech(String text) async {
+  Future<Uint8List?> speech(String text, {String? engine}) async {
     try {
-      final bytes = await _remote.speechBytes(text);
+      final bytes = await _remote.speechBytes(text, engine: engine);
       return bytes.isEmpty ? null : bytes;
     } on DioException catch (e) {
       // 503 = 백엔드의 외부 TTS 가 안 될 때다("인터넷 오류니까 폴백해주세요").

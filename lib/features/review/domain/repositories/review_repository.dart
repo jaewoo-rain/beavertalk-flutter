@@ -32,5 +32,6 @@ abstract interface class ReviewRepository {
   /// Returns null when the server couldn't synthesize (503 — its upstream TTS
   /// is down; the caller falls back to a message). Throws [AppException] on
   /// other failures.
-  Future<Uint8List?> speech(String text);
+  /// [engine] 은 서버가 쓸 TTS 엔진(`'gemini-tts'` 등). 안 주면 서버 기본이다.
+  Future<Uint8List?> speech(String text, {String? engine});
 }

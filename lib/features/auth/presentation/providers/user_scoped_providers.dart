@@ -35,6 +35,7 @@ import '../../../bookmark/presentation/providers/bookmark_toggle_controller.dart
 import '../../../character/presentation/providers/character_providers.dart';
 import '../../../normalcall/presentation/normalcall_controller.dart';
 import '../../../review/presentation/review_providers.dart';
+import '../../../weak_sound/presentation/weak_sound_providers.dart';
 import '../../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../../../../core/i18n/locale_controller.dart';
 import '../../../alarm/presentation/providers/alarm_providers.dart';
@@ -80,6 +81,12 @@ final List<ProviderOrFamily> userScopedProviders = <ProviderOrFamily>[
   // A 가 방금 친 발음 과제 점수가 B 의 숙제 상세에 그려진다. 서버가 보관하지
   // 않는 값이라 여기서 안 지우면 되돌릴 방법이 없다.
   assignmentAttemptProvider,
+  // A 의 취약 발음 목록이 B 에게 보인다. 억양 국가·소리별 점수가 전부 회원 기준
+  // 계산값이라, 남기면 B 의 화면에 A 의 국적과 A 의 발음 점수가 그대로 뜬다.
+  weakSoundListProvider,
+  // 과 자체는 공용 콘텐츠지만 `score`·`learned` 는 **조회한 회원 기준**이다.
+  // family 라 키마다 캐시가 따로 남는다 — 안 지우면 B 가 A 의 점수를 본다.
+  soundLessonProvider,
 ];
 
 /// **일부러 안 지우는** 상태 — 지우면 오히려 깨지거나, 애초에 회원 스코프가 아니다.

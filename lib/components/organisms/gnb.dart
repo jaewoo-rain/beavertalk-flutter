@@ -483,6 +483,34 @@ class _GnbProgressTrack extends StatelessWidget {
 }
 
 /// Paints the Figma `arrow-left` glyph (`162:4156`) scaled into its 28×28 box.
+/// GNB 와 **같은 모양**의 뒤로가기 화살표.
+///
+/// GNB 밖에서도 같은 글리프를 써야 하는 화면이 있다(학습 4단계 헤더). 그때 아이콘을
+/// 새로 그리면 같은 뜻의 화살표가 두 벌이 되고, 한쪽만 고쳐진다. 그래서 GNB 가 쓰는
+/// 페인터를 그대로 노출한다 — 모양의 출처는 여전히 이 파일 하나다.
+class GnbBackArrow extends StatelessWidget {
+  /// Creates the shared back glyph.
+  const GnbBackArrow({super.key, this.size = Gnb._iconBox, this.color});
+
+  /// 그릴 정사각 크기(기본 = GNB 의 아이콘 박스).
+  final double size;
+
+  /// 글리프 색. 기본은 `Label/Strong`.
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+        width: size,
+        height: size,
+        child: Transform.flip(
+          flipX: Directionality.of(context) == TextDirection.rtl,
+          child: CustomPaint(
+            painter: _ArrowLeftPainter(color ?? context.c.labelStrong),
+          ),
+        ),
+      );
+}
+
 class _ArrowLeftPainter extends CustomPainter {
   const _ArrowLeftPainter(this.color);
 
