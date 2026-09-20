@@ -64,6 +64,24 @@ abstract final class ApiEndpoints {
   /// 마이페이지 발음 카드 — 최근 N세션 발음 4지표 평균(`?sessions=`).
   static const callsPronunciationSummary = '/calls/pronunciation-summary';
 
+  // ── Pronunciation · 취약 발음 학습 ──
+  /// 취약 발음 목록 — 국적별 5 + 내 취약 5 + 추천 1개.
+  ///
+  /// 🔴 `/calls` 아래가 **아니다.** 이 기능은 통화 1건에 매달리지 않고 회원의 누적 발음과
+  /// 국적 통계를 본다 — 그래서 서버가 `/pronunciation` 접두사에 뒀다.
+  static const weakSounds = '/pronunciation/weak-sounds';
+
+  /// 4단계 학습 콘텐츠 전량(이해·단어 4개·문장 1개·평가 1문장).
+  ///
+  /// ⚠️ `soundKey` 에 **한글 자모가 들어간다**(`coda_ㄹ`·`rule_연음`). 경로에 그대로
+  /// 이어 붙이면 플랫폼·프록시에 따라 조용히 깨지므로 반드시 퍼센트 인코딩한다.
+  static String weakSoundLesson(String soundKey) =>
+      '$weakSounds/${Uri.encodeComponent(soundKey)}/lesson';
+
+  /// 평가 단계 녹음 제출(multipart `audio`) → 서버 채점.
+  static String weakSoundAssess(String soundKey) =>
+      '$weakSounds/${Uri.encodeComponent(soundKey)}/assess';
+
   // ── Curriculum (2단계) ──
   /// 내 커리큘럼 위치 한 장 — 현재 차시·진도·`auto` 로 걸면 정해질 코스.
   static const curMe = '/cur/me';
