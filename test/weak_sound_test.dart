@@ -87,8 +87,17 @@ void main() {
       final short = repeatWindow(const Duration(milliseconds: 400));
       final long = repeatWindow(const Duration(seconds: 3));
       expect(short, const Duration(milliseconds: 1200)); // 하한
-      expect(long.inMilliseconds, 4050); // 3000 × 1.35
+      expect(long.inMilliseconds, 4300); // 3000 × 1.3 + 400
       expect(long > short, isTrue);
+    });
+
+    test('반응 시간은 더하고 발화 시간만 곱한다', () {
+      // 입을 떼기까지의 시간은 문장 길이와 무관하다. 곱셈에만 맡기면 짧은 단어가
+      // 유독 빠듯해진다 — 실측 「까치」 984ms 는 1.35배면 0.34초밖에 안 남았다.
+      final w = repeatWindow(const Duration(milliseconds: 984));
+      expect(w.inMilliseconds, 1679); // 984 × 1.3 + 400
+      // 곱셈만 썼다면 1,279ms 였다. 덧셈 항이 실제로 일하고 있는지 본다.
+      expect(w.inMilliseconds, greaterThan((984 * 1.3).round()));
     });
 
     test('길이를 모르면 하한을 쓴다 — 0 이 아니다', () {

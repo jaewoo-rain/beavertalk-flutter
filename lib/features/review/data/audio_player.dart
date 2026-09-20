@@ -33,12 +33,16 @@ class ReviewAudioPlayer {
   /// Plays mp3 bytes held in memory — `POST /tts/speech` answers with the audio
   /// itself rather than a URL, so there is nothing to hand [playUrl].
   ///
+  /// 재생된 음성의 **실제 길이**를 돌려준다(플러그인이 모르면 null). 자동 연습은 이
+  /// 값으로 재생 대기와 따라 말하기 구간을 정한다 — 글자 수 어림값은 「가」 같은 한 자와
+  /// 「값」 처럼 받침이 겹친 한 자를 같은 길이로 보아 어긋난다.
+  ///
   /// ⚠ [playBytes] is **not** interchangeable: it declares `pcm16WAV`, and mp3
   /// bytes under that codec play as noise or not at all.
-  Future<void> playMp3Bytes(Uint8List mp3Bytes) async {
+  Future<Duration?> playMp3Bytes(Uint8List mp3Bytes) async {
     final player = await _ensureOpen();
     await player.stopPlayer();
-    await player.startPlayer(fromDataBuffer: mp3Bytes, codec: Codec.mp3);
+    return player.startPlayer(fromDataBuffer: mp3Bytes, codec: Codec.mp3);
   }
 
   /// Plays native audio from [url]. Throws on failure (e.g. an unplayable

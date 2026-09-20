@@ -84,9 +84,8 @@ class AutoPracticeController extends ChangeNotifier {
     Duration? length;
     if (bytes != null) {
       try {
-        await _player.playMp3Bytes(bytes);
-        // 합성 음성 길이를 알 수 없으면(플러그인이 안 알려주면) 글자 수로 어림한다.
-        length = _estimate(text);
+        // 플레이어가 **실제 음성 길이**를 돌려준다. null 일 때만 글자 수로 어림한다.
+        length = await _player.playMp3Bytes(bytes);
       } catch (_) {
         _muted = true;
       }
@@ -126,13 +125,27 @@ class AutoPracticeController extends ChangeNotifier {
     return null;
   }
 
-  /// 한국어 합성 음성 길이 어림 — 글자당 약 180ms + 앞뒤 여유 400ms.
+  /// 플레이어가 길이를 안 알려줄 때만 쓰는 폴백 — 글자당 280ms + 앞뒤 여유 640ms.
   ///
-  /// 정확한 길이를 재는 API 가 없다. 어림값이지만 **고정 초보다는 낫다** — 긴 문장에
-  /// 짧은 틈을 주는 실수를 막는다.
+  /// **짧게 틀리면 말이 잘리고, 길게 틀리면 잠깐 조용할 뿐이다.** 그래서 일부러 넉넉한
+  /// 쪽으로 잡는다. 기기 실측(SM G950N, 2026-09-21, Gemini-TTS) 7건:
+  ///
+  /// | 글자(공백 제외) | 실제 | 옛 어림(180/자) |
+  /// |---|---|---|
+  /// | 꽃 1 | 672 | 580 |
+  /// | 꿀 1 | 912 | 580 |
+  /// | 까치 2 | 984 | 760 |
+  /// | 꿀을좋아해 5 | 1,440 | 1,300 |
+  /// | 까치가꽃꿀을좋아해 9 | 2,904 | 2,020 |
+  ///
+  /// 옛 상수는 **7건 전부** 실제보다 짧았다(실제의 0.64~0.90배) — 매 항목 음성이 끝나기
+  /// 전에 다음으로 넘어갔다. 최소제곱 직선은 `472 + 242n` 이지만 그 선도 7건 중 4건을 여전히
+  /// 짧게 잡는다. 그래서 회귀선이 아니라 **7건을 모두 덮는 값**을 쓴다.
+  ///
+  /// 그래도 어림은 어림이다 — 정상 경로는 `playMp3Bytes` 가 돌려주는 **실제 길이**다.
   static Duration _estimate(String text) {
     final n = text.replaceAll(' ', '').length;
-    return Duration(milliseconds: 400 + n * 180);
+    return Duration(milliseconds: 640 + n * 280);
   }
 
   void _after(Duration d, FutureOr<void> Function() run) {

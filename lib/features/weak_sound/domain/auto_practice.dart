@@ -69,16 +69,26 @@ class AutoPracticeState {
 /// ⛔ **고정 초를 쓰지 마라.** 「가방」과 「그 가방에 고기가 가득 있어요」에 같은 틈을 주면
 /// 짧은 쪽은 지루하고 긴 쪽은 말하는 중에 잘린다.
 ///
-/// 음성 길이의 [factor] 배에 [floor] 를 하한으로 둔다. 사람이 따라 말하는 속도는 듣기보다
-/// 느려서 1.0배로는 모자라고, 아주 짧은 단어는 하한이 없으면 깜빡이듯 지나간다.
+/// `음성 길이 × [factor] + [lead]`, 하한 [floor].
+///
+/// **[lead] 가 곱셈이 아니라 덧셈인 이유** — 소리가 끝나고 입을 떼기까지의 반응 시간은
+/// 문장이 길든 짧든 비슷하다. 곱셈에만 맡기면 짧은 단어가 유독 빠듯해진다. 실측
+/// (SM G950N, 2026-09-21, Gemini-TTS)에서 「까치」는 984ms 였고 1.35배면 1,328ms —
+/// 듣고 반응해서 따라 말하기엔 0.34초밖에 안 남는다.
+///
+/// [factor] 1.3 은 **학습자가 원어민보다 느리게 말한다**는 전제값이다. 음성 길이는 기기에서
+/// 실측했지만 「사람이 따라 말하는 데 걸리는 시간」은 재지 않았다 — 사용자가 써 보고
+/// 빠듯하거나 늘어지면 이 두 값으로 조정한다.
 Duration repeatWindow(
   Duration? nativeAudio, {
-  double factor = 1.35,
+  double factor = 1.3,
+  Duration lead = const Duration(milliseconds: 400),
   Duration floor = const Duration(milliseconds: 1200),
 }) {
   if (nativeAudio == null || nativeAudio == Duration.zero) return floor;
   final scaled = Duration(
-    microseconds: (nativeAudio.inMicroseconds * factor).round(),
+    microseconds: (nativeAudio.inMicroseconds * factor).round() +
+        lead.inMicroseconds,
   );
   return scaled < floor ? floor : scaled;
 }
