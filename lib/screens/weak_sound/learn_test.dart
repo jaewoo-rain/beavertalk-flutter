@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../components/atoms/button.dart';
+import '../../components/atoms/mic_analysis.dart';
 import '../../components/atoms/mic_button.dart';
+import '../../components/atoms/record_circle_button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/review/data/audio_recorder.dart';
 import '../../features/review/data/wav_writer.dart';
@@ -133,8 +135,8 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
     return LearnScaffold(
       soundKey: key,
       step: 4,
-      // 채점 중에는 나가기 확인을 띄우지 않는다 — 어차피 버튼이 잠겨 있다.
-      confirmExit: _phase != _Phase.scoring,
+      // 마이크를 화면 아래에 붙이기 위해 스크롤을 쓰지 않는다(learn_scaffold 참조).
+      scrollable: false,
       builder: (context, lesson) => _Body(
         lesson: lesson,
         phase: _phase,
@@ -211,14 +213,19 @@ class _Body extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: AppSpacing.s32),
+        // 마이크는 **화면 아래**다. 가운데 있으면 아래 절반이 비고, 한 손으로 쥐었을 때
+        // 엄지가 닿지 않는다(실기기 확인 2026-09-21).
+        const Spacer(),
+        // 마이크 3상태는 **기존 발음 학습(`learning_intro.dart`)과 같은 부품**을 쓴다.
+        // 녹음=MicButton · 채점=MicAnalysis · 실패=RecordCircleButton(redo).
+        // 세 상태가 같은 96 앵커를 차지해 전환할 때 레이아웃이 튀지 않는다.
         if (phase == _Phase.scoring)
           Column(
             children: [
-              const CircularProgressIndicator(),
-              const SizedBox(height: AppSpacing.s16),
               Text('채점하고 있어요',
                   style: AppType.body2.r.copyWith(color: c.labelNormal)),
+              const SizedBox(height: AppSpacing.s16),
+              const MicAnalysis(),
             ],
           )
         else if (phase == _Phase.failed)
@@ -230,11 +237,10 @@ class _Body extends StatelessWidget {
                 style: AppType.body2.r.copyWith(color: c.statusNegative),
               ),
               const SizedBox(height: AppSpacing.s16),
-              Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s48,
-                text: '다시 시도',
-                onPressed: onRetry,
+              RecordCircleButton(
+                icon: AppIcons.redo,
+                semanticLabel: '다시 시도',
+                onTap: onRetry,
               ),
             ],
           )
@@ -245,7 +251,7 @@ class _Body extends StatelessWidget {
                 stream: level,
                 builder: (context, snap) => MicButton(
                   recording: phase == _Phase.recording,
-                  level: snap.data,
+                  level: phase == _Phase.recording ? snap.data : null,
                   onTap: onMic,
                 ),
               ),
@@ -256,6 +262,7 @@ class _Body extends StatelessWidget {
               ),
             ],
           ),
+        const SizedBox(height: AppSpacing.s24),
       ],
     );
   }

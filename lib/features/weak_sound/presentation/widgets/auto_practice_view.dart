@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../components/atoms/button.dart';
-import '../../../../components/icons/app_icons.dart';
 import '../../../review/presentation/review_providers.dart';
 import '../../../../theme/app_color_tokens.dart';
 import '../../../../theme/app_radius.dart';
@@ -23,6 +22,7 @@ class AutoPracticeView extends ConsumerStatefulWidget {
     required this.pronunciations,
     required this.captions,
     required this.onDone,
+    this.header,
     this.doneLabel = '다음',
   });
 
@@ -34,6 +34,14 @@ class AutoPracticeView extends ConsumerStatefulWidget {
 
   /// 항목별 보조 설명(뜻·번역). 없으면 빈 리스트.
   final List<String?> captions;
+
+  /// 항목 위에 **항상** 띄울 머리말. 문장 단계가 「이번 문장」 전문과 번역을 여기 둔다.
+  ///
+  /// 조각에는 조각별 번역이 없다(소스에 문장 하나의 번역뿐). 조각마다 문장 전체 번역을
+  /// 붙이면 「주스를 조금 줘」에 «저녁에» 가 든 번역이 달려 **틀린 정보**가 되고, 마지막
+  /// 조각에만 붙이면 번역이 있다 없다 한다(2026-09-21 사용자 지적). 그래서 번역은 조각이
+  /// 아니라 **문장에 붙인다** — 위에 고정해 두고 아래에서 조각을 따라 한다.
+  final Widget? header;
 
   /// 전부 끝났을 때 누를 버튼의 동작.
   final VoidCallback onDone;
@@ -86,9 +94,17 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
     final s = _controller.state;
     final i = s.index;
     final done = s.phase == AutoPracticePhase.done;
+    // 주 동작은 **화면 아래**에 붙인다. 가운데 떠 있으면 다음으로 갈 수 있는지
+    // 한눈에 안 보이고, 아래 절반이 통째로 빈다(실기기 확인 2026-09-21).
+    // 그래서 이 위젯은 남은 높이를 다 받고 Spacer 로 아래를 민다
+    // (LearnScaffold 는 scrollable: false 로 부른다).
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (widget.header != null) ...[
+          widget.header!,
+          const SizedBox(height: AppSpacing.s16),
+        ],
         _Counter(state: s),
         const SizedBox(height: AppSpacing.s20),
         _Card(
@@ -96,25 +112,29 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
           pronunciation: _at(widget.pronunciations, i),
           caption: _at(widget.captions, i),
           phase: s.phase,
-          onReplay: _controller.replay,
         ),
         const SizedBox(height: AppSpacing.s20),
         _Hint(phase: s.phase, muted: _controller.muted),
-        if (done) ...[
-          const SizedBox(height: AppSpacing.s24),
-          Button(
-            type: BtnType.primaryFill,
-            size: BtnSize.s60,
-            text: widget.doneLabel,
-            onPressed: widget.onDone,
-          ),
-        ],
-        const SizedBox(height: AppSpacing.s12),
+        const Spacer(),
         // 「점수 없음」을 화면에 적어 둔다. 사용자가 점수를 기다리며 서 있지 않게.
         Text(
           '이 단계는 점수가 없어요. 편하게 따라 말해 보세요.',
           textAlign: TextAlign.center,
           style: AppType.label2.r.copyWith(color: c.labelAssistive),
+        ),
+        const SizedBox(height: AppSpacing.s12),
+        // 끝나기 전에도 자리를 지킨다 — 버튼이 불쑥 생기면 그 순간 레이아웃이 튄다.
+        Opacity(
+          opacity: done ? 1 : 0,
+          child: IgnorePointer(
+            ignoring: !done,
+            child: Button(
+              type: BtnType.primaryFill,
+              size: BtnSize.s60,
+              text: widget.doneLabel,
+              onPressed: widget.onDone,
+            ),
+          ),
         ),
       ],
     );
@@ -156,14 +176,12 @@ class _Card extends StatelessWidget {
     required this.pronunciation,
     required this.caption,
     required this.phase,
-    required this.onReplay,
   });
 
   final String text;
   final String? pronunciation;
   final String? caption;
   final AutoPracticePhase phase;
-  final VoidCallback onReplay;
 
   @override
   Widget build(BuildContext context) {
@@ -206,30 +224,6 @@ class _Card extends StatelessWidget {
               style: AppType.body2.r.copyWith(color: c.labelNormal),
             ),
           ],
-          const SizedBox(height: AppSpacing.s20),
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onReplay,
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.s16,
-                vertical: AppSpacing.s8,
-              ),
-              decoration: BoxDecoration(
-                color: c.backgroundElevatedAlternative,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  AppIcons.volume(size: 20, color: c.labelStrong),
-                  const SizedBox(width: AppSpacing.s4),
-                  Text('다시 듣기',
-                      style: AppType.label2.m.copyWith(color: c.labelStrong)),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
     );

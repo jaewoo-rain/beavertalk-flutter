@@ -23,6 +23,8 @@ class LearnWordsScreen extends ConsumerWidget {
     return LearnScaffold(
       soundKey: key,
       step: 2,
+      // 주 동작을 화면 아래에 붙이기 위해 스크롤을 쓰지 않는다(learn_scaffold 참조).
+      scrollable: false,
       builder: (context, lesson) => AutoPracticeView(
         items: [for (final w in lesson.words) w.text],
         pronunciations: [for (final w in lesson.words) w.pronunciation],

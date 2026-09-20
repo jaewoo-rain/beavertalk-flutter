@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
-import '../../components/icons/app_icons.dart';
+import '../../components/organisms/gnb.dart' show GnbBackArrow;
 import '../../features/pronunciation/domain/phoneme_diagram.dart';
 import '../../features/weak_sound/domain/entities/sound_lesson.dart';
 import '../../features/weak_sound/domain/entities/sound_result.dart';
@@ -37,98 +37,111 @@ class LearnResultScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final lesson = ref.watch(soundLessonProvider(soundKey)).valueOrNull;
-    return Scaffold(
-      backgroundColor: c.backgroundSurfaceAlternative,
-      body: SafeArea(
-        child: Column(
-          children: [
-            SizedBox(
-              height: 56,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      behavior: HitTestBehavior.opaque,
-                      onTap: () => _toList(context),
-                      child: AppIcons.close(size: 28, color: c.labelStrong),
-                    ),
-                  ],
+    // 뒤로가기는 **목록으로** 간다 — 화살표든 시스템 back 이든 같다.
+    //
+    // 막지 않으면 system back 이 한 칸만 pop 해서 방금 끝낸 문장 단계로 되돌아간다.
+    // 평가를 마친 사람이 가고 싶은 곳은 갱신된 점수가 있는 목록이다.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _toList(context);
+      },
+      child: Scaffold(
+        backgroundColor: c.backgroundSurfaceAlternative,
+        body: SafeArea(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 56,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.s20,
+                  ),
+                  child: Row(
+                    children: [
+                      GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _toList(context),
+                        child: GnbBackArrow(size: 28, color: c.labelStrong),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
-                  AppSpacing.s16,
-                  AppSpacing.s20,
-                  AppSpacing.s24,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Text(
-                      result.label,
-                      textAlign: TextAlign.center,
-                      style: AppType.label1.b
-                          .copyWith(color: c.primaryForeground),
-                    ),
-                    const SizedBox(height: AppSpacing.s4),
-                    Text(
-                      '학습을 마쳤어요',
-                      textAlign: TextAlign.center,
-                      style: AppType.title2.b.copyWith(color: c.labelStrong),
-                    ),
-                    const SizedBox(height: AppSpacing.s24),
-                    _ScoreLine(result: result),
-                    const SizedBox(height: AppSpacing.s16),
-                    _ProgressBar(result: result),
-                    const SizedBox(height: AppSpacing.s28),
-                    if (lesson != null) _SoundCard(lesson: lesson),
-                    const SizedBox(height: AppSpacing.s24),
-                    _Summary(lesson: lesson, result: result),
-                  ],
-                ),
-              ),
-            ),
-            SafeArea(
-              top: false,
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s20,
-                  AppSpacing.s8,
-                  AppSpacing.s20,
-                  AppSpacing.s8,
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Button(
-                        type: BtnType.secondaryFill,
-                        size: BtnSize.s60,
-                        text: '다시 평가하기',
-                        onPressed: () => Navigator.of(context)
-                            .pushReplacementNamed(
-                          Routes.weakSoundTest,
-                          arguments: soundKey,
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s20,
+                    AppSpacing.s16,
+                    AppSpacing.s20,
+                    AppSpacing.s24,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        result.label,
+                        textAlign: TextAlign.center,
+                        style: AppType.label1.b.copyWith(
+                          color: c.primaryForeground,
                         ),
                       ),
-                    ),
-                    const SizedBox(width: AppSpacing.s8),
-                    Expanded(
-                      child: Button(
-                        type: BtnType.primaryFill,
-                        size: BtnSize.s60,
-                        text: '목록으로',
-                        onPressed: () => _toList(context),
+                      const SizedBox(height: AppSpacing.s4),
+                      Text(
+                        '학습을 마쳤어요',
+                        textAlign: TextAlign.center,
+                        style: AppType.title2.b.copyWith(color: c.labelStrong),
                       ),
-                    ),
-                  ],
+                      const SizedBox(height: AppSpacing.s24),
+                      _ScoreLine(result: result),
+                      const SizedBox(height: AppSpacing.s16),
+                      _ProgressBar(result: result),
+                      const SizedBox(height: AppSpacing.s28),
+                      if (lesson != null) _SoundCard(lesson: lesson),
+                      const SizedBox(height: AppSpacing.s24),
+                      _Summary(lesson: lesson, result: result),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+              SafeArea(
+                top: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s20,
+                    AppSpacing.s8,
+                    AppSpacing.s20,
+                    AppSpacing.s8,
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Button(
+                          type: BtnType.secondaryFill,
+                          size: BtnSize.s60,
+                          text: '다시 평가하기',
+                          onPressed: () =>
+                              Navigator.of(context).pushReplacementNamed(
+                                Routes.weakSoundTest,
+                                arguments: soundKey,
+                              ),
+                        ),
+                      ),
+                      const SizedBox(width: AppSpacing.s8),
+                      Expanded(
+                        child: Button(
+                          type: BtnType.primaryFill,
+                          size: BtnSize.s60,
+                          text: '목록으로',
+                          onPressed: () => _toList(context),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -138,8 +151,9 @@ class LearnResultScreen extends ConsumerWidget {
   ///
   /// 학습 4단계가 스택에 쌓여 있어 `pop` 한 번으로는 평가 화면으로 떨어진다. 방금 끝낸
   /// 단계로 되돌아가는 것은 아무도 원하지 않는다.
-  void _toList(BuildContext context) => Navigator.of(context)
-      .popUntil((r) => r.settings.name == Routes.weakSounds || r.isFirst);
+  void _toList(BuildContext context) => Navigator.of(
+    context,
+  ).popUntil((r) => r.settings.name == Routes.weakSounds || r.isFirst);
 }
 
 /// 「84 점 +22」.
@@ -157,8 +171,10 @@ class _ScoreLine extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text('${result.after}',
-            style: AppType.display1.b.copyWith(color: c.primaryForeground)),
+        Text(
+          '${result.after}',
+          style: AppType.display1.b.copyWith(color: c.primaryForeground),
+        ),
         const SizedBox(width: AppSpacing.s4),
         Text('점', style: AppType.heading2.b.copyWith(color: c.labelStrong)),
         if (delta != null && delta != 0) ...[
@@ -235,7 +251,10 @@ class _ProgressBar extends StatelessWidget {
                   ),
                   // 학습 전 눈금. 첫 측정(E8)이면 그릴 것이 없다.
                   if (before != null)
-                    _Tick(left: w * (before.clamp(0, 100) / 100), color: c.labelStrong),
+                    _Tick(
+                      left: w * (before.clamp(0, 100) / 100),
+                      color: c.labelStrong,
+                    ),
                   _Tick(
                     left: w * (LearnResultScreen.goal / 100),
                     color: c.labelAssistive,
@@ -254,8 +273,10 @@ class _ProgressBar extends StatelessWidget {
               before == null ? '첫 측정이에요' : '학습 전 $before점',
               style: AppType.label2.m.copyWith(color: c.labelNormal),
             ),
-            Text('목표 ${LearnResultScreen.goal}점',
-                style: AppType.label2.m.copyWith(color: c.labelNormal)),
+            Text(
+              '목표 ${LearnResultScreen.goal}점',
+              style: AppType.label2.m.copyWith(color: c.labelNormal),
+            ),
           ],
         ),
       ],
@@ -271,17 +292,17 @@ class _Tick extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Positioned(
-        top: 0,
-        left: left - 1,
-        child: Container(
-          width: 2,
-          height: 16,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(1),
-          ),
-        ),
-      );
+    top: 0,
+    left: left - 1,
+    child: Container(
+      width: 2,
+      height: 16,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(1),
+      ),
+    ),
+  );
 }
 
 /// 조음카드 — 방금 배운 소리를 한 번 더 붙잡아 둔다.
@@ -296,8 +317,9 @@ class _SoundCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.c;
     final target = lesson.jamoTarget;
-    final diagram =
-        target == null ? null : diagramForJamo(target.jamo, isCoda: target.isCoda);
+    final diagram = target == null
+        ? null
+        : diagramForJamo(target.jamo, isCoda: target.isCoda);
     if (diagram == null) return const SizedBox.shrink();
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s16),
@@ -318,8 +340,10 @@ class _SoundCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('${lesson.label} 소리',
-                    style: AppType.body1.b.copyWith(color: c.labelStrong)),
+                Text(
+                  '${lesson.label} 소리',
+                  style: AppType.body1.b.copyWith(color: c.labelStrong),
+                ),
                 const SizedBox(height: AppSpacing.s4),
                 Text(
                   '${lesson.cardDesc}. 통화에서 다시 만나면 이 모양을 떠올리세요.',
@@ -370,20 +394,22 @@ class _Row extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(label,
-                style: AppType.body2.r.copyWith(color: c.labelNormal)),
+            child: Text(
+              label,
+              style: AppType.body2.r.copyWith(color: c.labelNormal),
+            ),
           ),
           if (value != null)
-            Text(value!,
-                style: AppType.body1.b.copyWith(color: c.labelStrong))
+            Text(value!, style: AppType.body1.b.copyWith(color: c.labelStrong))
           else if (done)
             Row(
               children: [
                 Icon(Icons.check, size: 16, color: c.primaryForeground),
                 const SizedBox(width: AppSpacing.s4),
-                Text('완료',
-                    style:
-                        AppType.label2.b.copyWith(color: c.primaryForeground)),
+                Text(
+                  '완료',
+                  style: AppType.label2.b.copyWith(color: c.primaryForeground),
+                ),
               ],
             ),
         ],

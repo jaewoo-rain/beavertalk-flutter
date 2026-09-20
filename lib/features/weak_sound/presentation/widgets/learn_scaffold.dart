@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../components/atoms/button.dart';
 import '../../../../components/molecules/empty_state.dart';
 import '../../../../components/organisms/dialog_basic.dart';
 import '../../../../theme/app_color_tokens.dart';
@@ -24,7 +25,8 @@ class LearnScaffold extends ConsumerWidget {
     required this.step,
     required this.builder,
     this.footer,
-    this.confirmExit = true,
+    this.confirmExit,
+    this.scrollable = true,
   });
 
   final String soundKey;
@@ -38,15 +40,28 @@ class LearnScaffold extends ConsumerWidget {
   /// 아래 고정 버튼. null 이면 푸터를 두지 않는다(자동진행 화면).
   final Widget Function(BuildContext context, SoundLesson lesson)? footer;
 
-  /// 나가기 확인 다이얼로그를 띄울지. 결과 화면처럼 잃을 것이 없으면 false.
-  final bool confirmExit;
+  /// 나가기 확인 다이얼로그를 띄울지. 안 주면 **1단계에서만** 띄운다.
+  ///
+  /// 뒤로가기의 뜻이 단계마다 다르다 — 1단계에서 뒤로 가면 **학습을 떠나** 목록으로
+  /// 돌아가지만, 2~4단계에서는 **앞 단계로** 갈 뿐이라 잃는 것이 없다. 안 잃는 곳에서
+  /// 「저장되지 않아요」를 묻는 것은 겁만 주는 짓이다(2026-09-21 사용자 지적).
+  final bool? confirmExit;
+
+  /// 본문을 스크롤로 감쌀지.
+  ///
+  /// ⛔ 자동 연습·평가 화면은 **false** 다. 그 화면들은 주 동작(다음 버튼·마이크)을
+  ///    화면 아래에 붙여야 하는데, 스크롤로 감싸면 내용 높이만큼만 차지해 동작이
+  ///    화면 한가운데 떠 버린다(실기기 확인 2026-09-21). false 면 본문이 남은 높이를
+  ///    그대로 받아 `Spacer` 로 아래에 붙일 수 있다.
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final async = ref.watch(soundLessonProvider(soundKey));
+    final confirm = confirmExit ?? (step == 1);
     return PopScope(
-      canPop: !confirmExit,
+      canPop: !confirm,
       onPopInvokedWithResult: (didPop, _) async {
         if (didPop) return;
         if (await _confirmLeave(context)) {
@@ -62,8 +77,8 @@ class LearnScaffold extends ConsumerWidget {
               LearnHeader(
                 title: async.valueOrNull?.label ?? '',
                 step: step,
-                onClose: () async {
-                  if (!confirmExit || await _confirmLeave(context)) {
+                onBack: () async {
+                  if (!confirm || await _confirmLeave(context)) {
                     if (context.mounted) Navigator.of(context).pop();
                   }
                 },
@@ -84,15 +99,37 @@ class LearnScaffold extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  data: (lesson) => SingleChildScrollView(
-                    padding: const EdgeInsets.fromLTRB(
+                  data: (lesson) {
+                    const pad = EdgeInsets.fromLTRB(
                       AppSpacing.s20,
                       AppSpacing.s24,
                       AppSpacing.s20,
                       AppSpacing.s24,
-                    ),
-                    child: builder(context, lesson),
-                  ),
+                    );
+                    final body = builder(context, lesson);
+                    if (scrollable) {
+                      return SingleChildScrollView(padding: pad, child: body);
+                    }
+                    // 높이를 꽉 채우되 **넘치면 스크롤한다.**
+                    //
+                    // 그냥 Padding 으로 두면 Spacer 가 남은 높이를 먹어 아래 고정은
+                    // 되지만, 긴 평가 문장이나 작은 화면에서 내용이 넘치는 순간
+                    // 노란 줄무늬(overflow)가 뜬다. minHeight + IntrinsicHeight 면
+                    // 평소엔 Spacer 가 살아 있고, 넘칠 때만 스크롤로 내려앉는다.
+                    return LayoutBuilder(
+                      builder: (context, box) => SingleChildScrollView(
+                        padding: pad,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minHeight: box.maxHeight -
+                                pad.top -
+                                pad.bottom,
+                          ),
+                          child: IntrinsicHeight(child: body),
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ),
               if (footer != null && async.valueOrNull != null)
@@ -105,7 +142,12 @@ class LearnScaffold extends ConsumerWidget {
                       AppSpacing.s20,
                       AppSpacing.s8,
                     ),
-                    child: footer!(context, async.value!),
+                    // 전폭이다. Padding 은 자식을 늘려 주지 않아서, 감싸지 않으면
+                    // 버튼이 글자 폭(Hug)으로 쪼그라든다(실기기 확인 2026-09-21).
+                    child: SizedBox(
+                      width: double.infinity,
+                      child: footer!(context, async.value!),
+                    ),
                   ),
                 ),
             ],
@@ -116,10 +158,12 @@ class LearnScaffold extends ConsumerWidget {
   }
 }
 
-/// 나가기 확인 — Figma E3.
+/// 나가기 확인 — Figma E3 (`6093:14169`).
 ///
-/// 「계속하기」를 주 버튼에 둔다. 실수로 닫는 쪽을 막는 것이 이 다이얼로그의 목적이고,
-/// 주 버튼은 눈이 먼저 가는 자리이기 때문이다.
+/// 버튼 순서는 정본을 따른다 — **나가기 왼쪽 · 계속하기 오른쪽**. `DialogBasic` 은
+/// `[primary, secondary]` 를 왼→오로 깔기 때문에 primary 슬롯에 「나가기」가 들어간다
+/// (슬롯 이름이 곧 강조는 아니다. 색은 `type` 이 정한다).
+///
 /// 스크림을 눌러 닫으면 `null` 이 오는데, 그때는 **나가지 않는다** — 의사를 밝힌 적이
 /// 없는 동작을 나가기로 해석하지 않는다.
 Future<bool> _confirmLeave(BuildContext context) async {
@@ -128,12 +172,14 @@ Future<bool> _confirmLeave(BuildContext context) async {
     title: '학습을 그만둘까요?',
     description: '지금 나가면 이번 연습은 저장되지 않아요.',
     primary: DialogAction(
-      label: '계속하기',
-      onPressed: () => Navigator.of(context).pop(false),
+      label: '나가기',
+      type: BtnType.secondaryFill,
+      onPressed: () => Navigator.of(context).pop(true),
     ),
     secondary: DialogAction(
-      label: '나가기',
-      onPressed: () => Navigator.of(context).pop(true),
+      label: '계속하기',
+      type: BtnType.primaryFill,
+      onPressed: () => Navigator.of(context).pop(false),
     ),
   );
   return result ?? false;

@@ -16,6 +16,12 @@ import '../domain/auto_practice.dart';
 /// 음성은 `POST /tts/speech` 로 합성해 [SpeechCache] 에 담는다. 같은 단어를 다시 들을 때
 /// 합성 요금을 또 내지 않기 위해서다(백엔드 요청 2026-09-04).
 ///
+/// ⭐ 엔진은 **구 Gemini-TTS** 다(2026-09-21 사장님 지시). 앱의 다른 TTS 경로(통화 힌트·
+///    표준 발음)는 Chirp3-HD 그대로다 — 여기서만 엔진을 지정한다.
+///
+/// ⛔ 「다시 듣기」 버튼은 없다(2026-09-21). 자동 진행이라 누를 틈이 생기기 전에 다음
+///    항목으로 넘어가고, 눌러도 되감을 지점이 이미 지나간다 — 있는 척만 하는 버튼이었다.
+///
 /// ⚠️ **화면이 사라지면 타이머와 재생을 둘 다 끊어야 한다.** 하나만 끊으면 돌아왔을 때
 /// 소리만 나거나 진행만 뛴다. [pause] 가 둘을 함께 끊는다.
 class AutoPracticeController extends ChangeNotifier {
@@ -33,6 +39,9 @@ class AutoPracticeController extends ChangeNotifier {
   final SpeechCache _cache;
   final AutoPracticeMachine _machine;
   final _player = ReviewAudioPlayer();
+
+  /// 취약 발음 학습이 쓰는 TTS 엔진. 서버 `CASCADE_TTS_ENGINE` 과 같은 문자열이다.
+  static const _engine = 'gemini-tts';
 
   Timer? _timer;
   bool _disposed = false;
@@ -65,14 +74,6 @@ class AutoPracticeController extends ChangeNotifier {
     if (state.phase != AutoPracticePhase.idle) return;
     _apply(_machine.resume());
     if (state.phase == AutoPracticePhase.playing) await _playCurrent();
-  }
-
-  /// 현재 항목 음성을 다시 듣는다(사용자가 스피커를 눌렀을 때).
-  ///
-  /// 진행을 **앞으로 밀지 않는다** — 다시 듣기는 되감기지 진도가 아니다.
-  Future<void> replay() async {
-    final bytes = await _bytesFor(currentItem);
-    if (bytes != null) await _player.playMp3Bytes(bytes);
   }
 
   Future<void> _playCurrent() async {
@@ -108,12 +109,15 @@ class AutoPracticeController extends ChangeNotifier {
 
   Future<Uint8List?> _bytesFor(String text) async {
     if (text.isEmpty) return null;
-    final cached = _cache.get(text);
+    // ⚠ 캐시 키에 엔진을 넣는다. 같은 문장이라도 엔진이 다르면 다른 소리라,
+    //   빼면 통화 힌트가 Chirp3 로 채운 캐시가 여기로 그대로 나온다.
+    final key = '$_engine|$text';
+    final cached = _cache.get(key);
     if (cached != null) return cached;
     try {
-      final bytes = await _repo.speech(text);
+      final bytes = await _repo.speech(text, engine: _engine);
       if (bytes != null && bytes.isNotEmpty) {
-        _cache.put(text, bytes);
+        _cache.put(key, bytes);
         return bytes;
       }
     } catch (_) {

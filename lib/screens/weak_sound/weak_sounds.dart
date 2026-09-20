@@ -35,7 +35,13 @@ class WeakSoundsScreen extends ConsumerWidget {
         bottom: false,
         child: Column(
           children: [
-            const Gnb.sub(title: '취약 발음'),
+            // ⛔ `Gnb.sub` 를 쓰지 마라 — 그 변형은 **뒤로가기 화살표를 그리지 않는다**
+            //    (gnb.dart `_buildSub`: 가운데 제목 + 선택적 상태 줄뿐). 마이페이지에서
+            //    들어온 화면이라 돌아갈 길이 시스템 back 하나만 남는다.
+            Gnb.main(
+              title: '취약 발음',
+              onBack: () => Navigator.of(context).maybePop(),
+            ),
             Expanded(
               child: async.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
@@ -95,8 +101,10 @@ class _Body extends ConsumerWidget {
                 : '${list.national.country} 화자가 자주 틀리는 소리예요',
             items: list.national.items,
             recommended: recommended,
-            emptyTitle: '아직 통계가 없어요',
+            emptyTitle: '아직 데이터가 없어요',
             emptyBody: '통화를 더 하면 억양을 분석해 알려드려요.',
+            emptyCtaText: '통화하러 가기',
+            onEmptyCta: () => _toHome(context),
           ),
           const SizedBox(height: AppSpacing.s28),
           _Section(
@@ -104,9 +112,11 @@ class _Body extends ConsumerWidget {
             subtitle: '최근 통화에서 정확도가 낮은 소리예요',
             items: list.mine,
             recommended: recommended,
-            // Figma E2 — 표본 부족. 「없다」가 아니라 「아직 모은 게 없다」로 쓴다.
-            emptyTitle: '아직 모은 발음이 부족해요',
+            // Figma E2 정본 문구. CTA 까지 있어야 「그래서 뭘 하라는 건데」가 풀린다.
+            emptyTitle: '아직 데이터가 없어요',
             emptyBody: '통화하고 복습하면 내 취약 발음이 쌓여요.',
+            emptyCtaText: '통화하러 가기',
+            onEmptyCta: () => _toHome(context),
           ),
         ],
       ),
@@ -121,6 +131,13 @@ class _Body extends ConsumerWidget {
     return '';
   }
 }
+
+/// 빈 상태 CTA — 통화를 시작할 수 있는 홈으로 되돌린다.
+///
+/// 통화 화면으로 직접 밀지 않는다. 통화 시작은 플랜·코스·권한을 거치는 흐름이라
+/// 중간에 끼어들면 그 조건을 건너뛴다.
+void _toHome(BuildContext context) =>
+    Navigator.of(context).popUntil((r) => r.isFirst);
 
 /// 억양 요약 — 국기 + 「<국가> 억양」.
 ///
@@ -200,6 +217,8 @@ class _Section extends StatelessWidget {
     required this.emptyTitle,
     required this.emptyBody,
     this.recommended,
+    this.emptyCtaText,
+    this.onEmptyCta,
   });
 
   final String title;
@@ -208,6 +227,10 @@ class _Section extends StatelessWidget {
   final String? recommended;
   final String emptyTitle;
   final String emptyBody;
+
+  /// 빈 상태 카드의 CTA. 없으면 안내문만 그린다(Figma `Empty/Card` type=no-cta).
+  final String? emptyCtaText;
+  final VoidCallback? onEmptyCta;
 
   @override
   Widget build(BuildContext context) {
@@ -220,10 +243,14 @@ class _Section extends StatelessWidget {
         Text(subtitle, style: AppType.label2.r.copyWith(color: c.labelNormal)),
         const SizedBox(height: AppSpacing.s12),
         if (items.isEmpty)
-          EmptyBlock(
+          // ⛔ `EmptyBlock` 을 쓰지 마라 — 그건 **면이 없는** 블록이라(정의부 주석)
+          //    카드 목록 사이에 끼면 글자만 허공에 떠 보인다(2026-09-21 사용자 지적).
+          //    Figma E2 정본도 `Empty/Card` 다.
+          EmptyCard(
             title: emptyTitle,
             body: emptyBody,
-            scale: EmptyScale.card,
+            ctaText: emptyCtaText,
+            onCta: onEmptyCta,
           )
         else
           for (var i = 0; i < items.length; i++) ...[

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../components/icons/app_icons.dart';
+import '../../../../components/organisms/gnb.dart' show GnbBackArrow;
 import '../../../../theme/app_color_tokens.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_typography.dart';
@@ -17,7 +17,7 @@ class LearnHeader extends StatelessWidget implements PreferredSizeWidget {
     super.key,
     required this.title,
     required this.step,
-    this.onClose,
+    this.onBack,
   });
 
   /// 소리 이름 — 「받침 ㄹ」.
@@ -26,8 +26,11 @@ class LearnHeader extends StatelessWidget implements PreferredSizeWidget {
   /// 1~4.
   final int step;
 
-  /// 닫기. null 이면 그냥 뒤로 간다.
-  final VoidCallback? onClose;
+  /// 뒤로 가기. null 이면 그냥 pop 한다.
+  ///
+  /// ⛔ 예전엔 X(닫기)였다. 누르면 **학습 전체가 닫히는 것처럼 보이는데 실제로는 한 단계
+  ///    뒤로 갈 뿐**이라 아이콘이 거짓말을 하고 있었다(2026-09-21 사용자 지적).
+  final VoidCallback? onBack;
 
   static const _labels = ['이해', '단어', '문장', '평가'];
 
@@ -51,11 +54,11 @@ class LearnHeader extends StatelessWidget implements PreferredSizeWidget {
                 children: [
                   GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: onClose ?? () => Navigator.of(context).maybePop(),
+                    onTap: onBack ?? () => Navigator.of(context).maybePop(),
                     child: SizedBox(
                       width: 28,
                       height: 28,
-                      child: AppIcons.close(size: 28, color: c.labelStrong),
+                      child: GnbBackArrow(size: 28, color: c.labelStrong),
                     ),
                   ),
                   Expanded(

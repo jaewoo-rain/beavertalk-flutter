@@ -63,10 +63,19 @@ class ReviewRemoteDataSource {
   /// 직접 찾아 그 목소리로 합성한다(백엔드 확인 2026-09-04: "캐릭터도 그냥 db에서
   /// 해결했었죠, id 없이 가면 될 거 같아요"). 앱이 굳이 실어 보내면 두 출처가 갈릴 수
   /// 있고, 어긋났을 때 어느 쪽이 맞는지 알 방법이 없다.
-  Future<Uint8List> speechBytes(String text) async {
+  ///
+  /// [engine] 은 서버가 쓸 TTS 엔진이다. 안 주면 서버 기본(Chirp3-HD)이고,
+  /// `'gemini-tts'` 를 주면 구 Gemini-TTS 로 합성한다(취약 발음 학습이 쓴다).
+  /// ⚠ 서버의 ETag 키에 엔진이 들어가므로 엔진이 다르면 캐시도 갈린다.
+  Future<Uint8List> speechBytes(String text, {String? engine}) async {
     final res = await _dio.post<List<int>>(
       '/tts/speech',
-      data: {'text': text},
+      data: {
+        'text': text,
+        // 키를 아예 안 보낸다 — null 을 실어 보내면 서버 DTO 가 «지정했는데 빈 값» 과
+        // 구분할 수 없다.
+        'engine': ?engine,
+      },
       options: Options(responseType: ResponseType.bytes),
     );
     return Uint8List.fromList(res.data ?? const <int>[]);
