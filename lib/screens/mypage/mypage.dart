@@ -659,6 +659,18 @@ class MyPageScreen extends ConsumerWidget {
                   body: l10n.noAccentDataBody,
                   scale: EmptyScale.card,
                 ),
+                // Figma E1 — 억양 분석 전에도 버튼은 **보이되 눌리지 않는다.**
+                // 숨기면 기능이 없는 줄 알고, 눌리게 두면 빈 목록으로 떨어진다.
+                const SizedBox(height: AppSpacing.s8),
+                const Button(
+                  // ⛔ secondaryFill 을 쓰지 마라 — 그 면색이 카드 자신의 색과 같아서
+                  //    다크에서 버튼이 통째로 사라진다(mypage_surface_contrast_test 가
+                  //    잡는 바로 그 결함). 카드 안 CTA 는 전부 secondaryElevated 다.
+                  type: BtnType.secondaryElevated,
+                  size: BtnSize.s48,
+                  text: '취약 발음 학습하기',
+                  disabled: true,
+                ),
               ]
             : [
           Center(
@@ -688,6 +700,19 @@ class MyPageScreen extends ConsumerWidget {
               value: stats[i].percent.toDouble(),
               active: i == 0,
             ),
+          // 취약 발음 학습 진입(Figma 01). 공유 아이콘은 헤더에 **그대로 둔다** —
+          // 사용자 지시로 되살린 것이라 이 버튼이 그 자리를 뺏지 않는다.
+          //
+          // 억양 분석 전이면 누를 수 없다(Figma E1). 분석 결과가 없으면 국적별 목록이
+          // 통째로 비어서, 들어가 봐야 빈 화면만 보게 된다.
+          const SizedBox(height: AppSpacing.s8),
+          Button(
+            // 위와 같은 이유로 secondaryElevated. 카드 면색과 같은 버튼은 안 보인다.
+            type: BtnType.secondaryElevated,
+            size: BtnSize.s48,
+            text: '취약 발음 학습하기',
+            onPressed: () => Navigator.of(context).pushNamed(Routes.weakSounds),
+          ),
         ],
       );
 

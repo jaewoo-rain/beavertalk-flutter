@@ -47,6 +47,11 @@ import '../screens/mypage/share.dart';
 import '../screens/alarm/alarm_list.dart';
 import '../screens/alarm/alarm_add.dart';
 import '../screens/alarm/alarm_empty.dart';
+import '../screens/weak_sound/learn_sentence.dart';
+import '../screens/weak_sound/learn_test.dart';
+import '../screens/weak_sound/learn_understand.dart';
+import '../screens/weak_sound/learn_words.dart';
+import '../screens/weak_sound/weak_sounds.dart';
 import '../screens/record/record_list.dart';
 import '../screens/record/record_empty.dart';
 import '../screens/report/report_content.dart';
@@ -105,6 +110,17 @@ abstract final class Routes {
   static const alarms = '/alarms';
   static const alarmAdd = '/alarms/add';
   static const alarmEmpty = '/alarms/empty';
+
+  // ── 취약 발음 학습 ──
+  //
+  // 학습 4단계는 전부 **인자로 `sound_key` 문자열**을 받는다(`coda_ㄹ`·`rule_연음`).
+  // 인자 없이 열면 화면이 스스로 「소리를 찾지 못했어요」로 내려앉는다(MissingSoundKey) —
+  // 흰 화면이나 404 로 숨기면 라우팅 실수를 서버 문제로 오해하게 된다.
+  static const weakSounds = '/weak-sounds';
+  static const weakSoundLearn = '/weak-sounds/learn';
+  static const weakSoundWords = '/weak-sounds/learn/words';
+  static const weakSoundSentence = '/weak-sounds/learn/sentence';
+  static const weakSoundTest = '/weak-sounds/learn/test';
 
   // ── Records ──
   static const records = '/records';
@@ -237,6 +253,12 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.classroomJoinDone: (_) => const JoinDoneScreen(),
     Routes.assignments: (_) => const AssignmentListScreen(),
     Routes.assignmentDetail: (_) => const AssignmentDetailScreen(),
+    // 취약 발음 학습 — `sound_key` 는 화면이 settings.arguments 로 직접 읽는다.
+    Routes.weakSounds: (_) => const WeakSoundsScreen(),
+    Routes.weakSoundLearn: (_) => const LearnUnderstandScreen(),
+    Routes.weakSoundWords: (_) => const LearnWordsScreen(),
+    Routes.weakSoundSentence: (_) => const LearnSentenceScreen(),
+    Routes.weakSoundTest: (_) => const LearnTestScreen(),
     Routes.callLoading: (_) => const CallLoadingScreen(),
     Routes.call: (_) => const CallScreen(),
     Routes.callFinish: (_) => const CallFinishScreen(),

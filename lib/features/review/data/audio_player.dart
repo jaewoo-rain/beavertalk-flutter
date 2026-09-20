@@ -49,6 +49,18 @@ class ReviewAudioPlayer {
     await player.startPlayer(fromURI: url);
   }
 
+  /// 재생만 멈춘다 — 플레이어는 열어 둔다. 멱등.
+  ///
+  /// [dispose] 와 다르다. 자동 연습처럼 **멈췄다 다시 재생하는** 흐름에서 dispose 를 쓰면
+  /// 다음 재생마다 플레이어를 새로 열어야 하고, 그 사이 지연이 그대로 침묵이 된다.
+  Future<void> stop() async {
+    try {
+      await _player?.stopPlayer();
+    } catch (_) {
+      // best-effort — 이미 멈춰 있을 수 있다.
+    }
+  }
+
   /// Stops and releases the player. Idempotent.
   Future<void> dispose() async {
     try {
