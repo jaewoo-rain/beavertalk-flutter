@@ -83,17 +83,19 @@ class InfoRowsCard extends StatelessWidget {
                         constraints: BoxConstraints(maxWidth: labelCap),
                         child: Text(
                           row.label,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style:
                               AppType.label1.r.copyWith(color: c.labelNormal),
                         ),
                       ),
                       const SizedBox(width: AppSpacing.s12),
+                      // 값에는 기관명·선생님 이름이 온다 — **식별자라 한 줄로 자르면
+                      // 누구인지 모른다.** 상한 규칙은 그대로 두고 줄 수만 늘린다.
                       Expanded(
                         child: Text(
                           row.value,
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.right,
                           style:

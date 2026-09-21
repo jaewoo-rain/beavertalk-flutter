@@ -107,23 +107,21 @@ class CardClass extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          // 라벨은 비유연이고 기관명만 Flexible 이라 **기관명이 먼저 잘렸다**.
+          // 둘 다 줄어들 수 있게 하고, 폭이 모자라면 기관명이 다음 줄로 내려간다.
+          Wrap(
+            spacing: AppSpacing.s8,
+            runSpacing: 2,
+            crossAxisAlignment: WrapCrossAlignment.center,
             children: [
               Text(
                 headerLabel,
                 style: AppType.label1.m.copyWith(color: c.primaryForeground),
               ),
               if (institution != null)
-                Flexible(
-                  child: Text(
-                    institution!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.right,
-                    style: AppType.label2.r.copyWith(color: c.labelNeutral),
-                  ),
+                Text(
+                  institution!,
+                  style: AppType.label2.r.copyWith(color: c.labelNeutral),
                 ),
             ],
           ),
@@ -185,28 +183,25 @@ class CardClass extends StatelessWidget {
         HomeworkProgressRing(completed: completed, total: total),
         const SizedBox(height: AppSpacing.s12),
         if (badge != null) ...[badge!, const SizedBox(height: 10)],
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        // 번호와 제목이 둘 다 Flexible 이라 **둘 다** 잘렸다 — 어느 차시의
+        // 무엇인지 알 수 없었다. 번호를 위로 올려 제목에 한 줄을 통째로 준다.
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
             if (chapterLabel != null)
-              Flexible(
-                child: Text(
-                  chapterLabel!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppType.body2.m.copyWith(color: c.labelStrong),
-                ),
+              Text(
+                chapterLabel!,
+                textAlign: TextAlign.center,
+                style: AppType.body2.m.copyWith(color: c.labelNeutral),
               ),
-            if (chapterLabel != null && chapterTitle != null)
-              const SizedBox(width: AppSpacing.s8),
             if (chapterTitle != null)
-              Flexible(
-                child: Text(
-                  chapterTitle!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppType.body2.m.copyWith(color: c.labelStrong),
-                ),
+              Text(
+                chapterTitle!,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: AppType.body2.m.copyWith(color: c.labelStrong),
               ),
           ],
         ),

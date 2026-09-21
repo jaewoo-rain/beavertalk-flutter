@@ -727,22 +727,21 @@ class AvatarScreen extends ConsumerWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // 본문이 먼저다 — 둘 다 Flexible 이면 둘 다 잘린다.
           Flexible(
             child: Text(text,
                 overflow: TextOverflow.ellipsis,
-                maxLines: 1,
+                maxLines: 2,
                 style:
                     AppType.label1.m.copyWith(color: context.c.labelNormal)),
           ),
           if (trailingWidget != null)
             trailingWidget
           else if (trailing != null)
-            Flexible(
-              child: Text(trailing,
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 1,
-                  style: AppType.label1.m.copyWith(color: context.c.accentForegroundRed)),
-            ),
+            // 꼬리말(가격·상태)은 자르지 않는다 — 잘리면 거짓이 된다.
+            Text(trailing,
+                style: AppType.label1.m
+                    .copyWith(color: context.c.accentForegroundRed)),
         ],
       );
 

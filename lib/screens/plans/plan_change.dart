@@ -200,20 +200,21 @@ class PlanChangeScreen extends ConsumerWidget {
               Container(height: 1, color: c.lineAlternative),
               const SizedBox(height: 10),
             ],
+            // ⛔ 값(결제일·주기)을 자르지 마라 — 잘린 날짜는 틀린 날짜다.
+            //   라벨만 줄이고, 값은 넘치지 않도록 **줄을 바꾼다**.
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
+                Flexible(
                   child: Text(rows[i].$1,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style:
                           AppType.label1.r.copyWith(color: c.labelNormal)),
                 ),
                 const SizedBox(width: 8),
-                // Flexible + ellipsis: long localized values (dates, "billed
-                // once a year" lines) overflowed the 320px sweep.
                 Flexible(
                   child: Text(rows[i].$2,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                       textAlign: TextAlign.end,
                       style:
                           AppType.label1.r.copyWith(color: c.labelStrong)),

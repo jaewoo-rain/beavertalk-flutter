@@ -440,18 +440,18 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
               flex: 2,
               child: Text(
                 label,
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: AppType.body1.r.copyWith(color: context.c.labelStrong),
               ),
             ),
             const SizedBox(width: 8),
+            // 값은 **자르지 않는다** — 사용자가 고른 내용이라 잘리면 무엇을
+            // 골랐는지 알 수 없다. 넘치지 않도록 줄만 바꾼다.
             Flexible(
               flex: 3,
               child: Text(
                 value,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
                 textAlign: TextAlign.end,
                 style: AppType.body1.r.copyWith(color: context.c.labelNormal),
               ),

@@ -140,6 +140,10 @@ class CardLine extends StatelessWidget {
             ),
             const SizedBox(width: 12),
             // Not flexed: sizes to the amount/status, staying pinned right.
+            //
+            // ⛔ 금액과 상태를 한 줄로 자르지 마라 — 「1.790.0…」 은 틀린 금액이고,
+            //   잘린 결제 상태는 잘못된 사실이다. 이 Column 은 비유연이라 제 크기를
+            //   가지므로, 줄만 늘려도 넘치지 않는다.
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,
@@ -147,16 +151,14 @@ class CardLine extends StatelessWidget {
                 if (value != null)
                   Text(
                     value!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                     style: AppType.label1.sb.copyWith(color: context.c.labelStrong),
                   ),
                 if (status != null) ...[
                   const SizedBox(height: 7),
                   Text(
                     status!,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                     style: AppType.label1.r.copyWith(color: context.c.statusPositive),
                   ),
                 ],
@@ -188,7 +190,7 @@ class CardLine extends StatelessWidget {
                     Flexible(
                       child: Text(
                         label,
-                        maxLines: 1,
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style:
                             AppType.body1.r.copyWith(color: context.c.labelStrong),
@@ -196,11 +198,10 @@ class CardLine extends StatelessWidget {
                     ),
                     if (value != null) ...[
                       const SizedBox(width: 8),
+                      // 값은 자르지 않는다 — 금액·상태가 잘리면 거짓이 된다.
                       Flexible(
                         child: Text(
                           value!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
                           textAlign: TextAlign.end,
                           style:
                               AppType.body1.r.copyWith(color: context.c.labelStrong),

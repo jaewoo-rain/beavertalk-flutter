@@ -238,33 +238,29 @@ class CardBox extends StatelessWidget {
 
   Widget _buildPriceRow(BuildContext context) {
     if (_isDiscount) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      // ⛔ 가격을 ellipsis 로 자르지 마라. 「₩12,0…」 은 빈 값보다 나쁘다 —
+      //   사용자가 읽고 결제를 판단하는데 그 숫자가 **거짓**이 된다.
+      //   Row + Flexible 이면 정가·할인가가 서로 폭을 다퉈 둘 다 잘렸다.
+      //   Wrap 은 폭이 모자랄 때 **줄을 바꿔** 두 값을 온전히 보인다.
+      return Wrap(
+        spacing: 4,
+        runSpacing: 2,
+        crossAxisAlignment: WrapCrossAlignment.center,
         children: [
           if (price != null)
-            Flexible(
-              child: Text(
-                price!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppType.label1.r.copyWith(
-                  color: context.c.labelNormal,
-                  decoration: TextDecoration.lineThrough,
-                  decorationColor: context.c.labelNormal,
-                ),
+            Text(
+              price!,
+              style: AppType.label1.r.copyWith(
+                color: context.c.labelNormal,
+                decoration: TextDecoration.lineThrough,
+                decorationColor: context.c.labelNormal,
               ),
             ),
-          if (price != null && discountPrice != null)
-            const SizedBox(width: 4),
           if (discountPrice != null)
-            Flexible(
-              child: Text(
-                discountPrice!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppType.label1.sb.copyWith(color: context.c.accentForegroundRed),
-              ),
+            Text(
+              discountPrice!,
+              style:
+                  AppType.label1.sb.copyWith(color: context.c.accentForegroundRed),
             ),
         ],
       );

@@ -311,23 +311,29 @@ class _PlanCard extends StatelessWidget {
           SizedBox(height: _compact ? 10 : 12),
           Container(height: 1, color: c.lineAlternative),
           SizedBox(height: _compact ? 10 : 12),
+          // ⛔ **값을 자르지 마라.** 「0 of 1 used」가 「0 of 1 us…」가 되면 남은 횟수가
+          //   거짓이 된다 — 빈 값보다 나쁘다. 예전엔 값에 ellipsis 를 걸어 넘침을
+          //   막았는데(hi·ur·kk 가 93px 넘쳤다는 그 주석), 그건 넘침을 잘림으로
+          //   바꾼 것뿐이었다.
+          //   줄어드는 쪽은 **라벨**이다. 라벨은 줄어도 옆의 값이 무엇인지는 남는다.
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              Flexible(
                 child: Text(
                   rowLabel,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                   style: AppType.label1.r.copyWith(color: c.labelNormal),
                 ),
               ),
               const SizedBox(width: 8),
-              // Flexible + ellipsis, not a bare Text: the wordier locales'
-              // usage line ("0 of 1 used") ran the row off the right edge
-              // (hi/ur/kk overflowed up to 93px in the 320-wide sweep).
+              // 값도 Flexible 이지만 **자르지 않고 줄을 바꾼다**(ellipsis 없음).
+              // 비유연으로 두면 이번엔 행이 넘친다 — 넘침도 잘림도 아닌 제3의 길이
+              // 줄바꿈이다.
               Flexible(
                 child: Text(
                   rowValue,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.end,
                   style: AppType.label1.sb.copyWith(color: c.labelStrong),
                 ),

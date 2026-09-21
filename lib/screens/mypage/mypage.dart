@@ -796,11 +796,11 @@ class MyPageScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      // ⛔ 비율은 자르지 않는다 — 「상위 3…」 은 없는 숫자다.
+                      //   넘치면 줄을 바꾼다.
                       Text(
                         l10n.topPercent(level!.topPercent!),
                         textAlign: TextAlign.end,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                         style: AppType.title3.b
                             .copyWith(color: context.c.primaryNormal),
                       ),
@@ -944,10 +944,12 @@ class MyPageScreen extends ConsumerWidget {
           Expanded(
             child: Row(
               children: [
+                // 제목이 먼저다 — 둘 다 Flexible 이면 **둘 다** 잘려 무엇의
+                // 무엇인지 알 수 없게 된다. 줄어드는 쪽은 부제목이다.
                 Flexible(
                   child: Text(
                     title,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppType.body1.sb
                         .copyWith(color: context.c.primaryHeavy),
@@ -957,7 +959,7 @@ class MyPageScreen extends ConsumerWidget {
                 Flexible(
                   child: Text(
                     subtitle,
-                    maxLines: 1,
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style:
                         AppType.body1.r.copyWith(color: context.c.labelNormal),

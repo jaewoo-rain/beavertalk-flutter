@@ -126,8 +126,33 @@ class BeaverTalkApp extends ConsumerWidget {
       theme: _theme(Brightness.light, AppColorTokens.light),
       darkTheme: _theme(Brightness.dark, AppColorTokens.dark),
       themeMode: ThemeMode.system,
+      builder: _clampTextScale,
       home: const AuthGate(),
       onGenerateRoute: onGenerateRoute,
+    );
+  }
+
+  /// 시스템 글꼴 배율의 **상한**을 건다.
+  ///
+  /// 안 걸면 사용자가 글꼴을 키웠을 때 모든 화면이 한 번에 무너진다 — 높이를 고정한
+  /// 버튼은 글자가 잘리고, 한 줄에서 폭을 다투던 것들은 전부 잘린다. 번역이 길어지는
+  /// 것과 같은 결함인데 **모든 언어에 동시에** 일어난다는 점만 다르다.
+  ///
+  /// 상한은 1.3 이다. 이 앱의 레이아웃은 320dp 폭에서 30개 로케일을 견디도록 잡혀
+  /// 있고, 그 여유가 1.3 배까지는 남는다(넘어가면 버튼 2개짜리 행이 먼저 깨진다).
+  ///
+  /// ⛔ 배율을 **1.0 으로 고정하지 마라.** 글씨를 키워야 읽히는 사용자가 있고,
+  ///   그 설정을 통째로 무시하는 것은 접근성 후퇴다. 상한만 건다.
+  ///
+  /// ⚠ 상한은 최후의 방어선이다. 높이를 고정한 상자는 1.3 배에서도 잘릴 수 있으니
+  ///   글자를 담는 상자는 Hug 로 두는 것이 먼저다.
+  static Widget _clampTextScale(BuildContext context, Widget? child) {
+    final media = MediaQuery.of(context);
+    return MediaQuery(
+      data: media.copyWith(
+        textScaler: media.textScaler.clamp(maxScaleFactor: 1.3),
+      ),
+      child: child ?? const SizedBox.shrink(),
     );
   }
 

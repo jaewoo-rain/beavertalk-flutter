@@ -58,9 +58,15 @@ import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/system/mic_denied.dart';
 import 'package:beavertalk/screens/system/network_error.dart';
 import 'package:beavertalk/screens/system/permission.dart';
+import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
+import 'package:beavertalk/features/weak_sound/presentation/sound_key_arg.dart';
 
 void main() {
   final screens = <String, Widget Function()>{
+    // 취약 발음 — 2026-09-21 까지 이 목록에 없었다. 그래서 「초성 ㄲ」이
+    // 「초…」로 잘리는 동안 이 시험은 한 번도 그 화면을 보지 않았다.
+    'WeakSounds': () => const WeakSoundsScreen(),
+    'MissingSoundKey': () => const MissingSoundKey(),
     'AlarmAdd': () => const AlarmAddScreen(),
     'AlarmEmpty': () => const AlarmEmptyScreen(),
     'AlarmList': () => const AlarmListScreen(),

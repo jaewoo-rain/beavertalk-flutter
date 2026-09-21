@@ -94,19 +94,21 @@ class CardHomework extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // ⛔ 고정 높이 22 를 걷어냈다 — 크메르어·태국어처럼 줄이 높은 글자가
+            //    잘리고, 시스템 글꼴을 키우면 모든 언어에서 잘린다.
+            // ⛔ Row + Expanded 도 걷어냈다 — 배지가 자리를 먼저 차지해 제목이
+            //    잘렸다(취약 발음 카드와 같은 구조, 2026-09-21).
             SizedBox(
-              height: 22,
-              child: Row(
+              child: Wrap(
+                spacing: AppSpacing.s8,
+                runSpacing: 4,
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: [
-                  Expanded(
-                    child: Text(
-                      chapterLabel,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppType.label1.b.copyWith(color: titleColor),
-                    ),
+                  Text(
+                    chapterLabel,
+                    maxLines: 2,
+                    style: AppType.label1.b.copyWith(color: titleColor),
                   ),
-                  const SizedBox(width: AppSpacing.s8),
                   badge,
                 ],
               ),

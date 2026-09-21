@@ -104,10 +104,12 @@ class LevelProgress extends StatelessWidget {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
+                          // 레벨명은 식별자다 — 둘 다 한 줄로 자르면 어느 레벨에서
+                          // 어느 레벨로 가는지 모른다. 두 줄까지 쓴다.
                           Flexible(
                             child: Text(
                               startLabel,
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: AppType.label1.r
                                   .copyWith(color: context.c.labelNeutral),
@@ -117,7 +119,7 @@ class LevelProgress extends StatelessWidget {
                           Flexible(
                             child: Text(
                               endLabel,
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               textAlign: TextAlign.end,
                               style: AppType.label1.r

@@ -391,11 +391,13 @@ class BottomSheetAvatar extends StatelessWidget {
             children: [
               AppIcons.volume(size: 24, color: context.c.labelStrong),
               const SizedBox(width: 8),
-              Flexible(
+                // 버튼 라벨은 **동작 이름**이다 — 잘리면 무엇을 하는 버튼인지
+                // 알 길이 없다. 한 줄에 안 들어가면 두 줄로 쓴다.
+                Flexible(
                 child: Text(
                   l10n.playSampleVoice,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
                   style: AppType.label1.m.copyWith(color: context.c.labelStrong),
                 ),
               ),
