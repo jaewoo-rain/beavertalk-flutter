@@ -2660,4 +2660,211 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'अभ्यास मोडमा सङ्केत उपलब्ध छैन';
+
+  @override
+  String get wsTitle => 'कठिन ध्वनिहरू';
+
+  @override
+  String get wsToList => 'सूचीमा';
+
+  @override
+  String get wsNext => 'अर्को';
+
+  @override
+  String get wsRetry => 'फेरि प्रयास';
+
+  @override
+  String get wsDone => 'सम्पन्न';
+
+  @override
+  String get wsContinue => 'जारी राख्नुहोस्';
+
+  @override
+  String get wsQuit => 'छोड्नुहोस्';
+
+  @override
+  String get wsRetryLater => 'कृपया एक छिनपछि फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get wsMissingTitle => 'त्यो ध्वनि भेटिएन';
+
+  @override
+  String get wsMissingBody => 'कृपया सूचीबाट फेरि छान्नुहोस्।';
+
+  @override
+  String get wsListLoadFailed => 'सूची लोड गर्न सकिएन';
+
+  @override
+  String get wsLessonLoadFailed => 'पाठ लोड गर्न सकिएन';
+
+  @override
+  String get wsNationalTitle => 'तपाईंको उच्चारणअनुसार कठिन ध्वनिहरू';
+
+  @override
+  String get wsNationalPending => 'उच्चारण विश्लेषण सकिएपछि यहाँ भरिन्छ';
+
+  @override
+  String get wsNationalPicked => 'तपाईंको उच्चारण विश्लेषणबाट छानिएको';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'केही थप कल गर्नुहोस्, हामी तपाईंको उच्चारण विश्लेषण गर्नेछौं।';
+
+  @override
+  String get wsMineTitle => 'मेरा कठिन ध्वनिहरू';
+
+  @override
+  String get wsMineSubtitle => 'हालै सबैभन्दा कम स्कोर आएका ध्वनिहरू';
+
+  @override
+  String get wsMineEmptyBody =>
+      'कल गर्दै दोहोर्याउँदै जाँदा कठिन ध्वनिहरू जम्मा हुन्छन्।';
+
+  @override
+  String get wsNoDataYet => 'अझै डेटा छैन';
+
+  @override
+  String get wsGoToCall => 'कल सुरु गर्नुहोस्';
+
+  @override
+  String get wsRule => 'नियम';
+
+  @override
+  String get wsRecommended => 'सिफारिस';
+
+  @override
+  String get wsNotMeasured => 'मापन भएको छैन';
+
+  @override
+  String get wsStepUnderstand => 'बुझ्नु';
+
+  @override
+  String get wsStepWords => 'शब्द';
+
+  @override
+  String get wsStepSentence => 'वाक्य';
+
+  @override
+  String get wsStepTest => 'परीक्षण';
+
+  @override
+  String get wsQuitTitle => 'अभ्यास रोक्ने?';
+
+  @override
+  String get wsQuitBody => 'अहिले निस्किए यो अभ्यास सुरक्षित हुँदैन।';
+
+  @override
+  String get wsHowToSound => 'ध्वनि निकाल्ने तरिका';
+
+  @override
+  String get wsPracticeWords => 'शब्द अभ्यास';
+
+  @override
+  String get wsPracticeSentence => 'वाक्य अभ्यास';
+
+  @override
+  String get wsStartTest => 'परीक्षण सुरु';
+
+  @override
+  String get wsThisSentence => 'यो वाक्य';
+
+  @override
+  String get wsNoScoreNote => 'यो चरणमा स्कोर छैन। सहजै दोहोर्याउनुहोस्।';
+
+  @override
+  String get wsListen => 'ध्यान दिएर सुन्नुहोस्';
+
+  @override
+  String get wsSayNow => 'अब दोहोर्याउनुहोस्';
+
+  @override
+  String get wsPracticeDone => 'अभ्यास सम्पन्न';
+
+  @override
+  String get wsPaused => 'रोकिएको';
+
+  @override
+  String get wsAudioFailed => 'अडियो लोड गर्न सकिएन। लेखिएको पढेर बोल्नुहोस्।';
+
+  @override
+  String get wsReadAloud => 'तलको वाक्य ठूलो स्वरमा पढ्नुहोस्';
+
+  @override
+  String get wsTapToStart => 'सुरु गर्न ट्याप गर्नुहोस्';
+
+  @override
+  String get wsTapWhenDone => 'सकिएपछि ट्याप गर्नुहोस्';
+
+  @override
+  String get wsScoring => 'स्कोर गर्दै';
+
+  @override
+  String get wsMicFailed => 'माइक्रोफोन खोल्न सकिएन।';
+
+  @override
+  String get wsNoSound => 'कुनै आवाज सुनिएन। फेरि प्रयास गर्ने?';
+
+  @override
+  String get wsScoreFailed => 'स्कोर गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्।';
+
+  @override
+  String get wsSomethingWrong => 'केही समस्या भयो।';
+
+  @override
+  String get wsLearnDone => 'पाठ सम्पन्न';
+
+  @override
+  String get wsRetest => 'फेरि परीक्षण';
+
+  @override
+  String get wsFirstMeasure => 'पहिलो मापन';
+
+  @override
+  String get wsFinalTest => 'अन्तिम परीक्षण';
+
+  @override
+  String wsPoints(int score) {
+    return '$score अंक';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'पहिले $score अंक';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'लक्ष्य $score अंक';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'लक्ष्य · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country उच्चारण';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count शब्द दोहोरिए';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count खण्ड दोहोरिए';
+  }
+
+  @override
+  String get wsStartRecommended => 'सिफारिस गरिएको ध्वनिबाट सुरु';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'सुरु · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'अंक';
 }

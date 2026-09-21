@@ -2667,4 +2667,210 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'មិនអាចប្រើជំនួយក្នុងការសិក្សាបានទេ';
+
+  @override
+  String get wsTitle => 'សំឡេងពិបាក';
+
+  @override
+  String get wsToList => 'ទៅបញ្ជី';
+
+  @override
+  String get wsNext => 'បន្ទាប់';
+
+  @override
+  String get wsRetry => 'ព្យាយាមម្ដងទៀត';
+
+  @override
+  String get wsDone => 'រួចរាល់';
+
+  @override
+  String get wsContinue => 'បន្តទៀត';
+
+  @override
+  String get wsQuit => 'ចាកចេញ';
+
+  @override
+  String get wsRetryLater => 'សូមព្យាយាមម្ដងទៀតបន្តិចទៀត។';
+
+  @override
+  String get wsMissingTitle => 'រកមិនឃើញសំឡេងនោះទេ';
+
+  @override
+  String get wsMissingBody => 'សូមជ្រើសរើសពីបញ្ជីម្ដងទៀត។';
+
+  @override
+  String get wsListLoadFailed => 'មិនអាចផ្ទុកបញ្ជីបានទេ';
+
+  @override
+  String get wsLessonLoadFailed => 'មិនអាចផ្ទុកមេរៀនបានទេ';
+
+  @override
+  String get wsNationalTitle => 'សំឡេងពិបាកតាមសំនៀងរបស់អ្នក';
+
+  @override
+  String get wsNationalPending => 'នឹងបំពេញពេលវិភាគសំនៀងរបស់អ្នករួច';
+
+  @override
+  String get wsNationalPicked => 'ជ្រើសរើសតាមលទ្ធផលវិភាគសំនៀង';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'ហៅច្រើនបន្តិចទៀត យើងនឹងវិភាគសំនៀងរបស់អ្នក។';
+
+  @override
+  String get wsMineTitle => 'សំឡេងពិបាករបស់ខ្ញុំ';
+
+  @override
+  String get wsMineSubtitle => 'សំឡេងដែលអ្នកបានពិន្ទុទាបថ្មីៗនេះ';
+
+  @override
+  String get wsMineEmptyBody => 'ហៅ និងរំលឹក សំឡេងពិបាករបស់អ្នកនឹងកើនឡើង។';
+
+  @override
+  String get wsNoDataYet => 'មិនទាន់មានទិន្នន័យទេ';
+
+  @override
+  String get wsGoToCall => 'ចាប់ផ្ដើមការហៅ';
+
+  @override
+  String get wsRule => 'វិធាន';
+
+  @override
+  String get wsRecommended => 'បានណែនាំ';
+
+  @override
+  String get wsNotMeasured => 'មិនទាន់វាស់';
+
+  @override
+  String get wsStepUnderstand => 'ស្វែងយល់';
+
+  @override
+  String get wsStepWords => 'ពាក្យ';
+
+  @override
+  String get wsStepSentence => 'ប្រយោគ';
+
+  @override
+  String get wsStepTest => 'តេស្ត';
+
+  @override
+  String get wsQuitTitle => 'ឈប់អនុវត្តឬ?';
+
+  @override
+  String get wsQuitBody => 'បើចេញឥឡូវ ការអនុវត្តនេះនឹងមិនត្រូវបានរក្សាទុកទេ។';
+
+  @override
+  String get wsHowToSound => 'របៀបបញ្ចេញសំឡេង';
+
+  @override
+  String get wsPracticeWords => 'អនុវត្តពាក្យ';
+
+  @override
+  String get wsPracticeSentence => 'អនុវត្តប្រយោគ';
+
+  @override
+  String get wsStartTest => 'ចាប់ផ្ដើមតេស្ត';
+
+  @override
+  String get wsThisSentence => 'ប្រយោគនេះ';
+
+  @override
+  String get wsNoScoreNote => 'ជំហាននេះមិនគិតពិន្ទុទេ។ គ្រាន់តែនិយាយតាម។';
+
+  @override
+  String get wsListen => 'ស្តាប់ឱ្យបានល្អ';
+
+  @override
+  String get wsSayNow => 'ឥឡូវនិយាយតាម';
+
+  @override
+  String get wsPracticeDone => 'អនុវត្តរួចរាល់';
+
+  @override
+  String get wsPaused => 'បានផ្អាក';
+
+  @override
+  String get wsAudioFailed => 'មិនអាចផ្ទុកសំឡេងបានទេ។ សូមអានតាមអក្សរ។';
+
+  @override
+  String get wsReadAloud => 'សូមអានប្រយោគខាងក្រោមឱ្យឮៗ';
+
+  @override
+  String get wsTapToStart => 'ចុចដើម្បីចាប់ផ្ដើម';
+
+  @override
+  String get wsTapWhenDone => 'ចុចពេលអ្នករួចរាល់';
+
+  @override
+  String get wsScoring => 'កំពុងគិតពិន្ទុ';
+
+  @override
+  String get wsMicFailed => 'មិនអាចបើកមីក្រូហ្វូនបានទេ។';
+
+  @override
+  String get wsNoSound => 'យើងមិនបានឮអ្វីទេ។ ព្យាយាមម្ដងទៀតឬ?';
+
+  @override
+  String get wsScoreFailed => 'ការគិតពិន្ទុបានបរាជ័យ។ សូមព្យាយាមម្ដងទៀត។';
+
+  @override
+  String get wsSomethingWrong => 'មានបញ្ហាកើតឡើង។';
+
+  @override
+  String get wsLearnDone => 'មេរៀនរួចរាល់';
+
+  @override
+  String get wsRetest => 'តេស្តម្ដងទៀត';
+
+  @override
+  String get wsFirstMeasure => 'ការវាស់លើកទី១';
+
+  @override
+  String get wsFinalTest => 'តេស្តចុងក្រោយ';
+
+  @override
+  String wsPoints(int score) {
+    return '$score ពិន្ទុ';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'មុន $score ពិន្ទុ';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'គោលដៅ $score ពិន្ទុ';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'គោលដៅ · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'សំនៀង $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'និយាយតាម $count ពាក្យ';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'និយាយតាម $count ចំណែក';
+  }
+
+  @override
+  String get wsStartRecommended => 'ចាប់ផ្ដើមពីសំឡេងដែលបានណែនាំ';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'ចាប់ផ្ដើម · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'ពិន្ទុ';
 }

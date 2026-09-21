@@ -47,10 +47,14 @@ class ReviewAudioPlayer {
 
   /// Plays native audio from [url]. Throws on failure (e.g. an unplayable
   /// storage key); the caller treats playback as best-effort.
-  Future<void> playUrl(String url) async {
+  ///
+  /// 재생된 음성의 **실제 길이**를 돌려준다(플러그인이 모르면 null) — [playMp3Bytes] 와
+  /// 같은 계약이다. 자동 연습이 미리 구운 URL 과 온디맨드 합성 중 어느 쪽으로 재생하든
+  /// 같은 값으로 타이밍을 잡아야 해서다.
+  Future<Duration?> playUrl(String url) async {
     final player = await _ensureOpen();
     await player.stopPlayer();
-    await player.startPlayer(fromURI: url);
+    return player.startPlayer(fromURI: url);
   }
 
   /// 재생만 멈춘다 — 플레이어는 열어 둔다. 멱등.

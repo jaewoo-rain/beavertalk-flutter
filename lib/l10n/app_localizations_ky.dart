@@ -2677,4 +2677,210 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Үйрөнүү режиминде кеп жеткиликсиз';
+
+  @override
+  String get wsTitle => 'Кыйын тыбыштар';
+
+  @override
+  String get wsToList => 'Тизмеге';
+
+  @override
+  String get wsNext => 'Кийинки';
+
+  @override
+  String get wsRetry => 'Кайра аракет';
+
+  @override
+  String get wsDone => 'Бүттү';
+
+  @override
+  String get wsContinue => 'Улантуу';
+
+  @override
+  String get wsQuit => 'Чыгуу';
+
+  @override
+  String get wsRetryLater => 'Бир аздан кийин кайра аракет кылыңыз.';
+
+  @override
+  String get wsMissingTitle => 'Ал тыбышты таба албадык';
+
+  @override
+  String get wsMissingBody => 'Тизмеден кайра тандаңыз.';
+
+  @override
+  String get wsListLoadFailed => 'Тизмени жүктөй албадык';
+
+  @override
+  String get wsLessonLoadFailed => 'Сабакты жүктөй албадык';
+
+  @override
+  String get wsNationalTitle => 'Акцентиңизге ылайык кыйын тыбыштар';
+
+  @override
+  String get wsNationalPending => 'Акцент анализи бүткөндө толтурулат';
+
+  @override
+  String get wsNationalPicked => 'Акцент анализинин негизинде тандалды';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Бир аз көбүрөөк чалсаңыз, акцентиңизди анализдейбиз.';
+
+  @override
+  String get wsMineTitle => 'Менин кыйын тыбыштарым';
+
+  @override
+  String get wsMineSubtitle => 'Акыркы учурда упайы төмөн болгон тыбыштар';
+
+  @override
+  String get wsMineEmptyBody => 'Чалып, кайталасаңыз, кыйын тыбыштар топтолот.';
+
+  @override
+  String get wsNoDataYet => 'Азырынча маалымат жок';
+
+  @override
+  String get wsGoToCall => 'Чалууну баштоо';
+
+  @override
+  String get wsRule => 'Эреже';
+
+  @override
+  String get wsRecommended => 'Сунушталат';
+
+  @override
+  String get wsNotMeasured => 'Ченелген эмес';
+
+  @override
+  String get wsStepUnderstand => 'Түшүнүү';
+
+  @override
+  String get wsStepWords => 'Сөздөр';
+
+  @override
+  String get wsStepSentence => 'Сүйлөм';
+
+  @override
+  String get wsStepTest => 'Баалоо';
+
+  @override
+  String get wsQuitTitle => 'Көнүгүүнү токтотобузбу?';
+
+  @override
+  String get wsQuitBody => 'Азыр чыксаңыз, бул көнүгүү сакталбайт.';
+
+  @override
+  String get wsHowToSound => 'Тыбышты кантип айтуу керек';
+
+  @override
+  String get wsPracticeWords => 'Сөздөрдү көнүгүү';
+
+  @override
+  String get wsPracticeSentence => 'Сүйлөмдү көнүгүү';
+
+  @override
+  String get wsStartTest => 'Баалоону баштоо';
+
+  @override
+  String get wsThisSentence => 'Ушул сүйлөм';
+
+  @override
+  String get wsNoScoreNote => 'Бул кадам бааланбайт. Эркин кайталап айтыңыз.';
+
+  @override
+  String get wsListen => 'Кунт коюп угуңуз';
+
+  @override
+  String get wsSayNow => 'Эми айтып көрүңүз';
+
+  @override
+  String get wsPracticeDone => 'Көнүгүү бүттү';
+
+  @override
+  String get wsPaused => 'Токтотулду';
+
+  @override
+  String get wsAudioFailed => 'Үндү жүктөй албадык. Тексттен окуп айтыңыз.';
+
+  @override
+  String get wsReadAloud => 'Төмөндөгү сүйлөмдү катуу окуңуз';
+
+  @override
+  String get wsTapToStart => 'Баштоо үчүн басыңыз';
+
+  @override
+  String get wsTapWhenDone => 'Окуп бүткөндө басыңыз';
+
+  @override
+  String get wsScoring => 'Баалануу жүрүп жатат';
+
+  @override
+  String get wsMicFailed => 'Микрофонду ача албадык.';
+
+  @override
+  String get wsNoSound => 'Үн келген жок. Кайра айтып көрөбүзбү?';
+
+  @override
+  String get wsScoreFailed => 'Баалоо ишке ашпады. Кайра аракет кылыңыз.';
+
+  @override
+  String get wsSomethingWrong => 'Ката кетти.';
+
+  @override
+  String get wsLearnDone => 'Сабак бүттү';
+
+  @override
+  String get wsRetest => 'Кайра баалоо';
+
+  @override
+  String get wsFirstMeasure => 'Биринчи ченөө';
+
+  @override
+  String get wsFinalTest => 'Жыйынтыктоочу баалоо';
+
+  @override
+  String wsPoints(int score) {
+    return '$score упай';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Мурда $score упай';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Максат $score упай';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Максат · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country акценти';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count сөз кайталанды';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count бөлүк кайталанды';
+  }
+
+  @override
+  String get wsStartRecommended => 'Сунушталган тыбыштан баштоо';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Баштоо · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'упай';
 }

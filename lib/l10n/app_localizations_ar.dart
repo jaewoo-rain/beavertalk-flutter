@@ -2650,4 +2650,209 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'التلميحات غير متاحة في وضع التعلّم';
+
+  @override
+  String get wsTitle => 'الأصوات الصعبة';
+
+  @override
+  String get wsToList => 'إلى القائمة';
+
+  @override
+  String get wsNext => 'التالي';
+
+  @override
+  String get wsRetry => 'حاول مرة أخرى';
+
+  @override
+  String get wsDone => 'تم';
+
+  @override
+  String get wsContinue => 'متابعة';
+
+  @override
+  String get wsQuit => 'خروج';
+
+  @override
+  String get wsRetryLater => 'يرجى المحاولة مرة أخرى بعد قليل.';
+
+  @override
+  String get wsMissingTitle => 'لم نجد هذا الصوت';
+
+  @override
+  String get wsMissingBody => 'يرجى اختياره من القائمة مرة أخرى.';
+
+  @override
+  String get wsListLoadFailed => 'تعذّر تحميل القائمة';
+
+  @override
+  String get wsLessonLoadFailed => 'تعذّر تحميل الدرس';
+
+  @override
+  String get wsNationalTitle => 'الأصوات الصعبة حسب لكنتك';
+
+  @override
+  String get wsNationalPending => 'سنكمل هذا بعد تحليل لكنتك';
+
+  @override
+  String get wsNationalPicked => 'اختيرت بناءً على تحليل لكنتك';
+
+  @override
+  String get wsNationalEmptyBody => 'أجرِ المزيد من المكالمات وسنحلّل لكنتك.';
+
+  @override
+  String get wsMineTitle => 'أصواتي الصعبة';
+
+  @override
+  String get wsMineSubtitle => 'الأصوات التي حصلت فيها على أقل نتيجة مؤخرًا';
+
+  @override
+  String get wsMineEmptyBody => 'تحدّث وراجع، وستتجمع أصواتك الصعبة هنا.';
+
+  @override
+  String get wsNoDataYet => 'لا توجد بيانات بعد';
+
+  @override
+  String get wsGoToCall => 'ابدأ مكالمة';
+
+  @override
+  String get wsRule => 'القاعدة';
+
+  @override
+  String get wsRecommended => 'مُقترح';
+
+  @override
+  String get wsNotMeasured => 'لم يُقَس';
+
+  @override
+  String get wsStepUnderstand => 'الفهم';
+
+  @override
+  String get wsStepWords => 'الكلمات';
+
+  @override
+  String get wsStepSentence => 'الجملة';
+
+  @override
+  String get wsStepTest => 'الاختبار';
+
+  @override
+  String get wsQuitTitle => 'هل تريد إيقاف التدريب؟';
+
+  @override
+  String get wsQuitBody => 'إذا خرجت الآن، فلن يُحفظ هذا التدريب.';
+
+  @override
+  String get wsHowToSound => 'طريقة إخراج الصوت';
+
+  @override
+  String get wsPracticeWords => 'تدرّب على الكلمات';
+
+  @override
+  String get wsPracticeSentence => 'تدرّب على الجملة';
+
+  @override
+  String get wsStartTest => 'ابدأ الاختبار';
+
+  @override
+  String get wsThisSentence => 'هذه الجملة';
+
+  @override
+  String get wsNoScoreNote => 'لا نتيجة في هذه الخطوة. كرّر بعدنا فقط.';
+
+  @override
+  String get wsListen => 'استمع بتركيز';
+
+  @override
+  String get wsSayNow => 'الآن كرّر بصوتك';
+
+  @override
+  String get wsPracticeDone => 'انتهى التدريب';
+
+  @override
+  String get wsPaused => 'متوقف مؤقتًا';
+
+  @override
+  String get wsAudioFailed => 'تعذّر تحميل الصوت. اقرأ النص بصوت عالٍ.';
+
+  @override
+  String get wsReadAloud => 'اقرأ الجملة أدناه بصوت عالٍ';
+
+  @override
+  String get wsTapToStart => 'اضغط للبدء';
+
+  @override
+  String get wsTapWhenDone => 'اضغط عند الانتهاء';
+
+  @override
+  String get wsScoring => 'جارٍ التقييم';
+
+  @override
+  String get wsMicFailed => 'تعذّر فتح الميكروفون.';
+
+  @override
+  String get wsNoSound => 'لم نسمع شيئًا. نحاول مرة أخرى؟';
+
+  @override
+  String get wsScoreFailed => 'فشل التقييم. يرجى المحاولة مرة أخرى.';
+
+  @override
+  String get wsSomethingWrong => 'حدث خطأ ما.';
+
+  @override
+  String get wsLearnDone => 'انتهى الدرس';
+
+  @override
+  String get wsRetest => 'أعد الاختبار';
+
+  @override
+  String get wsFirstMeasure => 'أول قياس';
+
+  @override
+  String get wsFinalTest => 'الاختبار النهائي';
+
+  @override
+  String wsPoints(int score) {
+    return '$score نقطة';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'قبل $score نقطة';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'الهدف $score نقطة';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'الهدف · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'لكنة $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'تكرار $count كلمة';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'تكرار $count جزءًا من الجملة';
+  }
+
+  @override
+  String get wsStartRecommended => 'ابدأ بالصوت المُقترح';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'ابدأ بـ $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'نقطة';
 }

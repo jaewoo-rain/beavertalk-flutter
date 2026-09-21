@@ -2677,4 +2677,214 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get callHintLockedTitle =>
       'Vihjeet eivät ole käytettävissä Opiskelu-tilassa';
+
+  @override
+  String get wsTitle => 'Vaikeat äänteet';
+
+  @override
+  String get wsToList => 'Takaisin listaan';
+
+  @override
+  String get wsNext => 'Seuraava';
+
+  @override
+  String get wsRetry => 'Yritä uudelleen';
+
+  @override
+  String get wsDone => 'Valmis';
+
+  @override
+  String get wsContinue => 'Jatka';
+
+  @override
+  String get wsQuit => 'Poistu';
+
+  @override
+  String get wsRetryLater => 'Yritä hetken kuluttua uudelleen.';
+
+  @override
+  String get wsMissingTitle => 'Emme löytäneet sitä äännettä';
+
+  @override
+  String get wsMissingBody => 'Valitse se uudelleen listasta.';
+
+  @override
+  String get wsListLoadFailed => 'Listaa ei voitu ladata';
+
+  @override
+  String get wsLessonLoadFailed => 'Harjoitusta ei voitu ladata';
+
+  @override
+  String get wsNationalTitle => 'Aksenttisi vaikeat äänteet';
+
+  @override
+  String get wsNationalPending =>
+      'Täytämme tämän, kun aksenttisi on analysoitu';
+
+  @override
+  String get wsNationalPicked => 'Valittu aksenttianalyysisi perusteella';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Käy vielä muutama puhelu, niin analysoimme aksenttisi.';
+
+  @override
+  String get wsMineTitle => 'Omat vaikeat äänteet';
+
+  @override
+  String get wsMineSubtitle =>
+      'Äänteet, joista sait viime aikoina vähiten pisteitä';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Kun soitat ja kertaat, vaikeat äänteesi kertyvät tänne.';
+
+  @override
+  String get wsNoDataYet => 'Ei vielä tietoja';
+
+  @override
+  String get wsGoToCall => 'Aloita puhelu';
+
+  @override
+  String get wsRule => 'Sääntö';
+
+  @override
+  String get wsRecommended => 'Suositeltu';
+
+  @override
+  String get wsNotMeasured => 'Ei mitattu';
+
+  @override
+  String get wsStepUnderstand => 'Opi';
+
+  @override
+  String get wsStepWords => 'Sanat';
+
+  @override
+  String get wsStepSentence => 'Lause';
+
+  @override
+  String get wsStepTest => 'Testi';
+
+  @override
+  String get wsQuitTitle => 'Lopetetaanko harjoittelu?';
+
+  @override
+  String get wsQuitBody => 'Jos poistut nyt, tätä harjoitusta ei tallenneta.';
+
+  @override
+  String get wsHowToSound => 'Näin äänne muodostetaan';
+
+  @override
+  String get wsPracticeWords => 'Harjoittele sanoja';
+
+  @override
+  String get wsPracticeSentence => 'Harjoittele lausetta';
+
+  @override
+  String get wsStartTest => 'Aloita testi';
+
+  @override
+  String get wsThisSentence => 'Tämä lause';
+
+  @override
+  String get wsNoScoreNote =>
+      'Tästä vaiheesta ei tule pisteitä. Toista vain perässä.';
+
+  @override
+  String get wsListen => 'Kuuntele tarkasti';
+
+  @override
+  String get wsSayNow => 'Toista nyt perässä';
+
+  @override
+  String get wsPracticeDone => 'Harjoitus valmis';
+
+  @override
+  String get wsPaused => 'Tauolla';
+
+  @override
+  String get wsAudioFailed => 'Ääntä ei voitu ladata. Lue teksti ääneen.';
+
+  @override
+  String get wsReadAloud => 'Lue alla oleva lause ääneen';
+
+  @override
+  String get wsTapToStart => 'Napauta aloittaaksesi';
+
+  @override
+  String get wsTapWhenDone => 'Napauta, kun olet valmis';
+
+  @override
+  String get wsScoring => 'Arvioidaan';
+
+  @override
+  String get wsMicFailed => 'Mikrofonia ei voitu avata.';
+
+  @override
+  String get wsNoSound => 'Emme kuulleet mitään. Yritetäänkö uudelleen?';
+
+  @override
+  String get wsScoreFailed => 'Arviointi epäonnistui. Yritä uudelleen.';
+
+  @override
+  String get wsSomethingWrong => 'Jokin meni vikaan.';
+
+  @override
+  String get wsLearnDone => 'Oppitunti valmis';
+
+  @override
+  String get wsRetest => 'Testaa uudelleen';
+
+  @override
+  String get wsFirstMeasure => 'Ensimmäinen mittaus';
+
+  @override
+  String get wsFinalTest => 'Lopputesti';
+
+  @override
+  String wsPoints(int score) {
+    return '$score p';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Ennen $score p';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Tavoite $score p';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Tavoite · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Aksentti: $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count sanaa toistettu';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count lauseen osaa toistettu';
+  }
+
+  @override
+  String get wsStartRecommended => 'Aloita suositellusta äänteestä';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Aloita: $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'p';
 }

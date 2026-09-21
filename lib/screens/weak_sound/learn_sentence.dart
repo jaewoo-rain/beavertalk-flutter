@@ -10,6 +10,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 
 /// 3단계 · 문장 연습 — Figma `09~13 · learn/3_sentence`, 규칙은 R3.
 ///
@@ -30,6 +31,7 @@ class _SentenceHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     return Container(
       width: double.infinity,
@@ -41,7 +43,7 @@ class _SentenceHeader extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('이번 문장',
+          Text(l10n.wsThisSentence,
               style: AppType.caption1.b.copyWith(color: c.primaryForeground)),
           const SizedBox(height: AppSpacing.s4),
           Text(sentence.text,
@@ -69,6 +71,7 @@ class LearnSentenceScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final key = resolveSoundKey(context, soundKey);
     if (key == null) return const MissingSoundKey();
     return LearnScaffold(
@@ -83,12 +86,13 @@ class LearnSentenceScreen extends ConsumerWidget {
             : lesson.sentence.chunks;
         return AutoPracticeView(
           items: chunks,
+          audioUrls: lesson.audio,
           // 발음 표기·번역은 **문장 전체 기준**이라 조각에 붙이지 않는다.
           // 둘 다 위 머리말(_SentenceHeader)로 올렸다.
           pronunciations: const [],
           captions: const [],
           header: _SentenceHeader(sentence: lesson.sentence),
-          doneLabel: '평가 시작하기',
+          doneLabel: l10n.wsStartTest,
           onDone: () => Navigator.of(context).pushNamed(
             Routes.weakSoundTest,
             arguments: key,

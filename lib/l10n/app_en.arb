@@ -267,28 +267,56 @@
   "navCall": "Call",
   "navStats": "Stats",
   "homeCourseExpression": "Expression",
-  "@homeCourseExpression": {"description": "Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge."},
+  "@homeCourseExpression": {
+    "description": "Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge."
+  },
   "homeCourseFreetalk": "Free talk",
-  "@homeCourseFreetalk": {"description": "Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`."},
+  "@homeCourseFreetalk": {
+    "description": "Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`."
+  },
   "homeExpressionsLeft": "{count} expressions left until free talk",
-  "@homeExpressionsLeft": {"description": "Home learning-status block, third line: how many expressions remain before free talk unlocks.", "placeholders": {"count": {"type": "int", "example": "14"}}},
+  "@homeExpressionsLeft": {
+    "description": "Home learning-status block, third line: how many expressions remain before free talk unlocks.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "14"
+      }
+    }
+  },
   "homeFreetalkNote": "Use what you learned and talk freely",
-  "@homeFreetalkNote": {"description": "Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked."},
+  "@homeFreetalkNote": {
+    "description": "Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked."
+  },
   "homeLevelPending": "Level pending",
-  "@homeLevelPending": {"description": "Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge."},
+  "@homeLevelPending": {
+    "description": "Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge."
+  },
   "homeNoLevelTitle": "You don't have a level yet",
-  "@homeNoLevelTitle": {"description": "Home learning-status block, second line when no level is assigned."},
+  "@homeNoLevelTitle": {
+    "description": "Home learning-status block, second line when no level is assigned."
+  },
   "homeNoLevelNote": "Finish your first call to get one",
   "homeCurriculumPendingBadge": "Coming soon",
-  "@homeCurriculumPendingBadge": {"description": "Home learning-status badge when the member's learning language has no curriculum yet (/cur/me available=false). Neutral tone."},
+  "@homeCurriculumPendingBadge": {
+    "description": "Home learning-status badge when the member's learning language has no curriculum yet (/cur/me available=false). Neutral tone."
+  },
   "homeCurriculumPendingTitle": "{language} curriculum is on its way",
   "@homeCurriculumPendingTitle": {
     "description": "Home learning-status block, second line when the learning language has no curriculum yet. {language} is the language's own name (e.g. English, 日本語).",
-    "placeholders": {"language": {"type": "String"}}
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
   },
   "homeCurriculumPendingNote": "You'll practice general expressions on your calls",
-  "@homeCurriculumPendingNote": {"description": "Home learning-status block, third line when the learning language has no curriculum yet — what the call will do instead."},
-  "@homeNoLevelNote": {"description": "Home learning-status block, third line when no level is assigned — how to get one."},
+  "@homeCurriculumPendingNote": {
+    "description": "Home learning-status block, third line when the learning language has no curriculum yet — what the call will do instead."
+  },
+  "@homeNoLevelNote": {
+    "description": "Home learning-status block, third line when no level is assigned — how to get one."
+  },
   "myPage": "My Page",
   "languageSaveFailed": "Couldn't save your language.",
   "accountDeleteFailed": "Couldn't delete your account.",
@@ -2016,5 +2044,127 @@
   "callHintLockedTitle": "Hints aren't available in Study",
   "@callHintLockedTitle": {
     "description": "Call screen - speech bubble above the hint button, shown when the learner taps it during a Study (callModeStudy) call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Keep the course name identical to callModeStudy."
+  },
+  "wsTitle": "Weak sounds",
+  "wsToList": "Back to list",
+  "wsNext": "Next",
+  "wsRetry": "Try again",
+  "wsDone": "Done",
+  "wsContinue": "Keep going",
+  "wsQuit": "Leave",
+  "wsRetryLater": "Please try again in a moment.",
+  "wsMissingTitle": "We couldn't find that sound",
+  "wsMissingBody": "Please choose it from the list again.",
+  "wsListLoadFailed": "Couldn't load the list",
+  "wsLessonLoadFailed": "Couldn't load the lesson",
+  "wsNationalTitle": "Weak sounds for your accent",
+  "wsNationalPending": "We'll fill this in once your accent is analyzed",
+  "wsNationalPicked": "Chosen from your accent analysis",
+  "wsNationalEmptyBody": "Make a few more calls and we'll analyze your accent.",
+  "wsMineTitle": "My weak sounds",
+  "wsMineSubtitle": "Sounds you scored lowest on recently",
+  "wsMineEmptyBody": "Call and review, and your weak sounds will build up.",
+  "wsNoDataYet": "No data yet",
+  "wsGoToCall": "Start a call",
+  "wsRule": "Rule",
+  "wsRecommended": "Recommended",
+  "wsNotMeasured": "Not measured",
+  "wsStepUnderstand": "Learn",
+  "wsStepWords": "Words",
+  "wsStepSentence": "Sentence",
+  "wsStepTest": "Test",
+  "wsQuitTitle": "Stop practicing?",
+  "wsQuitBody": "If you leave now, this practice won't be saved.",
+  "wsHowToSound": "How to make the sound",
+  "wsPracticeWords": "Practice words",
+  "wsPracticeSentence": "Practice the sentence",
+  "wsStartTest": "Start the test",
+  "wsThisSentence": "This sentence",
+  "wsNoScoreNote": "This step isn't scored. Just say it along.",
+  "wsListen": "Listen carefully",
+  "wsSayNow": "Now say it",
+  "wsPracticeDone": "Practice complete",
+  "wsPaused": "Paused",
+  "wsAudioFailed": "Couldn't load the audio. Read it aloud from the text.",
+  "wsReadAloud": "Read the sentence below aloud",
+  "wsTapToStart": "Tap to start",
+  "wsTapWhenDone": "Tap when you're done",
+  "wsScoring": "Scoring",
+  "wsMicFailed": "Couldn't open the microphone.",
+  "wsNoSound": "We didn't hear anything. Try again?",
+  "wsScoreFailed": "Scoring failed. Please try again.",
+  "wsSomethingWrong": "Something went wrong.",
+  "wsLearnDone": "Lesson complete",
+  "wsRetest": "Test again",
+  "wsFirstMeasure": "First measurement",
+  "wsFinalTest": "Final test",
+  "wsPoints": "{score} pts",
+  "@wsPoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsBeforePoints": "Before {score} pts",
+  "@wsBeforePoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsGoalPoints": "Goal {score} pts",
+  "@wsGoalPoints": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsGoalPrefix": "Goal · {desc}",
+  "@wsGoalPrefix": {
+    "placeholders": {
+      "desc": {
+        "type": "String"
+      }
+    }
+  },
+  "wsAccentOf": "{country} accent",
+  "@wsAccentOf": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
+  "wsWordsRepeated": "Repeated {count} words",
+  "@wsWordsRepeated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsChunksRepeated": "Repeated {count} chunks",
+  "@wsChunksRepeated": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsStartRecommended": "Start with the recommended sound",
+  "wsStartRecommendedWith": "Start with {label}",
+  "@wsStartRecommendedWith": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "wsPointsUnit": "pts",
+  "@wsPointsUnit": {
+    "description": "Unit shown next to a pronunciation score, e.g. the \"pts\" in \"84 pts\". Rendered in a smaller style beside the number."
   }
 }

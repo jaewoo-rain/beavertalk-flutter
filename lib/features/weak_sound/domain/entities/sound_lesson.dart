@@ -21,6 +21,7 @@ class SoundLesson {
     this.symbol,
     this.formula = const [],
     this.repSyllable,
+    this.audio = const {},
     this.score,
     this.learned = false,
   });
@@ -58,6 +59,17 @@ class SoundLesson {
 
   /// 대표 음절(예: 「가」). 이해 화면의 큰 글자.
   final String? repSyllable;
+
+  /// {문장: 재생 URL} — **미리 구워 둔 것만** 들어 있다.
+  ///
+  /// 서버가 같은 문장을 매번 합성하면 매번 과금된다(`/tts/speech` 는 저장을 안 한다).
+  /// 이 기능의 문장은 고정 콘텐츠라 미리 구워 두고 URL 로 받는다.
+  ///
+  /// ⛔ **이 URL 을 캐시하지 마라.** 서명이 붙어 있고 만료된다. 화면을 다시 열면
+  ///   서버가 새로 서명해 준다.
+  ///
+  /// 비어 있거나 그 문장이 없으면 종전대로 `POST /tts/speech` 로 떨어진다 — 소리는 난다.
+  final Map<String, String> audio;
 
   /// 현재 점수 0~100. null 이면 표본 없음.
   final int? score;

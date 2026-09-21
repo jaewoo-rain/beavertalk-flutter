@@ -2666,4 +2666,212 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Không dùng được gợi ý trong Học biểu đạt';
+
+  @override
+  String get wsTitle => 'Âm còn yếu';
+
+  @override
+  String get wsToList => 'Về danh sách';
+
+  @override
+  String get wsNext => 'Tiếp theo';
+
+  @override
+  String get wsRetry => 'Thử lại';
+
+  @override
+  String get wsDone => 'Xong';
+
+  @override
+  String get wsContinue => 'Tiếp tục';
+
+  @override
+  String get wsQuit => 'Thoát';
+
+  @override
+  String get wsRetryLater => 'Vui lòng thử lại sau một chút.';
+
+  @override
+  String get wsMissingTitle => 'Không tìm thấy âm đó';
+
+  @override
+  String get wsMissingBody => 'Vui lòng chọn lại từ danh sách.';
+
+  @override
+  String get wsListLoadFailed => 'Không tải được danh sách';
+
+  @override
+  String get wsLessonLoadFailed => 'Không tải được bài học';
+
+  @override
+  String get wsNationalTitle => 'Âm còn yếu theo giọng của bạn';
+
+  @override
+  String get wsNationalPending => 'Sẽ điền khi phân tích xong giọng của bạn';
+
+  @override
+  String get wsNationalPicked => 'Chọn từ kết quả phân tích giọng của bạn';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Gọi thêm vài lần để chúng tôi phân tích giọng của bạn.';
+
+  @override
+  String get wsMineTitle => 'Âm còn yếu của tôi';
+
+  @override
+  String get wsMineSubtitle => 'Những âm có điểm thấp nhất gần đây';
+
+  @override
+  String get wsMineEmptyBody => 'Gọi và ôn tập thì âm còn yếu sẽ dần tích lũy.';
+
+  @override
+  String get wsNoDataYet => 'Chưa có dữ liệu';
+
+  @override
+  String get wsGoToCall => 'Bắt đầu cuộc gọi';
+
+  @override
+  String get wsRule => 'Quy tắc';
+
+  @override
+  String get wsRecommended => 'Đề xuất';
+
+  @override
+  String get wsNotMeasured => 'Chưa đo';
+
+  @override
+  String get wsStepUnderstand => 'Hiểu';
+
+  @override
+  String get wsStepWords => 'Từ vựng';
+
+  @override
+  String get wsStepSentence => 'Câu';
+
+  @override
+  String get wsStepTest => 'Kiểm tra';
+
+  @override
+  String get wsQuitTitle => 'Dừng luyện tập nhé?';
+
+  @override
+  String get wsQuitBody =>
+      'Nếu thoát bây giờ, lần luyện này sẽ không được lưu.';
+
+  @override
+  String get wsHowToSound => 'Cách phát âm';
+
+  @override
+  String get wsPracticeWords => 'Luyện từ vựng';
+
+  @override
+  String get wsPracticeSentence => 'Luyện câu';
+
+  @override
+  String get wsStartTest => 'Bắt đầu kiểm tra';
+
+  @override
+  String get wsThisSentence => 'Câu này';
+
+  @override
+  String get wsNoScoreNote =>
+      'Bước này không tính điểm. Cứ nói theo thoải mái.';
+
+  @override
+  String get wsListen => 'Hãy nghe kỹ';
+
+  @override
+  String get wsSayNow => 'Giờ bạn nói theo';
+
+  @override
+  String get wsPracticeDone => 'Đã luyện xong';
+
+  @override
+  String get wsPaused => 'Đã tạm dừng';
+
+  @override
+  String get wsAudioFailed => 'Không tải được âm thanh. Hãy đọc to theo chữ.';
+
+  @override
+  String get wsReadAloud => 'Hãy đọc to câu bên dưới';
+
+  @override
+  String get wsTapToStart => 'Nhấn để bắt đầu';
+
+  @override
+  String get wsTapWhenDone => 'Đọc xong thì nhấn';
+
+  @override
+  String get wsScoring => 'Đang chấm điểm';
+
+  @override
+  String get wsMicFailed => 'Không mở được micrô.';
+
+  @override
+  String get wsNoSound => 'Chúng tôi không nghe thấy gì. Thử lại nhé?';
+
+  @override
+  String get wsScoreFailed => 'Chấm điểm thất bại. Vui lòng thử lại.';
+
+  @override
+  String get wsSomethingWrong => 'Đã xảy ra lỗi.';
+
+  @override
+  String get wsLearnDone => 'Đã học xong';
+
+  @override
+  String get wsRetest => 'Kiểm tra lại';
+
+  @override
+  String get wsFirstMeasure => 'Lần đo đầu tiên';
+
+  @override
+  String get wsFinalTest => 'Kiểm tra cuối';
+
+  @override
+  String wsPoints(int score) {
+    return '$score điểm';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Trước $score điểm';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Mục tiêu $score điểm';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Mục tiêu · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Giọng $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'Đã nói theo $count từ';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'Đã nói theo $count đoạn';
+  }
+
+  @override
+  String get wsStartRecommended => 'Bắt đầu từ âm được đề xuất';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Bắt đầu từ $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'điểm';
 }

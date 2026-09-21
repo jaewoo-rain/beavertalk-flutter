@@ -2695,4 +2695,213 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Petunjuk tidak tersedia dalam mod Belajar';
+
+  @override
+  String get wsTitle => 'Bunyi sukar';
+
+  @override
+  String get wsToList => 'Ke senarai';
+
+  @override
+  String get wsNext => 'Seterusnya';
+
+  @override
+  String get wsRetry => 'Cuba lagi';
+
+  @override
+  String get wsDone => 'Selesai';
+
+  @override
+  String get wsContinue => 'Teruskan';
+
+  @override
+  String get wsQuit => 'Keluar';
+
+  @override
+  String get wsRetryLater => 'Sila cuba lagi sebentar nanti.';
+
+  @override
+  String get wsMissingTitle => 'Kami tidak jumpa bunyi itu';
+
+  @override
+  String get wsMissingBody => 'Sila pilih semula daripada senarai.';
+
+  @override
+  String get wsListLoadFailed => 'Tidak dapat memuatkan senarai';
+
+  @override
+  String get wsLessonLoadFailed => 'Tidak dapat memuatkan pelajaran';
+
+  @override
+  String get wsNationalTitle => 'Bunyi sukar bagi loghat anda';
+
+  @override
+  String get wsNationalPending => 'Akan diisi selepas loghat anda dianalisis';
+
+  @override
+  String get wsNationalPicked => 'Dipilih daripada analisis loghat anda';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Buat beberapa panggilan lagi dan kami akan analisis loghat anda.';
+
+  @override
+  String get wsMineTitle => 'Bunyi sukar saya';
+
+  @override
+  String get wsMineSubtitle => 'Bunyi dengan skor terendah baru-baru ini';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Berbual dan ulang kaji, bunyi sukar anda akan terkumpul.';
+
+  @override
+  String get wsNoDataYet => 'Belum ada data';
+
+  @override
+  String get wsGoToCall => 'Mulakan panggilan';
+
+  @override
+  String get wsRule => 'Peraturan';
+
+  @override
+  String get wsRecommended => 'Disyorkan';
+
+  @override
+  String get wsNotMeasured => 'Belum diukur';
+
+  @override
+  String get wsStepUnderstand => 'Fahami';
+
+  @override
+  String get wsStepWords => 'Perkataan';
+
+  @override
+  String get wsStepSentence => 'Ayat';
+
+  @override
+  String get wsStepTest => 'Ujian';
+
+  @override
+  String get wsQuitTitle => 'Berhenti berlatih?';
+
+  @override
+  String get wsQuitBody => 'Jika keluar sekarang, latihan ini tidak disimpan.';
+
+  @override
+  String get wsHowToSound => 'Cara menghasilkan bunyi';
+
+  @override
+  String get wsPracticeWords => 'Latih perkataan';
+
+  @override
+  String get wsPracticeSentence => 'Latih ayat';
+
+  @override
+  String get wsStartTest => 'Mulakan ujian';
+
+  @override
+  String get wsThisSentence => 'Ayat ini';
+
+  @override
+  String get wsNoScoreNote =>
+      'Langkah ini tiada skor. Sebut sahaja mengikutnya.';
+
+  @override
+  String get wsListen => 'Dengar dengan teliti';
+
+  @override
+  String get wsSayNow => 'Kini sebut pula';
+
+  @override
+  String get wsPracticeDone => 'Latihan selesai';
+
+  @override
+  String get wsPaused => 'Dijeda';
+
+  @override
+  String get wsAudioFailed =>
+      'Tidak dapat memuatkan audio. Baca teks itu dengan kuat.';
+
+  @override
+  String get wsReadAloud => 'Baca ayat di bawah dengan kuat';
+
+  @override
+  String get wsTapToStart => 'Ketik untuk mula';
+
+  @override
+  String get wsTapWhenDone => 'Ketik apabila sudah siap';
+
+  @override
+  String get wsScoring => 'Menilai';
+
+  @override
+  String get wsMicFailed => 'Tidak dapat membuka mikrofon.';
+
+  @override
+  String get wsNoSound => 'Kami tidak dengar apa-apa. Cuba lagi?';
+
+  @override
+  String get wsScoreFailed => 'Penilaian gagal. Sila cuba lagi.';
+
+  @override
+  String get wsSomethingWrong => 'Ada masalah berlaku.';
+
+  @override
+  String get wsLearnDone => 'Pelajaran selesai';
+
+  @override
+  String get wsRetest => 'Uji semula';
+
+  @override
+  String get wsFirstMeasure => 'Ukuran pertama';
+
+  @override
+  String get wsFinalTest => 'Ujian akhir';
+
+  @override
+  String wsPoints(int score) {
+    return '$score mata';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Sebelum $score mata';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Sasaran $score mata';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Sasaran · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Loghat $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'Mengulang $count perkataan';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'Mengulang $count bahagian';
+  }
+
+  @override
+  String get wsStartRecommended => 'Mula dengan bunyi disyorkan';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Mula dengan $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'mata';
 }

@@ -13,6 +13,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 
 /// 취약 발음 목록 — Figma `02 · screen/weak_sounds` (`6023:34471`).
 ///
@@ -27,6 +28,7 @@ class WeakSoundsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final async = ref.watch(weakSoundListProvider);
     return Scaffold(
@@ -39,7 +41,7 @@ class WeakSoundsScreen extends ConsumerWidget {
             //    (gnb.dart `_buildSub`: 가운데 제목 + 선택적 상태 줄뿐). 마이페이지에서
             //    들어온 화면이라 돌아갈 길이 시스템 back 하나만 남는다.
             Gnb.main(
-              title: '취약 발음',
+              title: l10n.wsTitle,
               onBack: () => Navigator.of(context).maybePop(),
             ),
             Expanded(
@@ -49,9 +51,9 @@ class WeakSoundsScreen extends ConsumerWidget {
                   child: Padding(
                     padding: const EdgeInsets.all(AppSpacing.s20),
                     child: EmptyBlock(
-                      title: '목록을 불러오지 못했어요',
-                      body: '잠시 후 다시 시도해 주세요.',
-                      ctaText: '다시 시도',
+                      title: l10n.wsListLoadFailed,
+                      body: l10n.wsRetryLater,
+                      ctaText: l10n.wsRetry,
                       onCta: () => ref.invalidate(weakSoundListProvider),
                     ),
                   ),
@@ -73,6 +75,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final recommended = list.recommended;
     return RefreshIndicator(
       onRefresh: () async => ref.invalidate(weakSoundListProvider),
@@ -95,27 +98,27 @@ class _Body extends ConsumerWidget {
           ],
           const SizedBox(height: AppSpacing.s28),
           _Section(
-            title: '국적별 취약 발음',
+            title: l10n.wsNationalTitle,
             subtitle: list.national.country == null
-                ? '억양 분석이 끝나면 채워져요'
+                ? l10n.wsNationalPending
                 : '${list.national.country} 화자가 자주 틀리는 소리예요',
             items: list.national.items,
             recommended: recommended,
-            emptyTitle: '아직 데이터가 없어요',
-            emptyBody: '통화를 더 하면 억양을 분석해 알려드려요.',
-            emptyCtaText: '통화하러 가기',
+            emptyTitle: l10n.wsNoDataYet,
+            emptyBody: l10n.wsNationalEmptyBody,
+            emptyCtaText: l10n.wsGoToCall,
             onEmptyCta: () => _toHome(context),
           ),
           const SizedBox(height: AppSpacing.s28),
           _Section(
-            title: '나의 취약 발음',
-            subtitle: '최근 통화에서 정확도가 낮은 소리예요',
+            title: l10n.wsMineTitle,
+            subtitle: l10n.wsMineSubtitle,
             items: list.mine,
             recommended: recommended,
             // Figma E2 정본 문구. CTA 까지 있어야 「그래서 뭘 하라는 건데」가 풀린다.
-            emptyTitle: '아직 데이터가 없어요',
-            emptyBody: '통화하고 복습하면 내 취약 발음이 쌓여요.',
-            emptyCtaText: '통화하러 가기',
+            emptyTitle: l10n.wsNoDataYet,
+            emptyBody: l10n.wsMineEmptyBody,
+            emptyCtaText: l10n.wsGoToCall,
             onEmptyCta: () => _toHome(context),
           ),
         ],
@@ -151,6 +154,7 @@ class _AccentSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final iso = _isoOf(country);
     return Container(
@@ -172,12 +176,12 @@ class _AccentSummary extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '$country 억양',
+                  l10n.wsAccentOf(country),
                   style: AppType.body1.b.copyWith(color: c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s2),
                 Text(
-                  '억양 분석 결과를 바탕으로 골랐어요',
+                  l10n.wsNationalPicked,
                   style: AppType.label2.r.copyWith(color: c.labelNormal),
                 ),
               ],
@@ -197,15 +201,20 @@ class _RecommendCta extends StatelessWidget {
   final String label;
 
   @override
-  Widget build(BuildContext context) => Button(
-        type: BtnType.primaryFill,
-        size: BtnSize.s60,
-        text: label.isEmpty ? '추천 소리부터 학습' : '추천 소리부터 학습 · $label',
-        onPressed: () => Navigator.of(context).pushNamed(
-          Routes.weakSoundLearn,
-          arguments: soundKey,
-        ),
-      );
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Button(
+      type: BtnType.primaryFill,
+      size: BtnSize.s60,
+      text: label.isEmpty
+          ? l10n.wsStartRecommended
+          : l10n.wsStartRecommendedWith(label),
+      onPressed: () => Navigator.of(context).pushNamed(
+        Routes.weakSoundLearn,
+        arguments: soundKey,
+      ),
+    );
+  }
 }
 
 /// 제목 + 부제 + 카드 목록. 비면 [EmptyBlock].

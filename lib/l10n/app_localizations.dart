@@ -5019,6 +5019,384 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hints aren\'t available in Study'**
   String get callHintLockedTitle;
+
+  /// No description provided for @wsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak sounds'**
+  String get wsTitle;
+
+  /// No description provided for @wsToList.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to list'**
+  String get wsToList;
+
+  /// No description provided for @wsNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get wsNext;
+
+  /// No description provided for @wsRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get wsRetry;
+
+  /// No description provided for @wsDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get wsDone;
+
+  /// No description provided for @wsContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep going'**
+  String get wsContinue;
+
+  /// No description provided for @wsQuit.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave'**
+  String get wsQuit;
+
+  /// No description provided for @wsRetryLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Please try again in a moment.'**
+  String get wsRetryLater;
+
+  /// No description provided for @wsMissingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t find that sound'**
+  String get wsMissingTitle;
+
+  /// No description provided for @wsMissingBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose it from the list again.'**
+  String get wsMissingBody;
+
+  /// No description provided for @wsListLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the list'**
+  String get wsListLoadFailed;
+
+  /// No description provided for @wsLessonLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the lesson'**
+  String get wsLessonLoadFailed;
+
+  /// No description provided for @wsNationalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak sounds for your accent'**
+  String get wsNationalTitle;
+
+  /// No description provided for @wsNationalPending.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ll fill this in once your accent is analyzed'**
+  String get wsNationalPending;
+
+  /// No description provided for @wsNationalPicked.
+  ///
+  /// In en, this message translates to:
+  /// **'Chosen from your accent analysis'**
+  String get wsNationalPicked;
+
+  /// No description provided for @wsNationalEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Make a few more calls and we\'ll analyze your accent.'**
+  String get wsNationalEmptyBody;
+
+  /// No description provided for @wsMineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My weak sounds'**
+  String get wsMineTitle;
+
+  /// No description provided for @wsMineSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you scored lowest on recently'**
+  String get wsMineSubtitle;
+
+  /// No description provided for @wsMineEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Call and review, and your weak sounds will build up.'**
+  String get wsMineEmptyBody;
+
+  /// No description provided for @wsNoDataYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No data yet'**
+  String get wsNoDataYet;
+
+  /// No description provided for @wsGoToCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a call'**
+  String get wsGoToCall;
+
+  /// No description provided for @wsRule.
+  ///
+  /// In en, this message translates to:
+  /// **'Rule'**
+  String get wsRule;
+
+  /// No description provided for @wsRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get wsRecommended;
+
+  /// No description provided for @wsNotMeasured.
+  ///
+  /// In en, this message translates to:
+  /// **'Not measured'**
+  String get wsNotMeasured;
+
+  /// No description provided for @wsStepUnderstand.
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get wsStepUnderstand;
+
+  /// No description provided for @wsStepWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Words'**
+  String get wsStepWords;
+
+  /// No description provided for @wsStepSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Sentence'**
+  String get wsStepSentence;
+
+  /// No description provided for @wsStepTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get wsStepTest;
+
+  /// No description provided for @wsQuitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stop practicing?'**
+  String get wsQuitTitle;
+
+  /// No description provided for @wsQuitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'If you leave now, this practice won\'t be saved.'**
+  String get wsQuitBody;
+
+  /// No description provided for @wsHowToSound.
+  ///
+  /// In en, this message translates to:
+  /// **'How to make the sound'**
+  String get wsHowToSound;
+
+  /// No description provided for @wsPracticeWords.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice words'**
+  String get wsPracticeWords;
+
+  /// No description provided for @wsPracticeSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the sentence'**
+  String get wsPracticeSentence;
+
+  /// No description provided for @wsStartTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Start the test'**
+  String get wsStartTest;
+
+  /// No description provided for @wsThisSentence.
+  ///
+  /// In en, this message translates to:
+  /// **'This sentence'**
+  String get wsThisSentence;
+
+  /// No description provided for @wsNoScoreNote.
+  ///
+  /// In en, this message translates to:
+  /// **'This step isn\'t scored. Just say it along.'**
+  String get wsNoScoreNote;
+
+  /// No description provided for @wsListen.
+  ///
+  /// In en, this message translates to:
+  /// **'Listen carefully'**
+  String get wsListen;
+
+  /// No description provided for @wsSayNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Now say it'**
+  String get wsSayNow;
+
+  /// No description provided for @wsPracticeDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice complete'**
+  String get wsPracticeDone;
+
+  /// No description provided for @wsPaused.
+  ///
+  /// In en, this message translates to:
+  /// **'Paused'**
+  String get wsPaused;
+
+  /// No description provided for @wsAudioFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the audio. Read it aloud from the text.'**
+  String get wsAudioFailed;
+
+  /// No description provided for @wsReadAloud.
+  ///
+  /// In en, this message translates to:
+  /// **'Read the sentence below aloud'**
+  String get wsReadAloud;
+
+  /// No description provided for @wsTapToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to start'**
+  String get wsTapToStart;
+
+  /// No description provided for @wsTapWhenDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap when you\'re done'**
+  String get wsTapWhenDone;
+
+  /// No description provided for @wsScoring.
+  ///
+  /// In en, this message translates to:
+  /// **'Scoring'**
+  String get wsScoring;
+
+  /// No description provided for @wsMicFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the microphone.'**
+  String get wsMicFailed;
+
+  /// No description provided for @wsNoSound.
+  ///
+  /// In en, this message translates to:
+  /// **'We didn\'t hear anything. Try again?'**
+  String get wsNoSound;
+
+  /// No description provided for @wsScoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Scoring failed. Please try again.'**
+  String get wsScoreFailed;
+
+  /// No description provided for @wsSomethingWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong.'**
+  String get wsSomethingWrong;
+
+  /// No description provided for @wsLearnDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Lesson complete'**
+  String get wsLearnDone;
+
+  /// No description provided for @wsRetest.
+  ///
+  /// In en, this message translates to:
+  /// **'Test again'**
+  String get wsRetest;
+
+  /// No description provided for @wsFirstMeasure.
+  ///
+  /// In en, this message translates to:
+  /// **'First measurement'**
+  String get wsFirstMeasure;
+
+  /// No description provided for @wsFinalTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Final test'**
+  String get wsFinalTest;
+
+  /// No description provided for @wsPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'{score} pts'**
+  String wsPoints(int score);
+
+  /// No description provided for @wsBeforePoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Before {score} pts'**
+  String wsBeforePoints(int score);
+
+  /// No description provided for @wsGoalPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {score} pts'**
+  String wsGoalPoints(int score);
+
+  /// No description provided for @wsGoalPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal · {desc}'**
+  String wsGoalPrefix(String desc);
+
+  /// No description provided for @wsAccentOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{country} accent'**
+  String wsAccentOf(String country);
+
+  /// No description provided for @wsWordsRepeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated {count} words'**
+  String wsWordsRepeated(int count);
+
+  /// No description provided for @wsChunksRepeated.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeated {count} chunks'**
+  String wsChunksRepeated(int count);
+
+  /// No description provided for @wsStartRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with the recommended sound'**
+  String get wsStartRecommended;
+
+  /// No description provided for @wsStartRecommendedWith.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with {label}'**
+  String wsStartRecommendedWith(String label);
+
+  /// Unit shown next to a pronunciation score, e.g. the "pts" in "84 pts". Rendered in a smaller style beside the number.
+  ///
+  /// In en, this message translates to:
+  /// **'pts'**
+  String get wsPointsUnit;
 }
 
 class _AppLocalizationsDelegate

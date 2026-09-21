@@ -7,6 +7,7 @@ import '../../../../theme/app_radius.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_typography.dart';
 import '../../domain/entities/weak_sound_item.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 취약 발음 목록의 카드 1장 — Figma `WeakSound/Card` (`6040:1496`).
 ///
@@ -118,6 +119,7 @@ class _Text extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -135,11 +137,11 @@ class _Text extends StatelessWidget {
             if (item.isRule) ...[
               // Figma 실측 6px. AppSpacing 에 s6 토큰이 없어 raw 를 쓴다.
               const SizedBox(width: 6),
-              const bt.Badge(tone: bt.BadgeTone.neutral, label: '규칙'),
+              bt.Badge(tone: bt.BadgeTone.neutral, label: l10n.wsRule),
             ],
             if (recommended) ...[
               const SizedBox(width: 6),
-              const bt.Badge(tone: bt.BadgeTone.brand, label: '추천'),
+              bt.Badge(tone: bt.BadgeTone.brand, label: l10n.wsRecommended),
             ],
           ],
         ),
@@ -166,10 +168,11 @@ class _Score extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l10n = AppLocalizations.of(context);
     if (score == null) {
       // ⛔ 0 점으로 그리지 마라. 「아직 안 재 봤다」와 「재 봤더니 0점」은 다른 사실이다.
       return Text(
-        '측정 전',
+        l10n.wsNotMeasured,
         style: AppType.label1.m.copyWith(color: c.labelAssistive),
       );
     }
@@ -180,7 +183,8 @@ class _Score extends StatelessWidget {
       children: [
         Text('$score', style: AppType.headline1.b.copyWith(color: c.labelStrong)),
         const SizedBox(width: AppSpacing.s2),
-        Text('점', style: AppType.label1.m.copyWith(color: c.labelNormal)),
+        Text(l10n.wsPointsUnit,
+            style: AppType.label1.m.copyWith(color: c.labelNormal)),
       ],
     );
   }

@@ -2669,4 +2669,211 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Оқу режимінде кеңестер қолжетімсіз';
+
+  @override
+  String get wsTitle => 'Қиын дыбыстар';
+
+  @override
+  String get wsToList => 'Тізімге';
+
+  @override
+  String get wsNext => 'Келесі';
+
+  @override
+  String get wsRetry => 'Қайта көру';
+
+  @override
+  String get wsDone => 'Дайын';
+
+  @override
+  String get wsContinue => 'Жалғастыру';
+
+  @override
+  String get wsQuit => 'Шығу';
+
+  @override
+  String get wsRetryLater => 'Сәл кейін қайталап көріңіз.';
+
+  @override
+  String get wsMissingTitle => 'Ол дыбысты таба алмадық';
+
+  @override
+  String get wsMissingBody => 'Тізімнен қайта таңдаңыз.';
+
+  @override
+  String get wsListLoadFailed => 'Тізімді жүктей алмадық';
+
+  @override
+  String get wsLessonLoadFailed => 'Сабақты жүктей алмадық';
+
+  @override
+  String get wsNationalTitle => 'Акцентіңізге сай қиын дыбыстар';
+
+  @override
+  String get wsNationalPending => 'Акцент талдауы бітсе, осы жер толады';
+
+  @override
+  String get wsNationalPicked => 'Акцент талдауы бойынша таңдалды';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Бірнеше қоңырау шалсаңыз, акцентіңізді талдаймыз.';
+
+  @override
+  String get wsMineTitle => 'Менің қиын дыбыстарым';
+
+  @override
+  String get wsMineSubtitle => 'Соңғы кезде балл төмен болған дыбыстар';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Қоңырау шалып қайталасаңыз, қиын дыбыстар жинала береді.';
+
+  @override
+  String get wsNoDataYet => 'Әзірге дерек жоқ';
+
+  @override
+  String get wsGoToCall => 'Қоңырау шалу';
+
+  @override
+  String get wsRule => 'Ереже';
+
+  @override
+  String get wsRecommended => 'Ұсынылады';
+
+  @override
+  String get wsNotMeasured => 'Өлшенбеген';
+
+  @override
+  String get wsStepUnderstand => 'Түсіну';
+
+  @override
+  String get wsStepWords => 'Сөздер';
+
+  @override
+  String get wsStepSentence => 'Сөйлем';
+
+  @override
+  String get wsStepTest => 'Бағалау';
+
+  @override
+  String get wsQuitTitle => 'Жаттығуды тоқтатасыз ба?';
+
+  @override
+  String get wsQuitBody => 'Қазір шықсаңыз, бұл жаттығу сақталмайды.';
+
+  @override
+  String get wsHowToSound => 'Дыбысты қалай айту керек';
+
+  @override
+  String get wsPracticeWords => 'Сөздерді жаттығу';
+
+  @override
+  String get wsPracticeSentence => 'Сөйлемді жаттығу';
+
+  @override
+  String get wsStartTest => 'Бағалауды бастау';
+
+  @override
+  String get wsThisSentence => 'Осы сөйлем';
+
+  @override
+  String get wsNoScoreNote => 'Бұл қадам бағаланбайды. Еркін қайталап айтыңыз.';
+
+  @override
+  String get wsListen => 'Мұқият тыңдаңыз';
+
+  @override
+  String get wsSayNow => 'Енді айтып көріңіз';
+
+  @override
+  String get wsPracticeDone => 'Жаттығу бітті';
+
+  @override
+  String get wsPaused => 'Кідіртілді';
+
+  @override
+  String get wsAudioFailed => 'Дыбысты жүктей алмадық. Мәтінді оқып айтыңыз.';
+
+  @override
+  String get wsReadAloud => 'Төмендегі сөйлемді дауыстап оқыңыз';
+
+  @override
+  String get wsTapToStart => 'Бастау үшін басыңыз';
+
+  @override
+  String get wsTapWhenDone => 'Оқып болғанда басыңыз';
+
+  @override
+  String get wsScoring => 'Бағалануда';
+
+  @override
+  String get wsMicFailed => 'Микрофонды аша алмадық.';
+
+  @override
+  String get wsNoSound => 'Дыбыс келмеді. Қайта айтып көрейік пе?';
+
+  @override
+  String get wsScoreFailed => 'Бағалау сәтсіз болды. Қайта көріңіз.';
+
+  @override
+  String get wsSomethingWrong => 'Қателік кетті.';
+
+  @override
+  String get wsLearnDone => 'Сабақ бітті';
+
+  @override
+  String get wsRetest => 'Қайта бағалау';
+
+  @override
+  String get wsFirstMeasure => 'Бірінші өлшем';
+
+  @override
+  String get wsFinalTest => 'Қорытынды бағалау';
+
+  @override
+  String wsPoints(int score) {
+    return '$score балл';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Бұрын $score балл';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Мақсат $score балл';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Мақсат · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country акценті';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count сөз қайталанды';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count бөлік қайталанды';
+  }
+
+  @override
+  String get wsStartRecommended => 'Ұсынылған дыбыстан бастау';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Бастау · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'балл';
 }

@@ -2587,4 +2587,209 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => '표현 학습에서는 힌트를 쓸 수 없어요';
+
+  @override
+  String get wsTitle => '취약 발음';
+
+  @override
+  String get wsToList => '목록으로';
+
+  @override
+  String get wsNext => '다음';
+
+  @override
+  String get wsRetry => '다시 시도';
+
+  @override
+  String get wsDone => '완료';
+
+  @override
+  String get wsContinue => '계속하기';
+
+  @override
+  String get wsQuit => '나가기';
+
+  @override
+  String get wsRetryLater => '잠시 후 다시 시도해 주세요.';
+
+  @override
+  String get wsMissingTitle => '학습할 소리를 찾지 못했어요';
+
+  @override
+  String get wsMissingBody => '목록에서 다시 선택해 주세요.';
+
+  @override
+  String get wsListLoadFailed => '목록을 불러오지 못했어요';
+
+  @override
+  String get wsLessonLoadFailed => '학습을 불러오지 못했어요';
+
+  @override
+  String get wsNationalTitle => '국적별 취약 발음';
+
+  @override
+  String get wsNationalPending => '억양 분석이 끝나면 채워져요';
+
+  @override
+  String get wsNationalPicked => '억양 분석 결과를 바탕으로 골랐어요';
+
+  @override
+  String get wsNationalEmptyBody => '통화를 더 하면 억양을 분석해 알려드려요.';
+
+  @override
+  String get wsMineTitle => '나의 취약 발음';
+
+  @override
+  String get wsMineSubtitle => '최근 통화에서 정확도가 낮은 소리예요';
+
+  @override
+  String get wsMineEmptyBody => '통화하고 복습하면 내 취약 발음이 쌓여요.';
+
+  @override
+  String get wsNoDataYet => '아직 데이터가 없어요';
+
+  @override
+  String get wsGoToCall => '통화하러 가기';
+
+  @override
+  String get wsRule => '규칙';
+
+  @override
+  String get wsRecommended => '추천';
+
+  @override
+  String get wsNotMeasured => '측정 전';
+
+  @override
+  String get wsStepUnderstand => '이해';
+
+  @override
+  String get wsStepWords => '단어';
+
+  @override
+  String get wsStepSentence => '문장';
+
+  @override
+  String get wsStepTest => '평가';
+
+  @override
+  String get wsQuitTitle => '학습을 그만둘까요?';
+
+  @override
+  String get wsQuitBody => '지금 나가면 이번 연습은 저장되지 않아요.';
+
+  @override
+  String get wsHowToSound => '소리 내는 법';
+
+  @override
+  String get wsPracticeWords => '단어 연습하기';
+
+  @override
+  String get wsPracticeSentence => '문장 연습하기';
+
+  @override
+  String get wsStartTest => '평가 시작하기';
+
+  @override
+  String get wsThisSentence => '이번 문장';
+
+  @override
+  String get wsNoScoreNote => '이 단계는 점수가 없어요. 편하게 따라 말해 보세요.';
+
+  @override
+  String get wsListen => '잘 들어 보세요';
+
+  @override
+  String get wsSayNow => '지금 따라 말해 보세요';
+
+  @override
+  String get wsPracticeDone => '연습을 마쳤어요';
+
+  @override
+  String get wsPaused => '잠시 멈췄어요';
+
+  @override
+  String get wsAudioFailed => '소리를 불러오지 못했어요. 글자를 보고 따라 말해 보세요.';
+
+  @override
+  String get wsReadAloud => '아래 문장을 소리 내어 읽어 주세요';
+
+  @override
+  String get wsTapToStart => '눌러서 시작해요';
+
+  @override
+  String get wsTapWhenDone => '다 읽었으면 눌러 주세요';
+
+  @override
+  String get wsScoring => '채점하고 있어요';
+
+  @override
+  String get wsMicFailed => '마이크를 열지 못했어요.';
+
+  @override
+  String get wsNoSound => '소리가 들어오지 않았어요. 다시 말해 볼까요?';
+
+  @override
+  String get wsScoreFailed => '채점에 실패했어요. 다시 시도해 주세요.';
+
+  @override
+  String get wsSomethingWrong => '문제가 생겼어요.';
+
+  @override
+  String get wsLearnDone => '학습을 마쳤어요';
+
+  @override
+  String get wsRetest => '다시 평가하기';
+
+  @override
+  String get wsFirstMeasure => '첫 측정이에요';
+
+  @override
+  String get wsFinalTest => '최종 평가';
+
+  @override
+  String wsPoints(int score) {
+    return '$score점';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return '학습 전 $score점';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return '목표 $score점';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return '목표 · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country 억양';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '단어 $count개 따라 하기';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '문장 $count조각 따라 하기';
+  }
+
+  @override
+  String get wsStartRecommended => '추천 소리부터 학습';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '추천 소리부터 학습 · $label';
+  }
+
+  @override
+  String get wsPointsUnit => '점';
 }

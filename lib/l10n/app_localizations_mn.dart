@@ -2671,4 +2671,211 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Суралцах горимд зөвлөмж ашиглах боломжгүй';
+
+  @override
+  String get wsTitle => 'Хүндрэлтэй авиа';
+
+  @override
+  String get wsToList => 'Жагсаалт руу';
+
+  @override
+  String get wsNext => 'Дараах';
+
+  @override
+  String get wsRetry => 'Дахин оролдох';
+
+  @override
+  String get wsDone => 'Болсон';
+
+  @override
+  String get wsContinue => 'Үргэлжлүүлэх';
+
+  @override
+  String get wsQuit => 'Гарах';
+
+  @override
+  String get wsRetryLater => 'Хэсэг хүлээгээд дахин оролдоно уу.';
+
+  @override
+  String get wsMissingTitle => 'Тэр авиаг олсонгүй';
+
+  @override
+  String get wsMissingBody => 'Жагсаалтаас дахин сонгоно уу.';
+
+  @override
+  String get wsListLoadFailed => 'Жагсаалтыг татаж чадсангүй';
+
+  @override
+  String get wsLessonLoadFailed => 'Хичээлийг татаж чадсангүй';
+
+  @override
+  String get wsNationalTitle => 'Аялгад тохирсон хүндрэлтэй авиа';
+
+  @override
+  String get wsNationalPending => 'Аялгын шинжилгээ дуусахад нөхөгдөнө';
+
+  @override
+  String get wsNationalPicked => 'Аялгын шинжилгээгээр сонгосон';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Хэд хэдэн дуудлага хийвэл аялгыг шинжилж мэдэгдэнэ.';
+
+  @override
+  String get wsMineTitle => 'Миний хүндрэлтэй авиа';
+
+  @override
+  String get wsMineSubtitle => 'Сүүлийн үед оноо хамгийн бага байсан авианууд';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Дуудлага хийж, давтвал хүндрэлтэй авиа хуримтлагдана.';
+
+  @override
+  String get wsNoDataYet => 'Одоогоор дата байхгүй';
+
+  @override
+  String get wsGoToCall => 'Дуудлага хийх';
+
+  @override
+  String get wsRule => 'Дүрэм';
+
+  @override
+  String get wsRecommended => 'Зөвлөмж';
+
+  @override
+  String get wsNotMeasured => 'Хэмжээгүй';
+
+  @override
+  String get wsStepUnderstand => 'Ойлгох';
+
+  @override
+  String get wsStepWords => 'Үг';
+
+  @override
+  String get wsStepSentence => 'Өгүүлбэр';
+
+  @override
+  String get wsStepTest => 'Шалгалт';
+
+  @override
+  String get wsQuitTitle => 'Дадлагыг зогсоох уу?';
+
+  @override
+  String get wsQuitBody => 'Одоо гарвал энэ дадлага хадгалагдахгүй.';
+
+  @override
+  String get wsHowToSound => 'Авиаг хэрхэн гаргах';
+
+  @override
+  String get wsPracticeWords => 'Үг дадлагажих';
+
+  @override
+  String get wsPracticeSentence => 'Өгүүлбэр дадлагажих';
+
+  @override
+  String get wsStartTest => 'Шалгалт эхлүүлэх';
+
+  @override
+  String get wsThisSentence => 'Энэ өгүүлбэр';
+
+  @override
+  String get wsNoScoreNote => 'Энэ шат оноо авахгүй. Чөлөөтэй дагаж хэлээрэй.';
+
+  @override
+  String get wsListen => 'Сайн сонсоорой';
+
+  @override
+  String get wsSayNow => 'Одоо дагаж хэлээрэй';
+
+  @override
+  String get wsPracticeDone => 'Дадлага дууслаа';
+
+  @override
+  String get wsPaused => 'Түр зогслоо';
+
+  @override
+  String get wsAudioFailed => 'Аудио татагдсангүй. Бичгийг хараад хэлээрэй.';
+
+  @override
+  String get wsReadAloud => 'Доорх өгүүлбэрийг чангаар уншаарай';
+
+  @override
+  String get wsTapToStart => 'Эхлэхийн тулд дарна уу';
+
+  @override
+  String get wsTapWhenDone => 'Уншиж дуусмагц дарна уу';
+
+  @override
+  String get wsScoring => 'Дүгнэж байна';
+
+  @override
+  String get wsMicFailed => 'Микрофоныг нээж чадсангүй.';
+
+  @override
+  String get wsNoSound => 'Дуу орж ирсэнгүй. Дахин хэлэх үү?';
+
+  @override
+  String get wsScoreFailed => 'Дүгнэж чадсангүй. Дахин оролдоно уу.';
+
+  @override
+  String get wsSomethingWrong => 'Алдаа гарлаа.';
+
+  @override
+  String get wsLearnDone => 'Хичээл дууслаа';
+
+  @override
+  String get wsRetest => 'Дахин шалгах';
+
+  @override
+  String get wsFirstMeasure => 'Эхний хэмжилт';
+
+  @override
+  String get wsFinalTest => 'Төгсгөлийн шалгалт';
+
+  @override
+  String wsPoints(int score) {
+    return '$score оноо';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Өмнө $score оноо';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Зорилт $score оноо';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Зорилт · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country аялга';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count үг давтлаа';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count хэсэг давтлаа';
+  }
+
+  @override
+  String get wsStartRecommended => 'Зөвлөсөн авианаас эхлэх';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Эхлэх · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'оноо';
 }

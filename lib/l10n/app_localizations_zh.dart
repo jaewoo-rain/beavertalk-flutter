@@ -2582,4 +2582,209 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => '表达学习中无法使用提示';
+
+  @override
+  String get wsTitle => '薄弱发音';
+
+  @override
+  String get wsToList => '返回列表';
+
+  @override
+  String get wsNext => '下一个';
+
+  @override
+  String get wsRetry => '再试一次';
+
+  @override
+  String get wsDone => '完成';
+
+  @override
+  String get wsContinue => '继续';
+
+  @override
+  String get wsQuit => '退出';
+
+  @override
+  String get wsRetryLater => '请稍后再试。';
+
+  @override
+  String get wsMissingTitle => '没找到这个音';
+
+  @override
+  String get wsMissingBody => '请从列表中重新选择。';
+
+  @override
+  String get wsListLoadFailed => '列表加载失败';
+
+  @override
+  String get wsLessonLoadFailed => '课程加载失败';
+
+  @override
+  String get wsNationalTitle => '你口音的薄弱发音';
+
+  @override
+  String get wsNationalPending => '口音分析完成后就会填上';
+
+  @override
+  String get wsNationalPicked => '根据你的口音分析选出';
+
+  @override
+  String get wsNationalEmptyBody => '多打几次通话，我们就能分析你的口音。';
+
+  @override
+  String get wsMineTitle => '我的薄弱发音';
+
+  @override
+  String get wsMineSubtitle => '最近得分最低的音';
+
+  @override
+  String get wsMineEmptyBody => '通话并复习，薄弱发音就会累积起来。';
+
+  @override
+  String get wsNoDataYet => '还没有数据';
+
+  @override
+  String get wsGoToCall => '开始通话';
+
+  @override
+  String get wsRule => '规则';
+
+  @override
+  String get wsRecommended => '推荐';
+
+  @override
+  String get wsNotMeasured => '未测量';
+
+  @override
+  String get wsStepUnderstand => '理解';
+
+  @override
+  String get wsStepWords => '单词';
+
+  @override
+  String get wsStepSentence => '句子';
+
+  @override
+  String get wsStepTest => '测评';
+
+  @override
+  String get wsQuitTitle => '要停止练习吗？';
+
+  @override
+  String get wsQuitBody => '现在退出，这次练习不会被保存。';
+
+  @override
+  String get wsHowToSound => '发音方法';
+
+  @override
+  String get wsPracticeWords => '练习单词';
+
+  @override
+  String get wsPracticeSentence => '练习句子';
+
+  @override
+  String get wsStartTest => '开始测评';
+
+  @override
+  String get wsThisSentence => '这个句子';
+
+  @override
+  String get wsNoScoreNote => '这一步不计分，放心跟读吧。';
+
+  @override
+  String get wsListen => '仔细听';
+
+  @override
+  String get wsSayNow => '现在跟着说';
+
+  @override
+  String get wsPracticeDone => '练习完成';
+
+  @override
+  String get wsPaused => '已暂停';
+
+  @override
+  String get wsAudioFailed => '音频加载失败。看着文字读出来吧。';
+
+  @override
+  String get wsReadAloud => '请朗读下面的句子';
+
+  @override
+  String get wsTapToStart => '点按开始';
+
+  @override
+  String get wsTapWhenDone => '读完后点按';
+
+  @override
+  String get wsScoring => '正在评分';
+
+  @override
+  String get wsMicFailed => '无法打开麦克风。';
+
+  @override
+  String get wsNoSound => '没有听到声音。再说一次？';
+
+  @override
+  String get wsScoreFailed => '评分失败。请重试。';
+
+  @override
+  String get wsSomethingWrong => '出现问题了。';
+
+  @override
+  String get wsLearnDone => '学习完成';
+
+  @override
+  String get wsRetest => '再测一次';
+
+  @override
+  String get wsFirstMeasure => '这是第一次测量';
+
+  @override
+  String get wsFinalTest => '最终测评';
+
+  @override
+  String wsPoints(int score) {
+    return '$score分';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return '学习前$score分';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return '目标$score分';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return '目标 · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country口音';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '跟读了$count个单词';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '跟读了$count个句段';
+  }
+
+  @override
+  String get wsStartRecommended => '从推荐的音开始学';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '从$label开始学';
+  }
+
+  @override
+  String get wsPointsUnit => '分';
 }

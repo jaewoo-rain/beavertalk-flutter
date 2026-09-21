@@ -19,6 +19,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learn_result.dart';
+import '../../l10n/app_localizations.dart';
 
 /// 4단계 · 평가 — Figma `14~16 · learn/4_test`, 예외는 E4·E6·E7.
 ///
@@ -62,6 +63,7 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
   }
 
   Future<void> _toggle(String soundKey) async {
+    final l10n = AppLocalizations.of(context);
     if (_phase == _Phase.scoring) return;
     if (_phase == _Phase.recording) {
       await _stopAndSubmit(soundKey);
@@ -82,19 +84,20 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
     } catch (_) {
       setState(() {
         _phase = _Phase.failed;
-        _error = '마이크를 열지 못했어요.';
+        _error = l10n.wsMicFailed;
       });
     }
   }
 
   Future<void> _stopAndSubmit(String soundKey) async {
+    final l10n = AppLocalizations.of(context);
     setState(() => _phase = _Phase.scoring);
     final pcm = await _recorder.stop();
     if (pcm.isEmpty) {
       // Figma E4 — 인식 실패. 녹음이 비었으면 올려 봐야 0점이 나온다.
       setState(() {
         _phase = _Phase.failed;
-        _error = '소리가 들어오지 않았어요. 다시 말해 볼까요?';
+        _error = l10n.wsNoSound;
       });
       return;
     }
@@ -123,7 +126,7 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
       if (!mounted) return;
       setState(() {
         _phase = _Phase.failed;
-        _error = '채점에 실패했어요. 다시 시도해 주세요.';
+        _error = l10n.wsScoreFailed;
       });
     }
   }
@@ -171,12 +174,13 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          '아래 문장을 소리 내어 읽어 주세요',
+          l10n.wsReadAloud,
           textAlign: TextAlign.center,
           style: AppType.body2.r.copyWith(color: c.labelNormal),
         ),
@@ -222,7 +226,7 @@ class _Body extends StatelessWidget {
         if (phase == _Phase.scoring)
           Column(
             children: [
-              Text('채점하고 있어요',
+              Text(l10n.wsScoring,
                   style: AppType.body2.r.copyWith(color: c.labelNormal)),
               const SizedBox(height: AppSpacing.s16),
               const MicAnalysis(),
@@ -232,14 +236,14 @@ class _Body extends StatelessWidget {
           Column(
             children: [
               Text(
-                error ?? '문제가 생겼어요.',
+                error ?? l10n.wsSomethingWrong,
                 textAlign: TextAlign.center,
                 style: AppType.body2.r.copyWith(color: c.statusNegative),
               ),
               const SizedBox(height: AppSpacing.s16),
               RecordCircleButton(
                 icon: AppIcons.redo,
-                semanticLabel: '다시 시도',
+                semanticLabel: l10n.wsRetry,
                 onTap: onRetry,
               ),
             ],
@@ -257,7 +261,7 @@ class _Body extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.s16),
               Text(
-                phase == _Phase.recording ? '다 읽었으면 눌러 주세요' : '눌러서 시작해요',
+                phase == _Phase.recording ? l10n.wsTapWhenDone : l10n.wsTapToStart,
                 style: AppType.body2.r.copyWith(color: c.labelNormal),
               ),
             ],

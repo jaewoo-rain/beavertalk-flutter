@@ -64,6 +64,12 @@ class SoundLessonDto {
       learned: json['learned'] as bool? ?? false,
       symbol: payload['symbol'] as String?,
       repSyllable: payload['rep_syllable'] as String?,
+      // 미리 구운 음성. 서버가 안 주면(구 서버·미생성) 빈 map → 온디맨드 합성으로 떨어진다.
+      audio: {
+        for (final e in (json['audio'] as Map? ?? const {}).entries)
+          if (e.key is String && e.value is String)
+            e.key as String: e.value as String,
+      },
       howTo: [
         for (final e in (payload['how_to'] as List? ?? const []))
           if (e is String) e,

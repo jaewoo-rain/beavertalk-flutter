@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../components/molecules/empty_state.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// 학습 화면들이 `sound_key` 를 받는 방법 — 생성자 주입 우선, 없으면 라우트 인자.
 ///
@@ -26,17 +27,20 @@ class MissingSoundKey extends StatelessWidget {
   const MissingSoundKey({super.key});
 
   @override
-  Widget build(BuildContext context) => Scaffold(
-        body: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: EmptyBlock(
-              title: '학습할 소리를 찾지 못했어요',
-              body: '목록에서 다시 선택해 주세요.',
-              ctaText: '목록으로',
-              onCta: () => Navigator.of(context).maybePop(),
-            ),
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: EmptyBlock(
+            title: l10n.wsMissingTitle,
+            body: l10n.wsMissingBody,
+            ctaText: l10n.wsToList,
+            onCta: () => Navigator.of(context).maybePop(),
           ),
         ),
-      );
+      ),
+    );
+  }
 }

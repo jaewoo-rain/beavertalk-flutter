@@ -2677,4 +2677,213 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'В режиме «Изучение» подсказки недоступны';
+
+  @override
+  String get wsTitle => 'Слабые звуки';
+
+  @override
+  String get wsToList => 'К списку';
+
+  @override
+  String get wsNext => 'Далее';
+
+  @override
+  String get wsRetry => 'Повторить';
+
+  @override
+  String get wsDone => 'Готово';
+
+  @override
+  String get wsContinue => 'Продолжить';
+
+  @override
+  String get wsQuit => 'Выйти';
+
+  @override
+  String get wsRetryLater => 'Пожалуйста, попробуйте чуть позже.';
+
+  @override
+  String get wsMissingTitle => 'Мы не нашли этот звук';
+
+  @override
+  String get wsMissingBody => 'Выберите его из списка снова.';
+
+  @override
+  String get wsListLoadFailed => 'Не удалось загрузить список';
+
+  @override
+  String get wsLessonLoadFailed => 'Не удалось загрузить урок';
+
+  @override
+  String get wsNationalTitle => 'Слабые звуки для вашего акцента';
+
+  @override
+  String get wsNationalPending => 'Заполним, когда проанализируем ваш акцент';
+
+  @override
+  String get wsNationalPicked => 'Выбрано по анализу вашего акцента';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Сделайте ещё несколько звонков — и мы проанализируем ваш акцент.';
+
+  @override
+  String get wsMineTitle => 'Мои слабые звуки';
+
+  @override
+  String get wsMineSubtitle => 'Звуки с самыми низкими баллами';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Звоните и повторяйте — слабые звуки соберутся здесь.';
+
+  @override
+  String get wsNoDataYet => 'Данных пока нет';
+
+  @override
+  String get wsGoToCall => 'Начать звонок';
+
+  @override
+  String get wsRule => 'Правило';
+
+  @override
+  String get wsRecommended => 'Рекомендуем';
+
+  @override
+  String get wsNotMeasured => 'Нет замера';
+
+  @override
+  String get wsStepUnderstand => 'Разбор';
+
+  @override
+  String get wsStepWords => 'Слова';
+
+  @override
+  String get wsStepSentence => 'Фраза';
+
+  @override
+  String get wsStepTest => 'Тест';
+
+  @override
+  String get wsQuitTitle => 'Прервать занятие?';
+
+  @override
+  String get wsQuitBody => 'Если выйти сейчас, это занятие не сохранится.';
+
+  @override
+  String get wsHowToSound => 'Как произносить звук';
+
+  @override
+  String get wsPracticeWords => 'Тренировать слова';
+
+  @override
+  String get wsPracticeSentence => 'Тренировать фразу';
+
+  @override
+  String get wsStartTest => 'Начать тест';
+
+  @override
+  String get wsThisSentence => 'Эта фраза';
+
+  @override
+  String get wsNoScoreNote =>
+      'На этом шаге баллов нет. Просто говорите за нами.';
+
+  @override
+  String get wsListen => 'Слушайте внимательно';
+
+  @override
+  String get wsSayNow => 'Теперь скажите сами';
+
+  @override
+  String get wsPracticeDone => 'Тренировка завершена';
+
+  @override
+  String get wsPaused => 'Пауза';
+
+  @override
+  String get wsAudioFailed =>
+      'Не удалось загрузить звук. Прочитайте текст вслух.';
+
+  @override
+  String get wsReadAloud => 'Прочитайте фразу ниже вслух';
+
+  @override
+  String get wsTapToStart => 'Нажмите, чтобы начать';
+
+  @override
+  String get wsTapWhenDone => 'Нажмите, когда закончите';
+
+  @override
+  String get wsScoring => 'Оцениваем';
+
+  @override
+  String get wsMicFailed => 'Не удалось включить микрофон.';
+
+  @override
+  String get wsNoSound => 'Мы ничего не услышали. Скажете ещё раз?';
+
+  @override
+  String get wsScoreFailed => 'Не удалось оценить. Попробуйте ещё раз.';
+
+  @override
+  String get wsSomethingWrong => 'Что-то пошло не так.';
+
+  @override
+  String get wsLearnDone => 'Урок завершён';
+
+  @override
+  String get wsRetest => 'Пройти снова';
+
+  @override
+  String get wsFirstMeasure => 'Первый замер';
+
+  @override
+  String get wsFinalTest => 'Финальный тест';
+
+  @override
+  String wsPoints(int score) {
+    return '$score баллов';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'До $score баллов';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Цель $score баллов';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Цель · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Акцент: $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'Повторено слов: $count';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'Повторено частей: $count';
+  }
+
+  @override
+  String get wsStartRecommended => 'Начать с рекомендованного звука';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Начать с $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'баллов';
 }

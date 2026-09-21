@@ -5,6 +5,7 @@ import '../../app/routes.dart';
 import '../../features/weak_sound/presentation/sound_key_arg.dart';
 import '../../features/weak_sound/presentation/widgets/auto_practice_view.dart';
 import '../../features/weak_sound/presentation/widgets/learn_scaffold.dart';
+import '../../l10n/app_localizations.dart';
 
 /// 2단계 · 단어 연습 — Figma `04~08 · learn/2_words`, 규칙은 R2.
 ///
@@ -18,6 +19,7 @@ class LearnWordsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final key = resolveSoundKey(context, soundKey);
     if (key == null) return const MissingSoundKey();
     return LearnScaffold(
@@ -27,9 +29,10 @@ class LearnWordsScreen extends ConsumerWidget {
       scrollable: false,
       builder: (context, lesson) => AutoPracticeView(
         items: [for (final w in lesson.words) w.text],
+        audioUrls: lesson.audio,
         pronunciations: [for (final w in lesson.words) w.pronunciation],
         captions: [for (final w in lesson.words) w.meaningEn],
-        doneLabel: '문장 연습하기',
+        doneLabel: l10n.wsPracticeSentence,
         onDone: () => Navigator.of(context).pushNamed(
           Routes.weakSoundSentence,
           arguments: key,

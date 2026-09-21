@@ -2668,4 +2668,213 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Hints aren\'t available in Study';
+
+  @override
+  String get wsTitle => 'Weak sounds';
+
+  @override
+  String get wsToList => 'Back to list';
+
+  @override
+  String get wsNext => 'Next';
+
+  @override
+  String get wsRetry => 'Try again';
+
+  @override
+  String get wsDone => 'Done';
+
+  @override
+  String get wsContinue => 'Keep going';
+
+  @override
+  String get wsQuit => 'Leave';
+
+  @override
+  String get wsRetryLater => 'Please try again in a moment.';
+
+  @override
+  String get wsMissingTitle => 'We couldn\'t find that sound';
+
+  @override
+  String get wsMissingBody => 'Please choose it from the list again.';
+
+  @override
+  String get wsListLoadFailed => 'Couldn\'t load the list';
+
+  @override
+  String get wsLessonLoadFailed => 'Couldn\'t load the lesson';
+
+  @override
+  String get wsNationalTitle => 'Weak sounds for your accent';
+
+  @override
+  String get wsNationalPending =>
+      'We\'ll fill this in once your accent is analyzed';
+
+  @override
+  String get wsNationalPicked => 'Chosen from your accent analysis';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Make a few more calls and we\'ll analyze your accent.';
+
+  @override
+  String get wsMineTitle => 'My weak sounds';
+
+  @override
+  String get wsMineSubtitle => 'Sounds you scored lowest on recently';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Call and review, and your weak sounds will build up.';
+
+  @override
+  String get wsNoDataYet => 'No data yet';
+
+  @override
+  String get wsGoToCall => 'Start a call';
+
+  @override
+  String get wsRule => 'Rule';
+
+  @override
+  String get wsRecommended => 'Recommended';
+
+  @override
+  String get wsNotMeasured => 'Not measured';
+
+  @override
+  String get wsStepUnderstand => 'Learn';
+
+  @override
+  String get wsStepWords => 'Words';
+
+  @override
+  String get wsStepSentence => 'Sentence';
+
+  @override
+  String get wsStepTest => 'Test';
+
+  @override
+  String get wsQuitTitle => 'Stop practicing?';
+
+  @override
+  String get wsQuitBody => 'If you leave now, this practice won\'t be saved.';
+
+  @override
+  String get wsHowToSound => 'How to make the sound';
+
+  @override
+  String get wsPracticeWords => 'Practice words';
+
+  @override
+  String get wsPracticeSentence => 'Practice the sentence';
+
+  @override
+  String get wsStartTest => 'Start the test';
+
+  @override
+  String get wsThisSentence => 'This sentence';
+
+  @override
+  String get wsNoScoreNote => 'This step isn\'t scored. Just say it along.';
+
+  @override
+  String get wsListen => 'Listen carefully';
+
+  @override
+  String get wsSayNow => 'Now say it';
+
+  @override
+  String get wsPracticeDone => 'Practice complete';
+
+  @override
+  String get wsPaused => 'Paused';
+
+  @override
+  String get wsAudioFailed =>
+      'Couldn\'t load the audio. Read it aloud from the text.';
+
+  @override
+  String get wsReadAloud => 'Read the sentence below aloud';
+
+  @override
+  String get wsTapToStart => 'Tap to start';
+
+  @override
+  String get wsTapWhenDone => 'Tap when you\'re done';
+
+  @override
+  String get wsScoring => 'Scoring';
+
+  @override
+  String get wsMicFailed => 'Couldn\'t open the microphone.';
+
+  @override
+  String get wsNoSound => 'We didn\'t hear anything. Try again?';
+
+  @override
+  String get wsScoreFailed => 'Scoring failed. Please try again.';
+
+  @override
+  String get wsSomethingWrong => 'Something went wrong.';
+
+  @override
+  String get wsLearnDone => 'Lesson complete';
+
+  @override
+  String get wsRetest => 'Test again';
+
+  @override
+  String get wsFirstMeasure => 'First measurement';
+
+  @override
+  String get wsFinalTest => 'Final test';
+
+  @override
+  String wsPoints(int score) {
+    return '$score pts';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Before $score pts';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Goal $score pts';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Goal · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country accent';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'Repeated $count words';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'Repeated $count chunks';
+  }
+
+  @override
+  String get wsStartRecommended => 'Start with the recommended sound';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Start with $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'pts';
 }

@@ -2651,4 +2651,211 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'ไม่สามารถใช้คำใบ้ในโหมดเรียนรู้ได้';
+
+  @override
+  String get wsTitle => 'เสียงที่ยังไม่แม่น';
+
+  @override
+  String get wsToList => 'กลับไปรายการ';
+
+  @override
+  String get wsNext => 'ถัดไป';
+
+  @override
+  String get wsRetry => 'ลองอีกครั้ง';
+
+  @override
+  String get wsDone => 'เสร็จสิ้น';
+
+  @override
+  String get wsContinue => 'ไปต่อ';
+
+  @override
+  String get wsQuit => 'ออก';
+
+  @override
+  String get wsRetryLater => 'โปรดลองอีกครั้งในอีกสักครู่';
+
+  @override
+  String get wsMissingTitle => 'ไม่พบเสียงนั้น';
+
+  @override
+  String get wsMissingBody => 'โปรดเลือกจากรายการอีกครั้ง';
+
+  @override
+  String get wsListLoadFailed => 'โหลดรายการไม่สำเร็จ';
+
+  @override
+  String get wsLessonLoadFailed => 'โหลดบทเรียนไม่สำเร็จ';
+
+  @override
+  String get wsNationalTitle => 'เสียงที่ยังไม่แม่นตามสำเนียงของคุณ';
+
+  @override
+  String get wsNationalPending => 'จะเติมให้เมื่อวิเคราะห์สำเนียงของคุณเสร็จ';
+
+  @override
+  String get wsNationalPicked => 'เลือกจากผลวิเคราะห์สำเนียงของคุณ';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'โทรอีกสักสองสามครั้ง แล้วเราจะวิเคราะห์สำเนียงให้';
+
+  @override
+  String get wsMineTitle => 'เสียงที่ยังไม่แม่นของฉัน';
+
+  @override
+  String get wsMineSubtitle => 'เสียงที่ได้คะแนนต่ำสุดช่วงนี้';
+
+  @override
+  String get wsMineEmptyBody =>
+      'โทรและทบทวน แล้วเสียงที่ยังไม่แม่นจะค่อยๆ สะสม';
+
+  @override
+  String get wsNoDataYet => 'ยังไม่มีข้อมูล';
+
+  @override
+  String get wsGoToCall => 'เริ่มการโทร';
+
+  @override
+  String get wsRule => 'กฎ';
+
+  @override
+  String get wsRecommended => 'แนะนำ';
+
+  @override
+  String get wsNotMeasured => 'ยังไม่ได้วัด';
+
+  @override
+  String get wsStepUnderstand => 'เข้าใจ';
+
+  @override
+  String get wsStepWords => 'คำศัพท์';
+
+  @override
+  String get wsStepSentence => 'ประโยค';
+
+  @override
+  String get wsStepTest => 'ทดสอบ';
+
+  @override
+  String get wsQuitTitle => 'หยุดฝึกไหม';
+
+  @override
+  String get wsQuitBody => 'ถ้าออกตอนนี้ การฝึกครั้งนี้จะไม่ถูกบันทึก';
+
+  @override
+  String get wsHowToSound => 'วิธีออกเสียง';
+
+  @override
+  String get wsPracticeWords => 'ฝึกคำศัพท์';
+
+  @override
+  String get wsPracticeSentence => 'ฝึกประโยค';
+
+  @override
+  String get wsStartTest => 'เริ่มทดสอบ';
+
+  @override
+  String get wsThisSentence => 'ประโยคนี้';
+
+  @override
+  String get wsNoScoreNote => 'ขั้นนี้ไม่มีคะแนน พูดตามสบายๆ ได้เลย';
+
+  @override
+  String get wsListen => 'ฟังให้ดี';
+
+  @override
+  String get wsSayNow => 'ตอนนี้พูดตาม';
+
+  @override
+  String get wsPracticeDone => 'ฝึกเสร็จแล้ว';
+
+  @override
+  String get wsPaused => 'หยุดชั่วคราว';
+
+  @override
+  String get wsAudioFailed => 'โหลดเสียงไม่สำเร็จ อ่านออกเสียงจากข้อความได้เลย';
+
+  @override
+  String get wsReadAloud => 'อ่านประโยคด้านล่างออกเสียง';
+
+  @override
+  String get wsTapToStart => 'แตะเพื่อเริ่ม';
+
+  @override
+  String get wsTapWhenDone => 'อ่านจบแล้วแตะ';
+
+  @override
+  String get wsScoring => 'กำลังให้คะแนน';
+
+  @override
+  String get wsMicFailed => 'เปิดไมโครโฟนไม่สำเร็จ';
+
+  @override
+  String get wsNoSound => 'ไม่ได้ยินเสียงเลย ลองพูดอีกครั้งไหม';
+
+  @override
+  String get wsScoreFailed => 'การให้คะแนนล้มเหลว โปรดลองอีกครั้ง';
+
+  @override
+  String get wsSomethingWrong => 'เกิดข้อผิดพลาด';
+
+  @override
+  String get wsLearnDone => 'เรียนจบแล้ว';
+
+  @override
+  String get wsRetest => 'ทดสอบอีกครั้ง';
+
+  @override
+  String get wsFirstMeasure => 'การวัดครั้งแรก';
+
+  @override
+  String get wsFinalTest => 'ทดสอบครั้งสุดท้าย';
+
+  @override
+  String wsPoints(int score) {
+    return '$score คะแนน';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'ก่อนเรียน $score คะแนน';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'เป้าหมาย $score คะแนน';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'เป้าหมาย · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'สำเนียง$country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'พูดตามคำศัพท์ $count คำ';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'พูดตามประโยค $count ท่อน';
+  }
+
+  @override
+  String get wsStartRecommended => 'เริ่มจากเสียงที่แนะนำ';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'เริ่มจาก $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'คะแนน';
 }

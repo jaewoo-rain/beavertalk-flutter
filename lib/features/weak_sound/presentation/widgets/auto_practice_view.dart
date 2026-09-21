@@ -9,6 +9,7 @@ import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_typography.dart';
 import '../../domain/auto_practice.dart';
 import '../auto_practice_controller.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 단어·문장 단계의 공통 본문 — 자동 재생/따라 말하기를 그린다.
 ///
@@ -22,8 +23,9 @@ class AutoPracticeView extends ConsumerStatefulWidget {
     required this.pronunciations,
     required this.captions,
     required this.onDone,
+    this.audioUrls = const {},
     this.header,
-    this.doneLabel = '다음',
+    this.doneLabel,
   });
 
   /// 읽어 줄 텍스트들(단어 4개, 또는 문장 조각들).
@@ -43,10 +45,15 @@ class AutoPracticeView extends ConsumerStatefulWidget {
   /// 아니라 **문장에 붙인다** — 위에 고정해 두고 아래에서 조각을 따라 한다.
   final Widget? header;
 
+  /// {문장: 미리 구운 재생 URL}. 서버가 준 그대로 넘긴다 — 없으면 온디맨드 합성이다.
+  final Map<String, String> audioUrls;
+
   /// 전부 끝났을 때 누를 버튼의 동작.
   final VoidCallback onDone;
 
-  final String doneLabel;
+  /// 마지막 버튼 글자. null 이면 「다음」(언어별)으로 채운다 —
+  /// 기본값을 const 로 둘 수 없어서(번역은 context 가 있어야 한다) null 을 쓴다.
+  final String? doneLabel;
 
   @override
   ConsumerState<AutoPracticeView> createState() => _AutoPracticeViewState();
@@ -64,6 +71,7 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
       items: widget.items,
       repository: ref.read(reviewRepositoryProvider),
       cache: ref.read(speechCacheProvider),
+      audioUrls: widget.audioUrls,
     )..addListener(_onChange);
     WidgetsBinding.instance.addPostFrameCallback((_) => _controller.start());
   }
@@ -91,6 +99,7 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l10n = AppLocalizations.of(context);
     final s = _controller.state;
     final i = s.index;
     final done = s.phase == AutoPracticePhase.done;
@@ -118,7 +127,7 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
         const Spacer(),
         // 「점수 없음」을 화면에 적어 둔다. 사용자가 점수를 기다리며 서 있지 않게.
         Text(
-          '이 단계는 점수가 없어요. 편하게 따라 말해 보세요.',
+          l10n.wsNoScoreNote,
           textAlign: TextAlign.center,
           style: AppType.label2.r.copyWith(color: c.labelAssistive),
         ),
@@ -131,7 +140,7 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
             child: Button(
               type: BtnType.primaryFill,
               size: BtnSize.s60,
-              text: widget.doneLabel,
+              text: widget.doneLabel ?? l10n.wsNext,
               onPressed: widget.onDone,
             ),
           ),
@@ -240,11 +249,12 @@ class _Hint extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l10n = AppLocalizations.of(context);
     final (text, strong) = switch (phase) {
-      AutoPracticePhase.playing => ('잘 들어 보세요', false),
-      AutoPracticePhase.repeating => ('지금 따라 말해 보세요', true),
-      AutoPracticePhase.done => ('연습을 마쳤어요', false),
-      AutoPracticePhase.idle => ('잠시 멈췄어요', false),
+      AutoPracticePhase.playing => (l10n.wsListen, false),
+      AutoPracticePhase.repeating => (l10n.wsSayNow, true),
+      AutoPracticePhase.done => (l10n.wsPracticeDone, false),
+      AutoPracticePhase.idle => (l10n.wsPaused, false),
     };
     return Column(
       children: [
@@ -258,7 +268,7 @@ class _Hint extends StatelessWidget {
         if (muted) ...[
           const SizedBox(height: AppSpacing.s8),
           Text(
-            '소리를 불러오지 못했어요. 글자를 보고 따라 말해 보세요.',
+            l10n.wsAudioFailed,
             textAlign: TextAlign.center,
             style: AppType.label2.r.copyWith(color: c.statusCautionary),
           ),

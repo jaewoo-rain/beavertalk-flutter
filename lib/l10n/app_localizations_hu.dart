@@ -2689,4 +2689,213 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Tanulás módban nem érhetők el tippek';
+
+  @override
+  String get wsTitle => 'Nehéz hangok';
+
+  @override
+  String get wsToList => 'Vissza a listához';
+
+  @override
+  String get wsNext => 'Tovább';
+
+  @override
+  String get wsRetry => 'Újra';
+
+  @override
+  String get wsDone => 'Kész';
+
+  @override
+  String get wsContinue => 'Folytatás';
+
+  @override
+  String get wsQuit => 'Kilépés';
+
+  @override
+  String get wsRetryLater => 'Kérjük, próbáld újra egy pillanat múlva.';
+
+  @override
+  String get wsMissingTitle => 'Nem találtuk ezt a hangot';
+
+  @override
+  String get wsMissingBody => 'Kérjük, válaszd ki újra a listából.';
+
+  @override
+  String get wsListLoadFailed => 'Nem sikerült betölteni a listát';
+
+  @override
+  String get wsLessonLoadFailed => 'Nem sikerült betölteni a leckét';
+
+  @override
+  String get wsNationalTitle => 'Az akcentusodhoz tartozó nehéz hangok';
+
+  @override
+  String get wsNationalPending => 'Kitöltjük, amint elemeztük az akcentusodat';
+
+  @override
+  String get wsNationalPicked => 'Az akcentuselemzésed alapján válogattuk';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Beszélj még néhányat, és elemezzük az akcentusodat.';
+
+  @override
+  String get wsMineTitle => 'Az én nehéz hangjaim';
+
+  @override
+  String get wsMineSubtitle => 'Amelyekre nemrég a legkevesebb pontot kaptad';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Beszélj és ismételj, így gyűlnek a nehéz hangjaid.';
+
+  @override
+  String get wsNoDataYet => 'Még nincs adat';
+
+  @override
+  String get wsGoToCall => 'Hívás indítása';
+
+  @override
+  String get wsRule => 'Szabály';
+
+  @override
+  String get wsRecommended => 'Ajánlott';
+
+  @override
+  String get wsNotMeasured => 'Nincs mérés';
+
+  @override
+  String get wsStepUnderstand => 'Megértés';
+
+  @override
+  String get wsStepWords => 'Szavak';
+
+  @override
+  String get wsStepSentence => 'Mondat';
+
+  @override
+  String get wsStepTest => 'Teszt';
+
+  @override
+  String get wsQuitTitle => 'Befejezed a gyakorlást?';
+
+  @override
+  String get wsQuitBody => 'Ha most kilépsz, ez a gyakorlás nem lesz elmentve.';
+
+  @override
+  String get wsHowToSound => 'Így képezd a hangot';
+
+  @override
+  String get wsPracticeWords => 'Szavak gyakorlása';
+
+  @override
+  String get wsPracticeSentence => 'Mondat gyakorlása';
+
+  @override
+  String get wsStartTest => 'Teszt indítása';
+
+  @override
+  String get wsThisSentence => 'Ez a mondat';
+
+  @override
+  String get wsNoScoreNote => 'Ez a lépés nem kap pontot. Csak mondd utána.';
+
+  @override
+  String get wsListen => 'Hallgasd figyelmesen';
+
+  @override
+  String get wsSayNow => 'Most mondd utána';
+
+  @override
+  String get wsPracticeDone => 'Gyakorlás befejezve';
+
+  @override
+  String get wsPaused => 'Szüneteltetve';
+
+  @override
+  String get wsAudioFailed =>
+      'Nem sikerült betölteni a hangot. Olvasd fel a szöveget.';
+
+  @override
+  String get wsReadAloud => 'Olvasd fel hangosan az alábbi mondatot';
+
+  @override
+  String get wsTapToStart => 'Koppints az indításhoz';
+
+  @override
+  String get wsTapWhenDone => 'Koppints, ha végeztél';
+
+  @override
+  String get wsScoring => 'Értékelés folyamatban';
+
+  @override
+  String get wsMicFailed => 'Nem sikerült megnyitni a mikrofont.';
+
+  @override
+  String get wsNoSound => 'Nem hallottunk semmit. Megpróbálod újra?';
+
+  @override
+  String get wsScoreFailed =>
+      'Az értékelés nem sikerült. Kérjük, próbáld újra.';
+
+  @override
+  String get wsSomethingWrong => 'Valami hiba történt.';
+
+  @override
+  String get wsLearnDone => 'Lecke befejezve';
+
+  @override
+  String get wsRetest => 'Új teszt';
+
+  @override
+  String get wsFirstMeasure => 'Első mérés';
+
+  @override
+  String get wsFinalTest => 'Záróteszt';
+
+  @override
+  String wsPoints(int score) {
+    return '$score pont';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Előtte $score pont';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Cél $score pont';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Cél · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country akcentus';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count szó ismételve';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count mondatrész ismételve';
+  }
+
+  @override
+  String get wsStartRecommended => 'Kezdd az ajánlott hanggal';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Kezdd ezzel: $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'pont';
 }

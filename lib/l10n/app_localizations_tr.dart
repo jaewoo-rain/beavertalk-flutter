@@ -2667,4 +2667,212 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Çalışma modunda ipucu kullanılamaz';
+
+  @override
+  String get wsTitle => 'Zayıf sesler';
+
+  @override
+  String get wsToList => 'Listeye dön';
+
+  @override
+  String get wsNext => 'İleri';
+
+  @override
+  String get wsRetry => 'Tekrar dene';
+
+  @override
+  String get wsDone => 'Bitti';
+
+  @override
+  String get wsContinue => 'Devam et';
+
+  @override
+  String get wsQuit => 'Çık';
+
+  @override
+  String get wsRetryLater => 'Lütfen biraz sonra tekrar deneyin.';
+
+  @override
+  String get wsMissingTitle => 'O sesi bulamadık';
+
+  @override
+  String get wsMissingBody => 'Lütfen listeden tekrar seçin.';
+
+  @override
+  String get wsListLoadFailed => 'Liste yüklenemedi';
+
+  @override
+  String get wsLessonLoadFailed => 'Ders yüklenemedi';
+
+  @override
+  String get wsNationalTitle => 'Aksanınıza göre zayıf sesler';
+
+  @override
+  String get wsNationalPending =>
+      'Aksanınız analiz edilince burayı dolduracağız';
+
+  @override
+  String get wsNationalPicked => 'Aksan analizinize göre seçildi';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Birkaç arama daha yapın, aksanınızı analiz edelim.';
+
+  @override
+  String get wsMineTitle => 'Zayıf seslerim';
+
+  @override
+  String get wsMineSubtitle => 'Son zamanlarda en düşük puan aldığınız sesler';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Arama yapıp tekrar edin, zayıf sesleriniz birikecek.';
+
+  @override
+  String get wsNoDataYet => 'Henüz veri yok';
+
+  @override
+  String get wsGoToCall => 'Arama başlat';
+
+  @override
+  String get wsRule => 'Kural';
+
+  @override
+  String get wsRecommended => 'Önerilen';
+
+  @override
+  String get wsNotMeasured => 'Ölçülmedi';
+
+  @override
+  String get wsStepUnderstand => 'Anlama';
+
+  @override
+  String get wsStepWords => 'Kelimeler';
+
+  @override
+  String get wsStepSentence => 'Cümle';
+
+  @override
+  String get wsStepTest => 'Test';
+
+  @override
+  String get wsQuitTitle => 'Alıştırmayı bırakalım mı?';
+
+  @override
+  String get wsQuitBody => 'Şimdi çıkarsanız bu alıştırma kaydedilmez.';
+
+  @override
+  String get wsHowToSound => 'Ses nasıl çıkarılır';
+
+  @override
+  String get wsPracticeWords => 'Kelimeleri çalış';
+
+  @override
+  String get wsPracticeSentence => 'Cümleyi çalış';
+
+  @override
+  String get wsStartTest => 'Testi başlat';
+
+  @override
+  String get wsThisSentence => 'Bu cümle';
+
+  @override
+  String get wsNoScoreNote => 'Bu adım puanlanmaz. Rahatça tekrar edin.';
+
+  @override
+  String get wsListen => 'Dikkatle dinleyin';
+
+  @override
+  String get wsSayNow => 'Şimdi siz söyleyin';
+
+  @override
+  String get wsPracticeDone => 'Alıştırma tamamlandı';
+
+  @override
+  String get wsPaused => 'Duraklatıldı';
+
+  @override
+  String get wsAudioFailed => 'Ses yüklenemedi. Yazıya bakıp sesli okuyun.';
+
+  @override
+  String get wsReadAloud => 'Aşağıdaki cümleyi sesli okuyun';
+
+  @override
+  String get wsTapToStart => 'Başlamak için dokunun';
+
+  @override
+  String get wsTapWhenDone => 'Bitirince dokunun';
+
+  @override
+  String get wsScoring => 'Puanlanıyor';
+
+  @override
+  String get wsMicFailed => 'Mikrofon açılamadı.';
+
+  @override
+  String get wsNoSound => 'Hiçbir şey duymadık. Tekrar deneyelim mi?';
+
+  @override
+  String get wsScoreFailed => 'Puanlama başarısız oldu. Lütfen tekrar deneyin.';
+
+  @override
+  String get wsSomethingWrong => 'Bir sorun oluştu.';
+
+  @override
+  String get wsLearnDone => 'Ders tamamlandı';
+
+  @override
+  String get wsRetest => 'Yeniden test';
+
+  @override
+  String get wsFirstMeasure => 'İlk ölçüm';
+
+  @override
+  String get wsFinalTest => 'Son test';
+
+  @override
+  String wsPoints(int score) {
+    return '$score puan';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Önce $score puan';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Hedef $score puan';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Hedef · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country aksanı';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count kelime tekrar edildi';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count parça tekrar edildi';
+  }
+
+  @override
+  String get wsStartRecommended => 'Önerilen sesle başla';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$label ile başla';
+  }
+
+  @override
+  String get wsPointsUnit => 'puan';
 }

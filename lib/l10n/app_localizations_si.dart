@@ -2657,4 +2657,212 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'ඉගෙනීම් ප්‍රකාරයේදී ඉඟි භාවිත කළ නොහැක';
+
+  @override
+  String get wsTitle => 'දුර්වල ශබ්ද';
+
+  @override
+  String get wsToList => 'ලැයිස්තුවට';
+
+  @override
+  String get wsNext => 'ඊළඟ';
+
+  @override
+  String get wsRetry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get wsDone => 'නිමයි';
+
+  @override
+  String get wsContinue => 'දිගටම කරන්න';
+
+  @override
+  String get wsQuit => 'ඉවත් වන්න';
+
+  @override
+  String get wsRetryLater => 'මොහොතකින් නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get wsMissingTitle => 'ඒ ශබ්දය හමු නොවිණි';
+
+  @override
+  String get wsMissingBody => 'ලැයිස්තුවෙන් නැවත තෝරන්න.';
+
+  @override
+  String get wsListLoadFailed => 'ලැයිස්තුව පූරණය කළ නොහැකි විය';
+
+  @override
+  String get wsLessonLoadFailed => 'පාඩම පූරණය කළ නොහැකි විය';
+
+  @override
+  String get wsNationalTitle => 'ඔබේ උච්චාරණ රටාවට දුර්වල ශබ්ද';
+
+  @override
+  String get wsNationalPending => 'උච්චාරණ රටාව විශ්ලේෂණය වූ පසු මෙය පිරෙයි';
+
+  @override
+  String get wsNationalPicked => 'ඔබේ උච්චාරණ විශ්ලේෂණයෙන් තෝරා ගත්තා';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'ඇමතුම් කිහිපයක් තව ගන්න, ඔබේ උච්චාරණය විශ්ලේෂණය කර දෙන්නම්.';
+
+  @override
+  String get wsMineTitle => 'මගේ දුර්වල ශබ්ද';
+
+  @override
+  String get wsMineSubtitle => 'මෑතක ලකුණු අඩුම ශබ්ද';
+
+  @override
+  String get wsMineEmptyBody =>
+      'ඇමතුම් ගෙන පුනරීක්ෂණය කළොත් දුර්වල ශබ්ද එකතු වේ.';
+
+  @override
+  String get wsNoDataYet => 'තවම දත්ත නැත';
+
+  @override
+  String get wsGoToCall => 'ඇමතුමක් අරඹන්න';
+
+  @override
+  String get wsRule => 'රීතිය';
+
+  @override
+  String get wsRecommended => 'නිර්දේශිත';
+
+  @override
+  String get wsNotMeasured => 'මැනුම් නැත';
+
+  @override
+  String get wsStepUnderstand => 'තේරුම';
+
+  @override
+  String get wsStepWords => 'වචන';
+
+  @override
+  String get wsStepSentence => 'වාක්‍යය';
+
+  @override
+  String get wsStepTest => 'ඇගයීම';
+
+  @override
+  String get wsQuitTitle => 'පුහුණුව නවත්වන්නද?';
+
+  @override
+  String get wsQuitBody => 'දැන් ඉවත් වුණොත් මෙම පුහුණුව සුරැකෙන්නේ නැත.';
+
+  @override
+  String get wsHowToSound => 'ශබ්දය උච්චාරණය කරන ආකාරය';
+
+  @override
+  String get wsPracticeWords => 'වචන පුහුණු වන්න';
+
+  @override
+  String get wsPracticeSentence => 'වාක්‍යය පුහුණු වන්න';
+
+  @override
+  String get wsStartTest => 'ඇගයීම අරඹන්න';
+
+  @override
+  String get wsThisSentence => 'මෙම වාක්‍යය';
+
+  @override
+  String get wsNoScoreNote => 'මෙම පියවරට ලකුණු නැත. නිදහසේ අනුව කියන්න.';
+
+  @override
+  String get wsListen => 'හොඳින් අහන්න';
+
+  @override
+  String get wsSayNow => 'දැන් අනුව කියන්න';
+
+  @override
+  String get wsPracticeDone => 'පුහුණුව අවසන්';
+
+  @override
+  String get wsPaused => 'විරාම කර ඇත';
+
+  @override
+  String get wsAudioFailed => 'ශබ්දය පූරණය කළ නොහැකි විය. අකුරු බලා කියන්න.';
+
+  @override
+  String get wsReadAloud => 'පහත වාක්‍යය හඬ නඟා කියවන්න';
+
+  @override
+  String get wsTapToStart => 'ඇරඹීමට තට්ටු කරන්න';
+
+  @override
+  String get wsTapWhenDone => 'අවසන් වූ විට තට්ටු කරන්න';
+
+  @override
+  String get wsScoring => 'ලකුණු දෙමින්';
+
+  @override
+  String get wsMicFailed => 'මයික්‍රොෆෝනය විවෘත කළ නොහැකි විය.';
+
+  @override
+  String get wsNoSound => 'කිසිවක් ඇහුණේ නැහැ. නැවත කියමුද?';
+
+  @override
+  String get wsScoreFailed =>
+      'ලකුණු දීම අසාර්ථක විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get wsSomethingWrong => 'ගැටලුවක් ඇති විය.';
+
+  @override
+  String get wsLearnDone => 'පාඩම අවසන්';
+
+  @override
+  String get wsRetest => 'නැවත ඇගයීම';
+
+  @override
+  String get wsFirstMeasure => 'පළමු මැනුමයි';
+
+  @override
+  String get wsFinalTest => 'අවසන් ඇගයීම';
+
+  @override
+  String wsPoints(int score) {
+    return 'ලකුණු $score';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'පෙර ලකුණු $score';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'ඉලක්කය ලකුණු $score';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'ඉලක්කය · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country උච්චාරණය';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'වචන $countක් අනුව කීවා';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'කොටස් $countක් අනුව කීවා';
+  }
+
+  @override
+  String get wsStartRecommended => 'නිර්දේශිත ශබ්දයෙන් පටන් ගන්න';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$label සිට පටන් ගන්න';
+  }
+
+  @override
+  String get wsPointsUnit => 'ලකුණු';
 }

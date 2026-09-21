@@ -4,6 +4,7 @@ import '../../../../components/organisms/gnb.dart' show GnbBackArrow;
 import '../../../../theme/app_color_tokens.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_typography.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 학습 4단계 공통 헤더 — Figma `Learn/Header` (`6040:34651`), 실측 높이 89.
 ///
@@ -32,7 +33,13 @@ class LearnHeader extends StatelessWidget implements PreferredSizeWidget {
   ///    뒤로 갈 뿐**이라 아이콘이 거짓말을 하고 있었다(2026-09-21 사용자 지적).
   final VoidCallback? onBack;
 
-  static const _labels = ['이해', '단어', '문장', '평가'];
+  /// 단계 이름 4개. 언어에 따라 달라지므로 **const 로 둘 수 없다** — build 에서 만든다.
+  static List<String> _labels(AppLocalizations l10n) => [
+        l10n.wsStepUnderstand,
+        l10n.wsStepWords,
+        l10n.wsStepSentence,
+        l10n.wsStepTest,
+      ];
 
   @override
   Size get preferredSize => const Size.fromHeight(89);
@@ -40,6 +47,7 @@ class LearnHeader extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final labels = _labels(AppLocalizations.of(context));
     return Container(
       color: c.backgroundSurfaceAlternative,
       padding: const EdgeInsets.only(bottom: 10),
@@ -80,11 +88,11 @@ class LearnHeader extends StatelessWidget implements PreferredSizeWidget {
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.s20),
             child: Row(
               children: [
-                for (var i = 0; i < _labels.length; i++) ...[
+                for (var i = 0; i < labels.length; i++) ...[
                   if (i > 0) const SizedBox(width: 6),
                   Expanded(
                     child: _Step(
-                      label: _labels[i],
+                      label: labels[i],
                       active: i + 1 <= step,
                     ),
                   ),

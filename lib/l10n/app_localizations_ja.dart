@@ -2587,4 +2587,209 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => '表現学習ではヒントを使えません';
+
+  @override
+  String get wsTitle => '苦手な発音';
+
+  @override
+  String get wsToList => '一覧に戻る';
+
+  @override
+  String get wsNext => '次へ';
+
+  @override
+  String get wsRetry => 'もう一度';
+
+  @override
+  String get wsDone => '完了';
+
+  @override
+  String get wsContinue => '続ける';
+
+  @override
+  String get wsQuit => 'やめる';
+
+  @override
+  String get wsRetryLater => '少し時間をおいてお試しください。';
+
+  @override
+  String get wsMissingTitle => '学習する音が見つかりません';
+
+  @override
+  String get wsMissingBody => '一覧からもう一度選んでください。';
+
+  @override
+  String get wsListLoadFailed => '一覧を読み込めませんでした';
+
+  @override
+  String get wsLessonLoadFailed => '学習を読み込めませんでした';
+
+  @override
+  String get wsNationalTitle => 'アクセント別の苦手な発音';
+
+  @override
+  String get wsNationalPending => 'アクセント分析が終わると表示されます';
+
+  @override
+  String get wsNationalPicked => 'アクセント分析の結果から選びました';
+
+  @override
+  String get wsNationalEmptyBody => '通話をもう少し重ねると、アクセントを分析します。';
+
+  @override
+  String get wsMineTitle => 'わたしの苦手な発音';
+
+  @override
+  String get wsMineSubtitle => '最近の通話で正確さが低かった音です';
+
+  @override
+  String get wsMineEmptyBody => '通話して復習すると、苦手な発音がたまります。';
+
+  @override
+  String get wsNoDataYet => 'まだデータがありません';
+
+  @override
+  String get wsGoToCall => '通話を始める';
+
+  @override
+  String get wsRule => 'ルール';
+
+  @override
+  String get wsRecommended => 'おすすめ';
+
+  @override
+  String get wsNotMeasured => '測定前';
+
+  @override
+  String get wsStepUnderstand => '理解';
+
+  @override
+  String get wsStepWords => '単語';
+
+  @override
+  String get wsStepSentence => '文';
+
+  @override
+  String get wsStepTest => '評価';
+
+  @override
+  String get wsQuitTitle => '学習をやめますか？';
+
+  @override
+  String get wsQuitBody => 'いま出ると、今回の練習は保存されません。';
+
+  @override
+  String get wsHowToSound => '音の出し方';
+
+  @override
+  String get wsPracticeWords => '単語を練習する';
+
+  @override
+  String get wsPracticeSentence => '文を練習する';
+
+  @override
+  String get wsStartTest => '評価を始める';
+
+  @override
+  String get wsThisSentence => '今回の文';
+
+  @override
+  String get wsNoScoreNote => 'この段階は採点しません。気楽に続けて言ってみましょう。';
+
+  @override
+  String get wsListen => 'よく聞いてみましょう';
+
+  @override
+  String get wsSayNow => '今、声に出してみましょう';
+
+  @override
+  String get wsPracticeDone => '練習が終わりました';
+
+  @override
+  String get wsPaused => '一時停止しました';
+
+  @override
+  String get wsAudioFailed => '音声を読み込めませんでした。文字を見て声に出してみましょう。';
+
+  @override
+  String get wsReadAloud => '下の文を声に出して読んでください';
+
+  @override
+  String get wsTapToStart => 'タップして始めます';
+
+  @override
+  String get wsTapWhenDone => '読み終えたらタップしてください';
+
+  @override
+  String get wsScoring => '採点しています';
+
+  @override
+  String get wsMicFailed => 'マイクを開けませんでした。';
+
+  @override
+  String get wsNoSound => '音声が届きませんでした。もう一度言ってみましょうか？';
+
+  @override
+  String get wsScoreFailed => '採点に失敗しました。もう一度お試しください。';
+
+  @override
+  String get wsSomethingWrong => '問題が発生しました。';
+
+  @override
+  String get wsLearnDone => '学習が終わりました';
+
+  @override
+  String get wsRetest => 'もう一度評価する';
+
+  @override
+  String get wsFirstMeasure => '初めての測定です';
+
+  @override
+  String get wsFinalTest => '最終評価';
+
+  @override
+  String wsPoints(int score) {
+    return '$score点';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return '学習前 $score点';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return '目標 $score点';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return '目標 · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$countryアクセント';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '単語$count個をリピート';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'フレーズ$count個をリピート';
+  }
+
+  @override
+  String get wsStartRecommended => 'おすすめの音から学習';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$labelから学習';
+  }
+
+  @override
+  String get wsPointsUnit => '点';
 }

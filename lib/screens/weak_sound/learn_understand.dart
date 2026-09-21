@@ -11,6 +11,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 
 /// 1단계 · 소리 이해 — Figma `03 · learn/1_understand` (`6024:9569`), 규칙은 R1.
 ///
@@ -24,6 +25,7 @@ class LearnUnderstandScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final key = resolveSoundKey(context, soundKey);
     if (key == null) return const MissingSoundKey();
     return LearnScaffold(
@@ -33,7 +35,7 @@ class LearnUnderstandScreen extends ConsumerWidget {
       footer: (context, lesson) => Button(
         type: BtnType.primaryFill,
         size: BtnSize.s60,
-        text: '단어 연습하기',
+        text: l10n.wsPracticeWords,
         onPressed: () => Navigator.of(context).pushNamed(
           Routes.weakSoundWords,
           arguments: key,
@@ -50,6 +52,7 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,7 +64,7 @@ class _Body extends StatelessWidget {
         else
           _Diagram(lesson: lesson),
         const SizedBox(height: AppSpacing.s24),
-        Text('소리 내는 법',
+        Text(l10n.wsHowToSound,
             style: AppType.headline2.b.copyWith(color: c.labelStrong)),
         const SizedBox(height: 10),
         for (var i = 0; i < lesson.howTo.length; i++) ...[
@@ -133,6 +136,7 @@ class _Diagram extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final target = lesson.jamoTarget;
     if (target == null) return const SizedBox.shrink();
@@ -153,7 +157,7 @@ class _Diagram extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
-            '목표 · ${lesson.cardDesc}',
+            l10n.wsGoalPrefix(lesson.cardDesc),
             textAlign: TextAlign.center,
             style: AppType.label1.b.copyWith(color: c.primaryForeground),
           ),

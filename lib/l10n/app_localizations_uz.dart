@@ -2691,4 +2691,213 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get callHintLockedTitle =>
       'O‘rganish rejimida maslahatlar mavjud emas';
+
+  @override
+  String get wsTitle => 'Qiyin tovushlar';
+
+  @override
+  String get wsToList => 'Roʻyxatga';
+
+  @override
+  String get wsNext => 'Keyingi';
+
+  @override
+  String get wsRetry => 'Qayta urinish';
+
+  @override
+  String get wsDone => 'Tayyor';
+
+  @override
+  String get wsContinue => 'Davom etish';
+
+  @override
+  String get wsQuit => 'Chiqish';
+
+  @override
+  String get wsRetryLater => 'Iltimos, bir oz keyin qayta urinib koʻring.';
+
+  @override
+  String get wsMissingTitle => 'Bu tovush topilmadi';
+
+  @override
+  String get wsMissingBody => 'Roʻyxatdan yana tanlang.';
+
+  @override
+  String get wsListLoadFailed => 'Roʻyxat yuklanmadi';
+
+  @override
+  String get wsLessonLoadFailed => 'Mashgʻulot yuklanmadi';
+
+  @override
+  String get wsNationalTitle => 'Aksentingiz uchun qiyin tovushlar';
+
+  @override
+  String get wsNationalPending => 'Aksentingiz tahlil qilingach toʻldiramiz';
+
+  @override
+  String get wsNationalPicked => 'Aksent tahlilingiz asosida tanlandi';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Yana bir necha qoʻngʻiroq qiling, aksentingizni tahlil qilamiz.';
+
+  @override
+  String get wsMineTitle => 'Mening qiyin tovushlarim';
+
+  @override
+  String get wsMineSubtitle => 'Yaqinda eng kam ball olgan tovushlar';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Qoʻngʻiroq qilib takrorlasangiz, qiyin tovushlar toʻplanadi.';
+
+  @override
+  String get wsNoDataYet => 'Hozircha maʼlumot yoʻq';
+
+  @override
+  String get wsGoToCall => 'Qoʻngʻiroqni boshlash';
+
+  @override
+  String get wsRule => 'Qoida';
+
+  @override
+  String get wsRecommended => 'Tavsiya etiladi';
+
+  @override
+  String get wsNotMeasured => 'Oʻlchanmagan';
+
+  @override
+  String get wsStepUnderstand => 'Tushunish';
+
+  @override
+  String get wsStepWords => 'Soʻzlar';
+
+  @override
+  String get wsStepSentence => 'Gap';
+
+  @override
+  String get wsStepTest => 'Test';
+
+  @override
+  String get wsQuitTitle => 'Mashqni toʻxtatamizmi?';
+
+  @override
+  String get wsQuitBody => 'Hozir chiqsangiz, bu mashq saqlanmaydi.';
+
+  @override
+  String get wsHowToSound => 'Tovushni qanday chiqarish kerak';
+
+  @override
+  String get wsPracticeWords => 'Soʻzlarni mashq qilish';
+
+  @override
+  String get wsPracticeSentence => 'Gapni mashq qilish';
+
+  @override
+  String get wsStartTest => 'Testni boshlash';
+
+  @override
+  String get wsThisSentence => 'Bu gap';
+
+  @override
+  String get wsNoScoreNote => 'Bu bosqichda ball yoʻq. Erkin takrorlang.';
+
+  @override
+  String get wsListen => 'Diqqat bilan tinglang';
+
+  @override
+  String get wsSayNow => 'Endi siz aytib koʻring';
+
+  @override
+  String get wsPracticeDone => 'Mashq tugadi';
+
+  @override
+  String get wsPaused => 'Toʻxtatildi';
+
+  @override
+  String get wsAudioFailed =>
+      'Audio yuklanmadi. Matnga qarab ovoz chiqarib oʻqing.';
+
+  @override
+  String get wsReadAloud => 'Pastdagi gapni ovoz chiqarib oʻqing';
+
+  @override
+  String get wsTapToStart => 'Boshlash uchun bosing';
+
+  @override
+  String get wsTapWhenDone => 'Tugatgach bosing';
+
+  @override
+  String get wsScoring => 'Baholanmoqda';
+
+  @override
+  String get wsMicFailed => 'Mikrofon ochilmadi.';
+
+  @override
+  String get wsNoSound => 'Hech narsa eshitilmadi. Yana aytamizmi?';
+
+  @override
+  String get wsScoreFailed =>
+      'Baholash amalga oshmadi. Iltimos, qayta urinib koʻring.';
+
+  @override
+  String get wsSomethingWrong => 'Xatolik yuz berdi.';
+
+  @override
+  String get wsLearnDone => 'Mashgʻulot tugadi';
+
+  @override
+  String get wsRetest => 'Qayta test';
+
+  @override
+  String get wsFirstMeasure => 'Birinchi oʻlchov';
+
+  @override
+  String get wsFinalTest => 'Yakuniy test';
+
+  @override
+  String wsPoints(int score) {
+    return '$score ball';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Oldin $score ball';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Maqsad $score ball';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Maqsad · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country aksenti';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count soʻz takrorlandi';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count boʻlak takrorlandi';
+  }
+
+  @override
+  String get wsStartRecommended => 'Tavsiya etilgan tovushdan boshlash';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$label bilan boshlash';
+  }
+
+  @override
+  String get wsPointsUnit => 'ball';
 }

@@ -13,8 +13,11 @@ import '../domain/auto_practice.dart';
 /// [AutoPracticeMachine] 은 시간을 모르고, 이 클래스는 규칙을 모른다. 규칙은 기계가,
 /// 시간·소리는 여기가 갖는다.
 ///
-/// 음성은 `POST /tts/speech` 로 합성해 [SpeechCache] 에 담는다. 같은 단어를 다시 들을 때
-/// 합성 요금을 또 내지 않기 위해서다(백엔드 요청 2026-09-04).
+/// 음성은 **미리 구워 둔 URL** 을 먼저 쓴다([audioUrls]). 서버가 `/tts/speech` 로 매번
+/// 합성하면 매번 과금되는데, 이 기능의 문장은 고정 콘텐츠라 한 번 구워 두면 그만이다
+/// (2026-09-21). URL 이 없는 문장만 종전대로 합성하고 [SpeechCache] 에 담는다.
+///
+/// ⛔ **URL 을 캐시하지 마라** — 서명이 붙어 있고 만료된다. 캐시는 합성한 바이트만 담는다.
 ///
 /// ⭐ 엔진은 **구 Gemini-TTS** 다(2026-09-21 사장님 지시). 앱의 다른 TTS 경로(통화 힌트·
 ///    표준 발음)는 Chirp3-HD 그대로다 — 여기서만 엔진을 지정한다.
@@ -29,14 +32,19 @@ class AutoPracticeController extends ChangeNotifier {
     required List<String> items,
     required ReviewRepository repository,
     required SpeechCache cache,
+    Map<String, String> audioUrls = const {},
   })  : _items = items,
         _repo = repository,
         _cache = cache,
+        _audioUrls = audioUrls,
         _machine = AutoPracticeMachine(items.length);
 
   final List<String> _items;
   final ReviewRepository _repo;
   final SpeechCache _cache;
+
+  /// {문장: 미리 구운 재생 URL}. 서버가 준 그대로 쓰고 **저장하지 않는다**(만료된다).
+  final Map<String, String> _audioUrls;
   final AutoPracticeMachine _machine;
   final _player = ReviewAudioPlayer();
 
@@ -78,19 +86,35 @@ class AutoPracticeController extends ChangeNotifier {
 
   Future<void> _playCurrent() async {
     final text = currentItem;
-    final bytes = await _bytesFor(text);
-    if (_disposed) return;
-
     Duration? length;
-    if (bytes != null) {
+
+    // 1순위 — 미리 구운 URL. 합성 0회·요금 0원이다.
+    final url = _audioUrls[text];
+    if (url != null && url.isNotEmpty) {
       try {
-        // 플레이어가 **실제 음성 길이**를 돌려준다. null 일 때만 글자 수로 어림한다.
-        length = await _player.playMp3Bytes(bytes);
+        length = await _player.playUrl(url);
+        _muted = false;
       } catch (_) {
+        // 서명 만료·네트워크 실패. 합성으로 떨어진다 — 소리를 포기하지 않는다.
+        length = null;
+      }
+    }
+
+    // 2순위 — 온디맨드 합성(URL 이 없거나 재생에 실패한 문장).
+    if (length == null) {
+      final bytes = await _bytesFor(text);
+      if (_disposed) return;
+      if (bytes != null) {
+        try {
+          // 플레이어가 **실제 음성 길이**를 돌려준다. null 일 때만 글자 수로 어림한다.
+          length = await _player.playMp3Bytes(bytes);
+          _muted = false;
+        } catch (_) {
+          _muted = true;
+        }
+      } else {
         _muted = true;
       }
-    } else {
-      _muted = true;
     }
     if (_disposed) return;
 

@@ -2669,4 +2669,213 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'مشق موڈ میں اشارے دستیاب نہیں ہیں';
+
+  @override
+  String get wsTitle => 'کمزور آوازیں';
+
+  @override
+  String get wsToList => 'فہرست پر واپس';
+
+  @override
+  String get wsNext => 'اگلا';
+
+  @override
+  String get wsRetry => 'دوبارہ کوشش';
+
+  @override
+  String get wsDone => 'مکمل';
+
+  @override
+  String get wsContinue => 'جاری رکھیں';
+
+  @override
+  String get wsQuit => 'چھوڑیں';
+
+  @override
+  String get wsRetryLater => 'براہ کرم کچھ دیر بعد دوبارہ کوشش کریں۔';
+
+  @override
+  String get wsMissingTitle => 'وہ آواز نہیں مل سکی';
+
+  @override
+  String get wsMissingBody => 'براہ کرم فہرست سے دوبارہ منتخب کریں۔';
+
+  @override
+  String get wsListLoadFailed => 'فہرست لوڈ نہیں ہو سکی';
+
+  @override
+  String get wsLessonLoadFailed => 'سبق لوڈ نہیں ہو سکا';
+
+  @override
+  String get wsNationalTitle => 'آپ کے لہجے کی کمزور آوازیں';
+
+  @override
+  String get wsNationalPending => 'آپ کے لہجے کا تجزیہ ہونے پر یہ بھر جائے گا';
+
+  @override
+  String get wsNationalPicked => 'آپ کے لہجے کے تجزیے سے منتخب کیا گیا';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'کچھ مزید کالیں کریں تو ہم آپ کے لہجے کا تجزیہ کریں گے۔';
+
+  @override
+  String get wsMineTitle => 'میری کمزور آوازیں';
+
+  @override
+  String get wsMineSubtitle => 'حال ہی میں سب سے کم اسکور والی آوازیں';
+
+  @override
+  String get wsMineEmptyBody =>
+      'کال کریں اور دہرائیں، آپ کی کمزور آوازیں جمع ہوتی جائیں گی۔';
+
+  @override
+  String get wsNoDataYet => 'ابھی کوئی ڈیٹا نہیں';
+
+  @override
+  String get wsGoToCall => 'کال شروع کریں';
+
+  @override
+  String get wsRule => 'قاعدہ';
+
+  @override
+  String get wsRecommended => 'تجویز کردہ';
+
+  @override
+  String get wsNotMeasured => 'پیمائش نہیں ہوئی';
+
+  @override
+  String get wsStepUnderstand => 'سمجھنا';
+
+  @override
+  String get wsStepWords => 'الفاظ';
+
+  @override
+  String get wsStepSentence => 'جملہ';
+
+  @override
+  String get wsStepTest => 'جانچ';
+
+  @override
+  String get wsQuitTitle => 'مشق روک دیں؟';
+
+  @override
+  String get wsQuitBody => 'ابھی نکل جائیں تو یہ مشق محفوظ نہیں ہوگی۔';
+
+  @override
+  String get wsHowToSound => 'آواز نکالنے کا طریقہ';
+
+  @override
+  String get wsPracticeWords => 'الفاظ کی مشق';
+
+  @override
+  String get wsPracticeSentence => 'جملے کی مشق';
+
+  @override
+  String get wsStartTest => 'جانچ شروع کریں';
+
+  @override
+  String get wsThisSentence => 'یہ جملہ';
+
+  @override
+  String get wsNoScoreNote =>
+      'اس مرحلے کا اسکور نہیں ہوتا۔ بس آرام سے دہرائیں۔';
+
+  @override
+  String get wsListen => 'غور سے سنیں';
+
+  @override
+  String get wsSayNow => 'اب آپ بولیں';
+
+  @override
+  String get wsPracticeDone => 'مشق مکمل ہوئی';
+
+  @override
+  String get wsPaused => 'رکا ہوا';
+
+  @override
+  String get wsAudioFailed =>
+      'آڈیو لوڈ نہیں ہو سکا۔ متن دیکھ کر بلند آواز میں پڑھیں۔';
+
+  @override
+  String get wsReadAloud => 'نیچے دیا جملہ بلند آواز میں پڑھیں';
+
+  @override
+  String get wsTapToStart => 'شروع کرنے کے لیے ٹیپ کریں';
+
+  @override
+  String get wsTapWhenDone => 'پڑھ چکیں تو ٹیپ کریں';
+
+  @override
+  String get wsScoring => 'اسکور لگایا جا رہا ہے';
+
+  @override
+  String get wsMicFailed => 'مائیکروفون نہیں کھل سکا۔';
+
+  @override
+  String get wsNoSound => 'کچھ سنائی نہیں دیا۔ دوبارہ بولیں؟';
+
+  @override
+  String get wsScoreFailed => 'سکورنگ ناکام ہو گئی۔ براہ کرم دوبارہ کوشش کریں۔';
+
+  @override
+  String get wsSomethingWrong => 'کچھ غلط ہو گیا۔';
+
+  @override
+  String get wsLearnDone => 'سبق مکمل ہوا';
+
+  @override
+  String get wsRetest => 'دوبارہ جانچ';
+
+  @override
+  String get wsFirstMeasure => 'پہلی پیمائش';
+
+  @override
+  String get wsFinalTest => 'آخری جانچ';
+
+  @override
+  String wsPoints(int score) {
+    return '$score پوائنٹ';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'پہلے $score پوائنٹ';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'ہدف $score پوائنٹ';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'ہدف · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country لہجہ';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count الفاظ دہرائے';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count حصے دہرائے';
+  }
+
+  @override
+  String get wsStartRecommended => 'تجویز کردہ آواز سے شروع کریں';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return '$label سے شروع کریں';
+  }
+
+  @override
+  String get wsPointsUnit => 'پوائنٹ';
 }

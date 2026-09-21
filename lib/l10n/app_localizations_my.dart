@@ -2683,4 +2683,211 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get callHintLockedTitle =>
       'လေ့လာခြင်းတွင် အကြံပြုချက်ကို အသုံးမပြုနိုင်ပါ';
+
+  @override
+  String get wsTitle => 'အခက်အခဲ အသံများ';
+
+  @override
+  String get wsToList => 'စာရင်းသို့';
+
+  @override
+  String get wsNext => 'ရှေ့ဆက်ရန်';
+
+  @override
+  String get wsRetry => 'ထပ်ကြိုးစားရန်';
+
+  @override
+  String get wsDone => 'ပြီးပါပြီ';
+
+  @override
+  String get wsContinue => 'ဆက်လုပ်ရန်';
+
+  @override
+  String get wsQuit => 'ထွက်ရန်';
+
+  @override
+  String get wsRetryLater => 'ခဏနေ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get wsMissingTitle => 'ထိုအသံကို ရှာမတွေ့ပါ';
+
+  @override
+  String get wsMissingBody => 'စာရင်းမှ ပြန်ရွေးပါ။';
+
+  @override
+  String get wsListLoadFailed => 'စာရင်းကို ဖွင့်မရပါ';
+
+  @override
+  String get wsLessonLoadFailed => 'သင်ခန်းစာကို ဖွင့်မရပါ';
+
+  @override
+  String get wsNationalTitle => 'သင့်အသံဟန်အတွက် အခက်အခဲ အသံများ';
+
+  @override
+  String get wsNationalPending => 'အသံဟန် ခွဲခြမ်းပြီးလျှင် ဖော်ပြပါမည်';
+
+  @override
+  String get wsNationalPicked => 'အသံဟန် ခွဲခြမ်းချက်မှ ရွေးထားသည်';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'ခေါ်ဆိုမှု ထပ်လုပ်ပါ၊ အသံဟန်ကို ခွဲခြမ်းပေးပါမည်။';
+
+  @override
+  String get wsMineTitle => 'ကျွန်ုပ်၏ အခက်အခဲ အသံများ';
+
+  @override
+  String get wsMineSubtitle => 'မကြာမီ ရမှတ်နိမ့်ခဲ့သော အသံများ';
+
+  @override
+  String get wsMineEmptyBody =>
+      'ခေါ်ဆိုပြီး ပြန်လေ့လာလျှင် အခက်အခဲ အသံများ စုလာမည်။';
+
+  @override
+  String get wsNoDataYet => 'ဒေတာ မရှိသေးပါ';
+
+  @override
+  String get wsGoToCall => 'ခေါ်ဆိုမှု စတင်ရန်';
+
+  @override
+  String get wsRule => 'စည်းမျဉ်း';
+
+  @override
+  String get wsRecommended => 'အကြံပြုချက်';
+
+  @override
+  String get wsNotMeasured => 'မတိုင်းတာသေးပါ';
+
+  @override
+  String get wsStepUnderstand => 'လေ့လာ';
+
+  @override
+  String get wsStepWords => 'စကားလုံး';
+
+  @override
+  String get wsStepSentence => 'စာကြောင်း';
+
+  @override
+  String get wsStepTest => 'စစ်ဆေး';
+
+  @override
+  String get wsQuitTitle => 'လေ့ကျင့်မှု ရပ်မလား?';
+
+  @override
+  String get wsQuitBody => 'အခု ထွက်ပါက ဤလေ့ကျင့်မှု သိမ်းမည်မဟုတ်ပါ။';
+
+  @override
+  String get wsHowToSound => 'အသံ ထွက်ပုံ';
+
+  @override
+  String get wsPracticeWords => 'စကားလုံး လေ့ကျင့်ရန်';
+
+  @override
+  String get wsPracticeSentence => 'စာကြောင်း လေ့ကျင့်ရန်';
+
+  @override
+  String get wsStartTest => 'စစ်ဆေးမှု စတင်ရန်';
+
+  @override
+  String get wsThisSentence => 'ဤစာကြောင်း';
+
+  @override
+  String get wsNoScoreNote => 'ဤအဆင့်တွင် အမှတ်မပေးပါ။ လိုက်ဆိုကြည့်ပါ။';
+
+  @override
+  String get wsListen => 'အာရုံစိုက် နားထောင်ပါ';
+
+  @override
+  String get wsSayNow => 'အခု လိုက်ဆိုပါ';
+
+  @override
+  String get wsPracticeDone => 'လေ့ကျင့်မှု ပြီးပါပြီ';
+
+  @override
+  String get wsPaused => 'ခေတ္တရပ်ထားသည်';
+
+  @override
+  String get wsAudioFailed => 'အသံဖိုင် ဖွင့်မရပါ။ စာကိုကြည့်၍ ဆိုပါ။';
+
+  @override
+  String get wsReadAloud => 'အောက်ပါစာကြောင်းကို အသံထွက်ဖတ်ပါ';
+
+  @override
+  String get wsTapToStart => 'စတင်ရန် တို့ပါ';
+
+  @override
+  String get wsTapWhenDone => 'ပြီးလျှင် တို့ပါ';
+
+  @override
+  String get wsScoring => 'အမှတ်ပေးနေသည်';
+
+  @override
+  String get wsMicFailed => 'မိုက်ခရိုဖုန်း ဖွင့်မရပါ။';
+
+  @override
+  String get wsNoSound => 'အသံ မကြားရပါ။ ထပ်ဆိုကြည့်မလား?';
+
+  @override
+  String get wsScoreFailed => 'အမှတ်ပေးမှု မအောင်မြင်ပါ။ ထပ်ကြိုးစားပါ။';
+
+  @override
+  String get wsSomethingWrong => 'ပြဿနာ ရှိပါသည်။';
+
+  @override
+  String get wsLearnDone => 'သင်ခန်းစာ ပြီးပါပြီ';
+
+  @override
+  String get wsRetest => 'ထပ်စစ်ဆေးရန်';
+
+  @override
+  String get wsFirstMeasure => 'ပထမဆုံး တိုင်းတာမှု';
+
+  @override
+  String get wsFinalTest => 'နောက်ဆုံး စစ်ဆေးမှု';
+
+  @override
+  String wsPoints(int score) {
+    return '$score မှတ်';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'မတိုင်မီ $score မှတ်';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'ပန်းတိုင် $score မှတ်';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'ပန်းတိုင် · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return '$country အသံဟန်';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return 'စကားလုံး $count လုံး လိုက်ဆိုပြီး';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return 'အပိုင်း $count ပိုင်း လိုက်ဆိုပြီး';
+  }
+
+  @override
+  String get wsStartRecommended => 'အကြံပြု အသံမှ စတင်ရန်';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'စတင်ရန် · $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'မှတ်';
 }

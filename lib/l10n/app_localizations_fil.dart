@@ -2690,4 +2690,216 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callHintLockedTitle => 'Hindi available ang hint sa Pag-aaral';
+
+  @override
+  String get wsTitle => 'Mahihirap na tunog';
+
+  @override
+  String get wsToList => 'Bumalik sa listahan';
+
+  @override
+  String get wsNext => 'Susunod';
+
+  @override
+  String get wsRetry => 'Subukan Muli';
+
+  @override
+  String get wsDone => 'Tapos';
+
+  @override
+  String get wsContinue => 'Ituloy';
+
+  @override
+  String get wsQuit => 'Umalis';
+
+  @override
+  String get wsRetryLater => 'Pakisubukan muli maya-maya.';
+
+  @override
+  String get wsMissingTitle => 'Hindi namin nakita ang tunog na iyon';
+
+  @override
+  String get wsMissingBody => 'Pakipili muli ito sa listahan.';
+
+  @override
+  String get wsListLoadFailed => 'Hindi ma-load ang listahan';
+
+  @override
+  String get wsLessonLoadFailed => 'Hindi ma-load ang aralin';
+
+  @override
+  String get wsNationalTitle => 'Mahihirap na tunog para sa accent mo';
+
+  @override
+  String get wsNationalPending =>
+      'Pupunan namin ito kapag na-analyze na ang accent mo';
+
+  @override
+  String get wsNationalPicked => 'Pinili base sa analysis ng accent mo';
+
+  @override
+  String get wsNationalEmptyBody =>
+      'Tumawag pa ng kaunti at i-aanalyze namin ang accent mo.';
+
+  @override
+  String get wsMineTitle => 'Mga mahirap kong tunog';
+
+  @override
+  String get wsMineSubtitle =>
+      'Mga tunog na pinakamababa ang score mo kamakailan';
+
+  @override
+  String get wsMineEmptyBody =>
+      'Tumawag at mag-review, at madadagdagan ang mahirap mong tunog.';
+
+  @override
+  String get wsNoDataYet => 'Wala pang data';
+
+  @override
+  String get wsGoToCall => 'Simulan ang Tawag';
+
+  @override
+  String get wsRule => 'Tuntunin';
+
+  @override
+  String get wsRecommended => 'Rekomendado';
+
+  @override
+  String get wsNotMeasured => 'Hindi pa nasukat';
+
+  @override
+  String get wsStepUnderstand => 'Alamin';
+
+  @override
+  String get wsStepWords => 'Salita';
+
+  @override
+  String get wsStepSentence => 'Pangungusap';
+
+  @override
+  String get wsStepTest => 'Test';
+
+  @override
+  String get wsQuitTitle => 'Ihinto ang pag-practice?';
+
+  @override
+  String get wsQuitBody =>
+      'Kung aalis ka ngayon, hindi ma-save ang practice na ito.';
+
+  @override
+  String get wsHowToSound => 'Paano bigkasin ang tunog';
+
+  @override
+  String get wsPracticeWords => 'Sanayin ang salita';
+
+  @override
+  String get wsPracticeSentence => 'Sanayin ang pangungusap';
+
+  @override
+  String get wsStartTest => 'Simulan ang test';
+
+  @override
+  String get wsThisSentence => 'Ang pangungusap na ito';
+
+  @override
+  String get wsNoScoreNote =>
+      'Walang score sa hakbang na ito. Sumunod lang sa pagbigkas.';
+
+  @override
+  String get wsListen => 'Makinig nang mabuti';
+
+  @override
+  String get wsSayNow => 'Ngayon, sabihin mo na';
+
+  @override
+  String get wsPracticeDone => 'Tapos na ang practice';
+
+  @override
+  String get wsPaused => 'Naka-pause';
+
+  @override
+  String get wsAudioFailed =>
+      'Hindi ma-load ang audio. Basahin nang malakas ang teksto.';
+
+  @override
+  String get wsReadAloud => 'Basahin nang malakas ang pangungusap sa ibaba';
+
+  @override
+  String get wsTapToStart => 'I-tap para magsimula';
+
+  @override
+  String get wsTapWhenDone => 'I-tap kapag tapos na';
+
+  @override
+  String get wsScoring => 'Kinakalkula ang score';
+
+  @override
+  String get wsMicFailed => 'Hindi mabuksan ang mikropono.';
+
+  @override
+  String get wsNoSound => 'Wala kaming narinig. Subukan muli?';
+
+  @override
+  String get wsScoreFailed => 'Nabigo ang pag-iskor. Pakisubukan muli.';
+
+  @override
+  String get wsSomethingWrong => 'May nangyaring mali.';
+
+  @override
+  String get wsLearnDone => 'Tapos na ang aralin';
+
+  @override
+  String get wsRetest => 'Test muli';
+
+  @override
+  String get wsFirstMeasure => 'Unang pagsukat';
+
+  @override
+  String get wsFinalTest => 'Huling test';
+
+  @override
+  String wsPoints(int score) {
+    return '$score puntos';
+  }
+
+  @override
+  String wsBeforePoints(int score) {
+    return 'Dati $score puntos';
+  }
+
+  @override
+  String wsGoalPoints(int score) {
+    return 'Target $score puntos';
+  }
+
+  @override
+  String wsGoalPrefix(String desc) {
+    return 'Target · $desc';
+  }
+
+  @override
+  String wsAccentOf(String country) {
+    return 'Accent ng $country';
+  }
+
+  @override
+  String wsWordsRepeated(int count) {
+    return '$count salitang naulit';
+  }
+
+  @override
+  String wsChunksRepeated(int count) {
+    return '$count bahaging naulit';
+  }
+
+  @override
+  String get wsStartRecommended => 'Magsimula sa rekomendadong tunog';
+
+  @override
+  String wsStartRecommendedWith(String label) {
+    return 'Magsimula sa $label';
+  }
+
+  @override
+  String get wsPointsUnit => 'puntos';
 }

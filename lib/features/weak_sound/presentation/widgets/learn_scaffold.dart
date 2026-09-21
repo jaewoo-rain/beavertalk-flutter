@@ -9,6 +9,7 @@ import '../../../../theme/app_spacing.dart';
 import '../../domain/entities/sound_lesson.dart';
 import '../weak_sound_providers.dart';
 import 'learn_header.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// 학습 4단계가 공유하는 껍데기 — 고정 헤더 + 스크롤 본문 + 고정 푸터.
 ///
@@ -57,6 +58,7 @@ class LearnScaffold extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final async = ref.watch(soundLessonProvider(soundKey));
     final confirm = confirmExit ?? (step == 1);
@@ -91,9 +93,9 @@ class LearnScaffold extends ConsumerWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(AppSpacing.s20),
                       child: EmptyBlock(
-                        title: '학습을 불러오지 못했어요',
-                        body: '잠시 후 다시 시도해 주세요.',
-                        ctaText: '다시 시도',
+                        title: l10n.wsLessonLoadFailed,
+                        body: l10n.wsRetryLater,
+                        ctaText: l10n.wsRetry,
                         onCta: () =>
                             ref.invalidate(soundLessonProvider(soundKey)),
                       ),
@@ -167,17 +169,18 @@ class LearnScaffold extends ConsumerWidget {
 /// 스크림을 눌러 닫으면 `null` 이 오는데, 그때는 **나가지 않는다** — 의사를 밝힌 적이
 /// 없는 동작을 나가기로 해석하지 않는다.
 Future<bool> _confirmLeave(BuildContext context) async {
+  final l10n = AppLocalizations.of(context);
   final result = await showDialogBasic<bool>(
     context,
-    title: '학습을 그만둘까요?',
-    description: '지금 나가면 이번 연습은 저장되지 않아요.',
+    title: l10n.wsQuitTitle,
+    description: l10n.wsQuitBody,
     primary: DialogAction(
-      label: '나가기',
+      label: l10n.wsQuit,
       type: BtnType.secondaryFill,
       onPressed: () => Navigator.of(context).pop(true),
     ),
     secondary: DialogAction(
-      label: '계속하기',
+      label: l10n.wsContinue,
       type: BtnType.primaryFill,
       onPressed: () => Navigator.of(context).pop(false),
     ),

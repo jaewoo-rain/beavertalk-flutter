@@ -12,6 +12,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../l10n/app_localizations.dart';
 
 /// 학습 결과 — Figma `17 · learn/result` (`6118:12274`), 예외는 E5(하락)·E8(첫 측정).
 ///
@@ -35,6 +36,7 @@ class LearnResultScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final lesson = ref.watch(soundLessonProvider(soundKey)).valueOrNull;
     // 뒤로가기는 **목록으로** 간다 — 화살표든 시스템 back 이든 같다.
@@ -88,7 +90,7 @@ class LearnResultScreen extends ConsumerWidget {
                       ),
                       const SizedBox(height: AppSpacing.s4),
                       Text(
-                        '학습을 마쳤어요',
+                        l10n.wsLearnDone,
                         textAlign: TextAlign.center,
                         style: AppType.title2.b.copyWith(color: c.labelStrong),
                       ),
@@ -119,7 +121,7 @@ class LearnResultScreen extends ConsumerWidget {
                         child: Button(
                           type: BtnType.secondaryFill,
                           size: BtnSize.s60,
-                          text: '다시 평가하기',
+                          text: l10n.wsRetest,
                           onPressed: () =>
                               Navigator.of(context).pushReplacementNamed(
                                 Routes.weakSoundTest,
@@ -132,7 +134,7 @@ class LearnResultScreen extends ConsumerWidget {
                         child: Button(
                           type: BtnType.primaryFill,
                           size: BtnSize.s60,
-                          text: '목록으로',
+                          text: l10n.wsToList,
                           onPressed: () => _toList(context),
                         ),
                       ),
@@ -165,6 +167,7 @@ class _ScoreLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    final l10n = AppLocalizations.of(context);
     final delta = result.delta;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -176,7 +179,8 @@ class _ScoreLine extends StatelessWidget {
           style: AppType.display1.b.copyWith(color: c.primaryForeground),
         ),
         const SizedBox(width: AppSpacing.s4),
-        Text('점', style: AppType.heading2.b.copyWith(color: c.labelStrong)),
+        Text(l10n.wsPointsUnit,
+            style: AppType.heading2.b.copyWith(color: c.labelStrong)),
         if (delta != null && delta != 0) ...[
           const SizedBox(width: AppSpacing.s8),
           Container(
@@ -210,6 +214,7 @@ class _ProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final after = result.after.clamp(0, 100);
     final before = result.before;
@@ -270,11 +275,11 @@ class _ProgressBar extends StatelessWidget {
           children: [
             Text(
               // 첫 측정이면 「학습 전 —점」이 아니라 사실을 쓴다(Figma E8).
-              before == null ? '첫 측정이에요' : '학습 전 $before점',
+              before == null ? l10n.wsFirstMeasure : l10n.wsBeforePoints(before),
               style: AppType.label2.m.copyWith(color: c.labelNormal),
             ),
             Text(
-              '목표 ${LearnResultScreen.goal}점',
+              l10n.wsGoalPoints(LearnResultScreen.goal),
               style: AppType.label2.m.copyWith(color: c.labelNormal),
             ),
           ],
@@ -367,13 +372,14 @@ class _Summary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final words = lesson?.words.length ?? 0;
     final chunks = lesson?.sentence.chunks.length ?? 0;
     return Column(
       children: [
-        if (words > 0) _Row(label: '단어 $words개 따라 하기', done: true),
-        if (chunks > 0) _Row(label: '문장 $chunks조각 따라 하기', done: true),
-        _Row(label: '최종 평가', value: '${result.after}점'),
+        if (words > 0) _Row(label: l10n.wsWordsRepeated(words), done: true),
+        if (chunks > 0) _Row(label: l10n.wsChunksRepeated(chunks), done: true),
+        _Row(label: l10n.wsFinalTest, value: l10n.wsPoints(result.after)),
       ],
     );
   }
@@ -388,6 +394,7 @@ class _Row extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.s8),
@@ -407,7 +414,7 @@ class _Row extends StatelessWidget {
                 Icon(Icons.check, size: 16, color: c.primaryForeground),
                 const SizedBox(width: AppSpacing.s4),
                 Text(
-                  '완료',
+                  l10n.wsDone,
                   style: AppType.label2.b.copyWith(color: c.primaryForeground),
                 ),
               ],
