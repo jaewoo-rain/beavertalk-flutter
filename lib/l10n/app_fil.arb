@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} bahaging naulit",
   "wsStartRecommended": "Magsimula sa rekomendadong tunog",
   "wsStartRecommendedWith": "Magsimula sa {label}",
-  "wsPointsUnit": "puntos"
+  "wsPointsUnit": "puntos",
+  "wsEnterFromMypage": "Sanayin ang mahihirap na tunog",
+  "wsGoalOnly": "Target {score}",
+  "wsSoundOf": "Tunog {label}",
+  "wsResultTip": "{desc}. Isipin ang hugis na ito kapag lumabas ito sa tawag.",
+  "wsNationalSubtitle": "Mga tunog na madalas mamali ang mga nagsasalita mula sa {country}"
 }

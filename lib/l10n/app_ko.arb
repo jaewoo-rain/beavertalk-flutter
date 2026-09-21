@@ -880,5 +880,10 @@
   "wsChunksRepeated": "문장 {count}조각 따라 하기",
   "wsStartRecommended": "추천 소리부터 학습",
   "wsStartRecommendedWith": "추천 소리부터 학습 · {label}",
-  "wsPointsUnit": "점"
+  "wsPointsUnit": "점",
+  "wsEnterFromMypage": "취약 발음 학습하기",
+  "wsGoalOnly": "목표 {score}",
+  "wsSoundOf": "{label} 소리",
+  "wsResultTip": "{desc}. 통화에서 다시 만나면 이 모양을 떠올리세요.",
+  "wsNationalSubtitle": "{country} 화자가 자주 틀리는 소리예요"
 }

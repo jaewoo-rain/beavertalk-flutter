@@ -2902,4 +2902,27 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'puntos';
+
+  @override
+  String get wsEnterFromMypage => 'Sanayin ang mahihirap na tunog';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Target $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Tunog $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Isipin ang hugis na ito kapag lumabas ito sa tawag.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Mga tunog na madalas mamali ang mga nagsasalita mula sa $country';
+  }
 }

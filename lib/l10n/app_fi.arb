@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} lauseen osaa toistettu",
   "wsStartRecommended": "Aloita suositellusta äänteestä",
   "wsStartRecommendedWith": "Aloita: {label}",
-  "wsPointsUnit": "p"
+  "wsPointsUnit": "p",
+  "wsEnterFromMypage": "Harjoittele vaikeita äänteitä",
+  "wsGoalOnly": "Tavoite {score}",
+  "wsSoundOf": "Äänne {label}",
+  "wsResultTip": "{desc}. Kuvittele tämä muoto, kun äänne tulee vastaan puhelussa.",
+  "wsNationalSubtitle": "{country} – äänteet, joissa puhujat usein erehtyvät"
 }

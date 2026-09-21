@@ -679,13 +679,13 @@ class MyPageScreen extends ConsumerWidget {
                 // Figma E1 — 억양 분석 전에도 버튼은 **보이되 눌리지 않는다.**
                 // 숨기면 기능이 없는 줄 알고, 눌리게 두면 빈 목록으로 떨어진다.
                 const SizedBox(height: AppSpacing.s8),
-                const Button(
+                Button(
                   // ⛔ secondaryFill 을 쓰지 마라 — 그 면색이 카드 자신의 색과 같아서
                   //    다크에서 버튼이 통째로 사라진다(mypage_surface_contrast_test 가
                   //    잡는 바로 그 결함). 카드 안 CTA 는 전부 secondaryElevated 다.
                   type: BtnType.secondaryElevated,
                   size: BtnSize.s60,
-                  text: '취약 발음 학습하기',
+                  text: l10n.wsEnterFromMypage,
                   disabled: true,
                 ),
               ]
@@ -727,7 +727,7 @@ class MyPageScreen extends ConsumerWidget {
             // 위와 같은 이유로 secondaryElevated. 카드 면색과 같은 버튼은 안 보인다.
             type: BtnType.secondaryElevated,
             size: BtnSize.s60,
-            text: '취약 발음 학습하기',
+            text: l10n.wsEnterFromMypage,
             onPressed: () => Navigator.of(context).pushNamed(Routes.weakSounds),
           ),
         ],

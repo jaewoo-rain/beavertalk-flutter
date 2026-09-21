@@ -101,7 +101,7 @@ class _Body extends ConsumerWidget {
             title: l10n.wsNationalTitle,
             subtitle: list.national.country == null
                 ? l10n.wsNationalPending
-                : '${list.national.country} 화자가 자주 틀리는 소리예요',
+                : l10n.wsNationalSubtitle(list.national.country!),
             items: list.national.items,
             recommended: recommended,
             emptyTitle: l10n.wsNoDataYet,

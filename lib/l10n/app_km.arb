@@ -866,5 +866,10 @@
   "wsChunksRepeated": "និយាយតាម {count} ចំណែក",
   "wsStartRecommended": "ចាប់ផ្ដើមពីសំឡេងដែលបានណែនាំ",
   "wsStartRecommendedWith": "ចាប់ផ្ដើម · {label}",
-  "wsPointsUnit": "ពិន្ទុ"
+  "wsPointsUnit": "ពិន្ទុ",
+  "wsEnterFromMypage": "អនុវត្តសំឡេងពិបាក",
+  "wsGoalOnly": "គោលដៅ {score}",
+  "wsSoundOf": "សំឡេង {label}",
+  "wsResultTip": "{desc}។ ពេលជួបវាម្ដងទៀតក្នុងការហៅ សូមនឹកឃើញរូបរាងនេះ។",
+  "wsNationalSubtitle": "សំឡេងដែលអ្នកនិយាយមកពី {country} ច្រើនតែខុស"
 }

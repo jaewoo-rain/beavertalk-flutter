@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} parça tekrar edildi",
   "wsStartRecommended": "Önerilen sesle başla",
   "wsStartRecommendedWith": "{label} ile başla",
-  "wsPointsUnit": "puan"
+  "wsPointsUnit": "puan",
+  "wsEnterFromMypage": "Zayıf sesleri çalış",
+  "wsGoalOnly": "Hedef {score}",
+  "wsSoundOf": "{label} sesi",
+  "wsResultTip": "{desc}. Bir aramada karşınıza çıkınca bu şekli gözünüzde canlandırın.",
+  "wsNationalSubtitle": "{country} – konuşanların sık yanlış söylediği sesler"
 }

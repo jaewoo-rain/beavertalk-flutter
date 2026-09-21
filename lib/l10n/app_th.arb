@@ -866,5 +866,10 @@
   "wsChunksRepeated": "พูดตามประโยค {count} ท่อน",
   "wsStartRecommended": "เริ่มจากเสียงที่แนะนำ",
   "wsStartRecommendedWith": "เริ่มจาก {label}",
-  "wsPointsUnit": "คะแนน"
+  "wsPointsUnit": "คะแนน",
+  "wsEnterFromMypage": "ฝึกเสียงที่ยังไม่แม่น",
+  "wsGoalOnly": "เป้าหมาย {score}",
+  "wsSoundOf": "เสียง {label}",
+  "wsResultTip": "{desc} ถ้าเจอเสียงนี้อีกตอนโทร ให้นึกถึงรูปปากแบบนี้",
+  "wsNationalSubtitle": "เสียงที่ผู้พูดจาก {country} มักออกเสียงผิด"
 }

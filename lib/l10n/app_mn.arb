@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} хэсэг давтлаа",
   "wsStartRecommended": "Зөвлөсөн авианаас эхлэх",
   "wsStartRecommendedWith": "Эхлэх · {label}",
-  "wsPointsUnit": "оноо"
+  "wsPointsUnit": "оноо",
+  "wsEnterFromMypage": "Хүндрэлтэй авиа дадлагажих",
+  "wsGoalOnly": "Зорилт {score}",
+  "wsSoundOf": "{label} авиа",
+  "wsResultTip": "{desc}. Дуудлагад дахин тохиолдвол энэ хэлбэрийг санаарай.",
+  "wsNationalSubtitle": "{country} – хүмүүсийн түгээмэл алддаг авиа"
 }

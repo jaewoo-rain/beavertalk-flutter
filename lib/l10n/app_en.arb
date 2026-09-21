@@ -2166,5 +2166,41 @@
   "wsPointsUnit": "pts",
   "@wsPointsUnit": {
     "description": "Unit shown next to a pronunciation score, e.g. the \"pts\" in \"84 pts\". Rendered in a smaller style beside the number."
+  },
+  "wsEnterFromMypage": "Practice weak sounds",
+  "@wsEnterFromMypage": {
+    "description": "Button on the accent card in My Page that opens weak-sound practice."
+  },
+  "wsGoalOnly": "Goal {score}",
+  "@wsGoalOnly": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "wsSoundOf": "{label} sound",
+  "@wsSoundOf": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "wsResultTip": "{desc}. Picture this shape when it comes up in a call.",
+  "@wsResultTip": {
+    "placeholders": {
+      "desc": {
+        "type": "String"
+      }
+    }
+  },
+  "wsNationalSubtitle": "Sounds {country} speakers often get wrong",
+  "@wsNationalSubtitle": {
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
   }
 }

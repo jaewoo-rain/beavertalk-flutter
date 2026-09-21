@@ -866,5 +866,10 @@
   "wsChunksRepeated": "Mengulang {count} bahagian",
   "wsStartRecommended": "Mula dengan bunyi disyorkan",
   "wsStartRecommendedWith": "Mula dengan {label}",
-  "wsPointsUnit": "mata"
+  "wsPointsUnit": "mata",
+  "wsEnterFromMypage": "Latih bunyi sukar",
+  "wsGoalOnly": "Sasaran {score}",
+  "wsSoundOf": "Bunyi {label}",
+  "wsResultTip": "{desc}. Bayangkan bentuk ini apabila bunyinya muncul dalam panggilan.",
+  "wsNationalSubtitle": "Bunyi yang sering tersalah sebut oleh penutur dari {country}"
 }

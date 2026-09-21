@@ -2878,4 +2878,27 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'پوائنٹ';
+
+  @override
+  String get wsEnterFromMypage => 'کمزور آوازوں کی مشق';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'ہدف $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label کی آواز';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc۔ کال میں دوبارہ ملے تو یہ شکل یاد کریں۔';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country کے بولنے والوں سے اکثر غلط ہونے والی آوازیں';
+  }
 }

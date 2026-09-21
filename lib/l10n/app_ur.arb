@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} حصے دہرائے",
   "wsStartRecommended": "تجویز کردہ آواز سے شروع کریں",
   "wsStartRecommendedWith": "{label} سے شروع کریں",
-  "wsPointsUnit": "پوائنٹ"
+  "wsPointsUnit": "پوائنٹ",
+  "wsEnterFromMypage": "کمزور آوازوں کی مشق",
+  "wsGoalOnly": "ہدف {score}",
+  "wsSoundOf": "{label} کی آواز",
+  "wsResultTip": "{desc}۔ کال میں دوبارہ ملے تو یہ شکل یاد کریں۔",
+  "wsNationalSubtitle": "{country} کے بولنے والوں سے اکثر غلط ہونے والی آوازیں"
 }

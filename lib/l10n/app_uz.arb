@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} boʻlak takrorlandi",
   "wsStartRecommended": "Tavsiya etilgan tovushdan boshlash",
   "wsStartRecommendedWith": "{label} bilan boshlash",
-  "wsPointsUnit": "ball"
+  "wsPointsUnit": "ball",
+  "wsEnterFromMypage": "Qiyin tovushlarni mashq qilish",
+  "wsGoalOnly": "Maqsad {score}",
+  "wsSoundOf": "{label} tovushi",
+  "wsResultTip": "{desc}. Qoʻngʻiroqda yana uchrasa, shu shaklni eslang.",
+  "wsNationalSubtitle": "{country} soʻzlovchilari koʻp xato qiladigan tovushlar"
 }

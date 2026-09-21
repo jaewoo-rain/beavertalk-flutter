@@ -5397,6 +5397,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'pts'**
   String get wsPointsUnit;
+
+  /// Button on the accent card in My Page that opens weak-sound practice.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice weak sounds'**
+  String get wsEnterFromMypage;
+
+  /// No description provided for @wsGoalOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Goal {score}'**
+  String wsGoalOnly(int score);
+
+  /// No description provided for @wsSoundOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} sound'**
+  String wsSoundOf(String label);
+
+  /// No description provided for @wsResultTip.
+  ///
+  /// In en, this message translates to:
+  /// **'{desc}. Picture this shape when it comes up in a call.'**
+  String wsResultTip(String desc);
+
+  /// No description provided for @wsNationalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds {country} speakers often get wrong'**
+  String wsNationalSubtitle(String country);
 }
 
 class _AppLocalizationsDelegate

@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} trechos repetidos",
   "wsStartRecommended": "Começar pelo som recomendado",
   "wsStartRecommendedWith": "Começar por {label}",
-  "wsPointsUnit": "pts"
+  "wsPointsUnit": "pts",
+  "wsEnterFromMypage": "Praticar sons difíceis",
+  "wsGoalOnly": "Meta {score}",
+  "wsSoundOf": "Som {label}",
+  "wsResultTip": "{desc}. Imagine esse formato quando o som aparecer numa ligação.",
+  "wsNationalSubtitle": "{country} – sons que os falantes costumam errar"
 }

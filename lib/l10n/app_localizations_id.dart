@@ -2887,4 +2887,27 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'poin';
+
+  @override
+  String get wsEnterFromMypage => 'Latih bunyi sulit';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Target $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Bunyi $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Bayangkan bentuk ini saat bunyinya muncul dalam panggilan.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Bunyi yang sering salah diucapkan penutur dari $country';
+  }
 }

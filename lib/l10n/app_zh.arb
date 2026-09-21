@@ -866,5 +866,10 @@
   "wsChunksRepeated": "跟读了{count}个句段",
   "wsStartRecommended": "从推荐的音开始学",
   "wsStartRecommendedWith": "从{label}开始学",
-  "wsPointsUnit": "分"
+  "wsPointsUnit": "分",
+  "wsEnterFromMypage": "练习薄弱发音",
+  "wsGoalOnly": "目标{score}",
+  "wsSoundOf": "{label} 的发音",
+  "wsResultTip": "{desc}。通话中再遇到时，想想这个口型。",
+  "wsNationalSubtitle": "来自 {country} 的人常发错的音"
 }

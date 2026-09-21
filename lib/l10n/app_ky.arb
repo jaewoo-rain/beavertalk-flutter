@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} бөлүк кайталанды",
   "wsStartRecommended": "Сунушталган тыбыштан баштоо",
   "wsStartRecommendedWith": "Баштоо · {label}",
-  "wsPointsUnit": "упай"
+  "wsPointsUnit": "упай",
+  "wsEnterFromMypage": "Кыйын тыбыштарды көнүгүү",
+  "wsGoalOnly": "Максат {score}",
+  "wsSoundOf": "{label} тыбышы",
+  "wsResultTip": "{desc}. Чалууда кайра кезиксе, ушул форманы эсиңизге түшүрүңүз.",
+  "wsNationalSubtitle": "{country} сүйлөөчүлөрү көп жаңылган тыбыштар"
 }

@@ -866,5 +866,10 @@
   "wsChunksRepeated": "フレーズ{count}個をリピート",
   "wsStartRecommended": "おすすめの音から学習",
   "wsStartRecommendedWith": "{label}から学習",
-  "wsPointsUnit": "点"
+  "wsPointsUnit": "点",
+  "wsEnterFromMypage": "苦手な発音を練習する",
+  "wsGoalOnly": "目標 {score}",
+  "wsSoundOf": "{label} の音",
+  "wsResultTip": "{desc}。通話で出てきたら、この形を思い出してください。",
+  "wsNationalSubtitle": "{country} の話者がよく間違える音"
 }

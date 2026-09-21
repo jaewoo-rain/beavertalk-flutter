@@ -2877,4 +2877,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'pts';
+
+  @override
+  String get wsEnterFromMypage => 'Practice weak sounds';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Goal $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label sound';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Picture this shape when it comes up in a call.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Sounds $country speakers often get wrong';
+  }
 }

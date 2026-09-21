@@ -320,6 +320,7 @@ class _SoundCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final target = lesson.jamoTarget;
     final diagram = target == null
@@ -346,12 +347,12 @@ class _SoundCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  '${lesson.label} 소리',
+                  l10n.wsSoundOf(lesson.label),
                   style: AppType.body1.b.copyWith(color: c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s4),
                 Text(
-                  '${lesson.cardDesc}. 통화에서 다시 만나면 이 모양을 떠올리세요.',
+                  l10n.wsResultTip(lesson.cardDesc),
                   style: AppType.label2.r.copyWith(color: c.labelNormal),
                 ),
               ],

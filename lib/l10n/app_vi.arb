@@ -866,5 +866,10 @@
   "wsChunksRepeated": "Đã nói theo {count} đoạn",
   "wsStartRecommended": "Bắt đầu từ âm được đề xuất",
   "wsStartRecommendedWith": "Bắt đầu từ {label}",
-  "wsPointsUnit": "điểm"
+  "wsPointsUnit": "điểm",
+  "wsEnterFromMypage": "Luyện âm còn yếu",
+  "wsGoalOnly": "Mục tiêu {score}",
+  "wsSoundOf": "Âm {label}",
+  "wsResultTip": "{desc}. Gặp lại âm này trong cuộc gọi thì hãy nhớ tới hình dạng này.",
+  "wsNationalSubtitle": "Những âm người {country} hay phát âm sai"
 }

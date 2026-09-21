@@ -2792,4 +2792,27 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get wsPointsUnit => '点';
+
+  @override
+  String get wsEnterFromMypage => '苦手な発音を練習する';
+
+  @override
+  String wsGoalOnly(int score) {
+    return '目標 $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label の音';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc。通話で出てきたら、この形を思い出してください。';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country の話者がよく間違える音';
+  }
 }

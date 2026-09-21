@@ -2874,4 +2874,27 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'điểm';
+
+  @override
+  String get wsEnterFromMypage => 'Luyện âm còn yếu';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Mục tiêu $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Âm $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Gặp lại âm này trong cuộc gọi thì hãy nhớ tới hình dạng này.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Những âm người $country hay phát âm sai';
+  }
 }

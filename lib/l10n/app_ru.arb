@@ -866,5 +866,10 @@
   "wsChunksRepeated": "Повторено частей: {count}",
   "wsStartRecommended": "Начать с рекомендованного звука",
   "wsStartRecommendedWith": "Начать с {label}",
-  "wsPointsUnit": "баллов"
+  "wsPointsUnit": "баллов",
+  "wsEnterFromMypage": "Тренировать слабые звуки",
+  "wsGoalOnly": "Цель {score}",
+  "wsSoundOf": "Звук {label}",
+  "wsResultTip": "{desc}. Вспомните эту форму, когда звук встретится в звонке.",
+  "wsNationalSubtitle": "{country} — звуки, в которых говорящие часто ошибаются"
 }

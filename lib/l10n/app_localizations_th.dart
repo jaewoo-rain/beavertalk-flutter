@@ -2858,4 +2858,27 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'คะแนน';
+
+  @override
+  String get wsEnterFromMypage => 'ฝึกเสียงที่ยังไม่แม่น';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'เป้าหมาย $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'เสียง $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc ถ้าเจอเสียงนี้อีกตอนโทร ให้นึกถึงรูปปากแบบนี้';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'เสียงที่ผู้พูดจาก $country มักออกเสียงผิด';
+  }
 }

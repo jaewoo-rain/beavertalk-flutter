@@ -866,5 +866,10 @@
   "wsChunksRepeated": "အပိုင်း {count} ပိုင်း လိုက်ဆိုပြီး",
   "wsStartRecommended": "အကြံပြု အသံမှ စတင်ရန်",
   "wsStartRecommendedWith": "စတင်ရန် · {label}",
-  "wsPointsUnit": "မှတ်"
+  "wsPointsUnit": "မှတ်",
+  "wsEnterFromMypage": "အခက်အခဲ အသံများ လေ့ကျင့်ရန်",
+  "wsGoalOnly": "ပန်းတိုင် {score}",
+  "wsSoundOf": "{label} အသံ",
+  "wsResultTip": "{desc}။ ခေါ်ဆိုမှုမှာ ပြန်တွေ့ရင် ဒီပုံသဏ္ဌာန်ကို ပြန်စဉ်းစားပါ။",
+  "wsNationalSubtitle": "{country} မှ စကားပြောသူများ မကြာခဏ မှားတတ်သော အသံများ"
 }

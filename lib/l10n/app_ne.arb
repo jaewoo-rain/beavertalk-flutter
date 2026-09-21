@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} खण्ड दोहोरिए",
   "wsStartRecommended": "सिफारिस गरिएको ध्वनिबाट सुरु",
   "wsStartRecommendedWith": "सुरु · {label}",
-  "wsPointsUnit": "अंक"
+  "wsPointsUnit": "अंक",
+  "wsEnterFromMypage": "कठिन ध्वनि अभ्यास",
+  "wsGoalOnly": "लक्ष्य {score}",
+  "wsSoundOf": "{label} ध्वनि",
+  "wsResultTip": "{desc}। कलमा फेरि भेटिए यही आकार सम्झनुहोस्।",
+  "wsNationalSubtitle": "{country} का वक्ताहरूले प्रायः गलत उच्चारण गर्ने ध्वनिहरू"
 }

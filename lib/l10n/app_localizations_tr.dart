@@ -2875,4 +2875,27 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'puan';
+
+  @override
+  String get wsEnterFromMypage => 'Zayıf sesleri çalış';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Hedef $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label sesi';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Bir aramada karşınıza çıkınca bu şekli gözünüzde canlandırın.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – konuşanların sık yanlış söylediği sesler';
+  }
 }

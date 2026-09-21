@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count}টি বাক্যাংশ পুনরাবৃত্তি",
   "wsStartRecommended": "প্রস্তাবিত ধ্বনি থেকে শুরু",
   "wsStartRecommendedWith": "{label} থেকে শুরু",
-  "wsPointsUnit": "পয়েন্ট"
+  "wsPointsUnit": "পয়েন্ট",
+  "wsEnterFromMypage": "কঠিন ধ্বনি অভ্যাস করুন",
+  "wsGoalOnly": "লক্ষ্য {score}",
+  "wsSoundOf": "{label} ধ্বনি",
+  "wsResultTip": "{desc}। কলে আবার এলে এই আকৃতিটি মনে করুন।",
+  "wsNationalSubtitle": "{country} থেকে আসা বক্তারা প্রায়ই ভুল করেন এমন ধ্বনি"
 }

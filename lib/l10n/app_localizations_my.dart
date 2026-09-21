@@ -2890,4 +2890,27 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'မှတ်';
+
+  @override
+  String get wsEnterFromMypage => 'အခက်အခဲ အသံများ လေ့ကျင့်ရန်';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'ပန်းတိုင် $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label အသံ';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc။ ခေါ်ဆိုမှုမှာ ပြန်တွေ့ရင် ဒီပုံသဏ္ဌာန်ကို ပြန်စဉ်းစားပါ။';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country မှ စကားပြောသူများ မကြာခဏ မှားတတ်သော အသံများ';
+  }
 }

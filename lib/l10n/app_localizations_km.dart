@@ -2873,4 +2873,27 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'ពិន្ទុ';
+
+  @override
+  String get wsEnterFromMypage => 'អនុវត្តសំឡេងពិបាក';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'គោលដៅ $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'សំឡេង $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc។ ពេលជួបវាម្ដងទៀតក្នុងការហៅ សូមនឹកឃើញរូបរាងនេះ។';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'សំឡេងដែលអ្នកនិយាយមកពី $country ច្រើនតែខុស';
+  }
 }

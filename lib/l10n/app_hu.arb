@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} mondatrész ismételve",
   "wsStartRecommended": "Kezdd az ajánlott hanggal",
   "wsStartRecommendedWith": "Kezdd ezzel: {label}",
-  "wsPointsUnit": "pont"
+  "wsPointsUnit": "pont",
+  "wsEnterFromMypage": "Nehéz hangok gyakorlása",
+  "wsGoalOnly": "Cél {score}",
+  "wsSoundOf": "{label} hang",
+  "wsResultTip": "{desc}. Idézd fel ezt a formát, amikor előjön egy hívásban.",
+  "wsNationalSubtitle": "{country} – a beszélők által gyakran elrontott hangok"
 }

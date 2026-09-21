@@ -2878,4 +2878,27 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'оноо';
+
+  @override
+  String get wsEnterFromMypage => 'Хүндрэлтэй авиа дадлагажих';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Зорилт $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label авиа';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Дуудлагад дахин тохиолдвол энэ хэлбэрийг санаарай.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – хүмүүсийн түгээмэл алддаг авиа';
+  }
 }

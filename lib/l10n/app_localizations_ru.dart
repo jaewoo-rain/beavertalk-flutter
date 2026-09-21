@@ -2886,4 +2886,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'баллов';
+
+  @override
+  String get wsEnterFromMypage => 'Тренировать слабые звуки';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Цель $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Звук $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Вспомните эту форму, когда звук встретится в звонке.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country — звуки, в которых говорящие часто ошибаются';
+  }
 }

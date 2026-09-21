@@ -866,5 +866,10 @@
   "wsChunksRepeated": "تكرار {count} جزءًا من الجملة",
   "wsStartRecommended": "ابدأ بالصوت المُقترح",
   "wsStartRecommendedWith": "ابدأ بـ {label}",
-  "wsPointsUnit": "نقطة"
+  "wsPointsUnit": "نقطة",
+  "wsEnterFromMypage": "تدرّب على الأصوات الصعبة",
+  "wsGoalOnly": "الهدف {score}",
+  "wsSoundOf": "صوت {label}",
+  "wsResultTip": "{desc}. تذكّر هذا الشكل عندما يصادفك في مكالمة.",
+  "wsNationalSubtitle": "أصوات يخطئ فيها كثيرًا المتحدثون من {country}"
 }

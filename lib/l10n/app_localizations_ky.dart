@@ -2883,4 +2883,27 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'упай';
+
+  @override
+  String get wsEnterFromMypage => 'Кыйын тыбыштарды көнүгүү';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Максат $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label тыбышы';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Чалууда кайра кезиксе, ушул форманы эсиңизге түшүрүңүз.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country сүйлөөчүлөрү көп жаңылган тыбыштар';
+  }
 }

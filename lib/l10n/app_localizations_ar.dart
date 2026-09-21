@@ -2855,4 +2855,27 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'نقطة';
+
+  @override
+  String get wsEnterFromMypage => 'تدرّب على الأصوات الصعبة';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'الهدف $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'صوت $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. تذكّر هذا الشكل عندما يصادفك في مكالمة.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'أصوات يخطئ فيها كثيرًا المتحدثون من $country';
+  }
 }

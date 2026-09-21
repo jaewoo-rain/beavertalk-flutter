@@ -866,5 +866,10 @@
   "wsChunksRepeated": "Ripetuti {count} segmenti",
   "wsStartRecommended": "Inizia dal suono consigliato",
   "wsStartRecommendedWith": "Inizia da {label}",
-  "wsPointsUnit": "punti"
+  "wsPointsUnit": "punti",
+  "wsEnterFromMypage": "Esercita i suoni difficili",
+  "wsGoalOnly": "Obiettivo {score}",
+  "wsSoundOf": "Suono {label}",
+  "wsResultTip": "{desc}. Immagina questa forma quando il suono ricompare in una chiamata.",
+  "wsNationalSubtitle": "{country}: suoni che i parlanti sbagliano spesso"
 }

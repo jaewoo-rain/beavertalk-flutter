@@ -88,7 +88,10 @@ class SoundLessonDto {
             SoundWord(
               text: e['text'] as String? ?? '',
               pronunciation: e['pronunciation'] as String?,
-              meaningEn: e['meaning_en'] as String?,
+              // ⚠ `meaning` 이 먼저다. 서버가 회원 언어 번역을 그 키로 덮어쓴다
+              //   (`sound_lesson_i18n`). `meaning_en` 은 번역이 없는 언어용 원본 폴백이다.
+              //   순서를 뒤집으면 번역을 채워도 영어만 나온다.
+              meaningEn: (e['meaning'] ?? e['meaning_en']) as String?,
             ),
       ],
       sentence: _sentence(payload['sentence']),
@@ -101,7 +104,8 @@ class SoundLessonDto {
     return SoundSentence(
       text: raw['text'] as String? ?? '',
       pronunciation: raw['pronunciation'] as String?,
-      translationEn: raw['translation_en'] as String?,
+      // ⚠ 위 meaning 과 같은 규칙 — 번역본 우선, 없으면 영어 원본.
+      translationEn: (raw['translation'] ?? raw['translation_en']) as String?,
       chunks: [
         for (final e in (raw['chunks'] as List? ?? const []))
           if (e is String) e,

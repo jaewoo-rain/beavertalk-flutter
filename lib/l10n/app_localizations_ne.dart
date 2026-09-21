@@ -2867,4 +2867,27 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'अंक';
+
+  @override
+  String get wsEnterFromMypage => 'कठिन ध्वनि अभ्यास';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'लक्ष्य $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label ध्वनि';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc। कलमा फेरि भेटिए यही आकार सम्झनुहोस्।';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country का वक्ताहरूले प्रायः गलत उच्चारण गर्ने ध्वनिहरू';
+  }
 }

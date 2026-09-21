@@ -2922,4 +2922,27 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'Pkt.';
+
+  @override
+  String get wsEnterFromMypage => 'Schwache Laute üben';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Ziel $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Laut $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Stell dir diese Form vor, wenn der Laut im Anruf vorkommt.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Laute, die Sprecher aus $country oft falsch aussprechen';
+  }
 }

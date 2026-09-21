@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} бөлік қайталанды",
   "wsStartRecommended": "Ұсынылған дыбыстан бастау",
   "wsStartRecommendedWith": "Бастау · {label}",
-  "wsPointsUnit": "балл"
+  "wsPointsUnit": "балл",
+  "wsEnterFromMypage": "Қиын дыбыстарды жаттығу",
+  "wsGoalOnly": "Мақсат {score}",
+  "wsSoundOf": "{label} дыбысы",
+  "wsResultTip": "{desc}. Қоңырауда кездескенде осы пішінді есіңізге түсіріңіз.",
+  "wsNationalSubtitle": "{country} сөйлеушілері жиі қателесетін дыбыстар"
 }

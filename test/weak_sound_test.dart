@@ -245,6 +245,43 @@ void main() {
       expect(l.sentence.text, '');
       expect(l.test.text, '');
     });
+
+    test('번역본이 있으면 영어 원본보다 먼저 쓴다', () {
+      // 서버가 회원 언어 번역을 `meaning`·`translation` 으로 덮어쓴다
+      // (`sound_lesson_i18n`). 앱이 `_en` 만 읽던 동안에는 **번역을 채워도 화면에
+      // 영어만 나왔다**(2026-09-21 실기기에서 발견). 순서를 시험으로 박아 둔다.
+      final l = SoundLessonDto.parse({
+        'sound_key': 'coda_ㄹ',
+        'type': 'sound',
+        'payload': {
+          'words': [
+            {'text': '물', 'meaning': 'पानी', 'meaning_en': 'water'},
+          ],
+          'sentence': {
+            'text': '물 좀 줘',
+            'translation': 'अलिकति पानी दिनुस्',
+            'translation_en': 'Give me some water',
+          },
+        },
+      });
+      expect(l.words.single.meaningEn, 'पानी');
+      expect(l.sentence.translationEn, 'अलिकति पानी दिनुस्');
+    });
+
+    test('번역본이 없으면 영어 원본으로 떨어진다', () {
+      final l = SoundLessonDto.parse({
+        'sound_key': 'coda_ㄹ',
+        'type': 'sound',
+        'payload': {
+          'words': [
+            {'text': '물', 'meaning_en': 'water'},
+          ],
+          'sentence': {'text': '물 좀 줘', 'translation_en': 'Give me some water'},
+        },
+      });
+      expect(l.words.single.meaningEn, 'water');
+      expect(l.sentence.translationEn, 'Give me some water');
+    });
   });
 
   group('채점 결과 파싱', () {

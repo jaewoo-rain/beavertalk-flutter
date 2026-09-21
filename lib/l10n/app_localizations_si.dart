@@ -2865,4 +2865,27 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'ලකුණු';
+
+  @override
+  String get wsEnterFromMypage => 'දුර්වල ශබ්ද පුහුණු වන්න';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'ඉලක්කය $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label ශබ්දය';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. ඇමතුමකදී නැවත හමු වූ විට මේ හැඩය සිහිපත් කරන්න.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country කථිකයන් බොහෝ විට වැරදි කරන ශබ්ද';
+  }
 }

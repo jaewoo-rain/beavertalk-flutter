@@ -2887,4 +2887,27 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'p';
+
+  @override
+  String get wsEnterFromMypage => 'Harjoittele vaikeita äänteitä';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Tavoite $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Äänne $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Kuvittele tämä muoto, kun äänne tulee vastaan puhelussa.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – äänteet, joissa puhujat usein erehtyvät';
+  }
 }

@@ -199,6 +199,7 @@ class _Bar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final c = context.c;
     final value = score;
     return SizedBox(
@@ -253,7 +254,7 @@ class _Bar extends StatelessWidget {
                   top: 14,
                   left: w * (WeakSoundCard.goal / 100) - 18,
                   child: Text(
-                    '목표 ${WeakSoundCard.goal}',
+                    l10n.wsGoalOnly(WeakSoundCard.goal),
                     style: AppType.caption2.m.copyWith(color: c.labelNormal),
                   ),
                 ),

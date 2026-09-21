@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} bagian kalimat diulang",
   "wsStartRecommended": "Mulai dari bunyi rekomendasi",
   "wsStartRecommendedWith": "Mulai dari {label}",
-  "wsPointsUnit": "poin"
+  "wsPointsUnit": "poin",
+  "wsEnterFromMypage": "Latih bunyi sulit",
+  "wsGoalOnly": "Target {score}",
+  "wsSoundOf": "Bunyi {label}",
+  "wsResultTip": "{desc}. Bayangkan bentuk ini saat bunyinya muncul dalam panggilan.",
+  "wsNationalSubtitle": "Bunyi yang sering salah diucapkan penutur dari {country}"
 }

@@ -2792,4 +2792,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get wsPointsUnit => '점';
+
+  @override
+  String get wsEnterFromMypage => '취약 발음 학습하기';
+
+  @override
+  String wsGoalOnly(int score) {
+    return '목표 $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label 소리';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. 통화에서 다시 만나면 이 모양을 떠올리세요.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country 화자가 자주 틀리는 소리예요';
+  }
 }

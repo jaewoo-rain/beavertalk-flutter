@@ -2787,4 +2787,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get wsPointsUnit => '分';
+
+  @override
+  String get wsEnterFromMypage => '练习薄弱发音';
+
+  @override
+  String wsGoalOnly(int score) {
+    return '目标$score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label 的发音';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc。通话中再遇到时，想想这个口型。';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '来自 $country 的人常发错的音';
+  }
 }

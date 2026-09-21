@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} segments répétés",
   "wsStartRecommended": "Commencer par le son recommandé",
   "wsStartRecommendedWith": "Commencer par {label}",
-  "wsPointsUnit": "pts"
+  "wsPointsUnit": "pts",
+  "wsEnterFromMypage": "Pratiquer les sons difficiles",
+  "wsGoalOnly": "Objectif {score}",
+  "wsSoundOf": "Son {label}",
+  "wsResultTip": "{desc}. Imaginez cette forme quand ce son revient dans un appel.",
+  "wsNationalSubtitle": "{country} : sons souvent mal prononcés par les locuteurs"
 }

@@ -2898,4 +2898,27 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'pont';
+
+  @override
+  String get wsEnterFromMypage => 'Nehéz hangok gyakorlása';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Cél $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label hang';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Idézd fel ezt a formát, amikor előjön egy hívásban.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country – a beszélők által gyakran elrontott hangok';
+  }
 }

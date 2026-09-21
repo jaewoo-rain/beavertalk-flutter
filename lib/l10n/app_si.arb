@@ -866,5 +866,10 @@
   "wsChunksRepeated": "කොටස් {count}ක් අනුව කීවා",
   "wsStartRecommended": "නිර්දේශිත ශබ්දයෙන් පටන් ගන්න",
   "wsStartRecommendedWith": "{label} සිට පටන් ගන්න",
-  "wsPointsUnit": "ලකුණු"
+  "wsPointsUnit": "ලකුණු",
+  "wsEnterFromMypage": "දුර්වල ශබ්ද පුහුණු වන්න",
+  "wsGoalOnly": "ඉලක්කය {score}",
+  "wsSoundOf": "{label} ශබ්දය",
+  "wsResultTip": "{desc}. ඇමතුමකදී නැවත හමු වූ විට මේ හැඩය සිහිපත් කරන්න.",
+  "wsNationalSubtitle": "{country} කථිකයන් බොහෝ විට වැරදි කරන ශබ්ද"
 }

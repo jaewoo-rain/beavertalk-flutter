@@ -2872,4 +2872,27 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'अंक';
+
+  @override
+  String get wsEnterFromMypage => 'कठिन ध्वनि अभ्यास करें';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'लक्ष्य $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label ध्वनि';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc। कॉल में यह ध्वनि आए तो यही आकार याद करें।';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country के वक्ताओं से अक्सर गलत होने वाली ध्वनियाँ';
+  }
 }

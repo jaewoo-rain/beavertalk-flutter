@@ -2900,4 +2900,27 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'ball';
+
+  @override
+  String get wsEnterFromMypage => 'Qiyin tovushlarni mashq qilish';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Maqsad $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label tovushi';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Qoʻngʻiroqda yana uchrasa, shu shaklni eslang.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country soʻzlovchilari koʻp xato qiladigan tovushlar';
+  }
 }

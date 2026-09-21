@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} fragmentos repetidos",
   "wsStartRecommended": "Empezar con el sonido recomendado",
   "wsStartRecommendedWith": "Empezar con {label}",
-  "wsPointsUnit": "pts"
+  "wsPointsUnit": "pts",
+  "wsEnterFromMypage": "Practicar sonidos difíciles",
+  "wsGoalOnly": "Meta {score}",
+  "wsSoundOf": "Sonido {label}",
+  "wsResultTip": "{desc}. Imagina esta forma cuando aparezca en una llamada.",
+  "wsNationalSubtitle": "Sonidos que los hablantes de {country} suelen pronunciar mal"
 }

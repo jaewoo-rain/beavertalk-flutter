@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} वाक्यांश दोहराए",
   "wsStartRecommended": "सुझाई गई ध्वनि से शुरू करें",
   "wsStartRecommendedWith": "{label} से शुरू करें",
-  "wsPointsUnit": "अंक"
+  "wsPointsUnit": "अंक",
+  "wsEnterFromMypage": "कठिन ध्वनि अभ्यास करें",
+  "wsGoalOnly": "लक्ष्य {score}",
+  "wsSoundOf": "{label} ध्वनि",
+  "wsResultTip": "{desc}। कॉल में यह ध्वनि आए तो यही आकार याद करें।",
+  "wsNationalSubtitle": "{country} के वक्ताओं से अक्सर गलत होने वाली ध्वनियाँ"
 }

@@ -2935,4 +2935,27 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'pts';
+
+  @override
+  String get wsEnterFromMypage => 'Pratiquer les sons difficiles';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Objectif $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Son $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Imaginez cette forme quand ce son revient dans un appel.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country : sons souvent mal prononcés par les locuteurs';
+  }
 }

@@ -2904,4 +2904,27 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'mata';
+
+  @override
+  String get wsEnterFromMypage => 'Latih bunyi sukar';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Sasaran $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return 'Bunyi $label';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Bayangkan bentuk ini apabila bunyinya muncul dalam panggilan.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return 'Bunyi yang sering tersalah sebut oleh penutur dari $country';
+  }
 }

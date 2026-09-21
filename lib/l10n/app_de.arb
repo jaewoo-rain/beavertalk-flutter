@@ -866,5 +866,10 @@
   "wsChunksRepeated": "{count} Satzteile nachgesprochen",
   "wsStartRecommended": "Mit dem empfohlenen Laut starten",
   "wsStartRecommendedWith": "Mit {label} starten",
-  "wsPointsUnit": "Pkt."
+  "wsPointsUnit": "Pkt.",
+  "wsEnterFromMypage": "Schwache Laute üben",
+  "wsGoalOnly": "Ziel {score}",
+  "wsSoundOf": "Laut {label}",
+  "wsResultTip": "{desc}. Stell dir diese Form vor, wenn der Laut im Anruf vorkommt.",
+  "wsNationalSubtitle": "Laute, die Sprecher aus {country} oft falsch aussprechen"
 }

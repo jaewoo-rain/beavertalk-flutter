@@ -2869,4 +2869,27 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'পয়েন্ট';
+
+  @override
+  String get wsEnterFromMypage => 'কঠিন ধ্বনি অভ্যাস করুন';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'লক্ষ্য $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label ধ্বনি';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc। কলে আবার এলে এই আকৃতিটি মনে করুন।';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country থেকে আসা বক্তারা প্রায়ই ভুল করেন এমন ধ্বনি';
+  }
 }

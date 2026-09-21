@@ -2876,4 +2876,27 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get wsPointsUnit => 'балл';
+
+  @override
+  String get wsEnterFromMypage => 'Қиын дыбыстарды жаттығу';
+
+  @override
+  String wsGoalOnly(int score) {
+    return 'Мақсат $score';
+  }
+
+  @override
+  String wsSoundOf(String label) {
+    return '$label дыбысы';
+  }
+
+  @override
+  String wsResultTip(String desc) {
+    return '$desc. Қоңырауда кездескенде осы пішінді есіңізге түсіріңіз.';
+  }
+
+  @override
+  String wsNationalSubtitle(String country) {
+    return '$country сөйлеушілері жиі қателесетін дыбыстар';
+  }
 }
