@@ -57,19 +57,35 @@ class WeakSoundCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // ⛔ 점수를 이 줄에 같이 두지 마라. 이름·배지·점수 셋이 한 줄에서 폭을
+            //   다투면 **이름이 가장 먼저 잘린다** — 「초성 ㄲ」이 「초…」가 됐다
+            //   (2026-09-21 네팔어 실기기). 점수 문구는 언어마다 길이가 크게 다른데
+            //   (「측정 전」 4자 vs `मापन भएको छैन` 14자) 이름은 어느 언어에서도
+            //   줄일 수 없는 식별자다. 그래서 점수는 아래 줄로 내렸다.
             Row(
               children: [
                 _Symbol(item: item),
                 const SizedBox(width: AppSpacing.s12),
                 Expanded(child: _Text(item: item, recommended: recommended)),
-                const SizedBox(width: AppSpacing.s12),
-                _Score(score: item.score),
-                const SizedBox(width: AppSpacing.s2),
+                const SizedBox(width: AppSpacing.s8),
                 Icon(Icons.chevron_right, size: 20, color: c.labelAssistive),
               ],
             ),
-            const SizedBox(height: 18),
-            _Bar(score: item.score, showGoalLabel: showGoalLabel),
+            const SizedBox(height: AppSpacing.s12),
+            // 점수와 막대를 **한 줄**에 둔다. 같은 값을 두 방식으로 보이는 것이라
+            // 떨어뜨려 놓으면 카드 가운데가 비고 둘의 관계도 흐려진다.
+            // ⚠ 여기서는 폭 다툼이 안 난다 — 막대가 Expanded 라 남는 폭을 먹을 뿐,
+            //   점수를 밀어내지 않는다(제목 줄과 다른 점).
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: _Bar(score: item.score, showGoalLabel: showGoalLabel),
+                ),
+                const SizedBox(width: AppSpacing.s12),
+                _Score(score: item.score),
+              ],
+            ),
           ],
         ),
       ),
@@ -124,31 +140,32 @@ class _Text extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Row(
+        // Row 가 아니라 Wrap 이다 — 폭이 모자라면 배지가 **다음 줄로 내려가고**
+        // 이름은 안 잘린다. Row 였을 때는 배지가 자리를 먼저 차지해 이름이 잘렸다.
+        // Figma 실측 간격 6px. AppSpacing 에 s6 토큰이 없어 raw 를 쓴다.
+        Wrap(
+          spacing: 6,
+          runSpacing: 4,
+          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            Flexible(
-              child: Text(
-                item.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: AppType.body1.b.copyWith(color: c.labelStrong),
-              ),
+            Text(
+              item.label,
+              // 이름은 식별자라 줄이지 않는다. 한 줄에 안 들어가면 두 줄로 쓴다.
+              maxLines: 2,
+              style: AppType.body1.b.copyWith(color: c.labelStrong),
             ),
-            if (item.isRule) ...[
-              // Figma 실측 6px. AppSpacing 에 s6 토큰이 없어 raw 를 쓴다.
-              const SizedBox(width: 6),
+            if (item.isRule)
               bt.Badge(tone: bt.BadgeTone.neutral, label: l10n.wsRule),
-            ],
-            if (recommended) ...[
-              const SizedBox(width: 6),
+            if (recommended)
               bt.Badge(tone: bt.BadgeTone.brand, label: l10n.wsRecommended),
-            ],
           ],
         ),
         const SizedBox(height: AppSpacing.s2),
         Text(
           item.cardDesc,
-          maxLines: 1,
+          // 「소리 내는 법」이라 끝까지 읽혀야 뜻이 산다. 한 줄로 자르면 언어에 따라
+          // 「혀끝을 윗잇몸에…」에서 끊긴다. 두 줄까지 주고 그래도 넘치면 줄인다.
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
           // Figma 는 여기에 `Label/Caption`(Light #505050)을 쓴다. 앱에는 그 토큰이 없고
           // `labelNormal`(Light #333333)이 한 단계 진하다 — 대비가 더 나은 쪽으로 붙인다.
