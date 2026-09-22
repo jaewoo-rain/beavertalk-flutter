@@ -1367,7 +1367,24 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Өдөр бүр 15 минутын видео дуудлага';
+
+  @override
+  String get premiumBulletAnalysis => 'Дуудлагын бүрэн шинжилгээ';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Таны хэлэнд тохирсон хүндрэлтэй авианы дасгал';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Дүрүүдийг тусад нь зардаг. Худалдаж авсан дүрүүд тань таных хэвээр үлдэнэ.';
+
+  @override
+  String get ctaGetPremium => 'Premium авах';
 
   @override
   String get planMaxTrial => 'Max туршилт';
@@ -1567,7 +1584,7 @@ class AppLocalizationsMn extends AppLocalizations {
       'Хязгааргүй дуудлага. Тус бүр 15 минут. Жилийн турш.';
 
   @override
-  String get paywallLimitHeadline => 'Pro хязгаарыг арилгана.';
+  String get paywallLimitHeadline => 'Premium-ээр 15 минут ярина.';
 
   @override
   String get limitBannerCallTitle => 'Энэ өнөөдрийн дуудлага байлаа';

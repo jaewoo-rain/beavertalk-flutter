@@ -1335,7 +1335,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => '每天15分钟视频通话';
+
+  @override
+  String get premiumBulletAnalysis => '完整发音分析';
+
+  @override
+  String get premiumBulletWeakSounds => '针对你母语的薄弱发音练习';
+
+  @override
+  String get noteCharactersSeparate => '角色单独出售，买下的角色一直属于你。';
+
+  @override
+  String get ctaGetPremium => '开通 Premium';
 
   @override
   String get planMaxTrial => 'Max 试用';
@@ -1527,7 +1542,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paywallProSub => '通话不限次。每次 15 分钟。全年无休。';
 
   @override
-  String get paywallLimitHeadline => 'Pro 帮你解除限制。';
+  String get paywallLimitHeadline => 'Premium 可通话15分钟。';
 
   @override
   String get limitBannerCallTitle => '今天的通话用完了';

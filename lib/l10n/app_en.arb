@@ -844,7 +844,17 @@
   },
   "planFree": "Free",
   "planPro": "Pro",
-  "planMax": "Max",
+  "planMax": "Premium",
+  "premiumBulletVideo": "A 15-minute video call, every day",
+  "@premiumBulletVideo": {"description": "Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is one call a day, up to 15 minutes."},
+  "premiumBulletAnalysis": "Full pronunciation analysis",
+  "@premiumBulletAnalysis": {"description": "Premium benefit bullet."},
+  "premiumBulletWeakSounds": "Weak-sound drills for your language",
+  "@premiumBulletWeakSounds": {"description": "Premium benefit bullet: weak-sound drills matched to the learner's native language."},
+  "noteCharactersSeparate": "Characters are sold separately. The ones you buy stay yours.",
+  "@noteCharactersSeparate": {"description": "Footnote on paywall/plans: characters are not included in Premium."},
+  "ctaGetPremium": "Get Premium",
+  "@ctaGetPremium": {"description": "CTA on the limit paywall (reached by using up the free daily call)."},
   "planMaxTrial": "Max trial",
   "@planMaxTrial": {
     "description": "Plan-card title while inside the Max trial."
@@ -990,7 +1000,7 @@
   "paywallProTitle1": "Your Korean friend",
   "paywallProTitle2": "who's up at 3 a.m.",
   "paywallProSub": "Unlimited calls. 15 minutes each. All year.",
-  "paywallLimitHeadline": "Pro removes the limit.",
+  "paywallLimitHeadline": "Premium gives you 15 minutes.",
   "@paywallLimitHeadline": {
     "description": "Hot-entry paywall headline - one line, no story (spec 8-1)."
   },

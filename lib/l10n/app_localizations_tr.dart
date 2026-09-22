@@ -1368,7 +1368,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Her gün 15 dakikalık görüntülü arama';
+
+  @override
+  String get premiumBulletAnalysis => 'Tam telaffuz analizi';
+
+  @override
+  String get premiumBulletWeakSounds => 'Dilin için zayıf ses alıştırmaları';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Karakterler ayrı satılır. Satın aldıkların senin kalır.';
+
+  @override
+  String get ctaGetPremium => 'Premium al';
 
   @override
   String get planMaxTrial => 'Max deneme';
@@ -1567,7 +1583,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallProSub => 'Sınırsız arama. Her biri 15 dakika. Yıl boyu.';
 
   @override
-  String get paywallLimitHeadline => 'Pro sınırı kaldırır.';
+  String get paywallLimitHeadline => 'Premium ile 15 dakikan olur.';
 
   @override
   String get limitBannerCallTitle => 'Bugünkü araman buydu';

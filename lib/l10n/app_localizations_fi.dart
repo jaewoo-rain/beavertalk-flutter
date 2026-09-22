@@ -1374,7 +1374,24 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => '15 minuutin videopuhelu joka päivä';
+
+  @override
+  String get premiumBulletAnalysis => 'Täysi ääntämisanalyysi';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Vaikeiden äänteiden harjoitukset kielellesi';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Hahmot myydään erikseen. Ostamasi hahmot ovat omiasi.';
+
+  @override
+  String get ctaGetPremium => 'Hanki Premium';
 
   @override
   String get planMaxTrial => 'Max-kokeilu';
@@ -1573,7 +1590,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Rajattomat puhelut. 15 min kukin. Ympäri vuoden.';
 
   @override
-  String get paywallLimitHeadline => 'Pro poistaa rajan.';
+  String get paywallLimitHeadline => 'Premiumilla saat 15 minuuttia.';
 
   @override
   String get limitBannerCallTitle => 'Se oli päivän puhelu';

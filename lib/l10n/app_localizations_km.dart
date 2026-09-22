@@ -1370,7 +1370,24 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'ការហៅវីដេអូ 15 នាទី រៀងរាល់ថ្ងៃ';
+
+  @override
+  String get premiumBulletAnalysis => 'ការវិភាគការបញ្ចេញសំឡេងពេញលេញ';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'ហ្វឹកហាត់សំឡេងពិបាកសម្រាប់ភាសារបស់អ្នក';
+
+  @override
+  String get noteCharactersSeparate =>
+      'តួអង្គលក់ដាច់ដោយឡែក។ តួអង្គដែលអ្នកទិញ នៅតែជារបស់អ្នក។';
+
+  @override
+  String get ctaGetPremium => 'ទទួលបាន Premium';
 
   @override
   String get planMaxTrial => 'ការសាកល្បង Max';
@@ -1570,7 +1587,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'ការហៅគ្មានដែនកំណត់។ ១៥ នាទីក្នុងមួយលើក។ ពេញមួយឆ្នាំ។';
 
   @override
-  String get paywallLimitHeadline => 'Pro ដកដែនកំណត់ចេញ។';
+  String get paywallLimitHeadline => 'Premium ផ្តល់ឱ្យអ្នក 15 នាទី។';
 
   @override
   String get limitBannerCallTitle => 'នោះជាការហៅថ្ងៃនេះហើយ';

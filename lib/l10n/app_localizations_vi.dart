@@ -1368,7 +1368,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Gọi video 15 phút mỗi ngày';
+
+  @override
+  String get premiumBulletAnalysis => 'Phân tích phát âm đầy đủ';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Luyện các âm còn yếu theo ngôn ngữ của bạn';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Nhân vật được bán riêng. Nhân vật bạn đã mua vẫn là của bạn.';
+
+  @override
+  String get ctaGetPremium => 'Dùng Premium';
 
   @override
   String get planMaxTrial => 'Dùng thử Max';
@@ -1567,7 +1584,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Gọi không giới hạn. 15 phút mỗi cuộc. Quanh năm.';
 
   @override
-  String get paywallLimitHeadline => 'Pro xóa bỏ giới hạn.';
+  String get paywallLimitHeadline => 'Premium cho bạn 15 phút.';
 
   @override
   String get limitBannerCallTitle => 'Đó là cuộc gọi hôm nay';

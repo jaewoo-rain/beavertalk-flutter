@@ -61,7 +61,8 @@ void main() {
         SubscriptionState.free: ('Free', 'Current'),
         SubscriptionState.trial: ('Max trial', 'Trial'),
         SubscriptionState.activePro: ('Pro', 'Renewing'),
-        SubscriptionState.activeMax: ('Max', 'Renewing'),
+        // 단일 티어(09-22): 서버 플랜 코드 max 의 표시 이름은 Premium.
+        SubscriptionState.activeMax: ('Premium', 'Renewing'),
         SubscriptionState.grace: ('Pro', 'Past due'),
         SubscriptionState.onHold: ('Pro', 'Paused'),
         SubscriptionState.ending: ('Pro', 'Canceling'),

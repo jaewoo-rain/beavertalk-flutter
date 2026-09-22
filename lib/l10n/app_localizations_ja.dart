@@ -1337,7 +1337,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => '毎日15分のビデオ通話';
+
+  @override
+  String get premiumBulletAnalysis => '発音分析をすべて';
+
+  @override
+  String get premiumBulletWeakSounds => 'あなたの言語に合わせた苦手な発音の練習';
+
+  @override
+  String get noteCharactersSeparate => 'キャラクターは別売りです。購入したキャラクターはずっとあなたのものです。';
+
+  @override
+  String get ctaGetPremium => 'Premiumを始める';
 
   @override
   String get planMaxTrial => 'Max体験';
@@ -1529,7 +1544,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallProSub => '通話無制限。1回15分。一年中いつでも。';
 
   @override
-  String get paywallLimitHeadline => 'Proなら制限がなくなります。';
+  String get paywallLimitHeadline => 'Premiumなら15分話せます。';
 
   @override
   String get limitBannerCallTitle => '今日の通話は終わりました';

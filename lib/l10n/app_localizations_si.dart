@@ -1368,7 +1368,23 @@ class AppLocalizationsSi extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'සෑම දිනකම මිනිත්තු 15ක වීඩියෝ ඇමතුමක්';
+
+  @override
+  String get premiumBulletAnalysis => 'සම්පූර්ණ උච්චාරණ විශ්ලේෂණය';
+
+  @override
+  String get premiumBulletWeakSounds => 'ඔබේ භාෂාවට ගැළපෙන දුර්වල ශබ්ද පුහුණුව';
+
+  @override
+  String get noteCharactersSeparate =>
+      'චරිත වෙනම විකිණේ. ඔබ මිලදී ගත් චරිත ඔබේමයි.';
+
+  @override
+  String get ctaGetPremium => 'Premium ලබා ගන්න';
 
   @override
   String get planMaxTrial => 'Max අත්හදා බැලීම';
@@ -1567,7 +1583,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get paywallProSub => 'අසීමිත ඇමතුම්. එකකට විනාඩි 15. අවුරුද්ද පුරා.';
 
   @override
-  String get paywallLimitHeadline => 'Pro සීමාව ඉවත් කරයි.';
+  String get paywallLimitHeadline => 'Premium සමඟ මිනිත්තු 15ක් ලැබේ.';
 
   @override
   String get limitBannerCallTitle => 'අද ඇමතුම එයයි';

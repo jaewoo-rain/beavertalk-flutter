@@ -1377,7 +1377,23 @@ class AppLocalizationsUz extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Har kuni 15 daqiqalik video qo‘ng‘iroq';
+
+  @override
+  String get premiumBulletAnalysis => 'To‘liq talaffuz tahlili';
+
+  @override
+  String get premiumBulletWeakSounds => 'Tilingizga mos qiyin tovushlar mashqi';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Personajlar alohida sotiladi. Sotib olganlaringiz sizniki bo‘lib qoladi.';
+
+  @override
+  String get ctaGetPremium => 'Premium olish';
 
   @override
   String get planMaxTrial => 'Max sinovi';
@@ -1578,7 +1594,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Cheksiz qoʻngʻiroqlar. Har biri 15 daqiqa. Yil davomida.';
 
   @override
-  String get paywallLimitHeadline => 'Pro cheklovni olib tashlaydi.';
+  String get paywallLimitHeadline => 'Premium bilan 15 daqiqa gaplashasiz.';
 
   @override
   String get limitBannerCallTitle => 'Bu bugungi qoʻngʻiroq edi';

@@ -1383,7 +1383,23 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Minden nap egy 15 perces videóhívás';
+
+  @override
+  String get premiumBulletAnalysis => 'Teljes kiejtéselemzés';
+
+  @override
+  String get premiumBulletWeakSounds => 'Nehéz hangok gyakorlása a nyelvedhez';
+
+  @override
+  String get noteCharactersSeparate =>
+      'A karakterek külön kaphatók. A megvásárolt karakterek a tieid.';
+
+  @override
+  String get ctaGetPremium => 'Premium beszerzése';
 
   @override
   String get planMaxTrial => 'Max próba';
@@ -1582,7 +1598,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Korlátlan hívások. Egyenként 15 perc. Egész évben.';
 
   @override
-  String get paywallLimitHeadline => 'A Pro eltörli a korlátot.';
+  String get paywallLimitHeadline => 'A Premiummal 15 perced van.';
 
   @override
   String get limitBannerCallTitle => 'Ez volt a mai hívás';

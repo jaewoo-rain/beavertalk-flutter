@@ -1377,7 +1377,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Видеозвонок на 15 минут каждый день';
+
+  @override
+  String get premiumBulletAnalysis => 'Полный разбор произношения';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Тренировка слабых звуков для вашего языка';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Персонажи продаются отдельно. Купленные остаются вашими.';
+
+  @override
+  String get ctaGetPremium => 'Получить Premium';
 
   @override
   String get planMaxTrial => 'Пробный Max';
@@ -1577,7 +1594,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywallProSub => 'Безлимитные звонки. По 15 минут. Круглый год.';
 
   @override
-  String get paywallLimitHeadline => 'Pro снимает лимит.';
+  String get paywallLimitHeadline => 'С Premium у вас 15 минут.';
 
   @override
   String get limitBannerCallTitle => 'Это был звонок на сегодня';

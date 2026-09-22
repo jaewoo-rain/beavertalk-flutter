@@ -1364,7 +1364,24 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Күн сайын 15 минуттық бейнеқоңырау';
+
+  @override
+  String get premiumBulletAnalysis => 'Айтылымды толық талдау';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Тіліңізге сай қиын дыбыстарды жаттықтыру';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Кейіпкерлер бөлек сатылады. Сатып алғандарыңыз сіздікі болып қалады.';
+
+  @override
+  String get ctaGetPremium => 'Premium алу';
 
   @override
   String get planMaxTrial => 'Max сынағы';
@@ -1563,7 +1580,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paywallProSub => 'Шексіз қоңырау. Әрқайсысы 15 минут. Жыл бойы.';
 
   @override
-  String get paywallLimitHeadline => 'Pro шектеуді алып тастайды.';
+  String get paywallLimitHeadline => 'Premium-мен 15 минут сөйлесесіз.';
 
   @override
   String get limitBannerCallTitle => 'Бұл бүгінгі қоңырау еді';

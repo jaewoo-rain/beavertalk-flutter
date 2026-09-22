@@ -1366,7 +1366,24 @@ class AppLocalizationsNe extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'हरेक दिन 15 मिनेटको भिडियो कल';
+
+  @override
+  String get premiumBulletAnalysis => 'पूरा उच्चारण विश्लेषण';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'तपाईंको भाषाका लागि कठिन ध्वनिहरूको अभ्यास';
+
+  @override
+  String get noteCharactersSeparate =>
+      'क्यारेक्टर छुट्टै बिक्छन्। किनेका क्यारेक्टर तपाईंकै रहन्छन्।';
+
+  @override
+  String get ctaGetPremium => 'Premium लिनुहोस्';
 
   @override
   String get planMaxTrial => 'Max परीक्षण';
@@ -1565,7 +1582,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get paywallProSub => 'असीमित कल। प्रत्येक १५ मिनेट। वर्षभरि।';
 
   @override
-  String get paywallLimitHeadline => 'Pro ले सीमा हटाउँछ।';
+  String get paywallLimitHeadline => 'Premium मा 15 मिनेट पाउनुहुन्छ।';
 
   @override
   String get limitBannerCallTitle => 'आजको कल सकियो';

@@ -2635,8 +2635,38 @@ abstract class AppLocalizations {
   /// No description provided for @planMax.
   ///
   /// In en, this message translates to:
-  /// **'Max'**
+  /// **'Premium'**
   String get planMax;
+
+  /// Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is one call a day, up to 15 minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'A 15-minute video call, every day'**
+  String get premiumBulletVideo;
+
+  /// Premium benefit bullet.
+  ///
+  /// In en, this message translates to:
+  /// **'Full pronunciation analysis'**
+  String get premiumBulletAnalysis;
+
+  /// Premium benefit bullet: weak-sound drills matched to the learner's native language.
+  ///
+  /// In en, this message translates to:
+  /// **'Weak-sound drills for your language'**
+  String get premiumBulletWeakSounds;
+
+  /// Footnote on paywall/plans: characters are not included in Premium.
+  ///
+  /// In en, this message translates to:
+  /// **'Characters are sold separately. The ones you buy stay yours.'**
+  String get noteCharactersSeparate;
+
+  /// CTA on the limit paywall (reached by using up the free daily call).
+  ///
+  /// In en, this message translates to:
+  /// **'Get Premium'**
+  String get ctaGetPremium;
 
   /// Plan-card title while inside the Max trial.
   ///
@@ -2983,7 +3013,7 @@ abstract class AppLocalizations {
   /// Hot-entry paywall headline - one line, no story (spec 8-1).
   ///
   /// In en, this message translates to:
-  /// **'Pro removes the limit.'**
+  /// **'Premium gives you 15 minutes.'**
   String get paywallLimitHeadline;
 
   /// No description provided for @limitBannerCallTitle.

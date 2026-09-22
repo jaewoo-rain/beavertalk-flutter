@@ -1338,7 +1338,22 @@ class AppLocalizationsKo extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => '매일 15분 영상통화';
+
+  @override
+  String get premiumBulletAnalysis => '발음 분석 전체';
+
+  @override
+  String get premiumBulletWeakSounds => '내 언어에 맞춘 취약 발음 연습';
+
+  @override
+  String get noteCharactersSeparate => '캐릭터는 따로 판매해요. 구매한 캐릭터는 계속 내 것이에요.';
+
+  @override
+  String get ctaGetPremium => 'Premium 시작하기';
 
   @override
   String get planMaxTrial => 'Max 체험';
@@ -1530,7 +1545,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get paywallProSub => '무제한 통화. 회당 15분. 일 년 내내.';
 
   @override
-  String get paywallLimitHeadline => 'Pro는 제한이 없어요.';
+  String get paywallLimitHeadline => 'Premium은 15분을 드려요.';
 
   @override
   String get limitBannerCallTitle => '오늘의 통화를 모두 썼어요';

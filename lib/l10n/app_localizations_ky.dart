@@ -1371,7 +1371,24 @@ class AppLocalizationsKy extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Күн сайын 15 мүнөттүк видео чалуу';
+
+  @override
+  String get premiumBulletAnalysis => 'Айтылышты толук талдоо';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Тилиңизге ылайык кыйын тыбыштарды машыгуу';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Каармандар өзүнчө сатылат. Сатып алгандарыңыз сиздики бойдон калат.';
+
+  @override
+  String get ctaGetPremium => 'Premium алуу';
 
   @override
   String get planMaxTrial => 'Max сыноо';
@@ -1570,7 +1587,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get paywallProSub => 'Чексиз чалуулар. Ар бири 15 мүнөт. Жыл бою.';
 
   @override
-  String get paywallLimitHeadline => 'Pro чектөөнү алып салат.';
+  String get paywallLimitHeadline => 'Premium менен 15 мүнөт сүйлөшөсүз.';
 
   @override
   String get limitBannerCallTitle => 'Бул бүгүнкү чалуу болду';

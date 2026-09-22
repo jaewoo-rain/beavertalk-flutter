@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/badge.dart' show BadgeTone;
 import '../../components/atoms/button.dart';
 import '../../components/atoms/looping_video.dart';
 import '../../components/icons/app_icons.dart';
@@ -23,16 +22,21 @@ import '../../theme/app_typography.dart';
 import '../overlays/subscription_overlays.dart';
 
 /// Which paywall this is.
+///
+/// ⭐ **단일 티어(2026-09-22 · 가치 사다리 정본 §11-4).** 유료는 Premium 하나다 —
+/// 스토어 상품 `bt_max_*` · 서버 플랜 코드 `max` 는 그대로, **표시 이름만** Premium.
+/// [pro]·[max] 는 옛 라우트(`/paywall/pro`·`/paywall/max`)를 살리려고 남긴 값이고 **둘 다
+/// 같은 Premium 페이월**을 그린다. Pro 는 더 팔지 않는다.
 enum PaywallVariant {
-  /// `depth/paywall_pro` (`4514:5294`) — the warm entry.
+  /// 옛 `depth/paywall_pro` 라우트 — 이제 Premium 페이월과 같다.
   pro,
 
-  /// `depth/paywall_pro__limit` (`4658:28112`) — reached **only** by burning
+  /// `depth/paywall_premium__limit` (`4658:28112`) — reached **only** by burning
   /// the daily cap (spec §8-1). Hot entry: a non-interactive banner naming
   /// what ran out and a one-line headline instead of the story.
   proLimit,
 
-  /// `depth/paywall_max` (`4514:5481`) — the gold one.
+  /// `depth/paywall_premium` (`4514:5481`).
   max,
 }
 
@@ -76,7 +80,8 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   /// without nagging.
   bool _leaveGuardShown = false;
 
-  bool get _isMax => widget.variant == PaywallVariant.max;
+  /// 한도 진입인가(배너 + 한 줄 헤드라인 + 법적 링크). 나머지는 전부 같은 Premium 페이월.
+  bool get _isLimit => widget.variant == PaywallVariant.proLimit;
 
   /// Back/X on a paywall — the deepest point a member can still walk away
   /// from a subscription, so leaving gets one retention prompt. Dim tap and
@@ -177,7 +182,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ..._header(l10n, c),
                   const SizedBox(height: AppSpacing.s24),
                   _planCard(l10n, c),
-                  if (_isMax) ...[
+                  if (!_isLimit) ...[
                     const SizedBox(height: AppSpacing.s24),
                     // Hero is a **video**, not a still. The file is a
                     // placeholder to be swapped later, so [LoopingVideo] falls
@@ -197,12 +202,14 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   const SizedBox(height: AppSpacing.s24),
                   ..._planRows(l10n),
                   const SizedBox(height: AppSpacing.s24),
+                  // 캐릭터는 구독에 들어 있지 않다(정본 v3.1). 「무제한」·공정사용 각주는 없앴다 —
+                  // Premium 은 하루 1통화 · 15분이다.
                   Text(
-                    _isMax ? l10n.noteMaxCharacters : l10n.noteFairUse,
+                    l10n.noteCharactersSeparate,
                     textAlign: TextAlign.center,
                     style: AppType.caption1.r.copyWith(color: c.labelNormal),
                   ),
-                  if (!_isMax) ...[
+                  if (_isLimit) ...[
                     const SizedBox(height: AppSpacing.s24),
                     _footerLinks(l10n, c),
                   ],
@@ -223,97 +230,61 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   }
 
   List<Widget> _header(AppLocalizations l10n, AppColorTokens c) {
-    switch (widget.variant) {
-      case PaywallVariant.pro:
-        final title = AppType.title3.sb.copyWith(color: c.labelStrong);
-        return [
-          Text(l10n.paywallProTitle1, style: title),
-          const SizedBox(height: AppSpacing.s4),
-          Text(l10n.paywallProTitle2, style: title),
-          const SizedBox(height: AppSpacing.s4),
-          Text(l10n.paywallProSub,
-              style: AppType.label1.r.copyWith(color: c.labelNormal)),
-        ];
-      case PaywallVariant.proLimit:
-        // Hot entries get the short bridge (spec §8-1): one line, no story.
-        return [
-          Text(l10n.paywallLimitHeadline,
-              style: AppType.title3.sb.copyWith(color: c.labelStrong)),
-        ];
-      case PaywallVariant.max:
-        return [
-          Text(l10n.paywallMaxTitle,
-              style: AppType.title2.sb.copyWith(color: c.labelStrong)),
-          const SizedBox(height: AppSpacing.s8),
-          Text(l10n.paywallMaxSub,
-              style: AppType.label1.r.copyWith(color: c.labelNormal)),
-        ];
+    if (_isLimit) {
+      // Hot entries get the short bridge (spec §8-1): one line, no story.
+      return [
+        Text(l10n.paywallLimitHeadline,
+            style: AppType.title3.sb.copyWith(color: c.labelStrong)),
+      ];
     }
+    // ⚠ 정본의 둘째 줄 「튜터 1시간 $25 = Premium 한 달 $23.99」 는 **아직 그리지 않는다.**
+    //   $25 는 달러 고정 사실인데 옆 가격은 스토어 현지가라, 원화·루피 사용자에게는 서로 다른
+    //   통화를 비교하는 문장이 된다(남은판단 P12). 통화별 비교값이 정해지면 되살린다.
+    return [
+      Text(l10n.paywallMaxTitle,
+          style: AppType.title2.sb.copyWith(color: c.labelStrong)),
+    ];
   }
 
+  /// Premium 카드 — 불릿 4개는 정본 고정(가치 사다리 §4-1 · 출시 게이트 5: 만들지 않은 것은
+  /// 올리지 않는다 — 학습서·주간 리포트·「모든 캐릭터」 는 뺐다).
   Widget _planCard(AppLocalizations l10n, AppColorTokens c) {
-    if (_isMax) {
-      return PlanSummaryCard(
-        title: l10n.planMax,
-        price: PlanPrices.maxMonthly,
-        anchorPrice: PlanPrices.maxMonthlyAnchor,
-        perMonthUnit: l10n.perMonthUnit,
-        badgeTone: BadgeTone.gold,
-        badgeLabel: l10n.badgeRecommended,
-        tagline: l10n.planTaglineMax,
-        taglineColor: c.accentForegroundOrange,
-        bulletTone: BulletTone.max,
-        bullets: [
-          l10n.bulletMaxVideo,
-          l10n.bulletMaxEverything,
-          l10n.bulletMaxCharacters,
-          l10n.bulletMaxStudyBook,
-          l10n.bulletMaxWeeklyReport,
-        ],
-        face: c.statusCautionarySurface,
-        border: c.statusCautionary,
-      );
-    }
     return PlanSummaryCard(
-      title: l10n.planPro,
-      price: PlanPrices.proMonthly,
+      title: l10n.planMax,
+      price: PlanPrices.maxMonthly,
       perMonthUnit: l10n.perMonthUnit,
-      tagline: l10n.planTaglinePro,
-      taglineColor: c.primaryNormal,
-      bulletTone: BulletTone.pro,
+      tagline: l10n.premiumBulletVideo,
+      taglineColor: c.accentForegroundOrange,
+      bulletTone: BulletTone.max,
       bullets: [
-        l10n.bulletProCalls,
-        l10n.bulletProLength,
-        l10n.bulletProScoring,
+        l10n.premiumBulletVideo,
+        l10n.premiumBulletAnalysis,
+        l10n.premiumBulletWeakSounds,
         l10n.bulletProCorrections,
-        l10n.bulletProBeaverCalls,
-        // The sixth row — the character-permanence promise added in the
-        // redesign (spec §16-3: 5행 → 6행).
-        l10n.bulletProCharactersForever,
       ],
-      face: c.primaryNormal10,
-      border: c.primaryNormal,
+      face: c.statusCautionarySurface,
+      border: c.statusCautionary,
     );
   }
 
   List<Widget> _planRows(AppLocalizations l10n) {
-    final tier = _isMax ? PlanRowTier.max : PlanRowTier.pro;
+    // 가격은 스토어 현지가(PlanPrices ← storePricesProvider). 정가 취소선($29.99 앵커)은
+    // 뺐다 — 정본에 없고, 스토어 현지가 옆에 달러 앵커를 두면 틀린 비교가 된다.
     return [
       PlanRow(
-        tier: tier,
+        tier: PlanRowTier.max,
         selected: _cycle == _Cycle.monthly,
         title: l10n.planMonthly,
-        price: _isMax ? l10n.maxMonthlyPriceLine(PlanPrices.maxMonthly) : l10n.proMonthlyPriceLine(PlanPrices.proMonthly),
-        priceOriginal: _isMax ? PlanPrices.maxMonthlyAnchor : null,
+        price: l10n.maxMonthlyPriceLine(PlanPrices.maxMonthly),
         onTap: () => setState(() => _cycle = _Cycle.monthly),
       ),
       const SizedBox(height: AppSpacing.s12),
       PlanRow(
-        tier: tier,
+        tier: PlanRowTier.max,
         selected: _cycle == _Cycle.annual,
         title: l10n.planAnnual,
-        price: _isMax ? l10n.maxAnnualPriceLine(PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth) : l10n.proAnnualPriceLine(PlanPrices.proYearly, PlanPrices.proYearlyPerMonth),
-        priceOriginal: _isMax ? null : PlanPrices.proYearlyAnchor,
+        price: l10n.maxAnnualPriceLine(
+            PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth),
         onTap: () => setState(() => _cycle = _Cycle.annual),
       ),
     ];
@@ -351,25 +322,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
-  /// Whether the 7-day Max trial may be announced on this screen.
-  ///
-  /// The store is the real authority — an introductory offer is once per
-  /// account per subscription group, and only StoreKit / Play Billing can say
-  /// whether this account already used it. Until the SDK lands this
-  /// approximates it as "has never been on a paid plan", which errs toward
-  /// hiding the line: promising a free trial to someone who already spent it
-  /// is a 3.1.2 misstatement, not a cosmetic slip.
-  bool get _trialEligible {
-    // Gate one: can the rail answer at all? The mock cannot, so today this is
-    // always false and the trial line never ships. That is the intended
-    // state — see [IapService.reportsIntroEligibility].
-    if (!ref.watch(iapServiceProvider).reportsIntroEligibility) return false;
-    // Gate two: **replace this when a real rail lands.** "Never been on a paid
-    // plan" is not eligibility — a member who took the trial, cancelled, and
-    // whose server row lapsed reads as free here. Ask the store per product.
-    return ref.watch(subscriptionStatusProvider).state == SubscriptionState.free;
-  }
-
   Widget _stickyCta(AppLocalizations l10n, AppColorTokens c) {
     return Container(
       decoration: BoxDecoration(
@@ -381,9 +333,9 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Button(
-              type: _isMax ? BtnType.gold : BtnType.primaryFill,
+              type: BtnType.gold,
               size: BtnSize.s60,
-              text: _isMax ? l10n.ctaTurnOnVideo : l10n.ctaGoUnlimited,
+              text: _isLimit ? l10n.ctaGetPremium : l10n.ctaTurnOnVideo,
               // Tier AND cycle travel as the route argument — the tier alone
               // was the "bought Max, screen said Pro" bug, and a dropped cycle
               // meant the annual selection quietly bought monthly.
@@ -391,16 +343,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                 context,
                 Routes.purchaseProcessing,
                 arguments: (
-                  tier: _isMax ? SubscriptionTier.max : SubscriptionTier.pro,
+                  // 유료는 Premium 하나 — 상품·서버 코드는 `max` 그대로다.
+                  tier: SubscriptionTier.max,
                   annual: _cycle == _Cycle.annual,
                 ),
               ),
             ),
             const SizedBox(height: 6),
             Text(
-              _isMax
-                  ? (_trialEligible ? l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly) : l10n.ctaCaptionMax(PlanPrices.maxMonthly))
-                  : l10n.ctaCaptionPro(PlanPrices.proMonthly),
+              // 무료체험은 출시 때 끈다(정본 §8-2 · 스토어 「첫 주 무료」 오퍼 종료) — 체험 안내
+              // 문구 분기는 뺐다. 오퍼가 남아 있으면 StoreKit 이 고지 없이 적용하므로 콘솔에서
+              // 먼저 꺼야 한다(앱이 할 일이 아니다).
+              l10n.ctaCaptionMax(PlanPrices.maxMonthly),
               textAlign: TextAlign.center,
               style: AppType.caption1.r.copyWith(color: c.labelNormal),
             ),

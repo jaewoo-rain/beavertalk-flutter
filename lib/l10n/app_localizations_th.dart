@@ -1362,7 +1362,23 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'วิดีโอคอล 15 นาที ทุกวัน';
+
+  @override
+  String get premiumBulletAnalysis => 'วิเคราะห์การออกเสียงแบบเต็ม';
+
+  @override
+  String get premiumBulletWeakSounds => 'ฝึกเสียงที่ยังไม่แม่นสำหรับภาษาของคุณ';
+
+  @override
+  String get noteCharactersSeparate =>
+      'ตัวละครขายแยกต่างหาก ตัวที่ซื้อแล้วเป็นของคุณ';
+
+  @override
+  String get ctaGetPremium => 'รับ Premium';
 
   @override
   String get planMaxTrial => 'ทดลองใช้ Max';
@@ -1561,7 +1577,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get paywallProSub => 'โทรไม่จำกัด ครั้งละ 15 นาที ตลอดทั้งปี';
 
   @override
-  String get paywallLimitHeadline => 'Pro ลบข้อจำกัดออกให้';
+  String get paywallLimitHeadline => 'Premium ให้คุณ 15 นาที';
 
   @override
   String get limitBannerCallTitle => 'นั่นคือการโทรของวันนี้';

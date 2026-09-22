@@ -1389,7 +1389,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Jeden Tag ein 15-minütiger Videoanruf';
+
+  @override
+  String get premiumBulletAnalysis => 'Vollständige Ausspracheanalyse';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Übungen zu schwachen Lauten für deine Sprache';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Charaktere gibt es separat. Gekaufte gehören dir.';
+
+  @override
+  String get ctaGetPremium => 'Premium holen';
 
   @override
   String get planMaxTrial => 'Max-Testphase';
@@ -1590,7 +1607,7 @@ class AppLocalizationsDe extends AppLocalizations {
       'Unbegrenzte Anrufe. Je 15 Minuten. Das ganze Jahr.';
 
   @override
-  String get paywallLimitHeadline => 'Pro hebt das Limit auf.';
+  String get paywallLimitHeadline => 'Mit Premium hast du 15 Minuten.';
 
   @override
   String get limitBannerCallTitle => 'Das war der Anruf für heute';

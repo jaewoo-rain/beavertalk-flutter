@@ -1380,7 +1380,24 @@ class AppLocalizationsFil extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => '15 minutong video call, araw-araw';
+
+  @override
+  String get premiumBulletAnalysis => 'Buong pagsusuri ng bigkas';
+
+  @override
+  String get premiumBulletWeakSounds =>
+      'Pagsasanay sa mahihirap na tunog para sa wika mo';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Hiwalay na binebenta ang mga karakter. Sa iyo ang mga bibilhin mo.';
+
+  @override
+  String get ctaGetPremium => 'Kunin ang Premium';
 
   @override
   String get planMaxTrial => 'Max trial';
@@ -1580,7 +1597,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get paywallProSub => 'Unlimited na tawag. Tig-15 minuto. Buong taon.';
 
   @override
-  String get paywallLimitHeadline => 'Inaalis ng Pro ang limitasyon.';
+  String get paywallLimitHeadline => 'Sa Premium, may 15 minuto ka.';
 
   @override
   String get limitBannerCallTitle => 'Iyon na ang tawag mo ngayong araw';

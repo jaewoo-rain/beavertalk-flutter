@@ -1371,7 +1371,23 @@ class AppLocalizationsId extends AppLocalizations {
   String get planPro => 'Pro';
 
   @override
-  String get planMax => 'Max';
+  String get planMax => 'Premium';
+
+  @override
+  String get premiumBulletVideo => 'Video call 15 menit setiap hari';
+
+  @override
+  String get premiumBulletAnalysis => 'Analisis pengucapan lengkap';
+
+  @override
+  String get premiumBulletWeakSounds => 'Latihan bunyi sulit untuk bahasamu';
+
+  @override
+  String get noteCharactersSeparate =>
+      'Karakter dijual terpisah. Yang kamu beli tetap milikmu.';
+
+  @override
+  String get ctaGetPremium => 'Dapatkan Premium';
 
   @override
   String get planMaxTrial => 'Uji coba Max';
@@ -1572,7 +1588,7 @@ class AppLocalizationsId extends AppLocalizations {
       'Panggilan tanpa batas. 15 menit per panggilan. Sepanjang tahun.';
 
   @override
-  String get paywallLimitHeadline => 'Pro menghapus batasnya.';
+  String get paywallLimitHeadline => 'Premium memberimu 15 menit.';
 
   @override
   String get limitBannerCallTitle => 'Itu panggilan hari ini';
