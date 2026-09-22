@@ -84,6 +84,15 @@ Future<void> main() async {
   unawaited(initIncomingCallLocal(container));
 }
 
+/// 시스템 글꼴 배율의 **상한**. 사용자가 그 이상으로 키워도 앱은 여기까지만 따른다.
+///
+/// 1.1 이다(2026-09-22 사장님 확정, 1.3 에서 내림). 1.3 은 실기기에서 「드러워」
+/// 보였다 — 수치상 안 잘리는 것과 보기에 멀쩡한 것은 다른 문제다.
+///
+/// ⚠ 이 상수는 `test/i18n_truncation_test.dart` 가 그대로 읽어 간다. 값을 바꾸면
+///   시험도 같은 배율로 따라 움직이므로, **상한과 감시선이 어긋나지 않는다.**
+const double kMaxTextScale = 1.1;
+
 /// App root. Enters through [AuthGate] (token → home/onboarding); the component
 /// gallery stays at `/gallery`. Deep navigation uses [onGenerateRoute].
 class BeaverTalkApp extends ConsumerWidget {
@@ -138,19 +147,18 @@ class BeaverTalkApp extends ConsumerWidget {
   /// 버튼은 글자가 잘리고, 한 줄에서 폭을 다투던 것들은 전부 잘린다. 번역이 길어지는
   /// 것과 같은 결함인데 **모든 언어에 동시에** 일어난다는 점만 다르다.
   ///
-  /// 상한은 1.3 이다. 이 앱의 레이아웃은 320dp 폭에서 30개 로케일을 견디도록 잡혀
-  /// 있고, 그 여유가 1.3 배까지는 남는다(넘어가면 버튼 2개짜리 행이 먼저 깨진다).
+  /// 상한은 [kMaxTextScale] 이다.
   ///
   /// ⛔ 배율을 **1.0 으로 고정하지 마라.** 글씨를 키워야 읽히는 사용자가 있고,
   ///   그 설정을 통째로 무시하는 것은 접근성 후퇴다. 상한만 건다.
   ///
-  /// ⚠ 상한은 최후의 방어선이다. 높이를 고정한 상자는 1.3 배에서도 잘릴 수 있으니
+  /// ⚠ 상한은 최후의 방어선이다. 높이를 고정한 상자는 상한 안에서도 잘릴 수 있으니
   ///   글자를 담는 상자는 Hug 로 두는 것이 먼저다.
   static Widget _clampTextScale(BuildContext context, Widget? child) {
     final media = MediaQuery.of(context);
     return MediaQuery(
       data: media.copyWith(
-        textScaler: media.textScaler.clamp(maxScaleFactor: 1.3),
+        textScaler: media.textScaler.clamp(maxScaleFactor: kMaxTextScale),
       ),
       child: child ?? const SizedBox.shrink(),
     );

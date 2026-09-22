@@ -417,7 +417,11 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   /// same metrics (56 row, 12/8 padding, 0.5 divider).
   Widget _infoRow(String label, String value, {bool divider = true}) =>
       Container(
-        height: 56,
+        // 높이 **하한**. 고정 56 이었을 때 배율 1.3배에서 이메일이
+        // `soardick@gmail.` 로, 가입일 라벨은 둘째 줄이 잘렸다(2026-09-22 실측).
+        // 값은 아래에서 줄만 바꾸도록 돼 있는데, 상자가 안 늘어나면 그 줄이
+        // 그대로 잘려 나간다 — 두 방어는 같이 있어야 한다.
+        constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: divider
             ? BoxDecoration(
@@ -474,7 +478,8 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       _ => method,
     };
     return Container(
-      height: 56,
+      // 높이 하한(위 `_infoRow` 와 같은 이유).
+      constraints: const BoxConstraints(minHeight: 56),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: divider
           ? BoxDecoration(

@@ -22,6 +22,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:beavertalk/components/molecules/card_line.dart';
 import 'package:beavertalk/components/molecules/level_progress.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/main.dart' show kMaxTextScale;
 import 'package:beavertalk/theme/app_color_tokens.dart';
 
 /// 이 문자열이 잘리면 **사실이 틀어지는가**.
@@ -42,12 +43,17 @@ bool _mustNotTruncate(String s) {
 bool _willTruncate(Text t) =>
     t.maxLines == 1 && t.overflow == TextOverflow.ellipsis;
 
-Widget _host(Widget child, Locale locale) => MaterialApp(
+Widget _host(Widget child, Locale locale, {double scale = 1.0}) => MaterialApp(
       locale: locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(extensions: const [AppColorTokens.light]),
-      home: Scaffold(body: Center(child: SizedBox(width: 320, child: child))),
+      home: MediaQuery(
+        data: MediaQueryData(textScaler: TextScaler.linear(scale)),
+        child: Scaffold(
+          body: Center(child: SizedBox(width: 320, child: child)),
+        ),
+      ),
     );
 
 void main() {
@@ -109,6 +115,69 @@ void main() {
         '잘리면 안 되는 문자열이 한 줄 + ellipsis 로 잡혀 있다 '
         '(${bad.length}건).\n잘린 값은 빈 값보다 나쁘다 — 사용자가 그것을 '
         '사실로 읽는다.\n${bad.join('\n')}',
+      );
+    }
+  });
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // 상자가 글자를 자르는 경우 — **위 두 시험 어느 쪽도 못 잡는다.**
+  //
+  // 행 높이를 고정해 두면(`SizedBox(height: 56)`) 글자가 그 안에서 조용히
+  // 잘린다. `maxLines`·`overflow` 는 멀쩡하니 잘림 시험이 못 보고, Flutter 가
+  // 넘침 예외를 던지지도 않으니(`Text` 는 제 상자 안에서 스스로 클립한다)
+  // 넘침 시험도 못 본다. 그래서 **그려진 높이를 직접 재는** 시험이 따로 있다.
+  //
+  // 2026-09-22 실기기(네팔어 · 글꼴 200%→상한)에서 설정 이메일이
+  // `soardick@gmail.` 로, 가입일 라벨은 둘째 줄이 통째로 잘려 나왔다.
+  // ─────────────────────────────────────────────────────────────────────────
+  testWidgets('글꼴 배율 상한에서 행이 글자를 자르지 않는다', (tester) async {
+    final bad = <String>[];
+
+    /// 그려진 [Text] 가 필요한 높이보다 낮은 상자에 갇혔는지.
+    void check(WidgetTester t, String where) {
+      for (final el in t.elementList(find.byType(Text))) {
+        final w = el.widget as Text;
+        final s = w.data;
+        if (s == null || s.trim().isEmpty) continue;
+        // 한 줄로 자르기로 **명시한** 것은 여기서 볼 대상이 아니다(앞 시험 몫).
+        if (w.maxLines == 1) continue;
+        final box = el.renderObject! as RenderBox;
+        final painter = TextPainter(
+          text: TextSpan(text: s, style: w.style),
+          textDirection: TextDirection.ltr,
+          textScaler: MediaQuery.of(el).textScaler,
+          maxLines: w.maxLines,
+        )..layout(maxWidth: box.size.width);
+        // 반올림 여유 1px.
+        if (painter.height > box.size.height + 1) {
+          bad.add(
+            '$where: "$s" — 필요 ${painter.height.toStringAsFixed(1)}px / '
+            '상자 ${box.size.height.toStringAsFixed(1)}px',
+          );
+        }
+      }
+    }
+
+    for (final locale in locales) {
+      await tester.pumpWidget(_host(
+        const CardLine(
+          type: CardLineType.defaultRow,
+          label: 'Talaan ng paggamit sa buwang ito',
+          value: 'soardick@gmail.com',
+        ),
+        locale,
+        scale: kMaxTextScale,
+      ));
+      await tester.pump();
+      check(tester, '${locale.languageCode} · CardLine/defaultRow');
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+
+    if (bad.isNotEmpty) {
+      fail(
+        '고정 높이가 글자를 자르고 있다 (${bad.length}건).\n'
+        '높이는 고정이 아니라 **하한**이어야 한다 '
+        '(`BoxConstraints(minHeight: …)`).\n${bad.join('\n')}',
       );
     }
   });

@@ -13,12 +13,12 @@ enum CardLineType {
 
   /// A label/value row with a trailing chevron (e.g. a settings entry).
   ///
-  /// Defaults to a fixed 56px height.
+  /// 높이 하한 56px(내용이 넘으면 늘어난다).
   defaultRow,
 
   /// A label row with a trailing [AppToggle].
   ///
-  /// Defaults to a fixed 56px height.
+  /// 높이 하한 56px(내용이 넘으면 늘어난다).
   defaultToggle,
 }
 
@@ -33,9 +33,9 @@ enum CardLineType {
 ///   (Label 1 Regular, `textSecondary`) separated by a 2×2 `textTertiary` dot;
 ///   `meta` is split on `·` into segments. The right side stacks [value]
 ///   (Label 1 SemiBold, white) over [status] (Label 1 Regular, `success`).
-/// * [CardLineType.defaultRow] — a 56px row: [label]/[value] (Body 1 Regular,
+/// * [CardLineType.defaultRow] — a min-56px row: [label]/[value] (Body 1 Regular,
 ///   white) space-between, with a trailing 24px chevron.
-/// * [CardLineType.defaultToggle] — a 56px row: [label] (Body 1 Regular, white)
+/// * [CardLineType.defaultToggle] — a min-56px row: [label] (Body 1 Regular, white)
 ///   with a trailing [AppToggle] driven by [checked]/[onChanged].
 class CardLine extends StatelessWidget {
   /// Creates a card line of the given [type].
@@ -82,6 +82,15 @@ class CardLine extends StatelessWidget {
   /// non-interactive.
   final ValueChanged<bool>? onChanged;
 
+  /// 정본 행 높이. **고정이 아니라 하한이다.**
+  ///
+  /// 예전에는 `SizedBox(height: 56)` 이었는데, 그러면 글꼴 배율 1.3배나 긴
+  /// 번역에서 내용이 56을 넘어가는 순간 넘친 줄이 **통째로 잘린다**. 실측
+  /// (2026-09-22, 네팔어 · 배율 200%→상한 1.3): 설정 이메일 행이
+  /// `soardick@gmail.` 로, 가입일 라벨은 둘째 줄이 잘려 나왔다.
+  ///
+  /// 잘림은 넘침보다 나쁘다 — 화면 안에 남아서 **틀린 내용으로 읽힌다.**
+  /// 그래서 56은 지키되 위로 열어 둔다(`minHeight`).
   static const double _rowHeight = 56;
 
   // A divider colour is mode-aware, so this can no longer be a static
@@ -173,8 +182,8 @@ class CardLine extends StatelessWidget {
   Widget _buildDefaultRow(BuildContext context) {
     return DecoratedBox(
       decoration: showDivider ? _divider(context) : const BoxDecoration(),
-      child: SizedBox(
-        height: _rowHeight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _rowHeight),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(
@@ -226,8 +235,8 @@ class CardLine extends StatelessWidget {
   Widget _buildDefaultToggle(BuildContext context) {
     return DecoratedBox(
       decoration: showDivider ? _divider(context) : const BoxDecoration(),
-      child: SizedBox(
-        height: _rowHeight,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: _rowHeight),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           child: Row(

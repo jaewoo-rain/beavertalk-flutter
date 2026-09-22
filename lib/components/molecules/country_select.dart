@@ -50,7 +50,9 @@ class CountrySelect extends StatelessWidget {
     final Widget row = AnimatedContainer(
       duration: AppMotion.medium,
       curve: AppMotion.toggle,
-      height: 56,
+      // 높이는 **하한**이다. 고정으로 두면 긴 국가명이나 글꼴 배율 1.3배에서
+      // 두 번째 줄이 잘린다 — 국가명은 식별자라 잘리면 무엇을 고르는지 모른다.
+      constraints: const BoxConstraints(minHeight: 56),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: selected ? context.c.primaryNormal10 : Colors.transparent,

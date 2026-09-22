@@ -531,7 +531,9 @@ class _BillingRow extends StatelessWidget {
       onTap: onTap ?? () => _open(context),
       behavior: HitTestBehavior.opaque,
       child: Container(
-        height: 56,
+        // 높이 하한. 「스토어에서 관리」·「환불 문의」는 언어에 따라 두 줄이 되고,
+        // 고정 56 이면 둘째 줄이 잘려 무슨 동작인지 알 수 없게 된다.
+        constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: last
             ? null
