@@ -42,9 +42,14 @@ class CallLoadingScreen extends ConsumerStatefulWidget {
 class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
   bool _navigated = false;
 
-  /// `Frame 4` (`3360:19104`) — the spinner (32) + gap (12) + 연결 중's line
-  /// box (24). This is the box the frame centres on the screen.
-  static const double _groupHeight = AppSpacing.s32 + AppSpacing.s12 + 24;
+  /// `Frame 4` (`3360:19104`) — the spinner (32) + gap (12) + 연결 중's line box.
+  /// This is the box the frame centres on the screen.
+  ///
+  /// ⚠ 글자 줄 높이를 **상수로 박지 마라.** 예전에는 `+ 24` 였는데, 그 24 는
+  ///   한국어 Body1 한 줄을 잰 값이라 글꼴 배율이나 데바나가리·크메르 문자처럼
+  ///   줄이 높은 문자에서 그대로 틀린다. 실측(2026-09-22, 네팔어 · 배율 1.1):
+  ///   `BOTTOM OVERFLOWED BY 4.0 PIXELS`.
+  static const double _groupTop = AppSpacing.s32 + AppSpacing.s12;
 
   @override
   void initState() {
@@ -93,7 +98,9 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
         //   인자가 없으면 null → [CallChannel.defaultChannel] = 라이브. 즉 기존 진입점
         //   (홈·마이페이지·기록·온보딩완료·수신통화)의 동작은 **한 글자도 안 바뀐다.**
         final arg = ModalRoute.of(context)?.settings.arguments;
-        ref.read(normalCallControllerProvider.notifier).start(
+        ref
+            .read(normalCallControllerProvider.notifier)
+            .start(
               callChannel: arg is CallChannel ? arg : null,
               // ⭐ 숙제 회화 과제에서 들어오면 과제 id(int)를 그대로 넘긴다.
               //   ⛔ 예전에 이 자리의 int 는 **캐릭터 id** 였다(그리고 폴백 1 이
@@ -153,15 +160,17 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
   void _goFinish(CallState s) {
     if (_navigated || !mounted) return;
     _navigated = true;
-    _leave(() => Navigator.pushReplacementNamed(
-      context,
-      Routes.callFinish,
-      arguments: (
-        callId: s.callId,
-        elapsedSec: s.elapsedSec,
-        baselineCallId: s.baselineCallId,
+    _leave(
+      () => Navigator.pushReplacementNamed(
+        context,
+        Routes.callFinish,
+        arguments: (
+          callId: s.callId,
+          elapsedSec: s.elapsedSec,
+          baselineCallId: s.baselineCallId,
+        ),
       ),
-    ));
+    );
   }
 
   /// 실패 안내 후 홈으로.
@@ -242,45 +251,74 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
           // all three together, as this used to, pushes the spinner ~8.5px
           // above where the design puts it.
           Center(
+            // 폭은 전폭, 높이는 내용에 맡긴다.
+            // ⚠ 폭을 빼면 Stack 이 스피너 그룹 너비(~240)로 줄어들고, 전폭인 줄
+            //   알았던 힌트가 그 폭에 맞춰 네 줄로 쪼개진다(2026-09-22 실측).
             child: SizedBox(
               width: double.infinity,
-              height: _groupHeight,
               child: Stack(
                 clipBehavior: Clip.none,
+                alignment: Alignment.topCenter,
                 children: [
-                  Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        SizedBox(
-                          width: AppSpacing.s32,
-                          height: AppSpacing.s32,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 3,
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(context.c.labelStrong),
+                  // 이 열만 Stack 의 크기를 정한다 = 화면이 가운데 두는 대상.
+                  // 높이를 안 박으므로 글자가 몇 줄이 되든 넘치지 않는다.
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      SizedBox(
+                        width: AppSpacing.s32,
+                        height: AppSpacing.s32,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 3,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            context.c.labelStrong,
                           ),
                         ),
-                        const SizedBox(height: AppSpacing.s12),
-                        Text(
-                          l10n.connecting,
-                          style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+                      ),
+                      const SizedBox(height: AppSpacing.s12),
+                      Text(
+                        l10n.connecting,
+                        textAlign: TextAlign.center,
+                        style: AppType.body1.r.copyWith(
+                          color: context.c.labelStrong,
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                   // The frame pins this 9.5 below the group — a residue of
                   // absolute positioning against a half-pixel-centred box, so
                   // it rounds to the 8 token.
+                  //
+                  // `Positioned` 라 Stack 크기에 기여하지 않는다(= 힌트가 가운데
+                  // 정렬 기준을 아래로 끌어내리지 않는다. 셋을 같이 가운데 두면
+                  // 스피너가 정본보다 ~8.5px 위로 올라간다).
+                  // 그룹 아래에 정확히 붙이려고 **보이지 않는 같은 글자**로 자리를
+                  // 잡는다 — 줄 높이를 상수로 재발명하지 않는 유일한 방법이다.
                   Positioned(
-                    top: _groupHeight + AppSpacing.s8,
+                    top: 0,
                     left: 0,
                     right: 0,
-                    child: Text(
-                      l10n.connectingHint,
-                      textAlign: TextAlign.center,
-                      style: AppType.label2.r
-                          .copyWith(color: context.c.labelNormal),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(height: _groupTop),
+                        Opacity(
+                          opacity: 0,
+                          child: Text(
+                            l10n.connecting,
+                            textAlign: TextAlign.center,
+                            style: AppType.body1.r,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.s8),
+                        Text(
+                          l10n.connectingHint,
+                          textAlign: TextAlign.center,
+                          style: AppType.label2.r.copyWith(
+                            color: context.c.labelNormal,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -305,8 +343,10 @@ class _CallLoadingScreenState extends ConsumerState<CallLoadingScreen> {
                       child: GestureDetector(
                         behavior: HitTestBehavior.opaque,
                         onTap: _cancel,
-                        child:
-                            AppIcons.close(size: 28, color: context.c.labelStrong),
+                        child: AppIcons.close(
+                          size: 28,
+                          color: context.c.labelStrong,
+                        ),
                       ),
                     ),
                   ],
