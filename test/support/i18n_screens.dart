@@ -53,6 +53,8 @@ import 'package:beavertalk/screens/system/network_error.dart';
 import 'package:beavertalk/screens/system/permission.dart';
 import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
 import 'package:beavertalk/features/weak_sound/presentation/sound_key_arg.dart';
+import 'package:beavertalk/features/weak_sound/domain/entities/weak_sound_item.dart';
+import 'package:beavertalk/features/weak_sound/presentation/widgets/weak_sound_card.dart';
 
 /// 로케일 검사 대상 화면 전량.
 Map<String, Widget Function()> i18nScreens() {
@@ -61,6 +63,35 @@ Map<String, Widget Function()> i18nScreens() {
     // 「초…」로 잘리는 동안 이 시험은 한 번도 그 화면을 보지 않았다.
     'WeakSounds': () => const WeakSoundsScreen(),
     'MissingSoundKey': () => const MissingSoundKey(),
+    // 🔴 목록 화면은 이 하네스에서 데이터가 없어 **카드를 안 그린다.** 카드를 직접 띄운다.
+    //    최악 조합: 규칙 + 추천 배지 + 목표 글자(측정됨) / 「측정 전」(언어마다 길이 차가 가장 크다).
+    'WeakSoundCards': () => const SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              WeakSoundCard(
+                item: WeakSoundItem(
+                  soundKey: 'rule_비음화',
+                  label: '비음화',
+                  cardDesc: '받침 ㄱ·ㄷ·ㅂ 뒤에 ㄴ·ㅁ이 오면 ㅇ·ㄴ·ㅁ으로 바뀌어요',
+                  type: 'rule',
+                  score: 62,
+                ),
+                recommended: true,
+                showGoalLabel: true,
+              ),
+              SizedBox(height: 8),
+              WeakSoundCard(
+                item: WeakSoundItem(
+                  soundKey: 'onset_ㄲ',
+                  label: '초성 ㄲ',
+                  cardDesc: '목을 조이고 세게 터뜨려요',
+                  type: 'sound',
+                ),
+              ),
+            ],
+          ),
+        ),
     'AlarmAdd': () => const AlarmAddScreen(),
     'AlarmEmpty': () => const AlarmEmptyScreen(),
     'AlarmList': () => const AlarmListScreen(),

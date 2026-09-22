@@ -11,11 +11,12 @@ import '../../../../l10n/app_localizations.dart';
 
 /// 취약 발음 목록의 카드 1장 — Figma `WeakSound/Card` (`6040:1496`).
 ///
-/// 구조(실측): 카드 r8 · padding 16 · 세로 gap 18
+/// 구조(실측 2026-09-22): 카드 r8 · padding 16 · 세로 gap 8
 /// ```
-/// Row(gap 12)  [Symbol 48×48 r8]  [이름 + 설명]  [점수]  [chevron 20]
-/// Bar(높이 6, r3)  ─ 채움 + 목표 80 눈금
+/// Row(gap 12)  [Symbol 48×48 r8]  [이름 + 설명]
+/// Meter(gap 6) [Bar 높이 6, r3 ─ 채움 + 목표 80 눈금]  [점수 13/11]
 /// ```
+/// 셰브런은 없다(09-22 디자인 확정) — 카드 전체가 눌리는 자리라 화살표가 중복이다.
 ///
 /// 점수 색은 **구간**이다([_level]): 80 이상 초록 · 60~79 주황 · 60 미만 빨강.
 /// 80 이 기준선인 이유는 막대 위 「목표 80」 눈금과 같은 값이기 때문이다 — 두 값이 갈리면
@@ -67,11 +68,9 @@ class WeakSoundCard extends StatelessWidget {
                 _Symbol(item: item),
                 const SizedBox(width: AppSpacing.s12),
                 Expanded(child: _Text(item: item, recommended: recommended)),
-                const SizedBox(width: AppSpacing.s8),
-                Icon(Icons.chevron_right, size: 20, color: c.labelAssistive),
               ],
             ),
-            const SizedBox(height: AppSpacing.s12),
+            const SizedBox(height: AppSpacing.s8),
             // 점수와 막대를 **한 줄**에 둔다. 같은 값을 두 방식으로 보이는 것이라
             // 떨어뜨려 놓으면 카드 가운데가 비고 둘의 관계도 흐려진다.
             // ⚠ 여기서는 폭 다툼이 안 난다 — 막대가 Expanded 라 남는 폭을 먹을 뿐,
@@ -82,7 +81,8 @@ class WeakSoundCard extends StatelessWidget {
                 Expanded(
                   child: _Bar(score: item.score, showGoalLabel: showGoalLabel),
                 ),
-                const SizedBox(width: AppSpacing.s12),
+                // Figma 실측 6px. AppSpacing 에 s6 토큰이 없어 raw 를 쓴다.
+                const SizedBox(width: 6),
                 _Score(score: item.score),
               ],
             ),
@@ -190,7 +190,7 @@ class _Score extends StatelessWidget {
       // ⛔ 0 점으로 그리지 마라. 「아직 안 재 봤다」와 「재 봤더니 0점」은 다른 사실이다.
       return Text(
         l10n.wsNotMeasured,
-        style: AppType.label1.m.copyWith(color: c.labelAssistive),
+        style: AppType.label2.b.copyWith(color: c.labelAssistive),
       );
     }
     return Row(
@@ -198,10 +198,12 @@ class _Score extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
-        Text('$score', style: AppType.headline1.b.copyWith(color: c.labelStrong)),
-        const SizedBox(width: AppSpacing.s2),
+        // 점수는 막대 옆에 **작게** 둔다(Figma `MO/Label 2/Bold` + `MO/Caption 2/Medium`).
+        // 같은 값을 막대가 이미 보여 주므로 숫자가 카드의 주인공이 되면 안 된다.
+        Text('$score', style: AppType.label2.b.copyWith(color: c.labelStrong)),
+        const SizedBox(width: 1),
         Text(l10n.wsPointsUnit,
-            style: AppType.label1.m.copyWith(color: c.labelNormal)),
+            style: AppType.caption2.m.copyWith(color: c.labelNormal)),
       ],
     );
   }
