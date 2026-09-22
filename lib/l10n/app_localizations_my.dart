@@ -1715,7 +1715,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price မှစ၍';
+    return 'တစ်ခုလျှင် $price';
   }
 
   @override
@@ -1910,6 +1910,12 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'ဆုံးရှုံးမည့်အရာ';
+
+  @override
+  String get benefitScoring => 'စာလုံးတစ်လုံးချင်း အသံထွက် အမှတ်ပေးမှု';
+
+  @override
+  String get benefitEveryMetric => 'မက်ထရစ်တိုင်း၊ ဝါကျတိုင်း';
 
   @override
   String get subPaymentTitle => 'ငွေပေးချေမှု အပ်ဒိတ်လုပ်ရန်';

@@ -1652,7 +1652,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price 起';
+    return '每个 $price';
   }
 
   @override
@@ -1838,6 +1838,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get subWhatYouLose => '你将失去';
+
+  @override
+  String get benefitScoring => '逐字打分的发音评测';
+
+  @override
+  String get benefitEveryMetric => '每项指标，每个句子';
 
   @override
   String get subPaymentTitle => '更新付款';

@@ -227,33 +227,39 @@ class BottomSheetContent extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          ContentColumn(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                if (mark != null) ...[
-                  Center(child: ResultMark(tone: mark!)),
-                  const SizedBox(height: 16),
-                ],
-                _header(context),
-                ..._content(context),
-                if (child != null) ...[
-                  const SizedBox(height: 24),
-                  child!,
-                ],
-                if (benefitLabel != null) ...[
-                  const SizedBox(height: 16),
-                  BenefitRow(tier: benefitTier, label: benefitLabel!),
-                ],
-                if (caption != null) ...[
-                  const SizedBox(height: 16),
-                  Text(
-                    caption!,
-                    textAlign: TextAlign.center,
-                    style: AppType.caption1.r.copyWith(color: c.labelNormal),
-                  ),
-                ],
-              ],
+          // 본문만 스크롤한다 — 버튼은 아래에 붙어 있다. 짧으면 픽셀이 그대로고, 화면보다
+          // 길면(작은 폰 · 긴 로케일 · 큰 글꼴) 넘치는 대신 본문이 스크롤된다. 예전엔
+          // 스크롤이 없어 320×640 에서 해지·결제 수정 시트가 영어로도 넘쳤다.
+          Flexible(
+            child: SingleChildScrollView(
+              child: ContentColumn(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (mark != null) ...[
+                      Center(child: ResultMark(tone: mark!)),
+                      const SizedBox(height: 16),
+                    ],
+                    _header(context),
+                    ..._content(context),
+                    if (child != null) ...[const SizedBox(height: 24), child!],
+                    if (benefitLabel != null) ...[
+                      const SizedBox(height: 16),
+                      BenefitRow(tier: benefitTier, label: benefitLabel!),
+                    ],
+                    if (caption != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        caption!,
+                        textAlign: TextAlign.center,
+                        style: AppType.caption1.r.copyWith(
+                          color: c.labelNormal,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
             ),
           ),
           ContentColumn(
@@ -473,9 +479,10 @@ class _RowLine extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
+    // 높이는 최소 56 — 고정하면 줄바꿈한 라벨·값이 잘린다.
     return Container(
-      height: 56,
-      padding: const EdgeInsets.symmetric(horizontal: 12),
+      constraints: const BoxConstraints(minHeight: 56),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: last
           ? null
           : BoxDecoration(
@@ -491,10 +498,16 @@ class _RowLine extends StatelessWidget {
               style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
             ),
           ),
-          Text(
-            data.value,
-            style: AppType.label1.r.copyWith(
-              color: data.highlighted ? c.primaryNormal : c.labelNormal,
+          const SizedBox(width: 8),
+          // ⛔ 값(가격·날짜)은 **자르지 않는다** — 잘린 금액은 빈 값보다 나쁘다. 폭이 모자라면
+          //   줄을 바꾼다. 비유연이면 무한 폭을 받아 행이 넘쳤다(de·fi·bn 등 가격 행).
+          Flexible(
+            child: Text(
+              data.value,
+              textAlign: TextAlign.end,
+              style: AppType.label1.r.copyWith(
+                color: data.highlighted ? c.primaryNormal : c.labelNormal,
+              ),
             ),
           ),
         ],

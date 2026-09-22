@@ -1655,7 +1655,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price부터';
+    return '각 $price';
   }
 
   @override
@@ -1841,6 +1841,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get subWhatYouLose => '잃게 되는 것';
+
+  @override
+  String get benefitScoring => '글자 단위 발음 채점';
+
+  @override
+  String get benefitEveryMetric => '모든 지표, 모든 문장';
 
   @override
   String get subPaymentTitle => '결제 업데이트';

@@ -1716,7 +1716,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'mula $price';
+    return '$price bawat isa';
   }
 
   @override
@@ -1911,6 +1911,12 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Ang mawawala sa iyo';
+
+  @override
+  String get benefitScoring => 'Bigkas na sinusukat letra por letra';
+
+  @override
+  String get benefitEveryMetric => 'Bawat sukatan, bawat pangungusap';
 
   @override
   String get subPaymentTitle => 'I-update ang bayad';

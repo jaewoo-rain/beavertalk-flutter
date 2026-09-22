@@ -1704,7 +1704,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'từ $price';
+    return '$price mỗi nhân vật';
   }
 
   @override
@@ -1899,6 +1899,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Những gì bạn mất';
+
+  @override
+  String get benefitScoring => 'Chấm điểm phát âm từng chữ cái';
+
+  @override
+  String get benefitEveryMetric => 'Mọi chỉ số, mọi câu';
 
   @override
   String get subPaymentTitle => 'Cập nhật thanh toán';

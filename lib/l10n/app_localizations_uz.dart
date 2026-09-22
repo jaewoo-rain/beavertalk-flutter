@@ -1711,7 +1711,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price dan boshlab';
+    return 'har biri $price';
   }
 
   @override
@@ -1907,6 +1907,12 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Nimani yoʻqotasiz';
+
+  @override
+  String get benefitScoring => 'Talaffuz harfma-harf baholanadi';
+
+  @override
+  String get benefitEveryMetric => 'Har bir ko‘rsatkich, har bir gap';
 
   @override
   String get subPaymentTitle => 'Toʻlovni yangilash';

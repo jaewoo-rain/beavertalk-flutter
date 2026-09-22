@@ -3211,7 +3211,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowFromPrice.
   ///
   /// In en, this message translates to:
-  /// **'from {price}'**
+  /// **'{price} each'**
   String rowFromPrice(String price);
 
   /// No description provided for @rowYoursForever.
@@ -3549,6 +3549,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What you lose'**
   String get subWhatYouLose;
+
+  /// Cancel/resubscribe sheet row - a Premium benefit (letter-level pronunciation scoring).
+  ///
+  /// In en, this message translates to:
+  /// **'Pronunciation scored letter by letter'**
+  String get benefitScoring;
+
+  /// Cancel/resubscribe sheet row - a Premium benefit (full analysis: every metric, every sentence).
+  ///
+  /// In en, this message translates to:
+  /// **'Every metric, every sentence'**
+  String get benefitEveryMetric;
 
   /// No description provided for @subPaymentTitle.
   ///

@@ -1715,7 +1715,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'dari $price';
+    return '$price setiap satu';
   }
 
   @override
@@ -1911,6 +1911,12 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Apa yang anda hilang';
+
+  @override
+  String get benefitScoring => 'Sebutan dinilai huruf demi huruf';
+
+  @override
+  String get benefitEveryMetric => 'Setiap metrik, setiap ayat';
 
   @override
   String get subPaymentTitle => 'Kemas kini pembayaran';

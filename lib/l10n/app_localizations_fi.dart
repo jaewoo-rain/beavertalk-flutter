@@ -1710,7 +1710,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'alk. $price';
+    return '$price / kpl';
   }
 
   @override
@@ -1905,6 +1905,12 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Mitä menetät';
+
+  @override
+  String get benefitScoring => 'Ääntäminen arvioidaan kirjain kirjaimelta';
+
+  @override
+  String get benefitEveryMetric => 'Jokainen mittari, jokainen lause';
 
   @override
   String get subPaymentTitle => 'Päivitä maksutapa';

@@ -1717,7 +1717,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'már $price-tól';
+    return '$price darabonként';
   }
 
   @override
@@ -1913,6 +1913,12 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Amit elveszítesz';
+
+  @override
+  String get benefitScoring => 'Betűnként értékelt kiejtés';
+
+  @override
+  String get benefitEveryMetric => 'Minden mutató, minden mondat';
 
   @override
   String get subPaymentTitle => 'Fizetés frissítése';

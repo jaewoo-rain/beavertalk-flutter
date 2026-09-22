@@ -1701,7 +1701,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price\'dan başlayan';
+    return 'tanesi $price';
   }
 
   @override
@@ -1894,6 +1894,12 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Kaybedeceklerin';
+
+  @override
+  String get benefitScoring => 'Harf harf puanlanan telaffuz';
+
+  @override
+  String get benefitEveryMetric => 'Her ölçüt, her cümle';
 
   @override
   String get subPaymentTitle => 'Ödemeyi güncelle';

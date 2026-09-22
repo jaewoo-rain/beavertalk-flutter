@@ -1703,7 +1703,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'ចាប់ពី $price';
+    return '$price ក្នុងមួយ';
   }
 
   @override
@@ -1895,6 +1895,12 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'អ្វីដែលអ្នកនឹងបាត់បង់';
+
+  @override
+  String get benefitScoring => 'ដាក់ពិន្ទុការបញ្ចេញសំឡេង តាមអក្សរនីមួយៗ';
+
+  @override
+  String get benefitEveryMetric => 'រាល់រង្វាស់ រាល់ប្រយោគ';
 
   @override
   String get subPaymentTitle => 'ធ្វើបច្ចុប្បន្នភាពការទូទាត់';

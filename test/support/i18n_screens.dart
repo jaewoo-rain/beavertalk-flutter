@@ -52,6 +52,7 @@ import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
+import 'package:beavertalk/screens/overlays/subscription_overlays.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
@@ -136,10 +137,12 @@ Map<String, Widget Function()> i18nScreens() {
             final l10n = AppLocalizations.of(ctx);
             final loc = Localizations.localeOf(ctx).toString();
             const days = [false, true, false, true, false, true, false];
+            // ⛔ `SingleChildScrollView` 로 감싸지 마라 — 세로 제약이 풀려 **넘칠 수가 없게**
+            //   된다. 실제 모달(`isScrollControlled: true`)은 화면 높이가 상한이다. 예전엔
+            //   감싸 두어서 요일 칩이 세로로 쌓여 88px 넘친 것을 시험이 못 잡았다(실기기 1보).
             return Align(
               alignment: Alignment.bottomCenter,
-              child: SingleChildScrollView(
-                child: BottomSheetAlarmAdd(
+              child: BottomSheetAlarmAdd(
                   title: l10n.alarmAdd,
                   cancelText: l10n.cancel,
                   saveText: l10n.save,
@@ -165,7 +168,6 @@ Map<String, Widget Function()> i18nScreens() {
                   onCancel: () {},
                   initiallyOpen: const {AlarmAddPanel.repeat, AlarmAddPanel.partner},
                 ),
-              ),
             );
           },
         ),
@@ -267,6 +269,21 @@ Map<String, Widget Function()> i18nScreens() {
         const PaywallScreen(variant: PaywallVariant.proLimit),
     'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),
     'PlansCompare': () => const PlansCompareScreen(),
+    // 구독 오버레이 전장 — 가격·날짜가 든 시트(잘린 금액·날짜는 빈 값보다 나쁘다)와 해지·환불·
+    // 결제 실패처럼 돈을 잃었다고 느끼는 순간의 시트를 빠짐없이 그린다. 같은 부품이라도
+    // 문구 길이가 시트마다 달라 전부 넣는다.
+    for (final o in SubscriptionOverlay.values)
+      'Overlay_${o.name}': () => Align(
+            alignment: Alignment.bottomCenter,
+            child: subscriptionOverlayForTest(
+              o,
+              expiresAt: DateTime(2026, 6, 20),
+              usage: (used: '5:00', limit: '5:00'),
+              avatar: const SizedBox.square(dimension: 40),
+              characterName: 'Baba',
+              lastTopic: 'Weekend plans',
+            ),
+          ),
     // Premium 구독자 — Premium 카드에 「Current」 배지가 붙고 CTA 가 빠진다.
     'PlansCompare_premium': () => ProviderScope(
           overrides: [

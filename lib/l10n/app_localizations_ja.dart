@@ -1655,7 +1655,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$priceから';
+    return '各$price';
   }
 
   @override
@@ -1841,6 +1841,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get subWhatYouLose => '失うもの';
+
+  @override
+  String get benefitScoring => '一文字ずつ発音を採点';
+
+  @override
+  String get benefitEveryMetric => 'すべての指標、すべての文';
 
   @override
   String get subPaymentTitle => '支払いを更新';

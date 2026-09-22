@@ -1724,7 +1724,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'ab $price';
+    return 'je $price';
   }
 
   @override
@@ -1920,6 +1920,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Was du verlierst';
+
+  @override
+  String get benefitScoring => 'Aussprache Buchstabe für Buchstabe bewertet';
+
+  @override
+  String get benefitEveryMetric => 'Jede Kennzahl, jeder Satz';
 
   @override
   String get subPaymentTitle => 'Zahlung aktualisieren';

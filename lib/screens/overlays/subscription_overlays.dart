@@ -224,6 +224,30 @@ Future<void> runRestoreFlow(BuildContext context) async {
 
 bool _restoring = false;
 
+/// 시트 한 장을 띄우지 않고 위젯으로 돌려준다 — i18n 잘림·넘침 하네스 전용.
+///
+/// 가격·날짜가 든 시트를 로케일마다 실제로 그려 봐야 해서 연다(잘린 금액·날짜는 빈 값보다
+/// 나쁘다). 앱 코드는 [showSubscriptionOverlay] 를 쓴다.
+@visibleForTesting
+Widget subscriptionOverlayForTest(
+  SubscriptionOverlay overlay, {
+  DateTime? expiresAt,
+  ({String used, String limit})? usage,
+  Widget? avatar,
+  String? characterName,
+  String? lastTopic,
+  List<SheetRowData>? scores,
+}) =>
+    _OverlaySheet(
+      overlay: overlay,
+      expiresAt: expiresAt,
+      usage: usage,
+      avatar: avatar,
+      characterName: characterName,
+      lastTopic: lastTopic,
+      scores: scores,
+    );
+
 class _OverlaySheet extends StatelessWidget {
   const _OverlaySheet({
     required this.overlay,
@@ -461,9 +485,11 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.subCancelBody(_date(context, expiresAt)),
           blockTitle: l10n.subWhatYouLose,
           rows: [
+            // Figma `overlay/cancel_subscription`·`resubscribe`: 영상통화 · 글자 단위 채점 ·
+            // 모든 지표와 문장(분석 전체). 첫 줄은 P15 로 「하루 최대 3회」 문구를 쓴다.
             SubscriptionActionRow(l10n.premiumBulletVideo),
-            SubscriptionActionRow(l10n.premiumBulletAnalysis),
-            SubscriptionActionRow(l10n.premiumBulletWeakSounds),
+            SubscriptionActionRow(l10n.benefitScoring),
+            SubscriptionActionRow(l10n.benefitEveryMetric),
           ],
           primaryAction:
               SheetAction(label: l10n.ctaKeepMax, onPressed: () => _close(context)),
@@ -496,9 +522,11 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.subResubBody(_date(context, expiresAt)),
           blockTitle: l10n.subWhatYouKeep,
           rows: [
+            // Figma `overlay/cancel_subscription`·`resubscribe`: 영상통화 · 글자 단위 채점 ·
+            // 모든 지표와 문장(분석 전체). 첫 줄은 P15 로 「하루 최대 3회」 문구를 쓴다.
             SubscriptionActionRow(l10n.premiumBulletVideo),
-            SubscriptionActionRow(l10n.premiumBulletAnalysis),
-            SubscriptionActionRow(l10n.premiumBulletWeakSounds),
+            SubscriptionActionRow(l10n.benefitScoring),
+            SubscriptionActionRow(l10n.benefitEveryMetric),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaTurnItBackOn, onPressed: () => _toStore(context)),

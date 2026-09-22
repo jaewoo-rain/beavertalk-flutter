@@ -89,33 +89,36 @@ class SubscriptionActionSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final (Color frame, Color? face, Color heading, Widget Function() mark) =
-        switch (variant) {
+    final (
+      Color frame,
+      Color? face,
+      Color heading,
+      Widget Function() mark,
+    ) = switch (variant) {
       SubscriptionActionVariant.cancel => (
-          c.statusNegative,
-          null,
-          c.accentForegroundRed,
-          () => AppIcons.close(size: 20, color: c.accentForegroundRed),
-        ),
+        c.statusNegative,
+        null,
+        c.accentForegroundRed,
+        () => AppIcons.close(size: 20, color: c.accentForegroundRed),
+      ),
       SubscriptionActionVariant.paymentUpdate => (
-          c.labelNormal,
-          null,
-          c.labelStrong,
-          () => AppIcons.chevronRight(size: 20, color: c.labelNormal),
-        ),
+        c.labelNormal,
+        null,
+        c.labelStrong,
+        () => AppIcons.chevronRight(size: 20, color: c.labelNormal),
+      ),
       SubscriptionActionVariant.resubscribe => (
-          c.statusPositive,
-          c.statusPositive4,
-          c.accentForegroundGreen,
-          () => AppIcons.check(size: 20, color: c.accentForegroundGreen),
-        ),
+        c.statusPositive,
+        c.statusPositive4,
+        c.accentForegroundGreen,
+        () => AppIcons.check(size: 20, color: c.accentForegroundGreen),
+      ),
     };
 
     return Container(
       decoration: BoxDecoration(
         color: c.backgroundElevatedAlternative,
-        borderRadius:
-            const BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -131,63 +134,74 @@ class SubscriptionActionSheet extends StatelessWidget {
                   child: Text(
                     title,
                     textAlign: TextAlign.center,
-                    style: AppType.body1.sb
-                        .copyWith(color: c.commonWhiteAndDark),
+                    style: AppType.body1.sb.copyWith(
+                      color: c.commonWhiteAndDark,
+                    ),
                   ),
                 ),
                 GestureDetector(
                   onTap: onClose,
-                  child:
-                      AppIcons.close(size: 28, color: c.commonWhiteAndDark),
+                  child: AppIcons.close(size: 28, color: c.commonWhiteAndDark),
                 ),
               ],
             ),
           ),
-          ContentColumn(
-            padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  body,
-                  textAlign: TextAlign.center,
-                  style:
-                      AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
+          // 본문만 스크롤 — 버튼은 아래에 붙는다(BottomSheetContent 와 같은 이유).
+          Flexible(
+            child: SingleChildScrollView(
+              child: ContentColumn(
+                padding: const EdgeInsets.only(
+                  top: AppSpacing.s16,
+                  bottom: AppSpacing.s24,
                 ),
-                const SizedBox(height: AppSpacing.s8),
-                Container(
-                  padding: const EdgeInsets.all(AppSpacing.s20),
-                  decoration: BoxDecoration(
-                    color: face,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: frame),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(blockTitle,
-                          style:
-                              AppType.label1.sb.copyWith(color: heading)),
-                      for (final row in rows) ...[
-                        const SizedBox(height: AppSpacing.s8),
-                        Row(
-                          children: [
-                            mark(),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                row.label,
-                                style: AppType.label1.r
-                                    .copyWith(color: c.commonWhiteAndDark),
-                              ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      body,
+                      textAlign: TextAlign.center,
+                      style: AppType.label1.r.copyWith(
+                        color: c.commonWhiteAndDark,
+                      ),
+                    ),
+                    const SizedBox(height: AppSpacing.s8),
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.s20),
+                      decoration: BoxDecoration(
+                        color: face,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: frame),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            blockTitle,
+                            style: AppType.label1.sb.copyWith(color: heading),
+                          ),
+                          for (final row in rows) ...[
+                            const SizedBox(height: AppSpacing.s8),
+                            Row(
+                              children: [
+                                mark(),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  child: Text(
+                                    row.label,
+                                    style: AppType.label1.r.copyWith(
+                                      color: c.commonWhiteAndDark,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
-                        ),
-                      ],
-                    ],
-                  ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
           ContentColumn(

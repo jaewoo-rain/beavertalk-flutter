@@ -1698,7 +1698,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price бастап';
+    return 'әрқайсысы $price';
   }
 
   @override
@@ -1893,6 +1893,12 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Нені жоғалтасыз';
+
+  @override
+  String get benefitScoring => 'Айтылым әріп бойынша бағаланады';
+
+  @override
+  String get benefitEveryMetric => 'Әр көрсеткіш, әр сөйлем';
 
   @override
   String get subPaymentTitle => 'Төлемді жаңарту';

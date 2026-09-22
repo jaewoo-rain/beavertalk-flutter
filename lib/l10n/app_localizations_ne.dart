@@ -1696,7 +1696,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price देखि';
+    return 'प्रत्येक $price';
   }
 
   @override
@@ -1891,6 +1891,12 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'के गुमाउनुहुन्छ';
+
+  @override
+  String get benefitScoring => 'अक्षर-अक्षर उच्चारण स्कोर';
+
+  @override
+  String get benefitEveryMetric => 'हरेक मेट्रिक, हरेक वाक्य';
 
   @override
   String get subPaymentTitle => 'भुक्तानी अपडेट गर्नुहोस्';

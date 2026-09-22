@@ -146,13 +146,25 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
               const SizedBox(height: 16),
               _header(context),
               const SizedBox(height: 16),
-              _TimeWheel(
-                hour24: widget.hour24,
-                minute: widget.minute,
-                onChanged: widget.onTimeChanged,
+              // 휠 + 설정만 스크롤 — 머리(취소·제목)와 저장 버튼은 붙어 있다. 펼침 둘을 다
+              // 열면 320dp·긴 로케일·큰 글꼴에서 화면보다 길다(모달 상한 = 화면 높이).
+              // 짧으면 픽셀이 그대로다. 휠은 자체 스크롤이라 휠 위의 끌기는 휠이 받는다.
+              Flexible(
+                child: SingleChildScrollView(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      _TimeWheel(
+                        hour24: widget.hour24,
+                        minute: widget.minute,
+                        onChanged: widget.onTimeChanged,
+                      ),
+                      const SizedBox(height: 16),
+                      _settings(context, partnerName),
+                    ],
+                  ),
+                ),
               ),
-              const SizedBox(height: 16),
-              _settings(context, partnerName),
               const SizedBox(height: 16),
               Button(
                 type: BtnType.primaryFill,
@@ -355,15 +367,28 @@ class _DayChip extends StatelessWidget {
           // 높이는 하한 — 글자 배율이 크면 자란다.
           constraints: const BoxConstraints(minWidth: 43, minHeight: 38),
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          alignment: Alignment.center,
           decoration: BoxDecoration(
             color: on ? c.primaryHeavy : c.backgroundElevatedAlternative,
             borderRadius: BorderRadius.circular(19),
           ),
-          child: Text(
-            label,
-            style: AppType.label1.b.copyWith(
-              color: on ? c.staticWhite : c.labelNeutral,
+          // ⛔ `Container` 에 `alignment` 를 주지 마라. 그러면 **부모가 허용하는
+          //   만큼 커진다**(Flutter 문서: "the container will expand to fill its
+          //   parent"). `Wrap` 자식은 「Wrap 폭까지」라는 느슨한 제약을 받으므로
+          //   칩 하나가 전폭을 먹고 다음 칩이 줄을 바꾼다 — 일곱 개가 세로로
+          //   쌓여 시트가 넘쳤다(2026-09-22 실기기 88px).
+          //   `minWidth` 는 하한이라 이걸 못 막는다. 상한이 없는 게 문제였다.
+          //
+          //   `widthFactor`·`heightFactor` 를 1 로 준 [Center] 는 반대로 **자식
+          //   크기로 줄어든다**. 그래서 칩이 글자 폭을 갖고, `minWidth: 43` 이
+          //   짧은 약칭(ko 「월」)을 받쳐 준다.
+          child: Center(
+            widthFactor: 1,
+            heightFactor: 1,
+            child: Text(
+              label,
+              style: AppType.label1.b.copyWith(
+                color: on ? c.staticWhite : c.labelNeutral,
+              ),
             ),
           ),
         ),

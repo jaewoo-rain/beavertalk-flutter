@@ -1705,7 +1705,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$priceдон баштап';
+    return 'ар бири $price';
   }
 
   @override
@@ -1901,6 +1901,12 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Эмнеден айрыласыз';
+
+  @override
+  String get benefitScoring => 'Айтылыш тамга-тамгасына бааланат';
+
+  @override
+  String get benefitEveryMetric => 'Ар бир көрсөткүч, ар бир сүйлөм';
 
   @override
   String get subPaymentTitle => 'Төлөмдү жаңыртуу';

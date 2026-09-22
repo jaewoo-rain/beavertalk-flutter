@@ -1069,7 +1069,7 @@
   "ovCharacterOfferTitle": "Not ready for Premium?",
   "ovCharacterOfferBody": "Pick one character and keep them. A one-off purchase — no subscription, no renewal.",
   "rowOneCharacter": "One character",
-  "rowFromPrice": "from {price}",
+  "rowFromPrice": "{price} each",
   "@rowFromPrice": {
     "placeholders": {
       "price": {
@@ -1195,6 +1195,10 @@
     }
   },
   "subWhatYouLose": "What you lose",
+  "benefitScoring": "Pronunciation scored letter by letter",
+  "@benefitScoring": {"description": "Cancel/resubscribe sheet row - a Premium benefit (letter-level pronunciation scoring)."},
+  "benefitEveryMetric": "Every metric, every sentence",
+  "@benefitEveryMetric": {"description": "Cancel/resubscribe sheet row - a Premium benefit (full analysis: every metric, every sentence)."},
   "subPaymentTitle": "Update payment",
   "subPaymentBody": "We could not take the payment. Premium keeps running during the grace period.",
   "subHowToFix": "How to fix it",

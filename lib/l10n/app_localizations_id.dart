@@ -1705,7 +1705,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return 'mulai $price';
+    return '$price per karakter';
   }
 
   @override
@@ -1900,6 +1900,12 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Yang akan hilang';
+
+  @override
+  String get benefitScoring => 'Pengucapan dinilai huruf demi huruf';
+
+  @override
+  String get benefitEveryMetric => 'Setiap metrik, setiap kalimat';
 
   @override
   String get subPaymentTitle => 'Perbarui pembayaran';

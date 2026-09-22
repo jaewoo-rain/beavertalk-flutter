@@ -1703,7 +1703,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price سے';
+    return 'ہر ایک $price';
   }
 
   @override
@@ -1899,6 +1899,12 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'جو آپ کھو دیں گے';
+
+  @override
+  String get benefitScoring => 'حرف بہ حرف تلفظ کی جانچ';
+
+  @override
+  String get benefitEveryMetric => 'ہر میٹرک، ہر جملہ';
 
   @override
   String get subPaymentTitle => 'ادائیگی اپ ڈیٹ کریں';

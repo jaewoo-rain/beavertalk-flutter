@@ -1700,7 +1700,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String rowFromPrice(String price) {
-    return '$price-с эхлэн';
+    return 'тус бүр $price';
   }
 
   @override
@@ -1894,6 +1894,12 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get subWhatYouLose => 'Таны алдах зүйлс';
+
+  @override
+  String get benefitScoring => 'Дуудлагыг үсэг үсгээр нь дүгнэнэ';
+
+  @override
+  String get benefitEveryMetric => 'Бүх үзүүлэлт, бүх өгүүлбэр';
 
   @override
   String get subPaymentTitle => 'Төлбөр шинэчлэх';
