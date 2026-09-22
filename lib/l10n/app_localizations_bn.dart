@@ -240,17 +240,17 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'এবার শেখা অভিব্যক্তি $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'ঠিক হয়েছে';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'আবার দেখুন';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'পরের বার চালিয়ে যাবেন';
 
   @override
   String get analysisResult => 'বিশ্লেষণের ফলাফল';
@@ -582,16 +582,15 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeNoLevelNote => 'প্রথম কল শেষ করলে লেভেল পাবেন';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'শীঘ্রই আসছে';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language কারিকুলাম তৈরি হচ্ছে';
   }
 
   @override
-  String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+  String get homeCurriculumPendingNote => 'কলে সাধারণ অভিব্যক্তি অনুশীলন করবেন';
 
   @override
   String get myPage => 'আমার পেজ';

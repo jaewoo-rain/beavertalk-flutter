@@ -242,17 +242,17 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Oppimasi ilmaisut $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Osasit';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Kertaa vielä';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Jatketaan ensi kerralla';
 
   @override
   String get analysisResult => 'Analyysin tulos';
@@ -588,16 +588,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeNoLevelNote => 'Suorita ensimmäinen puhelu, niin saat tason';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Tulossa pian';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language: opetussuunnitelma on tulossa';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'Harjoittelet puheluissa yleisiä ilmaisuja';
 
   @override
   String get myPage => 'Oma sivu';

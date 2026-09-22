@@ -242,17 +242,17 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'اس بار سیکھے گئے تاثرات $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'درست';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'دوبارہ دیکھیں';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'اگلی بار جاری رکھیں';
 
   @override
   String get analysisResult => 'تجزیہ کا نتیجہ';
@@ -585,16 +585,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get homeNoLevelNote => 'پہلی کال مکمل کریں تو لیول مل جائے گا';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'جلد آ رہا ہے';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language کا نصاب تیار ہو رہا ہے';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'کالز میں آپ عام تاثرات کی مشق کریں گے';
 
   @override
   String get myPage => 'میرا صفحہ';

@@ -241,17 +241,17 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'ឃ្លាដែលបានរៀន $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'ត្រឹមត្រូវ';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'មើលម្តងទៀត';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'បន្តលើកក្រោយ';
 
   @override
   String get analysisResult => 'លទ្ធផលវិភាគ';
@@ -582,16 +582,15 @@ class AppLocalizationsKm extends AppLocalizations {
   String get homeNoLevelNote => 'បញ្ចប់ការហៅទូរស័ព្ទដំបូង នោះនឹងមានកម្រិត';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'ឆាប់ៗនេះ';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return 'កម្មវិធីសិក្សា $language កំពុងរៀបចំ';
   }
 
   @override
-  String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+  String get homeCurriculumPendingNote => 'អ្នកនឹងហាត់ឃ្លាទូទៅក្នុងការហៅ';
 
   @override
   String get myPage => 'ទំព័ររបស់ខ្ញុំ';

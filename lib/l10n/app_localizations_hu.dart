@@ -243,17 +243,17 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Megtanult kifejezések $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Eltaláltad';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Nézd át újra';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Legközelebb folytatjuk';
 
   @override
   String get analysisResult => 'Elemzés eredménye';
@@ -589,16 +589,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeNoLevelNote => 'Fejezd be az első hívást, és megkapod';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Hamarosan';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return 'A(z) $language tanmenet készül';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'A hívásokban általános kifejezéseket gyakorolsz';
 
   @override
   String get myPage => 'Saját oldal';

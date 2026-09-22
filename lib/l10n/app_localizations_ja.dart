@@ -234,17 +234,17 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return '今回学んだ表現 $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => '正解';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'もう一度確認';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => '次回に続きから';
 
   @override
   String get analysisResult => '分析結果';
@@ -567,16 +567,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeNoLevelNote => '最初の通話を終えるとレベルが出ます';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => '準備中';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$languageのカリキュラムは準備中です';
   }
 
   @override
-  String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+  String get homeCurriculumPendingNote => '通話では一般的な表現を練習します';
 
   @override
   String get myPage => 'マイページ';

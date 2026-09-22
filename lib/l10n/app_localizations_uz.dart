@@ -241,17 +241,17 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'O‘rganilgan iboralar $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'To‘g‘ri';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Yana ko‘rib chiqing';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Keyingi safar davom etamiz';
 
   @override
   String get analysisResult => 'Tahlil natijasi';
@@ -586,16 +586,16 @@ class AppLocalizationsUz extends AppLocalizations {
       'Birinchi qo‘ng‘iroqni yakunlasangiz daraja chiqadi';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Tez orada';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language o‘quv dasturi tayyorlanmoqda';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'Qo‘ng‘iroqlarda umumiy iboralarni mashq qilasiz';
 
   @override
   String get myPage => 'Mening sahifam';

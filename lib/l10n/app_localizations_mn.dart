@@ -241,17 +241,17 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Сурсан хэллэг $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Зөв';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Дахин харах';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Дараагийн удаа үргэлжлүүлнэ';
 
   @override
   String get analysisResult => 'Дүн шинжилгээний үр дүн';
@@ -582,16 +582,16 @@ class AppLocalizationsMn extends AppLocalizations {
   String get homeNoLevelNote => 'Эхний дуудлагаа дуусгавал түвшин гарна';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Удахгүй';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language хөтөлбөр бэлтгэгдэж байна';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'Дуудлагаар ерөнхий хэллэг дадлагажина';
 
   @override
   String get myPage => 'Миний хуудас';

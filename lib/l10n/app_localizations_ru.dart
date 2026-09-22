@@ -242,17 +242,17 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Изученные выражения $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Верно';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Повторите ещё раз';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Продолжим в следующий раз';
 
   @override
   String get analysisResult => 'Результат анализа';
@@ -588,16 +588,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeNoLevelNote => 'Завершите первый звонок, и он появится';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Скоро';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return 'Программа по языку «$language» готовится';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'В звонках вы будете практиковать общие выражения';
 
   @override
   String get myPage => 'Профиль';

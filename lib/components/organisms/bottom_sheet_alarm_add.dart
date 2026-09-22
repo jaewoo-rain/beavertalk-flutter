@@ -486,7 +486,12 @@ class _TimeWheelState extends State<_TimeWheel> {
   late int _hSel = widget.hour24;
   late int _mSel = widget.minute;
 
-  static const double _extent = 34;
+  // Figma `Picker-Time`(6222:20710 안, 343×156): 보이는 칸은 **3개**(위·선택·아래)이고
+  // 칸 중심 간격 36(07·08·09 중심 y 315·351·387). 시·분 열 중심 간격 65(x 155.5·220.5).
+  // 예전 34·높이 156 전체였을 때는 5칸이 보이고 열이 96 벌어져 있었다(2026-09-23).
+  static const double _extent = 36;
+  static const double _colWidth = 56;
+  static const double _colGap = 65 - _colWidth;
 
   @override
   void dispose() {
@@ -500,7 +505,8 @@ class _TimeWheelState extends State<_TimeWheel> {
     final c = context.c;
     Widget wheel(FixedExtentScrollController ctrl, int count, bool isHour) =>
         SizedBox(
-          width: 56,
+          width: _colWidth,
+          height: _extent * 3,
           child: ListWheelScrollView.useDelegate(
             controller: ctrl,
             itemExtent: _extent,
@@ -540,7 +546,7 @@ class _TimeWheelState extends State<_TimeWheel> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               wheel(_h, 24, true),
-              const SizedBox(width: 40),
+              const SizedBox(width: _colGap),
               wheel(_m, 60, false),
             ],
           ),

@@ -241,17 +241,17 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Үйренген сөз тіркестері $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Дұрыс';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Қайта қараңыз';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Келесі жолы жалғастырамыз';
 
   @override
   String get analysisResult => 'Талдау нәтижесі';
@@ -578,16 +578,16 @@ class AppLocalizationsKk extends AppLocalizations {
   String get homeNoLevelNote => 'Алғашқы қоңырауды аяқтасаңыз, деңгей шығады';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Жақында';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language оқу бағдарламасы дайындалуда';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'Қоңырауларда жалпы сөз тіркестерін жаттықтырасыз';
 
   @override
   String get myPage => 'Менің бетім';

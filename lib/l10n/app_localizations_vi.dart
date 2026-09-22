@@ -241,17 +241,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Cách diễn đạt đã học $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Đúng rồi';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Xem lại';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Tiếp tục lần sau';
 
   @override
   String get analysisResult => 'Kết quả phân tích';
@@ -582,16 +582,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeNoLevelNote => 'Hoàn thành cuộc gọi đầu tiên để nhận cấp độ';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Sắp ra mắt';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return 'Giáo trình $language đang được chuẩn bị';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'Bạn sẽ luyện các cách diễn đạt thông dụng trong cuộc gọi';
 
   @override
   String get myPage => 'Trang của tôi';

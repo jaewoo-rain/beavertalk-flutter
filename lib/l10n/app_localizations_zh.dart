@@ -234,17 +234,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return '本次学到的表达 $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => '答对了';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => '再复习一下';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => '下次继续';
 
   @override
   String get analysisResult => '分析结果';
@@ -566,16 +566,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeNoLevelNote => '完成第一次通话就会有等级';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => '即将推出';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language课程正在准备中';
   }
 
   @override
-  String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+  String get homeCurriculumPendingNote => '通话中将练习通用表达';
 
   @override
   String get myPage => '我的';

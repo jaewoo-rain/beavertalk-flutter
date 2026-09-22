@@ -242,17 +242,17 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'Ungkapan yang kamu pelajari $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'Benar';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'Lihat lagi';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'Lanjut lain kali';
 
   @override
   String get analysisResult => 'Hasil Analisis';
@@ -584,16 +584,16 @@ class AppLocalizationsId extends AppLocalizations {
       'Selesaikan panggilan pertama untuk mendapatkannya';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'Segera hadir';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return 'Kurikulum $language sedang disiapkan';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'Kamu akan berlatih ungkapan umum saat menelepon';
 
   @override
   String get myPage => 'Halamanku';

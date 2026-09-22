@@ -243,17 +243,17 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String quizExpressionsCount(int count) {
-    return 'Expressions you learned $count';
+    return 'သင်ယူခဲ့သော အသုံးအနှုန်း $count';
   }
 
   @override
-  String get quizPassed => 'Got it';
+  String get quizPassed => 'မှန်ပါသည်';
 
   @override
-  String get quizFailed => 'Review again';
+  String get quizFailed => 'ထပ်ကြည့်ရန်';
 
   @override
-  String get quizPending => 'Continue next time';
+  String get quizPending => 'နောက်တစ်ကြိမ် ဆက်ရန်';
 
   @override
   String get analysisResult => 'ဆန်းစစ်ချက် ရလဒ်';
@@ -587,16 +587,16 @@ class AppLocalizationsMy extends AppLocalizations {
   String get homeNoLevelNote => 'ပထမဆုံးခေါ်ဆိုမှုပြီးလျှင် အဆင့်ရပါမည်';
 
   @override
-  String get homeCurriculumPendingBadge => 'Coming soon';
+  String get homeCurriculumPendingBadge => 'မကြာမီ';
 
   @override
   String homeCurriculumPendingTitle(String language) {
-    return '$language curriculum is on its way';
+    return '$language သင်ရိုးကို ပြင်ဆင်နေပါသည်';
   }
 
   @override
   String get homeCurriculumPendingNote =>
-      'You\'ll practice general expressions on your calls';
+      'ခေါ်ဆိုမှုတွင် အထွေထွေ အသုံးအနှုန်းများ လေ့ကျင့်ပါမည်';
 
   @override
   String get myPage => 'ကျွန်ုပ်၏စာမျက်နှာ';
