@@ -15,6 +15,7 @@ class RecordCircleButton extends StatelessWidget {
     required this.onTap,
     this.semanticLabel,
     this.size = 96,
+    this.cautionary = false,
   });
 
   /// Centered glyph builder (e.g. [AppIcons.mic], [AppIcons.redo]).
@@ -29,8 +30,14 @@ class RecordCircleButton extends StatelessWidget {
   /// Diameter (Figma 96).
   final double size;
 
+  /// Ring and glyph in `Status/Cautionary` instead of `Primary/Heavy` — the
+  /// retry after a recognition failure (Figma `learning/9_failed` `5236:8536`).
+  /// A plain retry after a result stays mint: only a failure is flagged.
+  final bool cautionary;
+
   @override
   Widget build(BuildContext context) {
+    final tone = cautionary ? context.c.statusCautionary : context.c.primaryHeavy;
     return Semantics(
       button: true,
       label: semanticLabel,
@@ -44,10 +51,10 @@ class RecordCircleButton extends StatelessWidget {
             // mint ring, and it must stay white in Light too.
             color: context.c.staticWhite,
             shape: BoxShape.circle,
-            border: Border.all(color: context.c.primaryHeavy, width: 4),
+            border: Border.all(color: tone, width: 4),
           ),
           alignment: Alignment.center,
-          child: icon(size: 40, color: context.c.primaryHeavy),
+          child: icon(size: 40, color: tone),
         ),
       ),
     );

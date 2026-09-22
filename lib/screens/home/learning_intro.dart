@@ -1139,6 +1139,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   icon: AppIcons.redo,
                   semanticLabel: l10n.retry,
                   onTap: _retry,
+                  // Figma `learning/9_failed` — 실패 후 재시도는 주의색이다.
+                  cautionary: true,
                 ),
               ),
             ),
