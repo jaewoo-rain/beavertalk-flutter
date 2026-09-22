@@ -20,6 +20,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
 import 'payment_history_loading.dart';
+import '../../core/format/dates.dart';
 
 /// Payment history — Figma `screen/main_mypage_payment` (`2117:20206`).
 ///
@@ -230,7 +231,9 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
       children: [
         Text(
           // Locale-aware: this screen renders in 30 locales.
-          key == null ? l10n.undatedPayments : intl.DateFormat.yMMMM(locale).format(key),
+          key == null
+              ? l10n.undatedPayments
+              : asciiDigits(intl.DateFormat.yMMMM(locale).format(key)),
           style: AppType.label1.r.copyWith(color: context.c.labelNormal),
         ),
         const SizedBox(height: AppSpacing.s8),
@@ -250,7 +253,7 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
     // neither still shows its amount rather than being dropped.
     final date = p.date;
     final meta = [
-      if (date != null) intl.DateFormat.MMMd(locale).format(date),
+      if (date != null) asciiDigits(intl.DateFormat.MMMd(locale).format(date)),
       if (p.cardInfo != null && p.cardInfo!.isNotEmpty) p.cardInfo!,
     ].join('·'); // CardLine splits on `·` into dot-separated segments.
 

@@ -23,6 +23,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import 'learning_args.dart';
+import '../../core/format/dates.dart';
 
 /// Call analysis screen — Figma `screen/analysis` (`3583:34434`).
 ///
@@ -378,7 +379,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       // Locale-aware: this screen renders in 30 locales. (The old code pinned
       // this to 'en', which printed "Jul 10" inside an otherwise Korean line.)
       if (result.callDate != null)
-        intl.DateFormat.MMMd(locale).format(result.callDate!),
+        asciiDigits(intl.DateFormat.MMMd(locale).format(result.callDate!)),
       if (result.totalTime != null) _formatDuration(l10n, result.totalTime!),
       if (result.callSequence != null) l10n.callSequence(result.callSequence!),
     ];

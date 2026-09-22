@@ -18,6 +18,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
+import '../../core/format/dates.dart';
 
 /// 학습 달력 — Figma `screen/streak_calendar` (`6183:4527`) · 로딩 `6245:42308`.
 ///
@@ -342,7 +343,7 @@ class _MonthGrid extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(intl.DateFormat.yMMMM(locale).format(month),
+          child: Text(asciiDigits(intl.DateFormat.yMMMM(locale).format(month)),
               style: AppType.label1.b.copyWith(color: c.labelStrong)),
         ),
         const SizedBox(height: 4),
@@ -473,7 +474,7 @@ class _CallRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (date != null)
-                    Text(intl.DateFormat.MMMd(locale).format(date),
+                    Text(asciiDigits(intl.DateFormat.MMMd(locale).format(date)),
                         style: AppType.caption1.r
                             .copyWith(color: c.labelNormal)),
                   // 제목은 요약 산문이라 두 줄까지 쓰고 넘치면 줄인다(식별자 아님).

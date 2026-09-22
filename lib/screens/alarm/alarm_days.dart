@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../../core/format/dates.dart';
 
 /// 알람 요일 표기 — 칩 라벨과 요약 줄이 같은 표를 본다.
 ///
@@ -19,7 +20,10 @@ abstract final class AlarmDays {
   static List<String> shortLabels(String locale) {
     final f = DateFormat.E(locale);
     // 2026-09-20 은 일요일이다. 그날부터 7일을 찍으면 일→토 순이다.
-    return [for (var i = 0; i < 7; i++) f.format(DateTime(2026, 9, 20 + i))];
+    // 약칭에 숫자가 드는 언어가 있다(vi 「Th 2」). 숫자 체계는 아라비아로 통일한다.
+    return [
+      for (var i = 0; i < 7; i++) asciiDigits(f.format(DateTime(2026, 9, 20 + i))),
+    ];
   }
 
   /// 요약 한 줄 — 「매일」·「평일」·「주말」·「반복 안 함」, 그 밖에는 약칭을 월→일로
