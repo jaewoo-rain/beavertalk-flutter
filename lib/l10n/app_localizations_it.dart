@@ -506,11 +506,11 @@ class AppLocalizationsIt extends AppLocalizations {
   String get homeCourseExpression => 'Espressioni';
 
   @override
-  String get homeCourseFreetalk => 'Conversazione libera';
+  String get homeCourseFreetalk => 'Conversazione';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Mancano $count espressioni alla conversazione libera';
+    return 'Mancano $count espressioni alla conversazione';
   }
 
   @override

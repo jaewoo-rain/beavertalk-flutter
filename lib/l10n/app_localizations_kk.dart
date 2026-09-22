@@ -494,11 +494,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get homeCourseExpression => 'Өрнектер';
 
   @override
-  String get homeCourseFreetalk => 'Еркін әңгіме';
+  String get homeCourseFreetalk => 'Әңгіме';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Еркін әңгімеге $count өрнек қалды';
+    return 'Әңгімеге $count өрнек қалды';
   }
 
   @override

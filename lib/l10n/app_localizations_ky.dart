@@ -497,11 +497,11 @@ class AppLocalizationsKy extends AppLocalizations {
   String get homeCourseExpression => 'Сөз айкаштары';
 
   @override
-  String get homeCourseFreetalk => 'Эркин маек';
+  String get homeCourseFreetalk => 'Маек';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Эркин маекке $count сөз айкашы калды';
+    return 'Маекке $count сөз айкашы калды';
   }
 
   @override

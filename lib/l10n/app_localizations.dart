@@ -1063,13 +1063,13 @@ abstract class AppLocalizations {
   /// Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`.
   ///
   /// In en, this message translates to:
-  /// **'Free talk'**
+  /// **'Conversation'**
   String get homeCourseFreetalk;
 
   /// Home learning-status block, third line: how many expressions remain before free talk unlocks.
   ///
   /// In en, this message translates to:
-  /// **'{count} expressions left until free talk'**
+  /// **'{count} expressions left until conversation'**
   String homeExpressionsLeft(int count);
 
   /// Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked.
@@ -3943,7 +3943,7 @@ abstract class AppLocalizations {
   /// Mode sheet - the Free Talk mode name (streaming conversation, no corrections).
   ///
   /// In en, this message translates to:
-  /// **'Free Talk'**
+  /// **'Free talk'**
   String get callModeFreeTalk;
 
   /// Mode sheet - one-line description of Free Talk.

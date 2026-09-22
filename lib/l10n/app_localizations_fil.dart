@@ -502,11 +502,11 @@ class AppLocalizationsFil extends AppLocalizations {
   String get homeCourseExpression => 'Ekspresyon';
 
   @override
-  String get homeCourseFreetalk => 'Malayang usapan';
+  String get homeCourseFreetalk => 'Usapan';
 
   @override
   String homeExpressionsLeft(int count) {
-    return '$count ekspresyon na lang bago ang malayang usapan';
+    return '$count ekspresyon na lang bago ang usapan';
   }
 
   @override

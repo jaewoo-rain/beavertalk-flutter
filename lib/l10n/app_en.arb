@@ -288,11 +288,11 @@
   "@homeCourseExpression": {
     "description": "Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge."
   },
-  "homeCourseFreetalk": "Free talk",
+  "homeCourseFreetalk": "Conversation",
   "@homeCourseFreetalk": {
     "description": "Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`."
   },
-  "homeExpressionsLeft": "{count} expressions left until free talk",
+  "homeExpressionsLeft": "{count} expressions left until conversation",
   "@homeExpressionsLeft": {
     "description": "Home learning-status block, third line: how many expressions remain before free talk unlocks.",
     "placeholders": {
@@ -1379,7 +1379,7 @@
   "@callModeSheetSubtitle": {
     "description": "Mode sheet - subheading. The choice applies to the current call immediately."
   },
-  "callModeFreeTalk": "Free Talk",
+  "callModeFreeTalk": "Free talk",
   "@callModeFreeTalk": {
     "description": "Mode sheet - the Free Talk mode name (streaming conversation, no corrections)."
   },

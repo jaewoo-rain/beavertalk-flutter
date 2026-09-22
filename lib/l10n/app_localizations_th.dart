@@ -491,11 +491,11 @@ class AppLocalizationsTh extends AppLocalizations {
   String get homeCourseExpression => 'สำนวน';
 
   @override
-  String get homeCourseFreetalk => 'สนทนาอิสระ';
+  String get homeCourseFreetalk => 'การสนทนา';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'เหลืออีก $count สำนวนก่อนสนทนาอิสระ';
+    return 'เหลืออีก $count สำนวนก่อนการสนทนา';
   }
 
   @override

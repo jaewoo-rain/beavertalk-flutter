@@ -498,11 +498,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get homeCourseExpression => 'Ekspresi';
 
   @override
-  String get homeCourseFreetalk => 'Obrolan bebas';
+  String get homeCourseFreetalk => 'Percakapan';
 
   @override
   String homeExpressionsLeft(int count) {
-    return '$count ekspresi lagi menuju obrolan bebas';
+    return '$count ekspresi lagi menuju percakapan';
   }
 
   @override

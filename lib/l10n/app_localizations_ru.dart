@@ -498,11 +498,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeCourseExpression => 'Выражения';
 
   @override
-  String get homeCourseFreetalk => 'Свободная беседа';
+  String get homeCourseFreetalk => 'Разговор';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'До свободной беседы осталось выражений: $count';
+    return 'До разговора осталось выражений: $count';
   }
 
   @override

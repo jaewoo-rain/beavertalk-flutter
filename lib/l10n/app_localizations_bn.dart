@@ -498,11 +498,11 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeCourseExpression => 'অভিব্যক্তি';
 
   @override
-  String get homeCourseFreetalk => 'মুক্ত আলাপ';
+  String get homeCourseFreetalk => 'কথোপকথন';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'মুক্ত আলাপ পর্যন্ত আরও $countটি অভিব্যক্তি';
+    return 'কথোপকথন পর্যন্ত আরও $countটি অভিব্যক্তি';
   }
 
   @override

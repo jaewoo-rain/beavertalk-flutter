@@ -496,11 +496,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeCourseExpression => 'İfadeler';
 
   @override
-  String get homeCourseFreetalk => 'Serbest sohbet';
+  String get homeCourseFreetalk => 'Diyalog';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Serbest sohbete $count ifade kaldı';
+    return 'Diyaloğa $count ifade kaldı';
   }
 
   @override

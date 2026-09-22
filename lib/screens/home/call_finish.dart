@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -81,19 +83,12 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   /// Final call duration in whole seconds, from the call screen's live timer.
   int _durationSec = 0;
 
-  /// Whether the rating sheet has been offered — once per screen, not on every
-  /// dependency change.
+  /// Whether the rating sheet has been offered — once per screen.
   bool _ratingOffered = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    if (!_ratingOffered) {
-      _ratingOffered = true;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _offerRating();
-      });
-    }
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is ({String? callId, int elapsedSec, int? baselineCallId})) {
       final id = args.callId;
@@ -123,7 +118,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   Future<int?>? _recovery;
 
   Future<int?> _pollCallId() async {
-    final repo = ref.read(normalcallRepositoryProvider);
+    final repo = ref.read(normalcallRepositoryProvider); // 화면이 닫혀도 쓰도록 먼저 잡는다
     const attempts = 5;
     const gap = Duration(milliseconds: 600);
     final baseline = _baselineCallId;
@@ -153,6 +148,23 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
     return '$m:$s';
   }
 
+  /// 이 화면을 떠나는 모든 길(홈 · 대화 분석 · 시스템 뒤로) 앞에서 평가 시트를 한 번
+  /// 띄우고, 닫히면 [next] 로 간다.
+  ///
+  /// P8(사용자 결정 2026-09-22): 「종료 화면 **이후**에 통화 평가 시트 노출」. 예전엔
+  /// 도착하자마자 떠서 통화 시간·버튼을 보기 전에 모달이 화면을 덮었다. 이제 종료
+  /// 화면을 먼저 보여 주고, 사용자가 떠나려 할 때 묻는다.
+  /// ⚠ 떠나지 않으면(앱 강제 종료·화면 방치) 평가를 받지 않는다 — 이 결정의 필연이다.
+  ///   평가 수집률이 낮게 나오면 원인은 여기다.
+  Future<void> _rateThen(FutureOr<void> Function() next) async {
+    if (!_ratingOffered) {
+      _ratingOffered = true;
+      await _offerRating();
+      if (!mounted) return;
+    }
+    await next();
+  }
+
   /// Opens the rating sheet; a chosen rating is sent in the background.
   Future<void> _offerRating() async {
     final picked = await showModalBottomSheet<_Rating>(
@@ -162,23 +174,23 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       isScrollControlled: true,
       builder: (_) => const CallRatingSheet(),
     );
-    if (picked != null && mounted) await _submitRating(picked);
+    // 기다리지 않는다 — 전송(수동 종료면 통화 id 복구 폴링 포함)이 다음 화면을 붙잡으면
+    // 안 된다. 저장소는 [_submitRating] 첫 줄에서 잡으므로 화면이 닫혀도 전송된다.
+    if (picked != null && mounted) unawaited(_submitRating(picked));
   }
 
   /// Sends [rating] — best-effort: a failure is surfaced but never blocks.
   /// A manual hang-up has no call id yet, so it is recovered first.
   Future<void> _submitRating(_Rating rating) async {
+    final repo = ref.read(normalcallRepositoryProvider);
     var callId = _callId;
     if (callId == null) {
       callId = await _recoverCallId();
-      if (!mounted) return;
       if (callId != null) _callId = callId;
     }
     if (callId == null) return;
     try {
-      await ref
-          .read(normalcallRepositoryProvider)
-          .submitRating(callId, rating.value);
+      await repo.submitRating(callId, rating.value);
     } on AppException catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -252,7 +264,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
         if (didPop) return;
-        Navigator.of(context).popUntil((r) => r.isFirst);
+        _rateThen(() => Navigator.of(context).popUntil((r) => r.isFirst));
       },
       child: AppScaffold(
         background: context.c.backgroundNormalNormal,
@@ -330,9 +342,9 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                             type: BtnType.secondaryFill,
                             size: BtnSize.s60,
                             text: l10n.goHome,
-                            onPressed: () => Navigator.of(
-                              context,
-                            ).popUntil((r) => r.isFirst),
+                            onPressed: () => _rateThen(() => Navigator.of(
+                                  context,
+                                ).popUntil((r) => r.isFirst)),
                           ),
                           const SizedBox(height: AppSpacing.s16),
                           Button(
@@ -342,7 +354,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                                 ? l10n.loadingShort
                                 : l10n.viewAnalysis,
                             disabled: _recovering,
-                            onPressed: _analyze,
+                            onPressed: () => _rateThen(_analyze),
                           ),
                         ],
                       ),

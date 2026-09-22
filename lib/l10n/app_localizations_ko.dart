@@ -484,11 +484,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeCourseExpression => '표현학습';
 
   @override
-  String get homeCourseFreetalk => '자유회화';
+  String get homeCourseFreetalk => '회화';
 
   @override
   String homeExpressionsLeft(int count) {
-    return '자유 회화까지 표현 $count개 남음';
+    return '회화까지 표현 $count개 남음';
   }
 
   @override

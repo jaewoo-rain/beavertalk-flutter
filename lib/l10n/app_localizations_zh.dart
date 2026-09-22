@@ -482,11 +482,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeCourseExpression => '表达学习';
 
   @override
-  String get homeCourseFreetalk => '自由对话';
+  String get homeCourseFreetalk => '对话';
 
   @override
   String homeExpressionsLeft(int count) {
-    return '距离自由对话还剩 $count 个表达';
+    return '距离对话还剩 $count 个表达';
   }
 
   @override

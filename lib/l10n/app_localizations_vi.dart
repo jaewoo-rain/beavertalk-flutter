@@ -498,11 +498,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeCourseExpression => 'Mẫu câu';
 
   @override
-  String get homeCourseFreetalk => 'Trò chuyện tự do';
+  String get homeCourseFreetalk => 'Hội thoại';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Còn $count mẫu câu nữa đến trò chuyện tự do';
+    return 'Còn $count mẫu câu nữa đến hội thoại';
   }
 
   @override

@@ -499,11 +499,11 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeCourseExpression => 'ප්‍රකාශන';
 
   @override
-  String get homeCourseFreetalk => 'නිදහස් කතාව';
+  String get homeCourseFreetalk => 'සංවාදය';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'නිදහස් කතාව දක්වා ප්‍රකාශන $countක් ඉතිරියි';
+    return 'සංවාදය දක්වා ප්‍රකාශන $countක් ඉතිරියි';
   }
 
   @override

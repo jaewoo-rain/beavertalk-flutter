@@ -483,11 +483,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get homeCourseExpression => '表現学習';
 
   @override
-  String get homeCourseFreetalk => 'フリートーク';
+  String get homeCourseFreetalk => '会話';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'フリートークまで表現あと$count個';
+    return '会話まで表現あと$count個';
   }
 
   @override

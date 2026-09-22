@@ -494,11 +494,11 @@ class AppLocalizationsNe extends AppLocalizations {
   String get homeCourseExpression => 'अभिव्यक्ति';
 
   @override
-  String get homeCourseFreetalk => 'स्वतन्त्र कुराकानी';
+  String get homeCourseFreetalk => 'कुराकानी';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'स्वतन्त्र कुराकानीसम्म $count अभिव्यक्ति बाँकी';
+    return 'कुराकानीसम्म $count अभिव्यक्ति बाँकी';
   }
 
   @override

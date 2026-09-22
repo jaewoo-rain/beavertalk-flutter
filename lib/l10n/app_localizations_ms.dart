@@ -502,11 +502,11 @@ class AppLocalizationsMs extends AppLocalizations {
   String get homeCourseExpression => 'Ungkapan';
 
   @override
-  String get homeCourseFreetalk => 'Sembang bebas';
+  String get homeCourseFreetalk => 'Perbualan';
 
   @override
   String homeExpressionsLeft(int count) {
-    return '$count ungkapan lagi sebelum sembang bebas';
+    return '$count ungkapan lagi sebelum perbualan';
   }
 
   @override

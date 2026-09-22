@@ -495,11 +495,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get homeCourseExpression => 'अभिव्यक्ति';
 
   @override
-  String get homeCourseFreetalk => 'मुक्त बातचीत';
+  String get homeCourseFreetalk => 'बातचीत';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'मुक्त बातचीत तक $count अभिव्यक्तियाँ बाकी';
+    return 'बातचीत तक $count अभिव्यक्तियाँ बाकी';
   }
 
   @override

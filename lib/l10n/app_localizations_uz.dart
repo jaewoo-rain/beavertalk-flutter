@@ -500,11 +500,11 @@ class AppLocalizationsUz extends AppLocalizations {
   String get homeCourseExpression => 'Iboralar';
 
   @override
-  String get homeCourseFreetalk => 'Erkin suhbat';
+  String get homeCourseFreetalk => 'Suhbat';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Erkin suhbatgacha $count ta ibora qoldi';
+    return 'Suhbatgacha $count ta ibora qoldi';
   }
 
   @override

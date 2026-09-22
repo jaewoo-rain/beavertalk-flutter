@@ -501,11 +501,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeCourseExpression => 'Ilmaukset';
 
   @override
-  String get homeCourseFreetalk => 'Vapaa keskustelu';
+  String get homeCourseFreetalk => 'Keskustelu';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Vapaaseen keskusteluun $count ilmausta jäljellä';
+    return 'Keskusteluun $count ilmausta jäljellä';
   }
 
   @override

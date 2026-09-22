@@ -505,11 +505,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeCourseExpression => 'Kifejezések';
 
   @override
-  String get homeCourseFreetalk => 'Szabad beszélgetés';
+  String get homeCourseFreetalk => 'Beszélgetés';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Még $count kifejezés a szabad beszélgetésig';
+    return 'Még $count kifejezés a beszélgetésig';
   }
 
   @override

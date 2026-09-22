@@ -499,11 +499,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get homeCourseExpression => 'اظہار';
 
   @override
-  String get homeCourseFreetalk => 'آزاد گفتگو';
+  String get homeCourseFreetalk => 'گفتگو';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'آزاد گفتگو تک $count اظہار باقی';
+    return 'گفتگو تک $count اظہار باقی';
   }
 
   @override

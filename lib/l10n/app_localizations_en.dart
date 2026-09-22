@@ -496,11 +496,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeCourseExpression => 'Expression';
 
   @override
-  String get homeCourseFreetalk => 'Free talk';
+  String get homeCourseFreetalk => 'Conversation';
 
   @override
   String homeExpressionsLeft(int count) {
-    return '$count expressions left until free talk';
+    return '$count expressions left until conversation';
   }
 
   @override
@@ -2113,7 +2113,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callModeSheetSubtitle => 'Applies to this call right away';
 
   @override
-  String get callModeFreeTalk => 'Free Talk';
+  String get callModeFreeTalk => 'Free talk';
 
   @override
   String get callModeFreeTalkDesc => 'Just talk — no corrections';

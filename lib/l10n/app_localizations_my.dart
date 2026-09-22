@@ -503,11 +503,11 @@ class AppLocalizationsMy extends AppLocalizations {
   String get homeCourseExpression => 'အသုံးအနှုန်း';
 
   @override
-  String get homeCourseFreetalk => 'လွတ်လပ်စကားပြော';
+  String get homeCourseFreetalk => 'စကားဝိုင်း';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'လွတ်လပ်စကားပြောအထိ အသုံးအနှုန်း $count ခုကျန်';
+    return 'စကားဝိုင်းအထိ အသုံးအနှုန်း $count ခုကျန်';
   }
 
   @override

@@ -506,11 +506,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeCourseExpression => 'Expressions';
 
   @override
-  String get homeCourseFreetalk => 'Conversation libre';
+  String get homeCourseFreetalk => 'Conversation';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Encore $count expressions avant la conversation libre';
+    return 'Encore $count expressions avant la conversation';
   }
 
   @override

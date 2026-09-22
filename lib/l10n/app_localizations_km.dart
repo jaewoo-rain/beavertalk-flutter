@@ -498,11 +498,11 @@ class AppLocalizationsKm extends AppLocalizations {
   String get homeCourseExpression => 'កន្សោម';
 
   @override
-  String get homeCourseFreetalk => 'សន្ទនាសេរី';
+  String get homeCourseFreetalk => 'សន្ទនា';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'នៅសល់កន្សោម $count រហូតដល់សន្ទនាសេរី';
+    return 'នៅសល់កន្សោម $count រហូតដល់សន្ទនា';
   }
 
   @override

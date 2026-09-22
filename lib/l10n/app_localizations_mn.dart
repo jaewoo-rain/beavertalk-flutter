@@ -498,11 +498,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get homeCourseExpression => 'Хэллэг';
 
   @override
-  String get homeCourseFreetalk => 'Чөлөөт яриа';
+  String get homeCourseFreetalk => 'Яриа';
 
   @override
   String homeExpressionsLeft(int count) {
-    return 'Чөлөөт яриа хүртэл $count хэллэг үлдлээ';
+    return 'Яриа хүртэл $count хэллэг үлдлээ';
   }
 
   @override
