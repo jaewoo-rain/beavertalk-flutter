@@ -138,6 +138,24 @@ class AppLocalizationsMy extends AppLocalizations {
   String get alarms => 'နှိုးစက်များ';
 
   @override
+  String get alarmAdd => 'နှိုးစက် ထည့်ရန်';
+
+  @override
+  String get alarmEdit => 'နှိုးစက် ပြင်ရန်';
+
+  @override
+  String get alarmEveryDay => 'နေ့တိုင်း';
+
+  @override
+  String get alarmWeekdays => 'ကြားရက်များ';
+
+  @override
+  String get alarmWeekend => 'စနေ၊ တနင်္ဂနွေ';
+
+  @override
+  String get alarmNoRepeat => 'ထပ်မလုပ်ပါ';
+
+  @override
   String get addSchedule => 'အချိန်ဇယား ထည့်ရန်';
 
   @override

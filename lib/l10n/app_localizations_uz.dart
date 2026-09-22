@@ -136,6 +136,24 @@ class AppLocalizationsUz extends AppLocalizations {
   String get alarms => 'Signalar';
 
   @override
+  String get alarmAdd => 'Budilnik qo‘shish';
+
+  @override
+  String get alarmEdit => 'Budilnikni tahrirlash';
+
+  @override
+  String get alarmEveryDay => 'Har kuni';
+
+  @override
+  String get alarmWeekdays => 'Ish kunlari';
+
+  @override
+  String get alarmWeekend => 'Dam olish kunlari';
+
+  @override
+  String get alarmNoRepeat => 'Takrorlanmaydi';
+
+  @override
   String get addSchedule => 'Jadval qoʻshish';
 
   @override

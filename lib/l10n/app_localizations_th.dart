@@ -132,6 +132,24 @@ class AppLocalizationsTh extends AppLocalizations {
   String get alarms => 'การเตือน';
 
   @override
+  String get alarmAdd => 'เพิ่มนาฬิกาปลุก';
+
+  @override
+  String get alarmEdit => 'แก้ไขนาฬิกาปลุก';
+
+  @override
+  String get alarmEveryDay => 'ทุกวัน';
+
+  @override
+  String get alarmWeekdays => 'วันธรรมดา';
+
+  @override
+  String get alarmWeekend => 'วันหยุดสุดสัปดาห์';
+
+  @override
+  String get alarmNoRepeat => 'ไม่ทำซ้ำ';
+
+  @override
   String get addSchedule => 'เพิ่มตารางเวลา';
 
   @override

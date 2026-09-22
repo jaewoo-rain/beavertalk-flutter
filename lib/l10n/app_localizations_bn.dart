@@ -135,6 +135,24 @@ class AppLocalizationsBn extends AppLocalizations {
   String get alarms => 'অ্যালার্ম';
 
   @override
+  String get alarmAdd => 'অ্যালার্ম যোগ করুন';
+
+  @override
+  String get alarmEdit => 'অ্যালার্ম সম্পাদনা';
+
+  @override
+  String get alarmEveryDay => 'প্রতিদিন';
+
+  @override
+  String get alarmWeekdays => 'সপ্তাহের কর্মদিবস';
+
+  @override
+  String get alarmWeekend => 'সপ্তাহান্তে';
+
+  @override
+  String get alarmNoRepeat => 'পুনরাবৃত্তি নেই';
+
+  @override
   String get addSchedule => 'সময়সূচি যোগ করুন';
 
   @override

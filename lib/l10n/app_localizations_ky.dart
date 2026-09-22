@@ -137,6 +137,24 @@ class AppLocalizationsKy extends AppLocalizations {
   String get alarms => 'Ойготкучтар';
 
   @override
+  String get alarmAdd => 'Ойготкуч кошуу';
+
+  @override
+  String get alarmEdit => 'Ойготкучту өзгөртүү';
+
+  @override
+  String get alarmEveryDay => 'Күн сайын';
+
+  @override
+  String get alarmWeekdays => 'Иш күндөрү';
+
+  @override
+  String get alarmWeekend => 'Дем алыш күндөрү';
+
+  @override
+  String get alarmNoRepeat => 'Кайталанбайт';
+
+  @override
   String get addSchedule => 'Жадыбал кошуу';
 
   @override

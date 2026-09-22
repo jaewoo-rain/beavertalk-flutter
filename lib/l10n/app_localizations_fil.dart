@@ -136,6 +136,24 @@ class AppLocalizationsFil extends AppLocalizations {
   String get alarms => 'Mga Alarma';
 
   @override
+  String get alarmAdd => 'Magdagdag ng alarm';
+
+  @override
+  String get alarmEdit => 'I-edit ang alarm';
+
+  @override
+  String get alarmEveryDay => 'Araw-araw';
+
+  @override
+  String get alarmWeekdays => 'Weekdays';
+
+  @override
+  String get alarmWeekend => 'Weekends';
+
+  @override
+  String get alarmNoRepeat => 'Hindi uulit';
+
+  @override
   String get addSchedule => 'Magdagdag ng Schedule';
 
   @override

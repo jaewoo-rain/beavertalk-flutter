@@ -138,6 +138,24 @@ class AppLocalizationsIt extends AppLocalizations {
   String get alarms => 'Sveglie';
 
   @override
+  String get alarmAdd => 'Aggiungi sveglia';
+
+  @override
+  String get alarmEdit => 'Modifica sveglia';
+
+  @override
+  String get alarmEveryDay => 'Ogni giorno';
+
+  @override
+  String get alarmWeekdays => 'Giorni feriali';
+
+  @override
+  String get alarmWeekend => 'Nel weekend';
+
+  @override
+  String get alarmNoRepeat => 'Mai';
+
+  @override
   String get addSchedule => 'Aggiungi programma';
 
   @override

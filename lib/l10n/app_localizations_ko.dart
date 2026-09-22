@@ -130,6 +130,24 @@ class AppLocalizationsKo extends AppLocalizations {
   String get alarms => '알람';
 
   @override
+  String get alarmAdd => '알람 추가';
+
+  @override
+  String get alarmEdit => '알람 수정';
+
+  @override
+  String get alarmEveryDay => '매일';
+
+  @override
+  String get alarmWeekdays => '평일';
+
+  @override
+  String get alarmWeekend => '주말';
+
+  @override
+  String get alarmNoRepeat => '반복 안 함';
+
+  @override
   String get addSchedule => '새 일정 추가';
 
   @override

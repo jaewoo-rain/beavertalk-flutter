@@ -139,6 +139,24 @@ class AppLocalizationsDe extends AppLocalizations {
   String get alarms => 'Erinnerungen';
 
   @override
+  String get alarmAdd => 'Wecker hinzufügen';
+
+  @override
+  String get alarmEdit => 'Wecker bearbeiten';
+
+  @override
+  String get alarmEveryDay => 'Täglich';
+
+  @override
+  String get alarmWeekdays => 'Werktags';
+
+  @override
+  String get alarmWeekend => 'Am Wochenende';
+
+  @override
+  String get alarmNoRepeat => 'Nie';
+
+  @override
   String get addSchedule => 'Zeitplan hinzufügen';
 
   @override

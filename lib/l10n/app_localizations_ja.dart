@@ -129,6 +129,24 @@ class AppLocalizationsJa extends AppLocalizations {
   String get alarms => 'アラーム';
 
   @override
+  String get alarmAdd => 'アラームを追加';
+
+  @override
+  String get alarmEdit => 'アラームを編集';
+
+  @override
+  String get alarmEveryDay => '毎日';
+
+  @override
+  String get alarmWeekdays => '平日';
+
+  @override
+  String get alarmWeekend => '週末';
+
+  @override
+  String get alarmNoRepeat => '繰り返さない';
+
+  @override
   String get addSchedule => 'スケジュールを追加';
 
   @override

@@ -137,6 +137,24 @@ class AppLocalizationsSi extends AppLocalizations {
   String get alarms => 'එලාම්';
 
   @override
+  String get alarmAdd => 'එලාම් එක් කරන්න';
+
+  @override
+  String get alarmEdit => 'එලාම් සංස්කරණය';
+
+  @override
+  String get alarmEveryDay => 'සෑම දිනකම';
+
+  @override
+  String get alarmWeekdays => 'සතියේ දින';
+
+  @override
+  String get alarmWeekend => 'සති අන්ත';
+
+  @override
+  String get alarmNoRepeat => 'නැවත නොකෙරේ';
+
+  @override
   String get addSchedule => 'කාලසටහනක් එක් කරන්න';
 
   @override

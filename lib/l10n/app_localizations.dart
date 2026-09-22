@@ -382,6 +382,42 @@ abstract class AppLocalizations {
   /// **'Alarms'**
   String get alarms;
 
+  /// Title of the add-alarm sheet (Figma etc_alarm__add).
+  ///
+  /// In en, this message translates to:
+  /// **'Add alarm'**
+  String get alarmAdd;
+
+  /// Title of the same sheet when editing an existing alarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit alarm'**
+  String get alarmEdit;
+
+  /// Repeat summary when all 7 days are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Every day'**
+  String get alarmEveryDay;
+
+  /// Repeat summary when Monday-Friday are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekdays'**
+  String get alarmWeekdays;
+
+  /// Repeat summary when Saturday and Sunday are on.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekends'**
+  String get alarmWeekend;
+
+  /// Repeat summary when no day is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get alarmNoRepeat;
+
   /// No description provided for @addSchedule.
   ///
   /// In en, this message translates to:

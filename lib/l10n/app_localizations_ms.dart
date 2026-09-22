@@ -137,6 +137,24 @@ class AppLocalizationsMs extends AppLocalizations {
   String get alarms => 'Penggera';
 
   @override
+  String get alarmAdd => 'Tambah penggera';
+
+  @override
+  String get alarmEdit => 'Edit penggera';
+
+  @override
+  String get alarmEveryDay => 'Setiap hari';
+
+  @override
+  String get alarmWeekdays => 'Hari bekerja';
+
+  @override
+  String get alarmWeekend => 'Hujung minggu';
+
+  @override
+  String get alarmNoRepeat => 'Tidak berulang';
+
+  @override
   String get addSchedule => 'Tambah Jadual';
 
   @override

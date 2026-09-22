@@ -138,6 +138,24 @@ class AppLocalizationsHu extends AppLocalizations {
   String get alarms => 'Riasztások';
 
   @override
+  String get alarmAdd => 'Ébresztő hozzáadása';
+
+  @override
+  String get alarmEdit => 'Ébresztő szerkesztése';
+
+  @override
+  String get alarmEveryDay => 'Minden nap';
+
+  @override
+  String get alarmWeekdays => 'Hétköznap';
+
+  @override
+  String get alarmWeekend => 'Hétvégén';
+
+  @override
+  String get alarmNoRepeat => 'Soha';
+
+  @override
   String get addSchedule => 'Ütemezés hozzáadása';
 
   @override

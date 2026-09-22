@@ -137,6 +137,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get alarms => 'Будильники';
 
   @override
+  String get alarmAdd => 'Добавить будильник';
+
+  @override
+  String get alarmEdit => 'Изменить будильник';
+
+  @override
+  String get alarmEveryDay => 'Каждый день';
+
+  @override
+  String get alarmWeekdays => 'По будням';
+
+  @override
+  String get alarmWeekend => 'По выходным';
+
+  @override
+  String get alarmNoRepeat => 'Без повтора';
+
+  @override
   String get addSchedule => 'Добавить расписание';
 
   @override

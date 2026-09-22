@@ -129,6 +129,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get alarms => '闹钟';
 
   @override
+  String get alarmAdd => '添加闹钟';
+
+  @override
+  String get alarmEdit => '编辑闹钟';
+
+  @override
+  String get alarmEveryDay => '每天';
+
+  @override
+  String get alarmWeekdays => '工作日';
+
+  @override
+  String get alarmWeekend => '周末';
+
+  @override
+  String get alarmNoRepeat => '不重复';
+
+  @override
   String get addSchedule => '添加日程';
 
   @override

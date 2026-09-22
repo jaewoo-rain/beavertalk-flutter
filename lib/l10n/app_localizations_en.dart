@@ -134,6 +134,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get alarms => 'Alarms';
 
   @override
+  String get alarmAdd => 'Add alarm';
+
+  @override
+  String get alarmEdit => 'Edit alarm';
+
+  @override
+  String get alarmEveryDay => 'Every day';
+
+  @override
+  String get alarmWeekdays => 'Weekdays';
+
+  @override
+  String get alarmWeekend => 'Weekends';
+
+  @override
+  String get alarmNoRepeat => 'Never';
+
+  @override
   String get addSchedule => 'Add new schedule';
 
   @override

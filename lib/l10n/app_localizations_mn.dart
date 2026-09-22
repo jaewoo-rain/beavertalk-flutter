@@ -136,6 +136,24 @@ class AppLocalizationsMn extends AppLocalizations {
   String get alarms => 'Сэрүүлэг';
 
   @override
+  String get alarmAdd => 'Сэрүүлэг нэмэх';
+
+  @override
+  String get alarmEdit => 'Сэрүүлэг засах';
+
+  @override
+  String get alarmEveryDay => 'Өдөр бүр';
+
+  @override
+  String get alarmWeekdays => 'Ажлын өдрүүд';
+
+  @override
+  String get alarmWeekend => 'Амралтын өдрүүд';
+
+  @override
+  String get alarmNoRepeat => 'Давтахгүй';
+
+  @override
   String get addSchedule => 'Хуваарь нэмэх';
 
   @override

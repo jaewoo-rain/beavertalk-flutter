@@ -138,6 +138,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get alarms => 'التنبيهات';
 
   @override
+  String get alarmAdd => 'إضافة منبّه';
+
+  @override
+  String get alarmEdit => 'تعديل المنبّه';
+
+  @override
+  String get alarmEveryDay => 'كل يوم';
+
+  @override
+  String get alarmWeekdays => 'أيام الأسبوع';
+
+  @override
+  String get alarmWeekend => 'عطلة نهاية الأسبوع';
+
+  @override
+  String get alarmNoRepeat => 'بدون تكرار';
+
+  @override
   String get addSchedule => 'إضافة موعد';
 
   @override

@@ -137,6 +137,24 @@ class AppLocalizationsPt extends AppLocalizations {
   String get alarms => 'Alarmes';
 
   @override
+  String get alarmAdd => 'Adicionar alarme';
+
+  @override
+  String get alarmEdit => 'Editar alarme';
+
+  @override
+  String get alarmEveryDay => 'Todos os dias';
+
+  @override
+  String get alarmWeekdays => 'Dias úteis';
+
+  @override
+  String get alarmWeekend => 'Fins de semana';
+
+  @override
+  String get alarmNoRepeat => 'Nunca';
+
+  @override
   String get addSchedule => 'Adicionar horário';
 
   @override

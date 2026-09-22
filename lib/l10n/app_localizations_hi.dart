@@ -134,6 +134,24 @@ class AppLocalizationsHi extends AppLocalizations {
   String get alarms => 'अलार्म';
 
   @override
+  String get alarmAdd => 'अलार्म जोड़ें';
+
+  @override
+  String get alarmEdit => 'अलार्म बदलें';
+
+  @override
+  String get alarmEveryDay => 'रोज़';
+
+  @override
+  String get alarmWeekdays => 'सप्ताह के दिन';
+
+  @override
+  String get alarmWeekend => 'सप्ताहांत';
+
+  @override
+  String get alarmNoRepeat => 'दोहराव नहीं';
+
+  @override
   String get addSchedule => 'शेड्यूल जोड़ें';
 
   @override

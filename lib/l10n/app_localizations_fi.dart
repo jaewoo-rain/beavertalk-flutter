@@ -137,6 +137,24 @@ class AppLocalizationsFi extends AppLocalizations {
   String get alarms => 'Hälytykset';
 
   @override
+  String get alarmAdd => 'Lisää herätys';
+
+  @override
+  String get alarmEdit => 'Muokkaa herätystä';
+
+  @override
+  String get alarmEveryDay => 'Joka päivä';
+
+  @override
+  String get alarmWeekdays => 'Arkipäivisin';
+
+  @override
+  String get alarmWeekend => 'Viikonloppuisin';
+
+  @override
+  String get alarmNoRepeat => 'Ei koskaan';
+
+  @override
   String get addSchedule => 'Lisää aikataulu';
 
   @override

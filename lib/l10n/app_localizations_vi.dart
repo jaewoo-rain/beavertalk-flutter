@@ -136,6 +136,24 @@ class AppLocalizationsVi extends AppLocalizations {
   String get alarms => 'Báo thức';
 
   @override
+  String get alarmAdd => 'Thêm báo thức';
+
+  @override
+  String get alarmEdit => 'Sửa báo thức';
+
+  @override
+  String get alarmEveryDay => 'Hằng ngày';
+
+  @override
+  String get alarmWeekdays => 'Ngày thường';
+
+  @override
+  String get alarmWeekend => 'Cuối tuần';
+
+  @override
+  String get alarmNoRepeat => 'Không lặp lại';
+
+  @override
   String get addSchedule => 'Thêm lịch';
 
   @override

@@ -134,6 +134,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get alarms => 'Alarmlar';
 
   @override
+  String get alarmAdd => 'Alarm ekle';
+
+  @override
+  String get alarmEdit => 'Alarmı düzenle';
+
+  @override
+  String get alarmEveryDay => 'Her gün';
+
+  @override
+  String get alarmWeekdays => 'Hafta içi';
+
+  @override
+  String get alarmWeekend => 'Hafta sonu';
+
+  @override
+  String get alarmNoRepeat => 'Tekrar yok';
+
+  @override
   String get addSchedule => 'Program Ekle';
 
   @override

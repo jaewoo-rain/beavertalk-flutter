@@ -136,6 +136,24 @@ class AppLocalizationsKm extends AppLocalizations {
   String get alarms => 'ម៉ោងរោទ៍';
 
   @override
+  String get alarmAdd => 'បន្ថែមម៉ោងរោទ៍';
+
+  @override
+  String get alarmEdit => 'កែម៉ោងរោទ៍';
+
+  @override
+  String get alarmEveryDay => 'រៀងរាល់ថ្ងៃ';
+
+  @override
+  String get alarmWeekdays => 'ថ្ងៃធ្វើការ';
+
+  @override
+  String get alarmWeekend => 'ចុងសប្តាហ៍';
+
+  @override
+  String get alarmNoRepeat => 'មិនធ្វើម្ដងទៀត';
+
+  @override
   String get addSchedule => 'បន្ថែមកាលវិភាគ';
 
   @override

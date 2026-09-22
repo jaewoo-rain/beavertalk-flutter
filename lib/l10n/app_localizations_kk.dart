@@ -136,6 +136,24 @@ class AppLocalizationsKk extends AppLocalizations {
   String get alarms => 'Дабылдар';
 
   @override
+  String get alarmAdd => 'Оятқыш қосу';
+
+  @override
+  String get alarmEdit => 'Оятқышты өзгерту';
+
+  @override
+  String get alarmEveryDay => 'Күн сайын';
+
+  @override
+  String get alarmWeekdays => 'Жұмыс күндері';
+
+  @override
+  String get alarmWeekend => 'Демалыс күндері';
+
+  @override
+  String get alarmNoRepeat => 'Қайталанбайды';
+
+  @override
   String get addSchedule => 'Кесте қосу';
 
   @override

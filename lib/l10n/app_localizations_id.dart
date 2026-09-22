@@ -137,6 +137,24 @@ class AppLocalizationsId extends AppLocalizations {
   String get alarms => 'Alarm';
 
   @override
+  String get alarmAdd => 'Tambah alarm';
+
+  @override
+  String get alarmEdit => 'Edit alarm';
+
+  @override
+  String get alarmEveryDay => 'Setiap hari';
+
+  @override
+  String get alarmWeekdays => 'Hari kerja';
+
+  @override
+  String get alarmWeekend => 'Akhir pekan';
+
+  @override
+  String get alarmNoRepeat => 'Tidak berulang';
+
+  @override
   String get addSchedule => 'Tambah Jadwal';
 
   @override

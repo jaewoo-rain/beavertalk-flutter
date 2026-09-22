@@ -135,6 +135,24 @@ class AppLocalizationsNe extends AppLocalizations {
   String get alarms => 'अलार्महरू';
 
   @override
+  String get alarmAdd => 'अलार्म थप्नुहोस्';
+
+  @override
+  String get alarmEdit => 'अलार्म सम्पादन';
+
+  @override
+  String get alarmEveryDay => 'हरेक दिन';
+
+  @override
+  String get alarmWeekdays => 'हप्ताका कार्यदिन';
+
+  @override
+  String get alarmWeekend => 'सप्ताहान्त';
+
+  @override
+  String get alarmNoRepeat => 'दोहोरिँदैन';
+
+  @override
   String get addSchedule => 'तालिका थप्नुहोस्';
 
   @override

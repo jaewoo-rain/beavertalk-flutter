@@ -137,6 +137,24 @@ class AppLocalizationsUr extends AppLocalizations {
   String get alarms => 'الارمز';
 
   @override
+  String get alarmAdd => 'الارم شامل کریں';
+
+  @override
+  String get alarmEdit => 'الارم میں ترمیم';
+
+  @override
+  String get alarmEveryDay => 'روزانہ';
+
+  @override
+  String get alarmWeekdays => 'ہفتے کے دن';
+
+  @override
+  String get alarmWeekend => 'ہفتے کا اختتام';
+
+  @override
+  String get alarmNoRepeat => 'دہرایا نہیں جائے گا';
+
+  @override
   String get addSchedule => 'شیڈول شامل کریں';
 
   @override

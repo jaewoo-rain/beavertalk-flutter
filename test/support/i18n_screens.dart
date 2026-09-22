@@ -24,6 +24,10 @@ import 'package:beavertalk/mock/mock_data.dart';
 import 'package:beavertalk/screens/classroom/widgets/assignment_badge.dart';
 
 import 'package:beavertalk/screens/alarm/alarm_add.dart';
+import 'package:beavertalk/screens/alarm/alarm_days.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_alarm_add.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet_alarm_settings.dart' show AlarmPartner;
+import 'package:beavertalk/components/molecules/row_alarm.dart';
 import 'package:beavertalk/screens/alarm/alarm_empty.dart';
 import 'package:beavertalk/screens/alarm/alarm_list.dart';
 import 'package:beavertalk/screens/auth/login.dart';
@@ -114,6 +118,75 @@ Map<String, Widget Function()> i18nScreens() {
           },
         ),
     'AlarmAdd': () => const AlarmAddScreen(),
+    // 🔴 알람 추가 시트는 **펼침 둘을 다 연 상태**가 가장 길다(검수 세션 요청 2026-09-22) —
+    //    접힌 상태만 보면 시트가 화면 높이를 넘치는 경우를 못 본다. 화면 하네스는 캐릭터
+    //    프로바이더가 없어 로딩만 그리므로 시트를 직접 띄운다.
+    'AlarmAddSheetOpen': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            final loc = Localizations.localeOf(ctx).toString();
+            const days = [false, true, false, true, false, true, false];
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: SingleChildScrollView(
+                child: BottomSheetAlarmAdd(
+                  title: l10n.alarmAdd,
+                  cancelText: l10n.cancel,
+                  saveText: l10n.save,
+                  repeatLabel: l10n.repeat,
+                  partnerLabel: l10n.callPartner,
+                  hour24: 8,
+                  minute: 0,
+                  onTimeChanged: (_, _) {},
+                  days: days,
+                  dayLabels: AlarmDays.shortLabels(loc),
+                  daysSummary: AlarmDays.summary(days, l10n, loc),
+                  onDayToggled: (_, _) {},
+                  partners: const [
+                    AlarmPartner(id: '1', name: 'Baba'),
+                    AlarmPartner(id: '2', name: 'Bibi'),
+                    AlarmPartner(id: '3', name: 'Popo'),
+                    AlarmPartner(id: '4', name: 'Rara'),
+                    AlarmPartner(id: '5', name: 'Dudu'),
+                  ],
+                  partner: '1',
+                  onPartnerChanged: (_) {},
+                  onSave: () {},
+                  onCancel: () {},
+                  initiallyOpen: const {AlarmAddPanel.repeat, AlarmAddPanel.partner},
+                ),
+              ),
+            );
+          },
+        ),
+    // 알람 목록 줄 — 목록 화면도 하네스에서 데이터가 없어 줄을 안 그린다. 켜짐·꺼짐 둘.
+    'AlarmRows': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            final loc = Localizations.localeOf(ctx).toString();
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: RowAlarmGroup(children: [
+                  RowAlarm(
+                    partner: 'Baba',
+                    time: '8:00',
+                    summary: AlarmDays.summary(const [false, true, true, true, true, true, false], l10n, loc),
+                    active: true,
+                    onChanged: (_) {},
+                  ),
+                  RowAlarm(
+                    partner: 'Bibi',
+                    time: '21:30',
+                    summary: AlarmDays.summary(const [false, true, false, true, false, true, false], l10n, loc),
+                    active: false,
+                    onChanged: (_) {},
+                  ),
+                ]),
+              ),
+            );
+          },
+        ),
     'AlarmEmpty': () => const AlarmEmptyScreen(),
     'AlarmList': () => const AlarmListScreen(),
     'Login': () => const LoginScreen(),
