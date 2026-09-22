@@ -29,12 +29,13 @@ class PlanSummaryCard extends StatelessWidget {
     required this.taglineColor,
     required this.bulletTone,
     required this.bullets,
+    this.bulletIcons,
     required this.face,
     this.border,
     this.cta,
     this.ctaType,
     this.onCta,
-  });
+  }) : assert(bulletIcons == null || bulletIcons.length == bullets.length);
 
   final String title;
   final String price;
@@ -52,6 +53,11 @@ class PlanSummaryCard extends StatelessWidget {
   final Color taglineColor;
   final BulletTone bulletTone;
   final List<String> bullets;
+
+  /// Leading duotone icons, one per [bullets] entry — Figma `Paywall/Benefit`
+  /// (`6198:1999`: 20 icon · 12 gap · Label 1 Regular). Null keeps the dot
+  /// [BulletRow] (the Free card).
+  final List<Widget>? bulletIcons;
   final Color face;
   final Color? border;
   final String? cta;
@@ -142,7 +148,10 @@ class PlanSummaryCard extends StatelessWidget {
           const SizedBox(height: AppSpacing.s16),
           for (var i = 0; i < bullets.length; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.s8),
-            BulletRow(tone: bulletTone, label: bullets[i]),
+            if (bulletIcons != null)
+              _BenefitRow(icon: bulletIcons![i], label: bullets[i])
+            else
+              BulletRow(tone: bulletTone, label: bullets[i]),
           ],
           if (cta != null) ...[
             const SizedBox(height: AppSpacing.s16),
@@ -158,6 +167,34 @@ class PlanSummaryCard extends StatelessWidget {
           ],
         ],
       ),
+    );
+  }
+}
+
+/// `Paywall/Benefit` — 듀오톤 아이콘 + 라벨. 라벨은 줄을 바꾼다(자르지 않음).
+///
+/// 아이콘은 **장식**이다 — 뜻은 라벨이 나른다. 그래서 Light 에서 초록·주황이 면 대비 3:1
+/// 아래(1.93·1.73)여도 결함이 아니다(WCAG 1.4.11 은 이해에 필요한 그래픽에만 걸림).
+/// ⚠ 라벨을 빼고 아이콘만 남기면 판정이 뒤집힌다 — 그때는 대비를 다시 재라.
+class _BenefitRow extends StatelessWidget {
+  const _BenefitRow({required this.icon, required this.label});
+
+  final Widget icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        SizedBox.square(dimension: 20, child: icon),
+        const SizedBox(width: AppSpacing.s12),
+        Expanded(
+          child: Text(
+            label,
+            style: AppType.label1.r.copyWith(color: context.c.commonWhiteAndDark),
+          ),
+        ),
+      ],
     );
   }
 }

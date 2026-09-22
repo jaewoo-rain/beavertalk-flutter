@@ -262,6 +262,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         l10n.premiumBulletWeakSounds,
         l10n.bulletProCorrections,
       ],
+      bulletIcons: [
+        AppIcons.duoVideo(),
+        AppIcons.duoChart(),
+        AppIcons.duoTarget(),
+        AppIcons.duoBubble(),
+      ],
       face: c.statusCautionarySurface,
       border: c.statusCautionary,
     );

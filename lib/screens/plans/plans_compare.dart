@@ -6,6 +6,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/molecules/bullet_row.dart';
 import '../../components/molecules/plan_summary_card.dart';
 import '../../components/organisms/gnb.dart';
@@ -65,6 +66,12 @@ class PlansCompareScreen extends ConsumerWidget {
                       l10n.premiumBulletWeakSounds,
                       l10n.bulletProCorrections,
                     ],
+                    bulletIcons: [
+                      AppIcons.duoVideo(),
+                      AppIcons.duoChart(),
+                      AppIcons.duoTarget(),
+                      AppIcons.duoBubble(),
+                    ],
                     face: c.statusCautionarySurface,
                     border: c.statusCautionary,
                     cta: premium ? null : l10n.ctaTurnOnVideo,
@@ -85,8 +92,8 @@ class PlansCompareScreen extends ConsumerWidget {
                     bullets: [
                       l10n.bulletFreeCall,
                       l10n.bulletFreeCheck,
-                      // 「억양 체크 무제한」 줄은 뺐다 — 한도 시트의 「하루 1번」과
-                      // 같은 「check」로 읽혀 모순된다. 사실 확인 전까지 약속하지 않는다(P16).
+                      // 「억양 체크 무제한」 줄은 뺐다 — 사실이 아니다(P16 확정 09-22: 억양
+                      // 체크는 통화 중 기능이며 무제한이 아님). 복원하지 않는다.
                       l10n.bulletFreeCharacter,
                     ],
                     face: c.backgroundSurfaceAlternative,

@@ -52,6 +52,14 @@ abstract final class AppIcons {
   /// `duo-homework` (`6246:1532`) — 홈 숙제 배너 앞 아이콘.
   static Widget duoHomework({double size = 24}) => _duo('duo-homework', size);
 
+  /// Premium 혜택 줄 아이콘 4종 — Figma `Paywall/Benefit`(`6198:1999`) 의 20 크기.
+  /// `duo-video`(`6195:1517`) · `duo-chart`(`6195:1553`) · `duo-target`(`6195:1582`) ·
+  /// `duo-bubble`(`6195:29871`).
+  static Widget duoVideo({double size = 20}) => _duo('duo-video', size);
+  static Widget duoChart({double size = 20}) => _duo('duo-chart', size);
+  static Widget duoTarget({double size = 20}) => _duo('duo-target', size);
+  static Widget duoBubble({double size = 20}) => _duo('duo-bubble', size);
+
   // ── Navigation / chrome ──────────────────────────────────────
   static Widget close({double size = 24, required Color color}) =>
       _glyph('close', size, color);

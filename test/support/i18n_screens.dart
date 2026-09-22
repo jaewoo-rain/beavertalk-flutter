@@ -267,6 +267,17 @@ Map<String, Widget Function()> i18nScreens() {
         const PaywallScreen(variant: PaywallVariant.proLimit),
     'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),
     'PlansCompare': () => const PlansCompareScreen(),
+    // Premium 구독자 — Premium 카드에 「Current」 배지가 붙고 CTA 가 빠진다.
+    'PlansCompare_premium': () => ProviderScope(
+          overrides: [
+            subscriptionStatusProvider.overrideWithValue(SubscriptionStatus(
+              state: SubscriptionState.activeMax,
+              tier: SubscriptionTier.max,
+              expiresAt: DateTime(2026, 6, 20),
+            )),
+          ],
+          child: const PlansCompareScreen(),
+        ),
     'PurchaseSuccessMax': () =>
         const PurchaseSuccessScreen(tier: SubscriptionTier.max),
     'PlansError': () => const PlansErrorScreen(),
