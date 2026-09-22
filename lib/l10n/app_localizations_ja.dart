@@ -2727,6 +2727,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get wsMicFailed => 'マイクを開けませんでした。';
 
   @override
+  String get wsMicPermissionBody =>
+      'このテストは声に出して読むので、マイクが必要です。設定でマイクへのアクセスをオンにしてください。';
+
+  @override
   String get wsNoSound => '音声が届きませんでした。もう一度言ってみましょうか？';
 
   @override

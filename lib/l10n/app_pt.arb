@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Toque quando terminar",
   "wsScoring": "Pontuando",
   "wsMicFailed": "Não foi possível abrir o microfone.",
+  "wsMicPermissionBody": "Este teste é feito em voz alta, então precisa do microfone. Ative o acesso ao microfone nos Ajustes.",
   "wsNoSound": "Não ouvimos nada. Tentar de novo?",
   "wsScoreFailed": "Falha ao pontuar. Tente novamente.",
   "wsSomethingWrong": "Algo deu errado.",

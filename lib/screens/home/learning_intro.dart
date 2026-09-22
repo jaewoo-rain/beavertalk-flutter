@@ -553,8 +553,10 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       if (!mounted) return;
       setState(() => _recording = true);
       _syncAvatarIdle();
-    } on StateError catch (e) {
-      _snack(e.message);
+    } on StateError {
+      // 녹음기의 `StateError` 는 권한 거부 하나뿐이다(`audio_recorder.dart:60`).
+      // ⛔ `e.message` 를 띄우지 마라 — 한국어로 박힌 문구라 전 언어에서 한국어가 나온다.
+      _snack(l10n.micPermissionNeededTitle);
     } catch (_) {
       _snack(l10n.recordStartFailed);
     }

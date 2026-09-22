@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../components/atoms/mic_analysis.dart';
 import '../../components/atoms/mic_button.dart';
 import '../../components/atoms/record_circle_button.dart';
+import '../../components/organisms/bottom_sheet.dart' show SheetAction;
+import '../../components/organisms/bottom_sheet_content.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/review/data/audio_recorder.dart';
@@ -21,7 +24,7 @@ import '../../theme/app_typography.dart';
 import 'learn_result.dart';
 import '../../l10n/app_localizations.dart';
 
-/// 4단계 · 평가 — Figma `14~16 · learn/4_test`, 예외는 E4·E6·E7.
+/// 4단계 · 평가 — Figma `14~16 · learn/4_test`, 예외는 E4·E7(화면 안) · E6(시트).
 ///
 /// **여기서만 점수가 움직인다.** 앞 세 단계는 무채점이다.
 /// 채점은 서버가 한다 — 앱은 녹음을 올리고 결과를 받는다(클라가 점수를 계산해 보내면
@@ -47,7 +50,7 @@ enum _Phase {
   /// 업로드·채점 대기(Figma 16).
   scoring,
 
-  /// 실패 — 사유를 보이고 재시도를 준다(E4·E6·E7).
+  /// 실패 — 사유를 보이고 재시도를 준다(E4·E7). E6 은 시트라 여기 오지 않는다.
   failed,
 }
 
@@ -75,12 +78,18 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
     });
     try {
       await _recorder.start();
-    } on StateError catch (e) {
-      // 마이크 권한 거부(Figma E6). 녹음기가 사용자 문구로 던진다.
+    } on StateError {
+      // 마이크 권한 거부(Figma E6 `6093:14239`) — 화면 안 오류 줄이 아니라 **시트**다.
+      // 권한은 이 화면에서 못 고치고 설정으로 가야 하므로, 할 일(설정 열기)을 버튼으로 준다.
+      // 녹음기의 `StateError` 는 권한 거부 하나뿐이다(`audio_recorder.dart:60`) — 다른
+      //   StateError 가 생기면 여기서 권한 시트가 잘못 뜬다. 녹음기를 고치면 이 자리도 본다.
+      // ⛔ 녹음기의 `StateError.message` 를 그대로 띄우지 마라 — 한국어로 박힌 문구라
+      //   전 언어에서 한국어가 나온다. 문구는 l10n 에서 가져온다.
       setState(() {
-        _phase = _Phase.failed;
-        _error = e.message;
+        _phase = _Phase.ready;
+        _error = null;
       });
+      if (mounted) unawaited(_showMicPermissionSheet());
     } catch (_) {
       setState(() {
         _phase = _Phase.failed;
@@ -129,6 +138,32 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
         _error = l10n.wsScoreFailed;
       });
     }
+  }
+
+  /// E6 — 마이크 권한 없음 시트. 「설정 열기」는 OS 앱 설정으로 보낸다.
+  Future<void> _showMicPermissionSheet() {
+    final l10n = AppLocalizations.of(context);
+    return showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      isScrollControlled: true,
+      builder: (sheetCtx) => BottomSheetContent(
+        title: l10n.micPermissionNeededTitle,
+        body: l10n.wsMicPermissionBody,
+        primaryAction: SheetAction(
+          label: l10n.openSettings,
+          onPressed: () {
+            Navigator.pop(sheetCtx);
+            unawaited(openAppSettings());
+          },
+        ),
+        secondaryAction: SheetAction(
+          label: l10n.ctaNotNow,
+          onPressed: () => Navigator.pop(sheetCtx),
+        ),
+      ),
+    );
   }
 
   @override

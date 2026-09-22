@@ -2839,6 +2839,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get wsMicFailed => 'Tidak dapat membuka mikrofon.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Ujian ini dibaca dengan kuat, jadi mikrofon diperlukan. Hidupkan akses mikrofon dalam Tetapan.';
+
+  @override
   String get wsNoSound => 'Kami tidak dengar apa-apa. Cuba lagi?';
 
   @override

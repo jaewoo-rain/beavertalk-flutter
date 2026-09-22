@@ -850,6 +850,7 @@
   "wsTapWhenDone": "読み終えたらタップしてください",
   "wsScoring": "採点しています",
   "wsMicFailed": "マイクを開けませんでした。",
+  "wsMicPermissionBody": "このテストは声に出して読むので、マイクが必要です。設定でマイクへのアクセスをオンにしてください。",
   "wsNoSound": "音声が届きませんでした。もう一度言ってみましょうか？",
   "wsScoreFailed": "採点に失敗しました。もう一度お試しください。",
   "wsSomethingWrong": "問題が発生しました。",

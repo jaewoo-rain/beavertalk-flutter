@@ -2818,6 +2818,10 @@ class AppLocalizationsKy extends AppLocalizations {
   String get wsMicFailed => 'Микрофонду ача албадык.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Бул тестте үн чыгарып окуу керек, ошондуктан микрофон керек. Жөндөөлөрдөн микрофонго уруксатты күйгүзүңүз.';
+
+  @override
   String get wsNoSound => 'Үн келген жок. Кайра айтып көрөбүзбү?';
 
   @override

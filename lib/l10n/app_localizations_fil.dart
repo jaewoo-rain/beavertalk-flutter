@@ -2837,6 +2837,10 @@ class AppLocalizationsFil extends AppLocalizations {
   String get wsMicFailed => 'Hindi mabuksan ang mikropono.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Babasahin mo nang malakas ang test na ito, kaya kailangan ang mikropono. I-on ang access sa mikropono sa Settings.';
+
+  @override
   String get wsNoSound => 'Wala kaming narinig. Subukan muli?';
 
   @override

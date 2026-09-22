@@ -2811,6 +2811,10 @@ class AppLocalizationsKk extends AppLocalizations {
   String get wsMicFailed => 'Микрофонды аша алмадық.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Бұл тестте дауыстап оқу керек, сондықтан микрофон қажет. Параметрлерде микрофонға рұқсатты қосыңыз.';
+
+  @override
   String get wsNoSound => 'Дыбыс келмеді. Қайта айтып көрейік пе?';
 
   @override

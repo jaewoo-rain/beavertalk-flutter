@@ -850,6 +850,7 @@
   "wsTapWhenDone": "读完后点按",
   "wsScoring": "正在评分",
   "wsMicFailed": "无法打开麦克风。",
+  "wsMicPermissionBody": "这项测试需要大声朗读，因此需要麦克风。请在设置中开启麦克风权限。",
   "wsNoSound": "没有听到声音。再说一次？",
   "wsScoreFailed": "评分失败。请重试。",
   "wsSomethingWrong": "出现问题了。",

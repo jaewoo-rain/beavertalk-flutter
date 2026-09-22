@@ -2727,6 +2727,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get wsMicFailed => '마이크를 열지 못했어요.';
 
   @override
+  String get wsMicPermissionBody => '평가는 소리 내어 읽어야 해요. 설정에서 마이크 권한을 켜 주세요.';
+
+  @override
   String get wsNoSound => '소리가 들어오지 않았어요. 다시 말해 볼까요?';
 
   @override

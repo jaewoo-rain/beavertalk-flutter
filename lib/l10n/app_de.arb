@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Tippe, wenn du fertig bist",
   "wsScoring": "Wird bewertet",
   "wsMicFailed": "Das Mikrofon konnte nicht geöffnet werden.",
+  "wsMicPermissionBody": "Bei diesem Test liest du laut vor, dafür braucht es das Mikrofon. Erlaube den Mikrofonzugriff in den Einstellungen.",
   "wsNoSound": "Wir haben nichts gehört. Nochmal?",
   "wsScoreFailed": "Bewertung fehlgeschlagen. Bitte versuche es erneut.",
   "wsSomethingWrong": "Etwas ist schiefgelaufen.",

@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Touchez quand vous avez fini",
   "wsScoring": "Évaluation en cours",
   "wsMicFailed": "Impossible d'ouvrir le microphone.",
+  "wsMicPermissionBody": "Ce test se fait à voix haute, il a donc besoin du micro. Autorisez l'accès au micro dans les Réglages.",
   "wsNoSound": "Nous n'avons rien entendu. On réessaie ?",
   "wsScoreFailed": "L'évaluation a échoué. Veuillez réessayer.",
   "wsSomethingWrong": "Une erreur s'est produite.",

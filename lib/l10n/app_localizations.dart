@@ -5296,6 +5296,12 @@ abstract class AppLocalizations {
   /// **'Couldn\'t open the microphone.'**
   String get wsMicFailed;
 
+  /// E6 mic-permission sheet body on the weak-sound final test. Title reuses micPermissionNeededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This test is read aloud, so it needs the microphone. Turn on microphone access in Settings.'**
+  String get wsMicPermissionBody;
+
   /// No description provided for @wsNoSound.
   ///
   /// In en, this message translates to:

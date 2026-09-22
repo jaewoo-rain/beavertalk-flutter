@@ -2809,6 +2809,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get wsMicFailed => 'Không mở được micrô.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Bài kiểm tra này cần đọc to nên cần micrô. Hãy bật quyền truy cập micrô trong Cài đặt.';
+
+  @override
   String get wsNoSound => 'Chúng tôi không nghe thấy gì. Thử lại nhé?';
 
   @override

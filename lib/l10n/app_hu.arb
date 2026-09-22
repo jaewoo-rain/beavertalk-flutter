@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Koppints, ha végeztél",
   "wsScoring": "Értékelés folyamatban",
   "wsMicFailed": "Nem sikerült megnyitni a mikrofont.",
+  "wsMicPermissionBody": "Ezt a tesztet hangosan kell felolvasni, ezért kell a mikrofon. Engedélyezd a mikrofon-hozzáférést a Beállításokban.",
   "wsNoSound": "Nem hallottunk semmit. Megpróbálod újra?",
   "wsScoreFailed": "Az értékelés nem sikerült. Kérjük, próbáld újra.",
   "wsSomethingWrong": "Valami hiba történt.",

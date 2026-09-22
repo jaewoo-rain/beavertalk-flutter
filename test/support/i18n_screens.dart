@@ -55,6 +55,8 @@ import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
 import 'package:beavertalk/features/weak_sound/presentation/sound_key_arg.dart';
 import 'package:beavertalk/features/weak_sound/domain/entities/weak_sound_item.dart';
 import 'package:beavertalk/features/weak_sound/presentation/widgets/weak_sound_card.dart';
+import 'package:beavertalk/components/organisms/bottom_sheet.dart' show SheetAction;
+import 'package:beavertalk/components/organisms/bottom_sheet_content.dart';
 
 /// 로케일 검사 대상 화면 전량.
 Map<String, Widget Function()> i18nScreens() {
@@ -91,6 +93,21 @@ Map<String, Widget Function()> i18nScreens() {
               ),
             ],
           ),
+        ),
+    // E6 — 평가 단계 마이크 권한 시트(Figma `6093:14239`). 버튼 둘이 세로로 쌓인다.
+    'WsMicPermissionSheet': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            return Align(
+              alignment: Alignment.bottomCenter,
+              child: BottomSheetContent(
+                title: l10n.micPermissionNeededTitle,
+                body: l10n.wsMicPermissionBody,
+                primaryAction: SheetAction(label: l10n.openSettings, onPressed: () {}),
+                secondaryAction: SheetAction(label: l10n.ctaNotNow, onPressed: () {}),
+              ),
+            );
+          },
         ),
     'AlarmAdd': () => const AlarmAddScreen(),
     'AlarmEmpty': () => const AlarmEmptyScreen(),

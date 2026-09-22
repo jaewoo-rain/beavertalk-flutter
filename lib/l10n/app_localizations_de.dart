@@ -2856,6 +2856,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wsMicFailed => 'Das Mikrofon konnte nicht geöffnet werden.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Bei diesem Test liest du laut vor, dafür braucht es das Mikrofon. Erlaube den Mikrofonzugriff in den Einstellungen.';
+
+  @override
   String get wsNoSound => 'Wir haben nichts gehört. Nochmal?';
 
   @override

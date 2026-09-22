@@ -2804,6 +2804,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get wsMicFailed => 'মাইক্রোফোন খোলা যায়নি।';
 
   @override
+  String get wsMicPermissionBody =>
+      'এই পরীক্ষায় জোরে পড়তে হয়, তাই মাইক্রোফোন লাগবে। সেটিংসে মাইক্রোফোন অ্যাক্সেস চালু করুন।';
+
+  @override
   String get wsNoSound => 'কিছু শোনা যায়নি। আবার বলবেন?';
 
   @override

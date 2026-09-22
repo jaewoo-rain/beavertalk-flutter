@@ -2091,6 +2091,8 @@
   "wsTapWhenDone": "Tap when you're done",
   "wsScoring": "Scoring",
   "wsMicFailed": "Couldn't open the microphone.",
+  "wsMicPermissionBody": "This test is read aloud, so it needs the microphone. Turn on microphone access in Settings.",
+  "@wsMicPermissionBody": {"description": "E6 mic-permission sheet body on the weak-sound final test. Title reuses micPermissionNeededTitle."},
   "wsNoSound": "We didn't hear anything. Try again?",
   "wsScoreFailed": "Scoring failed. Please try again.",
   "wsSomethingWrong": "Something went wrong.",

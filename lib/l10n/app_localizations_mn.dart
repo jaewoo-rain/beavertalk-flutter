@@ -2813,6 +2813,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get wsMicFailed => 'Микрофоныг нээж чадсангүй.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Энэ шалгалтыг чангаар уншдаг тул микрофон хэрэгтэй. Тохиргоо хэсгээс микрофоны зөвшөөрлийг асаана уу.';
+
+  @override
   String get wsNoSound => 'Дуу орж ирсэнгүй. Дахин хэлэх үү?';
 
   @override

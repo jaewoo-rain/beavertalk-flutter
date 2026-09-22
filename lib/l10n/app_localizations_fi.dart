@@ -2822,6 +2822,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get wsMicFailed => 'Mikrofonia ei voitu avata.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Tässä testissä luet ääneen, joten tarvitaan mikrofoni. Salli mikrofonin käyttö asetuksista.';
+
+  @override
   String get wsNoSound => 'Emme kuulleet mitään. Yritetäänkö uudelleen?';
 
   @override

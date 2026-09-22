@@ -2793,6 +2793,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get wsMicFailed => 'เปิดไมโครโฟนไม่สำเร็จ';
 
   @override
+  String get wsMicPermissionBody =>
+      'แบบทดสอบนี้ต้องอ่านออกเสียง จึงต้องใช้ไมโครโฟน เปิดสิทธิ์เข้าถึงไมโครโฟนในการตั้งค่า';
+
+  @override
   String get wsNoSound => 'ไม่ได้ยินเสียงเลย ลองพูดอีกครั้งไหม';
 
   @override

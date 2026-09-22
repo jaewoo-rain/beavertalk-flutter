@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Tugatgach bosing",
   "wsScoring": "Baholanmoqda",
   "wsMicFailed": "Mikrofon ochilmadi.",
+  "wsMicPermissionBody": "Bu testda ovoz chiqarib o‘qiladi, shuning uchun mikrofon kerak. Sozlamalarda mikrofonga ruxsatni yoqing.",
   "wsNoSound": "Hech narsa eshitilmadi. Yana aytamizmi?",
   "wsScoreFailed": "Baholash amalga oshmadi. Iltimos, qayta urinib koʻring.",
   "wsSomethingWrong": "Xatolik yuz berdi.",

@@ -2799,6 +2799,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get wsMicFailed => 'මයික්‍රොෆෝනය විවෘත කළ නොහැකි විය.';
 
   @override
+  String get wsMicPermissionBody =>
+      'මෙම පරීක්ෂණය ශබ්ද නගා කියවිය යුතු නිසා මයික්‍රෆෝනය අවශ්‍යයි. සැකසුම් තුළ මයික්‍රෆෝන ප්‍රවේශය සක්‍රිය කරන්න.';
+
+  @override
   String get wsNoSound => 'කිසිවක් ඇහුණේ නැහැ. නැවත කියමුද?';
 
   @override

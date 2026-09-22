@@ -2813,6 +2813,10 @@ class AppLocalizationsUr extends AppLocalizations {
   String get wsMicFailed => 'مائیکروفون نہیں کھل سکا۔';
 
   @override
+  String get wsMicPermissionBody =>
+      'اس ٹیسٹ میں بلند آواز سے پڑھنا ہوتا ہے، اس لیے مائیکروفون درکار ہے۔ سیٹنگز میں مائیکروفون کی اجازت آن کریں۔';
+
+  @override
   String get wsNoSound => 'کچھ سنائی نہیں دیا۔ دوبارہ بولیں؟';
 
   @override

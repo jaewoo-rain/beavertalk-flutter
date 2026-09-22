@@ -2808,6 +2808,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get wsMicFailed => 'មិនអាចបើកមីក្រូហ្វូនបានទេ។';
 
   @override
+  String get wsMicPermissionBody =>
+      'ការធ្វើតេស្តនេះត្រូវអានឮៗ ដូច្នេះត្រូវការមីក្រូហ្វូន។ សូមបើកការចូលប្រើមីក្រូហ្វូននៅក្នុងការកំណត់។';
+
+  @override
   String get wsNoSound => 'យើងមិនបានឮអ្វីទេ។ ព្យាយាមម្ដងទៀតឬ?';
 
   @override

@@ -2807,6 +2807,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get wsMicFailed => 'माइक्रोफ़ोन नहीं खुल सका।';
 
   @override
+  String get wsMicPermissionBody =>
+      'इस टेस्ट में ज़ोर से पढ़ना होता है, इसलिए माइक्रोफ़ोन चाहिए। सेटिंग्स में माइक्रोफ़ोन की अनुमति चालू करें।';
+
+  @override
   String get wsNoSound => 'हमें कुछ सुनाई नहीं दिया। फिर बोलें?';
 
   @override

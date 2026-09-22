@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Bitirince dokunun",
   "wsScoring": "Puanlanıyor",
   "wsMicFailed": "Mikrofon açılamadı.",
+  "wsMicPermissionBody": "Bu testte sesli okursun, bu yüzden mikrofon gerekir. Ayarlar'dan mikrofon erişimini aç.",
   "wsNoSound": "Hiçbir şey duymadık. Tekrar deneyelim mi?",
   "wsScoreFailed": "Puanlama başarısız oldu. Lütfen tekrar deneyin.",
   "wsSomethingWrong": "Bir sorun oluştu.",

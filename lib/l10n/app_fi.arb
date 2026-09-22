@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Napauta, kun olet valmis",
   "wsScoring": "Arvioidaan",
   "wsMicFailed": "Mikrofonia ei voitu avata.",
+  "wsMicPermissionBody": "Tässä testissä luet ääneen, joten tarvitaan mikrofoni. Salli mikrofonin käyttö asetuksista.",
   "wsNoSound": "Emme kuulleet mitään. Yritetäänkö uudelleen?",
   "wsScoreFailed": "Arviointi epäonnistui. Yritä uudelleen.",
   "wsSomethingWrong": "Jokin meni vikaan.",

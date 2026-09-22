@@ -850,6 +850,7 @@
   "wsTapWhenDone": "Ketuk jika sudah selesai",
   "wsScoring": "Menilai",
   "wsMicFailed": "Tidak dapat membuka mikrofon.",
+  "wsMicPermissionBody": "Tes ini dibaca dengan suara keras, jadi perlu mikrofon. Aktifkan akses mikrofon di Pengaturan.",
   "wsNoSound": "Kami tidak mendengar apa pun. Coba lagi?",
   "wsScoreFailed": "Penilaian gagal. Silakan coba lagi.",
   "wsSomethingWrong": "Terjadi kesalahan.",

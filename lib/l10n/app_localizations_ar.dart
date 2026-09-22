@@ -2790,6 +2790,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wsMicFailed => 'تعذّر فتح الميكروفون.';
 
   @override
+  String get wsMicPermissionBody =>
+      'يتطلب هذا الاختبار القراءة بصوت عالٍ، لذا يحتاج إلى الميكروفون. فعّل الوصول إلى الميكروفون من الإعدادات.';
+
+  @override
   String get wsNoSound => 'لم نسمع شيئًا. نحاول مرة أخرى؟';
 
   @override

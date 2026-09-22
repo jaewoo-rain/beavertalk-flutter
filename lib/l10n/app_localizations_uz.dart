@@ -2834,6 +2834,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get wsMicFailed => 'Mikrofon ochilmadi.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Bu testda ovoz chiqarib o‘qiladi, shuning uchun mikrofon kerak. Sozlamalarda mikrofonga ruxsatni yoqing.';
+
+  @override
   String get wsNoSound => 'Hech narsa eshitilmadi. Yana aytamizmi?';
 
   @override

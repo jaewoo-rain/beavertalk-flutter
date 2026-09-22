@@ -2822,6 +2822,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get wsMicFailed => 'Tidak dapat membuka mikrofon.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Tes ini dibaca dengan suara keras, jadi perlu mikrofon. Aktifkan akses mikrofon di Pengaturan.';
+
+  @override
   String get wsNoSound => 'Kami tidak mendengar apa pun. Coba lagi?';
 
   @override

@@ -2722,6 +2722,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wsMicFailed => '无法打开麦克风。';
 
   @override
+  String get wsMicPermissionBody => '这项测试需要大声朗读，因此需要麦克风。请在设置中开启麦克风权限。';
+
+  @override
   String get wsNoSound => '没有听到声音。再说一次？';
 
   @override

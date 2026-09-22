@@ -2825,6 +2825,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get wsMicFailed => 'မိုက်ခရိုဖုန်း ဖွင့်မရပါ။';
 
   @override
+  String get wsMicPermissionBody =>
+      'ဤစာမေးပွဲတွင် အသံထွက်ဖတ်ရသဖြင့် မိုက်ခရိုဖုန်း လိုအပ်သည်။ ဆက်တင်တွင် မိုက်ခရိုဖုန်း အသုံးပြုခွင့်ကို ဖွင့်ပါ။';
+
+  @override
   String get wsNoSound => 'အသံ မကြားရပါ။ ထပ်ဆိုကြည့်မလား?';
 
   @override

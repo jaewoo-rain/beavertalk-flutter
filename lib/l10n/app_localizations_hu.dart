@@ -2832,6 +2832,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get wsMicFailed => 'Nem sikerült megnyitni a mikrofont.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Ezt a tesztet hangosan kell felolvasni, ezért kell a mikrofon. Engedélyezd a mikrofon-hozzáférést a Beállításokban.';
+
+  @override
   String get wsNoSound => 'Nem hallottunk semmit. Megpróbálod újra?';
 
   @override

@@ -2821,6 +2821,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wsMicFailed => 'Не удалось включить микрофон.';
 
   @override
+  String get wsMicPermissionBody =>
+      'В этом тесте нужно читать вслух, поэтому нужен микрофон. Разрешите доступ к микрофону в настройках.';
+
+  @override
   String get wsNoSound => 'Мы ничего не услышали. Скажете ещё раз?';
 
   @override

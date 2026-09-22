@@ -2802,6 +2802,10 @@ class AppLocalizationsNe extends AppLocalizations {
   String get wsMicFailed => 'माइक्रोफोन खोल्न सकिएन।';
 
   @override
+  String get wsMicPermissionBody =>
+      'यो परीक्षामा ठूलो स्वरले पढ्नुपर्छ, त्यसैले माइक्रोफोन चाहिन्छ। सेटिङमा माइक्रोफोन पहुँच खोल्नुहोस्।';
+
+  @override
   String get wsNoSound => 'कुनै आवाज सुनिएन। फेरि प्रयास गर्ने?';
 
   @override

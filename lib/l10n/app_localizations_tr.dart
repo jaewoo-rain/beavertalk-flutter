@@ -2810,6 +2810,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wsMicFailed => 'Mikrofon açılamadı.';
 
   @override
+  String get wsMicPermissionBody =>
+      'Bu testte sesli okursun, bu yüzden mikrofon gerekir. Ayarlar\'dan mikrofon erişimini aç.';
+
+  @override
   String get wsNoSound => 'Hiçbir şey duymadık. Tekrar deneyelim mi?';
 
   @override

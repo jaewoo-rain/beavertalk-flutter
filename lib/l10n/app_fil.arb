@@ -850,6 +850,7 @@
   "wsTapWhenDone": "I-tap kapag tapos na",
   "wsScoring": "Kinakalkula ang score",
   "wsMicFailed": "Hindi mabuksan ang mikropono.",
+  "wsMicPermissionBody": "Babasahin mo nang malakas ang test na ito, kaya kailangan ang mikropono. I-on ang access sa mikropono sa Settings.",
   "wsNoSound": "Wala kaming narinig. Subukan muli?",
   "wsScoreFailed": "Nabigo ang pag-iskor. Pakisubukan muli.",
   "wsSomethingWrong": "May nangyaring mali.",
