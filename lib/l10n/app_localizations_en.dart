@@ -1294,7 +1294,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get billingGroupInTheStore => 'In the store';
 
   @override
-  String get billingCompareAllPlans => 'Compare all plans';
+  String get billingCompareAllPlans => 'Compare plans';
 
   @override
   String get billingBuyACharacter => 'Buy a character';

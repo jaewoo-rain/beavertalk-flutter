@@ -1291,7 +1291,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get billingGroupInTheStore => 'වෙළඳසැලේ';
 
   @override
-  String get billingCompareAllPlans => 'සියලු සැලසුම් සසඳන්න';
+  String get billingCompareAllPlans => 'සැලසුම් සසඳන්න';
 
   @override
   String get billingBuyACharacter => 'චරිතයක් මිලදී ගන්න';

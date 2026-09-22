@@ -1285,7 +1285,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get billingGroupInTheStore => 'ในสโตร์';
 
   @override
-  String get billingCompareAllPlans => 'เปรียบเทียบแพ็กเกจทั้งหมด';
+  String get billingCompareAllPlans => 'เปรียบเทียบแพ็กเกจ';
 
   @override
   String get billingBuyACharacter => 'ซื้อตัวละคร';

@@ -1305,7 +1305,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get billingGroupInTheStore => 'En la tienda';
 
   @override
-  String get billingCompareAllPlans => 'Comparar todos los planes';
+  String get billingCompareAllPlans => 'Comparar planes';
 
   @override
   String get billingBuyACharacter => 'Comprar un personaje';

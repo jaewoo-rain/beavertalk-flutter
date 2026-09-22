@@ -1289,7 +1289,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get billingGroupInTheStore => 'स्टोरमा';
 
   @override
-  String get billingCompareAllPlans => 'सबै योजना तुलना गर्नुहोस्';
+  String get billingCompareAllPlans => 'योजना तुलना गर्नुहोस्';
 
   @override
   String get billingBuyACharacter => 'क्यारेक्टर किन्नुहोस्';

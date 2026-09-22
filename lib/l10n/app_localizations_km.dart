@@ -1293,7 +1293,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get billingGroupInTheStore => 'នៅក្នុងហាង';
 
   @override
-  String get billingCompareAllPlans => 'ប្រៀបធៀបគម្រោងទាំងអស់';
+  String get billingCompareAllPlans => 'ប្រៀបធៀបគម្រោង';
 
   @override
   String get billingBuyACharacter => 'ទិញតួអង្គ';

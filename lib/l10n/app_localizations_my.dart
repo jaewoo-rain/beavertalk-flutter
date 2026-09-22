@@ -1301,7 +1301,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get billingGroupInTheStore => 'စတိုးတွင်';
 
   @override
-  String get billingCompareAllPlans => 'အစီအစဉ်အားလုံး နှိုင်းယှဉ်ရန်';
+  String get billingCompareAllPlans => 'အစီအစဉ်များ နှိုင်းယှဉ်ရန်';
 
   @override
   String get billingBuyACharacter => 'ဇာတ်ကောင် ဝယ်ရန်';

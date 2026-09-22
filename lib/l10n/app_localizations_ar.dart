@@ -1288,7 +1288,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get billingGroupInTheStore => 'في المتجر';
 
   @override
-  String get billingCompareAllPlans => 'مقارنة جميع الخطط';
+  String get billingCompareAllPlans => 'مقارنة الخطط';
 
   @override
   String get billingBuyACharacter => 'شراء شخصية';

@@ -1312,7 +1312,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get billingGroupInTheStore => 'Im Store';
 
   @override
-  String get billingCompareAllPlans => 'Alle Pläne vergleichen';
+  String get billingCompareAllPlans => 'Pläne vergleichen';
 
   @override
   String get billingBuyACharacter => 'Charakter kaufen';

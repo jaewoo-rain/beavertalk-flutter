@@ -1291,7 +1291,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get billingGroupInTheStore => 'Mağazada';
 
   @override
-  String get billingCompareAllPlans => 'Tüm planları karşılaştır';
+  String get billingCompareAllPlans => 'Planları karşılaştır';
 
   @override
   String get billingBuyACharacter => 'Karakter satın al';

@@ -52,6 +52,8 @@ import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
+import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
 import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
@@ -245,6 +247,16 @@ Map<String, Widget Function()> i18nScreens() {
     // the harness it renders the Free state; its copy is confirmed-English in
     // every locale, but the layout still gets audited at 320×640.
     'SubscriptionManage': () => const SubscriptionManageScreen(),
+    // 단일 티어(09-22) 다섯 상태 — 상태마다 붙는 문구 길이가 달라 전부 등록한다
+    // (배너·배지·행 라벨·주석이 가장 긴 조합을 놓치지 않게).
+    for (final st in [
+      SubscriptionState.activeMax,
+      SubscriptionState.ending,
+      SubscriptionState.grace,
+      SubscriptionState.onHold,
+      SubscriptionState.trial,
+    ])
+      'SubscriptionManage_${st.name}': () => _manageHost(st),
     // P3 conversion screens (this run's l10n pass). PurchaseProcessing is
     // excluded (it fires the mock purchase and navigates by named route);
     // the Pro success screen is excluded too — its one-time-offer timer
@@ -417,3 +429,17 @@ Widget _avatarHost({required bool discount}) {
     child: const AvatarScreen(),
   );
 }
+
+/// 구독 관리 화면을 한 상태로 띄운다. 날짜 행이 모두 값으로 차도록 세 날짜를 다 준다.
+Widget _manageHost(SubscriptionState state) => ProviderScope(
+      overrides: [
+        subscriptionStatusProvider.overrideWithValue(SubscriptionStatus(
+          state: state,
+          tier: SubscriptionTier.max,
+          expiresAt: DateTime(2026, 6, 20),
+          retryingUntil: DateTime(2026, 6, 25),
+          pausedSince: DateTime(2026, 6, 26),
+        )),
+      ],
+      child: const SubscriptionManageScreen(),
+    );

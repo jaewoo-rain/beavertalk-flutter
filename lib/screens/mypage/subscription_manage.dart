@@ -142,8 +142,9 @@ class _ManageBody extends StatelessWidget {
     if (status.state != SubscriptionState.free) return const [];
     return [
       const SizedBox(height: AppSpacing.s24),
+      // Figma `subscription_manage_free`: 민트 톤(브랜드). 금색은 Light 대비가 안 나온다(P17).
       Banner(
-        tone: BannerTone.gold,
+        tone: BannerTone.brand,
         title: l10n.bannerMaxUpsellTitle,
         sub: l10n.bannerMaxUpsellSub(PlanPrices.maxMonthly),
         onTap: () => Navigator.pushNamed(context, Routes.paywallMax),
@@ -278,7 +279,10 @@ class _PlanCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 8),
-              Badge(tone: badgeTone, label: badgeLabel),
+              // 배지에 폭 상한을 준다 — 비유연이면 무한 폭을 받아 줄바꿈을 못 하고
+              // 넘친다(de 「Zahlung überfällig」 17px · my 67px @320). 상한이 있으면
+              // Badge 가 스스로 줄을 바꾼다(자르지 않음).
+              Flexible(child: Badge(tone: badgeTone, label: badgeLabel)),
             ],
           ),
           SizedBox(height: _compact ? 10 : 12),

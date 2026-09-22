@@ -1295,7 +1295,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get billingGroupInTheStore => 'اسٹور میں';
 
   @override
-  String get billingCompareAllPlans => 'تمام پلانز کا موازنہ کریں';
+  String get billingCompareAllPlans => 'پلانز کا موازنہ کریں';
 
   @override
   String get billingBuyACharacter => 'کردار خریدیں';

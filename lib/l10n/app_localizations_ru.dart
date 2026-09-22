@@ -1300,7 +1300,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get billingGroupInTheStore => 'В магазине';
 
   @override
-  String get billingCompareAllPlans => 'Сравнить все планы';
+  String get billingCompareAllPlans => 'Сравнить планы';
 
   @override
   String get billingBuyACharacter => 'Купить персонажа';

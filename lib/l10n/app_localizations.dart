@@ -2485,7 +2485,7 @@ abstract class AppLocalizations {
   /// Billing slot 1 label on every non-paid state.
   ///
   /// In en, this message translates to:
-  /// **'Compare all plans'**
+  /// **'Compare plans'**
   String get billingCompareAllPlans;
 
   /// Billing slot 2 - character one-off purchase (in-house PG rail).

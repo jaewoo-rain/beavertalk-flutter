@@ -1260,7 +1260,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get billingGroupInTheStore => 'ストアで';
 
   @override
-  String get billingCompareAllPlans => '全プランを比較';
+  String get billingCompareAllPlans => 'プランを比較';
 
   @override
   String get billingBuyACharacter => 'キャラクターを購入';

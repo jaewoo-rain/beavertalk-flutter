@@ -1294,7 +1294,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get billingGroupInTheStore => 'Di toko';
 
   @override
-  String get billingCompareAllPlans => 'Bandingkan semua paket';
+  String get billingCompareAllPlans => 'Bandingkan paket';
 
   @override
   String get billingBuyACharacter => 'Beli karakter';

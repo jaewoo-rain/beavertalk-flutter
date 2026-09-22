@@ -1292,7 +1292,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get billingGroupInTheStore => 'स्टोर में';
 
   @override
-  String get billingCompareAllPlans => 'सभी प्लान की तुलना करें';
+  String get billingCompareAllPlans => 'प्लान की तुलना करें';
 
   @override
   String get billingBuyACharacter => 'कैरेक्टर खरीदें';

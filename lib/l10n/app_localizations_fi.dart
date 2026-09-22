@@ -1297,7 +1297,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get billingGroupInTheStore => 'Kaupassa';
 
   @override
-  String get billingCompareAllPlans => 'Vertaa kaikkia paketteja';
+  String get billingCompareAllPlans => 'Vertaa paketteja';
 
   @override
   String get billingBuyACharacter => 'Osta hahmo';

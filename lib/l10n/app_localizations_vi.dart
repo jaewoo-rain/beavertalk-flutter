@@ -1291,7 +1291,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get billingGroupInTheStore => 'Trong cửa hàng';
 
   @override
-  String get billingCompareAllPlans => 'So sánh tất cả các gói';
+  String get billingCompareAllPlans => 'So sánh các gói';
 
   @override
   String get billingBuyACharacter => 'Mua nhân vật';

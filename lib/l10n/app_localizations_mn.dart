@@ -1290,7 +1290,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get billingGroupInTheStore => 'Дэлгүүрт';
 
   @override
-  String get billingCompareAllPlans => 'Бүх багцыг харьцуулах';
+  String get billingCompareAllPlans => 'Багцуудыг харьцуулах';
 
   @override
   String get billingBuyACharacter => 'Дүр худалдаж авах';

@@ -1261,7 +1261,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get billingGroupInTheStore => '스토어에서';
 
   @override
-  String get billingCompareAllPlans => '전체 플랜 비교';
+  String get billingCompareAllPlans => '플랜 비교';
 
   @override
   String get billingBuyACharacter => '캐릭터 구매';

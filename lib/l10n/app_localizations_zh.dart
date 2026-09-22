@@ -1258,7 +1258,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get billingGroupInTheStore => '在商店中';
 
   @override
-  String get billingCompareAllPlans => '对比全部套餐';
+  String get billingCompareAllPlans => '对比套餐';
 
   @override
   String get billingBuyACharacter => '购买角色';

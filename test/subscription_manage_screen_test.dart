@@ -109,7 +109,7 @@ void main() {
         expect(
             find.text(state == SubscriptionState.activeMax
                 ? 'Switch to annual'
-                : 'Compare all plans'),
+                : 'Compare plans'),
             findsOneWidget,
             reason: '$state slot ①');
 

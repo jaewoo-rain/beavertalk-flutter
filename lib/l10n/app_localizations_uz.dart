@@ -1300,7 +1300,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get billingGroupInTheStore => 'Doʻkonda';
 
   @override
-  String get billingCompareAllPlans => 'Barcha tariflarni solishtirish';
+  String get billingCompareAllPlans => 'Tariflarni solishtirish';
 
   @override
   String get billingBuyACharacter => 'Personaj sotib olish';

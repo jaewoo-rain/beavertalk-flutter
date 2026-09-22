@@ -1287,7 +1287,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get billingGroupInTheStore => 'Дүкенде';
 
   @override
-  String get billingCompareAllPlans => 'Барлық жоспарды салыстыру';
+  String get billingCompareAllPlans => 'Жоспарларды салыстыру';
 
   @override
   String get billingBuyACharacter => 'Кейіпкер сатып алу';

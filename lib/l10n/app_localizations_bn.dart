@@ -1291,7 +1291,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get billingGroupInTheStore => 'স্টোরে';
 
   @override
-  String get billingCompareAllPlans => 'সব প্ল্যান তুলনা করুন';
+  String get billingCompareAllPlans => 'প্ল্যান তুলনা করুন';
 
   @override
   String get billingBuyACharacter => 'ক্যারেক্টার কিনুন';

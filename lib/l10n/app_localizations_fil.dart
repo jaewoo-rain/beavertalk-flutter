@@ -1303,7 +1303,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get billingGroupInTheStore => 'Sa store';
 
   @override
-  String get billingCompareAllPlans => 'Ikumpara lahat ng plan';
+  String get billingCompareAllPlans => 'Ikumpara ang mga plan';
 
   @override
   String get billingBuyACharacter => 'Bumili ng karakter';

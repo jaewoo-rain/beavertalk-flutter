@@ -756,7 +756,7 @@
   "@billingGroupInTheStore": {
     "description": "Billing list group title - rows that leave the app for the store."
   },
-  "billingCompareAllPlans": "Compare all plans",
+  "billingCompareAllPlans": "Compare plans",
   "@billingCompareAllPlans": {
     "description": "Billing slot 1 label on every non-paid state."
   },

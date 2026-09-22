@@ -1306,7 +1306,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get billingGroupInTheStore => 'Az áruházban';
 
   @override
-  String get billingCompareAllPlans => 'Összes csomag összehasonlítása';
+  String get billingCompareAllPlans => 'Csomagok összehasonlítása';
 
   @override
   String get billingBuyACharacter => 'Karakter vásárlása';

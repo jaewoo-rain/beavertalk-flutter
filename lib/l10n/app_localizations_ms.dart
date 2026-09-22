@@ -1303,7 +1303,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get billingGroupInTheStore => 'Di kedai';
 
   @override
-  String get billingCompareAllPlans => 'Bandingkan semua pelan';
+  String get billingCompareAllPlans => 'Bandingkan pelan';
 
   @override
   String get billingBuyACharacter => 'Beli watak';
