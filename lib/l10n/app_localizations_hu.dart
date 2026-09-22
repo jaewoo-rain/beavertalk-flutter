@@ -1366,7 +1366,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Minden nap egy 15 perces videóhívás';
+  String get premiumBulletVideo =>
+      'Napi legfeljebb 3 videohívás, egyenként 15 perc';
 
   @override
   String get premiumBulletAnalysis => 'Teljes kiejtéselemzés';
@@ -1427,7 +1428,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Videohívás · napi 15 perc · havi $price';
+    return 'Videohívás · napi legfeljebb 3 · havi $price';
   }
 
   @override
@@ -1509,7 +1510,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaTurnOnVideo => 'Videó bekapcsolása';
 
   @override
-  String get noteCallLength => 'Premium: napi egy hívás, legfeljebb 15 perc.';
+  String get noteCallLength =>
+      'Premium: napi legfeljebb 3 hívás, egyenként 15 perc.';
 
   @override
   String get paywallProTitle1 => 'A koreai barátod,';
@@ -1518,7 +1520,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get paywallProTitle2 => 'aki hajnali 3-kor is fent van';
 
   @override
-  String get paywallLimitHeadline => 'A Premiummal 15 perced van.';
+  String get paywallLimitHeadline => 'A Premiummal napi legfeljebb 3 hívás.';
 
   @override
   String get limitBannerCallTitle => 'Ez volt a mai hívás';

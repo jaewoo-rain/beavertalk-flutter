@@ -2605,7 +2605,7 @@ abstract class AppLocalizations {
   /// Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is one call a day, up to 15 minutes.
   ///
   /// In en, this message translates to:
-  /// **'A 15-minute video call, every day'**
+  /// **'Up to 3 video calls a day, 15 minutes each'**
   String get premiumBulletVideo;
 
   /// Premium benefit bullet.
@@ -2707,7 +2707,7 @@ abstract class AppLocalizations {
   /// No description provided for @bannerMaxUpsellSub.
   ///
   /// In en, this message translates to:
-  /// **'Video calls · 15 minutes a day · {price} per month'**
+  /// **'Video calls · up to 3 a day · {price} per month'**
   String bannerMaxUpsellSub(String price);
 
   /// No description provided for @bannerAnnualSwitchTitle.
@@ -2851,7 +2851,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteCallLength.
   ///
   /// In en, this message translates to:
-  /// **'Premium: one call a day, up to 15 minutes.'**
+  /// **'Premium: up to 3 calls a day, 15 minutes each.'**
   String get noteCallLength;
 
   /// No description provided for @paywallProTitle1.
@@ -2869,7 +2869,7 @@ abstract class AppLocalizations {
   /// Hot-entry paywall headline - one line, no story (spec 8-1).
   ///
   /// In en, this message translates to:
-  /// **'Premium gives you 15 minutes.'**
+  /// **'Premium gives you up to 3 calls a day.'**
   String get paywallLimitHeadline;
 
   /// No description provided for @limitBannerCallTitle.

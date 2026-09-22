@@ -1372,7 +1372,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Jeden Tag ein 15-minütiger Videoanruf';
+  String get premiumBulletVideo => 'Bis zu 3 Videoanrufe am Tag, je 15 Minuten';
 
   @override
   String get premiumBulletAnalysis => 'Vollständige Ausspracheanalyse';
@@ -1434,7 +1434,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Videoanrufe · 15 Minuten am Tag · $price pro Monat';
+    return 'Videoanrufe · bis zu 3 am Tag · $price pro Monat';
   }
 
   @override
@@ -1518,7 +1518,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get ctaTurnOnVideo => 'Video aktivieren';
 
   @override
-  String get noteCallLength => 'Premium: ein Anruf pro Tag, bis zu 15 Minuten.';
+  String get noteCallLength =>
+      'Premium: bis zu 3 Anrufe am Tag, je 15 Minuten.';
 
   @override
   String get paywallProTitle1 => 'Dein koreanischer Freund';
@@ -1527,7 +1528,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get paywallProTitle2 => 'der um 3 Uhr nachts wach ist';
 
   @override
-  String get paywallLimitHeadline => 'Mit Premium hast du 15 Minuten.';
+  String get paywallLimitHeadline => 'Mit Premium bis zu 3 Anrufe am Tag.';
 
   @override
   String get limitBannerCallTitle => 'Das war der Anruf für heute';

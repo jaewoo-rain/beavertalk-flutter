@@ -1345,7 +1345,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'วิดีโอคอล 15 นาที ทุกวัน';
+  String get premiumBulletVideo =>
+      'วิดีโอคอลได้สูงสุดวันละ 3 ครั้ง ครั้งละ 15 นาที';
 
   @override
   String get premiumBulletAnalysis => 'วิเคราะห์การออกเสียงแบบเต็ม';
@@ -1406,7 +1407,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'วิดีโอคอล · วันละ 15 นาที · เดือนละ $price';
+    return 'วิดีโอคอล · สูงสุดวันละ 3 ครั้ง · เดือนละ $price';
   }
 
   @override
@@ -1488,7 +1489,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get ctaTurnOnVideo => 'เปิดวิดีโอคอล';
 
   @override
-  String get noteCallLength => 'Premium: วันละ 1 สาย สูงสุด 15 นาที';
+  String get noteCallLength =>
+      'Premium: โทรได้สูงสุดวันละ 3 ครั้ง ครั้งละ 15 นาที';
 
   @override
   String get paywallProTitle1 => 'เพื่อนชาวเกาหลีของคุณ';
@@ -1497,7 +1499,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get paywallProTitle2 => 'ที่ยังตื่นอยู่ตอนตีสาม';
 
   @override
-  String get paywallLimitHeadline => 'Premium ให้คุณ 15 นาที';
+  String get paywallLimitHeadline => 'Premium โทรได้สูงสุดวันละ 3 ครั้ง';
 
   @override
   String get limitBannerCallTitle => 'นั่นคือการโทรของวันนี้';

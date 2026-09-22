@@ -1353,7 +1353,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'ការហៅវីដេអូ 15 នាទី រៀងរាល់ថ្ងៃ';
+  String get premiumBulletVideo =>
+      'ហៅជាវីដេអូរហូតដល់ 3 ដងក្នុងមួយថ្ងៃ ម្ដងៗ 15 នាទី';
 
   @override
   String get premiumBulletAnalysis => 'ការវិភាគការបញ្ចេញសំឡេងពេញលេញ';
@@ -1415,7 +1416,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'ការហៅជាវីដេអូ · 15 នាទីក្នុងមួយថ្ងៃ · $price ក្នុងមួយខែ';
+    return 'ការហៅជាវីដេអូ · រហូតដល់ 3 ដងក្នុងមួយថ្ងៃ · $price ក្នុងមួយខែ';
   }
 
   @override
@@ -1497,7 +1498,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaTurnOnVideo => 'បើកវីដេអូ';
 
   @override
-  String get noteCallLength => 'Premium៖ ហៅ 1 ដងក្នុងមួយថ្ងៃ រហូតដល់ 15 នាទី។';
+  String get noteCallLength =>
+      'Premium៖ ហៅរហូតដល់ 3 ដងក្នុងមួយថ្ងៃ ម្ដងៗ 15 នាទី។';
 
   @override
   String get paywallProTitle1 => 'មិត្តកូរ៉េរបស់អ្នក';
@@ -1506,7 +1508,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get paywallProTitle2 => 'ដែលនៅភ្ញាក់ម៉ោង ៣ យប់';
 
   @override
-  String get paywallLimitHeadline => 'Premium ផ្តល់ឱ្យអ្នក 15 នាទី។';
+  String get paywallLimitHeadline =>
+      'Premium ផ្ដល់ការហៅរហូតដល់ 3 ដងក្នុងមួយថ្ងៃ។';
 
   @override
   String get limitBannerCallTitle => 'នោះជាការហៅថ្ងៃនេះហើយ';

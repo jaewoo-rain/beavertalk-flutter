@@ -203,7 +203,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   ..._planRows(l10n),
                   const SizedBox(height: AppSpacing.s24),
                   // 캐릭터는 구독에 들어 있지 않다(정본 v3.1). 「무제한」·공정사용 각주는 없앴다 —
-                  // Premium 은 하루 1통화 · 15분이다.
+                  // Premium 은 하루 최대 3통화 · 한 번에 15분이다(09-22 확정).
                   Text(
                     l10n.noteCharactersSeparate,
                     textAlign: TextAlign.center,

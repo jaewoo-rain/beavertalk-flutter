@@ -634,7 +634,7 @@ class _OverlaySheet extends StatelessWidget {
             usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
           ),
           benefitLabel: l10n.premiumBulletVideo,
-          benefitTier: BenefitTier.pro,
+          benefitTier: BenefitTier.max,
           caption: l10n.flCaption(PlanPrices.maxMonthly),
           // ⛔ 여기서 직접 결제 화면으로 밀지 않는다. 통화를 끝내는 일과 화면을 옮기는
           //    일이 **둘 다** 일어나야 하는데, 통화 종료는 화면의 요약 이동 리스너를
@@ -679,7 +679,7 @@ class _OverlaySheet extends StatelessWidget {
                 : l10n.flUsage(usage!.used, usage!.limit),
           ),
           benefitLabel: l10n.premiumBulletVideo,
-          benefitTier: BenefitTier.pro,
+          benefitTier: BenefitTier.max,
           caption: l10n.flCaption(PlanPrices.maxMonthly),
           primaryAction: SheetAction(
               label: l10n.ctaGetPremium,
@@ -697,7 +697,7 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.flCheckBody,
           rows: scores ?? const [],
           benefitLabel: l10n.premiumBulletAnalysis,
-          benefitTier: BenefitTier.pro,
+          benefitTier: BenefitTier.max,
           caption: l10n.flCaption(PlanPrices.maxMonthly),
           primaryAction: SheetAction(
               label: l10n.ctaGetPremium,

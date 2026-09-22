@@ -1351,7 +1351,8 @@ class AppLocalizationsSi extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'සෑම දිනකම මිනිත්තු 15ක වීඩියෝ ඇමතුමක්';
+  String get premiumBulletVideo =>
+      'දිනකට වීඩියෝ ඇමතුම් 3ක් දක්වා, එකකට මිනිත්තු 15';
 
   @override
   String get premiumBulletAnalysis => 'සම්පූර්ණ උච්චාරණ විශ්ලේෂණය';
@@ -1412,7 +1413,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'වීඩියෝ ඇමතුම් · දිනකට මිනිත්තු 15 · මසකට $price';
+    return 'වීඩියෝ ඇමතුම් · දිනකට 3ක් දක්වා · මසකට $price';
   }
 
   @override
@@ -1494,7 +1495,8 @@ class AppLocalizationsSi extends AppLocalizations {
   String get ctaTurnOnVideo => 'වීඩියෝ සක්‍රිය කරන්න';
 
   @override
-  String get noteCallLength => 'Premium: දිනකට ඇමතුම් 1ක්, මිනිත්තු 15 දක්වා.';
+  String get noteCallLength =>
+      'Premium: දිනකට ඇමතුම් 3ක් දක්වා, එකකට මිනිත්තු 15.';
 
   @override
   String get paywallProTitle1 => 'ඔබේ කොරියානු මිතුරා';
@@ -1503,7 +1505,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get paywallProTitle2 => 'පාන්දර 3ටත් අවදියෙන්';
 
   @override
-  String get paywallLimitHeadline => 'Premium සමඟ මිනිත්තු 15ක් ලැබේ.';
+  String get paywallLimitHeadline => 'Premium සමඟ දිනකට ඇමතුම් 3ක් දක්වා.';
 
   @override
   String get limitBannerCallTitle => 'අද ඇමතුම එයයි';

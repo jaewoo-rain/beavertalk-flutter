@@ -1360,7 +1360,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Видеозвонок на 15 минут каждый день';
+  String get premiumBulletVideo => 'До 3 видеозвонков в день, по 15 минут';
 
   @override
   String get premiumBulletAnalysis => 'Полный разбор произношения';
@@ -1422,7 +1422,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Видеозвонки · 15 минут в день · $price в месяц';
+    return 'Видеозвонки · до 3 в день · $price в месяц';
   }
 
   @override
@@ -1505,7 +1505,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ctaTurnOnVideo => 'Включить видео';
 
   @override
-  String get noteCallLength => 'Premium: один звонок в день, до 15 минут.';
+  String get noteCallLength => 'Premium: до 3 звонков в день, по 15 минут.';
 
   @override
   String get paywallProTitle1 => 'Ваш корейский друг,';
@@ -1514,7 +1514,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywallProTitle2 => 'который не спит в 3 часа ночи';
 
   @override
-  String get paywallLimitHeadline => 'С Premium у вас 15 минут.';
+  String get paywallLimitHeadline => 'Premium даёт до 3 звонков в день.';
 
   @override
   String get limitBannerCallTitle => 'Это был звонок на сегодня';

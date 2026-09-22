@@ -1349,7 +1349,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'हरेक दिन 15 मिनेटको भिडियो कल';
+  String get premiumBulletVideo => 'दिनमा बढीमा 3 भिडियो कल, प्रत्येक 15 मिनेट';
 
   @override
   String get premiumBulletAnalysis => 'पूरा उच्चारण विश्लेषण';
@@ -1411,7 +1411,7 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'भिडियो कल · दिनमा 15 मिनेट · महिनाको $price';
+    return 'भिडियो कल · दिनमा बढीमा 3 · महिनाको $price';
   }
 
   @override
@@ -1493,7 +1493,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get ctaTurnOnVideo => 'भिडियो खोल्नुहोस्';
 
   @override
-  String get noteCallLength => 'Premium: दिनमा 1 कल, 15 मिनेटसम्म।';
+  String get noteCallLength => 'Premium: दिनमा बढीमा 3 कल, प्रत्येक 15 मिनेट।';
 
   @override
   String get paywallProTitle1 => 'तपाईंको कोरियन साथी';
@@ -1502,7 +1502,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get paywallProTitle2 => 'राति ३ बजे पनि जागै';
 
   @override
-  String get paywallLimitHeadline => 'Premium मा 15 मिनेट पाउनुहुन्छ।';
+  String get paywallLimitHeadline => 'Premium मा दिनमा बढीमा 3 कल।';
 
   @override
   String get limitBannerCallTitle => 'आजको कल सकियो';

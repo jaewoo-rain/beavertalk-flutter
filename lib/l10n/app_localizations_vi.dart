@@ -1351,7 +1351,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Gọi video 15 phút mỗi ngày';
+  String get premiumBulletVideo =>
+      'Tối đa 3 cuộc gọi video mỗi ngày, mỗi cuộc 15 phút';
 
   @override
   String get premiumBulletAnalysis => 'Phân tích phát âm đầy đủ';
@@ -1413,7 +1414,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Gọi video · 15 phút mỗi ngày · $price mỗi tháng';
+    return 'Gọi video · tối đa 3 lần mỗi ngày · $price mỗi tháng';
   }
 
   @override
@@ -1496,7 +1497,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: mỗi ngày một cuộc gọi, tối đa 15 phút.';
+      'Premium: tối đa 3 cuộc gọi mỗi ngày, mỗi cuộc 15 phút.';
 
   @override
   String get paywallProTitle1 => 'Người bạn Hàn Quốc';
@@ -1505,7 +1506,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get paywallProTitle2 => 'thức cùng bạn lúc 3 giờ sáng';
 
   @override
-  String get paywallLimitHeadline => 'Premium cho bạn 15 phút.';
+  String get paywallLimitHeadline =>
+      'Premium cho bạn tối đa 3 cuộc gọi mỗi ngày.';
 
   @override
   String get limitBannerCallTitle => 'Đó là cuộc gọi hôm nay';

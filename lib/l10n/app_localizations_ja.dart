@@ -1320,7 +1320,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => '毎日15分のビデオ通話';
+  String get premiumBulletVideo => 'ビデオ通話は1日最大3回、1回15分';
 
   @override
   String get premiumBulletAnalysis => '発音分析をすべて';
@@ -1380,7 +1380,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'ビデオ通話 · 1日15分 · 月額$price';
+    return 'ビデオ通話 · 1日最大3回 · 月額$price';
   }
 
   @override
@@ -1457,7 +1457,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaTurnOnVideo => 'ビデオ通話を始める';
 
   @override
-  String get noteCallLength => 'Premium：1日1回の通話、最大15分。';
+  String get noteCallLength => 'Premium：1日最大3回の通話、1回15分。';
 
   @override
   String get paywallProTitle1 => '深夜3時でも起きている';
@@ -1466,7 +1466,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallProTitle2 => 'あなたの韓国人の友だち';
 
   @override
-  String get paywallLimitHeadline => 'Premiumなら15分話せます。';
+  String get paywallLimitHeadline => 'Premiumなら1日最大3回通話できます。';
 
   @override
   String get limitBannerCallTitle => '今日の通話は終わりました';

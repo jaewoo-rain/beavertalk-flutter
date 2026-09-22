@@ -1360,7 +1360,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Har kuni 15 daqiqalik video qo‘ng‘iroq';
+  String get premiumBulletVideo =>
+      'Kuniga 3 tagacha video qo‘ng‘iroq, har biri 15 daqiqa';
 
   @override
   String get premiumBulletAnalysis => 'To‘liq talaffuz tahlili';
@@ -1421,7 +1422,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Video qo‘ng‘iroqlar · kuniga 15 daqiqa · oyiga $price';
+    return 'Video qo‘ng‘iroqlar · kuniga 3 tagacha · oyiga $price';
   }
 
   @override
@@ -1504,7 +1505,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: kuniga 1 ta qo‘ng‘iroq, 15 daqiqagacha.';
+      'Premium: kuniga 3 tagacha qo‘ng‘iroq, har biri 15 daqiqa.';
 
   @override
   String get paywallProTitle1 => 'Tungi soat 3da ham uygʻoq';
@@ -1513,7 +1514,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get paywallProTitle2 => 'koreys doʻstingiz';
 
   @override
-  String get paywallLimitHeadline => 'Premium bilan 15 daqiqa gaplashasiz.';
+  String get paywallLimitHeadline =>
+      'Premium kuniga 3 tagacha qo‘ng‘iroq beradi.';
 
   @override
   String get limitBannerCallTitle => 'Bu bugungi qoʻngʻiroq edi';

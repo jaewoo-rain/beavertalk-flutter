@@ -1351,7 +1351,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Her gün 15 dakikalık görüntülü arama';
+  String get premiumBulletVideo =>
+      'Günde 3 görüntülü aramaya kadar, her biri 15 dakika';
 
   @override
   String get premiumBulletAnalysis => 'Tam telaffuz analizi';
@@ -1412,7 +1413,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Görüntülü arama · günde 15 dakika · aylık $price';
+    return 'Görüntülü arama · günde 3\'e kadar · aylık $price';
   }
 
   @override
@@ -1494,7 +1495,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaTurnOnVideo => 'Videoyu aç';
 
   @override
-  String get noteCallLength => 'Premium: günde bir arama, 15 dakikaya kadar.';
+  String get noteCallLength =>
+      'Premium: günde 3 aramaya kadar, her biri 15 dakika.';
 
   @override
   String get paywallProTitle1 => 'Gece 3\'te bile ayakta olan';
@@ -1503,7 +1505,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallProTitle2 => 'Koreli arkadaşın';
 
   @override
-  String get paywallLimitHeadline => 'Premium ile 15 dakikan olur.';
+  String get paywallLimitHeadline => 'Premium ile günde 3 aramaya kadar.';
 
   @override
   String get limitBannerCallTitle => 'Bugünkü araman buydu';

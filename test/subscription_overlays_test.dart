@@ -158,7 +158,7 @@ void main() {
     testWidgets('무료 시트는 사용량과 Premium 혜택 줄을 보여 준다', (tester) async {
       await pumpHost(tester, SubscriptionOverlay.freeCallEnded);
       expect(find.text('4:58 of 5:00 used'), findsOneWidget);
-      expect(find.text('A 15-minute video call, every day'),
+      expect(find.text('Up to 3 video calls a day, 15 minutes each'),
           findsOneWidget);
     });
   });

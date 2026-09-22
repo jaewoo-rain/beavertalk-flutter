@@ -1363,7 +1363,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Panggilan video 15 minit setiap hari';
+  String get premiumBulletVideo =>
+      'Sehingga 3 panggilan video sehari, 15 minit setiap satu';
 
   @override
   String get premiumBulletAnalysis => 'Analisis sebutan penuh';
@@ -1424,7 +1425,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Panggilan video · 15 minit sehari · $price sebulan';
+    return 'Panggilan video · sehingga 3 sehari · $price sebulan';
   }
 
   @override
@@ -1508,7 +1509,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: satu panggilan sehari, sehingga 15 minit.';
+      'Premium: sehingga 3 panggilan sehari, 15 minit setiap satu.';
 
   @override
   String get paywallProTitle1 => 'Kawan Korea anda';
@@ -1517,7 +1518,8 @@ class AppLocalizationsMs extends AppLocalizations {
   String get paywallProTitle2 => 'yang berjaga jam 3 pagi';
 
   @override
-  String get paywallLimitHeadline => 'Premium memberi anda 15 minit.';
+  String get paywallLimitHeadline =>
+      'Premium memberi anda sehingga 3 panggilan sehari.';
 
   @override
   String get limitBannerCallTitle => 'Itu panggilan hari ini';

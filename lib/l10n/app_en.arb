@@ -827,7 +827,7 @@
   "planFree": "Free",
   "planPro": "Pro",
   "planMax": "Premium",
-  "premiumBulletVideo": "A 15-minute video call, every day",
+  "premiumBulletVideo": "Up to 3 video calls a day, 15 minutes each",
   "@premiumBulletVideo": {"description": "Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is one call a day, up to 15 minutes."},
   "premiumBulletAnalysis": "Full pronunciation analysis",
   "@premiumBulletAnalysis": {"description": "Premium benefit bullet."},
@@ -894,7 +894,7 @@
     }
   },
   "bannerMaxUpsellTitle": "Get face to face with Premium",
-  "bannerMaxUpsellSub": "Video calls · 15 minutes a day · {price} per month",
+  "bannerMaxUpsellSub": "Video calls · up to 3 a day · {price} per month",
   "@bannerMaxUpsellSub": {
     "placeholders": {
       "price": {
@@ -944,10 +944,10 @@
   "bulletFreeCheck": "Full analysis for your first 3 calls",
   "bulletFreeCharacter": "Two characters to start",
   "ctaTurnOnVideo": "Turn on video",
-  "noteCallLength": "Premium: one call a day, up to 15 minutes.",
+  "noteCallLength": "Premium: up to 3 calls a day, 15 minutes each.",
   "paywallProTitle1": "Your Korean friend",
   "paywallProTitle2": "who's up at 3 a.m.",
-  "paywallLimitHeadline": "Premium gives you 15 minutes.",
+  "paywallLimitHeadline": "Premium gives you up to 3 calls a day.",
   "@paywallLimitHeadline": {
     "description": "Hot-entry paywall headline - one line, no story (spec 8-1)."
   },

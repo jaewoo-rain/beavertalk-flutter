@@ -4,12 +4,16 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 import '../icons/app_icons.dart';
 
-/// Which plan a [BenefitRow]'s check speaks for — mint for Pro, gold for Max.
+/// Which plan a [BenefitRow]'s check speaks for — mint (Free·legacy Pro) or
+/// orange (Premium).
 enum BenefitTier {
   /// Mint check (`Primary/Normal`).
   pro,
 
-  /// Gold check (`Status/Cautionary`).
+  /// Premium check — `Accent/Foreground/Orange`(Light `#9C5800` 5.51:1).
+  ///
+  /// `Status/Cautionary` 금색은 흰 면 위에서 1.69:1 로 사라진다(P17, 사용자
+  /// 결정 2026-09-22). 금색은 면(배지·테두리)에만 쓰고 체크는 전경 토큰으로 그린다.
   max,
 }
 
@@ -31,7 +35,7 @@ class BenefitRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final check = tier == BenefitTier.max ? c.statusCautionary : c.primaryNormal;
+    final check = tier == BenefitTier.max ? c.accentForegroundOrange : c.primaryNormal;
     return Row(
       children: [
         AppIcons.check(size: 20, color: check),

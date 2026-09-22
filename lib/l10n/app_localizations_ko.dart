@@ -1321,7 +1321,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => '매일 15분 영상통화';
+  String get premiumBulletVideo => '하루 최대 3번 영상통화, 한 번에 15분';
 
   @override
   String get premiumBulletAnalysis => '발음 분석 전체';
@@ -1381,7 +1381,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return '영상통화 · 하루 15분 · 월 $price';
+    return '영상통화 · 하루 최대 3번 · 월 $price';
   }
 
   @override
@@ -1458,7 +1458,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaTurnOnVideo => '영상통화 켜기';
 
   @override
-  String get noteCallLength => 'Premium: 하루 1통화, 최대 15분.';
+  String get noteCallLength => 'Premium: 하루 최대 3통화, 한 번에 15분.';
 
   @override
   String get paywallProTitle1 => '새벽 3시에도 깨어 있는';
@@ -1467,7 +1467,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get paywallProTitle2 => '나의 한국인 친구';
 
   @override
-  String get paywallLimitHeadline => 'Premium은 15분을 드려요.';
+  String get paywallLimitHeadline => 'Premium은 하루 최대 3번 통화할 수 있어요.';
 
   @override
   String get limitBannerCallTitle => '오늘의 통화를 모두 썼어요';

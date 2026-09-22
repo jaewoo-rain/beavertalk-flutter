@@ -1350,7 +1350,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Өдөр бүр 15 минутын видео дуудлага';
+  String get premiumBulletVideo =>
+      'Өдөрт 3 хүртэл видео дуудлага, тус бүр 15 минут';
 
   @override
   String get premiumBulletAnalysis => 'Дуудлагын бүрэн шинжилгээ';
@@ -1412,7 +1413,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Видео дуудлага · өдөрт 15 минут · сард $price';
+    return 'Видео дуудлага · өдөрт 3 хүртэл · сард $price';
   }
 
   @override
@@ -1494,7 +1495,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaTurnOnVideo => 'Видео асаах';
 
   @override
-  String get noteCallLength => 'Premium: өдөрт 1 дуудлага, 15 хүртэл минут.';
+  String get noteCallLength =>
+      'Premium: өдөрт 3 хүртэл дуудлага, тус бүр 15 минут.';
 
   @override
   String get paywallProTitle1 => 'Шөнийн 3 цагт ч сэрүүн байдаг';
@@ -1503,7 +1505,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get paywallProTitle2 => 'таны солонгос найз';
 
   @override
-  String get paywallLimitHeadline => 'Premium-ээр 15 минут ярина.';
+  String get paywallLimitHeadline => 'Premium өдөрт 3 хүртэл дуудлага өгнө.';
 
   @override
   String get limitBannerCallTitle => 'Энэ өнөөдрийн дуудлага байлаа';

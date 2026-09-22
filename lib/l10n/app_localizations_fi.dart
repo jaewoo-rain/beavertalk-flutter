@@ -1357,7 +1357,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => '15 minuutin videopuhelu joka päivä';
+  String get premiumBulletVideo =>
+      'Jopa 3 videopuhelua päivässä, 15 minuuttia kukin';
 
   @override
   String get premiumBulletAnalysis => 'Täysi ääntämisanalyysi';
@@ -1419,7 +1420,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Videopuhelut · 15 minuuttia päivässä · $price kuukaudessa';
+    return 'Videopuhelut · jopa 3 päivässä · $price kuukaudessa';
   }
 
   @override
@@ -1502,7 +1503,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: yksi puhelu päivässä, enintään 15 minuuttia.';
+      'Premium: jopa 3 puhelua päivässä, 15 minuuttia kukin.';
 
   @override
   String get paywallProTitle1 => 'Korealainen ystäväsi,';
@@ -1511,7 +1512,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get paywallProTitle2 => 'joka valvoo kello 3 yöllä';
 
   @override
-  String get paywallLimitHeadline => 'Premiumilla saat 15 minuuttia.';
+  String get paywallLimitHeadline => 'Premiumilla jopa 3 puhelua päivässä.';
 
   @override
   String get limitBannerCallTitle => 'Se oli päivän puhelu';

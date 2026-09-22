@@ -1354,7 +1354,8 @@ class AppLocalizationsKy extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'Күн сайын 15 мүнөттүк видео чалуу';
+  String get premiumBulletVideo =>
+      'Күнүнө 3 видео чалууга чейин, ар бири 15 мүнөт';
 
   @override
   String get premiumBulletAnalysis => 'Айтылышты толук талдоо';
@@ -1416,7 +1417,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Видео чалуу · күнүнө 15 мүнөт · айына $price';
+    return 'Видео чалуу · күнүнө 3кө чейин · айына $price';
   }
 
   @override
@@ -1498,7 +1499,8 @@ class AppLocalizationsKy extends AppLocalizations {
   String get ctaTurnOnVideo => 'Видеону күйгүзүү';
 
   @override
-  String get noteCallLength => 'Premium: күнүнө 1 чалуу, 15 мүнөткө чейин.';
+  String get noteCallLength =>
+      'Premium: күнүнө 3 чалууга чейин, ар бири 15 мүнөт.';
 
   @override
   String get paywallProTitle1 => 'Түнкү саат 3тө да ойгоо';
@@ -1507,7 +1509,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get paywallProTitle2 => 'корей досуңуз';
 
   @override
-  String get paywallLimitHeadline => 'Premium менен 15 мүнөт сүйлөшөсүз.';
+  String get paywallLimitHeadline => 'Premium күнүнө 3 чалууга чейин берет.';
 
   @override
   String get limitBannerCallTitle => 'Бул бүгүнкү чалуу болду';

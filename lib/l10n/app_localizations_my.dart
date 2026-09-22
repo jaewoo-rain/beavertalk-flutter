@@ -1361,7 +1361,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'နေ့တိုင်း 15 မိနစ် ဗီဒီယိုခေါ်ဆိုမှု';
+  String get premiumBulletVideo =>
+      'တစ်ရက် ဗီဒီယိုခေါ်ဆိုမှု အများဆုံး 3 ကြိမ်၊ တစ်ကြိမ် 15 မိနစ်';
 
   @override
   String get premiumBulletAnalysis => 'အသံထွက် ခွဲခြမ်းစိတ်ဖြာမှု အပြည့်အစုံ';
@@ -1424,7 +1425,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'ဗီဒီယိုခေါ်ဆိုမှု · တစ်ရက် 15 မိနစ် · တစ်လ $price';
+    return 'ဗီဒီယိုခေါ်ဆိုမှု · တစ်ရက် အများဆုံး 3 ကြိမ် · တစ်လ $price';
   }
 
   @override
@@ -1508,7 +1509,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: တစ်ရက် 1 ကြိမ် ခေါ်ဆိုမှု၊ အများဆုံး 15 မိနစ်။';
+      'Premium: တစ်ရက် အများဆုံး 3 ကြိမ် ခေါ်ဆိုနိုင်၊ တစ်ကြိမ် 15 မိနစ်။';
 
   @override
   String get paywallProTitle1 => 'သင့်ကိုရီးယား သူငယ်ချင်း';
@@ -1517,7 +1518,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get paywallProTitle2 => 'နံနက် ၃ နာရီမှာလည်း နိုးနေတယ်';
 
   @override
-  String get paywallLimitHeadline => 'Premium ဖြင့် 15 မိနစ် ရသည်။';
+  String get paywallLimitHeadline =>
+      'Premium ဖြင့် တစ်ရက် အများဆုံး 3 ကြိမ် ခေါ်ဆိုနိုင်သည်။';
 
   @override
   String get limitBannerCallTitle => 'ယနေ့ ခေါ်ဆိုမှု ပြီးပါပြီ';
