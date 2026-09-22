@@ -314,7 +314,11 @@ class _InputFieldState extends State<InputField> {
 
     return AnimatedContainer(
       duration: const Duration(milliseconds: 120),
-      height: spec.height,
+      // 높이는 **하한**이다(정본 수치는 지키되 위로 연다).
+      //
+      // 고정이면 힌트·입력값이 상자 안에서 잘린다 — 무엇을 넣어야 하는지 모르게
+      // 된다(2026-09-22 전수감사: 「이메일 주소」류 15건).
+      constraints: BoxConstraints(minHeight: spec.height),
       padding: EdgeInsets.symmetric(
         horizontal: spec.padH,
         vertical: spec.padV,

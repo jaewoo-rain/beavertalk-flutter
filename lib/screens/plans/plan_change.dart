@@ -421,7 +421,10 @@ class _ReasonRow extends StatelessWidget {
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
-        height: 56,
+        // 높이 하한. 해지 사유는 문장이라 로케일에 따라 두 줄이 된다
+        // (hu 「Nem használtam eleget」: 필요 66 / 상자 55.5, 320dp·배율 1.1).
+        // 고정으로 두면 둘째 줄이 사라져 무슨 사유를 고르는지 모르게 된다.
+        constraints: const BoxConstraints(minHeight: 56),
         padding: const EdgeInsets.symmetric(horizontal: 12),
         decoration: last
             ? null

@@ -219,8 +219,11 @@ class _JoinConsentScreenState extends ConsumerState<JoinConsentScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           for (final item in items)
-            SizedBox(
-              height: 32,
+            ConstrainedBox(
+              // 높이 **하한**. 고정 32 로 두면 항목 이름이 두 줄이 되는 순간
+              // 둘째 줄이 통째로 사라진다 — 무엇을 공유하는지 모르게 된다.
+              // (2026-09-22 전수감사: 네팔어·크메르어 9건)
+              constraints: const BoxConstraints(minHeight: 32),
               child: Row(
                 children: [
                   shared

@@ -87,8 +87,10 @@ class CardTask extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox(
-            height: 24,
+          ConstrainedBox(
+            // 높이 하한. 고정 24 면 배율 1.1 에서 한 줄(26)도 안 들어가
+            // 글자 아랫부분이 잘린다(2026-09-22 전수감사 32건).
+            constraints: const BoxConstraints(minHeight: 24),
             child: Row(
               children: [
                 icon(size: 20, color: c.labelStrong),
