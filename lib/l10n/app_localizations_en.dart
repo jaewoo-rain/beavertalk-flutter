@@ -670,9 +670,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get subscriptionManage => 'Manage Subscription';
 
   @override
-  String get changePlan => 'Change Plan';
-
-  @override
   String get cancelSubscription => 'Cancel Subscription';
 
   @override
@@ -691,18 +688,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewBillingHistory => 'View Billing History';
 
   @override
-  String get keepUsingPro => 'Keep Using Pro';
-
-  @override
-  String get proMembership => 'Pro Membership';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / mo';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Unlimited calls';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1151,11 +1139,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get lastPayment => 'Last payment';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'You can keep using Pro benefits until $date, after which your plan switches to Free automatically.';
-  }
-
-  @override
   String get freePlanCallLimit => '1 call a day · 5 min limit';
 
   @override
@@ -1311,9 +1294,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get billingGroupInTheStore => 'In the store';
 
   @override
-  String get billingChangePlan => 'Change plan';
-
-  @override
   String get billingCompareAllPlans => 'Compare all plans';
 
   @override
@@ -1390,7 +1370,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaGetPremium => 'Get Premium';
 
   @override
-  String get planMaxTrial => 'Max trial';
+  String get planMaxTrial => 'Premium trial';
 
   @override
   String get freePlanPriceLine => '\$0.00 — one call a day';
@@ -1431,35 +1411,22 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Go unlimited with Pro';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Unlimited calls · 15 minutes each · $price per month';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Turn on video with Max';
+  String get bannerMaxUpsellTitle => 'Get face to face with Premium';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Face-to-face calls · $price per month';
+    return 'Video calls · 15 minutes a day · $price per month';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Switch to annual';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly per year · $perMonth per month';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'We couldn\'t take the payment';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Update payment in the store to keep Pro';
+      'Update payment in the store to keep Premium';
 
   @override
   String get bannerPausedTitle => 'Your plan is paused';
@@ -1476,9 +1443,6 @@ class AppLocalizationsEn extends AppLocalizations {
       'Payment method, plan changes, and cancellation are handled by the store.';
 
   @override
-  String get noteFairUse => 'Unlimited use is subject to our fair use policy.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Your trial ends $date. Cancel in the store before then and nothing is charged.';
   }
@@ -1489,7 +1453,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Pro is paused until the payment goes through. Your characters and progress are safe.';
+      'Premium is paused until the payment goes through. Your characters and progress are safe.';
 
   @override
   String noteEnding(String date) {
@@ -1497,7 +1461,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Your Max trial ended';
+  String get trialExpiredTitle => 'Your Premium trial ended';
 
   @override
   String get trialExpiredSub => 'You are on Free now';
@@ -1509,13 +1473,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get currentPlanTitle => 'Current Plan';
 
   @override
-  String get badgeRecommended => 'Recommended';
-
-  @override
   String get perMonthUnit => 'per month';
-
-  @override
-  String get planTaglinePro => 'Unlimited calls. 15 minutes each.';
 
   @override
   String get planTaglineMax => 'Now you can see them.';
@@ -1524,66 +1482,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get planTaglineFree => 'One call a day. On the house.';
 
   @override
-  String get bulletProCalls => 'Voice calls, as often as you want';
-
-  @override
-  String get bulletProLength => '15 minutes a call';
-
-  @override
-  String get bulletProScoring => 'Pronunciation scored letter by letter';
-
-  @override
   String get bulletProCorrections =>
       'Corrections aimed at your native language';
-
-  @override
-  String get bulletProBeaverCalls => 'Beaver calls you first';
-
-  @override
-  String get bulletMaxVideo => 'Face-to-face video calls';
-
-  @override
-  String get bulletMaxEverything => 'Everything in Pro';
-
-  @override
-  String get bulletMaxCharacters => 'Every character, unlimited';
-
-  @override
-  String get bulletMaxStudyBook => 'A study book matched to where you are';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'A weekly report on how your sound is changing';
 
   @override
   String get bulletFreeCall => 'One 5-minute voice call a day';
 
   @override
-  String get bulletFreeCheck => 'One pronunciation check a day';
+  String get bulletFreeCheck => 'Full analysis for your first 3 calls';
 
   @override
-  String get bulletFreeAccent => 'Unlimited accent checks';
-
-  @override
-  String get bulletFreeCharacter => 'One character to start';
-
-  @override
-  String get ctaGoUnlimited => 'Go unlimited';
+  String get bulletFreeCharacter => 'Two characters to start';
 
   @override
   String get ctaTurnOnVideo => 'Turn on video';
 
   @override
-  String get noteCallLength => 'Calls are 15 minutes each.';
+  String get noteCallLength => 'Premium: one call a day, up to 15 minutes.';
 
   @override
   String get paywallProTitle1 => 'Your Korean friend';
 
   @override
   String get paywallProTitle2 => 'who\'s up at 3 a.m.';
-
-  @override
-  String get paywallProSub => 'Unlimited calls. 15 minutes each. All year.';
 
   @override
   String get paywallLimitHeadline => 'Premium gives you 15 minutes.';
@@ -1606,10 +1527,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Now you can see them.';
-
-  @override
-  String get paywallMaxSub =>
-      'Video calls, every character, and a study book made for where you are.';
 
   @override
   String get planMonthly => 'Monthly';
@@ -1662,30 +1579,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get footerPrivacy => 'Privacy';
 
   @override
-  String get noteMaxCharacters =>
-      'Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.';
-
-  @override
   String get processingTitle => 'Confirming your purchase';
 
   @override
   String get processingSub => 'This usually takes a few seconds.';
 
   @override
-  String get successProTitle => 'You\'re on Pro.';
-
-  @override
-  String get successProSub => 'Unlimited calls, starting right now.';
-
-  @override
-  String get successProBenefit1 =>
-      'Call as often as you want — 15 minutes a call';
-
-  @override
-  String get successProBenefit2 => 'Unlimited pronunciation checks';
-
-  @override
-  String get successProBenefit3 => 'Every character, plus one-off purchases';
+  String get successProTitle => 'You\'re on Premium.';
 
   @override
   String get successMaxTitle => 'You can see them now.';
@@ -1695,28 +1595,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Video calls are on. Tap the video button in any call.';
 
   @override
-  String get successMaxBenefit1 => 'Face-to-face video calls';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Every character, unlimited and new ones first';
-
-  @override
-  String get successMaxBenefit3 => 'A study book matched to where you are';
-
-  @override
-  String get ctaStartACall => 'Start a call';
-
-  @override
   String get ctaStartAVideoCall => 'Start a video call';
 
   @override
   String get ctaSeeYourSubscription => 'See your subscription';
-
-  @override
-  String successProCaption(String price) {
-    return '$price is charged monthly until you cancel. Manage or cancel anytime in the store.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1736,91 +1618,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get plansErrorCaption => 'Nothing was charged.';
 
   @override
-  String get changePlanTitle => 'Change Plan';
-
-  @override
-  String get moveToMaxTitle => 'Move to Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / mo';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Face-to-face video calls · every character · a study book made for you';
-
-  @override
-  String get whatHappensNow => 'What happens now';
-
-  @override
-  String get maxStartsLabel => 'Max starts';
-
-  @override
-  String get immediately => 'Immediately';
-
-  @override
-  String get unusedProTime => 'Unused Pro time';
-
-  @override
-  String get creditedTowardMax => 'Credited toward Max';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Switch to Max';
-
-  @override
-  String get upgradeCaption =>
-      'Your new plan starts right away. Unused Pro time is credited, never charged twice.';
-
-  @override
-  String get moveToProTitle => 'Move to Pro';
-
-  @override
-  String get moveToProSub =>
-      'Nothing changes today. Max runs to the end of the month you already paid for.';
-
-  @override
-  String get maxRunsUntil => 'Max runs until';
-
-  @override
-  String get proStarts => 'Pro starts';
-
-  @override
-  String get whatYouKeep => 'What you keep';
-
-  @override
-  String get keepBenefitCalls => 'Unlimited voice calls, 15 minutes each';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Characters you bought stay yours forever';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Video calls and Max-only characters turn off on $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Switch to Pro';
-
-  @override
-  String get ctaKeepMax => 'Keep Max';
+  String get ctaKeepMax => 'Keep Premium';
 
   @override
   String get winbackSkip => 'Skip';
 
   @override
-  String get winbackTitle => 'Your Pro plan ended';
+  String get winbackTitle => 'Your Premium plan ended';
 
   @override
   String get winbackSub => 'You\'re on Free now — one call a day.';
@@ -1860,7 +1664,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaClose => 'Close';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro is back';
+  String get ovRestoreSuccessTitle => 'Premium is back';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1887,7 +1691,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaGetHelp => 'Get help';
 
   @override
-  String get ovCharacterOfferTitle => 'Not ready for Pro?';
+  String get ovCharacterOfferTitle => 'Not ready for Premium?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1942,7 +1746,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rowCharactersYouBought => 'Characters you bought';
 
   @override
-  String get rowProRunsUntil => 'Pro runs until';
+  String get rowProRunsUntil => 'Premium runs until';
 
   @override
   String get ctaSwitchToYearly => 'Switch to yearly';
@@ -1957,7 +1761,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'You\'ve been on Pro for two months. The yearly plan works out cheaper.';
+      'The yearly plan works out cheaper than paying monthly.';
 
   @override
   String get rowYouSave => 'You save';
@@ -2018,7 +1822,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'Max keeps running unless you cancel. Here is what happens.';
+      'Premium keeps running unless you cancel. Here is what happens.';
 
   @override
   String get rowTrialEnds => 'Trial ends';
@@ -2033,7 +1837,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaCancelInStore => 'Cancel in the store';
 
   @override
-  String get ovTrialStartTitle => '7 days of Max, free';
+  String get ovTrialStartTitle => '7 days of Premium, free';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2048,7 +1852,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.';
+      'Good call. The same Premium costs less if you pay yearly.';
 
   @override
   String get ovFailedDeclinedTitle => 'Your card was declined';
@@ -2075,7 +1879,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'We couldn\'t reach the store. Nothing was charged.';
 
   @override
-  String get ovAlreadyTitle => 'You\'re already on Pro';
+  String get ovAlreadyTitle => 'You\'re already on Premium';
 
   @override
   String get ovAlreadyBody =>
@@ -2089,30 +1893,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro runs until $date. After that you move to Free.';
+    return 'Premium runs until $date. After that you move to Free.';
   }
 
   @override
   String get subWhatYouLose => 'What you lose';
 
   @override
-  String get benefitCalls15 => 'Unlimited calls, 15 minutes each';
-
-  @override
-  String get benefitScoring => 'Pronunciation scored letter by letter';
-
-  @override
-  String get benefitEveryCharacter => 'Every character, unlimited';
-
-  @override
-  String get ctaKeepPro => 'Keep Pro';
-
-  @override
   String get subPaymentTitle => 'Update payment';
 
   @override
   String get subPaymentBody =>
-      'We could not take the payment. Pro keeps running during the grace period.';
+      'We could not take the payment. Premium keeps running during the grace period.';
 
   @override
   String get subHowToFix => 'How to fix it';
@@ -2131,7 +1923,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro ends on $date. Turn auto-renew back on and nothing changes.';
+    return 'Premium ends on $date. Turn auto-renew back on and nothing changes.';
   }
 
   @override
@@ -2150,13 +1942,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flCheckTitle => 'That\'s today\'s check';
 
   @override
-  String get flCheckBody => 'One check a day on Free. Pro makes it unlimited.';
-
-  @override
-  String get flBenefitCalls => 'Unlimited calls with Pro · 15 minutes each';
-
-  @override
-  String get flBenefitChecks => 'Unlimited pronunciation checks with Pro';
+  String get flCheckBody =>
+      'Free includes one check a day. Premium gives you the full analysis.';
 
   @override
   String flCaption(String price) {
@@ -2297,7 +2084,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get connected => 'Connected';
 
   @override
-  String get unlockedWithMax => 'Available with Max';
+  String get unlockedWithMax => 'Included with your plan';
 
   @override
   String get fcEndedTitle => 'Your free call has ended';

@@ -1312,12 +1312,6 @@ abstract class AppLocalizations {
   /// **'Manage Subscription'**
   String get subscriptionManage;
 
-  /// No description provided for @changePlan.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Plan'**
-  String get changePlan;
-
   /// No description provided for @cancelSubscription.
   ///
   /// In en, this message translates to:
@@ -1354,29 +1348,11 @@ abstract class AppLocalizations {
   /// **'View Billing History'**
   String get viewBillingHistory;
 
-  /// No description provided for @keepUsingPro.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep Using Pro'**
-  String get keepUsingPro;
-
-  /// No description provided for @proMembership.
-  ///
-  /// In en, this message translates to:
-  /// **'Pro Membership'**
-  String get proMembership;
-
   /// Subscription price line. {price} is the store-formatted, storefront-local price string (StoreKit displayPrice / Play formattedPrice) and already carries its own currency symbol - never prefix or append one in a translation.
   ///
   /// In en, this message translates to:
   /// **'{price} / mo'**
   String pricePerMonth(String price);
-
-  /// No description provided for @benefitUnlimitedCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls'**
-  String get benefitUnlimitedCalls;
 
   /// No description provided for @benefitDetailedAnalysis.
   ///
@@ -2236,12 +2212,6 @@ abstract class AppLocalizations {
   /// **'Last payment'**
   String get lastPayment;
 
-  /// Note paragraph on the change-plan and cancel subscription sheets.
-  ///
-  /// In en, this message translates to:
-  /// **'You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.'**
-  String subscriptionSwitchNote(String date);
-
   /// Free plan benefit line on the change-plan sheet.
   ///
   /// In en, this message translates to:
@@ -2512,12 +2482,6 @@ abstract class AppLocalizations {
   /// **'In the store'**
   String get billingGroupInTheStore;
 
-  /// Billing slot 1 label on a paid plan.
-  ///
-  /// In en, this message translates to:
-  /// **'Change plan'**
-  String get billingChangePlan;
-
   /// Billing slot 1 label on every non-paid state.
   ///
   /// In en, this message translates to:
@@ -2671,7 +2635,7 @@ abstract class AppLocalizations {
   /// Plan-card title while inside the Max trial.
   ///
   /// In en, this message translates to:
-  /// **'Max trial'**
+  /// **'Premium trial'**
   String get planMaxTrial;
 
   /// Plan-card subtitle on the Free state. Confirmed copy; do not reword.
@@ -2734,28 +2698,16 @@ abstract class AppLocalizations {
   /// **'{plan} ends'**
   String planEndsLabel(String plan);
 
-  /// No description provided for @bannerGoUnlimitedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Go unlimited with Pro'**
-  String get bannerGoUnlimitedTitle;
-
-  /// No description provided for @bannerGoUnlimitedSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls · 15 minutes each · {price} per month'**
-  String bannerGoUnlimitedSub(String price);
-
   /// No description provided for @bannerMaxUpsellTitle.
   ///
   /// In en, this message translates to:
-  /// **'Turn on video with Max'**
+  /// **'Get face to face with Premium'**
   String get bannerMaxUpsellTitle;
 
   /// No description provided for @bannerMaxUpsellSub.
   ///
   /// In en, this message translates to:
-  /// **'Face-to-face calls · {price} per month'**
+  /// **'Video calls · 15 minutes a day · {price} per month'**
   String bannerMaxUpsellSub(String price);
 
   /// No description provided for @bannerAnnualSwitchTitle.
@@ -2763,12 +2715,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Switch to annual'**
   String get bannerAnnualSwitchTitle;
-
-  /// No description provided for @bannerAnnualSwitchSub.
-  ///
-  /// In en, this message translates to:
-  /// **'{yearly} per year · {perMonth} per month'**
-  String bannerAnnualSwitchSub(String yearly, String perMonth);
 
   /// No description provided for @bannerPaymentFailedTitle.
   ///
@@ -2779,7 +2725,7 @@ abstract class AppLocalizations {
   /// No description provided for @bannerPaymentFailedSub.
   ///
   /// In en, this message translates to:
-  /// **'Update payment in the store to keep Pro'**
+  /// **'Update payment in the store to keep Premium'**
   String get bannerPaymentFailedSub;
 
   /// No description provided for @bannerPausedTitle.
@@ -2806,12 +2752,6 @@ abstract class AppLocalizations {
   /// **'Payment method, plan changes, and cancellation are handled by the store.'**
   String get noteStoreHandled;
 
-  /// No description provided for @noteFairUse.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited use is subject to our fair use policy.'**
-  String get noteFairUse;
-
   /// No description provided for @noteTrialEnds.
   ///
   /// In en, this message translates to:
@@ -2827,7 +2767,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteHold.
   ///
   /// In en, this message translates to:
-  /// **'Pro is paused until the payment goes through. Your characters and progress are safe.'**
+  /// **'Premium is paused until the payment goes through. Your characters and progress are safe.'**
   String get noteHold;
 
   /// No description provided for @noteEnding.
@@ -2839,7 +2779,7 @@ abstract class AppLocalizations {
   /// No description provided for @trialExpiredTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Max trial ended'**
+  /// **'Your Premium trial ended'**
   String get trialExpiredTitle;
 
   /// No description provided for @trialExpiredSub.
@@ -2860,23 +2800,11 @@ abstract class AppLocalizations {
   /// **'Current Plan'**
   String get currentPlanTitle;
 
-  /// No description provided for @badgeRecommended.
-  ///
-  /// In en, this message translates to:
-  /// **'Recommended'**
-  String get badgeRecommended;
-
   /// No description provided for @perMonthUnit.
   ///
   /// In en, this message translates to:
   /// **'per month'**
   String get perMonthUnit;
-
-  /// No description provided for @planTaglinePro.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls. 15 minutes each.'**
-  String get planTaglinePro;
 
   /// No description provided for @planTaglineMax.
   ///
@@ -2890,65 +2818,11 @@ abstract class AppLocalizations {
   /// **'One call a day. On the house.'**
   String get planTaglineFree;
 
-  /// No description provided for @bulletProCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Voice calls, as often as you want'**
-  String get bulletProCalls;
-
-  /// No description provided for @bulletProLength.
-  ///
-  /// In en, this message translates to:
-  /// **'15 minutes a call'**
-  String get bulletProLength;
-
-  /// No description provided for @bulletProScoring.
-  ///
-  /// In en, this message translates to:
-  /// **'Pronunciation scored letter by letter'**
-  String get bulletProScoring;
-
   /// No description provided for @bulletProCorrections.
   ///
   /// In en, this message translates to:
   /// **'Corrections aimed at your native language'**
   String get bulletProCorrections;
-
-  /// No description provided for @bulletProBeaverCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Beaver calls you first'**
-  String get bulletProBeaverCalls;
-
-  /// No description provided for @bulletMaxVideo.
-  ///
-  /// In en, this message translates to:
-  /// **'Face-to-face video calls'**
-  String get bulletMaxVideo;
-
-  /// No description provided for @bulletMaxEverything.
-  ///
-  /// In en, this message translates to:
-  /// **'Everything in Pro'**
-  String get bulletMaxEverything;
-
-  /// No description provided for @bulletMaxCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, unlimited'**
-  String get bulletMaxCharacters;
-
-  /// No description provided for @bulletMaxStudyBook.
-  ///
-  /// In en, this message translates to:
-  /// **'A study book matched to where you are'**
-  String get bulletMaxStudyBook;
-
-  /// No description provided for @bulletMaxWeeklyReport.
-  ///
-  /// In en, this message translates to:
-  /// **'A weekly report on how your sound is changing'**
-  String get bulletMaxWeeklyReport;
 
   /// No description provided for @bulletFreeCall.
   ///
@@ -2959,26 +2833,14 @@ abstract class AppLocalizations {
   /// No description provided for @bulletFreeCheck.
   ///
   /// In en, this message translates to:
-  /// **'One pronunciation check a day'**
+  /// **'Full analysis for your first 3 calls'**
   String get bulletFreeCheck;
-
-  /// No description provided for @bulletFreeAccent.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited accent checks'**
-  String get bulletFreeAccent;
 
   /// No description provided for @bulletFreeCharacter.
   ///
   /// In en, this message translates to:
-  /// **'One character to start'**
+  /// **'Two characters to start'**
   String get bulletFreeCharacter;
-
-  /// No description provided for @ctaGoUnlimited.
-  ///
-  /// In en, this message translates to:
-  /// **'Go unlimited'**
-  String get ctaGoUnlimited;
 
   /// No description provided for @ctaTurnOnVideo.
   ///
@@ -2989,7 +2851,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteCallLength.
   ///
   /// In en, this message translates to:
-  /// **'Calls are 15 minutes each.'**
+  /// **'Premium: one call a day, up to 15 minutes.'**
   String get noteCallLength;
 
   /// No description provided for @paywallProTitle1.
@@ -3003,12 +2865,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'who\'s up at 3 a.m.'**
   String get paywallProTitle2;
-
-  /// No description provided for @paywallProSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls. 15 minutes each. All year.'**
-  String get paywallProSub;
 
   /// Hot-entry paywall headline - one line, no story (spec 8-1).
   ///
@@ -3051,12 +2907,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Now you can see them.'**
   String get paywallMaxTitle;
-
-  /// No description provided for @paywallMaxSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Video calls, every character, and a study book made for where you are.'**
-  String get paywallMaxSub;
 
   /// No description provided for @planMonthly.
   ///
@@ -3130,12 +2980,6 @@ abstract class AppLocalizations {
   /// **'Privacy'**
   String get footerPrivacy;
 
-  /// No description provided for @noteMaxCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.'**
-  String get noteMaxCharacters;
-
   /// No description provided for @processingTitle.
   ///
   /// In en, this message translates to:
@@ -3151,32 +2995,8 @@ abstract class AppLocalizations {
   /// No description provided for @successProTitle.
   ///
   /// In en, this message translates to:
-  /// **'You\'re on Pro.'**
+  /// **'You\'re on Premium.'**
   String get successProTitle;
-
-  /// No description provided for @successProSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls, starting right now.'**
-  String get successProSub;
-
-  /// No description provided for @successProBenefit1.
-  ///
-  /// In en, this message translates to:
-  /// **'Call as often as you want — 15 minutes a call'**
-  String get successProBenefit1;
-
-  /// No description provided for @successProBenefit2.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited pronunciation checks'**
-  String get successProBenefit2;
-
-  /// No description provided for @successProBenefit3.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, plus one-off purchases'**
-  String get successProBenefit3;
 
   /// No description provided for @successMaxTitle.
   ///
@@ -3190,30 +3010,6 @@ abstract class AppLocalizations {
   /// **'Video calls are on. Tap the video button in any call.'**
   String get successMaxSub;
 
-  /// No description provided for @successMaxBenefit1.
-  ///
-  /// In en, this message translates to:
-  /// **'Face-to-face video calls'**
-  String get successMaxBenefit1;
-
-  /// No description provided for @successMaxBenefit2.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, unlimited and new ones first'**
-  String get successMaxBenefit2;
-
-  /// No description provided for @successMaxBenefit3.
-  ///
-  /// In en, this message translates to:
-  /// **'A study book matched to where you are'**
-  String get successMaxBenefit3;
-
-  /// No description provided for @ctaStartACall.
-  ///
-  /// In en, this message translates to:
-  /// **'Start a call'**
-  String get ctaStartACall;
-
   /// No description provided for @ctaStartAVideoCall.
   ///
   /// In en, this message translates to:
@@ -3225,12 +3021,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'See your subscription'**
   String get ctaSeeYourSubscription;
-
-  /// No description provided for @successProCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} is charged monthly until you cancel. Manage or cancel anytime in the store.'**
-  String successProCaption(String price);
 
   /// No description provided for @successMaxCaption.
   ///
@@ -3262,142 +3052,10 @@ abstract class AppLocalizations {
   /// **'Nothing was charged.'**
   String get plansErrorCaption;
 
-  /// No description provided for @changePlanTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Change Plan'**
-  String get changePlanTitle;
-
-  /// No description provided for @moveToMaxTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Move to Max'**
-  String get moveToMaxTitle;
-
-  /// No description provided for @maxPriceShort.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} / mo'**
-  String maxPriceShort(String price);
-
-  /// No description provided for @moveToMaxCardSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Face-to-face video calls · every character · a study book made for you'**
-  String get moveToMaxCardSub;
-
-  /// No description provided for @whatHappensNow.
-  ///
-  /// In en, this message translates to:
-  /// **'What happens now'**
-  String get whatHappensNow;
-
-  /// No description provided for @maxStartsLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Max starts'**
-  String get maxStartsLabel;
-
-  /// No description provided for @immediately.
-  ///
-  /// In en, this message translates to:
-  /// **'Immediately'**
-  String get immediately;
-
-  /// No description provided for @unusedProTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Unused Pro time'**
-  String get unusedProTime;
-
-  /// No description provided for @creditedTowardMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Credited toward Max'**
-  String get creditedTowardMax;
-
-  /// No description provided for @nextPaymentMaxValue.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} · {date}'**
-  String nextPaymentMaxValue(String price, String date);
-
-  /// No description provided for @nextPaymentProValue.
-  ///
-  /// In en, this message translates to:
-  /// **'{price} · {date}'**
-  String nextPaymentProValue(String price, String date);
-
-  /// No description provided for @ctaSwitchToMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to Max'**
-  String get ctaSwitchToMax;
-
-  /// No description provided for @upgradeCaption.
-  ///
-  /// In en, this message translates to:
-  /// **'Your new plan starts right away. Unused Pro time is credited, never charged twice.'**
-  String get upgradeCaption;
-
-  /// No description provided for @moveToProTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Move to Pro'**
-  String get moveToProTitle;
-
-  /// No description provided for @moveToProSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Nothing changes today. Max runs to the end of the month you already paid for.'**
-  String get moveToProSub;
-
-  /// No description provided for @maxRunsUntil.
-  ///
-  /// In en, this message translates to:
-  /// **'Max runs until'**
-  String get maxRunsUntil;
-
-  /// No description provided for @proStarts.
-  ///
-  /// In en, this message translates to:
-  /// **'Pro starts'**
-  String get proStarts;
-
-  /// No description provided for @whatYouKeep.
-  ///
-  /// In en, this message translates to:
-  /// **'What you keep'**
-  String get whatYouKeep;
-
-  /// No description provided for @keepBenefitCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited voice calls, 15 minutes each'**
-  String get keepBenefitCalls;
-
-  /// No description provided for @keepBenefitCharacters.
-  ///
-  /// In en, this message translates to:
-  /// **'Characters you bought stay yours forever'**
-  String get keepBenefitCharacters;
-
-  /// No description provided for @downgradeWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Video calls and Max-only characters turn off on {date}.'**
-  String downgradeWarning(String date);
-
-  /// No description provided for @ctaSwitchToPro.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to Pro'**
-  String get ctaSwitchToPro;
-
   /// No description provided for @ctaKeepMax.
   ///
   /// In en, this message translates to:
-  /// **'Keep Max'**
+  /// **'Keep Premium'**
   String get ctaKeepMax;
 
   /// No description provided for @winbackSkip.
@@ -3409,7 +3067,7 @@ abstract class AppLocalizations {
   /// No description provided for @winbackTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Pro plan ended'**
+  /// **'Your Premium plan ended'**
   String get winbackTitle;
 
   /// No description provided for @winbackSub.
@@ -3487,7 +3145,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovRestoreSuccessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Pro is back'**
+  /// **'Premium is back'**
   String get ovRestoreSuccessTitle;
 
   /// No description provided for @ovRestoreSuccessBody.
@@ -3535,7 +3193,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovCharacterOfferTitle.
   ///
   /// In en, this message translates to:
-  /// **'Not ready for Pro?'**
+  /// **'Not ready for Premium?'**
   String get ovCharacterOfferTitle;
 
   /// No description provided for @ovCharacterOfferBody.
@@ -3631,7 +3289,7 @@ abstract class AppLocalizations {
   /// No description provided for @rowProRunsUntil.
   ///
   /// In en, this message translates to:
-  /// **'Pro runs until'**
+  /// **'Premium runs until'**
   String get rowProRunsUntil;
 
   /// No description provided for @ctaSwitchToYearly.
@@ -3655,7 +3313,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovAnnualSwitchBody.
   ///
   /// In en, this message translates to:
-  /// **'You\'ve been on Pro for two months. The yearly plan works out cheaper.'**
+  /// **'The yearly plan works out cheaper than paying monthly.'**
   String get ovAnnualSwitchBody;
 
   /// No description provided for @rowYouSave.
@@ -3757,7 +3415,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovTrialEndingBody.
   ///
   /// In en, this message translates to:
-  /// **'Max keeps running unless you cancel. Here is what happens.'**
+  /// **'Premium keeps running unless you cancel. Here is what happens.'**
   String get ovTrialEndingBody;
 
   /// No description provided for @rowTrialEnds.
@@ -3787,7 +3445,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovTrialStartTitle.
   ///
   /// In en, this message translates to:
-  /// **'7 days of Max, free'**
+  /// **'7 days of Premium, free'**
   String get ovTrialStartTitle;
 
   /// No description provided for @ovTrialStartBody.
@@ -3811,7 +3469,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovOtoBody.
   ///
   /// In en, this message translates to:
-  /// **'Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.'**
+  /// **'Good call. The same Premium costs less if you pay yearly.'**
   String get ovOtoBody;
 
   /// No description provided for @ovFailedDeclinedTitle.
@@ -3859,7 +3517,7 @@ abstract class AppLocalizations {
   /// No description provided for @ovAlreadyTitle.
   ///
   /// In en, this message translates to:
-  /// **'You\'re already on Pro'**
+  /// **'You\'re already on Premium'**
   String get ovAlreadyTitle;
 
   /// No description provided for @ovAlreadyBody.
@@ -3883,7 +3541,7 @@ abstract class AppLocalizations {
   /// No description provided for @subCancelBody.
   ///
   /// In en, this message translates to:
-  /// **'Pro runs until {date}. After that you move to Free.'**
+  /// **'Premium runs until {date}. After that you move to Free.'**
   String subCancelBody(String date);
 
   /// No description provided for @subWhatYouLose.
@@ -3891,30 +3549,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'What you lose'**
   String get subWhatYouLose;
-
-  /// No description provided for @benefitCalls15.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls, 15 minutes each'**
-  String get benefitCalls15;
-
-  /// No description provided for @benefitScoring.
-  ///
-  /// In en, this message translates to:
-  /// **'Pronunciation scored letter by letter'**
-  String get benefitScoring;
-
-  /// No description provided for @benefitEveryCharacter.
-  ///
-  /// In en, this message translates to:
-  /// **'Every character, unlimited'**
-  String get benefitEveryCharacter;
-
-  /// No description provided for @ctaKeepPro.
-  ///
-  /// In en, this message translates to:
-  /// **'Keep Pro'**
-  String get ctaKeepPro;
 
   /// No description provided for @subPaymentTitle.
   ///
@@ -3925,7 +3559,7 @@ abstract class AppLocalizations {
   /// No description provided for @subPaymentBody.
   ///
   /// In en, this message translates to:
-  /// **'We could not take the payment. Pro keeps running during the grace period.'**
+  /// **'We could not take the payment. Premium keeps running during the grace period.'**
   String get subPaymentBody;
 
   /// No description provided for @subHowToFix.
@@ -3961,7 +3595,7 @@ abstract class AppLocalizations {
   /// No description provided for @subResubBody.
   ///
   /// In en, this message translates to:
-  /// **'Pro ends on {date}. Turn auto-renew back on and nothing changes.'**
+  /// **'Premium ends on {date}. Turn auto-renew back on and nothing changes.'**
   String subResubBody(String date);
 
   /// No description provided for @subWhatYouKeep.
@@ -3997,20 +3631,8 @@ abstract class AppLocalizations {
   /// No description provided for @flCheckBody.
   ///
   /// In en, this message translates to:
-  /// **'One check a day on Free. Pro makes it unlimited.'**
+  /// **'Free includes one check a day. Premium gives you the full analysis.'**
   String get flCheckBody;
-
-  /// No description provided for @flBenefitCalls.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited calls with Pro · 15 minutes each'**
-  String get flBenefitCalls;
-
-  /// No description provided for @flBenefitChecks.
-  ///
-  /// In en, this message translates to:
-  /// **'Unlimited pronunciation checks with Pro'**
-  String get flBenefitChecks;
 
   /// No description provided for @flCaption.
   ///
@@ -4267,7 +3889,7 @@ abstract class AppLocalizations {
   /// Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does.
   ///
   /// In en, this message translates to:
-  /// **'Available with Max'**
+  /// **'Included with your plan'**
   String get unlockedWithMax;
 
   /// Title of the sheet shown when a FREE member hits the 5-minute call limit. The call is over; there is no extend option.

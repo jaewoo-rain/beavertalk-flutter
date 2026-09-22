@@ -38,7 +38,7 @@ import '../screens/mypage/edit_nickname.dart';
 import '../screens/mypage/settings.dart';
 import '../screens/mypage/subscription_manage.dart';
 import '../screens/plans/paywall.dart';
-import '../screens/plans/plan_change.dart';
+import '../screens/plans/winback_survey.dart';
 import '../screens/plans/plans_compare.dart';
 import '../screens/plans/purchase_flow.dart';
 import '../features/subscription/domain/entities/subscription_state.dart';
@@ -133,13 +133,10 @@ abstract final class Routes {
 
   // ── Subscription redesign (P3) ──
   static const plansCompare = '/plans/compare';
-  static const planChangeUpgrade = '/plans/change-upgrade';
-  static const planChangeDowngrade = '/plans/change-downgrade';
   static const paywallPro = '/paywall/pro';
   static const paywallProLimit = '/paywall/pro-limit';
   static const paywallMax = '/paywall/max';
   static const purchaseProcessing = '/purchase/processing';
-  static const purchaseSuccessPro = '/purchase/success-pro';
   static const purchaseSuccessMax = '/purchase/success-max';
   static const plansError = '/plans/error';
   static const winbackSurvey = '/winback-survey';
@@ -290,13 +287,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
         const PaywallScreen(variant: PaywallVariant.proLimit),
     Routes.paywallMax: (_) =>
         const PaywallScreen(variant: PaywallVariant.max),
-    Routes.planChangeUpgrade: (_) =>
-        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
-    Routes.planChangeDowngrade: (_) =>
-        const PlanChangeScreen(direction: PlanChangeDirection.downgrade),
     Routes.purchaseProcessing: (_) => const PurchaseProcessingScreen(),
-    Routes.purchaseSuccessPro: (_) =>
-        const PurchaseSuccessScreen(tier: SubscriptionTier.pro),
     Routes.purchaseSuccessMax: (_) =>
         const PurchaseSuccessScreen(tier: SubscriptionTier.max),
     Routes.plansError: (_) => const PlansErrorScreen(),

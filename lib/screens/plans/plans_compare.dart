@@ -17,12 +17,11 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
-/// Plan comparison — `depth/plans_compare` (`4514:5226`), measured 2026-08-03.
+/// Plan comparison — `depth/plans_compare` (`4514:5226`, 09-22 단일 티어).
 ///
-/// Three [PlanSummaryCard]s: Pro (mint border, `Go unlimited`), Max (gold
-/// border, `Recommended`, struck anchor, `Turn on video`) and Free (flat, no
-/// CTA — there is nothing to buy). The design shows the Free-member variant;
-/// the only state-driven part is which card wears `Current` and drops its CTA.
+/// 카드 두 장: Premium(금색, 「Turn on video」) · Free(평평, CTA 없음 — 살 것이 없다).
+/// 어느 카드가 `Current` 를 달고 CTA 를 떨어뜨리는지만 상태로 갈린다.
+/// 옛 Pro 카드(「Go unlimited」)는 없앴다 — Pro 는 더 팔지 않는다.
 class PlansCompareScreen extends ConsumerWidget {
   /// Creates the plan comparison screen.
   const PlansCompareScreen({super.key});
@@ -34,9 +33,9 @@ class PlansCompareScreen extends ConsumerWidget {
     final tier = ref.watch(subscriptionStatusProvider).tier;
     // Kicks the store catalog query and rebuilds this subtree when it lands.
     // Child widgets read [PlanPrices] statically, so this one watch is what
-    // turns list prices into the member's real storefront prices — and what
-    // makes a console-side discount show up without an app release.
+    // turns list prices into the member's real storefront prices.
     ref.watch(storePricesProvider);
+    final premium = tier == SubscriptionTier.max;
 
     return AppScaffold(
       background: c.backgroundNormalNormal,
@@ -52,54 +51,23 @@ class PlansCompareScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(top: AppSpacing.s24, bottom: AppSpacing.s32),
                 children: [
                   PlanSummaryCard(
-                    title: l10n.planPro,
-                    price: PlanPrices.proMonthly,
-                    perMonthUnit: l10n.perMonthUnit,
-                    badgeTone:
-                        tier == SubscriptionTier.pro ? BadgeTone.neutral : null,
-                    badgeLabel:
-                        tier == SubscriptionTier.pro ? l10n.badgeCurrent : null,
-                    tagline: l10n.planTaglinePro,
-                    taglineColor: c.primaryNormal,
-                    bulletTone: BulletTone.pro,
-                    bullets: [
-                      l10n.bulletProCalls,
-                      l10n.bulletProLength,
-                      l10n.bulletProScoring,
-                      l10n.bulletProCorrections,
-                      l10n.bulletProBeaverCalls,
-                    ],
-                    face: c.primaryNormal10,
-                    border: c.primaryNormal,
-                    cta: tier == SubscriptionTier.pro ? null : l10n.ctaGoUnlimited,
-                    ctaType: BtnType.primaryFill,
-                    onCta: () => Navigator.pushNamed(context, Routes.paywallPro),
-                  ),
-                  const SizedBox(height: AppSpacing.s24),
-                  PlanSummaryCard(
                     title: l10n.planMax,
                     price: PlanPrices.maxMonthly,
-                    anchorPrice: PlanPrices.maxMonthlyAnchor,
                     perMonthUnit: l10n.perMonthUnit,
-                    badgeTone: tier == SubscriptionTier.max
-                        ? BadgeTone.neutral
-                        : BadgeTone.gold,
-                    badgeLabel: tier == SubscriptionTier.max
-                        ? l10n.badgeCurrent
-                        : l10n.badgeRecommended,
+                    badgeTone: premium ? BadgeTone.neutral : null,
+                    badgeLabel: premium ? l10n.badgeCurrent : null,
                     tagline: l10n.planTaglineMax,
                     taglineColor: c.accentForegroundOrange,
                     bulletTone: BulletTone.max,
                     bullets: [
-                      l10n.bulletMaxVideo,
-                      l10n.bulletMaxEverything,
-                      l10n.bulletMaxCharacters,
-                      l10n.bulletMaxStudyBook,
-                      l10n.bulletMaxWeeklyReport,
+                      l10n.premiumBulletVideo,
+                      l10n.premiumBulletAnalysis,
+                      l10n.premiumBulletWeakSounds,
+                      l10n.bulletProCorrections,
                     ],
                     face: c.statusCautionarySurface,
                     border: c.statusCautionary,
-                    cta: tier == SubscriptionTier.max ? null : l10n.ctaTurnOnVideo,
+                    cta: premium ? null : l10n.ctaTurnOnVideo,
                     ctaType: BtnType.gold,
                     onCta: () => Navigator.pushNamed(context, Routes.paywallMax),
                   ),
@@ -117,7 +85,8 @@ class PlansCompareScreen extends ConsumerWidget {
                     bullets: [
                       l10n.bulletFreeCall,
                       l10n.bulletFreeCheck,
-                      l10n.bulletFreeAccent,
+                      // 「억양 체크 무제한」 줄은 뺐다 — 한도 시트의 「하루 1번」과
+                      // 같은 「check」로 읽혀 모순된다. 사실 확인 전까지 약속하지 않는다(P16).
                       l10n.bulletFreeCharacter,
                     ],
                     face: c.backgroundSurfaceAlternative,
@@ -126,7 +95,7 @@ class PlansCompareScreen extends ConsumerWidget {
                   Text(l10n.noteCallLength,
                       style: AppType.caption1.r.copyWith(color: c.labelNormal)),
                   const SizedBox(height: AppSpacing.s4),
-                  Text(l10n.noteFairUse,
+                  Text(l10n.noteCharactersSeparate,
                       style: AppType.caption1.r.copyWith(color: c.labelNormal)),
                 ],
               ),

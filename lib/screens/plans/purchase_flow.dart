@@ -43,12 +43,12 @@ class _PurchaseProcessingScreenState
   bool _kicked = false;
 
   /// What to buy — a [PurchaseRequest] argument, or a bare tier (legacy call
-  /// sites), or the Pro-monthly default.
+  /// sites), or the Premium-monthly default (Pro is no longer sold).
   PurchaseRequest get _request {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is PurchaseRequest) return args;
     if (args is SubscriptionTier) return (tier: args, annual: false);
-    return (tier: SubscriptionTier.pro, annual: false);
+    return (tier: SubscriptionTier.max, annual: false);
   }
 
   @override
@@ -92,13 +92,10 @@ class _PurchaseProcessingScreenState
                 (r) => r.settings.name == Routes.call || r.isFirst);
             return;
           }
+          // 유료는 Premium 하나(상품·서버 코드 `max`) — 성공 화면도 하나다.
           Navigator.pushReplacementNamed(
             context,
-            tier == SubscriptionTier.max
-                ? Routes.purchaseSuccessMax
-                : Routes.purchaseSuccessPro,
-            // The success screen suppresses the annual OTO when the purchase
-            // was already annual (spec §8-2).
+            Routes.purchaseSuccessMax,
             arguments: request.annual,
           );
         case IapPurchaseState.canceled:
@@ -216,8 +213,10 @@ class _PurchaseProcessingScreenState
 /// Close-GNB, success mark, headline, three unlocked-benefit rows and a
 /// sticky CTA pair. Pro is mint; Max is gold end to end.
 ///
-/// The Pro variant also fires the one-time-offer: `overlay/oto_annual` 0.8s
-/// after entry (spec §8-2) — once per app run, monthly purchases only.
+/// 단일 티어(09-22): Premium 성공 화면 하나(Figma `depth/purchase_success` `4514:5684`).
+/// 옛 Pro 성공 화면이 띄우던 연간 전환 OTO(`overlay/oto_annual`)는 **껐다** — 연간은 팔되
+/// 유도하지 않는다(가치 사다리 정본 §1 · §11-4).
+/// [tier] 는 호출부 호환으로 남겼다. 무엇이 와도 Premium 으로 그린다.
 class PurchaseSuccessScreen extends StatefulWidget {
   /// Creates a success screen for [tier].
   const PurchaseSuccessScreen({super.key, required this.tier});
@@ -230,29 +229,6 @@ class PurchaseSuccessScreen extends StatefulWidget {
 }
 
 class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
-  /// Once per app run — the OTO never nags (spec §8-2: 신규 결제 직후 1회).
-  static bool _otoShownThisRun = false;
-
-  SubscriptionTier get tier => widget.tier;
-
-  bool get _isMax => tier == SubscriptionTier.max;
-
-  /// Whether the purchase that landed here was annual — the processing screen
-  /// hands it through as the route argument. Annual buyers never see the
-  /// annual OTO (spec §8-2: 월간 신규 결제 직후 1회).
-  bool get _wasAnnual =>
-      ModalRoute.of(context)?.settings.arguments as bool? ?? false;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_isMax || _otoShownThisRun || _wasAnnual) return;
-    _otoShownThisRun = true;
-    Future.delayed(const Duration(milliseconds: 800), () {
-      if (!mounted) return;
-      showSubscriptionOverlay(context, SubscriptionOverlay.otoAnnual);
-    });
-  }
 
   /// The whole purchase funnel sits beneath this screen; going "back" into a
   /// spent paywall or the processing limbo helps no one. Every exit — system
@@ -264,17 +240,13 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    final benefits = _isMax
-        ? [
-            l10n.successMaxBenefit1,
-            l10n.successMaxBenefit2,
-            l10n.successMaxBenefit3
-          ]
-        : [
-            l10n.successProBenefit1,
-            l10n.successProBenefit2,
-            l10n.successProBenefit3
-          ];
+    // 페이월·플랜 비교와 **같은 네 줄**이다 — 산 것과 판 것이 같아야 한다.
+    final benefits = [
+      l10n.premiumBulletVideo,
+      l10n.premiumBulletAnalysis,
+      l10n.premiumBulletWeakSounds,
+      l10n.bulletProCorrections,
+    ];
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
@@ -313,19 +285,19 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                   ),
                   const SizedBox(height: AppSpacing.s24),
                   Text(
-                    _isMax ? l10n.successMaxTitle : l10n.successProTitle,
+                    l10n.successMaxTitle,
                     style: AppType.title3.sb.copyWith(color: c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s24),
                   Text(
-                    _isMax ? l10n.successMaxSub : l10n.successProSub,
+                    l10n.successMaxSub,
                     style: AppType.label1.r.copyWith(color: c.labelNormal),
                   ),
                   const SizedBox(height: AppSpacing.s24),
                   for (var i = 0; i < benefits.length; i++) ...[
                     if (i > 0) const SizedBox(height: 14),
                     BenefitRow(
-                      tier: _isMax ? BenefitTier.max : BenefitTier.pro,
+                      tier: BenefitTier.max,
                       label: benefits[i],
                     ),
                   ],
@@ -343,9 +315,9 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Button(
-                    type: _isMax ? BtnType.gold : BtnType.primaryFill,
+                    type: BtnType.gold,
                     size: BtnSize.s60,
-                    text: _isMax ? l10n.ctaStartAVideoCall : l10n.ctaStartACall,
+                    text: l10n.ctaStartAVideoCall,
                     onPressed: () => _exitToRoot(context),
                   ),
                   const SizedBox(height: 6),
@@ -361,7 +333,7 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    _isMax ? l10n.successMaxCaption(PlanPrices.maxMonthly) : l10n.successProCaption(PlanPrices.proMonthly),
+                    l10n.successMaxCaption(PlanPrices.maxMonthly),
                     textAlign: TextAlign.center,
                     style: AppType.caption1.r.copyWith(color: c.labelNormal),
                   ),

@@ -392,15 +392,12 @@
   "noAlarms": "No alarms registered",
   "noAlarmsBody": "Add a learning reminder\nand you can build a consistent habit.",
   "subscriptionManage": "Manage Subscription",
-  "changePlan": "Change Plan",
   "cancelSubscription": "Cancel Subscription",
   "benefitsInUse": "Your benefits",
   "paymentInfo": "Payment info",
   "nextBillingDate": "Next billing date",
   "lostBenefitsTitle": "Benefits you'll lose if you cancel",
   "viewBillingHistory": "View Billing History",
-  "keepUsingPro": "Keep Using Pro",
-  "proMembership": "Pro Membership",
   "pricePerMonth": "{price} / mo",
   "@pricePerMonth": {
     "description": "Subscription price line. {price} is the store-formatted, storefront-local price string (StoreKit displayPrice / Play formattedPrice) and already carries its own currency symbol - never prefix or append one in a translation.",
@@ -411,7 +408,6 @@
       }
     }
   },
-  "benefitUnlimitedCalls": "Unlimited calls",
   "benefitDetailedAnalysis": "Detailed pronunciation & grammar analysis",
   "benefitAllCharacters": "Access to all characters",
   "benefitNoAds": "No ads",
@@ -579,16 +575,6 @@
   "lastPayment": "Last payment",
   "@lastPayment": {
     "description": "Label of the most-recent-charge row in the subscription sheet's 결제 정보 section."
-  },
-  "subscriptionSwitchNote": "You can keep using Pro benefits until {date}, after which your plan switches to Free automatically.",
-  "@subscriptionSwitchNote": {
-    "description": "Note paragraph on the change-plan and cancel subscription sheets.",
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "June 20, 2026"
-      }
-    }
   },
   "freePlanCallLimit": "1 call a day · 5 min limit",
   "@freePlanCallLimit": {
@@ -770,10 +756,6 @@
   "@billingGroupInTheStore": {
     "description": "Billing list group title - rows that leave the app for the store."
   },
-  "billingChangePlan": "Change plan",
-  "@billingChangePlan": {
-    "description": "Billing slot 1 label on a paid plan."
-  },
   "billingCompareAllPlans": "Compare all plans",
   "@billingCompareAllPlans": {
     "description": "Billing slot 1 label on every non-paid state."
@@ -855,7 +837,7 @@
   "@noteCharactersSeparate": {"description": "Footnote on paywall/plans: characters are not included in Premium."},
   "ctaGetPremium": "Get Premium",
   "@ctaGetPremium": {"description": "CTA on the limit paywall (reached by using up the free daily call)."},
-  "planMaxTrial": "Max trial",
+  "planMaxTrial": "Premium trial",
   "@planMaxTrial": {
     "description": "Plan-card title while inside the Max trial."
   },
@@ -911,17 +893,8 @@
       }
     }
   },
-  "bannerGoUnlimitedTitle": "Go unlimited with Pro",
-  "bannerGoUnlimitedSub": "Unlimited calls · 15 minutes each · {price} per month",
-  "@bannerGoUnlimitedSub": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "bannerMaxUpsellTitle": "Turn on video with Max",
-  "bannerMaxUpsellSub": "Face-to-face calls · {price} per month",
+  "bannerMaxUpsellTitle": "Get face to face with Premium",
+  "bannerMaxUpsellSub": "Video calls · 15 minutes a day · {price} per month",
   "@bannerMaxUpsellSub": {
     "placeholders": {
       "price": {
@@ -930,24 +903,12 @@
     }
   },
   "bannerAnnualSwitchTitle": "Switch to annual",
-  "bannerAnnualSwitchSub": "{yearly} per year · {perMonth} per month",
-  "@bannerAnnualSwitchSub": {
-    "placeholders": {
-      "yearly": {
-        "type": "String"
-      },
-      "perMonth": {
-        "type": "String"
-      }
-    }
-  },
   "bannerPaymentFailedTitle": "We couldn't take the payment",
-  "bannerPaymentFailedSub": "Update payment in the store to keep Pro",
+  "bannerPaymentFailedSub": "Update payment in the store to keep Premium",
   "bannerPausedTitle": "Your plan is paused",
   "bannerPausedSub": "The payment never went through",
   "noteRestoreHint": "Already subscribed on another device? Restore brings it back on this one.",
   "noteStoreHandled": "Payment method, plan changes, and cancellation are handled by the store.",
-  "noteFairUse": "Unlimited use is subject to our fair use policy.",
   "noteTrialEnds": "Your trial ends {date}. Cancel in the store before then and nothing is charged.",
   "@noteTrialEnds": {
     "placeholders": {
@@ -958,7 +919,7 @@
     }
   },
   "noteGrace": "Benefits keep running through the grace period. Cancellation is never intercepted in the app.",
-  "noteHold": "Pro is paused until the payment goes through. Your characters and progress are safe.",
+  "noteHold": "Premium is paused until the payment goes through. Your characters and progress are safe.",
   "noteEnding": "Your plan is set to end. Benefits run until {date}, then you move to Free. You can resubscribe any time.",
   "@noteEnding": {
     "placeholders": {
@@ -968,38 +929,24 @@
       }
     }
   },
-  "trialExpiredTitle": "Your Max trial ended",
+  "trialExpiredTitle": "Your Premium trial ended",
   "trialExpiredSub": "You are on Free now",
   "seePlans": "See plans",
   "currentPlanTitle": "Current Plan",
   "@currentPlanTitle": {
     "description": "GNB title of plans_compare (4514:5226)."
   },
-  "badgeRecommended": "Recommended",
   "perMonthUnit": "per month",
-  "planTaglinePro": "Unlimited calls. 15 minutes each.",
   "planTaglineMax": "Now you can see them.",
   "planTaglineFree": "One call a day. On the house.",
-  "bulletProCalls": "Voice calls, as often as you want",
-  "bulletProLength": "15 minutes a call",
-  "bulletProScoring": "Pronunciation scored letter by letter",
   "bulletProCorrections": "Corrections aimed at your native language",
-  "bulletProBeaverCalls": "Beaver calls you first",
-  "bulletMaxVideo": "Face-to-face video calls",
-  "bulletMaxEverything": "Everything in Pro",
-  "bulletMaxCharacters": "Every character, unlimited",
-  "bulletMaxStudyBook": "A study book matched to where you are",
-  "bulletMaxWeeklyReport": "A weekly report on how your sound is changing",
   "bulletFreeCall": "One 5-minute voice call a day",
-  "bulletFreeCheck": "One pronunciation check a day",
-  "bulletFreeAccent": "Unlimited accent checks",
-  "bulletFreeCharacter": "One character to start",
-  "ctaGoUnlimited": "Go unlimited",
+  "bulletFreeCheck": "Full analysis for your first 3 calls",
+  "bulletFreeCharacter": "Two characters to start",
   "ctaTurnOnVideo": "Turn on video",
-  "noteCallLength": "Calls are 15 minutes each.",
+  "noteCallLength": "Premium: one call a day, up to 15 minutes.",
   "paywallProTitle1": "Your Korean friend",
   "paywallProTitle2": "who's up at 3 a.m.",
-  "paywallProSub": "Unlimited calls. 15 minutes each. All year.",
   "paywallLimitHeadline": "Premium gives you 15 minutes.",
   "@paywallLimitHeadline": {
     "description": "Hot-entry paywall headline - one line, no story (spec 8-1)."
@@ -1010,7 +957,6 @@
   "limitBannerCheckSub": "Free gives you one check a day",
   "bulletProCharactersForever": "Characters you buy stay yours forever",
   "paywallMaxTitle": "Now you can see them.",
-  "paywallMaxSub": "Video calls, every character, and a study book made for where you are.",
   "planMonthly": "Monthly",
   "planAnnual": "Annual",
   "proMonthlyPriceLine": "{price} per month",
@@ -1078,30 +1024,13 @@
   "ctaCaptionAutoRenew": "Renews automatically until canceled.",
   "footerTerms": "Terms",
   "footerPrivacy": "Privacy",
-  "noteMaxCharacters": "Characters unlocked by Max are available while your subscription is active. Characters you bought stay yours.",
   "processingTitle": "Confirming your purchase",
   "processingSub": "This usually takes a few seconds.",
-  "successProTitle": "You're on Pro.",
-  "successProSub": "Unlimited calls, starting right now.",
-  "successProBenefit1": "Call as often as you want — 15 minutes a call",
-  "successProBenefit2": "Unlimited pronunciation checks",
-  "successProBenefit3": "Every character, plus one-off purchases",
+  "successProTitle": "You're on Premium.",
   "successMaxTitle": "You can see them now.",
   "successMaxSub": "Video calls are on. Tap the video button in any call.",
-  "successMaxBenefit1": "Face-to-face video calls",
-  "successMaxBenefit2": "Every character, unlimited and new ones first",
-  "successMaxBenefit3": "A study book matched to where you are",
-  "ctaStartACall": "Start a call",
   "ctaStartAVideoCall": "Start a video call",
   "ctaSeeYourSubscription": "See your subscription",
-  "successProCaption": "{price} is charged monthly until you cancel. Manage or cancel anytime in the store.",
-  "@successProCaption": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
   "successMaxCaption": "{price} is charged monthly until you cancel. Manage or cancel anytime in the store.",
   "@successMaxCaption": {
     "placeholders": {
@@ -1114,68 +1043,9 @@
   "plansErrorSub": "The store didn't answer.",
   "ctaTryAgain": "Try again",
   "plansErrorCaption": "Nothing was charged.",
-  "changePlanTitle": "Change Plan",
-  "moveToMaxTitle": "Move to Max",
-  "maxPriceShort": "{price} / mo",
-  "@maxPriceShort": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      }
-    }
-  },
-  "moveToMaxCardSub": "Face-to-face video calls · every character · a study book made for you",
-  "whatHappensNow": "What happens now",
-  "maxStartsLabel": "Max starts",
-  "immediately": "Immediately",
-  "unusedProTime": "Unused Pro time",
-  "creditedTowardMax": "Credited toward Max",
-  "nextPaymentMaxValue": "{price} · {date}",
-  "@nextPaymentMaxValue": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String",
-        "example": "Jun 20, 2026"
-      }
-    }
-  },
-  "nextPaymentProValue": "{price} · {date}",
-  "@nextPaymentProValue": {
-    "placeholders": {
-      "price": {
-        "type": "String"
-      },
-      "date": {
-        "type": "String",
-        "example": "Jun 20, 2026"
-      }
-    }
-  },
-  "ctaSwitchToMax": "Switch to Max",
-  "upgradeCaption": "Your new plan starts right away. Unused Pro time is credited, never charged twice.",
-  "moveToProTitle": "Move to Pro",
-  "moveToProSub": "Nothing changes today. Max runs to the end of the month you already paid for.",
-  "maxRunsUntil": "Max runs until",
-  "proStarts": "Pro starts",
-  "whatYouKeep": "What you keep",
-  "keepBenefitCalls": "Unlimited voice calls, 15 minutes each",
-  "keepBenefitCharacters": "Characters you bought stay yours forever",
-  "downgradeWarning": "Video calls and Max-only characters turn off on {date}.",
-  "@downgradeWarning": {
-    "placeholders": {
-      "date": {
-        "type": "String",
-        "example": "Jun 20"
-      }
-    }
-  },
-  "ctaSwitchToPro": "Switch to Pro",
-  "ctaKeepMax": "Keep Max",
+  "ctaKeepMax": "Keep Premium",
   "winbackSkip": "Skip",
-  "winbackTitle": "Your Pro plan ended",
+  "winbackTitle": "Your Premium plan ended",
   "winbackSub": "You're on Free now — one call a day.",
   "winbackQuestion": "Mind telling us why you left?",
   "winbackReasonExpensive": "Too expensive",
@@ -1188,7 +1058,7 @@
   "winbackCaption": "This doesn't restore your plan. Resubscribe in the store.",
   "ctaContinue": "Continue",
   "ctaClose": "Close",
-  "ovRestoreSuccessTitle": "Pro is back",
+  "ovRestoreSuccessTitle": "Premium is back",
   "ovRestoreSuccessBody": "We found your subscription and turned it back on for this device.",
   "ovRestoreEmptyTitle": "Nothing to restore",
   "ovRestoreEmptyBody": "No active subscription is linked to this store account.",
@@ -1196,7 +1066,7 @@
   "ovRestoreOtherBody": "This subscription is already active on a different BeaverTalk account.",
   "ctaSignInThatAccount": "Sign in to that account",
   "ctaGetHelp": "Get help",
-  "ovCharacterOfferTitle": "Not ready for Pro?",
+  "ovCharacterOfferTitle": "Not ready for Premium?",
   "ovCharacterOfferBody": "Pick one character and keep them. A one-off purchase — no subscription, no renewal.",
   "rowOneCharacter": "One character",
   "rowFromPrice": "from {price}",
@@ -1226,7 +1096,7 @@
     }
   },
   "rowCharactersYouBought": "Characters you bought",
-  "rowProRunsUntil": "Pro runs until",
+  "rowProRunsUntil": "Premium runs until",
   "ctaSwitchToYearly": "Switch to yearly",
   "ctaContinueToStore": "Continue to the store",
   "ovAnnualSwitchTitle": "Pay yearly, save {saved}",
@@ -1237,7 +1107,7 @@
       }
     }
   },
-  "ovAnnualSwitchBody": "You've been on Pro for two months. The yearly plan works out cheaper.",
+  "ovAnnualSwitchBody": "The yearly plan works out cheaper than paying monthly.",
   "rowYouSave": "You save",
   "amountSaved": "{price}",
   "@amountSaved": {
@@ -1283,12 +1153,12 @@
   "ovRefundHelpBody": "We cannot issue refunds ourselves. Every request is reviewed by the store.",
   "ctaGoToStore": "Go to the store",
   "ovTrialEndingTitle": "Your trial ends tomorrow",
-  "ovTrialEndingBody": "Max keeps running unless you cancel. Here is what happens.",
+  "ovTrialEndingBody": "Premium keeps running unless you cancel. Here is what happens.",
   "rowTrialEnds": "Trial ends",
   "rowFirstCharge": "First charge",
   "rowThenMonthly": "Then monthly",
   "ctaCancelInStore": "Cancel in the store",
-  "ovTrialStartTitle": "7 days of Max, free",
+  "ovTrialStartTitle": "7 days of Premium, free",
   "ovTrialStartBody": "Free until {date}. Then {price} per month, unless you cancel in the store.",
   "@ovTrialStartBody": {
     "placeholders": {
@@ -1303,7 +1173,7 @@
   },
   "ctaStart7Days": "Start 7 days free",
   "ovOtoTitle": "One more thing before you start",
-  "ovOtoBody": "Good call — unlimited calls are on right now. The same Pro costs less if you pay yearly.",
+  "ovOtoBody": "Good call. The same Premium costs less if you pay yearly.",
   "ovFailedDeclinedTitle": "Your card was declined",
   "ovFailedDeclinedBody": "The store couldn't take the payment. Nothing was charged.",
   "ctaUpdatePaymentMethod": "Update payment method",
@@ -1311,11 +1181,11 @@
   "ovFailedCanceledBody": "You're still on Free. Nothing was charged.",
   "ovFailedStoreTitle": "Something went wrong",
   "ovFailedStoreBody": "We couldn't reach the store. Nothing was charged.",
-  "ovAlreadyTitle": "You're already on Pro",
+  "ovAlreadyTitle": "You're already on Premium",
   "ovAlreadyBody": "This store account has an active plan. There's nothing to buy.",
   "ctaSeeMySubscription": "See my subscription",
   "subCancelTitle": "Cancel subscription",
-  "subCancelBody": "Pro runs until {date}. After that you move to Free.",
+  "subCancelBody": "Premium runs until {date}. After that you move to Free.",
   "@subCancelBody": {
     "placeholders": {
       "date": {
@@ -1325,18 +1195,14 @@
     }
   },
   "subWhatYouLose": "What you lose",
-  "benefitCalls15": "Unlimited calls, 15 minutes each",
-  "benefitScoring": "Pronunciation scored letter by letter",
-  "benefitEveryCharacter": "Every character, unlimited",
-  "ctaKeepPro": "Keep Pro",
   "subPaymentTitle": "Update payment",
-  "subPaymentBody": "We could not take the payment. Pro keeps running during the grace period.",
+  "subPaymentBody": "We could not take the payment. Premium keeps running during the grace period.",
   "subHowToFix": "How to fix it",
   "fixStep1": "Open the store and update your payment method",
   "fixStep2": "Come back — your plan resumes automatically",
   "fixStep3": "Nothing is charged twice",
   "subResubTitle": "Resubscribe",
-  "subResubBody": "Pro ends on {date}. Turn auto-renew back on and nothing changes.",
+  "subResubBody": "Premium ends on {date}. Turn auto-renew back on and nothing changes.",
   "@subResubBody": {
     "placeholders": {
       "date": {
@@ -1353,9 +1219,7 @@
   },
   "flTodayBody": "Pick up where you left off — right now.",
   "flCheckTitle": "That's today's check",
-  "flCheckBody": "One check a day on Free. Pro makes it unlimited.",
-  "flBenefitCalls": "Unlimited calls with Pro · 15 minutes each",
-  "flBenefitChecks": "Unlimited pronunciation checks with Pro",
+  "flCheckBody": "Free includes one check a day. Premium gives you the full analysis.",
   "flCaption": "{price} per month · cancel anytime",
   "@flCaption": {
     "placeholders": {
@@ -1479,7 +1343,7 @@
   "@connected": {
     "description": "Call header status - the call is live. Sibling of `connecting`."
   },
-  "unlockedWithMax": "Available with Max",
+  "unlockedWithMax": "Included with your plan",
   "@unlockedWithMax": {
     "description": "Characters unlocked by the member's Max subscription but NOT bought. Used twice: the section heading on the change-avatar screen, and the status chip on the avatar detail screen. Must never read as ownership - the access ends when the subscription does."
   },

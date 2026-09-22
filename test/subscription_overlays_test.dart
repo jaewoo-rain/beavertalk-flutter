@@ -72,26 +72,26 @@ void main() {
 
   group('every overlay renders its measured title', () {
     const titles = {
-      SubscriptionOverlay.restoreSuccess: 'Pro is back',
+      SubscriptionOverlay.restoreSuccess: 'Premium is back',
       SubscriptionOverlay.restoreEmpty: 'Nothing to restore',
       SubscriptionOverlay.restoreOtherAccount:
           'That plan belongs to another account',
-      SubscriptionOverlay.characterOffer: 'Not ready for Pro?',
+      SubscriptionOverlay.characterOffer: 'Not ready for Premium?',
       SubscriptionOverlay.notEligible: 'Nothing to cancel',
       SubscriptionOverlay.cancelDownsell: 'Before you go',
-      SubscriptionOverlay.annualSwitch: r'Pay yearly, save $73.89',
+      SubscriptionOverlay.annualSwitch: r'Pay yearly, save $98.89',
       SubscriptionOverlay.monthlySwitch: 'Switch to monthly',
       SubscriptionOverlay.refundHelp: 'Refunds are handled by the store',
       SubscriptionOverlay.cancelSubscription: 'Cancel subscription',
       SubscriptionOverlay.paymentUpdate: 'Update payment',
       SubscriptionOverlay.resubscribe: 'Resubscribe',
       SubscriptionOverlay.trialEnding: 'Your trial ends tomorrow',
-      SubscriptionOverlay.trialStart: '7 days of Max, free',
+      SubscriptionOverlay.trialStart: '7 days of Premium, free',
       SubscriptionOverlay.otoAnnual: 'One more thing before you start',
       SubscriptionOverlay.purchaseFailedDeclined: 'Your card was declined',
       SubscriptionOverlay.purchaseFailedCanceled: 'Payment canceled',
       SubscriptionOverlay.purchaseFailedStore: 'Something went wrong',
-      SubscriptionOverlay.alreadySubscribed: "You're already on Pro",
+      SubscriptionOverlay.alreadySubscribed: "You're already on Premium",
       SubscriptionOverlay.freeLimitCall: "That's today's call",
       SubscriptionOverlay.freeLimitCheck: "That's today's check",
       SubscriptionOverlay.freeCallEnded: 'Your free call has ended',
@@ -155,10 +155,10 @@ void main() {
           reason: '이미 유료다 — 구독을 다시 팔지 않는다');
     });
 
-    testWidgets('무료 시트는 사용량과 Pro 혜택 줄을 보여 준다', (tester) async {
+    testWidgets('무료 시트는 사용량과 Premium 혜택 줄을 보여 준다', (tester) async {
       await pumpHost(tester, SubscriptionOverlay.freeCallEnded);
       expect(find.text('4:58 of 5:00 used'), findsOneWidget);
-      expect(find.text('Unlimited calls with Pro · 15 minutes each'),
+      expect(find.text('A 15-minute video call, every day'),
           findsOneWidget);
     });
   });
@@ -234,10 +234,10 @@ void main() {
     testWidgets('cancel sheet quotes the server expiry date', (tester) async {
       await pumpHost(tester, SubscriptionOverlay.cancelSubscription);
       expect(
-          find.text('Pro runs until Jun 20, 2026. After that you move to Free.'),
+          find.text('Premium runs until Jun 20, 2026. After that you move to Free.'),
           findsOneWidget);
       expect(find.text('What you lose'), findsOneWidget);
-      expect(find.text('Keep Pro'), findsOneWidget);
+      expect(find.text('Keep Premium'), findsOneWidget);
       expect(find.text('Continue to the store'), findsOneWidget);
     });
 
@@ -245,7 +245,7 @@ void main() {
       await pumpHost(tester, SubscriptionOverlay.freeLimitCall);
       expect(find.text('Baba'), findsOneWidget);
       expect(find.text('4:58 of 5:00 used'), findsOneWidget);
-      expect(find.text(r'$15.99 per month · cancel anytime'), findsOneWidget);
+      expect(find.text(r'$23.99 per month · cancel anytime'), findsOneWidget);
       expect(find.text('Maybe tomorrow'), findsOneWidget);
     });
   });

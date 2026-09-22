@@ -675,9 +675,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get subscriptionManage => 'Előfizetés kezelése';
 
   @override
-  String get changePlan => 'Csomag módosítása';
-
-  @override
   String get cancelSubscription => 'Előfizetés lemondása';
 
   @override
@@ -697,18 +694,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get viewBillingHistory => 'Számlázási előzmények megtekintése';
 
   @override
-  String get keepUsingPro => 'Maradok Pro-tag';
-
-  @override
-  String get proMembership => 'Pro tagság';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / hó';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Korlátlan hívások';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1162,11 +1150,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get lastPayment => 'Utolsó fizetés';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'A Pro előnyeit $date napjáig használhatod, utána a csomagod automatikusan Ingyenesre vált.';
-  }
-
-  @override
   String get freePlanCallLimit => 'Napi 1 hívás · 5 perces korlát';
 
   @override
@@ -1323,9 +1306,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get billingGroupInTheStore => 'Az áruházban';
 
   @override
-  String get billingChangePlan => 'Csomagváltás';
-
-  @override
   String get billingCompareAllPlans => 'Összes csomag összehasonlítása';
 
   @override
@@ -1402,7 +1382,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaGetPremium => 'Premium beszerzése';
 
   @override
-  String get planMaxTrial => 'Max próba';
+  String get planMaxTrial => 'Premium próba';
 
   @override
   String get freePlanPriceLine => '\$0.00 — napi egy hívás';
@@ -1443,35 +1423,22 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Korlátlan hívások a Pro csomaggal';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Korlátlan hívások · egyenként 15 perc · havi $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Kapcsold be a videót a Max csomaggal';
+  String get bannerMaxUpsellTitle => 'Szemtől szemben a Premiummal';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Szemtől szembeni hívások · havi $price';
+    return 'Videohívás · napi 15 perc · havi $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Válts évesre';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'Évi $yearly · havi $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Nem sikerült levonni a díjat';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Frissítsd a fizetést az áruházban, hogy a Pro megmaradjon';
+      'Frissítsd a fizetést az áruházban, hogy a Premium megmaradjon';
 
   @override
   String get bannerPausedTitle => 'A csomagod szünetel';
@@ -1488,10 +1455,6 @@ class AppLocalizationsHu extends AppLocalizations {
       'A fizetési módot, a csomagváltást és a lemondást az áruház kezeli.';
 
   @override
-  String get noteFairUse =>
-      'A korlátlan használatra méltányos használati szabályzatunk vonatkozik.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'A próbaidőszakod $date napján ér véget. Ha előtte lemondod az áruházban, semmit nem vonunk le.';
   }
@@ -1502,7 +1465,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'A Pro szünetel, amíg a fizetés át nem megy. A karaktereid és a haladásod biztonságban vannak.';
+      'A Premium szünetel, amíg a fizetés át nem megy. A karaktereid és a haladásod biztonságban vannak.';
 
   @override
   String noteEnding(String date) {
@@ -1510,7 +1473,7 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'A Max próbád véget ért';
+  String get trialExpiredTitle => 'A Premium próbád véget ért';
 
   @override
   String get trialExpiredSub => 'Most az Ingyenes csomagon vagy';
@@ -1522,13 +1485,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get currentPlanTitle => 'Jelenlegi csomag';
 
   @override
-  String get badgeRecommended => 'Ajánlott';
-
-  @override
   String get perMonthUnit => 'havonta';
-
-  @override
-  String get planTaglinePro => 'Korlátlan hívások. Egyenként 15 perc.';
 
   @override
   String get planTaglineMax => 'Most már láthatod őket.';
@@ -1537,65 +1494,28 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planTaglineFree => 'Napi egy hívás. Ajándékba.';
 
   @override
-  String get bulletProCalls => 'Hanghívások, amennyit csak szeretnél';
-
-  @override
-  String get bulletProLength => '15 perc hívásonként';
-
-  @override
-  String get bulletProScoring => 'Betűnként értékelt kiejtés';
-
-  @override
   String get bulletProCorrections => 'Az anyanyelvedre szabott javítások';
-
-  @override
-  String get bulletProBeaverCalls => 'Beaver hív fel először';
-
-  @override
-  String get bulletMaxVideo => 'Szemtől szembeni videóhívások';
-
-  @override
-  String get bulletMaxEverything => 'Minden, ami a Pro csomagban van';
-
-  @override
-  String get bulletMaxCharacters => 'Minden karakter, korlátlanul';
-
-  @override
-  String get bulletMaxStudyBook => 'A szintedhez igazított tankönyv';
-
-  @override
-  String get bulletMaxWeeklyReport => 'Heti jelentés a kiejtésed változásáról';
 
   @override
   String get bulletFreeCall => 'Napi egy 5 perces hanghívás';
 
   @override
-  String get bulletFreeCheck => 'Napi egy kiejtésellenőrzés';
+  String get bulletFreeCheck => 'Teljes elemzés az első 3 hívásodhoz';
 
   @override
-  String get bulletFreeAccent => 'Korlátlan akcentusellenőrzés';
-
-  @override
-  String get bulletFreeCharacter => 'Egy karakter kezdésnek';
-
-  @override
-  String get ctaGoUnlimited => 'Váltás korlátlanra';
+  String get bulletFreeCharacter => 'Két karakter kezdésnek';
 
   @override
   String get ctaTurnOnVideo => 'Videó bekapcsolása';
 
   @override
-  String get noteCallLength => 'A hívások egyenként 15 percesek.';
+  String get noteCallLength => 'Premium: napi egy hívás, legfeljebb 15 perc.';
 
   @override
   String get paywallProTitle1 => 'A koreai barátod,';
 
   @override
   String get paywallProTitle2 => 'aki hajnali 3-kor is fent van';
-
-  @override
-  String get paywallProSub =>
-      'Korlátlan hívások. Egyenként 15 perc. Egész évben.';
 
   @override
   String get paywallLimitHeadline => 'A Premiummal 15 perced van.';
@@ -1619,10 +1539,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Most már láthatod őket.';
-
-  @override
-  String get paywallMaxSub =>
-      'Videóhívások, minden karakter és a szintedhez készült tankönyv.';
 
   @override
   String get planMonthly => 'Havi';
@@ -1675,30 +1591,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get footerPrivacy => 'Adatvédelem';
 
   @override
-  String get noteMaxCharacters =>
-      'A Max által feloldott karakterek az előfizetésed ideje alatt érhetők el. A megvásárolt karakterek a tieid maradnak.';
-
-  @override
   String get processingTitle => 'Vásárlás megerősítése';
 
   @override
   String get processingSub => 'Ez általában néhány másodpercet vesz igénybe.';
 
   @override
-  String get successProTitle => 'Pro csomagon vagy.';
-
-  @override
-  String get successProSub => 'Korlátlan hívások, mostantól azonnal.';
-
-  @override
-  String get successProBenefit1 =>
-      'Hívj, amennyiszer csak szeretnél — 15 perc hívásonként';
-
-  @override
-  String get successProBenefit2 => 'Korlátlan kiejtésellenőrzés';
-
-  @override
-  String get successProBenefit3 => 'Minden karakter, plusz egyszeri vásárlások';
+  String get successProTitle => 'Premium csomagon vagy.';
 
   @override
   String get successMaxTitle => 'Most már láthatod őket.';
@@ -1708,28 +1607,10 @@ class AppLocalizationsHu extends AppLocalizations {
       'A videóhívások bekapcsolva. Koppints a videó gombra bármelyik hívásban.';
 
   @override
-  String get successMaxBenefit1 => 'Szemtől szembeni videóhívások';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Minden karakter korlátlanul, az újak elsőként';
-
-  @override
-  String get successMaxBenefit3 => 'A szintedhez igazított tankönyv';
-
-  @override
-  String get ctaStartACall => 'Hívás indítása';
-
-  @override
   String get ctaStartAVideoCall => 'Videóhívás indítása';
 
   @override
   String get ctaSeeYourSubscription => 'Előfizetésed megtekintése';
-
-  @override
-  String successProCaption(String price) {
-    return 'Havonta $price kerül levonásra, amíg le nem mondod. Bármikor kezelheted vagy lemondhatod az áruházban.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1749,90 +1630,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get plansErrorCaption => 'Semmit nem vontunk le.';
 
   @override
-  String get changePlanTitle => 'Csomagváltás';
-
-  @override
-  String get moveToMaxTitle => 'Váltás Max csomagra';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / hó';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Szemtől szembeni videóhívások · minden karakter · neked készült tankönyv';
-
-  @override
-  String get whatHappensNow => 'Mi történik most';
-
-  @override
-  String get maxStartsLabel => 'Max indul';
-
-  @override
-  String get immediately => 'Azonnal';
-
-  @override
-  String get unusedProTime => 'Fel nem használt Pro idő';
-
-  @override
-  String get creditedTowardMax => 'Beszámítjuk a Max árába';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Váltás Max csomagra';
-
-  @override
-  String get upgradeCaption =>
-      'Az új csomagod azonnal indul. A fel nem használt Pro időt beszámítjuk, kétszer sosem vonunk le.';
-
-  @override
-  String get moveToProTitle => 'Váltás Pro csomagra';
-
-  @override
-  String get moveToProSub =>
-      'Ma semmi nem változik. A Max a már kifizetett hónap végéig működik.';
-
-  @override
-  String get maxRunsUntil => 'Max érvényes eddig';
-
-  @override
-  String get proStarts => 'Pro indul';
-
-  @override
-  String get whatYouKeep => 'Amit megtartasz';
-
-  @override
-  String get keepBenefitCalls => 'Korlátlan hanghívások, egyenként 15 perc';
-
-  @override
-  String get keepBenefitCharacters => 'A megvásárolt karakterek örökre a tieid';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'A videóhívások és a csak Max karakterek $date napján kikapcsolnak.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Váltás Pro csomagra';
-
-  @override
-  String get ctaKeepMax => 'Maradjon a Max';
+  String get ctaKeepMax => 'Maradjon a Premium';
 
   @override
   String get winbackSkip => 'Kihagyás';
 
   @override
-  String get winbackTitle => 'A Pro csomagod véget ért';
+  String get winbackTitle => 'A Premium csomagod véget ért';
 
   @override
   String get winbackSub => 'Most az Ingyenes csomagon vagy — napi egy hívás.';
@@ -1872,7 +1676,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaClose => 'Bezárás';
 
   @override
-  String get ovRestoreSuccessTitle => 'A Pro visszatért';
+  String get ovRestoreSuccessTitle => 'A Premium visszatért';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1899,7 +1703,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaGetHelp => 'Segítségkérés';
 
   @override
-  String get ovCharacterOfferTitle => 'Még nem állsz készen a Pro csomagra?';
+  String get ovCharacterOfferTitle =>
+      'Még nem állsz készen a Premium csomagra?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1954,7 +1759,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get rowCharactersYouBought => 'A megvásárolt karaktereid';
 
   @override
-  String get rowProRunsUntil => 'Pro érvényes eddig';
+  String get rowProRunsUntil => 'Premium érvényes eddig';
 
   @override
   String get ctaSwitchToYearly => 'Váltás évesre';
@@ -1969,7 +1774,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Két hónapja vagy Pro csomagon. Az éves csomag olcsóbban jön ki.';
+      'Az éves csomag olcsóbb, mint a havi fizetés.';
 
   @override
   String get rowYouSave => 'Megtakarításod';
@@ -2030,7 +1835,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'A Max tovább fut, hacsak le nem mondod. Íme, mi történik.';
+      'A Premium tovább fut, hacsak le nem mondod. Íme, mi történik.';
 
   @override
   String get rowTrialEnds => 'Próba vége';
@@ -2045,7 +1850,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaCancelInStore => 'Lemondás az áruházban';
 
   @override
-  String get ovTrialStartTitle => '7 nap Max, ingyen';
+  String get ovTrialStartTitle => '7 nap Premium, ingyen';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2060,7 +1865,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Jó döntés — a korlátlan hívások már működnek. Ugyanez a Pro éves fizetéssel olcsóbb.';
+      'Jó döntés. Ugyanaz a Premium kevesebbe kerül éves fizetéssel.';
 
   @override
   String get ovFailedDeclinedTitle => 'A kártyádat elutasították';
@@ -2087,7 +1892,7 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem értük el az áruházat. Semmit nem vontunk le.';
 
   @override
-  String get ovAlreadyTitle => 'Már Pro csomagon vagy';
+  String get ovAlreadyTitle => 'Már Premium csomagon vagy';
 
   @override
   String get ovAlreadyBody =>
@@ -2101,30 +1906,18 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'A Pro $date napjáig érvényes. Utána Ingyenesre váltasz.';
+    return 'A Premium $date napjáig érvényes. Utána Ingyenesre váltasz.';
   }
 
   @override
   String get subWhatYouLose => 'Amit elveszítesz';
 
   @override
-  String get benefitCalls15 => 'Korlátlan hívások, egyenként 15 perc';
-
-  @override
-  String get benefitScoring => 'Betűnként értékelt kiejtés';
-
-  @override
-  String get benefitEveryCharacter => 'Minden karakter, korlátlanul';
-
-  @override
-  String get ctaKeepPro => 'Maradjon a Pro';
-
-  @override
   String get subPaymentTitle => 'Fizetés frissítése';
 
   @override
   String get subPaymentBody =>
-      'Nem sikerült levonni a díjat. A Pro a türelmi időszak alatt tovább működik.';
+      'Nem sikerült levonni a díjat. A Premium a türelmi időszak alatt tovább működik.';
 
   @override
   String get subHowToFix => 'Így javíthatod';
@@ -2144,7 +1937,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'A Pro $date napján ér véget. Kapcsold vissza az automatikus megújítást, és semmi sem változik.';
+    return 'A Premium $date napján ér véget. Kapcsold vissza az automatikus megújítást, és semmi sem változik.';
   }
 
   @override
@@ -2164,14 +1957,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get flCheckBody =>
-      'Az Ingyenes csomagon napi egy ellenőrzés jár. A Pro korlátlanná teszi.';
-
-  @override
-  String get flBenefitCalls =>
-      'Korlátlan hívások a Pro csomaggal · egyenként 15 perc';
-
-  @override
-  String get flBenefitChecks => 'Korlátlan kiejtésellenőrzés a Pro csomaggal';
+      'Az Ingyenesben napi egy ellenőrzés van. A Premium a teljes elemzést adja.';
 
   @override
   String flCaption(String price) {
@@ -2312,7 +2098,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get connected => 'Csatlakozva';
 
   @override
-  String get unlockedWithMax => 'Elérhető a Maxszal';
+  String get unlockedWithMax => 'A csomagod része';
 
   @override
   String get fcEndedTitle => 'A díjmentes hívásod véget ért';

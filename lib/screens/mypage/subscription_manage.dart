@@ -135,40 +135,20 @@ class _ManageBody extends StatelessWidget {
 
   /// The banner below the plan card, when the state carries one.
   ///
-  /// Free sells Pro (brand), Pro-tier states sell Max (gold), Max sells the
-  /// annual cycle (gold). Trial and hold show none — hold because payment
-  /// recovery comes first (spec §6-1), trial per the measured original
-  /// (`4514:5111` carries no banner; spec §6-1's table disagrees and the
-  /// design is the canon — flagged for review).
+  /// 단일 티어(09-22 · Figma `subscription_manage_free` 외): **Free 만** 배너를 단다 —
+  /// 「Premium 으로 얼굴 보며」(→ Premium 페이월). 유료 상태의 업셀(옛 Pro→Max · 연간 전환)은
+  /// 없앴다: 올려 팔 티어가 없고, 연간은 팔되 유도하지 않는다(연간 전환은 결제 목록 ① 한 줄).
   List<Widget> _upsell(BuildContext context, AppLocalizations l10n) {
-    final Banner? banner = switch (status.state) {
-      SubscriptionState.free => Banner(
-          tone: BannerTone.brand,
-          title: l10n.bannerGoUnlimitedTitle,
-          sub: l10n.bannerGoUnlimitedSub(PlanPrices.proMonthly),
-          onTap: () => Navigator.pushNamed(context, Routes.paywallPro),
-        ),
-      SubscriptionState.activePro ||
-      SubscriptionState.grace ||
-      SubscriptionState.ending =>
-        Banner(
-          tone: BannerTone.gold,
-          title: l10n.bannerMaxUpsellTitle,
-          sub: l10n.bannerMaxUpsellSub(PlanPrices.maxMonthly),
-          onTap: () => Navigator.pushNamed(context, Routes.paywallMax),
-        ),
-      SubscriptionState.activeMax => Banner(
-          tone: BannerTone.gold,
-          title: l10n.bannerAnnualSwitchTitle,
-          sub: l10n.bannerAnnualSwitchSub(PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth),
-          onTap: () => showSubscriptionOverlay(
-              context, SubscriptionOverlay.annualSwitch,
-              expiresAt: status.expiresAt),
-        ),
-      _ => null,
-    };
-    if (banner == null) return const [];
-    return [const SizedBox(height: AppSpacing.s24), banner];
+    if (status.state != SubscriptionState.free) return const [];
+    return [
+      const SizedBox(height: AppSpacing.s24),
+      Banner(
+        tone: BannerTone.gold,
+        title: l10n.bannerMaxUpsellTitle,
+        sub: l10n.bannerMaxUpsellSub(PlanPrices.maxMonthly),
+        onTap: () => Navigator.pushNamed(context, Routes.paywallMax),
+      ),
+    ];
   }
 
   /// The caption block(s) under the billing list — copy measured per state.
@@ -184,10 +164,8 @@ class _ManageBody extends StatelessWidget {
       else if (state == SubscriptionState.trial) ...[
         if (expiry != null) l10n.noteTrialEnds(_shortDate(context, expiry)),
       ] else ...[
+        // 공정 사용 문구는 뺐다 — 「무제한」 약속이 사라져 걸 대상이 없다.
         l10n.noteStoreHandled,
-        // The Max original carries only the store-handled line; every other
-        // paid state adds the fair-use line (measured).
-        if (state != SubscriptionState.activeMax) l10n.noteFairUse,
       ],
       if (state == SubscriptionState.grace) l10n.noteGrace,
       if (state == SubscriptionState.onHold) l10n.noteHold,
@@ -362,7 +340,7 @@ class _BillingList extends StatelessWidget {
     final state = status.state;
 
     String slotLabel(BillingSlotLabel label) => switch (label) {
-          BillingSlotLabel.changePlan => l10n.billingChangePlan,
+          BillingSlotLabel.switchToAnnual => l10n.bannerAnnualSwitchTitle,
           BillingSlotLabel.compareAllPlans => l10n.billingCompareAllPlans,
           BillingSlotLabel.cancelSubscription => l10n.billingCancelSubscription,
           BillingSlotLabel.resubscribe => l10n.billingResubscribe,
@@ -377,6 +355,8 @@ class _BillingList extends StatelessWidget {
           _BillingRow(
             label: slotLabel(state.planSlotLabel),
             destination: state.planSlotDestination,
+            // 연간 전환 시트가 「언제부터」를 말하려면 지금 기간의 끝이 필요하다.
+            expiresAt: status.expiresAt,
           ),
           _BillingRow(
             label: l10n.billingBuyACharacter,
@@ -583,10 +563,9 @@ class _BillingRow extends StatelessWidget {
         Navigator.pushNamed(context, Routes.paymentHistory);
       case BillingDestination.plansCompare:
         Navigator.pushNamed(context, Routes.plansCompare);
-      case BillingDestination.planChangeUpgrade:
-        Navigator.pushNamed(context, Routes.planChangeUpgrade);
-      case BillingDestination.planChangeDowngrade:
-        Navigator.pushNamed(context, Routes.planChangeDowngrade);
+      case BillingDestination.annualSwitch:
+        showSubscriptionOverlay(context, SubscriptionOverlay.annualSwitch,
+            expiresAt: expiresAt);
       case BillingDestination.characterOffer:
         showSubscriptionOverlay(context, SubscriptionOverlay.characterOffer);
       case BillingDestination.restoreSuccess:

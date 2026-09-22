@@ -666,9 +666,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get subscriptionManage => 'Aboneliği Yönet';
 
   @override
-  String get changePlan => 'Planı Değiştir';
-
-  @override
   String get cancelSubscription => 'Aboneliği İptal Et';
 
   @override
@@ -687,18 +684,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get viewBillingHistory => 'Fatura Geçmişini Görüntüle';
 
   @override
-  String get keepUsingPro => 'Pro Kullanmaya Devam Et';
-
-  @override
-  String get proMembership => 'Pro Üyelik';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / ay';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Sınırsız arama';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1148,11 +1136,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lastPayment => 'Son ödeme';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Pro avantajlarını $date tarihine kadar kullanmaya devam edebilirsiniz; ardından planınız otomatik olarak Ücretsiz\'e geçer.';
-  }
-
-  @override
   String get freePlanCallLimit => 'Günde 1 görüşme · 5 dk sınır';
 
   @override
@@ -1308,9 +1291,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get billingGroupInTheStore => 'Mağazada';
 
   @override
-  String get billingChangePlan => 'Planı değiştir';
-
-  @override
   String get billingCompareAllPlans => 'Tüm planları karşılaştır';
 
   @override
@@ -1387,7 +1367,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaGetPremium => 'Premium al';
 
   @override
-  String get planMaxTrial => 'Max deneme';
+  String get planMaxTrial => 'Premium deneme';
 
   @override
   String get freePlanPriceLine => '\$0.00 — günde bir arama';
@@ -1428,35 +1408,22 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro ile sınırsıza geç';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Sınırsız arama · her biri 15 dakika · aylık $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max ile videoyu aç';
+  String get bannerMaxUpsellTitle => 'Premium ile yüz yüze konuş';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Yüz yüze aramalar · aylık $price';
+    return 'Görüntülü arama · günde 15 dakika · aylık $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Yıllık plana geç';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'Yılda $yearly · aylık $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Ödemeyi alamadık';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Pro\'yu korumak için mağazadan ödeme yöntemini güncelle';
+      'Premium\'u korumak için mağazadan ödeme yöntemini güncelle';
 
   @override
   String get bannerPausedTitle => 'Planın duraklatıldı';
@@ -1473,10 +1440,6 @@ class AppLocalizationsTr extends AppLocalizations {
       'Ödeme yöntemi, plan değişiklikleri ve iptal işlemleri mağaza üzerinden yapılır.';
 
   @override
-  String get noteFairUse =>
-      'Sınırsız kullanım, adil kullanım politikamıza tabidir.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Denemen $date tarihinde bitiyor. Öncesinde mağazadan iptal edersen hiçbir ücret alınmaz.';
   }
@@ -1487,7 +1450,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Ödeme gerçekleşene kadar Pro duraklatıldı. Karakterlerin ve ilerlemen güvende.';
+      'Ödeme gerçekleşene kadar Premium duraklatıldı. Karakterlerin ve ilerlemen güvende.';
 
   @override
   String noteEnding(String date) {
@@ -1495,7 +1458,7 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max denemen sona erdi';
+  String get trialExpiredTitle => 'Premium denemen sona erdi';
 
   @override
   String get trialExpiredSub => 'Artık Free plandasın';
@@ -1507,13 +1470,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get currentPlanTitle => 'Mevcut Plan';
 
   @override
-  String get badgeRecommended => 'Önerilen';
-
-  @override
   String get perMonthUnit => 'aylık';
-
-  @override
-  String get planTaglinePro => 'Sınırsız arama. Her biri 15 dakika.';
 
   @override
   String get planTaglineMax => 'Artık onları görebilirsin.';
@@ -1522,65 +1479,28 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planTaglineFree => 'Günde bir arama. Bizden.';
 
   @override
-  String get bulletProCalls => 'İstediğin kadar sesli arama';
-
-  @override
-  String get bulletProLength => 'Arama başına 15 dakika';
-
-  @override
-  String get bulletProScoring => 'Harf harf puanlanan telaffuz';
-
-  @override
   String get bulletProCorrections => 'Ana diline göre düzeltmeler';
-
-  @override
-  String get bulletProBeaverCalls => 'Beaver seni önce arar';
-
-  @override
-  String get bulletMaxVideo => 'Yüz yüze görüntülü aramalar';
-
-  @override
-  String get bulletMaxEverything => 'Pro\'daki her şey';
-
-  @override
-  String get bulletMaxCharacters => 'Tüm karakterler, sınırsız';
-
-  @override
-  String get bulletMaxStudyBook => 'Seviyene uygun bir çalışma kitabı';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'Telaffuzunun nasıl değiştiğine dair haftalık rapor';
 
   @override
   String get bulletFreeCall => 'Günde bir 5 dakikalık sesli arama';
 
   @override
-  String get bulletFreeCheck => 'Günde bir telaffuz kontrolü';
+  String get bulletFreeCheck => 'İlk 3 araman için tam analiz';
 
   @override
-  String get bulletFreeAccent => 'Sınırsız aksan kontrolü';
-
-  @override
-  String get bulletFreeCharacter => 'Başlangıç için bir karakter';
-
-  @override
-  String get ctaGoUnlimited => 'Sınırsıza geç';
+  String get bulletFreeCharacter => 'Başlangıç için iki karakter';
 
   @override
   String get ctaTurnOnVideo => 'Videoyu aç';
 
   @override
-  String get noteCallLength => 'Aramalar her biri 15 dakikadır.';
+  String get noteCallLength => 'Premium: günde bir arama, 15 dakikaya kadar.';
 
   @override
   String get paywallProTitle1 => 'Gece 3\'te bile ayakta olan';
 
   @override
   String get paywallProTitle2 => 'Koreli arkadaşın';
-
-  @override
-  String get paywallProSub => 'Sınırsız arama. Her biri 15 dakika. Yıl boyu.';
 
   @override
   String get paywallLimitHeadline => 'Premium ile 15 dakikan olur.';
@@ -1603,10 +1523,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Artık onları görebilirsin.';
-
-  @override
-  String get paywallMaxSub =>
-      'Görüntülü aramalar, tüm karakterler ve seviyene göre hazırlanmış bir çalışma kitabı.';
 
   @override
   String get planMonthly => 'Aylık';
@@ -1660,31 +1576,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get footerPrivacy => 'Gizlilik';
 
   @override
-  String get noteMaxCharacters =>
-      'Max ile açılan karakterler aboneliğin aktif olduğu sürece kullanılabilir. Satın aldığın karakterler senin kalır.';
-
-  @override
   String get processingTitle => 'Satın alma onaylanıyor';
 
   @override
   String get processingSub => 'Bu genellikle birkaç saniye sürer.';
 
   @override
-  String get successProTitle => 'Artık Pro\'dasın.';
-
-  @override
-  String get successProSub => 'Sınırsız aramalar şu andan itibaren başladı.';
-
-  @override
-  String get successProBenefit1 =>
-      'İstediğin kadar ara — arama başına 15 dakika';
-
-  @override
-  String get successProBenefit2 => 'Sınırsız telaffuz kontrolü';
-
-  @override
-  String get successProBenefit3 =>
-      'Tüm karakterler, ayrıca tek seferlik satın alımlar';
+  String get successProTitle => 'Artık Premium\'dasın.';
 
   @override
   String get successMaxTitle => 'Artık onları görebilirsin.';
@@ -1694,28 +1592,10 @@ class AppLocalizationsTr extends AppLocalizations {
       'Görüntülü aramalar açık. Herhangi bir aramada video düğmesine dokun.';
 
   @override
-  String get successMaxBenefit1 => 'Yüz yüze görüntülü aramalar';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Tüm karakterler sınırsız, yeniler önce sende';
-
-  @override
-  String get successMaxBenefit3 => 'Seviyene uygun bir çalışma kitabı';
-
-  @override
-  String get ctaStartACall => 'Arama başlat';
-
-  @override
   String get ctaStartAVideoCall => 'Görüntülü arama başlat';
 
   @override
   String get ctaSeeYourSubscription => 'Aboneliğini gör';
-
-  @override
-  String successProCaption(String price) {
-    return 'İptal edene kadar aylık $price tahsil edilir. İstediğin zaman mağazadan yönet veya iptal et.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1735,91 +1615,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get plansErrorCaption => 'Hiçbir ücret alınmadı.';
 
   @override
-  String get changePlanTitle => 'Planı Değiştir';
-
-  @override
-  String get moveToMaxTitle => 'Max\'e Geç';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / ay';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Yüz yüze görüntülü aramalar · tüm karakterler · senin için hazırlanmış çalışma kitabı';
-
-  @override
-  String get whatHappensNow => 'Şimdi ne olacak';
-
-  @override
-  String get maxStartsLabel => 'Max başlar';
-
-  @override
-  String get immediately => 'Hemen';
-
-  @override
-  String get unusedProTime => 'Kullanılmayan Pro süresi';
-
-  @override
-  String get creditedTowardMax => 'Max\'e sayılır';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max\'e geç';
-
-  @override
-  String get upgradeCaption =>
-      'Yeni planın hemen başlar. Kullanılmayan Pro süresi hesaba sayılır, asla iki kez ücret alınmaz.';
-
-  @override
-  String get moveToProTitle => 'Pro\'ya Geç';
-
-  @override
-  String get moveToProSub =>
-      'Bugün hiçbir şey değişmez. Max, zaten ödediğin ayın sonuna kadar devam eder.';
-
-  @override
-  String get maxRunsUntil => 'Max şu tarihe kadar sürer';
-
-  @override
-  String get proStarts => 'Pro başlar';
-
-  @override
-  String get whatYouKeep => 'Sende kalanlar';
-
-  @override
-  String get keepBenefitCalls => 'Sınırsız sesli arama, her biri 15 dakika';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Satın aldığın karakterler sonsuza dek senin';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Görüntülü aramalar ve yalnızca Max\'e özel karakterler $date tarihinde kapanır.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro\'ya geç';
-
-  @override
-  String get ctaKeepMax => 'Max\'te kal';
+  String get ctaKeepMax => 'Premium\'da kal';
 
   @override
   String get winbackSkip => 'Atla';
 
   @override
-  String get winbackTitle => 'Pro planın sona erdi';
+  String get winbackTitle => 'Premium planın sona erdi';
 
   @override
   String get winbackSub => 'Artık Free\'desin — günde bir arama.';
@@ -1859,7 +1661,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaClose => 'Kapat';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro geri döndü';
+  String get ovRestoreSuccessTitle => 'Premium geri döndü';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1886,7 +1688,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaGetHelp => 'Yardım al';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro için hazır değil misin?';
+  String get ovCharacterOfferTitle => 'Premium için hazır değil misin?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1941,7 +1743,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get rowCharactersYouBought => 'Satın aldığın karakterler';
 
   @override
-  String get rowProRunsUntil => 'Pro şu tarihe kadar sürer';
+  String get rowProRunsUntil => 'Premium şu tarihe kadar sürer';
 
   @override
   String get ctaSwitchToYearly => 'Yıllığa geç';
@@ -1956,7 +1758,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'İki aydır Pro\'dasın. Yıllık plan daha ucuza geliyor.';
+      'Yıllık plan, aylık ödemekten daha ucuza gelir.';
 
   @override
   String get rowYouSave => 'Tasarrufun';
@@ -2017,7 +1819,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'İptal etmezsen Max devam eder. Olacaklar şöyle.';
+      'İptal etmezsen Premium devam eder. Olacaklar şöyle.';
 
   @override
   String get rowTrialEnds => 'Deneme bitişi';
@@ -2032,7 +1834,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaCancelInStore => 'Mağazadan iptal et';
 
   @override
-  String get ovTrialStartTitle => '7 gün Max, ücretsiz';
+  String get ovTrialStartTitle => '7 gün Premium, ücretsiz';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2046,8 +1848,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ovOtoTitle => 'Başlamadan önce son bir şey';
 
   @override
-  String get ovOtoBody =>
-      'İyi seçim — sınırsız aramalar şu anda açık. Aynı Pro, yıllık ödersen daha ucuz.';
+  String get ovOtoBody => 'İyi seçim. Aynı Premium yıllık ödersen daha ucuz.';
 
   @override
   String get ovFailedDeclinedTitle => 'Kartın reddedildi';
@@ -2072,7 +1873,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ovFailedStoreBody => 'Mağazaya ulaşamadık. Hiçbir ücret alınmadı.';
 
   @override
-  String get ovAlreadyTitle => 'Zaten Pro\'dasın';
+  String get ovAlreadyTitle => 'Zaten Premium\'dasın';
 
   @override
   String get ovAlreadyBody =>
@@ -2086,30 +1887,18 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date tarihine kadar sürer. Sonrasında Free\'ye geçersin.';
+    return 'Premium $date tarihine kadar sürer. Sonrasında Free\'ye geçersin.';
   }
 
   @override
   String get subWhatYouLose => 'Kaybedeceklerin';
 
   @override
-  String get benefitCalls15 => 'Sınırsız arama, her biri 15 dakika';
-
-  @override
-  String get benefitScoring => 'Harf harf puanlanan telaffuz';
-
-  @override
-  String get benefitEveryCharacter => 'Tüm karakterler, sınırsız';
-
-  @override
-  String get ctaKeepPro => 'Pro\'da kal';
-
-  @override
   String get subPaymentTitle => 'Ödemeyi güncelle';
 
   @override
   String get subPaymentBody =>
-      'Ödemeyi alamadık. Ek süre boyunca Pro çalışmaya devam eder.';
+      'Ödemeyi alamadık. Ek süre boyunca Premium çalışmaya devam eder.';
 
   @override
   String get subHowToFix => 'Nasıl düzeltilir';
@@ -2128,7 +1917,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date tarihinde bitiyor. Otomatik yenilemeyi tekrar aç, hiçbir şey değişmesin.';
+    return 'Premium $date tarihinde bitiyor. Otomatik yenilemeyi tekrar aç, hiçbir şey değişmesin.';
   }
 
   @override
@@ -2147,13 +1936,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get flCheckTitle => 'Bugünkü kontrolün buydu';
 
   @override
-  String get flCheckBody => 'Free\'de günde bir kontrol. Pro sınırsız yapar.';
-
-  @override
-  String get flBenefitCalls => 'Pro ile sınırsız arama · her biri 15 dakika';
-
-  @override
-  String get flBenefitChecks => 'Pro ile sınırsız telaffuz kontrolü';
+  String get flCheckBody =>
+      'Free\'de günde bir kontrol var. Premium sana tam analizi verir.';
 
   @override
   String flCaption(String price) {
@@ -2294,7 +2078,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get connected => 'Bağlandı';
 
   @override
-  String get unlockedWithMax => 'Max ile kullanılabilir';
+  String get unlockedWithMax => 'Planına dahil';
 
   @override
   String get fcEndedTitle => 'Ücretsiz görüşmen sona erdi';

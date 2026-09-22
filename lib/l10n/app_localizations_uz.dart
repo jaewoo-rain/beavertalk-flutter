@@ -672,9 +672,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get subscriptionManage => 'Obunani boshqarish';
 
   @override
-  String get changePlan => 'Rejani almashtirish';
-
-  @override
   String get cancelSubscription => 'Obunani bekor qilish';
 
   @override
@@ -693,18 +690,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get viewBillingHistory => 'Toʻlovlar tarixini koʻrish';
 
   @override
-  String get keepUsingPro => 'Pro\'dan foydalanishda davom etish';
-
-  @override
-  String get proMembership => 'Pro aʼzolik';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / oy';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Cheksiz qoʻngʻiroqlar';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1157,11 +1145,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get lastPayment => 'Oxirgi to\'lov';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Pro imtiyozlaridan $date gacha foydalanishingiz mumkin, so\'ng tarifingiz avtomatik tarzda bepulga o\'tadi.';
-  }
-
-  @override
   String get freePlanCallLimit => 'Kuniga 1 qo\'ng\'iroq · 5 daqiqa chegara';
 
   @override
@@ -1317,9 +1300,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get billingGroupInTheStore => 'Doʻkonda';
 
   @override
-  String get billingChangePlan => 'Tarifni oʻzgartirish';
-
-  @override
   String get billingCompareAllPlans => 'Barcha tariflarni solishtirish';
 
   @override
@@ -1396,7 +1376,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaGetPremium => 'Premium olish';
 
   @override
-  String get planMaxTrial => 'Max sinovi';
+  String get planMaxTrial => 'Premium sinovi';
 
   @override
   String get freePlanPriceLine => '\$0.00 — kuniga bitta qoʻngʻiroq';
@@ -1437,35 +1417,22 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro bilan cheksiz boʻling';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Cheksiz qoʻngʻiroqlar · har biri 15 daqiqa · oyiga $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max bilan videoni yoqing';
+  String get bannerMaxUpsellTitle => 'Premium bilan yuzma-yuz gaplashing';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Yuzma-yuz qoʻngʻiroqlar · oyiga $price';
+    return 'Video qo‘ng‘iroqlar · kuniga 15 daqiqa · oyiga $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Yillik tarifga oʻting';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'Yiliga $yearly · oyiga $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Toʻlovni olib boʻlmadi';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Pro saqlanishi uchun doʻkonda toʻlovni yangilang';
+      'Premium saqlanishi uchun doʻkonda toʻlovni yangilang';
 
   @override
   String get bannerPausedTitle => 'Tarifingiz toʻxtatildi';
@@ -1482,10 +1449,6 @@ class AppLocalizationsUz extends AppLocalizations {
       'Toʻlov usuli, tarifni oʻzgartirish va bekor qilish doʻkon orqali amalga oshiriladi.';
 
   @override
-  String get noteFairUse =>
-      'Cheksiz foydalanish adolatli foydalanish siyosatiga boʻysunadi.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Sinov muddatingiz $date tugaydi. Ungacha doʻkonda bekor qilsangiz, hech narsa olinmaydi.';
   }
@@ -1496,7 +1459,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Toʻlov oʻtguncha Pro toʻxtatib turiladi. Personajlaringiz va natijalaringiz saqlanadi.';
+      'Toʻlov oʻtguncha Premium toʻxtatib turiladi. Personajlaringiz va natijalaringiz saqlanadi.';
 
   @override
   String noteEnding(String date) {
@@ -1504,7 +1467,7 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max sinov muddatingiz tugadi';
+  String get trialExpiredTitle => 'Premium sinov muddatingiz tugadi';
 
   @override
   String get trialExpiredSub => 'Endi Bepul tarifdasiz';
@@ -1516,13 +1479,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get currentPlanTitle => 'Joriy tarif';
 
   @override
-  String get badgeRecommended => 'Tavsiya etiladi';
-
-  @override
   String get perMonthUnit => 'oyiga';
-
-  @override
-  String get planTaglinePro => 'Cheksiz qoʻngʻiroqlar. Har biri 15 daqiqa.';
 
   @override
   String get planTaglineMax => 'Endi ularni koʻra olasiz.';
@@ -1531,67 +1488,29 @@ class AppLocalizationsUz extends AppLocalizations {
   String get planTaglineFree => 'Kuniga bitta qoʻngʻiroq. Mutlaqo bepul.';
 
   @override
-  String get bulletProCalls => 'Istalgancha ovozli qoʻngʻiroqlar';
-
-  @override
-  String get bulletProLength => 'Har bir qoʻngʻiroq 15 daqiqa';
-
-  @override
-  String get bulletProScoring => 'Talaffuz harfma-harf baholanadi';
-
-  @override
   String get bulletProCorrections => 'Ona tilingizga moslangan tuzatishlar';
-
-  @override
-  String get bulletProBeaverCalls =>
-      'Beaver sizga birinchi boʻlib qoʻngʻiroq qiladi';
-
-  @override
-  String get bulletMaxVideo => 'Yuzma-yuz videoqoʻngʻiroqlar';
-
-  @override
-  String get bulletMaxEverything => 'Pro tarifidagi hamma narsa';
-
-  @override
-  String get bulletMaxCharacters => 'Barcha personajlar, cheksiz';
-
-  @override
-  String get bulletMaxStudyBook => 'Darajangizga mos oʻquv kitobi';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'Talaffuzingiz qanday oʻzgarayotgani haqida haftalik hisobot';
 
   @override
   String get bulletFreeCall => 'Kuniga bitta 5 daqiqalik ovozli qoʻngʻiroq';
 
   @override
-  String get bulletFreeCheck => 'Kuniga bitta talaffuz tekshiruvi';
+  String get bulletFreeCheck => 'Dastlabki 3 qo‘ng‘iroq uchun to‘liq tahlil';
 
   @override
-  String get bulletFreeAccent => 'Cheksiz aksent tekshiruvlari';
-
-  @override
-  String get bulletFreeCharacter => 'Boshlash uchun bitta personaj';
-
-  @override
-  String get ctaGoUnlimited => 'Cheksizga oʻtish';
+  String get bulletFreeCharacter => 'Boshlash uchun 2 ta personaj';
 
   @override
   String get ctaTurnOnVideo => 'Videoni yoqish';
 
   @override
-  String get noteCallLength => 'Har bir qoʻngʻiroq 15 daqiqa.';
+  String get noteCallLength =>
+      'Premium: kuniga 1 ta qo‘ng‘iroq, 15 daqiqagacha.';
 
   @override
   String get paywallProTitle1 => 'Tungi soat 3da ham uygʻoq';
 
   @override
   String get paywallProTitle2 => 'koreys doʻstingiz';
-
-  @override
-  String get paywallProSub =>
-      'Cheksiz qoʻngʻiroqlar. Har biri 15 daqiqa. Yil davomida.';
 
   @override
   String get paywallLimitHeadline => 'Premium bilan 15 daqiqa gaplashasiz.';
@@ -1614,10 +1533,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Endi ularni koʻra olasiz.';
-
-  @override
-  String get paywallMaxSub =>
-      'Videoqoʻngʻiroqlar, barcha personajlar va darajangizga mos oʻquv kitobi.';
 
   @override
   String get planMonthly => 'Oylik';
@@ -1671,31 +1586,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get footerPrivacy => 'Maxfiylik';
 
   @override
-  String get noteMaxCharacters =>
-      'Max ochgan personajlar obunangiz faol boʻlganda mavjud. Sotib olgan personajlaringiz sizniki boʻlib qoladi.';
-
-  @override
   String get processingTitle => 'Xaridingiz tasdiqlanmoqda';
 
   @override
   String get processingSub => 'Bu odatda bir necha soniya davom etadi.';
 
   @override
-  String get successProTitle => 'Siz Pro tarifdasiz.';
-
-  @override
-  String get successProSub => 'Cheksiz qoʻngʻiroqlar hoziroq boshlanadi.';
-
-  @override
-  String get successProBenefit1 =>
-      'Istalgancha qoʻngʻiroq qiling — har biri 15 daqiqa';
-
-  @override
-  String get successProBenefit2 => 'Cheksiz talaffuz tekshiruvlari';
-
-  @override
-  String get successProBenefit3 =>
-      'Barcha personajlar, qoʻshimcha bir martalik xaridlar';
+  String get successProTitle => 'Siz Premium tarifdasiz.';
 
   @override
   String get successMaxTitle => 'Endi ularni koʻra olasiz.';
@@ -1705,28 +1602,10 @@ class AppLocalizationsUz extends AppLocalizations {
       'Videoqoʻngʻiroqlar yoqildi. Istalgan qoʻngʻiroqda video tugmasini bosing.';
 
   @override
-  String get successMaxBenefit1 => 'Yuzma-yuz videoqoʻngʻiroqlar';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Barcha personajlar, cheksiz va yangilari birinchi';
-
-  @override
-  String get successMaxBenefit3 => 'Darajangizga mos oʻquv kitobi';
-
-  @override
-  String get ctaStartACall => 'Qoʻngʻiroqni boshlash';
-
-  @override
   String get ctaStartAVideoCall => 'Videoqoʻngʻiroqni boshlash';
 
   @override
   String get ctaSeeYourSubscription => 'Obunangizni koʻrish';
-
-  @override
-  String successProCaption(String price) {
-    return 'Bekor qilguningizcha har oy $price olinadi. Doʻkonda istalgan vaqtda boshqaring yoki bekor qiling.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1746,92 +1625,13 @@ class AppLocalizationsUz extends AppLocalizations {
   String get plansErrorCaption => 'Hech narsa olinmadi.';
 
   @override
-  String get changePlanTitle => 'Tarifni oʻzgartirish';
-
-  @override
-  String get moveToMaxTitle => 'Max tarifiga oʻtish';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / oy';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Yuzma-yuz videoqoʻngʻiroqlar · barcha personajlar · sizga mos oʻquv kitobi';
-
-  @override
-  String get whatHappensNow => 'Endi nima boʻladi';
-
-  @override
-  String get maxStartsLabel => 'Max boshlanadi';
-
-  @override
-  String get immediately => 'Darhol';
-
-  @override
-  String get unusedProTime => 'Ishlatilmagan Pro vaqti';
-
-  @override
-  String get creditedTowardMax => 'Max hisobiga oʻtkaziladi';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max tarifiga oʻtish';
-
-  @override
-  String get upgradeCaption =>
-      'Yangi tarifingiz darhol boshlanadi. Ishlatilmagan Pro vaqti hisobga olinadi, ikki marta toʻlov olinmaydi.';
-
-  @override
-  String get moveToProTitle => 'Pro tarifiga oʻtish';
-
-  @override
-  String get moveToProSub =>
-      'Bugun hech narsa oʻzgarmaydi. Max siz toʻlagan oy oxirigacha ishlaydi.';
-
-  @override
-  String get maxRunsUntil => 'Max muddati';
-
-  @override
-  String get proStarts => 'Pro boshlanadi';
-
-  @override
-  String get whatYouKeep => 'Nima saqlanadi';
-
-  @override
-  String get keepBenefitCalls =>
-      'Cheksiz ovozli qoʻngʻiroqlar, har biri 15 daqiqa';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Sotib olgan personajlaringiz abadiy sizniki';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Videoqoʻngʻiroqlar va faqat Max personajlari $date kuni oʻchiriladi.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro tarifiga oʻtish';
-
-  @override
-  String get ctaKeepMax => 'Max qolsin';
+  String get ctaKeepMax => 'Premium qolsin';
 
   @override
   String get winbackSkip => 'Oʻtkazib yuborish';
 
   @override
-  String get winbackTitle => 'Pro tarifingiz tugadi';
+  String get winbackTitle => 'Premium tarifingiz tugadi';
 
   @override
   String get winbackSub => 'Endi Bepul tarifdasiz — kuniga bitta qoʻngʻiroq.';
@@ -1871,7 +1671,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaClose => 'Yopish';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro qaytdi';
+  String get ovRestoreSuccessTitle => 'Premium qaytdi';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1898,7 +1698,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaGetHelp => 'Yordam olish';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro uchun hali tayyor emasmisiz?';
+  String get ovCharacterOfferTitle => 'Premium uchun hali tayyor emasmisiz?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1953,7 +1753,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get rowCharactersYouBought => 'Sotib olgan personajlaringiz';
 
   @override
-  String get rowProRunsUntil => 'Pro muddati';
+  String get rowProRunsUntil => 'Premium muddati';
 
   @override
   String get ctaSwitchToYearly => 'Yillikka oʻtish';
@@ -1968,7 +1768,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Ikki oydan beri Pro tarifdasiz. Yillik tarif arzonroq chiqadi.';
+      'Yillik tarif har oy to‘lagandan arzonroq tushadi.';
 
   @override
   String get rowYouSave => 'Tejaysiz';
@@ -2029,7 +1829,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'Bekor qilmasangiz, Max ishlashda davom etadi. Nima boʻlishini koʻring.';
+      'Bekor qilmasangiz, Premium ishlashda davom etadi. Nima boʻlishini koʻring.';
 
   @override
   String get rowTrialEnds => 'Sinov tugaydi';
@@ -2044,7 +1844,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaCancelInStore => 'Doʻkonda bekor qilish';
 
   @override
-  String get ovTrialStartTitle => '7 kun Max, bepul';
+  String get ovTrialStartTitle => '7 kun Premium, bepul';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2059,7 +1859,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Toʻgʻri qaror — cheksiz qoʻngʻiroqlar hoziroq yoniq. Yillik toʻlasangiz, xuddi shu Pro arzonroq boʻladi.';
+      'Yaxshi tanlov. Yillik to‘lasangiz, o‘sha Premium arzonroq.';
 
   @override
   String get ovFailedDeclinedTitle => 'Kartangiz rad etildi';
@@ -2086,7 +1886,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Doʻkonga ulanib boʻlmadi. Hech narsa olinmadi.';
 
   @override
-  String get ovAlreadyTitle => 'Siz allaqachon Pro tarifdasiz';
+  String get ovAlreadyTitle => 'Siz allaqachon Premium tarifdasiz';
 
   @override
   String get ovAlreadyBody =>
@@ -2100,30 +1900,18 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date gacha ishlaydi. Soʻng Bepulga oʻtasiz.';
+    return 'Premium $date gacha ishlaydi. Soʻng Bepulga oʻtasiz.';
   }
 
   @override
   String get subWhatYouLose => 'Nimani yoʻqotasiz';
 
   @override
-  String get benefitCalls15 => 'Cheksiz qoʻngʻiroqlar, har biri 15 daqiqa';
-
-  @override
-  String get benefitScoring => 'Talaffuz harfma-harf baholanadi';
-
-  @override
-  String get benefitEveryCharacter => 'Barcha personajlar, cheksiz';
-
-  @override
-  String get ctaKeepPro => 'Pro qolsin';
-
-  @override
   String get subPaymentTitle => 'Toʻlovni yangilash';
 
   @override
   String get subPaymentBody =>
-      'Toʻlovni ola olmadik. Imtiyozli davrda Pro ishlashda davom etadi.';
+      'Toʻlovni ola olmadik. Imtiyozli davrda Premium ishlashda davom etadi.';
 
   @override
   String get subHowToFix => 'Qanday tuzatish mumkin';
@@ -2142,7 +1930,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date kuni tugaydi. Avto-yangilanishni qayta yoqsangiz, hech narsa oʻzgarmaydi.';
+    return 'Premium $date kuni tugaydi. Avto-yangilanishni qayta yoqsangiz, hech narsa oʻzgarmaydi.';
   }
 
   @override
@@ -2162,14 +1950,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get flCheckBody =>
-      'Bepul tarifda kuniga bitta tekshiruv. Pro uni cheksiz qiladi.';
-
-  @override
-  String get flBenefitCalls =>
-      'Pro bilan cheksiz qoʻngʻiroqlar · har biri 15 daqiqa';
-
-  @override
-  String get flBenefitChecks => 'Pro bilan cheksiz talaffuz tekshiruvlari';
+      'Bepul tarifda kuniga bitta tekshiruv bor. Premium to‘liq tahlilni beradi.';
 
   @override
   String flCaption(String price) {
@@ -2310,7 +2091,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get connected => 'Ulandi';
 
   @override
-  String get unlockedWithMax => 'Max bilan mavjud';
+  String get unlockedWithMax => 'Tarifingizga kiritilgan';
 
   @override
   String get fcEndedTitle => 'Bepul qo\'ng\'irog\'ingiz tugadi';

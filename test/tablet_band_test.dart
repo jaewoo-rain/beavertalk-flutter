@@ -46,7 +46,7 @@ import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
-import 'package:beavertalk/screens/plans/plan_change.dart';
+import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
 import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
@@ -75,8 +75,6 @@ void main() {
     'SubscriptionManage': () => const SubscriptionManageScreen(),
     'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
     'PlansCompare': () => const PlansCompareScreen(),
-    'PlanChange': () =>
-        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
     'WinbackSurvey': () => const WinbackSurveyScreen(),
     'AlarmList': () => const AlarmListScreen(),
     'AlarmEmpty': () => const AlarmEmptyScreen(),

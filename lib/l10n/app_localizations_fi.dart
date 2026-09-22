@@ -674,9 +674,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get subscriptionManage => 'Hallinnoi tilausta';
 
   @override
-  String get changePlan => 'Vaihda tilaus';
-
-  @override
   String get cancelSubscription => 'Peruuta tilaus';
 
   @override
@@ -695,18 +692,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get viewBillingHistory => 'Näytä laskutushistoria';
 
   @override
-  String get keepUsingPro => 'Jatka Pro-käyttöä';
-
-  @override
-  String get proMembership => 'Pro-jäsenyys';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / kk';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Rajattomat puhelut';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1154,11 +1142,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get lastPayment => 'Viimeisin maksu';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Voit käyttää Pro-etuja $date asti, minkä jälkeen tilauksesi vaihtuu automaattisesti maksuttomaan.';
-  }
-
-  @override
   String get freePlanCallLimit => '1 puhelu päivässä · 5 min raja';
 
   @override
@@ -1314,9 +1297,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get billingGroupInTheStore => 'Kaupassa';
 
   @override
-  String get billingChangePlan => 'Vaihda pakettia';
-
-  @override
   String get billingCompareAllPlans => 'Vertaa kaikkia paketteja';
 
   @override
@@ -1394,7 +1374,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaGetPremium => 'Hanki Premium';
 
   @override
-  String get planMaxTrial => 'Max-kokeilu';
+  String get planMaxTrial => 'Premium-kokeilu';
 
   @override
   String get freePlanPriceLine => '\$0.00 — yksi puhelu päivässä';
@@ -1435,35 +1415,22 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Rajattomat puhelut Pro-paketilla';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Rajattomat puhelut · 15 min kukin · $price kuukaudessa';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Ota video käyttöön Max-paketilla';
+  String get bannerMaxUpsellTitle => 'Kasvokkain Premiumilla';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Kasvokkaiset puhelut · $price kuukaudessa';
+    return 'Videopuhelut · 15 minuuttia päivässä · $price kuukaudessa';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Vaihda vuositilaukseen';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly vuodessa · $perMonth kuukaudessa';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Maksua ei voitu veloittaa';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Päivitä maksutapa kaupassa, jotta Pro säilyy';
+      'Päivitä maksutapa kaupassa, jotta Premium säilyy';
 
   @override
   String get bannerPausedTitle => 'Pakettisi on tauolla';
@@ -1480,10 +1447,6 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kauppa hoitaa maksutavan, paketin vaihdot ja peruutuksen.';
 
   @override
-  String get noteFairUse =>
-      'Rajattomaan käyttöön sovelletaan kohtuullisen käytön ehtoja.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Kokeilusi päättyy $date. Jos peruutat kaupassa sitä ennen, mitään ei veloiteta.';
   }
@@ -1494,7 +1457,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Pro on tauolla, kunnes maksu menee läpi. Hahmosi ja edistymisesi ovat tallessa.';
+      'Premium on tauolla, kunnes maksu menee läpi. Hahmosi ja edistymisesi ovat tallessa.';
 
   @override
   String noteEnding(String date) {
@@ -1502,7 +1465,7 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max-kokeilusi päättyi';
+  String get trialExpiredTitle => 'Premium-kokeilusi päättyi';
 
   @override
   String get trialExpiredSub => 'Käytät nyt Ilmaista pakettia';
@@ -1514,13 +1477,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get currentPlanTitle => 'Nykyinen paketti';
 
   @override
-  String get badgeRecommended => 'Suositeltu';
-
-  @override
   String get perMonthUnit => 'kuukaudessa';
-
-  @override
-  String get planTaglinePro => 'Rajattomat puhelut. 15 min kukin.';
 
   @override
   String get planTaglineMax => 'Nyt näet heidät.';
@@ -1529,65 +1486,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planTaglineFree => 'Yksi puhelu päivässä. Talon puolesta.';
 
   @override
-  String get bulletProCalls => 'Äänipuheluita niin usein kuin haluat';
-
-  @override
-  String get bulletProLength => '15 minuuttia per puhelu';
-
-  @override
-  String get bulletProScoring => 'Ääntäminen arvioidaan kirjain kirjaimelta';
-
-  @override
   String get bulletProCorrections => 'Korjaukset äidinkielesi mukaan';
-
-  @override
-  String get bulletProBeaverCalls => 'Beaver soittaa sinulle ensin';
-
-  @override
-  String get bulletMaxVideo => 'Kasvokkaiset videopuhelut';
-
-  @override
-  String get bulletMaxEverything => 'Kaikki Pro-paketista';
-
-  @override
-  String get bulletMaxCharacters => 'Kaikki hahmot, rajattomasti';
-
-  @override
-  String get bulletMaxStudyBook => 'Tasollesi sovitettu oppikirja';
-
-  @override
-  String get bulletMaxWeeklyReport => 'Viikkoraportti ääntämisesi kehityksestä';
 
   @override
   String get bulletFreeCall => 'Yksi 5 minuutin äänipuhelu päivässä';
 
   @override
-  String get bulletFreeCheck => 'Yksi ääntämistarkistus päivässä';
+  String get bulletFreeCheck => 'Täysi analyysi 3 ensimmäisestä puhelusta';
 
   @override
-  String get bulletFreeAccent => 'Rajattomat aksenttitarkistukset';
-
-  @override
-  String get bulletFreeCharacter => 'Yksi hahmo alkuun';
-
-  @override
-  String get ctaGoUnlimited => 'Siirry rajattomaan';
+  String get bulletFreeCharacter => 'Kaksi hahmoa alkuun';
 
   @override
   String get ctaTurnOnVideo => 'Ota video käyttöön';
 
   @override
-  String get noteCallLength => 'Puhelut ovat 15 minuutin mittaisia.';
+  String get noteCallLength =>
+      'Premium: yksi puhelu päivässä, enintään 15 minuuttia.';
 
   @override
   String get paywallProTitle1 => 'Korealainen ystäväsi,';
 
   @override
   String get paywallProTitle2 => 'joka valvoo kello 3 yöllä';
-
-  @override
-  String get paywallProSub =>
-      'Rajattomat puhelut. 15 min kukin. Ympäri vuoden.';
 
   @override
   String get paywallLimitHeadline => 'Premiumilla saat 15 minuuttia.';
@@ -1611,10 +1532,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Nyt näet heidät.';
-
-  @override
-  String get paywallMaxSub =>
-      'Videopuhelut, kaikki hahmot ja tasollesi tehty oppikirja.';
 
   @override
   String get planMonthly => 'Kuukausi';
@@ -1668,30 +1585,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get footerPrivacy => 'Tietosuoja';
 
   @override
-  String get noteMaxCharacters =>
-      'Maxin avaamat hahmot ovat käytössä, kun tilauksesi on voimassa. Ostamasi hahmot pysyvät sinulla.';
-
-  @override
   String get processingTitle => 'Vahvistetaan ostoasi';
 
   @override
   String get processingSub => 'Tämä kestää yleensä muutaman sekunnin.';
 
   @override
-  String get successProTitle => 'Pro on nyt käytössä.';
-
-  @override
-  String get successProSub => 'Rajattomat puhelut alkavat heti.';
-
-  @override
-  String get successProBenefit1 =>
-      'Soita niin usein kuin haluat — 15 min per puhelu';
-
-  @override
-  String get successProBenefit2 => 'Rajattomat ääntämistarkistukset';
-
-  @override
-  String get successProBenefit3 => 'Kaikki hahmot sekä kertaostot';
+  String get successProTitle => 'Premium on nyt käytössä.';
 
   @override
   String get successMaxTitle => 'Nyt näet heidät.';
@@ -1701,27 +1601,10 @@ class AppLocalizationsFi extends AppLocalizations {
       'Videopuhelut ovat käytössä. Napauta videopainiketta missä tahansa puhelussa.';
 
   @override
-  String get successMaxBenefit1 => 'Kasvokkaiset videopuhelut';
-
-  @override
-  String get successMaxBenefit2 => 'Kaikki hahmot rajattomasti, uudet ensin';
-
-  @override
-  String get successMaxBenefit3 => 'Tasollesi sovitettu oppikirja';
-
-  @override
-  String get ctaStartACall => 'Aloita puhelu';
-
-  @override
   String get ctaStartAVideoCall => 'Aloita videopuhelu';
 
   @override
   String get ctaSeeYourSubscription => 'Katso tilauksesi';
-
-  @override
-  String successProCaption(String price) {
-    return '$price veloitetaan kuukausittain, kunnes peruutat. Hallinnoi tai peruuta milloin tahansa kaupassa.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1741,90 +1624,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get plansErrorCaption => 'Mitään ei veloitettu.';
 
   @override
-  String get changePlanTitle => 'Vaihda pakettia';
-
-  @override
-  String get moveToMaxTitle => 'Siirry Max-pakettiin';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / kk';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Kasvokkaiset videopuhelut · kaikki hahmot · sinulle tehty oppikirja';
-
-  @override
-  String get whatHappensNow => 'Mitä tapahtuu nyt';
-
-  @override
-  String get maxStartsLabel => 'Max alkaa';
-
-  @override
-  String get immediately => 'Heti';
-
-  @override
-  String get unusedProTime => 'Käyttämätön Pro-aika';
-
-  @override
-  String get creditedTowardMax => 'Hyvitetään Max-hinnassa';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Vaihda Max-pakettiin';
-
-  @override
-  String get upgradeCaption =>
-      'Uusi pakettisi alkaa heti. Käyttämätön Pro-aika hyvitetään — mitään ei veloiteta kahdesti.';
-
-  @override
-  String get moveToProTitle => 'Siirry Pro-pakettiin';
-
-  @override
-  String get moveToProSub =>
-      'Tänään mikään ei muutu. Max jatkuu jo maksamasi kuukauden loppuun.';
-
-  @override
-  String get maxRunsUntil => 'Max voimassa';
-
-  @override
-  String get proStarts => 'Pro alkaa';
-
-  @override
-  String get whatYouKeep => 'Mitä pidät';
-
-  @override
-  String get keepBenefitCalls => 'Rajattomat äänipuhelut, 15 min kukin';
-
-  @override
-  String get keepBenefitCharacters => 'Ostamasi hahmot ovat omiasi ikuisesti';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Videopuhelut ja vain Maxin hahmot poistuvat käytöstä $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Vaihda Pro-pakettiin';
-
-  @override
-  String get ctaKeepMax => 'Pidä Max';
+  String get ctaKeepMax => 'Pidä Premium';
 
   @override
   String get winbackSkip => 'Ohita';
 
   @override
-  String get winbackTitle => 'Pro-pakettisi päättyi';
+  String get winbackTitle => 'Premium-pakettisi päättyi';
 
   @override
   String get winbackSub => 'Käytät nyt Ilmaista — yksi puhelu päivässä.';
@@ -1864,7 +1670,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaClose => 'Sulje';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro on palannut';
+  String get ovRestoreSuccessTitle => 'Premium on palannut';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1891,7 +1697,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaGetHelp => 'Pyydä apua';
 
   @override
-  String get ovCharacterOfferTitle => 'Etkö ole vielä valmis Pro-pakettiin?';
+  String get ovCharacterOfferTitle =>
+      'Etkö ole vielä valmis Premium-pakettiin?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1946,7 +1753,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get rowCharactersYouBought => 'Ostamasi hahmot';
 
   @override
-  String get rowProRunsUntil => 'Pro voimassa';
+  String get rowProRunsUntil => 'Premium voimassa';
 
   @override
   String get ctaSwitchToYearly => 'Vaihda vuositilaukseen';
@@ -1961,7 +1768,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Olet ollut Pro-käyttäjä kaksi kuukautta. Vuositilaus tulee halvemmaksi.';
+      'Vuosipaketti tulee halvemmaksi kuin kuukausimaksu.';
 
   @override
   String get rowYouSave => 'Säästät';
@@ -2021,7 +1828,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ovTrialEndingTitle => 'Kokeilusi päättyy huomenna';
 
   @override
-  String get ovTrialEndingBody => 'Max jatkuu, ellet peruuta. Näin käy.';
+  String get ovTrialEndingBody => 'Premium jatkuu, ellet peruuta. Näin käy.';
 
   @override
   String get rowTrialEnds => 'Kokeilu päättyy';
@@ -2036,7 +1843,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaCancelInStore => 'Peruuta kaupassa';
 
   @override
-  String get ovTrialStartTitle => '7 päivää Maxia, ilmaiseksi';
+  String get ovTrialStartTitle => '7 päivää Premiumia, ilmaiseksi';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2051,7 +1858,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Hyvä valinta — rajattomat puhelut ovat nyt käytössä. Sama Pro maksaa vähemmän vuosittain maksettuna.';
+      'Hyvä valinta. Sama Premium maksaa vähemmän vuosittain maksettuna.';
 
   @override
   String get ovFailedDeclinedTitle => 'Korttisi hylättiin';
@@ -2078,7 +1885,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kauppaan ei saatu yhteyttä. Mitään ei veloitettu.';
 
   @override
-  String get ovAlreadyTitle => 'Sinulla on jo Pro';
+  String get ovAlreadyTitle => 'Sinulla on jo Premium';
 
   @override
   String get ovAlreadyBody =>
@@ -2092,30 +1899,18 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro on voimassa $date asti. Sen jälkeen siirryt Ilmaiseen.';
+    return 'Premium on voimassa $date asti. Sen jälkeen siirryt Ilmaiseen.';
   }
 
   @override
   String get subWhatYouLose => 'Mitä menetät';
 
   @override
-  String get benefitCalls15 => 'Rajattomat puhelut, 15 min kukin';
-
-  @override
-  String get benefitScoring => 'Ääntäminen arvioidaan kirjain kirjaimelta';
-
-  @override
-  String get benefitEveryCharacter => 'Kaikki hahmot, rajattomasti';
-
-  @override
-  String get ctaKeepPro => 'Pidä Pro';
-
-  @override
   String get subPaymentTitle => 'Päivitä maksutapa';
 
   @override
   String get subPaymentBody =>
-      'Maksua ei voitu veloittaa. Pro jatkuu lisäajan loppuun.';
+      'Maksua ei voitu veloittaa. Premium jatkuu lisäajan loppuun.';
 
   @override
   String get subHowToFix => 'Näin korjaat sen';
@@ -2134,7 +1929,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro päättyy $date. Kytke automaattinen uusinta takaisin päälle, eikä mikään muutu.';
+    return 'Premium päättyy $date. Kytke automaattinen uusinta takaisin päälle, eikä mikään muutu.';
   }
 
   @override
@@ -2154,14 +1949,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get flCheckBody =>
-      'Ilmaisella yksi tarkistus päivässä. Pro tekee siitä rajattoman.';
-
-  @override
-  String get flBenefitCalls =>
-      'Rajattomat puhelut Pro-paketilla · 15 min kukin';
-
-  @override
-  String get flBenefitChecks => 'Rajattomat ääntämistarkistukset Pro-paketilla';
+      'Ilmaisessa on yksi tarkistus päivässä. Premium antaa koko analyysin.';
 
   @override
   String flCaption(String price) {
@@ -2303,7 +2091,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get connected => 'Yhdistetty';
 
   @override
-  String get unlockedWithMax => 'Käytettävissä Maxilla';
+  String get unlockedWithMax => 'Sisältyy pakettiisi';
 
   @override
   String get fcEndedTitle => 'Ilmainen puhelusi päättyi';

@@ -668,9 +668,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get subscriptionManage => 'Quản lý đăng ký';
 
   @override
-  String get changePlan => 'Đổi gói';
-
-  @override
   String get cancelSubscription => 'Hủy đăng ký';
 
   @override
@@ -689,18 +686,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get viewBillingHistory => 'Xem lịch sử thanh toán';
 
   @override
-  String get keepUsingPro => 'Tiếp tục dùng Pro';
-
-  @override
-  String get proMembership => 'Thành viên Pro';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / tháng';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Cuộc gọi không giới hạn';
 
   @override
   String get benefitDetailedAnalysis => 'Phân tích phát âm & ngữ pháp chi tiết';
@@ -1148,11 +1136,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get lastPayment => 'Thanh toán gần nhất';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Bạn có thể tiếp tục dùng quyền lợi Pro đến $date, sau đó gói của bạn sẽ tự động chuyển sang Miễn phí.';
-  }
-
-  @override
   String get freePlanCallLimit => '1 cuộc gọi mỗi ngày · giới hạn 5 phút';
 
   @override
@@ -1308,9 +1291,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get billingGroupInTheStore => 'Trong cửa hàng';
 
   @override
-  String get billingChangePlan => 'Đổi gói';
-
-  @override
   String get billingCompareAllPlans => 'So sánh tất cả các gói';
 
   @override
@@ -1388,7 +1368,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaGetPremium => 'Dùng Premium';
 
   @override
-  String get planMaxTrial => 'Dùng thử Max';
+  String get planMaxTrial => 'Dùng thử Premium';
 
   @override
   String get freePlanPriceLine => '\$0.00 — mỗi ngày một cuộc gọi';
@@ -1429,35 +1409,22 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Gọi không giới hạn với Pro';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Gọi không giới hạn · 15 phút mỗi cuộc · $price mỗi tháng';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Bật gọi video với Max';
+  String get bannerMaxUpsellTitle => 'Trò chuyện trực tiếp với Premium';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Gọi mặt đối mặt · $price mỗi tháng';
+    return 'Gọi video · 15 phút mỗi ngày · $price mỗi tháng';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Chuyển sang gói năm';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly mỗi năm · $perMonth mỗi tháng';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Chúng tôi không thể thu tiền';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Cập nhật thanh toán trong cửa hàng để giữ Pro';
+      'Cập nhật thanh toán trong cửa hàng để giữ Premium';
 
   @override
   String get bannerPausedTitle => 'Gói của bạn đang tạm dừng';
@@ -1474,10 +1441,6 @@ class AppLocalizationsVi extends AppLocalizations {
       'Phương thức thanh toán, đổi gói và hủy gói đều do cửa hàng xử lý.';
 
   @override
-  String get noteFairUse =>
-      'Việc dùng không giới hạn tuân theo chính sách sử dụng hợp lý của chúng tôi.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Bản dùng thử kết thúc $date. Hủy trong cửa hàng trước đó và bạn sẽ không bị tính phí.';
   }
@@ -1488,7 +1451,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Pro tạm dừng cho đến khi thanh toán thành công. Nhân vật và tiến trình của bạn vẫn an toàn.';
+      'Premium tạm dừng cho đến khi thanh toán thành công. Nhân vật và tiến trình của bạn vẫn an toàn.';
 
   @override
   String noteEnding(String date) {
@@ -1496,7 +1459,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Bản dùng thử Max đã kết thúc';
+  String get trialExpiredTitle => 'Bản dùng thử Premium đã kết thúc';
 
   @override
   String get trialExpiredSub => 'Bạn đang ở gói Miễn phí';
@@ -1508,13 +1471,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get currentPlanTitle => 'Gói hiện tại';
 
   @override
-  String get badgeRecommended => 'Đề xuất';
-
-  @override
   String get perMonthUnit => 'mỗi tháng';
-
-  @override
-  String get planTaglinePro => 'Gọi không giới hạn. 15 phút mỗi cuộc.';
 
   @override
   String get planTaglineMax => 'Giờ bạn có thể nhìn thấy họ.';
@@ -1523,65 +1480,29 @@ class AppLocalizationsVi extends AppLocalizations {
   String get planTaglineFree => 'Mỗi ngày một cuộc gọi. Hoàn toàn miễn phí.';
 
   @override
-  String get bulletProCalls => 'Gọi thoại thoải mái, bao nhiêu tùy thích';
-
-  @override
-  String get bulletProLength => '15 phút mỗi cuộc gọi';
-
-  @override
-  String get bulletProScoring => 'Chấm điểm phát âm từng chữ cái';
-
-  @override
   String get bulletProCorrections => 'Sửa lỗi theo tiếng mẹ đẻ của bạn';
-
-  @override
-  String get bulletProBeaverCalls => 'Hải ly gọi cho bạn trước';
-
-  @override
-  String get bulletMaxVideo => 'Gọi video mặt đối mặt';
-
-  @override
-  String get bulletMaxEverything => 'Mọi thứ trong Pro';
-
-  @override
-  String get bulletMaxCharacters => 'Mọi nhân vật, không giới hạn';
-
-  @override
-  String get bulletMaxStudyBook => 'Sổ tay học tập đúng trình độ của bạn';
-
-  @override
-  String get bulletMaxWeeklyReport => 'Báo cáo hằng tuần về tiến bộ phát âm';
 
   @override
   String get bulletFreeCall => 'Mỗi ngày một cuộc gọi thoại 5 phút';
 
   @override
-  String get bulletFreeCheck => 'Mỗi ngày một lần kiểm tra phát âm';
+  String get bulletFreeCheck => 'Phân tích đầy đủ cho 3 cuộc gọi đầu tiên';
 
   @override
-  String get bulletFreeAccent => 'Kiểm tra ngữ điệu không giới hạn';
-
-  @override
-  String get bulletFreeCharacter => 'Một nhân vật khởi đầu';
-
-  @override
-  String get ctaGoUnlimited => 'Gọi không giới hạn';
+  String get bulletFreeCharacter => 'Hai nhân vật để bắt đầu';
 
   @override
   String get ctaTurnOnVideo => 'Bật gọi video';
 
   @override
-  String get noteCallLength => 'Mỗi cuộc gọi kéo dài 15 phút.';
+  String get noteCallLength =>
+      'Premium: mỗi ngày một cuộc gọi, tối đa 15 phút.';
 
   @override
   String get paywallProTitle1 => 'Người bạn Hàn Quốc';
 
   @override
   String get paywallProTitle2 => 'thức cùng bạn lúc 3 giờ sáng';
-
-  @override
-  String get paywallProSub =>
-      'Gọi không giới hạn. 15 phút mỗi cuộc. Quanh năm.';
 
   @override
   String get paywallLimitHeadline => 'Premium cho bạn 15 phút.';
@@ -1605,10 +1526,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Giờ bạn có thể nhìn thấy họ.';
-
-  @override
-  String get paywallMaxSub =>
-      'Gọi video, mọi nhân vật, và sổ tay học tập dành riêng cho trình độ của bạn.';
 
   @override
   String get planMonthly => 'Hằng tháng';
@@ -1661,29 +1578,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get footerPrivacy => 'Quyền riêng tư';
 
   @override
-  String get noteMaxCharacters =>
-      'Nhân vật mở khóa bằng Max dùng được khi gói còn hiệu lực. Nhân vật bạn đã mua vẫn là của bạn.';
-
-  @override
   String get processingTitle => 'Đang xác nhận giao dịch';
 
   @override
   String get processingSub => 'Thường chỉ mất vài giây.';
 
   @override
-  String get successProTitle => 'Bạn đã có Pro.';
-
-  @override
-  String get successProSub => 'Gọi không giới hạn, bắt đầu ngay bây giờ.';
-
-  @override
-  String get successProBenefit1 => 'Gọi bao nhiêu tùy thích — 15 phút mỗi cuộc';
-
-  @override
-  String get successProBenefit2 => 'Kiểm tra phát âm không giới hạn';
-
-  @override
-  String get successProBenefit3 => 'Mọi nhân vật, cùng tùy chọn mua lẻ';
+  String get successProTitle => 'Bạn đã có Premium.';
 
   @override
   String get successMaxTitle => 'Giờ bạn đã nhìn thấy họ.';
@@ -1693,28 +1594,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Gọi video đã bật. Nhấn nút video trong bất kỳ cuộc gọi nào.';
 
   @override
-  String get successMaxBenefit1 => 'Gọi video mặt đối mặt';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Mọi nhân vật không giới hạn, nhân vật mới dùng trước';
-
-  @override
-  String get successMaxBenefit3 => 'Sổ tay học tập đúng trình độ của bạn';
-
-  @override
-  String get ctaStartACall => 'Bắt đầu cuộc gọi';
-
-  @override
   String get ctaStartAVideoCall => 'Bắt đầu gọi video';
 
   @override
   String get ctaSeeYourSubscription => 'Xem gói đăng ký của bạn';
-
-  @override
-  String successProCaption(String price) {
-    return '$price được tính hằng tháng cho đến khi bạn hủy. Quản lý hoặc hủy bất cứ lúc nào trong cửa hàng.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1734,90 +1617,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get plansErrorCaption => 'Bạn chưa bị tính phí.';
 
   @override
-  String get changePlanTitle => 'Đổi gói';
-
-  @override
-  String get moveToMaxTitle => 'Chuyển lên Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price/tháng';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Gọi video mặt đối mặt · mọi nhân vật · sổ tay học tập dành riêng cho bạn';
-
-  @override
-  String get whatHappensNow => 'Điều gì xảy ra tiếp theo';
-
-  @override
-  String get maxStartsLabel => 'Max bắt đầu';
-
-  @override
-  String get immediately => 'Ngay lập tức';
-
-  @override
-  String get unusedProTime => 'Thời gian Pro chưa dùng';
-
-  @override
-  String get creditedTowardMax => 'Được trừ vào phí Max';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Chuyển sang Max';
-
-  @override
-  String get upgradeCaption =>
-      'Gói mới bắt đầu ngay. Thời gian Pro chưa dùng được trừ vào phí, không bao giờ tính hai lần.';
-
-  @override
-  String get moveToProTitle => 'Chuyển xuống Pro';
-
-  @override
-  String get moveToProSub =>
-      'Hôm nay không có gì thay đổi. Max chạy đến hết tháng bạn đã thanh toán.';
-
-  @override
-  String get maxRunsUntil => 'Max hiệu lực đến';
-
-  @override
-  String get proStarts => 'Pro bắt đầu';
-
-  @override
-  String get whatYouKeep => 'Những gì bạn giữ lại';
-
-  @override
-  String get keepBenefitCalls => 'Gọi thoại không giới hạn, 15 phút mỗi cuộc';
-
-  @override
-  String get keepBenefitCharacters => 'Nhân vật bạn mua là của bạn mãi mãi';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Gọi video và nhân vật riêng của Max sẽ tắt vào $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Chuyển sang Pro';
-
-  @override
-  String get ctaKeepMax => 'Giữ Max';
+  String get ctaKeepMax => 'Giữ Premium';
 
   @override
   String get winbackSkip => 'Bỏ qua';
 
   @override
-  String get winbackTitle => 'Gói Pro của bạn đã kết thúc';
+  String get winbackTitle => 'Gói Premium của bạn đã kết thúc';
 
   @override
   String get winbackSub => 'Bạn đang ở gói Miễn phí — mỗi ngày một cuộc gọi.';
@@ -1858,7 +1664,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaClose => 'Đóng';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro đã trở lại';
+  String get ovRestoreSuccessTitle => 'Premium đã trở lại';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1885,7 +1691,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaGetHelp => 'Nhận trợ giúp';
 
   @override
-  String get ovCharacterOfferTitle => 'Chưa sẵn sàng cho Pro?';
+  String get ovCharacterOfferTitle => 'Chưa sẵn sàng cho Premium?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1940,7 +1746,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get rowCharactersYouBought => 'Nhân vật bạn đã mua';
 
   @override
-  String get rowProRunsUntil => 'Pro hiệu lực đến';
+  String get rowProRunsUntil => 'Premium hiệu lực đến';
 
   @override
   String get ctaSwitchToYearly => 'Chuyển sang gói năm';
@@ -1954,8 +1760,7 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get ovAnnualSwitchBody =>
-      'Bạn đã dùng Pro được hai tháng. Gói năm tính ra rẻ hơn.';
+  String get ovAnnualSwitchBody => 'Gói năm rẻ hơn trả theo tháng.';
 
   @override
   String get rowYouSave => 'Bạn tiết kiệm';
@@ -2016,7 +1821,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'Max sẽ tiếp tục trừ khi bạn hủy. Đây là những gì sẽ diễn ra.';
+      'Premium sẽ tiếp tục trừ khi bạn hủy. Đây là những gì sẽ diễn ra.';
 
   @override
   String get rowTrialEnds => 'Dùng thử kết thúc';
@@ -2031,7 +1836,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaCancelInStore => 'Hủy trong cửa hàng';
 
   @override
-  String get ovTrialStartTitle => '7 ngày dùng Max, miễn phí';
+  String get ovTrialStartTitle => '7 ngày dùng Premium, miễn phí';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2046,7 +1851,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Lựa chọn tốt — gọi không giới hạn đã bật ngay bây giờ. Cùng gói Pro nhưng trả theo năm sẽ rẻ hơn.';
+      'Lựa chọn hay. Cùng là Premium nhưng trả theo năm sẽ rẻ hơn.';
 
   @override
   String get ovFailedDeclinedTitle => 'Thẻ của bạn bị từ chối';
@@ -2073,7 +1878,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Không kết nối được với cửa hàng. Bạn chưa bị tính phí.';
 
   @override
-  String get ovAlreadyTitle => 'Bạn đã có Pro rồi';
+  String get ovAlreadyTitle => 'Bạn đã có Premium rồi';
 
   @override
   String get ovAlreadyBody =>
@@ -2087,30 +1892,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro hiệu lực đến $date. Sau đó bạn chuyển về gói Miễn phí.';
+    return 'Premium hiệu lực đến $date. Sau đó bạn chuyển về gói Miễn phí.';
   }
 
   @override
   String get subWhatYouLose => 'Những gì bạn mất';
 
   @override
-  String get benefitCalls15 => 'Gọi không giới hạn, 15 phút mỗi cuộc';
-
-  @override
-  String get benefitScoring => 'Chấm điểm phát âm từng chữ cái';
-
-  @override
-  String get benefitEveryCharacter => 'Mọi nhân vật, không giới hạn';
-
-  @override
-  String get ctaKeepPro => 'Giữ Pro';
-
-  @override
   String get subPaymentTitle => 'Cập nhật thanh toán';
 
   @override
   String get subPaymentBody =>
-      'Chúng tôi không thể thu tiền. Pro vẫn hoạt động trong thời gian gia hạn.';
+      'Chúng tôi không thể thu tiền. Premium vẫn hoạt động trong thời gian gia hạn.';
 
   @override
   String get subHowToFix => 'Cách khắc phục';
@@ -2129,7 +1922,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro kết thúc vào $date. Bật lại gia hạn tự động và mọi thứ giữ nguyên.';
+    return 'Premium kết thúc vào $date. Bật lại gia hạn tự động và mọi thứ giữ nguyên.';
   }
 
   @override
@@ -2149,13 +1942,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get flCheckBody =>
-      'Gói Miễn phí kiểm tra một lần mỗi ngày. Pro thì không giới hạn.';
-
-  @override
-  String get flBenefitCalls => 'Gọi không giới hạn với Pro · 15 phút mỗi cuộc';
-
-  @override
-  String get flBenefitChecks => 'Kiểm tra phát âm không giới hạn với Pro';
+      'Gói miễn phí có một lượt kiểm tra mỗi ngày. Premium cho bạn phân tích đầy đủ.';
 
   @override
   String flCaption(String price) {
@@ -2294,7 +2081,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get connected => 'Đã kết nối';
 
   @override
-  String get unlockedWithMax => 'Có sẵn với Max';
+  String get unlockedWithMax => 'Đã bao gồm trong gói của bạn';
 
   @override
   String get fcEndedTitle => 'Cuộc gọi miễn phí đã kết thúc';

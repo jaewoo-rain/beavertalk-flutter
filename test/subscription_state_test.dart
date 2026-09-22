@@ -165,22 +165,21 @@ void main() {
       }
     });
 
-    test('slot ① is Change plan only on a paid plan', () {
+    test('slot ① — Premium 은 연간 전환, 나머지는 플랜 비교(단일 티어 09-22)', () {
       for (final s in SubscriptionState.values) {
-        final paid =
-            s == SubscriptionState.activePro || s == SubscriptionState.activeMax;
         expect(
           s.planSlotLabel,
-          paid
-              ? BillingSlotLabel.changePlan
+          s == SubscriptionState.activeMax
+              ? BillingSlotLabel.switchToAnnual
               : BillingSlotLabel.compareAllPlans,
           reason: 'slot ① label for $s',
         );
       }
-      expect(SubscriptionState.activePro.planSlotDestination,
-          BillingDestination.planChangeUpgrade);
       expect(SubscriptionState.activeMax.planSlotDestination,
-          BillingDestination.planChangeDowngrade);
+          BillingDestination.annualSwitch);
+      // 옛 Pro 는 더 팔지 않는다 — 바꿀 상대가 없으니 플랜 비교로.
+      expect(SubscriptionState.activePro.planSlotDestination,
+          BillingDestination.plansCompare);
     });
 
     test('slot ③ shows "nothing to restore" only on Free', () {
@@ -476,6 +475,12 @@ void main() {
           cents(PlanPrices.proYearlyPerMonth));
       expect((cents(PlanPrices.maxYearly) / 12).round(),
           cents(PlanPrices.maxYearlyPerMonth));
+      // Premium (`max`) — the only plan on sale — carries the same pair.
+      expect(cents(PlanPrices.maxYearlyAnchor), cents(PlanPrices.maxMonthly) * 12);
+      expect(
+        cents(PlanPrices.maxYearlySaved),
+        cents(PlanPrices.maxYearlyAnchor) - cents(PlanPrices.maxYearly),
+      );
       // Anchors only make sense above the price they strike through.
       expect(cents(PlanPrices.maxMonthlyAnchor),
           greaterThan(cents(PlanPrices.maxMonthly)));

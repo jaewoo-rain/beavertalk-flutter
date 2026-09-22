@@ -94,8 +94,10 @@ enum SubscriptionBadge {
 /// Copy is registered in `l10n` (work order §1-3 forbids hardcoded strings), so
 /// the domain names the label and the widget resolves it.
 enum BillingSlotLabel {
-  /// Slot ① on a paid plan.
-  changePlan,
+  /// Slot ① on Premium — 「Switch to annual」(Figma `subscription_manage__active`).
+  ///
+  /// 단일 티어(09-22): 옛 「Change plan」(Pro↔Max)은 바꿀 상대 티어가 없어 사라졌다.
+  switchToAnnual,
 
   /// Slot ① everywhere else.
   compareAllPlans,
@@ -118,11 +120,9 @@ enum BillingDestination {
   /// `depth/plans_compare`.
   plansCompare,
 
-  /// `depth/plan_change_upgrade` — Pro → Max.
-  planChangeUpgrade,
-
-  /// `depth/plan_change_downgrade` — Max → Pro.
-  planChangeDowngrade,
+  /// `overlay/annual_switch` — Premium 월간 → 연간. 판매는 하되 유도하지 않는다(정본 §1) —
+  /// 그래서 배너가 아니라 결제 목록의 한 줄이다.
+  annualSwitch,
 
   /// `overlay/character_offer`.
   characterOffer,
@@ -238,16 +238,15 @@ extension SubscriptionStateX on SubscriptionState {
 
   /// Slot ① label — spec §5-2.
   BillingSlotLabel get planSlotLabel => switch (this) {
-        SubscriptionState.activePro ||
-        SubscriptionState.activeMax =>
-          BillingSlotLabel.changePlan,
+        SubscriptionState.activeMax => BillingSlotLabel.switchToAnnual,
         _ => BillingSlotLabel.compareAllPlans,
       };
 
   /// Slot ① destination — spec §5-2.
+  ///
+  /// 옛 Pro 회원([SubscriptionState.activePro] — 더 팔지 않는 티어)은 플랜 비교로 간다.
   BillingDestination get planSlotDestination => switch (this) {
-        SubscriptionState.activePro => BillingDestination.planChangeUpgrade,
-        SubscriptionState.activeMax => BillingDestination.planChangeDowngrade,
+        SubscriptionState.activeMax => BillingDestination.annualSwitch,
         _ => BillingDestination.plansCompare,
       };
 

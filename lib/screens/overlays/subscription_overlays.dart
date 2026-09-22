@@ -122,7 +122,7 @@ Future<void> showSubscriptionOverlay(
   BuildContext context,
   SubscriptionOverlay overlay, {
   DateTime? expiresAt,
-  SubscriptionTier retryTier = SubscriptionTier.pro,
+  SubscriptionTier retryTier = SubscriptionTier.max,
   bool retryAnnual = false,
   ({String used, String limit})? usage,
   Widget? avatar,
@@ -228,7 +228,7 @@ class _OverlaySheet extends StatelessWidget {
   const _OverlaySheet({
     required this.overlay,
     this.expiresAt,
-    this.retryTier = SubscriptionTier.pro,
+    this.retryTier = SubscriptionTier.max,
     this.retryAnnual = false,
     this.usage,
     this.avatar,
@@ -367,7 +367,7 @@ class _OverlaySheet extends StatelessWidget {
           rows: [
             SheetRowData(
                 label: l10n.rowPayYearlyInstead,
-                value: l10n.rowYearlyMonthEquiv(PlanPrices.proYearlyPerMonth),
+                value: l10n.rowYearlyMonthEquiv(PlanPrices.maxYearlyPerMonth),
                 highlighted: true),
             SheetRowData(
                 label: l10n.rowCharactersYouBought,
@@ -383,7 +383,7 @@ class _OverlaySheet extends StatelessWidget {
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
                       arguments: (
-                        tier: SubscriptionTier.pro,
+                        tier: SubscriptionTier.max,
                         annual: true
                       )))),
           secondaryAction: SheetAction(
@@ -393,17 +393,17 @@ class _OverlaySheet extends StatelessWidget {
       case SubscriptionOverlay.annualSwitch:
         return BottomSheetContent(
           type: SheetContentType.rows,
-          title: l10n.ovAnnualSwitchTitle(PlanPrices.proYearlySaved),
+          title: l10n.ovAnnualSwitchTitle(PlanPrices.maxYearlySaved),
           body: l10n.ovAnnualSwitchBody,
           rows: [
             SheetRowData(
                 label: l10n.rowYouSave,
-                value: l10n.amountSaved(PlanPrices.proYearlySaved),
+                value: l10n.amountSaved(PlanPrices.maxYearlySaved),
                 highlighted: true),
-            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.proYearly)),
+            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.maxYearly)),
             SheetRowData(
                 label: l10n.rowMonthlyForYear,
-                value: l10n.amountMonthlyForYear(PlanPrices.proYearlyAnchor)),
+                value: l10n.amountMonthlyForYear(PlanPrices.maxYearlyAnchor)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToYearly,
@@ -411,7 +411,7 @@ class _OverlaySheet extends StatelessWidget {
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
                       arguments: (
-                        tier: SubscriptionTier.pro,
+                        tier: SubscriptionTier.max,
                         annual: true
                       )))),
           secondaryAction:
@@ -428,10 +428,10 @@ class _OverlaySheet extends StatelessWidget {
                 value: _date(context, expiresAt),
                 highlighted: true),
             SheetRowData(
-                label: l10n.rowMonthlyLabel, value: l10n.proMonthlyPriceLine(PlanPrices.proMonthly)),
+                label: l10n.rowMonthlyLabel, value: l10n.proMonthlyPriceLine(PlanPrices.maxMonthly)),
             SheetRowData(
                 label: l10n.rowYearlyWorkedOut,
-                value: l10n.rowYearlyMonthEquiv(PlanPrices.proYearlyPerMonth)),
+                value: l10n.rowYearlyMonthEquiv(PlanPrices.maxYearlyPerMonth)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToMonthly,
@@ -439,7 +439,7 @@ class _OverlaySheet extends StatelessWidget {
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
                       arguments: (
-                        tier: SubscriptionTier.pro,
+                        tier: SubscriptionTier.max,
                         annual: false
                       )))),
           secondaryAction:
@@ -461,12 +461,12 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.subCancelBody(_date(context, expiresAt)),
           blockTitle: l10n.subWhatYouLose,
           rows: [
-            SubscriptionActionRow(l10n.benefitCalls15),
-            SubscriptionActionRow(l10n.benefitScoring),
-            SubscriptionActionRow(l10n.benefitEveryCharacter),
+            SubscriptionActionRow(l10n.premiumBulletVideo),
+            SubscriptionActionRow(l10n.premiumBulletAnalysis),
+            SubscriptionActionRow(l10n.premiumBulletWeakSounds),
           ],
           primaryAction:
-              SheetAction(label: l10n.ctaKeepPro, onPressed: () => _close(context)),
+              SheetAction(label: l10n.ctaKeepMax, onPressed: () => _close(context)),
           secondaryAction: SheetAction(
               label: l10n.ctaContinueToStore,
               onPressed: () => _toStore(context)),
@@ -496,9 +496,9 @@ class _OverlaySheet extends StatelessWidget {
           body: l10n.subResubBody(_date(context, expiresAt)),
           blockTitle: l10n.subWhatYouKeep,
           rows: [
-            SubscriptionActionRow(l10n.benefitCalls15),
-            SubscriptionActionRow(l10n.benefitScoring),
-            SubscriptionActionRow(l10n.benefitEveryCharacter),
+            SubscriptionActionRow(l10n.premiumBulletVideo),
+            SubscriptionActionRow(l10n.premiumBulletAnalysis),
+            SubscriptionActionRow(l10n.premiumBulletWeakSounds),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaTurnItBackOn, onPressed: () => _toStore(context)),
@@ -555,12 +555,12 @@ class _OverlaySheet extends StatelessWidget {
           rows: [
             SheetRowData(
                 label: l10n.rowYouSave,
-                value: l10n.amountSaved(PlanPrices.proYearlySaved),
+                value: l10n.amountSaved(PlanPrices.maxYearlySaved),
                 highlighted: true),
-            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.proYearly)),
+            SheetRowData(label: l10n.rowYearly, value: l10n.amountYearly(PlanPrices.maxYearly)),
             SheetRowData(
                 label: l10n.rowMonthlyForYear,
-                value: l10n.amountMonthlyForYear(PlanPrices.proYearlyAnchor)),
+                value: l10n.amountMonthlyForYear(PlanPrices.maxYearlyAnchor)),
           ],
           primaryAction: SheetAction(
               label: l10n.ctaSwitchToYearly,
@@ -633,9 +633,9 @@ class _OverlaySheet extends StatelessWidget {
             topic: lastTopic ?? '',
             usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
           ),
-          benefitLabel: l10n.flBenefitCalls,
+          benefitLabel: l10n.premiumBulletVideo,
           benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption(PlanPrices.proMonthly),
+          caption: l10n.flCaption(PlanPrices.maxMonthly),
           // ⛔ 여기서 직접 결제 화면으로 밀지 않는다. 통화를 끝내는 일과 화면을 옮기는
           //    일이 **둘 다** 일어나야 하는데, 통화 종료는 화면의 요약 이동 리스너를
           //    깨운다. 여기서 push 하면 그 리스너의 `pushReplacement` 가 방금 띄운
@@ -678,11 +678,11 @@ class _OverlaySheet extends StatelessWidget {
                 ? ''
                 : l10n.flUsage(usage!.used, usage!.limit),
           ),
-          benefitLabel: l10n.flBenefitCalls,
+          benefitLabel: l10n.premiumBulletVideo,
           benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption(PlanPrices.proMonthly),
+          caption: l10n.flCaption(PlanPrices.maxMonthly),
           primaryAction: SheetAction(
-              label: l10n.ctaGoUnlimited,
+              label: l10n.ctaGetPremium,
               onPressed: () => _then(context, () {
                     rootNav.pushNamed(Routes.paywallProLimit,
                         arguments: 'call');
@@ -696,11 +696,11 @@ class _OverlaySheet extends StatelessWidget {
           title: l10n.flCheckTitle,
           body: l10n.flCheckBody,
           rows: scores ?? const [],
-          benefitLabel: l10n.flBenefitChecks,
+          benefitLabel: l10n.premiumBulletAnalysis,
           benefitTier: BenefitTier.pro,
-          caption: l10n.flCaption(PlanPrices.proMonthly),
+          caption: l10n.flCaption(PlanPrices.maxMonthly),
           primaryAction: SheetAction(
-              label: l10n.ctaGoUnlimited,
+              label: l10n.ctaGetPremium,
               onPressed: () => _then(context, () {
                     rootNav.pushNamed(Routes.paywallProLimit,
                         arguments: 'check');

@@ -673,9 +673,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get subscriptionManage => 'စာရင်းသွင်းမှု စီမံရန်';
 
   @override
-  String get changePlan => 'အစီအစဉ် ပြောင်းရန်';
-
-  @override
   String get cancelSubscription => 'စာရင်းသွင်းမှု ပယ်ဖျက်ရန်';
 
   @override
@@ -695,18 +692,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get viewBillingHistory => 'ငွေတောင်းခံမှတ်တမ်း ကြည့်ရန်';
 
   @override
-  String get keepUsingPro => 'Pro ကို ဆက်သုံးရန်';
-
-  @override
-  String get proMembership => 'Pro အသင်းဝင်ဖြစ်မှု';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / လ';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'ကန့်သတ်မထားသော ခေါ်ဆိုမှုများ';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1158,11 +1146,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get lastPayment => 'နောက်ဆုံး ငွေပေးချေမှု';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return '$date အထိ Pro အကျိုးခံစားခွင့်များကို ဆက်လက်သုံးနိုင်ပြီး ထို့နောက် အစီအစဉ်သည် အလိုအလျောက် အခမဲ့သို့ ပြောင်းသွားပါမည်။';
-  }
-
-  @override
   String get freePlanCallLimit => 'တစ်ရက် ၁ ကြိမ် · ၅ မိနစ် ကန့်သတ်';
 
   @override
@@ -1318,9 +1301,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get billingGroupInTheStore => 'စတိုးတွင်';
 
   @override
-  String get billingChangePlan => 'အစီအစဉ် ပြောင်းရန်';
-
-  @override
   String get billingCompareAllPlans => 'အစီအစဉ်အားလုံး နှိုင်းယှဉ်ရန်';
 
   @override
@@ -1398,7 +1378,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaGetPremium => 'Premium ရယူရန်';
 
   @override
-  String get planMaxTrial => 'Max အစမ်းသုံး';
+  String get planMaxTrial => 'Premium အစမ်းသုံး';
 
   @override
   String get freePlanPriceLine => '\$0.00 — တစ်နေ့ ခေါ်ဆိုမှုတစ်ကြိမ်';
@@ -1439,35 +1419,23 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro ဖြင့် အကန့်အသတ်မဲ့ သုံးပါ';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု · တစ်ကြိမ် ၁၅ မိနစ် · တစ်လ $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max ဖြင့် ဗီဒီယို ဖွင့်ပါ';
+  String get bannerMaxUpsellTitle =>
+      'Premium ဖြင့် မျက်နှာချင်းဆိုင် စကားပြောပါ';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'မျက်နှာချင်းဆိုင် ခေါ်ဆိုမှု · တစ်လ $price';
+    return 'ဗီဒီယိုခေါ်ဆိုမှု · တစ်ရက် 15 မိနစ် · တစ်လ $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'နှစ်စဉ်အစီအစဉ်သို့ ပြောင်းရန်';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'တစ်နှစ် $yearly · တစ်လ $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'ငွေပေးချေမှု မအောင်မြင်ပါ';
 
   @override
   String get bannerPaymentFailedSub =>
-      'Pro ဆက်သုံးရန် စတိုးတွင် ငွေပေးချေမှု အပ်ဒိတ်လုပ်ပါ';
+      'Premium ဆက်သုံးရန် စတိုးတွင် ငွေပေးချေမှု အပ်ဒိတ်လုပ်ပါ';
 
   @override
   String get bannerPausedTitle => 'သင့်အစီအစဉ် ခေတ္တရပ်ထားသည်';
@@ -1484,10 +1452,6 @@ class AppLocalizationsMy extends AppLocalizations {
       'ငွေပေးချေနည်း၊ အစီအစဉ်ပြောင်းခြင်းနှင့် ပယ်ဖျက်ခြင်းကို စတိုးက ဆောင်ရွက်သည်။';
 
   @override
-  String get noteFairUse =>
-      'အကန့်အသတ်မဲ့ အသုံးပြုမှုသည် တရားမျှတသုံးစွဲမှု မူဝါဒအတိုင်း ဖြစ်သည်။';
-
-  @override
   String noteTrialEnds(String date) {
     return 'သင့်အစမ်းသုံးကာလ $date တွင် ကုန်ဆုံးမည်။ ၎င်းမတိုင်မီ စတိုးတွင် ပယ်ဖျက်ပါက ငွေမကောက်ခံပါ။';
   }
@@ -1498,7 +1462,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'ငွေပေးချေမှု အောင်မြင်သည်အထိ Pro ခေတ္တရပ်ထားသည်။ သင့်ဇာတ်ကောင်များနှင့် တိုးတက်မှု လုံခြုံပါသည်။';
+      'ငွေပေးချေမှု အောင်မြင်သည်အထိ Premium ခေတ္တရပ်ထားသည်။ သင့်ဇာတ်ကောင်များနှင့် တိုးတက်မှု လုံခြုံပါသည်။';
 
   @override
   String noteEnding(String date) {
@@ -1506,7 +1470,7 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'သင့် Max အစမ်းသုံးကာလ ကုန်ဆုံးပြီ';
+  String get trialExpiredTitle => 'သင့် Premium အစမ်းသုံးကာလ ကုန်ဆုံးပြီ';
 
   @override
   String get trialExpiredSub => 'ယခု Free တွင် ရှိနေသည်';
@@ -1518,13 +1482,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get currentPlanTitle => 'လက်ရှိ အစီအစဉ်';
 
   @override
-  String get badgeRecommended => 'အကြံပြုထားသည်';
-
-  @override
   String get perMonthUnit => 'တစ်လလျှင်';
-
-  @override
-  String get planTaglinePro => 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု။ တစ်ကြိမ် ၁၅ မိနစ်။';
 
   @override
   String get planTaglineMax => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
@@ -1533,66 +1491,30 @@ class AppLocalizationsMy extends AppLocalizations {
   String get planTaglineFree => 'တစ်နေ့ တစ်ကြိမ်။ အခမဲ့။';
 
   @override
-  String get bulletProCalls => 'ကြိုက်သလောက် အသံခေါ်ဆိုမှု';
-
-  @override
-  String get bulletProLength => 'တစ်ကြိမ်လျှင် ၁၅ မိနစ်';
-
-  @override
-  String get bulletProScoring => 'စာလုံးတစ်လုံးချင်း အသံထွက် အမှတ်ပေးမှု';
-
-  @override
   String get bulletProCorrections => 'သင့်မိခင်ဘာသာစကားအလိုက် ပြင်ဆင်ချက်များ';
-
-  @override
-  String get bulletProBeaverCalls => 'Beaver က သင့်ကို အရင်ခေါ်မည်';
-
-  @override
-  String get bulletMaxVideo => 'မျက်နှာချင်းဆိုင် ဗီဒီယိုခေါ်ဆိုမှု';
-
-  @override
-  String get bulletMaxEverything => 'Pro ပါ အရာအားလုံး';
-
-  @override
-  String get bulletMaxCharacters => 'ဇာတ်ကောင်အားလုံး၊ အကန့်အသတ်မဲ့';
-
-  @override
-  String get bulletMaxStudyBook => 'သင့်အဆင့်နှင့် ကိုက်ညီသော လေ့လာစာအုပ်';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'သင့်အသံထွက် ပြောင်းလဲပုံ အပတ်စဉ် အစီရင်ခံစာ';
 
   @override
   String get bulletFreeCall => 'တစ်နေ့ ၅ မိနစ် အသံခေါ်ဆိုမှု တစ်ကြိမ်';
 
   @override
-  String get bulletFreeCheck => 'တစ်နေ့ အသံထွက်စစ်ဆေးမှု တစ်ကြိမ်';
+  String get bulletFreeCheck =>
+      'ပထမ ခေါ်ဆိုမှု 3 ကြိမ်အတွက် ခွဲခြမ်းစိတ်ဖြာမှု အပြည့်အစုံ';
 
   @override
-  String get bulletFreeAccent => 'အကန့်အသတ်မဲ့ လေယူလေသိမ်း စစ်ဆေးမှု';
-
-  @override
-  String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင်တစ်ကောင်';
-
-  @override
-  String get ctaGoUnlimited => 'အကန့်အသတ်မဲ့ သုံးရန်';
+  String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင် 2 ခု';
 
   @override
   String get ctaTurnOnVideo => 'ဗီဒီယို ဖွင့်ရန်';
 
   @override
-  String get noteCallLength => 'ခေါ်ဆိုမှုတစ်ကြိမ်လျှင် ၁၅ မိနစ်ဖြစ်သည်။';
+  String get noteCallLength =>
+      'Premium: တစ်ရက် 1 ကြိမ် ခေါ်ဆိုမှု၊ အများဆုံး 15 မိနစ်။';
 
   @override
   String get paywallProTitle1 => 'သင့်ကိုရီးယား သူငယ်ချင်း';
 
   @override
   String get paywallProTitle2 => 'နံနက် ၃ နာရီမှာလည်း နိုးနေတယ်';
-
-  @override
-  String get paywallProSub =>
-      'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု။ တစ်ကြိမ် ၁၅ မိနစ်။ တစ်နှစ်ပတ်လုံး။';
 
   @override
   String get paywallLimitHeadline => 'Premium ဖြင့် 15 မိနစ် ရသည်။';
@@ -1615,10 +1537,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
-
-  @override
-  String get paywallMaxSub =>
-      'ဗီဒီယိုခေါ်ဆိုမှု၊ ဇာတ်ကောင်အားလုံးနှင့် သင့်အဆင့်အတွက် ပြုလုပ်ထားသော လေ့လာစာအုပ်။';
 
   @override
   String get planMonthly => 'လစဉ်';
@@ -1672,30 +1590,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get footerPrivacy => 'ကိုယ်ရေးလုံခြုံမှု';
 
   @override
-  String get noteMaxCharacters =>
-      'Max ဖြင့် ဖွင့်ထားသော ဇာတ်ကောင်များကို စာရင်းသွင်းမှု သက်ဝင်နေစဉ် သုံးနိုင်သည်။ ဝယ်ထားသော ဇာတ်ကောင်များ သင့်ပိုင် ဆက်ဖြစ်သည်။';
-
-  @override
   String get processingTitle => 'သင့်ဝယ်ယူမှုကို အတည်ပြုနေသည်';
 
   @override
   String get processingSub => 'ပုံမှန်အားဖြင့် စက္ကန့်အနည်းငယ် ကြာသည်။';
 
   @override
-  String get successProTitle => 'ယခု Pro ဖြစ်ပါပြီ။';
-
-  @override
-  String get successProSub => 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု၊ ယခုချက်ချင်း စတင်။';
-
-  @override
-  String get successProBenefit1 => 'ကြိုက်သလောက် ခေါ်ဆိုပါ — တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get successProBenefit2 => 'အကန့်အသတ်မဲ့ အသံထွက်စစ်ဆေးမှု';
-
-  @override
-  String get successProBenefit3 =>
-      'ဇာတ်ကောင်အားလုံးနှင့် တစ်ကြိမ်တည်း ဝယ်ယူမှုများ';
+  String get successProTitle => 'ယခု Premium ဖြစ်ပါပြီ။';
 
   @override
   String get successMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
@@ -1705,28 +1606,10 @@ class AppLocalizationsMy extends AppLocalizations {
       'ဗီဒီယိုခေါ်ဆိုမှု ဖွင့်ပြီးပြီ။ မည်သည့်ခေါ်ဆိုမှုတွင်မဆို ဗီဒီယိုခလုတ်ကို နှိပ်ပါ။';
 
   @override
-  String get successMaxBenefit1 => 'မျက်နှာချင်းဆိုင် ဗီဒီယိုခေါ်ဆိုမှု';
-
-  @override
-  String get successMaxBenefit2 =>
-      'ဇာတ်ကောင်အားလုံး အကန့်အသတ်မဲ့ — အသစ်များကို အရင်ရ';
-
-  @override
-  String get successMaxBenefit3 => 'သင့်အဆင့်နှင့် ကိုက်ညီသော လေ့လာစာအုပ်';
-
-  @override
-  String get ctaStartACall => 'ခေါ်ဆိုမှု စတင်ရန်';
-
-  @override
   String get ctaStartAVideoCall => 'ဗီဒီယိုခေါ်ဆိုမှု စတင်ရန်';
 
   @override
   String get ctaSeeYourSubscription => 'သင့်စာရင်းသွင်းမှု ကြည့်ရန်';
-
-  @override
-  String successProCaption(String price) {
-    return 'မပယ်ဖျက်မချင်း တစ်လ $price ကောက်ခံသည်။ စတိုးတွင် အချိန်မရွေး စီမံ သို့မဟုတ် ပယ်ဖျက်နိုင်သည်။';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1746,91 +1629,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get plansErrorCaption => 'ငွေမကောက်ခံခဲ့ပါ။';
 
   @override
-  String get changePlanTitle => 'အစီအစဉ် ပြောင်းရန်';
-
-  @override
-  String get moveToMaxTitle => 'Max သို့ ပြောင်းရန်';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / လ';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'မျက်နှာချင်းဆိုင် ဗီဒီယိုခေါ်ဆိုမှု · ဇာတ်ကောင်အားလုံး · သင့်အတွက် လေ့လာစာအုပ်';
-
-  @override
-  String get whatHappensNow => 'ယခု ဖြစ်လာမည့်အရာ';
-
-  @override
-  String get maxStartsLabel => 'Max စတင်ချိန်';
-
-  @override
-  String get immediately => 'ချက်ချင်း';
-
-  @override
-  String get unusedProTime => 'Pro မသုံးရသေးသော ကာလ';
-
-  @override
-  String get creditedTowardMax => 'Max သို့ ခုနှိမ်ပေးမည်';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max သို့ ပြောင်းရန်';
-
-  @override
-  String get upgradeCaption =>
-      'အစီအစဉ်အသစ် ချက်ချင်း စတင်သည်။ Pro ကျန်ကာလကို ခုနှိမ်ပေးပြီး နှစ်ကြိမ် မကောက်ခံပါ။';
-
-  @override
-  String get moveToProTitle => 'Pro သို့ ပြောင်းရန်';
-
-  @override
-  String get moveToProSub =>
-      'ယနေ့ ဘာမှ မပြောင်းပါ။ ပေးချေပြီးသော လကုန်အထိ Max ဆက်သုံးနိုင်သည်။';
-
-  @override
-  String get maxRunsUntil => 'Max သုံးနိုင်သည့်ရက်';
-
-  @override
-  String get proStarts => 'Pro စတင်ချိန်';
-
-  @override
-  String get whatYouKeep => 'ဆက်ရရှိမည့်အရာ';
-
-  @override
-  String get keepBenefitCalls =>
-      'အကန့်အသတ်မဲ့ အသံခေါ်ဆိုမှု၊ တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get keepBenefitCharacters => 'ဝယ်ထားသော ဇာတ်ကောင်များ ထာဝရ သင့်ပိုင်';
-
-  @override
-  String downgradeWarning(String date) {
-    return '$date တွင် ဗီဒီယိုခေါ်ဆိုမှုနှင့် Max သီးသန့် ဇာတ်ကောင်များ ပိတ်သွားမည်။';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro သို့ ပြောင်းရန်';
-
-  @override
-  String get ctaKeepMax => 'Max ဆက်ထားရန်';
+  String get ctaKeepMax => 'Premium ဆက်ထားရန်';
 
   @override
   String get winbackSkip => 'ကျော်ရန်';
 
   @override
-  String get winbackTitle => 'သင့် Pro အစီအစဉ် ကုန်ဆုံးပြီ';
+  String get winbackTitle => 'သင့် Premium အစီအစဉ် ကုန်ဆုံးပြီ';
 
   @override
   String get winbackSub => 'ယခု Free တွင် — တစ်နေ့ တစ်ကြိမ်။';
@@ -1870,7 +1675,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaClose => 'ပိတ်ရန်';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro ပြန်ရောက်ပြီ';
+  String get ovRestoreSuccessTitle => 'Premium ပြန်ရောက်ပြီ';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1897,7 +1702,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaGetHelp => 'အကူအညီ ရယူရန်';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro အတွက် မသင့်သေးဘူးလား။';
+  String get ovCharacterOfferTitle => 'Premium အတွက် မသင့်သေးဘူးလား။';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1952,7 +1757,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get rowCharactersYouBought => 'ဝယ်ထားသော ဇာတ်ကောင်များ';
 
   @override
-  String get rowProRunsUntil => 'Pro သုံးနိုင်သည့်ရက်';
+  String get rowProRunsUntil => 'Premium သုံးနိုင်သည့်ရက်';
 
   @override
   String get ctaSwitchToYearly => 'နှစ်စဉ်သို့ ပြောင်းရန်';
@@ -1967,7 +1772,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Pro ကို နှစ်လ သုံးထားပြီးပြီ။ နှစ်စဉ်အစီအစဉ်က ပိုသက်သာသည်။';
+      'နှစ်စဉ်အစီအစဉ်သည် လစဉ်ပေးချေခြင်းထက် ပိုသက်သာသည်။';
 
   @override
   String get rowYouSave => 'ချွေတာနိုင်ငွေ';
@@ -2028,7 +1833,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'မပယ်ဖျက်ပါက Max ဆက်သွားမည်။ ဖြစ်လာမည့်အရာများမှာ —';
+      'မပယ်ဖျက်ပါက Premium ဆက်သွားမည်။ ဖြစ်လာမည့်အရာများမှာ —';
 
   @override
   String get rowTrialEnds => 'အစမ်းသုံး ကုန်ဆုံးချိန်';
@@ -2043,7 +1848,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaCancelInStore => 'စတိုးတွင် ပယ်ဖျက်ရန်';
 
   @override
-  String get ovTrialStartTitle => 'Max ၇ ရက်၊ အခမဲ့';
+  String get ovTrialStartTitle => 'Premium ၇ ရက်၊ အခမဲ့';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2058,7 +1863,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'ကောင်းသော ရွေးချယ်မှု — အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု ယခုဖွင့်ပြီးပြီ။ နှစ်စဉ်ပေးချေလျှင် တူညီသော Pro ကို ပိုသက်သာစွာ ရသည်။';
+      'ရွေးချယ်မှု ကောင်းပါသည်။ နှစ်စဉ်ပေးချေလျှင် တူညီသော Premium ကို ပိုသက်သာစွာ ရနိုင်သည်။';
 
   @override
   String get ovFailedDeclinedTitle => 'သင့်ကတ် ငြင်းပယ်ခံရသည်';
@@ -2084,7 +1889,7 @@ class AppLocalizationsMy extends AppLocalizations {
       'စတိုးနှင့် ချိတ်ဆက်၍ မရပါ။ ငွေမကောက်ခံခဲ့ပါ။';
 
   @override
-  String get ovAlreadyTitle => 'Pro ကို သုံးနေပြီးသား ဖြစ်သည်';
+  String get ovAlreadyTitle => 'Premium ကို သုံးနေပြီးသား ဖြစ်သည်';
 
   @override
   String get ovAlreadyBody =>
@@ -2098,30 +1903,18 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date အထိ သက်ဝင်သည်။ ထို့နောက် Free သို့ ပြောင်းမည်။';
+    return 'Premium $date အထိ သက်ဝင်သည်။ ထို့နောက် Free သို့ ပြောင်းမည်။';
   }
 
   @override
   String get subWhatYouLose => 'ဆုံးရှုံးမည့်အရာ';
 
   @override
-  String get benefitCalls15 => 'အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု၊ တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get benefitScoring => 'စာလုံးတစ်လုံးချင်း အသံထွက် အမှတ်ပေးမှု';
-
-  @override
-  String get benefitEveryCharacter => 'ဇာတ်ကောင်အားလုံး၊ အကန့်အသတ်မဲ့';
-
-  @override
-  String get ctaKeepPro => 'Pro ဆက်ထားရန်';
-
-  @override
   String get subPaymentTitle => 'ငွေပေးချေမှု အပ်ဒိတ်လုပ်ရန်';
 
   @override
   String get subPaymentBody =>
-      'ငွေပေးချေမှု မအောင်မြင်ပါ။ ဆိုင်းငံ့ကာလအတွင်း Pro ဆက်သုံးနိုင်သည်။';
+      'ငွေပေးချေမှု မအောင်မြင်ပါ။ ဆိုင်းငံ့ကာလအတွင်း Premium ဆက်သုံးနိုင်သည်။';
 
   @override
   String get subHowToFix => 'ပြင်ဆင်နည်း';
@@ -2140,7 +1933,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date တွင် ကုန်ဆုံးမည်။ အလိုအလျောက် သက်တမ်းတိုးကို ပြန်ဖွင့်ပါက ဘာမှ မပြောင်းပါ။';
+    return 'Premium $date တွင် ကုန်ဆုံးမည်။ အလိုအလျောက် သက်တမ်းတိုးကို ပြန်ဖွင့်ပါက ဘာမှ မပြောင်းပါ။';
   }
 
   @override
@@ -2160,14 +1953,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get flCheckBody =>
-      'Free တွင် တစ်နေ့ တစ်ကြိမ်။ Pro ဖြင့် အကန့်အသတ်မဲ့။';
-
-  @override
-  String get flBenefitCalls =>
-      'Pro ဖြင့် အကန့်အသတ်မဲ့ ခေါ်ဆိုမှု · တစ်ကြိမ် ၁၅ မိနစ်';
-
-  @override
-  String get flBenefitChecks => 'Pro ဖြင့် အကန့်အသတ်မဲ့ အသံထွက်စစ်ဆေးမှု';
+      'Free တွင် တစ်ရက် 1 ကြိမ် စစ်ဆေးနိုင်သည်။ Premium က ခွဲခြမ်းစိတ်ဖြာမှု အပြည့်အစုံ ပေးသည်။';
 
   @override
   String flCaption(String price) {
@@ -2307,7 +2093,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get connected => 'ချိတ်ဆက်ပြီး';
 
   @override
-  String get unlockedWithMax => 'Max ဖြင့် ရနိုင်သည်';
+  String get unlockedWithMax => 'သင့်အစီအစဉ်တွင် ပါဝင်သည်';
 
   @override
   String get fcEndedTitle => 'သင့်အခမဲ့ခေါ်ဆိုမှု ပြီးဆုံးသွားပါပြီ';

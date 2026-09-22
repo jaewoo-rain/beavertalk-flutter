@@ -676,9 +676,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get subscriptionManage => 'Pamahalaan ang Subscription';
 
   @override
-  String get changePlan => 'Baguhin ang Plan';
-
-  @override
   String get cancelSubscription => 'Kanselahin ang Subscription';
 
   @override
@@ -698,18 +695,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get viewBillingHistory => 'Tingnan ang Kasaysayan ng Bayad';
 
   @override
-  String get keepUsingPro => 'Ipagpatuloy ang Pro';
-
-  @override
-  String get proMembership => 'Pro Membership';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / buwan';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'Walang limitasyong tawag';
 
   @override
   String get benefitDetailedAnalysis =>
@@ -1160,11 +1148,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get lastPayment => 'Huling bayad';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'Magagamit mo pa ang mga benepisyo ng Pro hanggang $date, pagkatapos ay awtomatikong lilipat sa Libre ang plano mo.';
-  }
-
-  @override
   String get freePlanCallLimit => '1 tawag kada araw · 5 min na limitasyon';
 
   @override
@@ -1320,9 +1303,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get billingGroupInTheStore => 'Sa store';
 
   @override
-  String get billingChangePlan => 'Baguhin ang plan';
-
-  @override
   String get billingCompareAllPlans => 'Ikumpara lahat ng plan';
 
   @override
@@ -1400,7 +1380,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaGetPremium => 'Kunin ang Premium';
 
   @override
-  String get planMaxTrial => 'Max trial';
+  String get planMaxTrial => 'Premium trial';
 
   @override
   String get freePlanPriceLine => '\$0.00 — isang tawag kada araw';
@@ -1441,35 +1421,23 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Maging unlimited sa Pro';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'Unlimited na tawag · tig-15 minuto · $price kada buwan';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'I-on ang video sa Max';
+  String get bannerMaxUpsellTitle =>
+      'Makipag-usap nang harapan gamit ang Premium';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Harapang tawag · $price kada buwan';
+    return 'Video call · 15 minuto bawat araw · $price bawat buwan';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'Lumipat sa taunan';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly kada taon · $perMonth kada buwan';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'Hindi namin makuha ang bayad';
 
   @override
   String get bannerPaymentFailedSub =>
-      'I-update ang bayad sa store para manatili ang Pro';
+      'I-update ang bayad sa store para manatili ang Premium';
 
   @override
   String get bannerPausedTitle => 'Naka-pause ang plan mo';
@@ -1486,10 +1454,6 @@ class AppLocalizationsFil extends AppLocalizations {
       'Ang paraan ng pagbabayad, pagpapalit ng plan, at pagkansela ay hinahawakan ng store.';
 
   @override
-  String get noteFairUse =>
-      'Ang unlimited na paggamit ay sakop ng aming fair use policy.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'Matatapos ang trial mo sa $date. Kanselahin sa store bago iyon at walang sisingilin.';
   }
@@ -1500,7 +1464,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Naka-pause ang Pro hanggang matuloy ang bayad. Ligtas ang mga karakter at progreso mo.';
+      'Naka-pause ang Premium hanggang matuloy ang bayad. Ligtas ang mga karakter at progreso mo.';
 
   @override
   String noteEnding(String date) {
@@ -1508,7 +1472,7 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Natapos na ang Max trial mo';
+  String get trialExpiredTitle => 'Natapos na ang Premium trial mo';
 
   @override
   String get trialExpiredSub => 'Nasa Libre ka na ngayon';
@@ -1520,13 +1484,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get currentPlanTitle => 'Kasalukuyang Plan';
 
   @override
-  String get badgeRecommended => 'Inirerekomenda';
-
-  @override
   String get perMonthUnit => 'kada buwan';
-
-  @override
-  String get planTaglinePro => 'Unlimited na tawag. Tig-15 minuto.';
 
   @override
   String get planTaglineMax => 'Ngayon ay makikita mo na sila.';
@@ -1535,66 +1493,30 @@ class AppLocalizationsFil extends AppLocalizations {
   String get planTaglineFree => 'Isang tawag kada araw. Libre.';
 
   @override
-  String get bulletProCalls => 'Voice call kahit gaano kadalas mo gusto';
-
-  @override
-  String get bulletProLength => '15 minuto kada tawag';
-
-  @override
-  String get bulletProScoring => 'Bigkas na sinusukat letra por letra';
-
-  @override
   String get bulletProCorrections =>
       'Mga koreksyon na angkop sa sariling wika mo';
-
-  @override
-  String get bulletProBeaverCalls => 'Si Beaver ang unang tatawag sa iyo';
-
-  @override
-  String get bulletMaxVideo => 'Harapang video call';
-
-  @override
-  String get bulletMaxEverything => 'Lahat ng nasa Pro';
-
-  @override
-  String get bulletMaxCharacters => 'Bawat karakter, unlimited';
-
-  @override
-  String get bulletMaxStudyBook => 'Study book na akma sa antas mo';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'Lingguhang report kung paano nagbabago ang bigkas mo';
 
   @override
   String get bulletFreeCall => 'Isang 5-minutong voice call kada araw';
 
   @override
-  String get bulletFreeCheck => 'Isang pagsusuri ng bigkas kada araw';
+  String get bulletFreeCheck => 'Buong pagsusuri sa unang 3 tawag mo';
 
   @override
-  String get bulletFreeAccent => 'Unlimited na pagsusuri ng accent';
-
-  @override
-  String get bulletFreeCharacter => 'Isang karakter para magsimula';
-
-  @override
-  String get ctaGoUnlimited => 'Maging unlimited';
+  String get bulletFreeCharacter => 'Dalawang karakter para magsimula';
 
   @override
   String get ctaTurnOnVideo => 'I-on ang video';
 
   @override
-  String get noteCallLength => 'Tig-15 minuto ang bawat tawag.';
+  String get noteCallLength =>
+      'Premium: isang tawag bawat araw, hanggang 15 minuto.';
 
   @override
   String get paywallProTitle1 => 'Ang Korean friend mo';
 
   @override
   String get paywallProTitle2 => 'na gising kahit alas-3 ng madaling-araw';
-
-  @override
-  String get paywallProSub => 'Unlimited na tawag. Tig-15 minuto. Buong taon.';
 
   @override
   String get paywallLimitHeadline => 'Sa Premium, may 15 minuto ka.';
@@ -1617,10 +1539,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'Ngayon ay makikita mo na sila.';
-
-  @override
-  String get paywallMaxSub =>
-      'Video call, bawat karakter, at study book na ginawa para sa antas mo.';
 
   @override
   String get planMonthly => 'Buwanan';
@@ -1674,30 +1592,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get footerPrivacy => 'Privacy';
 
   @override
-  String get noteMaxCharacters =>
-      'Ang mga karakter na binuksan ng Max ay magagamit habang aktibo ang subscription mo. Ang mga karakter na binili mo ay mananatiling sa iyo.';
-
-  @override
   String get processingTitle => 'Kinukumpirma ang binili mo';
 
   @override
   String get processingSub => 'Karaniwang ilang segundo lang ito.';
 
   @override
-  String get successProTitle => 'Nasa Pro ka na.';
-
-  @override
-  String get successProSub => 'Unlimited na tawag, simula ngayon mismo.';
-
-  @override
-  String get successProBenefit1 =>
-      'Tumawag kahit gaano kadalas — 15 minuto kada tawag';
-
-  @override
-  String get successProBenefit2 => 'Unlimited na pagsusuri ng bigkas';
-
-  @override
-  String get successProBenefit3 => 'Bawat karakter, pati one-off na pagbili';
+  String get successProTitle => 'Nasa Premium ka na.';
 
   @override
   String get successMaxTitle => 'Makikita mo na sila ngayon.';
@@ -1707,28 +1608,10 @@ class AppLocalizationsFil extends AppLocalizations {
       'Naka-on na ang video call. I-tap ang video button sa kahit anong tawag.';
 
   @override
-  String get successMaxBenefit1 => 'Harapang video call';
-
-  @override
-  String get successMaxBenefit2 =>
-      'Bawat karakter, unlimited at una sa mga bago';
-
-  @override
-  String get successMaxBenefit3 => 'Study book na akma sa antas mo';
-
-  @override
-  String get ctaStartACall => 'Magsimula ng tawag';
-
-  @override
   String get ctaStartAVideoCall => 'Magsimula ng video call';
 
   @override
   String get ctaSeeYourSubscription => 'Tingnan ang subscription mo';
-
-  @override
-  String successProCaption(String price) {
-    return '$price ang sisingilin buwan-buwan hanggang kanselahin mo. Pamahalaan o kanselahin anumang oras sa store.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1748,91 +1631,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get plansErrorCaption => 'Walang siningil.';
 
   @override
-  String get changePlanTitle => 'Baguhin ang Plan';
-
-  @override
-  String get moveToMaxTitle => 'Lumipat sa Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / buwan';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'Harapang video call · bawat karakter · study book na para sa iyo';
-
-  @override
-  String get whatHappensNow => 'Ano ang mangyayari ngayon';
-
-  @override
-  String get maxStartsLabel => 'Magsisimula ang Max';
-
-  @override
-  String get immediately => 'Kaagad';
-
-  @override
-  String get unusedProTime => 'Hindi nagamit na oras ng Pro';
-
-  @override
-  String get creditedTowardMax => 'Ikre-kredito sa Max';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Lumipat sa Max';
-
-  @override
-  String get upgradeCaption =>
-      'Agad magsisimula ang bago mong plan. Ang hindi nagamit na oras ng Pro ay ikre-kredito, hindi kailanman sisingilin nang dalawang beses.';
-
-  @override
-  String get moveToProTitle => 'Lumipat sa Pro';
-
-  @override
-  String get moveToProSub =>
-      'Walang magbabago ngayon. Tuloy ang Max hanggang matapos ang buwang nabayaran mo na.';
-
-  @override
-  String get maxRunsUntil => 'Tuloy ang Max hanggang';
-
-  @override
-  String get proStarts => 'Magsisimula ang Pro';
-
-  @override
-  String get whatYouKeep => 'Ang mananatili sa iyo';
-
-  @override
-  String get keepBenefitCalls => 'Unlimited na voice call, tig-15 minuto';
-
-  @override
-  String get keepBenefitCharacters =>
-      'Ang mga karakter na binili mo ay sa iyo habambuhay';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'Mao-off ang video call at mga karakter na pang-Max lang sa $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Lumipat sa Pro';
-
-  @override
-  String get ctaKeepMax => 'Panatilihin ang Max';
+  String get ctaKeepMax => 'Panatilihin ang Premium';
 
   @override
   String get winbackSkip => 'Laktawan';
 
   @override
-  String get winbackTitle => 'Natapos na ang Pro plan mo';
+  String get winbackTitle => 'Natapos na ang Premium plan mo';
 
   @override
   String get winbackSub => 'Nasa Libre ka na — isang tawag kada araw.';
@@ -1872,7 +1677,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaClose => 'Isara';
 
   @override
-  String get ovRestoreSuccessTitle => 'Bumalik na ang Pro';
+  String get ovRestoreSuccessTitle => 'Bumalik na ang Premium';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1899,7 +1704,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaGetHelp => 'Humingi ng tulong';
 
   @override
-  String get ovCharacterOfferTitle => 'Hindi pa handa para sa Pro?';
+  String get ovCharacterOfferTitle => 'Hindi pa handa para sa Premium?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1954,7 +1759,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get rowCharactersYouBought => 'Mga karakter na binili mo';
 
   @override
-  String get rowProRunsUntil => 'Tuloy ang Pro hanggang';
+  String get rowProRunsUntil => 'Tuloy ang Premium hanggang';
 
   @override
   String get ctaSwitchToYearly => 'Lumipat sa taunan';
@@ -1969,7 +1774,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'Dalawang buwan ka na sa Pro. Mas mura ang taunang plan sa kabuuan.';
+      'Mas mura ang taunang plan kaysa magbayad buwan-buwan.';
 
   @override
   String get rowYouSave => 'Matitipid mo';
@@ -2030,7 +1835,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'Tuloy ang Max maliban kung kanselahin mo. Ito ang mangyayari.';
+      'Tuloy ang Premium maliban kung kanselahin mo. Ito ang mangyayari.';
 
   @override
   String get rowTrialEnds => 'Matatapos ang trial';
@@ -2045,7 +1850,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaCancelInStore => 'Kanselahin sa store';
 
   @override
-  String get ovTrialStartTitle => '7 araw ng Max, libre';
+  String get ovTrialStartTitle => '7 araw ng Premium, libre';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2060,7 +1865,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'Magandang desisyon — aktibo na ang unlimited na tawag. Mas mura ang parehong Pro kung magbabayad ka taunan.';
+      'Magandang pili. Mas mura ang parehong Premium kung taunan ang bayad.';
 
   @override
   String get ovFailedDeclinedTitle => 'Tinanggihan ang card mo';
@@ -2086,7 +1891,7 @@ class AppLocalizationsFil extends AppLocalizations {
       'Hindi namin maabot ang store. Walang siningil.';
 
   @override
-  String get ovAlreadyTitle => 'Nasa Pro ka na';
+  String get ovAlreadyTitle => 'Nasa Premium ka na';
 
   @override
   String get ovAlreadyBody =>
@@ -2100,30 +1905,18 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Tuloy ang Pro hanggang $date. Pagkatapos noon ay lilipat ka sa Libre.';
+    return 'Tuloy ang Premium hanggang $date. Pagkatapos noon ay lilipat ka sa Libre.';
   }
 
   @override
   String get subWhatYouLose => 'Ang mawawala sa iyo';
 
   @override
-  String get benefitCalls15 => 'Unlimited na tawag, tig-15 minuto';
-
-  @override
-  String get benefitScoring => 'Bigkas na sinusukat letra por letra';
-
-  @override
-  String get benefitEveryCharacter => 'Bawat karakter, unlimited';
-
-  @override
-  String get ctaKeepPro => 'Panatilihin ang Pro';
-
-  @override
   String get subPaymentTitle => 'I-update ang bayad';
 
   @override
   String get subPaymentBody =>
-      'Hindi namin makuha ang bayad. Tuloy ang Pro sa buong grace period.';
+      'Hindi namin makuha ang bayad. Tuloy ang Premium sa buong grace period.';
 
   @override
   String get subHowToFix => 'Paano ito ayusin';
@@ -2143,7 +1936,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Matatapos ang Pro sa $date. I-on muli ang auto-renew at walang magbabago.';
+    return 'Matatapos ang Premium sa $date. I-on muli ang auto-renew at walang magbabago.';
   }
 
   @override
@@ -2163,13 +1956,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get flCheckBody =>
-      'Isang pagsusuri kada araw sa Libre. Ginagawa itong unlimited ng Pro.';
-
-  @override
-  String get flBenefitCalls => 'Unlimited na tawag sa Pro · tig-15 minuto';
-
-  @override
-  String get flBenefitChecks => 'Unlimited na pagsusuri ng bigkas sa Pro';
+      'May isang check bawat araw sa Free. Buong pagsusuri ang ibinibigay ng Premium.';
 
   @override
   String flCaption(String price) {
@@ -2312,7 +2099,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get connected => 'Nakakonekta';
 
   @override
-  String get unlockedWithMax => 'Available sa Max';
+  String get unlockedWithMax => 'Kasama sa plan mo';
 
   @override
   String get fcEndedTitle => 'Tapos na ang libre mong tawag';

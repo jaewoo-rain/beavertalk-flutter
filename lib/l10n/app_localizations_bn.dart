@@ -668,9 +668,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get subscriptionManage => 'সাবস্ক্রিপশন পরিচালনা করুন';
 
   @override
-  String get changePlan => 'প্ল্যান পরিবর্তন করুন';
-
-  @override
   String get cancelSubscription => 'সাবস্ক্রিপশন বাতিল করুন';
 
   @override
@@ -689,18 +686,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get viewBillingHistory => 'বিলিং ইতিহাস দেখুন';
 
   @override
-  String get keepUsingPro => 'Pro ব্যবহার চালিয়ে যান';
-
-  @override
-  String get proMembership => 'Pro সদস্যপদ';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / মাস';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'সীমাহীন কল';
 
   @override
   String get benefitDetailedAnalysis => 'বিস্তারিত উচ্চারণ ও ব্যাকরণ বিশ্লেষণ';
@@ -1148,11 +1136,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get lastPayment => 'সর্বশেষ পেমেন্ট';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'আপনি $date পর্যন্ত Pro সুবিধা ব্যবহার করতে পারবেন, এরপর আপনার প্ল্যান স্বয়ংক্রিয়ভাবে ফ্রি-তে বদলে যাবে।';
-  }
-
-  @override
   String get freePlanCallLimit => 'দিনে ১টি কল · ৫ মিনিট সীমা';
 
   @override
@@ -1308,9 +1291,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get billingGroupInTheStore => 'স্টোরে';
 
   @override
-  String get billingChangePlan => 'প্ল্যান পরিবর্তন';
-
-  @override
   String get billingCompareAllPlans => 'সব প্ল্যান তুলনা করুন';
 
   @override
@@ -1387,7 +1367,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaGetPremium => 'Premium নিন';
 
   @override
-  String get planMaxTrial => 'Max ট্রায়াল';
+  String get planMaxTrial => 'Premium ট্রায়াল';
 
   @override
   String get freePlanPriceLine => '\$0.00 — দিনে একটি কল';
@@ -1428,34 +1408,22 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro দিয়ে সীমাহীন হোন';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'সীমাহীন কল · প্রতিটি ১৫ মিনিট · প্রতি মাসে $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max দিয়ে ভিডিও চালু করুন';
+  String get bannerMaxUpsellTitle => 'Premium-এ মুখোমুখি কথা বলুন';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'মুখোমুখি কল · প্রতি মাসে $price';
+    return 'ভিডিও কল · দিনে 15 মিনিট · মাসে $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'বার্ষিক প্ল্যানে যান';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return 'বছরে $yearly · প্রতি মাসে $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'পেমেন্ট নেওয়া যায়নি';
 
   @override
-  String get bannerPaymentFailedSub => 'Pro রাখতে স্টোরে পেমেন্ট আপডেট করুন';
+  String get bannerPaymentFailedSub =>
+      'Premium রাখতে স্টোরে পেমেন্ট আপডেট করুন';
 
   @override
   String get bannerPausedTitle => 'আপনার প্ল্যান বিরতিতে আছে';
@@ -1472,10 +1440,6 @@ class AppLocalizationsBn extends AppLocalizations {
       'পেমেন্ট পদ্ধতি, প্ল্যান পরিবর্তন ও বাতিল — সবই স্টোর পরিচালনা করে।';
 
   @override
-  String get noteFairUse =>
-      'সীমাহীন ব্যবহার আমাদের ন্যায্য ব্যবহার নীতির অধীন।';
-
-  @override
   String noteTrialEnds(String date) {
     return 'আপনার ট্রায়াল $date শেষ হবে। তার আগে স্টোরে বাতিল করলে কোনো চার্জ হবে না।';
   }
@@ -1486,7 +1450,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'পেমেন্ট সম্পন্ন না হওয়া পর্যন্ত Pro বিরতিতে থাকবে। আপনার ক্যারেক্টার ও অগ্রগতি নিরাপদ।';
+      'পেমেন্ট সম্পন্ন না হওয়া পর্যন্ত Premium বিরতিতে থাকবে। আপনার ক্যারেক্টার ও অগ্রগতি নিরাপদ।';
 
   @override
   String noteEnding(String date) {
@@ -1494,7 +1458,7 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'আপনার Max ট্রায়াল শেষ হয়েছে';
+  String get trialExpiredTitle => 'আপনার Premium ট্রায়াল শেষ হয়েছে';
 
   @override
   String get trialExpiredSub => 'আপনি এখন Free-তে আছেন';
@@ -1506,13 +1470,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get currentPlanTitle => 'বর্তমান প্ল্যান';
 
   @override
-  String get badgeRecommended => 'প্রস্তাবিত';
-
-  @override
   String get perMonthUnit => 'প্রতি মাসে';
-
-  @override
-  String get planTaglinePro => 'সীমাহীন কল। প্রতিটি ১৫ মিনিট।';
 
   @override
   String get planTaglineMax => 'এখন তাদের দেখতে পাবেন।';
@@ -1521,65 +1479,28 @@ class AppLocalizationsBn extends AppLocalizations {
   String get planTaglineFree => 'দিনে একটি কল। একদম ফ্রি।';
 
   @override
-  String get bulletProCalls => 'যত খুশি ভয়েস কল';
-
-  @override
-  String get bulletProLength => 'প্রতি কলে ১৫ মিনিট';
-
-  @override
-  String get bulletProScoring => 'অক্ষর ধরে ধরে উচ্চারণের স্কোর';
-
-  @override
   String get bulletProCorrections => 'আপনার মাতৃভাষা অনুযায়ী সংশোধন';
-
-  @override
-  String get bulletProBeaverCalls => 'Beaver আগে আপনাকে কল করবে';
-
-  @override
-  String get bulletMaxVideo => 'মুখোমুখি ভিডিও কল';
-
-  @override
-  String get bulletMaxEverything => 'Pro-এর সবকিছু';
-
-  @override
-  String get bulletMaxCharacters => 'সব ক্যারেক্টার, সীমাহীন';
-
-  @override
-  String get bulletMaxStudyBook => 'আপনার স্তর অনুযায়ী স্টাডি বুক';
-
-  @override
-  String get bulletMaxWeeklyReport =>
-      'উচ্চারণের পরিবর্তন নিয়ে সাপ্তাহিক রিপোর্ট';
 
   @override
   String get bulletFreeCall => 'দিনে একটি ৫ মিনিটের ভয়েস কল';
 
   @override
-  String get bulletFreeCheck => 'দিনে একটি উচ্চারণ পরীক্ষা';
+  String get bulletFreeCheck => 'প্রথম 3টি কলে সম্পূর্ণ বিশ্লেষণ';
 
   @override
-  String get bulletFreeAccent => 'সীমাহীন অ্যাকসেন্ট চেক';
-
-  @override
-  String get bulletFreeCharacter => 'শুরুতে একটি ক্যারেক্টার';
-
-  @override
-  String get ctaGoUnlimited => 'সীমাহীন হোন';
+  String get bulletFreeCharacter => 'শুরুতে 2টি ক্যারেক্টার';
 
   @override
   String get ctaTurnOnVideo => 'ভিডিও চালু করুন';
 
   @override
-  String get noteCallLength => 'প্রতিটি কল ১৫ মিনিটের।';
+  String get noteCallLength => 'Premium: দিনে 1টি কল, সর্বোচ্চ 15 মিনিট।';
 
   @override
   String get paywallProTitle1 => 'আপনার কোরিয়ান বন্ধু';
 
   @override
   String get paywallProTitle2 => 'রাত ৩টায়ও জেগে থাকে';
-
-  @override
-  String get paywallProSub => 'সীমাহীন কল। প্রতিটি ১৫ মিনিট। সারা বছর।';
 
   @override
   String get paywallLimitHeadline => 'Premium-এ 15 মিনিট পাবেন।';
@@ -1601,10 +1522,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'এখন তাদের দেখতে পাবেন।';
-
-  @override
-  String get paywallMaxSub =>
-      'ভিডিও কল, সব ক্যারেক্টার, আর আপনার স্তরের জন্য তৈরি স্টাডি বুক।';
 
   @override
   String get planMonthly => 'মাসিক';
@@ -1658,29 +1575,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get footerPrivacy => 'গোপনীয়তা';
 
   @override
-  String get noteMaxCharacters =>
-      'Max-এ আনলক হওয়া ক্যারেক্টার সাবস্ক্রিপশন চালু থাকা পর্যন্ত ব্যবহারযোগ্য। কেনা ক্যারেক্টার আপনারই থাকবে।';
-
-  @override
   String get processingTitle => 'আপনার কেনাকাটা নিশ্চিত হচ্ছে';
 
   @override
   String get processingSub => 'সাধারণত কয়েক সেকেন্ড লাগে।';
 
   @override
-  String get successProTitle => 'আপনি এখন Pro-তে।';
-
-  @override
-  String get successProSub => 'সীমাহীন কল, এখন থেকেই শুরু।';
-
-  @override
-  String get successProBenefit1 => 'যত খুশি কল করুন — প্রতি কলে ১৫ মিনিট';
-
-  @override
-  String get successProBenefit2 => 'সীমাহীন উচ্চারণ পরীক্ষা';
-
-  @override
-  String get successProBenefit3 => 'সব ক্যারেক্টার, সঙ্গে এককালীন কেনাকাটা';
+  String get successProTitle => 'আপনি এখন Premium-তে।';
 
   @override
   String get successMaxTitle => 'এখন তাদের দেখতে পাচ্ছেন।';
@@ -1690,28 +1591,10 @@ class AppLocalizationsBn extends AppLocalizations {
       'ভিডিও কল চালু হয়েছে। যেকোনো কলে ভিডিও বোতামে চাপ দিন।';
 
   @override
-  String get successMaxBenefit1 => 'মুখোমুখি ভিডিও কল';
-
-  @override
-  String get successMaxBenefit2 =>
-      'সব ক্যারেক্টার, সীমাহীন — নতুনগুলো সবার আগে';
-
-  @override
-  String get successMaxBenefit3 => 'আপনার স্তর অনুযায়ী স্টাডি বুক';
-
-  @override
-  String get ctaStartACall => 'কল শুরু করুন';
-
-  @override
   String get ctaStartAVideoCall => 'ভিডিও কল শুরু করুন';
 
   @override
   String get ctaSeeYourSubscription => 'আপনার সাবস্ক্রিপশন দেখুন';
-
-  @override
-  String successProCaption(String price) {
-    return 'বাতিল না করা পর্যন্ত প্রতি মাসে $price চার্জ হবে। স্টোরে যেকোনো সময় ম্যানেজ বা বাতিল করুন।';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1731,90 +1614,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get plansErrorCaption => 'কোনো চার্জ হয়নি।';
 
   @override
-  String get changePlanTitle => 'প্ল্যান পরিবর্তন';
-
-  @override
-  String get moveToMaxTitle => 'Max-এ যান';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / মাস';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'মুখোমুখি ভিডিও কল · সব ক্যারেক্টার · আপনার জন্য তৈরি স্টাডি বুক';
-
-  @override
-  String get whatHappensNow => 'এখন যা হবে';
-
-  @override
-  String get maxStartsLabel => 'Max শুরু';
-
-  @override
-  String get immediately => 'এখনই';
-
-  @override
-  String get unusedProTime => 'Pro-এর অব্যবহৃত সময়';
-
-  @override
-  String get creditedTowardMax => 'Max-এ সমন্বয় হবে';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max-এ যান';
-
-  @override
-  String get upgradeCaption =>
-      'নতুন প্ল্যান সঙ্গে সঙ্গে শুরু হবে। Pro-এর অব্যবহৃত সময় সমন্বয় হয়, দুবার চার্জ হয় না।';
-
-  @override
-  String get moveToProTitle => 'Pro-তে যান';
-
-  @override
-  String get moveToProSub =>
-      'আজ কিছুই বদলাবে না। যে মাসের টাকা দিয়েছেন, Max সেই মাসের শেষ পর্যন্ত চলবে।';
-
-  @override
-  String get maxRunsUntil => 'Max চলবে';
-
-  @override
-  String get proStarts => 'Pro শুরু';
-
-  @override
-  String get whatYouKeep => 'যা থাকবে';
-
-  @override
-  String get keepBenefitCalls => 'সীমাহীন ভয়েস কল, প্রতিটি ১৫ মিনিট';
-
-  @override
-  String get keepBenefitCharacters => 'কেনা ক্যারেক্টার চিরকাল আপনারই';
-
-  @override
-  String downgradeWarning(String date) {
-    return '$date থেকে ভিডিও কল ও শুধু-Max ক্যারেক্টার বন্ধ হবে।';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro-তে যান';
-
-  @override
-  String get ctaKeepMax => 'Max রাখুন';
+  String get ctaKeepMax => 'Premium রাখুন';
 
   @override
   String get winbackSkip => 'এড়িয়ে যান';
 
   @override
-  String get winbackTitle => 'আপনার Pro প্ল্যান শেষ হয়েছে';
+  String get winbackTitle => 'আপনার Premium প্ল্যান শেষ হয়েছে';
 
   @override
   String get winbackSub => 'আপনি এখন Free-তে — দিনে একটি কল।';
@@ -1854,7 +1660,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaClose => 'বন্ধ করুন';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro ফিরে এসেছে';
+  String get ovRestoreSuccessTitle => 'Premium ফিরে এসেছে';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1881,7 +1687,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaGetHelp => 'সহায়তা নিন';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro-এর জন্য প্রস্তুত নন?';
+  String get ovCharacterOfferTitle => 'Premium-এর জন্য প্রস্তুত নন?';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1936,7 +1742,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get rowCharactersYouBought => 'কেনা ক্যারেক্টার';
 
   @override
-  String get rowProRunsUntil => 'Pro চলবে';
+  String get rowProRunsUntil => 'Premium চলবে';
 
   @override
   String get ctaSwitchToYearly => 'বার্ষিকে যান';
@@ -1951,7 +1757,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get ovAnnualSwitchBody =>
-      'আপনি দুই মাস ধরে Pro-তে আছেন। বার্ষিক প্ল্যানে খরচ কম পড়ে।';
+      'মাসিক পেমেন্টের চেয়ে বার্ষিক প্ল্যান সস্তা পড়ে।';
 
   @override
   String get rowYouSave => 'আপনার সাশ্রয়';
@@ -2012,7 +1818,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get ovTrialEndingBody =>
-      'বাতিল না করলে Max চলতেই থাকবে। যা হবে তা এখানে।';
+      'বাতিল না করলে Premium চলতেই থাকবে। যা হবে তা এখানে।';
 
   @override
   String get rowTrialEnds => 'ট্রায়াল শেষ';
@@ -2027,7 +1833,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaCancelInStore => 'স্টোরে বাতিল করুন';
 
   @override
-  String get ovTrialStartTitle => '৭ দিন Max, ফ্রি';
+  String get ovTrialStartTitle => '৭ দিন Premium, ফ্রি';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2042,7 +1848,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get ovOtoBody =>
-      'দারুণ সিদ্ধান্ত — সীমাহীন কল এখনই চালু। বছরে দিলে একই Pro-তে খরচ কম।';
+      'ভালো সিদ্ধান্ত। বার্ষিক পেমেন্ট করলে একই Premium কম খরচে পাবেন।';
 
   @override
   String get ovFailedDeclinedTitle => 'আপনার কার্ড প্রত্যাখ্যাত হয়েছে';
@@ -2068,7 +1874,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ovFailedStoreBody => 'স্টোরে পৌঁছানো যায়নি। কোনো চার্জ হয়নি।';
 
   @override
-  String get ovAlreadyTitle => 'আপনি ইতিমধ্যে Pro-তে আছেন';
+  String get ovAlreadyTitle => 'আপনি ইতিমধ্যে Premium-তে আছেন';
 
   @override
   String get ovAlreadyBody =>
@@ -2082,30 +1888,18 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro $date পর্যন্ত চলবে। তারপর Free-তে চলে যাবেন।';
+    return 'Premium $date পর্যন্ত চলবে। তারপর Free-তে চলে যাবেন।';
   }
 
   @override
   String get subWhatYouLose => 'যা হারাবেন';
 
   @override
-  String get benefitCalls15 => 'সীমাহীন কল, প্রতিটি ১৫ মিনিট';
-
-  @override
-  String get benefitScoring => 'অক্ষর ধরে ধরে উচ্চারণের স্কোর';
-
-  @override
-  String get benefitEveryCharacter => 'সব ক্যারেক্টার, সীমাহীন';
-
-  @override
-  String get ctaKeepPro => 'Pro রাখুন';
-
-  @override
   String get subPaymentTitle => 'পেমেন্ট আপডেট করুন';
 
   @override
   String get subPaymentBody =>
-      'পেমেন্ট নেওয়া যায়নি। গ্রেস পিরিয়ডে Pro চালু থাকবে।';
+      'পেমেন্ট নেওয়া যায়নি। গ্রেস পিরিয়ডে Premium চালু থাকবে।';
 
   @override
   String get subHowToFix => 'কীভাবে ঠিক করবেন';
@@ -2124,7 +1918,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro $date শেষ হবে। অটো-নবায়ন আবার চালু করলে কিছুই বদলাবে না।';
+    return 'Premium $date শেষ হবে। অটো-নবায়ন আবার চালু করলে কিছুই বদলাবে না।';
   }
 
   @override
@@ -2143,13 +1937,8 @@ class AppLocalizationsBn extends AppLocalizations {
   String get flCheckTitle => 'এটাই ছিল আজকের পরীক্ষা';
 
   @override
-  String get flCheckBody => 'Free-তে দিনে একটি পরীক্ষা। Pro-তে সীমাহীন।';
-
-  @override
-  String get flBenefitCalls => 'Pro-তে সীমাহীন কল · প্রতিটি ১৫ মিনিট';
-
-  @override
-  String get flBenefitChecks => 'Pro-তে সীমাহীন উচ্চারণ পরীক্ষা';
+  String get flCheckBody =>
+      'Free-তে দিনে 1টি চেক। Premium-এ পাবেন সম্পূর্ণ বিশ্লেষণ।';
 
   @override
   String flCaption(String price) {
@@ -2289,7 +2078,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get connected => 'সংযুক্ত';
 
   @override
-  String get unlockedWithMax => 'Max দিয়ে ব্যবহারযোগ্য';
+  String get unlockedWithMax => 'আপনার প্ল্যানে অন্তর্ভুক্ত';
 
   @override
   String get fcEndedTitle => 'আপনার ফ্রি কল শেষ হয়েছে';

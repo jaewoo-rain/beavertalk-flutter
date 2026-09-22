@@ -59,7 +59,7 @@ void main() {
     testWidgets('plan-card identity per state', (tester) async {
       const expectations = {
         SubscriptionState.free: ('Free', 'Current'),
-        SubscriptionState.trial: ('Max trial', 'Trial'),
+        SubscriptionState.trial: ('Premium trial', 'Trial'),
         SubscriptionState.activePro: ('Pro', 'Renewing'),
         // 단일 티어(09-22): 서버 플랜 코드 max 의 표시 이름은 Premium.
         SubscriptionState.activeMax: ('Premium', 'Renewing'),
@@ -78,7 +78,7 @@ void main() {
     testWidgets('expired renders the trial_expired notice instead',
         (tester) async {
       await pump(tester, status(SubscriptionState.expired));
-      expect(find.text('Your Max trial ended'), findsOneWidget);
+      expect(find.text('Your Premium trial ended'), findsOneWidget);
       expect(find.text('You are on Free now'), findsOneWidget);
       expect(find.text('See plans'), findsOneWidget);
       // A notice, not a manage surface: no billing groups (spec §4-1).
@@ -105,9 +105,11 @@ void main() {
         }
 
         // Slot ①.
-        final paid = state == SubscriptionState.activePro ||
-            state == SubscriptionState.activeMax;
-        expect(find.text(paid ? 'Change plan' : 'Compare all plans'),
+        // Pro↔Premium 전환이 없어져 ①은 Premium 이면 연간 전환, 그 밖엔 비교다.
+        expect(
+            find.text(state == SubscriptionState.activeMax
+                ? 'Switch to annual'
+                : 'Compare all plans'),
             findsOneWidget,
             reason: '$state slot ①');
 
@@ -173,25 +175,11 @@ void main() {
         (tester) async {
       for (final state in manageStates) {
         await pump(tester, status(state));
-        final pro = find.text('Go unlimited with Pro');
-        final max = find.text('Turn on video with Max');
-        final annual = find.text('Switch to annual');
-        switch (state) {
-          case SubscriptionState.free:
-            expect(pro, findsOneWidget, reason: '$state');
-          case SubscriptionState.activePro:
-          case SubscriptionState.grace:
-          case SubscriptionState.ending:
-            expect(max, findsOneWidget, reason: '$state');
-          case SubscriptionState.activeMax:
-            expect(annual, findsOneWidget, reason: '$state');
-          default:
-            // Trial (measured: none, despite spec §6-1's table — flagged) and
-            // hold (payment recovery first).
-            expect(pro, findsNothing, reason: '$state');
-            expect(max, findsNothing, reason: '$state');
-            expect(annual, findsNothing, reason: '$state');
-        }
+        // 단일 티어: 올려 팔 곳은 무료 회원의 Premium 하나뿐이다.
+        final premium = find.text('Get face to face with Premium');
+        expect(premium,
+            state == SubscriptionState.free ? findsOneWidget : findsNothing,
+            reason: '$state');
       }
     });
   });
@@ -245,14 +233,18 @@ void main() {
               'Your plan is set to end. Benefits run until Jun 20, then you move to Free. You can resubscribe any time.'),
           findsOneWidget);
 
-      // Max carries the store-handled line but not the fair-use line.
-      await pump(tester, status(SubscriptionState.activeMax));
-      expect(
-          find.text(
-              'Payment method, plan changes, and cancellation are handled by the store.'),
-          findsOneWidget);
-      expect(find.text('Unlimited use is subject to our fair use policy.'),
-          findsNothing);
+      // 공정 사용 문구는 없어졌다 — 유료 상태는 스토어 안내 한 줄만 싣는다.
+      for (final state in [
+        SubscriptionState.activeMax,
+        SubscriptionState.activePro,
+      ]) {
+        await pump(tester, status(state));
+        expect(
+            find.text(
+                'Payment method, plan changes, and cancellation are handled by the store.'),
+            findsOneWidget,
+            reason: '$state');
+      }
     });
   });
 }

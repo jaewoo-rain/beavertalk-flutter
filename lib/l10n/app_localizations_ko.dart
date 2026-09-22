@@ -650,9 +650,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get subscriptionManage => '구독 관리';
 
   @override
-  String get changePlan => '요금제 변경';
-
-  @override
   String get cancelSubscription => '구독 취소';
 
   @override
@@ -671,18 +668,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get viewBillingHistory => '결제 내역 보기';
 
   @override
-  String get keepUsingPro => 'Pro 계속 이용하기';
-
-  @override
-  String get proMembership => 'Pro 멤버십';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / 월';
   }
-
-  @override
-  String get benefitUnlimitedCalls => '무제한 통화';
 
   @override
   String get benefitDetailedAnalysis => '상세한 발음 및 문법 분석';
@@ -1118,11 +1106,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get lastPayment => '최근 결제';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return '$date까지 Pro 혜택을 계속 사용할 수 있고 그 이후 자동으로 무료 플랜으로 전환됩니다.';
-  }
-
-  @override
   String get freePlanCallLimit => '하루 1통화 · 5분 제한';
 
   @override
@@ -1278,9 +1261,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get billingGroupInTheStore => '스토어에서';
 
   @override
-  String get billingChangePlan => '플랜 변경';
-
-  @override
   String get billingCompareAllPlans => '전체 플랜 비교';
 
   @override
@@ -1356,7 +1336,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaGetPremium => 'Premium 시작하기';
 
   @override
-  String get planMaxTrial => 'Max 체험';
+  String get planMaxTrial => 'Premium 체험';
 
   @override
   String get freePlanPriceLine => '\$0.00 — 하루 한 번 통화';
@@ -1397,34 +1377,21 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'Pro로 무제한 통화';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return '무제한 통화 · 회당 15분 · 월 $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'Max로 영상통화 시작';
+  String get bannerMaxUpsellTitle => 'Premium으로 얼굴 보며 대화해요';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return '얼굴 보며 통화 · 월 $price';
+    return '영상통화 · 하루 15분 · 월 $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => '연간 플랜으로 전환';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '연 $yearly · 월 $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => '결제가 되지 않았어요';
 
   @override
-  String get bannerPaymentFailedSub => '스토어에서 결제 수단을 업데이트하면 Pro가 유지돼요';
+  String get bannerPaymentFailedSub => '스토어에서 결제 수단을 업데이트하면 Premium이 유지돼요';
 
   @override
   String get bannerPausedTitle => '플랜이 일시중지됐어요';
@@ -1439,9 +1406,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noteStoreHandled => '결제 수단, 플랜 변경, 해지는 스토어에서 처리돼요.';
 
   @override
-  String get noteFairUse => '무제한 이용에는 공정 이용 정책이 적용돼요.';
-
-  @override
   String noteTrialEnds(String date) {
     return '체험은 $date에 끝나요. 그 전에 스토어에서 해지하면 요금이 청구되지 않아요.';
   }
@@ -1450,7 +1414,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noteGrace => '유예 기간에도 혜택은 계속 유지돼요. 해지는 앱에서 막지 않아요.';
 
   @override
-  String get noteHold => '결제가 완료될 때까지 Pro가 일시중지돼요. 캐릭터와 학습 기록은 안전하게 보관돼요.';
+  String get noteHold => '결제가 완료될 때까지 Premium이 일시중지돼요. 캐릭터와 학습 기록은 안전하게 보관돼요.';
 
   @override
   String noteEnding(String date) {
@@ -1458,7 +1422,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'Max 체험이 끝났어요';
+  String get trialExpiredTitle => 'Premium 체험이 끝났어요';
 
   @override
   String get trialExpiredSub => '지금은 무료 플랜이에요';
@@ -1470,13 +1434,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get currentPlanTitle => '현재 플랜';
 
   @override
-  String get badgeRecommended => '추천';
-
-  @override
   String get perMonthUnit => '/월';
-
-  @override
-  String get planTaglinePro => '무제한 통화. 회당 15분.';
 
   @override
   String get planTaglineMax => '이제 얼굴을 보며 대화해요.';
@@ -1485,64 +1443,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get planTaglineFree => '하루 한 번, 무료 통화.';
 
   @override
-  String get bulletProCalls => '원하는 만큼 음성통화';
-
-  @override
-  String get bulletProLength => '통화당 15분';
-
-  @override
-  String get bulletProScoring => '글자 단위 발음 채점';
-
-  @override
   String get bulletProCorrections => '모국어에 맞춘 교정';
-
-  @override
-  String get bulletProBeaverCalls => '비버가 먼저 전화해요';
-
-  @override
-  String get bulletMaxVideo => '얼굴 보며 영상통화';
-
-  @override
-  String get bulletMaxEverything => 'Pro의 모든 기능 포함';
-
-  @override
-  String get bulletMaxCharacters => '모든 캐릭터 무제한';
-
-  @override
-  String get bulletMaxStudyBook => '내 수준에 맞춘 학습 노트';
-
-  @override
-  String get bulletMaxWeeklyReport => '발음 변화를 담은 주간 리포트';
 
   @override
   String get bulletFreeCall => '하루 한 번 5분 음성통화';
 
   @override
-  String get bulletFreeCheck => '하루 한 번 발음 체크';
+  String get bulletFreeCheck => '처음 3번의 통화는 분석 전체';
 
   @override
-  String get bulletFreeAccent => '억양 체크 무제한';
-
-  @override
-  String get bulletFreeCharacter => '시작 캐릭터 1개';
-
-  @override
-  String get ctaGoUnlimited => '무제한으로 시작하기';
+  String get bulletFreeCharacter => '시작 캐릭터 2명';
 
   @override
   String get ctaTurnOnVideo => '영상통화 켜기';
 
   @override
-  String get noteCallLength => '통화는 회당 15분이에요.';
+  String get noteCallLength => 'Premium: 하루 1통화, 최대 15분.';
 
   @override
   String get paywallProTitle1 => '새벽 3시에도 깨어 있는';
 
   @override
   String get paywallProTitle2 => '나의 한국인 친구';
-
-  @override
-  String get paywallProSub => '무제한 통화. 회당 15분. 일 년 내내.';
 
   @override
   String get paywallLimitHeadline => 'Premium은 15분을 드려요.';
@@ -1564,9 +1486,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => '이제 얼굴을 보며 대화해요.';
-
-  @override
-  String get paywallMaxSub => '영상통화, 모든 캐릭터, 그리고 내 수준에 맞춘 학습 노트까지.';
 
   @override
   String get planMonthly => '월간';
@@ -1619,29 +1538,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get footerPrivacy => '개인정보 처리방침';
 
   @override
-  String get noteMaxCharacters =>
-      'Max로 잠금 해제된 캐릭터는 구독 중에 이용할 수 있어요. 직접 구매한 캐릭터는 계속 내 것이에요.';
-
-  @override
   String get processingTitle => '구매를 확인하고 있어요';
 
   @override
   String get processingSub => '보통 몇 초면 끝나요.';
 
   @override
-  String get successProTitle => 'Pro가 시작됐어요.';
-
-  @override
-  String get successProSub => '지금부터 무제한으로 통화할 수 있어요.';
-
-  @override
-  String get successProBenefit1 => '원하는 만큼 통화 — 회당 15분';
-
-  @override
-  String get successProBenefit2 => '발음 체크 무제한';
-
-  @override
-  String get successProBenefit3 => '모든 캐릭터와 단품 구매';
+  String get successProTitle => 'Premium이 시작됐어요.';
 
   @override
   String get successMaxTitle => '이제 얼굴이 보여요.';
@@ -1650,27 +1553,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get successMaxSub => '영상통화가 켜졌어요. 통화 중 영상 버튼을 눌러 보세요.';
 
   @override
-  String get successMaxBenefit1 => '얼굴 보며 영상통화';
-
-  @override
-  String get successMaxBenefit2 => '모든 캐릭터 무제한, 신규 캐릭터 우선 제공';
-
-  @override
-  String get successMaxBenefit3 => '내 수준에 맞춘 학습 노트';
-
-  @override
-  String get ctaStartACall => '통화 시작하기';
-
-  @override
   String get ctaStartAVideoCall => '영상통화 시작하기';
 
   @override
   String get ctaSeeYourSubscription => '내 구독 보기';
-
-  @override
-  String successProCaption(String price) {
-    return '해지 전까지 매월 $price가 청구돼요. 관리와 해지는 언제든 스토어에서 할 수 있어요.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1690,88 +1576,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get plansErrorCaption => '요금은 청구되지 않았어요.';
 
   @override
-  String get changePlanTitle => '플랜 변경';
-
-  @override
-  String get moveToMaxTitle => 'Max로 이동';
-
-  @override
-  String maxPriceShort(String price) {
-    return '월 $price';
-  }
-
-  @override
-  String get moveToMaxCardSub => '얼굴 보며 영상통화 · 모든 캐릭터 · 맞춤 학습 노트';
-
-  @override
-  String get whatHappensNow => '지금부터 이렇게 돼요';
-
-  @override
-  String get maxStartsLabel => 'Max 시작';
-
-  @override
-  String get immediately => '즉시';
-
-  @override
-  String get unusedProTime => '남은 Pro 기간';
-
-  @override
-  String get creditedTowardMax => 'Max 요금에서 차감';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'Max로 전환';
-
-  @override
-  String get upgradeCaption =>
-      '새 플랜이 바로 시작돼요. 남은 Pro 기간은 요금에서 차감되고, 이중 청구는 없어요.';
-
-  @override
-  String get moveToProTitle => 'Pro로 이동';
-
-  @override
-  String get moveToProSub => '오늘은 아무것도 바뀌지 않아요. 이미 결제한 달이 끝날 때까지 Max가 유지돼요.';
-
-  @override
-  String get maxRunsUntil => 'Max 유지 기한';
-
-  @override
-  String get proStarts => 'Pro 시작';
-
-  @override
-  String get whatYouKeep => '계속 유지되는 것';
-
-  @override
-  String get keepBenefitCalls => '무제한 음성통화, 회당 15분';
-
-  @override
-  String get keepBenefitCharacters => '구매한 캐릭터는 영원히 내 것';
-
-  @override
-  String downgradeWarning(String date) {
-    return '영상통화와 Max 전용 캐릭터는 $date에 꺼져요.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'Pro로 전환';
-
-  @override
-  String get ctaKeepMax => 'Max 유지하기';
+  String get ctaKeepMax => 'Premium 유지하기';
 
   @override
   String get winbackSkip => '건너뛰기';
 
   @override
-  String get winbackTitle => 'Pro 플랜이 끝났어요';
+  String get winbackTitle => 'Premium 플랜이 끝났어요';
 
   @override
   String get winbackSub => '지금은 무료 플랜이에요 — 하루 한 번 통화할 수 있어요.';
@@ -1810,7 +1621,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaClose => '닫기';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro가 돌아왔어요';
+  String get ovRestoreSuccessTitle => 'Premium이 돌아왔어요';
 
   @override
   String get ovRestoreSuccessBody => '구독을 찾아 이 기기에서 다시 켰어요.';
@@ -1834,7 +1645,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaGetHelp => '도움받기';
 
   @override
-  String get ovCharacterOfferTitle => 'Pro는 아직 고민되나요?';
+  String get ovCharacterOfferTitle => 'Premium은 아직 고민되나요?';
 
   @override
   String get ovCharacterOfferBody => '캐릭터 하나를 골라 평생 소장하세요. 구독도 갱신도 없는 단품 구매예요.';
@@ -1886,7 +1697,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get rowCharactersYouBought => '구매한 캐릭터';
 
   @override
-  String get rowProRunsUntil => 'Pro 유지 기한';
+  String get rowProRunsUntil => 'Premium 유지 기한';
 
   @override
   String get ctaSwitchToYearly => '연간으로 전환';
@@ -1900,7 +1711,7 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get ovAnnualSwitchBody => 'Pro를 두 달째 쓰고 계시네요. 연간 플랜이 더 저렴해요.';
+  String get ovAnnualSwitchBody => '연간 요금제가 매달 내는 것보다 저렴해요.';
 
   @override
   String get rowYouSave => '절약 금액';
@@ -1959,7 +1770,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ovTrialEndingTitle => '체험이 내일 끝나요';
 
   @override
-  String get ovTrialEndingBody => '해지하지 않으면 Max가 계속 유지돼요. 이렇게 진행돼요.';
+  String get ovTrialEndingBody => '해지하지 않으면 Premium이 계속 유지돼요. 이렇게 진행돼요.';
 
   @override
   String get rowTrialEnds => '체험 종료';
@@ -1974,7 +1785,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaCancelInStore => '스토어에서 해지';
 
   @override
-  String get ovTrialStartTitle => 'Max 7일 무료 체험';
+  String get ovTrialStartTitle => 'Premium 7일 무료 체험';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1988,7 +1799,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ovOtoTitle => '시작 전에 한 가지만 더';
 
   @override
-  String get ovOtoBody => '좋은 선택이에요 — 무제한 통화가 지금 켜졌어요. 같은 Pro라도 연간 결제가 더 저렴해요.';
+  String get ovOtoBody => '잘 골랐어요. 같은 Premium도 연간으로 내면 더 저렴해요.';
 
   @override
   String get ovFailedDeclinedTitle => '카드 결제가 거절됐어요';
@@ -2012,7 +1823,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ovFailedStoreBody => '스토어에 연결하지 못했어요. 요금은 청구되지 않았어요.';
 
   @override
-  String get ovAlreadyTitle => '이미 Pro를 쓰고 있어요';
+  String get ovAlreadyTitle => '이미 Premium을 쓰고 있어요';
 
   @override
   String get ovAlreadyBody => '이 스토어 계정에 활성 플랜이 있어요. 새로 구매할 필요가 없어요.';
@@ -2025,29 +1836,17 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro는 $date까지 유지돼요. 그 후 무료 플랜으로 전환돼요.';
+    return 'Premium은 $date까지 유지돼요. 그 후 무료 플랜으로 전환돼요.';
   }
 
   @override
   String get subWhatYouLose => '잃게 되는 것';
 
   @override
-  String get benefitCalls15 => '무제한 통화, 회당 15분';
-
-  @override
-  String get benefitScoring => '글자 단위 발음 채점';
-
-  @override
-  String get benefitEveryCharacter => '모든 캐릭터 무제한';
-
-  @override
-  String get ctaKeepPro => 'Pro 유지하기';
-
-  @override
   String get subPaymentTitle => '결제 업데이트';
 
   @override
-  String get subPaymentBody => '결제가 완료되지 않았어요. 유예 기간 동안 Pro는 계속 유지돼요.';
+  String get subPaymentBody => '결제가 완료되지 않았어요. 유예 기간 동안 Premium은 계속 유지돼요.';
 
   @override
   String get subHowToFix => '해결 방법';
@@ -2066,7 +1865,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro가 $date에 끝나요. 자동 갱신을 다시 켜면 그대로 유지돼요.';
+    return 'Premium이 $date에 끝나요. 자동 갱신을 다시 켜면 그대로 유지돼요.';
   }
 
   @override
@@ -2085,13 +1884,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get flCheckTitle => '오늘의 체크를 다 썼어요';
 
   @override
-  String get flCheckBody => '무료 플랜은 하루 한 번 체크할 수 있어요. Pro는 무제한이에요.';
-
-  @override
-  String get flBenefitCalls => 'Pro로 무제한 통화 · 회당 15분';
-
-  @override
-  String get flBenefitChecks => 'Pro로 발음 체크 무제한';
+  String get flCheckBody => '무료는 하루 1번 확인할 수 있어요. Premium은 분석 전체를 보여줘요.';
 
   @override
   String flCaption(String price) {
@@ -2227,7 +2020,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get connected => '연결됨';
 
   @override
-  String get unlockedWithMax => 'Max로 이용 가능';
+  String get unlockedWithMax => '내 요금제에 포함';
 
   @override
   String get fcEndedTitle => '무료 통화가 끝났어요';

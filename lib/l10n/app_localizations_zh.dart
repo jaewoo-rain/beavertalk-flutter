@@ -649,9 +649,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get subscriptionManage => '管理订阅';
 
   @override
-  String get changePlan => '更改套餐';
-
-  @override
   String get cancelSubscription => '取消订阅';
 
   @override
@@ -670,18 +667,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get viewBillingHistory => '查看账单记录';
 
   @override
-  String get keepUsingPro => '继续使用 Pro';
-
-  @override
-  String get proMembership => 'Pro 会员';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / 月';
   }
-
-  @override
-  String get benefitUnlimitedCalls => '无限通话';
 
   @override
   String get benefitDetailedAnalysis => '详细的发音与语法分析';
@@ -1115,11 +1103,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lastPayment => '最近支付';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return '你可以在$date前继续使用 Pro 权益，之后套餐将自动切换为免费版。';
-  }
-
-  @override
   String get freePlanCallLimit => '每天1次通话 · 限时5分钟';
 
   @override
@@ -1275,9 +1258,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get billingGroupInTheStore => '在商店中';
 
   @override
-  String get billingChangePlan => '更换套餐';
-
-  @override
   String get billingCompareAllPlans => '对比全部套餐';
 
   @override
@@ -1353,7 +1333,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaGetPremium => '开通 Premium';
 
   @override
-  String get planMaxTrial => 'Max 试用';
+  String get planMaxTrial => 'Premium 试用';
 
   @override
   String get freePlanPriceLine => '\$0.00 — 每天一次通话';
@@ -1394,34 +1374,21 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => '用 Pro 解锁无限通话';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return '通话不限次 · 每次 15 分钟 · 每月 $price';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => '用 Max 开启视频通话';
+  String get bannerMaxUpsellTitle => '用 Premium 面对面聊天';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return '面对面通话 · 每月 $price';
+    return '视频通话 · 每天 15 分钟 · 每月 $price';
   }
 
   @override
   String get bannerAnnualSwitchTitle => '换成年付';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '每年 $yearly · 折合每月 $perMonth';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => '扣款没有成功';
 
   @override
-  String get bannerPaymentFailedSub => '在商店中更新付款方式即可保住 Pro';
+  String get bannerPaymentFailedSub => '在商店中更新付款方式即可保住 Premium';
 
   @override
   String get bannerPausedTitle => '你的套餐已暂停';
@@ -1436,9 +1403,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noteStoreHandled => '付款方式、套餐变更和取消都由商店处理。';
 
   @override
-  String get noteFairUse => '无限使用需遵守我们的合理使用政策。';
-
-  @override
   String noteTrialEnds(String date) {
     return '试用将于$date结束。在此之前在商店中取消，就不会产生任何费用。';
   }
@@ -1447,7 +1411,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noteGrace => '宽限期内权益照常可用。应用绝不会拦截你的取消操作。';
 
   @override
-  String get noteHold => '付款完成前 Pro 会暂停。你的角色和学习进度都安然无恙。';
+  String get noteHold => '付款完成前 Premium 会暂停。你的角色和学习进度都安然无恙。';
 
   @override
   String noteEnding(String date) {
@@ -1455,7 +1419,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => '你的 Max 试用已结束';
+  String get trialExpiredTitle => '你的 Premium 试用已结束';
 
   @override
   String get trialExpiredSub => '你现在是免费套餐';
@@ -1467,13 +1431,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get currentPlanTitle => '当前套餐';
 
   @override
-  String get badgeRecommended => '推荐';
-
-  @override
   String get perMonthUnit => '/月';
-
-  @override
-  String get planTaglinePro => '通话不限次。每次 15 分钟。';
 
   @override
   String get planTaglineMax => '现在可以看见对方了。';
@@ -1482,64 +1440,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planTaglineFree => '每天一次通话，完全免费。';
 
   @override
-  String get bulletProCalls => '语音通话，想打就打';
-
-  @override
-  String get bulletProLength => '每次通话 15 分钟';
-
-  @override
-  String get bulletProScoring => '逐字打分的发音评测';
-
-  @override
   String get bulletProCorrections => '针对你母语的纠正';
-
-  @override
-  String get bulletProBeaverCalls => '海狸会主动给你打电话';
-
-  @override
-  String get bulletMaxVideo => '面对面视频通话';
-
-  @override
-  String get bulletMaxEverything => '包含 Pro 的全部功能';
-
-  @override
-  String get bulletMaxCharacters => '所有角色，不限使用';
-
-  @override
-  String get bulletMaxStudyBook => '匹配你水平的学习手册';
-
-  @override
-  String get bulletMaxWeeklyReport => '记录发音变化的每周报告';
 
   @override
   String get bulletFreeCall => '每天一次 5 分钟语音通话';
 
   @override
-  String get bulletFreeCheck => '每天一次发音检测';
+  String get bulletFreeCheck => '前3次通话提供完整分析';
 
   @override
-  String get bulletFreeAccent => '口音检测不限次';
-
-  @override
-  String get bulletFreeCharacter => '一个起步角色';
-
-  @override
-  String get ctaGoUnlimited => '解锁无限通话';
+  String get bulletFreeCharacter => '开局2个角色';
 
   @override
   String get ctaTurnOnVideo => '开启视频通话';
 
   @override
-  String get noteCallLength => '每次通话 15 分钟。';
+  String get noteCallLength => 'Premium：每天1次通话，最长15分钟。';
 
   @override
   String get paywallProTitle1 => '凌晨 3 点也在线的';
 
   @override
   String get paywallProTitle2 => '你的韩国朋友';
-
-  @override
-  String get paywallProSub => '通话不限次。每次 15 分钟。全年无休。';
 
   @override
   String get paywallLimitHeadline => 'Premium 可通话15分钟。';
@@ -1561,9 +1483,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => '现在可以看见对方了。';
-
-  @override
-  String get paywallMaxSub => '视频通话、所有角色，还有专为你水平定制的学习手册。';
 
   @override
   String get planMonthly => '月付';
@@ -1616,28 +1535,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get footerPrivacy => '隐私';
 
   @override
-  String get noteMaxCharacters => 'Max 解锁的角色在订阅有效期内可用。你买下的角色永远属于你。';
-
-  @override
   String get processingTitle => '正在确认购买';
 
   @override
   String get processingSub => '通常只需几秒钟。';
 
   @override
-  String get successProTitle => 'Pro 已开通。';
-
-  @override
-  String get successProSub => '从现在起，通话不限次。';
-
-  @override
-  String get successProBenefit1 => '想打就打 — 每次 15 分钟';
-
-  @override
-  String get successProBenefit2 => '发音检测不限次';
-
-  @override
-  String get successProBenefit3 => '所有角色，还可单独购买';
+  String get successProTitle => 'Premium 已开通。';
 
   @override
   String get successMaxTitle => '现在可以看见对方了。';
@@ -1646,27 +1550,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get successMaxSub => '视频通话已开启。在任意通话中点击视频按钮即可。';
 
   @override
-  String get successMaxBenefit1 => '面对面视频通话';
-
-  @override
-  String get successMaxBenefit2 => '所有角色不限用，新角色抢先体验';
-
-  @override
-  String get successMaxBenefit3 => '匹配你水平的学习手册';
-
-  @override
-  String get ctaStartACall => '开始通话';
-
-  @override
   String get ctaStartAVideoCall => '开始视频通话';
 
   @override
   String get ctaSeeYourSubscription => '查看我的订阅';
-
-  @override
-  String successProCaption(String price) {
-    return '每月收取 $price，直到你取消为止。可随时在商店中管理或取消。';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1686,87 +1573,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get plansErrorCaption => '没有产生任何扣款。';
 
   @override
-  String get changePlanTitle => '更换套餐';
-
-  @override
-  String get moveToMaxTitle => '升级到 Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price/月';
-  }
-
-  @override
-  String get moveToMaxCardSub => '面对面视频通话 · 所有角色 · 为你定制的学习手册';
-
-  @override
-  String get whatHappensNow => '接下来会怎样';
-
-  @override
-  String get maxStartsLabel => 'Max 生效';
-
-  @override
-  String get immediately => '立即';
-
-  @override
-  String get unusedProTime => 'Pro 剩余时长';
-
-  @override
-  String get creditedTowardMax => '折抵 Max 费用';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => '切换到 Max';
-
-  @override
-  String get upgradeCaption => '新套餐立即生效。Pro 剩余时长会折抵费用，绝不重复扣款。';
-
-  @override
-  String get moveToProTitle => '换到 Pro';
-
-  @override
-  String get moveToProSub => '今天不会有任何变化。Max 会持续到你已付费的当月结束。';
-
-  @override
-  String get maxRunsUntil => 'Max 有效期至';
-
-  @override
-  String get proStarts => 'Pro 开始';
-
-  @override
-  String get whatYouKeep => '你保留的权益';
-
-  @override
-  String get keepBenefitCalls => '语音通话不限次，每次 15 分钟';
-
-  @override
-  String get keepBenefitCharacters => '买下的角色永远属于你';
-
-  @override
-  String downgradeWarning(String date) {
-    return '视频通话和 Max 专属角色将于$date关闭。';
-  }
-
-  @override
-  String get ctaSwitchToPro => '切换到 Pro';
-
-  @override
-  String get ctaKeepMax => '保留 Max';
+  String get ctaKeepMax => '保留 Premium';
 
   @override
   String get winbackSkip => '跳过';
 
   @override
-  String get winbackTitle => '你的 Pro 套餐已结束';
+  String get winbackTitle => '你的 Premium 套餐已结束';
 
   @override
   String get winbackSub => '你现在是免费套餐 — 每天一次通话。';
@@ -1805,7 +1618,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaClose => '关闭';
 
   @override
-  String get ovRestoreSuccessTitle => 'Pro 回来了';
+  String get ovRestoreSuccessTitle => 'Premium 回来了';
 
   @override
   String get ovRestoreSuccessBody => '我们找到了你的订阅，已在这台设备上重新开启。';
@@ -1829,7 +1642,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaGetHelp => '获取帮助';
 
   @override
-  String get ovCharacterOfferTitle => '还没准备好订 Pro？';
+  String get ovCharacterOfferTitle => '还没准备好订 Premium？';
 
   @override
   String get ovCharacterOfferBody => '挑一个角色永久拥有。一次性购买 — 没有订阅，也不会续费。';
@@ -1881,7 +1694,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get rowCharactersYouBought => '你买下的角色';
 
   @override
-  String get rowProRunsUntil => 'Pro 有效期至';
+  String get rowProRunsUntil => 'Premium 有效期至';
 
   @override
   String get ctaSwitchToYearly => '换成年付';
@@ -1895,7 +1708,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get ovAnnualSwitchBody => '你已经用了两个月 Pro。年付套餐算下来更划算。';
+  String get ovAnnualSwitchBody => '年付套餐比按月付更划算。';
 
   @override
   String get rowYouSave => '你省下';
@@ -1954,7 +1767,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovTrialEndingTitle => '你的试用明天结束';
 
   @override
-  String get ovTrialEndingBody => '不取消的话 Max 会继续。接下来是这样的。';
+  String get ovTrialEndingBody => '不取消的话 Premium 会继续。接下来是这样的。';
 
   @override
   String get rowTrialEnds => '试用结束';
@@ -1969,7 +1782,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaCancelInStore => '在商店中取消';
 
   @override
-  String get ovTrialStartTitle => '免费体验 Max 7 天';
+  String get ovTrialStartTitle => '免费体验 Premium 7 天';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -1983,7 +1796,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovOtoTitle => '开始前还有一件事';
 
   @override
-  String get ovOtoBody => '好选择 — 无限通话已经开启。同样的 Pro，年付更便宜。';
+  String get ovOtoBody => '选得好。同样的 Premium，按年付更便宜。';
 
   @override
   String get ovFailedDeclinedTitle => '你的卡被拒绝了';
@@ -2007,7 +1820,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovFailedStoreBody => '无法连接到商店。没有产生任何费用。';
 
   @override
-  String get ovAlreadyTitle => '你已经在用 Pro 了';
+  String get ovAlreadyTitle => '你已经在用 Premium 了';
 
   @override
   String get ovAlreadyBody => '此商店账号已有生效中的套餐，无需再购买。';
@@ -2020,29 +1833,17 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'Pro 有效期至$date。之后你将转为免费套餐。';
+    return 'Premium 有效期至$date。之后你将转为免费套餐。';
   }
 
   @override
   String get subWhatYouLose => '你将失去';
 
   @override
-  String get benefitCalls15 => '通话不限次，每次 15 分钟';
-
-  @override
-  String get benefitScoring => '逐字打分的发音评测';
-
-  @override
-  String get benefitEveryCharacter => '所有角色，不限使用';
-
-  @override
-  String get ctaKeepPro => '保留 Pro';
-
-  @override
   String get subPaymentTitle => '更新付款';
 
   @override
-  String get subPaymentBody => '扣款没有成功。宽限期内 Pro 会继续有效。';
+  String get subPaymentBody => '扣款没有成功。宽限期内 Premium 会继续有效。';
 
   @override
   String get subHowToFix => '解决方法';
@@ -2061,7 +1862,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'Pro 将于$date结束。重新打开自动续订，一切照旧。';
+    return 'Premium 将于$date结束。重新打开自动续订，一切照旧。';
   }
 
   @override
@@ -2080,13 +1881,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get flCheckTitle => '今天的检测用完了';
 
   @override
-  String get flCheckBody => '免费套餐每天检测一次。Pro 则不限次。';
-
-  @override
-  String get flBenefitCalls => 'Pro 通话不限次 · 每次 15 分钟';
-
-  @override
-  String get flBenefitChecks => 'Pro 发音检测不限次';
+  String get flCheckBody => '免费套餐每天可检测 1 次。Premium 提供完整分析。';
 
   @override
   String flCaption(String price) {
@@ -2222,7 +2017,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get connected => '已连接';
 
   @override
-  String get unlockedWithMax => 'Max 可用';
+  String get unlockedWithMax => '已包含在你的套餐中';
 
   @override
   String get fcEndedTitle => '免费通话已结束';

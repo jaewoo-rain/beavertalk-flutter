@@ -668,9 +668,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get subscriptionManage => 'إدارة الاشتراك';
 
   @override
-  String get changePlan => 'تغيير الخطة';
-
-  @override
   String get cancelSubscription => 'إلغاء الاشتراك';
 
   @override
@@ -689,18 +686,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get viewBillingHistory => 'عرض سجل الفواتير';
 
   @override
-  String get keepUsingPro => 'الاستمرار في استخدام Pro';
-
-  @override
-  String get proMembership => 'عضوية Pro';
-
-  @override
   String pricePerMonth(String price) {
     return '$price / شهريًا';
   }
-
-  @override
-  String get benefitUnlimitedCalls => 'مكالمات غير محدودة';
 
   @override
   String get benefitDetailedAnalysis => 'تحليل مفصّل للنطق والقواعد';
@@ -1145,11 +1133,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get lastPayment => 'آخر دفعة';
 
   @override
-  String subscriptionSwitchNote(String date) {
-    return 'يمكنك الاستمرار في استخدام مزايا Pro حتى $date، وبعدها تتحول خطتك تلقائيًا إلى المجانية.';
-  }
-
-  @override
   String get freePlanCallLimit => 'مكالمة واحدة يوميًا · حد 5 دقائق';
 
   @override
@@ -1305,9 +1288,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get billingGroupInTheStore => 'في المتجر';
 
   @override
-  String get billingChangePlan => 'تغيير الخطة';
-
-  @override
   String get billingCompareAllPlans => 'مقارنة جميع الخطط';
 
   @override
@@ -1384,7 +1364,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ctaGetPremium => 'احصل على Premium';
 
   @override
-  String get planMaxTrial => 'تجربة Max';
+  String get planMaxTrial => 'تجربة Premium';
 
   @override
   String get freePlanPriceLine => '\$0.00 — مكالمة واحدة في اليوم';
@@ -1425,35 +1405,22 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get bannerGoUnlimitedTitle => 'انطلق بلا حدود مع Pro';
-
-  @override
-  String bannerGoUnlimitedSub(String price) {
-    return 'مكالمات غير محدودة · 15 دقيقة لكل مكالمة · $price شهريًا';
-  }
-
-  @override
-  String get bannerMaxUpsellTitle => 'فعّل الفيديو مع Max';
+  String get bannerMaxUpsellTitle => 'تحدّث وجهًا لوجه مع Premium';
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'مكالمات وجهًا لوجه · $price شهريًا';
+    return 'مكالمات فيديو · 15 دقيقة يوميًا · $price شهريًا';
   }
 
   @override
   String get bannerAnnualSwitchTitle => 'انتقل إلى الخطة السنوية';
 
   @override
-  String bannerAnnualSwitchSub(String yearly, String perMonth) {
-    return '$yearly سنويًا · $perMonth شهريًا';
-  }
-
-  @override
   String get bannerPaymentFailedTitle => 'تعذّر إتمام الدفع';
 
   @override
   String get bannerPaymentFailedSub =>
-      'حدّث وسيلة الدفع في المتجر للحفاظ على Pro';
+      'حدّث وسيلة الدفع في المتجر للحفاظ على Premium';
 
   @override
   String get bannerPausedTitle => 'خطتك متوقفة مؤقتًا';
@@ -1470,10 +1437,6 @@ class AppLocalizationsAr extends AppLocalizations {
       'تتم إدارة وسيلة الدفع وتغيير الخطة والإلغاء عبر المتجر.';
 
   @override
-  String get noteFairUse =>
-      'يخضع الاستخدام غير المحدود لسياسة الاستخدام العادل لدينا.';
-
-  @override
   String noteTrialEnds(String date) {
     return 'تنتهي فترتك التجريبية في $date. ألغِ من المتجر قبل ذلك ولن يُخصم منك شيء.';
   }
@@ -1484,7 +1447,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get noteHold =>
-      'Pro متوقف مؤقتًا حتى تتم عملية الدفع. شخصياتك وتقدمك في أمان.';
+      'Premium متوقف مؤقتًا حتى تتم عملية الدفع. شخصياتك وتقدمك في أمان.';
 
   @override
   String noteEnding(String date) {
@@ -1492,7 +1455,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get trialExpiredTitle => 'انتهت تجربة Max';
+  String get trialExpiredTitle => 'انتهت تجربة Premium';
 
   @override
   String get trialExpiredSub => 'أنت الآن على Free';
@@ -1504,13 +1467,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get currentPlanTitle => 'الخطة الحالية';
 
   @override
-  String get badgeRecommended => 'موصى بها';
-
-  @override
   String get perMonthUnit => 'شهريًا';
-
-  @override
-  String get planTaglinePro => 'مكالمات غير محدودة. 15 دقيقة لكل مكالمة.';
 
   @override
   String get planTaglineMax => 'الآن يمكنك رؤيتهم.';
@@ -1519,65 +1476,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get planTaglineFree => 'مكالمة واحدة في اليوم. مجانًا.';
 
   @override
-  String get bulletProCalls => 'مكالمات صوتية بلا حدود';
-
-  @override
-  String get bulletProLength => '15 دقيقة لكل مكالمة';
-
-  @override
-  String get bulletProScoring => 'تقييم النطق حرفًا بحرف';
-
-  @override
   String get bulletProCorrections => 'تصحيحات مصممة حسب لغتك الأم';
-
-  @override
-  String get bulletProBeaverCalls => 'بيفر يتصل بك أولًا';
-
-  @override
-  String get bulletMaxVideo => 'مكالمات فيديو وجهًا لوجه';
-
-  @override
-  String get bulletMaxEverything => 'كل ما في Pro';
-
-  @override
-  String get bulletMaxCharacters => 'جميع الشخصيات، بلا حدود';
-
-  @override
-  String get bulletMaxStudyBook => 'كتاب دراسي يناسب مستواك';
-
-  @override
-  String get bulletMaxWeeklyReport => 'تقرير أسبوعي عن تطور نطقك';
 
   @override
   String get bulletFreeCall => 'مكالمة صوتية واحدة مدتها 5 دقائق يوميًا';
 
   @override
-  String get bulletFreeCheck => 'فحص نطق واحد يوميًا';
+  String get bulletFreeCheck => 'تحليل كامل لأول 3 مكالمات';
 
   @override
-  String get bulletFreeAccent => 'فحوصات لهجة غير محدودة';
-
-  @override
-  String get bulletFreeCharacter => 'شخصية واحدة للبداية';
-
-  @override
-  String get ctaGoUnlimited => 'انطلق بلا حدود';
+  String get bulletFreeCharacter => 'شخصيتان للبداية';
 
   @override
   String get ctaTurnOnVideo => 'فعّل الفيديو';
 
   @override
-  String get noteCallLength => 'مدة كل مكالمة 15 دقيقة.';
+  String get noteCallLength => 'Premium: مكالمة واحدة يوميًا، حتى 15 دقيقة.';
 
   @override
   String get paywallProTitle1 => 'صديقك الكوري';
 
   @override
   String get paywallProTitle2 => 'المستيقظ في الثالثة فجرًا';
-
-  @override
-  String get paywallProSub =>
-      'مكالمات غير محدودة. 15 دقيقة لكل مكالمة. طوال العام.';
 
   @override
   String get paywallLimitHeadline => 'يمنحك Premium مدة 15 دقيقة.';
@@ -1600,10 +1520,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get paywallMaxTitle => 'الآن يمكنك رؤيتهم.';
-
-  @override
-  String get paywallMaxSub =>
-      'مكالمات فيديو، وجميع الشخصيات، وكتاب دراسي مصمم لمستواك.';
 
   @override
   String get planMonthly => 'شهري';
@@ -1656,30 +1572,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get footerPrivacy => 'الخصوصية';
 
   @override
-  String get noteMaxCharacters =>
-      'الشخصيات المفتوحة عبر Max متاحة ما دام اشتراكك نشطًا. الشخصيات التي اشتريتها تبقى لك.';
-
-  @override
   String get processingTitle => 'جارٍ تأكيد عملية الشراء';
 
   @override
   String get processingSub => 'يستغرق هذا عادةً بضع ثوانٍ.';
 
   @override
-  String get successProTitle => 'أنت الآن على Pro.';
-
-  @override
-  String get successProSub => 'مكالمات غير محدودة، تبدأ الآن.';
-
-  @override
-  String get successProBenefit1 => 'اتصل متى شئت — 15 دقيقة لكل مكالمة';
-
-  @override
-  String get successProBenefit2 => 'فحوصات نطق غير محدودة';
-
-  @override
-  String get successProBenefit3 =>
-      'جميع الشخصيات، إضافة إلى المشتريات لمرة واحدة';
+  String get successProTitle => 'أنت الآن على Premium.';
 
   @override
   String get successMaxTitle => 'يمكنك رؤيتهم الآن.';
@@ -1689,28 +1588,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'مكالمات الفيديو مفعّلة. اضغط زر الفيديو في أي مكالمة.';
 
   @override
-  String get successMaxBenefit1 => 'مكالمات فيديو وجهًا لوجه';
-
-  @override
-  String get successMaxBenefit2 =>
-      'جميع الشخصيات بلا حدود، والجديدة تصلك أولًا';
-
-  @override
-  String get successMaxBenefit3 => 'كتاب دراسي يناسب مستواك';
-
-  @override
-  String get ctaStartACall => 'ابدأ مكالمة';
-
-  @override
   String get ctaStartAVideoCall => 'ابدأ مكالمة فيديو';
 
   @override
   String get ctaSeeYourSubscription => 'عرض اشتراكك';
-
-  @override
-  String successProCaption(String price) {
-    return 'يُخصم $price شهريًا حتى تلغي. يمكنك الإدارة أو الإلغاء من المتجر في أي وقت.';
-  }
 
   @override
   String successMaxCaption(String price) {
@@ -1730,92 +1611,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get plansErrorCaption => 'لم يُخصم أي مبلغ.';
 
   @override
-  String get changePlanTitle => 'تغيير الخطة';
-
-  @override
-  String get moveToMaxTitle => 'الانتقال إلى Max';
-
-  @override
-  String maxPriceShort(String price) {
-    return '$price / شهر';
-  }
-
-  @override
-  String get moveToMaxCardSub =>
-      'مكالمات فيديو وجهًا لوجه · جميع الشخصيات · كتاب دراسي مصمم لك';
-
-  @override
-  String get whatHappensNow => 'ماذا سيحدث الآن';
-
-  @override
-  String get maxStartsLabel => 'يبدأ Max';
-
-  @override
-  String get immediately => 'فورًا';
-
-  @override
-  String get unusedProTime => 'مدة Pro غير المستخدمة';
-
-  @override
-  String get creditedTowardMax => 'تُحتسب من قيمة Max';
-
-  @override
-  String nextPaymentMaxValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String nextPaymentProValue(String price, String date) {
-    return '$price · $date';
-  }
-
-  @override
-  String get ctaSwitchToMax => 'التبديل إلى Max';
-
-  @override
-  String get upgradeCaption =>
-      'تبدأ خطتك الجديدة فورًا. تُحتسب مدة Pro غير المستخدمة، ولن تُحاسب مرتين أبدًا.';
-
-  @override
-  String get moveToProTitle => 'الانتقال إلى Pro';
-
-  @override
-  String get moveToProSub =>
-      'لن يتغير شيء اليوم. يستمر Max حتى نهاية الشهر الذي دفعته بالفعل.';
-
-  @override
-  String get maxRunsUntil => 'يستمر Max حتى';
-
-  @override
-  String get proStarts => 'يبدأ Pro';
-
-  @override
-  String get whatYouKeep => 'ما ستحتفظ به';
-
-  @override
-  String get keepBenefitCalls =>
-      'مكالمات صوتية غير محدودة، 15 دقيقة لكل مكالمة';
-
-  @override
-  String get keepBenefitCharacters =>
-      'الشخصيات التي اشتريتها تبقى لك إلى الأبد';
-
-  @override
-  String downgradeWarning(String date) {
-    return 'تتوقف مكالمات الفيديو والشخصيات الحصرية لـ Max في $date.';
-  }
-
-  @override
-  String get ctaSwitchToPro => 'التبديل إلى Pro';
-
-  @override
-  String get ctaKeepMax => 'الاحتفاظ بـ Max';
+  String get ctaKeepMax => 'الاحتفاظ بـ Premium';
 
   @override
   String get winbackSkip => 'تخطي';
 
   @override
-  String get winbackTitle => 'انتهت خطة Pro الخاصة بك';
+  String get winbackTitle => 'انتهت خطة Premium الخاصة بك';
 
   @override
   String get winbackSub => 'أنت الآن على Free — مكالمة واحدة في اليوم.';
@@ -1854,7 +1656,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ctaClose => 'إغلاق';
 
   @override
-  String get ovRestoreSuccessTitle => 'عاد Pro';
+  String get ovRestoreSuccessTitle => 'عاد Premium';
 
   @override
   String get ovRestoreSuccessBody =>
@@ -1880,7 +1682,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ctaGetHelp => 'طلب المساعدة';
 
   @override
-  String get ovCharacterOfferTitle => 'لست مستعدًا لـ Pro؟';
+  String get ovCharacterOfferTitle => 'لست مستعدًا لـ Premium؟';
 
   @override
   String get ovCharacterOfferBody =>
@@ -1935,7 +1737,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get rowCharactersYouBought => 'الشخصيات التي اشتريتها';
 
   @override
-  String get rowProRunsUntil => 'يستمر Pro حتى';
+  String get rowProRunsUntil => 'يستمر Premium حتى';
 
   @override
   String get ctaSwitchToYearly => 'التبديل إلى السنوي';
@@ -1949,7 +1751,7 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get ovAnnualSwitchBody => 'أنت على Pro منذ شهرين. الخطة السنوية أوفر.';
+  String get ovAnnualSwitchBody => 'الخطة السنوية أرخص من الدفع الشهري.';
 
   @override
   String get rowYouSave => 'توفّر';
@@ -2009,7 +1811,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ovTrialEndingTitle => 'تنتهي تجربتك غدًا';
 
   @override
-  String get ovTrialEndingBody => 'يستمر Max ما لم تلغِ. إليك ما سيحدث.';
+  String get ovTrialEndingBody => 'يستمر Premium ما لم تلغِ. إليك ما سيحدث.';
 
   @override
   String get rowTrialEnds => 'تنتهي التجربة';
@@ -2024,7 +1826,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ctaCancelInStore => 'الإلغاء من المتجر';
 
   @override
-  String get ovTrialStartTitle => '7 أيام من Max، مجانًا';
+  String get ovTrialStartTitle => '7 أيام من Premium، مجانًا';
 
   @override
   String ovTrialStartBody(String price, String date) {
@@ -2038,8 +1840,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ovOtoTitle => 'أمر أخير قبل أن تبدأ';
 
   @override
-  String get ovOtoBody =>
-      'اختيار موفق — المكالمات غير المحدودة مفعّلة الآن. نفس Pro يكلف أقل عند الدفع سنويًا.';
+  String get ovOtoBody => 'اختيار موفق. Premium نفسه أرخص إذا دفعت سنويًا.';
 
   @override
   String get ovFailedDeclinedTitle => 'رُفضت بطاقتك';
@@ -2064,7 +1865,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ovFailedStoreBody => 'تعذّر الوصول إلى المتجر. لم يُخصم أي مبلغ.';
 
   @override
-  String get ovAlreadyTitle => 'أنت بالفعل على Pro';
+  String get ovAlreadyTitle => 'أنت بالفعل على Premium';
 
   @override
   String get ovAlreadyBody =>
@@ -2078,29 +1879,18 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String subCancelBody(String date) {
-    return 'يستمر Pro حتى $date. بعد ذلك تنتقل إلى Free.';
+    return 'يستمر Premium حتى $date. بعد ذلك تنتقل إلى Free.';
   }
 
   @override
   String get subWhatYouLose => 'ما ستفقده';
 
   @override
-  String get benefitCalls15 => 'مكالمات غير محدودة، 15 دقيقة لكل مكالمة';
-
-  @override
-  String get benefitScoring => 'تقييم النطق حرفًا بحرف';
-
-  @override
-  String get benefitEveryCharacter => 'جميع الشخصيات، بلا حدود';
-
-  @override
-  String get ctaKeepPro => 'الاحتفاظ بـ Pro';
-
-  @override
   String get subPaymentTitle => 'تحديث الدفع';
 
   @override
-  String get subPaymentBody => 'تعذّر إتمام الدفع. يستمر Pro خلال فترة السماح.';
+  String get subPaymentBody =>
+      'تعذّر إتمام الدفع. يستمر Premium خلال فترة السماح.';
 
   @override
   String get subHowToFix => 'كيفية الإصلاح';
@@ -2119,7 +1909,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String subResubBody(String date) {
-    return 'ينتهي Pro في $date. أعد تفعيل التجديد التلقائي ولن يتغير شيء.';
+    return 'ينتهي Premium في $date. أعد تفعيل التجديد التلقائي ولن يتغير شيء.';
   }
 
   @override
@@ -2138,14 +1928,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get flCheckTitle => 'كان هذا فحص اليوم';
 
   @override
-  String get flCheckBody => 'فحص واحد يوميًا على Free. مع Pro يصبح غير محدود.';
-
-  @override
-  String get flBenefitCalls =>
-      'مكالمات غير محدودة مع Pro · 15 دقيقة لكل مكالمة';
-
-  @override
-  String get flBenefitChecks => 'فحوصات نطق غير محدودة مع Pro';
+  String get flCheckBody =>
+      'تتضمن الخطة المجانية فحصًا واحدًا يوميًا. يمنحك Premium التحليل الكامل.';
 
   @override
   String flCaption(String price) {
@@ -2284,7 +2068,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get connected => 'متصل';
 
   @override
-  String get unlockedWithMax => 'متاح مع Max';
+  String get unlockedWithMax => 'مضمّن في خطتك';
 
   @override
   String get fcEndedTitle => 'انتهت مكالمتك المجانية';

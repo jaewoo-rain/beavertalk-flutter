@@ -61,6 +61,8 @@ abstract final class PlanPrices {
   static const _listProYearlySaved = r'$73.89';
   static const _listProYearlyPerMonth = r'$9.83';
   static const _listMaxYearlyPerMonth = r'$15.75';
+  static const _listMaxYearlyAnchor = r'$287.88';
+  static const _listMaxYearlySaved = r'$98.89';
   static const _listMaxMonthlyAnchor = r'$29.99';
   static const _listCharacterFrom = r'$11.99';
 
@@ -137,6 +139,23 @@ abstract final class PlanPrices {
     return s == null
         ? _listProYearlyPerMonth
         : s.derive(s.proYearly.raw / 12);
+  }
+
+  /// Twelve months of Premium (`max`) at the monthly rate. **Derived**:
+  /// monthly × 12.
+  static String get maxYearlyAnchor {
+    final s = _store;
+    return s == null
+        ? _listMaxYearlyAnchor
+        : s.derive(s.maxMonthly.raw * 12);
+  }
+
+  /// What the Premium annual plan saves against [maxYearlyAnchor].
+  static String get maxYearlySaved {
+    final s = _store;
+    return s == null
+        ? _listMaxYearlySaved
+        : s.derive(s.maxMonthly.raw * 12 - s.maxYearly.raw);
   }
 
   /// Max annual, expressed per month. **Derived**: annual ÷ 12.

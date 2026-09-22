@@ -160,8 +160,6 @@ void main() {
             home: const Scaffold(body: SizedBox()),
             routes: {
               '/processing': (_) => const PurchaseProcessingScreen(),
-              Routes.purchaseSuccessPro: (_) =>
-                  const Scaffold(body: Text('success-pro')),
               Routes.purchaseSuccessMax: (_) =>
                   const Scaffold(body: Text('success-max')),
             },
@@ -173,11 +171,12 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('annual Pro request buys the yearly product', (tester) async {
+    testWidgets('annual Premium request buys the yearly product', (tester) async {
+      // 단일 티어(09-22): 유료는 Premium(상품 bt_max_*) 하나 — 성공 화면도 하나다.
       await pumpProcessing(
-          tester, (tier: SubscriptionTier.pro, annual: true));
-      expect(boughtIds, [IapProductIds.proYearly]);
-      expect(find.text('success-pro'), findsOneWidget);
+          tester, (tier: SubscriptionTier.max, annual: true));
+      expect(boughtIds, [IapProductIds.maxYearly]);
+      expect(find.text('success-max'), findsOneWidget);
     });
 
     testWidgets('Max request lands on the Max success screen with its product',
@@ -190,9 +189,9 @@ void main() {
 
     testWidgets('a bare tier argument still works and buys monthly',
         (tester) async {
-      await pumpProcessing(tester, SubscriptionTier.pro);
-      expect(boughtIds, [IapProductIds.proMonthly]);
-      expect(find.text('success-pro'), findsOneWidget);
+      await pumpProcessing(tester, SubscriptionTier.max);
+      expect(boughtIds, [IapProductIds.maxMonthly]);
+      expect(find.text('success-max'), findsOneWidget);
     });
 
     testWidgets('a canceled purchase pops back and shows the canceled sheet',

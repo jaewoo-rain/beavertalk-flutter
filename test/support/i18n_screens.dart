@@ -53,7 +53,7 @@ import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
-import 'package:beavertalk/screens/plans/plan_change.dart';
+import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
 import 'package:beavertalk/screens/plans/purchase_flow.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
@@ -255,10 +255,6 @@ Map<String, Widget Function()> i18nScreens() {
         const PaywallScreen(variant: PaywallVariant.proLimit),
     'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),
     'PlansCompare': () => const PlansCompareScreen(),
-    'PlanChangeUpgrade': () =>
-        const PlanChangeScreen(direction: PlanChangeDirection.upgrade),
-    'PlanChangeDowngrade': () =>
-        const PlanChangeScreen(direction: PlanChangeDirection.downgrade),
     'PurchaseSuccessMax': () =>
         const PurchaseSuccessScreen(tier: SubscriptionTier.max),
     'PlansError': () => const PlansErrorScreen(),
