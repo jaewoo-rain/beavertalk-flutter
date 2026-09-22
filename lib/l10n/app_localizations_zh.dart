@@ -2041,6 +2041,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get kgBody => '通话以5分钟为一段继续。\n每段结束时都会再问你一次。';
 
   @override
+  String get pcEndedTitleToday => '今天的通话就到这里吧。';
+
+  @override
+  String get pcEndedBodyToday => '复习一下我们聊过的内容，明天再给我打电话吧！';
+
+  @override
+  String get pcEndedTitle => '这次通话就到这里吧。';
+
+  @override
+  String get pcEndedBody => '复习一下我们聊过的内容，再给我打电话吧！';
+
+  @override
   String get ctaKeepTalking => '继续通话';
 
   @override

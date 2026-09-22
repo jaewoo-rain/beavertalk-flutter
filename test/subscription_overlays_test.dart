@@ -96,12 +96,15 @@ void main() {
       SubscriptionOverlay.freeLimitCheck: "That's today's check",
       SubscriptionOverlay.freeCallEnded: 'Your free call has ended',
       SubscriptionOverlay.keepGoing: 'Keep going?',
+      // 기본은 「더 남음」 문구 — 오늘 마지막 통화 문구는 아래 별도 시험.
+      SubscriptionOverlay.premiumCallEnded: "Let's wrap up this call.",
     };
 
     /// 결정을 받아야 하는 시트 — 딤 탭으로 닫히지 않는다. CTA 로 닫아야 한다.
     const mustDecide = {
       SubscriptionOverlay.freeCallEnded,
       SubscriptionOverlay.keepGoing,
+      SubscriptionOverlay.premiumCallEnded,
     };
 
     test('제목 표가 enum 을 빠짐없이 덮는다', () {
@@ -247,6 +250,45 @@ void main() {
       expect(find.text('4:58 of 5:00 used'), findsOneWidget);
       expect(find.text(r'$23.99 per month · cancel anytime'), findsOneWidget);
       expect(find.text('Maybe tomorrow'), findsOneWidget);
+    });
+  });
+
+  group('Premium 15분 종료 시트 (P19)', () {
+    Future<void> pump(WidgetTester tester, {required bool last}) async {
+      await tester.pumpWidget(MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: const Locale('en'),
+        home: Scaffold(
+          body: Align(
+            alignment: Alignment.bottomCenter,
+            child: subscriptionOverlayForTest(
+              SubscriptionOverlay.premiumCallEnded,
+              usage: (used: '15:00', limit: '15:00'),
+              characterName: 'Baba',
+              lastCallToday: last,
+            ),
+          ),
+        ),
+      ));
+    }
+
+    testWidgets('오늘 마지막 통화면 「내일」 문구', (tester) async {
+      await pump(tester, last: true);
+      expect(find.text("Let's wrap up for today."), findsOneWidget);
+      expect(
+          find.text('Review what we talked about, and call me again tomorrow!'),
+          findsOneWidget);
+      expect(find.text('15:00 of 15:00 used'), findsOneWidget);
+      // 버튼은 End Call 하나 — 연장이 없다.
+      expect(find.text('End Call'), findsOneWidget);
+      expect(find.text('Keep talking'), findsNothing);
+    });
+
+    testWidgets('통화가 더 남았으면 「내일」이 없다', (tester) async {
+      await pump(tester, last: false);
+      expect(find.text("Let's wrap up this call."), findsOneWidget);
+      expect(find.textContaining('tomorrow'), findsNothing);
     });
   });
 }

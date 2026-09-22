@@ -2110,6 +2110,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'Calls continue in 5-minute stretches.\nWe\'ll check in again each time.';
 
   @override
+  String get pcEndedTitleToday => 'Let\'s wrap up for today.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Review what we talked about, and call me again tomorrow!';
+
+  @override
+  String get pcEndedTitle => 'Let\'s wrap up this call.';
+
+  @override
+  String get pcEndedBody => 'Review what we talked about, and call me again!';
+
+  @override
   String get ctaKeepTalking => 'Keep talking';
 
   @override

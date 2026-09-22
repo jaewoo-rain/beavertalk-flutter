@@ -2150,6 +2150,19 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les appels se poursuivent par tranches de 5 minutes.\nNous te redemanderons à chaque fois.';
 
   @override
+  String get pcEndedTitleToday => 'On s\'arrête là pour aujourd\'hui.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Révisez ce qu\'on s\'est dit, et rappelez-moi demain !';
+
+  @override
+  String get pcEndedTitle => 'On termine cet appel.';
+
+  @override
+  String get pcEndedBody => 'Révisez ce qu\'on s\'est dit, et rappelez-moi !';
+
+  @override
   String get ctaKeepTalking => 'Continuer à parler';
 
   @override

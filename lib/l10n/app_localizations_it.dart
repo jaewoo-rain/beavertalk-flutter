@@ -2131,6 +2131,20 @@ class AppLocalizationsIt extends AppLocalizations {
       'Le chiamate proseguono a blocchi di 5 minuti.\nTe lo chiederemo ogni volta.';
 
   @override
+  String get pcEndedTitleToday => 'Chiudiamo la chiamata di oggi.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ripassa quello di cui abbiamo parlato e richiamami domani!';
+
+  @override
+  String get pcEndedTitle => 'Chiudiamo questa chiamata.';
+
+  @override
+  String get pcEndedBody =>
+      'Ripassa quello di cui abbiamo parlato e richiamami!';
+
+  @override
   String get ctaKeepTalking => 'Continua a parlare';
 
   @override

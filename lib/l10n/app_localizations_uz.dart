@@ -2120,6 +2120,20 @@ class AppLocalizationsUz extends AppLocalizations {
       'Qo\'ng\'iroqlar 5 daqiqalik qismlarda davom etadi.\nHar safar sizdan yana so\'raymiz.';
 
   @override
+  String get pcEndedTitleToday => 'Bugungi qo‘ng‘iroqni tugatamiz.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Gaplashganlarimizni takrorlang va ertaga yana qo‘ng‘iroq qiling!';
+
+  @override
+  String get pcEndedTitle => 'Bu qo‘ng‘iroqni tugatamiz.';
+
+  @override
+  String get pcEndedBody =>
+      'Gaplashganlarimizni takrorlang va yana qo‘ng‘iroq qiling!';
+
+  @override
   String get ctaKeepTalking => 'Suhbatni davom ettirish';
 
   @override

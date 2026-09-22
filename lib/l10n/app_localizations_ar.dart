@@ -2096,6 +2096,18 @@ class AppLocalizationsAr extends AppLocalizations {
       'تستمر المكالمات على فترات مدتها 5 دقائق.\nسنسألك مرة أخرى في كل مرة.';
 
   @override
+  String get pcEndedTitleToday => 'لننهِ مكالمة اليوم.';
+
+  @override
+  String get pcEndedBodyToday => 'راجع ما تحدثنا عنه، واتصل بي مجددًا غدًا!';
+
+  @override
+  String get pcEndedTitle => 'لننهِ هذه المكالمة.';
+
+  @override
+  String get pcEndedBody => 'راجع ما تحدثنا عنه، واتصل بي مجددًا!';
+
+  @override
   String get ctaKeepTalking => 'مواصلة الحديث';
 
   @override

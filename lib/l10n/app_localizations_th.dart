@@ -2098,6 +2098,19 @@ class AppLocalizationsTh extends AppLocalizations {
       'การโทรจะดำเนินต่อครั้งละ 5 นาที\nเราจะถามคุณอีกทุกครั้ง';
 
   @override
+  String get pcEndedTitleToday => 'วันนี้ขอจบการโทรไว้แค่นี้นะ';
+
+  @override
+  String get pcEndedBodyToday =>
+      'ทบทวนสิ่งที่เราคุยกัน แล้วพรุ่งนี้โทรมาอีกนะ!';
+
+  @override
+  String get pcEndedTitle => 'ขอจบการโทรครั้งนี้ไว้แค่นี้นะ';
+
+  @override
+  String get pcEndedBody => 'ทบทวนสิ่งที่เราคุยกัน แล้วโทรมาอีกนะ!';
+
+  @override
   String get ctaKeepTalking => 'คุยต่อ';
 
   @override

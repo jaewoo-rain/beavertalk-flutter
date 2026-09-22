@@ -2118,6 +2118,19 @@ class AppLocalizationsFi extends AppLocalizations {
       'Puhelut jatkuvat 5 minuutin jaksoissa.\nKysymme sinulta joka kerta uudelleen.';
 
   @override
+  String get pcEndedTitleToday => 'Lopetetaan tämän päivän puhelu.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Kertaa, mistä puhuimme, ja soita minulle taas huomenna!';
+
+  @override
+  String get pcEndedTitle => 'Lopetetaan tämä puhelu.';
+
+  @override
+  String get pcEndedBody => 'Kertaa, mistä puhuimme, ja soita minulle taas!';
+
+  @override
   String get ctaKeepTalking => 'Jatka juttelua';
 
   @override

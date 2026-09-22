@@ -2105,6 +2105,19 @@ class AppLocalizationsSi extends AppLocalizations {
       'ඇමතුම් විනාඩි 5ක කොටස් වශයෙන් දිගටම පවතී.\nසෑම වතාවකම අපි ඔබෙන් නැවත අසන්නෙමු.';
 
   @override
+  String get pcEndedTitleToday => 'අද ඇමතුම මෙතැනින් නවත්වමු.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'අපි කතා කළ දේ පුනරීක්ෂණය කර, හෙට නැවත අමතන්න!';
+
+  @override
+  String get pcEndedTitle => 'මෙම ඇමතුම මෙතැනින් නවත්වමු.';
+
+  @override
+  String get pcEndedBody => 'අපි කතා කළ දේ පුනරීක්ෂණය කර, නැවත අමතන්න!';
+
+  @override
   String get ctaKeepTalking => 'කතාව දිගටම කරගෙන යන්න';
 
   @override

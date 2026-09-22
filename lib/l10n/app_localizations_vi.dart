@@ -2109,6 +2109,20 @@ class AppLocalizationsVi extends AppLocalizations {
       'Cuộc gọi tiếp tục theo từng đoạn 5 phút.\nChúng tôi sẽ hỏi lại mỗi lần.';
 
   @override
+  String get pcEndedTitleToday => 'Mình kết thúc cuộc gọi hôm nay nhé.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ôn lại những gì mình đã nói, rồi mai lại gọi cho mình nhé!';
+
+  @override
+  String get pcEndedTitle => 'Mình kết thúc cuộc gọi này nhé.';
+
+  @override
+  String get pcEndedBody =>
+      'Ôn lại những gì mình đã nói, rồi lại gọi cho mình nhé!';
+
+  @override
   String get ctaKeepTalking => 'Tiếp tục trò chuyện';
 
   @override

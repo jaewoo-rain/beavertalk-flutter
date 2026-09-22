@@ -2105,6 +2105,19 @@ class AppLocalizationsMn extends AppLocalizations {
       'Дуудлага 5 минутын хэсгээр үргэлжилнэ.\nБид болгонд дахин асууна.';
 
   @override
+  String get pcEndedTitleToday => 'Өнөөдрийн дуудлагаа дуусгая.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ярьсан зүйлээ давтаад, маргааш дахин залгаарай!';
+
+  @override
+  String get pcEndedTitle => 'Энэ дуудлагаа дуусгая.';
+
+  @override
+  String get pcEndedBody => 'Ярьсан зүйлээ давтаад, дахин залгаарай!';
+
+  @override
   String get ctaKeepTalking => 'Яриаг үргэлжлүүлэх';
 
   @override

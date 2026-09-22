@@ -2117,6 +2117,20 @@ class AppLocalizationsRu extends AppLocalizations {
       'Звонки продолжаются отрезками по 5 минут.\nМы будем спрашивать каждый раз.';
 
   @override
+  String get pcEndedTitleToday => 'На сегодня закончим звонок.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Повторите, о чём мы говорили, и позвоните мне завтра!';
+
+  @override
+  String get pcEndedTitle => 'Закончим этот звонок.';
+
+  @override
+  String get pcEndedBody =>
+      'Повторите, о чём мы говорили, и позвоните мне снова!';
+
+  @override
   String get ctaKeepTalking => 'Продолжить разговор';
 
   @override

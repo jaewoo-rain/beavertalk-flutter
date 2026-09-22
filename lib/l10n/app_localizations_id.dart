@@ -2114,6 +2114,19 @@ class AppLocalizationsId extends AppLocalizations {
       'Panggilan berlanjut dalam sesi 5 menit.\nKami akan bertanya lagi setiap kali.';
 
   @override
+  String get pcEndedTitleToday => 'Kita akhiri panggilan hari ini, ya.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ulas lagi obrolan kita, lalu telepon aku lagi besok!';
+
+  @override
+  String get pcEndedTitle => 'Kita akhiri panggilan ini, ya.';
+
+  @override
+  String get pcEndedBody => 'Ulas lagi obrolan kita, lalu telepon aku lagi!';
+
+  @override
   String get ctaKeepTalking => 'Lanjut mengobrol';
 
   @override

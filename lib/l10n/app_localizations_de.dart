@@ -2137,6 +2137,20 @@ class AppLocalizationsDe extends AppLocalizations {
       'Gespräche laufen in 5-Minuten-Abschnitten weiter.\nWir fragen jedes Mal nach.';
 
   @override
+  String get pcEndedTitleToday => 'Lass uns für heute Schluss machen.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Wiederhole, worüber wir gesprochen haben, und ruf mich morgen wieder an!';
+
+  @override
+  String get pcEndedTitle => 'Lass uns diesen Anruf beenden.';
+
+  @override
+  String get pcEndedBody =>
+      'Wiederhole, worüber wir gesprochen haben, und ruf mich wieder an!';
+
+  @override
   String get ctaKeepTalking => 'Weitersprechen';
 
   @override

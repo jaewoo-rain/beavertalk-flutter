@@ -1371,6 +1371,14 @@
   "@kgBody": {
     "description": "Body of the paid continue sheet. Two lines separated by a newline."
   },
+  "pcEndedTitleToday": "Let's wrap up for today.",
+  "@pcEndedTitleToday": {"description": "Premium 15-minute end sheet title - the last call allowed today."},
+  "pcEndedBodyToday": "Review what we talked about, and call me again tomorrow!",
+  "@pcEndedBodyToday": {"description": "Premium 15-minute end sheet body - the last call today; come back tomorrow."},
+  "pcEndedTitle": "Let's wrap up this call.",
+  "@pcEndedTitle": {"description": "Premium 15-minute end sheet title - more calls remain today."},
+  "pcEndedBody": "Review what we talked about, and call me again!",
+  "@pcEndedBody": {"description": "Premium 15-minute end sheet body - more calls remain today (no 'tomorrow')."},
   "ctaKeepTalking": "Keep talking",
   "@ctaKeepTalking": {
     "description": "Primary CTA on the paid continue sheet. Opens the next 5-minute segment."

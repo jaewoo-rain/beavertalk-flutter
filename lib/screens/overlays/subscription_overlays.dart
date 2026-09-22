@@ -107,6 +107,13 @@ enum SubscriptionOverlay {
   /// time."). 상한을 다 쓰면 이 시트를 띄우지 않고 통화를 끝낸다 — 누를 수 없는
   /// 버튼을 보여 줄 이유가 없다.
   keepGoing,
+
+  /// `call_main_live_5minute_premium` (`5026:24871`) — **유료 통화가 15분 상한을 다
+  /// 썼다.** 연장은 없고 버튼은 「End Call」 하나다(P19, 사용자 결정 2026-09-22).
+  ///
+  /// 문구는 [lastCallToday] 로 갈린다 — Premium 은 하루 최대 3통화라, 1·2번째 통화에
+  /// 「내일 또 전화해요」라고 하면 오늘 더 걸 수 있는 사람에게 내일 오라고 하게 된다.
+  premiumCallEnded,
 }
 
 /// Shows [overlay] as a modal bottom sheet over the current screen.
@@ -132,12 +139,14 @@ Future<void> showSubscriptionOverlay(
   VoidCallback? onContinue,
   VoidCallback? onEndCall,
   VoidCallback? onSubscribe,
+  bool lastCallToday = false,
 }) {
   // 통화 구간 시트는 **결정을 받아야 하는** 시트다. 딤을 눌러서 흘려보내면 통화가
   // 결정을 기다리는 상태로 남는다(소리도 없고 화면도 안 바뀐다). 그래서 이 둘만
   // 딤 탭·드래그로 닫히지 않게 한다.
   final mustDecide = overlay == SubscriptionOverlay.keepGoing ||
-      overlay == SubscriptionOverlay.freeCallEnded;
+      overlay == SubscriptionOverlay.freeCallEnded ||
+      overlay == SubscriptionOverlay.premiumCallEnded;
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
@@ -159,6 +168,7 @@ Future<void> showSubscriptionOverlay(
       onContinue: onContinue,
       onEndCall: onEndCall,
       onSubscribe: onSubscribe,
+      lastCallToday: lastCallToday,
     ),
   );
 }
@@ -237,6 +247,7 @@ Widget subscriptionOverlayForTest(
   String? characterName,
   String? lastTopic,
   List<SheetRowData>? scores,
+  bool lastCallToday = false,
 }) =>
     _OverlaySheet(
       overlay: overlay,
@@ -246,6 +257,7 @@ Widget subscriptionOverlayForTest(
       characterName: characterName,
       lastTopic: lastTopic,
       scores: scores,
+      lastCallToday: lastCallToday,
     );
 
 class _OverlaySheet extends StatelessWidget {
@@ -262,7 +274,11 @@ class _OverlaySheet extends StatelessWidget {
     this.onContinue,
     this.onEndCall,
     this.onSubscribe,
+    this.lastCallToday = false,
   });
+
+  /// [SubscriptionOverlay.premiumCallEnded] 전용 — 오늘 마지막 통화였는가.
+  final bool lastCallToday;
 
   final SubscriptionOverlay overlay;
   final DateTime? expiresAt;
@@ -682,6 +698,21 @@ class _OverlaySheet extends StatelessWidget {
         );
       // 유료 회원에게 5분마다 묻는다. 상한(15분)을 다 쓰면 화면이 이 시트를 아예
       // 띄우지 않는다 — 여기서 「Keep talking」 이 보이면 반드시 눌러지는 상태다.
+      case SubscriptionOverlay.premiumCallEnded:
+        return BottomSheetContent(
+          type: SheetContentType.preview,
+          title: lastCallToday ? l10n.pcEndedTitleToday : l10n.pcEndedTitle,
+          body: lastCallToday ? l10n.pcEndedBodyToday : l10n.pcEndedBody,
+          preview: SheetPreviewData(
+            avatar: avatar ?? const SizedBox.shrink(),
+            name: characterName ?? '',
+            topic: lastTopic ?? '',
+            usage: usage == null ? '' : l10n.flUsage(usage!.used, usage!.limit),
+          ),
+          primaryAction: SheetAction(
+              label: l10n.endCall,
+              onPressed: () => _then(context, () => onEndCall?.call())),
+        );
       case SubscriptionOverlay.keepGoing:
         return BottomSheetContent(
           title: l10n.kgTitle,

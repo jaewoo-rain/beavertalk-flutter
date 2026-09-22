@@ -2044,6 +2044,18 @@ class AppLocalizationsKo extends AppLocalizations {
   String get kgBody => '통화는 5분씩 이어져요.\n5분마다 다시 여쭤볼게요.';
 
   @override
+  String get pcEndedTitleToday => '오늘 통화를 마칠게요.';
+
+  @override
+  String get pcEndedBodyToday => '복습하고 내일 또 다시 전화해요!';
+
+  @override
+  String get pcEndedTitle => '이번 통화를 마칠게요.';
+
+  @override
+  String get pcEndedBody => '복습하고 또 전화해요!';
+
+  @override
   String get ctaKeepTalking => '계속 대화하기';
 
   @override

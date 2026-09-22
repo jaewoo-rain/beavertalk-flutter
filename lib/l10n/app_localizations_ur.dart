@@ -2110,6 +2110,19 @@ class AppLocalizationsUr extends AppLocalizations {
       'کالیں 5 منٹ کے حصوں میں جاری رہتی ہیں۔\nہم ہر بار دوبارہ پوچھیں گے۔';
 
   @override
+  String get pcEndedTitleToday => 'آج کی کال یہیں ختم کرتے ہیں۔';
+
+  @override
+  String get pcEndedBodyToday =>
+      'جو بات ہوئی اسے دہرائیں، اور کل پھر کال کریں!';
+
+  @override
+  String get pcEndedTitle => 'یہ کال یہیں ختم کرتے ہیں۔';
+
+  @override
+  String get pcEndedBody => 'جو بات ہوئی اسے دہرائیں، اور پھر کال کریں!';
+
+  @override
   String get ctaKeepTalking => 'بات جاری رکھیں';
 
   @override

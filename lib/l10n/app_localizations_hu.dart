@@ -2126,6 +2126,19 @@ class AppLocalizationsHu extends AppLocalizations {
       'A hívások 5 perces szakaszokban folytatódnak.\nMinden alkalommal rákérdezünk.';
 
   @override
+  String get pcEndedTitleToday => 'Mára fejezzük be a hívást.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ismételd át, amiről beszéltünk, és hívj holnap újra!';
+
+  @override
+  String get pcEndedTitle => 'Fejezzük be ezt a hívást.';
+
+  @override
+  String get pcEndedBody => 'Ismételd át, amiről beszéltünk, és hívj újra!';
+
+  @override
   String get ctaKeepTalking => 'Beszélgetés folytatása';
 
   @override

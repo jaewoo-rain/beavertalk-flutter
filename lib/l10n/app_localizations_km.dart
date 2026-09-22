@@ -2107,6 +2107,19 @@ class AppLocalizationsKm extends AppLocalizations {
       'ការហៅបន្តជាដំណាក់កាល ៥ នាទី។\nយើងនឹងសួរអ្នកម្តងទៀតរាល់ពេល។';
 
   @override
+  String get pcEndedTitleToday => 'យើងបញ្ចប់ការហៅថ្ងៃនេះសិន។';
+
+  @override
+  String get pcEndedBodyToday =>
+      'រំលឹកអ្វីដែលយើងបាននិយាយ ហើយហៅមកម្ដងទៀតនៅថ្ងៃស្អែក!';
+
+  @override
+  String get pcEndedTitle => 'យើងបញ្ចប់ការហៅនេះសិន។';
+
+  @override
+  String get pcEndedBody => 'រំលឹកអ្វីដែលយើងបាននិយាយ ហើយហៅមកម្ដងទៀត!';
+
+  @override
   String get ctaKeepTalking => 'បន្តនិយាយ';
 
   @override

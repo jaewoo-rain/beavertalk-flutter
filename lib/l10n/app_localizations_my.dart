@@ -2121,6 +2121,19 @@ class AppLocalizationsMy extends AppLocalizations {
       'ခေါ်ဆိုမှုသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်ပါသည်။\nအကြိမ်တိုင်း ထပ်မံမေးပါမည်။';
 
   @override
+  String get pcEndedTitleToday => 'ဒီနေ့ ခေါ်ဆိုမှုကို ဒီမှာ ရပ်ပါမယ်။';
+
+  @override
+  String get pcEndedBodyToday =>
+      'ပြောခဲ့တာတွေ ပြန်လေ့ကျင့်ပြီး မနက်ဖြန် ထပ်ခေါ်ပါ!';
+
+  @override
+  String get pcEndedTitle => 'ဒီခေါ်ဆိုမှုကို ဒီမှာ ရပ်ပါမယ်။';
+
+  @override
+  String get pcEndedBody => 'ပြောခဲ့တာတွေ ပြန်လေ့ကျင့်ပြီး ထပ်ခေါ်ပါ!';
+
+  @override
   String get ctaKeepTalking => 'ဆက်ပြောပါ';
 
   @override

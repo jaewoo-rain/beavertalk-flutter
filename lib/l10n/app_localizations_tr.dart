@@ -2106,6 +2106,18 @@ class AppLocalizationsTr extends AppLocalizations {
       'Görüşmeler 5 dakikalık bölümler hâlinde sürer.\nHer seferinde sana tekrar soracağız.';
 
   @override
+  String get pcEndedTitleToday => 'Bugünkü aramayı burada bitirelim.';
+
+  @override
+  String get pcEndedBodyToday => 'Konuştuklarımızı tekrar et, yarın yine ara!';
+
+  @override
+  String get pcEndedTitle => 'Bu aramayı burada bitirelim.';
+
+  @override
+  String get pcEndedBody => 'Konuştuklarımızı tekrar et, yine ara!';
+
+  @override
   String get ctaKeepTalking => 'Konuşmaya devam et';
 
   @override

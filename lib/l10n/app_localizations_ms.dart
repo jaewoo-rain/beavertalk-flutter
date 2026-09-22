@@ -2126,6 +2126,20 @@ class AppLocalizationsMs extends AppLocalizations {
       'Panggilan diteruskan dalam sesi 5 minit.\nKami akan bertanya lagi setiap kali.';
 
   @override
+  String get pcEndedTitleToday => 'Kita tamatkan panggilan hari ini.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Ulang kaji apa yang kita bualkan, dan hubungi saya lagi esok!';
+
+  @override
+  String get pcEndedTitle => 'Kita tamatkan panggilan ini.';
+
+  @override
+  String get pcEndedBody =>
+      'Ulang kaji apa yang kita bualkan, dan hubungi saya lagi!';
+
+  @override
   String get ctaKeepTalking => 'Terus berbual';
 
   @override

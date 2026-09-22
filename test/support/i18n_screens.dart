@@ -284,6 +284,18 @@ Map<String, Widget Function()> i18nScreens() {
               lastTopic: 'Weekend plans',
             ),
           ),
+    // Premium 15분 종료 시트의 「오늘 마지막 통화」 문구(P19) — 위 전장은 기본(더 남음) 문구다.
+    'Overlay_premiumCallEnded_today': () => Align(
+          alignment: Alignment.bottomCenter,
+          child: subscriptionOverlayForTest(
+            SubscriptionOverlay.premiumCallEnded,
+            usage: (used: '15:00', limit: '15:00'),
+            avatar: const SizedBox.square(dimension: 40),
+            characterName: 'Baba',
+            lastTopic: 'Weekend plans',
+            lastCallToday: true,
+          ),
+        ),
     // Premium 구독자 — Premium 카드에 「Current」 배지가 붙고 CTA 가 빠진다.
     'PlansCompare_premium': () => ProviderScope(
           overrides: [

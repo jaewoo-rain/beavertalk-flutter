@@ -326,7 +326,14 @@ class CallState {
     this.segmentsUsed = 0,
     this.paidCallTime = false,
     this.micMuted = false,
+    this.endedAtCap = false,
   });
+
+  /// 유료 통화가 **상한(15분)을 다 써서** 끝났는가 — [CallPhase.ended] 와 함께만 참.
+  ///
+  /// 화면이 종료 화면으로 가기 전에 「오늘 통화를 마칠게요」 시트를 띄울지 가른다
+  /// (P19, 사용자 결정 2026-09-22). 사용자가 끊은 종료·무료 종료는 false 다.
+  final bool endedAtCap;
 
   /// Current lifecycle phase.
   final CallPhase phase;
@@ -471,6 +478,7 @@ class CallState {
     int? segmentsUsed,
     bool? paidCallTime,
     bool? micMuted,
+    bool? endedAtCap,
   }) {
     return CallState(
       phase: phase ?? this.phase,
@@ -492,6 +500,7 @@ class CallState {
       segmentsUsed: segmentsUsed ?? this.segmentsUsed,
       paidCallTime: paidCallTime ?? this.paidCallTime,
       micMuted: micMuted ?? this.micMuted,
+      endedAtCap: endedAtCap ?? this.endedAtCap,
     );
   }
 }
@@ -5571,6 +5580,8 @@ class NormalCallController extends Notifier<CallState> {
           callId: segmentId,
           elapsedSec: preservedElapsed,
           baselineCallId: preservedBaseline,
+          // 화면이 종료 화면 전에 「통화를 마칠게요」 시트를 띄운다(P19).
+          endedAtCap: true,
         );
         return;
       }

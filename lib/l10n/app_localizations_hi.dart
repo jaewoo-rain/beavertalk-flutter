@@ -2107,6 +2107,18 @@ class AppLocalizationsHi extends AppLocalizations {
       'कॉल 5-5 मिनट के हिस्सों में जारी रहती है।\nहर बार हम आपसे फिर पूछेंगे।';
 
   @override
+  String get pcEndedTitleToday => 'आज की कॉल यहीं खत्म करते हैं।';
+
+  @override
+  String get pcEndedBodyToday => 'जो बात की उसे दोहराइए, और कल फिर कॉल कीजिए!';
+
+  @override
+  String get pcEndedTitle => 'यह कॉल यहीं खत्म करते हैं।';
+
+  @override
+  String get pcEndedBody => 'जो बात की उसे दोहराइए, और फिर कॉल कीजिए!';
+
+  @override
   String get ctaKeepTalking => 'बात जारी रखें';
 
   @override

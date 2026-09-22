@@ -2102,6 +2102,20 @@ class AppLocalizationsNe extends AppLocalizations {
       'कल ५-५ मिनेटका खण्डमा जारी रहन्छ।\nहरेक पटक हामी फेरि सोध्नेछौं।';
 
   @override
+  String get pcEndedTitleToday => 'आजको कल यहीँ सक्छौँ।';
+
+  @override
+  String get pcEndedBodyToday =>
+      'कुरा गरेको दोहोर्याउनुहोस्, अनि भोलि फेरि कल गर्नुहोस्!';
+
+  @override
+  String get pcEndedTitle => 'यो कल यहीँ सक्छौँ।';
+
+  @override
+  String get pcEndedBody =>
+      'कुरा गरेको दोहोर्याउनुहोस्, अनि फेरि कल गर्नुहोस्!';
+
+  @override
   String get ctaKeepTalking => 'कुराकानी जारी राख्नुहोस्';
 
   @override

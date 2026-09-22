@@ -2112,6 +2112,19 @@ class AppLocalizationsKy extends AppLocalizations {
       'Чалуулар 5 мүнөттүк бөлүктөр менен уланат.\nАр жолу сизден кайра сурайбыз.';
 
   @override
+  String get pcEndedTitleToday => 'Бүгүнкү чалууну бүтүрөлү.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Сүйлөшкөнүбүздү кайталап, эртең дагы чалыңыз!';
+
+  @override
+  String get pcEndedTitle => 'Бул чалууну бүтүрөлү.';
+
+  @override
+  String get pcEndedBody => 'Сүйлөшкөнүбүздү кайталап, дагы чалыңыз!';
+
+  @override
   String get ctaKeepTalking => 'Сүйлөшүүнү улантуу';
 
   @override

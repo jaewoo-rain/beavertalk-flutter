@@ -2126,6 +2126,20 @@ class AppLocalizationsFil extends AppLocalizations {
       'Nagpapatuloy ang tawag kada 5 minuto.\nTatanungin ka naming muli sa bawat pagkakataon.';
 
   @override
+  String get pcEndedTitleToday => 'Tapusin na natin ang tawag ngayong araw.';
+
+  @override
+  String get pcEndedBodyToday =>
+      'Balikan ang pinag-usapan natin, at tawagan mo ulit ako bukas!';
+
+  @override
+  String get pcEndedTitle => 'Tapusin na natin ang tawag na ito.';
+
+  @override
+  String get pcEndedBody =>
+      'Balikan ang pinag-usapan natin, at tawagan mo ulit ako!';
+
+  @override
   String get ctaKeepTalking => 'Ituloy ang usapan';
 
   @override

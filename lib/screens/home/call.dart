@@ -29,6 +29,7 @@ import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/normalcall/presentation/streak_provider.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/speech_cache.dart';
@@ -437,6 +438,63 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     );
   }
 
+  /// 유료 통화가 15분 상한을 다 써서 끝났을 때 — 종료 화면 **전에** 「통화를 마칠게요」
+  /// 시트를 한 번 보여 준다(P19, 사용자 결정 2026-09-22). 버튼은 「End Call」 하나다.
+  ///
+  /// 문구는 오늘 마지막 통화인지로 갈린다(Premium 하루 최대 3통화). **남은 통화 수를
+  /// 주는 API 가 없어서**(남은판단 S5) 통화 기록(`GET /calls`)의 오늘 건수를 앱이 센다.
+  /// 못 세면(네트워크·타임아웃) 「내일」이 없는 문구로 간다 — 덜 약속하는 쪽이다.
+  bool _capSheetOpen = false;
+
+  Future<void> _showCapSheet(
+    CallState s, {
+    required String characterName,
+    required ImageProvider? avatarImage,
+  }) async {
+    if (_navigated || _capSheetOpen) return;
+    _capSheetOpen = true;
+    final last = await _isLastCallToday(s.callId);
+    if (!mounted) return;
+    final limit = CallAllowance.limitFor(paidAccess: true);
+    await showSubscriptionOverlay(
+      context,
+      SubscriptionOverlay.premiumCallEnded,
+      characterName: characterName,
+      avatar: avatarImage == null
+          ? null
+          : Image(image: avatarImage, fit: BoxFit.cover),
+      usage: (used: _clock(limit.inSeconds), limit: _clock(limit.inSeconds)),
+      lastCallToday: last,
+    );
+    if (!mounted) return;
+    _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
+  }
+
+  /// Premium 하루 상한(3통화) — 이번 통화가 오늘 그 마지막인가. 서버가 아직 막 끝난
+  /// 통화를 목록에 안 올렸을 수 있으니, 목록에 없으면 이번 통화를 더해 센다.
+  static const _premiumCallsPerDay = 3;
+
+  Future<bool> _isLastCallToday(String? callId) async {
+    try {
+      final calls = await ref
+          .refresh(callHistoryProvider.future)
+          .timeout(const Duration(seconds: 3));
+      final now = DateTime.now();
+      bool today(DateTime? d) =>
+          d != null &&
+          d.toLocal().year == now.year &&
+          d.toLocal().month == now.month &&
+          d.toLocal().day == now.day;
+      final id = int.tryParse(callId ?? '');
+      final todays = calls.where((c) => today(c.callDate)).toList();
+      final listed = id != null && todays.any((c) => c.callId == id);
+      final count = todays.length + (listed ? 0 : 1);
+      return count >= _premiumCallsPerDay;
+    } catch (_) {
+      return false;
+    }
+  }
+
   /// 5분 구간이 끝났을 때 뜨는 시트 — 무료는 구독 유도, 유료는 「Keep going?」.
   ///
   /// 어느 시트인지는 [CallState.paidCallTime] 이 가른다. **화면이 구독 상태를 따로
@@ -595,7 +653,15 @@ class _CallScreenState extends ConsumerState<CallScreen> {
           avatarImage: partnerImage,
         );
       } else if (next.phase == CallPhase.ended) {
-        _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
+        if (next.endedAtCap) {
+          _showCapSheet(
+            next,
+            characterName: selectedChar?.name ?? '',
+            avatarImage: partnerImage,
+          );
+        } else {
+          _goFinish(next.callId, next.elapsedSec, next.baselineCallId);
+        }
       } else if (next.phase == CallPhase.error) {
         if (_navigated) return;
         _navigated = true;

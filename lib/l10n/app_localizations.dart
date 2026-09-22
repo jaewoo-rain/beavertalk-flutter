@@ -3934,6 +3934,30 @@ abstract class AppLocalizations {
   /// **'Calls continue in 5-minute stretches.\nWe\'ll check in again each time.'**
   String get kgBody;
 
+  /// Premium 15-minute end sheet title - the last call allowed today.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s wrap up for today.'**
+  String get pcEndedTitleToday;
+
+  /// Premium 15-minute end sheet body - the last call today; come back tomorrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Review what we talked about, and call me again tomorrow!'**
+  String get pcEndedBodyToday;
+
+  /// Premium 15-minute end sheet title - more calls remain today.
+  ///
+  /// In en, this message translates to:
+  /// **'Let\'s wrap up this call.'**
+  String get pcEndedTitle;
+
+  /// Premium 15-minute end sheet body - more calls remain today (no 'tomorrow').
+  ///
+  /// In en, this message translates to:
+  /// **'Review what we talked about, and call me again!'**
+  String get pcEndedBody;
+
   /// Primary CTA on the paid continue sheet. Opens the next 5-minute segment.
   ///
   /// In en, this message translates to:

@@ -2106,6 +2106,18 @@ class AppLocalizationsBn extends AppLocalizations {
       'কল ৫ মিনিট করে চলতে থাকে।\nপ্রতিবার আমরা আবার জিজ্ঞেস করব।';
 
   @override
+  String get pcEndedTitleToday => 'আজকের কল এখানেই শেষ করি।';
+
+  @override
+  String get pcEndedBodyToday => 'যা বললাম তা রিভিউ করুন, আর কাল আবার কল করুন!';
+
+  @override
+  String get pcEndedTitle => 'এই কলটা এখানেই শেষ করি।';
+
+  @override
+  String get pcEndedBody => 'যা বললাম তা রিভিউ করুন, আর আবার কল করুন!';
+
+  @override
   String get ctaKeepTalking => 'কথা চালিয়ে যান';
 
   @override
