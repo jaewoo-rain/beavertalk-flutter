@@ -58,6 +58,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callRatingPrompt => 'Как прошёл звонок?';
 
   @override
+  String get callRatingBody =>
+      'Ваша оценка поможет нам лучше поговорить в следующий раз.';
+
+  @override
+  String get callRatingSubmit => 'Отправить';
+
+  @override
+  String get callRatingSkip => 'Пропустить';
+
+  @override
   String get ratingBad => 'Не очень';
 
   @override

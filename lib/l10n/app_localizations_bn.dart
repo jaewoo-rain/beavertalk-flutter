@@ -56,6 +56,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String get callRatingPrompt => 'আপনার কল কেমন ছিল?';
 
   @override
+  String get callRatingBody =>
+      'আপনার রেটিং পরের বার আরও ভালোভাবে কথা বলতে সাহায্য করে।';
+
+  @override
+  String get callRatingSubmit => 'জমা দিন';
+
+  @override
+  String get callRatingSkip => 'এড়িয়ে যান';
+
+  @override
   String get ratingBad => 'ভালো না';
 
   @override

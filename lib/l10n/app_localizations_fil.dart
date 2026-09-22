@@ -57,6 +57,16 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callRatingPrompt => 'Kumusta ang tawag mo?';
 
   @override
+  String get callRatingBody =>
+      'Nakakatulong ang rating mo para mas gumanda ang usapan sa susunod.';
+
+  @override
+  String get callRatingSubmit => 'Ipadala';
+
+  @override
+  String get callRatingSkip => 'Laktawan';
+
+  @override
   String get ratingBad => 'Hindi maganda';
 
   @override

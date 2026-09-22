@@ -55,6 +55,15 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callRatingPrompt => 'การโทรเป็นอย่างไรบ้าง?';
 
   @override
+  String get callRatingBody => 'คะแนนของคุณช่วยให้การสนทนาครั้งหน้าดีขึ้น';
+
+  @override
+  String get callRatingSubmit => 'ส่ง';
+
+  @override
+  String get callRatingSkip => 'ข้าม';
+
+  @override
   String get ratingBad => 'ไม่ค่อยดี';
 
   @override

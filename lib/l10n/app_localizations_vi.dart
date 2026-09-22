@@ -57,6 +57,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callRatingPrompt => 'Cuộc gọi của bạn thế nào?';
 
   @override
+  String get callRatingBody =>
+      'Đánh giá của bạn giúp lần trò chuyện sau tốt hơn.';
+
+  @override
+  String get callRatingSubmit => 'Gửi';
+
+  @override
+  String get callRatingSkip => 'Bỏ qua';
+
+  @override
   String get ratingBad => 'Chưa tốt lắm';
 
   @override

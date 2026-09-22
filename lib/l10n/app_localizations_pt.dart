@@ -58,6 +58,16 @@ class AppLocalizationsPt extends AppLocalizations {
   String get callRatingPrompt => 'Como foi sua ligação?';
 
   @override
+  String get callRatingBody =>
+      'Sua avaliação nos ajuda a conversar melhor da próxima vez.';
+
+  @override
+  String get callRatingSubmit => 'Enviar';
+
+  @override
+  String get callRatingSkip => 'Pular';
+
+  @override
   String get ratingBad => 'Não gostei';
 
   @override

@@ -59,6 +59,16 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callRatingPrompt => 'كيف كانت مكالمتك؟';
 
   @override
+  String get callRatingBody =>
+      'تقييمك يساعدنا على محادثة أفضل في المرة القادمة.';
+
+  @override
+  String get callRatingSubmit => 'إرسال';
+
+  @override
+  String get callRatingSkip => 'تخطٍّ';
+
+  @override
   String get ratingBad => 'غير جيدة';
 
   @override

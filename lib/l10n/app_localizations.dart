@@ -238,6 +238,24 @@ abstract class AppLocalizations {
   /// **'How was your call?'**
   String get callRatingPrompt;
 
+  /// Body of the call-rating bottom sheet shown on the call-finished screen, under callRatingPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating helps us talk better next time.'**
+  String get callRatingBody;
+
+  /// Primary button of the call-rating sheet: sends the chosen rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get callRatingSubmit;
+
+  /// Secondary button of the call-rating sheet: closes it without rating.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get callRatingSkip;
+
   /// Lowest call rating choice (thumbs-down).
   ///
   /// In en, this message translates to:

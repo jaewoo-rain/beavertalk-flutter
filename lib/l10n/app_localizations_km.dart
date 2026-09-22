@@ -57,6 +57,16 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callRatingPrompt => 'តើការហៅរបស់អ្នកយ៉ាងណាដែរ?';
 
   @override
+  String get callRatingBody =>
+      'ការវាយតម្លៃរបស់អ្នកជួយឱ្យការសន្ទនាលើកក្រោយកាន់តែប្រសើរ។';
+
+  @override
+  String get callRatingSubmit => 'ផ្ញើ';
+
+  @override
+  String get callRatingSkip => 'រំលង';
+
+  @override
   String get ratingBad => 'មិនសូវល្អ';
 
   @override

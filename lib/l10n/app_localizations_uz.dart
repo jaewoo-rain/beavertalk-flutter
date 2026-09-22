@@ -57,6 +57,16 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callRatingPrompt => 'Qoʻngʻiroq qanday oʻtdi?';
 
   @override
+  String get callRatingBody =>
+      'Bahoingiz keyingi safar yaxshiroq suhbatlashishga yordam beradi.';
+
+  @override
+  String get callRatingSubmit => 'Yuborish';
+
+  @override
+  String get callRatingSkip => 'O‘tkazib yuborish';
+
+  @override
   String get ratingBad => 'Yaxshi emas';
 
   @override

@@ -58,6 +58,16 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callRatingPrompt => 'Чалуу кандай болду?';
 
   @override
+  String get callRatingBody =>
+      'Бааңыз кийинки жолу жакшыраак сүйлөшүүгө жардам берет.';
+
+  @override
+  String get callRatingSubmit => 'Жөнөтүү';
+
+  @override
+  String get callRatingSkip => 'Өткөрүп жиберүү';
+
+  @override
   String get ratingBad => 'Начар';
 
   @override

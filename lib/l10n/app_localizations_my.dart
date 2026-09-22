@@ -59,6 +59,16 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callRatingPrompt => 'ခေါ်ဆိုမှု ဘယ်လိုရှိခဲ့လဲ။';
 
   @override
+  String get callRatingBody =>
+      'သင့်အဆင့်သတ်မှတ်ချက်က နောက်တစ်ကြိမ် ပိုကောင်းစွာ စကားပြောနိုင်ရန် ကူညီပေးသည်။';
+
+  @override
+  String get callRatingSubmit => 'ပို့ရန်';
+
+  @override
+  String get callRatingSkip => 'ကျော်ရန်';
+
+  @override
   String get ratingBad => 'သိပ်မကောင်းဘူး';
 
   @override

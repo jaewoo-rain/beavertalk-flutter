@@ -57,6 +57,16 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callRatingPrompt => 'Дуудлага ямар байсан бэ?';
 
   @override
+  String get callRatingBody =>
+      'Таны үнэлгээ дараагийн яриаг илүү сайн болгоход тусална.';
+
+  @override
+  String get callRatingSubmit => 'Илгээх';
+
+  @override
+  String get callRatingSkip => 'Алгасах';
+
+  @override
   String get ratingBad => 'Тийм ч сайнгүй';
 
   @override

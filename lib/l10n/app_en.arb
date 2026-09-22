@@ -26,6 +26,12 @@
   "@callRatingPrompt": {
     "description": "Heading asking the user to rate the call just ended."
   },
+  "callRatingBody": "Your rating helps us talk better next time.",
+  "@callRatingBody": {"description": "Body of the call-rating bottom sheet shown on the call-finished screen, under callRatingPrompt."},
+  "callRatingSubmit": "Submit",
+  "@callRatingSubmit": {"description": "Primary button of the call-rating sheet: sends the chosen rating."},
+  "callRatingSkip": "Skip",
+  "@callRatingSkip": {"description": "Secondary button of the call-rating sheet: closes it without rating."},
   "ratingBad": "Not great",
   "@ratingBad": {
     "description": "Lowest call rating choice (thumbs-down)."

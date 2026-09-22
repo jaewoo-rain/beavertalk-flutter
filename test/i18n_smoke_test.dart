@@ -20,13 +20,22 @@ void main() {
         ),
       ),
     );
-    // Let the localizations delegate resolve.
+    // Let the localizations delegate resolve, then the rating sheet open
+    // (it is offered once, right after the first frame).
     await tester.pump();
+    await tester.pumpAndSettle();
 
-    // The rating prompt and the primary action render in English.
+    // The rating sheet and the screen's primary action render in English.
     expect(find.text('How was your call?'), findsOneWidget);
+    expect(find.text('Submit'), findsOneWidget);
     expect(find.text('View Analysis'), findsOneWidget);
     // And no leftover Korean copy from the migrated screen.
     expect(find.text('통화는 어떠셨나요?'), findsNothing);
+
+    // Skip closes the sheet without rating; the wrap-up screen stays.
+    await tester.tap(find.text('Skip'));
+    await tester.pumpAndSettle();
+    expect(find.text('How was your call?'), findsNothing);
+    expect(find.text('View Analysis'), findsOneWidget);
   });
 }

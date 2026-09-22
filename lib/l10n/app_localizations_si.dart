@@ -58,6 +58,16 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callRatingPrompt => 'ඔබේ ඇමතුම කෙසේ වුණාද?';
 
   @override
+  String get callRatingBody =>
+      'ඔබේ ඇගයීම ඊළඟ වතාවේ වඩා හොඳින් කතා කිරීමට උදව් කරයි.';
+
+  @override
+  String get callRatingSubmit => 'යවන්න';
+
+  @override
+  String get callRatingSkip => 'මඟ හරින්න';
+
+  @override
   String get ratingBad => 'එච්චර හොඳ නැහැ';
 
   @override

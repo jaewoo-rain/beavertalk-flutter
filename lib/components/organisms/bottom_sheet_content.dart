@@ -127,6 +127,7 @@ class BottomSheetContent extends StatelessWidget {
     this.benefitLabel,
     this.benefitTier = BenefitTier.pro,
     this.caption,
+    this.child,
     required this.primaryAction,
     this.secondaryAction,
   });
@@ -176,6 +177,12 @@ class BottomSheetContent extends StatelessWidget {
   /// Price/cancel caption under the content, or null for none.
   final String? caption;
 
+  /// Free-form content under the header (e.g. the call-rating choices,
+  /// Figma `screen/call_finish__rating` `6249:13158`). Rendered after the
+  /// typed [type] content and before the benefit line; giving it turns the
+  /// sheet into the card form (screen-background surface).
+  final Widget? child;
+
   /// Main CTA — always present, always on top.
   final SheetAction primaryAction;
 
@@ -186,7 +193,7 @@ class BottomSheetContent extends StatelessWidget {
   // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
   // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
   // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
-  bool get _onCard => type != SheetContentType.none;
+  bool get _onCard => type != SheetContentType.none || child != null;
 
   @override
   Widget build(BuildContext context) {
@@ -230,6 +237,10 @@ class BottomSheetContent extends StatelessWidget {
                 ],
                 _header(context),
                 ..._content(context),
+                if (child != null) ...[
+                  const SizedBox(height: 24),
+                  child!,
+                ],
                 if (benefitLabel != null) ...[
                   const SizedBox(height: 16),
                   BenefitRow(tier: benefitTier, label: benefitLabel!),

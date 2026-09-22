@@ -120,6 +120,12 @@ Map<String, Widget Function()> i18nScreens() {
     'PasswordNew': () => const PasswordNewScreen(),
     'Signup': () => const SignupScreen(),
     'CallFinish': () => const CallFinishScreen(),
+    // 통화 평가 시트(Figma `6249:13158`) — 화면이 첫 프레임 뒤에 띄우므로 하네스가
+    // 못 볼 수 있다. 직접 띄운다. 카드는 아이콘뿐이고 버튼 둘이 세로로 쌓인다.
+    'CallRatingSheet': () => const Align(
+          alignment: Alignment.bottomCenter,
+          child: CallRatingSheet(),
+        ),
     // Worst case for the detail screen's name row: name + the long
     // "Available to purchase" badge + a "-N%" marker, all on one line.
     'AvatarDetailDiscount': () => const AvatarDetailScreen(

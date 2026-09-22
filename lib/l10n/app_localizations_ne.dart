@@ -57,6 +57,16 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callRatingPrompt => 'तपाईंको कल कस्तो थियो?';
 
   @override
+  String get callRatingBody =>
+      'तपाईंको मूल्याङ्कनले अर्को पटक अझ राम्रो कुरा गर्न मद्दत गर्छ।';
+
+  @override
+  String get callRatingSubmit => 'पठाउनुहोस्';
+
+  @override
+  String get callRatingSkip => 'छोड्नुहोस्';
+
+  @override
   String get ratingBad => 'राम्रो थिएन';
 
   @override

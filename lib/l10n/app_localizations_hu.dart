@@ -59,6 +59,16 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callRatingPrompt => 'Milyen volt a hívásod?';
 
   @override
+  String get callRatingBody =>
+      'Az értékelésed segít, hogy legközelebb jobban beszélgessünk.';
+
+  @override
+  String get callRatingSubmit => 'Küldés';
+
+  @override
+  String get callRatingSkip => 'Kihagyás';
+
+  @override
   String get ratingBad => 'Nem volt jó';
 
   @override

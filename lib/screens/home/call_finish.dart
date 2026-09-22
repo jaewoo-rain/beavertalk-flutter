@@ -8,6 +8,8 @@ import '../../components/atoms/button.dart';
 import '../../components/chrome/home_indicator.dart';
 import '../../components/chrome/status_bar.dart';
 import '../../components/icons/app_icons.dart';
+import '../../components/organisms/bottom_sheet.dart' show SheetAction;
+import '../../components/organisms/bottom_sheet_content.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
@@ -19,10 +21,15 @@ import '../../theme/app_typography.dart';
 
 /// Call finished — Figma `screen/call_finish` (`2117:19981`).
 ///
-/// The wrap-up screen shown after a call ends: a "통화 종료" heading, the
-/// [beaverImage] avatar, and a quick rating row (3 choices). Two pinned actions
-/// close the flow — "대화 분석" (primary) submits the rating (best-effort) and
-/// pushes [Routes.analysisLoading]; "홈으로" (secondary) → [Routes.home].
+/// The wrap-up screen shown after a call ends: the partner avatar, name and
+/// call duration, with two pinned actions — "대화 분석" (primary) pushes
+/// [Routes.analysisLoading]; "홈으로" (secondary) → [Routes.home].
+///
+/// The quick rating (3 choices) is a **bottom sheet** that opens over this
+/// screen on arrival — Figma `screen/call_finish__rating` (`6249:13158`). It
+/// used to be an inline row here; the sheet keeps the wrap-up screen to the two
+/// next steps and makes rating a one-tap, skippable question. Submit sends the
+/// rating (best-effort, never blocks); Skip and a dim tap just close it.
 ///
 /// The server call id arrives as the route's `arguments` (`String?`, set by
 /// [CallScreen]; the WS `call_ended` carries it as a string) and is parsed to an
@@ -38,11 +45,11 @@ class CallFinishScreen extends ConsumerStatefulWidget {
 /// The user's quick rating of the call, carrying the backend int value
 /// (ascending): bad=1, ok=2, good=3.
 enum _Rating {
-  // 👎 / 👍 / 👍👍 — bad = thumbs-down, ok = single thumbs-up, good = double
-  // thumbs-up (the top satisfaction rating).
+  // Figma `call_finish__rating`: thumbs-down / thumbs-up / heart-eyes — the
+  // top rating is heart-eyes (was a double thumbs-up on the old inline row).
   bad(1, AppIcons.thumbsDown),
   ok(2, AppIcons.thumbsUp),
-  good(3, AppIcons.thumbsUpDouble);
+  good(3, AppIcons.heartEyes);
 
   const _Rating(this.value, this.icon);
 
@@ -61,9 +68,6 @@ enum _Rating {
 }
 
 class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
-  /// Selected rating, or `null` until the user taps one.
-  _Rating? _rating;
-
   /// Server call id from route arguments (string), parsed to int when valid.
   int? _callId;
 
@@ -77,9 +81,19 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   /// Final call duration in whole seconds, from the call screen's live timer.
   int _durationSec = 0;
 
+  /// Whether the rating sheet has been offered — once per screen, not on every
+  /// dependency change.
+  bool _ratingOffered = false;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (!_ratingOffered) {
+      _ratingOffered = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _offerRating();
+      });
+    }
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is ({String? callId, int elapsedSec, int? baselineCallId})) {
       final id = args.callId;
@@ -101,7 +115,14 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
   /// `call_ended`, so [_callId] is null). Polls `GET /calls` for an id greater
   /// than [_baselineCallId] — the server may lag finalizing the row, so retry a
   /// few times. Returns null if no new call appears.
-  Future<int?> _recoverCallId() async {
+  Future<int?> _recoverCallId() => _recovery ??= _pollCallId();
+
+  /// The one in-flight recovery — shared by the rating sheet and 「대화 분석」 so
+  /// a manual hang-up never polls twice (Submit, then tapping analysis within
+  /// the ~3s window, used to start a second 5-attempt poll).
+  Future<int?>? _recovery;
+
+  Future<int?> _pollCallId() async {
     final repo = ref.read(normalcallRepositoryProvider);
     const attempts = 5;
     const gap = Duration(milliseconds: 600);
@@ -132,11 +153,50 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
     return '$m:$s';
   }
 
-  void _rate(_Rating r) => setState(() => _rating = r);
+  /// Opens the rating sheet; a chosen rating is sent in the background.
+  Future<void> _offerRating() async {
+    final picked = await showModalBottomSheet<_Rating>(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: context.c.materialDim,
+      isScrollControlled: true,
+      builder: (_) => const CallRatingSheet(),
+    );
+    if (picked != null && mounted) await _submitRating(picked);
+  }
 
-  /// Submits the rating (best-effort) then moves to the analysis-loading
-  /// screen. Rating is optional: if none was picked, the PATCH is skipped.
-  /// A failed rating never blocks navigation.
+  /// Sends [rating] — best-effort: a failure is surfaced but never blocks.
+  /// A manual hang-up has no call id yet, so it is recovered first.
+  Future<void> _submitRating(_Rating rating) async {
+    var callId = _callId;
+    if (callId == null) {
+      callId = await _recoverCallId();
+      if (!mounted) return;
+      if (callId != null) _callId = callId;
+    }
+    if (callId == null) return;
+    try {
+      await ref
+          .read(normalcallRepositoryProvider)
+          .submitRating(callId, rating.value);
+    } on AppException catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(
+            SnackBar(
+              content: Text(
+                AppLocalizations.of(context).ratingSubmitFailed(e.message),
+              ),
+            ),
+          );
+      }
+    } catch (_) {
+      // Swallow any other error — rating is non-critical.
+    }
+  }
+
+  /// Moves to the analysis-loading screen (recovering the call id if needed).
   Future<void> _analyze() async {
     if (_recovering) return; // guard against double-taps during recovery
 
@@ -150,31 +210,6 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       if (!mounted) return;
       setState(() => _recovering = false);
       if (callId != null) _callId = callId;
-    }
-
-    final rating = _rating;
-
-    if (callId != null && rating != null) {
-      try {
-        await ref
-            .read(normalcallRepositoryProvider)
-            .submitRating(callId, rating.value);
-      } on AppException catch (e) {
-        // Best-effort: surface but don't block the analysis flow.
-        if (mounted) {
-          ScaffoldMessenger.of(context)
-            ..clearSnackBars()
-            ..showSnackBar(
-              SnackBar(
-                content: Text(
-                  AppLocalizations.of(context).ratingSubmitFailed(e.message),
-                ),
-              ),
-            );
-        }
-      } catch (_) {
-        // Swallow any other error — rating is non-critical.
-      }
     }
 
     if (!mounted) return;
@@ -223,9 +258,9 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         background: context.c.backgroundNormalNormal,
         statusVariant: StatusBarVariant.whiteTransparent,
         homeVariant: HomeIndicatorVariant.whiteTransparent,
-        // Figma `2296:26290`: 3 groups — avatar/name/duration (top), rating
-        // (middle), actions (bottom) — distributed space-between so they adapt to
-        // any device height (was fixed-y Positioned under the old 812 frame).
+        // Figma `3360:19277`: 2 groups — avatar/name/duration (top), actions
+        // (bottom) — distributed space-between so they adapt to any device height.
+        // The rating that used to sit between them is now a sheet (see class doc).
         //
         // `spaceBetween` alone assumed the three groups always fit. On a 320×640
         // handset they do not once the copy is translated: French and Burmese
@@ -242,7 +277,10 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
               constraints: BoxConstraints(minHeight: constraints.maxHeight),
               child: IntrinsicHeight(
                 child: ContentColumn(
-                  padding: const EdgeInsets.only(top: AppSpacing.s48, bottom: AppSpacing.s24),
+                  padding: const EdgeInsets.only(
+                    top: AppSpacing.s48,
+                    bottom: AppSpacing.s24,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -283,28 +321,6 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
                           ),
                         ],
                       ),
-                      // Rating prompt + 3 rating cards.
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            l10n.callRatingPrompt,
-                            style: AppType.headline1.r.copyWith(
-                              color: context.c.labelStrong,
-                            ),
-                          ),
-                          const SizedBox(height: AppSpacing.s32),
-                          Row(
-                            children: [
-                              _ratingCard(_Rating.bad),
-                              const SizedBox(width: AppSpacing.s16),
-                              _ratingCard(_Rating.ok),
-                              const SizedBox(width: AppSpacing.s16),
-                              _ratingCard(_Rating.good),
-                            ],
-                          ),
-                        ],
-                      ),
                       // Actions — 홈으로 (secondary) / 대화 분석 바로가기 (primary).
                       Column(
                         mainAxisSize: MainAxisSize.min,
@@ -340,12 +356,54 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       ),
     );
   }
+}
 
-  /// One rating choice rendered as a Figma card (`2296:26302`): a 112-tall
-  /// rounded box with a 56px circular icon chip; selected → primary border +
-  /// primary-10 chip + primary glyph, otherwise neutral.
-  Widget _ratingCard(_Rating r) {
-    final selected = _rating == r;
+/// The call-rating sheet — Figma `BottomSheet/CallRating` in
+/// `screen/call_finish__rating` (`6249:13158`). Pops the chosen [_Rating] on
+/// Submit, `null` on Skip (and a dim tap).
+class CallRatingSheet extends StatefulWidget {
+  /// Creates the call-rating sheet.
+  const CallRatingSheet({super.key});
+
+  @override
+  State<CallRatingSheet> createState() => _CallRatingSheetState();
+}
+
+class _CallRatingSheetState extends State<CallRatingSheet> {
+  _Rating? _picked;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return BottomSheetContent(
+      title: l10n.callRatingPrompt,
+      body: l10n.callRatingBody,
+      primaryAction: SheetAction(
+        label: l10n.callRatingSubmit,
+        // Nothing picked → Submit is the same as Skip; it never sends a guess.
+        onPressed: () => Navigator.pop(context, _picked),
+      ),
+      secondaryAction: SheetAction(
+        label: l10n.callRatingSkip,
+        onPressed: () => Navigator.pop(context),
+      ),
+      // Three equal cards, icon only — no text competes for the row's width in
+      // any locale. Each card still carries its label for screen readers.
+      child: Row(
+        children: [
+          for (final r in _Rating.values) ...[
+            if (r != _Rating.bad) const SizedBox(width: AppSpacing.s16),
+            _card(context, r),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// One rating choice (Figma card 101×112, r20): a 56px icon disc;
+  /// selected → primary border + primary-10 disc + primary glyph.
+  Widget _card(BuildContext context, _Rating r) {
+    final selected = _picked == r;
     return Expanded(
       child: Semantics(
         button: true,
@@ -353,7 +411,7 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
         label: r.label(AppLocalizations.of(context)),
         child: GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => _rate(r),
+          onTap: () => setState(() => _picked = r),
           child: Container(
             height: 112,
             decoration: BoxDecoration(

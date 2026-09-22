@@ -56,6 +56,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callRatingPrompt => 'Arama nasıldı?';
 
   @override
+  String get callRatingBody =>
+      'Puanın bir dahaki sefere daha iyi konuşmamıza yardımcı olur.';
+
+  @override
+  String get callRatingSubmit => 'Gönder';
+
+  @override
+  String get callRatingSkip => 'Atla';
+
+  @override
   String get ratingBad => 'İyi değildi';
 
   @override

@@ -53,6 +53,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callRatingPrompt => '这次通话怎么样？';
 
   @override
+  String get callRatingBody => '你的评分能让下次通话更好。';
+
+  @override
+  String get callRatingSubmit => '提交';
+
+  @override
+  String get callRatingSkip => '跳过';
+
+  @override
   String get ratingBad => '不太好';
 
   @override

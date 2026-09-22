@@ -54,6 +54,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callRatingPrompt => '통화는 어떠셨나요?';
 
   @override
+  String get callRatingBody => '평가해 주시면 다음 통화가 더 좋아져요.';
+
+  @override
+  String get callRatingSubmit => '보내기';
+
+  @override
+  String get callRatingSkip => '건너뛰기';
+
+  @override
   String get ratingBad => '별로예요';
 
   @override

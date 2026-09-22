@@ -58,6 +58,16 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callRatingPrompt => 'Millainen puhelu oli?';
 
   @override
+  String get callRatingBody =>
+      'Arviosi auttaa meitä keskustelemaan paremmin ensi kerralla.';
+
+  @override
+  String get callRatingSubmit => 'Lähetä';
+
+  @override
+  String get callRatingSkip => 'Ohita';
+
+  @override
   String get ratingBad => 'Ei kovin hyvä';
 
   @override

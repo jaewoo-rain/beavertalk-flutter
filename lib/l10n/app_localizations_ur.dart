@@ -58,6 +58,16 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callRatingPrompt => 'آپ کی کال کیسی رہی؟';
 
   @override
+  String get callRatingBody =>
+      'آپ کی ریٹنگ اگلی بار بہتر بات چیت میں مدد دیتی ہے۔';
+
+  @override
+  String get callRatingSubmit => 'بھیجیں';
+
+  @override
+  String get callRatingSkip => 'چھوڑیں';
+
+  @override
   String get ratingBad => 'اچھی نہیں';
 
   @override

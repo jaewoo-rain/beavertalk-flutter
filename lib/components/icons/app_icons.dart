@@ -109,6 +109,10 @@ abstract final class AppIcons {
   /// distinct from the single [thumbsUp] used for the middle rating.
   static Widget thumbsUpDouble({double size = 24, required Color color}) =>
       _glyph('thumbs-up-double', size, color);
+  /// `heart-eyes` — the top call rating (Figma `call_finish__rating`
+  /// `6249:13158`), replacing [thumbsUpDouble] there.
+  static Widget heartEyes({double size = 24, required Color color}) =>
+      _glyph('heart-eyes', size, color);
   static Widget flag({double size = 24, required Color color}) =>
       _glyph('flag', size, color);
 
