@@ -1,13 +1,15 @@
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
+import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
+import 'package:beavertalk/screens/plans/purchase_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Premium 혜택 줄은 듀오톤 아이콘 4종을 단다(Figma `Paywall/Benefit` `6198:1999`) —
-/// 플랜 비교와 페이월 양쪽. Free 카드는 점 불릿 그대로다.
+/// 플랜 비교 · 페이월 · 구매 완료 세 곳. Free 카드는 점 불릿 그대로다.
 void main() {
   Future<void> pump(WidgetTester t, Widget screen) async {
     await t.binding.setSurfaceSize(const Size(375, 1800));
@@ -30,6 +32,8 @@ void main() {
   for (final (label, screen) in [
     ('plans compare', const PlansCompareScreen()),
     ('paywall', const PaywallScreen(variant: PaywallVariant.max)),
+    ('purchase success',
+        const PurchaseSuccessScreen(tier: SubscriptionTier.max)),
   ]) {
     testWidgets('$label: Premium bullets carry the four duotone icons',
         (t) async {

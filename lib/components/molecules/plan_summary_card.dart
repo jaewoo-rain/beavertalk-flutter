@@ -5,6 +5,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/badge.dart';
 import '../atoms/button.dart';
+import 'benefit_row.dart';
 import 'bullet_row.dart';
 
 /// A plan summary card — the `card/pro` / `card/max` / `card/free` block
@@ -149,7 +150,7 @@ class PlanSummaryCard extends StatelessWidget {
           for (var i = 0; i < bullets.length; i++) ...[
             if (i > 0) const SizedBox(height: AppSpacing.s8),
             if (bulletIcons != null)
-              _BenefitRow(icon: bulletIcons![i], label: bullets[i])
+              BenefitRow(icon: bulletIcons![i], label: bullets[i])
             else
               BulletRow(tone: bulletTone, label: bullets[i]),
           ],
@@ -167,34 +168,6 @@ class PlanSummaryCard extends StatelessWidget {
           ],
         ],
       ),
-    );
-  }
-}
-
-/// `Paywall/Benefit` — 듀오톤 아이콘 + 라벨. 라벨은 줄을 바꾼다(자르지 않음).
-///
-/// 아이콘은 **장식**이다 — 뜻은 라벨이 나른다. 그래서 Light 에서 초록·주황이 면 대비 3:1
-/// 아래(1.93·1.73)여도 결함이 아니다(WCAG 1.4.11 은 이해에 필요한 그래픽에만 걸림).
-/// ⚠ 라벨을 빼고 아이콘만 남기면 판정이 뒤집힌다 — 그때는 대비를 다시 재라.
-class _BenefitRow extends StatelessWidget {
-  const _BenefitRow({required this.icon, required this.label});
-
-  final Widget icon;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        SizedBox.square(dimension: 20, child: icon),
-        const SizedBox(width: AppSpacing.s12),
-        Expanded(
-          child: Text(
-            label,
-            style: AppType.label1.r.copyWith(color: context.c.commonWhiteAndDark),
-          ),
-        ),
-      ],
     );
   }
 }

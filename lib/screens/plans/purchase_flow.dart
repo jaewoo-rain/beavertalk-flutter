@@ -242,10 +242,10 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
     final c = context.c;
     // 페이월·플랜 비교와 **같은 네 줄**이다 — 산 것과 판 것이 같아야 한다.
     final benefits = [
-      l10n.premiumBulletVideo,
-      l10n.premiumBulletAnalysis,
-      l10n.premiumBulletWeakSounds,
-      l10n.bulletProCorrections,
+      (AppIcons.duoVideo(), l10n.premiumBulletVideo),
+      (AppIcons.duoChart(), l10n.premiumBulletAnalysis),
+      (AppIcons.duoTarget(), l10n.premiumBulletWeakSounds),
+      (AppIcons.duoBubble(), l10n.bulletProCorrections),
     ];
     return PopScope(
       canPop: false,
@@ -286,6 +286,8 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                   const SizedBox(height: AppSpacing.s24),
                   Text(
                     l10n.successMaxTitle,
+                    // Figma: 제목만 가운데 정렬(본문·혜택 줄은 왼쪽).
+                    textAlign: TextAlign.center,
                     style: AppType.title3.sb.copyWith(color: c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s24),
@@ -296,10 +298,9 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                   const SizedBox(height: AppSpacing.s24),
                   for (var i = 0; i < benefits.length; i++) ...[
                     if (i > 0) const SizedBox(height: 14),
-                    BenefitRow(
-                      tier: BenefitTier.max,
-                      label: benefits[i],
-                    ),
+                    // Figma `purchase_success`(`4514:5684`): 페이월·플랜 비교와 같은 듀오톤
+                    // 아이콘 줄(`Paywall/Benefit`).
+                    BenefitRow(icon: benefits[i].$1, label: benefits[i].$2),
                   ],
                 ],
               ),
