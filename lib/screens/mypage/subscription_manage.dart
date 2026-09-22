@@ -271,6 +271,9 @@ class _PlanCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            // 배지는 오른쪽 끝(Figma 4514:4739 justify-between). 배지가 `Flexible` 이라 몫을
+            // 다 안 쓰면 남은 폭이 행 끝에 버려진다 — spaceBetween 이 배지 앞으로 옮긴다.
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
                 child: Text(
@@ -300,6 +303,9 @@ class _PlanCard extends StatelessWidget {
           //   줄어드는 쪽은 **라벨**이다. 라벨은 줄어도 옆의 값이 무엇인지는 남는다.
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
+            // 라벨은 왼쪽 끝, 값은 오른쪽 끝(Figma 4514:4739). Flexible 둘이 몫을 다 안
+            // 쓰면 남은 폭이 행 끝에 버려져 값이 가운데로 몰린다 — spaceBetween 필수.
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Flexible(
                 child: Text(

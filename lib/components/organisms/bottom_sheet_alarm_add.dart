@@ -203,7 +203,12 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
             ),
           ),
           // 제목은 가운데 칸 — 길면 줄을 바꾼다(자르지 않는다).
-          Flexible(
+          //
+          // ⛔ `Flexible` 로 두지 마라. 그건 **필요한 만큼만** 차지해서, 가운데 칸이
+          //   제 몫(50%)보다 좁아지고 남은 폭이 행 끝에 죽은 공간으로 남는다. 그러면
+          //   제목이 왼쪽으로 밀려 「취소」에 붙는다(2026-09-23 사장님 지적).
+          //   `Expanded` 는 몫을 꽉 채우므로 그 안에서 가운데 정렬이 **행의 가운데**가 된다.
+          Expanded(
             flex: 2,
             child: Text(
               widget.title,
@@ -314,7 +319,10 @@ class _SettingRow extends StatelessWidget {
               children: [
                 // 라벨도 언어마다 길다(ne 「반복」 = 15자) — 비유연이면 줄이 넘친다(320dp 에서
                 // 30px). 라벨·값 둘 다 줄을 바꾸게 둔다. 자르지는 않는다.
-                Flexible(
+                // ⛔ `Flexible` 로 두지 마라 — 라벨이 몫을 다 안 쓰면 남은 폭이 셰브런 **뒤**에
+                //   버려져 값·셰브런이 가운데로 몰린다(2026-09-23 사장님 지적). 둘 다 Expanded 여야
+                //   라벨은 왼쪽 끝, 값·셰브런은 오른쪽 끝에 붙는다(Figma justify-between).
+                Expanded(
                   child: Text(label,
                       style: AppType.body2.r.copyWith(color: c.labelStrong)),
                 ),

@@ -100,6 +100,25 @@
   ⛔ **취소된 작업은 푸시가 아니라 되돌리기다.** 지시가 취소되면 커밋하지 말고
   `git checkout -- <경로>` 로 원복한 뒤, 원복했다는 사실을 보고한다.
 
+- **R11. 가로 배치는 Figma 좌표와 맞아야 끝이다. 「안 넘친다」로 끝내지 마라.**
+  사장님 지적(2026-09-22~23, 같은 결함 반복): 「진짜 몇번째야 이게」.
+  마이페이지 카드 머리 반반 갈림, 알람 시트 「취소」·제목 붙음, 「Repeat」·「Every day」 붙음, 「Call partner」·「Baba」 붙음.
+  **전부 원인이 하나다.** 넘침을 막으려고 `Flexible` 을 둘렀고, `Flexible` 이 몫을 다 안 쓰면 남은 폭이 **행 끝에 버려진다.**
+  그래서 오른쪽 끝에 붙어야 할 값·배지·셰브런이 가운데로 몰린다. 넘침은 사라지지만 Figma 와 다른 화면이 된다.
+  - **라벨 · 값 행**(Figma justify-between): 둘 다 `Expanded`, 또는 `mainAxisAlignment: MainAxisAlignment.spaceBetween`.
+    셰브런처럼 값 뒤에 고정 칸이 더 붙으면 spaceBetween 은 틈을 **값과 셰브런 사이에도** 벌린다. 이때는 둘 다 `Expanded`.
+  - **가운데 제목 + 양옆 버튼**: 제목은 `Expanded`. `Flexible` 이면 제목이 왼쪽 버튼 쪽으로 붙는다.
+  - **`Flexible` 둘**은 필요와 무관하게 행을 반반 가른다(`card_line.dart` 주석). 제목 옆 부제는 `Wrap`.
+  - **`Container(alignment:)` 는 부모를 꽉 채운다** — `Wrap` 안 칩이 전폭이 된다. `Center(widthFactor: 1, heightFactor: 1)`.
+  - **`Gnb` 는 자기 면을 칠한다** — 색 있는 화면 위에서는 `Gnb.main(background:)` 로 넘긴다.
+  - **Figma 는 스크린샷이 아니라 좌표로 대조한다.** `get_metadata`·`use_figma` 로 자식 `x`·`width`·`primaryAxisAlignItems`·`layoutSizingHorizontal` 을 읽는다.
+    `MIN` + `HUG` 면 왼쪽에 붙고 뒤가 비는 것이 디자인이다(기록 탭 `3360:83`). `SPACE_BETWEEN` 이거나 값의 `x` 가 오른쪽 끝이면 코드도 끝에 붙어야 한다.
+  - **타이포 이름을 믿지 마라.** Figma `MO/Title 3` 은 40/52 이고 앱 `AppType.title3` 은 24/32 다. 크기는 Figma 수치로 확인한다.
+  - **실기기는 글꼴 배율 1.0 에서 본다.** 사장님 기기는 0.8 이다. 작은 글꼴에서는 빈 공간이 더 커져 결함이 더 잘 보이고, 1.0 에서만 보이는 넘침도 있다. 둘 다 본다.
+  - ⛔ **게이트: `test/layout_dead_space_test.dart`.** 늘어나는 칸이 있는데 행 끝이 16px 넘게 비는 가로 행을 `i18nScreens()` 전 화면(2026-09-23 기준 72개) × en·ko·ja 에서 잡는다.
+    이 시험을 끄거나 `_allowed` 에 넣어 통과시키지 마라. `_allowed` 추가는 **Figma 노드 ID + 좌표 근거**가 있을 때만이다.
+    새 화면을 만들면 `test/support/i18n_screens.dart` 에 등록해야 이 시험이 그 화면을 본다. 등록 안 한 화면은 검사 밖이다.
+
 ## 기술 스택 결정 (확정)
 
 - **상태관리: Riverpod** (`flutter_riverpod`) — Flutter 입문자 친화 목적.

@@ -491,6 +491,9 @@ class _RowLine extends StatelessWidget {
               ),
             ),
       child: Row(
+        // 값은 오른쪽 끝에 붙는다(Figma justify-between). 값이 `Flexible` 이라 몫을 다 안 쓰면
+        // 남은 폭이 행 끝에 버려진다 — spaceBetween 이 그 폭을 값 앞으로 옮긴다.
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Expanded(
             child: Text(

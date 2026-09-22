@@ -207,6 +207,9 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
       [
         const SizedBox(height: AppSpacing.s24),
         Row(
+          // 뒤쪽 칸은 오른쪽 끝에 붙는다(Figma justify-between). `Flexible` 이 몫을 다 안 쓰면
+          // 남은 폭이 행 끝에 버려져 가운데로 몰린다 — layout_dead_space_test 가 잡는다.
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
               child: Align(
