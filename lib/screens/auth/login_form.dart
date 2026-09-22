@@ -150,7 +150,11 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                                         setState(() => _saveId = !_saveId),
                                     child: Text(
                                       l10n.loginRememberMe,
-                                      maxLines: 1,
+                                      // 조작 라벨은 자르지 않는다 — 무엇을
+                                      // 켜고 끄는지 모르게 된다. 한 줄에서
+                                      // 「비밀번호 찾기」와 폭을 다투는 자리라
+                                      // 로케일이 길면 바로 잘렸다(전수감사).
+                                      maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                       style: AppType.label1.r.copyWith(
                                           color: context.c.labelNormal),
@@ -167,7 +171,7 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                               child: Text(
                                 l10n.loginForgotPassword,
                                 textAlign: TextAlign.right,
-                                maxLines: 1,
+                                maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppType.label1.r
                                     .copyWith(color: context.c.labelNormal),

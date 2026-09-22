@@ -384,7 +384,9 @@ class _CenteredTitle extends StatelessWidget {
     return Text(
       title ?? '',
       textAlign: TextAlign.center,
-      maxLines: 1,
+      // 화면 제목이 잘리면 **어느 화면인지** 모른다. GNB 본체는 높이 고정이
+      // 아니라 제목이 늘면 같이 커진다(전수감사 10건).
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
       style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
     );

@@ -278,13 +278,22 @@ class Button extends StatelessWidget {
     //   이름을 붙여야 한다.
     if (text.isNotEmpty) {
       children.add(
+        // 라벨은 **자르지 말고 줄을 바꾼다**(2026-09-22 사장님 확정).
+        //
+        // 예전에는 `maxLines: 1` + `softWrap: false` 였다. 넘침을 막으려던
+        // 설정인데, 그 결과 「설정 열기」가 `सेटिङ खो…` 가 됐다 — 사용자가 **뭘
+        // 누르는지 모르는** 상태다. 전수감사 실측(411dp·배율 1.1): 78건.
+        //
+        // 버튼은 높이가 고정이 아니라 `padV` 로 크는 구조라, 줄이 늘면 버튼이
+        // 같이 커진다. 셋째 줄부터는 ellipsis 로 막는다 — 그쯤이면 번역이 잘못된
+        // 것이고, 버튼 하나가 화면을 먹는 쪽이 더 나쁘다.
         Flexible(
           child: Text(
             text,
             style: _textStyle().copyWith(color: fg),
-            maxLines: 1,
+            textAlign: TextAlign.center,
+            maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            softWrap: false,
           ),
         ),
       );

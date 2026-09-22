@@ -282,7 +282,9 @@ class _AssignmentDetailScreenState
                       Expanded(
                         child: Text(
                           a.classroomName,
-                          maxLines: 1,
+                          // 교실 이름은 식별자 + 수치다(「TOPIK 1 A」). 잘리면
+                          // 어느 반 과제인지 모른다.
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: AppType.label1.r.copyWith(
                             color: c.labelNeutral,

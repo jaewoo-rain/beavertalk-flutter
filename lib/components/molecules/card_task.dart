@@ -98,7 +98,9 @@ class CardTask extends StatelessWidget {
                 Expanded(
                   child: Text(
                     title,
-                    maxLines: 1,
+                    // 활동 이름(말하기·회화·워크북)은 식별자다. 잘리면 무슨
+                    // 과제인지 모른다 — 행 높이는 이미 하한이라 두 줄이 든다.
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                     style: AppType.body1.m.copyWith(color: c.labelStrong),
                   ),

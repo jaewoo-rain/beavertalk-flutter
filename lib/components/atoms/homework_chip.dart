@@ -29,7 +29,8 @@ class HomeworkChip extends StatelessWidget {
     final Color fg = done ? c.primaryForeground : c.labelNeutral;
 
     return Container(
-      height: 20,
+      // 높이 하한. 라벨이 두 줄이 될 수 있으므로 고정이면 둘째 줄이 잘린다.
+      constraints: const BoxConstraints(minHeight: 20),
       padding: EdgeInsets.only(left: done ? 6 : 8, right: 8),
       decoration: BoxDecoration(
         color: bg,
@@ -57,7 +58,9 @@ class HomeworkChip extends StatelessWidget {
           Flexible(
             child: Text(
               label,
-              maxLines: 1,
+              // 활동 이름은 자르지 않는다. 칩은 높이가 하한이 아니므로
+              // `card_homework` 의 Wrap 안에서 두 줄이 되면 칩이 세로로 커진다.
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: AppType.caption2.m.copyWith(color: fg),
             ),

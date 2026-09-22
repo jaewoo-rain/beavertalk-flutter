@@ -172,7 +172,9 @@ class _MetricsFooter extends StatelessWidget {
             children: [
               Text(
                 m.label,
-                maxLines: 1,
+                // 지표 이름은 자르지 않는다 — 「발음」인지 「유창성」인지 모르면
+                // 그 아래 점수가 무슨 점수인지 모른다(전수감사 20건).
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
                 style: AppType.caption1.r
                     .copyWith(color: context.c.labelNormal),

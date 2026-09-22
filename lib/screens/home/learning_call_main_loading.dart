@@ -215,7 +215,9 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                     Text(
                       label!,
                       style: AppType.body2.m,
-                      maxLines: 1,
+                      // 구획 이름은 자르지 않는다 — 아래 표가 무엇의 표인지
+                      // 알려 주는 유일한 단서다(전수감사).
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
               ),
@@ -342,7 +344,9 @@ class _H {
       text,
       style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
       textAlign: width == null ? TextAlign.left : TextAlign.right,
-      maxLines: 1,
+      // 컬럼 헤더가 잘리면 그 열의 숫자가 무슨 숫자인지 모른다. 표는 폭이
+      // 빡빡한 자리라 두 줄이 정상이다(전수감사 67건).
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
     return width == null

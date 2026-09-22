@@ -245,7 +245,9 @@ class CardLine extends StatelessWidget {
               Expanded(
                 child: Text(
                   label,
-                  maxLines: 1,
+                  // 설정 항목 이름. 행 높이는 이미 하한이라 두 줄이 들어간다
+                  // (de 「Benachrichtigung」 전수감사 1건).
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                   style: AppType.body1.r.copyWith(color: context.c.labelStrong),
                 ),

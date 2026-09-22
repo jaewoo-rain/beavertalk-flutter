@@ -88,7 +88,9 @@ class PlanSummaryCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         title,
-                        maxLines: 1,
+                        // 플랜 이름(Free·Pro·Max)은 식별자다. 「Ma…」 는 어느
+                        // 플랜인지 알려 주지 못한다.
+                        maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style:
                             AppType.headline2.sb.copyWith(color: c.labelStrong),

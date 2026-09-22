@@ -282,7 +282,8 @@ class LearningCallMainScreen extends ConsumerWidget {
         trailing: Text(
           l10n.phonemeAttempts(s.phonemeAttempts),
           style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
-          maxLines: 1,
+          // 수치는 자르지 않는다 — 잘린 횟수는 틀린 횟수다.
+          maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),
         child: _table(context, 
@@ -422,7 +423,8 @@ class LearningCallMainScreen extends ConsumerWidget {
               child: Text(
                 label,
                 style: AppType.body2.m,
-                maxLines: 1,
+                // 구획 이름은 아래 표가 무엇의 표인지 알려 주는 단서다.
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
@@ -549,7 +551,8 @@ class _Cell {
       text,
       style: style ?? _headerStyle(context),
       textAlign: _alignRight ? TextAlign.right : TextAlign.left,
-      maxLines: 1,
+      // 컬럼 헤더가 잘리면 그 열의 숫자가 무슨 숫자인지 모른다.
+      maxLines: 2,
       overflow: TextOverflow.ellipsis,
     );
     return width == null
