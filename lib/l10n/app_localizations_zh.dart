@@ -475,6 +475,28 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeFreetalkNote => '用学过的表达自由交流吧';
 
   @override
+  String get homeTalkTitle => '今天发生了什么？';
+
+  @override
+  String get homeTalkNote => '自由聊天，边聊边学。';
+
+  @override
+  String get homeModeLearn => '学习';
+
+  @override
+  String get homeModeTalk => '聊天';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '连续 $count 天',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => '等级未定';
 
   @override

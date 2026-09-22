@@ -494,6 +494,28 @@ class AppLocalizationsUz extends AppLocalizations {
       'O‘rganganingizdan foydalanib erkin suhbatlashing';
 
   @override
+  String get homeTalkTitle => 'Bugun nima bo‘ldi?';
+
+  @override
+  String get homeTalkNote => 'Erkin suhbatlashing va yo‘l-yo‘lakay o‘rganing.';
+
+  @override
+  String get homeModeLearn => 'O‘rganish';
+
+  @override
+  String get homeModeTalk => 'Suhbat';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ketma-ket $count kun',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Daraja aniqlanmagan';
 
   @override

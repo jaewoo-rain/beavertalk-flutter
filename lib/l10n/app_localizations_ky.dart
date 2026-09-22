@@ -490,6 +490,28 @@ class AppLocalizationsKy extends AppLocalizations {
   String get homeFreetalkNote => 'Үйрөнгөнүңүздү колдонуп эркин сүйлөшүңүз';
 
   @override
+  String get homeTalkTitle => 'Бүгүн эмне болду?';
+
+  @override
+  String get homeTalkNote => 'Эркин сүйлөшүп, жол-жолой үйрөнүңүз.';
+
+  @override
+  String get homeModeLearn => 'Окуу';
+
+  @override
+  String get homeModeTalk => 'Сүйлөшүү';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'катары менен $count күн',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Деңгээл белгисиз';
 
   @override

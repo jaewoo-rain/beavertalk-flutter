@@ -40,6 +40,18 @@ abstract final class AppIcons {
     );
   }
 
+  /// 듀오톤 아이콘 — **색을 입히지 않는다.** 두 색이 SVG 에 박혀 있다(Figma `duo-*`,
+  /// 고정 팔레트 · 양 모드 공통). [_glyph] 처럼 srcIn 으로 칠하면 한 색으로 뭉개진다.
+  static Widget _duo(String name, double size) => SvgPicture.asset(
+        'assets/icons/$name.svg',
+        width: size,
+        height: size,
+        fit: BoxFit.contain,
+      );
+
+  /// `duo-homework` (`6246:1532`) — 홈 숙제 배너 앞 아이콘.
+  static Widget duoHomework({double size = 24}) => _duo('duo-homework', size);
+
   // ── Navigation / chrome ──────────────────────────────────────
   static Widget close({double size = 24, required Color color}) =>
       _glyph('close', size, color);
@@ -113,6 +125,9 @@ abstract final class AppIcons {
   /// `6249:13158`), replacing [thumbsUpDouble] there.
   static Widget heartEyes({double size = 24, required Color color}) =>
       _glyph('heart-eyes', size, color);
+  /// `flame-fill` (`6231:1510`) — 연속 학습일 불꽃(홈 `Chip-Streak`).
+  static Widget flameFill({double size = 24, required Color color}) =>
+      _glyph('flame-fill', size, color);
   static Widget flag({double size = 24, required Color color}) =>
       _glyph('flag', size, color);
 

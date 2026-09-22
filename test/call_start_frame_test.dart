@@ -156,8 +156,9 @@ void main() {
       //   Literal["normal","level_test","expression","freetalk","auto"].
       // pydantic Literal 이라 오타 하나면 **422 로 통화가 아예 안 열린다.**
       // enum 이름을 바꾸면 여기서 걸린다.
+      // `normal` 은 홈 대화 모드(2026-09-22) — Literal 에 원래 있던 값이다.
       expect(CallCourse.values.map((c) => c.wireValue).toList(),
-          ['expression', 'freetalk', 'auto']);
+          ['expression', 'freetalk', 'normal', 'auto']);
     });
 
     test('자동이면 auto 가 실린다 — 서버가 진도로 코스를 정한다', () {

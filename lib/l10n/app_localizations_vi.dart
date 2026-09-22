@@ -491,6 +491,28 @@ class AppLocalizationsVi extends AppLocalizations {
   String get homeFreetalkNote => 'Dùng những gì đã học và trò chuyện tự do';
 
   @override
+  String get homeTalkTitle => 'Hôm nay có chuyện gì?';
+
+  @override
+  String get homeTalkNote => 'Trò chuyện thoải mái và học trong lúc nói.';
+
+  @override
+  String get homeModeLearn => 'Học';
+
+  @override
+  String get homeModeTalk => 'Trò chuyện';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ngày liên tiếp',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Chưa có cấp độ';
 
   @override

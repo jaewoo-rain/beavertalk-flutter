@@ -494,6 +494,29 @@ class AppLocalizationsFi extends AppLocalizations {
   String get homeFreetalkNote => 'Käytä oppimaasi ja puhu vapaasti';
 
   @override
+  String get homeTalkTitle => 'Mitä tänään tapahtui?';
+
+  @override
+  String get homeTalkNote => 'Juttele vapaasti ja opi samalla.';
+
+  @override
+  String get homeModeLearn => 'Opi';
+
+  @override
+  String get homeModeTalk => 'Juttele';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count päivää putkeen',
+      one: '1 päivä putkeen',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Taso avoinna';
 
   @override

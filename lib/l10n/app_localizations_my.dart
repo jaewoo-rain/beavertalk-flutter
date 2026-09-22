@@ -496,6 +496,28 @@ class AppLocalizationsMy extends AppLocalizations {
   String get homeFreetalkNote => 'သင်ယူထားသည်ကို သုံး၍ လွတ်လပ်စွာ စကားပြောပါ';
 
   @override
+  String get homeTalkTitle => 'ဒီနေ့ ဘာတွေဖြစ်ခဲ့လဲ။';
+
+  @override
+  String get homeTalkNote => 'လွတ်လပ်စွာ စကားပြောရင်း လေ့လာပါ။';
+
+  @override
+  String get homeModeLearn => 'လေ့လာ';
+
+  @override
+  String get homeModeTalk => 'စကားပြော';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ဆက်တိုက် $count ရက်',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'အဆင့် မသတ်မှတ်ရသေး';
 
   @override

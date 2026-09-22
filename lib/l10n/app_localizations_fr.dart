@@ -500,6 +500,29 @@ class AppLocalizationsFr extends AppLocalizations {
       'Utilisez ce que vous avez appris et parlez librement';
 
   @override
+  String get homeTalkTitle => 'Qu\'est-ce qui s\'est passé aujourd\'hui ?';
+
+  @override
+  String get homeTalkNote => 'Discutez librement et apprenez en chemin.';
+
+  @override
+  String get homeModeLearn => 'Apprendre';
+
+  @override
+  String get homeModeTalk => 'Discuter';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count jours d\'affilée',
+      one: '1 jour d\'affilée',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Niveau à définir';
 
   @override

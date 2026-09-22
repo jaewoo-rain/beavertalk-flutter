@@ -294,6 +294,16 @@
   "@homeFreetalkNote": {
     "description": "Home learning-status block, third line in free-talk mode. Replaces the countdown once free talk is unlocked."
   },
+  "homeTalkTitle": "What happened today?",
+  "@homeTalkTitle": {"description": "Home, Talk mode: second line of the status block (free conversation, no curriculum)."},
+  "homeTalkNote": "Chat freely and learn as you go.",
+  "@homeTalkNote": {"description": "Home, Talk mode: third line of the status block."},
+  "homeModeLearn": "Learn",
+  "@homeModeLearn": {"description": "Accessible label of the Learn segment in the home mode toggle (icon-only)."},
+  "homeModeTalk": "Talk",
+  "@homeModeTalk": {"description": "Accessible label of the Talk segment in the home mode toggle (icon-only)."},
+  "homeStreakDays": "{count, plural, =1{1-day streak} other{{count}-day streak}}",
+  "@homeStreakDays": {"description": "Accessible label of the home streak chip; the chip itself shows only the number.", "placeholders": {"count": {"type": "int"}}},
   "homeLevelPending": "Level pending",
   "@homeLevelPending": {
     "description": "Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge."

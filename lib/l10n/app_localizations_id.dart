@@ -492,6 +492,28 @@ class AppLocalizationsId extends AppLocalizations {
       'Gunakan yang sudah dipelajari dan mengobrol bebas';
 
   @override
+  String get homeTalkTitle => 'Apa yang terjadi hari ini?';
+
+  @override
+  String get homeTalkNote => 'Mengobrol bebas sambil belajar.';
+
+  @override
+  String get homeModeLearn => 'Belajar';
+
+  @override
+  String get homeModeTalk => 'Ngobrol';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hari berturut-turut',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Level belum ada';
 
   @override

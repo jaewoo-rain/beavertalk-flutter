@@ -491,6 +491,28 @@ class AppLocalizationsMn extends AppLocalizations {
   String get homeFreetalkNote => 'Сурсанаа ашиглан чөлөөтэй ярилцаарай';
 
   @override
+  String get homeTalkTitle => 'Өнөөдөр юу болсон бэ?';
+
+  @override
+  String get homeTalkNote => 'Чөлөөтэй ярилцаж, дундуур нь суралцаарай.';
+
+  @override
+  String get homeModeLearn => 'Суралцах';
+
+  @override
+  String get homeModeTalk => 'Ярилцах';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'дараалан $count өдөр',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Түвшин тодорхойгүй';
 
   @override

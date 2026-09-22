@@ -495,6 +495,29 @@ class AppLocalizationsPt extends AppLocalizations {
   String get homeFreetalkNote => 'Use o que aprendeu e converse livremente';
 
   @override
+  String get homeTalkTitle => 'O que aconteceu hoje?';
+
+  @override
+  String get homeTalkNote => 'Converse à vontade e aprenda no caminho.';
+
+  @override
+  String get homeModeLearn => 'Aprender';
+
+  @override
+  String get homeModeTalk => 'Conversar';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dias seguidos',
+      one: '1 dia seguido',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Nível pendente';
 
   @override

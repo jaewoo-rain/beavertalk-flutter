@@ -493,6 +493,29 @@ class AppLocalizationsUr extends AppLocalizations {
       'جو سیکھا ہے اسے استعمال کرکے آزادانہ بات کریں';
 
   @override
+  String get homeTalkTitle => 'آج کیا ہوا؟';
+
+  @override
+  String get homeTalkNote => 'آزادی سے بات کریں اور بات کرتے ہوئے سیکھیں۔';
+
+  @override
+  String get homeModeLearn => 'سیکھیں';
+
+  @override
+  String get homeModeTalk => 'بات چیت';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'لگاتار $count دن',
+      one: 'لگاتار 1 دن',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'لیول طے نہیں';
 
   @override

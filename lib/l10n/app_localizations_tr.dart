@@ -489,6 +489,28 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeFreetalkNote => 'Öğrendiklerini kullanarak serbestçe konuş';
 
   @override
+  String get homeTalkTitle => 'Bugün neler oldu?';
+
+  @override
+  String get homeTalkNote => 'Serbestçe sohbet et, konuşurken öğren.';
+
+  @override
+  String get homeModeLearn => 'Öğren';
+
+  @override
+  String get homeModeTalk => 'Sohbet';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gün üst üste',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Seviye belirsiz';
 
   @override

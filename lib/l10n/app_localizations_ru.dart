@@ -491,6 +491,30 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeFreetalkNote => 'Используйте изученное и говорите свободно';
 
   @override
+  String get homeTalkTitle => 'Что сегодня произошло?';
+
+  @override
+  String get homeTalkNote => 'Общайтесь свободно и учитесь по ходу.';
+
+  @override
+  String get homeModeLearn => 'Учёба';
+
+  @override
+  String get homeModeTalk => 'Разговор';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дней подряд',
+      few: '$count дня подряд',
+      one: '$count день подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Без уровня';
 
   @override

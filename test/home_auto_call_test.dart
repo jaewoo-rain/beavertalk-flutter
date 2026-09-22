@@ -123,6 +123,42 @@ void main() {
     );
   });
 
+  testWidgets('대화 모드로 바꾸고 전화 → CourseCallRequest(normal) — 진도 게이트 없는 자유 대화',
+      (tester) async {
+    // 사장님 정의(2026-09-22): 학습 = 커리큘럼(auto) · 대화 = 제한 없는 자유 대화(normal).
+    _grantMic();
+    final pushed = <RouteSettings>[];
+    final repo = _FakeRepo();
+    tester.view.physicalSize = const Size(375, 812);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_host(const HomeScreen(), pushed,
+        overrides: [normalcallRepositoryProvider.overrideWithValue(repo)]));
+    await tester.pump(const Duration(milliseconds: 32));
+    tester.takeException();
+
+    await tester.tap(find.bySemanticsLabel('대화'));
+    await tester.pump();
+    // 대화 모드 블록 — 서버 없이 바로 그린다.
+    expect(find.text('오늘 어떤 일이 있었나요?'), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel(RegExp('통화')).first);
+    await tester.pumpAndSettle();
+
+    final call = pushed.where((s) => s.name == Routes.callLoading).toList();
+    expect(call, hasLength(1));
+    final req = call.single.arguments as CourseCallRequest;
+    expect(req.course, CallCourse.normal);
+    expect(req.forceCourse, isFalse);
+    expect(
+      buildStartFrame(
+        aec: const {}, sampleRate: 16000, numChannels: 1,
+        callType: req.course.wireValue, forceCourse: req.forceCourse,
+      )['call_type'],
+      'normal',
+    );
+  });
+
   testWidgets('통화가 끝나면 학습 현황(/cur/me)을 다시 읽는다 — 표시와 실제 코스를 맞춘다',
       (tester) async {
     final repo = _FakeRepo();

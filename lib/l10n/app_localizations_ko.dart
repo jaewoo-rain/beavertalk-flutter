@@ -477,6 +477,28 @@ class AppLocalizationsKo extends AppLocalizations {
   String get homeFreetalkNote => '배운 표현을 바탕으로 자유롭게 대화해보세요';
 
   @override
+  String get homeTalkTitle => '오늘 어떤 일이 있었나요?';
+
+  @override
+  String get homeTalkNote => '자유롭게 대화하며 학습해봐요.';
+
+  @override
+  String get homeModeLearn => '학습';
+
+  @override
+  String get homeModeTalk => '대화';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count일 연속',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => '레벨 미정';
 
   @override

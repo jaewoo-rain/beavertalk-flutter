@@ -82,6 +82,7 @@ const List<PlanOverride> _devMatrixPlans = [
 String _courseLabel(CallCourse? c) => switch (c) {
       CallCourse.expression => '표현학습',
       CallCourse.freetalk => '프리토킹',
+      CallCourse.normal => '일반',
       CallCourse.auto => '자동',
       null => '(모름)',
     };

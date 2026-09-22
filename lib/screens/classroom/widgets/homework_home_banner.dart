@@ -1,3 +1,4 @@
+import '../../../components/icons/app_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -41,9 +42,11 @@ class HomeworkHomeBanner extends ConsumerWidget {
         l10n.hwHomeBannerOverdue(o),
         bn.BannerTone.danger,
       ),
+      // Figma `Banner/HomeworkEntry` = `tone=tone5`(떠 있는 면 + 선) — 민트는 구독
+      // 업셀의 색이라 숙제 안내에 쓰지 않는다.
       (_, final d) when d > 0 => (
         l10n.hwHomeBannerDueTomorrow(d),
-        bn.BannerTone.brand,
+        bn.BannerTone.elevated,
       ),
       _ => ('', bn.BannerTone.neutral),
     };
@@ -52,9 +55,9 @@ class HomeworkHomeBanner extends ConsumerWidget {
     return bn.Banner(
       tone: tone,
       title: title,
-      // 시안의 배너는 한 줄이지만 공용 컴포넌트는 보조 줄을 요구한다. 새 문구를
-      // 만들지 않고 목록으로 간다는 뜻의 기존 문안을 쓴다.
-      sub: l10n.hwJoinDoneCta,
+      // 정본은 제목 한 줄 + 앞 아이콘이다(`sub` 숨김). 보조 줄이 필수이던 때 넣었던
+      // 「숙제 보러 가기」 는 뺐다 — 셰브런이 이미 그 뜻이다.
+      leading: AppIcons.duoHomework(),
       onTap: () => Navigator.of(context).pushNamed(Routes.assignments),
     );
   }

@@ -498,6 +498,28 @@ class AppLocalizationsHu extends AppLocalizations {
   String get homeFreetalkNote => 'Használd a tanultakat és beszélj szabadon';
 
   @override
+  String get homeTalkTitle => 'Mi történt ma?';
+
+  @override
+  String get homeTalkNote => 'Beszélgess szabadon, és tanulj közben.';
+
+  @override
+  String get homeModeLearn => 'Tanulás';
+
+  @override
+  String get homeModeTalk => 'Beszélgetés';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count nap egymás után',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Szint nincs meg';
 
   @override

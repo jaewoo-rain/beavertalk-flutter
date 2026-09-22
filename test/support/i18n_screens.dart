@@ -16,6 +16,10 @@ import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
 import 'package:beavertalk/components/organisms/home_gnb.dart';
+import 'package:beavertalk/components/organisms/home_header_mode.dart';
+import 'package:beavertalk/components/molecules/banner.dart' as bn;
+import 'package:beavertalk/components/icons/app_icons.dart';
+import 'package:beavertalk/features/normalcall/domain/entities/call_streak.dart';
 import 'package:beavertalk/mock/mock_data.dart';
 import 'package:beavertalk/screens/classroom/widgets/assignment_badge.dart';
 
@@ -243,6 +247,32 @@ Map<String, Widget Function()> i18nScreens() {
         const Center(child: HomeGnb(course: mockHomeCourse)),
     'HomeGnbFreetalk': () =>
         const Center(child: HomeGnb(course: mockHomeCourseFreetalk)),
+    // 홈 대화 모드 블록 — 서버 값 없이 l10n 만으로 그린다.
+    'HomeGnbTalk': () => const Center(child: HomeGnb(course: HomeCourse.talk)),
+    // 홈 헤더 — 토글(아이콘만) · 연속일 칩(숫자만) · 프로필이 한 줄에 선다. 세 자리
+    // 연속일이 칩이 가장 넓은 경우다.
+    'HomeHeaderMode': () => Center(
+          child: HomeHeaderMode(
+            mode: HomeMode.talk,
+            onModeChanged: (_) {},
+            streak: const CallStreak(days: 128, state: StreakState.done),
+            onProfileTap: () {},
+          ),
+        ),
+    // 숙제 배너 tone5 — 앞 아이콘 + 제목 한 줄(보조 줄 없음).
+    'HomeworkBannerElevated': () => Builder(
+          builder: (ctx) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: bn.Banner(
+                tone: bn.BannerTone.elevated,
+                title: AppLocalizations.of(ctx).hwHomeBannerDueTomorrow(3),
+                leading: AppIcons.duoHomework(),
+                onTap: () {},
+              ),
+            ),
+          ),
+        ),
     'HomeGnbNoLevel': () =>
         const Center(child: HomeGnb(course: mockHomeCourseNoLevel)),
   };

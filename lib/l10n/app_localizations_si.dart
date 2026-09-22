@@ -492,6 +492,28 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeFreetalkNote => 'ඉගෙන ගත් දේ භාවිතා කර නිදහසේ කතා කරන්න';
 
   @override
+  String get homeTalkTitle => 'අද මොකද වුණේ?';
+
+  @override
+  String get homeTalkNote => 'නිදහසේ කතා කරමින් ඉගෙන ගන්න.';
+
+  @override
+  String get homeModeLearn => 'ඉගෙනුම';
+
+  @override
+  String get homeModeTalk => 'කතාබහ';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'දින $countක් අඛණ්ඩව',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'මට්ටම නිශ්චිත නැත';
 
   @override

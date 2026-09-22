@@ -484,6 +484,28 @@ class AppLocalizationsTh extends AppLocalizations {
   String get homeFreetalkNote => 'ใช้สิ่งที่เรียนมาคุยได้อย่างอิสระ';
 
   @override
+  String get homeTalkTitle => 'วันนี้มีอะไรเกิดขึ้นบ้าง?';
+
+  @override
+  String get homeTalkNote => 'คุยได้อย่างอิสระ แล้วเรียนไปพร้อมกัน';
+
+  @override
+  String get homeModeLearn => 'เรียน';
+
+  @override
+  String get homeModeTalk => 'คุย';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ติดต่อกัน $count วัน',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'ยังไม่มีระดับ';
 
   @override

@@ -1042,6 +1042,36 @@ abstract class AppLocalizations {
   /// **'Use what you learned and talk freely'**
   String get homeFreetalkNote;
 
+  /// Home, Talk mode: second line of the status block (free conversation, no curriculum).
+  ///
+  /// In en, this message translates to:
+  /// **'What happened today?'**
+  String get homeTalkTitle;
+
+  /// Home, Talk mode: third line of the status block.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat freely and learn as you go.'**
+  String get homeTalkNote;
+
+  /// Accessible label of the Learn segment in the home mode toggle (icon-only).
+  ///
+  /// In en, this message translates to:
+  /// **'Learn'**
+  String get homeModeLearn;
+
+  /// Accessible label of the Talk segment in the home mode toggle (icon-only).
+  ///
+  /// In en, this message translates to:
+  /// **'Talk'**
+  String get homeModeTalk;
+
+  /// Accessible label of the home streak chip; the chip itself shows only the number.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
+  String homeStreakDays(int count);
+
   /// Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge.
   ///
   /// In en, this message translates to:

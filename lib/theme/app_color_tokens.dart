@@ -70,6 +70,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.statusNegative6,
     required this.statusCautionary,
     required this.statusCautionarySurface,
+    required this.accentStreak,
+    required this.accentStreakSurface,
     required this.accentForegroundRed,
     required this.accentForegroundOrange,
     required this.accentForegroundRedOrange,
@@ -209,6 +211,13 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   final Color statusCautionary;
   final Color statusCautionarySurface;
 
+  /// `Accent/Streak` — 연속 학습일 불꽃(홈 `Chip-Streak`). Dark #FF9A57 / Light #E8702A.
+  /// 주의색([statusCautionary])과 따로 둔다 — 불꽃은 경고가 아니라 보상이다.
+  final Color accentStreak;
+
+  /// `Accent/Streak-Surface` — 불꽃 칩 바탕(알파 내장). Dark #FF9A57·16% / Light #F1843F·14%.
+  final Color accentStreakSurface;
+
   // ── Accent ─────────────────────────────────────────────────
   final Color accentForegroundRed, accentForegroundOrange;
   final Color accentForegroundRedOrange, accentForegroundLime;
@@ -287,6 +296,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     statusNegative6: Color(0x0FFF7070),
     statusCautionary: Color(0xFFFFA938),
     statusCautionarySurface: Color(0x1AFFB548),
+    accentStreak: Color(0xFFFF9A57),
+    accentStreakSurface: Color(0x29FF9A57),
     accentForegroundRed: Color(0xFFFF6363),
     accentForegroundOrange: Color(0xFFFF9200),
     accentForegroundRedOrange: Color(0xFFFF7B2E),
@@ -373,6 +384,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     statusNegative6: Color(0x0FDC0000),
     statusCautionary: Color(0xFFFFAA00),
     statusCautionarySurface: Color(0x1AFFAA00),
+    accentStreak: Color(0xFFE8702A),
+    accentStreakSurface: Color(0x24F1843F),
     accentForegroundRed: Color(0xFFE52222),
     accentForegroundOrange: Color(0xFF9C5800),
     accentForegroundRedOrange: Color(0xFFF55A00),
@@ -454,6 +467,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? statusNegative6,
     Color? statusCautionary,
     Color? statusCautionarySurface,
+    Color? accentStreak,
+    Color? accentStreakSurface,
     Color? accentForegroundRed,
     Color? accentForegroundOrange,
     Color? accentForegroundRedOrange,
@@ -541,6 +556,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
         statusCautionary: statusCautionary ?? this.statusCautionary,
         statusCautionarySurface:
             statusCautionarySurface ?? this.statusCautionarySurface,
+        accentStreak: accentStreak ?? this.accentStreak,
+        accentStreakSurface: accentStreakSurface ?? this.accentStreakSurface,
         accentForegroundRed: accentForegroundRed ?? this.accentForegroundRed,
         accentForegroundOrange:
             accentForegroundOrange ?? this.accentForegroundOrange,
@@ -644,6 +661,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
       statusCautionary: c(statusCautionary, other.statusCautionary),
       statusCautionarySurface:
           c(statusCautionarySurface, other.statusCautionarySurface),
+      accentStreak: c(accentStreak, other.accentStreak),
+      accentStreakSurface: c(accentStreakSurface, other.accentStreakSurface),
       accentForegroundRed: c(accentForegroundRed, other.accentForegroundRed),
       accentForegroundOrange:
           c(accentForegroundOrange, other.accentForegroundOrange),

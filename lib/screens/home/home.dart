@@ -7,13 +7,15 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/pressable.dart';
 import '../../components/atoms/skeleton.dart';
-import '../../components/icons/app_icons.dart';
 import '../../components/molecules/hero_avatar.dart';
 import '../../components/organisms/home_gnb.dart';
+import '../../components/organisms/home_header_mode.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/normalcall/domain/entities/call_course.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
+import '../../features/normalcall/presentation/home_mode_provider.dart';
+import '../../features/normalcall/presentation/streak_provider.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -52,7 +54,13 @@ class HomeScreen extends ConsumerWidget {
   ///   ⛔ 여기만이다. 수신(알림) 통화·레벨테스트·숙제·기록 화면의 진입점은 종전 그대로
   ///     (`call_type` 미전송 = 서버 D11 라우팅).
   /// 캐릭터는 서버가 정한다(member.character_id) — 인자에 싣지 않는다.
+  ///
+  /// ⭐ **대화 모드는 `normal` 로 건다**(사장님 정의 2026-09-22: 학습 = 커리큘럼,
+  ///   대화 = 제한 없는 자유 대화). 진도 게이트가 없다 — [CallCourse.normal] 참조.
   Future<void> _startCall(BuildContext context, WidgetRef ref) async {
+    final course = ref.read(homeModeProvider) == HomeMode.talk
+        ? CallCourse.normal
+        : CallCourse.auto;
     final status = await Permission.microphone.request();
     if (!context.mounted) return;
     if (!status.isGranted) {
@@ -63,7 +71,7 @@ class HomeScreen extends ConsumerWidget {
     Navigator.pushNamed(
       context,
       Routes.callLoading,
-      arguments: const CourseCallRequest(CallCourse.auto),
+      arguments: CourseCallRequest(course),
     );
   }
 
@@ -85,6 +93,7 @@ class HomeScreen extends ConsumerWidget {
         };
         if (live.contains(prev) && !live.contains(next)) {
           ref.invalidate(curMeProvider);
+          ref.invalidate(callStreakProvider);
         }
       },
     );
@@ -119,42 +128,20 @@ class HomeScreen extends ConsumerWidget {
     // That is the intended trade: the previous behaviour asserted a partner the
     // user does not have.
     final heroLoading = selected == null;
+    final mode = ref.watch(homeModeProvider);
+    final streak = ref.watch(callStreakProvider);
     return Column(
       children: [
-          // Header — GNB-style 56-tall bar, trailing profile icon → mypage.
-          SizedBox(
-            height: 56,
-            child: ContentColumn(
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Semantics(
-                    button: true,
-                    label: l10n.myPage,
-                    child: Pressable(
-                      onTap: () =>
-                          Navigator.pushNamed(context, Routes.mypage),
-                      // Figma `2296:26381` — a surface2 circle holding a muted
-                      // (label/assistive) person, not a bare white glyph.
-                      child: Container(
-                        width: AppSpacing.s28,
-                        height: AppSpacing.s28,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: context.c.backgroundNormalAlternative,
-                        ),
-                        child: AppIcons.profile(
-                          size: 20,
-                          color: context.c.labelAssistive,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          // Header — Figma `Home/Header-Mode`(`6177:29151`): 모드 토글 · 연속일 칩 ·
+          // 프로필. 칩은 조회에 실패하면 **그리지 않는다** — 0 으로 그리면 끊긴 것처럼
+          // 거짓말하고, 셔머로 두면 영영 안 끝나는 로딩이 된다.
+          HomeHeaderMode(
+            mode: mode,
+            onModeChanged: (m) =>
+                ref.read(homeModeProvider.notifier).state = m,
+            streak: streak.valueOrNull,
+            showStreak: !streak.hasError,
+            onProfileTap: () => Navigator.pushNamed(context, Routes.mypage),
           ),
           // Hero — avatar + change badge + title, pinned near the top (Figma
           // body top 37), horizontally centered.
@@ -189,6 +176,10 @@ class HomeScreen extends ConsumerWidget {
                 // 돌리면 「영영 안 끝나는 로딩」이 되고, 레벨미정으로 떨어뜨리면
                 // 네트워크가 끊겼을 뿐인 사용자에게 레벨이 없다고 거짓말한다.
                 // 높이를 유지하는 것은 아래 히어로가 안 튀게 하기 위해서다.
+                // 대화 모드는 커리큘럼과 무관하다 — 서버를 기다리지 않고 바로 그린다.
+                if (mode == HomeMode.talk)
+                  const HomeGnb(course: HomeCourse.talk)
+                else
                 ref.watch(curMeProvider).when(
                       loading: () => const HomeGnbSkeleton(),
                       error: (e, _) {

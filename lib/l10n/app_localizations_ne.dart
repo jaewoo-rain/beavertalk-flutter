@@ -488,6 +488,28 @@ class AppLocalizationsNe extends AppLocalizations {
       'सिकेको प्रयोग गरी स्वतन्त्र रूपमा कुरा गर्नुहोस्';
 
   @override
+  String get homeTalkTitle => 'आज के भयो?';
+
+  @override
+  String get homeTalkNote => 'खुलेर कुरा गर्नुहोस्, कुरा गर्दै सिक्नुहोस्।';
+
+  @override
+  String get homeModeLearn => 'सिक्नुहोस्';
+
+  @override
+  String get homeModeTalk => 'कुराकानी';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'लगातार $count दिन',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'स्तर निर्धारित छैन';
 
   @override

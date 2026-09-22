@@ -489,6 +489,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeFreetalkNote => 'Use what you learned and talk freely';
 
   @override
+  String get homeTalkTitle => 'What happened today?';
+
+  @override
+  String get homeTalkNote => 'Chat freely and learn as you go.';
+
+  @override
+  String get homeModeLearn => 'Learn';
+
+  @override
+  String get homeModeTalk => 'Talk';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count-day streak',
+      one: '1-day streak',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'Level pending';
 
   @override

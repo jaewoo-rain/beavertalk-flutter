@@ -33,6 +33,13 @@ enum HomeCourseKind {
   /// [noLevel] 과 다르다: 그쪽은 *이 회원*의 위치가 없는 것이고, 이쪽은 *그 언어*에
   /// 위치라는 게 아직 없는 것이다. 첫 통화를 해도 안 생긴다 — 안내가 달라야 한다.
   unavailable,
+
+  /// 홈 **대화 모드**(Figma `screen/main_home__free — 대화 탭` `6177:28268`) —
+  /// 배지 「자유 대화」 + 「오늘 어떤 일이 있었나요?」 + 「자유롭게 대화하며 학습해봐요.」.
+  ///
+  /// 커리큘럼과 무관하다 — 서버 응답 없이 화면이 직접 만든다([HomeCourse.talk]).
+  /// ⛔ [freetalk](커리큘럼의 실전대화)와 다르다. 이쪽은 진도 게이트가 없다.
+  talk,
 }
 
 /// [HomeGnb] 가 그리는 한 덩어리 — 서버 [CurMe] 의 화면용 축약.
@@ -54,6 +61,9 @@ class HomeCourse {
   /// 커리큘럼 위치가 아직 없는 회원 — 서버가 `/cur/me` 에 **404** 로 답하는
   /// 경우다. 응답 본문이 없으니 [fromCurMe] 로는 만들 수 없어 상수로 둔다.
   static const noLevel = HomeCourse(kind: HomeCourseKind.noLevel);
+
+  /// 대화 모드 — 서버 값이 필요 없다.
+  static const talk = HomeCourse(kind: HomeCourseKind.talk);
 
   /// 서버 응답에서 화면 값을 뽑는다.
   ///
@@ -170,6 +180,7 @@ class HomeGnb extends StatelessWidget {
       HomeCourseKind.noLevel => l10n.homeNoLevelTitle,
       HomeCourseKind.unavailable =>
         l10n.homeCurriculumPendingTitle(languageLabel(course.language)),
+      HomeCourseKind.talk => l10n.homeTalkTitle,
       _ => course.topic ?? '',
     };
 
@@ -180,7 +191,9 @@ class HomeGnb extends StatelessWidget {
       HomeCourseKind.freetalk => l10n.homeFreetalkNote,
       HomeCourseKind.noLevel => l10n.homeNoLevelNote,
       HomeCourseKind.unavailable => l10n.homeCurriculumPendingNote,
+      HomeCourseKind.talk => l10n.homeTalkNote,
     };
+    final talk = course.kind == HomeCourseKind.talk;
 
     return ConstrainedBox(
       // 최소 92 — 평소엔 정확히 그 높이라 히어로가 안 움직이고, 글자 배율이
@@ -224,11 +237,13 @@ class HomeGnb extends StatelessWidget {
                     HomeCourseKind.noLevel => l10n.homeLevelPending,
                     HomeCourseKind.unavailable =>
                       l10n.homeCurriculumPendingBadge,
+                    HomeCourseKind.talk => l10n.callModeFreeTalk,
                     _ => course.unitCode ?? '',
                   },
                 ),
                 // 레벨 미정에는 오른쪽 라벨이 없다(정본에서 hidden).
-                if (!noLevel)
+                // 대화 모드는 배지가 곧 이름이라 오른쪽 라벨이 없다(정본에서 hidden).
+                if (!noLevel && !talk)
                   Text(
                     course.kind == HomeCourseKind.freetalk
                         ? l10n.homeCourseFreetalk
@@ -250,14 +265,17 @@ class HomeGnb extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: AppType.label2.b.copyWith(color: c.labelNormal),
+              // 대화 모드만 정본이 한 단계 진하다(Label/Strong · 3행 Label/Normal).
+              style: AppType.label2.b
+                  .copyWith(color: talk ? c.labelStrong : c.labelNormal),
             ),
             const SizedBox(height: AppSpacing.s8),
             // ── 3행 — 진행 안내 ────────────────────────────────────
             Text(
               note,
               textAlign: TextAlign.center,
-              style: AppType.caption1.r.copyWith(color: c.labelAlternative),
+              style: AppType.caption1.r
+                  .copyWith(color: talk ? c.labelNormal : c.labelAlternative),
             ),
           ],
         ),

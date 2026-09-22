@@ -491,6 +491,28 @@ class AppLocalizationsBn extends AppLocalizations {
   String get homeFreetalkNote => 'যা শিখেছেন তা দিয়ে স্বাধীনভাবে কথা বলুন';
 
   @override
+  String get homeTalkTitle => 'আজ কী হলো?';
+
+  @override
+  String get homeTalkNote => 'মন খুলে কথা বলুন, কথার মধ্যে শিখুন।';
+
+  @override
+  String get homeModeLearn => 'শিখুন';
+
+  @override
+  String get homeModeTalk => 'কথা';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'টানা $count দিন',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'লেভেল নির্ধারিত নয়';
 
   @override

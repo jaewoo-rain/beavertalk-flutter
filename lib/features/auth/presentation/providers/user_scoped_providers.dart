@@ -39,6 +39,7 @@ import '../../../weak_sound/presentation/weak_sound_providers.dart';
 import '../../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../../../../core/i18n/locale_controller.dart';
 import '../../../alarm/presentation/providers/alarm_providers.dart';
+import '../../../normalcall/presentation/home_mode_provider.dart';
 import 'auth_controller.dart';
 import 'language_sheet_provider.dart';
 import 'my_profile_provider.dart';
@@ -87,6 +88,9 @@ final List<ProviderOrFamily> userScopedProviders = <ProviderOrFamily>[
   // 과 자체는 공용 콘텐츠지만 `score`·`learned` 는 **조회한 회원 기준**이다.
   // family 라 키마다 캐시가 따로 남는다 — 안 지우면 B 가 A 의 점수를 본다.
   soundLessonProvider,
+  // A 가 대화 모드로 두고 나가면 B 가 대화 모드로 시작한다. 모드는 사용자 선택이라
+  // 다음 회원에게 넘기지 않는다 — 학습 모드(기본)로 되돌린다.
+  homeModeProvider,
 ];
 
 /// **일부러 안 지우는** 상태 — 지우면 오히려 깨지거나, 애초에 회원 스코프가 아니다.

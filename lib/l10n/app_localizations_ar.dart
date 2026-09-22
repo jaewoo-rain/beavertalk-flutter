@@ -489,6 +489,29 @@ class AppLocalizationsAr extends AppLocalizations {
   String get homeFreetalkNote => 'استخدم ما تعلمته وتحدث بحرية';
 
   @override
+  String get homeTalkTitle => 'ماذا حدث اليوم؟';
+
+  @override
+  String get homeTalkNote => 'تحدّث بحرية وتعلّم أثناء ذلك.';
+
+  @override
+  String get homeModeLearn => 'تعلّم';
+
+  @override
+  String get homeModeTalk => 'محادثة';
+
+  @override
+  String homeStreakDays(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count أيام متتالية',
+      one: 'يوم واحد متتالٍ',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get homeLevelPending => 'المستوى غير محدد';
 
   @override
