@@ -530,6 +530,49 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'सीखने का कैलेंडर';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'दिन लगातार',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'कॉल का समय';
+
+  @override
+  String get streakMetricCalls => 'कॉल';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count मिनट',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count कॉल',
+      one: '1 कॉल',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'इस दिन कोई कॉल नहीं हुई।';
+
+  @override
   String get homeLevelPending => 'स्तर तय नहीं';
 
   @override

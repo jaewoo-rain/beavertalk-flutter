@@ -1108,6 +1108,48 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1-day streak} other{{count}-day streak}}'**
   String homeStreakDays(int count);
 
+  /// Title of the learning-calendar screen (Figma streak_calendar).
+  ///
+  /// In en, this message translates to:
+  /// **'Learning calendar'**
+  String get streakCalendarTitle;
+
+  /// Unit shown next to the big streak number (the number is rendered separately, larger). Unit only, no number.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{day in a row} other{days in a row}}'**
+  String streakDaysUnit(int count);
+
+  /// Metric tile label: total call time this month.
+  ///
+  /// In en, this message translates to:
+  /// **'Call time'**
+  String get streakMetricCallTime;
+
+  /// Metric tile label: number of calls this month.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls'**
+  String get streakMetricCalls;
+
+  /// Metric tile value: minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 min} other{{count} min}}'**
+  String streakMinutes(int count);
+
+  /// Metric tile value: number of calls.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 call} other{{count} calls}}'**
+  String streakCallCount(int count);
+
+  /// Shown under the calendar when the selected day has no calls.
+  ///
+  /// In en, this message translates to:
+  /// **'No calls on this day.'**
+  String get streakNoCallsThatDay;
+
   /// Home learning-status badge when the member has no level yet. Neutral tone, unlike the unit code badge.
   ///
   /// In en, this message translates to:

@@ -531,6 +531,48 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Суралцах хуанли';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'өдөр дараалан',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Ярианы хугацаа';
+
+  @override
+  String get streakMetricCalls => 'Дуудлага';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count мин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дуудлага',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Энэ өдөр дуудлага байхгүй.';
+
+  @override
   String get homeLevelPending => 'Түвшин тодорхойгүй';
 
   @override

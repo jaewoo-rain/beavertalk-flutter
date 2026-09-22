@@ -1,35 +1,51 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/entities/call_result.dart';
 import '../domain/entities/call_streak.dart';
 import 'normalcall_providers.dart';
 
-/// 홈 불꽃 칩의 연속일 — `GET /calls` 를 최신순으로 읽어 앱이 센다.
+/// 최근 통화 기록 — 홈 불꽃 칩(연속일)과 학습 달력이 **같은 목록**을 본다.
 ///
-/// 한 번에 100건(서버 상한 `PageParams.limit le=100`)을 읽고, 읽은 범위의 **가장
-/// 오래된 날까지 연속이 이어져 있으면** 다음 쪽을 더 읽는다. 끊긴 날이 범위 안에
-/// 들어오면 거기서 멈춘다. 쪽 수는 [_maxPages] 로 막는다 — 서버에 연속일 API 가
-/// 생기면 이 전부가 한 줄로 바뀐다(남은판단 문서 S4).
+/// `GET /calls` 를 최신순으로 100건씩(서버 상한 `PageParams.limit le=100`) 읽는다. 두 조건을
+/// 모두 채우면 멈춘다: ①읽은 범위 안에서 연속이 끊겼다 ②이번 달 1일보다 오래된 통화까지
+/// 읽었다(달력이 이번 달을 그린다). 쪽 수는 [_maxPages] 로 막는다 — 서버에 연속일·달력
+/// API 가 생기면 이 전부가 한 줄로 바뀐다(남은판단 S4).
 ///
-/// autoDispose: 통화가 끝나면 홈이 [curMeProvider] 와 함께 이것도 다시 읽는다.
-final callStreakProvider = FutureProvider.autoDispose<CallStreak>((ref) async {
+/// ⚠ 새로 읽게 하려면 **이것을** 무효화하라. [callStreakProvider] 만 무효화하면 이 목록이
+///   캐시로 남아 옛 날짜로 다시 센다.
+final callHistoryProvider =
+    FutureProvider.autoDispose<List<CallSummary>>((ref) async {
   final repo = ref.watch(normalcallRepositoryProvider);
   const pageSize = 100;
-  const maxPages = _maxPages;
-  final dates = <DateTime>[];
+  final all = <CallSummary>[];
   final today = DateTime.now();
-  for (var page = 0; page < maxPages; page++) {
-    final calls = await repo.listCalls(limit: pageSize, offset: page * pageSize);
-    dates.addAll(calls.map((c) => c.callDate).whereType<DateTime>());
+  final monthStart = DateTime(today.year, today.month);
+  for (var page = 0; page < _maxPages; page++) {
+    final calls =
+        await repo.listCalls(limit: pageSize, offset: page * pageSize);
+    all.addAll(calls);
     if (calls.length < pageSize) break;
+    final dates = all.map((c) => c.callDate).whereType<DateTime>().toList();
     // 날짜가 하나도 없으면(전부 null) 더 볼 것이 없다 — 아래 reduce 가 빈 목록에서 던진다.
     if (dates.isEmpty) break;
-    // 읽은 범위 안에서 이미 끊겼으면 더 읽을 필요가 없다.
     final streak = CallStreak.fromDates(dates, today);
-    final oldest = dates.map((d) => d.toLocal()).reduce((a, b) => a.isBefore(b) ? a : b);
+    final oldest =
+        dates.map((d) => d.toLocal()).reduce((a, b) => a.isBefore(b) ? a : b);
+    final oldestDay = DateTime(oldest.year, oldest.month, oldest.day);
     final reach = DateTime(today.year, today.month, today.day - streak.days);
-    if (DateTime(oldest.year, oldest.month, oldest.day).isBefore(reach)) break;
+    if (oldestDay.isBefore(reach) && oldestDay.isBefore(monthStart)) break;
   }
-  return CallStreak.fromDates(dates, today);
+  return all;
+});
+
+/// 홈 불꽃 칩의 연속일 — [callHistoryProvider] 의 날짜로 앱이 센다.
+final callStreakProvider =
+    FutureProvider.autoDispose<CallStreak>((ref) async {
+  final calls = await ref.watch(callHistoryProvider.future);
+  return CallStreak.fromDates(
+    calls.map((c) => c.callDate).whereType<DateTime>(),
+    DateTime.now(),
+  );
 });
 
 /// 최대 쪽 수 — 100건 × 4 = 400건. **하루 1통화 전제**로 1년 넘게 센다.

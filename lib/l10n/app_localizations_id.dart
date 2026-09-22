@@ -532,6 +532,48 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Kalender belajar';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'hari berturut-turut',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Waktu panggilan';
+
+  @override
+  String get streakMetricCalls => 'Panggilan';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mnt',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count panggilan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Tidak ada panggilan di hari ini.';
+
+  @override
   String get homeLevelPending => 'Level belum ada';
 
   @override

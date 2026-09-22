@@ -93,7 +93,8 @@ class HomeScreen extends ConsumerWidget {
         };
         if (live.contains(prev) && !live.contains(next)) {
           ref.invalidate(curMeProvider);
-          ref.invalidate(callStreakProvider);
+          // 연속일은 통화 기록에서 센다 — 기록을 무효화해야 새로 읽는다.
+          ref.invalidate(callHistoryProvider);
         }
       },
     );
@@ -141,6 +142,8 @@ class HomeScreen extends ConsumerWidget {
                 ref.read(homeModeProvider.notifier).state = m,
             streak: streak.valueOrNull,
             showStreak: !streak.hasError,
+            onStreakTap: () =>
+                Navigator.pushNamed(context, Routes.streakCalendar),
             onProfileTap: () => Navigator.pushNamed(context, Routes.mypage),
           ),
           // Hero — avatar + change badge + title, pinned near the top (Figma

@@ -517,6 +517,48 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => '학습 달력';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '일 연속',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => '통화 시간';
+
+  @override
+  String get streakMetricCalls => '통화';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count분',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count회',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => '이날은 통화가 없어요.';
+
+  @override
   String get homeLevelPending => '레벨 미정';
 
   @override

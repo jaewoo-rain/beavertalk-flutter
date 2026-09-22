@@ -538,6 +538,48 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Tanulási naptár';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'nap egymás után',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Hívásidő';
+
+  @override
+  String get streakMetricCalls => 'Hívások';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count perc',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hívás',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Ezen a napon nem volt hívás.';
+
+  @override
   String get homeLevelPending => 'Szint nincs meg';
 
   @override

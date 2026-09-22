@@ -528,6 +528,48 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'सिकाइ पात्रो';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'दिन लगातार',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'कल समय';
+
+  @override
+  String get streakMetricCalls => 'कलहरू';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count मिनेट',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count कल',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'यो दिन कुनै कल भएन।';
+
+  @override
   String get homeLevelPending => 'स्तर निर्धारित छैन';
 
   @override

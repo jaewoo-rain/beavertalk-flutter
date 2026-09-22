@@ -530,6 +530,48 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Окуу календары';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'күн катары менен',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Чалуу убактысы';
+
+  @override
+  String get streakMetricCalls => 'Чалуулар';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count мүн',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count чалуу',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Бул күнү чалуу болгон жок.';
+
+  @override
   String get homeLevelPending => 'Деңгээл белгисиз';
 
   @override

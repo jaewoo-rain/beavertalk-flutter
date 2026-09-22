@@ -43,6 +43,7 @@ import '../screens/plans/plans_compare.dart';
 import '../screens/plans/purchase_flow.dart';
 import '../features/subscription/domain/entities/subscription_state.dart';
 import '../screens/mypage/avatar.dart';
+import '../screens/home/streak_calendar.dart';
 import '../screens/mypage/share.dart';
 import '../screens/alarm/alarm_list.dart';
 import '../screens/alarm/alarm_add.dart';
@@ -121,6 +122,9 @@ abstract final class Routes {
   static const weakSoundWords = '/weak-sounds/learn/words';
   static const weakSoundSentence = '/weak-sounds/learn/sentence';
   static const weakSoundTest = '/weak-sounds/learn/test';
+
+  // ── 학습 달력(홈 불꽃 칩) ──
+  static const streakCalendar = '/streak-calendar';
 
   // ── Records ──
   static const records = '/records';
@@ -302,6 +306,7 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.alarms: (_) => const AlarmListScreen(),
     Routes.alarmAdd: (_) => const AlarmAddScreen(),
     Routes.alarmEmpty: (_) => const AlarmEmptyScreen(),
+    Routes.streakCalendar: (_) => const StreakCalendarScreen(),
     Routes.records: (_) => const RecordListScreen(),
     // Archive is now an in-page tab of RecordListScreen; the route is kept for
     // deep links and opens the same page pre-selected on the 보관 tab.

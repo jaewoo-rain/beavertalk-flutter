@@ -527,6 +527,48 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Оқу күнтізбесі';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'күн қатарынан',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Қоңырау уақыты';
+
+  @override
+  String get streakMetricCalls => 'Қоңыраулар';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count мин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count қоңырау',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Бұл күні қоңырау болмады.';
+
+  @override
   String get homeLevelPending => 'Деңгей белгісіз';
 
   @override

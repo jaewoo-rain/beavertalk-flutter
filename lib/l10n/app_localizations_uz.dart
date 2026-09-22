@@ -534,6 +534,48 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'O‘qish taqvimi';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'kun ketma-ket',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Qo‘ng‘iroq vaqti';
+
+  @override
+  String get streakMetricCalls => 'Qo‘ng‘iroqlar';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count daq',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ta qo‘ng‘iroq',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Bu kuni qo‘ng‘iroq bo‘lmagan.';
+
+  @override
   String get homeLevelPending => 'Daraja aniqlanmagan';
 
   @override

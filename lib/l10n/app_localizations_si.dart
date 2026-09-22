@@ -532,6 +532,48 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'ඉගෙනුම් දින දර්ශනය';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'දින අඛණ්ඩව',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'ඇමතුම් කාලය';
+
+  @override
+  String get streakMetricCalls => 'ඇමතුම්';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'මිනි. $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ඇමතුම් $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'මෙදින ඇමතුම් නැත.';
+
+  @override
   String get homeLevelPending => 'මට්ටම නිශ්චිත නැත';
 
   @override

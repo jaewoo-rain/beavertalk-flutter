@@ -524,6 +524,48 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'ปฏิทินการเรียน';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'วันติดต่อกัน',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'เวลาโทร';
+
+  @override
+  String get streakMetricCalls => 'การโทร';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count นาที',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ครั้ง',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'วันนี้ไม่มีการโทร';
+
+  @override
   String get homeLevelPending => 'ยังไม่มีระดับ';
 
   @override

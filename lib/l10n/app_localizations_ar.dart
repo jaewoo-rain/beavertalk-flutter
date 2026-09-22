@@ -530,6 +530,50 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'تقويم التعلّم';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'أيام متتالية',
+      one: 'يوم متتالٍ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'مدة المكالمات';
+
+  @override
+  String get streakMetricCalls => 'المكالمات';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count دقيقة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count مكالمات',
+      one: 'مكالمة واحدة',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'لا توجد مكالمات في هذا اليوم.';
+
+  @override
   String get homeLevelPending => 'المستوى غير محدد';
 
   @override

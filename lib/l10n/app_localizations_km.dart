@@ -531,6 +531,48 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'ប្រតិទិនសិក្សា';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ថ្ងៃជាប់គ្នា',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'រយៈពេលហៅ';
+
+  @override
+  String get streakMetricCalls => 'ការហៅ';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count នាទី',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ដង',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'ថ្ងៃនេះគ្មានការហៅទេ។';
+
+  @override
   String get homeLevelPending => 'មិនទាន់មានកម្រិត';
 
   @override

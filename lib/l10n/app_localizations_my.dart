@@ -536,6 +536,48 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'လေ့လာမှု ပြက္ခဒိန်';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ရက် ဆက်တိုက်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'ခေါ်ဆိုချိန်';
+
+  @override
+  String get streakMetricCalls => 'ခေါ်ဆိုမှု';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count မိနစ်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ကြိမ်',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'ဤနေ့တွင် ခေါ်ဆိုမှု မရှိပါ။';
+
+  @override
   String get homeLevelPending => 'အဆင့် မသတ်မှတ်ရသေး';
 
   @override

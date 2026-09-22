@@ -533,6 +533,52 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Календарь занятий';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'дней подряд',
+      few: 'дня подряд',
+      one: 'день подряд',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Время звонков';
+
+  @override
+  String get streakMetricCalls => 'Звонки';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count мин',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count звонков',
+      few: '$count звонка',
+      one: '$count звонок',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'В этот день звонков не было.';
+
+  @override
   String get homeLevelPending => 'Без уровня';
 
   @override

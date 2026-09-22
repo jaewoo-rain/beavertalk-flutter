@@ -535,6 +535,50 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Oppimiskalenteri';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'päivää putkeen',
+      one: 'päivä putkeen',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Puheluaika';
+
+  @override
+  String get streakMetricCalls => 'Puhelut';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count min',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count puhelua',
+      one: '1 puhelu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Tänä päivänä ei ollut puheluita.';
+
+  @override
   String get homeLevelPending => 'Taso avoinna';
 
   @override

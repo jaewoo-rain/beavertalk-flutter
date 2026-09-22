@@ -537,6 +537,50 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Kalendaryo ng pag-aaral';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'araw na sunod-sunod',
+      one: 'araw na sunod-sunod',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Tagal ng tawag';
+
+  @override
+  String get streakMetricCalls => 'Mga tawag';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count min',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tawag',
+      one: '1 tawag',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Walang tawag sa araw na ito.';
+
+  @override
   String get homeLevelPending => 'Wala pang level';
 
   @override

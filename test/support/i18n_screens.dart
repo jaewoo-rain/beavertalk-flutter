@@ -40,6 +40,9 @@ import 'package:beavertalk/screens/auth/signup.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/screens/mypage/avatar.dart';
+import 'package:beavertalk/screens/home/streak_calendar.dart';
+import 'package:beavertalk/features/normalcall/domain/entities/call_result.dart';
+import 'package:beavertalk/features/normalcall/presentation/streak_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:beavertalk/features/auth/domain/entities/member.dart';
 import 'package:beavertalk/features/auth/presentation/providers/my_profile_provider.dart';
@@ -211,6 +214,29 @@ Map<String, Widget Function()> i18nScreens() {
     // 파트너 변경(09-22 개편) — 목록+상세를 합친 한 화면. 데이터가 필요해 프로바이더를
     // 덮어 띄운다. 최악 조합 둘: 할인(가격 줄 + 정가 취소선 + -N% + 떠 있는 배너 +
     // 「구매 가능」 배지) · 구독으로 열림(보라 배지가 가장 긴 문구).
+    // 학습 달력 — 오늘부터 사흘 연속 + 끊긴 하루(히어로 · 지표 · 얼굴 달력 · 통화 줄 모두 그린다).
+    'StreakCalendar': () => ProviderScope(
+          overrides: [
+            callHistoryProvider.overrideWith((ref) async {
+              final now = DateTime.now();
+              CallSummary c(int id, int ago, String summary) => CallSummary(
+                    callId: id,
+                    character: const CallCharacterBrief(characterId: 1, name: 'Baba'),
+                    callDate: DateTime(now.year, now.month, now.day, 10)
+                        .subtract(Duration(days: ago)),
+                    totalTime: 600,
+                    summary: summary,
+                  );
+              return [
+                c(1, 0, 'Talked about weekend hiking plans and favourite music'),
+                c(2, 1, 'Ordering food'),
+                c(3, 2, 'Weekend plans'),
+                c(4, 5, ''),
+              ];
+            }),
+          ],
+          child: const StreakCalendarScreen(),
+        ),
     'AvatarScreenDiscount': () => _avatarHost(discount: true),
     'AvatarScreenSubscription': () => _avatarHost(discount: false),
     'MyPage': () => const MyPageScreen(),

@@ -515,6 +515,48 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => '学习日历';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '天连续',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => '通话时长';
+
+  @override
+  String get streakMetricCalls => '通话';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 分钟',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => '这一天没有通话。';
+
+  @override
   String get homeLevelPending => '等级未定';
 
   @override

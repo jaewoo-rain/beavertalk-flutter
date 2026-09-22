@@ -531,6 +531,48 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Lịch học';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ngày liên tiếp',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Thời gian gọi';
+
+  @override
+  String get streakMetricCalls => 'Cuộc gọi';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count phút',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count cuộc gọi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Ngày này không có cuộc gọi.';
+
+  @override
   String get homeLevelPending => 'Chưa có cấp độ';
 
   @override

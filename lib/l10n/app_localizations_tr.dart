@@ -529,6 +529,48 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Öğrenme takvimi';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'gün üst üste',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Arama süresi';
+
+  @override
+  String get streakMetricCalls => 'Aramalar';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dk',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count arama',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'Bu gün arama yok.';
+
+  @override
   String get homeLevelPending => 'Seviye belirsiz';
 
   @override

@@ -534,6 +534,48 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'سیکھنے کا کیلنڈر';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'دن لگاتار',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'کال کا وقت';
+
+  @override
+  String get streakMetricCalls => 'کالز';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count منٹ',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count کالز',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'اس دن کوئی کال نہیں ہوئی۔';
+
+  @override
   String get homeLevelPending => 'لیول طے نہیں';
 
   @override

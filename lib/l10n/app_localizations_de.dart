@@ -542,6 +542,50 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get streakCalendarTitle => 'Lernkalender';
+
+  @override
+  String streakDaysUnit(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Tage in Folge',
+      one: 'Tag in Folge',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakMetricCallTime => 'Gesprächszeit';
+
+  @override
+  String get streakMetricCalls => 'Anrufe';
+
+  @override
+  String streakMinutes(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Min.',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String streakCallCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Anrufe',
+      one: '1 Anruf',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get streakNoCallsThatDay => 'An diesem Tag gab es keine Anrufe.';
+
+  @override
   String get homeLevelPending => 'Level offen';
 
   @override
