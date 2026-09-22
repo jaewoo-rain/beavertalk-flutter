@@ -62,9 +62,19 @@ class RowAlarm extends StatelessWidget {
                 children: [
                   // 이름·요약은 식별자라 자르지 않는다 — 길면 줄을 바꾼다.
                   Text(partner, style: AppType.caption1.r.copyWith(color: sub)),
+                  // 시각은 이 줄의 주인공이다 — Figma `Row-Alarm`(`6179:28978`)의
+                  // `MO/Title 3/Regular` 는 **40 / 줄높이 52** 다.
+                  //
+                  // ⚠ 앱의 `AppType.title3` 는 24/32 라 이름이 같아도 **다른 크기**다.
+                  //   그걸 쓰는 바람에 행이 정본 109 → 74 로 눌려 세 줄이 서로 붙어
+                  //   보였다(2026-09-23 사장님 지적 「객체가 서로 몰려있다」).
+                  //   앱 스케일을 건드리면 다른 화면이 같이 움직이므로 여기서만 값을 준다.
                   Text(
                     time,
                     style: AppType.title3.r.copyWith(
+                      fontSize: 40,
+                      height: 52 / 40,
+                      letterSpacing: -2.82,
                       color: main,
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),

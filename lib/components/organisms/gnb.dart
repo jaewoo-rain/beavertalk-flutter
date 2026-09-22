@@ -95,6 +95,7 @@ class Gnb extends StatelessWidget {
     this.statusColor,
     this.caption,
     this.trailing,
+    this.background,
   });
 
   /// [GnbType.main]: back arrow + centered [title].
@@ -103,12 +104,14 @@ class Gnb extends StatelessWidget {
     String? title,
     VoidCallback? onBack,
     Widget? trailing,
+    Color? background,
   }) : this(
           key: key,
           type: GnbType.main,
           title: title,
           onBack: onBack,
           trailing: trailing,
+          background: background,
         );
 
   /// [GnbType.main2]: back arrow + [progress] bar + `current/total`.
@@ -188,6 +191,12 @@ class Gnb extends StatelessWidget {
   /// When omitted, a balancing transparent spacer keeps the title centered.
   final Widget? trailing;
 
+  /// GNB 가 칠할 배경. null 이면 [type] 의 기본값.
+  ///
+  /// 이어지는 면 위에 얹을 때 `Colors.transparent` 를 준다 — 안 그러면 GNB 만
+  /// 제 배경을 칠해 가로줄이 생긴다.
+  final Color? background;
+
   // 좌우 패딩(Figma `20`)은 상수가 아니라 [ContentColumn] 이 준다. 폰에서는
   // 그대로 20이고, 넓어지면 헤더 내용이 본문 컬럼과 같은 선에 선다(태블릿
   // 810에서 105). 막대 **배경은** 전폭 그대로다 — 좁아지는 건 패딩뿐이다.
@@ -199,6 +208,13 @@ class Gnb extends StatelessWidget {
   static const double _iconBox = 28;
 
   Color _background(BuildContext context) {
+    // 호출부가 지정하면 그것이 이긴다.
+    //
+    // GNB 가 **자기 배경을 칠한다**는 것이 놓치기 쉬운 사실이다. 뒤에 색을 깔아도
+    // GNB 만 회색으로 남는다 — 학습 달력에서 히어로는 주황인데 GNB 만 회색이라
+    // 가로줄이 생겼다(2026-09-23 실기기). 이어지는 면 위에 얹을 때는 투명을 준다.
+    final override = background;
+    if (override != null) return override;
     switch (type) {
       case GnbType.main:
       case GnbType.sub:

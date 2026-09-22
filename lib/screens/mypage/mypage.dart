@@ -942,29 +942,28 @@ class MyPageScreen extends ConsumerWidget {
           // Expanded (not Flexible + Spacer): with both the text group and a
           // Spacer flexible, each would only get half the free width and the
           // titles would overflow at 320dp in the wordier locales.
+          // ⛔ 제목·부제를 `Flexible` 둘로 나란히 두지 마라. **flex 가 같으면 행이
+          //   정확히 반반 갈린다** — 짧은 제목이 안 쓰는 폭까지 잡고, 부제는 남은
+          //   절반에 안 들어가 줄이 바뀐다. 「Accent analysis / Last 10 sessions
+          //   avg.」 가 공간이 남는데도 두 줄이 됐다(2026-09-23 실기기).
+          //   같은 함정이 `card_line.dart` 결제 행 주석에 이미 적혀 있었다.
+          //
+          // `Wrap` 은 **각자 필요한 만큼만** 쓰고, 한 줄에 안 들어갈 때만 부제를
+          // 통째로 다음 줄로 내린다. 문구 중간에서 끊기지 않는다.
           Expanded(
-            child: Row(
+            child: Wrap(
+              spacing: AppSpacing.s8,
+              runSpacing: 2,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
-                // 제목이 먼저다 — 둘 다 Flexible 이면 **둘 다** 잘려 무엇의
-                // 무엇인지 알 수 없게 된다. 줄어드는 쪽은 부제목이다.
-                Flexible(
-                  child: Text(
-                    title,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: AppType.body1.sb
-                        .copyWith(color: context.c.primaryHeavy),
-                  ),
+                Text(
+                  title,
+                  style:
+                      AppType.body1.sb.copyWith(color: context.c.primaryHeavy),
                 ),
-                const SizedBox(width: AppSpacing.s8),
-                Flexible(
-                  child: Text(
-                    subtitle,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style:
-                        AppType.body1.r.copyWith(color: context.c.labelNormal),
-                  ),
+                Text(
+                  subtitle,
+                  style: AppType.body1.r.copyWith(color: context.c.labelNormal),
                 ),
               ],
             ),

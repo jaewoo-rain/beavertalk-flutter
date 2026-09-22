@@ -104,9 +104,14 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
           color: c.accentStreakSurface,
           child: Column(
             children: [
+              // GNB 도 히어로와 같은 면 위에 얹는다 — 기본 배경을 그대로 두면
+              // GNB 만 회색이라 주황 히어로와의 사이에 가로줄이 생긴다
+              // (Figma `6183:4527` 은 GNB 와 히어로가 한 면이다).
               Gnb.main(
-                  title: l10n.streakCalendarTitle,
-                  onBack: () => Navigator.pop(context)),
+                title: l10n.streakCalendarTitle,
+                onBack: () => Navigator.pop(context),
+                background: Colors.transparent,
+              ),
               ContentColumn(
                 gutter: 24,
                 padding: const EdgeInsets.only(bottom: 20),
@@ -359,14 +364,27 @@ class _MonthGrid extends StatelessWidget {
           ],
         ),
         const SizedBox(height: 4),
+        // 연속 구간 띠는 **한 줄 안에서 이어진다.** 그래서 칸마다 따로 그리지 않고
+        // 「왼쪽·오른쪽 이웃도 띠인가」를 넘겨, 끝나는 쪽만 둥글게 한다. 칸마다
+        // 동그라미를 그리면 이어진 날들이 구슬처럼 끊겨 보인다.
         for (final week in monthWeeks(month, first))
           Row(
             children: [
-              for (final d in week)
+              for (var i = 0; i < week.length; i++)
                 Expanded(
-                  child: d == null
+                  child: week[i] == null
                       ? const SizedBox(height: 40)
-                      : _cell(context, d, inBand(d)),
+                      : _cell(
+                          context,
+                          week[i]!,
+                          inBand(week[i]!),
+                          joinLeft: i > 0 &&
+                              week[i - 1] != null &&
+                              inBand(week[i - 1]!),
+                          joinRight: i + 1 < week.length &&
+                              week[i + 1] != null &&
+                              inBand(week[i + 1]!),
+                        ),
                 ),
             ],
           ),
@@ -374,7 +392,13 @@ class _MonthGrid extends StatelessWidget {
     );
   }
 
-  Widget _cell(BuildContext context, DateTime d, bool band) {
+  Widget _cell(
+    BuildContext context,
+    DateTime d,
+    bool band, {
+    bool joinLeft = false,
+    bool joinRight = false,
+  }) {
     final c = context.c;
     final calls = byDay[d];
     final future = d.isAfter(today);
@@ -387,7 +411,12 @@ class _MonthGrid extends StatelessWidget {
         height: 28,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: c.accentStreak),
+          // 고른 날에는 **얼굴의 주황 테두리를 끈다.** 바깥 선택 링(36)과 겹치면
+          // 링이 두 겹으로 보여 지저분하다 — 정본 `6183:4527` 은 통화 없는 날만
+          // 골라 둬서 이 경우를 안 그렸다(2026-09-23 실기기에서 드러남).
+          border: Border.all(
+            color: isSelected ? Colors.transparent : c.accentStreak,
+          ),
           image: DecorationImage(
             image: (url != null && url.isNotEmpty)
                 ? NetworkImage(url) as ImageProvider
@@ -414,7 +443,19 @@ class _MonthGrid extends StatelessWidget {
         onTap: future ? null : () => onSelect(d),
         child: Container(
           constraints: const BoxConstraints(minHeight: 40),
-          color: band ? c.accentStreakSurface : null,
+          // 연속 구간 띠. Figma 는 `var(--ds-radius-full)`(9999) 즉 **알약**이다.
+          // 각진 사각형으로 두면 칸 경계마다 모서리가 서서 달력이 지저분해진다.
+          decoration: band
+              ? BoxDecoration(
+                  color: c.accentStreakSurface,
+                  // 이어지는 쪽은 각지게, 끝나는 쪽만 둥글게 — Figma
+                  // `var(--ds-radius-full)`. 이러면 붙은 칸끼리 한 알약이 된다.
+                  borderRadius: BorderRadius.horizontal(
+                    left: Radius.circular(joinLeft ? 0 : 9999),
+                    right: Radius.circular(joinRight ? 0 : 9999),
+                  ),
+                )
+              : null,
           alignment: Alignment.center,
           child: Container(
             width: 36,
