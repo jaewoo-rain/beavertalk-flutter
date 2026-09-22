@@ -568,6 +568,27 @@ class AppLocalizationsFi extends AppLocalizations {
   String get changeAvatar => 'Vaihda avatar';
 
   @override
+  String get avatarUseNow => 'Käytä nyt';
+
+  @override
+  String get avatarPurchaseFailed => 'Osto ei onnistunut';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Vain tänään · −$percent %';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time jäljellä';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days pv $time jäljellä';
+  }
+
+  @override
   String get avatarIntro =>
       'Ääni ja vaikeustaso vaihtelevat puhekumppanin mukaan.\nJotkin kumppanit voivat vaatia maksun.';
 

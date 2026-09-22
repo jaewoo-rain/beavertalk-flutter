@@ -564,6 +564,27 @@ class AppLocalizationsKm extends AppLocalizations {
   String get changeAvatar => 'ប្តូររូបតំណាង';
 
   @override
+  String get avatarUseNow => 'ប្រើឥឡូវ';
+
+  @override
+  String get avatarPurchaseFailed => 'ការទិញមិនបានសម្រេច';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'តែថ្ងៃនេះ · បញ្ចុះ $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'នៅសល់ $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'នៅសល់ $days ថ្ងៃ $time';
+  }
+
+  @override
   String get avatarIntro =>
       'សំឡេង និងកម្រិតលំបាកខុសគ្នាទៅតាមដៃគូការហៅ។\nដៃគូខ្លះអាចត្រូវការការបង់ប្រាក់។';
 

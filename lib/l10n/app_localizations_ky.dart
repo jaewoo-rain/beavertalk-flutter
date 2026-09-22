@@ -563,6 +563,27 @@ class AppLocalizationsKy extends AppLocalizations {
   String get changeAvatar => 'Аватарды алмаштыруу';
 
   @override
+  String get avatarUseNow => 'Азыр колдонуу';
+
+  @override
+  String get avatarPurchaseFailed => 'Сатып алуу аяктаган жок';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Бүгүн гана · $percent% арзандатуу';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time калды';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days к. $time калды';
+  }
+
+  @override
   String get avatarIntro =>
       'Үн жана татаалдык чалуу шеригине жараша ар түрдүү болот.\nАйрым шериктер төлөмдү талап кылышы мүмкүн.';
 

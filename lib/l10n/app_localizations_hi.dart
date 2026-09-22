@@ -563,6 +563,27 @@ class AppLocalizationsHi extends AppLocalizations {
   String get changeAvatar => 'अवतार बदलें';
 
   @override
+  String get avatarUseNow => 'अभी इस्तेमाल करें';
+
+  @override
+  String get avatarPurchaseFailed => 'खरीदारी पूरी नहीं हुई';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'सिर्फ़ आज · $percent% छूट';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time बाकी';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days दिन $time बाकी';
+  }
+
+  @override
   String get avatarIntro =>
       'आवाज़ और कठिनाई कॉल पार्टनर के अनुसार अलग-अलग होती है।\nकुछ पार्टनर के लिए भुगतान करना पड़ सकता है।';
 

@@ -1,34 +1,19 @@
 import 'package:flutter/material.dart';
 
 import '../../app/adaptive.dart';
+import '../../app/app_scaffold.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/organisms/gnb.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_radius.dart';
-import '../../theme/app_spacing.dart';
-import '../../theme/app_typography.dart';
 
-/// AvatarLoading — what `AvatarScreen` shows while the characters land, Figma
-/// `screen/main_change_avatar_loading` (`3490:4126`).
+/// AvatarLoading — 캐릭터가 오기 전 `AvatarScreen`, Figma
+/// `screen/main_change_avatar_loading` (`6255:13815`, 09-22 개편).
 ///
-/// The frame is not a separate screen: it is the real one with **only the
-/// server's words** swapped for bars. So the intro paragraph and the 한정 할인 중
-/// / 구매 가능 section labels are still real text here — they are static, and
-/// blanking them would make the screen say less than it already knows.
-///
-/// The one label that *is* a bar is 나의 통화 상대: this app spells it
-/// `myPartnersOwned` — "내 파트너 · {count}개 보유" — which bakes the count into the
-/// string, so it cannot be shown without inventing a number. The frame splits
-/// label from count and can keep the label; we cannot, and adding a second key
-/// just to fill a 300ms gap is not worth a copy fork.
-///
-/// The quantities it draws (two owned, one discounted, two buyable) are the
-/// frame's guess, not a claim: the response replaces the list wholesale.
-///
-/// Metrics come from [CardBox] itself (radius 8, padding 10, 64 avatar → 84
-/// high), not from a second reading of the frame — a skeleton that measures the
-/// design independently is exactly how `Card-Loading` ended up reserving 136 for
-/// a 116 card.
+/// 새 배치(로스터 고정 · 무대 · 샘플 음성 · 이야기)를 **같은 자리에서** 막대로 든다 —
+/// 데이터가 오면 막대만 글자로 바뀌고 아무것도 움직이지 않게.
+/// GNB 제목(「아바타 변경」)은 서버 값이 아니라 그대로 쓴다.
+/// CTA 는 그리지 않는다 — 무엇을 할지(사용·구매)는 캐릭터를 알아야 정해진다.
 class AvatarLoading extends StatelessWidget {
   /// Creates the change-avatar loading screen.
   const AvatarLoading({super.key});
@@ -36,137 +21,95 @@ class AvatarLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    return SkeletonShimmer(
-      child: ContentColumn(
-        child: ListView(
-          padding: const EdgeInsets.only(top: AppSpacing.s8, bottom: AppSpacing.s24),
-          children: [
-            Text(
-              l10n.avatarIntro,
-              style: AppType.body2.r.copyWith(color: context.c.labelNormal),
-            ),
-            const SizedBox(height: AppSpacing.s24),
-            // 나의 통화 상대 · <count> (`3490:4133`, 131 wide all in).
-            const SizedBox(
-              height: 20,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Skeleton.bar(width: 131, height: 14),
+    return AppScaffold(
+      background: context.c.backgroundNormalNormal,
+      body: Column(
+        children: [
+          Gnb.main(
+              title: l10n.changeAvatar,
+              onBack: () => Navigator.maybePop(context)),
+          Expanded(
+            child: SkeletonShimmer(
+              child: SingleChildScrollView(
+                physics: const NeverScrollableScrollPhysics(),
+                child: Column(
+                  children: [
+                    // Roster/Fixed — 타일 56·r14 다섯 개(정본 개수 — 주장이 아니다).
+                    // 가로 스크롤 안에 둔다 — 실제 로스터와 같다. 다섯 개 + 여백은 360 이라
+                    // 320dp 에서 그냥 Row 면 40px 넘친다(렌더 시험이 잡았다).
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 12),
+                      child: Row(
+                        children: [
+                          for (var i = 0; i < 5; i++) ...[
+                            if (i > 0) const SizedBox(width: 10),
+                            const Skeleton.box(width: 56, height: 56),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    const Skeleton.circle(size: 140),
+                    const SizedBox(height: 6),
+                    const Skeleton.bar(width: 96, height: 20),
+                    const SizedBox(height: 6),
+                    const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Skeleton.pill(width: 52, height: 24),
+                        SizedBox(width: 6),
+                        Skeleton.pill(width: 56, height: 24),
+                        SizedBox(width: 6),
+                        Skeleton.pill(width: 52, height: 24),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    const Skeleton.bar(width: 260, height: 14),
+                    const SizedBox(height: 8),
+                    const Skeleton.bar(width: 200, height: 14),
+                    const SizedBox(height: 36),
+                    ContentColumn(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // SampleVoice — 카드 틀은 그대로, 안의 글자만 막대.
+                          Container(
+                            height: 48,
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16),
+                            decoration: BoxDecoration(
+                              color: context.c.backgroundElevatedAlternative,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Row(
+                              children: [
+                                Skeleton.circle(size: 24),
+                                SizedBox(width: 10),
+                                Skeleton.bar(width: 130, height: 14),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          // 이야기 네 줄 — 폭 null = 칸 가득.
+                          const Skeleton.bar(height: 14),
+                          const SizedBox(height: 8),
+                          const Skeleton.bar(height: 14),
+                          const SizedBox(height: 8),
+                          const Skeleton.bar(height: 14),
+                          const SizedBox(height: 8),
+                          const Skeleton.bar(width: 200, height: 14),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: AppSpacing.s12),
-            const _OwnedRow(),
-            const SizedBox(height: AppSpacing.s28),
-            _label(context, l10n.limitedDiscount),
-            const SizedBox(height: AppSpacing.s12),
-            const _CharacterCard(),
-            const SizedBox(height: AppSpacing.s16),
-            _label(context, l10n.availableForPurchase),
-            const SizedBox(height: AppSpacing.s12),
-            const _CharacterCard(),
-            const SizedBox(height: AppSpacing.s12),
-            const _CharacterCard(),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-
-  /// The real screen's section label, same style — these are static strings, so
-  /// they are not a promise about the response.
-  Widget _label(BuildContext context, String text) => Text(
-        text,
-        style: AppType.label1.m.copyWith(color: context.c.labelNormal),
-      );
-}
-
-/// Two 80×128 avatar slots at the real row's 16 gap (`3490:4137`).
-class _OwnedRow extends StatelessWidget {
-  const _OwnedRow();
-
-  @override
-  Widget build(BuildContext context) => const Wrap(
-        spacing: AppSpacing.s16,
-        runSpacing: AppSpacing.s16,
-        children: [_AvatarSlot(), _AvatarSlot()],
-      );
-}
-
-/// One `AvatarCard` slot (`3490:4403`): the 64 circle at the frame's y=32 over a
-/// name bar. The 사용 중 / 보유 중 badge is deliberately absent — which badge a
-/// slot carries is exactly what the response decides.
-class _AvatarSlot extends StatelessWidget {
-  const _AvatarSlot();
-
-  @override
-  Widget build(BuildContext context) => const SizedBox(
-        width: 80,
-        height: 128,
-        child: Column(
-          children: [
-            SizedBox(height: 32),
-            Skeleton.circle(size: 64),
-            SizedBox(height: 4),
-            SizedBox(
-              height: 20,
-              child: Center(child: Skeleton.bar(width: 40, height: 14)),
-            ),
-          ],
-        ),
-      );
-}
-
-/// One `Card-Box` character row (`3490:4429`) at [CardBox]'s own box: radius 8,
-/// 10 padding, a 64 avatar and 84 high. Inside, the frame's three lines — name
-/// (29), tags (101) and price (46) — at y 0 / 24 / 44, plus the buy button's
-/// 47×36 slot.
-class _CharacterCard extends StatelessWidget {
-  const _CharacterCard();
-
-  @override
-  Widget build(BuildContext context) => Container(
-        height: 84,
-        decoration: BoxDecoration(
-          color: context.c.backgroundElevatedAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.xs),
-        ),
-        padding: const EdgeInsets.all(10),
-        child: const Row(
-          children: [
-            Skeleton.circle(size: 64),
-            SizedBox(width: 6),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 20,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Skeleton.bar(width: 29, height: 14),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  SizedBox(
-                    height: 16,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Skeleton.bar(width: 101, height: 14),
-                    ),
-                  ),
-                  SizedBox(height: 4),
-                  SizedBox(
-                    height: 20,
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Skeleton.bar(width: 46, height: 14),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Skeleton.box(width: 47, height: 36),
-          ],
-        ),
-      );
 }

@@ -571,6 +571,27 @@ class AppLocalizationsHu extends AppLocalizations {
   String get changeAvatar => 'Avatar módosítása';
 
   @override
+  String get avatarUseNow => 'Használat most';
+
+  @override
+  String get avatarPurchaseFailed => 'A vásárlás nem sikerült';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Csak ma · $percent% kedvezmény';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Még $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Még $days nap $time';
+  }
+
+  @override
   String get avatarIntro =>
       'A hang és a nehézségi szint hívópartnerenként eltérő.\nEgyes partnerek fizetést igényelhetnek.';
 

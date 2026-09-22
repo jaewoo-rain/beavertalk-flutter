@@ -565,6 +565,27 @@ class AppLocalizationsSi extends AppLocalizations {
   String get changeAvatar => 'අවතාරය වෙනස් කරන්න';
 
   @override
+  String get avatarUseNow => 'දැන් භාවිත කරන්න';
+
+  @override
+  String get avatarPurchaseFailed => 'මිලදී ගැනීම සම්පූර්ණ නොවීය';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'අද පමණයි · $percent% වට්ටම්';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time ඉතිරියි';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'දින $days $time ඉතිරියි';
+  }
+
+  @override
   String get avatarIntro =>
       'හඬ සහ අපහසුතා මට්ටම ඇමතුම් හවුල්කරු අනුව වෙනස් වේ.\nසමහර හවුල්කරුවන් සඳහා ගෙවීමක් අවශ්‍ය විය හැක.';
 

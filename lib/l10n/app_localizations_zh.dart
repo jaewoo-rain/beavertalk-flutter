@@ -548,6 +548,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get changeAvatar => '更换头像';
 
   @override
+  String get avatarUseNow => '立即使用';
+
+  @override
+  String get avatarPurchaseFailed => '购买未完成';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return '仅限今日 · $percent% 折扣';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '剩余 $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '剩余 $days 天 $time';
+  }
+
+  @override
   String get avatarIntro => '不同通话对象的声音和难度各不相同。\n部分对象可能需要付费。';
 
   @override

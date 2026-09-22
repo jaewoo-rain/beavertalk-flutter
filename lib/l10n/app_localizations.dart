@@ -1168,6 +1168,36 @@ abstract class AppLocalizations {
   /// **'Change Avatar'**
   String get changeAvatar;
 
+  /// Secondary action of the character purchase-success sheet: make the new character the active one.
+  ///
+  /// In en, this message translates to:
+  /// **'Use now'**
+  String get avatarUseNow;
+
+  /// Banner shown above the purchase button when the store purchase failed (Figma iap_result__fail).
+  ///
+  /// In en, this message translates to:
+  /// **'The purchase didn\'t go through'**
+  String get avatarPurchaseFailed;
+
+  /// Floating discount banner title on the partner-change screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Today only · {percent}% off'**
+  String avatarPromoTitle(int percent);
+
+  /// Countdown under the discount banner title; time is HH:MM:SS.
+  ///
+  /// In en, this message translates to:
+  /// **'{time} left'**
+  String avatarPromoLeft(String time);
+
+  /// Countdown when a day or more is left.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d {time} left'**
+  String avatarPromoLeftDays(int days, String time);
+
   /// No description provided for @avatarIntro.
   ///
   /// In en, this message translates to:

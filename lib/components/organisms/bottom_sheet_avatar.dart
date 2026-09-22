@@ -40,7 +40,7 @@ enum BottomSheetAvatarState {
   /// "Max 이용 중", 가격 행과 구매 버튼은 남는다. 푸터 = 구매하기 + 사용하기.
   ///
   /// Figma 에는 없는 상태다. 서버가 소유(`is_owned`)와 접근(`is_unlocked`)을 분리하면서
-  /// 생겼다 — 자세한 배경은 [AvatarDetailState.subscriptionUnused] 참고.
+  /// 생겼다 — 자세한 배경은 `screens/mypage/avatar.dart` 의 상태 배지 참고.
   unlockedBySubscription,
 }
 
@@ -73,7 +73,7 @@ enum BottomSheetAvatarState {
 /// This widget renders only the sheet surface (no scrim); [asModal] wraps it in
 /// a [Dim] for use inside a [Stack].
 ///
-/// **Retired — superseded by `AvatarDetailScreen`.** Figma replaced the
+/// **Retired — superseded by the partner-change screen (`AvatarScreen`).** Figma replaced the
 /// `BottomSheet-Avatar` sheet with the full-page `Avatar-Detail` (`4024:1090`),
 /// which carries the same four `state` variants. `AvatarScreen` now pushes that
 /// screen instead of showing this sheet, so this widget has **no callers left**

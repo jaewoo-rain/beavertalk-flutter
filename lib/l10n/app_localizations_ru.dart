@@ -566,6 +566,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get changeAvatar => 'Сменить аватар';
 
   @override
+  String get avatarUseNow => 'Использовать';
+
+  @override
+  String get avatarPurchaseFailed => 'Покупка не завершилась';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Только сегодня · скидка $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Осталось $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Осталось $days д $time';
+  }
+
+  @override
   String get avatarIntro =>
       'Голос и сложность зависят от собеседника.\nНекоторые персонажи могут быть платными.';
 

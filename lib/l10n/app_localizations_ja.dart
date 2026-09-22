@@ -549,6 +549,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get changeAvatar => 'アバターを変更';
 
   @override
+  String get avatarUseNow => '今すぐ使う';
+
+  @override
+  String get avatarPurchaseFailed => '購入が完了しませんでした';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return '本日限定 · $percent%オフ';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '残り $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '残り $days日 $time';
+  }
+
+  @override
   String get avatarIntro => '通話相手によって声や難易度が異なります。\n一部の相手は購入が必要な場合があります。';
 
   @override

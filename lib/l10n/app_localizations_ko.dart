@@ -549,6 +549,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get changeAvatar => '아바타 변경';
 
   @override
+  String get avatarUseNow => '바로 사용하기';
+
+  @override
+  String get avatarPurchaseFailed => '결제가 완료되지 않았어요';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return '오늘만 $percent% 할인';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time 남음';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days일 $time 남음';
+  }
+
+  @override
   String get avatarIntro => '통화 상대에 따라 목소리와 난이도가 달라요.\n일부 상대는 유료일 수 있어요.';
 
   @override

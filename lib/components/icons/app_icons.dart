@@ -128,6 +128,9 @@ abstract final class AppIcons {
   /// `flame-fill` (`6231:1510`) — 연속 학습일 불꽃(홈 `Chip-Streak`).
   static Widget flameFill({double size = 24, required Color color}) =>
       _glyph('flame-fill', size, color);
+  /// `clock` — 할인 배너의 남은 시간(`Banner-Promo`).
+  static Widget clock({double size = 24, required Color color}) =>
+      _glyph('clock', size, color);
   static Widget flag({double size = 24, required Color color}) =>
       _glyph('flag', size, color);
 

@@ -566,6 +566,27 @@ class AppLocalizationsId extends AppLocalizations {
   String get changeAvatar => 'Ganti Avatar';
 
   @override
+  String get avatarUseNow => 'Pakai sekarang';
+
+  @override
+  String get avatarPurchaseFailed => 'Pembelian tidak berhasil';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Hari ini saja · diskon $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Sisa $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Sisa $days hr $time';
+  }
+
+  @override
   String get avatarIntro =>
       'Suara dan tingkat kesulitan berbeda tergantung lawan bicara.\nBeberapa lawan bicara mungkin memerlukan pembayaran.';
 

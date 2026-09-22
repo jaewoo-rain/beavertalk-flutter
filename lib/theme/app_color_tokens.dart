@@ -72,6 +72,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.statusCautionarySurface,
     required this.accentStreak,
     required this.accentStreakSurface,
+    required this.characterSurfaceBaba,
+    required this.characterSurfaceBibi,
+    required this.characterSurfaceDudu,
+    required this.characterSurfacePopo,
+    required this.characterSurfaceRara,
     required this.accentForegroundRed,
     required this.accentForegroundOrange,
     required this.accentForegroundRedOrange,
@@ -218,6 +223,14 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// `Accent/Streak-Surface` — 불꽃 칩 바탕(알파 내장). Dark #FF9A57·16% / Light #F1843F·14%.
   final Color accentStreakSurface;
 
+  /// `Character/Surface/*` — 캐릭터 고유색(파트너 변경 화면의 무대·로스터 타일 바탕).
+  /// Dark 는 저채도(09-22 디자인 확정). 모르는 캐릭터는 [characterSurfaceFor] 가 중립색으로 떨어뜨린다.
+  final Color characterSurfaceBaba;
+  final Color characterSurfaceBibi;
+  final Color characterSurfaceDudu;
+  final Color characterSurfacePopo;
+  final Color characterSurfaceRara;
+
   // ── Accent ─────────────────────────────────────────────────
   final Color accentForegroundRed, accentForegroundOrange;
   final Color accentForegroundRedOrange, accentForegroundLime;
@@ -298,6 +311,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     statusCautionarySurface: Color(0x1AFFB548),
     accentStreak: Color(0xFFFF9A57),
     accentStreakSurface: Color(0x29FF9A57),
+    characterSurfaceBaba: Color(0xFF2D2A26),
+    characterSurfaceBibi: Color(0xFF302A24),
+    characterSurfaceDudu: Color(0xFF2A2826),
+    characterSurfacePopo: Color(0xFF312827),
+    characterSurfaceRara: Color(0xFF2B2733),
     accentForegroundRed: Color(0xFFFF6363),
     accentForegroundOrange: Color(0xFFFF9200),
     accentForegroundRedOrange: Color(0xFFFF7B2E),
@@ -386,6 +404,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     statusCautionarySurface: Color(0x1AFFAA00),
     accentStreak: Color(0xFFE8702A),
     accentStreakSurface: Color(0x24F1843F),
+    characterSurfaceBaba: Color(0xFFF1ECE2),
+    characterSurfaceBibi: Color(0xFFF4E6D6),
+    characterSurfaceDudu: Color(0xFFE7E1DA),
+    characterSurfacePopo: Color(0xFFF6E1DC),
+    characterSurfaceRara: Color(0xFFECE6F1),
     accentForegroundRed: Color(0xFFE52222),
     accentForegroundOrange: Color(0xFF9C5800),
     accentForegroundRedOrange: Color(0xFFF55A00),
@@ -469,6 +492,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? statusCautionarySurface,
     Color? accentStreak,
     Color? accentStreakSurface,
+    Color? characterSurfaceBaba,
+    Color? characterSurfaceBibi,
+    Color? characterSurfaceDudu,
+    Color? characterSurfacePopo,
+    Color? characterSurfaceRara,
     Color? accentForegroundRed,
     Color? accentForegroundOrange,
     Color? accentForegroundRedOrange,
@@ -558,6 +586,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
             statusCautionarySurface ?? this.statusCautionarySurface,
         accentStreak: accentStreak ?? this.accentStreak,
         accentStreakSurface: accentStreakSurface ?? this.accentStreakSurface,
+        characterSurfaceBaba: characterSurfaceBaba ?? this.characterSurfaceBaba,
+        characterSurfaceBibi: characterSurfaceBibi ?? this.characterSurfaceBibi,
+        characterSurfaceDudu: characterSurfaceDudu ?? this.characterSurfaceDudu,
+        characterSurfacePopo: characterSurfacePopo ?? this.characterSurfacePopo,
+        characterSurfaceRara: characterSurfaceRara ?? this.characterSurfaceRara,
         accentForegroundRed: accentForegroundRed ?? this.accentForegroundRed,
         accentForegroundOrange:
             accentForegroundOrange ?? this.accentForegroundOrange,
@@ -663,6 +696,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
           c(statusCautionarySurface, other.statusCautionarySurface),
       accentStreak: c(accentStreak, other.accentStreak),
       accentStreakSurface: c(accentStreakSurface, other.accentStreakSurface),
+      characterSurfaceBaba: c(characterSurfaceBaba, other.characterSurfaceBaba),
+      characterSurfaceBibi: c(characterSurfaceBibi, other.characterSurfaceBibi),
+      characterSurfaceDudu: c(characterSurfaceDudu, other.characterSurfaceDudu),
+      characterSurfacePopo: c(characterSurfacePopo, other.characterSurfacePopo),
+      characterSurfaceRara: c(characterSurfaceRara, other.characterSurfaceRara),
       accentForegroundRed: c(accentForegroundRed, other.accentForegroundRed),
       accentForegroundOrange:
           c(accentForegroundOrange, other.accentForegroundOrange),
@@ -722,4 +760,18 @@ extension AppColorTokensX on BuildContext {
   /// exactly what the app rendered before any of this existed.
   AppColorTokens get c =>
       Theme.of(this).extension<AppColorTokens>() ?? AppColorTokens.dark;
+}
+
+/// 캐릭터 이름 → 고유 바탕색. 카탈로그에 새 캐릭터가 오면 **중립색**으로 떨어진다 —
+/// 남의 색을 빌려 쓰면 다른 캐릭터처럼 보인다.
+extension CharacterSurface on AppColorTokens {
+  /// [name] 의 `Character/Surface/*`.
+  Color characterSurfaceFor(String name) => switch (name.trim().toLowerCase()) {
+        'baba' => characterSurfaceBaba,
+        'bibi' => characterSurfaceBibi,
+        'dudu' => characterSurfaceDudu,
+        'popo' => characterSurfacePopo,
+        'rara' => characterSurfaceRara,
+        _ => backgroundNormalAlternative,
+      };
 }

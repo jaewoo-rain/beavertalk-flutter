@@ -568,6 +568,27 @@ class AppLocalizationsUz extends AppLocalizations {
   String get changeAvatar => 'Avatarni almashtirish';
 
   @override
+  String get avatarUseNow => 'Hozir ishlatish';
+
+  @override
+  String get avatarPurchaseFailed => 'Xarid amalga oshmadi';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Faqat bugun · $percent% chegirma';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time qoldi';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days kun $time qoldi';
+  }
+
+  @override
   String get avatarIntro =>
       'Ovoz va qiyinlik darajasi suhbat sherigiga qarab oʻzgaradi.\nBaʼzi sheriklar toʻlov talab qilishi mumkin.';
 

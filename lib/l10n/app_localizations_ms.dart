@@ -569,6 +569,27 @@ class AppLocalizationsMs extends AppLocalizations {
   String get changeAvatar => 'Tukar Avatar';
 
   @override
+  String get avatarUseNow => 'Guna sekarang';
+
+  @override
+  String get avatarPurchaseFailed => 'Pembelian tidak berjaya';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Hari ini sahaja · diskaun $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Tinggal $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Tinggal $days hr $time';
+  }
+
+  @override
   String get avatarIntro =>
       'Suara dan tahap kesukaran berbeza mengikut rakan panggilan.\nSesetengah rakan mungkin memerlukan pembayaran.';
 

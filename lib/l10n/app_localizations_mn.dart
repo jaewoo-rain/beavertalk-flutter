@@ -564,6 +564,27 @@ class AppLocalizationsMn extends AppLocalizations {
   String get changeAvatar => 'Аватар солих';
 
   @override
+  String get avatarUseNow => 'Одоо ашиглах';
+
+  @override
+  String get avatarPurchaseFailed => 'Худалдан авалт амжилтгүй боллоо';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Зөвхөн өнөөдөр · $percent% хямдрал';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time үлдсэн';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days өдөр $time үлдсэн';
+  }
+
+  @override
   String get avatarIntro =>
       'Дуу хоолой болон түвшин дүрээс хамаарч ялгаатай.\nЗарим дүрд төлбөр шаардлагатай байж болно.';
 

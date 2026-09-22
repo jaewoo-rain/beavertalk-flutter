@@ -562,6 +562,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get changeAvatar => 'Avatarı Değiştir';
 
   @override
+  String get avatarUseNow => 'Şimdi kullan';
+
+  @override
+  String get avatarPurchaseFailed => 'Satın alma tamamlanmadı';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Sadece bugün · %$percent indirim';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time kaldı';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days g $time kaldı';
+  }
+
+  @override
   String get avatarIntro =>
       'Ses ve zorluk seviyesi arama partnerine göre değişir.\nBazı partnerler ücretli olabilir.';
 

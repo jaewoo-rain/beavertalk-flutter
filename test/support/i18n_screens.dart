@@ -39,7 +39,12 @@ import 'package:beavertalk/screens/auth/password_new.dart';
 import 'package:beavertalk/screens/auth/signup.dart';
 import 'package:beavertalk/screens/home/call_finish.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
-import 'package:beavertalk/screens/mypage/avatar_detail.dart';
+import 'package:beavertalk/screens/mypage/avatar.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:beavertalk/features/auth/domain/entities/member.dart';
+import 'package:beavertalk/features/auth/presentation/providers/my_profile_provider.dart';
+import 'package:beavertalk/features/character/data/models/character_dto.dart';
+import 'package:beavertalk/features/character/presentation/providers/character_providers.dart';
 import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
@@ -203,38 +208,11 @@ Map<String, Widget Function()> i18nScreens() {
           alignment: Alignment.bottomCenter,
           child: CallRatingSheet(),
         ),
-    // Worst case for the detail screen's name row: name + the long
-    // "Available to purchase" badge + a "-N%" marker, all on one line.
-    'AvatarDetailDiscount': () => const AvatarDetailScreen(
-          state: AvatarDetailState.unownedDiscount,
-          name: 'Baba',
-          tags: ['Savage', 'Blunt', 'Tsundere'],
-          summary: 'A sharp-tongued master.',
-          description: 'Baba, a beaver famous for his flawless dams.',
-          price: '₩4,900',
-          discountPrice: '₩2,450',
-          discountPercent: 50,
-        ),
-    // 구독 축의 최악 케이스: 이름 + "Included with Max"(소유 배지보다 길다) + "-N%"
-    // 마커가 한 줄에, 푸터에는 버튼이 둘. 소유 상태는 배지 하나에 버튼도 하나라
-    // 여기서 안 걸린다.
-    'AvatarDetailSubscription': () => const AvatarDetailScreen(
-          state: AvatarDetailState.subscriptionUnused,
-          name: 'Baba',
-          tags: ['Savage', 'Blunt', 'Tsundere'],
-          summary: 'A sharp-tongued master.',
-          description: 'Baba, a beaver famous for his flawless dams.',
-          price: '₩4,900',
-          discountPrice: '₩2,450',
-          discountPercent: 50,
-        ),
-    'AvatarDetailOwned': () => const AvatarDetailScreen(
-          state: AvatarDetailState.ownedUnused,
-          name: 'Baba',
-          tags: ['Savage', 'Blunt', 'Tsundere'],
-          summary: 'A sharp-tongued master.',
-          description: 'Baba, a beaver famous for his flawless dams.',
-        ),
+    // 파트너 변경(09-22 개편) — 목록+상세를 합친 한 화면. 데이터가 필요해 프로바이더를
+    // 덮어 띄운다. 최악 조합 둘: 할인(가격 줄 + 정가 취소선 + -N% + 떠 있는 배너 +
+    // 「구매 가능」 배지) · 구독으로 열림(보라 배지가 가장 긴 문구).
+    'AvatarScreenDiscount': () => _avatarHost(discount: true),
+    'AvatarScreenSubscription': () => _avatarHost(discount: false),
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
     // The subscription manage screen (P2 redesign). With no server data in
@@ -377,5 +355,43 @@ ClassroomAssignment _assignment({
     conversationMet: done ? 0 : null,
     conversationTotal: done ? 10 : null,
     workbookOpenedAt: done ? DateTime(2026, 9, 4) : null,
+  );
+}
+
+/// 파트너 변경 화면을 데이터와 함께 띄운다. 무대에는 **미보유** 캐릭터(Rara)가 먼저 오르도록
+/// 대표를 비워 둔다 — 첫 캐릭터가 무대에 선다.
+Widget _avatarHost({required bool discount}) {
+  Map<String, dynamic> row(int id, String name, {bool owned = false, bool sub = false}) => {
+        'character_id': id,
+        'product_key': name.toLowerCase(),
+        'name': name,
+        'price': '11.99',
+        'effective_price': discount && !owned && !sub ? '5.99' : '11.99',
+        'is_owned': owned,
+        'is_unlocked': owned || sub,
+        if (sub) 'unlock_source': 'subscription',
+        if (discount && !owned && !sub)
+          'active_discount': {
+            'end_time': DateTime.now().toUtc().add(const Duration(days: 2, hours: 3)).toIso8601String(),
+          },
+        'tags': ['Savage', 'Blunt', 'Tsundere'],
+        'description': 'A sharp-tongued master.',
+        'background_story': 'Rara, a beaver famous for her flawless dams.',
+      };
+  final list = [
+    for (final r in [
+      row(10, 'Rara', sub: !discount),
+      row(1, 'Baba', owned: true),
+      row(11, 'Dudu'),
+    ])
+      CharacterDto.fromJson(r).toEntity(),
+  ];
+  return ProviderScope(
+    overrides: [
+      charactersProvider.overrideWith((ref) async => list),
+      ownedCharactersProvider.overrideWith((ref) async => const []),
+      myProfileProvider.overrideWith((ref) async => const Member(memberId: 1)),
+    ],
+    child: const AvatarScreen(),
   );
 }

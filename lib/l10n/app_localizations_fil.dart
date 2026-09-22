@@ -570,6 +570,27 @@ class AppLocalizationsFil extends AppLocalizations {
   String get changeAvatar => 'Baguhin ang Avatar';
 
   @override
+  String get avatarUseNow => 'Gamitin na';
+
+  @override
+  String get avatarPurchaseFailed => 'Hindi natuloy ang pagbili';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Ngayong araw lang · $percent% off';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time na lang';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days araw $time na lang';
+  }
+
+  @override
   String get avatarIntro =>
       'Naiiba ang boses at antas ng hirap depende sa kausap.\nAng ilang kausap ay maaaring mangailangan ng bayad.';
 

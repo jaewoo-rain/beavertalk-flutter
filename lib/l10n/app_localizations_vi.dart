@@ -564,6 +564,27 @@ class AppLocalizationsVi extends AppLocalizations {
   String get changeAvatar => 'Đổi avatar';
 
   @override
+  String get avatarUseNow => 'Dùng ngay';
+
+  @override
+  String get avatarPurchaseFailed => 'Giao dịch mua chưa hoàn tất';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Chỉ hôm nay · giảm $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Còn $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Còn $days ngày $time';
+  }
+
+  @override
   String get avatarIntro =>
       'Giọng nói và độ khó khác nhau tùy theo đối tác gọi.\nMột số đối tác có thể yêu cầu thanh toán.';
 

@@ -564,6 +564,27 @@ class AppLocalizationsBn extends AppLocalizations {
   String get changeAvatar => 'অ্যাভাটার পরিবর্তন করুন';
 
   @override
+  String get avatarUseNow => 'এখনই ব্যবহার করুন';
+
+  @override
+  String get avatarPurchaseFailed => 'কেনাকাটা সম্পন্ন হয়নি';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'শুধু আজ · $percent% ছাড়';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time বাকি';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days দিন $time বাকি';
+  }
+
+  @override
   String get avatarIntro =>
       'কণ্ঠস্বর এবং কঠিনতা কল পার্টনার অনুযায়ী ভিন্ন হয়।\nকিছু পার্টনারের জন্য পেমেন্ট লাগতে পারে।';
 

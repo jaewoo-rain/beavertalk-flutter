@@ -569,6 +569,27 @@ class AppLocalizationsMy extends AppLocalizations {
   String get changeAvatar => 'အာဗတား ပြောင်းရန်';
 
   @override
+  String get avatarUseNow => 'ယခု သုံးမည်';
+
+  @override
+  String get avatarPurchaseFailed => 'ဝယ်ယူမှု မအောင်မြင်ပါ';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'ယနေ့သာ · $percent% လျှော့';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return '$time ကျန်';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return '$days ရက် $time ကျန်';
+  }
+
+  @override
   String get avatarIntro =>
       'ခေါ်ဆိုမှု ဘက်ပါတနာအလိုက် အသံနှင့် အခက်အခဲအဆင့် ကွာခြားပါသည်။\nအချို့ဘက်ပါတနာများအတွက် ငွေပေးချေရနိုင်ပါသည်။';
 

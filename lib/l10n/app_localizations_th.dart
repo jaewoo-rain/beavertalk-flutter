@@ -557,6 +557,27 @@ class AppLocalizationsTh extends AppLocalizations {
   String get changeAvatar => 'เปลี่ยนอวาตาร์';
 
   @override
+  String get avatarUseNow => 'ใช้เลย';
+
+  @override
+  String get avatarPurchaseFailed => 'การซื้อไม่สำเร็จ';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'วันนี้เท่านั้น · ลด $percent%';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'เหลือ $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'เหลือ $days วัน $time';
+  }
+
+  @override
   String get avatarIntro =>
       'เสียงและระดับความยากแตกต่างกันไปตามคู่สนทนา\nคู่สนทนาบางรายอาจต้องชำระเงิน';
 

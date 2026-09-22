@@ -574,6 +574,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get changeAvatar => 'Changer d\'avatar';
 
   @override
+  String get avatarUseNow => 'Utiliser maintenant';
+
+  @override
+  String get avatarPurchaseFailed => 'L\'achat n\'a pas abouti';
+
+  @override
+  String avatarPromoTitle(int percent) {
+    return 'Aujourd\'hui seulement · -$percent %';
+  }
+
+  @override
+  String avatarPromoLeft(String time) {
+    return 'Encore $time';
+  }
+
+  @override
+  String avatarPromoLeftDays(int days, String time) {
+    return 'Encore $days j $time';
+  }
+
+  @override
   String get avatarIntro =>
       'La voix et la difficulté varient selon le personnage.\nCertains personnages peuvent être payants.';
 
