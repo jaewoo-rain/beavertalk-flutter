@@ -20,7 +20,7 @@ import '../icons/app_icons.dart';
 /// 있어야 열린다.
 ///
 /// **카드 전체가 탭 영역이다.** 우측 화살표는 장식이다.
-/// 높이는 아이콘 36 + 패딩 32 = 68(Figma 두 변이 모두 Hug 68).
+/// 높이는 아이콘 36 + 패딩 32 = 68(Figma 두 변이 모두 Hug 68). 제목이 두 줄이면 자란다.
 class CardStudy extends StatelessWidget {
   /// 카드를 만든다.
   const CardStudy({
@@ -83,10 +83,10 @@ class CardStudy extends StatelessWidget {
               Opacity(opacity: enabled ? 1 : 0.4, child: icon),
               const SizedBox(width: AppSpacing.s12),
               Expanded(
+                // 줄바꿈 허용 — de·hi·ne·km 등은 1.1배 글꼴에서 한 줄에 안 들어간다
+                // (clip 360 실측 24건). 제목을 자르지 않고 카드가 자란다.
                 child: Text(
                   title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                   style: AppType.headline2.b.copyWith(
                     color: enabled ? c.labelStrong : c.labelDisabled,
                   ),
