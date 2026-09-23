@@ -23,6 +23,12 @@ class AppLocalizationsId extends AppLocalizations {
   String get callErrorGeneric => 'Terjadi kesalahan saat panggilan.';
 
   @override
+  String get callDailyLimit => 'Waktu belajar hari ini sudah habis.';
+
+  @override
+  String get callAlreadyInCall => 'Kamu sedang dalam panggilan.';
+
+  @override
   String get callNetworkError => 'Terjadi kesalahan jaringan.';
 
   @override

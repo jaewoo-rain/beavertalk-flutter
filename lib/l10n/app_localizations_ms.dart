@@ -23,6 +23,12 @@ class AppLocalizationsMs extends AppLocalizations {
   String get callErrorGeneric => 'Ralat berlaku semasa panggilan.';
 
   @override
+  String get callDailyLimit => 'Masa pembelajaran hari ini sudah habis.';
+
+  @override
+  String get callAlreadyInCall => 'Anda sudah berada dalam panggilan.';
+
+  @override
   String get callNetworkError => 'Ralat rangkaian berlaku.';
 
   @override

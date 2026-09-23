@@ -23,6 +23,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callErrorGeneric => 'Đã xảy ra lỗi trong cuộc gọi.';
 
   @override
+  String get callDailyLimit => 'Bạn đã dùng hết thời gian học hôm nay.';
+
+  @override
+  String get callAlreadyInCall => 'Bạn đang trong một cuộc gọi.';
+
+  @override
   String get callNetworkError => 'Đã xảy ra lỗi mạng.';
 
   @override

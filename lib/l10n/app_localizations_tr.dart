@@ -23,6 +23,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callErrorGeneric => 'Arama sırasında bir hata oluştu.';
 
   @override
+  String get callDailyLimit => 'Bugünkü öğrenme süreni doldurdun.';
+
+  @override
+  String get callAlreadyInCall => 'Zaten bir aramadasın.';
+
+  @override
   String get callNetworkError => 'Ağ hatası oluştu.';
 
   @override

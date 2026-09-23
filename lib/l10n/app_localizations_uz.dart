@@ -23,6 +23,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callErrorGeneric => 'Qoʻngʻiroq paytida xatolik yuz berdi.';
 
   @override
+  String get callDailyLimit => 'Bugungi o\'qish vaqti tugadi.';
+
+  @override
+  String get callAlreadyInCall => 'Siz allaqachon qo\'ng\'iroqdasiz.';
+
+  @override
   String get callNetworkError => 'Tarmoq xatosi yuz berdi.';
 
   @override

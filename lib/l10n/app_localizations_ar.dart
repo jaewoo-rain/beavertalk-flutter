@@ -23,6 +23,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callErrorGeneric => 'حدث خطأ أثناء المكالمة.';
 
   @override
+  String get callDailyLimit => 'لقد استنفدت وقت التعلّم لهذا اليوم.';
+
+  @override
+  String get callAlreadyInCall => 'أنت في مكالمة بالفعل.';
+
+  @override
   String get callNetworkError => 'حدث خطأ في الشبكة.';
 
   @override

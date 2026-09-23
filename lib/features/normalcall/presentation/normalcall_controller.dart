@@ -13,6 +13,7 @@ import 'package:flutter/foundation.dart'
         defaultTargetPlatform,
         kDebugMode,
         kIsWeb,
+        visibleForTesting,
         TargetPlatform;
 import 'package:flutter/widgets.dart' show AppLifecycleState, WidgetsBinding;
 import 'package:flutter/services.dart' show MethodChannel;
@@ -4897,9 +4898,12 @@ class NormalCallController extends Notifier<CallState> {
         _log('⛔ 서버 error 프레임 — code=${msg['code'] ?? '(없음)'} '
             'message=${msg['message'] ?? '(없음)'} '
             '기타키=${msg.keys.where((k) => k != 'type' && k != 'code' && k != 'message').toList()}');
+        // 서버 `premium` 브랜치(09-23)의 두 거절 코드는 앱 문구로 바꾼다 — 사용자가 다음에
+        // 할 일이 코드마다 다르다. 둘 다 recoverable=false 라 **재시도하지 않는다**(error
+        // 단계는 재연결 경로를 타지 않는다). 나머지 코드는 종전대로 서버 문구 그대로.
         state = state.copyWith(
           phase: CallPhase.error,
-          errorMsg: (msg['message'] as String?) ?? _l10n.callErrorGeneric,
+          errorMsg: serverErrorMessage(msg, _l10n),
         );
         unawaited(_teardown(keepError: true));
       case 'hint':
@@ -6307,3 +6311,15 @@ enum _FragmentSwitch {
   /// 새 소켓을 여는 중(call_started 대기).
   reconnecting,
 }
+
+/// WS `error` 프레임 → 화면 문구.
+///
+/// 서버 `premium` 브랜치(09-23)의 두 거절 코드는 앱 문구로 바꾼다 — 사용자가 다음에 할 일이
+/// 코드마다 다르다(오늘은 끝 / 다른 통화를 먼저 끊기). 나머지는 서버 문구 그대로다.
+@visibleForTesting
+String serverErrorMessage(Map<String, dynamic> msg, AppLocalizations l10n) =>
+    switch (msg['code']) {
+      'DAILY_LIMIT' => l10n.callDailyLimit,
+      'ALREADY_IN_CALL' => l10n.callAlreadyInCall,
+      _ => (msg['message'] as String?) ?? l10n.callErrorGeneric,
+    };

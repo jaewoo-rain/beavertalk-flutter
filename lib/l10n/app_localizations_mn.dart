@@ -23,6 +23,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callErrorGeneric => 'Дуудлагын үеэр алдаа гарлаа.';
 
   @override
+  String get callDailyLimit => 'Өнөөдрийн суралцах цаг дууслаа.';
+
+  @override
+  String get callAlreadyInCall => 'Та аль хэдийн дуудлага дээр байна.';
+
+  @override
   String get callNetworkError => 'Сүлжээний алдаа гарлаа.';
 
   @override

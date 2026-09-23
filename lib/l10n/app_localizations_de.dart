@@ -24,6 +24,12 @@ class AppLocalizationsDe extends AppLocalizations {
       'Während des Anrufs ist ein Fehler aufgetreten.';
 
   @override
+  String get callDailyLimit => 'Deine Lernzeit für heute ist aufgebraucht.';
+
+  @override
+  String get callAlreadyInCall => 'Du bist bereits in einem Anruf.';
+
+  @override
   String get callNetworkError => 'Es ist ein Netzwerkfehler aufgetreten.';
 
   @override

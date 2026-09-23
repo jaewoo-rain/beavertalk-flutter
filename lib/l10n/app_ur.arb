@@ -4,6 +4,8 @@
   "callWebNotSupported": "ویب پر وائس کال دستیاب نہیں ہے۔ ایپ استعمال کریں۔",
   "micPermissionRequiredForCall": "مائیکروفون کی اجازت درکار ہے۔ کال کرنے کے لیے مائیکروفون کی اجازت دیں۔",
   "callErrorGeneric": "کال کے دوران خرابی پیش آئی۔",
+  "callDailyLimit": "آج کا سیکھنے کا وقت ختم ہو گیا ہے۔",
+  "callAlreadyInCall": "آپ پہلے سے ایک کال پر ہیں۔",
   "callNetworkError": "نیٹ ورک کی خرابی پیش آئی۔",
   "authInvalidCredentials": "ای میل یا پاس ورڈ درست نہیں ہے۔",
   "authEmailAlreadyRegistered": "یہ ای میل پہلے سے رجسٹرڈ ہے۔",

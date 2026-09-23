@@ -4,6 +4,8 @@
   "callWebNotSupported": "ウェブでは音声通話をご利用いただけません。アプリからご利用ください。",
   "micPermissionRequiredForCall": "マイクの許可が必要です。通話するにはマイクを許可してください。",
   "callErrorGeneric": "通話中にエラーが発生しました。",
+  "callDailyLimit": "今日の学習時間を使い切りました。",
+  "callAlreadyInCall": "すでに通話中です。",
   "callNetworkError": "ネットワークエラーが発生しました。",
   "authInvalidCredentials": "メールアドレスまたはパスワードが正しくありません。",
   "authEmailAlreadyRegistered": "このメールアドレスは既に登録されています。",

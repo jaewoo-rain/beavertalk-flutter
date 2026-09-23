@@ -4,6 +4,8 @@
   "callWebNotSupported": "වෙබයේ හඬ ඇමතුම් සහාය නොදක්වයි. යෙදුම භාවිත කරන්න.",
   "micPermissionRequiredForCall": "මයික්‍රොෆෝන අවසරය අවශ්‍යයි. ඇමතුමක් ගැනීමට මයික්‍රොෆෝනයට අවසර දෙන්න.",
   "callErrorGeneric": "ඇමතුම අතරතුර දෝෂයක් ඇති විය.",
+  "callDailyLimit": "අද ඉගෙනුම් කාලය අවසන්.",
+  "callAlreadyInCall": "ඔබ දැනටමත් ඇමතුමක සිටී.",
   "callNetworkError": "ජාල දෝෂයක් ඇති විය.",
   "authInvalidCredentials": "විද්‍යුත් තැපෑල හෝ මුරපදය වැරදියි.",
   "authEmailAlreadyRegistered": "මෙම විද්‍යුත් තැපෑල දැනටමත් ලියාපදිංචි වී ඇත.",

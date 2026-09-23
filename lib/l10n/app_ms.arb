@@ -4,6 +4,8 @@
   "callWebNotSupported": "Panggilan suara tidak disokong di web. Sila gunakan apl.",
   "micPermissionRequiredForCall": "Kebenaran mikrofon diperlukan. Benarkan mikrofon untuk membuat panggilan.",
   "callErrorGeneric": "Ralat berlaku semasa panggilan.",
+  "callDailyLimit": "Masa pembelajaran hari ini sudah habis.",
+  "callAlreadyInCall": "Anda sudah berada dalam panggilan.",
   "callNetworkError": "Ralat rangkaian berlaku.",
   "authInvalidCredentials": "E-mel atau kata laluan tidak betul.",
   "authEmailAlreadyRegistered": "E-mel ini sudah didaftarkan.",

@@ -4,6 +4,8 @@
   "callWebNotSupported": "Вэб дээр дуут дуудлага дэмжигдэхгүй. Аппыг ашиглана уу.",
   "micPermissionRequiredForCall": "Микрофоны зөвшөөрөл шаардлагатай. Дуудлага хийхийн тулд микрофоныг зөвшөөрнө үү.",
   "callErrorGeneric": "Дуудлагын үеэр алдаа гарлаа.",
+  "callDailyLimit": "Өнөөдрийн суралцах цаг дууслаа.",
+  "callAlreadyInCall": "Та аль хэдийн дуудлага дээр байна.",
   "callNetworkError": "Сүлжээний алдаа гарлаа.",
   "authInvalidCredentials": "И-мэйл эсвэл нууц үг буруу байна.",
   "authEmailAlreadyRegistered": "Энэ и-мэйл бүртгэлтэй байна.",

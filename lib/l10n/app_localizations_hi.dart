@@ -23,6 +23,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get callErrorGeneric => 'कॉल के दौरान एक त्रुटि हुई।';
 
   @override
+  String get callDailyLimit => 'आज का सीखने का समय खत्म हो गया है।';
+
+  @override
+  String get callAlreadyInCall => 'आप पहले से एक कॉल पर हैं।';
+
+  @override
   String get callNetworkError => 'नेटवर्क त्रुटि हुई।';
 
   @override

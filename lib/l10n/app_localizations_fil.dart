@@ -23,6 +23,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callErrorGeneric => 'May naganap na problema habang tumatawag.';
 
   @override
+  String get callDailyLimit =>
+      'Nagamit mo na ang oras ng pag-aaral ngayong araw.';
+
+  @override
+  String get callAlreadyInCall => 'Nasa tawag ka na.';
+
+  @override
   String get callNetworkError => 'May network error na naganap.';
 
   @override

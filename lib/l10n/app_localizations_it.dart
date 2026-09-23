@@ -24,6 +24,12 @@ class AppLocalizationsIt extends AppLocalizations {
       'Si è verificato un errore durante la chiamata.';
 
   @override
+  String get callDailyLimit => 'Hai esaurito il tempo di studio di oggi.';
+
+  @override
+  String get callAlreadyInCall => 'Sei già in una chiamata.';
+
+  @override
   String get callNetworkError => 'Si è verificato un errore di rete.';
 
   @override

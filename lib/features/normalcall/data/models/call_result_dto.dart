@@ -45,6 +45,9 @@ class LearnedSentenceDto {
     this.nativeSentence,
     this.voiceUrl,
     this.isBookmarked = false,
+    this.kind,
+    this.pairedSentenceId,
+    this.nuance,
   });
 
   final int sentenceId;
@@ -53,6 +56,11 @@ class LearnedSentenceDto {
   final String? voiceUrl;
   final bool isBookmarked;
 
+  /// `"native"` = 현지인 표현 짝. 기본 문장에는 키 자체가 없다(null 이 아니라 부재).
+  final String? kind;
+  final int? pairedSentenceId;
+  final String? nuance;
+
   factory LearnedSentenceDto.fromJson(Map<String, dynamic> json) {
     return LearnedSentenceDto(
       sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,
@@ -60,6 +68,9 @@ class LearnedSentenceDto {
       nativeSentence: json['native_sentence'] as String?,
       voiceUrl: json['voice_url'] as String?,
       isBookmarked: json['is_bookmarked'] as bool? ?? false,
+      kind: json['kind'] as String?,
+      pairedSentenceId: (json['paired_sentence_id'] as num?)?.toInt(),
+      nuance: json['nuance'] as String?,
     );
   }
 
@@ -69,6 +80,9 @@ class LearnedSentenceDto {
         native: nativeSentence,
         voiceUrl: voiceUrl,
         isBookmarked: isBookmarked,
+        isNative: kind == 'native',
+        pairedSentenceId: pairedSentenceId,
+        nuance: nuance,
       );
 }
 

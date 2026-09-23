@@ -4,6 +4,8 @@
   "callWebNotSupported": "A hanghívás nem támogatott a weben. Használd az alkalmazást.",
   "micPermissionRequiredForCall": "Mikrofon-hozzáférés szükséges. Engedélyezd a mikrofont a híváshoz.",
   "callErrorGeneric": "Hiba történt a hívás közben.",
+  "callDailyLimit": "Elhasználtad a mai tanulási idődet.",
+  "callAlreadyInCall": "Már hívásban vagy.",
   "callNetworkError": "Hálózati hiba történt.",
   "authInvalidCredentials": "Az e-mail-cím vagy a jelszó hibás.",
   "authEmailAlreadyRegistered": "Ez az e-mail-cím már regisztrálva van.",

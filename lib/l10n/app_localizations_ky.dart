@@ -23,6 +23,12 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callErrorGeneric => 'Чалуу учурунда ката кетти.';
 
   @override
+  String get callDailyLimit => 'Бүгүнкү окуу убактысы бүттү.';
+
+  @override
+  String get callAlreadyInCall => 'Сиз азыр чалууда отурасыз.';
+
+  @override
   String get callNetworkError => 'Тармак катасы кетти.';
 
   @override

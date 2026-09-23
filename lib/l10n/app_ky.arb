@@ -4,6 +4,8 @@
   "callWebNotSupported": "Вебде үн чалуу колдоолбойт. Колдонмону пайдаланыңыз.",
   "micPermissionRequiredForCall": "Микрофонго уруксат керек. Чалуу үчүн микрофонго уруксат бериңиз.",
   "callErrorGeneric": "Чалуу учурунда ката кетти.",
+  "callDailyLimit": "Бүгүнкү окуу убактысы бүттү.",
+  "callAlreadyInCall": "Сиз азыр чалууда отурасыз.",
   "callNetworkError": "Тармак катасы кетти.",
   "authInvalidCredentials": "Электрондук почта же сырсөз туура эмес.",
   "authEmailAlreadyRegistered": "Бул электрондук почта катталган.",

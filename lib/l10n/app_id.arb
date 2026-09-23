@@ -4,6 +4,8 @@
   "callWebNotSupported": "Panggilan suara tidak didukung di web. Gunakan aplikasi.",
   "micPermissionRequiredForCall": "Izin mikrofon diperlukan. Izinkan mikrofon untuk memulai panggilan.",
   "callErrorGeneric": "Terjadi kesalahan saat panggilan.",
+  "callDailyLimit": "Waktu belajar hari ini sudah habis.",
+  "callAlreadyInCall": "Kamu sedang dalam panggilan.",
   "callNetworkError": "Terjadi kesalahan jaringan.",
   "authInvalidCredentials": "Email atau kata sandi salah.",
   "authEmailAlreadyRegistered": "Email ini sudah terdaftar.",

@@ -4,6 +4,8 @@
   "callWebNotSupported": "Le chiamate vocali non sono supportate sul web. Usa l'app.",
   "micPermissionRequiredForCall": "È necessario l'accesso al microfono. Consenti il microfono per chiamare.",
   "callErrorGeneric": "Si è verificato un errore durante la chiamata.",
+  "callDailyLimit": "Hai esaurito il tempo di studio di oggi.",
+  "callAlreadyInCall": "Sei già in una chiamata.",
   "callNetworkError": "Si è verificato un errore di rete.",
   "authInvalidCredentials": "Email o password non corretti.",
   "authEmailAlreadyRegistered": "Questa email è già registrata.",

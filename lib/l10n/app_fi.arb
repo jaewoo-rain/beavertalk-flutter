@@ -4,6 +4,8 @@
   "callWebNotSupported": "Äänipuhelut eivät toimi verkossa. Käytä sovellusta.",
   "micPermissionRequiredForCall": "Mikrofonin käyttöoikeus vaaditaan. Salli mikrofoni aloittaaksesi puhelun.",
   "callErrorGeneric": "Puhelun aikana tapahtui virhe.",
+  "callDailyLimit": "Tämän päivän opiskeluaika on käytetty.",
+  "callAlreadyInCall": "Olet jo puhelussa.",
   "callNetworkError": "Tapahtui verkkovirhe.",
   "authInvalidCredentials": "Sähköposti tai salasana on virheellinen.",
   "authEmailAlreadyRegistered": "Tämä sähköposti on jo rekisteröity.",

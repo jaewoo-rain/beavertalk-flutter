@@ -4,6 +4,8 @@
   "callWebNotSupported": "网页版不支持语音通话，请使用应用。",
   "micPermissionRequiredForCall": "需要麦克风权限。请允许麦克风后再通话。",
   "callErrorGeneric": "通话过程中出现错误。",
+  "callDailyLimit": "今天的学习时间已用完。",
+  "callAlreadyInCall": "你已经在通话中了。",
   "callNetworkError": "网络出现错误。",
   "authInvalidCredentials": "邮箱或密码不正确。",
   "authEmailAlreadyRegistered": "该邮箱已注册。",

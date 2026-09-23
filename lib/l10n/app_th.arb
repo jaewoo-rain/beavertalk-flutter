@@ -4,6 +4,8 @@
   "callWebNotSupported": "เว็บไม่รองรับการโทรด้วยเสียง โปรดใช้แอป",
   "micPermissionRequiredForCall": "ต้องอนุญาตไมโครโฟน โปรดอนุญาตไมโครโฟนเพื่อโทร",
   "callErrorGeneric": "เกิดข้อผิดพลาดระหว่างการโทร",
+  "callDailyLimit": "ใช้เวลาเรียนของวันนี้หมดแล้ว",
+  "callAlreadyInCall": "คุณอยู่ในสายอยู่แล้ว",
   "callNetworkError": "เกิดข้อผิดพลาดของเครือข่าย",
   "authInvalidCredentials": "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
   "authEmailAlreadyRegistered": "อีเมลนี้ลงทะเบียนไว้แล้ว",

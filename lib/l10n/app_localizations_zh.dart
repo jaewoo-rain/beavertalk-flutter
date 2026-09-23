@@ -21,6 +21,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callErrorGeneric => '通话过程中出现错误。';
 
   @override
+  String get callDailyLimit => '今天的学习时间已用完。';
+
+  @override
+  String get callAlreadyInCall => '你已经在通话中了。';
+
+  @override
   String get callNetworkError => '网络出现错误。';
 
   @override

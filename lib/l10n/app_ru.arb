@@ -4,6 +4,8 @@
   "callWebNotSupported": "Голосовые звонки не поддерживаются в вебе. Используйте приложение.",
   "micPermissionRequiredForCall": "Требуется доступ к микрофону. Разрешите микрофон, чтобы позвонить.",
   "callErrorGeneric": "Во время звонка произошла ошибка.",
+  "callDailyLimit": "Время занятий на сегодня закончилось.",
+  "callAlreadyInCall": "Вы уже в звонке.",
   "callNetworkError": "Произошла сетевая ошибка.",
   "authInvalidCredentials": "Неверный адрес электронной почты или пароль.",
   "authEmailAlreadyRegistered": "Эта почта уже зарегистрирована.",

@@ -4,6 +4,14 @@
   "callWebNotSupported": "Voice calls aren't supported on the web. Please use the app.",
   "micPermissionRequiredForCall": "Microphone access is required. Allow the microphone to start a call.",
   "callErrorGeneric": "Something went wrong during the call.",
+  "callDailyLimit": "You've used up today's learning time.",
+  "@callDailyLimit": {
+    "description": "Server refused the call: daily time budget used up (WS error code DAILY_LIMIT)."
+  },
+  "callAlreadyInCall": "You're already on a call.",
+  "@callAlreadyInCall": {
+    "description": "Server refused the call: another call of this member is live (WS error code ALREADY_IN_CALL). Do not retry."
+  },
   "callNetworkError": "A network error occurred.",
   "authInvalidCredentials": "Your email or password is incorrect.",
   "authEmailAlreadyRegistered": "This email is already registered.",

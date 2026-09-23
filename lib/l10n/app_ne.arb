@@ -4,6 +4,8 @@
   "callWebNotSupported": "वेबमा भ्वाइस कल समर्थित छैन। एप प्रयोग गर्नुहोस्।",
   "micPermissionRequiredForCall": "माइक्रोफोन अनुमति आवश्यक छ। कल गर्न माइक्रोफोन अनुमति दिनुहोस्।",
   "callErrorGeneric": "कलको क्रममा त्रुटि भयो।",
+  "callDailyLimit": "आजको सिक्ने समय सकियो।",
+  "callAlreadyInCall": "तपाईं पहिले नै कलमा हुनुहुन्छ।",
   "callNetworkError": "नेटवर्क त्रुटि भयो।",
   "authInvalidCredentials": "इमेल वा पासवर्ड मिलेन।",
   "authEmailAlreadyRegistered": "यो इमेल पहिले नै दर्ता भइसकेको छ।",

@@ -21,6 +21,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callErrorGeneric => '通話中にエラーが発生しました。';
 
   @override
+  String get callDailyLimit => '今日の学習時間を使い切りました。';
+
+  @override
+  String get callAlreadyInCall => 'すでに通話中です。';
+
+  @override
   String get callNetworkError => 'ネットワークエラーが発生しました。';
 
   @override

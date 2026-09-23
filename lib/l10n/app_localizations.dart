@@ -178,6 +178,18 @@ abstract class AppLocalizations {
   /// **'Something went wrong during the call.'**
   String get callErrorGeneric;
 
+  /// Server refused the call: daily time budget used up (WS error code DAILY_LIMIT).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve used up today\'s learning time.'**
+  String get callDailyLimit;
+
+  /// Server refused the call: another call of this member is live (WS error code ALREADY_IN_CALL). Do not retry.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re already on a call.'**
+  String get callAlreadyInCall;
+
   /// No description provided for @callNetworkError.
   ///
   /// In en, this message translates to:

@@ -23,6 +23,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get callErrorGeneric => 'কল চলাকালীন একটি সমস্যা হয়েছে।';
 
   @override
+  String get callDailyLimit => 'আজকের শেখার সময় শেষ হয়ে গেছে।';
+
+  @override
+  String get callAlreadyInCall => 'আপনি ইতিমধ্যে একটি কলে আছেন।';
+
+  @override
   String get callNetworkError => 'নেটওয়ার্ক ত্রুটি হয়েছে।';
 
   @override

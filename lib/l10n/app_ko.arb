@@ -4,6 +4,8 @@
   "callWebNotSupported": "웹에서는 음성 통화를 지원하지 않아요. 앱에서 이용해 주세요.",
   "micPermissionRequiredForCall": "마이크 권한이 필요해요. 통화하려면 마이크를 허용해 주세요.",
   "callErrorGeneric": "통화 중 오류가 발생했어요.",
+  "callDailyLimit": "오늘 학습 시간을 다 썼어요.",
+  "callAlreadyInCall": "이미 통화 중이에요.",
   "callNetworkError": "네트워크 오류가 발생했어요.",
   "authInvalidCredentials": "이메일 또는 비밀번호가 올바르지 않아요.",
   "authEmailAlreadyRegistered": "이미 가입된 이메일입니다.",

@@ -23,6 +23,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callErrorGeneric => 'Во время звонка произошла ошибка.';
 
   @override
+  String get callDailyLimit => 'Время занятий на сегодня закончилось.';
+
+  @override
+  String get callAlreadyInCall => 'Вы уже в звонке.';
+
+  @override
   String get callNetworkError => 'Произошла сетевая ошибка.';
 
   @override

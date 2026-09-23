@@ -23,6 +23,12 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callErrorGeneric => 'कलको क्रममा त्रुटि भयो।';
 
   @override
+  String get callDailyLimit => 'आजको सिक्ने समय सकियो।';
+
+  @override
+  String get callAlreadyInCall => 'तपाईं पहिले नै कलमा हुनुहुन्छ।';
+
+  @override
   String get callNetworkError => 'नेटवर्क त्रुटि भयो।';
 
   @override

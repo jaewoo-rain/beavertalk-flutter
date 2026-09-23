@@ -23,6 +23,12 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callErrorGeneric => 'Hiba történt a hívás közben.';
 
   @override
+  String get callDailyLimit => 'Elhasználtad a mai tanulási idődet.';
+
+  @override
+  String get callAlreadyInCall => 'Már hívásban vagy.';
+
+  @override
   String get callNetworkError => 'Hálózati hiba történt.';
 
   @override

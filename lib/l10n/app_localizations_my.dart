@@ -23,6 +23,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callErrorGeneric => 'ခေါ်ဆိုနေစဉ် အမှားတစ်ခု ဖြစ်ပွားခဲ့သည်။';
 
   @override
+  String get callDailyLimit => 'ယနေ့ လေ့လာချိန် ကုန်သွားပါပြီ။';
+
+  @override
+  String get callAlreadyInCall => 'သင် ဖုန်းခေါ်ဆိုမှုထဲတွင် ရှိနေပြီးဖြစ်သည်။';
+
+  @override
   String get callNetworkError => 'ကွန်ရက် အမှား ဖြစ်ပွားခဲ့သည်။';
 
   @override

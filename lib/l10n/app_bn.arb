@@ -4,6 +4,8 @@
   "callWebNotSupported": "ওয়েবে ভয়েস কল সমর্থিত নয়। অ্যাপ ব্যবহার করুন।",
   "micPermissionRequiredForCall": "মাইক্রোফোন অনুমতি প্রয়োজন। কল শুরু করতে মাইক্রোফোন অনুমতি দিন।",
   "callErrorGeneric": "কল চলাকালীন একটি সমস্যা হয়েছে।",
+  "callDailyLimit": "আজকের শেখার সময় শেষ হয়ে গেছে।",
+  "callAlreadyInCall": "আপনি ইতিমধ্যে একটি কলে আছেন।",
   "callNetworkError": "নেটওয়ার্ক ত্রুটি হয়েছে।",
   "authInvalidCredentials": "ইমেইল বা পাসওয়ার্ড সঠিক নয়।",
   "authEmailAlreadyRegistered": "এই ইমেইলটি ইতিমধ্যে নিবন্ধিত।",

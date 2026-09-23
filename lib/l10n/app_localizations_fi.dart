@@ -23,6 +23,12 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callErrorGeneric => 'Puhelun aikana tapahtui virhe.';
 
   @override
+  String get callDailyLimit => 'Tämän päivän opiskeluaika on käytetty.';
+
+  @override
+  String get callAlreadyInCall => 'Olet jo puhelussa.';
+
+  @override
   String get callNetworkError => 'Tapahtui verkkovirhe.';
 
   @override

@@ -23,6 +23,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get callErrorGeneric => 'Se produjo un error durante la llamada.';
 
   @override
+  String get callDailyLimit => 'Ya usaste tu tiempo de aprendizaje de hoy.';
+
+  @override
+  String get callAlreadyInCall => 'Ya estás en una llamada.';
+
+  @override
   String get callNetworkError => 'Se produjo un error de red.';
 
   @override

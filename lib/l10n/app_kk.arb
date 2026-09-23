@@ -4,6 +4,8 @@
   "callWebNotSupported": "Веб-нұсқада дауыстық қоңырау жұмыс істемейді. Қолданбаны пайдаланыңыз.",
   "micPermissionRequiredForCall": "Микрофонға рұқсат қажет. Қоңырау шалу үшін микрофонға рұқсат беріңіз.",
   "callErrorGeneric": "Қоңырау кезінде қате шықты.",
+  "callDailyLimit": "Бүгінгі оқу уақыты таусылды.",
+  "callAlreadyInCall": "Сіз қазір қоңырауда отырсыз.",
   "callNetworkError": "Желі қатесі шықты.",
   "authInvalidCredentials": "Электрондық пошта немесе құпия сөз дұрыс емес.",
   "authEmailAlreadyRegistered": "Бұл электрондық пошта тіркелген.",

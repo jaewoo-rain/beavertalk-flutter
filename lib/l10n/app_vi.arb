@@ -4,6 +4,8 @@
   "callWebNotSupported": "Cuộc gọi thoại không được hỗ trợ trên web. Vui lòng dùng ứng dụng.",
   "micPermissionRequiredForCall": "Cần quyền micrô. Hãy cho phép micrô để gọi.",
   "callErrorGeneric": "Đã xảy ra lỗi trong cuộc gọi.",
+  "callDailyLimit": "Bạn đã dùng hết thời gian học hôm nay.",
+  "callAlreadyInCall": "Bạn đang trong một cuộc gọi.",
   "callNetworkError": "Đã xảy ra lỗi mạng.",
   "authInvalidCredentials": "Email hoặc mật khẩu không đúng.",
   "authEmailAlreadyRegistered": "Email này đã được đăng ký.",

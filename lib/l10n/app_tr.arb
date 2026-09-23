@@ -4,6 +4,8 @@
   "callWebNotSupported": "Sesli aramalar web'de desteklenmiyor. Lütfen uygulamayı kullanın.",
   "micPermissionRequiredForCall": "Mikrofon izni gerekiyor. Arama yapmak için mikrofona izin verin.",
   "callErrorGeneric": "Arama sırasında bir hata oluştu.",
+  "callDailyLimit": "Bugünkü öğrenme süreni doldurdun.",
+  "callAlreadyInCall": "Zaten bir aramadasın.",
   "callNetworkError": "Ağ hatası oluştu.",
   "authInvalidCredentials": "E-posta veya şifre hatalı.",
   "authEmailAlreadyRegistered": "Bu e-posta zaten kayıtlı.",

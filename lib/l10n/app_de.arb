@@ -4,6 +4,8 @@
   "callWebNotSupported": "Sprachanrufe werden im Web nicht unterstützt. Bitte nutze die App.",
   "micPermissionRequiredForCall": "Mikrofonzugriff ist erforderlich. Erlaube das Mikrofon, um anzurufen.",
   "callErrorGeneric": "Während des Anrufs ist ein Fehler aufgetreten.",
+  "callDailyLimit": "Deine Lernzeit für heute ist aufgebraucht.",
+  "callAlreadyInCall": "Du bist bereits in einem Anruf.",
   "callNetworkError": "Es ist ein Netzwerkfehler aufgetreten.",
   "authInvalidCredentials": "E-Mail oder Passwort ist falsch.",
   "authEmailAlreadyRegistered": "Diese E-Mail-Adresse ist bereits registriert.",

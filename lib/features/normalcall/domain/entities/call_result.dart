@@ -36,6 +36,9 @@ class LearnedSentence {
     this.native,
     this.voiceUrl,
     this.isBookmarked = false,
+    this.isNative = false,
+    this.pairedSentenceId,
+    this.nuance,
   });
 
   /// Server primary key for this sentence.
@@ -52,6 +55,18 @@ class LearnedSentence {
 
   /// Whether the learner has bookmarked this sentence.
   final bool isBookmarked;
+
+  /// 현지인 표현 짝인가(서버 `kind == "native"`). 기본 문장은 false.
+  ///
+  /// 서버 `premium` 브랜치(09-23)부터 배운 표현마다 원어민이 실제로 쓰는 말이 하나씩
+  /// 붙어 온다(예: 배고파요 → 뱃가죽이 등에 붙을 것 같아요). 순서는 「기본1·짝1·기본2·짝2…」.
+  final bool isNative;
+
+  /// 짝이 되는 기본 문장의 [sentenceId]. 기본 문장·북마크 목록에서는 null.
+  final int? pairedSentenceId;
+
+  /// 현지인 표현의 뉘앙스 설명(학습자 모국어). 기본 문장에서는 null.
+  final String? nuance;
 }
 
 /// The partner's short remark left right after the call ("Baba의 한마디").
@@ -97,8 +112,14 @@ class CallResult {
   /// Average pronunciation scores (may be placeholder zeros/nulls).
   final ScoreAverage average;
 
-  /// Sentences learned/spoken during the call.
+  /// Sentences learned/spoken during the call — 서버가 준 순서 그대로(기본·짝 교차).
   final List<LearnedSentence> sentences;
+
+  /// 배운 표현 수 — 현지인 짝([LearnedSentence.isNative])은 세지 않는다.
+  ///
+  /// 3개를 배우면 서버는 6개(기본 3 + 짝 3)를 준다. `sentences.length` 로 세면
+  /// 「새로운 표현 6개」 라는 틀린 숫자가 나온다.
+  int get learnedCount => sentences.where((s) => !s.isNative).length;
 
   // ── Fields the v2 analysis design renders (Figma `screen/analysis__확정`) ──
   //

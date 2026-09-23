@@ -23,6 +23,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callErrorGeneric => 'ඇමතුම අතරතුර දෝෂයක් ඇති විය.';
 
   @override
+  String get callDailyLimit => 'අද ඉගෙනුම් කාලය අවසන්.';
+
+  @override
+  String get callAlreadyInCall => 'ඔබ දැනටමත් ඇමතුමක සිටී.';
+
+  @override
   String get callNetworkError => 'ජාල දෝෂයක් ඇති විය.';
 
   @override

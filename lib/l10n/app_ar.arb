@@ -4,6 +4,8 @@
   "callWebNotSupported": "المكالمات الصوتية غير مدعومة على الويب. يرجى استخدام التطبيق.",
   "micPermissionRequiredForCall": "إذن الميكروفون مطلوب. اسمح بالميكروفون لبدء المكالمة.",
   "callErrorGeneric": "حدث خطأ أثناء المكالمة.",
+  "callDailyLimit": "لقد استنفدت وقت التعلّم لهذا اليوم.",
+  "callAlreadyInCall": "أنت في مكالمة بالفعل.",
   "callNetworkError": "حدث خطأ في الشبكة.",
   "authInvalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
   "authEmailAlreadyRegistered": "هذا البريد الإلكتروني مسجَّل بالفعل.",

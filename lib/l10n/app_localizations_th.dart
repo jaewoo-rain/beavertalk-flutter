@@ -22,6 +22,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callErrorGeneric => 'เกิดข้อผิดพลาดระหว่างการโทร';
 
   @override
+  String get callDailyLimit => 'ใช้เวลาเรียนของวันนี้หมดแล้ว';
+
+  @override
+  String get callAlreadyInCall => 'คุณอยู่ในสายอยู่แล้ว';
+
+  @override
   String get callNetworkError => 'เกิดข้อผิดพลาดของเครือข่าย';
 
   @override

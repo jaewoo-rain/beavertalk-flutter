@@ -23,6 +23,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callErrorGeneric => 'کال کے دوران خرابی پیش آئی۔';
 
   @override
+  String get callDailyLimit => 'آج کا سیکھنے کا وقت ختم ہو گیا ہے۔';
+
+  @override
+  String get callAlreadyInCall => 'آپ پہلے سے ایک کال پر ہیں۔';
+
+  @override
   String get callNetworkError => 'نیٹ ورک کی خرابی پیش آئی۔';
 
   @override

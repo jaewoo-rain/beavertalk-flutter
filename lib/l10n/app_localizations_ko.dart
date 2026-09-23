@@ -22,6 +22,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callErrorGeneric => '통화 중 오류가 발생했어요.';
 
   @override
+  String get callDailyLimit => '오늘 학습 시간을 다 썼어요.';
+
+  @override
+  String get callAlreadyInCall => '이미 통화 중이에요.';
+
+  @override
   String get callNetworkError => '네트워크 오류가 발생했어요.';
 
   @override

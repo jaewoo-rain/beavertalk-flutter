@@ -23,6 +23,12 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callErrorGeneric => 'មានបញ្ហាកើតឡើងកំឡុងពេលហៅ។';
 
   @override
+  String get callDailyLimit => 'ពេលវេលាសិក្សាថ្ងៃនេះបានអស់ហើយ។';
+
+  @override
+  String get callAlreadyInCall => 'អ្នកកំពុងនៅក្នុងការហៅរួចហើយ។';
+
+  @override
   String get callNetworkError => 'មានបញ្ហាបណ្តាញ។';
 
   @override

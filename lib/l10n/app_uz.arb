@@ -4,6 +4,8 @@
   "callWebNotSupported": "Vebda ovozli qoʻngʻiroq ishlamaydi. Ilovadan foydalaning.",
   "micPermissionRequiredForCall": "Mikrofonga ruxsat kerak. Qoʻngʻiroq qilish uchun mikrofonga ruxsat bering.",
   "callErrorGeneric": "Qoʻngʻiroq paytida xatolik yuz berdi.",
+  "callDailyLimit": "Bugungi o'qish vaqti tugadi.",
+  "callAlreadyInCall": "Siz allaqachon qo'ng'iroqdasiz.",
   "callNetworkError": "Tarmoq xatosi yuz berdi.",
   "authInvalidCredentials": "Email yoki parol notoʻgʻri.",
   "authEmailAlreadyRegistered": "Bu email allaqachon roʻyxatdan oʻtgan.",
