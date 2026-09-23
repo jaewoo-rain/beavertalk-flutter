@@ -1172,7 +1172,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get lastPayment => 'ការទូទាត់ចុងក្រោយ';
 
   @override
-  String get freePlanCallLimit => '1 ការហៅក្នុងមួយថ្ងៃ · កំណត់ 5 នាទី';
+  String get freePlanCallLimit => 'ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String get freePlanBasicCharacters => 'រួមបញ្ចូលតួអង្គមូលដ្ឋាន';
@@ -1387,8 +1387,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'ហៅជាវីដេអូរហូតដល់ 3 ដងក្នុងមួយថ្ងៃ ម្ដងៗ 15 នាទី';
+  String get premiumBulletVideo => 'ហៅជាវីដេអូ 15 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String get premiumBulletAnalysis => 'ការវិភាគការបញ្ចេញសំឡេងពេញលេញ';
@@ -1408,7 +1407,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planMaxTrial => 'ការសាកល្បង Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — ការហៅមួយក្នុងមួយថ្ងៃ';
+  String get freePlanPriceLine => '\$0.00 — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1450,7 +1449,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'ការហៅជាវីដេអូ · រហូតដល់ 3 ដងក្នុងមួយថ្ងៃ · $price ក្នុងមួយខែ';
+    return 'ការហៅជាវីដេអូ · 15 នាទីក្នុងមួយថ្ងៃ · $price ក្នុងមួយខែ';
   }
 
   @override
@@ -1514,13 +1513,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planTaglineMax => 'ឥឡូវអ្នកអាចមើលឃើញពួកគេ។';
 
   @override
-  String get planTaglineFree => 'ការហៅមួយក្នុងមួយថ្ងៃ។ ឥតគិតថ្លៃ។';
+  String get planTaglineFree => 'ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ។ ឥតគិតថ្លៃ។';
 
   @override
   String get bulletProCorrections => 'ការកែតម្រូវ ផ្អែកលើភាសាកំណើតរបស់អ្នក';
 
   @override
-  String get bulletFreeCall => 'ការហៅជាសំឡេង ៥ នាទី មួយក្នុងមួយថ្ងៃ';
+  String get bulletFreeCall => 'ការហៅជាសំឡេង 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String get bulletFreeCheck => 'ការវិភាគពេញលេញសម្រាប់ការហៅ 3 ដងដំបូង';
@@ -1533,7 +1532,7 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium៖ ហៅរហូតដល់ 3 ដងក្នុងមួយថ្ងៃ ម្ដងៗ 15 នាទី។';
+      'Premium៖ 15 នាទីក្នុងមួយថ្ងៃ — ក្នុងរយៈពេលនោះ អាចហៅបានប៉ុន្មានដងក៏បាន។';
 
   @override
   String get paywallProTitle1 => 'មិត្តកូរ៉េរបស់អ្នក';
@@ -1542,14 +1541,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get paywallProTitle2 => 'ដែលនៅភ្ញាក់ម៉ោង ៣ យប់';
 
   @override
-  String get paywallLimitHeadline =>
-      'Premium ផ្ដល់ការហៅរហូតដល់ 3 ដងក្នុងមួយថ្ងៃ។';
+  String get paywallLimitHeadline => 'Premium ផ្ដល់ការហៅ 15 នាទីក្នុងមួយថ្ងៃ។';
 
   @override
-  String get limitBannerCallTitle => 'នោះជាការហៅថ្ងៃនេះហើយ';
+  String get limitBannerCallTitle => 'ពេលហៅថ្ងៃនេះអស់ហើយ';
 
   @override
-  String get limitBannerCallSub => 'Free ផ្ដល់ការហៅមួយក្នុងមួយថ្ងៃ';
+  String get limitBannerCallSub => 'Free ផ្ដល់ការហៅ 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String get limitBannerCheckTitle => 'នោះជាការត្រួតពិនិត្យថ្ងៃនេះហើយ';
@@ -1668,7 +1666,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get winbackTitle => 'គម្រោង Premium របស់អ្នកបានបញ្ចប់';
 
   @override
-  String get winbackSub => 'ឥឡូវអ្នកនៅលើ Free — ការហៅមួយក្នុងមួយថ្ងៃ។';
+  String get winbackSub => 'ឥឡូវអ្នកនៅលើ Free — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ។';
 
   @override
   String get winbackQuestion => 'អាចប្រាប់យើងបានទេ ថាហេតុអ្វីអ្នកចាកចេញ?';

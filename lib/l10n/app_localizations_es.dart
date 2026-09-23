@@ -1186,7 +1186,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get lastPayment => 'Último pago';
 
   @override
-  String get freePlanCallLimit => '1 llamada al día · límite de 5 min';
+  String get freePlanCallLimit => '5 min de llamadas al día';
 
   @override
   String get freePlanBasicCharacters => 'Personajes básicos incluidos';
@@ -1401,8 +1401,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Hasta 3 videollamadas al día, de 15 minutos cada una';
+  String get premiumBulletVideo => '15 minutos de videollamadas al día';
 
   @override
   String get premiumBulletAnalysis => 'Análisis completo de pronunciación';
@@ -1422,7 +1421,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get planMaxTrial => 'Prueba de Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — una llamada al día';
+  String get freePlanPriceLine => '\$0.00 — 5 minutos de llamadas al día';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1464,7 +1463,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Videollamadas · hasta 3 al día · $price al mes';
+    return 'Videollamadas · 15 minutos al día · $price al mes';
   }
 
   @override
@@ -1528,14 +1527,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get planTaglineMax => 'Ahora puedes verlos.';
 
   @override
-  String get planTaglineFree => 'Una llamada al día. Invita la casa.';
+  String get planTaglineFree => '5 minutos de llamadas al día. Invita la casa.';
 
   @override
   String get bulletProCorrections =>
       'Correcciones adaptadas a tu idioma nativo';
 
   @override
-  String get bulletFreeCall => 'Una llamada de voz de 5 minutos al día';
+  String get bulletFreeCall => '5 minutos de llamadas de voz al día';
 
   @override
   String get bulletFreeCheck => 'Análisis completo en tus 3 primeras llamadas';
@@ -1548,7 +1547,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: hasta 3 llamadas al día, de 15 minutos cada una.';
+      'Premium: 15 minutos al día — dentro de ese tiempo, llama cuantas veces quieras.';
 
   @override
   String get paywallProTitle1 => 'Tu amigo coreano';
@@ -1557,13 +1556,14 @@ class AppLocalizationsEs extends AppLocalizations {
   String get paywallProTitle2 => 'que está despierto a las 3 a.m.';
 
   @override
-  String get paywallLimitHeadline => 'Premium te da hasta 3 llamadas al día.';
+  String get paywallLimitHeadline =>
+      'Premium te da 15 minutos de llamadas al día.';
 
   @override
-  String get limitBannerCallTitle => 'Esa fue la llamada de hoy';
+  String get limitBannerCallTitle => 'Ya usaste el tiempo de llamada de hoy';
 
   @override
-  String get limitBannerCallSub => 'Gratis te da una llamada al día';
+  String get limitBannerCallSub => 'Gratis te da 5 minutos de llamadas al día';
 
   @override
   String get limitBannerCheckTitle => 'Esa fue la prueba de hoy';
@@ -1683,7 +1683,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get winbackTitle => 'Tu plan Premium terminó';
 
   @override
-  String get winbackSub => 'Ahora estás en Gratis — una llamada al día.';
+  String get winbackSub =>
+      'Ahora estás en Gratis — 5 minutos de llamadas al día.';
 
   @override
   String get winbackQuestion => '¿Nos cuentas por qué te fuiste?';

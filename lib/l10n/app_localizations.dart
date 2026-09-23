@@ -2275,7 +2275,7 @@ abstract class AppLocalizations {
   /// Free plan benefit line on the change-plan sheet.
   ///
   /// In en, this message translates to:
-  /// **'1 call a day · 5 min limit'**
+  /// **'5 minutes of calls a day'**
   String get freePlanCallLimit;
 
   /// Free plan benefit line on the change-plan sheet.
@@ -2662,10 +2662,10 @@ abstract class AppLocalizations {
   /// **'Premium'**
   String get planMax;
 
-  /// Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is one call a day, up to 15 minutes.
+  /// Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is 15 minutes of calls a day in total, any number of calls (decision 2026-09-23).
   ///
   /// In en, this message translates to:
-  /// **'Up to 3 video calls a day, 15 minutes each'**
+  /// **'15 minutes of video calls a day'**
   String get premiumBulletVideo;
 
   /// Premium benefit bullet.
@@ -2701,7 +2701,7 @@ abstract class AppLocalizations {
   /// Plan-card subtitle on the Free state. Confirmed copy; do not reword.
   ///
   /// In en, this message translates to:
-  /// **'\$0.00 — one call a day'**
+  /// **'\$0.00 — 5 minutes of calls a day'**
   String get freePlanPriceLine;
 
   /// Plan-card subtitle for a monthly paid plan. 'per month' is mandated wording (spec 6-4 forbids 'a month').
@@ -2767,7 +2767,7 @@ abstract class AppLocalizations {
   /// No description provided for @bannerMaxUpsellSub.
   ///
   /// In en, this message translates to:
-  /// **'Video calls · up to 3 a day · {price} per month'**
+  /// **'Video calls · 15 minutes a day · {price} per month'**
   String bannerMaxUpsellSub(String price);
 
   /// No description provided for @bannerAnnualSwitchTitle.
@@ -2875,7 +2875,7 @@ abstract class AppLocalizations {
   /// No description provided for @planTaglineFree.
   ///
   /// In en, this message translates to:
-  /// **'One call a day. On the house.'**
+  /// **'5 minutes of calls a day. On the house.'**
   String get planTaglineFree;
 
   /// No description provided for @bulletProCorrections.
@@ -2887,7 +2887,7 @@ abstract class AppLocalizations {
   /// No description provided for @bulletFreeCall.
   ///
   /// In en, this message translates to:
-  /// **'One 5-minute voice call a day'**
+  /// **'5 minutes of voice calls a day'**
   String get bulletFreeCall;
 
   /// No description provided for @bulletFreeCheck.
@@ -2911,7 +2911,7 @@ abstract class AppLocalizations {
   /// No description provided for @noteCallLength.
   ///
   /// In en, this message translates to:
-  /// **'Premium: up to 3 calls a day, 15 minutes each.'**
+  /// **'Premium: 15 minutes of calls a day — call as often as you like within that.'**
   String get noteCallLength;
 
   /// No description provided for @paywallProTitle1.
@@ -2929,19 +2929,19 @@ abstract class AppLocalizations {
   /// Hot-entry paywall headline - one line, no story (spec 8-1).
   ///
   /// In en, this message translates to:
-  /// **'Premium gives you up to 3 calls a day.'**
+  /// **'Premium gives you 15 minutes of calls a day.'**
   String get paywallLimitHeadline;
 
   /// No description provided for @limitBannerCallTitle.
   ///
   /// In en, this message translates to:
-  /// **'That was today\'s call'**
+  /// **'You\'ve used today\'s call time'**
   String get limitBannerCallTitle;
 
   /// No description provided for @limitBannerCallSub.
   ///
   /// In en, this message translates to:
-  /// **'Free gives you one call a day'**
+  /// **'Free gives you 5 minutes of calls a day'**
   String get limitBannerCallSub;
 
   /// No description provided for @limitBannerCheckTitle.
@@ -3139,7 +3139,7 @@ abstract class AppLocalizations {
   /// No description provided for @winbackSub.
   ///
   /// In en, this message translates to:
-  /// **'You\'re on Free now — one call a day.'**
+  /// **'You\'re on Free now — 5 minutes of calls a day.'**
   String get winbackSub;
 
   /// No description provided for @winbackQuestion.

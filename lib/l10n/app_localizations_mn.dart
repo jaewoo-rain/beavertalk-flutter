@@ -1170,7 +1170,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get lastPayment => 'Сүүлийн төлбөр';
 
   @override
-  String get freePlanCallLimit => 'Өдөрт 1 дуудлага · 5 мин хязгаар';
+  String get freePlanCallLimit => 'Өдөрт 5 минут дуудлага';
 
   @override
   String get freePlanBasicCharacters => 'Үндсэн дүрүүд багтсан';
@@ -1385,8 +1385,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Өдөрт 3 хүртэл видео дуудлага, тус бүр 15 минут';
+  String get premiumBulletVideo => 'Өдөрт 15 минут видео дуудлага';
 
   @override
   String get premiumBulletAnalysis => 'Дуудлагын бүрэн шинжилгээ';
@@ -1406,7 +1405,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planMaxTrial => 'Premium туршилт';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — өдөрт нэг дуудлага';
+  String get freePlanPriceLine => '\$0.00 — өдөрт 5 минут дуудлага';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1448,7 +1447,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Видео дуудлага · өдөрт 3 хүртэл · сард $price';
+    return 'Видео дуудлага · өдөрт 15 минут · сард $price';
   }
 
   @override
@@ -1512,13 +1511,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planTaglineMax => 'Одоо та тэднийг харах боломжтой.';
 
   @override
-  String get planTaglineFree => 'Өдөрт нэг дуудлага. Үнэгүй.';
+  String get planTaglineFree => 'Өдөрт 5 минут дуудлага. Үнэгүй.';
 
   @override
   String get bulletProCorrections => 'Таны төрөлх хэлэнд тохирсон засварууд';
 
   @override
-  String get bulletFreeCall => 'Өдөрт нэг 5 минутын дуут дуудлага';
+  String get bulletFreeCall => 'Өдөрт 5 минут дуут дуудлага';
 
   @override
   String get bulletFreeCheck => 'Эхний 3 дуудлагад бүрэн шинжилгээ';
@@ -1531,7 +1530,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: өдөрт 3 хүртэл дуудлага, тус бүр 15 минут.';
+      'Premium: өдөрт 15 минут — энэ хугацаанд хүссэн удаагаа залгаж болно.';
 
   @override
   String get paywallProTitle1 => 'Шөнийн 3 цагт ч сэрүүн байдаг';
@@ -1540,13 +1539,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get paywallProTitle2 => 'таны солонгос найз';
 
   @override
-  String get paywallLimitHeadline => 'Premium өдөрт 3 хүртэл дуудлага өгнө.';
+  String get paywallLimitHeadline => 'Premium өдөрт 15 минут дуудлага өгнө.';
 
   @override
-  String get limitBannerCallTitle => 'Энэ өнөөдрийн дуудлага байлаа';
+  String get limitBannerCallTitle => 'Өнөөдрийн дуудлагын хугацаа дууслаа';
 
   @override
-  String get limitBannerCallSub => 'Үнэгүй багц өдөрт нэг дуудлага олгоно';
+  String get limitBannerCallSub => 'Үнэгүй багц өдөрт 5 минут дуудлага олгоно';
 
   @override
   String get limitBannerCheckTitle => 'Энэ өнөөдрийн шалгалт байлаа';
@@ -1665,7 +1664,8 @@ class AppLocalizationsMn extends AppLocalizations {
   String get winbackTitle => 'Таны Premium багц дууслаа';
 
   @override
-  String get winbackSub => 'Та одоо Үнэгүй багцад байна — өдөрт нэг дуудлага.';
+  String get winbackSub =>
+      'Та одоо Үнэгүй багцад байна — өдөрт 5 минут дуудлага.';
 
   @override
   String get winbackQuestion => 'Яагаад гарсан шалтгаанаа хэлж өгөх үү?';

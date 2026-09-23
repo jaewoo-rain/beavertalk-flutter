@@ -1138,7 +1138,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lastPayment => '最近支付';
 
   @override
-  String get freePlanCallLimit => '每天1次通话 · 限时5分钟';
+  String get freePlanCallLimit => '每天通话5分钟';
 
   @override
   String get freePlanBasicCharacters => '可使用基础角色';
@@ -1353,7 +1353,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => '每天最多 3 次视频通话，每次 15 分钟';
+  String get premiumBulletVideo => '每天 15 分钟视频通话';
 
   @override
   String get premiumBulletAnalysis => '完整发音分析';
@@ -1371,7 +1371,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planMaxTrial => 'Premium 试用';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 每天一次通话';
+  String get freePlanPriceLine => '\$0.00 — 每天通话 5 分钟';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1413,7 +1413,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return '视频通话 · 每天最多 3 次 · 每月 $price';
+    return '视频通话 · 每天 15 分钟 · 每月 $price';
   }
 
   @override
@@ -1472,13 +1472,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planTaglineMax => '现在可以看见对方了。';
 
   @override
-  String get planTaglineFree => '每天一次通话，完全免费。';
+  String get planTaglineFree => '每天 5 分钟通话，完全免费。';
 
   @override
   String get bulletProCorrections => '针对你母语的纠正';
 
   @override
-  String get bulletFreeCall => '每天一次 5 分钟语音通话';
+  String get bulletFreeCall => '每天 5 分钟语音通话';
 
   @override
   String get bulletFreeCheck => '前3次通话提供完整分析';
@@ -1490,7 +1490,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaTurnOnVideo => '开启视频通话';
 
   @override
-  String get noteCallLength => 'Premium：每天最多 3 次通话，每次 15 分钟。';
+  String get noteCallLength => 'Premium：每天 15 分钟 — 在此时间内可多次通话。';
 
   @override
   String get paywallProTitle1 => '凌晨 3 点也在线的';
@@ -1499,13 +1499,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paywallProTitle2 => '你的韩国朋友';
 
   @override
-  String get paywallLimitHeadline => 'Premium 每天最多可通话 3 次。';
+  String get paywallLimitHeadline => 'Premium 每天可通话 15 分钟。';
 
   @override
-  String get limitBannerCallTitle => '今天的通话用完了';
+  String get limitBannerCallTitle => '今天的通话时间用完了';
 
   @override
-  String get limitBannerCallSub => '免费套餐每天可通话一次';
+  String get limitBannerCallSub => '免费套餐每天可通话 5 分钟';
 
   @override
   String get limitBannerCheckTitle => '今天的检测用完了';
@@ -1622,7 +1622,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get winbackTitle => '你的 Premium 套餐已结束';
 
   @override
-  String get winbackSub => '你现在是免费套餐 — 每天一次通话。';
+  String get winbackSub => '你现在是免费套餐 — 每天可通话 5 分钟。';
 
   @override
   String get winbackQuestion => '愿意告诉我们离开的原因吗？';

@@ -95,7 +95,7 @@ enum SubscriptionOverlay {
 
   /// `free_call_ended` (`4952:18151`) — **무료 회원이 5분 구간을 다 썼다.**
   ///
-  /// [freeLimitCall] 과 형제지만 뜻이 다르다: 저쪽은 "오늘 통화를 다 썼다"(하루 1통화),
+  /// [freeLimitCall] 과 형제지만 뜻이 다르다: 저쪽은 "오늘 통화 시간을 다 썼다"(하루 합산 5분),
   /// 이쪽은 "이번 통화의 5분이 끝났다"다. 무료에는 연장이 없으므로 두 번째 버튼은
   /// 통화 종료다.
   freeCallEnded,
@@ -111,8 +111,9 @@ enum SubscriptionOverlay {
   /// `call_main_live_5minute_premium` (`5026:24871`) — **유료 통화가 15분 상한을 다
   /// 썼다.** 연장은 없고 버튼은 「End Call」 하나다(P19, 사용자 결정 2026-09-22).
   ///
-  /// 문구는 [lastCallToday] 로 갈린다 — Premium 은 하루 최대 3통화라, 1·2번째 통화에
-  /// 「내일 또 전화해요」라고 하면 오늘 더 걸 수 있는 사람에게 내일 오라고 하게 된다.
+  /// 문구는 [lastCallToday] 로 갈린다. Premium 은 하루 합산 15분(09-23 확정)이라 상한
+  /// 도달이 곧 오늘 예산 소진이다 — 실사용에서는 「내일 또」 쪽이다. 「통화가 더 남음」
+  /// 쪽은 서버가 예산이 남았다고 답할 때(한도 면제 admin)만 쓴다.
   premiumCallEnded,
 }
 
@@ -502,7 +503,7 @@ class _OverlaySheet extends StatelessWidget {
           blockTitle: l10n.subWhatYouLose,
           rows: [
             // Figma `overlay/cancel_subscription`·`resubscribe`: 영상통화 · 글자 단위 채점 ·
-            // 모든 지표와 문장(분석 전체). 첫 줄은 P15 로 「하루 최대 3회」 문구를 쓴다.
+            // 모든 지표와 문장(분석 전체). 첫 줄은 「하루 15분」 문구다(09-23 하루 합산 확정).
             SubscriptionActionRow(l10n.premiumBulletVideo),
             SubscriptionActionRow(l10n.benefitScoring),
             SubscriptionActionRow(l10n.benefitEveryMetric),
@@ -539,7 +540,7 @@ class _OverlaySheet extends StatelessWidget {
           blockTitle: l10n.subWhatYouKeep,
           rows: [
             // Figma `overlay/cancel_subscription`·`resubscribe`: 영상통화 · 글자 단위 채점 ·
-            // 모든 지표와 문장(분석 전체). 첫 줄은 P15 로 「하루 최대 3회」 문구를 쓴다.
+            // 모든 지표와 문장(분석 전체). 첫 줄은 「하루 15분」 문구다(09-23 하루 합산 확정).
             SubscriptionActionRow(l10n.premiumBulletVideo),
             SubscriptionActionRow(l10n.benefitScoring),
             SubscriptionActionRow(l10n.benefitEveryMetric),

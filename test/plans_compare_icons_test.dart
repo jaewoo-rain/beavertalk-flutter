@@ -42,7 +42,7 @@ void main() {
         expect(find.byWidgetPredicate((w) => isDuo(w, name)), findsOneWidget,
             reason: name);
       }
-      expect(find.text('Up to 3 video calls a day, 15 minutes each'),
+      expect(find.text('15 minutes of video calls a day'),
           findsWidgets);
     });
   }

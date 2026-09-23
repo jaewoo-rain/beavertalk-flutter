@@ -1178,7 +1178,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get lastPayment => 'Viimeisin maksu';
 
   @override
-  String get freePlanCallLimit => '1 puhelu päivässä · 5 min raja';
+  String get freePlanCallLimit => '5 min puheluita päivässä';
 
   @override
   String get freePlanBasicCharacters => 'Perushahmot mukana';
@@ -1393,8 +1393,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Jopa 3 videopuhelua päivässä, 15 minuuttia kukin';
+  String get premiumBulletVideo => '15 minuuttia videopuheluita päivässä';
 
   @override
   String get premiumBulletAnalysis => 'Täysi ääntämisanalyysi';
@@ -1414,7 +1413,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planMaxTrial => 'Premium-kokeilu';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — yksi puhelu päivässä';
+  String get freePlanPriceLine => '\$0.00 — 5 minuuttia puheluita päivässä';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1456,7 +1455,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Videopuhelut · jopa 3 päivässä · $price kuukaudessa';
+    return 'Videopuhelut · 15 minuuttia päivässä · $price kuukaudessa';
   }
 
   @override
@@ -1520,13 +1519,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planTaglineMax => 'Nyt näet heidät.';
 
   @override
-  String get planTaglineFree => 'Yksi puhelu päivässä. Talon puolesta.';
+  String get planTaglineFree =>
+      '5 minuuttia puheluita päivässä. Talon puolesta.';
 
   @override
   String get bulletProCorrections => 'Korjaukset äidinkielesi mukaan';
 
   @override
-  String get bulletFreeCall => 'Yksi 5 minuutin äänipuhelu päivässä';
+  String get bulletFreeCall => '5 minuuttia äänipuheluita päivässä';
 
   @override
   String get bulletFreeCheck => 'Täysi analyysi 3 ensimmäisestä puhelusta';
@@ -1539,7 +1539,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: jopa 3 puhelua päivässä, 15 minuuttia kukin.';
+      'Premium: 15 minuuttia päivässä — sen puitteissa voit soittaa niin usein kuin haluat.';
 
   @override
   String get paywallProTitle1 => 'Korealainen ystäväsi,';
@@ -1548,13 +1548,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get paywallProTitle2 => 'joka valvoo kello 3 yöllä';
 
   @override
-  String get paywallLimitHeadline => 'Premiumilla jopa 3 puhelua päivässä.';
+  String get paywallLimitHeadline =>
+      'Premiumilla saat 15 minuuttia puheluita päivässä.';
 
   @override
-  String get limitBannerCallTitle => 'Se oli päivän puhelu';
+  String get limitBannerCallTitle => 'Tämän päivän puheluaika on käytetty';
 
   @override
-  String get limitBannerCallSub => 'Ilmainen antaa yhden puhelun päivässä';
+  String get limitBannerCallSub =>
+      'Ilmainen antaa 5 minuuttia puheluita päivässä';
 
   @override
   String get limitBannerCheckTitle => 'Se oli päivän tarkistus';
@@ -1675,7 +1677,8 @@ class AppLocalizationsFi extends AppLocalizations {
   String get winbackTitle => 'Premium-pakettisi päättyi';
 
   @override
-  String get winbackSub => 'Käytät nyt Ilmaista — yksi puhelu päivässä.';
+  String get winbackSub =>
+      'Käytät nyt Ilmaista — 5 minuuttia puheluita päivässä.';
 
   @override
   String get winbackQuestion => 'Kertoisitko, miksi lähdit?';

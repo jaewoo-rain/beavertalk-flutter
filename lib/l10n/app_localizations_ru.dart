@@ -1181,7 +1181,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get lastPayment => 'Последний платёж';
 
   @override
-  String get freePlanCallLimit => '1 звонок в день · лимит 5 мин';
+  String get freePlanCallLimit => '5 мин звонков в день';
 
   @override
   String get freePlanBasicCharacters => 'Базовые персонажи включены';
@@ -1396,7 +1396,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'До 3 видеозвонков в день, по 15 минут';
+  String get premiumBulletVideo => '15 минут видеозвонков в день';
 
   @override
   String get premiumBulletAnalysis => 'Полный разбор произношения';
@@ -1416,7 +1416,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get planMaxTrial => 'Пробный Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — один звонок в день';
+  String get freePlanPriceLine => '\$0.00 — 5 минут звонков в день';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1458,7 +1458,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Видеозвонки · до 3 в день · $price в месяц';
+    return 'Видеозвонки · 15 минут в день · $price в месяц';
   }
 
   @override
@@ -1522,14 +1522,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get planTaglineMax => 'Теперь вы можете их видеть.';
 
   @override
-  String get planTaglineFree => 'Один звонок в день. Бесплатно.';
+  String get planTaglineFree => '5 минут звонков в день. Бесплатно.';
 
   @override
   String get bulletProCorrections =>
       'Исправления с учётом вашего родного языка';
 
   @override
-  String get bulletFreeCall => 'Один 5-минутный голосовой звонок в день';
+  String get bulletFreeCall => '5 минут голосовых звонков в день';
 
   @override
   String get bulletFreeCheck => 'Полный разбор первых 3 звонков';
@@ -1541,7 +1541,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ctaTurnOnVideo => 'Включить видео';
 
   @override
-  String get noteCallLength => 'Premium: до 3 звонков в день, по 15 минут.';
+  String get noteCallLength =>
+      'Premium: 15 минут в день — в их пределах звоните сколько захотите.';
 
   @override
   String get paywallProTitle1 => 'Ваш корейский друг,';
@@ -1550,13 +1551,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywallProTitle2 => 'который не спит в 3 часа ночи';
 
   @override
-  String get paywallLimitHeadline => 'Premium даёт до 3 звонков в день.';
+  String get paywallLimitHeadline => 'Premium даёт 15 минут звонков в день.';
 
   @override
-  String get limitBannerCallTitle => 'Это был звонок на сегодня';
+  String get limitBannerCallTitle => 'Время звонков на сегодня закончилось';
 
   @override
-  String get limitBannerCallSub => 'Free даёт один звонок в день';
+  String get limitBannerCallSub => 'Free даёт 5 минут звонков в день';
 
   @override
   String get limitBannerCheckTitle => 'Это была проверка на сегодня';
@@ -1675,7 +1676,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get winbackTitle => 'Ваш план Premium закончился';
 
   @override
-  String get winbackSub => 'Теперь вы на Free — один звонок в день.';
+  String get winbackSub => 'Теперь вы на Free — 5 минут звонков в день.';
 
   @override
   String get winbackQuestion => 'Расскажете, почему вы ушли?';

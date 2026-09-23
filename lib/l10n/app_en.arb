@@ -603,7 +603,7 @@
   "@lastPayment": {
     "description": "Label of the most-recent-charge row in the subscription sheet's 결제 정보 section."
   },
-  "freePlanCallLimit": "1 call a day · 5 min limit",
+  "freePlanCallLimit": "5 minutes of calls a day",
   "@freePlanCallLimit": {
     "description": "Free plan benefit line on the change-plan sheet."
   },
@@ -854,8 +854,8 @@
   "planFree": "Free",
   "planPro": "Pro",
   "planMax": "Premium",
-  "premiumBulletVideo": "Up to 3 video calls a day, 15 minutes each",
-  "@premiumBulletVideo": {"description": "Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is one call a day, up to 15 minutes."},
+  "premiumBulletVideo": "15 minutes of video calls a day",
+  "@premiumBulletVideo": {"description": "Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is 15 minutes of calls a day in total, any number of calls (decision 2026-09-23)."},
   "premiumBulletAnalysis": "Full pronunciation analysis",
   "@premiumBulletAnalysis": {"description": "Premium benefit bullet."},
   "premiumBulletWeakSounds": "Weak-sound drills for your language",
@@ -868,7 +868,7 @@
   "@planMaxTrial": {
     "description": "Plan-card title while inside the Max trial."
   },
-  "freePlanPriceLine": "$0.00 — one call a day",
+  "freePlanPriceLine": "$0.00 — 5 minutes of calls a day",
   "@freePlanPriceLine": {
     "description": "Plan-card subtitle on the Free state. Confirmed copy; do not reword."
   },
@@ -921,7 +921,7 @@
     }
   },
   "bannerMaxUpsellTitle": "Get face to face with Premium",
-  "bannerMaxUpsellSub": "Video calls · up to 3 a day · {price} per month",
+  "bannerMaxUpsellSub": "Video calls · 15 minutes a day · {price} per month",
   "@bannerMaxUpsellSub": {
     "placeholders": {
       "price": {
@@ -965,21 +965,21 @@
   },
   "perMonthUnit": "per month",
   "planTaglineMax": "Now you can see them.",
-  "planTaglineFree": "One call a day. On the house.",
+  "planTaglineFree": "5 minutes of calls a day. On the house.",
   "bulletProCorrections": "Corrections aimed at your native language",
-  "bulletFreeCall": "One 5-minute voice call a day",
+  "bulletFreeCall": "5 minutes of voice calls a day",
   "bulletFreeCheck": "Full analysis for your first 3 calls",
   "bulletFreeCharacter": "Two characters to start",
   "ctaTurnOnVideo": "Turn on video",
-  "noteCallLength": "Premium: up to 3 calls a day, 15 minutes each.",
+  "noteCallLength": "Premium: 15 minutes of calls a day — call as often as you like within that.",
   "paywallProTitle1": "Your Korean friend",
   "paywallProTitle2": "who's up at 3 a.m.",
-  "paywallLimitHeadline": "Premium gives you up to 3 calls a day.",
+  "paywallLimitHeadline": "Premium gives you 15 minutes of calls a day.",
   "@paywallLimitHeadline": {
     "description": "Hot-entry paywall headline - one line, no story (spec 8-1)."
   },
-  "limitBannerCallTitle": "That was today's call",
-  "limitBannerCallSub": "Free gives you one call a day",
+  "limitBannerCallTitle": "You've used today's call time",
+  "limitBannerCallSub": "Free gives you 5 minutes of calls a day",
   "limitBannerCheckTitle": "That was today's check",
   "limitBannerCheckSub": "Free gives you one check a day",
   "bulletProCharactersForever": "Characters you buy stay yours forever",
@@ -1082,7 +1082,7 @@
   "ctaKeepMax": "Keep Premium",
   "winbackSkip": "Skip",
   "winbackTitle": "Your Premium plan ended",
-  "winbackSub": "You're on Free now — one call a day.",
+  "winbackSub": "You're on Free now — 5 minutes of calls a day.",
   "winbackQuestion": "Mind telling us why you left?",
   "winbackReasonExpensive": "Too expensive",
   "winbackReasonUnused": "I wasn't using it enough",

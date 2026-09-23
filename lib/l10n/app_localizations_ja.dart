@@ -1140,7 +1140,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lastPayment => '最近の決済';
 
   @override
-  String get freePlanCallLimit => '1日1通話 · 5分制限';
+  String get freePlanCallLimit => '1日の通話5分';
 
   @override
   String get freePlanBasicCharacters => '基本キャラクター利用可';
@@ -1355,7 +1355,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'ビデオ通話は1日最大3回、1回15分';
+  String get premiumBulletVideo => '1日15分のビデオ通話';
 
   @override
   String get premiumBulletAnalysis => '発音分析をすべて';
@@ -1373,7 +1373,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planMaxTrial => 'Premium体験';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 1日1回の通話';
+  String get freePlanPriceLine => '\$0.00 — 1日5分の通話';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1415,7 +1415,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'ビデオ通話 · 1日最大3回 · 月額$price';
+    return 'ビデオ通話 · 1日15分 · 月$price';
   }
 
   @override
@@ -1474,13 +1474,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planTaglineMax => '顔を見ながら話せます。';
 
   @override
-  String get planTaglineFree => '1日1回、無料で通話。';
+  String get planTaglineFree => '1日5分、無料で通話。';
 
   @override
   String get bulletProCorrections => '母語に合わせた添削';
 
   @override
-  String get bulletFreeCall => '1日1回、5分の音声通話';
+  String get bulletFreeCall => '1日5分の音声通話';
 
   @override
   String get bulletFreeCheck => '最初の3回の通話は分析をすべて';
@@ -1492,7 +1492,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaTurnOnVideo => 'ビデオ通話を始める';
 
   @override
-  String get noteCallLength => 'Premium：1日最大3回の通話、1回15分。';
+  String get noteCallLength => 'Premium：1日15分 — その中なら何回でも通話できます。';
 
   @override
   String get paywallProTitle1 => '深夜3時でも起きている';
@@ -1501,13 +1501,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallProTitle2 => 'あなたの韓国人の友だち';
 
   @override
-  String get paywallLimitHeadline => 'Premiumなら1日最大3回通話できます。';
+  String get paywallLimitHeadline => 'Premiumなら1日15分通話できます。';
 
   @override
-  String get limitBannerCallTitle => '今日の通話は終わりました';
+  String get limitBannerCallTitle => '今日の通話時間を使い切りました';
 
   @override
-  String get limitBannerCallSub => '無料プランは1日1回の通話です';
+  String get limitBannerCallSub => '無料プランは1日5分通話できます';
 
   @override
   String get limitBannerCheckTitle => '今日のチェックは終わりました';
@@ -1624,7 +1624,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get winbackTitle => 'Premiumプランが終了しました';
 
   @override
-  String get winbackSub => '現在は無料プラン — 1日1回の通話です。';
+  String get winbackSub => '現在は無料プラン — 1日5分通話できます。';
 
   @override
   String get winbackQuestion => 'よろしければ、やめた理由を教えてください。';

@@ -1171,7 +1171,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get lastPayment => 'সর্বশেষ পেমেন্ট';
 
   @override
-  String get freePlanCallLimit => 'দিনে ১টি কল · ৫ মিনিট সীমা';
+  String get freePlanCallLimit => 'দিনে 5 মিনিট কল';
 
   @override
   String get freePlanBasicCharacters => 'বেসিক চরিত্র অন্তর্ভুক্ত';
@@ -1386,8 +1386,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'দিনে সর্বোচ্চ 3টি ভিডিও কল, প্রতিটি 15 মিনিট';
+  String get premiumBulletVideo => 'দিনে 15 মিনিট ভিডিও কল';
 
   @override
   String get premiumBulletAnalysis => 'সম্পূর্ণ উচ্চারণ বিশ্লেষণ';
@@ -1406,7 +1405,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get planMaxTrial => 'Premium ট্রায়াল';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — দিনে একটি কল';
+  String get freePlanPriceLine => '\$0.00 — দিনে 5 মিনিট কল';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1448,7 +1447,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'ভিডিও কল · দিনে সর্বোচ্চ 3টি · মাসে $price';
+    return 'ভিডিও কল · দিনে 15 মিনিট · মাসে $price';
   }
 
   @override
@@ -1512,13 +1511,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get planTaglineMax => 'এখন তাদের দেখতে পাবেন।';
 
   @override
-  String get planTaglineFree => 'দিনে একটি কল। একদম ফ্রি।';
+  String get planTaglineFree => 'দিনে 5 মিনিট কল। একদম ফ্রি।';
 
   @override
   String get bulletProCorrections => 'আপনার মাতৃভাষা অনুযায়ী সংশোধন';
 
   @override
-  String get bulletFreeCall => 'দিনে একটি ৫ মিনিটের ভয়েস কল';
+  String get bulletFreeCall => 'দিনে 5 মিনিট ভয়েস কল';
 
   @override
   String get bulletFreeCheck => 'প্রথম 3টি কলে সম্পূর্ণ বিশ্লেষণ';
@@ -1531,7 +1530,7 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: দিনে সর্বোচ্চ 3টি কল, প্রতিটি 15 মিনিট।';
+      'Premium: দিনে 15 মিনিট — এর মধ্যে যতবার খুশি কল করুন।';
 
   @override
   String get paywallProTitle1 => 'আপনার কোরিয়ান বন্ধু';
@@ -1540,13 +1539,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get paywallProTitle2 => 'রাত ৩টায়ও জেগে থাকে';
 
   @override
-  String get paywallLimitHeadline => 'Premium-এ দিনে সর্বোচ্চ 3টি কল।';
+  String get paywallLimitHeadline => 'Premium-এ দিনে 15 মিনিট কল করা যায়।';
 
   @override
-  String get limitBannerCallTitle => 'আজকের কল শেষ';
+  String get limitBannerCallTitle => 'আজকের কলের সময় শেষ';
 
   @override
-  String get limitBannerCallSub => 'Free-তে দিনে একটি কল';
+  String get limitBannerCallSub => 'Free-তে দিনে 5 মিনিট কল করা যায়';
 
   @override
   String get limitBannerCheckTitle => 'আজকের পরীক্ষা শেষ';
@@ -1665,7 +1664,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get winbackTitle => 'আপনার Premium প্ল্যান শেষ হয়েছে';
 
   @override
-  String get winbackSub => 'আপনি এখন Free-তে — দিনে একটি কল।';
+  String get winbackSub => 'আপনি এখন Free-তে — দিনে 5 মিনিট কল।';
 
   @override
   String get winbackQuestion => 'কেন ছেড়ে গেলেন, জানাবেন কি?';

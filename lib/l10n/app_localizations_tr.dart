@@ -1171,7 +1171,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get lastPayment => 'Son ödeme';
 
   @override
-  String get freePlanCallLimit => 'Günde 1 görüşme · 5 dk sınır';
+  String get freePlanCallLimit => 'Günde 5 dk görüşme';
 
   @override
   String get freePlanBasicCharacters => 'Temel karakterler dahil';
@@ -1386,8 +1386,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Günde 3 görüntülü aramaya kadar, her biri 15 dakika';
+  String get premiumBulletVideo => 'Günde 15 dakika görüntülü arama';
 
   @override
   String get premiumBulletAnalysis => 'Tam telaffuz analizi';
@@ -1406,7 +1405,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planMaxTrial => 'Premium deneme';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — günde bir arama';
+  String get freePlanPriceLine => '\$0.00 — günde 5 dakika arama';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1448,7 +1447,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Görüntülü arama · günde 3\'e kadar · aylık $price';
+    return 'Görüntülü arama · günde 15 dakika · aylık $price';
   }
 
   @override
@@ -1512,13 +1511,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planTaglineMax => 'Artık onları görebilirsin.';
 
   @override
-  String get planTaglineFree => 'Günde bir arama. Bizden.';
+  String get planTaglineFree => 'Günde 5 dakika arama. Bizden.';
 
   @override
   String get bulletProCorrections => 'Ana diline göre düzeltmeler';
 
   @override
-  String get bulletFreeCall => 'Günde bir 5 dakikalık sesli arama';
+  String get bulletFreeCall => 'Günde 5 dakika sesli arama';
 
   @override
   String get bulletFreeCheck => 'İlk 3 araman için tam analiz';
@@ -1531,7 +1530,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: günde 3 aramaya kadar, her biri 15 dakika.';
+      'Premium: günde 15 dakika — bu süre içinde istediğin kadar arayabilirsin.';
 
   @override
   String get paywallProTitle1 => 'Gece 3\'te bile ayakta olan';
@@ -1540,13 +1539,14 @@ class AppLocalizationsTr extends AppLocalizations {
   String get paywallProTitle2 => 'Koreli arkadaşın';
 
   @override
-  String get paywallLimitHeadline => 'Premium ile günde 3 aramaya kadar.';
+  String get paywallLimitHeadline =>
+      'Premium ile günde 15 dakika arama yapabilirsin.';
 
   @override
-  String get limitBannerCallTitle => 'Bugünkü araman buydu';
+  String get limitBannerCallTitle => 'Bugünkü arama süren doldu';
 
   @override
-  String get limitBannerCallSub => 'Free günde bir arama verir';
+  String get limitBannerCallSub => 'Free günde 5 dakika arama verir';
 
   @override
   String get limitBannerCheckTitle => 'Bugünkü kontrolün buydu';
@@ -1666,7 +1666,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get winbackTitle => 'Premium planın sona erdi';
 
   @override
-  String get winbackSub => 'Artık Free\'desin — günde bir arama.';
+  String get winbackSub => 'Artık Free\'desin — günde 5 dakika arama.';
 
   @override
   String get winbackQuestion => 'Neden ayrıldığını söyler misin?';

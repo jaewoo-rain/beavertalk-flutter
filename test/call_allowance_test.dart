@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 /// 통화 시간 정책 — 5분 구간, 무료 1구간 / 유료 3구간.
 ///
-/// 여기서 굳히는 건 **숫자 자체**다. 페이월 카피(`premiumBulletVideo` = "Up to 3 video
-/// calls a day, 15 minutes each")의 「15분」과 유료 3구간이 같은 값을 말하고 있고,
+/// 여기서 굳히는 건 **숫자 자체**다. 페이월 카피(`premiumBulletVideo` = "15 minutes of
+/// video calls a day", 09-23 하루 합산)의 「15분」과 유료 3구간이 같은 값을 말하고 있고,
 /// 이 테스트가 그 둘을 묶어 둔다.
 void main() {
   group('구간 길이', () {

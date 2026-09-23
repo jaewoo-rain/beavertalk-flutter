@@ -1185,7 +1185,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get lastPayment => 'Utolsó fizetés';
 
   @override
-  String get freePlanCallLimit => 'Napi 1 hívás · 5 perces korlát';
+  String get freePlanCallLimit => 'Napi 5 perc hívás';
 
   @override
   String get freePlanBasicCharacters => 'Alapkarakterek benne vannak';
@@ -1401,8 +1401,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Napi legfeljebb 3 videohívás, egyenként 15 perc';
+  String get premiumBulletVideo => 'Napi 15 perc videóhívás';
 
   @override
   String get premiumBulletAnalysis => 'Teljes kiejtéselemzés';
@@ -1421,7 +1420,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planMaxTrial => 'Premium próba';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — napi egy hívás';
+  String get freePlanPriceLine => '\$0.00 — napi 5 perc hívás';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1463,7 +1462,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Videohívás · napi legfeljebb 3 · havi $price';
+    return 'Videóhívás · napi 15 perc · havi $price';
   }
 
   @override
@@ -1527,13 +1526,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planTaglineMax => 'Most már láthatod őket.';
 
   @override
-  String get planTaglineFree => 'Napi egy hívás. Ajándékba.';
+  String get planTaglineFree => 'Napi 5 perc hívás. Ajándékba.';
 
   @override
   String get bulletProCorrections => 'Az anyanyelvedre szabott javítások';
 
   @override
-  String get bulletFreeCall => 'Napi egy 5 perces hanghívás';
+  String get bulletFreeCall => 'Napi 5 perc hanghívás';
 
   @override
   String get bulletFreeCheck => 'Teljes elemzés az első 3 hívásodhoz';
@@ -1546,7 +1545,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: napi legfeljebb 3 hívás, egyenként 15 perc.';
+      'Premium: napi 15 perc — ezen belül annyiszor hívhatsz, ahányszor csak akarsz.';
 
   @override
   String get paywallProTitle1 => 'A koreai barátod,';
@@ -1555,13 +1554,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get paywallProTitle2 => 'aki hajnali 3-kor is fent van';
 
   @override
-  String get paywallLimitHeadline => 'A Premiummal napi legfeljebb 3 hívás.';
+  String get paywallLimitHeadline => 'A Premiummal napi 15 perc hívásod van.';
 
   @override
-  String get limitBannerCallTitle => 'Ez volt a mai hívás';
+  String get limitBannerCallTitle => 'Elfogyott a mai hívásidőd';
 
   @override
-  String get limitBannerCallSub => 'Az Ingyenes csomag napi egy hívást ad';
+  String get limitBannerCallSub => 'Az Ingyenes csomag napi 5 perc hívást ad';
 
   @override
   String get limitBannerCheckTitle => 'Ez volt a mai ellenőrzés';
@@ -1681,7 +1680,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get winbackTitle => 'A Premium csomagod véget ért';
 
   @override
-  String get winbackSub => 'Most az Ingyenes csomagon vagy — napi egy hívás.';
+  String get winbackSub =>
+      'Most az Ingyenes csomagon vagy — napi 5 perc hívás.';
 
   @override
   String get winbackQuestion => 'Elárulod, miért mentél el?';

@@ -1172,7 +1172,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get lastPayment => 'අවසන් ගෙවීම';
 
   @override
-  String get freePlanCallLimit => 'දිනකට ඇමතුම් 1 · මිනිත්තු 5 සීමාව';
+  String get freePlanCallLimit => 'දිනකට ඇමතුම් මිනිත්තු 5';
 
   @override
   String get freePlanBasicCharacters => 'මූලික චරිත ඇතුළත්';
@@ -1387,8 +1387,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'දිනකට වීඩියෝ ඇමතුම් 3ක් දක්වා, එකකට මිනිත්තු 15';
+  String get premiumBulletVideo => 'දිනකට වීඩියෝ ඇමතුම් මිනිත්තු 15';
 
   @override
   String get premiumBulletAnalysis => 'සම්පූර්ණ උච්චාරණ විශ්ලේෂණය';
@@ -1407,7 +1406,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get planMaxTrial => 'Premium අත්හදා බැලීම';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — දිනකට එක් ඇමතුමක්';
+  String get freePlanPriceLine => '\$0.00 — දිනකට ඇමතුම් මිනිත්තු 5';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1449,7 +1448,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'වීඩියෝ ඇමතුම් · දිනකට 3ක් දක්වා · මසකට $price';
+    return 'වීඩියෝ ඇමතුම් · දිනකට මිනිත්තු 15 · මසකට $price';
   }
 
   @override
@@ -1513,13 +1512,13 @@ class AppLocalizationsSi extends AppLocalizations {
   String get planTaglineMax => 'දැන් ඔවුන්ව දැකිය හැක.';
 
   @override
-  String get planTaglineFree => 'දිනකට එක් ඇමතුමක්. නොමිලේ.';
+  String get planTaglineFree => 'දිනකට ඇමතුම් මිනිත්තු 5. නොමිලේ.';
 
   @override
   String get bulletProCorrections => 'ඔබේ මව්බස ඉලක්ක කළ නිවැරදි කිරීම්';
 
   @override
-  String get bulletFreeCall => 'දිනකට විනාඩි 5ක හඬ ඇමතුමක්';
+  String get bulletFreeCall => 'දිනකට හඬ ඇමතුම් මිනිත්තු 5';
 
   @override
   String get bulletFreeCheck => 'පළමු ඇමතුම් 3 සඳහා සම්පූර්ණ විශ්ලේෂණය';
@@ -1532,7 +1531,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: දිනකට ඇමතුම් 3ක් දක්වා, එකකට මිනිත්තු 15.';
+      'Premium: දිනකට මිනිත්තු 15 — ඒ කාලය තුළ කැමති වාර ගණනක් අමතන්න.';
 
   @override
   String get paywallProTitle1 => 'ඔබේ කොරියානු මිතුරා';
@@ -1541,13 +1540,13 @@ class AppLocalizationsSi extends AppLocalizations {
   String get paywallProTitle2 => 'පාන්දර 3ටත් අවදියෙන්';
 
   @override
-  String get paywallLimitHeadline => 'Premium සමඟ දිනකට ඇමතුම් 3ක් දක්වා.';
+  String get paywallLimitHeadline => 'Premium සමඟ දිනකට ඇමතුම් මිනිත්තු 15.';
 
   @override
-  String get limitBannerCallTitle => 'අද ඇමතුම එයයි';
+  String get limitBannerCallTitle => 'අද ඇමතුම් කාලය අවසන්';
 
   @override
-  String get limitBannerCallSub => 'Free හි දිනකට එක් ඇමතුමක්';
+  String get limitBannerCallSub => 'Free හි දිනකට ඇමතුම් මිනිත්තු 5';
 
   @override
   String get limitBannerCheckTitle => 'අද පරීක්ෂාව එයයි';
@@ -1665,7 +1664,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get winbackTitle => 'ඔබේ Premium සැලසුම අවසන් විය';
 
   @override
-  String get winbackSub => 'ඔබ දැන් Free හි — දිනකට එක් ඇමතුමක්.';
+  String get winbackSub => 'ඔබ දැන් Free හි — දිනකට ඇමතුම් මිනිත්තු 5.';
 
   @override
   String get winbackQuestion => 'ඇයි ගියේ කියා කියනවාද?';

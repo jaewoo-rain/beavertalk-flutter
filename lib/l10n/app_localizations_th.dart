@@ -1164,7 +1164,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get lastPayment => 'ชำระล่าสุด';
 
   @override
-  String get freePlanCallLimit => 'วันละ 1 สาย · จำกัด 5 นาที';
+  String get freePlanCallLimit => 'โทรได้วันละ 5 นาที';
 
   @override
   String get freePlanBasicCharacters => 'รวมตัวละครพื้นฐาน';
@@ -1379,8 +1379,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'วิดีโอคอลได้สูงสุดวันละ 3 ครั้ง ครั้งละ 15 นาที';
+  String get premiumBulletVideo => 'วิดีโอคอลวันละ 15 นาที';
 
   @override
   String get premiumBulletAnalysis => 'วิเคราะห์การออกเสียงแบบเต็ม';
@@ -1399,7 +1398,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planMaxTrial => 'ทดลองใช้ Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — โทรได้วันละครั้ง';
+  String get freePlanPriceLine => '\$0.00 — โทรได้วันละ 5 นาที';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1441,7 +1440,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'วิดีโอคอล · สูงสุดวันละ 3 ครั้ง · เดือนละ $price';
+    return 'วิดีโอคอล · วันละ 15 นาที · เดือนละ $price';
   }
 
   @override
@@ -1505,13 +1504,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planTaglineMax => 'ตอนนี้คุณเห็นหน้าพวกเขาได้แล้ว';
 
   @override
-  String get planTaglineFree => 'โทรวันละครั้ง ฟรีไม่มีค่าใช้จ่าย';
+  String get planTaglineFree => 'โทรวันละ 5 นาที ฟรีไม่มีค่าใช้จ่าย';
 
   @override
   String get bulletProCorrections => 'แก้ไขให้ตรงกับภาษาแม่ของคุณ';
 
   @override
-  String get bulletFreeCall => 'โทรด้วยเสียง 5 นาที วันละครั้ง';
+  String get bulletFreeCall => 'โทรด้วยเสียงวันละ 5 นาที';
 
   @override
   String get bulletFreeCheck => 'วิเคราะห์แบบเต็มสำหรับ 3 สายแรก';
@@ -1524,7 +1523,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: โทรได้สูงสุดวันละ 3 ครั้ง ครั้งละ 15 นาที';
+      'Premium: วันละ 15 นาที — ภายในเวลานี้โทรกี่ครั้งก็ได้';
 
   @override
   String get paywallProTitle1 => 'เพื่อนชาวเกาหลีของคุณ';
@@ -1533,13 +1532,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get paywallProTitle2 => 'ที่ยังตื่นอยู่ตอนตีสาม';
 
   @override
-  String get paywallLimitHeadline => 'Premium โทรได้สูงสุดวันละ 3 ครั้ง';
+  String get paywallLimitHeadline => 'Premium โทรได้วันละ 15 นาที';
 
   @override
-  String get limitBannerCallTitle => 'นั่นคือการโทรของวันนี้';
+  String get limitBannerCallTitle => 'เวลาโทรของวันนี้หมดแล้ว';
 
   @override
-  String get limitBannerCallSub => 'แพ็กเกจฟรีโทรได้วันละครั้ง';
+  String get limitBannerCallSub => 'แพ็กเกจฟรีโทรได้วันละ 5 นาที';
 
   @override
   String get limitBannerCheckTitle => 'นั่นคือการตรวจของวันนี้';
@@ -1657,7 +1656,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get winbackTitle => 'แพ็กเกจ Premium ของคุณสิ้นสุดแล้ว';
 
   @override
-  String get winbackSub => 'ตอนนี้คุณอยู่ในแพ็กเกจฟรี — โทรได้วันละครั้ง';
+  String get winbackSub => 'ตอนนี้คุณอยู่ในแพ็กเกจฟรี — โทรได้วันละ 5 นาที';
 
   @override
   String get winbackQuestion => 'ช่วยบอกเราหน่อยได้ไหมว่าทำไมถึงเลิกใช้';

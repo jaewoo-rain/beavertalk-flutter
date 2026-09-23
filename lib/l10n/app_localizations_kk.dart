@@ -1168,7 +1168,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get lastPayment => 'Соңғы төлем';
 
   @override
-  String get freePlanCallLimit => 'Күніне 1 қоңырау · 5 мин шектеу';
+  String get freePlanCallLimit => 'Күніне 5 минут қоңырау';
 
   @override
   String get freePlanBasicCharacters => 'Негізгі кейіпкерлер кіреді';
@@ -1383,8 +1383,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Күніне 3 бейне қоңырауға дейін, әрқайсысы 15 минут';
+  String get premiumBulletVideo => 'Күніне 15 минут бейне қоңырау';
 
   @override
   String get premiumBulletAnalysis => 'Айтылымды толық талдау';
@@ -1404,7 +1403,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planMaxTrial => 'Premium сынағы';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — күніне бір қоңырау';
+  String get freePlanPriceLine => '\$0.00 — күніне 5 минут қоңырау';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1446,7 +1445,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Бейне қоңырау · күніне 3-ке дейін · айына $price';
+    return 'Бейне қоңырау · күніне 15 минут · айына $price';
   }
 
   @override
@@ -1510,13 +1509,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planTaglineMax => 'Енді оларды көре аласыз.';
 
   @override
-  String get planTaglineFree => 'Күніне бір қоңырау. Тегін.';
+  String get planTaglineFree => 'Күніне 5 минут қоңырау. Тегін.';
 
   @override
   String get bulletProCorrections => 'Ана тіліңізге бейімделген түзетулер';
 
   @override
-  String get bulletFreeCall => 'Күніне бір 5 минуттық дауыстық қоңырау';
+  String get bulletFreeCall => 'Күніне 5 минут дауыстық қоңырау';
 
   @override
   String get bulletFreeCheck => 'Алғашқы 3 қоңырауға толық талдау';
@@ -1529,7 +1528,7 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: күніне 3 қоңырауға дейін, әрқайсысы 15 минут.';
+      'Premium: күніне 15 минут — осы уақыт ішінде қалағаныңызша қоңырау шала аласыз.';
 
   @override
   String get paywallProTitle1 => 'Түнгі 3-те де ояу жүретін';
@@ -1538,13 +1537,13 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paywallProTitle2 => 'кәріс досыңыз';
 
   @override
-  String get paywallLimitHeadline => 'Premium күніне 3 қоңырауға дейін береді.';
+  String get paywallLimitHeadline => 'Premium күніне 15 минут қоңырау береді.';
 
   @override
-  String get limitBannerCallTitle => 'Бұл бүгінгі қоңырау еді';
+  String get limitBannerCallTitle => 'Бүгінгі қоңырау уақыты бітті';
 
   @override
-  String get limitBannerCallSub => 'Тегін жоспар күніне бір қоңырау береді';
+  String get limitBannerCallSub => 'Тегін жоспар күніне 5 минут қоңырау береді';
 
   @override
   String get limitBannerCheckTitle => 'Бұл бүгінгі тексеріс еді';
@@ -1664,7 +1663,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get winbackTitle => 'Premium жоспарыңыз аяқталды';
 
   @override
-  String get winbackSub => 'Сіз қазір Тегіндесіз — күніне бір қоңырау.';
+  String get winbackSub => 'Сіз қазір Тегіндесіз — күніне 5 минут қоңырау.';
 
   @override
   String get winbackQuestion => 'Неге кеткеніңізді айта аласыз ба?';

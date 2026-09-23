@@ -1171,7 +1171,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get lastPayment => 'पिछला भुगतान';
 
   @override
-  String get freePlanCallLimit => 'रोज़ 1 कॉल · 5 मिनट की सीमा';
+  String get freePlanCallLimit => 'रोज़ 5 मिनट कॉल';
 
   @override
   String get freePlanBasicCharacters => 'बेसिक किरदार शामिल';
@@ -1386,7 +1386,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo => 'रोज़ 3 वीडियो कॉल तक, हर कॉल 15 मिनट';
+  String get premiumBulletVideo => 'रोज़ 15 मिनट वीडियो कॉल';
 
   @override
   String get premiumBulletAnalysis => 'पूरा उच्चारण विश्लेषण';
@@ -1406,7 +1406,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get planMaxTrial => 'Premium ट्रायल';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — रोज़ एक कॉल';
+  String get freePlanPriceLine => '\$0.00 — रोज़ 5 मिनट कॉल';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1448,7 +1448,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'वीडियो कॉल · रोज़ 3 तक · $price प्रति माह';
+    return 'वीडियो कॉल · रोज़ 15 मिनट · $price प्रति माह';
   }
 
   @override
@@ -1512,13 +1512,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get planTaglineMax => 'अब आप उन्हें देख सकते हैं।';
 
   @override
-  String get planTaglineFree => 'रोज़ एक कॉल। बिल्कुल मुफ़्त।';
+  String get planTaglineFree => 'रोज़ 5 मिनट कॉल। बिल्कुल मुफ़्त।';
 
   @override
   String get bulletProCorrections => 'आपकी मातृभाषा के अनुसार सुधार';
 
   @override
-  String get bulletFreeCall => 'रोज़ एक 5 मिनट की वॉयस कॉल';
+  String get bulletFreeCall => 'रोज़ 5 मिनट वॉयस कॉल';
 
   @override
   String get bulletFreeCheck => 'पहली 3 कॉल का पूरा विश्लेषण';
@@ -1530,7 +1530,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get ctaTurnOnVideo => 'वीडियो चालू करें';
 
   @override
-  String get noteCallLength => 'Premium: रोज़ 3 कॉल तक, हर कॉल 15 मिनट।';
+  String get noteCallLength =>
+      'Premium: रोज़ 15 मिनट — इसके अंदर जितनी बार चाहें कॉल करें।';
 
   @override
   String get paywallProTitle1 => 'आपका कोरियाई दोस्त';
@@ -1539,13 +1540,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get paywallProTitle2 => 'जो रात 3 बजे भी जागता है';
 
   @override
-  String get paywallLimitHeadline => 'Premium में रोज़ 3 कॉल तक।';
+  String get paywallLimitHeadline => 'Premium में रोज़ 15 मिनट कॉल।';
 
   @override
-  String get limitBannerCallTitle => 'आज की कॉल यही थी';
+  String get limitBannerCallTitle => 'आज का कॉल समय खत्म';
 
   @override
-  String get limitBannerCallSub => 'Free में रोज़ एक कॉल मिलती है';
+  String get limitBannerCallSub => 'Free में रोज़ 5 मिनट कॉल मिलती है';
 
   @override
   String get limitBannerCheckTitle => 'आज की जाँच यही थी';
@@ -1664,7 +1665,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get winbackTitle => 'आपका Premium प्लान समाप्त हो गया';
 
   @override
-  String get winbackSub => 'अब आप Free पर हैं — रोज़ एक कॉल।';
+  String get winbackSub => 'अब आप Free पर हैं — रोज़ 5 मिनट कॉल।';
 
   @override
   String get winbackQuestion => 'बताएँगे कि आपने क्यों छोड़ा?';

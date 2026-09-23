@@ -1175,7 +1175,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get lastPayment => 'Акыркы төлөм';
 
   @override
-  String get freePlanCallLimit => 'Күнүнө 1 чалуу · 5 мүн чектөө';
+  String get freePlanCallLimit => 'Күнүнө 5 мүнөт чалуу';
 
   @override
   String get freePlanBasicCharacters => 'Негизги каармандар кирет';
@@ -1390,8 +1390,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get planMax => 'Premium';
 
   @override
-  String get premiumBulletVideo =>
-      'Күнүнө 3 видео чалууга чейин, ар бири 15 мүнөт';
+  String get premiumBulletVideo => 'Күнүнө 15 мүнөт видео чалуу';
 
   @override
   String get premiumBulletAnalysis => 'Айтылышты толук талдоо';
@@ -1411,7 +1410,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get planMaxTrial => 'Premium сыноо';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — күнүнө бир чалуу';
+  String get freePlanPriceLine => '\$0.00 — күнүнө 5 мүнөт чалуу';
 
   @override
   String pricePerMonthLine(String amount) {
@@ -1453,7 +1452,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String bannerMaxUpsellSub(String price) {
-    return 'Видео чалуу · күнүнө 3кө чейин · айына $price';
+    return 'Видео чалуу · күнүнө 15 мүнөт · айына $price';
   }
 
   @override
@@ -1517,13 +1516,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get planTaglineMax => 'Эми аларды көрө аласыз.';
 
   @override
-  String get planTaglineFree => 'Күнүнө бир чалуу. Акысыз.';
+  String get planTaglineFree => 'Күнүнө 5 мүнөт чалуу. Акысыз.';
 
   @override
   String get bulletProCorrections => 'Эне тилиңизге ылайыкталган оңдоолор';
 
   @override
-  String get bulletFreeCall => 'Күнүнө бир 5 мүнөттүк үн чалуу';
+  String get bulletFreeCall => 'Күнүнө 5 мүнөт үн чалуу';
 
   @override
   String get bulletFreeCheck => 'Алгачкы 3 чалууга толук талдоо';
@@ -1536,7 +1535,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get noteCallLength =>
-      'Premium: күнүнө 3 чалууга чейин, ар бири 15 мүнөт.';
+      'Premium: күнүнө 15 мүнөт — ошол убакыттын ичинде каалагандай чала аласыз.';
 
   @override
   String get paywallProTitle1 => 'Түнкү саат 3тө да ойгоо';
@@ -1545,13 +1544,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get paywallProTitle2 => 'корей досуңуз';
 
   @override
-  String get paywallLimitHeadline => 'Premium күнүнө 3 чалууга чейин берет.';
+  String get paywallLimitHeadline => 'Premium күнүнө 15 мүнөт чалуу берет.';
 
   @override
-  String get limitBannerCallTitle => 'Бул бүгүнкү чалуу болду';
+  String get limitBannerCallTitle => 'Бүгүнкү чалуу убактысы бүттү';
 
   @override
-  String get limitBannerCallSub => 'Акысыз планда күнүнө бир чалуу';
+  String get limitBannerCallSub => 'Акысыз планда күнүнө 5 мүнөт чалуу';
 
   @override
   String get limitBannerCheckTitle => 'Бул бүгүнкү текшерүү болду';
@@ -1671,7 +1670,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get winbackTitle => 'Premium планыңыз аяктады';
 
   @override
-  String get winbackSub => 'Азыр Акысыз пландасыз — күнүнө бир чалуу.';
+  String get winbackSub => 'Азыр Акысыз пландасыз — күнүнө 5 мүнөт чалуу.';
 
   @override
   String get winbackQuestion => 'Эмне үчүн кеткениңизди айтып бересизби?';

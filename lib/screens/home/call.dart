@@ -30,7 +30,6 @@ import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
-import '../../features/normalcall/presentation/streak_provider.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/review/data/speech_cache.dart';
@@ -442,10 +441,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// 유료 통화가 15분 상한을 다 써서 끝났을 때 — 종료 화면 **전에** 「통화를 마칠게요」
   /// 시트를 한 번 보여 준다(P19, 사용자 결정 2026-09-22). 버튼은 「End Call」 하나다.
   ///
-  /// 문구는 오늘 마지막 통화인지로 갈린다. 신서버(premium 브랜치 09-23 §5)는
-  /// `GET /calls/daily-status` 가 오늘 남은 예산을 주므로 그것으로 판정하고, 구서버는
-  /// 통화 기록(`GET /calls`)의 오늘 건수를 앱이 센다(남은판단 S5).
-  /// 못 세면(네트워크·타임아웃) 「내일」이 없는 문구로 간다 — 덜 약속하는 쪽이다.
+  /// 문구는 오늘 마지막 통화인지로 갈린다([_isLastCallToday]). 하루 합산 15분 정책에서는
+  /// 상한 도달이 곧 오늘 예산 소진이라 거의 항상 「내일 또」 문구다. 「통화가 더 남음」
+  /// 문구는 한도 면제(admin) 통화처럼 서버가 예산을 남겼다고 답할 때만 나온다.
   bool _capSheetOpen = false;
 
   Future<void> _showCapSheet(
@@ -455,7 +453,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   }) async {
     if (_navigated || _capSheetOpen) return;
     _capSheetOpen = true;
-    final last = await _isLastCallToday(s.callId);
+    final last = await _isLastCallToday();
     if (!mounted) return;
     final limit = CallAllowance.limitFor(paidAccess: true);
     await showSubscriptionOverlay(
@@ -472,17 +470,17 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     _goFinish(s.callId, s.elapsedSec, s.baselineCallId);
   }
 
-  /// Premium 하루 상한(3통화) — 이번 통화가 오늘 그 마지막인가. 서버가 아직 막 끝난
-  /// 통화를 목록에 안 올렸을 수 있으니, 목록에 없으면 이번 통화를 더해 센다.
-  /// ⚠ 구서버 폴백 전용이다. 신서버는 아래 예산 판정이 먼저다.
-  static const _premiumCallsPerDay = 3;
-
   /// 오늘 남은 예산이 이보다 적으면 「오늘 마지막」 으로 본다 — 1분 미만으로는 통화가
   /// 성립하지 않는다(인사만 하고 끝난다).
   static const _minUsefulCallSec = 60;
 
-  Future<bool> _isLastCallToday(String? callId) async {
-    // 신서버: 오늘 남은 예산. 키가 없으면(구서버·admin 면제) 아래 종전 계산으로 간다.
+  /// 이번 통화가 오늘 마지막인가.
+  ///
+  /// 정책(09-23 사용자 확정): Premium 은 **하루 합산 15분** · 그 안에서는 횟수 제한 없음.
+  /// 신서버는 `GET /calls/daily-status` 의 오늘 남은 초로 판정한다. 모르면(구서버·admin
+  /// 면제·실패) **마지막으로 본다** — 이 시트는 15분 상한에 닿았을 때만 뜨고, 통화 한
+  /// 번의 상한이 하루 총량과 같으므로 상한 도달은 곧 오늘 예산 소진이다.
+  Future<bool> _isLastCallToday() async {
     try {
       final daily = await ref
           .read(normalcallRepositoryProvider)
@@ -491,24 +489,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       final remaining = daily?.remainingSec;
       if (remaining != null) return remaining < _minUsefulCallSec;
     } catch (_) {}
-    try {
-      final calls = await ref
-          .refresh(callHistoryProvider.future)
-          .timeout(const Duration(seconds: 3));
-      final now = DateTime.now();
-      bool today(DateTime? d) =>
-          d != null &&
-          d.toLocal().year == now.year &&
-          d.toLocal().month == now.month &&
-          d.toLocal().day == now.day;
-      final id = int.tryParse(callId ?? '');
-      final todays = calls.where((c) => today(c.callDate)).toList();
-      final listed = id != null && todays.any((c) => c.callId == id);
-      final count = todays.length + (listed ? 0 : 1);
-      return count >= _premiumCallsPerDay;
-    } catch (_) {
-      return false;
-    }
+    return true;
   }
 
   /// 5분 구간이 끝났을 때 뜨는 시트 — 무료는 구독 유도, 유료는 「Keep going?」.
