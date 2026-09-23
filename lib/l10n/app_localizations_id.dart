@@ -188,6 +188,17 @@ class AppLocalizationsId extends AppLocalizations {
   String get callPartner => 'Karakter';
 
   @override
+  String get alarmModeLearnSub => 'Latih ekspresi kurikulum';
+
+  @override
+  String get alarmModeChatSub => 'Ngobrol apa saja';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Mulai cepat';
 
   @override

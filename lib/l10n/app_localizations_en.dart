@@ -185,6 +185,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callPartner => 'Call partner';
 
   @override
+  String get alarmModeLearnSub => 'Practice curriculum expressions';
+
+  @override
+  String get alarmModeChatSub => 'Talk about anything';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Quick start';
 
   @override

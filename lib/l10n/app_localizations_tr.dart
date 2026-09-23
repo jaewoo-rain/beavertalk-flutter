@@ -185,6 +185,17 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callPartner => 'Karakter';
 
   @override
+  String get alarmModeLearnSub => 'Müfredattaki ifadeleri çalış';
+
+  @override
+  String get alarmModeChatSub => 'Her şey hakkında konuş';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Hızlı başlangıç';
 
   @override

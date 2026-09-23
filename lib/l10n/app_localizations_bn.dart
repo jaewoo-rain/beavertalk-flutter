@@ -186,6 +186,17 @@ class AppLocalizationsBn extends AppLocalizations {
   String get callPartner => 'ক্যারেক্টার';
 
   @override
+  String get alarmModeLearnSub => 'পাঠ্যক্রমের অভিব্যক্তি অনুশীলন';
+
+  @override
+  String get alarmModeChatSub => 'যেকোনো বিষয়ে কথা';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'দ্রুত শুরু';
 
   @override

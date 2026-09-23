@@ -188,6 +188,17 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callPartner => 'Karakter';
 
   @override
+  String get alarmModeLearnSub => 'Sanayin ang mga ekspresyon ng kurikulum';
+
+  @override
+  String get alarmModeChatSub => 'Mag-usap tungkol sa kahit ano';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Mabilis na simula';
 
   @override

@@ -55,6 +55,7 @@ import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/components/molecules/card_bookmark.dart';
 import 'package:beavertalk/components/molecules/card_native.dart';
+import 'package:beavertalk/features/alarm/domain/entities/alarm.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/daily_status.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
@@ -173,6 +174,13 @@ Map<String, Widget Function()> i18nScreens() {
                   onSave: () {},
                   onCancel: () {},
                   initiallyOpen: const {AlarmAddPanel.repeat, AlarmAddPanel.partner},
+                  // 모드 카드 두 장(Figma CallMode 6222:20794) — 자유 대화 선택 상태.
+                  callMode: AlarmCallMode.chat,
+                  onCallModeChanged: (_) {},
+                  learnModeTitle: l10n.homeModeLearn,
+                  learnModeSubtitle: l10n.alarmModeLearnSub,
+                  chatModeTitle: l10n.callModeFreeTalk,
+                  chatModeSubtitle: l10n.alarmModeChatSub,
                 ),
             );
           },
@@ -267,14 +275,14 @@ Map<String, Widget Function()> i18nScreens() {
                   RowAlarm(
                     partner: 'Baba',
                     time: '8:00',
-                    summary: AlarmDays.summary(const [false, true, true, true, true, true, false], l10n, loc),
+                    summary: l10n.alarmRowSummary(AlarmDays.summary(const [false, true, true, true, true, true, false], l10n, loc), l10n.homeModeLearn),
                     active: true,
                     onChanged: (_) {},
                   ),
                   RowAlarm(
                     partner: 'Bibi',
                     time: '21:30',
-                    summary: AlarmDays.summary(const [false, true, false, true, false, true, false], l10n, loc),
+                    summary: l10n.alarmRowSummary(AlarmDays.summary(const [false, true, false, true, false, true, false], l10n, loc), l10n.callModeFreeTalk),
                     active: false,
                     onChanged: (_) {},
                   ),

@@ -185,6 +185,17 @@ class AppLocalizationsHi extends AppLocalizations {
   String get callPartner => 'कैरेक्टर';
 
   @override
+  String get alarmModeLearnSub => 'पाठ्यक्रम के भाव अभ्यास करें';
+
+  @override
+  String get alarmModeChatSub => 'किसी भी विषय पर बात';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'तुरंत शुरू करें';
 
   @override

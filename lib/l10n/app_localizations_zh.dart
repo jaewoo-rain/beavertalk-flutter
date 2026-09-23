@@ -180,6 +180,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callPartner => '角色';
 
   @override
+  String get alarmModeLearnSub => '练习课程表达';
+
+  @override
+  String get alarmModeChatSub => '不限话题聊天';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days，$mode';
+  }
+
+  @override
   String get quickStart => '快速开始';
 
   @override

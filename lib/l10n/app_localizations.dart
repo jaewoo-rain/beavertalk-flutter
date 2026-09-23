@@ -484,6 +484,24 @@ abstract class AppLocalizations {
   /// **'Call partner'**
   String get callPartner;
 
+  /// Alarm call-mode card subtitle under Learn (Figma Card-CallMode 6179:4647).
+  ///
+  /// In en, this message translates to:
+  /// **'Practice curriculum expressions'**
+  String get alarmModeLearnSub;
+
+  /// Alarm call-mode card subtitle under Free talk.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk about anything'**
+  String get alarmModeChatSub;
+
+  /// Alarm list row subtitle: repeat summary then the call mode (Figma Row-Alarm 6179:28978 "평일, 학습"). Use the locale's list comma.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}, {mode}'**
+  String alarmRowSummary(String days, String mode);
+
   /// No description provided for @quickStart.
   ///
   /// In en, this message translates to:

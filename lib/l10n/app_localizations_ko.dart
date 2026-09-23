@@ -181,6 +181,17 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callPartner => '통화 상대';
 
   @override
+  String get alarmModeLearnSub => '커리큘럼 표현 연습';
+
+  @override
+  String get alarmModeChatSub => '주제 없이 대화';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => '빠른 시작';
 
   @override

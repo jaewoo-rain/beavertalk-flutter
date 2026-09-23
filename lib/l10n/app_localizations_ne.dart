@@ -186,6 +186,17 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callPartner => 'क्यारेक्टर';
 
   @override
+  String get alarmModeLearnSub => 'पाठ्यक्रमका अभिव्यक्ति अभ्यास';
+
+  @override
+  String get alarmModeChatSub => 'जुनसुकै विषयमा कुरा';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'छिटो सुरु';
 
   @override

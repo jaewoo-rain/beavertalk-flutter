@@ -180,6 +180,17 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callPartner => 'キャラクター';
 
   @override
+  String get alarmModeLearnSub => 'カリキュラムの表現を練習';
+
+  @override
+  String get alarmModeChatSub => 'テーマなしで会話';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days、$mode';
+  }
+
+  @override
   String get quickStart => 'クイックスタート';
 
   @override

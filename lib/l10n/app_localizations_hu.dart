@@ -189,6 +189,17 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callPartner => 'Karakter';
 
   @override
+  String get alarmModeLearnSub => 'Tananyag kifejezéseinek gyakorlása';
+
+  @override
+  String get alarmModeChatSub => 'Beszélgetés bármiről';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Gyors indítás';
 
   @override

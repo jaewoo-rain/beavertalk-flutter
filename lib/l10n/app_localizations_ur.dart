@@ -188,6 +188,17 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callPartner => 'کریکٹر';
 
   @override
+  String get alarmModeLearnSub => 'نصاب کے جملوں کی مشق';
+
+  @override
+  String get alarmModeChatSub => 'کسی بھی موضوع پر بات';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days، $mode';
+  }
+
+  @override
   String get quickStart => 'فوری آغاز';
 
   @override

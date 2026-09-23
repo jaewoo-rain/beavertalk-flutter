@@ -187,6 +187,17 @@ class AppLocalizationsKk extends AppLocalizations {
   String get callPartner => 'Кейіпкер';
 
   @override
+  String get alarmModeLearnSub => 'Бағдарлама тіркестерін жаттығу';
+
+  @override
+  String get alarmModeChatSub => 'Кез келген тақырыпта сөйлесу';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Жылдам бастау';
 
   @override

@@ -7,6 +7,8 @@ import '../atoms/button.dart';
 import '../icons/app_icons.dart';
 import 'bottom_sheet_alarm_settings.dart' show AlarmPartner;
 import '../layout/need_based_rows.dart';
+import '../../features/alarm/domain/entities/alarm.dart';
+import '../molecules/card_call_mode.dart';
 
 /// 알람 추가·편집 시트 — Figma `BottomSheet/AlarmAdd` (`screen/etc_alarm__add`
 /// `6222:20710` · 반복 펼침 `6180:4764` · 상대 펼침 `6180:4865`).
@@ -48,6 +50,12 @@ class BottomSheetAlarmAdd extends StatefulWidget {
     required this.onPartnerChanged,
     required this.onSave,
     required this.onCancel,
+    required this.callMode,
+    required this.onCallModeChanged,
+    required this.learnModeTitle,
+    required this.learnModeSubtitle,
+    required this.chatModeTitle,
+    required this.chatModeSubtitle,
     this.initiallyOpen,
   });
 
@@ -95,6 +103,18 @@ class BottomSheetAlarmAdd extends StatefulWidget {
   /// 저장 · 취소.
   final VoidCallback onSave;
   final VoidCallback onCancel;
+
+  /// 이 알람 통화의 모드 — 서버 `Alarm.call_type`(09-24 배포).
+  final AlarmCallMode callMode;
+
+  /// 모드 카드를 누르면.
+  final ValueChanged<AlarmCallMode> onCallModeChanged;
+
+  /// 모드 카드 문구 — 학습 · 자유 대화(Figma `Card-CallMode` `6179:4647`).
+  final String learnModeTitle;
+  final String learnModeSubtitle;
+  final String chatModeTitle;
+  final String chatModeSubtitle;
 
   /// 처음부터 펼쳐 둘 칸(시험용 — 하네스가 **다 연 상태**를 그려야 가장 긴 경우를 본다).
   final Set<AlarmAddPanel>? initiallyOpen;
@@ -161,6 +181,8 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
                         onChanged: widget.onTimeChanged,
                       ),
                       const SizedBox(height: 16),
+                      _callModes(),
+                      const SizedBox(height: 16),
                       _settings(context, partnerName),
                     ],
                   ),
@@ -209,6 +231,29 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
       ),
     );
   }
+
+  /// 통화 모드 카드 두 장 — Figma `CallMode` `6222:20794`: 시간 휠 아래 · 반복/통화 상대 위 ·
+  /// VERTICAL gap 8 · 항상 보인다(접지 않는다). 카드 `6222:20795`(학습) · `6222:20796`(자유 대화).
+  Widget _callModes() => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CardCallMode(
+            icon: AppIcons.book,
+            title: widget.learnModeTitle,
+            subtitle: widget.learnModeSubtitle,
+            selected: widget.callMode == AlarmCallMode.learn,
+            onTap: () => widget.onCallModeChanged(AlarmCallMode.learn),
+          ),
+          const SizedBox(height: 8),
+          CardCallMode(
+            icon: AppIcons.chat,
+            title: widget.chatModeTitle,
+            subtitle: widget.chatModeSubtitle,
+            selected: widget.callMode == AlarmCallMode.chat,
+            onTap: () => widget.onCallModeChanged(AlarmCallMode.chat),
+          ),
+        ],
+      );
 
   Widget _settings(BuildContext context, String partnerName) {
     final c = context.c;

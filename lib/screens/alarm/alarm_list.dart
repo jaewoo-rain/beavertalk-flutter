@@ -189,7 +189,11 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
       child: RowAlarm(
         partner: view.partnerName,
         time: view.clock24,
-        summary: AlarmDays.summary(a.days, l10n, locale),
+        // Figma `Row-Alarm` `6179:28978`: 「평일, 학습」 — 반복 요약 뒤에 모드를 붙인다(배지 아님).
+        summary: l10n.alarmRowSummary(
+          AlarmDays.summary(a.days, l10n, locale),
+          a.callMode == AlarmCallMode.chat ? l10n.callModeFreeTalk : l10n.homeModeLearn,
+        ),
         active: a.active,
         onTap: () => _edit(a),
         onChanged: id == null

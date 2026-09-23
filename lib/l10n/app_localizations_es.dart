@@ -189,6 +189,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get callPartner => 'Personaje';
 
   @override
+  String get alarmModeLearnSub => 'Practica expresiones del plan';
+
+  @override
+  String get alarmModeChatSub => 'Habla de lo que quieras';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Inicio rápido';
 
   @override

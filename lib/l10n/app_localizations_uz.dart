@@ -187,6 +187,17 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callPartner => 'Personaj';
 
   @override
+  String get alarmModeLearnSub => 'Dastur iboralarini mashq qilish';
+
+  @override
+  String get alarmModeChatSub => 'Istalgan mavzuda suhbat';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Tez boshlash';
 
   @override

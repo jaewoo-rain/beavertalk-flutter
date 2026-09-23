@@ -25,6 +25,7 @@ class AlarmData {
     this.characterName,
     this.imageUrl,
     this.active = true,
+    this.callMode = AlarmCallMode.learn,
   });
 
   /// Server alarm id (null in add mode, set in edit mode).
@@ -53,6 +54,9 @@ class AlarmData {
 
   /// Whether the alarm is enabled.
   bool active;
+
+  /// 이 알람 통화의 모드(학습 · 자유대화 · 서버 `call_type`).
+  AlarmCallMode callMode;
 
   /// 0–23 — the 24-hour wheel of the new add sheet (Figma `Picker-Time`).
   int get hour24 =>
@@ -89,6 +93,7 @@ class AlarmData {
         characterName: characterName,
         imageUrl: imageUrl,
         active: active,
+        callMode: callMode,
       );
 
   /// Builds an editor view-model from a server [Alarm] entity.
@@ -102,6 +107,7 @@ class AlarmData {
         characterName: a.characterName,
         imageUrl: a.imageUrl,
         active: a.active,
+        callMode: a.callMode,
       );
 
   /// Converts back to a server [Alarm] entity for create/update.
@@ -115,6 +121,7 @@ class AlarmData {
         characterName: characterName,
         imageUrl: imageUrl,
         active: active,
+        callMode: callMode,
       );
 }
 

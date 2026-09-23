@@ -13,6 +13,7 @@ class AlarmDto {
     this.characterName,
     this.imageUrl,
     required this.daysOfWeek,
+    this.callType,
   });
 
   final int alarmId;
@@ -22,6 +23,9 @@ class AlarmDto {
   final String? characterName;
   final String? imageUrl;
   final List<String> daysOfWeek;
+
+  /// 서버 `call_type` — "auto" | "chat"(09-24 배포). 구서버·누락이면 null → 학습.
+  final String? callType;
 
   /// Index → server code. UI `days[7]` is 0=Sun … 6=Sat.
   static const dayCodes = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
@@ -37,6 +41,7 @@ class AlarmDto {
       characterName: character['name'] as String?,
       imageUrl: character['image_url'] as String?,
       daysOfWeek: days.map((e) => e.toString()).toList(),
+      callType: json['call_type'] as String?,
     );
   }
 
@@ -67,6 +72,7 @@ class AlarmDto {
       characterName: characterName,
       imageUrl: imageUrl,
       active: isActivate ?? true,
+      callMode: AlarmCallMode.fromWire(callType),
     );
   }
 
@@ -77,6 +83,8 @@ class AlarmDto {
       'time': _encodeTime(alarm),
       'is_activate': alarm.active,
       'days_of_week': _encodeDays(alarm.days),
+      // 서버 `AlarmCreate.call_type: Literal["auto","chat"] = "auto"`.
+      'call_type': alarm.callMode.wireValue,
     };
   }
 
@@ -87,6 +95,8 @@ class AlarmDto {
       'character_id': alarm.characterId,
       'is_activate': alarm.active,
       'days_of_week': _encodeDays(alarm.days),
+      // 서버 `AlarmUpdate.call_type`(부분 갱신) — 전체 페이로드라 항상 싣는다.
+      'call_type': alarm.callMode.wireValue,
     };
   }
 

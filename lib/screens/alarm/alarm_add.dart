@@ -138,6 +138,13 @@ class _AlarmAddSheetState extends ConsumerState<AlarmAddSheet> {
           }),
           onSave: () => Navigator.pop(context, data),
           onCancel: () => Navigator.pop(context),
+          // 서버 `Alarm.call_type`. 알람 통화는 서버가 이 모드로 시작한다(앱은 싣지 않는다).
+          callMode: data.callMode,
+          onCallModeChanged: (m) => setState(() => data.callMode = m),
+          learnModeTitle: l10n.homeModeLearn,
+          learnModeSubtitle: l10n.alarmModeLearnSub,
+          chatModeTitle: l10n.callModeFreeTalk,
+          chatModeSubtitle: l10n.alarmModeChatSub,
         );
       },
     );

@@ -189,6 +189,17 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callPartner => 'ဇာတ်ကောင်';
 
   @override
+  String get alarmModeLearnSub => 'သင်ရိုးပါ စကားစုများ လေ့ကျင့်ရန်';
+
+  @override
+  String get alarmModeChatSub => 'ကြိုက်ရာ အကြောင်း စကားပြော';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days၊ $mode';
+  }
+
+  @override
   String get quickStart => 'အမြန်စတင်ရန်';
 
   @override

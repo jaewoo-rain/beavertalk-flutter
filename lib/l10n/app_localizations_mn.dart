@@ -187,6 +187,17 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callPartner => 'Дүр';
 
   @override
+  String get alarmModeLearnSub => 'Хөтөлбөрийн хэллэг дадлагажуулах';
+
+  @override
+  String get alarmModeChatSub => 'Дурын сэдвээр ярих';
+
+  @override
+  String alarmRowSummary(String days, String mode) {
+    return '$days, $mode';
+  }
+
+  @override
   String get quickStart => 'Хурдан эхлэх';
 
   @override
