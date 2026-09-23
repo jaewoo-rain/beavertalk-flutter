@@ -135,8 +135,6 @@
   "pm": "PM",
   "save": "Save",
   "conversation": "Conversation",
-  "review": "Review",
-  "pronunciationChallenge": "Pronunciation Challenge",
   "newExpressions": "New Expressions",
   "usedExpressions": "Expressions you used",
   "@usedExpressions": {
@@ -484,7 +482,6 @@
   "pronunciation": "Pronunciation",
   "fluency": "Fluency",
   "rhythm": "Rhythm",
-  "analysisTimeout": "This is taking longer than expected. Please try again in a moment.",
   "analysisFailed": "We couldn't analyze the conversation. Please try again.",
   "analyzingConversation": "Analyzing your conversation…",
   "analyzingSubtitle": "This will only take a moment",

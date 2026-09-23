@@ -234,12 +234,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get conversation => 'Әңгіме';
 
   @override
-  String get review => 'Шолу';
-
-  @override
-  String get pronunciationChallenge => 'Айтылым сынағы';
-
-  @override
   String get newExpressions => 'Жаңа сөз тіркестері';
 
   @override
@@ -901,10 +895,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get rhythm => 'Ырғақ';
-
-  @override
-  String get analysisTimeout =>
-      'Бұл күткеннен ұзағырақ уақыт алып жатыр. Сәлден соң қайта көріңіз.';
 
   @override
   String get analysisFailed => 'Әңгімені талдай алмадық. Қайта көріңіз.';

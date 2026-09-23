@@ -233,12 +233,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get conversation => 'কথোপকথন';
 
   @override
-  String get review => 'পর্যালোচনা';
-
-  @override
-  String get pronunciationChallenge => 'উচ্চারণ চ্যালেঞ্জ';
-
-  @override
   String get newExpressions => 'নতুন অভিব্যক্তি';
 
   @override
@@ -904,10 +898,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get rhythm => 'ছন্দ';
-
-  @override
-  String get analysisTimeout =>
-      'এটি প্রত্যাশার চেয়ে বেশি সময় নিচ্ছে। অনুগ্রহ করে একটু পরে আবার চেষ্টা করুন।';
 
   @override
   String get analysisFailed =>

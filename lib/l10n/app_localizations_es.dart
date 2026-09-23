@@ -236,12 +236,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get conversation => 'Conversación';
 
   @override
-  String get review => 'Repaso';
-
-  @override
-  String get pronunciationChallenge => 'Desafío de pronunciación';
-
-  @override
   String get newExpressions => 'Expresiones nuevas';
 
   @override
@@ -915,10 +909,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritmo';
-
-  @override
-  String get analysisTimeout =>
-      'Esto está tardando más de lo esperado. Inténtalo de nuevo en un momento.';
 
   @override
   String get analysisFailed =>

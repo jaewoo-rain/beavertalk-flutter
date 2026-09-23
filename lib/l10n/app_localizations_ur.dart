@@ -235,12 +235,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get conversation => 'گفتگو';
 
   @override
-  String get review => 'جائزہ';
-
-  @override
-  String get pronunciationChallenge => 'تلفظ چیلنج';
-
-  @override
   String get newExpressions => 'نئے تاثرات';
 
   @override
@@ -909,10 +903,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get rhythm => 'تال';
-
-  @override
-  String get analysisTimeout =>
-      'اس میں توقع سے زیادہ وقت لگ رہا ہے۔ براہ کرم تھوڑی دیر بعد دوبارہ کوشش کریں۔';
 
   @override
   String get analysisFailed =>

@@ -235,12 +235,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get conversation => 'Маек';
 
   @override
-  String get review => 'Карап чыгуу';
-
-  @override
-  String get pronunciationChallenge => 'Айтылыш чакырыгы';
-
-  @override
   String get newExpressions => 'Жаңы сөз айкаштары';
 
   @override
@@ -908,10 +902,6 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get rhythm => 'Ритм';
-
-  @override
-  String get analysisTimeout =>
-      'Бул күтүлгөндөн узагыраак убакыт алып жатат. Бир азга кийин кайра аракет кылыңыз.';
 
   @override
   String get analysisFailed =>

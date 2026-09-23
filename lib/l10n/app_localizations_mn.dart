@@ -234,12 +234,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get conversation => 'Яриа';
 
   @override
-  String get review => 'Дахин үзэх';
-
-  @override
-  String get pronunciationChallenge => 'Дуудлагын сорилт';
-
-  @override
   String get newExpressions => 'Шинэ хэллэгүүд';
 
   @override
@@ -905,10 +899,6 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get rhythm => 'Хэмнэл';
-
-  @override
-  String get analysisTimeout =>
-      'Энэ нь хүлээгдснээс удаж байна. Түр хүлээгээд дахин оролдоно уу.';
 
   @override
   String get analysisFailed =>

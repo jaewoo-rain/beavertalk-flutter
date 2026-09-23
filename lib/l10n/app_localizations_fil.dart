@@ -235,12 +235,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get conversation => 'Usapan';
 
   @override
-  String get review => 'Review';
-
-  @override
-  String get pronunciationChallenge => 'Hamon sa Bigkas';
-
-  @override
   String get newExpressions => 'Mga Bagong Ekspresyon';
 
   @override
@@ -917,10 +911,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritmo';
-
-  @override
-  String get analysisTimeout =>
-      'Mas matagal ito kaysa inaasahan. Pakisubukan muli sandali.';
 
   @override
   String get analysisFailed =>

@@ -227,12 +227,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get conversation => '对话';
 
   @override
-  String get review => '复习';
-
-  @override
-  String get pronunciationChallenge => '发音挑战';
-
-  @override
   String get newExpressions => '新表达';
 
   @override
@@ -879,9 +873,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get rhythm => '语调节奏';
-
-  @override
-  String get analysisTimeout => '这次花的时间比预期长。请稍后再试。';
 
   @override
   String get analysisFailed => '我们无法分析这次对话。请重试。';

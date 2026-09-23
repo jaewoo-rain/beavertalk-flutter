@@ -236,12 +236,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get conversation => 'စကားဝိုင်း';
 
   @override
-  String get review => 'သုံးသပ်ချက်';
-
-  @override
-  String get pronunciationChallenge => 'အသံထွက် စိန်ခေါ်မှု';
-
-  @override
   String get newExpressions => 'အသုံးအနှုန်းအသစ်များ';
 
   @override
@@ -913,10 +907,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get rhythm => 'စည်းချက်';
-
-  @override
-  String get analysisTimeout =>
-      'မျှော်လင့်ထားသည်ထက် အချိန်ကြာနေပါသည်။ ခဏနေ ထပ်ကြိုးစားပါ။';
 
   @override
   String get analysisFailed => 'စကားဝိုင်းကို ဆန်းစစ်၍မရပါ။ ထပ်ကြိုးစားပါ။';

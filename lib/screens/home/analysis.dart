@@ -6,9 +6,9 @@ import 'package:intl/intl.dart' as intl;
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/button.dart';
 import '../../components/molecules/card_bookmark.dart';
 import '../../components/molecules/empty_state.dart';
+import '../../components/molecules/card_study.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/bookmark/presentation/providers/bookmark_toggle_controller.dart';
@@ -335,30 +335,41 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
 
             // ── Actions (`3583:34442`) ─────────────────────────────────
             const SizedBox(height: AppSpacing.s24),
-            Button(
-              type: BtnType.primaryFill,
-              size: BtnSize.s60,
-              text: l10n.review,
-              // Nothing to practice → nothing for the button to do.
-              disabled: _learningSentences.isEmpty,
-              onPressed: () => _startLearning(_learningSentences),
-            ),
-            const SizedBox(height: AppSpacing.s12),
-            Button(
-              type: BtnType.primaryOutline,
-              size: BtnSize.s60,
-              text: l10n.pronunciationChallenge,
-              // Feed this call's learned sentences to the challenge so its cards
-              // are what the user just practised (not the default word list).
-              onPressed: () => Navigator.pushNamed(
-                context,
-                Routes.pronunciationChallenge,
-                arguments: _learningSentences
-                    .map((s) => s.korean)
-                    .where((k) => k.trim().isNotEmpty)
-                    .toList(growable: false),
-              ),
-            ),
+            // `Card/Study` ×2 (`6329:46475`) — replaced the 복습하기 fill button
+            // and the challenge outline button on 2026-09-23 (proposal A, 복습하기
+            // → 발음 학습하기). Both need this call's learned sentences: with none,
+            // both are disabled.
+            Builder(builder: (context) {
+              final words = _learningSentences
+                  .map((s) => s.korean)
+                  .where((k) => k.trim().isNotEmpty)
+                  .toList(growable: false);
+              final open = _learningSentences.isNotEmpty && words.isNotEmpty;
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CardStudy.learn(
+                    title: l10n.practicePronunciation,
+                    onTap: open
+                        ? () => _startLearning(_learningSentences)
+                        : null,
+                  ),
+                  const SizedBox(height: AppSpacing.s12),
+                  CardStudy.challenge(
+                    title: l10n.challengeTitle,
+                    // Feed this call's learned sentences to the challenge so its
+                    // cards are what the user just practised.
+                    onTap: open
+                        ? () => Navigator.pushNamed(
+                              context,
+                              Routes.pronunciationChallenge,
+                              arguments: words,
+                            )
+                        : null,
+                  ),
+                ],
+              );
+            }),
 
             ..._babaNote(l10n, result),
             ..._usedItems(l10n, result),

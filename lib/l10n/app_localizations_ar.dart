@@ -236,12 +236,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get conversation => 'المحادثة';
 
   @override
-  String get review => 'المراجعة';
-
-  @override
-  String get pronunciationChallenge => 'تحدي النطق';
-
-  @override
   String get newExpressions => 'تعبيرات جديدة';
 
   @override
@@ -904,10 +898,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get rhythm => 'الإيقاع';
-
-  @override
-  String get analysisTimeout =>
-      'يستغرق هذا وقتًا أطول من المتوقع. يرجى المحاولة مرة أخرى بعد قليل.';
 
   @override
   String get analysisFailed => 'تعذّر تحليل المحادثة. يرجى المحاولة مرة أخرى.';

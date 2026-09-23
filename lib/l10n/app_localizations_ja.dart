@@ -227,12 +227,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get conversation => '会話';
 
   @override
-  String get review => '復習';
-
-  @override
-  String get pronunciationChallenge => '発音チャレンジ';
-
-  @override
   String get newExpressions => '新しい表現';
 
   @override
@@ -881,9 +875,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get rhythm => 'リズム';
-
-  @override
-  String get analysisTimeout => '予想より時間がかかっています。しばらくしてからもう一度お試しください。';
 
   @override
   String get analysisFailed => '会話を分析できませんでした。もう一度お試しください。';

@@ -232,12 +232,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get conversation => 'Konuşma';
 
   @override
-  String get review => 'İnceleme';
-
-  @override
-  String get pronunciationChallenge => 'Telaffuz Mücadelesi';
-
-  @override
   String get newExpressions => 'Yeni İfadeler';
 
   @override
@@ -905,10 +899,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritim';
-
-  @override
-  String get analysisTimeout =>
-      'Bu beklenenden uzun sürüyor. Lütfen biraz sonra tekrar deneyin.';
 
   @override
   String get analysisFailed =>

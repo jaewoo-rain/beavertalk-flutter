@@ -15,6 +15,7 @@ import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
+import 'package:beavertalk/components/molecules/card_study.dart';
 import 'package:beavertalk/components/organisms/home_gnb.dart';
 import 'package:beavertalk/components/organisms/home_header_mode.dart';
 import 'package:beavertalk/components/molecules/banner.dart' as bn;
@@ -172,6 +173,38 @@ Map<String, Widget Function()> i18nScreens() {
           },
         ),
     // 알람 목록 줄 — 목록 화면도 하네스에서 데이터가 없어 줄을 안 그린다. 켜짐·꺼짐 둘.
+    // 분석 화면 학습 카드 2장(Figma `Card/Study` `6332:1699`, 09-23) — 활성과 비활성을
+    // 함께 그린다(둘 다 제목만). 분석 화면 자체는 결과 데이터가 필요해 미등록.
+    'AnalysisStudyCards': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CardStudy.learn(
+                    title: l10n.practicePronunciation,
+                    onTap: () {},
+                  ),
+                  const SizedBox(height: 12),
+                  CardStudy.challenge(
+                    title: l10n.challengeTitle,
+                    onTap: () {},
+                  ),
+                  const SizedBox(height: 12),
+                  CardStudy.learn(
+                    title: l10n.practicePronunciation,
+                  ),
+                  const SizedBox(height: 12),
+                  CardStudy.challenge(
+                    title: l10n.challengeTitle,
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
     'AlarmRows': () => Builder(
           builder: (ctx) {
             final l10n = AppLocalizations.of(ctx);

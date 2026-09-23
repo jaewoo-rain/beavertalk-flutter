@@ -574,18 +574,6 @@ abstract class AppLocalizations {
   /// **'Conversation'**
   String get conversation;
 
-  /// No description provided for @review.
-  ///
-  /// In en, this message translates to:
-  /// **'Review'**
-  String get review;
-
-  /// No description provided for @pronunciationChallenge.
-  ///
-  /// In en, this message translates to:
-  /// **'Pronunciation Challenge'**
-  String get pronunciationChallenge;
-
   /// No description provided for @newExpressions.
   ///
   /// In en, this message translates to:
@@ -1761,12 +1749,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rhythm'**
   String get rhythm;
-
-  /// No description provided for @analysisTimeout.
-  ///
-  /// In en, this message translates to:
-  /// **'This is taking longer than expected. Please try again in a moment.'**
-  String get analysisTimeout;
 
   /// No description provided for @analysisFailed.
   ///

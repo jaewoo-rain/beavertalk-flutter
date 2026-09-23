@@ -235,12 +235,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get conversation => 'සංවාදය';
 
   @override
-  String get review => 'සමාලෝචනය';
-
-  @override
-  String get pronunciationChallenge => 'උච්චාරණ අභියෝගය';
-
-  @override
   String get newExpressions => 'නව වචන ප්‍රකාශන';
 
   @override
@@ -906,10 +900,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get rhythm => 'රිද්මය';
-
-  @override
-  String get analysisTimeout =>
-      'මෙයට අපේක්ෂා කළාට වඩා වැඩි කාලයක් ගතවෙමින් තිබේ. කරුණාකර මොහොතකින් නැවත උත්සාහ කරන්න.';
 
   @override
   String get analysisFailed =>

@@ -234,12 +234,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get conversation => 'Hội thoại';
 
   @override
-  String get review => 'Ôn tập';
-
-  @override
-  String get pronunciationChallenge => 'Thử thách phát âm';
-
-  @override
   String get newExpressions => 'Cách diễn đạt mới';
 
   @override
@@ -905,10 +899,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get rhythm => 'Nhịp điệu';
-
-  @override
-  String get analysisTimeout =>
-      'Việc này đang mất nhiều thời gian hơn dự kiến. Vui lòng thử lại sau giây lát.';
 
   @override
   String get analysisFailed =>

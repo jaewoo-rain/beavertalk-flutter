@@ -235,12 +235,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get conversation => 'Keskustelu';
 
   @override
-  String get review => 'Kertaus';
-
-  @override
-  String get pronunciationChallenge => 'Ääntämishaaste';
-
-  @override
   String get newExpressions => 'Uudet ilmaisut';
 
   @override
@@ -912,10 +906,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get rhythm => 'Rytmi';
-
-  @override
-  String get analysisTimeout =>
-      'Tämä kestää odotettua kauemmin. Yritä hetken kuluttua uudelleen.';
 
   @override
   String get analysisFailed =>

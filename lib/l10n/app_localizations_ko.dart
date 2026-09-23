@@ -228,12 +228,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get conversation => '대화';
 
   @override
-  String get review => '복습하기';
-
-  @override
-  String get pronunciationChallenge => '발음 챌린지 도전하기';
-
-  @override
   String get newExpressions => '새로 배운 표현';
 
   @override
@@ -882,9 +876,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get rhythm => '리듬';
-
-  @override
-  String get analysisTimeout => '예상보다 시간이 오래 걸리고 있어요. 잠시 후 다시 시도해 주세요.';
 
   @override
   String get analysisFailed => '대화를 분석하지 못했어요. 다시 시도해 주세요.';

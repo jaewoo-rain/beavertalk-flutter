@@ -230,12 +230,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get conversation => 'บทสนทนา';
 
   @override
-  String get review => 'ทบทวน';
-
-  @override
-  String get pronunciationChallenge => 'ท้าทายการออกเสียง';
-
-  @override
   String get newExpressions => 'สำนวนใหม่';
 
   @override
@@ -897,10 +891,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get rhythm => 'จังหวะ';
-
-  @override
-  String get analysisTimeout =>
-      'ใช้เวลานานกว่าที่คาดไว้ โปรดลองอีกครั้งในอีกสักครู่';
 
   @override
   String get analysisFailed =>

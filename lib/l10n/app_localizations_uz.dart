@@ -234,12 +234,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get conversation => 'Suhbat';
 
   @override
-  String get review => 'Koʻrib chiqish';
-
-  @override
-  String get pronunciationChallenge => 'Talaffuz sinovi';
-
-  @override
   String get newExpressions => 'Yangi iboralar';
 
   @override
@@ -912,10 +906,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritm';
-
-  @override
-  String get analysisTimeout =>
-      'Bu kutilganidan koʻproq vaqt olmoqda. Birozdan soʻng qayta urinib koʻring.';
 
   @override
   String get analysisFailed =>

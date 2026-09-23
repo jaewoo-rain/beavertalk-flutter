@@ -234,12 +234,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get conversation => 'ការសន្ទនា';
 
   @override
-  String get review => 'ពិនិត្យឡើងវិញ';
-
-  @override
-  String get pronunciationChallenge => 'ការប្រកួតការបញ្ចេញសំឡេង';
-
-  @override
   String get newExpressions => 'ឃ្លាថ្មី';
 
   @override
@@ -906,10 +900,6 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get rhythm => 'ចង្វាក់';
-
-  @override
-  String get analysisTimeout =>
-      'វាចំណាយពេលយូរជាងការរំពឹងទុក។ សូមព្យាយាមម្ដងទៀតបន្តិចទៀត។';
 
   @override
   String get analysisFailed =>

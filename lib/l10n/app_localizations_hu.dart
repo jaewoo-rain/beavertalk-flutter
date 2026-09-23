@@ -236,12 +236,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get conversation => 'Beszélgetés';
 
   @override
-  String get review => 'Áttekintés';
-
-  @override
-  String get pronunciationChallenge => 'Kiejtési kihívás';
-
-  @override
   String get newExpressions => 'Új kifejezések';
 
   @override
@@ -915,10 +909,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get rhythm => 'Ritmus';
-
-  @override
-  String get analysisTimeout =>
-      'Ez a vártnál tovább tart. Kérjük, próbáld újra egy kicsit később.';
 
   @override
   String get analysisFailed =>

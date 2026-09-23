@@ -6,8 +6,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
-import '../../components/atoms/button.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/molecules/card_study.dart';
 import '../../components/molecules/card_loading.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
@@ -26,9 +26,13 @@ import '../system/network_error.dart';
 /// Receives the int `callId` as route arguments, then polls
 /// `repository.getStatus(callId)` every [_pollInterval] until the analysis is
 /// `done` (→ fetch the result and replace with [Routes.analysis]) or `failed`
-/// (→ inline error + retry/home). Polling is capped at [_timeout]; a timeout
-/// shows the same retry UI. The poll timer is cancelled on dispose and every
-/// async step guards against an unmounted widget.
+/// (→ inline error + retry/home). **There is no timeout** (2026-09-23 사장님 「그대로 둬
+/// (로딩 중)」 · 원장 P29-a): past [_fastWindow] the screen stays in its loading state and
+/// only slows its polling to [_slowInterval]. The 「오래 걸리고 있어요」 error was removed
+/// on purpose — a stuck server analysis must be closed as `failed` by the server
+/// (proposal S-a·S-b in `docs/2026-09-23_1741_analysis-preparing-flow-plan.md`).
+/// The poll timer is cancelled on dispose and every async step guards against an
+/// unmounted widget.
 ///
 /// The waiting state is a **skeleton of the analysis screen** (Figma
 /// `screen/analysis_loading`, `3569:27500`) — same GNB, gauge, buttons and
@@ -56,17 +60,23 @@ class AnalysisLoadingScreen extends ConsumerStatefulWidget {
 enum _LoadingPhase { polling, error }
 
 class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
-  /// How often to poll the status endpoint.
+  /// How often to poll the status endpoint at first.
   static const Duration _pollInterval = Duration(milliseconds: 1500);
 
-  /// Give up after this long and show the retry UI.
-  static const Duration _timeout = Duration(seconds: 60);
+  /// How long to poll at [_pollInterval] before slowing down.
+  static const Duration _fastWindow = Duration(seconds: 60);
+
+  /// Polling interval after [_fastWindow] — the screen keeps waiting, just
+  /// asks the server less often.
+  static const Duration _slowInterval = Duration(seconds: 5);
 
   int? _callId;
   _LoadingPhase _phase = _LoadingPhase.polling;
   String _errorMsg = '';
 
   Timer? _pollTimer;
+
+  /// End of the fast-polling window; null once polling has slowed down.
   DateTime? _deadline;
 
   /// Prevents overlapping polls and double navigation.
@@ -97,7 +107,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// (Re)starts the polling cycle from a fresh deadline.
   void _start() {
     _pollTimer?.cancel();
-    _deadline = DateTime.now().add(_timeout);
+    _deadline = DateTime.now().add(_fastWindow);
     setState(() {
       _phase = _LoadingPhase.polling;
       _errorMsg = '';
@@ -112,10 +122,11 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     final callId = _callId;
     if (callId == null) return;
 
-    // Timeout check.
+    // Past the fast window: keep waiting (no error), poll less often.
     if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
-      _fail(AppLocalizations.of(context).analysisTimeout);
-      return;
+      _deadline = null;
+      _pollTimer?.cancel();
+      _pollTimer = Timer.periodic(_slowInterval, (_) => _poll());
     }
 
     _busy = true;
@@ -134,12 +145,8 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           // Keep polling.
           break;
       }
-    } on AppException catch (e) {
-      // Transient network errors: keep polling until the timeout, but if we're
-      // already past the deadline, surface the message.
-      if (_deadline != null && DateTime.now().isAfter(_deadline!)) {
-        _fail(_reason(e));
-      }
+    } on AppException {
+      // Transient network errors: keep polling — the screen stays loading.
     } finally {
       _busy = false;
     }
@@ -264,22 +271,14 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
 
             // ── Actions (3569:27509) ───────────────────────────────────
             const SizedBox(height: AppSpacing.s24),
-            Button(
-              type: BtnType.primaryFill,
-              size: BtnSize.s60,
-              text: l10n.review,
-              // Nothing to practice until the result lands.
-              disabled: true,
-              onPressed: () {},
+            // `Card/Study` ×2, disabled — both need this call's learned
+            // sentences, which arrive with the result.
+            CardStudy.learn(
+              title: l10n.practicePronunciation,
             ),
             const SizedBox(height: AppSpacing.s12),
-            Button(
-              type: BtnType.primaryOutline,
-              size: BtnSize.s60,
-              text: l10n.pronunciationChallenge,
-              // The challenge needs nothing from this call, so it stays live.
-              onPressed: () =>
-                  Navigator.pushNamed(context, Routes.pronunciationChallenge),
+            CardStudy.challenge(
+              title: l10n.challengeTitle,
             ),
 
             // ── Section/BabaNote (3569:27512) ──────────────────────────

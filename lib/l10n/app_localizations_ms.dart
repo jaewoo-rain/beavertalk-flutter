@@ -235,12 +235,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get conversation => 'Perbualan';
 
   @override
-  String get review => 'Semakan';
-
-  @override
-  String get pronunciationChallenge => 'Cabaran Sebutan';
-
-  @override
   String get newExpressions => 'Ungkapan Baharu';
 
   @override
@@ -914,10 +908,6 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get rhythm => 'Irama';
-
-  @override
-  String get analysisTimeout =>
-      'Ini mengambil masa lebih lama daripada dijangka. Sila cuba lagi sebentar lagi.';
 
   @override
   String get analysisFailed =>
