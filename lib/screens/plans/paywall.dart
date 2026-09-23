@@ -184,19 +184,15 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   _planCard(l10n, c),
                   if (!_isLimit) ...[
                     const SizedBox(height: AppSpacing.s24),
-                    // Hero is a **video**, not a still. The file is a
-                    // placeholder to be swapped later, so [LoopingVideo] falls
-                    // back to a plain box rather than failing when the asset
-                    // is missing — dropping in a new mp4 at the same path is
-                    // the whole handover.
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: LoopingVideo(
-                        asset: 'assets/videos/paywall_max_hero.mp4',
-                        // 375 / 210.9375 은 정확히 16:9 다. 폭을 따라 커진다.
-                        aspectRatio: AppLayout.videoAspect,
-                        placeholderColor: c.backgroundSurfaceAlternative,
-                      ),
+                    // 히어로 = Bibi 영상 루프(09-23 사장님 결정). 정본 `image 1`
+                    // (`4514:5491` · Tablet `6268:44867`) — 16:9 · 모서리 0 · 위아래 gap 24.
+                    // 사용자가 고른 파트너와 무관하게 **항상 Bibi**다. 정본은 정지 이미지지만
+                    // 영상 반복 재생으로 정했고, 영상 배경(연보라 회색)과 Figma 흰 배경의 톤
+                    // 차이는 수용했다. 아바타 클립이 1280×720 이라 칸 비율과 같다.
+                    LoopingVideo(
+                      asset: 'assets/avatar/bibi/idle.mp4',
+                      aspectRatio: AppLayout.videoAspect,
+                      placeholderColor: c.backgroundSurfaceAlternative,
                     ),
                   ],
                   const SizedBox(height: AppSpacing.s24),

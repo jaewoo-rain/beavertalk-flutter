@@ -212,7 +212,6 @@ flutter:
 
   assets:
     - assets/images/
-    - assets/videos/
     - assets/icons/
     - assets/icons/3d/
     # 조음 도해(발음 교정 시트) — Figma `Airflow / *` 22종을 scale 1.5 PNG 로.

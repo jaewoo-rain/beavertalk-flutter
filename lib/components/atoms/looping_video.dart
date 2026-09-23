@@ -17,7 +17,7 @@ class LoopingVideo extends StatefulWidget {
     this.placeholderColor,
   });
 
-  /// Bundled asset path, e.g. `assets/videos/paywall_max_hero.mp4`.
+  /// Bundled asset path, e.g. `assets/avatar/bibi/idle.mp4`.
   final String asset;
 
   /// Box the video is laid out in; also the placeholder's shape.
