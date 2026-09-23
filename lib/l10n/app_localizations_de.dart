@@ -240,6 +240,35 @@ class AppLocalizationsDe extends AppLocalizations {
   String get newExpressions => 'Neue Ausdrücke';
 
   @override
+  String get analysisPrepNote => 'Das heutige Gespräch wird ausgewertet.';
+
+  @override
+  String get analysisPrepNoteHint => 'Gleich erscheint hier eine Nachricht';
+
+  @override
+  String get analysisPrepTitle =>
+      'Der Biber macht aus den heutigen Ausdrücken Karten';
+
+  @override
+  String get analysisPrepSub =>
+      'Sobald sie fertig sind, erscheinen sie genau hier.';
+
+  @override
+  String get analysisPrepStepSave => 'Gespräch speichern';
+
+  @override
+  String get analysisPrepStepCards => 'Ausdruckskarten erstellen';
+
+  @override
+  String get analysisPrepStateDone => 'Fertig';
+
+  @override
+  String get analysisPrepStateWorking => 'Läuft';
+
+  @override
+  String get analysisPrepStateWaiting => 'Wartet';
+
+  @override
   String get usedExpressions => 'Von dir verwendete Ausdrücke';
 
   @override

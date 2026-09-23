@@ -236,6 +236,34 @@ class AppLocalizationsBn extends AppLocalizations {
   String get newExpressions => 'নতুন অভিব্যক্তি';
 
   @override
+  String get analysisPrepNote => 'আজকের কলটি দেখা হচ্ছে।';
+
+  @override
+  String get analysisPrepNoteHint => 'একটু পরেই এখানে মন্তব্য আসবে';
+
+  @override
+  String get analysisPrepTitle =>
+      'বিভার আজকের অভিব্যক্তিগুলো দিয়ে কার্ড বানাচ্ছে';
+
+  @override
+  String get analysisPrepSub => 'তৈরি হলেই এখানে দেখা যাবে।';
+
+  @override
+  String get analysisPrepStepSave => 'কথোপকথন সংরক্ষণ';
+
+  @override
+  String get analysisPrepStepCards => 'অভিব্যক্তি কার্ড তৈরি';
+
+  @override
+  String get analysisPrepStateDone => 'সম্পন্ন';
+
+  @override
+  String get analysisPrepStateWorking => 'চলছে';
+
+  @override
+  String get analysisPrepStateWaiting => 'অপেক্ষায়';
+
+  @override
   String get usedExpressions => 'আপনি যে প্রকাশভঙ্গি ব্যবহার করেছেন';
 
   @override

@@ -16,6 +16,7 @@ import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
 import 'package:beavertalk/components/molecules/card_study.dart';
+import 'package:beavertalk/screens/home/analysis_loading.dart';
 import 'package:beavertalk/components/organisms/home_gnb.dart';
 import 'package:beavertalk/components/organisms/home_header_mode.dart';
 import 'package:beavertalk/components/molecules/banner.dart' as bn;
@@ -173,6 +174,18 @@ Map<String, Widget Function()> i18nScreens() {
           },
         ),
     // 알람 목록 줄 — 목록 화면도 하네스에서 데이터가 없어 줄을 안 그린다. 켜짐·꺼짐 둘.
+    // 분석 대기 준비 카드(Figma `6330:13219` Card/Preparing, 09-23) — 두 단계 상태를 모두
+    // 그린다(저장 중·대기 / 완료·만드는 중). 가장 긴 문구는 de·ru 단계 이름이다.
+    'AnalysisPreparingCard': () => const SingleChildScrollView(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            children: [
+              AnalysisPreparingCard(saved: false),
+              SizedBox(height: 12),
+              AnalysisPreparingCard(saved: true),
+            ],
+          ),
+        ),
     // 분석 화면 학습 카드 2장(Figma `Card/Study` `6332:1699`, 09-23) — 활성과 비활성을
     // 함께 그린다(둘 다 제목만). 분석 화면 자체는 결과 데이터가 필요해 미등록.
     'AnalysisStudyCards': () => Builder(

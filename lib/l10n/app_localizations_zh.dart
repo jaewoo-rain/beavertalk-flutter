@@ -230,6 +230,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get newExpressions => '新表达';
 
   @override
+  String get analysisPrepNote => '正在回顾今天的通话。';
+
+  @override
+  String get analysisPrepNoteHint => '稍后这里会出现一句留言';
+
+  @override
+  String get analysisPrepTitle => '海狸正在把今天的表达做成卡片';
+
+  @override
+  String get analysisPrepSub => '做好后会立刻显示在这里。';
+
+  @override
+  String get analysisPrepStepSave => '保存对话';
+
+  @override
+  String get analysisPrepStepCards => '制作表达卡片';
+
+  @override
+  String get analysisPrepStateDone => '完成';
+
+  @override
+  String get analysisPrepStateWorking => '进行中';
+
+  @override
+  String get analysisPrepStateWaiting => '等待中';
+
+  @override
   String get usedExpressions => '本次通话中用到的表达';
 
   @override

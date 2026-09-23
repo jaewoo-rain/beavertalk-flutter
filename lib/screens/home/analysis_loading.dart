@@ -8,8 +8,8 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_study.dart';
-import '../../components/molecules/card_loading.dart';
 import '../../components/molecules/pronunciation_result.dart';
+import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
@@ -20,6 +20,7 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
+import 'analysis.dart';
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
 ///
@@ -72,6 +73,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
 
   int? _callId;
   _LoadingPhase _phase = _LoadingPhase.polling;
+
+  /// Latest status from the server — drives the waiting card's two steps.
+  /// null until the first answer.
+  CallAnalysisStatus? _status;
   String _errorMsg = '';
 
   Timer? _pollTimer;
@@ -134,6 +139,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       final status =
           await ref.read(normalcallRepositoryProvider).getStatus(callId);
       if (!mounted || _navigated) return;
+      if (status != _status) setState(() => _status = status);
       switch (status) {
         case CallAnalysisStatus.done:
           await _fetchResultAndGo(callId);
@@ -160,10 +166,17 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       if (!mounted || _navigated) return;
       _navigated = true;
       _pollTimer?.cancel();
-      Navigator.pushReplacementNamed(
-        context,
-        Routes.analysis,
-        arguments: result,
+      // A short fade, not the default slide: the waiting screen already has
+      // the analysis layout, so the hand-off should read as the same screen
+      // filling in (Figma prototype `6330:13219` → `screen/analysis`, DISSOLVE).
+      Navigator.of(context).pushReplacement(
+        PageRouteBuilder<void>(
+          settings: RouteSettings(name: Routes.analysis, arguments: result),
+          transitionDuration: const Duration(milliseconds: 300),
+          pageBuilder: (_, _, _) => const AnalysisScreen(),
+          transitionsBuilder: (_, animation, _, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
       );
     } on AppException catch (e) {
       _fail(_reason(e));
@@ -281,44 +294,31 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
               title: l10n.challengeTitle,
             ),
 
-            // ── Section/BabaNote (3569:27512) ──────────────────────────
+            // ── Section/BabaNote → 준비 중 (`6330:13219`) ─────────────────
+            // The note is written with the result, so its slot says what is
+            // happening instead of shimmering. The label stays a skeleton: it
+            // needs the partner's name, which this screen does not have.
             ..._section(
-              // A skeleton, not "…의 한마디": the label needs the partner's name.
               label: const Skeleton.bar(width: 90, height: 15),
               child: _card(
-                child: const Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Row(
                   children: [
-                    Skeleton.circle(size: 32),
-                    SizedBox(width: AppSpacing.s12),
+                    AppIcons.duoPreparing(size: 36),
+                    const SizedBox(width: AppSpacing.s12),
                     Expanded(
-                      // The frame gives the two skeleton slots the line boxes of
-                      // the text they stand in for — Body 38 (`3569:27517`) and
-                      // Attribution 14 (`3569:27520`) — which is what makes the
-                      // card 90, exactly the loaded BabaNote's 88 + its 2px of
-                      // extra leading. Stacking the bars bare rendered 83.
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(
-                            height: 38,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Skeleton.bar(width: 255, height: 12),
-                                SizedBox(height: 6),
-                                Skeleton.bar(width: 150, height: 12),
-                              ],
-                            ),
+                          Text(
+                            l10n.analysisPrepNote,
+                            style: AppType.body2.r
+                                .copyWith(color: context.c.labelNormal),
                           ),
-                          SizedBox(height: 6),
-                          SizedBox(
-                            height: 14,
-                            child: Align(
-                              alignment: Alignment.centerLeft,
-                              child: Skeleton.bar(width: 110, height: 9),
-                            ),
+                          const SizedBox(height: 6), // no s6 token
+                          Text(
+                            l10n.analysisPrepNoteHint,
+                            style: AppType.caption1.r
+                                .copyWith(color: context.c.labelAlternative),
                           ),
                         ],
                       ),
@@ -328,15 +328,17 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
               ),
             ),
 
-            // ── Section/Expressions (3569:27534) ───────────────────────
+            // ── Section/Expressions → 준비 카드 (`6330:13219` Card/Preparing) ──
+            // 2026-09-23: the cards are what the LLM is still writing, so this
+            // slot shows the beaver at work rather than a card-shaped skeleton.
+            // When `done` lands the analysis screen replaces this one with a
+            // fade, and the real cards take this spot.
             ..._section(
-              // Countless here — the frame's label is 새로 배운 표현 with no number,
-              // since the count is exactly what is still loading.
+              // Countless here — the count is exactly what is still loading.
               label: Text(l10n.newExpressions, style: AppType.body2.m),
-              // One card, as the frame draws (`3569:27537` holds a single
-              // `Card/Expression-1`). It used to stack three; that promised a
-              // count the response hasn't given yet.
-              child: const CardLoading(),
+              child: AnalysisPreparingCard(
+                saved: _status == CallAnalysisStatus.analyzing,
+              ),
             ),
           ],
         ),
@@ -388,4 +390,96 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
         message: _errorMsg.isEmpty ? null : _errorMsg,
         onRetry: _callId == null ? null : _start,
       );
+}
+
+/// `Card/Preparing` in the analysis waiting state (Figma `6330:13219`).
+///
+/// icon 80 · title · line · two steps. r16 · Surface/Alternative · padding
+/// 28/20/20/20 · gap 12, centred. Public so the i18n harness can mount it.
+class AnalysisPreparingCard extends StatelessWidget {
+  /// Creates the card.
+  const AnalysisPreparingCard({super.key, required this.saved});
+
+  /// Step 1 (대화 저장) is done once the server reports `analyzing`; until then
+  /// it is the step in progress and step 2 waits.
+  final bool saved;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final c = context.c;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(
+          AppSpacing.s20, 28, AppSpacing.s20, AppSpacing.s20),
+      decoration: BoxDecoration(
+        color: c.backgroundSurfaceAlternative,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Column(
+        children: [
+          AppIcons.duoPreparing(size: 80),
+          const SizedBox(height: AppSpacing.s12),
+          Text(
+            l10n.analysisPrepTitle,
+            textAlign: TextAlign.center,
+            style: AppType.headline2.b.copyWith(color: c.labelStrong),
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          Text(
+            l10n.analysisPrepSub,
+            textAlign: TextAlign.center,
+            style: AppType.label2.r.copyWith(color: c.labelNeutral),
+          ),
+          const SizedBox(height: AppSpacing.s24), // 12 gap + 12 top of Steps
+          _step(
+            context,
+            icon: saved
+                ? AppIcons.duoCheck(size: 20)
+                : AppIcons.aiSparkle(size: 20, color: c.labelNormal),
+            label: l10n.analysisPrepStepSave,
+            state: saved
+                ? l10n.analysisPrepStateDone
+                : l10n.analysisPrepStateWorking,
+            stateColor: saved ? c.labelAlternative : c.primaryNormal,
+          ),
+          const SizedBox(height: AppSpacing.s12),
+          _step(
+            context,
+            icon: AppIcons.aiSparkle(
+                size: 20, color: saved ? c.labelNormal : c.labelAssistive),
+            label: l10n.analysisPrepStepCards,
+            state: saved
+                ? l10n.analysisPrepStateWorking
+                : l10n.analysisPrepStateWaiting,
+            stateColor: saved ? c.primaryNormal : c.labelAlternative,
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// One step row: icon 20 · 10 · label (fills) · state at the end.
+  Widget _step(
+    BuildContext context, {
+    required Widget icon,
+    required String label,
+    required String state,
+    required Color stateColor,
+  }) =>
+      Row(
+        children: [
+          icon,
+          const SizedBox(width: 10), // Figma gap, no token
+          Expanded(
+            child: Text(
+              label,
+              style: AppType.label1.m.copyWith(color: context.c.labelNormal),
+            ),
+          ),
+          const SizedBox(width: AppSpacing.s8),
+          Text(state, style: AppType.label1.r.copyWith(color: stateColor)),
+        ],
+      );
+
 }

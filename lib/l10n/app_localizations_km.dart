@@ -237,6 +237,33 @@ class AppLocalizationsKm extends AppLocalizations {
   String get newExpressions => 'ឃ្លាថ្មី';
 
   @override
+  String get analysisPrepNote => 'កំពុងពិនិត្យការហៅថ្ងៃនេះ។';
+
+  @override
+  String get analysisPrepNoteHint => 'បន្តិចទៀតសារនឹងលេចឡើងនៅទីនេះ';
+
+  @override
+  String get analysisPrepTitle => 'សត្វបេវើរកំពុងធ្វើកាតពីឃ្លាថ្ងៃនេះ';
+
+  @override
+  String get analysisPrepSub => 'នឹងបង្ហាញនៅទីនេះភ្លាមៗពេលរួចរាល់។';
+
+  @override
+  String get analysisPrepStepSave => 'រក្សាទុកការសន្ទនា';
+
+  @override
+  String get analysisPrepStepCards => 'បង្កើតកាតឃ្លា';
+
+  @override
+  String get analysisPrepStateDone => 'រួចរាល់';
+
+  @override
+  String get analysisPrepStateWorking => 'កំពុងដំណើរការ';
+
+  @override
+  String get analysisPrepStateWaiting => 'កំពុងរង់ចាំ';
+
+  @override
   String get usedExpressions => 'ឃ្លាដែលអ្នកបានប្រើ';
 
   @override

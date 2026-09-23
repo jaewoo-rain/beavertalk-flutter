@@ -241,6 +241,35 @@ class AppLocalizationsFr extends AppLocalizations {
   String get newExpressions => 'Nouvelles expressions';
 
   @override
+  String get analysisPrepNote => 'Nous revenons sur l\'appel d\'aujourd\'hui.';
+
+  @override
+  String get analysisPrepNoteHint => 'Un mot apparaîtra ici dans un instant';
+
+  @override
+  String get analysisPrepTitle =>
+      'Le castor transforme les expressions du jour en cartes';
+
+  @override
+  String get analysisPrepSub =>
+      'Elles apparaîtront ici dès qu\'elles seront prêtes.';
+
+  @override
+  String get analysisPrepStepSave => 'Enregistrement de la conversation';
+
+  @override
+  String get analysisPrepStepCards => 'Création des cartes d\'expressions';
+
+  @override
+  String get analysisPrepStateDone => 'Terminé';
+
+  @override
+  String get analysisPrepStateWorking => 'En cours';
+
+  @override
+  String get analysisPrepStateWaiting => 'En attente';
+
+  @override
   String get usedExpressions => 'Expressions que vous avez utilisées';
 
   @override

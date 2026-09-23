@@ -238,6 +238,34 @@ class AppLocalizationsFil extends AppLocalizations {
   String get newExpressions => 'Mga Bagong Ekspresyon';
 
   @override
+  String get analysisPrepNote => 'Binabalikan ang tawag ngayon.';
+
+  @override
+  String get analysisPrepNoteHint => 'Lalabas dito ang mensahe mamaya';
+
+  @override
+  String get analysisPrepTitle =>
+      'Ginagawang card ng beaver ang mga ekspresyon ngayon';
+
+  @override
+  String get analysisPrepSub => 'Lalabas dito agad kapag handa na.';
+
+  @override
+  String get analysisPrepStepSave => 'Pag-save ng usapan';
+
+  @override
+  String get analysisPrepStepCards => 'Paggawa ng expression card';
+
+  @override
+  String get analysisPrepStateDone => 'Tapos na';
+
+  @override
+  String get analysisPrepStateWorking => 'Ginagawa';
+
+  @override
+  String get analysisPrepStateWaiting => 'Naghihintay';
+
+  @override
   String get usedExpressions => 'Mga ekspresyong ginamit mo';
 
   @override

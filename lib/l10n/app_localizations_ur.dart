@@ -238,6 +238,33 @@ class AppLocalizationsUr extends AppLocalizations {
   String get newExpressions => 'نئے تاثرات';
 
   @override
+  String get analysisPrepNote => 'آج کی کال کا جائزہ لیا جا رہا ہے۔';
+
+  @override
+  String get analysisPrepNoteHint => 'تھوڑی دیر میں یہاں پیغام آئے گا';
+
+  @override
+  String get analysisPrepTitle => 'بیور آج کے جملوں سے کارڈ بنا رہا ہے';
+
+  @override
+  String get analysisPrepSub => 'تیار ہوتے ہی یہیں نظر آئیں گے۔';
+
+  @override
+  String get analysisPrepStepSave => 'گفتگو محفوظ کرنا';
+
+  @override
+  String get analysisPrepStepCards => 'جملوں کے کارڈ بنانا';
+
+  @override
+  String get analysisPrepStateDone => 'مکمل';
+
+  @override
+  String get analysisPrepStateWorking => 'جاری';
+
+  @override
+  String get analysisPrepStateWaiting => 'انتظار میں';
+
+  @override
   String get usedExpressions => 'وہ جملے جو آپ نے استعمال کیے';
 
   @override

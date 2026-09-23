@@ -238,6 +238,34 @@ class AppLocalizationsFi extends AppLocalizations {
   String get newExpressions => 'Uudet ilmaisut';
 
   @override
+  String get analysisPrepNote => 'Tämän päivän puhelua käydään läpi.';
+
+  @override
+  String get analysisPrepNoteHint => 'Viesti ilmestyy tähän pian';
+
+  @override
+  String get analysisPrepTitle =>
+      'Majava tekee tämän päivän ilmauksista kortteja';
+
+  @override
+  String get analysisPrepSub => 'Ne ilmestyvät tähän heti valmistuttuaan.';
+
+  @override
+  String get analysisPrepStepSave => 'Keskustelun tallennus';
+
+  @override
+  String get analysisPrepStepCards => 'Ilmauskorttien teko';
+
+  @override
+  String get analysisPrepStateDone => 'Valmis';
+
+  @override
+  String get analysisPrepStateWorking => 'Käynnissä';
+
+  @override
+  String get analysisPrepStateWaiting => 'Odottaa';
+
+  @override
   String get usedExpressions => 'Käyttämäsi ilmaukset';
 
   @override

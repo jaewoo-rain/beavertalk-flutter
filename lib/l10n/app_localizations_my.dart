@@ -239,6 +239,34 @@ class AppLocalizationsMy extends AppLocalizations {
   String get newExpressions => 'အသုံးအနှုန်းအသစ်များ';
 
   @override
+  String get analysisPrepNote => 'ဒီနေ့ ဖုန်းခေါ်ဆိုမှုကို ပြန်ကြည့်နေပါတယ်။';
+
+  @override
+  String get analysisPrepNoteHint => 'ခဏနေရင် ဒီနေရာမှာ စာတိုလေး ရောက်လာပါမယ်';
+
+  @override
+  String get analysisPrepTitle =>
+      'ဘီဗာက ဒီနေ့ စကားစုတွေကို ကတ်အဖြစ် လုပ်နေပါတယ်';
+
+  @override
+  String get analysisPrepSub => 'ပြီးတာနဲ့ ဒီနေရာမှာ ချက်ချင်း ပေါ်လာပါမယ်။';
+
+  @override
+  String get analysisPrepStepSave => 'စကားပြောမှု သိမ်းဆည်းခြင်း';
+
+  @override
+  String get analysisPrepStepCards => 'စကားစုကတ် ပြုလုပ်ခြင်း';
+
+  @override
+  String get analysisPrepStateDone => 'ပြီးပြီ';
+
+  @override
+  String get analysisPrepStateWorking => 'လုပ်နေဆဲ';
+
+  @override
+  String get analysisPrepStateWaiting => 'စောင့်ဆိုင်းနေ';
+
+  @override
   String get usedExpressions => 'သင်သုံးခဲ့သော အသုံးအနှုန်းများ';
 
   @override

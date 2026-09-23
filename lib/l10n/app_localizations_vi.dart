@@ -237,6 +237,35 @@ class AppLocalizationsVi extends AppLocalizations {
   String get newExpressions => 'Cách diễn đạt mới';
 
   @override
+  String get analysisPrepNote => 'Đang xem lại cuộc gọi hôm nay.';
+
+  @override
+  String get analysisPrepNoteHint =>
+      'Lời nhắn sẽ xuất hiện ở đây trong giây lát';
+
+  @override
+  String get analysisPrepTitle =>
+      'Hải ly đang biến các cách nói hôm nay thành thẻ';
+
+  @override
+  String get analysisPrepSub => 'Xong là hiện ngay tại đây.';
+
+  @override
+  String get analysisPrepStepSave => 'Lưu cuộc trò chuyện';
+
+  @override
+  String get analysisPrepStepCards => 'Tạo thẻ cách nói';
+
+  @override
+  String get analysisPrepStateDone => 'Xong';
+
+  @override
+  String get analysisPrepStateWorking => 'Đang làm';
+
+  @override
+  String get analysisPrepStateWaiting => 'Chờ';
+
+  @override
   String get usedExpressions => 'Cách diễn đạt bạn đã dùng';
 
   @override

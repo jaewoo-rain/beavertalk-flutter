@@ -233,6 +233,33 @@ class AppLocalizationsTh extends AppLocalizations {
   String get newExpressions => 'สำนวนใหม่';
 
   @override
+  String get analysisPrepNote => 'กำลังทบทวนการโทรวันนี้';
+
+  @override
+  String get analysisPrepNoteHint => 'อีกสักครู่ข้อความจะปรากฏที่นี่';
+
+  @override
+  String get analysisPrepTitle => 'บีเวอร์กำลังทำการ์ดจากสำนวนวันนี้';
+
+  @override
+  String get analysisPrepSub => 'เสร็จแล้วจะแสดงที่นี่ทันที';
+
+  @override
+  String get analysisPrepStepSave => 'บันทึกบทสนทนา';
+
+  @override
+  String get analysisPrepStepCards => 'สร้างการ์ดสำนวน';
+
+  @override
+  String get analysisPrepStateDone => 'เสร็จแล้ว';
+
+  @override
+  String get analysisPrepStateWorking => 'กำลังทำ';
+
+  @override
+  String get analysisPrepStateWaiting => 'รอ';
+
+  @override
   String get usedExpressions => 'สำนวนที่คุณใช้';
 
   @override

@@ -238,6 +238,34 @@ class AppLocalizationsId extends AppLocalizations {
   String get newExpressions => 'Ungkapan Baru';
 
   @override
+  String get analysisPrepNote => 'Sedang meninjau panggilan hari ini.';
+
+  @override
+  String get analysisPrepNoteHint => 'Sebentar lagi pesan akan muncul di sini';
+
+  @override
+  String get analysisPrepTitle =>
+      'Berang-berang sedang membuat kartu dari ungkapan hari ini';
+
+  @override
+  String get analysisPrepSub => 'Akan muncul di sini begitu siap.';
+
+  @override
+  String get analysisPrepStepSave => 'Menyimpan percakapan';
+
+  @override
+  String get analysisPrepStepCards => 'Membuat kartu ungkapan';
+
+  @override
+  String get analysisPrepStateDone => 'Selesai';
+
+  @override
+  String get analysisPrepStateWorking => 'Sedang berjalan';
+
+  @override
+  String get analysisPrepStateWaiting => 'Menunggu';
+
+  @override
   String get usedExpressions => 'Ungkapan yang kamu pakai';
 
   @override

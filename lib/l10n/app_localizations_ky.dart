@@ -238,6 +238,34 @@ class AppLocalizationsKy extends AppLocalizations {
   String get newExpressions => 'Жаңы сөз айкаштары';
 
   @override
+  String get analysisPrepNote => 'Бүгүнкү чалуу каралып жатат.';
+
+  @override
+  String get analysisPrepNoteHint => 'Жакында бул жерде билдирүү чыгат';
+
+  @override
+  String get analysisPrepTitle =>
+      'Кундуз бүгүнкү сөз айкаштарынан карта жасап жатат';
+
+  @override
+  String get analysisPrepSub => 'Даяр болгондо дал ушул жерде чыгат.';
+
+  @override
+  String get analysisPrepStepSave => 'Сүйлөшүүнү сактоо';
+
+  @override
+  String get analysisPrepStepCards => 'Сөз айкашы карталарын жасоо';
+
+  @override
+  String get analysisPrepStateDone => 'Даяр';
+
+  @override
+  String get analysisPrepStateWorking => 'Жүрүп жатат';
+
+  @override
+  String get analysisPrepStateWaiting => 'Күтүүдө';
+
+  @override
   String get usedExpressions => 'Сиз колдонгон сөз айкаштары';
 
   @override

@@ -237,6 +237,34 @@ class AppLocalizationsUz extends AppLocalizations {
   String get newExpressions => 'Yangi iboralar';
 
   @override
+  String get analysisPrepNote => 'Bugungi qo‘ng‘iroq ko‘rib chiqilmoqda.';
+
+  @override
+  String get analysisPrepNoteHint => 'Tez orada bu yerda xabar paydo bo‘ladi';
+
+  @override
+  String get analysisPrepTitle =>
+      'Qunduz bugungi iboralardan kartalar yasamoqda';
+
+  @override
+  String get analysisPrepSub => 'Tayyor bo‘lishi bilan shu yerda chiqadi.';
+
+  @override
+  String get analysisPrepStepSave => 'Suhbatni saqlash';
+
+  @override
+  String get analysisPrepStepCards => 'Ibora kartalarini yasash';
+
+  @override
+  String get analysisPrepStateDone => 'Tayyor';
+
+  @override
+  String get analysisPrepStateWorking => 'Jarayonda';
+
+  @override
+  String get analysisPrepStateWaiting => 'Kutilmoqda';
+
+  @override
   String get usedExpressions => 'Siz ishlatgan iboralar';
 
   @override

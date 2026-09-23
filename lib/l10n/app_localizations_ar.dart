@@ -239,6 +239,33 @@ class AppLocalizationsAr extends AppLocalizations {
   String get newExpressions => 'تعبيرات جديدة';
 
   @override
+  String get analysisPrepNote => 'نراجع مكالمة اليوم.';
+
+  @override
+  String get analysisPrepNoteHint => 'ستظهر الملاحظة هنا بعد قليل';
+
+  @override
+  String get analysisPrepTitle => 'يصنع القندس بطاقات من تعبيرات اليوم';
+
+  @override
+  String get analysisPrepSub => 'ستظهر هنا فور جهوزها.';
+
+  @override
+  String get analysisPrepStepSave => 'حفظ المحادثة';
+
+  @override
+  String get analysisPrepStepCards => 'صنع بطاقات التعبيرات';
+
+  @override
+  String get analysisPrepStateDone => 'تم';
+
+  @override
+  String get analysisPrepStateWorking => 'جارٍ';
+
+  @override
+  String get analysisPrepStateWaiting => 'بالانتظار';
+
+  @override
   String get usedExpressions => 'العبارات التي استخدمتها';
 
   @override

@@ -235,6 +235,33 @@ class AppLocalizationsHi extends AppLocalizations {
   String get newExpressions => 'नए वाक्यांश';
 
   @override
+  String get analysisPrepNote => 'आज की कॉल को देखा जा रहा है।';
+
+  @override
+  String get analysisPrepNoteHint => 'थोड़ी देर में यहाँ एक संदेश आएगा';
+
+  @override
+  String get analysisPrepTitle => 'बीवर आज के वाक्यांशों से कार्ड बना रहा है';
+
+  @override
+  String get analysisPrepSub => 'तैयार होते ही यहीं दिखेंगे।';
+
+  @override
+  String get analysisPrepStepSave => 'बातचीत सहेजना';
+
+  @override
+  String get analysisPrepStepCards => 'वाक्यांश कार्ड बनाना';
+
+  @override
+  String get analysisPrepStateDone => 'पूरा';
+
+  @override
+  String get analysisPrepStateWorking => 'जारी';
+
+  @override
+  String get analysisPrepStateWaiting => 'प्रतीक्षा में';
+
+  @override
   String get usedExpressions => 'आपने जो अभिव्यक्तियाँ इस्तेमाल कीं';
 
   @override

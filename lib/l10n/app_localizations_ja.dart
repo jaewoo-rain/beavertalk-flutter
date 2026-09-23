@@ -230,6 +230,33 @@ class AppLocalizationsJa extends AppLocalizations {
   String get newExpressions => '新しい表現';
 
   @override
+  String get analysisPrepNote => '今日の通話を振り返っています。';
+
+  @override
+  String get analysisPrepNoteHint => 'まもなくここにひとことが届きます';
+
+  @override
+  String get analysisPrepTitle => 'ビーバーが今日の表現をカードにしています';
+
+  @override
+  String get analysisPrepSub => 'できあがったらすぐここに表示されます。';
+
+  @override
+  String get analysisPrepStepSave => '会話の保存';
+
+  @override
+  String get analysisPrepStepCards => '表現カードの作成';
+
+  @override
+  String get analysisPrepStateDone => '完了';
+
+  @override
+  String get analysisPrepStateWorking => '作成中';
+
+  @override
+  String get analysisPrepStateWaiting => '待機中';
+
+  @override
   String get usedExpressions => '今回の通話で使った表現';
 
   @override

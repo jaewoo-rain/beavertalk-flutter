@@ -235,6 +235,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get newExpressions => 'New Expressions';
 
   @override
+  String get analysisPrepNote => 'Looking back on today\'s call.';
+
+  @override
+  String get analysisPrepNoteHint => 'A note will appear here shortly';
+
+  @override
+  String get analysisPrepTitle =>
+      'The beaver is turning today\'s expressions into cards';
+
+  @override
+  String get analysisPrepSub => 'They\'ll show up right here when ready.';
+
+  @override
+  String get analysisPrepStepSave => 'Saving the conversation';
+
+  @override
+  String get analysisPrepStepCards => 'Making expression cards';
+
+  @override
+  String get analysisPrepStateDone => 'Done';
+
+  @override
+  String get analysisPrepStateWorking => 'In progress';
+
+  @override
+  String get analysisPrepStateWaiting => 'Waiting';
+
+  @override
   String get usedExpressions => 'Expressions you used';
 
   @override

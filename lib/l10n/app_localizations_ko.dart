@@ -231,6 +231,33 @@ class AppLocalizationsKo extends AppLocalizations {
   String get newExpressions => '새로 배운 표현';
 
   @override
+  String get analysisPrepNote => '오늘 통화를 돌아보고 있어요.';
+
+  @override
+  String get analysisPrepNoteHint => '잠시 뒤 한마디가 여기에 도착해요';
+
+  @override
+  String get analysisPrepTitle => '비버가 오늘 배운 표현을 카드로 만들고 있어요';
+
+  @override
+  String get analysisPrepSub => '다 되면 이 자리에 바로 나타나요.';
+
+  @override
+  String get analysisPrepStepSave => '대화 저장';
+
+  @override
+  String get analysisPrepStepCards => '표현 카드 만들기';
+
+  @override
+  String get analysisPrepStateDone => '완료';
+
+  @override
+  String get analysisPrepStateWorking => '만드는 중';
+
+  @override
+  String get analysisPrepStateWaiting => '대기';
+
+  @override
   String get usedExpressions => '이번 통화에서 쓴 표현';
 
   @override

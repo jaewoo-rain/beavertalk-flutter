@@ -238,6 +238,34 @@ class AppLocalizationsRu extends AppLocalizations {
   String get newExpressions => 'Новые выражения';
 
   @override
+  String get analysisPrepNote => 'Разбираем сегодняшний звонок.';
+
+  @override
+  String get analysisPrepNoteHint => 'Скоро здесь появится сообщение';
+
+  @override
+  String get analysisPrepTitle =>
+      'Бобёр делает карточки из сегодняшних выражений';
+
+  @override
+  String get analysisPrepSub => 'Появятся здесь, как только будут готовы.';
+
+  @override
+  String get analysisPrepStepSave => 'Сохранение разговора';
+
+  @override
+  String get analysisPrepStepCards => 'Создание карточек';
+
+  @override
+  String get analysisPrepStateDone => 'Готово';
+
+  @override
+  String get analysisPrepStateWorking => 'В процессе';
+
+  @override
+  String get analysisPrepStateWaiting => 'Ожидание';
+
+  @override
   String get usedExpressions => 'Выражения, которые вы использовали';
 
   @override

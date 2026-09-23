@@ -236,6 +236,33 @@ class AppLocalizationsNe extends AppLocalizations {
   String get newExpressions => 'नयाँ अभिव्यक्तिहरू';
 
   @override
+  String get analysisPrepNote => 'आजको कल हेर्दैछौं।';
+
+  @override
+  String get analysisPrepNoteHint => 'केही बेरमा यहाँ सन्देश आउनेछ';
+
+  @override
+  String get analysisPrepTitle => 'बिभरले आजका अभिव्यक्तिहरूबाट कार्ड बनाउँदैछ';
+
+  @override
+  String get analysisPrepSub => 'तयार हुनेबित्तिकै यहीँ देखिन्छ।';
+
+  @override
+  String get analysisPrepStepSave => 'कुराकानी सुरक्षित गर्दै';
+
+  @override
+  String get analysisPrepStepCards => 'अभिव्यक्ति कार्ड बनाउँदै';
+
+  @override
+  String get analysisPrepStateDone => 'सम्पन्न';
+
+  @override
+  String get analysisPrepStateWorking => 'भइरहेको';
+
+  @override
+  String get analysisPrepStateWaiting => 'पर्खाइमा';
+
+  @override
   String get usedExpressions => 'तपाईंले प्रयोग गर्नुभएका अभिव्यक्ति';
 
   @override

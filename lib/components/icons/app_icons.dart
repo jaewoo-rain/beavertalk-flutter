@@ -60,6 +60,17 @@ abstract final class AppIcons {
   static Widget duoTarget({double size = 20}) => _duo('duo-target', size);
   static Widget duoBubble({double size = 20}) => _duo('duo-bubble', size);
 
+  /// `duo-preparing`(`6326:40983`) — 분석 준비 중(비버가 표현 카드를 만드는 중).
+  /// 분석 대기 화면의 BabaNote 36 · Expressions 80.
+  static Widget duoPreparing({double size = 36}) => _duo('duo-preparing', size);
+
+  /// `duo-check`(`6195:1655`) — 분석 준비 단계 「완료」.
+  static Widget duoCheck({double size = 20}) => _duo('duo-check', size);
+
+  /// `ai-sparkle`(`3443:1393`) — 분석 준비 단계 「진행 중」. 한 색 글리프.
+  static Widget aiSparkle({double size = 20, required Color color}) =>
+      _glyph('ai-sparkle', size, color);
+
   // ── Navigation / chrome ──────────────────────────────────────
   static Widget close({double size = 24, required Color color}) =>
       _glyph('close', size, color);

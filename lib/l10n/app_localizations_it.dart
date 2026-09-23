@@ -239,6 +239,34 @@ class AppLocalizationsIt extends AppLocalizations {
   String get newExpressions => 'Nuove espressioni';
 
   @override
+  String get analysisPrepNote => 'Stiamo ripercorrendo la chiamata di oggi.';
+
+  @override
+  String get analysisPrepNoteHint => 'A breve qui comparirà un messaggio';
+
+  @override
+  String get analysisPrepTitle =>
+      'Il castoro sta trasformando le espressioni di oggi in schede';
+
+  @override
+  String get analysisPrepSub => 'Compariranno qui appena pronte.';
+
+  @override
+  String get analysisPrepStepSave => 'Salvataggio della conversazione';
+
+  @override
+  String get analysisPrepStepCards => 'Creazione delle schede';
+
+  @override
+  String get analysisPrepStateDone => 'Fatto';
+
+  @override
+  String get analysisPrepStateWorking => 'In corso';
+
+  @override
+  String get analysisPrepStateWaiting => 'In attesa';
+
+  @override
   String get usedExpressions => 'Espressioni che hai usato';
 
   @override

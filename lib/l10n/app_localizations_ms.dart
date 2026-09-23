@@ -238,6 +238,34 @@ class AppLocalizationsMs extends AppLocalizations {
   String get newExpressions => 'Ungkapan Baharu';
 
   @override
+  String get analysisPrepNote => 'Sedang menyemak panggilan hari ini.';
+
+  @override
+  String get analysisPrepNoteHint => 'Sebentar lagi mesej akan muncul di sini';
+
+  @override
+  String get analysisPrepTitle =>
+      'Memerang sedang menjadikan ungkapan hari ini kad';
+
+  @override
+  String get analysisPrepSub => 'Akan muncul di sini sebaik sahaja siap.';
+
+  @override
+  String get analysisPrepStepSave => 'Menyimpan perbualan';
+
+  @override
+  String get analysisPrepStepCards => 'Membuat kad ungkapan';
+
+  @override
+  String get analysisPrepStateDone => 'Selesai';
+
+  @override
+  String get analysisPrepStateWorking => 'Sedang berjalan';
+
+  @override
+  String get analysisPrepStateWaiting => 'Menunggu';
+
+  @override
   String get usedExpressions => 'Ungkapan yang anda guna';
 
   @override

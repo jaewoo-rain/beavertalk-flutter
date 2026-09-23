@@ -237,6 +237,33 @@ class AppLocalizationsMn extends AppLocalizations {
   String get newExpressions => 'Шинэ хэллэгүүд';
 
   @override
+  String get analysisPrepNote => 'Өнөөдрийн дуудлагыг эргэн харж байна.';
+
+  @override
+  String get analysisPrepNoteHint => 'Удахгүй энд захидал гарч ирнэ';
+
+  @override
+  String get analysisPrepTitle => 'Минж өнөөдрийн хэллэгүүдээр карт хийж байна';
+
+  @override
+  String get analysisPrepSub => 'Бэлэн болмогц яг энд гарч ирнэ.';
+
+  @override
+  String get analysisPrepStepSave => 'Яриаг хадгалах';
+
+  @override
+  String get analysisPrepStepCards => 'Хэллэгийн карт хийх';
+
+  @override
+  String get analysisPrepStateDone => 'Дууссан';
+
+  @override
+  String get analysisPrepStateWorking => 'Хийж байна';
+
+  @override
+  String get analysisPrepStateWaiting => 'Хүлээж байна';
+
+  @override
   String get usedExpressions => 'Таны хэрэглэсэн хэллэгүүд';
 
   @override

@@ -235,6 +235,33 @@ class AppLocalizationsTr extends AppLocalizations {
   String get newExpressions => 'Yeni İfadeler';
 
   @override
+  String get analysisPrepNote => 'Bugünkü görüşme gözden geçiriliyor.';
+
+  @override
+  String get analysisPrepNoteHint => 'Birazdan burada bir not görünecek';
+
+  @override
+  String get analysisPrepTitle => 'Kunduz bugünkü ifadeleri karta dönüştürüyor';
+
+  @override
+  String get analysisPrepSub => 'Hazır olunca tam burada görünecek.';
+
+  @override
+  String get analysisPrepStepSave => 'Konuşmayı kaydetme';
+
+  @override
+  String get analysisPrepStepCards => 'İfade kartları hazırlama';
+
+  @override
+  String get analysisPrepStateDone => 'Tamam';
+
+  @override
+  String get analysisPrepStateWorking => 'Sürüyor';
+
+  @override
+  String get analysisPrepStateWaiting => 'Bekliyor';
+
+  @override
   String get usedExpressions => 'Kullandığın ifadeler';
 
   @override

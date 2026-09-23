@@ -237,6 +237,34 @@ class AppLocalizationsKk extends AppLocalizations {
   String get newExpressions => 'Жаңа сөз тіркестері';
 
   @override
+  String get analysisPrepNote => 'Бүгінгі қоңырау қаралып жатыр.';
+
+  @override
+  String get analysisPrepNoteHint => 'Жақында осында хабар пайда болады';
+
+  @override
+  String get analysisPrepTitle =>
+      'Құндыз бүгінгі сөз тіркестерінен карта жасап жатыр';
+
+  @override
+  String get analysisPrepSub => 'Дайын болғанда дәл осында шығады.';
+
+  @override
+  String get analysisPrepStepSave => 'Сөйлесуді сақтау';
+
+  @override
+  String get analysisPrepStepCards => 'Сөз тіркесі карталарын жасау';
+
+  @override
+  String get analysisPrepStateDone => 'Дайын';
+
+  @override
+  String get analysisPrepStateWorking => 'Жүріп жатыр';
+
+  @override
+  String get analysisPrepStateWaiting => 'Күтуде';
+
+  @override
   String get usedExpressions => 'Сіз қолданған тіркестер';
 
   @override

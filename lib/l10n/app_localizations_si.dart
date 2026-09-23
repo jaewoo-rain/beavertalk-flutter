@@ -238,6 +238,34 @@ class AppLocalizationsSi extends AppLocalizations {
   String get newExpressions => 'නව වචන ප්‍රකාශන';
 
   @override
+  String get analysisPrepNote => 'අද ඇමතුම නැවත බලමින් සිටී.';
+
+  @override
+  String get analysisPrepNoteHint => 'ටික වේලාවකින් පණිවිඩයක් මෙහි පෙනේ';
+
+  @override
+  String get analysisPrepTitle =>
+      'බීවර් අද ප්‍රකාශන කාඩ්පත් බවට පත් කරමින් සිටී';
+
+  @override
+  String get analysisPrepSub => 'සූදානම් වූ වහාම මෙහි පෙනේ.';
+
+  @override
+  String get analysisPrepStepSave => 'සංවාදය සුරැකීම';
+
+  @override
+  String get analysisPrepStepCards => 'ප්‍රකාශන කාඩ්පත් සෑදීම';
+
+  @override
+  String get analysisPrepStateDone => 'අවසන්';
+
+  @override
+  String get analysisPrepStateWorking => 'සිදු වෙමින්';
+
+  @override
+  String get analysisPrepStateWaiting => 'රැඳී සිටී';
+
+  @override
   String get usedExpressions => 'ඔබ භාවිත කළ ප්‍රකාශන';
 
   @override

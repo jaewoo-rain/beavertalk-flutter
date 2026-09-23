@@ -239,6 +239,33 @@ class AppLocalizationsHu extends AppLocalizations {
   String get newExpressions => 'Új kifejezések';
 
   @override
+  String get analysisPrepNote => 'Átnézzük a mai hívást.';
+
+  @override
+  String get analysisPrepNoteHint => 'Hamarosan itt jelenik meg egy üzenet';
+
+  @override
+  String get analysisPrepTitle => 'A hód kártyákat készít a mai kifejezésekből';
+
+  @override
+  String get analysisPrepSub => 'Amint elkészülnek, itt jelennek meg.';
+
+  @override
+  String get analysisPrepStepSave => 'Beszélgetés mentése';
+
+  @override
+  String get analysisPrepStepCards => 'Kifejezéskártyák készítése';
+
+  @override
+  String get analysisPrepStateDone => 'Kész';
+
+  @override
+  String get analysisPrepStateWorking => 'Folyamatban';
+
+  @override
+  String get analysisPrepStateWaiting => 'Várakozik';
+
+  @override
   String get usedExpressions => 'Az általad használt kifejezések';
 
   @override

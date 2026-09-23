@@ -580,6 +580,60 @@ abstract class AppLocalizations {
   /// **'New Expressions'**
   String get newExpressions;
 
+  /// Analysis waiting state, in place of the partner's note: the call is being reviewed. Figma analysis__preparing BabaNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking back on today\'s call.'**
+  String get analysisPrepNote;
+
+  /// Caption under analysisPrepNote: the partner's note will appear in this spot.
+  ///
+  /// In en, this message translates to:
+  /// **'A note will appear here shortly'**
+  String get analysisPrepNoteHint;
+
+  /// Analysis waiting card title (in place of the expression cards). Centered, may wrap. Figma analysis__preparing Card/Preparing.
+  ///
+  /// In en, this message translates to:
+  /// **'The beaver is turning today\'s expressions into cards'**
+  String get analysisPrepTitle;
+
+  /// Line under analysisPrepTitle: the cards replace this card as soon as they are ready.
+  ///
+  /// In en, this message translates to:
+  /// **'They\'ll show up right here when ready.'**
+  String get analysisPrepSub;
+
+  /// Waiting card step 1 label: saving the conversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Saving the conversation'**
+  String get analysisPrepStepSave;
+
+  /// Waiting card step 2 label: making the expression cards.
+  ///
+  /// In en, this message translates to:
+  /// **'Making expression cards'**
+  String get analysisPrepStepCards;
+
+  /// Waiting card step state: finished.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get analysisPrepStateDone;
+
+  /// Waiting card step state: in progress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get analysisPrepStateWorking;
+
+  /// Waiting card step state: not started yet (the previous step is still running).
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting'**
+  String get analysisPrepStateWaiting;
+
   /// 통화 결과 화면의 「이번 통화에서 쓴 표현」 섹션 제목. 학습자가 대화 중 스스로 꺼내 쓴 커리큘럼 항목을 모은 칸이며, 물어보거나 고쳐 받은 「새로 배운 표현」과 다르다.
   ///
   /// In en, this message translates to:
