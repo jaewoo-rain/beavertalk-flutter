@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{දින {count}ක් අඛණ්ඩව}}",
   "streakCalendarTitle": "ඉගෙනුම් දින දර්ශනය",
   "streakDaysUnit": "{count, plural, other{දින අඛණ්ඩව}}",
+  "streakBest": "{count, plural, other{හොඳම වාර්තාව දින {count}}}",
   "streakMetricCallTime": "ඇමතුම් කාලය",
   "streakMetricCalls": "ඇමතුම්",
   "streakMinutes": "{count, plural, other{මිනි. {count}}}",

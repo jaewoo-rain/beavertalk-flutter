@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, =1{1 päivä putkeen} other{{count} päivää putkeen}}",
   "streakCalendarTitle": "Oppimiskalenteri",
   "streakDaysUnit": "{count, plural, =1{päivä putkeen} other{päivää putkeen}}",
+  "streakBest": "{count, plural, =1{Paras putki: {count} päivä} other{Paras putki: {count} päivää}}",
   "streakMetricCallTime": "Puheluaika",
   "streakMetricCalls": "Puhelut",
   "streakMinutes": "{count, plural, other{{count} min}}",

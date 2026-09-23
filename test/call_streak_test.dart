@@ -30,14 +30,42 @@ void main() {
   });
 
   test('달이 바뀌어도 이어진다', () {
-    final s = CallStreak.fromDates(
-      [DateTime(2026, 10, 1, 10), DateTime(2026, 9, 30, 10)],
-      DateTime(2026, 10, 1, 23),
-    );
+    final s = CallStreak.fromDates([
+      DateTime(2026, 10, 1, 10),
+      DateTime(2026, 9, 30, 10),
+    ], DateTime(2026, 10, 1, 23));
     expect(s.days, 2);
   });
 
   test('통화 기록 없음 = broken 0', () {
     expect(CallStreak.fromDates(const [], today).days, 0);
+  });
+
+  group('bestDays — 최고 기록', () {
+    test('가장 긴 구간을 센다(현재 연속과 무관)', () {
+      expect(
+        CallStreak.bestDays([d(1), d(2), d(3), d(4), d(10), d(11), d(22)]),
+        4,
+      );
+    });
+
+    test('하루 여러 통화는 하루', () {
+      expect(CallStreak.bestDays([d(5, 8), d(5, 20), d(6)]), 2);
+    });
+
+    test('달을 넘어도 이어진다', () {
+      expect(
+        CallStreak.bestDays([
+          DateTime(2026, 8, 31, 10),
+          DateTime(2026, 9, 1, 10),
+        ]),
+        2,
+      );
+    });
+
+    test('기록 없음 = 0 · 한 번 = 1', () {
+      expect(CallStreak.bestDays(const []), 0);
+      expect(CallStreak.bestDays([d(3)]), 1);
+    });
   });
 }

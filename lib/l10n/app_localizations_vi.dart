@@ -544,6 +544,16 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Kỷ lục $count ngày',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get streakMetricCallTime => 'Thời gian gọi';
 
   @override

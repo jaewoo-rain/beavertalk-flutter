@@ -551,6 +551,17 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Pinakamahabang streak: $count araw',
+      one: 'Pinakamahabang streak: $count araw',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get streakMetricCallTime => 'Tagal ng tawag';
 
   @override

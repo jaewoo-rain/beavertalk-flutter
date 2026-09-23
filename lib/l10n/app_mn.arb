@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{дараалан {count} өдөр}}",
   "streakCalendarTitle": "Суралцах хуанли",
   "streakDaysUnit": "{count, plural, other{өдөр дараалан}}",
+  "streakBest": "{count, plural, other{Шилдэг амжилт: {count} өдөр}}",
   "streakMetricCallTime": "Ярианы хугацаа",
   "streakMetricCalls": "Дуудлага",
   "streakMinutes": "{count, plural, other{{count} мин}}",

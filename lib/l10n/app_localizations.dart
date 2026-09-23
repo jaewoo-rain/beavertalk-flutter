@@ -1120,6 +1120,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{day in a row} other{days in a row}}'**
   String streakDaysUnit(int count);
 
+  /// Line under the big streak number on the learning calendar: the user's longest streak ever, in days. Figma streak_calendar Hero/Best.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Best streak: {count} day} other{Best streak: {count} days}}'**
+  String streakBest(int count);
+
   /// Metric tile label: total call time this month.
   ///
   /// In en, this message translates to:

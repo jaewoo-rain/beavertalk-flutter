@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{ketma-ket {count} kun}}",
   "streakCalendarTitle": "O‘qish taqvimi",
   "streakDaysUnit": "{count, plural, other{kun ketma-ket}}",
+  "streakBest": "{count, plural, other{Eng yaxshi natija: {count} kun}}",
   "streakMetricCallTime": "Qo‘ng‘iroq vaqti",
   "streakMetricCalls": "Qo‘ng‘iroqlar",
   "streakMinutes": "{count, plural, other{{count} daq}}",

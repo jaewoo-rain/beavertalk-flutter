@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, one{لگاتار 1 دن} other{لگاتار {count} دن}}",
   "streakCalendarTitle": "سیکھنے کا کیلنڈر",
   "streakDaysUnit": "{count, plural, other{دن لگاتار}}",
+  "streakBest": "{count, plural, other{بہترین ریکارڈ {count} دن}}",
   "streakMetricCallTime": "کال کا وقت",
   "streakMetricCalls": "کالز",
   "streakMinutes": "{count, plural, other{{count} منٹ}}",

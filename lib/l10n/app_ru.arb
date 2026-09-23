@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, one{{count} день подряд} few{{count} дня подряд} other{{count} дней подряд}}",
   "streakCalendarTitle": "Календарь занятий",
   "streakDaysUnit": "{count, plural, one{день подряд} few{дня подряд} other{дней подряд}}",
+  "streakBest": "{count, plural, one{Рекорд: {count} день} few{Рекорд: {count} дня} other{Рекорд: {count} дней}}",
   "streakMetricCallTime": "Время звонков",
   "streakMetricCalls": "Звонки",
   "streakMinutes": "{count, plural, other{{count} мин}}",

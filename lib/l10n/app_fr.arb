@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, =1{1 jour d'affilée} other{{count} jours d'affilée}}",
   "streakCalendarTitle": "Calendrier d'apprentissage",
   "streakDaysUnit": "{count, plural, =1{jour d'affilée} other{jours d'affilée}}",
+  "streakBest": "{count, plural, =1{Meilleure série : {count} jour} other{Meilleure série : {count} jours}}",
   "streakMetricCallTime": "Temps d'appel",
   "streakMetricCalls": "Appels",
   "streakMinutes": "{count, plural, other{{count} min}}",

@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, =1{يوم واحد متتالٍ} other{{count} أيام متتالية}}",
   "streakCalendarTitle": "تقويم التعلّم",
   "streakDaysUnit": "{count, plural, =1{يوم متتالٍ} other{أيام متتالية}}",
+  "streakBest": "{count, plural, =1{أفضل سلسلة: يوم واحد} other{أفضل سلسلة: {count} يوم}}",
   "streakMetricCallTime": "مدة المكالمات",
   "streakMetricCalls": "المكالمات",
   "streakMinutes": "{count, plural, other{{count} دقيقة}}",

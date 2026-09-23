@@ -549,6 +549,17 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Paras putki: $count päivää',
+      one: 'Paras putki: $count päivä',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get streakMetricCallTime => 'Puheluaika';
 
   @override

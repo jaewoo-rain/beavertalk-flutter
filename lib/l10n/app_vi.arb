@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{{count} ngày liên tiếp}}",
   "streakCalendarTitle": "Lịch học",
   "streakDaysUnit": "{count, plural, other{ngày liên tiếp}}",
+  "streakBest": "{count, plural, other{Kỷ lục {count} ngày}}",
   "streakMetricCallTime": "Thời gian gọi",
   "streakMetricCalls": "Cuộc gọi",
   "streakMinutes": "{count, plural, other{{count} phút}}",

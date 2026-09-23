@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{{count} hari berturut-turut}}",
   "streakCalendarTitle": "Kalendar pembelajaran",
   "streakDaysUnit": "{count, plural, other{hari berturut-turut}}",
+  "streakBest": "{count, plural, other{Rekod terbaik {count} hari}}",
   "streakMetricCallTime": "Masa panggilan",
   "streakMetricCalls": "Panggilan",
   "streakMinutes": "{count, plural, other{{count} min}}",

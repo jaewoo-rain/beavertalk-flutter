@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{{count} nap egymás után}}",
   "streakCalendarTitle": "Tanulási naptár",
   "streakDaysUnit": "{count, plural, other{nap egymás után}}",
+  "streakBest": "{count, plural, other{Legjobb sorozat: {count} nap}}",
   "streakMetricCallTime": "Hívásidő",
   "streakMetricCalls": "Hívások",
   "streakMinutes": "{count, plural, other{{count} perc}}",

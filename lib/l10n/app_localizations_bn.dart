@@ -544,6 +544,16 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String streakBest(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'সেরা রেকর্ড $count দিন',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get streakMetricCallTime => 'কলের সময়';
 
   @override

@@ -320,6 +320,8 @@
   "@streakCalendarTitle": {"description": "Title of the learning-calendar screen (Figma streak_calendar)."},
   "streakDaysUnit": "{count, plural, =1{day in a row} other{days in a row}}",
   "@streakDaysUnit": {"description": "Unit shown next to the big streak number (the number is rendered separately, larger). Unit only, no number.", "placeholders": {"count": {"type": "int"}}},
+  "streakBest": "{count, plural, =1{Best streak: {count} day} other{Best streak: {count} days}}",
+  "@streakBest": {"description": "Line under the big streak number on the learning calendar: the user's longest streak ever, in days. Figma streak_calendar Hero/Best.", "placeholders": {"count": {"type": "int"}}},
   "streakMetricCallTime": "Call time",
   "@streakMetricCallTime": {"description": "Metric tile label: total call time this month."},
   "streakMetricCalls": "Calls",

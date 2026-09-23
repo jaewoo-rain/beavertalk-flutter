@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{{count} gün üst üste}}",
   "streakCalendarTitle": "Öğrenme takvimi",
   "streakDaysUnit": "{count, plural, other{gün üst üste}}",
+  "streakBest": "{count, plural, other{En iyi seri: {count} gün}}",
   "streakMetricCallTime": "Arama süresi",
   "streakMetricCalls": "Aramalar",
   "streakMinutes": "{count, plural, other{{count} dk}}",

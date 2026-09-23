@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{ဆက်တိုက် {count} ရက်}}",
   "streakCalendarTitle": "လေ့လာမှု ပြက္ခဒိန်",
   "streakDaysUnit": "{count, plural, other{ရက် ဆက်တိုက်}}",
+  "streakBest": "{count, plural, other{အကောင်းဆုံးမှတ်တမ်း {count} ရက်}}",
   "streakMetricCallTime": "ခေါ်ဆိုချိန်",
   "streakMetricCalls": "ခေါ်ဆိုမှု",
   "streakMinutes": "{count, plural, other{{count} မိနစ်}}",

@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{{count} ថ្ងៃជាប់គ្នា}}",
   "streakCalendarTitle": "ប្រតិទិនសិក្សា",
   "streakDaysUnit": "{count, plural, other{ថ្ងៃជាប់គ្នា}}",
+  "streakBest": "{count, plural, other{កំណត់ត្រាល្អបំផុត {count} ថ្ងៃ}}",
   "streakMetricCallTime": "រយៈពេលហៅ",
   "streakMetricCalls": "ការហៅ",
   "streakMinutes": "{count, plural, other{{count} នាទី}}",

@@ -13,24 +13,28 @@ import 'normalcall_providers.dart';
 ///
 /// ⚠ 새로 읽게 하려면 **이것을** 무효화하라. [callStreakProvider] 만 무효화하면 이 목록이
 ///   캐시로 남아 옛 날짜로 다시 센다.
-final callHistoryProvider =
-    FutureProvider.autoDispose<List<CallSummary>>((ref) async {
+final callHistoryProvider = FutureProvider.autoDispose<List<CallSummary>>((
+  ref,
+) async {
   final repo = ref.watch(normalcallRepositoryProvider);
   const pageSize = 100;
   final all = <CallSummary>[];
   final today = DateTime.now();
   final monthStart = DateTime(today.year, today.month);
   for (var page = 0; page < _maxPages; page++) {
-    final calls =
-        await repo.listCalls(limit: pageSize, offset: page * pageSize);
+    final calls = await repo.listCalls(
+      limit: pageSize,
+      offset: page * pageSize,
+    );
     all.addAll(calls);
     if (calls.length < pageSize) break;
     final dates = all.map((c) => c.callDate).whereType<DateTime>().toList();
     // 날짜가 하나도 없으면(전부 null) 더 볼 것이 없다 — 아래 reduce 가 빈 목록에서 던진다.
     if (dates.isEmpty) break;
     final streak = CallStreak.fromDates(dates, today);
-    final oldest =
-        dates.map((d) => d.toLocal()).reduce((a, b) => a.isBefore(b) ? a : b);
+    final oldest = dates
+        .map((d) => d.toLocal())
+        .reduce((a, b) => a.isBefore(b) ? a : b);
     final oldestDay = DateTime(oldest.year, oldest.month, oldest.day);
     final reach = DateTime(today.year, today.month, today.day - streak.days);
     if (oldestDay.isBefore(reach) && oldestDay.isBefore(monthStart)) break;
@@ -38,9 +42,28 @@ final callHistoryProvider =
   return all;
 });
 
+/// 학습 달력의 「최고 기록」 — 통화 기록을 [_maxPages] 끝까지 읽어 가장 긴 연속일을 센다.
+///
+/// [callHistoryProvider] 는 현재 연속과 이번 달만 채우면 멈추므로 옛 기록이 빠진다. 최고 기록은
+/// 전 기간이 필요해 따로 읽는다(달력 화면에서만 본다 — 홈은 이 비용을 내지 않는다).
+/// ⚠ 상한(400건)을 넘는 오래된 기록은 못 본다 — 서버 연속일 API(남은판단 S4)가 생기면 대체한다.
+final bestStreakProvider = FutureProvider.autoDispose<int>((ref) async {
+  final repo = ref.watch(normalcallRepositoryProvider);
+  const pageSize = 100;
+  final dates = <DateTime>[];
+  for (var page = 0; page < _maxPages; page++) {
+    final calls = await repo.listCalls(
+      limit: pageSize,
+      offset: page * pageSize,
+    );
+    dates.addAll(calls.map((c) => c.callDate).whereType<DateTime>());
+    if (calls.length < pageSize) break;
+  }
+  return CallStreak.bestDays(dates);
+});
+
 /// 홈 불꽃 칩의 연속일 — [callHistoryProvider] 의 날짜로 앱이 센다.
-final callStreakProvider =
-    FutureProvider.autoDispose<CallStreak>((ref) async {
+final callStreakProvider = FutureProvider.autoDispose<CallStreak>((ref) async {
   final calls = await ref.watch(callHistoryProvider.future);
   return CallStreak.fromDates(
     calls.map((c) => c.callDate).whereType<DateTime>(),

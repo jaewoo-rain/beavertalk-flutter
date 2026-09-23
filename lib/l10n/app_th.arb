@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{ติดต่อกัน {count} วัน}}",
   "streakCalendarTitle": "ปฏิทินการเรียน",
   "streakDaysUnit": "{count, plural, other{วันติดต่อกัน}}",
+  "streakBest": "{count, plural, other{สถิติสูงสุด {count} วัน}}",
   "streakMetricCallTime": "เวลาโทร",
   "streakMetricCalls": "การโทร",
   "streakMinutes": "{count, plural, other{{count} นาที}}",

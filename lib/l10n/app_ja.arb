@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{{count}日連続}}",
   "streakCalendarTitle": "学習カレンダー",
   "streakDaysUnit": "{count, plural, other{日連続}}",
+  "streakBest": "{count, plural, other{最高記録 {count}日}}",
   "streakMetricCallTime": "通話時間",
   "streakMetricCalls": "通話",
   "streakMinutes": "{count, plural, other{{count}分}}",

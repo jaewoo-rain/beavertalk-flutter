@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, =1{1 Tag in Folge} other{{count} Tage in Folge}}",
   "streakCalendarTitle": "Lernkalender",
   "streakDaysUnit": "{count, plural, =1{Tag in Folge} other{Tage in Folge}}",
+  "streakBest": "{count, plural, =1{Bestwert: {count} Tag} other{Bestwert: {count} Tage}}",
   "streakMetricCallTime": "Gesprächszeit",
   "streakMetricCalls": "Anrufe",
   "streakMinutes": "{count, plural, other{{count} Min.}}",

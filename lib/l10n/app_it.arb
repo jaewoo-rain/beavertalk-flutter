@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, =1{1 giorno di fila} other{{count} giorni di fila}}",
   "streakCalendarTitle": "Calendario di studio",
   "streakDaysUnit": "{count, plural, =1{giorno di fila} other{giorni di fila}}",
+  "streakBest": "{count, plural, =1{Record: {count} giorno} other{Record: {count} giorni}}",
   "streakMetricCallTime": "Tempo di chiamata",
   "streakMetricCalls": "Chiamate",
   "streakMinutes": "{count, plural, other{{count} min}}",

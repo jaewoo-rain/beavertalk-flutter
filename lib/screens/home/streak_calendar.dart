@@ -60,8 +60,9 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
         error: (e, _) => Column(
           children: [
             Gnb.main(
-                title: l10n.streakCalendarTitle,
-                onBack: () => Navigator.pop(context)),
+              title: l10n.streakCalendarTitle,
+              onBack: () => Navigator.pop(context),
+            ),
             Expanded(
               child: NetworkErrorView(
                 message: e is AppException && e.fromServer ? e.message : null,
@@ -82,18 +83,29 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
     final today = DateTime(now.year, now.month, now.day);
     final byDay = callsByDay(calls);
     final streak = CallStreak.fromDates(
-        calls.map((x) => x.callDate).whereType<DateTime>(), now);
+      calls.map((x) => x.callDate).whereType<DateTime>(),
+      now,
+    );
+    // 최고 기록은 현재 연속보다 짧을 수 없다 — 전 기간 기록이 아직 안 왔거나 상한(400건)에서
+    // 잘렸어도 지금 보이는 연속이 최소값이다. 못 읽으면(로딩·오류) 0 → 줄을 비운다.
+    final best =
+        ref
+            .watch(bestStreakProvider)
+            .whenOrNull(data: (b) => b < streak.days ? streak.days : b) ??
+        0;
     final month = [
       for (final e in byDay.entries)
         if (e.key.year == today.year && e.key.month == today.month) ...e.value,
     ];
-    final minutes =
-        month.fold<int>(0, (s, x) => s + (x.totalTime ?? 0)) ~/ 60;
-    final selected = _selected ??
+    final minutes = month.fold<int>(0, (s, x) => s + (x.totalTime ?? 0)) ~/ 60;
+    final selected =
+        _selected ??
         (byDay.keys
                 .where((d) => d.year == today.year && d.month == today.month)
                 .fold<DateTime?>(
-                    null, (a, b) => a == null || b.isAfter(a) ? b : a) ??
+                  null,
+                  (a, b) => a == null || b.isAfter(a) ? b : a,
+                ) ??
             today);
     final dayCalls = byDay[selected] ?? const <CallSummary>[];
 
@@ -115,40 +127,65 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
               ContentColumn(
                 gutter: 24,
                 padding: const EdgeInsets.only(bottom: 20),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    AppIcons.flameFill(
-                      size: 36,
-                      color: streak.state == StreakState.broken
-                          ? c.labelAssistive
-                          : c.accentStreak,
+                    Row(
+                      children: [
+                        AppIcons.flameFill(
+                          size: 36,
+                          color: streak.state == StreakState.broken
+                              ? c.labelAssistive
+                              : c.accentStreak,
+                        ),
+                        const SizedBox(width: 10),
+                        // 숫자(Title 1) + 단위(Headline 1). 단위는 언어마다 길이가 크게 달라
+                        // (ko 「일 연속」 · de 「Tage in Folge」) Wrap 으로 둔다 — 자르지 않는다.
+                        Expanded(
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.end,
+                            spacing: 2,
+                            children: [
+                              Text(
+                                '${streak.days}',
+                                style: AppType.title1.b.copyWith(
+                                  color: c.labelStrong,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 6),
+                                child: Text(
+                                  l10n.streakDaysUnit(streak.days),
+                                  style: AppType.headline1.b.copyWith(
+                                    color: c.labelStrong,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    // 숫자(Title 1) + 단위(Headline 1). 단위는 언어마다 길이가 크게 달라
-                    // (ko 「일 연속」 · de 「Tage in Folge」) Wrap 으로 둔다 — 자르지 않는다.
-                    Expanded(
-                      child: Wrap(
-                        crossAxisAlignment: WrapCrossAlignment.end,
-                        spacing: 2,
-                        children: [
-                          Text(
-                            '${streak.days}',
-                            style: AppType.title1.b.copyWith(
-                              color: c.labelStrong,
-                              fontFeatures: const [
-                                FontFeature.tabularFigures()
-                              ],
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 6),
-                            child: Text(
-                              l10n.streakDaysUnit(streak.days),
-                              style: AppType.headline1.b
-                                  .copyWith(color: c.labelStrong),
-                            ),
-                          ),
-                        ],
+                    // 최고 기록 — Figma Hero/Best(`6325:45506`): 숫자 시작선(불꽃 36 + 간격 10)에
+                    // 맞추고 위 2px. 전 기간을 따로 읽어 늦게 오므로 그 사이엔 같은 높이를 비워 둔다
+                    // (도착할 때 히어로가 자라며 아래가 밀리지 않게).
+                    Padding(
+                      padding: const EdgeInsets.only(left: 46, top: 2),
+                      child: SizedBox(
+                        height: 20,
+                        child: best > 0
+                            ? Text(
+                                l10n.streakBest(best),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppType.label1.m.copyWith(
+                                  color: c.labelNeutral,
+                                ),
+                              )
+                            : null,
                       ),
                     ),
                   ],
@@ -181,7 +218,10 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
                             ),
                           ),
                           VerticalDivider(
-                              width: 1, thickness: 1, color: c.lineAlternative),
+                            width: 1,
+                            thickness: 1,
+                            color: c.lineAlternative,
+                          ),
                           Expanded(
                             child: _Metric(
                               value: l10n.streakCallCount(month.length),
@@ -215,8 +255,9 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
                             child: Text(
                               l10n.streakNoCallsThatDay,
                               textAlign: TextAlign.center,
-                              style: AppType.label1.r
-                                  .copyWith(color: c.labelAlternative),
+                              style: AppType.label1.r.copyWith(
+                                color: c.labelAlternative,
+                              ),
                             ),
                           )
                         : Column(
@@ -238,16 +279,18 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
     );
   }
 
-  Widget _card(BuildContext context,
-          {required Widget child, required EdgeInsets padding}) =>
-      Container(
-        padding: padding,
-        decoration: BoxDecoration(
-          color: context.c.backgroundElevatedAlternative,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: child,
-      );
+  Widget _card(
+    BuildContext context, {
+    required Widget child,
+    required EdgeInsets padding,
+  }) => Container(
+    padding: padding,
+    decoration: BoxDecoration(
+      color: context.c.backgroundElevatedAlternative,
+      borderRadius: BorderRadius.circular(12),
+    ),
+    child: child,
+  );
 }
 
 /// 통화를 **현지 날짜**별로 묶는다(최신순 유지).
@@ -275,9 +318,7 @@ List<List<DateTime?>> monthWeeks(DateTime month, int firstDayOfWeekIndex) {
   while (cells.length % 7 != 0) {
     cells.add(null);
   }
-  return [
-    for (var i = 0; i < cells.length; i += 7) cells.sublist(i, i + 7),
-  ];
+  return [for (var i = 0; i < cells.length; i += 7) cells.sublist(i, i + 7)];
 }
 
 class _Metric extends StatelessWidget {
@@ -295,13 +336,17 @@ class _Metric extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 수치 — 자르지 않는다. 좁으면 줄을 바꾼다.
-          Text(value,
-              style: AppType.heading1.b.copyWith(
-                color: c.labelStrong,
-                fontFeatures: const [FontFeature.tabularFigures()],
-              )),
-          Text(label,
-              style: AppType.caption1.r.copyWith(color: c.labelAlternative)),
+          Text(
+            value,
+            style: AppType.heading1.b.copyWith(
+              color: c.labelStrong,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          Text(
+            label,
+            style: AppType.caption1.r.copyWith(color: c.labelAlternative),
+          ),
         ],
       ),
     );
@@ -333,7 +378,9 @@ class _MonthGrid extends StatelessWidget {
     final ml = MaterialLocalizations.of(context);
     final locale = Localizations.localeOf(context).toString();
     final first = ml.firstDayOfWeekIndex;
-    final heads = [for (var i = 0; i < 7; i++) ml.narrowWeekdays[(first + i) % 7]];
+    final heads = [
+      for (var i = 0; i < 7; i++) ml.narrowWeekdays[(first + i) % 7],
+    ];
     // 연속 구간 — 오늘(done) 또는 어제(pending)부터 거꾸로 [streak.days] 일.
     final end = streak.state == StreakState.done
         ? today
@@ -348,18 +395,21 @@ class _MonthGrid extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(asciiDigits(intl.DateFormat.yMMMM(locale).format(month)),
-              style: AppType.label1.b.copyWith(color: c.labelStrong)),
+          child: Text(
+            asciiDigits(intl.DateFormat.yMMMM(locale).format(month)),
+            style: AppType.label1.b.copyWith(color: c.labelStrong),
+          ),
         ),
         const SizedBox(height: 4),
         Row(
           children: [
             for (final h in heads)
               Expanded(
-                child: Text(h,
-                    textAlign: TextAlign.center,
-                    style: AppType.caption1.r
-                        .copyWith(color: c.labelAlternative)),
+                child: Text(
+                  h,
+                  textAlign: TextAlign.center,
+                  style: AppType.caption1.r.copyWith(color: c.labelAlternative),
+                ),
               ),
           ],
         ),
@@ -378,10 +428,12 @@ class _MonthGrid extends StatelessWidget {
                           context,
                           week[i]!,
                           inBand(week[i]!),
-                          joinLeft: i > 0 &&
+                          joinLeft:
+                              i > 0 &&
                               week[i - 1] != null &&
                               inBand(week[i - 1]!),
-                          joinRight: i + 1 < week.length &&
+                          joinRight:
+                              i + 1 < week.length &&
                               week[i + 1] != null &&
                               inBand(week[i + 1]!),
                         ),
@@ -491,8 +543,11 @@ class _CallRow extends StatelessWidget {
     final date = call.callDate?.toLocal();
     final title = (call.summary ?? '').trim();
     return InkWell(
-      onTap: () => Navigator.pushNamed(context, Routes.analysisLoading,
-          arguments: call.callId),
+      onTap: () => Navigator.pushNamed(
+        context,
+        Routes.analysisLoading,
+        arguments: call.callId,
+      ),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
@@ -515,9 +570,10 @@ class _CallRow extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   if (date != null)
-                    Text(asciiDigits(intl.DateFormat.MMMd(locale).format(date)),
-                        style: AppType.caption1.r
-                            .copyWith(color: c.labelNormal)),
+                    Text(
+                      asciiDigits(intl.DateFormat.MMMd(locale).format(date)),
+                      style: AppType.caption1.r.copyWith(color: c.labelNormal),
+                    ),
                   // 제목은 요약 산문이라 두 줄까지 쓰고 넘치면 줄인다(식별자 아님).
                   Text(
                     title.isEmpty ? l10n.analysisResult : title,

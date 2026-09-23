@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{катары менен {count} күн}}",
   "streakCalendarTitle": "Окуу календары",
   "streakDaysUnit": "{count, plural, other{күн катары менен}}",
+  "streakBest": "{count, plural, other{Эң мыкты рекорд: {count} күн}}",
   "streakMetricCallTime": "Чалуу убактысы",
   "streakMetricCalls": "Чалуулар",
   "streakMinutes": "{count, plural, other{{count} мүн}}",

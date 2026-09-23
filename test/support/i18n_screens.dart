@@ -221,6 +221,8 @@ Map<String, Widget Function()> i18nScreens() {
     // 학습 달력 — 오늘부터 사흘 연속 + 끊긴 하루(히어로 · 지표 · 얼굴 달력 · 통화 줄 모두 그린다).
     'StreakCalendar': () => ProviderScope(
           overrides: [
+            // 최고 기록은 현재 연속(3)보다 긴 값 — 줄이 그려지는 최악 폭(ru·de) 확인용.
+            bestStreakProvider.overrideWith((ref) async => 128),
             callHistoryProvider.overrideWith((ref) async {
               final now = DateTime.now();
               CallSummary c(int id, int ago, String summary) => CallSummary(

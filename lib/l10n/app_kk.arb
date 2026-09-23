@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{қатарынан {count} күн}}",
   "streakCalendarTitle": "Оқу күнтізбесі",
   "streakDaysUnit": "{count, plural, other{күн қатарынан}}",
+  "streakBest": "{count, plural, other{Үздік рекорд: {count} күн}}",
   "streakMetricCallTime": "Қоңырау уақыты",
   "streakMetricCalls": "Қоңыраулар",
   "streakMinutes": "{count, plural, other{{count} мин}}",

@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, other{लगातार {count} दिन}}",
   "streakCalendarTitle": "सिकाइ पात्रो",
   "streakDaysUnit": "{count, plural, other{दिन लगातार}}",
+  "streakBest": "{count, plural, other{उत्कृष्ट रेकर्ड {count} दिन}}",
   "streakMetricCallTime": "कल समय",
   "streakMetricCalls": "कलहरू",
   "streakMinutes": "{count, plural, other{{count} मिनेट}}",

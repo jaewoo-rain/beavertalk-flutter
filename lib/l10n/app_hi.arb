@@ -162,6 +162,7 @@
   "homeStreakDays": "{count, plural, =1{लगातार 1 दिन} other{लगातार {count} दिन}}",
   "streakCalendarTitle": "सीखने का कैलेंडर",
   "streakDaysUnit": "{count, plural, other{दिन लगातार}}",
+  "streakBest": "{count, plural, other{सबसे लंबा रिकॉर्ड {count} दिन}}",
   "streakMetricCallTime": "कॉल का समय",
   "streakMetricCalls": "कॉल",
   "streakMinutes": "{count, plural, other{{count} मिनट}}",
