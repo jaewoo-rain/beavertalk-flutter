@@ -53,13 +53,17 @@ class SubscriptionStatusDto {
     'trial': SubscriptionState.trial,
     'active_pro': SubscriptionState.activePro,
     'active_max': SubscriptionState.activeMax,
+    // 서버 `premium` 브랜치(09-23)는 active_pro·active_max 를 이 하나로 합쳤다. 앱에서는
+    // 09-22 단일 티어 이후 Max 가 곧 Premium 이라 같은 값에 대응시킨다. 옛 두 키는 구서버
+    // 호환으로 남긴다 — 빼면 배포 순서에 따라 결제자가 행 목록 추론(=Pro)으로 떨어진다.
+    'active_premium': SubscriptionState.activeMax,
     'grace': SubscriptionState.grace,
     'on_hold': SubscriptionState.onHold,
     'ending': SubscriptionState.ending,
     'expired': SubscriptionState.expired,
   };
 
-  /// The domain status, or **null when [state] is not one of the eight names**.
+  /// The domain status, or **null when [state] is not a known wire name**.
   ///
   /// Null tells the caller to fall back to row-list inference. Swallowing an
   /// unknown state as `free` would silently strip a paying member of access the
@@ -70,7 +74,7 @@ class SubscriptionStatusDto {
     if (parsed == null) return null;
 
     final tier = switch (plan) {
-      'max' => SubscriptionTier.max,
+      'premium' || 'max' => SubscriptionTier.max,
       'pro' => SubscriptionTier.pro,
       // No plan on the wire: fall back to what the state alone implies, and to
       // Pro for the states that retain an unknown paid plan.

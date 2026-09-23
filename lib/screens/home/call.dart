@@ -735,7 +735,7 @@ class _CallScreenState extends ConsumerState<CallScreen> {
     final planOverride =
         ref.watch(normalCallControllerProvider.select((s) => s.planOverride));
     final avatarIsVideo = planOverride != null
-        ? planOverride == PlanOverride.max
+        ? planOverride == PlanOverride.premium
         : ref.watch(subscriptionStatusProvider).tier == SubscriptionTier.max;
     // 티어가 아직 안 왔으면 **둘 중 아무것도 그리지 않는다.**
     //

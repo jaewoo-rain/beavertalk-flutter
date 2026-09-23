@@ -70,10 +70,10 @@ abstract final class _Fallback {
 ///   되살린다.
 const bool _kLegacyDevTools = false;
 
-/// 플랜 × 코스 행렬의 **행 순서** — 사장님 표기대로 위에서 아래로 Max·Pro·Free.
+/// 플랜 × 코스 행렬의 **행 순서** — 위에서 아래로 상위 플랜(Premium·Free).
+/// 서버 `premium` 브랜치(09-23)에서 Pro·Max 가 Premium 하나로 합쳐졌다.
 const List<PlanOverride> _devMatrixPlans = [
-  PlanOverride.max,
-  PlanOverride.pro,
+  PlanOverride.premium,
   PlanOverride.free,
 ];
 
@@ -476,12 +476,12 @@ class MyPageScreen extends ConsumerWidget {
 
   /// 플랜 × 코스 6칸(QA) — «Max·표현학습» 부터 «Free·프리토킹» 까지.
   ///
-  /// 사장님 지시(2026-09-19): 옛 «Max 로 통화 / Free 로 통화» 2개를 이 6개로 대체한다.
+  /// 사장님 지시(2026-09-19): 옛 «Max 로 통화 / Free 로 통화» 2개를 이 6개로 대체했다(09-23 Premium·Free 4개로 축소).
   /// 두 축이 곱해지는 자리라 **행렬로 그린다** — 목록으로 늘어놓으면 6줄이 서로 비슷해
   /// 무엇이 빠졌는지 눈으로 못 센다. 세로가 플랜, 가로가 코스다.
   ///
   /// 보내는 것(한 줄에 셋):
-  /// - `plan_override` — free|pro|max. **admin 만 유효**하고 엔진·조각 수만 바꾼다.
+  /// - `plan_override` — free|premium. **admin 만 유효**하고 엔진·조각 수만 바꾼다.
   /// - `call_type` — `expression`|`freetalk` 을 **명시**한다(auto 아님 · 서버가 안 고른다).
   /// - `force_course` — **프리토킹에만** true. 그 차시 표현학습이 안 끝났어도 열린다
   ///   (`COURSE_LOCKED` 우회, 진도 무영향). 표현학습은 원래 안 잠기므로 안 보낸다.
@@ -497,12 +497,12 @@ class MyPageScreen extends ConsumerWidget {
             const SizedBox(height: AppSpacing.s4),
             Text(
               '구독과 무관하게 이 통화만 그 플랜 엔진으로 겁니다 — 관리자 계정만 먹습니다. '
-              'Max 는 영상·3.1, Pro·Free 는 음성·2.5. 프리토킹은 잠금을 우회합니다. '
+              'Premium 은 영상, Free 는 음성. 프리토킹은 잠금을 우회합니다. '
               '⚠ 같은 DB 라 이 통화도 실서비스 데이터에 그대로 쌓입니다.',
               style: AppType.label1.r.copyWith(color: context.c.labelNormal),
             ),
             const SizedBox(height: AppSpacing.s12),
-            // 사장님 표기 순서대로 Max → Pro → Free(위에서 아래로 상위 플랜).
+            // Premium → Free(위에서 아래로 상위 플랜).
             // ⛔ `PlanOverride.values` 를 그대로 쓰지 마라 — 그건 와이어 값의 순서다.
             for (final plan in _devMatrixPlans) ...[
               if (plan != _devMatrixPlans.first)
@@ -566,8 +566,7 @@ class MyPageScreen extends ConsumerWidget {
 
   static String _planLabel(PlanOverride plan) => switch (plan) {
         PlanOverride.free => 'Free',
-        PlanOverride.pro => 'Pro',
-        PlanOverride.max => 'Max',
+        PlanOverride.premium => 'Premium',
       };
 
   Widget _devRow(

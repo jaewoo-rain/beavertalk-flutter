@@ -315,6 +315,23 @@ void main() {
       expect(status.isPlanInferred, isFalse);
     });
 
+    // 서버 `premium` 브랜치(09-23): state 7종 · plan 은 'premium' 하나. 앱의 Max 가 곧 Premium.
+    // 이게 틀리면 결제자가 Pro 로 떨어져 통화 화면이 영상 대신 원형 아바타가 된다(call.dart).
+    test('new server: active_premium + plan premium is the Max tier', () {
+      final status =
+          dto({'state': 'active_premium', 'plan': 'premium'}).toStatus()!;
+      expect(status.state, SubscriptionState.activeMax);
+      expect(status.tier, SubscriptionTier.max);
+      expect(status.isPlanInferred, isFalse);
+    });
+
+    test('new server: billing-trouble states keep plan premium as Max', () {
+      for (final s in ['grace', 'on_hold', 'ending']) {
+        final status = dto({'state': s, 'plan': 'premium'}).toStatus()!;
+        expect(status.tier, SubscriptionTier.max, reason: s);
+      }
+    });
+
     test('a paid state without a plan stays honest about inferring', () {
       final status = dto({'state': 'grace'}).toStatus()!;
       expect(status.tier, SubscriptionTier.pro);

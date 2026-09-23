@@ -203,13 +203,13 @@ void main() {
     test('6칸은 플랜 + **명시 코스**를 같이 싣는다 — auto 가 아니다', () {
       // 2026-09-19 로 바뀐 것: 옛 두 버튼은 auto 를 보냈고, 지금 6칸은 코스를 명시한다.
       // 서버가 코스를 고르면 «플랜별로 그 코스를 본다» 는 QA 목적이 사라진다.
-      final maxExpr = _frame(
+      final premiumExpr = _frame(
         callType: CallCourse.expression.wireValue,
-        planOverride: PlanOverride.max.wireValue,
+        planOverride: PlanOverride.premium.wireValue,
       );
-      expect(maxExpr['call_type'], 'expression');
-      expect(maxExpr['plan_override'], 'max');
-      expect(maxExpr.containsKey('force_course'), isFalse);
+      expect(premiumExpr['call_type'], 'expression');
+      expect(premiumExpr['plan_override'], 'premium');
+      expect(premiumExpr.containsKey('force_course'), isFalse);
 
       final freeTalk = _frame(
         callType: CallCourse.freetalk.wireValue,
@@ -220,23 +220,23 @@ void main() {
       expect(freeTalk['plan_override'], 'free');
       expect(freeTalk['force_course'], isTrue, reason: '프리토킹은 잠금을 우회한다');
 
-      final pro = _frame(planOverride: PlanOverride.pro.wireValue);
-      expect(pro['plan_override'], 'pro', reason: 'pro 도 6칸에 있다');
     });
 
+    // 서버 `premium` 브랜치(09-23) Literal["free","premium"]. 옛 pro·max 를 보내면 신서버가
+    // start 프레임을 검증에서 버려 통화가 안 열린다.
     test('⛔ 와이어 값은 서버 Literal 과 글자 그대로', () {
-      expect(PlanOverride.values.map((p) => p.wireValue).toList(), ['free', 'pro', 'max']);
+      expect(PlanOverride.values.map((p) => p.wireValue).toList(), ['free', 'premium']);
     });
 
     test('이어가는 구간에도 같이 실린다 — 안 그러면 2구간부터 구독 플랜 엔진으로 돌아간다', () {
       final f = _frame(
         continuesCallId: '1182',
         callType: 'auto',
-        planOverride: PlanOverride.max.wireValue,
+        planOverride: PlanOverride.premium.wireValue,
       );
 
       expect(f['continues_call_id'], '1182');
-      expect(f['plan_override'], 'max');
+      expect(f['plan_override'], 'premium');
     });
 
     test('⭐ 이어가는 구간에도 같이 실린다 — assignment_id 가 정확히 여기서 샜다', () {

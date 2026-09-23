@@ -114,17 +114,17 @@ class CourseCallRequest {
 
 /// `start.plan_override` — **구독과 무관하게 이 통화만** 그 플랜의 엔진으로 연다(QA).
 ///
-/// 서버 계약(`ClientStart.plan_override: Literal["free","pro","max"] | None`, expr-build
-/// 작업 중): admin 계정만 유효, user 는 무시. Max = 영상·AI Studio 3.1, Free = 음성·
-/// Vertex 2.5. ⚠ 배포 전 서버는 `extra=ignore` 라 키를 조용히 버린다(protocol.py:192).
+/// 서버 계약(`premium` 브랜치 09-23, `ClientStart.plan_override: Literal["free","premium"]`):
+/// admin 계정만 유효, user 는 무시. Premium = 영상·표정, Free = 음성.
+/// ⛔ 옛 값 `pro`·`max` 를 보내면 신서버는 start 프레임을 검증에서 통째로 버린다 — 에러도
+///   없이 통화가 안 열리고 타임아웃된다. 구서버는 `extra=ignore` 라 모르는 값을 조용히 버린다.
 ///
 /// ⭐ [CallCourse]·[forceCourse] 와 같은 규율 — 2구간 재연결에도 **같은 값을 다시 싣는다**
 ///   (컨트롤러 필드 `_planOverride`). 안 그러면 「Keep talking」 뒤 엔진이 구독 플랜으로
 ///   되돌아가 QA 가 반쪽이 된다.
 enum PlanOverride {
   free,
-  pro,
-  max;
+  premium;
 
   /// 서버로 보내는 문자열. enum 이름과 같게 맞춰 뒀다.
   String get wireValue => name;

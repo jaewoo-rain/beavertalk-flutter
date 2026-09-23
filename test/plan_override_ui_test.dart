@@ -1,6 +1,6 @@
 // 플랜 흉내(plan_override) 화면 규칙 — 사장님 지시(2026-09-13).
 //
-// plan_override=max 는 영상통화 UI(16:9 밴드), free·pro 는 음성 전용(원형 스틸).
+// plan_override=premium 은 영상통화 UI(16:9 밴드), free 는 음성 전용(원형 스틸).
 // 서버는 이미 override 플랜대로 엔진을 고르므로 **화면만** 그 선택에 맞춘다 — 구독
 // 티어가 무엇이든. override 가 없으면 종전대로 구독 티어를 본다.
 //
@@ -98,8 +98,8 @@ class _CaptureAdapter implements HttpClientAdapter {
 
 void main() {
   group('영상/음성 UI — override 가 구독 티어를 이긴다', () {
-    testWidgets('Free 계정 + Max 강제 → 영상 밴드', (tester) async {
-      await _pump(tester, subscription: _free, override: PlanOverride.max);
+    testWidgets('Free 계정 + Premium 강제 → 영상 밴드', (tester) async {
+      await _pump(tester, subscription: _free, override: PlanOverride.premium);
       expect(_videoBand, findsOneWidget, reason: '서버가 Max 엔진(영상)으로 열었다');
     });
 
@@ -118,21 +118,17 @@ void main() {
       expect(_videoBand, findsNothing);
     });
 
-    testWidgets('pro 강제는 음성 — 지금 Pro 구독이 그렇듯', (tester) async {
-      await _pump(tester, subscription: _max, override: PlanOverride.pro);
-      expect(_videoBand, findsNothing);
-    });
   });
 
   group('resume-status 의 plan_override 쿼리', () {
-    test('override 통화면 ?plan_override=max 가 붙는다', () async {
+    test('override 통화면 ?plan_override=premium 가 붙는다', () async {
       final adapter = _CaptureAdapter();
       final dio = Dio(BaseOptions(baseUrl: 'https://h.run.app/api/v1'))
         ..httpClientAdapter = adapter;
-      await NormalcallRemoteDataSource(dio).getResumeStatus(1182, planOverride: 'max');
+      await NormalcallRemoteDataSource(dio).getResumeStatus(1182, planOverride: 'premium');
 
       expect(adapter.last!.path, '/calls/1182/resume-status');
-      expect(adapter.last!.queryParameters, {'plan_override': 'max'});
+      expect(adapter.last!.queryParameters, {'plan_override': 'premium'});
     });
 
     test('⭐ override 가 없으면 쿼리 자체가 없다 — 제품 통화는 종전 그대로', () async {

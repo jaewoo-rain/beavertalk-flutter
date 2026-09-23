@@ -106,8 +106,8 @@ void main() {
     });
   });
 
-  group('개발자 도구 «플랜 × 코스» 6칸', () {
-    // 사장님 지시(2026-09-19): 옛 «Max 로 통화 / Free 로 통화» 2개를 6개로 대체.
+  group('개발자 도구 «플랜 × 코스» 4칸', () {
+    // 사장님 지시(2026-09-19): 옛 «Max 로 통화 / Free 로 통화» 2개를 6개로 대체 → 09-23 Premium·Free 4칸.
     // 한 칸이 세 값을 싣는다 — plan_override · call_type(명시) · force_course(프리토킹만).
     // ⛔ 여기 문안은 화면의 칸 이름 그대로다. 라벨을 바꾸면 이 시험이 먼저 빨간불을 낸다.
     Future<CourseCallRequest> tap(WidgetTester tester, String label) async {
@@ -117,32 +117,18 @@ void main() {
       return call.single.arguments as CourseCallRequest;
     }
 
-    testWidgets('Max · 표현학습 — max + expression, force 없음', (tester) async {
-      final r = await tap(tester, 'Max · 표현학습');
-      expect(r.planOverride, PlanOverride.max);
+    testWidgets('Premium · 표현학습 — premium + expression, force 없음', (tester) async {
+      final r = await tap(tester, 'Premium · 표현학습');
+      expect(r.planOverride, PlanOverride.premium);
       expect(r.course, CallCourse.expression);
       expect(r.forceCourse, isFalse, reason: '표현학습은 원래 안 잠긴다');
     });
 
-    testWidgets('Max · 프리토킹 — max + freetalk + force', (tester) async {
-      final r = await tap(tester, 'Max · 프리토킹');
-      expect(r.planOverride, PlanOverride.max);
+    testWidgets('Premium · 프리토킹 — premium + freetalk + force', (tester) async {
+      final r = await tap(tester, 'Premium · 프리토킹');
+      expect(r.planOverride, PlanOverride.premium);
       expect(r.course, CallCourse.freetalk);
       expect(r.forceCourse, isTrue, reason: '그 차시 표현학습이 안 끝나도 열려야 한다');
-    });
-
-    testWidgets('Pro · 표현학습 — pro + expression, force 없음', (tester) async {
-      final r = await tap(tester, 'Pro · 표현학습');
-      expect(r.planOverride, PlanOverride.pro);
-      expect(r.course, CallCourse.expression);
-      expect(r.forceCourse, isFalse);
-    });
-
-    testWidgets('Pro · 프리토킹 — pro + freetalk + force', (tester) async {
-      final r = await tap(tester, 'Pro · 프리토킹');
-      expect(r.planOverride, PlanOverride.pro);
-      expect(r.course, CallCourse.freetalk);
-      expect(r.forceCourse, isTrue);
     });
 
     testWidgets('Free · 표현학습 — free + expression, force 없음', (tester) async {
