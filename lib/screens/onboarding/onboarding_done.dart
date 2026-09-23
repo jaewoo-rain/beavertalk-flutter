@@ -10,6 +10,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../components/atoms/button.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// Onboarding — completion. Figma `screen/onborading_done` (`2291:21311`).
 ///
@@ -84,26 +85,22 @@ class OnboardingDoneScreen extends StatelessWidget {
           // Figma `BottomSheet` two-button row: pt 12, px 20, gap 10.
           ContentColumn(
             padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Button(
-                    type: BtnType.secondaryOutline,
-                    size: BtnSize.s60,
-                    text: l10n.home,
-                    onPressed: () => _goHome(context),
-                  ),
-                ),
-                const SizedBox(width: 10), // Figma 10px gap (no AppSpacing token)
-                Expanded(
-                  child: Button(
-                    type: BtnType.primaryFill,
-                    size: BtnSize.s60,
-                    text: l10n.callNow,
-                    onPressed: () => _startCall(context),
-                  ),
-                ),
-              ],
+            // Figma `I3360:55;175:18146`: 같은 폭 두 버튼(FILL·FILL, gap 10). 긴 언어에서 한쪽이
+            // 한 줄에 안 들어가면 세로로 쌓는다(주요 버튼 위) — 1:1 안에서 「지금 통화하기」 가
+            // 줄을 바꾸고 옆 「홈」 은 87px 가 남았다(09-24 전수조사 H · app designer 합의).
+            child: EqualButtonPair(
+              secondary: Button(
+                type: BtnType.secondaryOutline,
+                size: BtnSize.s60,
+                text: l10n.home,
+                onPressed: () => _goHome(context),
+              ),
+              primary: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: l10n.callNow,
+                onPressed: () => _startCall(context),
+              ),
             ),
           ),
         ],

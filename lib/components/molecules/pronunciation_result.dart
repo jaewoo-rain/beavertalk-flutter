@@ -6,6 +6,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../layout/need_based_rows.dart';
 
 /// Visual state of a [PronunciationResult].
 ///
@@ -211,10 +212,15 @@ class _MetricsFooter extends StatelessWidget {
         color: context.c.backgroundSurfaceAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
-      child: IntrinsicHeight(
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: children,
+      // 지표 3칸은 균등 격자가 디자인이다 — Figma `pronunciation_result` `2224:20997` 지표 행
+      // `2224:20974`: 칸 3개 모두 FILL(92) + 1px 구분선(09-24 app designer 실측).
+      child: FigmaEqualColumns(
+        figmaNode: '2224:20974',
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: children,
+          ),
         ),
       ),
     );

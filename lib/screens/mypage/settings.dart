@@ -27,6 +27,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// My-page settings — Figma `screen/main_mypage_settings` (Dark `4085:30568`,
 /// Light `4086:30700`).
@@ -433,34 +434,21 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                 ),
               )
             : null,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // 2:3, not 1:1 — an even split truncated `device2026@te…` while
-            // the short label sat on dead space. Both stay flexible so a long
-            // label (es `Fecha de registro`) shrinks instead of overflowing;
-            // an unbounded label is what blew the 320px sweep open.
-            Flexible(
-              flex: 2,
-              child: Text(
-                label,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: AppType.body1.r.copyWith(color: context.c.labelStrong),
-              ),
-            ),
-            const SizedBox(width: 8),
-            // 값은 **자르지 않는다** — 사용자가 고른 내용이라 잘리면 무엇을
-            // 골랐는지 알 수 없다. 넘치지 않도록 줄만 바꾼다.
-            Flexible(
-              flex: 3,
-              child: Text(
-                value,
-                textAlign: TextAlign.end,
-                style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-              ),
-            ),
-          ],
+        // 폭은 **글자 폭대로** 나눈다(LabelValueRow). 고정 2:3 분할은 짧은 라벨 「이메일」 몫을
+        // 비워 둔 채 값을 60% 안에서만 흘려 `bt.qa.free0924@example.` / `com` 으로 줄을
+        // 바꿨다(09-24 실기기 · 전수조사 F). 값은 **자르지 않는다** — 줄만 바꾼다.
+        child: LabelValueRow(
+          label: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+          ),
+          value: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: AppType.body1.r.copyWith(color: context.c.labelNormal),
+          ),
         ),
       );
 

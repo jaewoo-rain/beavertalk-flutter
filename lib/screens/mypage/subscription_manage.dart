@@ -23,6 +23,7 @@ import '../overlays/subscription_overlays.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// Subscription management — the eight state screens of spec §4-1, rendered
 /// from one widget because they are one screen with state-driven parts.
@@ -285,23 +286,15 @@ class _PlanCard extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            // 배지는 오른쪽 끝(Figma 4514:4739 justify-between). 배지가 `Flexible` 이라 몫을
-            // 다 안 쓰면 남은 폭이 행 끝에 버려진다 — spaceBetween 이 배지 앞으로 옮긴다.
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: AppType.headline1.sb.copyWith(color: c.labelStrong),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // 배지에 폭 상한을 준다 — 비유연이면 무한 폭을 받아 줄바꿈을 못 하고
-              // 넘친다(de 「Zahlung überfällig」 17px · my 67px @320). 상한이 있으면
-              // Badge 가 스스로 줄을 바꾼다(자르지 않음).
-              Flexible(child: Badge(tone: badgeTone, label: badgeLabel)),
-            ],
+          // 배지는 오른쪽 끝(Figma 4514:4739 justify-between). 폭은 글자 폭대로 나눈다
+          // (LabelValueRow) — Expanded+Flexible 은 「체험 중 / Premium 체험」 에서 83px 를
+          // 버렸다(09-24 전수조사 C). 배지는 폭 상한을 받아 스스로 줄을 바꾼다(자르지 않음).
+          LabelValueRow(
+            label: Text(
+              title,
+              style: AppType.headline1.sb.copyWith(color: c.labelStrong),
+            ),
+            value: Badge(tone: badgeTone, label: badgeLabel),
           ),
           SizedBox(height: _compact ? 10 : 12),
           Text(
@@ -317,32 +310,22 @@ class _PlanCard extends ConsumerWidget {
           //   막았는데(hi·ur·kk 가 93px 넘쳤다는 그 주석), 그건 넘침을 잘림으로
           //   바꾼 것뿐이었다.
           //   줄어드는 쪽은 **라벨**이다. 라벨은 줄어도 옆의 값이 무엇인지는 남는다.
-          Row(
+          // 라벨은 왼쪽 끝, 값은 오른쪽 끝(Figma 4514:4739). 폭은 글자 폭대로 나눈다
+          // (LabelValueRow) — Flexible 둘은 「다음 결제 / 2026년 6월 20일」 에서 69px 를
+          // 버리고 값을 줄바꿈시켰다(09-24 전수조사 B). 값은 자르지 않고 줄을 바꾼다.
+          LabelValueRow(
             crossAxisAlignment: CrossAxisAlignment.start,
-            // 라벨은 왼쪽 끝, 값은 오른쪽 끝(Figma 4514:4739). Flexible 둘이 몫을 다 안
-            // 쓰면 남은 폭이 행 끝에 버려져 값이 가운데로 몰린다 — spaceBetween 필수.
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Flexible(
-                child: Text(
-                  rowLabel,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: AppType.label1.r.copyWith(color: c.labelNormal),
-                ),
-              ),
-              const SizedBox(width: 8),
-              // 값도 Flexible 이지만 **자르지 않고 줄을 바꾼다**(ellipsis 없음).
-              // 비유연으로 두면 이번엔 행이 넘친다 — 넘침도 잘림도 아닌 제3의 길이
-              // 줄바꿈이다.
-              Flexible(
-                child: Text(
-                  rowValue,
-                  textAlign: TextAlign.end,
-                  style: AppType.label1.sb.copyWith(color: c.labelStrong),
-                ),
-              ),
-            ],
+            label: Text(
+              rowLabel,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: AppType.label1.r.copyWith(color: c.labelNormal),
+            ),
+            value: Text(
+              rowValue,
+              textAlign: TextAlign.end,
+              style: AppType.label1.sb.copyWith(color: c.labelStrong),
+            ),
           ),
           ],
         ],

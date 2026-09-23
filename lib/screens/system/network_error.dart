@@ -10,6 +10,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// The network-error body — Figma `screen/network_error` (`3360:19658`).
 ///
@@ -145,29 +146,33 @@ class NetworkErrorView extends StatelessWidget {
         if (showHome)
           ContentColumn(
             padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s24),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Button(
-                    type: BtnType.secondaryOutline,
-                    size: BtnSize.s60,
-                    text: l10n.goHome,
-                    onPressed: onHome ?? () => _goHome(context),
-                  ),
-                ),
-                if (onRetry != null) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
+            // Figma `I3360:19665;175:18146`: 같은 폭 두 버튼(FILL·FILL, gap 10). 한쪽이 한 줄에 안
+            // 들어가면 세로로 쌓는다(「다시 시도」 위) — ru 「Повторить」 가 반 폭에서 줄을 바꿨다
+            // (09-24 전수조사 I · app designer 합의).
+            child: onRetry == null
+                ? SizedBox(
+                    width: double.infinity,
                     child: Button(
+                      type: BtnType.secondaryOutline,
+                      size: BtnSize.s60,
+                      text: l10n.goHome,
+                      onPressed: onHome ?? () => _goHome(context),
+                    ),
+                  )
+                : EqualButtonPair(
+                    secondary: Button(
+                      type: BtnType.secondaryOutline,
+                      size: BtnSize.s60,
+                      text: l10n.goHome,
+                      onPressed: onHome ?? () => _goHome(context),
+                    ),
+                    primary: Button(
                       type: BtnType.primaryFill,
                       size: BtnSize.s60,
                       text: l10n.retry,
                       onPressed: onRetry,
                     ),
                   ),
-                ],
-              ],
-            ),
           ),
       ],
     );

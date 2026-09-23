@@ -6,6 +6,7 @@ import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../icons/app_icons.dart';
 import 'bottom_sheet_alarm_settings.dart' show AlarmPartner;
+import '../layout/need_based_rows.dart';
 
 /// 알람 추가·편집 시트 — Figma `BottomSheet/AlarmAdd` (`screen/etc_alarm__add`
 /// `6222:20710` · 반복 펼침 `6180:4764` · 상대 펼침 `6180:4865`).
@@ -184,40 +185,27 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
     final c = context.c;
     return ConstrainedBox(
       constraints: const BoxConstraints(minHeight: 44),
-      child: Row(
-        children: [
-          Expanded(
-            child: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: widget.onCancel,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-                  child: Text(
-                    widget.cancelText,
-                    style: AppType.body2.r.copyWith(color: c.labelNeutral),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          // 제목은 가운데 칸 — 길면 줄을 바꾼다(자르지 않는다).
-          //
-          // ⛔ `Flexible` 로 두지 마라. 그건 **필요한 만큼만** 차지해서, 가운데 칸이
-          //   제 몫(50%)보다 좁아지고 남은 폭이 행 끝에 죽은 공간으로 남는다. 그러면
-          //   제목이 왼쪽으로 밀려 「취소」에 붙는다(2026-09-23 사장님 지적).
-          //   `Expanded` 는 몫을 꽉 채우므로 그 안에서 가운데 정렬이 **행의 가운데**가 된다.
-          Expanded(
-            flex: 2,
+      // 「취소」 칸은 **자기 글자 폭**만 쓰고 끝 쪽에 같은 폭을 비운다 — 제목은 행의 가운데.
+      // 1:2:1 비율 분할은 「キャンセル」·「Отмена」 를 줄바꿈시키면서 오른쪽 빈칸 72~82px 를
+      // 버렸다(09-24 전수조사 G). 제목은 길면 줄을 바꾼다(자르지 않는다).
+      // ⛔ `Row`+`Flexible` 로 되돌리지 마라 — 제목이 「취소」 에 붙는다(2026-09-23 지적).
+      child: CenteredTitleRow(
+        leading: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: widget.onCancel,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             child: Text(
-              widget.title,
-              textAlign: TextAlign.center,
-              style: AppType.body1.b.copyWith(color: c.labelStrong),
+              widget.cancelText,
+              style: AppType.body2.r.copyWith(color: c.labelNeutral),
             ),
           ),
-          const Expanded(child: SizedBox()),
-        ],
+        ),
+        title: Text(
+          widget.title,
+          textAlign: TextAlign.center,
+          style: AppType.body1.b.copyWith(color: c.labelStrong),
+        ),
       ),
     );
   }
@@ -317,23 +305,22 @@ class _SettingRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                // 라벨도 언어마다 길다(ne 「반복」 = 15자) — 비유연이면 줄이 넘친다(320dp 에서
-                // 30px). 라벨·값 둘 다 줄을 바꾸게 둔다. 자르지는 않는다.
-                // ⛔ `Flexible` 로 두지 마라 — 라벨이 몫을 다 안 쓰면 남은 폭이 셰브런 **뒤**에
-                //   버려져 값·셰브런이 가운데로 몰린다(2026-09-23 사장님 지적). 둘 다 Expanded 여야
-                //   라벨은 왼쪽 끝, 값·셰브런은 오른쪽 끝에 붙는다(Figma justify-between).
+                // 라벨은 왼쪽 끝, 값·셰브런은 오른쪽 끝(Figma justify-between). 폭은 **글자
+                // 폭대로** 나눈다(LabelValueRow) — `Flexible` 은 몫을 남겨 값이 가운데로 몰렸고
+                // (09-23), `Expanded` 둘은 반반으로 갈라 「반복 / 월 · 수 · 금」 에서 100px 를
+                // 버렸다(09-24 전수조사 E). 라벨·값 둘 다 자르지 않고 줄을 바꾼다.
                 Expanded(
-                  child: Text(label,
-                      style: AppType.body2.r.copyWith(color: c.labelStrong)),
-                ),
-                const SizedBox(width: 12),
-                // 값은 식별자(요일 요약·캐릭터 이름)라 자르지 않는다 — 길면 줄을 바꾼다.
-                Expanded(
-                  child: Text(
-                    value,
-                    textAlign: TextAlign.end,
-                    style: AppType.body2.r.copyWith(
-                      color: open ? c.primaryNormal : c.labelAlternative,
+                  child: LabelValueRow(
+                    gap: 12,
+                    label: Text(label,
+                        style: AppType.body2.r.copyWith(color: c.labelStrong)),
+                    // 값은 식별자(요일 요약·캐릭터 이름)라 자르지 않는다 — 길면 줄을 바꾼다.
+                    value: Text(
+                      value,
+                      textAlign: TextAlign.end,
+                      style: AppType.body2.r.copyWith(
+                        color: open ? c.primaryNormal : c.labelAlternative,
+                      ),
                     ),
                   ),
                 ),

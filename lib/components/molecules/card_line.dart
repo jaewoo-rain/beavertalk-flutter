@@ -4,6 +4,7 @@ import '../../theme/app_color_tokens.dart';
 import '../icons/app_icons.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/toggle.dart';
+import '../layout/need_based_rows.dart';
 
 /// The three line-row layouts of [CardLine].
 enum CardLineType {
@@ -190,35 +191,32 @@ class CardLine extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Expanded(
-                child: Row(
-                  // Keep the original label-left / value-right split; only wrap
-                  // the two texts in Flexible + ellipsis so long translations
-                  // shrink in place instead of overflowing (design preserved).
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
+                // 라벨 왼쪽 끝 · 값 오른쪽 끝(Figma justify-between). 폭은 **글자 폭대로** 나눈다
+                // (LabelValueRow) — Flexible 둘은 짧은 칸이 남긴 폭을 긴 칸이 못 써서 「Lernsprache」
+                // 가 줄을 바꾸는데 옆 「한국어」 는 67px 가 남았다(09-24 전수조사 A).
+                child: value == null
+                    ? Text(
                         label,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style:
-                            AppType.body1.r.copyWith(color: context.c.labelStrong),
-                      ),
-                    ),
-                    if (value != null) ...[
-                      const SizedBox(width: 8),
-                      // 값은 자르지 않는다 — 금액·상태가 잘리면 거짓이 된다.
-                      Flexible(
-                        child: Text(
+                        style: AppType.body1.r.copyWith(color: context.c.labelStrong),
+                      )
+                    : LabelValueRow(
+                        label: Text(
+                          label,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style:
+                              AppType.body1.r.copyWith(color: context.c.labelStrong),
+                        ),
+                        // 값은 자르지 않는다 — 금액·상태가 잘리면 거짓이 된다.
+                        value: Text(
                           value!,
                           textAlign: TextAlign.end,
                           style:
                               AppType.body1.r.copyWith(color: context.c.labelStrong),
                         ),
                       ),
-                    ],
-                  ],
-                ),
               ),
               const SizedBox(width: 10),
               AppIcons.chevronRight(

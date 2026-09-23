@@ -105,10 +105,16 @@
   마이페이지 카드 머리 반반 갈림, 알람 시트 「취소」·제목 붙음, 「Repeat」·「Every day」 붙음, 「Call partner」·「Baba」 붙음.
   **전부 원인이 하나다.** 넘침을 막으려고 `Flexible` 을 둘렀고, `Flexible` 이 몫을 다 안 쓰면 남은 폭이 **행 끝에 버려진다.**
   그래서 오른쪽 끝에 붙어야 할 값·배지·셰브런이 가운데로 몰린다. 넘침은 사라지지만 Figma 와 다른 화면이 된다.
-  - **라벨 · 값 행**(Figma justify-between): 둘 다 `Expanded`, 또는 `mainAxisAlignment: MainAxisAlignment.spaceBetween`.
-    셰브런처럼 값 뒤에 고정 칸이 더 붙으면 spaceBetween 은 틈을 **값과 셰브런 사이에도** 벌린다. 이때는 둘 다 `Expanded`.
-  - **가운데 제목 + 양옆 버튼**: 제목은 `Expanded`. `Flexible` 이면 제목이 왼쪽 버튼 쪽으로 붙는다.
-  - **`Flexible` 둘**은 필요와 무관하게 행을 반반 가른다(`card_line.dart` 주석). 제목 옆 부제는 `Wrap`.
+  - ⭐ **폭은 비율이 아니라 필요로 나눈다(2026-09-24 개정).** 유연 칸(`Flexible`·`Expanded`) 둘 이상은 **flex 비율로** 폭을
+    가른다. `Flexible` 둘은 남긴 폭을 행 끝에 버려 값이 가운데로 몰리고(09-22~23), 옛 처방 「둘 다 `Expanded`」 는 행을 반반으로 갈라
+    짧은 라벨 옆 긴 값이 절반 폭 안에서 줄을 바꾼다(09-24 설정 이메일 `…@example.` / `com`, 전수조사 확정 68건 · 원인 11곳).
+    뿌리가 같아서 비율로는 둘 다 못 푼다. 공용 레이아웃(`lib/components/layout/need_based_rows.dart`)을 쓴다:
+    - **라벨 · 값 행**(Figma justify-between) → `LabelValueRow`. 한 줄 폭 합이 들어가면 각자 자기 폭 + 양 끝 정렬, 안 들어가면
+      낱말 폭을 먼저 주고 나머지를 필요 폭 비율로 — 긴 쪽이 줄을 바꾼다. 값 뒤 셰브런은 `Expanded(child: LabelValueRow(…))` + 셰브런.
+    - **가운데 제목 + 시작 쪽 버튼**(취소 · 제목 · 빈칸) → `CenteredTitleRow`. 버튼은 자기 폭, 끝 쪽에 같은 폭을 비워 제목이 행 가운데.
+    - **같은 폭 버튼 쌍**(Figma FILL·FILL) → `EqualButtonPair`. 한쪽이 반 폭 한 줄에 안 들어가면 세로로 쌓는다(주요 버튼 위).
+    - **균등 격자가 Figma 의도**인 행(지표 3칸 등, 칸 모두 FILL)만 `Row`+`Expanded` 를 쓰고 `FigmaEqualColumns(figmaNode: …)` 로 감싼다.
+    - 제목 옆 부제는 `Wrap`.
   - **`Container(alignment:)` 는 부모를 꽉 채운다** — `Wrap` 안 칩이 전폭이 된다. `Center(widthFactor: 1, heightFactor: 1)`.
   - **`Gnb` 는 자기 면을 칠한다** — 색 있는 화면 위에서는 `Gnb.main(background:)` 로 넘긴다.
   - **Figma 는 스크린샷이 아니라 좌표로 대조한다.** `get_metadata`·`use_figma` 로 자식 `x`·`width`·`primaryAxisAlignItems`·`layoutSizingHorizontal` 을 읽는다.
@@ -118,6 +124,10 @@
   - ⛔ **게이트: `test/layout_dead_space_test.dart`.** 늘어나는 칸이 있는데 행 끝이 16px 넘게 비는 가로 행을 `i18nScreens()` 전 화면(2026-09-23 기준 72개) × en·ko·ja 에서 잡는다.
     이 시험을 끄거나 `_allowed` 에 넣어 통과시키지 마라. `_allowed` 추가는 **Figma 노드 ID + 좌표 근거**가 있을 때만이다.
     새 화면을 만들면 `test/support/i18n_screens.dart` 에 등록해야 이 시험이 그 화면을 본다. 등록 안 한 화면은 검사 밖이다.
+  - ⛔ **게이트: `test/layout_premature_wrap_test.dart`(2026-09-24).** 유연 칸 둘 이상인 가로 행에서 한 칸 글자가 줄을 바꾸는데
+    옆 칸에 8px 넘는 여유가 있고 그 여유면 한 줄에 들어가는 경우를 `i18nScreens()` × en·ko·ja·de·ru × 320·360 에서 잡는다.
+    [확정]이 있으면 실패한다. 건너뛰기는 `FigmaEqualColumns` 뿐이고 **Figma 노드 ID** 가 근거다. 근거 없이 감싸서 통과시키지 마라.
+    ⚠ 시험 글꼴은 라틴 글자를 실제보다 넓게 잰다 — en·de·ru 는 과검출일 수 있다. ko·ja 와 실기기 확인 건은 확실하다.
 
 ## 기술 스택 결정 (확정)
 

@@ -19,6 +19,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
 import '../../core/format/dates.dart';
+import '../../components/layout/need_based_rows.dart';
 
 /// 학습 달력 — Figma `screen/streak_calendar` (`6183:4527`) · 로딩 `6245:42308`.
 ///
@@ -218,41 +219,45 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
                   _card(
                     context,
                     padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: IntrinsicHeight(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Expanded(
-                            child: _Metric(
-                              value: _count(l10n, server?.total.sentences),
-                              label: l10n.streakMetricLearned,
-                            ),
-                          ),
-                          VerticalDivider(
-                            width: 1,
-                            thickness: 1,
-                            color: c.lineAlternative,
-                          ),
-                          Expanded(
-                            child: _Metric(
-                              value: _count(l10n, server?.total.words),
-                              label: l10n.streakMetricWords,
-                            ),
-                          ),
-                          VerticalDivider(
-                            width: 1,
-                            thickness: 1,
-                            color: c.lineAlternative,
-                          ),
-                          Expanded(
-                            child: _Metric(
-                              value: l10n.streakMinutes(
-                                server?.total.callMinutes ?? minutes,
+                    // 균등 격자 — Figma Row `6183:4559`: Tile-Metric 3개 모두 FILL(09-23 실측).
+                    child: FigmaEqualColumns(
+                      figmaNode: '6183:4559',
+                      child: IntrinsicHeight(
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: _Metric(
+                                value: _count(l10n, server?.total.sentences),
+                                label: l10n.streakMetricLearned,
                               ),
-                              label: l10n.streakMetricCallTime,
                             ),
-                          ),
-                        ],
+                            VerticalDivider(
+                              width: 1,
+                              thickness: 1,
+                              color: c.lineAlternative,
+                            ),
+                            Expanded(
+                              child: _Metric(
+                                value: _count(l10n, server?.total.words),
+                                label: l10n.streakMetricWords,
+                              ),
+                            ),
+                            VerticalDivider(
+                              width: 1,
+                              thickness: 1,
+                              color: c.lineAlternative,
+                            ),
+                            Expanded(
+                              child: _Metric(
+                                value: l10n.streakMinutes(
+                                  server?.total.callMinutes ?? minutes,
+                                ),
+                                label: l10n.streakMetricCallTime,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),

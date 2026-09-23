@@ -7,6 +7,7 @@ import '../atoms/button.dart';
 import '../icons/app_icons.dart';
 import '../molecules/benefit_row.dart';
 import 'bottom_sheet.dart' show SheetAction;
+import '../layout/need_based_rows.dart';
 
 /// Content form of a [BottomSheetContent] — the Figma `content=*` variant
 /// (`BottomSheet-Content` `4399:2039`).
@@ -490,30 +491,21 @@ class _RowLine extends StatelessWidget {
                 bottom: BorderSide(color: c.lineAlternative, width: 0.5),
               ),
             ),
-      child: Row(
-        // 값은 오른쪽 끝에 붙는다(Figma justify-between). 값이 `Flexible` 이라 몫을 다 안 쓰면
-        // 남은 폭이 행 끝에 버려진다 — spaceBetween 이 그 폭을 값 앞으로 옮긴다.
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              data.label,
-              style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
-            ),
+      // 값은 오른쪽 끝(Figma justify-between). 폭은 글자 폭대로 나눈다(LabelValueRow) —
+      // Expanded+Flexible 은 「가능 / 무료 플랜에서도 사용」 에서 104px 를 버렸다(09-24 D).
+      // ⛔ 값(가격·날짜)은 **자르지 않는다** — 잘린 금액은 빈 값보다 나쁘다. 줄을 바꾼다.
+      child: LabelValueRow(
+        label: Text(
+          data.label,
+          style: AppType.label1.r.copyWith(color: c.commonWhiteAndDark),
+        ),
+        value: Text(
+          data.value,
+          textAlign: TextAlign.end,
+          style: AppType.label1.r.copyWith(
+            color: data.highlighted ? c.primaryNormal : c.labelNormal,
           ),
-          const SizedBox(width: 8),
-          // ⛔ 값(가격·날짜)은 **자르지 않는다** — 잘린 금액은 빈 값보다 나쁘다. 폭이 모자라면
-          //   줄을 바꾼다. 비유연이면 무한 폭을 받아 행이 넘쳤다(de·fi·bn 등 가격 행).
-          Flexible(
-            child: Text(
-              data.value,
-              textAlign: TextAlign.end,
-              style: AppType.label1.r.copyWith(
-                color: data.highlighted ? c.primaryNormal : c.labelNormal,
-              ),
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
