@@ -2162,7 +2162,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Puhelut jatkuvat 5 minuutin jaksoissa.\nKysymme sinulta joka kerta uudelleen.';
+      'Puhelut jatkuvat lyhyissä jaksoissa.\nKysymme uudelleen joka kerta.';
 
   @override
   String get pcEndedTitleToday => 'Lopetetaan tämän päivän puhelu.';
@@ -2209,7 +2209,7 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Lopettaminen nyt kuluttaa silti yhden puhelun';
+      'Tähän asti puhuttu aika lasketaan silti tämän päivän käyttöön';
 
   @override
   String get callExitKeep => 'Jatka puhumista';

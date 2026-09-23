@@ -2168,7 +2168,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Las llamadas continúan en tramos de 5 minutos.\nTe preguntaremos cada vez.';
+      'Las llamadas continúan en tramos cortos.\nTe preguntaremos de nuevo cada vez.';
 
   @override
   String get pcEndedTitleToday => 'Terminemos la llamada de hoy.';
@@ -2215,7 +2215,7 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Terminar ahora igual consume una de tus llamadas';
+      'El tiempo que ya hablaste cuenta para hoy igualmente';
 
   @override
   String get callExitKeep => 'Seguir hablando';

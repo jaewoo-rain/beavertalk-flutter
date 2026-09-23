@@ -4003,7 +4003,7 @@ abstract class AppLocalizations {
   /// Body of the paid continue sheet. Two lines separated by a newline.
   ///
   /// In en, this message translates to:
-  /// **'Calls continue in 5-minute stretches.\nWe\'ll check in again each time.'**
+  /// **'Calls continue in short stretches.\nWe\'ll check in again each time.'**
   String get kgBody;
 
   /// Premium 15-minute end sheet title - the last call allowed today.
@@ -4093,7 +4093,7 @@ abstract class AppLocalizations {
   /// End-call dialog - body. Warns the call is still counted against the daily quota.
   ///
   /// In en, this message translates to:
-  /// **'Ending now still uses one of your calls'**
+  /// **'Time you\'ve talked so far still counts toward today'**
   String get callExitSubtitle;
 
   /// End-call dialog - stay in the call.

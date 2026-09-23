@@ -2161,7 +2161,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Qo\'ng\'iroqlar 5 daqiqalik qismlarda davom etadi.\nHar safar sizdan yana so\'raymiz.';
+      'Qoʻngʻiroq qisqa boʻlaklarda davom etadi.\nHar safar yana soʻraymiz.';
 
   @override
   String get pcEndedTitleToday => 'Bugungi qo‘ng‘iroqni tugatamiz.';
@@ -2209,7 +2209,7 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Hozir tugatsangiz ham bitta qo‘ng‘iroq hisoblanadi';
+      'Hozir tugatsangiz ham, gaplashgan vaqt bugungi hisobga kiradi';
 
   @override
   String get callExitKeep => 'Suhbatni davom ettirish';

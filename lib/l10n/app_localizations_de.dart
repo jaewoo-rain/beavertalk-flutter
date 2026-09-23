@@ -2183,7 +2183,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Gespräche laufen in 5-Minuten-Abschnitten weiter.\nWir fragen jedes Mal nach.';
+      'Gespräche laufen in kurzen Abschnitten weiter.\nWir fragen jedes Mal nach.';
 
   @override
   String get pcEndedTitleToday => 'Lass uns für heute Schluss machen.';
@@ -2231,7 +2231,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Jetzt beenden verbraucht trotzdem einen Anruf';
+      'Deine bisherige Gesprächszeit zählt trotzdem für heute';
 
   @override
   String get callExitKeep => 'Weiter sprechen';

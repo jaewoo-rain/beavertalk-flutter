@@ -2135,8 +2135,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get kgTitle => 'คุยต่อไหม';
 
   @override
-  String get kgBody =>
-      'การโทรจะดำเนินต่อครั้งละ 5 นาที\nเราจะถามคุณอีกทุกครั้ง';
+  String get kgBody => 'การโทรจะต่อไปเป็นช่วงสั้นๆ\nเราจะถามอีกครั้งทุกครั้ง';
 
   @override
   String get pcEndedTitleToday => 'วันนี้ขอจบการโทรไว้แค่นี้นะ';
@@ -2182,7 +2181,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callExitTitle => 'วางสายเลยไหม';
 
   @override
-  String get callExitSubtitle => 'วางตอนนี้ก็ยังนับเป็นหนึ่งสายของวันนี้';
+  String get callExitSubtitle =>
+      'วางสายตอนนี้ เวลาที่คุยไปแล้วก็ยังนับรวมในวันนี้';
 
   @override
   String get callExitKeep => 'คุยต่อ';

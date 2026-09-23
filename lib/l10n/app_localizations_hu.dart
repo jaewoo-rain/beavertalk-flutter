@@ -2166,7 +2166,7 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'A hívások 5 perces szakaszokban folytatódnak.\nMinden alkalommal rákérdezünk.';
+      'A hívás rövid szakaszokban folytatódik.\nMinden alkalommal újra megkérdezzük.';
 
   @override
   String get pcEndedTitleToday => 'Mára fejezzük be a hívást.';
@@ -2212,7 +2212,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callExitTitle => 'Befejezed a hívást?';
 
   @override
-  String get callExitSubtitle => 'A most befejezés is felhasznál egy hívást';
+  String get callExitSubtitle =>
+      'Az eddig beszélt idő így is beleszámít a mai keretbe';
 
   @override
   String get callExitKeep => 'Beszélgetés folytatása';

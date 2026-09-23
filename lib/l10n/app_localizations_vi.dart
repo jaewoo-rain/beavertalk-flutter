@@ -2149,7 +2149,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Cuộc gọi tiếp tục theo từng đoạn 5 phút.\nChúng tôi sẽ hỏi lại mỗi lần.';
+      'Cuộc gọi tiếp tục theo từng đoạn ngắn.\nMỗi lần chúng tôi sẽ hỏi lại.';
 
   @override
   String get pcEndedTitleToday => 'Mình kết thúc cuộc gọi hôm nay nhé.';
@@ -2196,7 +2196,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callExitTitle => 'Kết thúc cuộc gọi?';
 
   @override
-  String get callExitSubtitle => 'Kết thúc bây giờ vẫn dùng hết một lượt gọi';
+  String get callExitSubtitle =>
+      'Kết thúc bây giờ thì thời gian đã nói vẫn được tính cho hôm nay';
 
   @override
   String get callExitKeep => 'Tiếp tục nói';

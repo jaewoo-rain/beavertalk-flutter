@@ -16,10 +16,11 @@ library;
 /// ⛔ **상한 숫자를 여기 밖에 쓰지 마라.** Max 전용 시안이 나오거나 정책이 바뀌면
 ///   이 클래스만 고치면 되도록 한 자리에 모아 둔다.
 abstract final class CallAllowance {
-  /// 한 구간의 길이. **플랜과 무관하게 5분이다.**
+  /// 한 구간의 길이. **플랜과 무관하게 5분이다** — 서버가 `call_started.remaining_s` 를
+  /// 주지 않을 때(구서버·면제)의 폴백이다. 신서버는 조각마다 최대 360초를 준다(09-23).
   ///
-  /// 유료 회원도 5분마다 「Keep going?」 을 받는다 — 시안의 "Calls continue in
-  /// 5-minute stretches. We'll check in again each time." 가 그 뜻이다.
+  /// 그래서 「Keep going?」 본문(`kgBody`)은 숫자를 뺀 「Calls continue in short
+  /// stretches.」 다(09-23 app designer 합의).
   static const Duration segment = Duration(minutes: 5);
 
   /// 이 접근권으로 쓸 수 있는 **구간 수**.

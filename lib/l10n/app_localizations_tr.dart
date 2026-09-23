@@ -2146,7 +2146,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Görüşmeler 5 dakikalık bölümler hâlinde sürer.\nHer seferinde sana tekrar soracağız.';
+      'Aramalar kısa bölümler hâlinde devam eder.\nHer seferinde yeniden soracağız.';
 
   @override
   String get pcEndedTitleToday => 'Bugünkü aramayı burada bitirelim.';
@@ -2191,7 +2191,8 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callExitTitle => 'Arama sonlandırılsın mı?';
 
   @override
-  String get callExitSubtitle => 'Şimdi bitirmek yine de bir aramanı kullanır';
+  String get callExitSubtitle =>
+      'Şimdi bitirsen de konuştuğun süre bugüne sayılır';
 
   @override
   String get callExitKeep => 'Konuşmaya devam et';

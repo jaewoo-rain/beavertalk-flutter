@@ -2152,7 +2152,7 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Чалуулар 5 мүнөттүк бөлүктөр менен уланат.\nАр жолу сизден кайра сурайбыз.';
+      'Чалуу кыска бөлүктөр менен уланат.\nАр жолу кайра сурайбыз.';
 
   @override
   String get pcEndedTitleToday => 'Бүгүнкү чалууну бүтүрөлү.';
@@ -2198,7 +2198,8 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callExitTitle => 'Чалууну аяктайсызбы?';
 
   @override
-  String get callExitSubtitle => 'Азыр аяктасаңыз да бир чалуу эсептелет';
+  String get callExitSubtitle =>
+      'Азыр бүтсөңүз да, сүйлөшкөн убакыт бүгүнкү колдонууга кирет';
 
   @override
   String get callExitKeep => 'Сүйлөшүүнү улантуу';

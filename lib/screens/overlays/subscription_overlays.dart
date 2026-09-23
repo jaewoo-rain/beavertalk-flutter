@@ -102,10 +102,10 @@ enum SubscriptionOverlay {
 
   /// `keep_going` (`4952:18344`) — **유료 회원에게 5분마다 묻는다.**
   ///
-  /// 통화당 15분(=5분 × 3구간)까지 이어갈 수 있고, 매 구간 끝에서 이 시트가 뜬다
-  /// (시안 카피: "Calls continue in 5-minute stretches. We'll check in again each
-  /// time."). 상한을 다 쓰면 이 시트를 띄우지 않고 통화를 끝낸다 — 누를 수 없는
-  /// 버튼을 보여 줄 이유가 없다.
+  /// 하루 합산 15분(09-23) 안에서 조각을 이어가고, 매 조각 끝에서 이 시트가 뜬다
+  /// (`kgBody` 「Calls continue in short stretches.」 — 조각 길이는 서버 `remaining_s` 라
+  /// 숫자를 쓰지 않는다). 상한을 다 쓰면 이 시트를 띄우지 않고 통화를 끝낸다 — 누를 수
+  /// 없는 버튼을 보여 줄 이유가 없다.
   keepGoing,
 
   /// `call_main_live_5minute_premium` (`5026:24871`) — **유료 통화가 15분 상한을 다

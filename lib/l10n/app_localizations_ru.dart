@@ -2159,7 +2159,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Звонки продолжаются отрезками по 5 минут.\nМы будем спрашивать каждый раз.';
+      'Звонок продолжается короткими отрезками.\nМы будем спрашивать каждый раз.';
 
   @override
   String get pcEndedTitleToday => 'На сегодня закончим звонок.';
@@ -2207,7 +2207,7 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Завершение сейчас всё равно использует один звонок';
+      'Уже проговорённое время всё равно засчитывается за сегодня';
 
   @override
   String get callExitKeep => 'Продолжить разговор';

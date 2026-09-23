@@ -2085,7 +2085,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get kgTitle => '더 이어갈까요?';
 
   @override
-  String get kgBody => '통화는 5분씩 이어져요.\n5분마다 다시 여쭤볼게요.';
+  String get kgBody => '통화는 조금씩 이어져요.\n이어질 때마다 다시 여쭤볼게요.';
 
   @override
   String get pcEndedTitleToday => '오늘 통화를 마칠게요.';
@@ -2130,7 +2130,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callExitTitle => '통화를 끝낼까요?';
 
   @override
-  String get callExitSubtitle => '지금 끝내도 오늘 통화 1회가 사용돼요';
+  String get callExitSubtitle => '지금 끝내도 통화한 시간은 오늘 사용량에 들어가요';
 
   @override
   String get callExitKeep => '계속 통화하기';

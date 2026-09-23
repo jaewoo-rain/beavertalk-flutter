@@ -2084,7 +2084,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get kgTitle => '続けますか？';
 
   @override
-  String get kgBody => '通話は5分ごとに続きます。\n毎回確認します。';
+  String get kgBody => '通話は少しずつ続きます。\n続くたびに確認します。';
 
   @override
   String get pcEndedTitleToday => '今日の通話はここまでにしますね。';
@@ -2129,7 +2129,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callExitTitle => '通話を終了しますか？';
 
   @override
-  String get callExitSubtitle => '今終了しても本日の通話1回が消費されます';
+  String get callExitSubtitle => '今終えても、話した時間は今日の利用分に含まれます';
 
   @override
   String get callExitKeep => '通話を続ける';

@@ -2136,7 +2136,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'تستمر المكالمات على فترات مدتها 5 دقائق.\nسنسألك مرة أخرى في كل مرة.';
+      'تستمر المكالمات على فترات قصيرة.\nسنسألك مرة أخرى في كل مرة.';
 
   @override
   String get pcEndedTitleToday => 'لننهِ مكالمة اليوم.';
@@ -2181,7 +2181,8 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callExitTitle => 'هل تريد إنهاء المكالمة؟';
 
   @override
-  String get callExitSubtitle => 'الإنهاء الآن يستهلك مكالمة من مكالماتك';
+  String get callExitSubtitle =>
+      'حتى لو أنهيت الآن، يُحتسب وقت حديثك ضمن استخدام اليوم';
 
   @override
   String get callExitKeep => 'متابعة الحديث';

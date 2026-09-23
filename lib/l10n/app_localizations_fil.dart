@@ -2170,7 +2170,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Nagpapatuloy ang tawag kada 5 minuto.\nTatanungin ka naming muli sa bawat pagkakataon.';
+      'Nagpapatuloy ang tawag nang paunti-unti.\nMagtatanong ulit kami sa bawat pagkakataon.';
 
   @override
   String get pcEndedTitleToday => 'Tapusin na natin ang tawag ngayong araw.';
@@ -2219,7 +2219,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Kahit tapusin ngayon, gagamit pa rin ng isang tawag';
+      'Kasama pa rin sa ngayong araw ang oras na naitawag mo';
 
   @override
   String get callExitKeep => 'Magpatuloy sa pag-uusap';

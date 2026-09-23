@@ -2145,7 +2145,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'Дуудлага 5 минутын хэсгээр үргэлжилнэ.\nБид болгонд дахин асууна.';
+      'Дуудлага богино хэсгүүдээр үргэлжилнэ.\nУдаа бүр дахин асууна.';
 
   @override
   String get pcEndedTitleToday => 'Өнөөдрийн дуудлагаа дуусгая.';
@@ -2192,7 +2192,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'Одоо дуусгасан ч өнөөдрийн нэг дуудлага зарцуулагдана';
+      'Одоо дуусгасан ч ярьсан хугацаа өнөөдрийн хэрэглээнд тооцогдоно';
 
   @override
   String get callExitKeep => 'Үргэлжлүүлэн ярих';

@@ -2081,7 +2081,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get kgTitle => '继续吗？';
 
   @override
-  String get kgBody => '通话以5分钟为一段继续。\n每段结束时都会再问你一次。';
+  String get kgBody => '通话会分段继续。\n每段继续时都会再问你。';
 
   @override
   String get pcEndedTitleToday => '今天的通话就到这里吧。';
@@ -2126,7 +2126,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callExitTitle => '要结束通话吗？';
 
   @override
-  String get callExitSubtitle => '现在结束仍会消耗今天的一次通话';
+  String get callExitSubtitle => '现在结束，已通话的时间仍计入今天的用量';
 
   @override
   String get callExitKeep => '继续通话';

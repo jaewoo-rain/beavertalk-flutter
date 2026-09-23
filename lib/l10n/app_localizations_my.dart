@@ -2161,7 +2161,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'ခေါ်ဆိုမှုသည် ၅ မိနစ်စီ ဆက်လက်ဖြစ်ပေါ်ပါသည်။\nအကြိမ်တိုင်း ထပ်မံမေးပါမည်။';
+      'ခေါ်ဆိုမှုသည် အပိုင်းတိုလေးများဖြင့် ဆက်သွားသည်။\nအကြိမ်တိုင်း ထပ်မေးပါမည်။';
 
   @override
   String get pcEndedTitleToday => 'ဒီနေ့ ခေါ်ဆိုမှုကို ဒီမှာ ရပ်ပါမယ်။';
@@ -2208,7 +2208,7 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get callExitSubtitle =>
-      'ယခုအဆုံးသတ်လျှင်လည်း ယနေ့ခေါ်ဆိုမှုတစ်ကြိမ် ကုန်ပါမည်';
+      'ယခု ပြီးလိုက်လည်း ပြောခဲ့သောအချိန်ကို ယနေ့ အသုံးပြုမှုတွင် ထည့်တွက်ပါမည်';
 
   @override
   String get callExitKeep => 'ဆက်ပြောပါ';

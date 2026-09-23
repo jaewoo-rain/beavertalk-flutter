@@ -2143,8 +2143,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get kgTitle => 'បន្តទៀតទេ?';
 
   @override
-  String get kgBody =>
-      'ការហៅបន្តជាដំណាក់កាល ៥ នាទី។\nយើងនឹងសួរអ្នកម្តងទៀតរាល់ពេល។';
+  String get kgBody => 'ការហៅបន្តជាដំណាក់កាលខ្លីៗ។\nយើងនឹងសួរម្ដងទៀតរាល់ពេល។';
 
   @override
   String get pcEndedTitleToday => 'យើងបញ្ចប់ការហៅថ្ងៃនេះសិន។';
@@ -2190,7 +2189,8 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callExitTitle => 'បញ្ចប់ការហៅនេះ?';
 
   @override
-  String get callExitSubtitle => 'បញ្ចប់ឥឡូវនេះនៅតែប្រើការហៅមួយ';
+  String get callExitSubtitle =>
+      'បើបញ្ចប់ឥឡូវ ពេលដែលបាននិយាយនៅតែរាប់ក្នុងការប្រើថ្ងៃនេះ';
 
   @override
   String get callExitKeep => 'បន្តនិយាយ';

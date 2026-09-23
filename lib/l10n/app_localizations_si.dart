@@ -2144,8 +2144,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get kgTitle => 'දිගටම කරගෙන යමුද?';
 
   @override
-  String get kgBody =>
-      'ඇමතුම් විනාඩි 5ක කොටස් වශයෙන් දිගටම පවතී.\nසෑම වතාවකම අපි ඔබෙන් නැවත අසන්නෙමු.';
+  String get kgBody => 'ඇමතුම් කෙටි කොටස් ලෙස දිගටම යයි.\nසෑම වරම නැවත අසමු.';
 
   @override
   String get pcEndedTitleToday => 'අද ඇමතුම මෙතැනින් නවත්වමු.';
@@ -2191,7 +2190,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callExitTitle => 'ඇමතුම අවසන් කරන්නද?';
 
   @override
-  String get callExitSubtitle => 'දැන් අවසන් කළත් අද ඇමතුමකින් එකක් වැය වේ';
+  String get callExitSubtitle => 'දැන් අවසන් කළත්, කතා කළ කාලය අද භාවිතයට ගැනේ';
 
   @override
   String get callExitKeep => 'කතා කරමින් සිටින්න';

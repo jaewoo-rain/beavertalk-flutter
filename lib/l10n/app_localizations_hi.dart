@@ -2147,7 +2147,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get kgBody =>
-      'कॉल 5-5 मिनट के हिस्सों में जारी रहती है।\nहर बार हम आपसे फिर पूछेंगे।';
+      'कॉल छोटे-छोटे हिस्सों में चलती है।\nहर बार हम फिर से पूछेंगे।';
 
   @override
   String get pcEndedTitleToday => 'आज की कॉल यहीं खत्म करते हैं।';
@@ -2192,7 +2192,8 @@ class AppLocalizationsHi extends AppLocalizations {
   String get callExitTitle => 'कॉल समाप्त करें?';
 
   @override
-  String get callExitSubtitle => 'अभी समाप्त करने पर भी एक कॉल गिनी जाएगी';
+  String get callExitSubtitle =>
+      'अभी खत्म करने पर भी बात किया गया समय आज में गिना जाएगा';
 
   @override
   String get callExitKeep => 'बात जारी रखें';
