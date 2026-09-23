@@ -133,7 +133,8 @@ class LearningSummary {
   factory LearningSummary.fromJson(Map<String, dynamic> j) => LearningSummary(
         passed: _asInt(j['passed']),
         total: _asInt(j['total']),
-        date: DateTime.tryParse(j['date'] as String? ?? '') ?? DateTime.now(),
+        // 서버 시각(UTC) → 현지 날짜. 안 바꾸면 자정 근처 리포트가 전날로 찍힌다.
+        date: DateTime.tryParse(j['date'] as String? ?? '')?.toLocal() ?? DateTime.now(),
         overall: _asInt(j['overall']),
         pronunciation: _asInt(j['pronunciation']),
         fluency: _asInt(j['fluency']),

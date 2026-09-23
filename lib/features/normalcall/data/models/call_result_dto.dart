@@ -218,7 +218,9 @@ class CallResultDto {
         callId: callId,
         summary: summary,
         rating: rating,
-        callDate: DateTime.tryParse(callDate ?? ''),
+        // 서버 `call_date` 는 timestamptz(UTC)다 — 현지 시각으로 바꿔야 자정 근처 통화가
+        // 전날로 찍히지 않는다(09-24 00:16 KST 가 「9월 23일」 로 보였다, 실기기 0f80de9).
+        callDate: DateTime.tryParse(callDate ?? '')?.toLocal(),
         totalTime: totalTime,
         average: average.toEntity(),
         sentences: sentences.map((s) => s.toEntity()).toList(),
@@ -290,7 +292,9 @@ class CallSummaryDto {
   CallSummary toEntity() => CallSummary(
         callId: callId,
         character: character.toEntity(),
-        callDate: DateTime.tryParse(callDate ?? ''),
+        // 서버 `call_date` 는 timestamptz(UTC)다 — 현지 시각으로 바꿔야 자정 근처 통화가
+        // 전날로 찍히지 않는다(09-24 00:16 KST 가 「9월 23일」 로 보였다, 실기기 0f80de9).
+        callDate: DateTime.tryParse(callDate ?? '')?.toLocal(),
         totalTime: totalTime,
         summary: summary,
         rating: rating,

@@ -258,6 +258,6 @@ class OwnedCharacterDto {
         tags: tags,
         purchasePrice: purchasePrice,
         purchaseDate:
-            purchaseDate == null ? null : DateTime.tryParse(purchaseDate!),
+            purchaseDate == null ? null : DateTime.tryParse(purchaseDate!)?.toLocal(),
       );
 }
