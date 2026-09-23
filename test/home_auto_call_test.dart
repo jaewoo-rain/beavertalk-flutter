@@ -148,14 +148,14 @@ void main() {
     final call = pushed.where((s) => s.name == Routes.callLoading).toList();
     expect(call, hasLength(1));
     final req = call.single.arguments as CourseCallRequest;
-    expect(req.course, CallCourse.normal);
+    expect(req.course, CallCourse.chat);
     expect(req.forceCourse, isFalse);
     expect(
       buildStartFrame(
         aec: const {}, sampleRate: 16000, numChannels: 1,
         callType: req.course.wireValue, forceCourse: req.forceCourse,
       )['call_type'],
-      'normal',
+      'chat',
     );
   });
 

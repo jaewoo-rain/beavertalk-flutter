@@ -13,10 +13,11 @@
 ///
 /// ## 서버 계약 — 새 파라미터가 아니다
 ///
-/// `domains/learning/realtime/protocol.py:105`
+/// `domains/learning/realtime/protocol.py:115`(서버 `origin/dev` `50d03df`)
 /// ```python
-/// call_type: Literal["normal", "level_test", "expression", "freetalk"] | None = None
+/// call_type: Literal["normal", "level_test", "expression", "freetalk", "auto", "chat"] | None = None
 /// ```
+/// `"normal"` 은 신서버에서 죽은 값이다(보내면 `chat` 으로 흡수). 앱은 `chat` 을 보낸다.
 /// **기존 `call_type` 필드에 문자열을 넣는 것이 전부다.** 소켓 경로는 그대로
 /// `/calls/stream` 이다.
 ///
@@ -45,13 +46,15 @@ enum CallCourse {
   ///   닫는다. 메시지는 `call_loading` 이 스낵바로 그대로 띄운다(`error` 프레임 경로).
   freetalk,
 
-  /// 일반 통화 — 홈 **대화 모드**(사장님 정의 2026-09-22: 「제한 없는 자유 대화」).
+  /// 자유대화 — 홈 **대화 모드**(사장님 정의 2026-09-22: 「제한 없는 자유 대화」).
   ///
-  /// 진도 게이트가 없다(프리토킹의 `COURSE_LOCKED` 가 안 걸린다). 서버는 이 통화에
-  /// 「오늘의 학습 항목」(`pick_study_items`)을 프롬프트에 가볍게 싣는다
-  /// (`call_session.py` · `inject_materials and call_type == "normal"`).
+  /// 서버 premium 계약 §2(09-23): 한국어 위주 대화 · 학습자가 모르거나 모국어로 물으면 그
+  /// 턴만 모국어로 설명 · 끝나면 서버가 대화 기억을 저장해 다음 자유대화에 넣는다.
+  /// 진도 게이트가 없다(프리토킹의 `COURSE_LOCKED` 가 안 걸린다). 옛 값 `normal` 을 대체한다
+  /// (09-23 · 사용자 「main이 아니라 지금 dev를 보고 진행」 — 앱이 붙는 demo-api 가 dev).
+  /// ⚠ `call_started.course` 는 `expression`·`freetalk` 만 준다 — 이 코스는 돌아오지 않는다.
   /// ⛔ [auto] 대신 쓰지 마라 — 이건 사용자가 대화 모드를 **고른** 경우만이다.
-  normal,
+  chat,
 
   /// **자동** — 서버가 진도(`cur_member_progress` · `cur_member_lesson.status`)로 이번
   /// 통화의 코스를 정한다. 표현학습을 다 드릴하면 다음은 프리토킹, 프리토킹 1회 뒤

@@ -55,11 +55,11 @@ class HomeScreen extends ConsumerWidget {
   ///     (`call_type` 미전송 = 서버 D11 라우팅).
   /// 캐릭터는 서버가 정한다(member.character_id) — 인자에 싣지 않는다.
   ///
-  /// ⭐ **대화 모드는 `normal` 로 건다**(사장님 정의 2026-09-22: 학습 = 커리큘럼,
-  ///   대화 = 제한 없는 자유 대화). 진도 게이트가 없다 — [CallCourse.normal] 참조.
+  /// ⭐ **대화 모드는 `chat` 으로 건다**(사장님 정의 2026-09-22: 학습 = 커리큘럼,
+  ///   대화 = 제한 없는 자유 대화). 진도 게이트가 없다 — [CallCourse.chat] 참조.
   Future<void> _startCall(BuildContext context, WidgetRef ref) async {
     final course = ref.read(homeModeProvider) == HomeMode.talk
-        ? CallCourse.normal
+        ? CallCourse.chat
         : CallCourse.auto;
     final status = await Permission.microphone.request();
     if (!context.mounted) return;

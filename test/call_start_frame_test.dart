@@ -152,13 +152,13 @@ void main() {
     });
 
     test('⛔ 와이어 값은 서버 Literal 과 **글자 그대로** 같아야 한다', () {
-      // `protocol.py:107`(a652cdc) —
-      //   Literal["normal","level_test","expression","freetalk","auto"].
+      // `protocol.py:115`(서버 origin/dev 50d03df) —
+      //   Literal["normal","level_test","expression","freetalk","auto","chat"].
       // pydantic Literal 이라 오타 하나면 **422 로 통화가 아예 안 열린다.**
       // enum 이름을 바꾸면 여기서 걸린다.
-      // `normal` 은 홈 대화 모드(2026-09-22) — Literal 에 원래 있던 값이다.
+      // `chat` 은 홈 대화 모드(09-23, 옛 `normal` 대체 — 신서버에서 normal 은 죽은 값).
       expect(CallCourse.values.map((c) => c.wireValue).toList(),
-          ['expression', 'freetalk', 'normal', 'auto']);
+          ['expression', 'freetalk', 'chat', 'auto']);
     });
 
     test('자동이면 auto 가 실린다 — 서버가 진도로 코스를 정한다', () {
