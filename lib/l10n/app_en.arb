@@ -182,6 +182,8 @@
   "analysisResult": "Analysis Result",
   "noNewExpressions": "No new expressions from this conversation.",
   "practice": "Practice",
+  "analysisNativeLabel": "Native",
+  "@analysisNativeLabel": {"description": "Label on the native-speaker pair card under a learned expression (Figma Card-Native 6177:28979). Short: what locals actually say."},
   "recentScore": "Recent score {score}%",
   "@recentScore": {
     "placeholders": {
@@ -891,8 +893,8 @@
       }
     }
   },
-  "todaysCalls": "Today's calls",
-  "callsUsedOfLimit": "{used} of {limit} used",
+  "todaysCalls": "Today's call time",
+  "callsUsedOfLimit": "{used} of {limit} min used",
   "@callsUsedOfLimit": {
     "placeholders": {
       "used": {
@@ -1253,7 +1255,7 @@
   },
   "subWhatYouKeep": "What you keep",
   "ctaTurnItBackOn": "Turn it back on",
-  "flTodayTitle": "That's today's call",
+  "flTodayTitle": "You've used today's call time",
   "@flTodayTitle": {
     "description": "free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa)."
   },

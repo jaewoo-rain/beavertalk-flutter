@@ -293,6 +293,9 @@ class AppLocalizationsHu extends AppLocalizations {
   String get practice => 'Gyakorlás';
 
   @override
+  String get analysisNativeLabel => 'Anyanyelvi';
+
+  @override
   String recentScore(int score) {
     return 'Legutóbbi eredmény: $score%';
   }
@@ -1433,11 +1436,11 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Mai hívások';
+  String get todaysCalls => 'Mai hívásidő';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used / $limit felhasználva';
+    return '$limit percből $used felhasználva';
   }
 
   @override
@@ -1995,7 +1998,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaTurnItBackOn => 'Visszakapcsolás';
 
   @override
-  String get flTodayTitle => 'Ez a mai hívás';
+  String get flTodayTitle => 'Elfogyott a mai hívásidőd';
 
   @override
   String get flTodayBody => 'Folytasd ott, ahol abbahagytad — most azonnal.';

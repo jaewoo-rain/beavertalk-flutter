@@ -283,6 +283,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get practice => '练习';
 
   @override
+  String get analysisNativeLabel => '地道表达';
+
+  @override
   String recentScore(int score) {
     return '最近得分 $score%';
   }
@@ -1384,11 +1387,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => '今日通话';
+  String get todaysCalls => '今日通话时间';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '已用 $used/$limit 次';
+    return '已用 $used/$limit 分钟';
   }
 
   @override
@@ -1918,7 +1921,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaTurnItBackOn => '重新开启';
 
   @override
-  String get flTodayTitle => '今天的通话用完了';
+  String get flTodayTitle => '今天的通话时间用完了';
 
   @override
   String get flTodayBody => '从上次中断的地方，现在就继续。';

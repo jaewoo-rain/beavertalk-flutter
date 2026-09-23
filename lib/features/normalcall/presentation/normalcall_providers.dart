@@ -6,6 +6,7 @@ import '../data/datasources/normalcall_remote_data_source.dart';
 import '../data/repositories/normalcall_repository_impl.dart';
 import '../domain/entities/call_result.dart';
 import '../domain/entities/cur_me.dart';
+import '../domain/entities/daily_status.dart';
 import '../domain/entities/pron_summary.dart';
 import '../domain/repositories/normalcall_repository.dart';
 
@@ -114,6 +115,17 @@ final pronunciationSummaryProvider =
 /// 내 커리큘럼 위치(`GET /cur/me`) — 개발자 도구의 한 줄, 나중엔 홈 «이번 통화» 카드.
 ///
 /// autoDispose: 통화마다 진도가 바뀌므로 화면을 벗어나면 버리고 다시 읽는다.
+/// 오늘의 통화 예산 — `GET /calls/daily-status`(서버 premium 브랜치 §5). 구서버·실패·
+/// admin 면제는 null 또는 [DailyStatus.hasBudget] false — 화면은 그 항목을 숨긴다.
+final dailyStatusProvider =
+    FutureProvider.autoDispose<DailyStatus?>((ref) async {
+  try {
+    return await ref.watch(normalcallRepositoryProvider).getDailyStatus();
+  } catch (_) {
+    return null;
+  }
+});
+
 final curMeProvider = FutureProvider.autoDispose<CurMe>((ref) async {
   return ref.watch(normalcallRepositoryProvider).getCurMe();
 });

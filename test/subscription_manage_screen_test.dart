@@ -1,3 +1,5 @@
+import 'package:beavertalk/features/normalcall/domain/entities/daily_status.dart';
+import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -29,12 +31,22 @@ void main() {
         pausedSince: DateTime(2026, 6, 26),
       );
 
-  Future<void> pump(WidgetTester tester, SubscriptionStatus s) async {
+  Future<void> pump(
+    WidgetTester tester,
+    SubscriptionStatus s, {
+    DailyStatus? daily,
+  }) async {
     await tester.binding.setSurfaceSize(const Size(375, 1800));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [subscriptionStatusProvider.overrideWithValue(s)],
+        // 매 호출 새 스코프 — 같은 스코프에 override 만 바꾸면 이미 풀린 값이 남는다.
+        key: UniqueKey(),
+        overrides: [
+          subscriptionStatusProvider.overrideWithValue(s),
+          // 서버 없이 돈다 — 기본은 「모른다」(null). 오늘 사용량 행은 값을 줄 때만 그린다.
+          dailyStatusProvider.overrideWith((ref) async => daily),
+        ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,
           supportedLocales: AppLocalizations.supportedLocales,
@@ -43,6 +55,7 @@ void main() {
         ),
       ),
     );
+    await tester.pump(); // dailyStatusProvider 의 future 가 풀리게 한 틱
   }
 
   const manageStates = [
@@ -207,9 +220,22 @@ void main() {
       expect(find.text('First payment'), findsOneWidget);
       expect(find.text('Free until Jun 20, 2026'), findsOneWidget);
 
+      // Free 의 「오늘 통화 시간」 은 서버 daily-status 값이다(09-23 하루 합산). 이 시험은 서버가
+      // 없어 값을 모른다 — 지어낸 「0 of 1 used」 대신 행을 숨긴다.
       await pump(tester, status(SubscriptionState.free));
-      expect(find.text("Today's calls"), findsOneWidget);
-      expect(find.text('0 of 1 used'), findsOneWidget);
+      expect(find.text("Today's call time"), findsNothing);
+      expect(find.textContaining('min used'), findsNothing);
+
+      // 서버가 오늘 120초 사용 · 예산 300초를 주면 분으로 그린다(올림).
+      await pump(tester, status(SubscriptionState.free),
+          daily: const DailyStatus(budgetSec: 300, usedSec: 120, remainingSec: 180));
+      expect(find.text("Today's call time"), findsOneWidget);
+      expect(find.text('2 of 5 min used'), findsOneWidget);
+
+      await pump(tester, status(SubscriptionState.free),
+          daily: const DailyStatus(budgetSec: 300, usedSec: 10, remainingSec: 290));
+      expect(find.text('1 of 5 min used'), findsOneWidget,
+          reason: '10초를 써도 0분이라고 하지 않는다 — 올림');
     });
   });
 

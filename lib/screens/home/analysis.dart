@@ -7,6 +7,7 @@ import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/molecules/card_bookmark.dart';
+import '../../components/molecules/card_native.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/card_study.dart';
 import '../../components/molecules/pronunciation_result.dart';
@@ -523,26 +524,52 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       );
     }
     return _section(
-      label: l10n.newExpressionsCount(sentences.length),
+      // 서버 `premium` 브랜치(09-23) P0-3 — 배운 표현마다 현지인 짝이 붙어 오므로 개수는
+      // 짝을 뺀 수다(3개 배우면 6개가 온다).
+      label: l10n.newExpressionsCount(result.learnedCount),
       child: ValueListenableBuilder<Set<int>>(
         valueListenable: bookmarkedSentenceIds,
         builder: (context, saved, _) => Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             for (var i = 0; i < sentences.length; i++) ...[
-              if (i > 0) const SizedBox(height: AppSpacing.s12),
-              CardBookmark(
-                korean: sentences[i].korean ?? '',
-                native: sentences[i].native ?? '',
-                bookmarked: saved.contains(sentences[i].sentenceId),
-                onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
-                onSpeakerTap: () => _playSentence(sentences[i]),
-                actionText: l10n.practice,
-                onAction: () => _startLearning(
-                  [_learningSentences[i]],
-                  origin: LearningOrigin.sentence,
+              // 기본 카드 사이는 12, 기본 → 짝은 8(Figma `Pair/Expression` `6177:28976` gap 8).
+              if (i > 0)
+                SizedBox(
+                  height: sentences[i].isNative ? AppSpacing.s8 : AppSpacing.s12,
                 ),
-              ),
+              if (sentences[i].isNative)
+                // 서버가 「기본1·짝1·기본2·짝2…」 로 정렬해 준다 — 재정렬하지 않고, 짝은 바로 위
+                // 기본 카드 아래 들여 붙인다(`Native Row` `6177:28977`).
+                NativePairRow(
+                  card: CardNative(
+                    label: l10n.analysisNativeLabel,
+                    expression: sentences[i].korean ?? '',
+                    gloss: sentences[i].nuance ?? sentences[i].native,
+                    bookmarked: saved.contains(sentences[i].sentenceId),
+                    onBookmarkTap: () =>
+                        _toggleBookmark(sentences[i].sentenceId),
+                    onSpeakerTap: () => _playSentence(sentences[i]),
+                    actionText: l10n.practice,
+                    onAction: () => _startLearning(
+                      [_learningSentences[i]],
+                      origin: LearningOrigin.sentence,
+                    ),
+                  ),
+                )
+              else
+                CardBookmark(
+                  korean: sentences[i].korean ?? '',
+                  native: sentences[i].native ?? '',
+                  bookmarked: saved.contains(sentences[i].sentenceId),
+                  onBookmarkTap: () => _toggleBookmark(sentences[i].sentenceId),
+                  onSpeakerTap: () => _playSentence(sentences[i]),
+                  actionText: l10n.practice,
+                  onAction: () => _startLearning(
+                    [_learningSentences[i]],
+                    origin: LearningOrigin.sentence,
+                  ),
+                ),
             ],
           ],
         ),

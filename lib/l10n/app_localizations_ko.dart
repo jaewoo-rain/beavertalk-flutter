@@ -284,6 +284,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get practice => '연습하기';
 
   @override
+  String get analysisNativeLabel => '현지인';
+
+  @override
   String recentScore(int score) {
     return '최근 점수 $score%';
   }
@@ -1388,11 +1391,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => '오늘의 통화';
+  String get todaysCalls => '오늘 통화 시간';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit회 중 $used회 사용';
+    return '$limit분 중 $used분 사용';
   }
 
   @override
@@ -1922,7 +1925,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaTurnItBackOn => '다시 켜기';
 
   @override
-  String get flTodayTitle => '오늘의 통화를 다 썼어요';
+  String get flTodayTitle => '오늘 통화 시간을 다 썼어요';
 
   @override
   String get flTodayBody => '끊긴 대화, 지금 바로 이어가요.';

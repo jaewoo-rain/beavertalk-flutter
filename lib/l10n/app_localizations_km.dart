@@ -290,6 +290,9 @@ class AppLocalizationsKm extends AppLocalizations {
   String get practice => 'អនុវត្ត';
 
   @override
+  String get analysisNativeLabel => 'ម្ចាស់ភាសា';
+
+  @override
   String recentScore(int score) {
     return 'ពិន្ទុថ្មីៗ $score%';
   }
@@ -1420,11 +1423,11 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'ការហៅថ្ងៃនេះ';
+  String get todaysCalls => 'ពេលហៅថ្ងៃនេះ';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return 'បានប្រើ $used ក្នុងចំណោម $limit';
+    return 'បានប្រើ $used ក្នុងចំណោម $limit នាទី';
   }
 
   @override
@@ -1973,7 +1976,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaTurnItBackOn => 'បើកវាឡើងវិញ';
 
   @override
-  String get flTodayTitle => 'នោះជាការហៅថ្ងៃនេះហើយ';
+  String get flTodayTitle => 'ពេលហៅថ្ងៃនេះអស់ហើយ';
 
   @override
   String get flTodayBody => 'បន្តពីកន្លែងដែលអ្នកឈប់ — ឥឡូវនេះ។';

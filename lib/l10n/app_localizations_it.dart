@@ -294,6 +294,9 @@ class AppLocalizationsIt extends AppLocalizations {
   String get practice => 'Esercitati';
 
   @override
+  String get analysisNativeLabel => 'Madrelingua';
+
+  @override
   String recentScore(int score) {
     return 'Punteggio recente $score%';
   }
@@ -1437,11 +1440,11 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Chiamate di oggi';
+  String get todaysCalls => 'Tempo di chiamata di oggi';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used di $limit usate';
+    return '$used di $limit min usati';
   }
 
   @override
@@ -2002,7 +2005,7 @@ class AppLocalizationsIt extends AppLocalizations {
   String get ctaTurnItBackOn => 'Riattiva';
 
   @override
-  String get flTodayTitle => 'Questa era la chiamata di oggi';
+  String get flTodayTitle => 'Hai finito il tempo di chiamata di oggi';
 
   @override
   String get flTodayBody => 'Riprendi da dove avevi lasciato — subito.';

@@ -53,6 +53,10 @@ import 'package:beavertalk/features/character/presentation/providers/character_p
 import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
+import 'package:beavertalk/components/molecules/card_bookmark.dart';
+import 'package:beavertalk/components/molecules/card_native.dart';
+import 'package:beavertalk/features/normalcall/domain/entities/daily_status.dart';
+import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
 import 'package:beavertalk/screens/overlays/subscription_overlays.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
@@ -218,6 +222,40 @@ Map<String, Widget Function()> i18nScreens() {
             );
           },
         ),
+    // 분석 화면 현지인 짝(서버 premium P0-3 · Figma `Pair/Expression` `6177:28976`) — 기본 카드 +
+    // 연결선 + 짝 카드. 뉘앙스가 긴 경우(줄바꿈)를 같이 본다. 분석 화면 자체는 미등록이라 부품을 건다.
+    'AnalysisNativePair': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  CardBookmark(
+                    korean: '배고파요',
+                    native: 'I am hungry',
+                    bookmarked: false,
+                    actionText: l10n.practice,
+                    onAction: () {},
+                  ),
+                  const SizedBox(height: 8),
+                  NativePairRow(
+                    card: CardNative(
+                      label: l10n.analysisNativeLabel,
+                      expression: '뱃가죽이 등에 붙을 것 같아요',
+                      gloss: 'So hungry my stomach touches my back — a playful way '
+                          'friends say they are starving',
+                      bookmarked: true,
+                      actionText: l10n.practice,
+                      onAction: () {},
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
     'AlarmRows': () => Builder(
           builder: (ctx) {
             final l10n = AppLocalizations.of(ctx);
@@ -309,6 +347,11 @@ Map<String, Widget Function()> i18nScreens() {
       SubscriptionState.trial,
     ])
       'SubscriptionManage_${st.name}': () => _manageHost(st),
+    // Free 카드의 「오늘 통화 시간」 행 — 서버 daily-status 를 알 때만 그린다(09-23 하루 합산).
+    'SubscriptionManage_free_budget': () => _manageHost(
+          SubscriptionState.free,
+          daily: const DailyStatus(budgetSec: 300, usedSec: 120, remainingSec: 180),
+        ),
     // P3 conversion screens (this run's l10n pass). PurchaseProcessing is
     // excluded (it fires the mock purchase and navigates by named route);
     // the Pro success screen is excluded too — its one-time-offer timer
@@ -521,8 +564,10 @@ Widget _avatarHost({required bool discount}) {
 }
 
 /// 구독 관리 화면을 한 상태로 띄운다. 날짜 행이 모두 값으로 차도록 세 날짜를 다 준다.
-Widget _manageHost(SubscriptionState state) => ProviderScope(
+Widget _manageHost(SubscriptionState state, {DailyStatus? daily}) =>
+    ProviderScope(
       overrides: [
+        dailyStatusProvider.overrideWith((ref) async => daily),
         subscriptionStatusProvider.overrideWithValue(SubscriptionStatus(
           state: state,
           tier: SubscriptionTier.max,

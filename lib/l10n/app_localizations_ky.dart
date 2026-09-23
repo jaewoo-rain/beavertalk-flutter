@@ -292,6 +292,9 @@ class AppLocalizationsKy extends AppLocalizations {
   String get practice => 'Көнүгүү';
 
   @override
+  String get analysisNativeLabel => 'Жергиликтүү';
+
+  @override
   String recentScore(int score) {
     return 'Акыркы упай $score%';
   }
@@ -1423,11 +1426,11 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Бүгүнкү чалуулар';
+  String get todaysCalls => 'Бүгүнкү чалуу убактысы';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit ичинен $used колдонулду';
+    return '$limit мүнөттүн $used мүнөтү колдонулду';
   }
 
   @override
@@ -1982,7 +1985,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get ctaTurnItBackOn => 'Кайра күйгүзүү';
 
   @override
-  String get flTodayTitle => 'Бул бүгүнкү чалуу';
+  String get flTodayTitle => 'Бүгүнкү чалуу убактысы бүттү';
 
   @override
   String get flTodayBody => 'Токтогон жерден улантыңыз — ушул замат.';

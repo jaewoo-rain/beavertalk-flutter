@@ -290,6 +290,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get practice => 'Дадлага';
 
   @override
+  String get analysisNativeLabel => 'Уугуул хэлтэн';
+
+  @override
   String recentScore(int score) {
     return 'Сүүлийн оноо $score%';
   }
@@ -1418,11 +1421,11 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Өнөөдрийн дуудлага';
+  String get todaysCalls => 'Өнөөдрийн дуудлагын хугацаа';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit-с $used ашигласан';
+    return '$limit минутаас $used ашигласан';
   }
 
   @override
@@ -1975,7 +1978,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaTurnItBackOn => 'Буцааж асаах';
 
   @override
-  String get flTodayTitle => 'Энэ өнөөдрийн дуудлага байлаа';
+  String get flTodayTitle => 'Өнөөдрийн дуудлагын хугацаа дууслаа';
 
   @override
   String get flTodayBody => 'Орхисон газраасаа үргэлжлүүлээрэй — яг одоо.';

@@ -290,6 +290,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get practice => 'অনুশীলন';
 
   @override
+  String get analysisNativeLabel => 'স্থানীয়রা বলে';
+
+  @override
   String recentScore(int score) {
     return 'সাম্প্রতিক স্কোর $score%';
   }
@@ -1418,11 +1421,11 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'আজকের কল';
+  String get todaysCalls => 'আজকের কলের সময়';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limitটির মধ্যে $usedটি ব্যবহৃত';
+    return '$limit মিনিটের মধ্যে $used মিনিট ব্যবহৃত';
   }
 
   @override
@@ -1975,7 +1978,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ctaTurnItBackOn => 'আবার চালু করুন';
 
   @override
-  String get flTodayTitle => 'এটাই ছিল আজকের কল';
+  String get flTodayTitle => 'আজকের কলের সময় শেষ';
 
   @override
   String get flTodayBody => 'যেখানে থেমেছিলেন, সেখান থেকে — এখনই।';

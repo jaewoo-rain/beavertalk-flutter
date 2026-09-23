@@ -292,6 +292,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get practice => 'පුහුණුව';
 
   @override
+  String get analysisNativeLabel => 'දේශීය';
+
+  @override
   String recentScore(int score) {
     return 'මෑත ලකුණු $score%';
   }
@@ -1419,11 +1422,11 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'අද ඇමතුම්';
+  String get todaysCalls => 'අද ඇමතුම් කාලය';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limitන් $usedක් භාවිත කර ඇත';
+    return 'මිනිත්තු $limit න් $used ක් භාවිතයි';
   }
 
   @override
@@ -1976,7 +1979,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get ctaTurnItBackOn => 'නැවත සක්‍රිය කරන්න';
 
   @override
-  String get flTodayTitle => 'අද ඇමතුම එයයි';
+  String get flTodayTitle => 'අද ඇමතුම් කාලය අවසන්';
 
   @override
   String get flTodayBody => 'නැවතුණු තැනින්ම — දැන්ම.';

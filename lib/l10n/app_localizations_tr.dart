@@ -288,6 +288,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get practice => 'Pratik';
 
   @override
+  String get analysisNativeLabel => 'Yerli';
+
+  @override
   String recentScore(int score) {
     return 'Son puan $score%';
   }
@@ -1418,11 +1421,11 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Bugünkü aramalar';
+  String get todaysCalls => 'Bugünkü arama süresi';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used/$limit kullanıldı';
+    return '$limit dakikanın $used dakikası kullanıldı';
   }
 
   @override
@@ -1975,7 +1978,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaTurnItBackOn => 'Yeniden aç';
 
   @override
-  String get flTodayTitle => 'Bugünkü araman buydu';
+  String get flTodayTitle => 'Bugünkü arama süren doldu';
 
   @override
   String get flTodayBody => 'Kaldığın yerden devam et — hemen şimdi.';

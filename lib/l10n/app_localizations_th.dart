@@ -286,6 +286,9 @@ class AppLocalizationsTh extends AppLocalizations {
   String get practice => 'ฝึกฝน';
 
   @override
+  String get analysisNativeLabel => 'เจ้าของภาษา';
+
+  @override
   String recentScore(int score) {
     return 'คะแนนล่าสุด $score%';
   }
@@ -1411,11 +1414,11 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'การโทรวันนี้';
+  String get todaysCalls => 'เวลาโทรวันนี้';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return 'ใช้ไป $used จาก $limit ครั้ง';
+    return 'ใช้ไป $used จาก $limit นาที';
   }
 
   @override
@@ -1966,7 +1969,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get ctaTurnItBackOn => 'เปิดใช้อีกครั้ง';
 
   @override
-  String get flTodayTitle => 'นั่นคือการโทรของวันนี้';
+  String get flTodayTitle => 'เวลาโทรของวันนี้หมดแล้ว';
 
   @override
   String get flTodayBody => 'คุยต่อจากที่ค้างไว้ — ได้เลยตอนนี้';

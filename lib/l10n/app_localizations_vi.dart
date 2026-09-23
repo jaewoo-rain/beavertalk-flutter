@@ -293,6 +293,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get practice => 'Luyện tập';
 
   @override
+  String get analysisNativeLabel => 'Người bản xứ';
+
+  @override
   String recentScore(int score) {
     return 'Điểm gần đây $score%';
   }
@@ -1421,11 +1424,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Cuộc gọi hôm nay';
+  String get todaysCalls => 'Thời gian gọi hôm nay';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return 'Đã dùng $used/$limit';
+    return 'Đã dùng $used/$limit phút';
   }
 
   @override
@@ -1980,7 +1983,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaTurnItBackOn => 'Bật lại';
 
   @override
-  String get flTodayTitle => 'Đó là cuộc gọi hôm nay';
+  String get flTodayTitle => 'Bạn đã dùng hết thời gian gọi hôm nay';
 
   @override
   String get flTodayBody => 'Tiếp tục từ chỗ bạn dừng lại — ngay bây giờ.';

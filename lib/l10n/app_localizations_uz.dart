@@ -291,6 +291,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get practice => 'Mashq qilish';
 
   @override
+  String get analysisNativeLabel => 'Mahalliy';
+
+  @override
   String recentScore(int score) {
     return 'Soʻnggi natija $score%';
   }
@@ -1428,11 +1431,11 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Bugungi qoʻngʻiroqlar';
+  String get todaysCalls => 'Bugungi qoʻngʻiroq vaqti';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit tadan $used tasi ishlatildi';
+    return '$limit daqiqadan $used daqiqa ishlatildi';
   }
 
   @override
@@ -1989,7 +1992,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaTurnItBackOn => 'Qayta yoqish';
 
   @override
-  String get flTodayTitle => 'Bu bugungi qoʻngʻiroq';
+  String get flTodayTitle => 'Bugungi qoʻngʻiroq vaqti tugadi';
 
   @override
   String get flTodayBody => 'Toʻxtagan joyingizdan davom eting — hoziroq.';

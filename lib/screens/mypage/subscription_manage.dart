@@ -12,6 +12,7 @@ import '../../components/molecules/banner.dart';
 import '../../core/format/dates.dart';
 import '../../core/format/money.dart';
 import '../../core/store/store_subscription_link.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/subscription_status_resolver.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -186,7 +187,7 @@ class _ManageBody extends StatelessWidget {
 /// The plan summary card. Two measured paddings exist in the originals —
 /// `card` (16/14, gap 10) on free/trial/max and `Card/status` (24/16, gap 12)
 /// on active/grace/hold/ending — and both are kept as measured.
-class _PlanCard extends StatelessWidget {
+class _PlanCard extends ConsumerWidget {
   const _PlanCard({required this.status});
 
   final SubscriptionStatus status;
@@ -200,7 +201,7 @@ class _PlanCard extends StatelessWidget {
       };
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final c = context.c;
     final l10n = AppLocalizations.of(context);
     final state = status.state;
@@ -231,10 +232,24 @@ class _PlanCard extends StatelessWidget {
       _ => _priceLine(l10n, status),
     };
 
-    final (String rowLabel, String rowValue) = switch (state) {
-      // TODO(server): today's usage is not on any endpoint yet; 0-of-1 is the
-      // Free default until the usage counter ships (see plan doc §5).
-      SubscriptionState.free => (l10n.todaysCalls, l10n.callsUsedOfLimit(0, 1)),
+    // Free 의 「오늘 통화 시간」 — 하루 합산 5분(09-23 확정)을 서버 `daily-status` 로 읽는다.
+    // 예전엔 「0 of 1 used」 를 박아 두어 실제 사용량과 무관했다. 모르면(구서버·실패) 행째
+    // 숨긴다 — 지어낸 0 을 보여 주지 않는다. 분은 올림(10초 써도 1분) · 한도는 내림.
+    final daily = state == SubscriptionState.free
+        ? ref.watch(dailyStatusProvider).valueOrNull
+        : null;
+    final budget = daily?.budgetSec;
+    final used = daily?.usedSec;
+    final (String rowLabel, String rowValue)? row = switch (state) {
+      SubscriptionState.free => budget == null || used == null
+          ? null
+          : (
+              l10n.todaysCalls,
+              l10n.callsUsedOfLimit(
+                ((used + 59) ~/ 60).clamp(0, budget ~/ 60),
+                budget ~/ 60,
+              ),
+            ),
       SubscriptionState.trial => (
           l10n.firstPaymentLabel,
           expiry == null ? '—' : _fullDate(context, expiry),
@@ -293,6 +308,7 @@ class _PlanCard extends StatelessWidget {
             subtitle,
             style: AppType.body2.r.copyWith(color: c.labelNormal),
           ),
+          if (row case (final rowLabel, final rowValue)) ...[
           SizedBox(height: _compact ? 10 : 12),
           Container(height: 1, color: c.lineAlternative),
           SizedBox(height: _compact ? 10 : 12),
@@ -328,6 +344,7 @@ class _PlanCard extends StatelessWidget {
               ),
             ],
           ),
+          ],
         ],
       ),
     );

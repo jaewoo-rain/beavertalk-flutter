@@ -293,6 +293,9 @@ class AppLocalizationsFil extends AppLocalizations {
   String get practice => 'Practice';
 
   @override
+  String get analysisNativeLabel => 'Katutubo';
+
+  @override
   String recentScore(int score) {
     return 'Kamakailang score $score%';
   }
@@ -1433,11 +1436,11 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Mga tawag ngayon';
+  String get todaysCalls => 'Oras ng tawag ngayon';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used sa $limit ang nagamit';
+    return '$used sa $limit min ang nagamit';
   }
 
   @override
@@ -1997,7 +2000,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaTurnItBackOn => 'I-on itong muli';
 
   @override
-  String get flTodayTitle => 'Iyon na ang tawag mo ngayong araw';
+  String get flTodayTitle => 'Nagamit mo na ang oras ng tawag ngayong araw';
 
   @override
   String get flTodayBody => 'Ituloy kung saan ka huminto — ngayon mismo.';

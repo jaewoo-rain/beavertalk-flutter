@@ -283,6 +283,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get practice => '練習';
 
   @override
+  String get analysisNativeLabel => 'ネイティブ';
+
+  @override
   String recentScore(int score) {
     return '最近のスコア $score%';
   }
@@ -1386,11 +1389,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => '今日の通話';
+  String get todaysCalls => '今日の通話時間';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit回中$used回使用';
+    return '$limit分中$used分使用';
   }
 
   @override
@@ -1921,7 +1924,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaTurnItBackOn => '再びオンにする';
 
   @override
-  String get flTodayTitle => '今日の通話は終わりました';
+  String get flTodayTitle => '今日の通話時間を使い切りました';
 
   @override
   String get flTodayBody => '続きから、今すぐ再開しましょう。';

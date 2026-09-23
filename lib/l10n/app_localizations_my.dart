@@ -293,6 +293,9 @@ class AppLocalizationsMy extends AppLocalizations {
   String get practice => 'လေ့ကျင့်ရန်';
 
   @override
+  String get analysisNativeLabel => 'ဒေသခံ';
+
+  @override
   String recentScore(int score) {
     return 'မကြာသေးမီက ရမှတ် $score%';
   }
@@ -1430,11 +1433,11 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'ယနေ့ ခေါ်ဆိုမှုများ';
+  String get todaysCalls => 'ယနေ့ ခေါ်ဆိုချိန်';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit ကြိမ်အနက် $used ကြိမ် သုံးပြီး';
+    return '$limit မိနစ်တွင် $used မိနစ် သုံးပြီး';
   }
 
   @override
@@ -1991,7 +1994,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaTurnItBackOn => 'ပြန်ဖွင့်ရန်';
 
   @override
-  String get flTodayTitle => 'ယနေ့ ခေါ်ဆိုမှု ပြီးပါပြီ';
+  String get flTodayTitle => 'ယနေ့ ခေါ်ဆိုချိန် ကုန်ပါပြီ';
 
   @override
   String get flTodayBody => 'ရပ်ထားသည့်နေရာမှ — ယခုပဲ ဆက်လုပ်ပါ။';

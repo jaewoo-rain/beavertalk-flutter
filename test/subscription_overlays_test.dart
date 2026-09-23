@@ -92,7 +92,7 @@ void main() {
       SubscriptionOverlay.purchaseFailedCanceled: 'Payment canceled',
       SubscriptionOverlay.purchaseFailedStore: 'Something went wrong',
       SubscriptionOverlay.alreadySubscribed: "You're already on Premium",
-      SubscriptionOverlay.freeLimitCall: "That's today's call",
+      SubscriptionOverlay.freeLimitCall: "You've used today's call time",
       SubscriptionOverlay.freeLimitCheck: "That's today's check",
       SubscriptionOverlay.freeCallEnded: 'Your free call has ended',
       SubscriptionOverlay.keepGoing: 'Keep going?',

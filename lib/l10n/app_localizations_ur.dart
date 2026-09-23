@@ -291,6 +291,9 @@ class AppLocalizationsUr extends AppLocalizations {
   String get practice => 'مشق';
 
   @override
+  String get analysisNativeLabel => 'مقامی';
+
+  @override
   String recentScore(int score) {
     return 'حالیہ سکور $score%';
   }
@@ -1422,11 +1425,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'آج کی کالیں';
+  String get todaysCalls => 'آج کا کال کا وقت';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit میں سے $used استعمال ہوئیں';
+    return '$limit میں سے $used منٹ استعمال';
   }
 
   @override
@@ -1981,7 +1984,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get ctaTurnItBackOn => 'دوبارہ آن کریں';
 
   @override
-  String get flTodayTitle => 'آج کی کال یہی تھی';
+  String get flTodayTitle => 'آج کا کال کا وقت ختم';
 
   @override
   String get flTodayBody => 'جہاں چھوڑا تھا وہیں سے جاری رکھیں — ابھی۔';

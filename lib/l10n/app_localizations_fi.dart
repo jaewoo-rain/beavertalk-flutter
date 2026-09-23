@@ -293,6 +293,9 @@ class AppLocalizationsFi extends AppLocalizations {
   String get practice => 'Harjoittele';
 
   @override
+  String get analysisNativeLabel => 'Natiivi';
+
+  @override
   String recentScore(int score) {
     return 'Viimeisin tulos $score %';
   }
@@ -1426,11 +1429,11 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Päivän puhelut';
+  String get todaysCalls => 'Tämän päivän puheluaika';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used/$limit käytetty';
+    return '$used/$limit min käytetty';
   }
 
   @override
@@ -1990,7 +1993,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaTurnItBackOn => 'Kytke takaisin päälle';
 
   @override
-  String get flTodayTitle => 'Se oli päivän puhelu';
+  String get flTodayTitle => 'Tämän päivän puheluaika on käytetty';
 
   @override
   String get flTodayBody => 'Jatka siitä, mihin jäit — heti.';

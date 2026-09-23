@@ -292,6 +292,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get practice => 'Практика';
 
   @override
+  String get analysisNativeLabel => 'Носители';
+
+  @override
   String recentScore(int score) {
     return 'Последний результат $score%';
   }
@@ -1429,11 +1432,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Звонки сегодня';
+  String get todaysCalls => 'Время звонков сегодня';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return 'Использовано $used из $limit';
+    return '$used из $limit мин использовано';
   }
 
   @override
@@ -1988,7 +1991,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ctaTurnItBackOn => 'Включить снова';
 
   @override
-  String get flTodayTitle => 'Это был звонок на сегодня';
+  String get flTodayTitle => 'Время звонков на сегодня закончилось';
 
   @override
   String get flTodayBody => 'Продолжите с того же места — прямо сейчас.';

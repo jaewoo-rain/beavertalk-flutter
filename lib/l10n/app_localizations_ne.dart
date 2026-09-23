@@ -289,6 +289,9 @@ class AppLocalizationsNe extends AppLocalizations {
   String get practice => 'अभ्यास';
 
   @override
+  String get analysisNativeLabel => 'स्थानीय';
+
+  @override
   String recentScore(int score) {
     return 'हालको स्कोर $score%';
   }
@@ -1417,11 +1420,11 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'आजका कलहरू';
+  String get todaysCalls => 'आजको कल समय';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$limit मध्ये $used प्रयोग भयो';
+    return '$limit मध्ये $used मिनेट प्रयोग';
   }
 
   @override
@@ -1973,7 +1976,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get ctaTurnItBackOn => 'फेरि खोल्नुहोस्';
 
   @override
-  String get flTodayTitle => 'आजको कल यही थियो';
+  String get flTodayTitle => 'आजको कल समय सकियो';
 
   @override
   String get flTodayBody => 'जहाँ छोड्नुभयो, त्यहीँबाट — अहिल्यै।';

@@ -293,6 +293,9 @@ class AppLocalizationsMs extends AppLocalizations {
   String get practice => 'Latihan';
 
   @override
+  String get analysisNativeLabel => 'Penutur asli';
+
+  @override
   String recentScore(int score) {
     return 'Skor terkini $score%';
   }
@@ -1431,11 +1434,11 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
-  String get todaysCalls => 'Panggilan hari ini';
+  String get todaysCalls => 'Masa panggilan hari ini';
 
   @override
   String callsUsedOfLimit(int used, int limit) {
-    return '$used daripada $limit digunakan';
+    return '$used daripada $limit minit digunakan';
   }
 
   @override
@@ -1993,7 +1996,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ctaTurnItBackOn => 'Hidupkan semula';
 
   @override
-  String get flTodayTitle => 'Itu panggilan hari ini';
+  String get flTodayTitle => 'Masa panggilan hari ini sudah habis';
 
   @override
   String get flTodayBody =>

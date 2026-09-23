@@ -71,6 +71,27 @@ abstract final class AppIcons {
   static Widget aiSparkle({double size = 20, required Color color}) =>
       _glyph('ai-sparkle', size, color);
 
+  /// `native` (`6177:27891`, 분석 카드 인스턴스 Size=16 `6177:27890`) — 현지인 표현 라벨.
+  ///
+  /// 다른 duo 와 달리 **토큰으로 칠한다** — 두 층이 `Primary/Normal-24`(말풍선) ·
+  /// `Primary/Normal`(핀)이라 모드마다 색이 다르다(Dark `#00FFB2` · Light `#007A55`).
+  /// 색을 SVG 에 박으면 한쪽 모드에서 어긋나서 두 층을 따로 srcIn 으로 입힌다.
+  static Widget duoNative({
+    double size = 16,
+    required Color bubble,
+    required Color pin,
+  }) =>
+      SizedBox(
+        width: size,
+        height: size,
+        child: Stack(
+          children: [
+            _glyph('native-bubble', size, bubble),
+            _glyph('native-pin', size, pin),
+          ],
+        ),
+      );
+
   // ── Navigation / chrome ──────────────────────────────────────
   static Widget close({double size = 24, required Color color}) =>
       _glyph('close', size, color);

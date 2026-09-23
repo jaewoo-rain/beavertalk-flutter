@@ -682,6 +682,12 @@ abstract class AppLocalizations {
   /// **'Practice'**
   String get practice;
 
+  /// Label on the native-speaker pair card under a learned expression (Figma Card-Native 6177:28979). Short: what locals actually say.
+  ///
+  /// In en, this message translates to:
+  /// **'Native'**
+  String get analysisNativeLabel;
+
   /// No description provided for @recentScore.
   ///
   /// In en, this message translates to:
@@ -2719,13 +2725,13 @@ abstract class AppLocalizations {
   /// No description provided for @todaysCalls.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s calls'**
+  /// **'Today\'s call time'**
   String get todaysCalls;
 
   /// No description provided for @callsUsedOfLimit.
   ///
   /// In en, this message translates to:
-  /// **'{used} of {limit} used'**
+  /// **'{used} of {limit} min used'**
   String callsUsedOfLimit(int used, int limit);
 
   /// No description provided for @firstPaymentLabel.
@@ -3691,7 +3697,7 @@ abstract class AppLocalizations {
   /// free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa).
   ///
   /// In en, this message translates to:
-  /// **'That\'s today\'s call'**
+  /// **'You\'ve used today\'s call time'**
   String get flTodayTitle;
 
   /// No description provided for @flTodayBody.
