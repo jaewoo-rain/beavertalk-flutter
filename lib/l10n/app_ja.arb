@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "無料プランは1日1回のチェックです",
   "bulletProCharactersForever": "購入したキャラクターはずっとあなたのもの",
   "paywallMaxTitle": "顔を見ながら話せます。",
+  "paywallTutorCompare": "チューターとのレッスンは1時間$25。Premiumは1か月{price}です。",
   "planMonthly": "月間",
   "planAnnual": "年間",
   "proMonthlyPriceLine": "月額{price}",

@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Gratis te da una prueba al día",
   "bulletProCharactersForever": "Los personajes que compras son tuyos para siempre",
   "paywallMaxTitle": "Ahora puedes verlos.",
+  "paywallTutorCompare": "Una hora con un tutor cuesta $25. Un mes de Premium cuesta {price}.",
   "planMonthly": "Mensual",
   "planAnnual": "Anual",
   "proMonthlyPriceLine": "{price} al mes",

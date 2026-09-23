@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free හි දිනකට එක් පරීක්ෂාවක්",
   "bulletProCharactersForever": "මිලදී ගත් චරිත සදහටම ඔබේමයි",
   "paywallMaxTitle": "දැන් ඔවුන්ව දැකිය හැක.",
+  "paywallTutorCompare": "ගුරුවරයෙකු සමඟ පැයකට $25 වැය වේ. Premium මාසයකට {price} වැය වේ.",
   "planMonthly": "මාසික",
   "planAnnual": "වාර්ෂික",
   "proMonthlyPriceLine": "මසකට {price}",

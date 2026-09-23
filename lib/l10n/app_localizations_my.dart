@@ -1541,6 +1541,11 @@ class AppLocalizationsMy extends AppLocalizations {
   String get paywallMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'ဆရာနှင့် တစ်နာရီ \$25 ကျသင့်သည်။ Premium တစ်လ $price ကျသင့်သည်။';
+  }
+
+  @override
   String get planMonthly => 'လစဉ်';
 
   @override

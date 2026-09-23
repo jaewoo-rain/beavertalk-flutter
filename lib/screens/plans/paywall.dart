@@ -237,12 +237,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
             style: AppType.title3.sb.copyWith(color: c.labelStrong)),
       ];
     }
-    // ⚠ 정본의 둘째 줄 「튜터 1시간 $25 = Premium 한 달 $23.99」 는 **아직 그리지 않는다.**
-    //   $25 는 달러 고정 사실인데 옆 가격은 스토어 현지가라, 원화·루피 사용자에게는 서로 다른
-    //   통화를 비교하는 문장이 된다(남은판단 P12). 통화별 비교값이 정해지면 되살린다.
+    // 정본 둘째 줄 「튜터 1시간 $25 · Premium 한 달 {price}」 (`4514:5489` · Tablet `6268:44851`)
+    // — Header VERTICAL gap 8 · Label 1 Regular 14 · Label/Normal · FILL.
+    // ⚠ $25 는 달러 고정 사실이고 옆 가격은 스토어 현지가다. 원화·루피 사용자에게는 서로 다른
+    //   통화를 비교하는 문장이 되므로 가격이 USD 일 때만 그린다(남은판단 P12).
     return [
       Text(l10n.paywallMaxTitle,
           style: AppType.title2.sb.copyWith(color: c.labelStrong)),
+      if (PlanPrices.maxQuotedInUsd) ...[
+        const SizedBox(height: AppSpacing.s8),
+        Text(l10n.paywallTutorCompare(PlanPrices.maxMonthly),
+            style: AppType.label1.r.copyWith(color: c.labelNormal)),
+      ],
     ];
   }
 

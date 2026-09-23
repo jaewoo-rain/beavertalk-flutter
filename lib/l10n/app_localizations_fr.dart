@@ -1557,6 +1557,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get paywallMaxTitle => 'Maintenant, vous pouvez les voir.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Une heure avec un tuteur coûte \$25. Un mois de Premium coûte $price.';
+  }
+
+  @override
   String get planMonthly => 'Mensuel';
 
   @override

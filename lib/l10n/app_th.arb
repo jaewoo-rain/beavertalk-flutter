@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "แพ็กเกจฟรีตรวจได้วันละครั้ง",
   "bulletProCharactersForever": "ตัวละครที่ซื้อแล้วเป็นของคุณตลอดไป",
   "paywallMaxTitle": "ตอนนี้คุณเห็นหน้าพวกเขาได้แล้ว",
+  "paywallTutorCompare": "เรียนกับติวเตอร์ 1 ชั่วโมงราคา $25 ส่วน Premium 1 เดือนราคา {price}",
   "planMonthly": "รายเดือน",
   "planAnnual": "รายปี",
   "proMonthlyPriceLine": "{price} ต่อเดือน",

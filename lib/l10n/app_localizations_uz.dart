@@ -1537,6 +1537,11 @@ class AppLocalizationsUz extends AppLocalizations {
   String get paywallMaxTitle => 'Endi ularni koʻra olasiz.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Repetitor bilan bir soat \$25 turadi. Premium bir oyi $price turadi.';
+  }
+
+  @override
   String get planMonthly => 'Oylik';
 
   @override

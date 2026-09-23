@@ -1524,6 +1524,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get paywallMaxTitle => 'الآن يمكنك رؤيتهم.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'ساعة واحدة مع مدرّس تكلّف \$25. شهر من Premium يكلّف $price.';
+  }
+
+  @override
   String get planMonthly => 'شهري';
 
   @override

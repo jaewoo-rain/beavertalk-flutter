@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Gratis memberi satu cek per hari",
   "bulletProCharactersForever": "Karakter yang kamu beli jadi milikmu selamanya",
   "paywallMaxTitle": "Sekarang kamu bisa melihat mereka.",
+  "paywallTutorCompare": "Satu jam dengan tutor seharga $25. Satu bulan Premium seharga {price}.",
   "planMonthly": "Bulanan",
   "planAnnual": "Tahunan",
   "proMonthlyPriceLine": "{price} per bulan",

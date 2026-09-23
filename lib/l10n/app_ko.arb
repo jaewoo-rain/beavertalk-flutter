@@ -467,6 +467,7 @@
   "limitBannerCheckSub": "무료 플랜은 하루 한 번 체크할 수 있어요",
   "bulletProCharactersForever": "구매한 캐릭터는 영원히 내 것",
   "paywallMaxTitle": "이제 얼굴을 보며 대화해요.",
+  "paywallTutorCompare": "튜터 수업 1시간은 $25예요. Premium 한 달은 {price}예요.",
   "planMonthly": "월간",
   "planAnnual": "연간",
   "proMonthlyPriceLine": "월 {price}",

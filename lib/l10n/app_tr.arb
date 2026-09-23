@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free günde bir kontrol verir",
   "bulletProCharactersForever": "Satın aldığın karakterler sonsuza dek senin",
   "paywallMaxTitle": "Artık onları görebilirsin.",
+  "paywallTutorCompare": "Bir öğretmenle bir saat $25. Bir aylık Premium {price}.",
   "planMonthly": "Aylık",
   "planAnnual": "Yıllık",
   "proMonthlyPriceLine": "Aylık {price}",

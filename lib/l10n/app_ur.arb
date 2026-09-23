@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free میں روزانہ ایک چیک ملتا ہے",
   "bulletProCharactersForever": "خریدے گئے کردار ہمیشہ آپ کے رہتے ہیں",
   "paywallMaxTitle": "اب آپ انہیں دیکھ سکتے ہیں۔",
+  "paywallTutorCompare": "ٹیوٹر کے ساتھ ایک گھنٹے کی قیمت $25 ہے۔ Premium کے ایک مہینے کی قیمت {price} ہے۔",
   "planMonthly": "ماہانہ",
   "planAnnual": "سالانہ",
   "proMonthlyPriceLine": "{price} ماہانہ",

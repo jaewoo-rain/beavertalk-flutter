@@ -1524,6 +1524,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get paywallMaxTitle => 'Енді оларды көре аласыз.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Тьютормен бір сағат \$25 тұрады. Premium бір айы $price тұрады.';
+  }
+
+  @override
   String get planMonthly => 'Айлық';
 
   @override

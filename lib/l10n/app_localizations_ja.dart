@@ -1486,6 +1486,11 @@ class AppLocalizationsJa extends AppLocalizations {
   String get paywallMaxTitle => '顔を見ながら話せます。';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'チューターとのレッスンは1時間\$25。Premiumは1か月$priceです。';
+  }
+
+  @override
   String get planMonthly => '月間';
 
   @override

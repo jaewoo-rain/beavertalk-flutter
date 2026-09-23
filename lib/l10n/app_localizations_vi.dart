@@ -1530,6 +1530,11 @@ class AppLocalizationsVi extends AppLocalizations {
   String get paywallMaxTitle => 'Giờ bạn có thể nhìn thấy họ.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Một giờ học với gia sư giá \$25. Một tháng Premium giá $price.';
+  }
+
+  @override
   String get planMonthly => 'Hằng tháng';
 
   @override

@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free ផ្ដល់ការត្រួតពិនិត្យមួយក្នុងមួយថ្ងៃ",
   "bulletProCharactersForever": "តួអង្គដែលអ្នកទិញ ជារបស់អ្នកជារៀងរហូត",
   "paywallMaxTitle": "ឥឡូវអ្នកអាចមើលឃើញពួកគេ។",
+  "paywallTutorCompare": "មួយម៉ោងជាមួយគ្រូបង្រៀនតម្លៃ $25។ Premium មួយខែតម្លៃ {price}។",
   "planMonthly": "ប្រចាំខែ",
   "planAnnual": "ប្រចាំឆ្នាំ",
   "proMonthlyPriceLine": "{price} ក្នុងមួយខែ",

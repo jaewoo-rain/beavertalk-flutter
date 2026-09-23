@@ -2908,6 +2908,12 @@ abstract class AppLocalizations {
   /// **'Now you can see them.'**
   String get paywallMaxTitle;
 
+  /// Paywall header second line (P12). Shown only when the store price is in USD. $25 is a fixed USD fact.
+  ///
+  /// In en, this message translates to:
+  /// **'One hour with a tutor costs \$25. A month of Premium costs {price}.'**
+  String paywallTutorCompare(String price);
+
   /// No description provided for @planMonthly.
   ///
   /// In en, this message translates to:

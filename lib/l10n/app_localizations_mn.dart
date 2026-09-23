@@ -1527,6 +1527,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get paywallMaxTitle => 'Одоо та тэднийг харах боломжтой.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Багштай нэг цаг \$25 болно. Premium нэг сар $price болно.';
+  }
+
+  @override
   String get planMonthly => 'Сарын';
 
   @override

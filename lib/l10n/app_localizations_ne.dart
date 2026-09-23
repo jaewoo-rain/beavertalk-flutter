@@ -1523,6 +1523,11 @@ class AppLocalizationsNe extends AppLocalizations {
   String get paywallMaxTitle => 'अब उनीहरूलाई देख्न सक्नुहुन्छ।';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'ट्युटरसँग एक घण्टाको \$25 लाग्छ। Premium को एक महिनाको $price लाग्छ।';
+  }
+
+  @override
   String get planMonthly => 'मासिक';
 
   @override

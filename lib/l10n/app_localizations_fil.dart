@@ -1542,6 +1542,11 @@ class AppLocalizationsFil extends AppLocalizations {
   String get paywallMaxTitle => 'Ngayon ay makikita mo na sila.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Ang isang oras sa tutor ay \$25. Ang isang buwan ng Premium ay $price.';
+  }
+
+  @override
   String get planMonthly => 'Buwanan';
 
   @override

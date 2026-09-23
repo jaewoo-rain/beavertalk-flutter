@@ -1488,6 +1488,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get paywallMaxTitle => '이제 얼굴을 보며 대화해요.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return '튜터 수업 1시간은 \$25예요. Premium 한 달은 $price예요.';
+  }
+
+  @override
   String get planMonthly => '월간';
 
   @override

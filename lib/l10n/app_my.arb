@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free တွင် တစ်နေ့ တစ်ကြိမ် စစ်ဆေးနိုင်သည်",
   "bulletProCharactersForever": "ဝယ်ထားသော ဇာတ်ကောင်များ ထာဝရ သင့်ပိုင်",
   "paywallMaxTitle": "ယခု သူတို့ကို မြင်နိုင်ပြီ။",
+  "paywallTutorCompare": "ဆရာနှင့် တစ်နာရီ $25 ကျသင့်သည်။ Premium တစ်လ {price} ကျသင့်သည်။",
   "planMonthly": "လစဉ်",
   "planAnnual": "နှစ်စဉ်",
   "proMonthlyPriceLine": "တစ်လ {price}",

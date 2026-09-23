@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free даёт одну проверку в день",
   "bulletProCharactersForever": "Купленные персонажи остаются с вами навсегда",
   "paywallMaxTitle": "Теперь вы можете их видеть.",
+  "paywallTutorCompare": "Час с репетитором стоит $25. Месяц Premium стоит {price}.",
   "planMonthly": "Помесячно",
   "planAnnual": "Годовой",
   "proMonthlyPriceLine": "{price} в месяц",

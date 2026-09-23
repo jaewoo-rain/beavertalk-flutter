@@ -957,6 +957,15 @@
   "limitBannerCheckSub": "Free gives you one check a day",
   "bulletProCharactersForever": "Characters you buy stay yours forever",
   "paywallMaxTitle": "Now you can see them.",
+  "paywallTutorCompare": "One hour with a tutor costs $25. A month of Premium costs {price}.",
+  "@paywallTutorCompare": {
+    "description": "Paywall header second line (P12). Shown only when the store price is in USD. $25 is a fixed USD fact.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "planMonthly": "Monthly",
   "planAnnual": "Annual",
   "proMonthlyPriceLine": "{price} per month",

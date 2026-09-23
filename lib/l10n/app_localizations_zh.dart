@@ -1484,6 +1484,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get paywallMaxTitle => '现在可以看见对方了。';
 
   @override
+  String paywallTutorCompare(String price) {
+    return '请家教一小时要\$25。Premium一个月$price。';
+  }
+
+  @override
   String get planMonthly => '月付';
 
   @override

@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Ilmainen antaa yhden tarkistuksen päivässä",
   "bulletProCharactersForever": "Ostamasi hahmot ovat omiasi ikuisesti",
   "paywallMaxTitle": "Nyt näet heidät.",
+  "paywallTutorCompare": "Tunti opettajan kanssa maksaa $25. Kuukausi Premiumia maksaa {price}.",
   "planMonthly": "Kuukausi",
   "planAnnual": "Vuosi",
   "proMonthlyPriceLine": "{price} kuukaudessa",

@@ -1536,6 +1536,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get paywallMaxTitle => 'Теперь вы можете их видеть.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Час с репетитором стоит \$25. Месяц Premium стоит $price.';
+  }
+
+  @override
   String get planMonthly => 'Помесячно';
 
   @override

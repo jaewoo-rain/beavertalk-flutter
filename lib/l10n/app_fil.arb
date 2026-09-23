@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Isang pagsusuri kada araw sa Libre",
   "bulletProCharactersForever": "Ang mga karakter na binili mo ay sa iyo habambuhay",
   "paywallMaxTitle": "Ngayon ay makikita mo na sila.",
+  "paywallTutorCompare": "Ang isang oras sa tutor ay $25. Ang isang buwan ng Premium ay {price}.",
   "planMonthly": "Buwanan",
   "planAnnual": "Taunan",
   "proMonthlyPriceLine": "{price} kada buwan",

@@ -1535,6 +1535,11 @@ class AppLocalizationsFi extends AppLocalizations {
   String get paywallMaxTitle => 'Nyt näet heidät.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Tunti opettajan kanssa maksaa \$25. Kuukausi Premiumia maksaa $price.';
+  }
+
+  @override
   String get planMonthly => 'Kuukausi';
 
   @override

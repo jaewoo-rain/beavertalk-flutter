@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Percuma memberi satu semakan sehari",
   "bulletProCharactersForever": "Watak yang anda beli kekal milik anda selamanya",
   "paywallMaxTitle": "Kini anda boleh melihat mereka.",
+  "paywallTutorCompare": "Sejam bersama tutor berharga $25. Sebulan Premium berharga {price}.",
   "planMonthly": "Bulanan",
   "planAnnual": "Tahunan",
   "proMonthlyPriceLine": "{price} sebulan",

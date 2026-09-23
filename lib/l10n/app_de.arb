@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Kostenlos gibt dir einen Check pro Tag",
   "bulletProCharactersForever": "Gekaufte Charaktere gehören dir für immer",
   "paywallMaxTitle": "Jetzt kannst du sie sehen.",
+  "paywallTutorCompare": "Eine Stunde mit einem Tutor kostet $25. Ein Monat Premium kostet {price}.",
   "planMonthly": "Monatlich",
   "planAnnual": "Jährlich",
   "proMonthlyPriceLine": "{price} pro Monat",

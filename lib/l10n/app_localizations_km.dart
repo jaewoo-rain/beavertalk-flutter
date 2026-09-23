@@ -1530,6 +1530,11 @@ class AppLocalizationsKm extends AppLocalizations {
   String get paywallMaxTitle => 'ឥឡូវអ្នកអាចមើលឃើញពួកគេ។';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'មួយម៉ោងជាមួយគ្រូបង្រៀនតម្លៃ \$25។ Premium មួយខែតម្លៃ $price។';
+  }
+
+  @override
   String get planMonthly => 'ប្រចាំខែ';
 
   @override

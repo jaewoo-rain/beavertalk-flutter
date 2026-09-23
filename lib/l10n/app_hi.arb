@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free में रोज़ एक जाँच मिलती है",
   "bulletProCharactersForever": "खरीदे गए कैरेक्टर हमेशा आपके रहते हैं",
   "paywallMaxTitle": "अब आप उन्हें देख सकते हैं।",
+  "paywallTutorCompare": "ट्यूटर के साथ एक घंटे की कीमत $25 है। Premium के एक महीने की कीमत {price} है।",
   "planMonthly": "मासिक",
   "planAnnual": "वार्षिक",
   "proMonthlyPriceLine": "{price} प्रति माह",

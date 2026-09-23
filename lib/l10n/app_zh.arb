@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "免费套餐每天可检测一次",
   "bulletProCharactersForever": "买下的角色永远属于你",
   "paywallMaxTitle": "现在可以看见对方了。",
+  "paywallTutorCompare": "请家教一小时要$25。Premium一个月{price}。",
   "planMonthly": "月付",
   "planAnnual": "年付",
   "proMonthlyPriceLine": "每月 {price}",

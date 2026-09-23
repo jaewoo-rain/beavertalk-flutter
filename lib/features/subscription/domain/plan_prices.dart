@@ -113,6 +113,15 @@ abstract final class PlanPrices {
   static String get maxMonthly =>
       _store?.maxMonthly.display ?? _listMaxMonthly;
 
+  /// Whether [maxMonthly] is quoted in US dollars — true for the list
+  /// fallback and for a USD storefront.
+  ///
+  /// The paywall's tutor line (남은판단 P12) sets a fixed `$25` beside this
+  /// price. In any other currency that sentence would compare two currencies,
+  /// so the line is shown only when this is true.
+  static bool get maxQuotedInUsd =>
+      _store == null || _store!.maxMonthly.currencyCode == 'USD';
+
   /// Max, billed yearly.
   static String get maxYearly => _store?.maxYearly.display ?? _listMaxYearly;
 

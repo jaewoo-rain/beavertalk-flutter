@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free يمنحك فحصًا واحدًا يوميًا",
   "bulletProCharactersForever": "الشخصيات التي تشتريها تبقى لك إلى الأبد",
   "paywallMaxTitle": "الآن يمكنك رؤيتهم.",
+  "paywallTutorCompare": "ساعة واحدة مع مدرّس تكلّف $25. شهر من Premium يكلّف {price}.",
   "planMonthly": "شهري",
   "planAnnual": "سنوي",
   "proMonthlyPriceLine": "{price} شهريًا",

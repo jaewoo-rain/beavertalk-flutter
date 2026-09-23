@@ -458,6 +458,7 @@
   "limitBannerCheckSub": "Free-তে দিনে একটি পরীক্ষা",
   "bulletProCharactersForever": "কেনা ক্যারেক্টার চিরকাল আপনারই",
   "paywallMaxTitle": "এখন তাদের দেখতে পাবেন।",
+  "paywallTutorCompare": "একজন টিউটরের সাথে এক ঘণ্টার খরচ $25। Premium-এর এক মাসের খরচ {price}।",
   "planMonthly": "মাসিক",
   "planAnnual": "বার্ষিক",
   "proMonthlyPriceLine": "প্রতি মাসে {price}",

@@ -1543,6 +1543,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get paywallMaxTitle => 'Most már láthatod őket.';
 
   @override
+  String paywallTutorCompare(String price) {
+    return 'Egy óra tanárral \$25. Egy hónap Premium $price.';
+  }
+
+  @override
   String get planMonthly => 'Havi';
 
   @override
