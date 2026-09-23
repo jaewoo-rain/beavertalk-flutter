@@ -66,16 +66,25 @@ class NormalcallRemoteDataSource {
     return res.data;
   }
 
-  /// `GET /calls/daily-status?tz=&tz_offset_min=` — 오늘 남은 예산(서버 `premium` §5).
+  /// `GET /calls/daily-status?date=&tz=&tz_offset=` — 오늘 남은 예산(서버 `premium` §5).
   ///
-  /// ⛔ `date` 쿼리는 보내지 않는다 — 과거 날짜로 물으면 `can_call_*` 가 여전히 「지금」
-  ///   기준이라 뜻이 어긋난다. 서버 기본값(오늘)만 쓴다.
+  /// 서버 dev `routers/call.py` `get_daily_status(date: str, tz_offset: int = 0, tz: str | None)`:
+  /// - `date` 는 **필수**(기기 로컬 오늘 `YYYY-MM-DD`). 빠지면 422 다(09-24 실기기 — 한때
+  ///   「보내지 않는다」 로 거꾸로 읽어 Free 카드 행이 늘 숨었다). ⛔ 오늘 날짜로만 묻는다 —
+  ///   `can_call_*` 는 서버의 「지금」 을 보므로 과거 날짜와 뜻이 갈린다.
+  /// - 오프셋 이름은 `tz_offset` 이다(달력·WS 의 `tz_offset_min` 과 **이름이 다르다**).
   Future<Map<String, dynamic>?> getDailyStatus({
-    required Map<String, Object> tzParams,
+    required String date,
+    String? tz,
+    required int tzOffsetMin,
   }) async {
     final res = await _dio.get<Map<String, dynamic>>(
       '/calls/daily-status',
-      queryParameters: <String, dynamic>{...tzParams},
+      queryParameters: <String, dynamic>{
+        'date': date,
+        'tz': ?tz,
+        'tz_offset': tzOffsetMin,
+      },
     );
     return res.data;
   }

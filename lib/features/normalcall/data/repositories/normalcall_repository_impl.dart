@@ -1,5 +1,6 @@
 import '../../domain/entities/call_resume_status.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 
 import '../../../../core/error/dio_error_mapper.dart';
 import '../../../../core/time/device_timezone.dart';
@@ -122,21 +123,24 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
     }
   }
 
+  static String _ymd(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}'
+      '-${d.day.toString().padLeft(2, '0')}';
+
   @override
   Future<CalendarStats?> getCalendarStats(DateTime start, DateTime end) async {
-    String ymd(DateTime d) =>
-        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}'
-        '-${d.day.toString().padLeft(2, '0')}';
     try {
       final json = await _remote.getCalendarStats(
-        start: ymd(start),
-        end: ymd(end),
+        start: _ymd(start),
+        end: _ymd(end),
         tzParams: await DeviceTimezone.params(),
       );
       return CalendarStats.tryParse(json);
-    } catch (_) {
+    } catch (e) {
       // ⛔ 던지지 않는다 — 구서버(404)·네트워크·모양 오류 전부 「모른다」다. 호출부가
       //   `GET /calls` 로 세는 종전 계산으로 간다([getResumeStatus] 와 같은 규율).
+      //   다만 로그는 남긴다 — daily-status 의 422 가 이런 catch 에 묻혔다(09-24).
+      debugPrint('[stats/calendar] 실패 — 종전 계산으로 간다: $e');
       return null;
     }
   }
@@ -144,10 +148,16 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
   @override
   Future<DailyStatus?> getDailyStatus() async {
     try {
-      final json =
-          await _remote.getDailyStatus(tzParams: await DeviceTimezone.params());
+      final json = await _remote.getDailyStatus(
+        date: _ymd(DateTime.now()),
+        tz: await DeviceTimezone.iana(),
+        tzOffsetMin: DeviceTimezone.offsetMinutes(),
+      );
       return DailyStatus.tryParse(json);
-    } catch (_) {
+    } catch (e) {
+      // 던지지 않는다(호출부가 행을 숨기거나 종전 판정으로 간다). 다만 **조용히 삼키지 않는다** —
+      // 422(필수 쿼리 누락)가 이 catch 에 묻혀 게이트·시험을 통과한 적이 있다(09-24).
+      debugPrint('[daily-status] 실패 — 모름(null)으로 둔다: $e');
       return null;
     }
   }

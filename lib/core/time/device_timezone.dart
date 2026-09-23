@@ -10,6 +10,8 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 /// ⛔ **세 곳에 같은 값을 보내라** — WS `start` · `GET /calls/daily-status` ·
 ///   `GET /stats/calendar`. 하나만 다르면 「달력엔 어제인데 통화는 오늘로 셌다」 가 된다.
 ///   그래서 이 한 곳에서만 읽는다.
+/// ⚠ 오프셋 **키 이름**은 곳마다 다르다(서버 dev 실측 09-24): WS `start`·달력은
+///   `tz_offset_min`, `daily-status` 는 `tz_offset`(+ 필수 `date`). [params] 는 앞의 둘 전용이다.
 ///
 /// ⚠ `DateTime.now().timeZoneName` 은 IANA 가 아니다(`KST` 같은 약칭). 그래서 플러그인을 쓴다.
 abstract final class DeviceTimezone {
