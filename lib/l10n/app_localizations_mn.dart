@@ -563,7 +563,19 @@ class AppLocalizationsMn extends AppLocalizations {
   String get streakMetricCallTime => 'Ярианы хугацаа';
 
   @override
-  String get streakMetricCalls => 'Дуудлага';
+  String get streakMetricLearned => 'Сурсан хэллэг';
+
+  @override
+  String get streakMetricWords => 'Хэлсэн үг';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -571,16 +583,6 @@ class AppLocalizationsMn extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count мин',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count дуудлага',
     );
     return '$_temp0';
   }

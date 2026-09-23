@@ -33,6 +33,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
+import '../../../core/time/device_timezone.dart';
 import '../../../l10n/app_localizations.dart';
 import '../data/datasources/audio_route_probe.dart';
 import '../data/datasources/call_diag_sink.dart';
@@ -131,6 +132,8 @@ Map<String, dynamic> buildStartFrame({
   bool forceCourse = false,
   String? planOverride,
   bool silentResume = false,
+  String? tz,
+  int? tzOffsetMin,
 }) =>
     <String, dynamic>{
       'type': 'start',
@@ -172,6 +175,12 @@ Map<String, dynamic> buildStartFrame({
       // 비버가 먼저 말하지 않고 사용자 첫 발화를 기다린다(S1·S2). 구서버는 extra=ignore.
       // false 면 키 자체가 안 나간다 — 첫 조각·시트 경유 이어하기는 종전 프레임 그대로.
       if (silentResume) 'silent_resume': true,
+      // 서버 `premium` 브랜치(09-23) §3 — 「오늘」의 경계(하루 예산·연속일·달력)를 기기
+      // 로컬 자정으로 자른다. `tz`(IANA)가 우선, `tz_offset_min` 은 폴백. 둘 다 없으면 UTC 라
+      // 한국은 오전 9시에 날짜가 바뀐다. 구서버는 extra=ignore 로 버린다.
+      // ⛔ daily-status·calendar 와 **같은 값**이어야 한다([DeviceTimezone] 한 곳에서 읽는다).
+      'tz': ?tz,
+      'tz_offset_min': ?tzOffsetMin,
     };
 
 /// 자막을 **틱당 몇 글자씩** 드러낼지. 봉투 틱 = 25ms(= 40틱/초).
@@ -900,6 +909,13 @@ class NormalCallController extends Notifier<CallState> {
   int? _serverFragmentIndex;
   int? _serverMaxFragments;
 
+  /// 이 조각이 끝나는 누적 초 — 서버 `call_started.remaining_s`(premium §4)로 잡는다.
+  /// 안 오면 null → 종전 5분 경계. 조각마다 새로 받는다.
+  int? _fragmentEndSec;
+
+  /// 이 조각에서 하루 예산이 끝나는가(`remaining_s` < [kServerFragmentCapSec]).
+  bool _budgetFinal = false;
+
   /// 재연결 시도 횟수. 2회 실패면 기존 «이어하기» 시트로 폴백(계획 §5).
   int _switchAttempts = 0;
 
@@ -931,6 +947,9 @@ class NormalCallController extends Notifier<CallState> {
 
   /// QA 플랜 강제. [_forceCourse] 와 같은 이유로 필드 — 2구간 재연결에 다시 싣는다.
   PlanOverride? _planOverride;
+
+  /// 통화 시작 때 읽은 기기 IANA 시간대([DeviceTimezone]). 조각 재연결 프레임이 재사용한다.
+  String? _deviceTz;
 
   /// Set by [onCallKitAudioReady] (the plugin's didActivate event). A zero-latency
   /// accelerator only — [_awaitCallKitAudio] treats the native flag as truth.
@@ -1838,6 +1857,7 @@ class NormalCallController extends Notifier<CallState> {
       // 없어 서버가 member.character_id 를 쓴다.
       // ⚠ 조립은 [buildStartFrame] 이 한다 — 필드가 조용히 빠지는 사고가 두 번
       //   났고(그 문서 참조), 소켓 없이 테스트로 고정하기 위해 밖으로 뺐다.
+      _deviceTz = await DeviceTimezone.iana();
       final startFrame = buildStartFrame(
         aec: await _aecHint(),
         sampleRate: _micSampleRate,
@@ -1851,6 +1871,8 @@ class NormalCallController extends Notifier<CallState> {
         callType: _callCourse?.wireValue,
         forceCourse: _forceCourse,
         planOverride: _planOverride?.wireValue,
+        tz: _deviceTz,
+        tzOffsetMin: DeviceTimezone.offsetMinutes(),
       );
       // ⭐ **보낸 것을 그대로 남긴다.** 이 줄이 없어서 `continues_call_id` 가 한 번도
       //   안 나가고 있다는 걸 아무도 몰랐다 — 화면상 통화는 멀쩡히 이어지고 비버만
@@ -4657,6 +4679,19 @@ class NormalCallController extends Notifier<CallState> {
             _serverMaxFragments = mf;
             _log('call_started: fragment $fi/$mf');
           }
+          // 서버 `premium` 브랜치(09-23) §4 — **이 조각이** 쓸 수 있는 초. 조각마다 새로 온다.
+          // ⛔ 안 오면 null 로 되돌린다 — 앞 조각 값이 남으면 구서버·면제(admin) 통화가 엉뚱한
+          //   시점에 끊긴다. 키 없음 = 예산 대상 아님 → 종전 5분 경계.
+          final rs = msg['remaining_s'];
+          if (rs is num) {
+            _fragmentEndSec = state.elapsedSec + rs.toInt();
+            _budgetFinal = rs < kServerFragmentCapSec;
+            _log('call_started: remaining_s=$rs → 이 조각 끝 ${_fragmentEndSec}s'
+                '${_budgetFinal ? ' (하루 예산이 이 조각에서 끝난다 — 마지막 조각)' : ''}');
+          } else {
+            _fragmentEndSec = null;
+            _budgetFinal = false;
+          }
         }
         // 끊김 없는 전환의 새 소켓이 열렸다 — 기다리던 쪽을 깨운다.
         if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(true);
@@ -5201,6 +5236,8 @@ class NormalCallController extends Notifier<CallState> {
       paidAccess: _paidNow,
       seamlessEligible: seamlessEligibleCourse(state.course),
       maxFragments: _maxFragments,
+      fragmentEndSec: _fragmentEndSec,
+      budgetFinal: _budgetFinal,
     );
     switch (action) {
       case FragmentBoundaryAction.none:
@@ -5345,6 +5382,9 @@ class NormalCallController extends Notifier<CallState> {
         forceCourse: _forceCourse,
         planOverride: _planOverride?.wireValue,
         silentResume: true,
+        // 첫 조각에서 읽어 둔 값 — 이 프레임은 소켓의 **첫** 프레임이라 여기서 await 하지 않는다.
+        tz: _deviceTz,
+        tzOffsetMin: DeviceTimezone.offsetMinutes(),
       );
       _log('조각 재연결 start 송신: $startFrame');
       channel.sink.add(jsonEncode(startFrame)); // ← 이 소켓의 **첫** 프레임이어야 한다
@@ -5999,6 +6039,8 @@ class NormalCallController extends Notifier<CallState> {
     _micPrebuffer.clear();
     _serverFragmentIndex = null;
     _serverMaxFragments = null;
+    _fragmentEndSec = null;
+    _budgetFinal = false;
     _switchAttempts = 0;
     if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
     _fragmentReady = null;

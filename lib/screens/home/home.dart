@@ -93,7 +93,9 @@ class HomeScreen extends ConsumerWidget {
         };
         if (live.contains(prev) && !live.contains(next)) {
           ref.invalidate(curMeProvider);
-          // 연속일은 통화 기록에서 센다 — 기록을 무효화해야 새로 읽는다.
+          // 연속일은 서버 달력(신서버) 또는 통화 기록(구서버)에서 센다 — 둘 다 무효화해야
+          // 새로 읽는다.
+          ref.invalidate(monthCalendarProvider);
           ref.invalidate(callHistoryProvider);
         }
       },

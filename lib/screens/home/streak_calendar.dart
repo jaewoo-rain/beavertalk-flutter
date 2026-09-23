@@ -25,13 +25,13 @@ import '../../core/format/dates.dart';
 /// 홈 불꽃 칩을 누르면 온다.
 /// ```
 /// [ 🔥 12 일 연속 ]                 ← 히어로(Accent/Streak-Surface)
-/// [통화 시간 130분 | 통화 9회]        ← 지표 — 이번 달
+/// [배운 표현 52개 | 말한 단어 2,860개 | 통화 시간 130분]  ← 지표 — 이번 달
 /// [ 2026년 9월 · 얼굴 달력 ]          ← 통화한 날은 그날 상대의 얼굴 · 연속 구간은 띠
 /// [ 9월 18일 · 강아지 산책… › ]       ← 고른 날의 통화 → 그 통화의 분석
 /// ```
 ///
-/// ⚠ Figma 의 지표 「배운 표현」·「말한 단어」 는 **아직 그리지 않는다** — 서버 집계가 없다
-///   (남은판단 S3). 지어낸 숫자를 그리느니 가진 값(통화 시간·통화 수)만 그린다.
+/// 지표·연속일은 서버 달력 API(`GET /stats/calendar`, premium 브랜치 09-23)가 정본이다.
+/// 구서버면 연속일·통화 시간은 통화 목록으로 세고, 배운 표현·말한 단어는 「-」 다(남은판단 S3).
 ///
 /// 요일 머리와 한 주의 시작 요일은 **로케일을 따른다**(`MaterialLocalizations` 의
 /// `narrowWeekdays` · `firstDayOfWeekIndex`). 달력 머리는 열이 고정이라 한 글자여도
@@ -66,7 +66,10 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
             Expanded(
               child: NetworkErrorView(
                 message: e is AppException && e.fromServer ? e.message : null,
-                onRetry: () => ref.invalidate(callHistoryProvider),
+                onRetry: () {
+                  ref.invalidate(monthCalendarProvider);
+                  ref.invalidate(callHistoryProvider);
+                },
               ),
             ),
           ],
@@ -82,10 +85,15 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final byDay = callsByDay(calls);
-    final streak = CallStreak.fromDates(
-      calls.map((x) => x.callDate).whereType<DateTime>(),
-      now,
-    );
+    // 연속일은 서버 달력의 `streak_days` 가 정본(하루 여러 통화도 정확 — 남은판단 S4).
+    // 구서버·실패·로딩 중이면 통화 목록으로 센다(홈 칩과 같은 규칙).
+    final server = ref.watch(monthCalendarProvider).valueOrNull;
+    final streak = server != null
+        ? streakFromServer(server, now)
+        : CallStreak.fromDates(
+            calls.map((x) => x.callDate).whereType<DateTime>(),
+            now,
+          );
     // 최고 기록은 현재 연속보다 짧을 수 없다 — 전 기간 기록이 아직 안 왔거나 상한(400건)에서
     // 잘렸어도 지금 보이는 연속이 최소값이다. 못 읽으면(로딩·오류) 0 → 줄을 비운다.
     final best =
@@ -201,9 +209,12 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // ⚠ 정본은 3칸(배운 표현 · 말한 단어 · 통화 시간)이다. 앞 두 칸은 서버 집계가
-                  //   없어 **일부러 뺐다**(0 으로 그리면 「안 했다」로 읽힌다 · 남은판단 S3).
-                  //   집계가 생기면 칸을 되살리고, 칸이 셋 이상이면 Wrap/2×2 로 바꾼다.
+                  // 정본 3칸(09-23 사용자 확정 · 남은판단 S3): 배운 표현 → 말한 단어 → 통화 시간.
+                  // Figma `Metrics` `6183:4558` · Row `6183:4559` — 칸 FILL · 가운데 정렬 ·
+                  // 칸 사이마다 1px `Line/Alternative`(마지막 칸 오른쪽엔 없음).
+                  // 값은 서버 달력 합계(이번 달). 키가 없거나 구서버면 「-」 — 0 으로 그리면
+                  // 「안 했다」 로 읽힌다(서버 계약 「키 없음 ≠ 0」). 통화 시간은 구서버면
+                  // 통화 목록으로 센 값.
                   _card(
                     context,
                     padding: const EdgeInsets.symmetric(vertical: 4),
@@ -213,8 +224,8 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
                         children: [
                           Expanded(
                             child: _Metric(
-                              value: l10n.streakMinutes(minutes),
-                              label: l10n.streakMetricCallTime,
+                              value: _count(l10n, server?.total.sentences),
+                              label: l10n.streakMetricLearned,
                             ),
                           ),
                           VerticalDivider(
@@ -224,8 +235,21 @@ class _StreakCalendarScreenState extends ConsumerState<StreakCalendarScreen> {
                           ),
                           Expanded(
                             child: _Metric(
-                              value: l10n.streakCallCount(month.length),
-                              label: l10n.streakMetricCalls,
+                              value: _count(l10n, server?.total.words),
+                              label: l10n.streakMetricWords,
+                            ),
+                          ),
+                          VerticalDivider(
+                            width: 1,
+                            thickness: 1,
+                            color: c.lineAlternative,
+                          ),
+                          Expanded(
+                            child: _Metric(
+                              value: l10n.streakMinutes(
+                                server?.total.callMinutes ?? minutes,
+                              ),
+                              label: l10n.streakMetricCallTime,
                             ),
                           ),
                         ],
@@ -321,6 +345,10 @@ List<List<DateTime?>> monthWeeks(DateTime month, int firstDayOfWeekIndex) {
   return [for (var i = 0; i < cells.length; i += 7) cells.sublist(i, i + 7)];
 }
 
+/// 지표 칸 값 — 없으면 「-」(0 이 아니다).
+String _count(AppLocalizations l10n, int? n) =>
+    n == null ? '-' : l10n.streakCountValue(n);
+
 class _Metric extends StatelessWidget {
   const _Metric({required this.value, required this.label});
 
@@ -332,19 +360,22 @@ class _Metric extends StatelessWidget {
     final c = context.c;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      // Figma `Tile-Metric`: VERTICAL · 교차축 CENTER · 값 Body 1 Bold 16 · 라벨 Caption 1 12.
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // 수치 — 자르지 않는다. 좁으면 줄을 바꾼다.
           Text(
             value,
-            style: AppType.heading1.b.copyWith(
+            textAlign: TextAlign.center,
+            style: AppType.body1.b.copyWith(
               color: c.labelStrong,
               fontFeatures: const [FontFeature.tabularFigures()],
             ),
           ),
           Text(
             label,
+            textAlign: TextAlign.center,
             style: AppType.caption1.r.copyWith(color: c.labelAlternative),
           ),
         ],

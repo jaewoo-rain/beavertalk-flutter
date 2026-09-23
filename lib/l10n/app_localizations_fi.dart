@@ -569,7 +569,19 @@ class AppLocalizationsFi extends AppLocalizations {
   String get streakMetricCallTime => 'Puheluaika';
 
   @override
-  String get streakMetricCalls => 'Puhelut';
+  String get streakMetricLearned => 'Ilmaukset';
+
+  @override
+  String get streakMetricWords => 'Puhutut sanat';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -577,17 +589,6 @@ class AppLocalizationsFi extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count min',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count puhelua',
-      one: '1 puhelu',
     );
     return '$_temp0';
   }

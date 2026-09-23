@@ -223,6 +223,8 @@ Map<String, Widget Function()> i18nScreens() {
           overrides: [
             // 최고 기록은 현재 연속(3)보다 긴 값 — 줄이 그려지는 최악 폭(ru·de) 확인용.
             bestStreakProvider.overrideWith((ref) async => 128),
+            // 구서버 경로(달력 API 없음) — 통화 목록으로 센다.
+            monthCalendarProvider.overrideWith((ref) async => null),
             callHistoryProvider.overrideWith((ref) async {
               final now = DateTime.now();
               CallSummary c(int id, int ago, String summary) => CallSummary(

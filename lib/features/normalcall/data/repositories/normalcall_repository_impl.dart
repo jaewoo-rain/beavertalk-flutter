@@ -2,9 +2,12 @@ import '../../domain/entities/call_resume_status.dart';
 import 'package:dio/dio.dart';
 
 import '../../../../core/error/dio_error_mapper.dart';
+import '../../../../core/time/device_timezone.dart';
 import '../../../../screens/home/learning_summary.dart';
+import '../../domain/entities/calendar_stats.dart';
 import '../../domain/entities/call_result.dart';
 import '../../domain/entities/cur_me.dart';
+import '../../domain/entities/daily_status.dart';
 import '../../domain/entities/pron_summary.dart';
 import '../../domain/repositories/normalcall_repository.dart';
 import '../datasources/normalcall_remote_data_source.dart';
@@ -115,6 +118,36 @@ class NormalcallRepositoryImpl implements NormalcallRepository {
       //   로컬 계산(`CallAllowance`)으로 내려간다. 404 는 **구버전 서버**이거나
       //   **남의 통화**이고(백엔드 문서 §2③), 네트워크 실패도 마찬가지로 「모른다」다.
       //   셋 다 null 이 맞는 답이라 사유로 가르지 않는다.
+      return null;
+    }
+  }
+
+  @override
+  Future<CalendarStats?> getCalendarStats(DateTime start, DateTime end) async {
+    String ymd(DateTime d) =>
+        '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}'
+        '-${d.day.toString().padLeft(2, '0')}';
+    try {
+      final json = await _remote.getCalendarStats(
+        start: ymd(start),
+        end: ymd(end),
+        tzParams: await DeviceTimezone.params(),
+      );
+      return CalendarStats.tryParse(json);
+    } catch (_) {
+      // ⛔ 던지지 않는다 — 구서버(404)·네트워크·모양 오류 전부 「모른다」다. 호출부가
+      //   `GET /calls` 로 세는 종전 계산으로 간다([getResumeStatus] 와 같은 규율).
+      return null;
+    }
+  }
+
+  @override
+  Future<DailyStatus?> getDailyStatus() async {
+    try {
+      final json =
+          await _remote.getDailyStatus(tzParams: await DeviceTimezone.params());
+      return DailyStatus.tryParse(json);
+    } catch (_) {
       return null;
     }
   }

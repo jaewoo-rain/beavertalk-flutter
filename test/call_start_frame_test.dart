@@ -252,4 +252,30 @@ void main() {
           reason: '빠지면 2구간부터 표현학습이 평소 통화로 되돌아간다');
     });
   });
+
+  // 서버 `premium` 브랜치(09-23) §3 — 「오늘」의 경계. daily-status·calendar 와 같은 값.
+  group('buildStartFrame — 시간대', () {
+    test('tz(IANA)·tz_offset_min 이 있으면 둘 다 실린다', () {
+      final f = buildStartFrame(
+        aec: const {'mode': 'unknown'},
+        sampleRate: 16000,
+        numChannels: 1,
+        tz: 'Asia/Seoul',
+        tzOffsetMin: 540,
+      );
+      expect(f['tz'], 'Asia/Seoul');
+      expect(f['tz_offset_min'], 540);
+    });
+
+    test('IANA 를 모르면 tz 키 자체가 빠지고 offset 만 간다', () {
+      final f = buildStartFrame(
+        aec: const {'mode': 'unknown'},
+        sampleRate: 16000,
+        numChannels: 1,
+        tzOffsetMin: -300,
+      );
+      expect(f.containsKey('tz'), isFalse, reason: '빈 문자열로 채우면 서버가 잘못된 이름으로 본다');
+      expect(f['tz_offset_min'], -300);
+    });
+  });
 }

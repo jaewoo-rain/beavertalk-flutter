@@ -29,6 +29,7 @@ import '../../features/normalcall/domain/entities/call_hint.dart';
 import '../../features/normalcall/presentation/avatar_assets.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
+import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/normalcall/presentation/streak_provider.dart';
 import '../../features/normalcall/presentation/sync_avatar.dart';
 import '../../features/review/data/audio_player.dart';
@@ -441,8 +442,9 @@ class _CallScreenState extends ConsumerState<CallScreen> {
   /// 유료 통화가 15분 상한을 다 써서 끝났을 때 — 종료 화면 **전에** 「통화를 마칠게요」
   /// 시트를 한 번 보여 준다(P19, 사용자 결정 2026-09-22). 버튼은 「End Call」 하나다.
   ///
-  /// 문구는 오늘 마지막 통화인지로 갈린다(Premium 하루 최대 3통화). **남은 통화 수를
-  /// 주는 API 가 없어서**(남은판단 S5) 통화 기록(`GET /calls`)의 오늘 건수를 앱이 센다.
+  /// 문구는 오늘 마지막 통화인지로 갈린다. 신서버(premium 브랜치 09-23 §5)는
+  /// `GET /calls/daily-status` 가 오늘 남은 예산을 주므로 그것으로 판정하고, 구서버는
+  /// 통화 기록(`GET /calls`)의 오늘 건수를 앱이 센다(남은판단 S5).
   /// 못 세면(네트워크·타임아웃) 「내일」이 없는 문구로 간다 — 덜 약속하는 쪽이다.
   bool _capSheetOpen = false;
 
@@ -472,9 +474,23 @@ class _CallScreenState extends ConsumerState<CallScreen> {
 
   /// Premium 하루 상한(3통화) — 이번 통화가 오늘 그 마지막인가. 서버가 아직 막 끝난
   /// 통화를 목록에 안 올렸을 수 있으니, 목록에 없으면 이번 통화를 더해 센다.
+  /// ⚠ 구서버 폴백 전용이다. 신서버는 아래 예산 판정이 먼저다.
   static const _premiumCallsPerDay = 3;
 
+  /// 오늘 남은 예산이 이보다 적으면 「오늘 마지막」 으로 본다 — 1분 미만으로는 통화가
+  /// 성립하지 않는다(인사만 하고 끝난다).
+  static const _minUsefulCallSec = 60;
+
   Future<bool> _isLastCallToday(String? callId) async {
+    // 신서버: 오늘 남은 예산. 키가 없으면(구서버·admin 면제) 아래 종전 계산으로 간다.
+    try {
+      final daily = await ref
+          .read(normalcallRepositoryProvider)
+          .getDailyStatus()
+          .timeout(const Duration(seconds: 3));
+      final remaining = daily?.remainingSec;
+      if (remaining != null) return remaining < _minUsefulCallSec;
+    } catch (_) {}
     try {
       final calls = await ref
           .refresh(callHistoryProvider.future)

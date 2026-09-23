@@ -32,10 +32,19 @@ enum FragmentBoundaryAction {
   finalClose,
 }
 
-/// 5분 경계 판정. 매초 틱마다 부른다.
+/// 서버가 한 조각에 주는 최대 초(서버 `premium` 브랜치 09-23 §4: `remaining_s` =
+/// `min(남은 하루 예산, 360)`). 받은 `remaining_s` 가 이보다 작으면 **하루 예산이 이 조각에서
+/// 끝난다** — 다음 조각을 열면 서버가 `DAILY_LIMIT` 로 거절하므로 마지막 조각으로 다룬다.
+const int kServerFragmentCapSec = 360;
+
+/// 조각 경계 판정. 매초 틱마다 부른다.
 ///
 /// [segmentsUsed] 는 **끝낸** 조각 수(첫 조각 진행 중 = 0). [elapsedSec] 은 조각을 건너
-/// 누적된 값이라 경계는 `(segmentsUsed + 1) × 5분` 이다.
+/// 누적된 값이다.
+///
+/// 경계는 [fragmentEndSec] 가 있으면 그것(서버 `call_started.remaining_s` 로 잡은 이 조각의
+/// 끝 — 누적 초 기준), 없으면(구서버·면제) 종전대로 `(segmentsUsed + 1) × 5분` 이다.
+/// [budgetFinal] 은 이 조각에서 하루 예산이 끝나는가([kServerFragmentCapSec] 참조).
 /// [maxFragments] 는 서버 `call_started.max_fragments` 가 있으면 그것, 없으면 로컬
 /// [CallAllowance.segmentsFor].
 FragmentBoundaryAction fragmentBoundaryAction({
@@ -44,14 +53,19 @@ FragmentBoundaryAction fragmentBoundaryAction({
   required bool paidAccess,
   required bool seamlessEligible,
   required int maxFragments,
+  int? fragmentEndSec,
+  bool budgetFinal = false,
 }) {
-  final boundary = CallAllowance.segment.inSeconds * (segmentsUsed + 1);
+  final boundary =
+      fragmentEndSec ?? CallAllowance.segment.inSeconds * (segmentsUsed + 1);
   if (elapsedSec < boundary) return FragmentBoundaryAction.none;
   // Free 는 종전 시트. 유료라도 전환 대상이 아닌 코스(일반 통화·레벨테스트)는 종전대로.
   if (!paidAccess || !seamlessEligible) return FragmentBoundaryAction.sheet;
-  // 지금 끝나는 조각이 마지막이면 다음은 없다 — 응답 뒤 close.
+  // 지금 끝나는 조각이 마지막이거나 하루 예산이 여기서 끝나면 다음은 없다 — 응답 뒤 close.
   final endingFragment = segmentsUsed + 1;
-  if (endingFragment >= maxFragments) return FragmentBoundaryAction.finalClose;
+  if (endingFragment >= maxFragments || budgetFinal) {
+    return FragmentBoundaryAction.finalClose;
+  }
   return FragmentBoundaryAction.seamless;
 }
 

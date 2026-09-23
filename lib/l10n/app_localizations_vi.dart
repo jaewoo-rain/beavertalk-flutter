@@ -563,7 +563,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get streakMetricCallTime => 'Thời gian gọi';
 
   @override
-  String get streakMetricCalls => 'Cuộc gọi';
+  String get streakMetricLearned => 'Mẫu câu đã học';
+
+  @override
+  String get streakMetricWords => 'Từ đã nói';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -571,16 +583,6 @@ class AppLocalizationsVi extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count phút',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count cuộc gọi',
     );
     return '$_temp0';
   }

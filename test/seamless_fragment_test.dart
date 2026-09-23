@@ -319,4 +319,39 @@ void main() {
       expect(_at(300, paid: false, maxFragments: 1), FragmentBoundaryAction.sheet);
     });
   });
+
+  // 서버 `premium` 브랜치(09-23) §4 — `call_started.remaining_s` 가 이 조각의 끝을 정한다.
+  group('⑨ 하루 예산 remaining_s — 경계는 서버가 준 초', () {
+    FragmentBoundaryAction at(int elapsed, {required int endSec, int used = 0, bool budgetFinal = false, bool paid = true}) =>
+        fragmentBoundaryAction(
+          elapsedSec: elapsed,
+          segmentsUsed: used,
+          paidAccess: paid,
+          seamlessEligible: true,
+          maxFragments: 3,
+          fragmentEndSec: endSec,
+          budgetFinal: budgetFinal,
+        );
+
+    test('Premium 900초: 조각1 remaining 360 → 6:00 에 전환(5:00 아님)', () {
+      expect(at(300, endSec: 360), FragmentBoundaryAction.none);
+      expect(at(360, endSec: 360), FragmentBoundaryAction.seamless);
+    });
+
+    test('오늘 480초를 이미 썼다: 조각1 360 → 조각2 remaining 60 은 마지막(예산 소진)', () {
+      // 조각2 가 360초 누적 시점에 열려 remaining_s=60 → 끝 = 420. 60 < 360 이라 budgetFinal.
+      expect(at(419, endSec: 420, used: 1, budgetFinal: true), FragmentBoundaryAction.none);
+      expect(at(420, endSec: 420, used: 1, budgetFinal: true), FragmentBoundaryAction.finalClose,
+          reason: '다음 조각을 열면 서버가 DAILY_LIMIT 로 거절한다 — 재연결하지 않는다');
+    });
+
+    test('Free 는 remaining 이 짧아도 종전 시트(구독 유도)', () {
+      expect(at(120, endSec: 120, budgetFinal: true, paid: false), FragmentBoundaryAction.sheet);
+    });
+
+    test('remaining_s 가 없으면(구서버·면제) 종전 5분 경계', () {
+      expect(_at(300), FragmentBoundaryAction.seamless);
+      expect(kServerFragmentCapSec, 360);
+    });
+  });
 }

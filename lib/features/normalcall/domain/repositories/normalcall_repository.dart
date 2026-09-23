@@ -1,7 +1,9 @@
 import '../../../../screens/home/learning_summary.dart';
+import '../entities/calendar_stats.dart';
 import '../entities/call_result.dart';
 import '../entities/call_resume_status.dart';
 import '../entities/cur_me.dart';
+import '../entities/daily_status.dart';
 import '../entities/pron_summary.dart';
 
 /// Post-call analysis capabilities the app depends on. Implemented in the data
@@ -60,4 +62,11 @@ abstract interface class NormalcallRepository {
   /// [planOverride] 는 QA 플랜 흉내 통화에서만 준다(`?plan_override=free|premium`, admin 만
   /// 유효) — 이어하기 판정이 그 플랜 조각 상한을 따르게.
   Future<CallResumeStatus?> getResumeStatus(int callId, {String? planOverride});
+
+  /// 학습 달력 집계([start]~[end] 현지 날짜, 양끝 포함). **던지지 않는다** — 구서버(404)·
+  /// 네트워크 실패·모양 오류는 전부 null 이고, 호출부가 `GET /calls` 계산으로 내려간다.
+  Future<CalendarStats?> getCalendarStats(DateTime start, DateTime end);
+
+  /// 오늘 남은 예산. **던지지 않는다** — 모르면 null(호출부가 종전 추정으로 간다).
+  Future<DailyStatus?> getDailyStatus();
 }

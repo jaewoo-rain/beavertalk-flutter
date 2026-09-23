@@ -1144,23 +1144,29 @@ abstract class AppLocalizations {
   /// **'Call time'**
   String get streakMetricCallTime;
 
-  /// Metric tile label: number of calls this month.
+  /// Metric tile label: expressions learned this month (server sentences).
   ///
   /// In en, this message translates to:
-  /// **'Calls'**
-  String get streakMetricCalls;
+  /// **'Expressions'**
+  String get streakMetricLearned;
+
+  /// Metric tile label: words the learner spoke this month (approximate, server words).
+  ///
+  /// In en, this message translates to:
+  /// **'Words spoken'**
+  String get streakMetricWords;
+
+  /// Metric tile value: a count with thousands separator. Add a counter word only if the language needs one (ko 개).
+  ///
+  /// In en, this message translates to:
+  /// **'{count}'**
+  String streakCountValue(int count);
 
   /// Metric tile value: minutes.
   ///
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 min} other{{count} min}}'**
   String streakMinutes(int count);
-
-  /// Metric tile value: number of calls.
-  ///
-  /// In en, this message translates to:
-  /// **'{count, plural, =1{1 call} other{{count} calls}}'**
-  String streakCallCount(int count);
 
   /// Shown under the calendar when the selected day has no calls.
   ///

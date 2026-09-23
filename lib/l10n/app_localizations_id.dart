@@ -564,7 +564,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get streakMetricCallTime => 'Waktu panggilan';
 
   @override
-  String get streakMetricCalls => 'Panggilan';
+  String get streakMetricLearned => 'Ekspresi';
+
+  @override
+  String get streakMetricWords => 'Kata diucapkan';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -572,16 +584,6 @@ class AppLocalizationsId extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count mnt',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count panggilan',
     );
     return '$_temp0';
   }

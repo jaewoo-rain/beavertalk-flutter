@@ -547,7 +547,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get streakMetricCallTime => '通话时长';
 
   @override
-  String get streakMetricCalls => '通话';
+  String get streakMetricLearned => '学到的表达';
+
+  @override
+  String get streakMetricWords => '说出的单词';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString个';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -555,16 +567,6 @@ class AppLocalizationsZh extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count 分钟',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count 次',
     );
     return '$_temp0';
   }

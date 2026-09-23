@@ -50,6 +50,36 @@ class NormalcallRemoteDataSource {
     return res.data;
   }
 
+  /// `GET /api/v1/stats/calendar?start=&end=&tz=&tz_offset_min=` — 학습 달력 집계.
+  ///
+  /// 서버 `premium` 브랜치(09-23) §7 신규. 구서버는 404 — 리포지토리가 null 로 눕힌다.
+  /// [start]·[end] 는 현지 날짜 `YYYY-MM-DD`(양끝 포함). [tzParams] 는 [DeviceTimezone.params].
+  Future<Map<String, dynamic>?> getCalendarStats({
+    required String start,
+    required String end,
+    required Map<String, Object> tzParams,
+  }) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/stats/calendar',
+      queryParameters: <String, dynamic>{'start': start, 'end': end, ...tzParams},
+    );
+    return res.data;
+  }
+
+  /// `GET /calls/daily-status?tz=&tz_offset_min=` — 오늘 남은 예산(서버 `premium` §5).
+  ///
+  /// ⛔ `date` 쿼리는 보내지 않는다 — 과거 날짜로 물으면 `can_call_*` 가 여전히 「지금」
+  ///   기준이라 뜻이 어긋난다. 서버 기본값(오늘)만 쓴다.
+  Future<Map<String, dynamic>?> getDailyStatus({
+    required Map<String, Object> tzParams,
+  }) async {
+    final res = await _dio.get<Map<String, dynamic>>(
+      '/calls/daily-status',
+      queryParameters: <String, dynamic>{...tzParams},
+    );
+    return res.data;
+  }
+
   /// `GET /calls/{call_id}/result`.
   Future<CallResultDto> getResult(int callId) async {
     final res = await _dio.get<Map<String, dynamic>>('/calls/$callId/result');

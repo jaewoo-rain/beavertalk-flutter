@@ -569,7 +569,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get streakMetricCallTime => 'Время звонков';
 
   @override
-  String get streakMetricCalls => 'Звонки';
+  String get streakMetricLearned => 'Выражения';
+
+  @override
+  String get streakMetricWords => 'Сказанные слова';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -577,18 +589,6 @@ class AppLocalizationsRu extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count мин',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count звонков',
-      few: '$count звонка',
-      one: '$count звонок',
     );
     return '$_temp0';
   }

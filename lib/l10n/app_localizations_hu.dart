@@ -570,7 +570,19 @@ class AppLocalizationsHu extends AppLocalizations {
   String get streakMetricCallTime => 'Hívásidő';
 
   @override
-  String get streakMetricCalls => 'Hívások';
+  String get streakMetricLearned => 'Kifejezések';
+
+  @override
+  String get streakMetricWords => 'Kimondott szavak';
+
+  @override
+  String streakCountValue(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString';
+  }
 
   @override
   String streakMinutes(int count) {
@@ -578,16 +590,6 @@ class AppLocalizationsHu extends AppLocalizations {
       count,
       locale: localeName,
       other: '$count perc',
-    );
-    return '$_temp0';
-  }
-
-  @override
-  String streakCallCount(int count) {
-    String _temp0 = intl.Intl.pluralLogic(
-      count,
-      locale: localeName,
-      other: '$count hívás',
     );
     return '$_temp0';
   }

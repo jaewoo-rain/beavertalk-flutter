@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../domain/entities/calendar_stats.dart';
 import '../domain/entities/call_result.dart';
 import '../domain/entities/call_streak.dart';
 import 'normalcall_providers.dart';
@@ -62,8 +63,45 @@ final bestStreakProvider = FutureProvider.autoDispose<int>((ref) async {
   return CallStreak.bestDays(dates);
 });
 
-/// 홈 불꽃 칩의 연속일 — [callHistoryProvider] 의 날짜로 앱이 센다.
+/// 이번 달(1일~오늘) 서버 달력 집계 — `GET /stats/calendar`(서버 `premium` 브랜치 09-23 §7).
+///
+/// 구서버(404)·실패면 null 이고, 소비자는 [callHistoryProvider] 로 세는 종전 계산으로 간다.
+/// ⚠ 새로 읽게 하려면 [callHistoryProvider] 와 **함께** 무효화하라(홈의 통화 종료 리스너).
+final monthCalendarProvider =
+    FutureProvider.autoDispose<CalendarStats?>((ref) async {
+  final now = DateTime.now();
+  try {
+    return await ref
+        .watch(normalcallRepositoryProvider)
+        .getCalendarStats(DateTime(now.year, now.month), now);
+  } catch (_) {
+    // 리포지토리는 던지지 않지만, 시험의 가짜 저장소(noSuchMethod)도 여기서 흡수한다.
+    return null;
+  }
+});
+
+/// 서버 연속일 → 칩 상태. 끊겼으면(키 부재) [StreakState.broken].
+///
+/// 서버는 오늘 통화가 없으면 **어제 기준** 값을 준다 — 오늘 칸이 [CalendarStats.days] 에
+/// 있으면 [StreakState.done], 없으면 [StreakState.pending](앱 계산과 같은 뜻).
+CallStreak streakFromServer(CalendarStats stats, DateTime today) {
+  final days = stats.streakDays;
+  if (days == null || days <= 0) {
+    return const CallStreak(days: 0, state: StreakState.broken);
+  }
+  return CallStreak(
+    days: days,
+    state: stats.dayOf(today) != null ? StreakState.done : StreakState.pending,
+  );
+}
+
+/// 홈 불꽃 칩의 연속일.
+///
+/// 서버 달력 API 가 있으면 그 `streak_days`(하루 여러 통화도 정확히 센다 — 남은판단 S4),
+/// 없으면(구서버) [callHistoryProvider] 의 날짜로 앱이 센다(400건 상한).
 final callStreakProvider = FutureProvider.autoDispose<CallStreak>((ref) async {
+  final server = await ref.watch(monthCalendarProvider.future);
+  if (server != null) return streakFromServer(server, DateTime.now());
   final calls = await ref.watch(callHistoryProvider.future);
   return CallStreak.fromDates(
     calls.map((c) => c.callDate).whereType<DateTime>(),
