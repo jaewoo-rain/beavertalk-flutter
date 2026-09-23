@@ -78,7 +78,7 @@
   "analysisPrepStepSave": "Menyimpan percakapan",
   "analysisPrepStepCards": "Membuat kartu ungkapan",
   "analysisPrepStateDone": "Selesai",
-  "analysisPrepStateWorking": "Sedang berjalan",
+  "analysisPrepStateWorking": "Diproses",
   "analysisPrepStateWaiting": "Menunggu",
   "hwConversationOnce": "Percakapan hanya bisa dilakukan sekali per PR.",
   "usedExpressions": "Ungkapan yang kamu pakai",

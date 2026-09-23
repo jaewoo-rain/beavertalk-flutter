@@ -78,7 +78,7 @@
   "analysisPrepStepSave": "Menyimpan perbualan",
   "analysisPrepStepCards": "Membuat kad ungkapan",
   "analysisPrepStateDone": "Selesai",
-  "analysisPrepStateWorking": "Sedang berjalan",
+  "analysisPrepStateWorking": "Diproses",
   "analysisPrepStateWaiting": "Menunggu",
   "hwConversationOnce": "Perbualan hanya boleh dibuat sekali bagi setiap kerja rumah.",
   "usedExpressions": "Ungkapan yang anda guna",

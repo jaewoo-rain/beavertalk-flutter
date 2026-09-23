@@ -260,7 +260,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get analysisPrepStateDone => 'Selesai';
 
   @override
-  String get analysisPrepStateWorking => 'Sedang berjalan';
+  String get analysisPrepStateWorking => 'Diproses';
 
   @override
   String get analysisPrepStateWaiting => 'Menunggu';
