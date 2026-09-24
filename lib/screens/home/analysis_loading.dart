@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_study.dart';
 import '../../components/molecules/pronunciation_result.dart';
@@ -483,14 +484,22 @@ class AnalysisPreparingCard extends StatelessWidget {
     children: [
       icon,
       const SizedBox(width: 10), // Figma gap, no token
+      // 이름 · 상태는 필요 폭대로(`LabelValueRow`) — 상태를 고정 폭으로 두면 긴 언어 320 폭에서
+      // 행이 0.8px 넘쳤다(09-24 i18n 게이트). 상태는 끝에 붙고, 넘치면 긴 쪽이 줄을 바꾼다.
       Expanded(
-        child: Text(
-          label,
-          style: AppType.label1.m.copyWith(color: context.c.labelNormal),
+        child: LabelValueRow(
+          gap: AppSpacing.s8,
+          label: Text(
+            label,
+            style: AppType.label1.m.copyWith(color: context.c.labelNormal),
+          ),
+          value: Text(
+            state,
+            textAlign: TextAlign.end,
+            style: AppType.label1.r.copyWith(color: stateColor),
+          ),
         ),
       ),
-      const SizedBox(width: AppSpacing.s8),
-      Text(state, style: AppType.label1.r.copyWith(color: stateColor)),
     ],
   );
 }

@@ -6,6 +6,8 @@
 // 화면을 추가할 곳은 **여기 한 곳뿐이다.**
 import 'package:flutter/material.dart';
 
+import 'i18n_data_screens.dart';
+
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/features/classroom/domain/entities/classroom_assignment.dart';
 import 'package:beavertalk/screens/classroom/assignment_detail.dart';
@@ -505,6 +507,8 @@ Map<String, Widget Function()> i18nScreens() {
         ),
     'HomeGnbNoLevel': () =>
         const Center(child: HomeGnb(course: mockHomeCourseNoLevel)),
+    // 데이터가 찬 상태의 화면들(09-24) — `i18n_data_screens.dart`. 새 데이터 화면도 거기에 등록한다.
+    ...i18nDataScreens(),
   };
   return screens;
 }
