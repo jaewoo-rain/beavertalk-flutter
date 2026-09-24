@@ -89,8 +89,10 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   /// Figma `paywall_exit_guard`(Mobile `6192:29141` · Tablet `6238:48555`, `Dialog/Confirm-Icon`)
   /// — 09-24 사장님 「Figma 대로 해」:
   /// - 위 「Get Premium」(primary_fill) → 결제 진행(`depth/purchase_processing`) — 아래 CTA 와 같은 곳.
-  /// - 아래 「Maybe later」(secondary_fill) → **창만 닫는다**(Figma BACK). 페이월에 남는다.
-  /// - 스크림도 BACK(닫기)이다. 한 번 보여 준 뒤의 back/X 는 묻지 않고 나간다.
+  /// - 아래 「Maybe later」(secondary_fill) → **페이월을 바로 떠난다**(09-24 사장님 「응 그렇게 해」 —
+  ///   처음엔 Figma BACK 대로 창만 닫았으나, 누르고도 X 를 한 번 더 눌러야 나가는 게 문제였다).
+  /// - 스크림은 창만 닫는다(Figma BACK · 뜻을 밝히지 않은 동작을 나가기로 읽지 않는다).
+  ///   한 번 보여 준 뒤의 back/X 는 묻지 않고 나간다.
   Future<void> _handleClose() async {
     if (_leaveGuardShown) {
       Navigator.pop(context);
@@ -98,7 +100,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     }
     _leaveGuardShown = true;
     final l10n = AppLocalizations.of(context);
-    final buy = await showDialogConfirmIcon<bool>(
+    final choice = await showDialogConfirmIcon<bool>(
       context,
       icon: AppIcons.duoHeart(),
       title: l10n.paywallGuardTitle,
@@ -116,7 +118,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ),
       ],
     );
-    if (buy == true && mounted) _startPurchase();
+    if (!mounted) return;
+    if (choice == true) {
+      _startPurchase();
+    } else if (choice == false) {
+      Navigator.pop(context); // 「Maybe later」 — 페이월을 떠난다.
+    }
   }
 
   /// 결제 진행 — 아래 CTA 와 이탈 방지 창의 「Get Premium」이 같은 곳으로 간다.

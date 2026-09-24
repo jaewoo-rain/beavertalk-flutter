@@ -127,7 +127,7 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('X shows the guard; "Maybe later" only closes it, a second X leaves',
+    testWidgets('X shows the guard; "Maybe later" leaves the paywall (09-24 owner)',
         (tester) async {
       await pumpPaywall(tester);
       final l10n = await l10nOf(tester, PaywallScreen);
@@ -141,8 +141,19 @@ void main() {
           lessThan(tester.getTopLeft(find.text(l10n.ctaMaybeLater)).dy));
       await tester.tap(find.text(l10n.ctaMaybeLater));
       await tester.pumpAndSettle();
+      expect(find.byType(PaywallScreen), findsNothing, reason: '「나중에 할게요」 = 페이월을 떠난다');
+    });
+
+    testWidgets('scrim only closes the guard; a second X leaves without asking',
+        (tester) async {
+      await pumpPaywall(tester);
+      final l10n = await l10nOf(tester, PaywallScreen);
+      await tester.tapAt(const Offset(34, 28));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(10, 1100)); // 스크림(창 바깥)
+      await tester.pumpAndSettle();
       expect(find.text(l10n.paywallGuardTitle), findsNothing);
-      expect(find.byType(PaywallScreen), findsOneWidget, reason: 'Figma BACK — 페이월에 남는다');
+      expect(find.byType(PaywallScreen), findsOneWidget, reason: '스크림은 창만 닫는다');
       await tester.tapAt(const Offset(34, 28));
       await tester.pumpAndSettle();
       expect(find.byType(PaywallScreen), findsNothing, reason: '두 번째 X 는 묻지 않고 나간다');
