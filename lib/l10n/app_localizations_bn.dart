@@ -930,7 +930,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get home => 'হোম';
 
   @override
-  String get callNow => 'এখনই কল করুন';
+  String get onboardingLevelTestCta => 'স্তর পরীক্ষা';
 
   @override
   String get pronunciation => 'উচ্চারণ';

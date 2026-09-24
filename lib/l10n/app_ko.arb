@@ -276,7 +276,7 @@
   "onboardingDoneTitle": "비버가 회원님의 전화를 기다리고 있어요",
   "onboardingDoneSubtitle": "지금 바로 통화를 시작해 보세요",
   "home": "홈",
-  "callNow": "지금 통화하기",
+  "onboardingLevelTestCta": "레벨 테스트",
   "pronunciation": "발음",
   "fluency": "유창성",
   "rhythm": "리듬",

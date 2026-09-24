@@ -938,7 +938,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get home => 'Bosh sahifa';
 
   @override
-  String get callNow => 'Hozir qoʻngʻiroq qilish';
+  String get onboardingLevelTestCta => 'Daraja testi';
 
   @override
   String get pronunciation => 'Talaffuz';

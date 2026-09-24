@@ -931,7 +931,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get home => 'ទំព័រដើម';
 
   @override
-  String get callNow => 'ហៅឥឡូវនេះ';
+  String get onboardingLevelTestCta => 'តេស្តកម្រិត';
 
   @override
   String get pronunciation => 'ការបញ្ចេញសំឡេង';

@@ -939,7 +939,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home => 'Главная';
 
   @override
-  String get callNow => 'Позвонить сейчас';
+  String get onboardingLevelTestCta => 'Тест уровня';
 
   @override
   String get pronunciation => 'Произношение';

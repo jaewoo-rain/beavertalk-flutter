@@ -932,7 +932,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get home => 'Trang chủ';
 
   @override
-  String get callNow => 'Gọi ngay';
+  String get onboardingLevelTestCta => 'Bài kiểm tra trình độ';
 
   @override
   String get pronunciation => 'Phát âm';

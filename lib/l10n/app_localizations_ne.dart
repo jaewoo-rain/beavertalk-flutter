@@ -928,7 +928,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get home => 'गृहपृष्ठ';
 
   @override
-  String get callNow => 'अहिले कल गर्नुहोस्';
+  String get onboardingLevelTestCta => 'स्तर परीक्षा';
 
   @override
   String get pronunciation => 'उच्चारण';

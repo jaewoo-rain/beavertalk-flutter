@@ -934,7 +934,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get home => 'ہوم';
 
   @override
-  String get callNow => 'ابھی کال کریں';
+  String get onboardingLevelTestCta => 'سطح کا امتحان';
 
   @override
   String get pronunciation => 'تلفظ';

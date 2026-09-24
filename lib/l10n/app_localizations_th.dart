@@ -922,7 +922,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get home => 'หน้าหลัก';
 
   @override
-  String get callNow => 'โทรเลย';
+  String get onboardingLevelTestCta => 'แบบทดสอบระดับ';
 
   @override
   String get pronunciation => 'การออกเสียง';

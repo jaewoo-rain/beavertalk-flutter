@@ -934,7 +934,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get callNow => 'Call now';
+  String get onboardingLevelTestCta => 'Level test';
 
   @override
   String get pronunciation => 'Pronunciation';

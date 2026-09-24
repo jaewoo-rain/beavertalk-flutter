@@ -1,6 +1,6 @@
 // 제품 진입점은 전부 «자동(auto)» 코스로 건다 — 사장님 결정(2026-09-13).
 //
-// 홈 전화 버튼(home_auto_call_test)에 이어 나머지 셋: 온보딩 완료 「지금 통화하기」 ·
+// 홈 전화 버튼(home_auto_call_test)에 이어 나머지 셋: 온보딩 완료 「레벨 테스트」 ·
 // 기록 빈 화면 「통화 시작」 · 기록 목록 빈 상태 CTA. 셋 다 CourseCallRequest(auto),
 // force 없음, plan 없음. 옛 경로(call_type 미전송)는 이제 개발자 도구 «일반 통화» 와
 // 수신·레벨테스트만 쓴다.
@@ -90,8 +90,10 @@ void _expectAuto(List<RouteSettings> call) {
 
 void main() {
   group('제품 진입점 3곳 → auto', () {
-    testWidgets('온보딩 완료 「지금 통화하기」', (tester) async {
-      final call = await _tapAndCollect(tester, const OnboardingDoneScreen(), '지금 통화하기');
+    // 09-24 버튼 문구 「레벨 테스트」(사용자 지시 · P30 번복). 요청은 그대로 auto — 가입 직후
+    // 회원은 레벨이 없어 서버가 레벨테스트로 라우팅한다.
+    testWidgets('온보딩 완료 「레벨 테스트」', (tester) async {
+      final call = await _tapAndCollect(tester, const OnboardingDoneScreen(), '레벨 테스트');
       _expectAuto(call);
     });
 

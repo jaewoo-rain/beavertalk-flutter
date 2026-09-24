@@ -934,7 +934,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get home => 'Башкы бет';
 
   @override
-  String get callNow => 'Азыр чалуу';
+  String get onboardingLevelTestCta => 'Деңгээл тести';
 
   @override
   String get pronunciation => 'Айтылыш';

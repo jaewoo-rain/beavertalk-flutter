@@ -940,7 +940,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get home => 'Kezdőlap';
 
   @override
-  String get callNow => 'Hívás most';
+  String get onboardingLevelTestCta => 'Szintfelmérő';
 
   @override
   String get pronunciation => 'Kiejtés';

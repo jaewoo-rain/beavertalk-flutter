@@ -932,7 +932,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get home => 'මුල් පිටුව';
 
   @override
-  String get callNow => 'දැන් අමතන්න';
+  String get onboardingLevelTestCta => 'මට්ටම් පරීක්ෂණය';
 
   @override
   String get pronunciation => 'උච්චාරණය';

@@ -939,7 +939,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get home => 'ပင်မစာမျက်နှာ';
 
   @override
-  String get callNow => 'ယခု ခေါ်ဆိုရန်';
+  String get onboardingLevelTestCta => 'အဆင့်စစ်ဆေးမှု';
 
   @override
   String get pronunciation => 'အသံထွက်';

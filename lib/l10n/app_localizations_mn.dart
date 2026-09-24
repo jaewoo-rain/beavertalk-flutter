@@ -930,7 +930,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get home => 'Нүүр';
 
   @override
-  String get callNow => 'Одоо дуудах';
+  String get onboardingLevelTestCta => 'Түвшин тогтоох шалгалт';
 
   @override
   String get pronunciation => 'Дуудлага';

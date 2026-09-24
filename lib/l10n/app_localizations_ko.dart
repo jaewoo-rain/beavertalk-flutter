@@ -907,7 +907,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get home => '홈';
 
   @override
-  String get callNow => '지금 통화하기';
+  String get onboardingLevelTestCta => '레벨 테스트';
 
   @override
   String get pronunciation => '발음';

@@ -927,7 +927,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get home => 'Басты бет';
 
   @override
-  String get callNow => 'Қазір қоңырау шалу';
+  String get onboardingLevelTestCta => 'Деңгей тесті';
 
   @override
   String get pronunciation => 'Айтылым';

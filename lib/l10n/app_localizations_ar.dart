@@ -929,7 +929,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get home => 'الرئيسية';
 
   @override
-  String get callNow => 'اتصل الآن';
+  String get onboardingLevelTestCta => 'اختبار المستوى';
 
   @override
   String get pronunciation => 'النطق';

@@ -906,7 +906,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get home => 'ホーム';
 
   @override
-  String get callNow => '今すぐ通話';
+  String get onboardingLevelTestCta => 'レベルテスト';
 
   @override
   String get pronunciation => '発音';

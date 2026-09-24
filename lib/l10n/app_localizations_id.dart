@@ -934,7 +934,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get home => 'Beranda';
 
   @override
-  String get callNow => 'Panggil sekarang';
+  String get onboardingLevelTestCta => 'Tes level';
 
   @override
   String get pronunciation => 'Pengucapan';

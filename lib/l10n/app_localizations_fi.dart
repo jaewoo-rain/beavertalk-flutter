@@ -938,7 +938,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get home => 'Koti';
 
   @override
-  String get callNow => 'Soita nyt';
+  String get onboardingLevelTestCta => 'Tasotesti';
 
   @override
   String get pronunciation => 'Ääntäminen';

@@ -940,7 +940,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get home => 'Laman Utama';
 
   @override
-  String get callNow => 'Panggil sekarang';
+  String get onboardingLevelTestCta => 'Ujian tahap';
 
   @override
   String get pronunciation => 'Sebutan';

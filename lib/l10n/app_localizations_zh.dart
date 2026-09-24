@@ -904,7 +904,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get home => '首页';
 
   @override
-  String get callNow => '立即通话';
+  String get onboardingLevelTestCta => '等级测试';
 
   @override
   String get pronunciation => '发音';

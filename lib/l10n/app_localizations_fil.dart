@@ -943,7 +943,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get callNow => 'Tumawag ngayon';
+  String get onboardingLevelTestCta => 'Level test';
 
   @override
   String get pronunciation => 'Bigkas';

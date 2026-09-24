@@ -1804,11 +1804,11 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get home;
 
-  /// No description provided for @callNow.
+  /// Primary button on the screen right after sign-up (Figma onborading_done 3360:48). A new member has no level, so this call is routed to the level test. Noun, same term as takeLevelTest.
   ///
   /// In en, this message translates to:
-  /// **'Call now'**
-  String get callNow;
+  /// **'Level test'**
+  String get onboardingLevelTestCta;
 
   /// No description provided for @pronunciation.
   ///

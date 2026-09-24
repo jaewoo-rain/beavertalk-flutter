@@ -950,7 +950,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get home => 'Accueil';
 
   @override
-  String get callNow => 'Appeler maintenant';
+  String get onboardingLevelTestCta => 'Test de niveau';
 
   @override
   String get pronunciation => 'Prononciation';

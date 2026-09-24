@@ -17,7 +17,8 @@ import '../../components/layout/need_based_rows.dart';
 /// Reached after the final onboarding step ([OnboardingReasonScreen]) submits
 /// the draft. A centered beaver avatar with a welcome heading + sub copy, and a
 /// pinned two-button row: a secondary "Home" (drops to the now-onboarded home)
-/// and a primary "Call now" (jumps straight into the call flow).
+/// and a primary 「레벨 테스트」 (jumps straight into the call flow — a new member has
+/// no level, so the server routes this call to the level test).
 class OnboardingDoneScreen extends StatelessWidget {
   /// Creates the onboarding completion screen.
   const OnboardingDoneScreen({super.key});
@@ -86,7 +87,7 @@ class OnboardingDoneScreen extends StatelessWidget {
           ContentColumn(
             padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
             // Figma `I3360:55;175:18146`: 같은 폭 두 버튼(FILL·FILL, gap 10). 긴 언어에서 한쪽이
-            // 한 줄에 안 들어가면 세로로 쌓는다(주요 버튼 위) — 1:1 안에서 「지금 통화하기」 가
+            // 한 줄에 안 들어가면 세로로 쌓는다(주요 버튼 위) — 1:1 안에서 옛 「지금 통화하기」 가
             // 줄을 바꾸고 옆 「홈」 은 87px 가 남았다(09-24 전수조사 H · app designer 합의).
             child: EqualButtonPair(
               secondary: Button(
@@ -98,7 +99,9 @@ class OnboardingDoneScreen extends StatelessWidget {
               primary: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
-                text: l10n.callNow,
+                // 사용자 지시(09-24): 「'비버와 통화하기'도 '레벨 테스트'로」 — P30(「지금 통화하기」)
+                // 번복. 가입 직후 회원은 레벨이 없어 이 통화가 서버에서 레벨테스트로 라우팅된다.
+                text: l10n.onboardingLevelTestCta,
                 onPressed: () => _startCall(context),
               ),
             ),

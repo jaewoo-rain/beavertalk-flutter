@@ -930,7 +930,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get home => 'Ana Sayfa';
 
   @override
-  String get callNow => 'Şimdi ara';
+  String get onboardingLevelTestCta => 'Seviye testi';
 
   @override
   String get pronunciation => 'Telaffuz';
