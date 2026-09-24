@@ -7,6 +7,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../../theme/score_band.dart';
 import '../layout/need_based_rows.dart';
 
 /// Visual state of a [PronunciationResult].
@@ -40,33 +41,11 @@ class PronunciationMetric {
   final num? score;
 }
 
-/// 점수 구간 1~5 — `min(5, floor(score/20)+1)`. 경계값 20 은 2구간, 100 은 5구간.
-int pronunciationBand(num score) =>
-    math.min(5, (score.clamp(0, 100) ~/ 20) + 1);
-
-extension _ScoreColors on AppColorTokens {
-  Color band(int n) => switch (n) {
-        1 => score1,
-        2 => score2,
-        3 => score3,
-        4 => score4,
-        _ => score5,
-      };
-
-  Color bandText(int n) => switch (n) {
-        1 => score1Text,
-        2 => score2Text,
-        3 => score3Text,
-        4 => score4Text,
-        _ => score5Text,
-      };
-}
-
 /// PronunciationResult — a semicircle score gauge with a metrics footer.
 ///
 /// Figma component set `2224:20999` (pronunciation_result) — **H4 「채움 + 구간 배경」**
 /// (09-24 사장님 확정 · 엔드캡 없음 · 원장 P32):
-/// - 반원 링 255×127.5 · 두께 18. 0–100 을 20점씩 다섯 조각으로 나누고 조각 양 끝을 0.4%씩
+/// - 반원 링 255×127.5 · 두께 18. 0–100 을 20점씩 다섯 조각으로 나누고 조각 사이를 0.4%씩
 ///   비운다(틈). 조각 배경 = 그 구간 색 18%, 채움 = 0부터 점수까지 **지나는 조각마다 그 조각의
 ///   구간 색**. 끝은 평평하다(butt).
 /// - 가운데 점수([AppType.title1] Bold) = 전체 점수의 `Score/n Text`.
@@ -186,7 +165,7 @@ class _PronunciationResultState extends State<PronunciationResult>
   Widget build(BuildContext context) {
     final c = context.c;
     final double clamped = widget.score.clamp(0, 100).toDouble();
-    final int band = pronunciationBand(clamped);
+    final int band = scoreBand(clamped);
 
     // 폭은 부모(콘텐츠 컬럼)를 채운다 — 폰 335, 태블릿 600. 안의 게이지는
     // [_gaugeWidth] 고정이라 커지지 않고 가운데 선다.
@@ -211,7 +190,7 @@ class _PronunciationResultState extends State<PronunciationResult>
                       size: const Size(PronunciationResult._gaugeWidth,
                           PronunciationResult._gaugeHeight),
                       painter: _GaugePainter(
-                        bands: [for (var i = 1; i <= 5; i++) c.band(i)],
+                        bands: [for (var i = 1; i <= 5; i++) c.scoreColor(i)],
                         progress: _active ? shown / 100 : 0,
                       ),
                     ),
@@ -222,7 +201,7 @@ class _PronunciationResultState extends State<PronunciationResult>
                         style: AppType.title1.b.copyWith(
                           // 숫자 색은 최종 구간색으로 고정 — 세는 동안 색이 바뀌지 않는다.
                           color:
-                              _active ? c.bandText(band) : c.primaryNormal24,
+                              _active ? c.scoreTextColor(band) : c.primaryNormal24,
                         ),
                       ),
                     ),
@@ -233,7 +212,7 @@ class _PronunciationResultState extends State<PronunciationResult>
               _MetricsFooter(
                 metrics: widget.metrics,
                 active: _active,
-                border: _active ? c.band(band) : null,
+                border: _active ? c.scoreColor(band) : null,
                 progressOf: (i) => _active
                     ? _phase(
                         PronunciationResult._metricStartMs +
@@ -321,7 +300,7 @@ class _MetricsFooter extends StatelessWidget {
                 style: score == null
                     ? AppType.body1.sb
                     : AppType.body1.sb
-                        .copyWith(color: c.bandText(pronunciationBand(score))),
+                        .copyWith(color: c.scoreTextColor(scoreBand(score))),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -387,7 +366,7 @@ class _GaugePainter extends CustomPainter {
 
   static const double _stroke = 18;
 
-  /// 조각 양 끝의 틈 — 0–1 범위의 0.4%(반원 180° 의 0.72°).
+  /// 조각 사이 틈의 한쪽 몫 — 0–1 범위의 0.4%(반원 180° 의 0.72°). 맨 끝 둘은 비우지 않는다.
   static const double _inset = 0.004;
 
   /// 배경 조각 투명도 — Figma 는 도형에 18% 를 걸었다(색 변수가 아니라).
@@ -413,8 +392,10 @@ class _GaugePainter extends CustomPainter {
 
     final p = progress.clamp(0.0, 1.0);
     for (var i = 0; i < 5; i++) {
-      final start = i * 0.2 + _inset;
-      final end = (i + 1) * 0.2 - _inset;
+      // 틈은 조각 **사이**에만 — 0점 쪽 시작과 100점 쪽 끝은 비우지 않는다(Figma Band1 은 0부터,
+      // Band5 는 1.0 까지 · 09-24 figma-code-diff).
+      final start = i == 0 ? 0.0 : i * 0.2 + _inset;
+      final end = i == 4 ? 1.0 : (i + 1) * 0.2 - _inset;
       arc(start, end, pen(bands[i].withValues(alpha: _trackAlpha)));
       if (p > start) arc(start, math.min(p, end), pen(bands[i]));
     }

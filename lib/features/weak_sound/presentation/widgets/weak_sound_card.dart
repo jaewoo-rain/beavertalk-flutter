@@ -6,6 +6,7 @@ import '../../../../theme/app_color_tokens.dart';
 import '../../../../theme/app_radius.dart';
 import '../../../../theme/app_spacing.dart';
 import '../../../../theme/app_typography.dart';
+import '../../../../theme/score_band.dart';
 import '../../domain/entities/weak_sound_item.dart';
 import '../../../../l10n/app_localizations.dart';
 
@@ -14,13 +15,13 @@ import '../../../../l10n/app_localizations.dart';
 /// 구조(실측 2026-09-22): 카드 r8 · padding 16 · 세로 gap 8
 /// ```
 /// Row(gap 12)  [Symbol 48×48 r8]  [이름 + 설명]
-/// Meter(gap 6) [Bar 높이 6, r3 ─ 채움 + 목표 80 눈금]  [점수 13/11]
+/// Meter(gap 6) [Bar 높이 8, r4 ─ 채움 + 목표 80 눈금]  [점수 13/11]
 /// ```
 /// 셰브런은 없다(09-22 디자인 확정) — 카드 전체가 눌리는 자리라 화살표가 중복이다.
 ///
-/// 점수 색은 **구간**이다([_level]): 80 이상 초록 · 60~79 주황 · 60 미만 빨강.
-/// 80 이 기준선인 이유는 막대 위 「목표 80」 눈금과 같은 값이기 때문이다 — 두 값이 갈리면
-/// 눈금 왼쪽인데 초록인 카드가 생긴다.
+/// 점수 색은 **W2 「구간 단색」**(09-24 사장님 확정 · 시안 `6387:3549`)이다 — 발음 결과 게이지와
+/// 같은 다섯 구간(`scoreBand`, 20점씩). 바탕 = 구간 색 16% · 채움 = 구간 색 · 점수 글자 = 구간
+/// 글자색. 옛 3단(80 이상 초록 · 60~79 주황 · 60 미만 빨강, `Status/*`)은 대체됐다.
 class WeakSoundCard extends StatelessWidget {
   const WeakSoundCard({
     super.key,
@@ -200,10 +201,14 @@ class _Score extends StatelessWidget {
       children: [
         // 점수는 막대 옆에 **작게** 둔다(Figma `MO/Label 2/Bold` + `MO/Caption 2/Medium`).
         // 같은 값을 막대가 이미 보여 주므로 숫자가 카드의 주인공이 되면 안 된다.
-        Text('$score', style: AppType.label2.b.copyWith(color: c.labelStrong)),
+        // 값 · 「점」 모두 구간 글자색(`Score/n Text`, W2).
+        Text('$score',
+            style: AppType.label2.b
+                .copyWith(color: c.scoreTextColor(scoreBand(score!)))),
         const SizedBox(width: 1),
         Text(l10n.wsPointsUnit,
-            style: AppType.caption2.m.copyWith(color: c.labelNormal)),
+            style: AppType.caption2.m
+                .copyWith(color: c.scoreTextColor(scoreBand(score!)))),
       ],
     );
   }
@@ -221,8 +226,10 @@ class _Bar extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     final value = score;
+    // 측정 전이면 바탕만 `Fill/Alternative` · 채움 없음. 재 봤으면 바탕 = 구간 색 16%.
+    final band = value == null ? null : c.scoreColor(scoreBand(value));
     return SizedBox(
-      // 막대 6 + 눈금이 위아래로 3씩 삐져나온다(눈금 높이 12). 고정 높이를 주지 않으면
+      // 막대 8 + 눈금이 위아래로 2씩 삐져나온다(눈금 높이 12). 고정 높이를 주지 않으면
       // 눈금이 잘리거나 카드 높이가 카드마다 달라진다.
       height: 12,
       child: LayoutBuilder(
@@ -232,30 +239,35 @@ class _Bar extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               Positioned(
-                top: 3,
+                top: 2,
                 left: 0,
                 right: 0,
                 child: Container(
-                  height: 6,
+                  height: 8,
                   decoration: BoxDecoration(
-                    color: c.fillAlternative,
-                    borderRadius: BorderRadius.circular(3),
+                    color: band == null
+                        ? c.fillAlternative
+                        : band.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
               ),
               if (value != null && value > 0)
                 Positioned(
-                  top: 3,
+                  top: 2,
                   left: 0,
                   child: Container(
+                    // 길이 = 폭 × 점수/100(Figma 는 그라디언트로 근사 — 코드는 점수 그대로).
                     width: w * (value.clamp(0, 100) / 100),
-                    height: 6,
+                    height: 8,
                     decoration: BoxDecoration(
-                      color: _levelColor(c, value),
-                      borderRadius: BorderRadius.circular(3),
+                      color: band,
+                      borderRadius: BorderRadius.circular(4),
                     ),
                   ),
                 ),
+              // 목표 눈금 2×12 · `Label/Assistive` · 폭의 80% 위치(Figma 모바일 269 폭 x=214 ·
+              // 09-24 정정 — 예전 Figma 는 x=241 로 잘못 놓여 있었다). 막대와 세로 가운데.
               Positioned(
                 top: 0,
                 left: w * (WeakSoundCard.goal / 100) - 1,
@@ -285,9 +297,3 @@ class _Bar extends StatelessWidget {
   }
 }
 
-/// 점수 구간 색 — 눈금(80)과 같은 기준선을 쓴다.
-Color _levelColor(AppColorTokens c, int score) {
-  if (score >= WeakSoundCard.goal) return c.statusPositive;
-  if (score >= 60) return c.statusCautionary;
-  return c.statusNegative;
-}

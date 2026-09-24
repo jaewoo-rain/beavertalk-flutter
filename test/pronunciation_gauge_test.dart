@@ -1,5 +1,6 @@
 import 'package:beavertalk/components/molecules/pronunciation_result.dart';
 import 'package:beavertalk/theme/app_color_tokens.dart';
+import 'package:beavertalk/theme/score_band.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -27,13 +28,13 @@ void main() {
       tester.widget<Text>(find.text(text)).style!.color!;
 
   test('구간 = min(5, floor(score/20)+1) — 경계 20 은 2구간', () {
-    expect(pronunciationBand(0), 1);
-    expect(pronunciationBand(19.9), 1);
-    expect(pronunciationBand(20), 2);
-    expect(pronunciationBand(59), 3);
-    expect(pronunciationBand(60), 4);
-    expect(pronunciationBand(80), 5);
-    expect(pronunciationBand(100), 5);
+    expect(scoreBand(0), 1);
+    expect(scoreBand(19.9), 1);
+    expect(scoreBand(20), 2);
+    expect(scoreBand(59), 3);
+    expect(scoreBand(60), 4);
+    expect(scoreBand(80), 5);
+    expect(scoreBand(100), 5);
   });
 
   testWidgets('끝나면 점수 · 지표 값이 각자 구간 글자색 · 패널 테두리는 전체 구간 색', (tester) async {
