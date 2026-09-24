@@ -9,6 +9,7 @@ import 'bottom_sheet_alarm_settings.dart' show AlarmPartner;
 import '../layout/need_based_rows.dart';
 import '../../features/alarm/domain/entities/alarm.dart';
 import '../molecules/card_call_mode.dart';
+import 'bottom_sheet_alarm_repeat.dart';
 
 /// 알람 추가·편집 시트 — Figma `BottomSheet/AlarmAdd` (`screen/etc_alarm__add`
 /// `6222:20710` · 반복 펼침 `6180:4764` · 상대 펼침 `6180:4865`).
@@ -18,15 +19,17 @@ import '../molecules/card_call_mode.dart';
 /// [ 07 ]  [ 59 ]          ← 24시간 휠 두 개(시·분)
 /// [ 08 ]  [ 00 ]  ← 선택 띠
 /// [ 09 ]  [ 01 ]
-/// ┌ 반복          평일 › ┐   ← 누르면 아래에 요일 칩이 펼쳐진다
-/// │ [월][화][수]…        │
+/// [ 학습 · 커리큘럼 표현 연습 ]  ← 통화 모드 카드 2장(Figma CallMode 6222:20794)
+/// [ 자유 대화 · 주제 없이 대화 ]
+/// ┌ 반복          평일 › ┐   ← 누르면 시트 **안에서** 「반복 선택」 화면이 밀려 들어온다
 /// │ 통화 상대      Baba › │   ← 누르면 캐릭터 줄이 펼쳐진다
 /// └──────────────────────┘
 /// [          저장          ]
 /// ```
 ///
-/// ⚠ Figma 에 있는 **통화 모드 카드 2장(학습·자유 대화)은 아직 그리지 않는다.** 알람에
-///   모드를 저장할 서버 칸이 없어서다(남은판단 S2). 칸이 생기면 휠과 설정 사이에 들어간다.
+/// 반복은 09-24 사용자 확정으로 인라인 요일 칩 → 하위 화면([BottomSheetAlarmRepeat],
+/// Figma `6180:4764`)이 됐다. 오른쪽→왼쪽으로 250ms 밀려 들어오고, 「<」·「완료」·시스템 뒤로가
+/// 시트 본문으로 되돌린다(시트는 닫히지 않는다).
 ///
 /// 이 위젯은 **값을 들고 있지 않는다**(상태는 부르는 쪽). 펼침 여부만 제 것이다.
 class BottomSheetAlarmAdd extends StatefulWidget {
@@ -42,7 +45,9 @@ class BottomSheetAlarmAdd extends StatefulWidget {
     required this.minute,
     required this.onTimeChanged,
     required this.days,
-    required this.dayLabels,
+    required this.dayNames,
+    required this.repeatDoneText,
+    required this.repeatBackLabel,
     required this.daysSummary,
     required this.onDayToggled,
     required this.partners,
@@ -57,6 +62,7 @@ class BottomSheetAlarmAdd extends StatefulWidget {
     required this.chatModeTitle,
     required this.chatModeSubtitle,
     this.initiallyOpen,
+    this.initiallyRepeat = false,
   });
 
   /// 머리 제목(「알람 추가」·「알람 수정」).
@@ -82,8 +88,12 @@ class BottomSheetAlarmAdd extends StatefulWidget {
   /// 7개, **일요일부터**(0=일).
   final List<bool> days;
 
-  /// 요일 약칭 7개, 일요일부터(`AlarmDays.shortLabels`).
-  final List<String> dayLabels;
+  /// 요일 이름 7개, 일요일부터(`AlarmDays.fullNames`) — 「반복 선택」 화면 줄.
+  final List<String> dayNames;
+
+  /// 「반복 선택」 화면의 「완료」 · 뒤로 버튼 접근성 이름.
+  final String repeatDoneText;
+  final String repeatBackLabel;
 
   /// 「반복」 줄 오른쪽 값(「평일」).
   final String daysSummary;
@@ -119,18 +129,26 @@ class BottomSheetAlarmAdd extends StatefulWidget {
   /// 처음부터 펼쳐 둘 칸(시험용 — 하네스가 **다 연 상태**를 그려야 가장 긴 경우를 본다).
   final Set<AlarmAddPanel>? initiallyOpen;
 
+  /// 처음부터 「반복 선택」 화면을 보인다(시험용).
+  final bool initiallyRepeat;
+
   @override
   State<BottomSheetAlarmAdd> createState() => _BottomSheetAlarmAddState();
 }
 
-/// 펼칠 수 있는 칸.
-enum AlarmAddPanel { repeat, partner }
+/// 펼칠 수 있는 칸. 반복은 펼침이 아니라 하위 화면이다(09-24).
+enum AlarmAddPanel { partner }
 
 class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
   late final Set<AlarmAddPanel> _open = {...?widget.initiallyOpen};
 
   void _toggle(AlarmAddPanel p) =>
       setState(() => _open.contains(p) ? _open.remove(p) : _open.add(p));
+
+  /// 「반복 선택」 하위 화면을 보이는 중인가.
+  late bool _repeat = widget.initiallyRepeat;
+
+  void _showRepeat(bool v) => setState(() => _repeat = v);
 
   @override
   Widget build(BuildContext context) {
@@ -165,35 +183,59 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
                 ),
               ),
               const SizedBox(height: 16),
-              _header(context),
-              const SizedBox(height: 16),
-              // 휠 + 설정만 스크롤 — 머리(취소·제목)와 저장 버튼은 붙어 있다. 펼침 둘을 다
-              // 열면 320dp·긴 로케일·큰 글꼴에서 화면보다 길다(모달 상한 = 화면 높이).
-              // 짧으면 픽셀이 그대로다. 휠은 자체 스크롤이라 휠 위의 끌기는 휠이 받는다.
+              // 본문 ↔ 「반복 선택」 — 같은 시트 안에서 밀어 넣고 뺀다(오른쪽→왼쪽, 250ms).
+              // 높이는 각자 내용에 맞춘다(AnimatedSize). 시스템 뒤로는 시트를 닫지 않고 본문으로.
               Flexible(
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _TimeWheel(
-                        hour24: widget.hour24,
-                        minute: widget.minute,
-                        onChanged: widget.onTimeChanged,
+                child: PopScope(
+                  canPop: !_repeat,
+                  onPopInvokedWithResult: (didPop, _) {
+                    if (!didPop && _repeat) _showRepeat(false);
+                  },
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 250),
+                    curve: Curves.easeOut,
+                    alignment: Alignment.topCenter,
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 250),
+                      layoutBuilder: (current, previous) => Stack(
+                        alignment: Alignment.topCenter,
+                        children: [...previous, ?current],
                       ),
-                      const SizedBox(height: 16),
-                      _callModes(),
-                      const SizedBox(height: 16),
-                      _settings(context, partnerName),
-                    ],
+                      transitionBuilder: (child, animation) {
+                        final rtl = Directionality.of(context) == TextDirection.rtl;
+                        // 하위 화면은 끝 쪽에서 들어오고, 본문은 시작 쪽에서 돌아온다.
+                        final fromEnd = child.key == const ValueKey('repeat');
+                        final dx = (fromEnd ? 1.0 : -1.0) * (rtl ? -1 : 1);
+                        return ClipRect(
+                          child: SlideTransition(
+                            position: Tween(begin: Offset(dx, 0), end: Offset.zero)
+                                .animate(CurvedAnimation(
+                                    parent: animation, curve: Curves.easeOut)),
+                            child: child,
+                          ),
+                        );
+                      },
+                      child: _repeat
+                          ? KeyedSubtree(
+                              key: const ValueKey('repeat'),
+                              child: BottomSheetAlarmRepeat(
+                                title: widget.repeatLabel,
+                                doneText: widget.repeatDoneText,
+                                backLabel: widget.repeatBackLabel,
+                                dayNames: widget.dayNames,
+                                days: widget.days,
+                                onDayToggled: widget.onDayToggled,
+                                onBack: () => _showRepeat(false),
+                                onDone: () => _showRepeat(false),
+                              ),
+                            )
+                          : KeyedSubtree(
+                              key: const ValueKey('main'),
+                              child: _main(context, partnerName),
+                            ),
+                    ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: widget.saveText,
-                onPressed: widget.onSave,
               ),
             ],
           ),
@@ -201,6 +243,44 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
       ),
     );
   }
+
+  /// 시트 본문 — 머리 · (휠 · 모드 · 설정) · 저장.
+  Widget _main(BuildContext context, String partnerName) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _header(context),
+          const SizedBox(height: 16),
+          // 휠 + 모드 + 설정만 스크롤 — 머리(취소·제목)와 저장 버튼은 붙어 있다. 상대 펼침을
+          // 열면 320dp·긴 로케일·큰 글꼴에서 화면보다 길다(모달 상한 = 화면 높이).
+          // 짧으면 픽셀이 그대로다. 휠은 자체 스크롤이라 휠 위의 끌기는 휠이 받는다.
+          Flexible(
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  _TimeWheel(
+                    hour24: widget.hour24,
+                    minute: widget.minute,
+                    onChanged: widget.onTimeChanged,
+                  ),
+                  const SizedBox(height: 16),
+                  _callModes(),
+                  const SizedBox(height: 16),
+                  _settings(context, partnerName),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: widget.saveText,
+            onPressed: widget.onSave,
+          ),
+        ],
+      );
 
   /// 「취소 · 제목 · (빈칸)」 — 제목이 가운데 서도록 좌우를 같은 폭으로 둔다.
   Widget _header(BuildContext context) {
@@ -257,7 +337,6 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
 
   Widget _settings(BuildContext context, String partnerName) {
     final c = context.c;
-    final repeatOpen = _open.contains(AlarmAddPanel.repeat);
     final partnerOpen = _open.contains(AlarmAddPanel.partner);
     return ClipRRect(
       borderRadius: BorderRadius.circular(12),
@@ -266,30 +345,13 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // 반복은 하위 화면으로 간다(펼치지 않는다) — 셰브런은 늘 오른쪽을 본다.
             _SettingRow(
               label: widget.repeatLabel,
               value: widget.daysSummary,
-              open: repeatOpen,
-              onTap: () => _toggle(AlarmAddPanel.repeat),
+              open: false,
+              onTap: () => _showRepeat(true),
             ),
-            if (repeatOpen)
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                // 약칭은 언어마다 길이가 다르다(ko 「월」 · fr 「lun.」 · ar 「الاثنين」).
-                // 일곱 개가 한 줄에 안 들어가면 **줄을 바꾼다** — 줄이거나 자르지 않는다.
-                child: Wrap(
-                  spacing: 6,
-                  runSpacing: 6,
-                  children: [
-                    for (final i in const [1, 2, 3, 4, 5, 6, 0])
-                      _DayChip(
-                        label: widget.dayLabels[i],
-                        on: widget.days[i],
-                        onTap: () => widget.onDayToggled(i, !widget.days[i]),
-                      ),
-                  ],
-                ),
-              ),
             Divider(height: 1, thickness: 1, color: c.lineAlternative),
             _SettingRow(
               label: widget.partnerLabel,
@@ -379,56 +441,6 @@ class _SettingRow extends StatelessWidget {
                   ),
                 ),
               ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// `Chip-Day` (`6179:28630`) — 가변 폭 알약(높이 38 · 최소 폭 43).
-class _DayChip extends StatelessWidget {
-  const _DayChip({required this.label, required this.on, required this.onTap});
-
-  final String label;
-  final bool on;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final c = context.c;
-    return Semantics(
-      button: true,
-      selected: on,
-      child: GestureDetector(
-        onTap: onTap,
-        child: Container(
-          // 높이는 하한 — 글자 배율이 크면 자란다.
-          constraints: const BoxConstraints(minWidth: 43, minHeight: 38),
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-          decoration: BoxDecoration(
-            color: on ? c.primaryHeavy : c.backgroundElevatedAlternative,
-            borderRadius: BorderRadius.circular(19),
-          ),
-          // ⛔ `Container` 에 `alignment` 를 주지 마라. 그러면 **부모가 허용하는
-          //   만큼 커진다**(Flutter 문서: "the container will expand to fill its
-          //   parent"). `Wrap` 자식은 「Wrap 폭까지」라는 느슨한 제약을 받으므로
-          //   칩 하나가 전폭을 먹고 다음 칩이 줄을 바꾼다 — 일곱 개가 세로로
-          //   쌓여 시트가 넘쳤다(2026-09-22 실기기 88px).
-          //   `minWidth` 는 하한이라 이걸 못 막는다. 상한이 없는 게 문제였다.
-          //
-          //   `widthFactor`·`heightFactor` 를 1 로 준 [Center] 는 반대로 **자식
-          //   크기로 줄어든다**. 그래서 칩이 글자 폭을 갖고, `minWidth: 43` 이
-          //   짧은 약칭(ko 「월」)을 받쳐 준다.
-          child: Center(
-            widthFactor: 1,
-            heightFactor: 1,
-            child: Text(
-              label,
-              style: AppType.label1.b.copyWith(
-                color: on ? c.staticWhite : c.labelNeutral,
-              ),
             ),
           ),
         ),

@@ -26,6 +26,17 @@ abstract final class AlarmDays {
     ];
   }
 
+  /// 요일 **이름** 7개 — 데이터 순서(일→토). 「반복 선택」 화면 줄(09-24, Figma `6180:4764`).
+  ///
+  /// `DateFormat.EEEE` 라 30개 언어를 손으로 쓰지 않고, 요약 줄의 약칭과 같은 표기 체계다.
+  /// 「~마다」 는 붙이지 않는다(사장님 지시).
+  static List<String> fullNames(String locale) {
+    final f = DateFormat.EEEE(locale);
+    return [
+      for (var i = 0; i < 7; i++) asciiDigits(f.format(DateTime(2026, 9, 20 + i))),
+    ];
+  }
+
   /// 요약 한 줄 — 「매일」·「평일」·「주말」·「반복 안 함」, 그 밖에는 약칭을 월→일로
   /// ` · ` 로 잇는다.
   static String summary(List<bool> days, AppLocalizations l10n, String locale) {

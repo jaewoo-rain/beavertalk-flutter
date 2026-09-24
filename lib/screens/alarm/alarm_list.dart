@@ -6,7 +6,6 @@ import '../../app/app_scaffold.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/row_alarm.dart';
-import '../../components/molecules/card_alarm_loading.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
@@ -133,7 +132,7 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
           ),
           Expanded(
             child: alarmsAsync.when(
-              loading: () => const _AlarmsLoading(),
+              loading: () => const AlarmListLoading(),
               error: (e, _) => NetworkErrorView(
                 message: e is AppException && e.fromServer ? e.message : null,
                 onRetry: () => ref.invalidate(alarmListControllerProvider),
@@ -232,28 +231,59 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   }
 }
 
-/// The waiting state — Figma `screen/etc_alarm_loading` (`3489:4550`).
+/// 로딩 — Figma `screen/etc_alarm_loading` Mobile `3489:4550` · Tablet `6242:13923`(09-24 개편).
 ///
-/// Two [CardAlarmLoading]s on the list's own padding and gap, so the real cards
-/// drop straight in. Two, as the frame draws: the alarm count is exactly what
-/// is loading, and a longer stack would guess at it.
-class _AlarmsLoading extends StatelessWidget {
-  const _AlarmsLoading();
+/// 목록과 **같은 틀**이다 — 같은 패딩의 [RowAlarmGroup] 안에 [RowAlarmLoading] 세 줄. 실제 줄이
+/// 그 자리에 그대로 들어온다. 옛 카드형(`CardAlarmLoading` 두 장)과 하단 「새 일정 추가」 버튼은
+/// 뺐다(버튼은 P11 에서 이미 없앤 기능).
+class AlarmListLoading extends StatelessWidget {
+  /// Creates the alarm list skeleton.
+  const AlarmListLoading({super.key});
 
   @override
   Widget build(BuildContext context) => const SkeletonShimmer(
         child: ContentColumn(
-          padding: EdgeInsets.only(top: 16, bottom: 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              CardAlarmLoading(),
-              SizedBox(height: 20),
-              CardAlarmLoading(),
-            ],
+          gutter: 16,
+          padding: EdgeInsets.only(top: 12, bottom: 24),
+          child: RowAlarmGroup(
+            children: [RowAlarmLoading(), RowAlarmLoading(), RowAlarmLoading()],
           ),
         ),
       );
 }
 
+/// `Row-Alarm-Loading` — 실제 [RowAlarm] 과 같은 높이(109 = 패딩 12·12 + 16 + 52 + 16 + 선 1).
+///
+/// 왼쪽 막대 셋은 이름(16 줄 · 36×10) · 시각(52 줄 · 92×36) · 요약(16 줄 · 72×10)의 **줄 높이**
+/// 안에 놓인다. 오른쪽은 토글 자리 52×28 알약. SPACE_BETWEEN · 세로 가운데 · 패딩 12/18.
+class RowAlarmLoading extends StatelessWidget {
+  /// Creates one skeleton row.
+  const RowAlarmLoading({super.key});
 
+  static Widget _line(double h, double w, double barH) => SizedBox(
+        height: h,
+        child: Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: Skeleton.bar(width: w, height: barH),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) => Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _line(16, 36, 10),
+                _line(52, 92, 36),
+                _line(16, 72, 10),
+              ],
+            ),
+            const Skeleton.pill(width: 52, height: 28),
+          ],
+        ),
+      );
+}

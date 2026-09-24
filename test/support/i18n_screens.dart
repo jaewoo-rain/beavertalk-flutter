@@ -140,52 +140,10 @@ Map<String, Widget Function()> i18nScreens() {
     // 🔴 알람 추가 시트는 **펼침 둘을 다 연 상태**가 가장 길다(검수 세션 요청 2026-09-22) —
     //    접힌 상태만 보면 시트가 화면 높이를 넘치는 경우를 못 본다. 화면 하네스는 캐릭터
     //    프로바이더가 없어 로딩만 그리므로 시트를 직접 띄운다.
-    'AlarmAddSheetOpen': () => Builder(
-          builder: (ctx) {
-            final l10n = AppLocalizations.of(ctx);
-            final loc = Localizations.localeOf(ctx).toString();
-            const days = [false, true, false, true, false, true, false];
-            // ⛔ `SingleChildScrollView` 로 감싸지 마라 — 세로 제약이 풀려 **넘칠 수가 없게**
-            //   된다. 실제 모달(`isScrollControlled: true`)은 화면 높이가 상한이다. 예전엔
-            //   감싸 두어서 요일 칩이 세로로 쌓여 88px 넘친 것을 시험이 못 잡았다(실기기 1보).
-            return Align(
-              alignment: Alignment.bottomCenter,
-              child: BottomSheetAlarmAdd(
-                  title: l10n.alarmAdd,
-                  cancelText: l10n.cancel,
-                  saveText: l10n.save,
-                  repeatLabel: l10n.repeat,
-                  partnerLabel: l10n.callPartner,
-                  hour24: 8,
-                  minute: 0,
-                  onTimeChanged: (_, _) {},
-                  days: days,
-                  dayLabels: AlarmDays.shortLabels(loc),
-                  daysSummary: AlarmDays.summary(days, l10n, loc),
-                  onDayToggled: (_, _) {},
-                  partners: const [
-                    AlarmPartner(id: '1', name: 'Baba'),
-                    AlarmPartner(id: '2', name: 'Bibi'),
-                    AlarmPartner(id: '3', name: 'Popo'),
-                    AlarmPartner(id: '4', name: 'Rara'),
-                    AlarmPartner(id: '5', name: 'Dudu'),
-                  ],
-                  partner: '1',
-                  onPartnerChanged: (_) {},
-                  onSave: () {},
-                  onCancel: () {},
-                  initiallyOpen: const {AlarmAddPanel.repeat, AlarmAddPanel.partner},
-                  // 모드 카드 두 장(Figma CallMode 6222:20794) — 자유 대화 선택 상태.
-                  callMode: AlarmCallMode.chat,
-                  onCallModeChanged: (_) {},
-                  learnModeTitle: l10n.homeModeLearn,
-                  learnModeSubtitle: l10n.alarmModeLearnSub,
-                  chatModeTitle: l10n.callModeFreeTalk,
-                  chatModeSubtitle: l10n.alarmModeChatSub,
-                ),
-            );
-          },
-        ),
+    'AlarmAddSheetOpen': () => Builder(builder: (ctx) => _alarmSheet(ctx)),
+    // 「반복 선택」 하위 화면(Figma `6180:4764`, 09-24) — 가장 긴 요일 이름(ru 「Воскресенье」)에
+    // 체크가 붙도록 일요일을 켜 둔다.
+    'AlarmRepeatSheet': () => Builder(builder: (ctx) => _alarmSheet(ctx, repeat: true)),
     // 알람 목록 줄 — 목록 화면도 하네스에서 데이터가 없어 줄을 안 그린다. 켜짐·꺼짐 둘.
     // 분석 대기 준비 카드(Figma `6330:13219` Card/Preparing, 09-23) — 두 단계 상태를 모두
     // 그린다(저장 중·대기 / 완료·만드는 중). 가장 긴 문구는 de·ru 단계 이름이다.
@@ -310,6 +268,8 @@ Map<String, Widget Function()> i18nScreens() {
         ),
     'AlarmEmpty': () => const AlarmEmptyScreen(),
     'AlarmList': () => const AlarmListScreen(),
+    // 알람 로딩(Figma `3489:4550`, 09-24 개편) — 목록 줄과 같은 틀의 스켈레톤 세 줄.
+    'AlarmListLoading': () => const AlarmListLoading(),
     'Login': () => const LoginScreen(),
     'LoginForm': () => const LoginFormScreen(),
     'PasswordCode': () => const PasswordCodeScreen(),
@@ -603,3 +563,56 @@ Widget _manageHost(SubscriptionState state, {DailyStatus? daily}) =>
       ],
       child: const SubscriptionManageScreen(),
     );
+
+/// 알람 추가 시트를 실제 모달과 같은 세로 제약으로 띄운다.
+///
+/// ⛔ `SingleChildScrollView` 로 감싸지 마라 — 세로 제약이 풀려 **넘칠 수가 없게** 된다.
+///   실제 모달(`isScrollControlled: true`)은 화면 높이가 상한이다. 예전엔 감싸 두어서 요일
+///   칩이 세로로 쌓여 88px 넘친 것을 시험이 못 잡았다(실기기 1보).
+/// 본문은 **상대 펼침을 연 상태**가 가장 길다(검수 세션 요청 2026-09-22).
+Widget _alarmSheet(BuildContext ctx, {bool repeat = false}) {
+  final l10n = AppLocalizations.of(ctx);
+  final loc = Localizations.localeOf(ctx).toString();
+  final days = repeat
+      ? const [true, true, false, true, false, true, false]
+      : const [false, true, false, true, false, true, false];
+  return Align(
+    alignment: Alignment.bottomCenter,
+    child: BottomSheetAlarmAdd(
+      title: l10n.alarmAdd,
+      cancelText: l10n.cancel,
+      saveText: l10n.save,
+      repeatLabel: l10n.repeat,
+      partnerLabel: l10n.callPartner,
+      hour24: 8,
+      minute: 0,
+      onTimeChanged: (_, _) {},
+      days: days,
+      dayNames: AlarmDays.fullNames(loc),
+      repeatDoneText: l10n.selectComplete,
+      repeatBackLabel: l10n.back,
+      daysSummary: AlarmDays.summary(days, l10n, loc),
+      onDayToggled: (_, _) {},
+      partners: const [
+        AlarmPartner(id: '1', name: 'Baba'),
+        AlarmPartner(id: '2', name: 'Bibi'),
+        AlarmPartner(id: '3', name: 'Popo'),
+        AlarmPartner(id: '4', name: 'Rara'),
+        AlarmPartner(id: '5', name: 'Dudu'),
+      ],
+      partner: '1',
+      onPartnerChanged: (_) {},
+      onSave: () {},
+      onCancel: () {},
+      initiallyOpen: const {AlarmAddPanel.partner},
+      initiallyRepeat: repeat,
+      // 모드 카드 두 장(Figma CallMode 6222:20794) — 자유 대화 선택 상태.
+      callMode: AlarmCallMode.chat,
+      onCallModeChanged: (_) {},
+      learnModeTitle: l10n.homeModeLearn,
+      learnModeSubtitle: l10n.alarmModeLearnSub,
+      chatModeTitle: l10n.callModeFreeTalk,
+      chatModeSubtitle: l10n.alarmModeChatSub,
+    ),
+  );
+}

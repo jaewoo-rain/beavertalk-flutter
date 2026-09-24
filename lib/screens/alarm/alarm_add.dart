@@ -124,7 +124,9 @@ class _AlarmAddSheetState extends ConsumerState<AlarmAddSheet> {
               ..minute = m;
           },
           days: data.days,
-          dayLabels: AlarmDays.shortLabels(locale),
+          dayNames: AlarmDays.fullNames(locale),
+          repeatDoneText: l10n.selectComplete,
+          repeatBackLabel: l10n.back,
           daysSummary: AlarmDays.summary(data.days, l10n, locale),
           onDayToggled: (index, on) =>
               setState(() => data.days = [...data.days]..[index] = on),
