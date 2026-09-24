@@ -1322,6 +1322,19 @@ class AppLocalizationsMn extends AppLocalizations {
   String get retakeLevelTest => 'Түвшин тогтоох шалгалтыг дахин өгөх';
 
   @override
+  String get levelRetakeTitle => 'Түвшний шалгалтыг дахин өгөх үү?';
+
+  @override
+  String get levelRetakeBody =>
+      'Дахин өгвөл ахиц тань тухайн түвшний эхний хичээл рүү буцна — ижил түвшин гарсан ч мөн адил. Сурсан хэллэг, дуудлагын түүх хэвээр үлдэнэ.';
+
+  @override
+  String get levelRetakeKeep => 'Ахицаа хадгалах';
+
+  @override
+  String get levelRetakeConfirm => 'Дахин шалгуулах';
+
+  @override
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
 
   @override

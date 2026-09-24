@@ -1352,6 +1352,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get retakeLevelTest => 'Refaire le test de niveau';
 
   @override
+  String get levelRetakeTitle => 'Refaire le test de niveau ?';
+
+  @override
+  String get levelRetakeBody =>
+      'Si vous le refaites, votre progression revient à la première leçon de ce niveau, même si vous obtenez le même niveau. Vos expressions apprises et votre historique d\'appels sont conservés.';
+
+  @override
+  String get levelRetakeKeep => 'Garder ma progression';
+
+  @override
+  String get levelRetakeConfirm => 'Refaire le test';
+
+  @override
   String get practicePronunciation => 'Travailler la prononciation';
 
   @override

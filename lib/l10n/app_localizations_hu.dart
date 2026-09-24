@@ -1338,6 +1338,19 @@ class AppLocalizationsHu extends AppLocalizations {
   String get retakeLevelTest => 'Szintfelmérő újra';
 
   @override
+  String get levelRetakeTitle => 'Újra kitöltöd a szintfelmérőt?';
+
+  @override
+  String get levelRetakeBody =>
+      'Ha újra kitöltöd, a haladásod a szint első leckéjére ugrik vissza – akkor is, ha ugyanazt a szintet kapod. A megtanult kifejezések és a híváselőzmények megmaradnak.';
+
+  @override
+  String get levelRetakeKeep => 'Haladás megtartása';
+
+  @override
+  String get levelRetakeConfirm => 'Teszt újra';
+
+  @override
   String get practicePronunciation => 'Kiejtés gyakorlása';
 
   @override

@@ -1292,6 +1292,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get retakeLevelTest => 'レベルテストを再受験';
 
   @override
+  String get levelRetakeTitle => 'レベルを測り直しますか？';
+
+  @override
+  String get levelRetakeBody =>
+      '測り直すと、進度はそのレベルの最初のレッスンに戻ります。同じレベルになっても同じです。覚えた表現と通話記録はそのまま残ります。';
+
+  @override
+  String get levelRetakeKeep => '進度をそのままにする';
+
+  @override
+  String get levelRetakeConfirm => '測り直す';
+
+  @override
   String get practicePronunciation => '発音を学習する';
 
   @override

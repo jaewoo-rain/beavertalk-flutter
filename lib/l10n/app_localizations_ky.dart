@@ -1327,6 +1327,19 @@ class AppLocalizationsKy extends AppLocalizations {
   String get retakeLevelTest => 'Деңгээл тестин кайра тапшыруу';
 
   @override
+  String get levelRetakeTitle => 'Деңгээл тестин кайра тапшырасызбы?';
+
+  @override
+  String get levelRetakeBody =>
+      'Кайра тапшырсаңыз, жетишкендигиңиз ошол деңгээлдин биринчи сабагына кайтат — деңгээл бирдей чыкса да. Үйрөнгөн сөз айкаштары жана чалуу тарыхы сакталат.';
+
+  @override
+  String get levelRetakeKeep => 'Жетишкендикти сактоо';
+
+  @override
+  String get levelRetakeConfirm => 'Кайра тапшыруу';
+
+  @override
   String get practicePronunciation => 'Айтылышты машыктыруу';
 
   @override

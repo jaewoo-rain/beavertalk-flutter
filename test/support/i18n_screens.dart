@@ -55,6 +55,7 @@ import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/components/molecules/card_bookmark.dart';
 import 'package:beavertalk/components/molecules/card_native.dart';
+import 'package:beavertalk/components/organisms/dialog_basic.dart';
 import 'package:beavertalk/features/alarm/domain/entities/alarm.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/daily_status.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
@@ -260,6 +261,22 @@ Map<String, Widget Function()> i18nScreens() {
                     ),
                   ),
                 ],
+              ),
+            );
+          },
+        ),
+    // 「레벨 테스트 다시하기」 확인(Figma `6353:13378` Dialog-Basic variant2 · 09-24) — 본문이
+    // 가장 긴 다이얼로그 축이라 30개 로케일 넘침을 본다.
+    'LevelRetakeConfirm': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            return Center(
+              child: DialogBasic(
+                title: l10n.levelRetakeTitle,
+                description: l10n.levelRetakeBody,
+                variant: DialogBasicVariant.twoVertical,
+                primary: DialogAction(label: l10n.levelRetakeKeep, onPressed: () {}),
+                secondary: DialogAction(label: l10n.levelRetakeConfirm, onPressed: () {}),
               ),
             );
           },

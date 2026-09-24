@@ -834,7 +834,9 @@ class MyPageScreen extends ConsumerWidget {
             type: BtnType.secondaryElevated,
             size: BtnSize.s60,
             text: l10n.retakeLevelTest,
-            onPressed: () => _startLevelTest(context, ref),
+            // 재측정은 진도를 그 레벨 첫 차시로 되돌린다(서버 09-24) — 확인을 먼저 받는다.
+            // ⛔ 이 버튼을 없애지 마라 — 레벨을 내리는 유일한 경로다(서버 요청).
+            onPressed: () => _confirmRetakeLevelTest(context, ref),
           ),
         ],
       );
@@ -1020,6 +1022,36 @@ class MyPageScreen extends ConsumerWidget {
   /// 서버에 이 API 가 아직 없던 동안(404) 레벨이 안 지워진 채 **일반 통화**가 열렸다.
   /// 사용자 눈에는 "레벨테스트를 눌렀는데 그냥 대화가 시작됨" 으로 보였고 원인이
   /// 드러나지 않았다. 조용한 폴백보다 명확한 실패가 낫다.
+  /// 「레벨 테스트 다시하기」 확인 — 서버 「레벨이 이제 «진도» 에서 나온다」(09-24).
+  ///
+  /// 다시 측정하면 진도가 **그 레벨의 첫 차시로** 돌아간다. 레벨이 같게 나와도 돌아가고,
+  /// 차시 완료 표시가 리셋된다(배운 항목·통화 기록·발음 점수는 보존). 되돌리기 어려운 쪽이라
+  /// 머무는 버튼이 주요 버튼(위)이다 — 통화 종료·페이월 이탈 확인과 같은 규칙(app designer 합의).
+  /// Dialog-Basic `175:12790` twoVertical(gap 12). 스크림으로 닫으면 **측정하지 않는다.**
+  ///
+  /// 레벨이 없는 회원의 「레벨 테스트 받기」 는 되돌아갈 진도가 없어 확인 없이 바로 간다.
+  Future<void> _confirmRetakeLevelTest(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final retake = await showDialogBasic<bool>(
+      context,
+      title: l10n.levelRetakeTitle,
+      description: l10n.levelRetakeBody,
+      variant: DialogBasicVariant.twoVertical,
+      primary: DialogAction(
+        label: l10n.levelRetakeKeep,
+        type: BtnType.primaryFill,
+        onPressed: () => Navigator.of(context).pop(false),
+      ),
+      secondary: DialogAction(
+        label: l10n.levelRetakeConfirm,
+        type: BtnType.secondaryFill,
+        onPressed: () => Navigator.of(context).pop(true),
+      ),
+    );
+    if (retake != true || !context.mounted) return;
+    await _startLevelTest(context, ref);
+  }
+
   Future<void> _startLevelTest(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
     try {

@@ -2536,6 +2536,30 @@ abstract class AppLocalizations {
   /// **'Retake level test'**
   String get retakeLevelTest;
 
+  /// Confirm dialog before retaking the level test (server 09-24: progress resets to the first lesson of the measured level).
+  ///
+  /// In en, this message translates to:
+  /// **'Retake the level test?'**
+  String get levelRetakeTitle;
+
+  /// Body of the retake confirm. Must say progress resets even if the level stays the same; learned items and call history are kept.
+  ///
+  /// In en, this message translates to:
+  /// **'If you retake it, your progress goes back to the first lesson of that level — even if you get the same level. Your learned expressions and call history stay.'**
+  String get levelRetakeBody;
+
+  /// Primary (top) button — cancel the retake and keep progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep my progress'**
+  String get levelRetakeKeep;
+
+  /// Secondary (bottom) button — go ahead with the retake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake test'**
+  String get levelRetakeConfirm;
+
   /// CTA on the pronunciation card - open the latest call analysis.
   ///
   /// In en, this message translates to:

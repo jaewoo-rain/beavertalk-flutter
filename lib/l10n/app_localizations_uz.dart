@@ -1333,6 +1333,19 @@ class AppLocalizationsUz extends AppLocalizations {
   String get retakeLevelTest => 'Daraja testini qayta topshirish';
 
   @override
+  String get levelRetakeTitle => 'Daraja testini qayta topshirasizmi?';
+
+  @override
+  String get levelRetakeBody =>
+      'Qayta topshirsangiz, natijangiz o‘sha darajaning birinchi darsiga qaytadi — daraja bir xil chiqsa ham. O‘rganilgan iboralar va qo‘ng‘iroqlar tarixi saqlanadi.';
+
+  @override
+  String get levelRetakeKeep => 'Natijani saqlash';
+
+  @override
+  String get levelRetakeConfirm => 'Qayta topshirish';
+
+  @override
   String get practicePronunciation => 'Talaffuzni mashq qilish';
 
   @override

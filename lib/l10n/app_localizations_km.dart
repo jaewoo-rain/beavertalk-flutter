@@ -1324,6 +1324,19 @@ class AppLocalizationsKm extends AppLocalizations {
   String get retakeLevelTest => 'ធ្វើតេស្តកម្រិតម្តងទៀត';
 
   @override
+  String get levelRetakeTitle => 'ធ្វើតេស្តកម្រិតម្តងទៀតឬ?';
+
+  @override
+  String get levelRetakeBody =>
+      'បើធ្វើម្តងទៀត វឌ្ឍនភាពរបស់អ្នកនឹងត្រឡប់ទៅមេរៀនដំបូងនៃកម្រិតនោះ — ទោះបីបានកម្រិតដដែលក៏ដោយ។ ឃ្លាដែលបានរៀន និងប្រវត្តិការហៅនៅដដែល។';
+
+  @override
+  String get levelRetakeKeep => 'រក្សាវឌ្ឍនភាព';
+
+  @override
+  String get levelRetakeConfirm => 'ធ្វើតេស្តម្តងទៀត';
+
+  @override
   String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
 
   @override

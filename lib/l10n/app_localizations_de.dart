@@ -1346,6 +1346,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get retakeLevelTest => 'Einstufungstest wiederholen';
 
   @override
+  String get levelRetakeTitle => 'Einstufungstest wiederholen?';
+
+  @override
+  String get levelRetakeBody =>
+      'Wenn du ihn wiederholst, springt dein Fortschritt zur ersten Lektion dieses Levels zurück – auch wenn du dasselbe Level erreichst. Gelernte Ausdrücke und dein Anrufverlauf bleiben erhalten.';
+
+  @override
+  String get levelRetakeKeep => 'Fortschritt behalten';
+
+  @override
+  String get levelRetakeConfirm => 'Test wiederholen';
+
+  @override
   String get practicePronunciation => 'Aussprache üben';
 
   @override

@@ -1327,6 +1327,19 @@ class AppLocalizationsUr extends AppLocalizations {
   String get retakeLevelTest => 'لیول ٹیسٹ دوبارہ دیں';
 
   @override
+  String get levelRetakeTitle => 'لیول ٹیسٹ دوبارہ دیں؟';
+
+  @override
+  String get levelRetakeBody =>
+      'دوبارہ دینے پر آپ کی پیش رفت اس لیول کے پہلے سبق پر واپس چلی جائے گی — چاہے وہی لیول آئے۔ سیکھے ہوئے جملے اور کال کی تاریخ برقرار رہے گی۔';
+
+  @override
+  String get levelRetakeKeep => 'پیش رفت برقرار رکھیں';
+
+  @override
+  String get levelRetakeConfirm => 'ٹیسٹ دوبارہ دیں';
+
+  @override
   String get practicePronunciation => 'تلفظ کی مشق کریں';
 
   @override

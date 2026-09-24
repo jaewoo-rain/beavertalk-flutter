@@ -1337,6 +1337,19 @@ class AppLocalizationsFil extends AppLocalizations {
   String get retakeLevelTest => 'Ulitin ang level test';
 
   @override
+  String get levelRetakeTitle => 'Ulitin ang level test?';
+
+  @override
+  String get levelRetakeBody =>
+      'Kapag inulit mo, babalik ang progreso mo sa unang aralin ng level na iyon — kahit pareho ang level na makuha mo. Mananatili ang mga natutunang ekspresyon at kasaysayan ng tawag.';
+
+  @override
+  String get levelRetakeKeep => 'Panatilihin ang progreso';
+
+  @override
+  String get levelRetakeConfirm => 'Ulitin ang test';
+
+  @override
   String get practicePronunciation => 'Magsanay ng pagbigkas';
 
   @override

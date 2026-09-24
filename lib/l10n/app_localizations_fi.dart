@@ -1330,6 +1330,19 @@ class AppLocalizationsFi extends AppLocalizations {
   String get retakeLevelTest => 'Uusi tasotesti';
 
   @override
+  String get levelRetakeTitle => 'Tehdäänkö tasotesti uudelleen?';
+
+  @override
+  String get levelRetakeBody =>
+      'Jos teet sen uudelleen, edistymisesi palaa tason ensimmäiseen oppituntiin – vaikka saisit saman tason. Opitut ilmaukset ja puheluhistoria säilyvät.';
+
+  @override
+  String get levelRetakeKeep => 'Säilytä edistyminen';
+
+  @override
+  String get levelRetakeConfirm => 'Tee testi uudelleen';
+
+  @override
   String get practicePronunciation => 'Harjoittele ääntämistä';
 
   @override

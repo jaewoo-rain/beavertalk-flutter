@@ -770,6 +770,14 @@
   "@retakeLevelTest": {
     "description": "CTA on the level card - start the level-test call again."
   },
+  "levelRetakeTitle": "Retake the level test?",
+  "@levelRetakeTitle": {"description": "Confirm dialog before retaking the level test (server 09-24: progress resets to the first lesson of the measured level)."},
+  "levelRetakeBody": "If you retake it, your progress goes back to the first lesson of that level — even if you get the same level. Your learned expressions and call history stay.",
+  "@levelRetakeBody": {"description": "Body of the retake confirm. Must say progress resets even if the level stays the same; learned items and call history are kept."},
+  "levelRetakeKeep": "Keep my progress",
+  "@levelRetakeKeep": {"description": "Primary (top) button \u2014 cancel the retake and keep progress."},
+  "levelRetakeConfirm": "Retake test",
+  "@levelRetakeConfirm": {"description": "Secondary (bottom) button \u2014 go ahead with the retake."},
   "practicePronunciation": "Practice pronunciation",
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."

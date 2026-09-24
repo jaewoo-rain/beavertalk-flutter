@@ -1324,6 +1324,19 @@ class AppLocalizationsSi extends AppLocalizations {
   String get retakeLevelTest => 'මට්ටම් පරීක්ෂණය නැවත කරන්න';
 
   @override
+  String get levelRetakeTitle => 'මට්ටම් පරීක්ෂණය නැවත කරනවාද?';
+
+  @override
+  String get levelRetakeBody =>
+      'නැවත කළහොත් ඔබේ ප්‍රගතිය එම මට්ටමේ පළමු පාඩමට ආපසු යයි — එම මට්ටමම ලැබුණත්. ඉගෙනගත් ප්‍රකාශන සහ ඇමතුම් ඉතිහාසය රැඳේ.';
+
+  @override
+  String get levelRetakeKeep => 'ප්‍රගතිය තබාගන්න';
+
+  @override
+  String get levelRetakeConfirm => 'නැවත පරීක්ෂා කරන්න';
+
+  @override
   String get practicePronunciation => 'උච්චාරණය පුහුණු වන්න';
 
   @override

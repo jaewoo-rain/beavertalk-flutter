@@ -1323,6 +1323,19 @@ class AppLocalizationsBn extends AppLocalizations {
   String get retakeLevelTest => 'স্তর পরীক্ষা আবার দিন';
 
   @override
+  String get levelRetakeTitle => 'লেভেল টেস্ট আবার দেবেন?';
+
+  @override
+  String get levelRetakeBody =>
+      'আবার দিলে আপনার অগ্রগতি সেই লেভেলের প্রথম পাঠে ফিরে যাবে — একই লেভেল এলেও। শেখা অভিব্যক্তি ও কলের ইতিহাস থেকে যাবে।';
+
+  @override
+  String get levelRetakeKeep => 'অগ্রগতি রাখুন';
+
+  @override
+  String get levelRetakeConfirm => 'আবার টেস্ট দিন';
+
+  @override
   String get practicePronunciation => 'উচ্চারণ অনুশীলন করুন';
 
   @override

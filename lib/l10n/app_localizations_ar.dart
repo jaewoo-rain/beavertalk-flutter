@@ -1320,6 +1320,19 @@ class AppLocalizationsAr extends AppLocalizations {
   String get retakeLevelTest => 'إعادة اختبار المستوى';
 
   @override
+  String get levelRetakeTitle => 'هل تعيد اختبار المستوى؟';
+
+  @override
+  String get levelRetakeBody =>
+      'إذا أعدت الاختبار، يعود تقدّمك إلى الدرس الأول من ذلك المستوى — حتى لو حصلت على المستوى نفسه. تبقى التعابير التي تعلّمتها وسجل مكالماتك.';
+
+  @override
+  String get levelRetakeKeep => 'الإبقاء على تقدّمي';
+
+  @override
+  String get levelRetakeConfirm => 'إعادة الاختبار';
+
+  @override
   String get practicePronunciation => 'تدرب على النطق';
 
   @override

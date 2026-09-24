@@ -1323,6 +1323,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get retakeLevelTest => 'Seviye testini tekrarla';
 
   @override
+  String get levelRetakeTitle => 'Seviye testini yeniden yapmak ister misin?';
+
+  @override
+  String get levelRetakeBody =>
+      'Yeniden yaparsan ilerlemen o seviyenin ilk dersine döner — aynı seviye çıksa bile. Öğrendiğin ifadeler ve arama geçmişin kalır.';
+
+  @override
+  String get levelRetakeKeep => 'İlerlememi koru';
+
+  @override
+  String get levelRetakeConfirm => 'Testi yeniden yap';
+
+  @override
   String get practicePronunciation => 'Telaffuz çalış';
 
   @override

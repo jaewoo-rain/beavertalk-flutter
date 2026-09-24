@@ -1336,6 +1336,19 @@ class AppLocalizationsMs extends AppLocalizations {
   String get retakeLevelTest => 'Ulang ujian tahap';
 
   @override
+  String get levelRetakeTitle => 'Ulang ujian tahap?';
+
+  @override
+  String get levelRetakeBody =>
+      'Jika diulang, kemajuan anda kembali ke pelajaran pertama tahap itu — walaupun mendapat tahap yang sama. Ungkapan yang dipelajari dan sejarah panggilan kekal.';
+
+  @override
+  String get levelRetakeKeep => 'Kekalkan kemajuan';
+
+  @override
+  String get levelRetakeConfirm => 'Ulang ujian';
+
+  @override
   String get practicePronunciation => 'Latih sebutan';
 
   @override

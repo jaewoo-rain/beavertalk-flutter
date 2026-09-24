@@ -1334,6 +1334,19 @@ class AppLocalizationsMy extends AppLocalizations {
   String get retakeLevelTest => 'အဆင့်စစ်ဆေးမှု ပြန်ဖြေရန်';
 
   @override
+  String get levelRetakeTitle => 'အဆင့်စစ်ဆေးမှုကို ပြန်ဖြေမလား?';
+
+  @override
+  String get levelRetakeBody =>
+      'ပြန်ဖြေပါက သင့်တိုးတက်မှုသည် ထိုအဆင့်၏ ပထမသင်ခန်းစာသို့ ပြန်သွားမည် — အဆင့်တူ ရလျှင်လည်း ထိုနည်းတူ။ သင်ယူခဲ့သော စကားစုနှင့် ခေါ်ဆိုမှုမှတ်တမ်း ကျန်ရှိမည်။';
+
+  @override
+  String get levelRetakeKeep => 'တိုးတက်မှု ထိန်းထားရန်';
+
+  @override
+  String get levelRetakeConfirm => 'ပြန်ဖြေရန်';
+
+  @override
   String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
 
   @override

@@ -1290,6 +1290,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get retakeLevelTest => '重新测试等级';
 
   @override
+  String get levelRetakeTitle => '要重新测试等级吗？';
+
+  @override
+  String get levelRetakeBody => '重新测试后，进度会回到该等级的第一课。即使测出相同等级也一样。学过的表达和通话记录会保留。';
+
+  @override
+  String get levelRetakeKeep => '保留进度';
+
+  @override
+  String get levelRetakeConfirm => '重新测试';
+
+  @override
   String get practicePronunciation => '练习发音';
 
   @override

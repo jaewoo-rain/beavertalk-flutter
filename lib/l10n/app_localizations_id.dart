@@ -1327,6 +1327,19 @@ class AppLocalizationsId extends AppLocalizations {
   String get retakeLevelTest => 'Ulangi tes level';
 
   @override
+  String get levelRetakeTitle => 'Ulangi tes level?';
+
+  @override
+  String get levelRetakeBody =>
+      'Jika diulang, progresmu kembali ke pelajaran pertama level itu — meski hasilnya level yang sama. Ekspresi yang dipelajari dan riwayat panggilan tetap tersimpan.';
+
+  @override
+  String get levelRetakeKeep => 'Simpan progres';
+
+  @override
+  String get levelRetakeConfirm => 'Ulangi tes';
+
+  @override
   String get practicePronunciation => 'Latih pelafalan';
 
   @override

@@ -1316,6 +1316,19 @@ class AppLocalizationsTh extends AppLocalizations {
   String get retakeLevelTest => 'ทำแบบทดสอบระดับอีกครั้ง';
 
   @override
+  String get levelRetakeTitle => 'ทำแบบทดสอบระดับใหม่ไหม?';
+
+  @override
+  String get levelRetakeBody =>
+      'ถ้าทำใหม่ ความคืบหน้าจะกลับไปที่บทเรียนแรกของระดับนั้น แม้จะได้ระดับเดิมก็ตาม สำนวนที่เรียนแล้วและประวัติการโทรยังอยู่';
+
+  @override
+  String get levelRetakeKeep => 'เก็บความคืบหน้าไว้';
+
+  @override
+  String get levelRetakeConfirm => 'ทำแบบทดสอบใหม่';
+
+  @override
   String get practicePronunciation => 'ฝึกการออกเสียง';
 
   @override

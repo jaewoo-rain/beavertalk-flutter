@@ -1333,6 +1333,19 @@ class AppLocalizationsRu extends AppLocalizations {
   String get retakeLevelTest => 'Пройти тест уровня заново';
 
   @override
+  String get levelRetakeTitle => 'Пройти тест уровня заново?';
+
+  @override
+  String get levelRetakeBody =>
+      'Если пройти заново, прогресс вернётся к первому уроку этого уровня — даже если уровень останется тем же. Выученные выражения и история звонков сохранятся.';
+
+  @override
+  String get levelRetakeKeep => 'Сохранить прогресс';
+
+  @override
+  String get levelRetakeConfirm => 'Пройти заново';
+
+  @override
   String get practicePronunciation => 'Тренировать произношение';
 
   @override

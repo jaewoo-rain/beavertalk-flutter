@@ -1325,6 +1325,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get retakeLevelTest => 'Làm lại bài kiểm tra cấp độ';
 
   @override
+  String get levelRetakeTitle => 'Làm lại bài kiểm tra trình độ?';
+
+  @override
+  String get levelRetakeBody =>
+      'Nếu làm lại, tiến độ của bạn sẽ quay về bài học đầu tiên của trình độ đó — kể cả khi ra cùng trình độ. Mẫu câu đã học và lịch sử cuộc gọi vẫn được giữ.';
+
+  @override
+  String get levelRetakeKeep => 'Giữ tiến độ';
+
+  @override
+  String get levelRetakeConfirm => 'Làm lại bài kiểm tra';
+
+  @override
   String get practicePronunciation => 'Luyện phát âm';
 
   @override

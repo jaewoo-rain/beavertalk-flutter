@@ -1294,6 +1294,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get retakeLevelTest => '레벨 테스트 다시하기';
 
   @override
+  String get levelRetakeTitle => '레벨을 다시 측정할까요?';
+
+  @override
+  String get levelRetakeBody =>
+      '다시 측정하면 진도가 그 레벨의 첫 차시로 돌아가요. 레벨이 같게 나와도 마찬가지예요. 배운 표현과 통화 기록은 그대로 남아요.';
+
+  @override
+  String get levelRetakeKeep => '진도 유지하기';
+
+  @override
+  String get levelRetakeConfirm => '다시 측정하기';
+
+  @override
   String get practicePronunciation => '발음 학습하기';
 
   @override
