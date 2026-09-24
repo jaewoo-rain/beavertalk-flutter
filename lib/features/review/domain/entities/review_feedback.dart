@@ -125,8 +125,9 @@ class ReviewFeedback {
   /// Native TTS audio URL/key for playback; null/unplayable when absent.
   final String? voiceUrl;
 
-  /// Overall scores for this attempt.
-  final PronScore evaluation;
+  /// Overall scores for this attempt — **null 이면 채점하지 못한 시도**다(0점이 아니다).
+  /// 화면은 기존 「점수 없음」(빈 게이지 · -%)으로 그리고, 평균에도 넣지 않는다.
+  final PronScore? evaluation;
 
   /// Per-character scores (may be empty).
   final List<CharScore> charScores;

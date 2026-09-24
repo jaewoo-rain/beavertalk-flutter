@@ -404,7 +404,7 @@ void main() {
       expect(s.passed, isFalse);
       expect(s.itemId, 21);
       expect(s.refText, '그림을 봅니다.');
-      expect(s.feedback.evaluation.totalScore, 92);
+      expect(s.feedback.evaluation!.totalScore, 92);
       expect(s.feedback.charScores, hasLength(1));
       expect(
         made.adapter.lastRequest!.path,

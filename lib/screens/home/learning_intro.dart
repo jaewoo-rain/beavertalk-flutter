@@ -272,8 +272,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
   ///    5캐릭터 전부에 있고 [kEmotionExciting]·[kEmotionCrying] 로 매핑돼 있다.
   void _reactToFeedback(ReviewFeedback feedback) {
     final hasLow = feedback.charScores.any((c) => c.grade == CharGrade.low);
-    final passed =
-        !hasLow && feedback.evaluation.totalScore >= _kReactionPassScore;
+    // 채점하지 못한 시도(evaluation null)는 통과로 치지 않는다.
+    final passed = !hasLow &&
+        (feedback.evaluation?.totalScore ?? 0) >= _kReactionPassScore;
     _avatarEmotion.value = passed ? kEmotionExciting : kEmotionCrying;
     // ⛔ `speaking` 을 켠다고 감정이 뜨는 게 아니다. `SyncAvatar` 의 발화 판정은
     //   **오디오 레벨**로만 켜지는데([_onLevel] 의 `audible`), 이 밴드는 무음이라
@@ -601,19 +602,23 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   wavBytes: wav,
                 )
                 .then((s) {
-                  ref
-                      .read(assignmentAttemptProvider.notifier)
-                      .record(
-                        assignmentId: args.assignmentId!,
-                        itemId: s.itemId,
-                        // 통과 판정은 서버가 한다 — 앱이 점수로 다시 재면 경계가
-                        // 두 곳이 되어 교사 화면과 어긋난다.
-                        passed: s.passed,
-                        totalScore: s.feedback.evaluation.totalScore,
-                        pronunciation: s.feedback.evaluation.pronunciation,
-                        fluency: s.feedback.evaluation.fluency,
-                        rhythm: s.feedback.evaluation.rhythm,
-                      );
+                  final score = s.feedback.evaluation;
+                  // 채점하지 못한 시도는 과제 평균에 넣지 않는다(0 으로 넣으면 평균이 내려간다).
+                  if (score != null) {
+                    ref
+                        .read(assignmentAttemptProvider.notifier)
+                        .record(
+                          assignmentId: args.assignmentId!,
+                          itemId: s.itemId,
+                          // 통과 판정은 서버가 한다 — 앱이 점수로 다시 재면 경계가
+                          // 두 곳이 되어 교사 화면과 어긋난다.
+                          passed: s.passed,
+                          totalScore: score.totalScore,
+                          pronunciation: score.pronunciation,
+                          fluency: score.fluency,
+                          rhythm: score.rhythm,
+                        );
+                  }
                   return s.feedback;
                 })
           : ref
@@ -621,14 +626,17 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                 .submitAudio(
                   sentence.id,
                   wav,
-                  applyScore: args.origin == LearningOrigin.callReview,
+                  applyScore: args.origin.countsTowardCallScore,
                 );
       await Future<void>.delayed(_kMinScan);
       final feedback = await scoring;
 
-      // Feed the running average for the analysis gauge. 과제는 통화 분석의
-      // 게이지가 아니라 과제 카드가 그리므로 넣지 않는다.
-      if (!isAssignment) {
+      // 통화 분석 게이지(통화 기록의 점수)는 **「발음 학습하기」(callReview)로 한 발음만** 반영한다
+      // — 서버 `apply_score` 와 같은 기준. 문장 하나만 연습(「새로 배운 표현」 카드 · 보관함의
+      // 연습하기, origin sentence)은 연습 모드라 통화 점수에 들어가면 안 된다(09-24 사장님 「문장만
+      // 단일 발음하면 conversation record 의 score 에는 반영되어서는 안돼」). 과제는 과제 카드가
+      // 그리므로 역시 넣지 않는다.
+      if (args.origin.countsTowardCallScore) {
         ref.read(reviewScoresProvider.notifier).record(feedback);
       }
 

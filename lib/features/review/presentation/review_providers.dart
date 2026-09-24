@@ -53,8 +53,12 @@ class ReviewScores extends Notifier<Map<int, PronScore>> {
   }
 
   /// Records the latest [feedback] for its sentence (overwrites any prior).
+  ///
+  /// 채점하지 못한 시도(evaluation null)는 넣지 않는다 — 앞서 얻은 점수를 지우지도 않는다.
   void record(ReviewFeedback feedback) {
-    state = {...state, feedback.sentenceId: feedback.evaluation};
+    final score = feedback.evaluation;
+    if (score == null) return;
+    state = {...state, feedback.sentenceId: score};
   }
 
   /// The latest score for [sentenceId], or null if not yet practiced.

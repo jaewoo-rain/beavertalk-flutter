@@ -28,6 +28,16 @@ enum LearningOrigin {
   assignment,
 }
 
+/// 이 발음 시도가 **통화 기록의 점수**(분석 게이지 · 서버 문장 공식점수)에 들어가나.
+///
+/// 「발음 학습하기」(callReview)만 들어간다. 문장 하나 연습(「새로 배운 표현」 카드 · 보관함의
+/// 연습하기)은 연습 모드라 안 들어가고, 과제는 과제 카드가 따로 센다(09-24 사장님 「문장만 단일
+/// 발음하면 conversation record 의 score 에는 반영되어서는 안돼」). 서버 `apply_score` 와 앱 게이지가
+/// **같은 규칙**을 쓰도록 여기 하나로 둔다 — 둘이 갈리면 서버 평균과 화면 게이지가 어긋난다.
+extension LearningOriginScore on LearningOrigin {
+  bool get countsTowardCallScore => this == LearningOrigin.callReview;
+}
+
 /// Navigation payload shared across the learning flow
 /// ([Routes.learningIntro] → the [origin]'s result
 /// screen).

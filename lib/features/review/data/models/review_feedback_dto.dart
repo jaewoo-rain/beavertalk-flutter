@@ -24,6 +24,15 @@ class PronScoreDto {
   }
 
   /// Accepts int/double/null from JSON, normalizing to a 0-based [int].
+  /// 채점 결과가 **없으면** null — `evaluation` 이 없거나 `total_score` 가 숫자가 아닐 때.
+  ///
+  /// 0 으로 채우지 않는다. 「채점하지 못함」과 「0점」은 다른 사실이다(09-24 사장님 · 서버 요청서 3).
+  /// 화면은 null 이면 기존 「점수 없음」(빈 게이지 · -%)으로 그린다.
+  static PronScoreDto? tryFromJson(Map<String, dynamic>? json) {
+    if (json == null || json['total_score'] is! num) return null;
+    return PronScoreDto.fromJson(json);
+  }
+
   static int _toInt(Object? value) {
     if (value is num) return value.round();
     return 0;
@@ -113,13 +122,12 @@ class ReviewFeedbackDto {
   final String? koreanSentence;
   final String? nativeSentence;
   final String? voiceUrl;
-  final PronScoreDto evaluation;
+  final PronScoreDto? evaluation;
   final List<CharScoreDto> charScores;
   final List<PhonemeMissDto> phonemeMisses;
 
   factory ReviewFeedbackDto.fromJson(Map<String, dynamic> json) {
-    final evaluation =
-        (json['evaluation'] as Map<String, dynamic>?) ?? const {};
+    final evaluation = json['evaluation'] as Map<String, dynamic>?;
     final charScores = (json['char_scores'] as List<dynamic>?) ?? const [];
     final misses = (json['phoneme_misses'] as List<dynamic>?) ?? const [];
     return ReviewFeedbackDto(
@@ -128,7 +136,7 @@ class ReviewFeedbackDto {
       koreanSentence: json['korean_sentence'] as String?,
       nativeSentence: json['native_sentence'] as String?,
       voiceUrl: json['voice_url'] as String?,
-      evaluation: PronScoreDto.fromJson(evaluation),
+      evaluation: PronScoreDto.tryFromJson(evaluation),
       charScores: charScores
           .whereType<Map<String, dynamic>>()
           .map(CharScoreDto.fromJson)
@@ -146,7 +154,7 @@ class ReviewFeedbackDto {
         korean: koreanSentence,
         native: nativeSentence,
         voiceUrl: voiceUrl,
-        evaluation: evaluation.toEntity(),
+        evaluation: evaluation?.toEntity(),
         charScores: charScores.map((c) => c.toEntity()).toList(),
         phonemeMisses: phonemeMisses.map((m) => m.toEntity()).toList(),
       );
