@@ -112,7 +112,11 @@
     - **라벨 · 값 행**(Figma justify-between) → `LabelValueRow`. 한 줄 폭 합이 들어가면 각자 자기 폭 + 양 끝 정렬, 안 들어가면
       낱말 폭을 먼저 주고 나머지를 필요 폭 비율로 — 긴 쪽이 줄을 바꾼다. 값 뒤 셰브런은 `Expanded(child: LabelValueRow(…))` + 셰브런.
     - **가운데 제목 + 시작 쪽 버튼**(취소 · 제목 · 빈칸) → `CenteredTitleRow`. 버튼은 자기 폭, 끝 쪽에 같은 폭을 비워 제목이 행 가운데.
-    - **같은 폭 버튼 쌍**(Figma FILL·FILL) → `EqualButtonPair`. 한쪽이 반 폭 한 줄에 안 들어가면 세로로 쌓는다(주요 버튼 위).
+    - **버튼 쌍은 가로에 두지 않는다 — 항상 세로**(09-24 사장님 확정 「양옆에 나란히 놓인 버튼 쌍을 전부 위아래로 쌓습니다」)
+      → `StackedButtonPair(top:, bottom:)`(`lib/components/molecules/stacked_button_pair.dart`) · 각자 전폭 · 간격 12.
+      순서는 화면마다 Figma — 보통 보조 위 · 주요 아래, 예외(주요 위)는 음소 다이얼로그 · 페이월 이탈 방지 · 결제 오류.
+      `DialogBasic` 두 버튼도 같은 규칙(`actions` 목록 순서 = 위→아래). 옛 `EqualButtonPair`(좁을 때만 세로)는 폐기.
+      탭·칩(기록|보관함, Native|Me 등)은 버튼 쌍이 아니다.
     - **균등 격자가 Figma 의도**인 행(지표 3칸 등, 칸 모두 FILL)만 `Row`+`Expanded` 를 쓰고 `FigmaEqualColumns(figmaNode: …)` 로 감싼다.
     - 제목 옆 부제는 `Wrap`.
   - **`Container(alignment:)` 는 부모를 꽉 채운다** — `Wrap` 안 칩이 전폭이 된다. `Center(widthFactor: 1, heightFactor: 1)`.

@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// 폭을 **필요에 따라** 나누는 행 세 가지(09-24 「칸이 남는데 줄바꿈」 전수조사).
+/// 폭을 **필요에 따라** 나누는 행 두 가지(09-24 「칸이 남는데 줄바꿈」 전수조사). 버튼 쌍은
+/// `stacked_button_pair_test.dart`(항상 세로).
 void main() {
   const style = TextStyle(fontSize: 14);
 
@@ -79,34 +80,6 @@ void main() {
           width: 320);
       expect(lines(tester, 'キャンセル'), 1);
       expect(tester.getCenter(find.text('Title')).dx, closeTo(160, 0.5));
-    });
-  });
-
-  group('EqualButtonPair', () {
-    Widget btn(String t) => SizedBox(
-          height: 60,
-          child: Center(child: Text(t, style: style, maxLines: 2)),
-        );
-
-    testWidgets('둘 다 반 폭에 들어가면 같은 폭 가로(보조 왼쪽 · 주요 오른쪽)', (tester) async {
-      await pump(tester, EqualButtonPair(secondary: btn('Home'), primary: btn('Call')), width: 300);
-      final home = tester.getRect(find.ancestor(of: find.text('Home'), matching: find.byType(SizedBox)).first);
-      final call = tester.getRect(find.ancestor(of: find.text('Call'), matching: find.byType(SizedBox)).first);
-      expect(home.width, call.width);
-      expect(home.left, 0);
-      expect(call.right, 300);
-      expect(home.top, call.top);
-    });
-
-    testWidgets('한쪽이 반 폭에 안 들어가면 세로로 쌓는다 — 주요 버튼 위', (tester) async {
-      const long = 'A primary label that is far too long for half the row';
-      await pump(tester, EqualButtonPair(secondary: btn('Home'), primary: btn(long)), width: 300);
-      final home = tester.getRect(find.ancestor(of: find.text('Home'), matching: find.byType(SizedBox)).first);
-      final main = tester.getRect(find.ancestor(of: find.text(long), matching: find.byType(SizedBox)).first);
-      expect(main.top, lessThan(home.top), reason: '주요 버튼이 위');
-      expect(main.width, 300);
-      expect(home.width, 300);
-      expect(home.top - main.bottom, 10, reason: '간격 10');
     });
   });
 }

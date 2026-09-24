@@ -10,15 +10,15 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../components/atoms/button.dart';
-import '../../components/layout/need_based_rows.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 
 /// Onboarding — completion. Figma `screen/onborading_done` (`2291:21311`).
 ///
 /// Reached after the final onboarding step ([OnboardingReasonScreen]) submits
 /// the draft. A centered beaver avatar with a welcome heading + sub copy, and a
-/// pinned two-button row: a secondary "Home" (drops to the now-onboarded home)
-/// and a primary 「레벨 테스트」 (jumps straight into the call flow — a new member has
-/// no level, so the server routes this call to the level test).
+/// pinned stacked button pair: a secondary "Home" on top (drops to the now-onboarded
+/// home) and a primary 「레벨 테스트」 below (jumps straight into the call flow — a new
+/// member has no level, so the server routes this call to the level test).
 class OnboardingDoneScreen extends StatelessWidget {
   /// Creates the onboarding completion screen.
   const OnboardingDoneScreen({super.key});
@@ -83,20 +83,19 @@ class OnboardingDoneScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Figma `BottomSheet` two-button row: pt 12, px 20, gap 10.
+          // Figma `BottomSheet` 두 버튼(Mobile `3360:48` · Tablet `5281:1142`): pt 12, px 20.
           ContentColumn(
             padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
-            // Figma `I3360:55;175:18146`: 같은 폭 두 버튼(FILL·FILL, gap 10). 긴 언어에서 한쪽이
-            // 한 줄에 안 들어가면 세로로 쌓는다(주요 버튼 위) — 1:1 안에서 옛 「지금 통화하기」 가
-            // 줄을 바꾸고 옆 「홈」 은 87px 가 남았다(09-24 전수조사 H · app designer 합의).
-            child: EqualButtonPair(
-              secondary: Button(
+            // 버튼 쌍은 항상 세로(09-24 사장님 확정) — 「홈」 위 · 「레벨 테스트」 아래, 각자 전폭 ·
+            // 간격 12. 옛 가로 1:1 에서는 긴 언어가 반 폭 안에서 줄을 바꿨다(전수조사 H).
+            child: StackedButtonPair(
+              top: Button(
                 type: BtnType.secondaryOutline,
                 size: BtnSize.s60,
                 text: l10n.home,
                 onPressed: () => _goHome(context),
               ),
-              primary: Button(
+              bottom: Button(
                 type: BtnType.primaryFill,
                 size: BtnSize.s60,
                 // 사용자 지시(09-24): 「'비버와 통화하기'도 '레벨 테스트'로」 — P30(「지금 통화하기」)

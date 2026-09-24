@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 import '../../components/organisms/gnb.dart' show GnbBackArrow;
 import '../../features/pronunciation/domain/phoneme_diagram.dart';
 import '../../features/weak_sound/domain/entities/sound_lesson.dart';
@@ -115,30 +116,25 @@ class LearnResultScreen extends ConsumerWidget {
                     AppSpacing.s20,
                     AppSpacing.s8,
                   ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Button(
-                          type: BtnType.secondaryFill,
-                          size: BtnSize.s60,
-                          text: l10n.wsRetest,
-                          onPressed: () =>
-                              Navigator.of(context).pushReplacementNamed(
-                                Routes.weakSoundTest,
-                                arguments: soundKey,
-                              ),
-                        ),
-                      ),
-                      const SizedBox(width: AppSpacing.s8),
-                      Expanded(
-                        child: Button(
-                          type: BtnType.primaryFill,
-                          size: BtnSize.s60,
-                          text: l10n.wsToList,
-                          onPressed: () => _toList(context),
-                        ),
-                      ),
-                    ],
+                  // 버튼 쌍 세로(09-24 사장님 확정) — E5 · E8 · 17 모두 「다시 평가하기」 위 ·
+                  // 「목록으로」 아래, 각자 전폭 · 간격 12.
+                  child: StackedButtonPair(
+                    top: Button(
+                      type: BtnType.secondaryFill,
+                      size: BtnSize.s60,
+                      text: l10n.wsRetest,
+                      onPressed: () =>
+                          Navigator.of(context).pushReplacementNamed(
+                            Routes.weakSoundTest,
+                            arguments: soundKey,
+                          ),
+                    ),
+                    bottom: Button(
+                      type: BtnType.primaryFill,
+                      size: BtnSize.s60,
+                      text: l10n.wsToList,
+                      onPressed: () => _toList(context),
+                    ),
                   ),
                 ),
               ),

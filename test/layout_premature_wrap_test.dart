@@ -15,8 +15,9 @@
 //          지금 데이터로는 안 넘쳐도, 값이 길어지면(이메일·이름·번역) 줄바꿈된다.
 //
 // ⛔ **게이트다**(09-24 정식 등록). [확정]이 하나라도 있으면 실패한다. [잠재]는 보고만 한다.
-//   고치는 법: 라벨·값 행은 `LabelValueRow`, 가운데 제목 머리는 `CenteredTitleRow`, 같은 폭
-//   버튼 쌍은 `EqualButtonPair`(lib/components/layout/need_based_rows.dart).
+//   고치는 법: 라벨·값 행은 `LabelValueRow`, 가운데 제목 머리는 `CenteredTitleRow`
+//   (lib/components/layout/need_based_rows.dart). 버튼 쌍은 가로에 두지 않는다 — 항상 세로
+//   `StackedButtonPair`(09-24 사장님 확정 · lib/components/molecules/stacked_button_pair.dart).
 //   균등 격자가 **Figma 의도**인 행만 `FigmaEqualColumns(figmaNode: …)` 로 감싸 건너뛴다 —
 //   노드 ID 가 근거다. 근거 없이 감싸서 통과시키지 마라.
 //   출처: 통합 담당 세션 전수조사 `40_배포베타_하네스/_output/2026-09-23_앱브랜치정리/`.

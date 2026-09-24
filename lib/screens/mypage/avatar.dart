@@ -409,14 +409,17 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         title: l10n.priceChangedTitle,
         description:
             l10n.priceChangedBody(_priceLabel(context, e.actualPrice)),
-        primary: DialogAction(
-          label: l10n.buy,
-          onPressed: () => Navigator.pop(context, true),
-        ),
-        secondary: DialogAction(
-          label: l10n.cancel,
-          onPressed: () => Navigator.pop(context, false),
-        ),
+        // Figma 에 없는 창 — 원칙대로 취소 위 · 확정 동작(구매) 아래(09-24 app designer).
+        actions: [
+          DialogAction(
+            label: l10n.cancel,
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          DialogAction(
+            label: l10n.buy,
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
       );
       if (ok == true && mounted) await _purchase(c, e.actualPrice);
     } catch (e) {
@@ -424,7 +427,8 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     }
   }
 
-  /// Figma `iap_result__success` — 결과 시트. 「바로 사용하기」 · 「홈으로」.
+  /// Figma `iap_result__success` — 결과 시트. 「홈으로」 위 · 「바로 사용하기」 아래(09-24 버튼 쌍
+  /// 세로 확정 · Figma `BottomSheet` 두 버튼형 순서).
   void _showPurchaseSuccessSheet(Character c) {
     final l10n = AppLocalizations.of(context);
     showModalBottomSheet<void>(
@@ -436,6 +440,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         title: l10n.iapCharacterSuccessTitle,
         body: l10n.iapCharacterSuccessBody,
         mark: SheetMarkTone.success,
+        secondaryOnTop: true,
         primaryAction: SheetAction(
           label: l10n.avatarUseNow,
           onPressed: () {

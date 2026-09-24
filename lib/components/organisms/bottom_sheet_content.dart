@@ -131,6 +131,7 @@ class BottomSheetContent extends StatelessWidget {
     this.child,
     required this.primaryAction,
     this.secondaryAction,
+    this.secondaryOnTop = false,
   });
 
   /// Content form; see [SheetContentType].
@@ -191,10 +192,35 @@ class BottomSheetContent extends StatelessWidget {
   /// dismiss; spec §7-2 forbids a closing action from changing any state.
   final SheetAction? secondaryAction;
 
+  /// 보조 버튼을 **위**, 주요 버튼을 아래에 둔다. 기본(false)은 주요 위 — 구독 오버레이 15종의
+  /// 정본 순서다. 캐릭터 구매 완료(`iap_result__success`)는 Figma `BottomSheet` 두 버튼형이라
+  /// 「홈으로」 위 · 「바로 사용하기」 아래(09-24 버튼 쌍 세로 확정).
+  final bool secondaryOnTop;
+
   // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠
   // 컬럼으로 패딩」). 예전의 430 캡은 AppScaffold 의 폰 칼럼을 그대로
   // 베낀 것이라, 시트만 좁고 뒤 배경은 넓은 어긋난 화면이 됐다.
   bool get _onCard => type != SheetContentType.none || child != null;
+
+  Widget _primaryButton() => SizedBox(
+        width: double.infinity,
+        child: Button(
+          type: BtnType.primaryFill,
+          size: BtnSize.s60,
+          text: primaryAction.label,
+          onPressed: primaryAction.onPressed,
+        ),
+      );
+
+  Widget _secondaryButton() => SizedBox(
+        width: double.infinity,
+        child: Button(
+          type: BtnType.secondaryFill,
+          size: BtnSize.s60,
+          text: secondaryAction!.label,
+          onPressed: secondaryAction!.onPressed,
+        ),
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -263,30 +289,14 @@ class BottomSheetContent extends StatelessWidget {
               ),
             ),
           ),
-          ContentColumn(
-            padding: const EdgeInsets.only(top: 12),
-            child: SizedBox(
-              width: double.infinity,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: primaryAction.label,
-                onPressed: primaryAction.onPressed,
-              ),
-            ),
-          ),
-          if (secondaryAction != null)
+          for (final button in [
+            if (secondaryOnTop && secondaryAction != null) _secondaryButton(),
+            _primaryButton(),
+            if (!secondaryOnTop && secondaryAction != null) _secondaryButton(),
+          ])
             ContentColumn(
               padding: const EdgeInsets.only(top: 12),
-              child: SizedBox(
-                width: double.infinity,
-                child: Button(
-                  type: BtnType.secondaryFill,
-                  size: BtnSize.s60,
-                  text: secondaryAction!.label,
-                  onPressed: secondaryAction!.onPressed,
-                ),
-              ),
+              child: button,
             ),
           // Bottom safe-area inset — clears the OS gesture bar, replacing the
           // design frame's fake HomeIndicator (same trade as `BottomSheet`).

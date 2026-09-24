@@ -3,7 +3,10 @@ import 'dart:math' as math;
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
-/// 폭을 **필요에 따라** 나누는 가로 행 세 가지(라벨·값 · 가운데 제목 · 같은 폭 버튼 쌍).
+/// 폭을 **필요에 따라** 나누는 가로 행 두 가지(라벨·값 · 가운데 제목).
+///
+/// 버튼 쌍은 여기 없다 — 09-24 사장님 확정으로 **항상 세로**가 됐다(`StackedButtonPair`,
+/// `lib/components/molecules/stacked_button_pair.dart`). 옛 `EqualButtonPair` 는 폐기.
 ///
 /// ## 왜 따로 만들었나
 ///
@@ -328,157 +331,6 @@ class RenderCenteredTitleRow extends _RenderTwoChildRow {
     _first.getMaxIntrinsicHeight(width * _fraction),
     _second.getMaxIntrinsicHeight(width),
   );
-}
-
-/// 같은 폭 버튼 두 개 — 한쪽 글자가 한 줄에 안 들어가면 **세로로 쌓는다**.
-///
-/// Figma: 온보딩 완료 `I3360:55;175:18146` · 네트워크 오류 `I3360:19665;175:18146` —
-/// HORIZONTAL gap 10 · 두 버튼 FILL(163 · 163). 같은 폭이 디자인 의도라 글자 폭 비율로 나누지
-/// 않는다. 긴 언어(ko 「지금 통화하기」 · ru 「Повторить」)에서 60 높이 버튼 안 두 줄 줄바꿈은
-/// 피한다 → 쌓을 때는 주요 버튼이 위, 보조 버튼이 아래, 각자 전폭 · 간격 10
-/// (app designer 합의 09-24 · 전수조사 H·I).
-class EqualButtonPair extends MultiChildRenderObjectWidget {
-  /// [secondary] 는 가로일 때 시작 쪽, [primary] 는 끝 쪽.
-  EqualButtonPair({
-    super.key,
-    required Widget secondary,
-    required Widget primary,
-    this.gap = 10,
-  }) : super(children: [secondary, primary]);
-
-  /// 두 버튼 사이(가로·세로 같음).
-  final double gap;
-
-  @override
-  RenderEqualButtonPair createRenderObject(BuildContext context) =>
-      RenderEqualButtonPair(
-        gap: gap,
-        textDirection: Directionality.of(context),
-      );
-
-  @override
-  void updateRenderObject(
-    BuildContext context,
-    RenderEqualButtonPair renderObject,
-  ) {
-    renderObject
-      ..gap = gap
-      ..textDirection = Directionality.of(context);
-  }
-}
-
-/// [EqualButtonPair] 의 렌더 객체.
-class RenderEqualButtonPair extends _RenderTwoChildRow {
-  /// Creates the render object.
-  RenderEqualButtonPair({required double gap, required super.textDirection})
-    : _gap = gap;
-
-  double _gap;
-  set gap(double v) {
-    if (v == _gap) return;
-    _gap = v;
-    markNeedsLayout();
-  }
-
-  /// 가로로 둘 수 있나 — 두 버튼 모두 반 폭 안에 한 줄로 들어가야 한다.
-  bool fitsSideBySide(double maxWidth) {
-    if (!maxWidth.isFinite) return true;
-    final half = (maxWidth - _gap) / 2;
-    return _first.getMaxIntrinsicWidth(double.infinity) <= half &&
-        _second.getMaxIntrinsicWidth(double.infinity) <= half;
-  }
-
-  @override
-  void performLayout() {
-    final maxW = constraints.maxWidth;
-    final secondary = _first;
-    final primary = _second;
-    if (fitsSideBySide(maxW)) {
-      final half = maxW.isFinite ? (maxW - _gap) / 2 : null;
-      final c = half == null
-          ? const BoxConstraints()
-          : BoxConstraints.tightFor(width: half);
-      secondary.layout(c, parentUsesSize: true);
-      primary.layout(c, parentUsesSize: true);
-      final h = math.max(secondary.size.height, primary.size.height);
-      final w = maxW.isFinite
-          ? maxW
-          : secondary.size.width + _gap + primary.size.width;
-      size = constraints.constrain(Size(w, h));
-      const startX = 0.0;
-      final endX = size.width - primary.size.width;
-      _place(secondary, _rtl ? endX : startX, (h - secondary.size.height) / 2);
-      _place(
-        primary,
-        _rtl ? startX : size.width - primary.size.width,
-        (h - primary.size.height) / 2,
-      );
-      return;
-    }
-    // 세로 — 주요 버튼 위, 보조 버튼 아래, 각자 전폭.
-    final full = BoxConstraints.tightFor(width: maxW);
-    primary.layout(full, parentUsesSize: true);
-    secondary.layout(full, parentUsesSize: true);
-    size = constraints.constrain(
-      Size(maxW, primary.size.height + _gap + secondary.size.height),
-    );
-    _place(primary, 0, 0);
-    _place(secondary, 0, primary.size.height + _gap);
-  }
-
-  @override
-  Size computeDryLayout(BoxConstraints constraints) {
-    final maxW = constraints.maxWidth;
-    if (fitsSideBySide(maxW)) {
-      final half = maxW.isFinite ? (maxW - _gap) / 2 : double.infinity;
-      final c = half.isFinite
-          ? BoxConstraints.tightFor(width: half)
-          : const BoxConstraints();
-      final s1 = _first.getDryLayout(c);
-      final s2 = _second.getDryLayout(c);
-      final w = maxW.isFinite ? maxW : s1.width + _gap + s2.width;
-      return constraints.constrain(Size(w, math.max(s1.height, s2.height)));
-    }
-    final full = BoxConstraints.tightFor(width: maxW);
-    final s1 = _first.getDryLayout(full);
-    final s2 = _second.getDryLayout(full);
-    return constraints.constrain(Size(maxW, s1.height + _gap + s2.height));
-  }
-
-  @override
-  double computeMinIntrinsicWidth(double height) => math.max(
-    _first.getMinIntrinsicWidth(height),
-    _second.getMinIntrinsicWidth(height),
-  );
-
-  @override
-  double computeMaxIntrinsicWidth(double height) =>
-      2 *
-          math.max(
-            _first.getMaxIntrinsicWidth(height),
-            _second.getMaxIntrinsicWidth(height),
-          ) +
-      _gap;
-
-  @override
-  double computeMinIntrinsicHeight(double width) => fitsSideBySide(width)
-      ? math.max(
-          _first.getMinIntrinsicHeight(width),
-          _second.getMinIntrinsicHeight(width),
-        )
-      : _first.getMinIntrinsicHeight(width) +
-            _gap +
-            _second.getMinIntrinsicHeight(width);
-
-  @override
-  double computeMaxIntrinsicHeight(double width) => fitsSideBySide(width)
-      ? math.max(
-          _first.getMaxIntrinsicHeight(width),
-          _second.getMaxIntrinsicHeight(width),
-        )
-      : _first.getMaxIntrinsicHeight(width) +
-            _gap +
-            _second.getMaxIntrinsicHeight(width);
 }
 
 /// **균등 격자**가 디자인인 행 표시 — 안의 `Row` 는 칸을 같은 폭으로 나누는 것이 Figma 의도다.

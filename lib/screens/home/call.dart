@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/call_toggle_button.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/atoms/speaking_equalizer.dart';
@@ -379,18 +380,22 @@ class _CallScreenState extends ConsumerState<CallScreen> {
       context,
       title: l10n.callExitTitle,
       description: l10n.callExitSubtitle,
-      variant: DialogBasicVariant.twoVertical,
-      primary: DialogAction(
-        label: l10n.callExitKeep,
-        onPressed: () => Navigator.of(context).pop(),
-      ),
-      secondary: DialogAction(
-        label: l10n.callExitConfirm,
-        onPressed: () {
-          Navigator.of(context).pop();
-          ref.read(normalCallControllerProvider.notifier).hangUp();
-        },
-      ),
+      // 「End call」 위 · 「Keep talking」(primary_fill) 아래 — 사장님이 Dialog-Basic variant2 를
+      // 직접 고친 순서(09-24). 예전엔 「Keep talking」 이 위였다.
+      actions: [
+        DialogAction(
+          label: l10n.callExitConfirm,
+          onPressed: () {
+            Navigator.of(context).pop();
+            ref.read(normalCallControllerProvider.notifier).hangUp();
+          },
+        ),
+        DialogAction(
+          label: l10n.callExitKeep,
+          type: BtnType.primaryFill,
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+      ],
     );
   }
 

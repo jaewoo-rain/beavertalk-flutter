@@ -162,9 +162,8 @@ class LearnScaffold extends ConsumerWidget {
 
 /// 나가기 확인 — Figma E3 (`6093:14169`).
 ///
-/// 버튼 순서는 정본을 따른다 — **나가기 왼쪽 · 계속하기 오른쪽**. `DialogBasic` 은
-/// `[primary, secondary]` 를 왼→오로 깔기 때문에 primary 슬롯에 「나가기」가 들어간다
-/// (슬롯 이름이 곧 강조는 아니다. 색은 `type` 이 정한다).
+/// 버튼 순서는 정본을 따른다 — **나가기 위 · 계속하기 아래**(E3, 09-24 버튼 쌍 세로 확정).
+/// 「계속하기」가 primary_fill 이다.
 ///
 /// 스크림을 눌러 닫으면 `null` 이 오는데, 그때는 **나가지 않는다** — 의사를 밝힌 적이
 /// 없는 동작을 나가기로 해석하지 않는다.
@@ -174,16 +173,17 @@ Future<bool> _confirmLeave(BuildContext context) async {
     context,
     title: l10n.wsQuitTitle,
     description: l10n.wsQuitBody,
-    primary: DialogAction(
-      label: l10n.wsQuit,
-      type: BtnType.secondaryFill,
-      onPressed: () => Navigator.of(context).pop(true),
-    ),
-    secondary: DialogAction(
-      label: l10n.wsContinue,
-      type: BtnType.primaryFill,
-      onPressed: () => Navigator.of(context).pop(false),
-    ),
+    actions: [
+      DialogAction(
+        label: l10n.wsQuit,
+        onPressed: () => Navigator.of(context).pop(true),
+      ),
+      DialogAction(
+        label: l10n.wsContinue,
+        type: BtnType.primaryFill,
+        onPressed: () => Navigator.of(context).pop(false),
+      ),
+    ],
   );
   return result ?? false;
 }

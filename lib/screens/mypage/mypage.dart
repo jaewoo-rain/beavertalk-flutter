@@ -1026,8 +1026,9 @@ class MyPageScreen extends ConsumerWidget {
   ///
   /// 다시 측정하면 진도가 **그 레벨의 첫 차시로** 돌아간다. 레벨이 같게 나와도 돌아가고,
   /// 차시 완료 표시가 리셋된다(배운 항목·통화 기록·발음 점수는 보존). 되돌리기 어려운 쪽이라
-  /// 머무는 버튼이 주요 버튼(위)이다 — 통화 종료·페이월 이탈 확인과 같은 규칙(app designer 합의).
-  /// Dialog-Basic `175:12790` twoVertical(gap 12). 스크림으로 닫으면 **측정하지 않는다.**
+  /// 머무는 「진도 유지하기」가 주요 버튼(primary_fill)이다. 위치는 **아래** — 「다시 측정하기」 위 ·
+  /// 「진도 유지하기」 아래(09-24 사장님이 Dialog-Basic variant2 를 직접 고친 정본 · 1285ee5 의
+  /// 「진도 유지하기 위」 를 뒤집음). Dialog-Basic `175:12790`(gap 12). 스크림으로 닫으면 **측정하지 않는다.**
   ///
   /// 레벨이 없는 회원의 「레벨 테스트 받기」 는 되돌아갈 진도가 없어 확인 없이 바로 간다.
   Future<void> _confirmRetakeLevelTest(BuildContext context, WidgetRef ref) async {
@@ -1036,17 +1037,17 @@ class MyPageScreen extends ConsumerWidget {
       context,
       title: l10n.levelRetakeTitle,
       description: l10n.levelRetakeBody,
-      variant: DialogBasicVariant.twoVertical,
-      primary: DialogAction(
-        label: l10n.levelRetakeKeep,
-        type: BtnType.primaryFill,
-        onPressed: () => Navigator.of(context).pop(false),
-      ),
-      secondary: DialogAction(
-        label: l10n.levelRetakeConfirm,
-        type: BtnType.secondaryFill,
-        onPressed: () => Navigator.of(context).pop(true),
-      ),
+      actions: [
+        DialogAction(
+          label: l10n.levelRetakeConfirm,
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+        DialogAction(
+          label: l10n.levelRetakeKeep,
+          type: BtnType.primaryFill,
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+      ],
     );
     if (retake != true || !context.mounted) return;
     await _startLevelTest(context, ref);
@@ -1162,15 +1163,16 @@ class _CurResetRowState extends ConsumerState<_CurResetRow> {
       title: '배운 기록을 지울까요?',
       description: '표현학습·프리토킹 진도(차시·항목 기록)를 지우고 차시 1 부터 다시 '
           '시작합니다. 통화 기록·분석은 남습니다.',
-      variant: DialogBasicVariant.twoHorizontal,
-      primary: DialogAction(
-        label: '취소',
-        onPressed: () => Navigator.of(context).pop(false),
-      ),
-      secondary: DialogAction(
-        label: '삭제',
-        onPressed: () => Navigator.of(context).pop(true),
-      ),
+      actions: [
+        DialogAction(
+          label: '취소',
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+        DialogAction(
+          label: '삭제',
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+      ],
     );
     if (confirmed != true || !mounted) return;
     setState(() => _busy = true);

@@ -14,6 +14,7 @@ import 'package:beavertalk/screens/classroom/join_code.dart';
 import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
+import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
 import 'package:beavertalk/components/molecules/card_study.dart';
 import 'package:beavertalk/screens/home/analysis_loading.dart';
@@ -232,9 +233,10 @@ Map<String, Widget Function()> i18nScreens() {
               child: DialogBasic(
                 title: l10n.levelRetakeTitle,
                 description: l10n.levelRetakeBody,
-                variant: DialogBasicVariant.twoVertical,
-                primary: DialogAction(label: l10n.levelRetakeKeep, onPressed: () {}),
-                secondary: DialogAction(label: l10n.levelRetakeConfirm, onPressed: () {}),
+                actions: [
+                  DialogAction(label: l10n.levelRetakeConfirm, onPressed: () {}),
+                  DialogAction(label: l10n.levelRetakeKeep, type: BtnType.primaryFill, onPressed: () {}),
+                ],
               ),
             );
           },

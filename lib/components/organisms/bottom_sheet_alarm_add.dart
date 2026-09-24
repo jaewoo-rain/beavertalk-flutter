@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../app/adaptive.dart';
 import '../../theme/app_color_tokens.dart';
+import '../../theme/app_radius.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../icons/app_icons.dart';
@@ -160,7 +161,8 @@ class _BottomSheetAlarmAddState extends State<BottomSheetAlarmAdd> {
     return Container(
       decoration: BoxDecoration(
         color: c.backgroundElevatedAlternative,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        // Figma 시트 위 모서리 24(= AppRadius.lg) — 반복 선택 화면도 같은 면을 쓴다(09-24 대조).
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
       child: SafeArea(
         top: false,

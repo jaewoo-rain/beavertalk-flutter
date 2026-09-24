@@ -187,15 +187,16 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       context,
       title: l10n.deleteAccountTitle,
       description: l10n.deleteAccountBody,
-      variant: DialogBasicVariant.twoHorizontal,
-      primary: DialogAction(
-        label: l10n.cancel,
-        onPressed: () => Navigator.of(context).pop(false),
-      ),
-      secondary: DialogAction(
-        label: l10n.delete,
-        onPressed: () => Navigator.of(context).pop(true),
-      ),
+      actions: [
+        DialogAction(
+          label: l10n.cancel,
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+        DialogAction(
+          label: l10n.delete,
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+      ],
     );
     if (confirmed != true || !mounted) return;
     try {

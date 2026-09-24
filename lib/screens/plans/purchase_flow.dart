@@ -9,6 +9,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/benefit_row.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
@@ -315,22 +316,26 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Button(
-                    type: BtnType.gold,
-                    size: BtnSize.s60,
-                    text: l10n.ctaStartAVideoCall,
-                    onPressed: () => _exitToRoot(context),
-                  ),
-                  const SizedBox(height: 6),
-                  Button(
-                    type: BtnType.secondaryFill,
-                    size: BtnSize.s60,
-                    text: l10n.ctaSeeYourSubscription,
-                    // Drop the spent funnel (paywall → processing → success)
-                    // underneath: back from the manage screen should land on the
-                    // root, not replay a completed purchase.
-                    onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                        context, Routes.subscription, (route) => route.isFirst),
+                  // 버튼 쌍 세로(09-24 사장님 확정) — Figma `depth/purchase_success` 순서:
+                  // 「See your subscription」 위 · 「Start a video call」(gold) 아래, 버튼 사이 12 ·
+                  // 안내 문구와는 6(Sticky-CTA gap 6 안에 Buttons gap 12).
+                  StackedButtonPair(
+                    top: Button(
+                      type: BtnType.secondaryFill,
+                      size: BtnSize.s60,
+                      text: l10n.ctaSeeYourSubscription,
+                      // Drop the spent funnel (paywall → processing → success)
+                      // underneath: back from the manage screen should land on the
+                      // root, not replay a completed purchase.
+                      onPressed: () => Navigator.pushNamedAndRemoveUntil(
+                          context, Routes.subscription, (route) => route.isFirst),
+                    ),
+                    bottom: Button(
+                      type: BtnType.gold,
+                      size: BtnSize.s60,
+                      text: l10n.ctaStartAVideoCall,
+                      onPressed: () => _exitToRoot(context),
+                    ),
                   ),
                   const SizedBox(height: 6),
                   Text(

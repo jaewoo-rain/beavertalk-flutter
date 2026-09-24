@@ -9,6 +9,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/button.dart';
 import '../atoms/dim.dart';
+import '../molecules/stacked_button_pair.dart';
 
 /// Purchase / selection state of a [BottomSheetAvatar].
 ///
@@ -450,28 +451,23 @@ class BottomSheetAvatar extends StatelessWidget {
 
   Widget _footerButtons(BuildContext context, AppLocalizations l10n) {
     switch (state) {
+      // Figma `176:13383` unowned-normal·discount: 이미 VERTICAL — 「닫기」 위 · 「구매하기」 아래
+      // (09-24 버튼 쌍 세로 확정 때 대조).
       case BottomSheetAvatarState.unownedNormal:
       case BottomSheetAvatarState.unownedDiscount:
-        return Row(
-          children: [
-            Expanded(
-              child: Button(
-                type: BtnType.secondaryOutline,
-                size: BtnSize.s60,
-                text: l10n.close,
-                onPressed: onClose,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.buy,
-                onPressed: onConfirm,
-              ),
-            ),
-          ],
+        return StackedButtonPair(
+          top: Button(
+            type: BtnType.secondaryOutline,
+            size: BtnSize.s60,
+            text: l10n.close,
+            onPressed: onClose,
+          ),
+          bottom: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.buy,
+            onPressed: onConfirm,
+          ),
         );
       case BottomSheetAvatarState.ownedUnused:
         return Button(
@@ -489,27 +485,21 @@ class BottomSheetAvatar extends StatelessWidget {
         );
       // 사용하기와 구매하기가 **둘 다** 필요하다: 사용하기가 없으면 원래 버그(선택
       // 불가)로 돌아가고, 구매하기가 없으면 해지 후에도 남길 방법이 사라진다.
+      // Figma 에 이 쌍이 없다 — 원칙(보조 위 · 주요 아래)대로 「구매하기」 위 · 「사용하기」 아래.
       case BottomSheetAvatarState.unlockedBySubscription:
-        return Row(
-          children: [
-            Expanded(
-              child: Button(
-                type: BtnType.secondaryOutline,
-                size: BtnSize.s60,
-                text: l10n.buy,
-                onPressed: onPurchase,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: l10n.useThisAvatar,
-                onPressed: onConfirm,
-              ),
-            ),
-          ],
+        return StackedButtonPair(
+          top: Button(
+            type: BtnType.secondaryOutline,
+            size: BtnSize.s60,
+            text: l10n.buy,
+            onPressed: onPurchase,
+          ),
+          bottom: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.useThisAvatar,
+            onPressed: onConfirm,
+          ),
         );
     }
   }

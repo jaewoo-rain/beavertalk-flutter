@@ -97,15 +97,18 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       context,
       title: l10n.paywallLeaveTitle,
       description: l10n.paywallLeaveBody,
-      variant: DialogBasicVariant.twoHorizontal,
-      primary: DialogAction(
-        label: l10n.ctaKeepLooking,
-        onPressed: () => Navigator.of(context).pop(false),
-      ),
-      secondary: DialogAction(
-        label: l10n.ctaLeaveAnyway,
-        onPressed: () => Navigator.of(context).pop(true),
-      ),
+      // 주요 버튼이 위인 예외(사장님 의도, 09-24). Figma `paywall_exit_guard` 는 「Get Premium」
+      // (primary_fill · 결제로) / 「Maybe later」 — 문구·색 차이는 사장님 판단 대기라 순서만 세로로.
+      actions: [
+        DialogAction(
+          label: l10n.ctaKeepLooking,
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+        DialogAction(
+          label: l10n.ctaLeaveAnyway,
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+      ],
     );
     if (leave == true && mounted) Navigator.pop(context);
   }

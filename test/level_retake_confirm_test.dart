@@ -65,6 +65,15 @@ void main() {
     expect(auth.retakes, 0);
   });
 
+  testWidgets('순서 — 「다시 측정하기」 위 · 「진도 유지하기」 아래, 같은 폭(09-24 사장님 정본)', (tester) async {
+    await pump(tester);
+    await openConfirm(tester);
+    final retake = tester.getRect(find.text('다시 측정하기'));
+    final keep = tester.getRect(find.text('진도 유지하기'));
+    expect(retake.top, lessThan(keep.top), reason: '1285ee5 의 「진도 유지하기 위」 를 뒤집었다');
+    expect(retake.center.dx, closeTo(keep.center.dx, 0.5), reason: '위아래로 쌓였다(가로 아님)');
+  });
+
   testWidgets('「진도 유지하기」 는 재측정하지 않는다', (tester) async {
     final (auth, pushed) = await pump(tester);
     await openConfirm(tester);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../app/app_scaffold.dart';
+import '../../components/atoms/button.dart';
 import '../../components/atoms/dim.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../l10n/app_localizations.dart';
@@ -34,15 +35,18 @@ class MicDeniedScreen extends StatelessWidget {
             child: DialogBasic(
               title: l10n.micPermissionNeededTitle,
               description: l10n.micPermissionNeededBody,
-              variant: DialogBasicVariant.twoHorizontal,
-              primary: DialogAction(
-                label: l10n.cancel,
-                onPressed: () => Navigator.maybePop(context),
-              ),
-              secondary: DialogAction(
-                label: l10n.openSettings,
-                onPressed: () => Navigator.maybePop(context),
-              ),
+              // 「취소」 위 · 「설정 열기」(primary_fill) 아래(09-24 버튼 쌍 세로 확정).
+              actions: [
+                DialogAction(
+                  label: l10n.cancel,
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+                DialogAction(
+                  label: l10n.openSettings,
+                  type: BtnType.primaryFill,
+                  onPressed: () => Navigator.maybePop(context),
+                ),
+              ],
             ),
           ),
         ],
