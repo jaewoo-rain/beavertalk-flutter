@@ -165,8 +165,10 @@ class _Text extends StatelessWidget {
         Text(
           item.cardDesc,
           // 「소리 내는 법」이라 끝까지 읽혀야 뜻이 산다. 한 줄로 자르면 언어에 따라
-          // 「혀끝을 윗잇몸에…」에서 끊긴다. 두 줄까지 주고 그래도 넘치면 줄인다.
-          maxLines: 2,
+          // 「혀끝을 윗잇몸에…」에서 끊긴다. **세 줄**까지 주고 그래도 넘치면 줄인다
+          // (09-24 사장님 — 번역본이 길어 2줄이면 약 20개 언어가 잘렸다 · Figma Desc
+          // `6040:1387` 외 3 maxLines 3). 전문은 이해 단계에서 다 보인다.
+          maxLines: 3,
           overflow: TextOverflow.ellipsis,
           // Figma 는 여기에 `Label/Caption`(Light #505050)을 쓴다. 앱에는 그 토큰이 없고
           // `labelNormal`(Light #333333)이 한 단계 진하다 — 대비가 더 나은 쪽으로 붙인다.
