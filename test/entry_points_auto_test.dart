@@ -93,7 +93,7 @@ void main() {
     // 09-24 버튼 문구 「레벨 테스트」(사용자 지시 · P30 번복). 요청은 그대로 auto — 가입 직후
     // 회원은 레벨이 없어 서버가 레벨테스트로 라우팅한다.
     testWidgets('온보딩 완료 「레벨 테스트」', (tester) async {
-      final call = await _tapAndCollect(tester, const OnboardingDoneScreen(), '레벨 테스트');
+      final call = await _tapAndCollect(tester, const OnboardingDoneScreen(), '레벨 테스트하기');
       _expectAuto(call);
     });
 

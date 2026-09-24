@@ -906,7 +906,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get home => 'ホーム';
 
   @override
-  String get onboardingLevelTestCta => 'レベルテスト';
+  String get onboardingLevelTestCta => 'レベルテストを受ける';
 
   @override
   String get pronunciation => '発音';
@@ -2020,16 +2020,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get iapFailBody => 'もう一度お試しいただけます';
 
   @override
-  String get paywallLeaveTitle => '今離れると、購読は開始されません';
+  String get paywallGuardTitle => '無料のまま使い続けられます';
 
   @override
-  String get paywallLeaveBody => '特典は決済直後に利用できます。マイページからいつでも戻れます。';
+  String get paywallGuardBody => '1日5分の通話はそのまま使えます。';
 
   @override
-  String get ctaKeepLooking => '続けて見る';
-
-  @override
-  String get ctaLeaveAnyway => 'それでも離れる';
+  String get ctaMaybeLater => 'また今度';
 
   @override
   String get iapCharacterSuccessTitle => '新しい友だちが仲間入り!';
@@ -2694,7 +2691,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get wsPracticeSentence => '文を練習する';
 
   @override
-  String get wsStartTest => '評価を始める';
+  String get wsPracticeAgain => 'もう一度';
+
+  @override
+  String get wsStartTest => '最終評価を受ける';
 
   @override
   String get wsThisSentence => '今回の文';

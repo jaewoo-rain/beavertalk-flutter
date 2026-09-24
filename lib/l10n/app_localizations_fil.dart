@@ -943,7 +943,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get onboardingLevelTestCta => 'Level test';
+  String get onboardingLevelTestCta => 'Kumuha ng level test';
 
   @override
   String get pronunciation => 'Bigkas';
@@ -2097,18 +2097,13 @@ class AppLocalizationsFil extends AppLocalizations {
   String get iapFailBody => 'Puwede mong subukan ulit';
 
   @override
-  String get paywallLeaveTitle =>
-      'Kapag umalis ka ngayon, hindi ka pa naka-subscribe';
+  String get paywallGuardTitle => 'Puwede kang magpatuloy nang Libre';
 
   @override
-  String get paywallLeaveBody =>
-      'Mabubuksan agad ang mga benepisyo pagkatapos magbayad. Puwede kang bumalik anumang oras mula sa Aking pahina.';
+  String get paywallGuardBody => 'May 5 minutong tawag ka pa rin kada araw.';
 
   @override
-  String get ctaKeepLooking => 'Tingnan pa';
-
-  @override
-  String get ctaLeaveAnyway => 'Umalis pa rin';
+  String get ctaMaybeLater => 'Siguro mamaya';
 
   @override
   String get iapCharacterSuccessTitle => 'May bagong kaibigan ka na!';
@@ -2809,7 +2804,10 @@ class AppLocalizationsFil extends AppLocalizations {
   String get wsPracticeSentence => 'Sanayin ang pangungusap';
 
   @override
-  String get wsStartTest => 'Simulan ang test';
+  String get wsPracticeAgain => 'Isa pang beses';
+
+  @override
+  String get wsStartTest => 'Kumuha ng huling test';
 
   @override
   String get wsThisSentence => 'Ang pangungusap na ito';

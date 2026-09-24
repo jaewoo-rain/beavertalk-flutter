@@ -938,7 +938,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get home => 'Koti';
 
   @override
-  String get onboardingLevelTestCta => 'Tasotesti';
+  String get onboardingLevelTestCta => 'Tee tasotesti';
 
   @override
   String get pronunciation => 'Ääntäminen';
@@ -2091,17 +2091,14 @@ class AppLocalizationsFi extends AppLocalizations {
   String get iapFailBody => 'Voit yrittää uudelleen';
 
   @override
-  String get paywallLeaveTitle => 'Jos poistut nyt, tilausta ei tehdä';
+  String get paywallGuardTitle => 'Voit jatkaa ilmaiseksi';
 
   @override
-  String get paywallLeaveBody =>
-      'Etusi avautuvat heti maksun jälkeen. Voit palata milloin tahansa Oma sivu -näkymästä.';
+  String get paywallGuardBody =>
+      'Saat edelleen 5 minuuttia puheluita päivässä.';
 
   @override
-  String get ctaKeepLooking => 'Jatka katselua';
-
-  @override
-  String get ctaLeaveAnyway => 'Poistu silti';
+  String get ctaMaybeLater => 'Ehkä myöhemmin';
 
   @override
   String get iapCharacterSuccessTitle => 'Uusi ystävä liittyi seuraan!';
@@ -2794,7 +2791,10 @@ class AppLocalizationsFi extends AppLocalizations {
   String get wsPracticeSentence => 'Harjoittele lausetta';
 
   @override
-  String get wsStartTest => 'Aloita testi';
+  String get wsPracticeAgain => 'Vielä kerran';
+
+  @override
+  String get wsStartTest => 'Tee lopputesti';
 
   @override
   String get wsThisSentence => 'Tämä lause';

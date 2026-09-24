@@ -930,7 +930,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get home => 'Нүүр';
 
   @override
-  String get onboardingLevelTestCta => 'Түвшин тогтоох шалгалт';
+  String get onboardingLevelTestCta => 'Түвшин тогтоох шалгалт өгөх';
 
   @override
   String get pronunciation => 'Дуудлага';
@@ -2075,17 +2075,13 @@ class AppLocalizationsMn extends AppLocalizations {
   String get iapFailBody => 'Дахин оролдож болно';
 
   @override
-  String get paywallLeaveTitle => 'Одоо гарвал захиалга хийгдэхгүй';
+  String get paywallGuardTitle => 'Үнэгүйгээр үргэлжлүүлэн ашиглаж болно';
 
   @override
-  String get paywallLeaveBody =>
-      'Төлбөрийн дараа шууд давуу тал нээгдэнэ. Миний хуудаснаас хүссэн үедээ буцаж болно.';
+  String get paywallGuardBody => 'Өдөрт 5 минут дуудлага хэвээр байна.';
 
   @override
-  String get ctaKeepLooking => 'Үргэлжлүүлэн үзэх';
-
-  @override
-  String get ctaLeaveAnyway => 'Гарах';
+  String get ctaMaybeLater => 'Дараа';
 
   @override
   String get iapCharacterSuccessTitle => 'Шинэ найз нэгдлээ!';
@@ -2773,7 +2769,10 @@ class AppLocalizationsMn extends AppLocalizations {
   String get wsPracticeSentence => 'Өгүүлбэр дадлагажих';
 
   @override
-  String get wsStartTest => 'Шалгалт эхлүүлэх';
+  String get wsPracticeAgain => 'Дахин нэг удаа';
+
+  @override
+  String get wsStartTest => 'Төгсгөлийн шалгалт өгөх';
 
   @override
   String get wsThisSentence => 'Энэ өгүүлбэр';

@@ -938,7 +938,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get home => 'Bosh sahifa';
 
   @override
-  String get onboardingLevelTestCta => 'Daraja testi';
+  String get onboardingLevelTestCta => 'Daraja testini topshirish';
 
   @override
   String get pronunciation => 'Talaffuz';
@@ -2089,17 +2089,14 @@ class AppLocalizationsUz extends AppLocalizations {
   String get iapFailBody => 'Qayta urinib koʻrishingiz mumkin';
 
   @override
-  String get paywallLeaveTitle => 'Hozir chiqsangiz, obuna boʻlmaysiz';
+  String get paywallGuardTitle => 'Bepul foydalanishda davom etishingiz mumkin';
 
   @override
-  String get paywallLeaveBody =>
-      'Imkoniyatlar toʻlovdan soʻng darhol ochiladi. Mening sahifam orqali istalgan vaqtda qaytishingiz mumkin.';
+  String get paywallGuardBody =>
+      'Kuniga 5 daqiqa qoʻngʻiroq avvalgidek qoladi.';
 
   @override
-  String get ctaKeepLooking => 'Koʻrishda davom etish';
-
-  @override
-  String get ctaLeaveAnyway => 'Baribir chiqish';
+  String get ctaMaybeLater => 'Keyinroq';
 
   @override
   String get iapCharacterSuccessTitle => 'Yangi doʻst qoʻshildi!';
@@ -2794,7 +2791,10 @@ class AppLocalizationsUz extends AppLocalizations {
   String get wsPracticeSentence => 'Gapni mashq qilish';
 
   @override
-  String get wsStartTest => 'Testni boshlash';
+  String get wsPracticeAgain => 'Yana bir marta';
+
+  @override
+  String get wsStartTest => 'Yakuniy testni topshirish';
 
   @override
   String get wsThisSentence => 'Bu gap';

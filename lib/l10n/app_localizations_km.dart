@@ -931,7 +931,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get home => 'ទំព័រដើម';
 
   @override
-  String get onboardingLevelTestCta => 'តេស្តកម្រិត';
+  String get onboardingLevelTestCta => 'ធ្វើតេស្តកម្រិត';
 
   @override
   String get pronunciation => 'ការបញ្ចេញសំឡេង';
@@ -2073,17 +2073,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get iapFailBody => 'អ្នកអាចព្យាយាមម្តងទៀត';
 
   @override
-  String get paywallLeaveTitle => 'បើចាកចេញឥឡូវ អ្នកនឹងមិនទាន់ជាវទេ';
+  String get paywallGuardTitle => 'អ្នកអាចបន្តប្រើ Free បាន';
 
   @override
-  String get paywallLeaveBody =>
-      'អត្ថប្រយោជន៍បើកភ្លាមៗក្រោយបង់ប្រាក់។ អ្នកអាចត្រឡប់មកវិញបានគ្រប់ពេលពីទំព័ររបស់ខ្ញុំ។';
+  String get paywallGuardBody => 'អ្នកនៅតែហៅបាន 5 នាទីក្នុងមួយថ្ងៃ។';
 
   @override
-  String get ctaKeepLooking => 'មើលបន្ត';
-
-  @override
-  String get ctaLeaveAnyway => 'ចាកចេញ';
+  String get ctaMaybeLater => 'ពេលក្រោយ';
 
   @override
   String get iapCharacterSuccessTitle => 'មិត្តថ្មីបានចូលរួម!';
@@ -2768,7 +2764,10 @@ class AppLocalizationsKm extends AppLocalizations {
   String get wsPracticeSentence => 'អនុវត្តប្រយោគ';
 
   @override
-  String get wsStartTest => 'ចាប់ផ្ដើមតេស្ត';
+  String get wsPracticeAgain => 'ម្ដងទៀត';
+
+  @override
+  String get wsStartTest => 'ធ្វើតេស្តចុងក្រោយ';
 
   @override
   String get wsThisSentence => 'ប្រយោគនេះ';

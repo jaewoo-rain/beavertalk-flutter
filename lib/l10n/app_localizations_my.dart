@@ -939,7 +939,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get home => 'ပင်မစာမျက်နှာ';
 
   @override
-  String get onboardingLevelTestCta => 'အဆင့်စစ်ဆေးမှု';
+  String get onboardingLevelTestCta => 'အဆင့်စစ်ဆေးမှု ဖြေဆိုရန်';
 
   @override
   String get pronunciation => 'အသံထွက်';
@@ -2091,17 +2091,13 @@ class AppLocalizationsMy extends AppLocalizations {
   String get iapFailBody => 'ထပ်မံ ကြိုးစားနိုင်ပါသည်';
 
   @override
-  String get paywallLeaveTitle => 'ယခုထွက်လျှင် စာရင်းသွင်းပြီးမည်မဟုတ်ပါ';
+  String get paywallGuardTitle => 'Free ကို ဆက်သုံးနိုင်ပါတယ်';
 
   @override
-  String get paywallLeaveBody =>
-      'ငွေပေးချေပြီးလျှင် အကျိုးခံစားခွင့်များ ချက်ချင်းပွင့်သည်။ ကျွန်ုပ်၏စာမျက်နှာမှ အချိန်မရွေး ပြန်လာနိုင်သည်။';
+  String get paywallGuardBody => 'တစ်ရက် ခေါ်ဆိုချိန် 5 မိနစ် ဆက်ရပါမယ်။';
 
   @override
-  String get ctaKeepLooking => 'ဆက်ကြည့်မည်';
-
-  @override
-  String get ctaLeaveAnyway => 'ထွက်မည်';
+  String get ctaMaybeLater => 'နောက်မှ';
 
   @override
   String get iapCharacterSuccessTitle => 'မိတ်ဆွေအသစ်ရောက်လာပြီ!';
@@ -2790,7 +2786,10 @@ class AppLocalizationsMy extends AppLocalizations {
   String get wsPracticeSentence => 'စာကြောင်း လေ့ကျင့်ရန်';
 
   @override
-  String get wsStartTest => 'စစ်ဆေးမှု စတင်ရန်';
+  String get wsPracticeAgain => 'နောက်တစ်ကြိမ်';
+
+  @override
+  String get wsStartTest => 'နောက်ဆုံး စစ်ဆေးမှု ဖြေဆိုရန်';
 
   @override
   String get wsThisSentence => 'ဤစာကြောင်း';

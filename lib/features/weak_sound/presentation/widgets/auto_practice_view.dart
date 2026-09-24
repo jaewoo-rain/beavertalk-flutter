@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../components/atoms/button.dart';
+import '../../../../components/molecules/stacked_button_pair.dart';
 import '../../../review/presentation/review_providers.dart';
 import '../../../../theme/app_color_tokens.dart';
 import '../../../../theme/app_radius.dart';
@@ -26,6 +27,7 @@ class AutoPracticeView extends ConsumerStatefulWidget {
     this.audioUrls = const {},
     this.header,
     this.doneLabel,
+    this.againLabel,
   });
 
   /// 읽어 줄 텍스트들(단어 4개, 또는 문장 조각들).
@@ -55,25 +57,43 @@ class AutoPracticeView extends ConsumerStatefulWidget {
   /// 기본값을 const 로 둘 수 없어서(번역은 context 가 있어야 한다) null 을 쓴다.
   final String? doneLabel;
 
+  /// 끝났을 때 주 버튼 **위**에 둘 「한 번 더 하기」 글자. 누르면 같은 연습을 처음부터 다시
+  /// 한다(Figma 08 · 13 → `04 · learn/2_words — 시작 전` · `09 · learn/3_sentence — 시작 전`,
+  /// 09-24 사장님 「Figma 대로 해」). null 이면 버튼 없음.
+  final String? againLabel;
+
   @override
   ConsumerState<AutoPracticeView> createState() => _AutoPracticeViewState();
 }
 
 class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
     with WidgetsBindingObserver {
-  late final AutoPracticeController _controller;
+  late AutoPracticeController _controller;
+
+  AutoPracticeController _newController() => AutoPracticeController(
+        items: widget.items,
+        repository: ref.read(reviewRepositoryProvider),
+        cache: ref.read(speechCacheProvider),
+        audioUrls: widget.audioUrls,
+      )..addListener(_onChange);
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _controller = AutoPracticeController(
-      items: widget.items,
-      repository: ref.read(reviewRepositoryProvider),
-      cache: ref.read(speechCacheProvider),
-      audioUrls: widget.audioUrls,
-    )..addListener(_onChange);
+    _controller = _newController();
     WidgetsBinding.instance.addPostFrameCallback((_) => _controller.start());
+  }
+
+  /// 「한 번 더 하기」 — 새 컨트롤러로 첫 항목부터 다시. 옛 것은 타이머·재생째 버린다.
+  void _restart() {
+    _controller
+      ..removeListener(_onChange)
+      ..dispose();
+    setState(() => _controller = _newController());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _controller.start();
+    });
   }
 
   void _onChange() => setState(() {});
@@ -137,17 +157,30 @@ class _AutoPracticeViewState extends ConsumerState<AutoPracticeView>
           opacity: done ? 1 : 0,
           child: IgnorePointer(
             ignoring: !done,
-            child: Button(
-              type: BtnType.primaryFill,
-              size: BtnSize.s60,
-              text: widget.doneLabel ?? l10n.wsNext,
-              onPressed: widget.onDone,
-            ),
+            child: widget.againLabel == null
+                ? _doneButton(l10n)
+                // Figma 08 · 13: 「한 번 더 하기」(secondary_elevated) 위 · 주 버튼 아래 · 간격 12.
+                : StackedButtonPair(
+                    top: Button(
+                      type: BtnType.secondaryElevated,
+                      size: BtnSize.s60,
+                      text: widget.againLabel!,
+                      onPressed: _restart,
+                    ),
+                    bottom: _doneButton(l10n),
+                  ),
           ),
         ),
       ],
     );
   }
+
+  Widget _doneButton(AppLocalizations l10n) => Button(
+        type: BtnType.primaryFill,
+        size: BtnSize.s60,
+        text: widget.doneLabel ?? l10n.wsNext,
+        onPressed: widget.onDone,
+      );
 
   static String? _at(List<String?> list, int i) =>
       i >= 0 && i < list.length ? list[i] : null;

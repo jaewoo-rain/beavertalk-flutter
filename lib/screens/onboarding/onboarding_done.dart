@@ -16,8 +16,8 @@ import '../../components/molecules/stacked_button_pair.dart';
 ///
 /// Reached after the final onboarding step ([OnboardingReasonScreen]) submits
 /// the draft. A centered beaver avatar with a welcome heading + sub copy, and a
-/// pinned stacked button pair: a secondary "Home" on top (drops to the now-onboarded
-/// home) and a primary 「레벨 테스트」 below (jumps straight into the call flow — a new
+/// pinned stacked button pair: a secondary 「홈으로」 on top (drops to the now-onboarded
+/// home) and a primary 「레벨 테스트하기」 below (jumps straight into the call flow — a new
 /// member has no level, so the server routes this call to the level test).
 class OnboardingDoneScreen extends StatelessWidget {
   /// Creates the onboarding completion screen.
@@ -86,13 +86,14 @@ class OnboardingDoneScreen extends StatelessWidget {
           // Figma `BottomSheet` 두 버튼(Mobile `3360:48` · Tablet `5281:1142`): pt 12, px 20.
           ContentColumn(
             padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: AppSpacing.s12),
-            // 버튼 쌍은 항상 세로(09-24 사장님 확정) — 「홈」 위 · 「레벨 테스트」 아래, 각자 전폭 ·
-            // 간격 12. 옛 가로 1:1 에서는 긴 언어가 반 폭 안에서 줄을 바꿨다(전수조사 H).
+            // 버튼 쌍은 항상 세로(09-24 사장님 확정) — 「홈으로」 위 · 「레벨 테스트하기」 아래, 각자
+            // 전폭 · 간격 12. 옛 가로 1:1 에서는 긴 언어가 반 폭 안에서 줄을 바꿨다(전수조사 H).
+            // 문구는 Figma(Mobile `I3360:55` · Tablet `I5281:1149`) — 사장님 「Figma 대로 해」(09-24).
             child: StackedButtonPair(
               top: Button(
                 type: BtnType.secondaryOutline,
                 size: BtnSize.s60,
-                text: l10n.home,
+                text: l10n.goHome,
                 onPressed: () => _goHome(context),
               ),
               bottom: Button(

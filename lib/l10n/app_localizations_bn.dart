@@ -930,7 +930,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get home => 'হোম';
 
   @override
-  String get onboardingLevelTestCta => 'স্তর পরীক্ষা';
+  String get onboardingLevelTestCta => 'স্তর পরীক্ষা দিন';
 
   @override
   String get pronunciation => 'উচ্চারণ';
@@ -2075,17 +2075,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get iapFailBody => 'আপনি আবার চেষ্টা করতে পারেন';
 
   @override
-  String get paywallLeaveTitle => 'এখন চলে গেলে সাবস্ক্রিপশন হবে না';
+  String get paywallGuardTitle => 'আপনি Free ব্যবহার চালিয়ে যেতে পারেন';
 
   @override
-  String get paywallLeaveBody =>
-      'পেমেন্টের পরপরই আপনার সুবিধা খুলে যায়। আমার পেজ থেকে যেকোনো সময় ফিরে আসতে পারেন।';
+  String get paywallGuardBody => 'দিনে 5 মিনিট কল আগের মতোই থাকবে।';
 
   @override
-  String get ctaKeepLooking => 'দেখতে থাকুন';
-
-  @override
-  String get ctaLeaveAnyway => 'তবুও চলে যান';
+  String get ctaMaybeLater => 'পরে দেখব';
 
   @override
   String get iapCharacterSuccessTitle => 'নতুন বন্ধু যোগ দিয়েছে!';
@@ -2769,7 +2765,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get wsPracticeSentence => 'বাক্য অভ্যাস করুন';
 
   @override
-  String get wsStartTest => 'পরীক্ষা শুরু করুন';
+  String get wsPracticeAgain => 'আরেকবার করুন';
+
+  @override
+  String get wsStartTest => 'চূড়ান্ত পরীক্ষা দিন';
 
   @override
   String get wsThisSentence => 'এই বাক্যটি';

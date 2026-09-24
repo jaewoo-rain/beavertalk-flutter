@@ -934,7 +934,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get home => 'Башкы бет';
 
   @override
-  String get onboardingLevelTestCta => 'Деңгээл тести';
+  String get onboardingLevelTestCta => 'Деңгээл тестин тапшыруу';
 
   @override
   String get pronunciation => 'Айтылыш';
@@ -2082,17 +2082,13 @@ class AppLocalizationsKy extends AppLocalizations {
   String get iapFailBody => 'Кайра аракет кылсаңыз болот';
 
   @override
-  String get paywallLeaveTitle => 'Азыр чыксаңыз, жазылуу түзүлбөйт';
+  String get paywallGuardTitle => 'Акысыз колдоно бересиз';
 
   @override
-  String get paywallLeaveBody =>
-      'Артыкчылыктар төлөмдөн кийин дароо ачылат. Менин барагым аркылуу каалаган убакта кайтып келе аласыз.';
+  String get paywallGuardBody => 'Күнүнө 5 мүнөт чалуу мурдагыдай калат.';
 
   @override
-  String get ctaKeepLooking => 'Көрүүнү улантуу';
-
-  @override
-  String get ctaLeaveAnyway => 'Баары бир чыгуу';
+  String get ctaMaybeLater => 'Кийинчерээк';
 
   @override
   String get iapCharacterSuccessTitle => 'Жаңы дос кошулду!';
@@ -2783,7 +2779,10 @@ class AppLocalizationsKy extends AppLocalizations {
   String get wsPracticeSentence => 'Сүйлөмдү көнүгүү';
 
   @override
-  String get wsStartTest => 'Баалоону баштоо';
+  String get wsPracticeAgain => 'Дагы бир жолу';
+
+  @override
+  String get wsStartTest => 'Жыйынтыктоочу баалоону тапшыруу';
 
   @override
   String get wsThisSentence => 'Ушул сүйлөм';

@@ -1804,10 +1804,10 @@ abstract class AppLocalizations {
   /// **'Home'**
   String get home;
 
-  /// Primary button on the screen right after sign-up (Figma onborading_done 3360:48). A new member has no level, so this call is routed to the level test. Noun, same term as takeLevelTest.
+  /// Primary button on the screen right after sign-up (Figma onborading_done 3360:48). A new member has no level, so this call is routed to the level test. Verb phrase, same wording as takeLevelTest (Figma, owner decision 2026-09-24).
   ///
   /// In en, this message translates to:
-  /// **'Level test'**
+  /// **'Take level test'**
   String get onboardingLevelTestCta;
 
   /// No description provided for @pronunciation.
@@ -3868,29 +3868,23 @@ abstract class AppLocalizations {
   /// **'You can try again'**
   String get iapFailBody;
 
-  /// No description provided for @paywallLeaveTitle.
+  /// Paywall exit guard (Figma paywall_exit_guard 6192:29141, Dialog/Confirm-Icon) title.
   ///
   /// In en, this message translates to:
-  /// **'If you leave now, you won\'t be subscribed'**
-  String get paywallLeaveTitle;
+  /// **'You can keep using Free'**
+  String get paywallGuardTitle;
 
-  /// No description provided for @paywallLeaveBody.
+  /// Paywall exit guard body. Free plan = 5 minutes of calls a day in total (decision 2026-09-23).
   ///
   /// In en, this message translates to:
-  /// **'Your benefits unlock right after checkout. You can come back anytime from My Page.'**
-  String get paywallLeaveBody;
+  /// **'You still get 5 minutes of calls a day.'**
+  String get paywallGuardBody;
 
-  /// No description provided for @ctaKeepLooking.
+  /// Paywall exit guard lower button — closes the dialog (Figma BACK).
   ///
   /// In en, this message translates to:
-  /// **'Keep looking'**
-  String get ctaKeepLooking;
-
-  /// No description provided for @ctaLeaveAnyway.
-  ///
-  /// In en, this message translates to:
-  /// **'Leave anyway'**
-  String get ctaLeaveAnyway;
+  /// **'Maybe later'**
+  String get ctaMaybeLater;
 
   /// No description provided for @iapCharacterSuccessTitle.
   ///
@@ -5176,10 +5170,16 @@ abstract class AppLocalizations {
   /// **'Practice the sentence'**
   String get wsPracticeSentence;
 
+  /// Weak-sound learning, end of the word (08) and sentence (13) practice: restarts the same practice from the first item. Figma 「한 번 더 하기」 (owner decision 2026-09-24).
+  ///
+  /// In en, this message translates to:
+  /// **'One more time'**
+  String get wsPracticeAgain;
+
   /// No description provided for @wsStartTest.
   ///
   /// In en, this message translates to:
-  /// **'Start the test'**
+  /// **'Take the final test'**
   String get wsStartTest;
 
   /// No description provided for @wsThisSentence.

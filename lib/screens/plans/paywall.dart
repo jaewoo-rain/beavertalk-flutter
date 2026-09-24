@@ -11,7 +11,8 @@ import '../../components/molecules/banner.dart';
 import '../../components/molecules/bullet_row.dart';
 import '../../components/molecules/plan_row.dart';
 import '../../components/molecules/plan_summary_card.dart';
-import '../../components/organisms/dialog_basic.dart';
+import '../../components/organisms/dialog_basic.dart' show DialogAction;
+import '../../components/organisms/dialog_confirm_icon.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../features/subscription/domain/plan_prices.dart';
@@ -76,16 +77,20 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   _Cycle _cycle = _Cycle.monthly;
 
   /// Whether the leave guard already ran. Once per visit: the first back/X
-  /// asks ("지금 나가면 구독할 수 없어요"), a second one respects the answer
-  /// without nagging.
+  /// asks (「무료로 계속 쓸 수 있어요」), a second one leaves without nagging.
   bool _leaveGuardShown = false;
 
   /// 한도 진입인가(배너 + 한 줄 헤드라인 + 법적 링크). 나머지는 전부 같은 Premium 페이월.
   bool get _isLimit => widget.variant == PaywallVariant.proLimit;
 
   /// Back/X on a paywall — the deepest point a member can still walk away
-  /// from a subscription, so leaving gets one retention prompt. Dim tap and
-  /// "Keep looking" stay; "Leave anyway" pops for real.
+  /// from a subscription, so leaving gets one retention prompt.
+  ///
+  /// Figma `paywall_exit_guard`(Mobile `6192:29141` · Tablet `6238:48555`, `Dialog/Confirm-Icon`)
+  /// — 09-24 사장님 「Figma 대로 해」:
+  /// - 위 「Get Premium」(primary_fill) → 결제 진행(`depth/purchase_processing`) — 아래 CTA 와 같은 곳.
+  /// - 아래 「Maybe later」(secondary_fill) → **창만 닫는다**(Figma BACK). 페이월에 남는다.
+  /// - 스크림도 BACK(닫기)이다. 한 번 보여 준 뒤의 back/X 는 묻지 않고 나간다.
   Future<void> _handleClose() async {
     if (_leaveGuardShown) {
       Navigator.pop(context);
@@ -93,25 +98,41 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     }
     _leaveGuardShown = true;
     final l10n = AppLocalizations.of(context);
-    final leave = await showDialogBasic<bool>(
+    final buy = await showDialogConfirmIcon<bool>(
       context,
-      title: l10n.paywallLeaveTitle,
-      description: l10n.paywallLeaveBody,
-      // 주요 버튼이 위인 예외(사장님 의도, 09-24). Figma `paywall_exit_guard` 는 「Get Premium」
-      // (primary_fill · 결제로) / 「Maybe later」 — 문구·색 차이는 사장님 판단 대기라 순서만 세로로.
+      icon: AppIcons.duoHeart(),
+      title: l10n.paywallGuardTitle,
+      description: l10n.paywallGuardBody,
+      // 주요 버튼이 위인 예외(사장님 의도, 09-24).
       actions: [
         DialogAction(
-          label: l10n.ctaKeepLooking,
-          onPressed: () => Navigator.of(context).pop(false),
+          label: l10n.ctaGetPremium,
+          type: BtnType.primaryFill,
+          onPressed: () => Navigator.of(context).pop(true),
         ),
         DialogAction(
-          label: l10n.ctaLeaveAnyway,
-          onPressed: () => Navigator.of(context).pop(true),
+          label: l10n.ctaMaybeLater,
+          onPressed: () => Navigator.of(context).pop(false),
         ),
       ],
     );
-    if (leave == true && mounted) Navigator.pop(context);
+    if (buy == true && mounted) _startPurchase();
   }
+
+  /// 결제 진행 — 아래 CTA 와 이탈 방지 창의 「Get Premium」이 같은 곳으로 간다.
+  ///
+  /// Tier AND cycle travel as the route argument — the tier alone was the
+  /// "bought Max, screen said Pro" bug, and a dropped cycle meant the annual
+  /// selection quietly bought monthly.
+  void _startPurchase() => Navigator.pushNamed(
+        context,
+        Routes.purchaseProcessing,
+        arguments: (
+          // 유료는 Premium 하나 — 상품·서버 코드는 `max` 그대로다.
+          tier: SubscriptionTier.max,
+          annual: _cycle == _Cycle.annual,
+        ),
+      );
 
   /// Which cap ran out — the widget parameter, or the route argument the
   /// free-limit sheets pass (`'call'` / `'check'`), or call.
@@ -347,18 +368,7 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               type: BtnType.gold,
               size: BtnSize.s60,
               text: _isLimit ? l10n.ctaGetPremium : l10n.ctaTurnOnVideo,
-              // Tier AND cycle travel as the route argument — the tier alone
-              // was the "bought Max, screen said Pro" bug, and a dropped cycle
-              // meant the annual selection quietly bought monthly.
-              onPressed: () => Navigator.pushNamed(
-                context,
-                Routes.purchaseProcessing,
-                arguments: (
-                  // 유료는 Premium 하나 — 상품·서버 코드는 `max` 그대로다.
-                  tier: SubscriptionTier.max,
-                  annual: _cycle == _Cycle.annual,
-                ),
-              ),
+              onPressed: _startPurchase,
             ),
             const SizedBox(height: 6),
             Text(

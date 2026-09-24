@@ -922,7 +922,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get home => 'หน้าหลัก';
 
   @override
-  String get onboardingLevelTestCta => 'แบบทดสอบระดับ';
+  String get onboardingLevelTestCta => 'ทำแบบทดสอบระดับ';
 
   @override
   String get pronunciation => 'การออกเสียง';
@@ -2067,17 +2067,13 @@ class AppLocalizationsTh extends AppLocalizations {
   String get iapFailBody => 'คุณลองใหม่ได้';
 
   @override
-  String get paywallLeaveTitle => 'หากออกตอนนี้ คุณจะยังไม่ได้สมัครสมาชิก';
+  String get paywallGuardTitle => 'คุณใช้ฟรีต่อได้';
 
   @override
-  String get paywallLeaveBody =>
-      'สิทธิประโยชน์จะปลดล็อกทันทีหลังชำระเงิน กลับมาได้ทุกเมื่อจากหน้าของฉัน';
+  String get paywallGuardBody => 'คุณยังโทรได้วันละ 5 นาทีเหมือนเดิม';
 
   @override
-  String get ctaKeepLooking => 'ดูต่อ';
-
-  @override
-  String get ctaLeaveAnyway => 'ออกอยู่ดี';
+  String get ctaMaybeLater => 'ไว้ทีหลัง';
 
   @override
   String get iapCharacterSuccessTitle => 'เพื่อนใหม่มาร่วมแล้ว!';
@@ -2755,7 +2751,10 @@ class AppLocalizationsTh extends AppLocalizations {
   String get wsPracticeSentence => 'ฝึกประโยค';
 
   @override
-  String get wsStartTest => 'เริ่มทดสอบ';
+  String get wsPracticeAgain => 'อีกครั้ง';
+
+  @override
+  String get wsStartTest => 'ทำแบบทดสอบครั้งสุดท้าย';
 
   @override
   String get wsThisSentence => 'ประโยคนี้';

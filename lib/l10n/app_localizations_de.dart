@@ -949,7 +949,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get home => 'Start';
 
   @override
-  String get onboardingLevelTestCta => 'Einstufungstest';
+  String get onboardingLevelTestCta => 'Einstufungstest machen';
 
   @override
   String get pronunciation => 'Aussprache';
@@ -2110,18 +2110,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get iapFailBody => 'Du kannst es erneut versuchen';
 
   @override
-  String get paywallLeaveTitle =>
-      'Wenn du jetzt gehst, bist du nicht abonniert';
+  String get paywallGuardTitle => 'Du kannst kostenlos weitermachen';
 
   @override
-  String get paywallLeaveBody =>
-      'Deine Vorteile werden direkt nach dem Kauf freigeschaltet. Du kannst jederzeit über Meine Seite zurückkommen.';
+  String get paywallGuardBody => 'Du hast weiterhin 5 Minuten Anrufe pro Tag.';
 
   @override
-  String get ctaKeepLooking => 'Weiter ansehen';
-
-  @override
-  String get ctaLeaveAnyway => 'Trotzdem gehen';
+  String get ctaMaybeLater => 'Vielleicht später';
 
   @override
   String get iapCharacterSuccessTitle => 'Ein neuer Freund ist dabei!';
@@ -2827,7 +2822,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wsPracticeSentence => 'Satz üben';
 
   @override
-  String get wsStartTest => 'Test starten';
+  String get wsPracticeAgain => 'Noch einmal';
+
+  @override
+  String get wsStartTest => 'Abschlusstest machen';
 
   @override
   String get wsThisSentence => 'Dieser Satz';

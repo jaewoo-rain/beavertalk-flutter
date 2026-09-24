@@ -15,6 +15,7 @@ import 'package:beavertalk/screens/classroom/join_consent.dart';
 import 'package:beavertalk/screens/classroom/join_done.dart';
 import 'package:beavertalk/screens/classroom/join_profile.dart';
 import 'package:beavertalk/components/atoms/button.dart';
+import 'package:beavertalk/components/organisms/dialog_confirm_icon.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
 import 'package:beavertalk/components/molecules/card_study.dart';
 import 'package:beavertalk/screens/home/analysis_loading.dart';
@@ -238,6 +239,23 @@ Map<String, Widget Function()> i18nScreens() {
                 actions: [
                   DialogAction(label: l10n.levelRetakeConfirm, onPressed: () {}),
                   DialogAction(label: l10n.levelRetakeKeep, type: BtnType.primaryFill, onPressed: () {}),
+                ],
+              ),
+            );
+          },
+        ),
+    // 페이월 이탈 방지(Figma `paywall_exit_guard` 6192:29141 · Dialog/Confirm-Icon, 09-24).
+    'PaywallExitGuard': () => Builder(
+          builder: (ctx) {
+            final l10n = AppLocalizations.of(ctx);
+            return Center(
+              child: DialogConfirmIcon(
+                icon: AppIcons.duoHeart(),
+                title: l10n.paywallGuardTitle,
+                description: l10n.paywallGuardBody,
+                actions: [
+                  DialogAction(label: l10n.ctaGetPremium, type: BtnType.primaryFill, onPressed: () {}),
+                  DialogAction(label: l10n.ctaMaybeLater, onPressed: () {}),
                 ],
               ),
             );

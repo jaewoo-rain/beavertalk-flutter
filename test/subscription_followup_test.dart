@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:beavertalk/components/organisms/dialog_confirm_icon.dart';
 import 'package:beavertalk/app/routes.dart';
 import 'package:beavertalk/features/auth/domain/entities/member.dart';
 import 'package:beavertalk/features/auth/presentation/providers/auth_providers.dart';
@@ -94,7 +95,12 @@ void main() {
   // ── 2. paywall leave guard ──────────────────────────────────────────────
 
   group('paywall leave guard', () {
+    // Figma `paywall_exit_guard`(Dialog/Confirm-Icon) — 09-24 사장님 「Figma 대로 해」:
+    // 위 「Get Premium」 → 결제 진행 · 아래 「Maybe later」 → 창만 닫기(BACK).
+    late List<String?> pushed;
+
     Future<void> pumpPaywall(WidgetTester tester) async {
+      pushed = [];
       await tester.binding.setSurfaceSize(const Size(375, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
@@ -108,6 +114,11 @@ void main() {
               '/paywall': (_) =>
                   const PaywallScreen(variant: PaywallVariant.pro),
             },
+            onGenerateRoute: (s) {
+              pushed.add(s.name);
+              return MaterialPageRoute<void>(
+                  settings: s, builder: (_) => const SizedBox.shrink());
+            },
           ),
         ),
       );
@@ -116,28 +127,37 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('X shows the retention prompt; "Keep looking" stays',
+    testWidgets('X shows the guard; "Maybe later" only closes it, a second X leaves',
         (tester) async {
       await pumpPaywall(tester);
       final l10n = await l10nOf(tester, PaywallScreen);
       // The close glyph is the lone GestureDetector in the 56px GNB strip.
       await tester.tapAt(const Offset(34, 28));
       await tester.pumpAndSettle();
-      expect(find.text(l10n.paywallLeaveTitle), findsOneWidget);
-      await tester.tap(find.text(l10n.ctaKeepLooking));
+      expect(find.text(l10n.paywallGuardTitle), findsOneWidget);
+      expect(find.text(l10n.paywallGuardBody), findsOneWidget);
+      // 주요 버튼이 위(사장님 의도).
+      expect(tester.getTopLeft(find.text(l10n.ctaGetPremium).last).dy,
+          lessThan(tester.getTopLeft(find.text(l10n.ctaMaybeLater)).dy));
+      await tester.tap(find.text(l10n.ctaMaybeLater));
       await tester.pumpAndSettle();
-      expect(find.byType(PaywallScreen), findsOneWidget);
+      expect(find.text(l10n.paywallGuardTitle), findsNothing);
+      expect(find.byType(PaywallScreen), findsOneWidget, reason: 'Figma BACK — 페이월에 남는다');
+      await tester.tapAt(const Offset(34, 28));
+      await tester.pumpAndSettle();
+      expect(find.byType(PaywallScreen), findsNothing, reason: '두 번째 X 는 묻지 않고 나간다');
     });
 
-    testWidgets('"Leave anyway" pops; a second back needs no prompt',
-        (tester) async {
+    testWidgets('"Get Premium" goes to purchase processing', (tester) async {
       await pumpPaywall(tester);
       final l10n = await l10nOf(tester, PaywallScreen);
       await tester.tapAt(const Offset(34, 28));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.ctaLeaveAnyway));
+      final inDialog = find.descendant(
+          of: find.byType(DialogConfirmIcon), matching: find.text(l10n.ctaGetPremium));
+      await tester.tap(inDialog);
       await tester.pumpAndSettle();
-      expect(find.byType(PaywallScreen), findsNothing);
+      expect(pushed, contains(Routes.purchaseProcessing));
     });
   });
 

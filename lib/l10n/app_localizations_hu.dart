@@ -940,7 +940,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get home => 'Kezdőlap';
 
   @override
-  String get onboardingLevelTestCta => 'Szintfelmérő';
+  String get onboardingLevelTestCta => 'Szintfelmérő kitöltése';
 
   @override
   String get pronunciation => 'Kiejtés';
@@ -2095,17 +2095,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get iapFailBody => 'Újra megpróbálhatod';
 
   @override
-  String get paywallLeaveTitle => 'Ha most kilépsz, nem lesz előfizetésed';
+  String get paywallGuardTitle => 'Ingyenesen is folytathatod';
 
   @override
-  String get paywallLeaveBody =>
-      'Az előnyök közvetlenül a fizetés után nyílnak meg. Bármikor visszatérhetsz a Saját oldalról.';
+  String get paywallGuardBody => 'Továbbra is napi 5 perc hívásod van.';
 
   @override
-  String get ctaKeepLooking => 'Nézem tovább';
-
-  @override
-  String get ctaLeaveAnyway => 'Kilépek mégis';
+  String get ctaMaybeLater => 'Talán később';
 
   @override
   String get iapCharacterSuccessTitle => 'Új barát csatlakozott!';
@@ -2796,7 +2792,10 @@ class AppLocalizationsHu extends AppLocalizations {
   String get wsPracticeSentence => 'Mondat gyakorlása';
 
   @override
-  String get wsStartTest => 'Teszt indítása';
+  String get wsPracticeAgain => 'Még egyszer';
+
+  @override
+  String get wsStartTest => 'Záróteszt kitöltése';
 
   @override
   String get wsThisSentence => 'Ez a mondat';

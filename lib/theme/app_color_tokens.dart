@@ -42,6 +42,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.backgroundNormalDeep,
     required this.backgroundElevatedNormal,
     required this.backgroundElevatedAlternative,
+    required this.backgroundElevatedDialog,
     required this.backgroundSurfaceAlternative,
     required this.backgroundTransparentNormal,
     required this.backgroundTransparentAlternative,
@@ -164,6 +165,10 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// `Background/Elevated/Alternative` — **the card/sheet/dialog surface**.
   final Color backgroundElevatedAlternative;
 
+  /// `Background/Elevated/Dialog` — `Dialog/Confirm-Icon`(`6198:29743`) 카드 면.
+  /// Figma 는 Atomic 별칭 없이 두 모드에 값을 직접 넣었다(Dark #2F3340 · Light #FFFFFF, 09-24 실측).
+  final Color backgroundElevatedDialog;
+
   /// `Background/Surface/Alternative` — the my-page analysis cards.
   ///
   /// Identical to [backgroundNormalAlternative] in Dark (#252932) but **white**
@@ -281,6 +286,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundNormalDeep: Color(0xFF121217),
     backgroundElevatedNormal: Color(0xFF2F3340),
     backgroundElevatedAlternative: Color(0xFF1F222A),
+    backgroundElevatedDialog: Color(0xFF2F3340),
     backgroundSurfaceAlternative: Color(0xFF252932),
     gradientLevelStart: Color(0xFFB0FFE7),
     gradientLevelMid: Color(0xFF00FFB2),
@@ -374,6 +380,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundNormalDeep: Color(0xFFE1E2E4),
     backgroundElevatedNormal: Color(0xFFF7F7FB),
     backgroundElevatedAlternative: Color(0xFFFFFFFF),
+    backgroundElevatedDialog: Color(0xFFFFFFFF),
     backgroundSurfaceAlternative: Color(0xFFFFFFFF),
     gradientLevelStart: Color(0xFF00C88A),
     gradientLevelMid: Color(0xFF008C62),
@@ -462,6 +469,7 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? backgroundNormalDeep,
     Color? backgroundElevatedNormal,
     Color? backgroundElevatedAlternative,
+    Color? backgroundElevatedDialog,
     Color? backgroundSurfaceAlternative,
     Color? gradientLevelStart,
     Color? gradientLevelMid,
@@ -552,6 +560,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
             backgroundElevatedNormal ?? this.backgroundElevatedNormal,
         backgroundElevatedAlternative:
             backgroundElevatedAlternative ?? this.backgroundElevatedAlternative,
+        backgroundElevatedDialog:
+            backgroundElevatedDialog ?? this.backgroundElevatedDialog,
         backgroundSurfaceAlternative:
             backgroundSurfaceAlternative ?? this.backgroundSurfaceAlternative,
         gradientLevelStart: gradientLevelStart ?? this.gradientLevelStart,
@@ -662,6 +672,8 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
           c(backgroundElevatedNormal, other.backgroundElevatedNormal),
       backgroundElevatedAlternative:
           c(backgroundElevatedAlternative, other.backgroundElevatedAlternative),
+      backgroundElevatedDialog:
+          c(backgroundElevatedDialog, other.backgroundElevatedDialog),
       backgroundSurfaceAlternative:
           c(backgroundSurfaceAlternative, other.backgroundSurfaceAlternative),
       gradientLevelStart: c(gradientLevelStart, other.gradientLevelStart),

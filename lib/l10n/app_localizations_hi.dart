@@ -930,7 +930,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get home => 'होम';
 
   @override
-  String get onboardingLevelTestCta => 'स्तर परीक्षा';
+  String get onboardingLevelTestCta => 'स्तर परीक्षा दें';
 
   @override
   String get pronunciation => 'उच्चारण';
@@ -2077,17 +2077,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get iapFailBody => 'आप फिर से कोशिश कर सकते हैं';
 
   @override
-  String get paywallLeaveTitle => 'अभी छोड़ने पर सदस्यता नहीं होगी';
+  String get paywallGuardTitle => 'आप Free इस्तेमाल करते रह सकते हैं';
 
   @override
-  String get paywallLeaveBody =>
-      'भुगतान के तुरंत बाद आपके लाभ खुल जाते हैं। आप मेरा पेज से कभी भी वापस आ सकते हैं।';
+  String get paywallGuardBody => 'आपको अब भी रोज़ 5 मिनट कॉल मिलेंगी।';
 
   @override
-  String get ctaKeepLooking => 'देखते रहें';
-
-  @override
-  String get ctaLeaveAnyway => 'फिर भी छोड़ें';
+  String get ctaMaybeLater => 'शायद बाद में';
 
   @override
   String get iapCharacterSuccessTitle => 'एक नया दोस्त जुड़ गया!';
@@ -2774,7 +2770,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get wsPracticeSentence => 'वाक्य अभ्यास करें';
 
   @override
-  String get wsStartTest => 'टेस्ट शुरू करें';
+  String get wsPracticeAgain => 'एक बार और';
+
+  @override
+  String get wsStartTest => 'अंतिम टेस्ट दें';
 
   @override
   String get wsThisSentence => 'यह वाक्य';

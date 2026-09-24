@@ -940,7 +940,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get home => 'Laman Utama';
 
   @override
-  String get onboardingLevelTestCta => 'Ujian tahap';
+  String get onboardingLevelTestCta => 'Ambil ujian tahap';
 
   @override
   String get pronunciation => 'Sebutan';
@@ -2095,17 +2095,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get iapFailBody => 'Anda boleh cuba lagi';
 
   @override
-  String get paywallLeaveTitle => 'Jika keluar sekarang, anda tidak melanggan';
+  String get paywallGuardTitle => 'Anda boleh terus guna percuma';
 
   @override
-  String get paywallLeaveBody =>
-      'Manfaat anda dibuka sejurus selepas pembayaran. Anda boleh kembali bila-bila masa dari Halaman saya.';
+  String get paywallGuardBody => 'Anda masih dapat 5 minit panggilan sehari.';
 
   @override
-  String get ctaKeepLooking => 'Terus lihat';
-
-  @override
-  String get ctaLeaveAnyway => 'Keluar juga';
+  String get ctaMaybeLater => 'Mungkin nanti';
 
   @override
   String get iapCharacterSuccessTitle => 'Rakan baharu menyertai!';
@@ -2799,7 +2795,10 @@ class AppLocalizationsMs extends AppLocalizations {
   String get wsPracticeSentence => 'Latih ayat';
 
   @override
-  String get wsStartTest => 'Mulakan ujian';
+  String get wsPracticeAgain => 'Sekali lagi';
+
+  @override
+  String get wsStartTest => 'Ambil ujian akhir';
 
   @override
   String get wsThisSentence => 'Ayat ini';

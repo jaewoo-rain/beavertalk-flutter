@@ -93,6 +93,7 @@ class LearnSentenceScreen extends ConsumerWidget {
           captions: const [],
           header: _SentenceHeader(sentence: lesson.sentence),
           doneLabel: l10n.wsStartTest,
+          againLabel: l10n.wsPracticeAgain,
           onDone: () => Navigator.of(context).pushNamed(
             Routes.weakSoundTest,
             arguments: key,

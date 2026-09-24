@@ -930,7 +930,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get home => 'Ana Sayfa';
 
   @override
-  String get onboardingLevelTestCta => 'Seviye testi';
+  String get onboardingLevelTestCta => 'Seviye testine gir';
 
   @override
   String get pronunciation => 'Telaffuz';
@@ -2075,17 +2075,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get iapFailBody => 'Tekrar deneyebilirsin';
 
   @override
-  String get paywallLeaveTitle => 'Şimdi çıkarsan abone olamazsın';
+  String get paywallGuardTitle => 'Free\'yi kullanmaya devam edebilirsin';
 
   @override
-  String get paywallLeaveBody =>
-      'Avantajların ödemeden hemen sonra açılır. Sayfam üzerinden istediğin zaman geri dönebilirsin.';
+  String get paywallGuardBody => 'Günde 5 dakika görüşme hakkın devam ediyor.';
 
   @override
-  String get ctaKeepLooking => 'Bakmaya devam et';
-
-  @override
-  String get ctaLeaveAnyway => 'Yine de çık';
+  String get ctaMaybeLater => 'Belki sonra';
 
   @override
   String get iapCharacterSuccessTitle => 'Yeni bir arkadaş katıldı!';
@@ -2772,7 +2768,10 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wsPracticeSentence => 'Cümleyi çalış';
 
   @override
-  String get wsStartTest => 'Testi başlat';
+  String get wsPracticeAgain => 'Bir kez daha';
+
+  @override
+  String get wsStartTest => 'Son teste gir';
 
   @override
   String get wsThisSentence => 'Bu cümle';

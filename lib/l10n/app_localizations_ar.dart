@@ -929,7 +929,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get home => 'الرئيسية';
 
   @override
-  String get onboardingLevelTestCta => 'اختبار المستوى';
+  String get onboardingLevelTestCta => 'خوض اختبار المستوى';
 
   @override
   String get pronunciation => 'النطق';
@@ -2067,17 +2067,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get iapFailBody => 'يمكنك المحاولة مرة أخرى';
 
   @override
-  String get paywallLeaveTitle => 'إذا غادرت الآن، فلن تكون مشتركًا';
+  String get paywallGuardTitle => 'يمكنك الاستمرار في استخدام Free';
 
   @override
-  String get paywallLeaveBody =>
-      'تُفتح مزاياك فور إتمام الدفع. يمكنك العودة في أي وقت من صفحتي.';
+  String get paywallGuardBody => 'لا تزال لديك 5 دقائق من المكالمات يوميًا.';
 
   @override
-  String get ctaKeepLooking => 'متابعة التصفح';
-
-  @override
-  String get ctaLeaveAnyway => 'المغادرة على أي حال';
+  String get ctaMaybeLater => 'ربما لاحقًا';
 
   @override
   String get iapCharacterSuccessTitle => 'انضم إليك صديق جديد!';
@@ -2755,7 +2751,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wsPracticeSentence => 'تدرّب على الجملة';
 
   @override
-  String get wsStartTest => 'ابدأ الاختبار';
+  String get wsPracticeAgain => 'مرة أخرى';
+
+  @override
+  String get wsStartTest => 'خوض الاختبار النهائي';
 
   @override
   String get wsThisSentence => 'هذه الجملة';

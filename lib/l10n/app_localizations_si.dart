@@ -932,7 +932,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get home => 'මුල් පිටුව';
 
   @override
-  String get onboardingLevelTestCta => 'මට්ටම් පරීක්ෂණය';
+  String get onboardingLevelTestCta => 'මට්ටම් පරීක්ෂණය කරන්න';
 
   @override
   String get pronunciation => 'උච්චාරණය';
@@ -2076,17 +2076,13 @@ class AppLocalizationsSi extends AppLocalizations {
   String get iapFailBody => 'ඔබට නැවත උත්සාහ කළ හැක';
 
   @override
-  String get paywallLeaveTitle => 'දැන් පිටව ගියොත් දායක නොවේ';
+  String get paywallGuardTitle => 'ඔබට Free දිගටම භාවිත කළ හැක';
 
   @override
-  String get paywallLeaveBody =>
-      'ගෙවීමෙන් පසු වහාම ප්‍රතිලාභ විවෘත වේ. මගේ පිටුවෙන් ඕනෑම වේලාවක නැවත පැමිණිය හැක.';
+  String get paywallGuardBody => 'දිනකට ඇමතුම් මිනිත්තු 5 තවමත් ලැබේ.';
 
   @override
-  String get ctaKeepLooking => 'දිගටම බලන්න';
-
-  @override
-  String get ctaLeaveAnyway => 'කෙසේ වුවත් යන්න';
+  String get ctaMaybeLater => 'පසුව';
 
   @override
   String get iapCharacterSuccessTitle => 'අලුත් මිතුරෙක් එක්වුණා!';
@@ -2765,7 +2761,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get wsPracticeSentence => 'වාක්‍යය පුහුණු වන්න';
 
   @override
-  String get wsStartTest => 'ඇගයීම අරඹන්න';
+  String get wsPracticeAgain => 'තවත් වරක්';
+
+  @override
+  String get wsStartTest => 'අවසන් ඇගයීම කරන්න';
 
   @override
   String get wsThisSentence => 'මෙම වාක්‍යය';

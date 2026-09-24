@@ -907,7 +907,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get home => '홈';
 
   @override
-  String get onboardingLevelTestCta => '레벨 테스트';
+  String get onboardingLevelTestCta => '레벨 테스트하기';
 
   @override
   String get pronunciation => '발음';
@@ -2021,16 +2021,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get iapFailBody => '다시 시도할 수 있어요';
 
   @override
-  String get paywallLeaveTitle => '지금 나가면 구독할 수 없어요';
+  String get paywallGuardTitle => '무료로 계속 쓸 수 있어요';
 
   @override
-  String get paywallLeaveBody => '혜택은 결제 직후 바로 열려요. 마이페이지에서 언제든 다시 올 수 있어요.';
+  String get paywallGuardBody => '하루 5분 통화는 그대로예요.';
 
   @override
-  String get ctaKeepLooking => '계속 볼게요';
-
-  @override
-  String get ctaLeaveAnyway => '그래도 나갈래요';
+  String get ctaMaybeLater => '나중에 할게요';
 
   @override
   String get iapCharacterSuccessTitle => '새 친구가 함께해요!';
@@ -2694,7 +2691,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get wsPracticeSentence => '문장 연습하기';
 
   @override
-  String get wsStartTest => '평가 시작하기';
+  String get wsPracticeAgain => '한 번 더 하기';
+
+  @override
+  String get wsStartTest => '최종 평가 하기';
 
   @override
   String get wsThisSentence => '이번 문장';

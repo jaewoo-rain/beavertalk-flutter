@@ -939,7 +939,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get home => 'Главная';
 
   @override
-  String get onboardingLevelTestCta => 'Тест уровня';
+  String get onboardingLevelTestCta => 'Пройти тест уровня';
 
   @override
   String get pronunciation => 'Произношение';
@@ -2088,17 +2088,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get iapFailBody => 'Вы можете попробовать снова';
 
   @override
-  String get paywallLeaveTitle => 'Если уйдёте сейчас, подписка не оформится';
+  String get paywallGuardTitle => 'Можно и дальше пользоваться Free';
 
   @override
-  String get paywallLeaveBody =>
-      'Преимущества открываются сразу после оплаты. Вернуться можно в любой момент со страницы Моя страница.';
+  String get paywallGuardBody => 'У вас по-прежнему 5 минут звонков в день.';
 
   @override
-  String get ctaKeepLooking => 'Продолжить просмотр';
-
-  @override
-  String get ctaLeaveAnyway => 'Всё равно уйти';
+  String get ctaMaybeLater => 'Может, позже';
 
   @override
   String get iapCharacterSuccessTitle => 'К вам присоединился новый друг!';
@@ -2790,7 +2786,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wsPracticeSentence => 'Тренировать фразу';
 
   @override
-  String get wsStartTest => 'Начать тест';
+  String get wsPracticeAgain => 'Ещё раз';
+
+  @override
+  String get wsStartTest => 'Пройти финальный тест';
 
   @override
   String get wsThisSentence => 'Эта фраза';

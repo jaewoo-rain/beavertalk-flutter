@@ -52,6 +52,10 @@ abstract final class AppIcons {
   /// `duo-homework` (`6246:1532`) — 홈 숙제 배너 앞 아이콘.
   static Widget duoHomework({double size = 24}) => _duo('duo-homework', size);
 
+  /// `duo-heart` (`6195:29828`) — 페이월 이탈 방지 창(`Dialog/Confirm-Icon`) 머리 아이콘, 화면에서 48.
+  /// SVG 는 Figma Size=24 를 그대로 내보낸 것(app designer 세션, 09-24).
+  static Widget duoHeart({double size = 48}) => _duo('duo-heart', size);
+
   /// Premium 혜택 줄 아이콘 4종 — Figma `Paywall/Benefit`(`6198:1999`) 의 20 크기.
   /// `duo-video`(`6195:1517`) · `duo-chart`(`6195:1553`) · `duo-target`(`6195:1582`) ·
   /// `duo-bubble`(`6195:29871`).

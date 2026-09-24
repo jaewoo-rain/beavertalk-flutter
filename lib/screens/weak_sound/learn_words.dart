@@ -10,8 +10,8 @@ import '../../l10n/app_localizations.dart';
 /// 2단계 · 단어 연습 — Figma `04~08 · learn/2_words`, 규칙은 R2.
 ///
 /// 단어 4개를 자동으로 재생하고 따라 말할 틈을 준다. **마이크도 점수도 없다.**
-/// 푸터 버튼을 두지 않는다 — 끝나면 본문 안에서 「문장 연습하기」가 나타난다. 끝나지도
-/// 않았는데 아래에 다음 버튼이 떠 있으면 건너뛰라는 신호로 읽힌다.
+/// 푸터 버튼을 두지 않는다 — 끝나면 본문 안에서 「한 번 더 하기」 · 「문장 연습하기」가 나타난다
+/// (Figma 08). 끝나지도 않았는데 아래에 다음 버튼이 떠 있으면 건너뛰라는 신호로 읽힌다.
 class LearnWordsScreen extends ConsumerWidget {
   const LearnWordsScreen({super.key, this.soundKey});
 
@@ -33,6 +33,7 @@ class LearnWordsScreen extends ConsumerWidget {
         pronunciations: [for (final w in lesson.words) w.pronunciation],
         captions: [for (final w in lesson.words) w.meaningEn],
         doneLabel: l10n.wsPracticeSentence,
+        againLabel: l10n.wsPracticeAgain,
         onDone: () => Navigator.of(context).pushNamed(
           Routes.weakSoundSentence,
           arguments: key,

@@ -932,7 +932,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get home => 'Trang chủ';
 
   @override
-  String get onboardingLevelTestCta => 'Bài kiểm tra trình độ';
+  String get onboardingLevelTestCta => 'Làm bài kiểm tra trình độ';
 
   @override
   String get pronunciation => 'Phát âm';
@@ -2080,17 +2080,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get iapFailBody => 'Bạn có thể thử lại';
 
   @override
-  String get paywallLeaveTitle => 'Nếu rời đi bây giờ, bạn sẽ chưa đăng ký';
+  String get paywallGuardTitle => 'Bạn vẫn có thể tiếp tục dùng miễn phí';
 
   @override
-  String get paywallLeaveBody =>
-      'Quyền lợi mở khóa ngay sau khi thanh toán. Bạn có thể quay lại bất cứ lúc nào từ Trang của tôi.';
+  String get paywallGuardBody => 'Bạn vẫn có 5 phút gọi mỗi ngày.';
 
   @override
-  String get ctaKeepLooking => 'Xem tiếp';
-
-  @override
-  String get ctaLeaveAnyway => 'Vẫn rời đi';
+  String get ctaMaybeLater => 'Để sau';
 
   @override
   String get iapCharacterSuccessTitle => 'Một người bạn mới đã tham gia!';
@@ -2776,7 +2772,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get wsPracticeSentence => 'Luyện câu';
 
   @override
-  String get wsStartTest => 'Bắt đầu kiểm tra';
+  String get wsPracticeAgain => 'Làm lại lần nữa';
+
+  @override
+  String get wsStartTest => 'Làm bài kiểm tra cuối';
 
   @override
   String get wsThisSentence => 'Câu này';

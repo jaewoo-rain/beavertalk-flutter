@@ -934,7 +934,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get home => 'Beranda';
 
   @override
-  String get onboardingLevelTestCta => 'Tes level';
+  String get onboardingLevelTestCta => 'Ikuti tes level';
 
   @override
   String get pronunciation => 'Pengucapan';
@@ -2083,18 +2083,13 @@ class AppLocalizationsId extends AppLocalizations {
   String get iapFailBody => 'Kamu bisa mencoba lagi';
 
   @override
-  String get paywallLeaveTitle =>
-      'Kalau keluar sekarang, kamu belum berlangganan';
+  String get paywallGuardTitle => 'Kamu tetap bisa lanjut gratis';
 
   @override
-  String get paywallLeaveBody =>
-      'Manfaatmu terbuka langsung setelah pembayaran. Kamu bisa kembali kapan saja dari Halaman saya.';
+  String get paywallGuardBody => 'Kamu tetap dapat 5 menit panggilan per hari.';
 
   @override
-  String get ctaKeepLooking => 'Lanjut lihat';
-
-  @override
-  String get ctaLeaveAnyway => 'Tetap keluar';
+  String get ctaMaybeLater => 'Nanti saja';
 
   @override
   String get iapCharacterSuccessTitle => 'Teman baru bergabung!';
@@ -2782,7 +2777,10 @@ class AppLocalizationsId extends AppLocalizations {
   String get wsPracticeSentence => 'Latih kalimat';
 
   @override
-  String get wsStartTest => 'Mulai tes';
+  String get wsPracticeAgain => 'Sekali lagi';
+
+  @override
+  String get wsStartTest => 'Ikuti tes akhir';
 
   @override
   String get wsThisSentence => 'Kalimat ini';

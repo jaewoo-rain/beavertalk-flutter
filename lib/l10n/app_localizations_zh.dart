@@ -904,7 +904,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get home => '首页';
 
   @override
-  String get onboardingLevelTestCta => '等级测试';
+  String get onboardingLevelTestCta => '参加等级测试';
 
   @override
   String get pronunciation => '发音';
@@ -2016,16 +2016,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get iapFailBody => '你可以再试一次';
 
   @override
-  String get paywallLeaveTitle => '现在离开将无法完成订阅';
+  String get paywallGuardTitle => '你可以继续免费使用';
 
   @override
-  String get paywallLeaveBody => '权益在付款后立即解锁。你随时可以从我的页面回来。';
+  String get paywallGuardBody => '每天 5 分钟通话照常保留。';
 
   @override
-  String get ctaKeepLooking => '继续查看';
-
-  @override
-  String get ctaLeaveAnyway => '仍然离开';
+  String get ctaMaybeLater => '以后再说';
 
   @override
   String get iapCharacterSuccessTitle => '新伙伴加入了!';
@@ -2689,7 +2686,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wsPracticeSentence => '练习句子';
 
   @override
-  String get wsStartTest => '开始测评';
+  String get wsPracticeAgain => '再来一次';
+
+  @override
+  String get wsStartTest => '参加最终测评';
 
   @override
   String get wsThisSentence => '这个句子';
