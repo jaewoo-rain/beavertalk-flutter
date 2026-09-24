@@ -402,7 +402,8 @@ class LearningCallMainScreen extends ConsumerWidget {
                     _Cell.fixed('${s.sessions[i].sentences}', 40,
                         style: _rowValue(context)),
                     // 「점수」 열은 13 Bold · Label/Strong(Figma 최근 세션 표 · 09-24 figma-code-diff).
-                    _Cell.fixed('${s.sessions[i].score}', 40,
+                    // 점수 없음(null)은 「—」 — 0 이 아니다(서버 1c83fd9 🔴2 · delta 와 같은 규칙).
+                    _Cell.fixed(s.sessions[i].score == null ? '—' : '${s.sessions[i].score}', 40,
                         style: _rowEmphasis(context.c.labelStrong)),
                     _Cell.fixed(
                       s.sessions[i].delta == null
@@ -628,7 +629,7 @@ class _TrendChart extends StatelessWidget {
   static const double _max = 100;
 
   /// 위→아래 눈금 셋.
-  List<int> get _ticks => sessions.any((s) => s.score < 60)
+  List<int> get _ticks => sessions.any((s) => s.score != null && s.score! < 60)
       ? const [100, 50, 0]
       : const [100, 80, 60];
 
@@ -650,13 +651,14 @@ class _TrendChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (sessions.isEmpty) return const SizedBox.shrink();
-    // 점수 0(미복습/집계없음) 세션은 평균에서 제외한다.
-    final scored = sessions.where((s) => s.score > 0).toList();
+    // 점수 없는(null) 세션은 평균에서 뺀다. 0 은 진짜 0점이라 넣는다 — 예전 서버는 없음을 0 으로
+    // 보내서 0 을 빼는 규칙이었다(서버 1c83fd9 🔴2).
+    final scored = sessions.map((s) => s.score).whereType<int>().toList();
     // 평균은 채점 세션이 **둘 이상**일 때만 — Figma `__first`(4849:8421, 세션 1개)에 평균선이
     // 없다. 채점 세션이 없을 때 「평균 0」을 그리면 없는 값을 0으로 적는 셈이다(09-24).
     final avg = scored.length < 2
         ? null
-        : (scored.fold<int>(0, (a, b) => a + b.score) / scored.length).round();
+        : (scored.fold<int>(0, (a, b) => a + b) / scored.length).round();
     return SizedBox(
       height: _valueRow + _plotHeight + _tickRow,
       child: Row(
@@ -799,7 +801,8 @@ class _TrendChart extends StatelessWidget {
               children: [
                 FittedBox(
                   child: Text(
-                    '${p.score}',
+                    // 점수 없음은 「—」 · 막대 없음.
+                    p.score == null ? '—' : '${p.score}',
                     style: isToday
                         ? AppType.caption2.b.copyWith(color: context.c.labelStrong)
                         : AppType.caption2.m
@@ -814,7 +817,7 @@ class _TrendChart extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 34),
                   child: Container(
                     width: 34,
-                    height: _plotHeight - _y(p.score),
+                    height: p.score == null ? 0 : _plotHeight - _y(p.score!),
                     decoration: BoxDecoration(
                       // Today is the point of the chart; the rest are context.
                       color: isToday

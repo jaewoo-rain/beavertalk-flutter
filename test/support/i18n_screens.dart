@@ -655,7 +655,7 @@ Widget _alarmSheet(BuildContext ctx, {bool repeat = false}) {
 /// 긴 소리 이름, 세션 5개. [low] 면 60 미만 · 0점(미채점) 세션이 섞인다.
 Widget _learningCallMain({required bool low}) {
   final now = DateTime.now();
-  SessionPoint sp(int ago, int score, int sentences, int? delta) {
+  SessionPoint sp(int ago, int? score, int sentences, int? delta) {
     final d = now.subtract(Duration(days: ago));
     return SessionPoint(
       label: '${d.month}/${d.day}',
@@ -693,7 +693,8 @@ Widget _learningCallMain({required bool low}) {
       SentenceScore(sentence: '생일 축하해요!', pronunciation: 97, fluency: 95, rhythm: 98),
     ],
     sessions: low
-        ? [sp(4, 72, 5, null), sp(3, 0, 0, -72), sp(2, 38, 3, 38), sp(1, 64, 4, 26), sp(0, 2, 1, -62)]
+        // 점수 없는 통화(null · 「—」)가 끼어도 비교는 앞의 채점 통화와 한다(72 → 없음 → 38 = −34).
+        ? [sp(4, 72, 5, null), sp(3, null, 0, null), sp(2, 38, 3, -34), sp(1, 64, 4, 26), sp(0, 2, 1, -62)]
         : [sp(4, 80, 5, null), sp(3, 84, 6, 4), sp(2, 91, 4, 7), sp(1, 88, 5, -3), sp(0, 97, 6, 9)],
   );
   return ProviderScope(

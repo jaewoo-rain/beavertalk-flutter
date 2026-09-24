@@ -36,16 +36,23 @@ class NormalcallRemoteDataSource {
   /// 그 경우를 null 로 눕힌다 — 이어가기를 못 할 뿐 통화를 막을 일은 아니다.
   ///
   /// [planOverride] 가 있으면 `?plan_override=` 를 붙인다 — 서버(admin 만)가 그 플랜의
-  /// 조각 상한으로 `can_resume`·`max_fragments` 를 답한다. 없으면 쿼리 자체가 빠진다.
+  /// 조각 상한으로 `can_resume`·`max_fragments` 를 답한다.
+  ///
+  /// [tzParams]([DeviceTimezone.params] — `tz` · `tz_offset_min`)도 싣는다. 서버는 하루 예산을
+  /// 이 시간대의 날짜로 센다 — 안 보내면 UTC 로 세서 한국 자정 전후에 「이어갈 수 없다」나
+  /// `max_fragments` 가 최대 9시간 어긋난다(서버 1c83fd9 프론트 조치 목록 🔴1 · 달력 · WS start 와 같은 값).
   Future<Map<String, dynamic>?> getResumeStatus(
     int callId, {
     String? planOverride,
+    Map<String, Object> tzParams = const {},
   }) async {
+    final query = <String, dynamic>{
+      'plan_override': ?planOverride,
+      ...tzParams,
+    };
     final res = await _dio.get<Map<String, dynamic>>(
       '/calls/$callId/resume-status',
-      queryParameters: planOverride == null
-          ? null
-          : <String, dynamic>{'plan_override': planOverride},
+      queryParameters: query.isEmpty ? null : query,
     );
     return res.data;
   }

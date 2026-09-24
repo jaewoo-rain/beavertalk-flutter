@@ -131,13 +131,27 @@ void main() {
       expect(adapter.last!.queryParameters, {'plan_override': 'premium'});
     });
 
-    test('⭐ override 가 없으면 쿼리 자체가 없다 — 제품 통화는 종전 그대로', () async {
+    test('⭐ override 가 없으면 plan_override 키가 없다 — 제품 통화는 종전 그대로', () async {
       final adapter = _CaptureAdapter();
       final dio = Dio(BaseOptions(baseUrl: 'https://h.run.app/api/v1'))
         ..httpClientAdapter = adapter;
       await NormalcallRemoteDataSource(dio).getResumeStatus(1182);
 
       expect(adapter.last!.queryParameters, isEmpty);
+    });
+
+    test('⭐ 시간대(tz · tz_offset_min)를 싣는다 — 서버가 하루 예산을 현지 날짜로 센다(1c83fd9 🔴1)', () async {
+      final adapter = _CaptureAdapter();
+      final dio = Dio(BaseOptions(baseUrl: 'https://h.run.app/api/v1'))
+        ..httpClientAdapter = adapter;
+      await NormalcallRemoteDataSource(dio).getResumeStatus(
+        1182,
+        planOverride: 'premium',
+        tzParams: const {'tz': 'Asia/Seoul', 'tz_offset_min': 540},
+      );
+
+      expect(adapter.last!.queryParameters,
+          {'plan_override': 'premium', 'tz': 'Asia/Seoul', 'tz_offset_min': 540});
     });
   });
 }

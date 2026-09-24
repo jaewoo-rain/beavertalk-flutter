@@ -88,7 +88,9 @@ class SessionPoint {
         label: j['label'] as String? ?? '',
         date: j['date'] as String? ?? '',
         sentences: _asInt(j['sentences']),
-        score: _asInt(j['score']),
+        // null = 그 통화에서 발음 챌린지를 안 했다(점수 없음) · 0 = 진짜 0점. 예전 서버는 없음을
+        // 0 으로 뭉개 보내 「96점 하락」 같은 가짜 하락이 생겼다(서버 1c83fd9 프론트 조치 🔴2).
+        score: j['score'] == null ? null : _asInt(j['score']),
         delta: j['delta'] == null ? null : _asInt(j['delta']),
         // 서버 요청(09-24 `_shared/비버톡_서버추가요청_앱_2026-09-24.md` §1) — 오기 전에는 null.
         callDate: DateTime.tryParse(j['call_date'] as String? ?? '')?.toLocal(),
@@ -103,8 +105,9 @@ class SessionPoint {
   /// How many sentences that session covered.
   final int sentences;
 
-  /// 0–100 session score.
-  final int score;
+  /// 0–100 session score — **null 이면 점수 없음**(발음 챌린지를 안 한 통화). 표에 「—」,
+  /// 차트에 막대 없음, 평균·눈금 판정에서 뺀다. [delta] 와 같은 규칙이다.
+  final int? score;
 
   /// Change from the session before, or null for the earliest one on record —
   /// which renders as `—`, not `0`: "no previous session" is not "no change".

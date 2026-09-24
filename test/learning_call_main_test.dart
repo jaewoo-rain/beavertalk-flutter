@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final now = DateTime.now();
 
-  SessionPoint sp(int ago, int score, {bool withDate = true, String label = '', String date = ''}) {
+  SessionPoint sp(int ago, int? score, {bool withDate = true, String label = '', String date = ''}) {
     final d = now.subtract(Duration(days: ago));
     return SessionPoint(
       label: label.isEmpty ? '${d.month}/${d.day}' : label,
@@ -93,8 +93,17 @@ void main() {
   });
 
   testWidgets('채점 세션이 2개 미만이면 평균선 없음 — 「평균 0」 을 그리지 않는다', (tester) async {
-    await pump(tester, summary([sp(1, 0), sp(0, 90)]));
+    await pump(tester, summary([sp(1, null), sp(0, 90)]));
     expect(find.textContaining('평균'), findsNothing);
+  });
+
+  testWidgets('점수 없음(null)은 표 · 차트 모두 「—」 · 0 은 진짜 0점(서버 1c83fd9)', (tester) async {
+    await pump(tester, summary([sp(2, 0), sp(1, null), sp(0, 90)]));
+    // 차트 값 줄 + 표 점수 칸 = 「—」 둘(없음 세션 하나). delta 없음의 「—」 도 있어 2개 이상.
+    expect(find.text('—'), findsAtLeastNWidgets(2));
+    // 0 은 진짜 0점 — 눈금이 0/50/100 이 되고 평균(0·90 → 45)에 들어간다.
+    expect(find.text('50'), findsOneWidget);
+    expect(find.textContaining('평균 45'), findsOneWidget);
   });
 
   testWidgets('평균 글자는 평균선 위(Figma 「평균 88」)', (tester) async {
