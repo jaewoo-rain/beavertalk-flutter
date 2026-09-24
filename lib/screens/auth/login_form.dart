@@ -7,6 +7,7 @@ import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/atoms/checkbox.dart';
 import '../../components/icons/app_icons.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/molecules/input_field.dart';
 import '../../components/molecules/password_eye_toggle.dart';
@@ -126,59 +127,50 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     Padding(
                       padding:
                           const EdgeInsets.symmetric(horizontal: AppSpacing.s8),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // DS checkbox box only; label rendered externally so it
-                          // keeps the Figma grey (AppCheckbox forces a white label).
-                          // Flexible: with spaceBetween, this Row has no flex of its
-                          // own, so a long localized "Remember me" label could
-                          // otherwise overflow against the forgot-password link.
-                          Flexible(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                AppCheckbox(
-                                  value: _saveId,
-                                  onChanged: (v) => setState(() => _saveId = v),
-                                  size: AppCheckboxSize.size20,
-                                ),
-                                const SizedBox(width: AppSpacing.s8),
-                                Flexible(
-                                  child: GestureDetector(
-                                    onTap: () =>
-                                        setState(() => _saveId = !_saveId),
-                                    child: Text(
-                                      l10n.loginRememberMe,
-                                      // 조작 라벨은 자르지 않는다 — 무엇을
-                                      // 켜고 끄는지 모르게 된다. 한 줄에서
-                                      // 「비밀번호 찾기」와 폭을 다투는 자리라
-                                      // 로케일이 길면 바로 잘렸다(전수감사).
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: AppType.label1.r.copyWith(
-                                          color: context.c.labelNormal),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                      // 「아이디 저장」 · 「비밀번호 찾기」 — `LabelValueRow`(09-24). 옛 `Flexible` 둘은
+                      // 폭을 반반으로 갈라, 짧은 쪽이 남긴 폭을 긴 번역이 못 쓰고 일찍 줄을 바꿨다.
+                      child: LabelValueRow(
+                        // DS checkbox box only; label rendered externally so it
+                        // keeps the Figma grey (AppCheckbox forces a white label).
+                        label: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            AppCheckbox(
+                              value: _saveId,
+                              onChanged: (v) => setState(() => _saveId = v),
+                              size: AppCheckboxSize.size20,
                             ),
-                          ),
-                          const SizedBox(width: AppSpacing.s8),
-                          Flexible(
-                            child: GestureDetector(
-                              onTap: _findPassword,
-                              child: Text(
-                                l10n.loginForgotPassword,
-                                textAlign: TextAlign.right,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: AppType.label1.r
-                                    .copyWith(color: context.c.labelNormal),
+                            const SizedBox(width: AppSpacing.s8),
+                            Flexible(
+                              child: GestureDetector(
+                                onTap: () =>
+                                    setState(() => _saveId = !_saveId),
+                                child: Text(
+                                  l10n.loginRememberMe,
+                                  // 조작 라벨은 자르지 않는다 — 무엇을
+                                  // 켜고 끄는지 모르게 된다. 한 줄에서
+                                  // 「비밀번호 찾기」와 폭을 다투는 자리라
+                                  // 로케일이 길면 바로 잘렸다(전수감사).
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: AppType.label1.r.copyWith(
+                                      color: context.c.labelNormal),
+                                ),
                               ),
                             ),
+                          ],
+                        ),
+                        value: GestureDetector(
+                          onTap: _findPassword,
+                          child: Text(
+                            l10n.loginForgotPassword,
+                            textAlign: TextAlign.right,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: AppType.label1.r
+                                .copyWith(color: context.c.labelNormal),
                           ),
-                        ],
+                        ),
                       ),
                     ),
                     // ── Inline error (login failure) ────────────────────────

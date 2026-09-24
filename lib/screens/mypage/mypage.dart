@@ -12,6 +12,7 @@ import '../../features/normalcall/presentation/build_flags.dart';
 import '../../features/normalcall/presentation/cascade_auto_talk.dart';
 import '../../features/normalcall/presentation/cascade_experiment.dart';
 import '../../components/atoms/button.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/atoms/progress_bar.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
@@ -766,33 +767,24 @@ class MyPageScreen extends ConsumerWidget {
                 ),
               ]
             : [
-          // Both sides are flexible: at 320dp "Stage 7" + "Among all learners"
-          // exceeds the 240pt card interior in the wordier locales. The stage
-          // ellipsizes (it is short and numeric) and the caption wraps rather
-          // than being cut, so no locale loses the sentence.
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Flexible(
-                // 레벨 미확정(레벨테스트 전)이면 숫자를 지어내지 않고 "—" 를 둔다.
-                // 예전엔 목업 값 7 이 그대로 떠서 테스트도 안 본 사용자에게
-                // "7단계" 가 보였다.
-                child: Text(
-                  level?.level == null
-                      ? '—'
-                      : l10n.levelStage(level!.level!),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      AppType.title2.b.copyWith(color: context.c.labelStrong),
-                ),
-              ),
-              const SizedBox(width: AppSpacing.s8),
-              // 상위 % 는 값이 있을 때만 — 없는 백분위를 0% 로 그리면 거짓이 된다.
-              if (level?.topPercent != null)
-                Flexible(
-                  child: Column(
+          // 레벨 · 상위 % — `LabelValueRow`(09-24). 320dp 에서 "Stage 7" + "Among all learners" 가
+          // 카드 안쪽 240 을 넘는 긴 언어가 있다. 옛 `Flexible` 둘은 폭을 반반으로 갈라 짧은 쪽이
+          // 남긴 폭을 긴 쪽이 못 썼다. 이제 필요 폭대로 나누고, 넘치면 긴 쪽이 줄을 바꾼다.
+          // 레벨은 짧은 숫자라 한 줄에서 자르고, 비율 설명은 자르지 않고 줄을 바꾼다.
+          LabelValueRow(
+            // 레벨 미확정(레벨테스트 전)이면 숫자를 지어내지 않고 "—" 를 둔다.
+            // 예전엔 목업 값 7 이 그대로 떠서 테스트도 안 본 사용자에게
+            // "7단계" 가 보였다.
+            label: Text(
+              level?.level == null ? '—' : l10n.levelStage(level!.level!),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppType.title2.b.copyWith(color: context.c.labelStrong),
+            ),
+            // 상위 % 는 값이 있을 때만 — 없는 백분위를 0% 로 그리면 거짓이 된다.
+            value: level?.topPercent == null
+                ? const SizedBox.shrink()
+                : Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
@@ -813,8 +805,6 @@ class MyPageScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
-                ),
-            ],
           ),
           LevelProgress(
             // level=null 이면 마커를 숨긴다(컴포넌트 계약) — 레일만 보인다.

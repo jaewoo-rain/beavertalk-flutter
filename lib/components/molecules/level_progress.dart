@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
+import '../layout/need_based_rows.dart';
 import '../../theme/app_typography.dart';
 
 /// LevelProgress — the 종합 레벨 band on my page (Figma `Group 231`, inside
@@ -96,37 +97,29 @@ class LevelProgress extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: _gap),
-                    // Both ends are flexible: "Stage 1"/"Stage 13" is short in
-                    // English but runs long in ru/mn/tr, where the pair
-                    // overflows a 240pt card interior at 320dp.
+                    // 양 끝 라벨 — "Stage 1"/"Stage 13" 은 영어로는 짧지만 ru/mn/tr 에서
+                    // 길어져 320dp 카드 안쪽 240 을 넘는다. `LabelValueRow` 가 필요 폭대로
+                    // 나눈다(옛 `Flexible` 둘은 반반으로 갈라 한쪽이 일찍 줄을 바꿨다, 09-24).
                     SizedBox(
                       height: _labelHeight,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          // 레벨명은 식별자다 — 둘 다 한 줄로 자르면 어느 레벨에서
-                          // 어느 레벨로 가는지 모른다. 두 줄까지 쓴다.
-                          Flexible(
-                            child: Text(
-                              startLabel,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: AppType.label1.r
-                                  .copyWith(color: context.c.labelNeutral),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Flexible(
-                            child: Text(
-                              endLabel,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              textAlign: TextAlign.end,
-                              style: AppType.label1.r
-                                  .copyWith(color: context.c.labelNeutral),
-                            ),
-                          ),
-                        ],
+                      child: LabelValueRow(
+                        // 레벨명은 식별자다 — 둘 다 한 줄로 자르면 어느 레벨에서
+                        // 어느 레벨로 가는지 모른다. 두 줄까지 쓴다.
+                        label: Text(
+                          startLabel,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: AppType.label1.r
+                              .copyWith(color: context.c.labelNeutral),
+                        ),
+                        value: Text(
+                          endLabel,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.end,
+                          style: AppType.label1.r
+                              .copyWith(color: context.c.labelNeutral),
+                        ),
                       ),
                     ),
                   ],

@@ -79,9 +79,10 @@ class SessionPoint {
     required this.sentences,
     required this.score,
     this.delta,
+    this.callDate,
   });
 
-  /// From `{label, date, sentences, score, delta}` — label/date are
+  /// From `{label, date, sentences, score, delta, call_date?}` — label/date are
   /// server-formatted strings; delta is null for the earliest session.
   factory SessionPoint.fromJson(Map<String, dynamic> j) => SessionPoint(
         label: j['label'] as String? ?? '',
@@ -89,6 +90,8 @@ class SessionPoint {
         sentences: _asInt(j['sentences']),
         score: _asInt(j['score']),
         delta: j['delta'] == null ? null : _asInt(j['delta']),
+        // 서버 요청(09-24 `_shared/비버톡_서버추가요청_앱_2026-09-24.md` §1) — 오기 전에는 null.
+        callDate: DateTime.tryParse(j['call_date'] as String? ?? '')?.toLocal(),
       );
 
   /// The chart's x-axis tick, e.g. `12/21` — or `오늘` for the latest.
@@ -106,6 +109,16 @@ class SessionPoint {
   /// Change from the session before, or null for the earliest one on record —
   /// which renders as `—`, not `0`: "no previous session" is not "no change".
   final int? delta;
+
+  /// 세션 시각(현지). 있으면 앱이 「오늘」 판정과 날짜 표기를 한다.
+  ///
+  /// [label]·[date] 는 서버가 **UTC 날짜**로 만든 문자열이라 한국 시각 00~09시 세션이
+  /// 전날로 찍히고, 「오늘」 은 한국어로 고정이다(09-24 실기기 「9/23 (오늘)」).
+  final DateTime? callDate;
+
+  /// 서버가 이 세션을 「오늘」로 판정했나 — [callDate] 가 없을 때만 쓰는 대체 신호.
+  /// 서버 `_sessions_from_history` 가 오늘이면 [label] 을 한국어 「오늘」로 보낸다(UTC 기준).
+  bool get serverSaysToday => label == '오늘';
 }
 
 /// Everything `screen/learning_main` (`3569:15065`) draws.

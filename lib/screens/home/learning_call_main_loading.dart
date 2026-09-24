@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
@@ -195,6 +196,17 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
     );
   }
 
+  Widget _label(String? label, Widget? labelWidget) =>
+      labelWidget ??
+      Text(
+        label!,
+        style: AppType.body2.m,
+        // 구획 이름은 자르지 않는다 — 아래 표가 무엇의 표인지
+        // 알려 주는 유일한 단서다(전수감사).
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      );
+
   /// The loaded screen's section rhythm (24 above, 8 under the label). Takes
   /// either a real [label] or a [labelWidget] for the one that is itself a
   /// skeleton.
@@ -206,31 +218,12 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
   }) =>
       [
         const SizedBox(height: AppSpacing.s24),
-        Row(
-          // 뒤쪽 칸은 오른쪽 끝에 붙는다(Figma justify-between). `Flexible` 이 몫을 다 안 쓰면
-          // 남은 폭이 행 끝에 버려져 가운데로 몰린다 — layout_dead_space_test 가 잡는다.
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: labelWidget ??
-                    Text(
-                      label!,
-                      style: AppType.body2.m,
-                      // 구획 이름은 자르지 않는다 — 아래 표가 무엇의 표인지
-                      // 알려 주는 유일한 단서다(전수감사).
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-              ),
-            ),
-            if (trailing != null) ...[
-              const SizedBox(width: AppSpacing.s8),
-              Flexible(child: trailing),
-            ],
-          ],
-        ),
+        // 뒤쪽 칸은 오른쪽 끝에 붙는다(Figma justify-between) — 로드된 화면과 같은 `LabelValueRow`.
+        // 옛 `Expanded` + `Flexible` 은 제목을 절반 폭에 가둬 긴 번역에서 일찍 줄을 바꿨다(09-24).
+        if (trailing == null)
+          Align(alignment: AlignmentDirectional.centerStart, child: _label(label, labelWidget))
+        else
+          LabelValueRow(label: _label(label, labelWidget), value: trailing),
         const SizedBox(height: AppSpacing.s8),
         child,
       ];

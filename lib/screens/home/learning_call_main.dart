@@ -5,7 +5,9 @@ import 'package:intl/intl.dart' as intl;
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
+import '../../core/format/dates.dart';
 import '../../components/atoms/button.dart';
+import '../../components/layout/need_based_rows.dart';
 import '../../components/molecules/empty_state.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/organisms/gnb.dart';
@@ -281,6 +283,7 @@ class LearningCallMainScreen extends ConsumerWidget {
         label: l10n.soundAccuracy,
         trailing: Text(
           l10n.phonemeAttempts(s.phonemeAttempts),
+          textAlign: TextAlign.end,
           style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
           // 수치는 자르지 않는다 — 잘린 횟수는 틀린 횟수다.
           maxLines: 2,
@@ -386,9 +389,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                 for (var i = s.sessions.length - 1; i >= 0; i--)
                   [
                     _Cell.flex(
-                      i == s.sessions.length - 1
-                          ? l10n.dateToday(s.sessions[i].date)
-                          : s.sessions[i].date,
+                      _tableDate(context, l10n, s.sessions[i]),
                       style: _rowName(context),
                     ),
                     _Cell.fixed('${s.sessions[i].sentences}', 40,
@@ -408,38 +409,52 @@ class LearningCallMainScreen extends ConsumerWidget {
         ),
       );
 
+  /// 표 날짜 칸 — 세션 시각이 있으면 현지 날짜(「9월 24일」)로, 없으면 서버 문자열.
+  ///
+  /// 「(오늘)」은 **정말 오늘일 때만** 붙인다. 예전엔 맨 윗줄에 무조건 붙여서, 서버가 UTC 로
+  /// 전날을 적은 세션이 「9/23 (오늘)」이 됐다(09-24 실기기). 최신 세션이 오늘이라는 보장도 없다.
+  static String _tableDate(
+      BuildContext context, AppLocalizations l10n, SessionPoint p) {
+    final at = p.callDate;
+    if (at == null) {
+      return p.serverSaysToday ? l10n.dateToday(p.date) : p.date;
+    }
+    final date = localizedShortDate(context, at);
+    return _isToday(at) ? l10n.dateToday(date) : date;
+  }
+
+  static bool _isToday(DateTime local) {
+    final now = DateTime.now();
+    return local.year == now.year &&
+        local.month == now.month &&
+        local.day == now.day;
+  }
+
   // ── shared shells ─────────────────────────────────────────────────────────
 
   List<Widget> _section(BuildContext context, {
     required String label,
     Widget? trailing,
     required Widget child,
-  }) =>
-      [
-        const SizedBox(height: AppSpacing.s24),
-        Row(
-          children: [
-            Expanded(
-              child: Text(
-                label,
-                style: AppType.body2.m,
-                // 구획 이름은 아래 표가 무엇의 표인지 알려 주는 단서다.
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (trailing != null) ...[
-              const SizedBox(width: AppSpacing.s8),
-              // Flexible, not fixed: these sub-labels carry counts ("음소 단위 ·
-              // 33회 시도"), and a locale that renders one long enough would push
-              // the row off a 320dp screen otherwise.
-              Flexible(child: trailing),
-            ],
-          ],
-        ),
-        const SizedBox(height: AppSpacing.s8),
-        child,
-      ];
+  }) {
+    final title = Text(
+      label,
+      style: AppType.body2.m,
+      // 구획 이름은 아래 표가 무엇의 표인지 알려 주는 단서다.
+      maxLines: 2,
+      overflow: TextOverflow.ellipsis,
+    );
+    return [
+      const SizedBox(height: AppSpacing.s24),
+      // 부가 문구(「음소 단위 · N회 시도」 `3569:15125` · 「N개 전체 보기」 `3569:15159`)는 머리 행
+      // **오른쪽 끝**이다. 옛 `Expanded`(제목) + `Flexible`(부가)는 폭을 1:1 로 갈라 부가 문구가
+      // 행 가운데쯤 떴다(09-24 사장님 실기기 「양옆으로 정렬하는 게 아니라 좀 붙어있어」).
+      // 긴 언어에서는 긴 쪽이 줄을 바꾼다(`LabelValueRow`).
+      if (trailing == null) title else LabelValueRow(label: title, value: trailing),
+      const SizedBox(height: AppSpacing.s8),
+      child,
+    ];
+  }
 
   Widget _card(BuildContext context, {required Widget child, EdgeInsets? padding}) => Container(
         width: double.infinity,
@@ -568,14 +583,24 @@ class _Cell {
 /// measure up from the 60 line, not from zero. That exaggerates differences on
 /// purpose (the frame's 80 and 97 differ by half the plot height), which is fine
 /// for "am I improving" but means the bars are not proportional to the scores.
-/// Anything at or below 60 flattens to the baseline rather than inverting.
+///
+/// **60 미만 세션이 하나라도 있으면 눈금을 0/50/100 으로 바꿔 막대를 0부터 그린다**
+/// (09-24 app designer 합의 · Figma 에 없는 규칙이라 사장님 보고 중). 60 창에 그대로 두면
+/// 0점과 60점이 똑같이 바닥에 깔린다(09-24 실기기). 눈금 선 셋 · 높이는 그대로다.
 class _TrendChart extends StatelessWidget {
   const _TrendChart({required this.sessions, required this.l10n});
 
   final List<SessionPoint> sessions;
   final AppLocalizations l10n;
 
-  static const double _min = 60, _max = 100;
+  static const double _max = 100;
+
+  /// 위→아래 눈금 셋.
+  List<int> get _ticks => sessions.any((s) => s.score < 60)
+      ? const [100, 50, 0]
+      : const [100, 80, 60];
+
+  double get _min => _ticks.last.toDouble();
 
   /// 60→100 spans this many pixels (the design's y 20→120).
   static const double _plotHeight = 100;
@@ -595,8 +620,10 @@ class _TrendChart extends StatelessWidget {
     if (sessions.isEmpty) return const SizedBox.shrink();
     // 점수 0(미복습/집계없음) 세션은 평균에서 제외한다.
     final scored = sessions.where((s) => s.score > 0).toList();
-    final avg = scored.isEmpty
-        ? 0
+    // 평균은 채점 세션이 **둘 이상**일 때만 — Figma `__first`(4849:8421, 세션 1개)에 평균선이
+    // 없다. 채점 세션이 없을 때 「평균 0」을 그리면 없는 값을 0으로 적는 셈이다(09-24).
+    final avg = scored.length < 2
+        ? null
         : (scored.fold<int>(0, (a, b) => a + b.score) / scored.length).round();
     return SizedBox(
       height: _valueRow + _plotHeight + _tickRow,
@@ -609,7 +636,7 @@ class _TrendChart extends StatelessWidget {
             child: Stack(
               children: [
                 _gridlines(context),
-                _avgLine(context, avg),
+                if (avg != null) _avgLine(context, avg),
                 Row(
                   children: [
                     // Each column takes an equal share rather than a fixed
@@ -632,13 +659,16 @@ class _TrendChart extends StatelessWidget {
     );
   }
 
-  /// 100 / 80 / 60, each sitting on its gridline.
+  /// 100 / 80 / 60 (or 100 / 50 / 0), each sitting on its gridline.
   Widget _axis(BuildContext context) => SizedBox(
         width: 20,
         height: _valueRow + _plotHeight,
         child: Stack(
+          // 맨 아래 눈금 글자는 바닥선에 가운데를 맞춰 상자 밖으로 7px 나간다 — 자르면
+          // 「60」의 아래가 잘린다(09-24 실기기).
+          clipBehavior: Clip.none,
           children: [
-            for (final v in [100, 80, 60])
+            for (final v in _ticks)
               Positioned(
                 // −7 centres the 14-high line on the 1px rule.
                 top: _valueRow + _y(v) - 7,
@@ -660,7 +690,7 @@ class _TrendChart extends StatelessWidget {
   Widget _gridlines(BuildContext context) => Positioned.fill(
         child: Stack(
           children: [
-            for (final v in [100, 80, 60])
+            for (final v in _ticks)
               Positioned(
                 top: _valueRow + _y(v),
                 left: 0,
@@ -677,29 +707,55 @@ class _TrendChart extends StatelessWidget {
         ),
       );
 
+  /// 평균 글자 칸 높이 — 글자가 **선 위**에 앉도록 선보다 이만큼 위에서 시작한다.
+  static const double _avgLabelBox = 12, _avgLabelGap = 2;
+
   Widget _avgLine(BuildContext context, int avg) => Positioned(
-        top: _valueRow + _y(avg),
+        // 글자는 평균선 **위**(Figma 「평균 88」 · 3569:15065). 선 아래에 두면 평균이 바닥에
+        // 가까울 때 가로 눈금 글자(「9/13」)와 겹쳤다(09-24 실기기).
+        top: _valueRow + _y(avg) - _avgLabelBox - _avgLabelGap,
         left: 0,
         right: 0,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(
+              height: _avgLabelBox,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 2),
+                child: Align(
+                  alignment: AlignmentDirectional.bottomStart,
+                  child: Text(
+                    l10n.trendAverage(avg),
+                    // 9px — the smallest thing on the screen by design; it labels
+                    // the line without competing with the bars.
+                    style: AppType.caption2.m
+                        .copyWith(color: context.c.primaryNormal, fontSize: 9),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: _avgLabelGap),
             Container(
                 height: 1,
                 color: context.c.primaryNormal.withValues(alpha: 0.35)),
-            Padding(
-              padding: const EdgeInsets.only(left: 2, top: 2),
-              child: Text(
-                l10n.trendAverage(avg),
-                // 9px — the smallest thing on the screen by design; it labels
-                // the line without competing with the bars.
-                style: AppType.caption2.m
-                    .copyWith(color: context.c.primaryNormal, fontSize: 9),
-              ),
-            ),
           ],
         ),
       );
+
+  /// 가로 눈금 — 세션 시각이 있으면 현지 날짜의 「9/24」·「오늘」, 없으면 서버 문자열.
+  /// 서버 「오늘」은 한국어 고정이라 앱 언어의 「오늘」로 바꿔 쓴다.
+  ///
+  /// 형식은 Figma 눈금(「12/21」)과 서버 문자열 그대로 `월/일` 이다. 로케일 형식
+  /// (`DateFormat.Md`, ko 「9. 20.」)은 막대 한 칸(320dp 에서 약 44px)에 안 들어간다.
+  String _tick(SessionPoint p) {
+    final at = p.callDate;
+    if (at == null) return p.serverSaysToday ? l10n.today : p.label;
+    final now = DateTime.now();
+    final today =
+        at.year == now.year && at.month == now.month && at.day == now.day;
+    return today ? l10n.today : '${at.month}/${at.day}';
+  }
 
   Widget _bar(BuildContext context, SessionPoint p, {required bool isToday}) => Column(
         mainAxisSize: MainAxisSize.min,
@@ -744,7 +800,7 @@ class _TrendChart extends StatelessWidget {
           ),
           const SizedBox(height: AppSpacing.s8),
           Text(
-            p.label,
+            _tick(p),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: isToday

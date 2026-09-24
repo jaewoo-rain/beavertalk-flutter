@@ -73,7 +73,9 @@ import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
 import 'package:beavertalk/screens/record/record_empty.dart';
+import 'package:beavertalk/screens/home/learning_args.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
+import 'package:beavertalk/screens/home/learning_summary.dart';
 import 'package:beavertalk/screens/home/learning_call_main_loading.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/system/mic_denied.dart';
@@ -401,7 +403,12 @@ Map<String, Widget Function()> i18nScreens() {
     'RecordArchiveTab': () => const RecordListScreen(initialTab: 1),
     // Densest screen in the app — three tables and a chart, all fixed-width
     // number columns. Narrow locales break here first.
-    'LearningCallMain': () => const LearningCallMainScreen(),
+    // ⚠ **데이터를 채워 등록한다**(09-24). 인자 없이 띄우면 오류 화면만 그려져 구획 머리 행 ·
+    //   표 · 차트가 게이트 밖이었다 — 그래서 「음소 단위 · N회 시도」 가 가운데로 몰린 결함을
+    //   시험이 못 잡았다(통합 담당 세션 보고서 04).
+    'LearningCallMain': () => _learningCallMain(low: false),
+    // 60 미만 세션이 있는 판 — 눈금 0/50/100 · 채점 안 된 세션(0) · 평균 글자 위치.
+    'LearningCallMainLow': () => _learningCallMain(low: true),
     'LearningCallMainLoading': () => const LearningCallMainLoadingScreen(),
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
@@ -615,6 +622,73 @@ Widget _alarmSheet(BuildContext ctx, {bool repeat = false}) {
       learnModeSubtitle: l10n.alarmModeLearnSub,
       chatModeTitle: l10n.callModeFreeTalk,
       chatModeSubtitle: l10n.alarmModeChatSub,
+    ),
+  );
+}
+
+/// 발음 학습 결과(`3569:15065`)를 **데이터가 찬 상태**로 띄운다 — 리포트 프로바이더를 덮고,
+/// 화면이 읽는 라우트 인자(`LearningArgs.callId`)를 실어 준다.
+///
+/// 가장 긴 경우를 그린다: 부가 문구가 붙는 구획 둘(소리별 정확도 · 문장 6개라 「전체 보기」),
+/// 긴 소리 이름, 세션 5개. [low] 면 60 미만 · 0점(미채점) 세션이 섞인다.
+Widget _learningCallMain({required bool low}) {
+  final now = DateTime.now();
+  SessionPoint sp(int ago, int score, int sentences, int? delta) {
+    final d = now.subtract(Duration(days: ago));
+    return SessionPoint(
+      label: '${d.month}/${d.day}',
+      date: '${d.month}/${d.day}',
+      sentences: sentences,
+      score: score,
+      delta: delta,
+      callDate: d,
+    );
+  }
+
+  final summary = LearningSummary(
+    passed: 4,
+    total: 6,
+    date: now,
+    overall: low ? 42 : 86,
+    pronunciation: 88,
+    fluency: 79,
+    rhythm: 91,
+    hardestSound: 'ㅓ vs ㅗ',
+    hardestEvidence: '"어머니" → "오머니"',
+    l1Interference: 'English has no separate ㅓ sound.',
+    phonemes: const [
+      PhonemeStat(sound: 'ㅓ (eo)', attempts: 12, correct: 7),
+      PhonemeStat(sound: 'ㄹ final', attempts: 9, correct: 6),
+      PhonemeStat(sound: 'ㅡ (eu)', attempts: 8, correct: 7),
+      PhonemeStat(sound: 'ㅆ tense', attempts: 5, correct: 5),
+    ],
+    sentences: const [
+      SentenceScore(sentence: '캐나다에서 왔어요.', pronunciation: 92, fluency: 88, rhythm: 90),
+      SentenceScore(sentence: '주말에 친구랑 등산을 갔어요.', pronunciation: 81, fluency: 77, rhythm: 84),
+      SentenceScore(sentence: '커피 한 잔 주세요.', pronunciation: 95, fluency: 93, rhythm: 96),
+      SentenceScore(sentence: '지하철역이 어디에 있어요?', pronunciation: 73, fluency: 70, rhythm: 78),
+      SentenceScore(sentence: '내일 다시 연락할게요.', pronunciation: 88, fluency: 85, rhythm: 87),
+      SentenceScore(sentence: '생일 축하해요!', pronunciation: 97, fluency: 95, rhythm: 98),
+    ],
+    sessions: low
+        ? [sp(4, 72, 5, null), sp(3, 0, 0, -72), sp(2, 38, 3, 38), sp(1, 64, 4, 26), sp(0, 2, 1, -62)]
+        : [sp(4, 80, 5, null), sp(3, 84, 6, 4), sp(2, 91, 4, 7), sp(1, 88, 5, -3), sp(0, 97, 6, 9)],
+  );
+  return ProviderScope(
+    overrides: [
+      pronunciationReportProvider.overrideWith((ref, callId) async => summary),
+    ],
+    child: Navigator(
+      onGenerateRoute: (_) => MaterialPageRoute<void>(
+        settings: const RouteSettings(
+          arguments: LearningArgs(
+            sentences: [],
+            origin: LearningOrigin.callReview,
+            callId: 1,
+          ),
+        ),
+        builder: (_) => const LearningCallMainScreen(),
+      ),
     ),
   );
 }
