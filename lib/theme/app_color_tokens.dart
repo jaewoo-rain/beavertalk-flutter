@@ -43,6 +43,16 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     required this.backgroundElevatedNormal,
     required this.backgroundElevatedAlternative,
     required this.backgroundElevatedDialog,
+    required this.score1,
+    required this.score2,
+    required this.score3,
+    required this.score4,
+    required this.score5,
+    required this.score1Text,
+    required this.score2Text,
+    required this.score3Text,
+    required this.score4Text,
+    required this.score5Text,
     required this.backgroundSurfaceAlternative,
     required this.backgroundTransparentNormal,
     required this.backgroundTransparentAlternative,
@@ -169,6 +179,14 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
   /// Figma 는 Atomic 별칭 없이 두 모드에 값을 직접 넣었다(Dark #2F3340 · Light #FFFFFF, 09-24 실측).
   final Color backgroundElevatedDialog;
 
+  /// `Score/1`~`Score/5` — 발음 점수 구간 색(0–20 · 20–40 · 40–60 · 60–80 · 80–100). 게이지 조각
+  /// 채움 · 조각 배경(18%) · 지표 패널 테두리. 구간 = `min(5, floor(score/20)+1)`(경계 20 은 2구간).
+  /// Figma Semantics(09-24 사장님 확정 H4 · Atomic Red·Red Orange·Orange·Lime·Brand 별칭).
+  final Color score1, score2, score3, score4, score5;
+
+  /// `Score/n Text` — 같은 구간의 글자색(가운데 점수 · 지표 값). 5구간은 `Score/5` 와 같다.
+  final Color score1Text, score2Text, score3Text, score4Text, score5Text;
+
   /// `Background/Surface/Alternative` — the my-page analysis cards.
   ///
   /// Identical to [backgroundNormalAlternative] in Dark (#252932) but **white**
@@ -287,6 +305,16 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundElevatedNormal: Color(0xFF2F3340),
     backgroundElevatedAlternative: Color(0xFF1F222A),
     backgroundElevatedDialog: Color(0xFF2F3340),
+    score1: Color(0xFFFF6363),
+    score2: Color(0xFFFF7B2E),
+    score3: Color(0xFFFFA938),
+    score4: Color(0xFF6BE016),
+    score5: Color(0xFF00FFB2),
+    score1Text: Color(0xFFFF8C8C),
+    score2Text: Color(0xFFFF9B61),
+    score3Text: Color(0xFFFFC06E),
+    score4Text: Color(0xFF88F03E),
+    score5Text: Color(0xFF00FFB2),
     backgroundSurfaceAlternative: Color(0xFF252932),
     gradientLevelStart: Color(0xFFB0FFE7),
     gradientLevelMid: Color(0xFF00FFB2),
@@ -381,6 +409,16 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     backgroundElevatedNormal: Color(0xFFF7F7FB),
     backgroundElevatedAlternative: Color(0xFFFFFFFF),
     backgroundElevatedDialog: Color(0xFFFFFFFF),
+    score1: Color(0xFFFF4242),
+    score2: Color(0xFFFF5E00),
+    score3: Color(0xFFFF9200),
+    score4: Color(0xFF58CF04),
+    score5: Color(0xFF007A55),
+    score1Text: Color(0xFFE52222),
+    score2Text: Color(0xFFC94A00),
+    score3Text: Color(0xFF9C5800),
+    score4Text: Color(0xFF429E00),
+    score5Text: Color(0xFF007A55),
     backgroundSurfaceAlternative: Color(0xFFFFFFFF),
     gradientLevelStart: Color(0xFF00C88A),
     gradientLevelMid: Color(0xFF008C62),
@@ -470,6 +508,16 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     Color? backgroundElevatedNormal,
     Color? backgroundElevatedAlternative,
     Color? backgroundElevatedDialog,
+    Color? score1,
+    Color? score2,
+    Color? score3,
+    Color? score4,
+    Color? score5,
+    Color? score1Text,
+    Color? score2Text,
+    Color? score3Text,
+    Color? score4Text,
+    Color? score5Text,
     Color? backgroundSurfaceAlternative,
     Color? gradientLevelStart,
     Color? gradientLevelMid,
@@ -562,6 +610,16 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
             backgroundElevatedAlternative ?? this.backgroundElevatedAlternative,
         backgroundElevatedDialog:
             backgroundElevatedDialog ?? this.backgroundElevatedDialog,
+        score1: score1 ?? this.score1,
+        score2: score2 ?? this.score2,
+        score3: score3 ?? this.score3,
+        score4: score4 ?? this.score4,
+        score5: score5 ?? this.score5,
+        score1Text: score1Text ?? this.score1Text,
+        score2Text: score2Text ?? this.score2Text,
+        score3Text: score3Text ?? this.score3Text,
+        score4Text: score4Text ?? this.score4Text,
+        score5Text: score5Text ?? this.score5Text,
         backgroundSurfaceAlternative:
             backgroundSurfaceAlternative ?? this.backgroundSurfaceAlternative,
         gradientLevelStart: gradientLevelStart ?? this.gradientLevelStart,
@@ -674,6 +732,16 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
           c(backgroundElevatedAlternative, other.backgroundElevatedAlternative),
       backgroundElevatedDialog:
           c(backgroundElevatedDialog, other.backgroundElevatedDialog),
+      score1: c(score1, other.score1),
+      score2: c(score2, other.score2),
+      score3: c(score3, other.score3),
+      score4: c(score4, other.score4),
+      score5: c(score5, other.score5),
+      score1Text: c(score1Text, other.score1Text),
+      score2Text: c(score2Text, other.score2Text),
+      score3Text: c(score3Text, other.score3Text),
+      score4Text: c(score4Text, other.score4Text),
+      score5Text: c(score5Text, other.score5Text),
       backgroundSurfaceAlternative:
           c(backgroundSurfaceAlternative, other.backgroundSurfaceAlternative),
       gradientLevelStart: c(gradientLevelStart, other.gradientLevelStart),

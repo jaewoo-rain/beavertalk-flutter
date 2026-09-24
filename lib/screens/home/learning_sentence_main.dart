@@ -85,14 +85,17 @@ class _LearningSentenceMainScreenState extends State<LearningSentenceMainScreen>
                     PronunciationMetric(
                       label: l10n.pronunciation,
                       value: eval == null ? '-%' : '${eval.pronunciation}%',
+                      score: eval?.pronunciation,
                     ),
                     PronunciationMetric(
                       label: l10n.fluency,
                       value: eval == null ? '-%' : '${eval.fluency}%',
+                      score: eval?.fluency,
                     ),
                     PronunciationMetric(
                       label: l10n.rhythm,
                       value: eval == null ? '-%' : '${eval.rhythm}%',
+                      score: eval?.rhythm,
                     ),
                   ],
                 ),

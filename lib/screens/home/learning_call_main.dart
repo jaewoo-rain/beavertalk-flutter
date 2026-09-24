@@ -169,14 +169,17 @@ class LearningCallMainScreen extends ConsumerWidget {
                         PronunciationMetric(
                           label: l10n.pronunciation,
                           value: '${s.pronunciation}%',
+                          score: s.pronunciation,
                         ),
                         PronunciationMetric(
                           label: l10n.fluency,
                           value: '${s.fluency}%',
+                          score: s.fluency,
                         ),
                         PronunciationMetric(
                           label: l10n.rhythm,
                           value: '${s.rhythm}%',
+                          score: s.rhythm,
                         ),
                       ],
                     ),

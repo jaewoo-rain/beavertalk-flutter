@@ -873,11 +873,17 @@ class MyPageScreen extends ConsumerWidget {
             score: pron?.totalScore ?? 0,
             metrics: [
               PronunciationMetric(
-                  label: l10n.pronunciation, value: _pct(pron?.pronunciation)),
+                  label: l10n.pronunciation,
+                  value: _pct(pron?.pronunciation),
+                  score: pron?.pronunciation),
               PronunciationMetric(
-                  label: l10n.fluency, value: _pct(pron?.fluency)),
+                  label: l10n.fluency,
+                  value: _pct(pron?.fluency),
+                  score: pron?.fluency),
               PronunciationMetric(
-                  label: l10n.rhythm, value: _pct(pron?.rhythm)),
+                  label: l10n.rhythm,
+                  value: _pct(pron?.rhythm),
+                  score: pron?.rhythm),
             ],
           ),
           Button(

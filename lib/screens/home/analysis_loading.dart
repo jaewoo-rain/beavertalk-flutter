@@ -136,8 +136,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
 
     _busy = true;
     try {
-      final status =
-          await ref.read(normalcallRepositoryProvider).getStatus(callId);
+      final status = await ref
+          .read(normalcallRepositoryProvider)
+          .getStatus(callId);
       if (!mounted || _navigated) return;
       if (status != _status) setState(() => _status = status);
       switch (status) {
@@ -161,8 +162,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// Fetches the full result and replaces this screen with the analysis screen.
   Future<void> _fetchResultAndGo(int callId) async {
     try {
-      final result =
-          await ref.read(normalcallRepositoryProvider).getResult(callId);
+      final result = await ref
+          .read(normalcallRepositoryProvider)
+          .getResult(callId);
       if (!mounted || _navigated) return;
       _navigated = true;
       _pollTimer?.cancel();
@@ -187,8 +189,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// The built-in fallbacks are hardcoded Korean, so showing them unconditionally
   /// leaks Korean into all 30 locales (see [AppException.fromServer]). Empty
   /// falls through to the view's own localized copy.
-  String _reason(AppException e) =>
-      e.fromServer ? e.message : '';
+  String _reason(AppException e) => e.fromServer ? e.message : '';
 
   /// Stops polling and shows the retry UI with [message].
   void _fail(String message) {
@@ -244,7 +245,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     return ContentColumn(
       child: SingleChildScrollView(
         // Same padding as the analysis screen, so nothing shifts on hand-off.
-        padding: const EdgeInsets.only(top: AppSpacing.s16, bottom: AppSpacing.s40),
+        padding: const EdgeInsets.only(
+          top: AppSpacing.s16,
+          bottom: AppSpacing.s40,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -270,15 +274,21 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
             ),
 
             const SizedBox(height: AppSpacing.s24),
+            // 준비 중에는 inactive 를 불투명도 0.4 로 흐리게(Figma `analysis__preparing` 인스턴스
+            // Mobile `6330:13227` · Tablet `6330:51010`, 09-24 사장님) — 비활성 학습 카드와 같은 결.
+            // 결과가 오면 분석 화면으로 페이드 전환되며 정상(active · 1)으로 나타난다.
             Center(
-              child: PronunciationResult(
-                state: PronunciationState.inactive,
-                score: 0,
-                metrics: [
-                  PronunciationMetric(label: l10n.pronunciation, value: '-%'),
-                  PronunciationMetric(label: l10n.fluency, value: '-%'),
-                  PronunciationMetric(label: l10n.rhythm, value: '-%'),
-                ],
+              child: Opacity(
+                opacity: 0.4,
+                child: PronunciationResult(
+                  state: PronunciationState.inactive,
+                  score: 0,
+                  metrics: [
+                    PronunciationMetric(label: l10n.pronunciation, value: '-%'),
+                    PronunciationMetric(label: l10n.fluency, value: '-%'),
+                    PronunciationMetric(label: l10n.rhythm, value: '-%'),
+                  ],
+                ),
               ),
             ),
 
@@ -286,13 +296,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
             const SizedBox(height: AppSpacing.s24),
             // `Card/Study` ×2, disabled — both need this call's learned
             // sentences, which arrive with the result.
-            CardStudy.learn(
-              title: l10n.practicePronunciation,
-            ),
+            CardStudy.learn(title: l10n.practicePronunciation),
             const SizedBox(height: AppSpacing.s12),
-            CardStudy.challenge(
-              title: l10n.challengeTitle,
-            ),
+            CardStudy.challenge(title: l10n.challengeTitle),
 
             // ── Section/BabaNote → 준비 중 (`6330:13219`) ─────────────────
             // The note is written with the result, so its slot says what is
@@ -311,14 +317,16 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
                         children: [
                           Text(
                             l10n.analysisPrepNote,
-                            style: AppType.body2.r
-                                .copyWith(color: context.c.labelNormal),
+                            style: AppType.body2.r.copyWith(
+                              color: context.c.labelNormal,
+                            ),
                           ),
                           const SizedBox(height: 6), // no s6 token
                           Text(
                             l10n.analysisPrepNoteHint,
-                            style: AppType.caption1.r
-                                .copyWith(color: context.c.labelAlternative),
+                            style: AppType.caption1.r.copyWith(
+                              color: context.c.labelAlternative,
+                            ),
                           ),
                         ],
                       ),
@@ -351,34 +359,33 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     required Widget label,
     Widget? trailing,
     required Widget child,
-  }) =>
-      [
-        const SizedBox(height: AppSpacing.s24),
-        Row(
-          children: [
-            Expanded(
-              child: Align(alignment: Alignment.centerLeft, child: label),
-            ),
-            if (trailing != null) ...[
-              const SizedBox(width: AppSpacing.s8),
-              trailing,
-            ],
-          ],
+  }) => [
+    const SizedBox(height: AppSpacing.s24),
+    Row(
+      children: [
+        Expanded(
+          child: Align(alignment: Alignment.centerLeft, child: label),
         ),
-        const SizedBox(height: AppSpacing.s8),
-        child,
-      ];
+        if (trailing != null) ...[
+          const SizedBox(width: AppSpacing.s8),
+          trailing,
+        ],
+      ],
+    ),
+    const SizedBox(height: AppSpacing.s8),
+    child,
+  ];
 
   /// The shared card shell (#1F222A, r12, p16).
   Widget _card({required Widget child}) => Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(AppSpacing.s16),
-        decoration: BoxDecoration(
-          color: context.c.backgroundElevatedAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: child,
-      );
+    width: double.infinity,
+    padding: const EdgeInsets.all(AppSpacing.s16),
+    decoration: BoxDecoration(
+      color: context.c.backgroundElevatedAlternative,
+      borderRadius: BorderRadius.circular(AppRadius.sm),
+    ),
+    child: child,
+  );
 
   /// The shared network-error body, carrying [_errorMsg] as the reason.
   ///
@@ -387,9 +394,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// and quietly navigate home instead, which is a different action under the
   /// wrong label.
   Widget _error() => NetworkErrorView(
-        message: _errorMsg.isEmpty ? null : _errorMsg,
-        onRetry: _callId == null ? null : _start,
-      );
+    message: _errorMsg.isEmpty ? null : _errorMsg,
+    onRetry: _callId == null ? null : _start,
+  );
 }
 
 /// `Card/Preparing` in the analysis waiting state (Figma `6330:13219`).
@@ -411,7 +418,11 @@ class AnalysisPreparingCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20, 28, AppSpacing.s20, AppSpacing.s20),
+        AppSpacing.s20,
+        28,
+        AppSpacing.s20,
+        AppSpacing.s20,
+      ),
       decoration: BoxDecoration(
         color: c.backgroundSurfaceAlternative,
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -447,7 +458,9 @@ class AnalysisPreparingCard extends StatelessWidget {
           _step(
             context,
             icon: AppIcons.aiSparkle(
-                size: 20, color: saved ? c.labelNormal : c.labelAssistive),
+              size: 20,
+              color: saved ? c.labelNormal : c.labelAssistive,
+            ),
             label: l10n.analysisPrepStepCards,
             state: saved
                 ? l10n.analysisPrepStateWorking
@@ -466,20 +479,18 @@ class AnalysisPreparingCard extends StatelessWidget {
     required String label,
     required String state,
     required Color stateColor,
-  }) =>
-      Row(
-        children: [
-          icon,
-          const SizedBox(width: 10), // Figma gap, no token
-          Expanded(
-            child: Text(
-              label,
-              style: AppType.label1.m.copyWith(color: context.c.labelNormal),
-            ),
-          ),
-          const SizedBox(width: AppSpacing.s8),
-          Text(state, style: AppType.label1.r.copyWith(color: stateColor)),
-        ],
-      );
-
+  }) => Row(
+    children: [
+      icon,
+      const SizedBox(width: 10), // Figma gap, no token
+      Expanded(
+        child: Text(
+          label,
+          style: AppType.label1.m.copyWith(color: context.c.labelNormal),
+        ),
+      ),
+      const SizedBox(width: AppSpacing.s8),
+      Text(state, style: AppType.label1.r.copyWith(color: stateColor)),
+    ],
+  );
 }

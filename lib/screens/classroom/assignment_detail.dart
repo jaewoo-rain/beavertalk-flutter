@@ -362,14 +362,17 @@ class _AssignmentDetailScreenState
               PronunciationMetric(
                 label: l10n.pronunciation,
                 value: _pct(attempt?.averagePronunciation),
+                score: attempt?.averagePronunciation,
               ),
               PronunciationMetric(
                 label: l10n.fluency,
                 value: _pct(attempt?.averageFluency),
+                score: attempt?.averageFluency,
               ),
               PronunciationMetric(
                 label: l10n.rhythm,
                 value: _pct(attempt?.averageRhythm),
+                score: attempt?.averageRhythm,
               ),
             ],
           ),

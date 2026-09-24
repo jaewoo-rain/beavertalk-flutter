@@ -327,9 +327,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                   PronunciationMetric(
                     label: l10n.pronunciation,
                     value: _pct(pronunciation),
+                    score: pronunciation,
                   ),
-                  PronunciationMetric(label: l10n.fluency, value: _pct(fluency)),
-                  PronunciationMetric(label: l10n.rhythm, value: _pct(rhythm)),
+                  PronunciationMetric(
+                      label: l10n.fluency, value: _pct(fluency), score: fluency),
+                  PronunciationMetric(
+                      label: l10n.rhythm, value: _pct(rhythm), score: rhythm),
                 ],
               ),
             ),
