@@ -341,19 +341,21 @@ class _ScoreLine extends StatelessWidget {
     final c = context.c;
     final l10n = AppLocalizations.of(context);
     final delta = result.delta;
+    final band = c.scoreTextColor(scoreBand(result.after));
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.baseline,
       textBaseline: TextBaseline.alphabetic,
       children: [
+        // 숫자 · 「점」 = 점수 구간 글자색(09-24 사장님 · Figma 17 `6118:12274` 84 → Score/5 Text).
         Text(
           '${result.after}',
-          style: AppType.display1.b.copyWith(color: c.primaryForeground),
+          style: AppType.display1.b.copyWith(color: band),
         ),
         const SizedBox(width: AppSpacing.s4),
         Text(
           l10n.wsPointsUnit,
-          style: AppType.heading2.b.copyWith(color: c.labelStrong),
+          style: AppType.heading2.b.copyWith(color: band),
         ),
         if (delta != null && delta != 0) ...[
           const SizedBox(width: AppSpacing.s8),
@@ -421,9 +423,9 @@ class _ProgressBar extends StatelessWidget {
                       width: w * (after / 100),
                       height: 6,
                       decoration: BoxDecoration(
-                        color: after >= LearnResultScreen.goal
-                            ? c.statusPositive
-                            : c.primaryNormal,
+                        // 채움 = 점수 구간 색(09-24 사장님 — 80 이상 statusPositive ·
+                        // 미만 primaryNormal 규칙 폐기). 바탕 · 눈금 · 알약은 그대로.
+                        color: c.scoreColor(scoreBand(after)),
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),

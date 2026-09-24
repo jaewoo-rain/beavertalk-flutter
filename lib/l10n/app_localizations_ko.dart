@@ -898,10 +898,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get continueLabel => '계속';
 
   @override
-  String get onboardingDoneTitle => '비버가 회원님의 전화를 기다리고 있어요';
+  String get onboardingDoneTitle => '비버가 당신과의 통화를 기다려요';
 
   @override
-  String get onboardingDoneSubtitle => '지금 바로 통화를 시작해 보세요';
+  String get onboardingDoneSubtitle => '지금 바로 통화해보세요';
 
   @override
   String get home => '홈';

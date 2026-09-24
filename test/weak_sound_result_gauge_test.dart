@@ -78,6 +78,17 @@ void main() {
     expect(find.text('목표 80점'), findsOneWidget);
   });
 
+  testWidgets('17 오름 — 숫자 · 「점」 · 막대 채움이 점수 구간색(09-24 사장님)', (tester) async {
+    await pump(tester, _result(before: 30, after: 44));
+    expect(tester.widget<Text>(find.text('44')).style!.color, c.score3Text);
+    expect(tester.widget<Text>(find.text('점')).style!.color, c.score3Text);
+    final fill = find.byWidgetPredicate((w) =>
+        w is Container &&
+        w.decoration is BoxDecoration &&
+        (w.decoration! as BoxDecoration).color == c.score3);
+    expect(fill, findsOneWidget, reason: '막대 채움 Score/3(옛 primaryNormal 아님)');
+  });
+
   testWidgets('E5 — 320×568 에서도 넘치지 않는다(모자라면 스크롤)', (tester) async {
     await pump(tester, _result(before: 70, after: 58), size: const Size(320, 568));
     expect(tester.takeException(), isNull);

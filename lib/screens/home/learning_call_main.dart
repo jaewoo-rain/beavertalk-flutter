@@ -357,7 +357,10 @@ class LearningCallMainScreen extends ConsumerWidget {
           for (final x in shown)
             [
               _Cell.flex(x.sentence, style: _rowName(context)),
-              _Cell.fixed('${x.pronunciation}', 36, style: _rowValue(context)),
+              // 「발음」 열만 13 Bold + 점수 색(Figma 3569:15156 · 소리별 정확도와 같은 기준,
+              // 09-24 figma-code-diff). 유창·리듬은 Regular 그대로.
+              _Cell.fixed('${x.pronunciation}', 36,
+                  style: _rowEmphasis(_accuracyColor(context, x.pronunciation))),
               _Cell.fixed('${x.fluency}', 36, style: _rowValue(context)),
               _Cell.fixed('${x.rhythm}', 36, style: _rowValue(context)),
             ],
@@ -397,7 +400,9 @@ class LearningCallMainScreen extends ConsumerWidget {
                     ),
                     _Cell.fixed('${s.sessions[i].sentences}', 40,
                         style: _rowValue(context)),
-                    _Cell.fixed('${s.sessions[i].score}', 40, style: _rowValue(context)),
+                    // 「점수」 열은 13 Bold · Label/Strong(Figma 최근 세션 표 · 09-24 figma-code-diff).
+                    _Cell.fixed('${s.sessions[i].score}', 40,
+                        style: _rowEmphasis(context.c.labelStrong)),
                     _Cell.fixed(
                       s.sessions[i].delta == null
                           ? '—'
