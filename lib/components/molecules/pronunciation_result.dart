@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/foundation.dart' show listEquals;
 import 'package:flutter/material.dart';
 
 import '../../theme/app_color_tokens.dart';
@@ -9,6 +8,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../theme/score_band.dart';
 import '../layout/need_based_rows.dart';
+import 'score_gauge_painter.dart';
 
 /// Visual state of a [PronunciationResult].
 ///
@@ -189,7 +189,7 @@ class _PronunciationResultState extends State<PronunciationResult>
                     CustomPaint(
                       size: const Size(PronunciationResult._gaugeWidth,
                           PronunciationResult._gaugeHeight),
-                      painter: _GaugePainter(
+                      painter: ScoreGaugePainter(
                         bands: [for (var i = 1; i <= 5; i++) c.scoreColor(i)],
                         progress: _active ? shown / 100 : 0,
                       ),
@@ -348,65 +348,6 @@ class _MetricsFooter extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Paints the semicircle gauge — five 20-point band segments (H4).
-///
-/// Geometry: frame 255×127.5, a true half circle whose centre sits on the
-/// bottom edge. Ring 18 thick (outer radius 127.5). The arc runs 180° from the
-/// left (score 0) clockwise to the right (score 100). Butt caps — no end cap.
-class _GaugePainter extends CustomPainter {
-  const _GaugePainter({required this.bands, required this.progress});
-
-  /// `Score/1`~`Score/5`, read from the theme by the caller — a painter has no context.
-  final List<Color> bands;
-
-  /// 0–1 fraction of the 180° arc to fill.
-  final double progress;
-
-  static const double _stroke = 18;
-
-  /// 조각 사이 틈의 한쪽 몫 — 0–1 범위의 0.4%(반원 180° 의 0.72°). 맨 끝 둘은 비우지 않는다.
-  static const double _inset = 0.004;
-
-  /// 배경 조각 투명도 — Figma 는 도형에 18% 를 걸었다(색 변수가 아니라).
-  static const double _trackAlpha = 0.18;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final double radius = size.width / 2 - _stroke / 2;
-    final Offset center = Offset(size.width / 2, size.height);
-    final Rect arcRect = Rect.fromCircle(center: center, radius: radius);
-
-    Paint pen(Color color) => Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = _stroke
-      ..strokeCap = StrokeCap.butt
-      ..color = color;
-
-    void arc(double from, double to, Paint paint) {
-      if (to <= from) return;
-      canvas.drawArc(
-          arcRect, math.pi + from * math.pi, (to - from) * math.pi, false, paint);
-    }
-
-    final p = progress.clamp(0.0, 1.0);
-    for (var i = 0; i < 5; i++) {
-      // 틈은 조각 **사이**에만 — 0점 쪽 시작과 100점 쪽 끝은 비우지 않는다(Figma Band1 은 0부터,
-      // Band5 는 1.0 까지 · 09-24 figma-code-diff).
-      final start = i == 0 ? 0.0 : i * 0.2 + _inset;
-      final end = i == 4 ? 1.0 : (i + 1) * 0.2 - _inset;
-      arc(start, end, pen(bands[i].withValues(alpha: _trackAlpha)));
-      if (p > start) arc(start, math.min(p, end), pen(bands[i]));
-    }
-  }
-
-  @override
-  bool shouldRepaint(_GaugePainter old) =>
-      old.progress != progress ||
-      // The colours are theme-dependent; without this the gauge would keep the
-      // previous mode's ring until the score happened to change.
-      !listEquals(old.bands, bands);
 }
 
 /// Gallery demo exposing both [PronunciationResult] states.
