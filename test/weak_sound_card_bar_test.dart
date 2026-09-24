@@ -78,4 +78,19 @@ void main() {
     expect((b[0].decoration! as BoxDecoration).color, c.fillAlternative);
     expect(find.text('측정 전'), findsOneWidget);
   });
+
+  testWidgets('「목표 80」 눈금은 카드마다 같은 x — 점수 글자 폭(「1점」 · 「측정 전」)과 무관(09-24 실기기)', (tester) async {
+    Future<double> tickX(int? score) async {
+      await pump(tester, score);
+      final tick = find.byWidgetPredicate((w) =>
+          w is Container && w.constraints?.maxWidth == 2 && w.constraints?.maxHeight == 12);
+      return tester.getRect(tick).center.dx;
+    }
+
+    final a = await tickX(1);
+    final b = await tickX(null);
+    final c100 = await tickX(100);
+    expect(b, closeTo(a, 0.5));
+    expect(c100, closeTo(a, 0.5));
+  });
 }

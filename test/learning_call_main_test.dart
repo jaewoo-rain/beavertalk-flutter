@@ -4,6 +4,9 @@ import 'package:beavertalk/screens/home/learning_args.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
 import 'package:beavertalk/screens/home/learning_summary.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter/services.dart';
+import 'package:beavertalk/theme/app_typography.dart' show kFontFamily;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -42,7 +45,7 @@ void main() {
         sessions: sessions,
       );
 
-  Future<void> pump(WidgetTester tester, LearningSummary s) async {
+  Future<void> pump(WidgetTester tester, LearningSummary s, {String locale = 'ko'}) async {
     tester.view.physicalSize = const Size(360, 2400);
     tester.view.devicePixelRatio = 1.0;
     addTearDown(tester.view.reset);
@@ -50,7 +53,7 @@ void main() {
       key: UniqueKey(),
       overrides: [pronunciationReportProvider.overrideWith((ref, id) async => s)],
       child: MaterialApp(
-        locale: const Locale('ko'),
+        locale: Locale(locale),
         localizationsDelegates: AppLocalizations.localizationsDelegates,
         supportedLocales: AppLocalizations.supportedLocales,
         home: Navigator(
@@ -124,5 +127,27 @@ void main() {
     ]));
     expect(find.text('9/23 (오늘)'), findsOneWidget);
     expect(find.text('9/22'), findsNWidgets(2), reason: '차트 눈금 + 표');
+  });
+
+  testWidgets('고정 폭 열 머리는 낱말 중간에서 끊기지 않는다 — en 「Sentences」(09-24 실기기)', (tester) async {
+    // 실제 글꼴로 잰다 — 시험 글꼴(네모)은 라틴 글자를 실제보다 훨씬 넓게 잰다(R11 주의).
+    await tester.runAsync(() async {
+      final loader = FontLoader(kFontFamily);
+      for (final w in const ['Regular', 'Medium', 'SemiBold', 'Bold']) {
+        loader.addFont(rootBundle.load('assets/fonts/Pretendard-$w.otf'));
+      }
+      await loader.load();
+    });
+    await pump(tester, summary([sp(1, 80), sp(0, 90)]), locale: 'en');
+    for (final h in ['Sentences', 'Score', 'Change', 'Attempts', 'Correct', 'Accuracy']) {
+      final f = find.text(h);
+      if (f.evaluate().isEmpty) continue;
+      final ro = tester.renderObject<RenderParagraph>(f.first);
+      final tops = ro
+          .getBoxesForSelection(TextSelection(baseOffset: 0, extentOffset: h.length))
+          .map((b) => b.top.round())
+          .toSet();
+      expect(tops.length, 1, reason: '「$h」 한 줄');
+    }
   });
 }

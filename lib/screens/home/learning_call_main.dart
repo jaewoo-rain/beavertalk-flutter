@@ -22,6 +22,7 @@ import '../system/network_error.dart';
 import 'learning_args.dart';
 import 'learning_call_main_loading.dart';
 import 'learning_summary.dart';
+import 'table_columns.dart';
 
 /// Learning session summary — Figma `screen/learning_main` (`3569:15065`).
 ///
@@ -487,16 +488,32 @@ class LearningCallMainScreen extends ConsumerWidget {
     required List<_Cell> header,
     required List<List<_Cell>> rows,
     String? emptyLabel,
-  }) =>
-      Container(
+  }) {
+    // 고정 열은 머리의 가장 긴 낱말까지 넓힌다(이름 열 몫은 남김) — [fitTableColumns].
+    // 열 폭을 머리에서 한 번 정해 머리 · 모든 줄에 같이 쓴다.
+    final wanted = <double?>[
+      for (final h in header)
+        h.width == null ? null : longestWordWidth(context, h.text, _headerStyle(context)),
+    ];
+    return Container(
         decoration: BoxDecoration(
           color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 4, AppSpacing.s16, 6),
-        child: Column(
+        child: LayoutBuilder(builder: (context, box) {
+          final widths = fitTableColumns(
+            spec: [for (final h in header) h.width],
+            wanted: wanted,
+            innerWidth: box.maxWidth,
+            gap: AppSpacing.s8,
+          );
+          List<_Cell> fit(List<_Cell> cells) => [
+                for (var i = 0; i < cells.length; i++) cells[i].withWidth(widths[i]),
+              ];
+          return Column(
           children: [
-            _row(context, header, vertical: 10),
+            _row(context, fit(header), vertical: 10),
             // `Line/Neutral` — 12% white. (This read `borderSubtle` (6%) under
             // a comment claiming the design was 7%; the variable actually
             // resolves to 12%, so every divider on this screen was drawn at
@@ -507,11 +524,13 @@ class LearningCallMainScreen extends ConsumerWidget {
             ],
             for (final r in rows) ...[
               Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
-              _row(context, r, vertical: 11),
+              _row(context, fit(r), vertical: 11),
             ],
           ],
-        ),
+        );
+        }),
       );
+  }
 
   Widget _row(BuildContext context, List<_Cell> cells, {required double vertical}) => Padding(
         padding: EdgeInsets.symmetric(vertical: vertical),
@@ -568,6 +587,11 @@ class _Cell {
   final double? width;
   final TextStyle? style;
   final bool _alignRight;
+
+  /// 같은 칸을 열 폭만 바꿔 — 고정 열만 해당([width] 가 null 이면 그대로).
+  _Cell withWidth(double? w) => width == null || w == null
+      ? this
+      : _Cell.fixed(text, w, style: style);
 
   Widget build(BuildContext context) {
     final child = Text(

@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../../../../components/atoms/badge.dart' as bt;
@@ -84,7 +86,16 @@ class WeakSoundCard extends StatelessWidget {
                 ),
                 // Figma 실측 6px. AppSpacing 에 s6 토큰이 없어 raw 를 쓴다.
                 const SizedBox(width: 6),
-                _Score(score: item.score),
+                // 점수 칸은 **언어마다 한 폭**(「100점」 · 「측정 전」 중 넓은 쪽)이다. 글자 폭대로 두면
+                // 「1점」 카드와 「측정 전」 카드의 막대 길이가 달라져 「목표 80」 눈금이 카드마다 다른
+                // x 에 섰다(09-24 실기기). 점수는 칸 끝에 붙인다.
+                SizedBox(
+                  width: _Score.slotWidth(context),
+                  child: Align(
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: _Score(score: item.score),
+                  ),
+                ),
               ],
             ),
           ],
@@ -184,6 +195,33 @@ class _Score extends StatelessWidget {
   const _Score({required this.score});
 
   final int? score;
+
+  /// 점수 칸 폭 — 이 언어에서 가장 넓은 점수 글자(「100점」 또는 「측정 전」).
+  static double slotWidth(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final scaler = MediaQuery.textScalerOf(context);
+    final dir = Directionality.of(context);
+    double measure(List<InlineSpan> spans) {
+      final painter = TextPainter(
+        text: TextSpan(children: spans),
+        textDirection: dir,
+        textScaler: scaler,
+        maxLines: 1,
+      )..layout();
+      final w = painter.width;
+      painter.dispose();
+      return w;
+    }
+
+    final points = measure([
+      TextSpan(text: '100', style: AppType.label2.b),
+      // 숫자와 단위 사이 1px 은 폭 계산에 더한다(아래 Row 와 같게).
+      TextSpan(text: l10n.wsPointsUnit, style: AppType.caption2.m),
+    ]) + 1;
+    final notMeasured =
+        measure([TextSpan(text: l10n.wsNotMeasured, style: AppType.label2.b)]);
+    return math.max(points, notMeasured).ceilToDouble();
+  }
 
   @override
   Widget build(BuildContext context) {

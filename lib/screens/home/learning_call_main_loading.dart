@@ -10,6 +10,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'table_columns.dart';
 
 /// The waiting state for [LearningCallMainScreen] — Figma
 /// `screen/learning_main_loading` (`3583:34469`).
@@ -250,22 +251,38 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
     required int rowCount,
     required List<double> nameWidths,
     required List<double> valueWidths,
-  }) =>
-      Container(
+  }) {
+    // 고정 열은 머리의 가장 긴 낱말까지 넓힌다 — 로드된 표와 같은 규칙([fitTableColumns]).
+    final wanted = <double?>[
+      for (final h in header)
+        h.width == null ? null : longestWordWidth(context, h.text, h._style(context)),
+    ];
+    return Container(
         decoration: BoxDecoration(
           color: context.c.backgroundElevatedAlternative,
           borderRadius: BorderRadius.circular(AppRadius.sm),
         ),
         padding: const EdgeInsets.fromLTRB(AppSpacing.s16, 4, AppSpacing.s16, 6),
-        child: Column(
+        child: LayoutBuilder(builder: (context, box) {
+          final widths = fitTableColumns(
+            spec: [for (final h in header) h.width],
+            wanted: wanted,
+            innerWidth: box.maxWidth,
+            gap: AppSpacing.s8,
+          );
+          final cols = [
+            for (var i = 0; i < header.length; i++)
+              widths[i] == null ? header[i] : _H.fixed(header[i].text, widths[i]!),
+          ];
+          return Column(
           children: [
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10),
               child: Row(
                 children: [
-                  for (var i = 0; i < header.length; i++) ...[
+                  for (var i = 0; i < cols.length; i++) ...[
                     if (i > 0) const SizedBox(width: AppSpacing.s8),
-                    header[i].build(context),
+                    cols[i].build(context),
                   ],
                 ],
               ),
@@ -289,10 +306,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
                         ),
                       ),
                     ),
-                    for (var i = 1; i < header.length; i++) ...[
+                    for (var i = 1; i < cols.length; i++) ...[
                       const SizedBox(width: AppSpacing.s8),
                       SizedBox(
-                        width: header[i].width,
+                        width: cols[i].width,
                         child: Align(
                           alignment: Alignment.centerRight,
                           child: Skeleton.bar(
@@ -307,8 +324,10 @@ class LearningCallMainLoadingScreen extends StatelessWidget {
               ),
             ],
           ],
-        ),
+        );
+        }),
       );
+  }
 }
 
 /// The L1 box keeps its tint while empty (`3583:34523`) — the reassurance is the
@@ -335,10 +354,13 @@ class _H {
   final String text;
   final double? width;
 
+  TextStyle _style(BuildContext context) =>
+      AppType.caption2.r.copyWith(color: context.c.labelAlternative);
+
   Widget build(BuildContext context) {
     final child = Text(
       text,
-      style: AppType.caption2.r.copyWith(color: context.c.labelAlternative),
+      style: _style(context),
       textAlign: width == null ? TextAlign.left : TextAlign.right,
       // 컬럼 헤더가 잘리면 그 열의 숫자가 무슨 숫자인지 모른다. 표는 폭이
       // 빡빡한 자리라 두 줄이 정상이다(전수감사 67건).
