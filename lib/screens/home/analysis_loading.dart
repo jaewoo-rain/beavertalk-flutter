@@ -13,6 +13,8 @@ import '../../components/molecules/pronunciation_result.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../features/auth/presentation/providers/auth_providers.dart' show authRepositoryProvider;
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../l10n/app_localizations.dart';
@@ -22,6 +24,7 @@ import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../system/network_error.dart';
 import 'analysis.dart';
+import 'level_up.dart';
 
 /// Analysis loading — bridges 통화 종료 → 통화 분석.
 ///
@@ -167,20 +170,40 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           .read(normalcallRepositoryProvider)
           .getResult(callId);
       if (!mounted || _navigated) return;
+      // 레벨이 올랐으면 분석 화면 **직전에 한 번** 축하 페이지(09-25 사장님 확정 V1 ·
+      // Figma `screen/level_up` `6410:42174`). 확인 → 분석 화면. 못 물어보면 그냥 분석으로.
+      final memberId = ref.read(myProfileProvider).valueOrNull?.memberId;
+      final leveledUp = memberId == null
+          ? null
+          : await LevelUpCheck.newLevel(ref.read(authRepositoryProvider),
+              memberId: memberId);
+      if (!mounted || _navigated) return;
       _navigated = true;
       _pollTimer?.cancel();
       // A short fade, not the default slide: the waiting screen already has
       // the analysis layout, so the hand-off should read as the same screen
       // filling in (Figma prototype `6330:13219` → `screen/analysis`, DISSOLVE).
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder<void>(
-          settings: RouteSettings(name: Routes.analysis, arguments: result),
-          transitionDuration: const Duration(milliseconds: 300),
-          pageBuilder: (_, _, _) => const AnalysisScreen(),
-          transitionsBuilder: (_, animation, _, child) =>
-              FadeTransition(opacity: animation, child: child),
-        ),
-      );
+      Route<void> analysisRoute() => PageRouteBuilder<void>(
+            settings: RouteSettings(name: Routes.analysis, arguments: result),
+            transitionDuration: const Duration(milliseconds: 300),
+            pageBuilder: (_, _, _) => const AnalysisScreen(),
+            transitionsBuilder: (_, animation, _, child) =>
+                FadeTransition(opacity: animation, child: child),
+          );
+      if (leveledUp == null) {
+        Navigator.of(context).pushReplacement(analysisRoute());
+      } else {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute<void>(
+            settings: const RouteSettings(name: Routes.levelUp),
+            builder: (page) => LevelUpScreen(
+              level: leveledUp,
+              onConfirm: () =>
+                  Navigator.of(page).pushReplacement(analysisRoute()),
+            ),
+          ),
+        );
+      }
     } on AppException catch (e) {
       _fail(_reason(e));
     }

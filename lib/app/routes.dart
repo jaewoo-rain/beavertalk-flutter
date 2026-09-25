@@ -87,6 +87,10 @@ abstract final class Routes {
   static const callFinish = '/call/finish';
   static const analysisLoading = '/analysis/loading';
   static const analysis = '/analysis';
+
+  /// 레벨업 축하(`screen/level_up` 6410:42174) — 통화 뒤 분석 화면 직전에 한 번. 인자가 필요해
+  /// 표에는 없고, 분석 대기 화면이 직접 띄운다(이름은 스택 판별용).
+  static const levelUp = '/level-up';
   static const learningIntro = '/learning/intro';
   static const learningSentenceMain = '/learning/sentence-main';
   static const learningCallMain = '/learning/call-main';

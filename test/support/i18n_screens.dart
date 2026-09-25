@@ -79,6 +79,7 @@ import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/home/learning_args.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
 import 'package:beavertalk/screens/home/learning_summary.dart';
+import 'package:beavertalk/screens/home/level_up.dart';
 import 'package:beavertalk/screens/home/learning_call_main_loading.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/system/mic_denied.dart';
@@ -430,6 +431,8 @@ Map<String, Widget Function()> i18nScreens() {
     // 60 미만 세션이 있는 판 — 눈금 0/50/100 · 채점 안 된 세션(0) · 평균 글자 위치.
     'LearningCallMainLow': () => _learningCallMain(low: true),
     'LearningCallMainLoading': () => const LearningCallMainLoadingScreen(),
+    // 레벨업 축하(09-25 · Figma screen/level_up 6410:42174) — 가장 큰 단계 숫자.
+    'LevelUp': () => LevelUpScreen(level: 13, onConfirm: () {}),
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
     'Permission': () => const PermissionScreen(),
