@@ -2836,7 +2836,7 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String wsAccentOf(String country) {
-    return 'สำเนียง$country';
+    return 'สำเนียง $country';
   }
 
   @override

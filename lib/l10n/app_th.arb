@@ -861,7 +861,7 @@
   "wsBeforePoints": "ก่อนเรียน {score} คะแนน",
   "wsGoalPoints": "เป้าหมาย {score} คะแนน",
   "wsGoalPrefix": "เป้าหมาย · {desc}",
-  "wsAccentOf": "สำเนียง{country}",
+  "wsAccentOf": "สำเนียง {country}",
   "wsWordsRepeated": "พูดตามคำศัพท์ {count} คำ",
   "wsChunksRepeated": "พูดตามประโยค {count} ท่อน",
   "wsStartRecommended": "เริ่มจากเสียงที่แนะนำ",
