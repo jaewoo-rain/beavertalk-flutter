@@ -664,6 +664,8 @@ Widget _learningCallMain({required bool low}) {
       score: score,
       delta: delta,
       callDate: d,
+      // 화면 인자 callId 1 = 어제 통화 — 「이 통화」 강조가 최신이 아닌 줄에 서는 경우(__past_call).
+      callId: ago == 1 ? 1 : 100 + ago,
     );
   }
 

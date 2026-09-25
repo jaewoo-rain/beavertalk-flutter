@@ -88,7 +88,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                 ? ref.invalidate(assignmentReportProvider(assignmentId))
                 : ref.invalidate(pronunciationReportProvider(callId!)),
           ),
-          data: (s) => _content(context, ref, l10n, s),
+          data: (s) => _content(context, ref, l10n, s, callId: callId),
         );
   }
 
@@ -134,7 +134,7 @@ class LearningCallMainScreen extends ConsumerWidget {
   }
 
   Widget _content(BuildContext context, WidgetRef ref, AppLocalizations l10n,
-      LearningSummary s) {
+      LearningSummary s, {int? callId}) {
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
       body: Column(
@@ -188,7 +188,7 @@ class LearningCallMainScreen extends ConsumerWidget {
                   ..._oneFix(context, l10n, s),
                   ..._phonemes(context, l10n, s),
                   ..._sentences(context, ref, l10n, s),
-                  ..._trend(context, l10n, s),
+                  ..._trend(context, l10n, s, callId: callId),
                 ],
               ),
             ),
@@ -372,7 +372,18 @@ class LearningCallMainScreen extends ConsumerWidget {
   }
 
   /// Section/Trend (`3569:15190`) — the chart, then the same data as a table.
-  List<Widget> _trend(BuildContext context, AppLocalizations l10n, LearningSummary s) => _section(context, 
+  ///
+  /// **「이 통화」 강조**(09-25 사장님 확정 A · Figma `__past_call` Mobile `6404:24650` · Tablet
+  /// `6404:42246`): 차트 강조를 「최신」에서 지금 리포트의 통화(`call_id`) 막대로 옮기고, 표에서는
+  /// 그 줄 배경을 칠한다. 이 통화가 최근 5개에 없으면(또는 구서버라 `call_id` 가 없으면) 차트는
+  /// 종전처럼 최신을 강조하고 표는 칠하지 않는다.
+  List<Widget> _trend(BuildContext context, AppLocalizations l10n, LearningSummary s,
+      {int? callId}) {
+    final match = callId == null
+        ? -1
+        : s.sessions.indexWhere((p) => p.callId == callId);
+    final emphasis = match >= 0 ? match : s.sessions.length - 1;
+    return _section(context, 
         label: l10n.recentSessions(s.sessions.length),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -380,10 +391,12 @@ class LearningCallMainScreen extends ConsumerWidget {
             _card(context, 
               padding: const EdgeInsets.fromLTRB(AppSpacing.s16, AppSpacing.s16,
                   AppSpacing.s16, AppSpacing.s12),
-              child: _TrendChart(sessions: s.sessions, l10n: l10n),
+              child: _TrendChart(sessions: s.sessions, l10n: l10n, emphasis: emphasis),
             ),
             const SizedBox(height: AppSpacing.s8),
             _table(context, 
+              // 표는 최신이 위(역순) — 세션 index i 는 줄 (길이 − 1 − i).
+              tintRow: match >= 0 ? s.sessions.length - 1 - match : null,
               header: [
                 _Cell.flex(l10n.colDate),
                 _Cell.fixed(l10n.colSentences, 40),
@@ -418,6 +431,7 @@ class LearningCallMainScreen extends ConsumerWidget {
           ],
         ),
       );
+  }
 
   /// 표 날짜 칸 — 세션 시각이 있으면 현지 날짜(「9월 24일」)로, 없으면 서버 문자열.
   ///
@@ -489,6 +503,7 @@ class LearningCallMainScreen extends ConsumerWidget {
     required List<_Cell> header,
     required List<List<_Cell>> rows,
     String? emptyLabel,
+    int? tintRow,
   }) {
     // 고정 열은 머리의 가장 긴 낱말까지 넓힌다(이름 열 몫은 남김) — [fitTableColumns].
     // 열 폭을 머리에서 한 번 정해 머리 · 모든 줄에 같이 쓴다.
@@ -523,15 +538,38 @@ class LearningCallMainScreen extends ConsumerWidget {
               Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
               EmptyRow(label: emptyLabel),
             ],
-            for (final r in rows) ...[
+            for (var r = 0; r < rows.length; r++) ...[
               Divider(height: 1, thickness: 1, color: context.c.lineNeutral),
-              _row(context, fit(r), vertical: 11),
+              r == tintRow
+                  ? _thisCallTint(context, _row(context, fit(rows[r]), vertical: 11))
+                  : _row(context, fit(rows[r]), vertical: 11),
             ],
           ],
         );
         }),
       );
   }
+
+  /// 「이 통화」 줄 배경(Figma `ThisCallTint`) — `Primary/Normal-10` · 모서리 8 · 줄보다 좌우 8씩
+  /// 넓게(글자 정렬은 그대로). 글자 굵기 · 색은 바꾸지 않는다.
+  Widget _thisCallTint(BuildContext context, Widget row) => Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Positioned(
+            left: -8,
+            right: -8,
+            top: 0,
+            bottom: 0,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: context.c.primaryNormal10,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          ),
+          row,
+        ],
+      );
 
   Widget _row(BuildContext context, List<_Cell> cells, {required double vertical}) => Padding(
         padding: EdgeInsets.symmetric(vertical: vertical),
@@ -621,10 +659,21 @@ class _Cell {
 /// (09-24 app designer 합의 · Figma 에 없는 규칙이라 사장님 보고 중). 60 창에 그대로 두면
 /// 0점과 60점이 똑같이 바닥에 깔린다(09-24 실기기). 눈금 선 셋 · 높이는 그대로다.
 class _TrendChart extends StatelessWidget {
-  const _TrendChart({required this.sessions, required this.l10n});
+  const _TrendChart({required this.sessions, required this.l10n, required this.emphasis});
 
   final List<SessionPoint> sessions;
   final AppLocalizations l10n;
+
+  /// 강조할 막대 — 「이 통화」, 없으면 최신(09-25 사장님 확정 A).
+  final int emphasis;
+
+  /// 날짜 눈금을 진하게 쓸 세션 — 「이 통화」와 「오늘」.
+  bool _isTodaySession(SessionPoint p) {
+    final at = p.callDate;
+    if (at == null) return p.serverSaysToday;
+    final now = DateTime.now();
+    return at.year == now.year && at.month == now.month && at.day == now.day;
+  }
 
   static const double _max = 100;
 
@@ -680,8 +729,12 @@ class _TrendChart extends StatelessWidget {
                     // the app supports.
                     for (var i = 0; i < sessions.length; i++)
                       Expanded(
-                        child:
-                            _bar(context, sessions[i], isToday: i == sessions.length - 1),
+                        child: _bar(
+                          context,
+                          sessions[i],
+                          emphasized: i == emphasis,
+                          tickStrong: i == emphasis || _isTodaySession(sessions[i]),
+                        ),
                       ),
                   ],
                 ),
@@ -791,7 +844,9 @@ class _TrendChart extends StatelessWidget {
     return today ? l10n.today : '${at.month}/${at.day}';
   }
 
-  Widget _bar(BuildContext context, SessionPoint p, {required bool isToday}) => Column(
+  Widget _bar(BuildContext context, SessionPoint p,
+          {required bool emphasized, required bool tickStrong}) =>
+      Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
@@ -803,7 +858,7 @@ class _TrendChart extends StatelessWidget {
                   child: Text(
                     // 점수 없음은 「—」 · 막대 없음.
                     p.score == null ? '—' : '${p.score}',
-                    style: isToday
+                    style: emphasized
                         ? AppType.caption2.b.copyWith(color: context.c.labelStrong)
                         : AppType.caption2.m
                             .copyWith(color: context.c.labelNormal),
@@ -819,8 +874,8 @@ class _TrendChart extends StatelessWidget {
                     width: 34,
                     height: p.score == null ? 0 : _plotHeight - _y(p.score!),
                     decoration: BoxDecoration(
-                      // Today is the point of the chart; the rest are context.
-                      color: isToday
+                      // 「이 통화」가 차트의 주인공이고 나머지는 맥락이다.
+                      color: emphasized
                           ? context.c.primaryNormal
                           : context.c.primaryNormal.withValues(alpha: 0.22),
                       borderRadius: const BorderRadius.vertical(
@@ -838,7 +893,7 @@ class _TrendChart extends StatelessWidget {
             _tick(p),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: isToday
+            style: tickStrong
                 ? AppType.caption2.m.copyWith(
                     color: context.c.labelNormal,
                     fontSize: 10,

@@ -3,6 +3,7 @@ import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/home/learning_args.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
 import 'package:beavertalk/screens/home/learning_summary.dart';
+import 'package:beavertalk/theme/app_color_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
@@ -15,7 +16,8 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   final now = DateTime.now();
 
-  SessionPoint sp(int ago, int? score, {bool withDate = true, String label = '', String date = ''}) {
+  SessionPoint sp(int ago, int? score,
+      {bool withDate = true, String label = '', String date = '', int? callId}) {
     final d = now.subtract(Duration(days: ago));
     return SessionPoint(
       label: label.isEmpty ? '${d.month}/${d.day}' : label,
@@ -23,6 +25,7 @@ void main() {
       sentences: 3,
       score: score,
       callDate: withDate ? d : null,
+      callId: callId,
     );
   }
 
@@ -158,5 +161,40 @@ void main() {
           .toSet();
       expect(tops.length, 1, reason: '「$h」 한 줄');
     }
+  });
+
+  group('「이 통화」 강조(09-25 사장님 확정 A · Figma __past_call 6404:24650)', () {
+    // 화면은 LearningArgs.callId = 1 로 연다(pump). 테마 확장이 없으면 Dark 토큰.
+    const c = AppColorTokens.dark;
+    Finder bar(Color color) => find.byWidgetPredicate((w) =>
+        w is Container &&
+        w.decoration is BoxDecoration &&
+        (w.decoration! as BoxDecoration).color == color &&
+        (w.decoration! as BoxDecoration).borderRadius ==
+            const BorderRadius.vertical(top: Radius.circular(6), bottom: Radius.circular(2)));
+    Finder tint() => find.byWidgetPredicate((w) =>
+        w is DecoratedBox &&
+        w.decoration is BoxDecoration &&
+        (w.decoration as BoxDecoration).color == c.primaryNormal10);
+
+    testWidgets('이 통화가 목록에 있으면 그 막대만 진하고 표의 그 줄을 칠한다', (tester) async {
+      await pump(tester, summary([sp(2, 80, callId: 7), sp(1, 90, callId: 1), sp(0, 70, callId: 9)]));
+      expect(bar(c.primaryNormal), findsOneWidget, reason: '진한 막대 하나');
+      expect(tester.getCenter(bar(c.primaryNormal)).dx,
+          lessThan(tester.getCenter(bar(c.primaryNormal.withValues(alpha: 0.22)).last).dx),
+          reason: '가운데(이 통화) 막대가 진하고 맨 오른쪽(최신)은 옅다');
+      expect(tint(), findsOneWidget);
+      // 칠한 줄은 이 통화(90점) 줄이다.
+      final tinted = tester.getRect(tint());
+      expect(tinted.contains(tester.getCenter(find.text('90').last)), isTrue);
+    });
+
+    testWidgets('이 통화가 목록에 없으면 최신을 강조하고 표는 칠하지 않는다', (tester) async {
+      await pump(tester, summary([sp(2, 80, callId: 7), sp(0, 70, callId: 9)]));
+      expect(bar(c.primaryNormal), findsOneWidget);
+      expect(tester.getCenter(bar(c.primaryNormal)).dx,
+          greaterThan(tester.getCenter(bar(c.primaryNormal.withValues(alpha: 0.22))).dx));
+      expect(tint(), findsNothing);
+    });
   });
 }
