@@ -435,6 +435,10 @@ class AuthController extends Notifier<AuthStatus> {
   Future<void> updateLanguage(String language) async {
     await ref.read(authRepositoryProvider).updateLanguage(language);
     ref.invalidate(myProfileProvider);
+    // 서버가 회원 언어로 번역해 주는 콘텐츠 — 안 버리면 이전 언어 설명이 남는다.
+    for (final provider in memberLanguageScopedProviders) {
+      ref.invalidate(provider);
+    }
   }
 
   /// Persists the member's **learning** language (`PATCH /members/me`

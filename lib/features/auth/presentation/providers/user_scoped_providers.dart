@@ -127,3 +127,17 @@ final List<ProviderOrFamily> intentionallyNotUserScoped = <ProviderOrFamily>[
   // 조용히 목록 가격으로 떨어지는 종류라(정의부 주석 참조) 이득 없이 느려지기만 한다.
   storePricesProvider,
 ];
+
+/// 앱 언어를 바꾸면(`AuthController.updateLanguage`) **버리는** 상태 — 서버가 회원
+/// 언어(`member.language`)로 번역해 주는 콘텐츠.
+///
+/// 요청에 언어를 싣지 않는다. 서버가 `PATCH /members/me` 로 저장된 언어를 보고 고른다.
+/// 그래서 캐시가 남으면 언어를 바꾼 뒤에도 앱을 다시 켤 때까지 이전 언어 설명이 보인다
+/// (취약 발음 설명 29개 언어 · 2026-09-25 서버 적재). 로그아웃 목록과는 축이 달라 따로 둔다
+/// — 여기 항목은 [userScopedProviders] 에도 들어 있다.
+final List<ProviderOrFamily> memberLanguageScopedProviders = <ProviderOrFamily>[
+  // 목록 카드의 소리 이름 · 설명(`label` · `card_desc`).
+  weakSoundListProvider,
+  // 과의 설명 · 뜻(`meaning`). family 라 키마다 캐시가 따로 남는다.
+  soundLessonProvider,
+];

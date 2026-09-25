@@ -14,6 +14,8 @@ import 'package:beavertalk/features/character/data/models/character_dto.dart';
 import 'package:beavertalk/features/character/domain/entities/character.dart';
 import 'package:beavertalk/features/character/presentation/providers/character_providers.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
+import 'package:beavertalk/features/weak_sound/data/models/weak_sound_dto.dart';
+import 'package:beavertalk/features/weak_sound/presentation/weak_sound_providers.dart';
 
 /// 로그아웃 시 **회원별 캐시가 남지 않는지**.
 ///
@@ -129,6 +131,38 @@ void main() {
         ..retainAll(intentionallyNotUserScoped.toSet());
       expect(overlap, isEmpty,
           reason: '같은 provider 가 지운다/안 지운다 양쪽에 있다');
+    });
+  });
+
+  // ── 앱 언어 변경 ────────────────────────────────────────────────────────────
+  group('앱 언어를 바꾸면 회원 언어 번역 캐시를 버린다', () {
+    test('취약 발음 목록이 새 언어로 다시 읽힌다', () async {
+      // `AuthController.updateLanguage` 가 PATCH 뒤에 하는 일과 같다. 서버는 요청이 아니라
+      // 저장된 회원 언어로 번역을 고르므로, 캐시를 버리지 않으면 이전 언어 설명이 남는다.
+      var reads = 0;
+      final container = ProviderContainer(overrides: [
+        weakSoundListProvider.overrideWith((ref) async {
+          reads++;
+          return WeakSoundListDto.parse(const {});
+        }),
+      ]);
+      addTearDown(container.dispose);
+
+      await container.read(weakSoundListProvider.future);
+      expect(reads, 1);
+
+      for (final provider in memberLanguageScopedProviders) {
+        container.invalidate(provider);
+      }
+
+      await container.read(weakSoundListProvider.future);
+      expect(reads, 2, reason: '언어를 바꿨는데 이전 언어 목록을 그대로 보여 준다');
+    });
+
+    test('목록 · 과 둘 다 들어 있고, 로그아웃 목록에도 있다', () {
+      expect(memberLanguageScopedProviders,
+          containsAll(<ProviderOrFamily>[weakSoundListProvider, soundLessonProvider]));
+      expect(userScopedProviders, containsAll(memberLanguageScopedProviders));
     });
   });
 
