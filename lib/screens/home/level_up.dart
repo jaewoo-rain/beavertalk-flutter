@@ -16,7 +16,7 @@ import '../../theme/app_typography.dart';
 ///
 /// 전체 화면 페이지(창이 아니다). 구조는 [OnboardingDoneScreen] 과 같다:
 /// ```
-/// (가운데 정렬 · 간격 28)
+/// (가운데 정렬 · 간격 28 — 태블릿 36)
 ///   [그림 320×236 — 별 셋 · 리본 「LEVEL UP」 · 색종이]
 ///   종합 레벨        ← overallLevel 16 Bold Primary/Heavy
 ///   (4)
@@ -65,22 +65,25 @@ class LevelUpScreen extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           SvgPicture.asset(_art, width: 320 * scale, height: 236 * scale),
-                          const SizedBox(height: 28),
+                          // 그림 ↔ 글자: 모바일 28 · 태블릿 36(Figma 6410:42233).
+                          SizedBox(height: wide ? 36 : 28),
                           Text(
                             l10n.overallLevel,
                             textAlign: TextAlign.center,
+                            // 줄높이 1.2 — Figma AUTO(16 → 상자 19 · 20 → 24).
                             style: (wide ? AppType.heading2 : AppType.body1)
                                 .b
-                                .copyWith(color: c.primaryHeavy),
+                                .copyWith(height: 1.2, color: c.primaryHeavy),
                           ),
                           const SizedBox(height: AppSpacing.s4),
                           Text(
                             l10n.levelStage(level),
                             textAlign: TextAlign.center,
                             // 40 · 48 Bold — 앱 타이포에 없는 크기라 Title 1 을 Figma 크기로 늘린다.
+                            // 줄높이 1.2 — Figma AUTO(40 → 상자 48 · 48 → 58).
                             style: AppType.title1.b.copyWith(
                               fontSize: wide ? 48 : 40,
-                              height: 1.3,
+                              height: 1.2,
                               color: c.labelStrong,
                             ),
                           ),
