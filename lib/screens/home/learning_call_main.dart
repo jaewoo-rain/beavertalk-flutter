@@ -416,8 +416,11 @@ class LearningCallMainScreen extends ConsumerWidget {
                         style: _rowValue(context)),
                     // 「점수」 열은 13 Bold · Label/Strong(Figma 최근 세션 표 · 09-24 figma-code-diff).
                     // 점수 없음(null)은 「—」 — 0 이 아니다(서버 1c83fd9 🔴2 · delta 와 같은 규칙).
+                    // 「—」 은 Label/Alternative(Figma __unscored_session Mobile 6408:17396 · Tablet 6408:42355).
                     _Cell.fixed(s.sessions[i].score == null ? '—' : '${s.sessions[i].score}', 40,
-                        style: _rowEmphasis(context.c.labelStrong)),
+                        style: _rowEmphasis(s.sessions[i].score == null
+                            ? context.c.labelAlternative
+                            : context.c.labelStrong)),
                     _Cell.fixed(
                       s.sessions[i].delta == null
                           ? '—'
@@ -603,7 +606,8 @@ Color _accuracyColor(BuildContext context, int accuracy) {
 
 /// A missing delta (the earliest session on record) is not a flat one.
 Color _deltaColor(BuildContext context, int? delta) {
-  if (delta == null) return context.c.labelNormal;
+  // 「—」(비교할 앞 채점 세션 없음)은 Label/Alternative(Figma __unscored_session 6408:17396).
+  if (delta == null) return context.c.labelAlternative;
   if (delta > 0) return context.c.primaryNormal;
   if (delta < 0) return context.c.statusNegative;
   return context.c.labelNormal;
