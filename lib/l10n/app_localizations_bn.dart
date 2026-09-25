@@ -2127,9 +2127,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get takeLevelTest => 'স্তর পরীক্ষা দিন';
 
   @override
-  String get reviewToSeeScore => 'পুনরালোচনা করলে উচ্চারণের স্কোর দেখা যাবে';
-
-  @override
   String get playAgain => 'আবার খেলুন';
 
   @override

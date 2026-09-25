@@ -2127,9 +2127,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get takeLevelTest => 'Түвшин тогтоох шалгалт өгөх';
 
   @override
-  String get reviewToSeeScore => 'Давтвал дуудлагын оноо гарна';
-
-  @override
   String get playAgain => 'Дахин тоглох';
 
   @override

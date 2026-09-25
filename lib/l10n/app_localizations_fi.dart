@@ -2145,9 +2145,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get takeLevelTest => 'Tee tasotesti';
 
   @override
-  String get reviewToSeeScore => 'Kertaa nähdäksesi ääntämispisteesi';
-
-  @override
   String get playAgain => 'Pelaa uudelleen';
 
   @override

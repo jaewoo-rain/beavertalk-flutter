@@ -2118,9 +2118,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get takeLevelTest => 'ทำแบบทดสอบระดับ';
 
   @override
-  String get reviewToSeeScore => 'ทบทวนเพื่อดูคะแนนการออกเสียง';
-
-  @override
   String get playAgain => 'เล่นอีกครั้ง';
 
   @override

@@ -2134,9 +2134,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get takeLevelTest => 'Деңгээл тестин тапшыруу';
 
   @override
-  String get reviewToSeeScore => 'Кайталасаңыз айтылыш упайы чыгат';
-
-  @override
   String get playAgain => 'Кайра ойноо';
 
   @override

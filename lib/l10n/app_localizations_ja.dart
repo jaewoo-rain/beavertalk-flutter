@@ -2069,9 +2069,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get takeLevelTest => 'レベルテストを受ける';
 
   @override
-  String get reviewToSeeScore => '復習すると発音スコアが出ます';
-
-  @override
   String get playAgain => 'もう一度';
 
   @override

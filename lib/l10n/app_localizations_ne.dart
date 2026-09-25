@@ -2125,9 +2125,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get takeLevelTest => 'स्तर परीक्षा दिनुहोस्';
 
   @override
-  String get reviewToSeeScore => 'दोहोर्‍याएपछि उच्चारण अंक देखिन्छ';
-
-  @override
   String get playAgain => 'फेरि खेल्नुहोस्';
 
   @override

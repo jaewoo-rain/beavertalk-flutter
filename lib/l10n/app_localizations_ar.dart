@@ -2118,9 +2118,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get takeLevelTest => 'خوض اختبار المستوى';
 
   @override
-  String get reviewToSeeScore => 'راجع لترى درجة نطقك';
-
-  @override
   String get playAgain => 'العب مرة أخرى';
 
   @override

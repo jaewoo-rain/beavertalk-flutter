@@ -2173,10 +2173,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get takeLevelTest => 'Passer le test de niveau';
 
   @override
-  String get reviewToSeeScore =>
-      'Révisez pour voir votre score de prononciation';
-
-  @override
   String get playAgain => 'Rejouer';
 
   @override

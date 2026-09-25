@@ -2148,9 +2148,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get takeLevelTest => 'Szintfelmérő kitöltése';
 
   @override
-  String get reviewToSeeScore => 'Ismételd át, hogy lásd a kiejtési pontszámod';
-
-  @override
   String get playAgain => 'Újra';
 
   @override

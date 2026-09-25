@@ -2126,9 +2126,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get takeLevelTest => 'ធ្វើតេស្តកម្រិត';
 
   @override
-  String get reviewToSeeScore => 'ពិនិត្យឡើងវិញ ដើម្បីមើលពិន្ទុការបញ្ចេញសំឡេង';
-
-  @override
   String get playAgain => 'លេងម្តងទៀត';
 
   @override

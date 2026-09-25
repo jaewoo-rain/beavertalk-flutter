@@ -1374,10 +1374,6 @@
   "@takeLevelTest": {
     "description": "CTA on the level card when the user has never taken the test."
   },
-  "reviewToSeeScore": "Review to see your pronunciation score",
-  "@reviewToSeeScore": {
-    "description": "Hint under the pronunciation gauge when there is no score yet."
-  },
   "playAgain": "Play Again",
   "@playAgain": {
     "description": "Pronunciation challenge - restart the run from the result screen."

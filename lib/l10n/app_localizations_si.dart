@@ -2127,9 +2127,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get takeLevelTest => 'මට්ටම් පරීක්ෂණය කරන්න';
 
   @override
-  String get reviewToSeeScore => 'නැවත බලා උච්චාරණ ලකුණු බලන්න';
-
-  @override
   String get playAgain => 'නැවත සෙල්ලම් කරන්න';
 
   @override

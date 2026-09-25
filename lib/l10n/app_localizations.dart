@@ -3964,12 +3964,6 @@ abstract class AppLocalizations {
   /// **'Take level test'**
   String get takeLevelTest;
 
-  /// Hint under the pronunciation gauge when there is no score yet.
-  ///
-  /// In en, this message translates to:
-  /// **'Review to see your pronunciation score'**
-  String get reviewToSeeScore;
-
   /// Pronunciation challenge - restart the run from the result screen.
   ///
   /// In en, this message translates to:

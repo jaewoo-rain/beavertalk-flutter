@@ -2150,10 +2150,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get takeLevelTest => 'Kumuha ng level test';
 
   @override
-  String get reviewToSeeScore =>
-      'Mag-review para makita ang iskor ng bigkas mo';
-
-  @override
   String get playAgain => 'Ulitin';
 
   @override

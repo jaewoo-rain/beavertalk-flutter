@@ -2148,9 +2148,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get takeLevelTest => 'Ambil ujian tahap';
 
   @override
-  String get reviewToSeeScore => 'Ulang kaji untuk melihat skor sebutan anda';
-
-  @override
   String get playAgain => 'Main semula';
 
   @override

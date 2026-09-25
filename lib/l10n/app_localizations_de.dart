@@ -2163,10 +2163,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get takeLevelTest => 'Einstufungstest machen';
 
   @override
-  String get reviewToSeeScore =>
-      'Wiederhole, um deine Aussprachebewertung zu sehen';
-
-  @override
   String get playAgain => 'Nochmal spielen';
 
   @override

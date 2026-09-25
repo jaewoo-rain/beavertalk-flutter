@@ -2128,9 +2128,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get takeLevelTest => 'Seviye testine gir';
 
   @override
-  String get reviewToSeeScore => 'Tekrar edince telaffuz puanınız çıkar';
-
-  @override
   String get playAgain => 'Tekrar oyna';
 
   @override

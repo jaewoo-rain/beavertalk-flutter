@@ -2143,9 +2143,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get takeLevelTest => 'အဆင့်စစ်ဆေးမှု ဖြေဆိုရန်';
 
   @override
-  String get reviewToSeeScore => 'ပြန်လေ့လာပါက အသံထွက်ရမှတ် ပေါ်လာပါမည်';
-
-  @override
   String get playAgain => 'ထပ်ကစားရန်';
 
   @override

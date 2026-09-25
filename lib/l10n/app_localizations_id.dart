@@ -2136,9 +2136,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get takeLevelTest => 'Ikuti tes level';
 
   @override
-  String get reviewToSeeScore => 'Ulas kembali untuk melihat skor pelafalanmu';
-
-  @override
   String get playAgain => 'Main lagi';
 
   @override

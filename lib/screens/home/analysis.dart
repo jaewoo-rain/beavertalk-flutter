@@ -320,9 +320,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                     ? PronunciationState.inactive
                     : PronunciationState.active,
                 score: total ?? 0,
-                // Why the gauge reads -%. Injected here rather than baked into
-                // the component: mypage shares it and its reason is different.
-                hint: total == null ? l10n.reviewToSeeScore : null,
+                // No hint under "-%" — 사용자 지시(09-25)로 「복습하면 발음 점수가
+                // 나와요」 안내를 뺐다. 게이지 ↔ 카드 간격은 아래 s24 그대로.
                 metrics: [
                   PronunciationMetric(
                     label: l10n.pronunciation,

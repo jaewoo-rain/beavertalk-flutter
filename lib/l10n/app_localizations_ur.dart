@@ -2133,9 +2133,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get takeLevelTest => 'سطح کا امتحان دیں';
 
   @override
-  String get reviewToSeeScore => 'دہرانے پر تلفظ کا اسکور نظر آئے گا';
-
-  @override
   String get playAgain => 'دوبارہ کھیلیں';
 
   @override

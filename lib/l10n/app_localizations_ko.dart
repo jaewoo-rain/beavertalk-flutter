@@ -2070,9 +2070,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get takeLevelTest => '레벨 테스트 받기';
 
   @override
-  String get reviewToSeeScore => '복습하면 발음 점수가 나와요';
-
-  @override
   String get playAgain => '다시 하기';
 
   @override

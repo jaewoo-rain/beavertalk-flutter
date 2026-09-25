@@ -2141,9 +2141,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get takeLevelTest => 'Пройти тест уровня';
 
   @override
-  String get reviewToSeeScore => 'Повторите, чтобы увидеть оценку произношения';
-
-  @override
   String get playAgain => 'Играть снова';
 
   @override

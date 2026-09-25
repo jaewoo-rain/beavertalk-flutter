@@ -2143,9 +2143,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get takeLevelTest => 'Daraja testini topshirish';
 
   @override
-  String get reviewToSeeScore => 'Takrorlasangiz talaffuz ballingiz chiqadi';
-
-  @override
   String get playAgain => 'Qayta o\'ynash';
 
   @override

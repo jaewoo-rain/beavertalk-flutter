@@ -2131,9 +2131,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get takeLevelTest => 'Làm bài kiểm tra trình độ';
 
   @override
-  String get reviewToSeeScore => 'Ôn tập để xem điểm phát âm';
-
-  @override
   String get playAgain => 'Chơi lại';
 
   @override

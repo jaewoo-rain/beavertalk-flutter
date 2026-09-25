@@ -2150,10 +2150,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get takeLevelTest => 'Hacer prueba de nivel';
 
   @override
-  String get reviewToSeeScore =>
-      'Repasa para ver tu puntuación de pronunciación';
-
-  @override
   String get playAgain => 'Jugar de nuevo';
 
   @override

@@ -2065,9 +2065,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get takeLevelTest => '参加等级测试';
 
   @override
-  String get reviewToSeeScore => '复习后就会出现发音分数';
-
-  @override
   String get playAgain => '再玩一次';
 
   @override

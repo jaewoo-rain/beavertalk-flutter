@@ -2129,9 +2129,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get takeLevelTest => 'स्तर परीक्षा दें';
 
   @override
-  String get reviewToSeeScore => 'दोहराने पर उच्चारण स्कोर दिखेगा';
-
-  @override
   String get playAgain => 'फिर से खेलें';
 
   @override
