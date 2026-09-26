@@ -353,6 +353,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.restoreEmpty:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           title: l10n.ovRestoreEmptyTitle,
           body: l10n.ovRestoreEmptyBody,
           primaryAction: SheetAction(
@@ -363,6 +364,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.restoreOtherAccount:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           title: l10n.ovRestoreOtherTitle,
           body: l10n.ovRestoreOtherBody,
           primaryAction: SheetAction(
@@ -373,6 +375,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.characterOffer:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovCharacterOfferTitle,
           body: l10n.ovCharacterOfferBody,
@@ -402,6 +405,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.cancelDownsell:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovCancelDownsellTitle,
           body: l10n.ovCancelDownsellBody,
@@ -433,6 +437,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.annualSwitch:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovAnnualSwitchTitle(PlanPrices.maxYearlySaved),
           body: l10n.ovAnnualSwitchBody,
@@ -460,6 +465,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.monthlySwitch:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 배치 · Figma 6465:4667)
           type: SheetContentType.rows,
           title: l10n.ovMonthlySwitchTitle,
           body: l10n.ovMonthlySwitchBody(_date(context, expiresAt)),
@@ -615,6 +621,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.purchaseFailedDeclined:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 확정 「이대로 가」)
           title: l10n.ovFailedDeclinedTitle,
           body: l10n.ovFailedDeclinedBody,
           mark: SheetMarkTone.error,
@@ -626,6 +633,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.purchaseFailedCanceled:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 확정 「이대로 가」)
           title: l10n.ovFailedCanceledTitle,
           body: l10n.ovFailedCanceledBody,
           primaryAction: SheetAction(
@@ -639,6 +647,7 @@ class _OverlaySheet extends StatelessWidget {
         );
       case SubscriptionOverlay.purchaseFailedStore:
         return BottomSheetContent(
+          secondaryOnTop: true, // CTA 아래(09-26 사용자 확정 「이대로 가」)
           title: l10n.ovFailedStoreTitle,
           body: l10n.ovFailedStoreBody,
           mark: SheetMarkTone.error,

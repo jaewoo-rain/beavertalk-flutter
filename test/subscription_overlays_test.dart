@@ -1,3 +1,4 @@
+import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet_content.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
@@ -290,5 +291,50 @@ void main() {
       expect(find.text("Let's wrap up this call."), findsOneWidget);
       expect(find.textContaining('tomorrow'), findsNothing);
     });
+  });
+
+  // 09-26 사용자가 화면별로 UX · CTA 를 보고 배치했다(Figma Workspace 6465:4667 · 디자인 세션 경유).
+  // 기본값이 아니라 화면마다 정한다 — CTA 아래 / CTA 위를 각각 못박는다.
+  group('버튼 순서 — 화면별 사용자 배치', () {
+    double topOf(WidgetTester tester, BtnType type) {
+      final f = find.byWidgetPredicate((w) => w is Button && w.type == type);
+      expect(f, findsOneWidget, reason: '$type 버튼이 하나가 아니다');
+      return tester.getTopLeft(f).dy;
+    }
+
+    const secondaryFirst = [
+      SubscriptionOverlay.restoreEmpty,
+      SubscriptionOverlay.restoreOtherAccount,
+      SubscriptionOverlay.characterOffer,
+      SubscriptionOverlay.cancelDownsell,
+      SubscriptionOverlay.annualSwitch,
+      SubscriptionOverlay.monthlySwitch,
+      SubscriptionOverlay.cancelSubscription,
+      SubscriptionOverlay.paymentUpdate,
+      SubscriptionOverlay.resubscribe,
+      SubscriptionOverlay.purchaseFailedDeclined,
+      SubscriptionOverlay.purchaseFailedCanceled,
+      SubscriptionOverlay.purchaseFailedStore,
+    ];
+    for (final overlay in secondaryFirst) {
+      testWidgets('${overlay.name}: CTA 아래', (tester) async {
+        await pumpHost(tester, overlay);
+        expect(topOf(tester, BtnType.secondaryFill),
+            lessThan(topOf(tester, BtnType.primaryFill)));
+      });
+    }
+
+    const primaryFirst = [
+      SubscriptionOverlay.refundHelp,
+      SubscriptionOverlay.alreadySubscribed,
+      SubscriptionOverlay.notEligible,
+    ];
+    for (final overlay in primaryFirst) {
+      testWidgets('${overlay.name}: CTA 위', (tester) async {
+        await pumpHost(tester, overlay);
+        expect(topOf(tester, BtnType.primaryFill),
+            lessThan(topOf(tester, BtnType.secondaryFill)));
+      });
+    }
   });
 }

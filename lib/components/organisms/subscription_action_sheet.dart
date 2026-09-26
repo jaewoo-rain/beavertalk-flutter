@@ -204,18 +204,8 @@ class SubscriptionActionSheet extends StatelessWidget {
               ),
             ),
           ),
-          ContentColumn(
-            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 0),
-            child: SizedBox(
-              width: double.infinity,
-              child: Button(
-                type: BtnType.primaryFill,
-                size: BtnSize.s60,
-                text: primaryAction.label,
-                onPressed: primaryAction.onPressed,
-              ),
-            ),
-          ),
+          // 보조 위 · 주요 아래(P33) — 09-26 사용자가 Figma `BottomSheet/Subscription`
+          // (`176:14577`)을 직접 이 순서로 고쳤다(디자인 세션 경유). 그 전엔 주요 위.
           if (secondaryAction != null)
             ContentColumn(
               padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 0),
@@ -229,6 +219,18 @@ class SubscriptionActionSheet extends StatelessWidget {
                 ),
               ),
             ),
+          ContentColumn(
+            padding: const EdgeInsets.only(top: AppSpacing.s12, bottom: 0),
+            child: SizedBox(
+              width: double.infinity,
+              child: Button(
+                type: BtnType.primaryFill,
+                size: BtnSize.s60,
+                text: primaryAction.label,
+                onPressed: primaryAction.onPressed,
+              ),
+            ),
+          ),
           const SafeArea(
             top: false,
             minimum: EdgeInsets.only(bottom: AppSpacing.s24),

@@ -388,6 +388,8 @@ class _CallRatingSheetState extends State<CallRatingSheet> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return BottomSheetContent(
+      // Skip 위 · Submit 아래(09-26 사용자 배치 · Figma CallRating 6436:2338).
+      secondaryOnTop: true,
       title: l10n.callRatingPrompt,
       body: l10n.callRatingBody,
       primaryAction: SheetAction(

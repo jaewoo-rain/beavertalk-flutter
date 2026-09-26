@@ -101,10 +101,9 @@ class SheetStreakDay {
 ///
 /// Fifteen of the nineteen subscription overlays are instances of this one
 /// component (work order §3-2), so its shape is load-bearing: grabber → mark →
-/// header → content → benefit → caption → CTA, with the CTA block stacking the
-/// primary action **above** the secondary (unlike the legacy `BottomSheet`
-/// organism, whose two-button column is secondary-first — that is why the CTA
-/// is built here rather than delegated).
+/// header → content → benefit → caption → CTA. CTA 두 버튼의 위 · 아래는 화면마다
+/// [secondaryOnTop] 으로 정한다(09-26 사용자 화면별 배치) — 그래서 CTA 는 옛 `BottomSheet`
+/// 두 버튼형에 맡기지 않고 여기서 짓는다.
 ///
 /// This is the sheet body only. Presenting it modally, the dim scrim and the
 /// close conventions (dim tap closes, sheet body does nothing, closing never
@@ -185,16 +184,23 @@ class BottomSheetContent extends StatelessWidget {
   /// sheet into the card form (screen-background surface).
   final Widget? child;
 
-  /// Main CTA — always present, always on top.
+  /// Main CTA — always present. 위 · 아래는 [secondaryOnTop] 이 정한다.
   final SheetAction primaryAction;
 
-  /// Quiet CTA below the main one (`Not now` / `Close`). These only ever
-  /// dismiss; spec §7-2 forbids a closing action from changing any state.
+  /// Quiet CTA (`Not now` / `Close`). These only ever dismiss; spec §7-2
+  /// forbids a closing action from changing any state.
   final SheetAction? secondaryAction;
 
-  /// 보조 버튼을 **위**, 주요 버튼을 아래에 둔다. 기본(false)은 주요 위 — 구독 오버레이 15종의
-  /// 정본 순서다. 캐릭터 구매 완료(`iap_result__success`)는 Figma `BottomSheet` 두 버튼형이라
-  /// 「홈으로」 위 · 「바로 사용하기」 아래(09-24 버튼 쌍 세로 확정).
+  /// 보조 버튼을 **위**, 주요 버튼을 아래에 둔다. 기본(false)은 주요 위.
+  ///
+  /// ⛔ 기본값을 뒤집지 마라 — **화면마다 정한다.** 09-26 사용자가 화면별로 UX · CTA 를 보고
+  /// 배치했다(「주요버튼이라기보다는 사용자 UX와 CTA를 고려해서 내가 배치했음」 · 정본 Figma
+  /// Workspace `6465:4667` · 디자인 세션 경유).
+  /// - true(CTA 아래): 통화 평가 · 복원 없음 · 복원 다른 계정 · 해지 다운셀 · 연간/월간 전환 ·
+  ///   캐릭터 제안 · 학습 마이크 권한 · 캐릭터 구매 완료 · 결제 오류 3종(사용자 「이대로 가」)
+  /// - false(CTA 위): 환불 도움 · 이미 구독 · 해지 대상 아님
+  /// - 나머지 구독 오버레이(체험 종료 · 체험 시작 · 연간 제안 · 통화 한도 · 통화 종료 등)는 09-26
+  ///   목록에 없어 종전(false) 유지 · 디자인 세션 확인 대기
   final bool secondaryOnTop;
 
   // 시트는 전폭이다(정본 규격: 「전폭 유지. 하단 정렬. 내부만 콘텐츠

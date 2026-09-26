@@ -149,6 +149,8 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
       barrierColor: context.c.materialDim,
       isScrollControlled: true,
       builder: (sheetCtx) => BottomSheetContent(
+        // 「나중에」 위 · 「설정 열기」 아래(09-26 사용자 배치 · Figma 6277:37887).
+        secondaryOnTop: true,
         title: l10n.micPermissionNeededTitle,
         body: l10n.wsMicPermissionBody,
         primaryAction: SheetAction(

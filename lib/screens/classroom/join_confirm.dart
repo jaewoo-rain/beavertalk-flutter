@@ -6,6 +6,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
+import '../../components/molecules/stacked_button_pair.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/classroom/presentation/join_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -41,41 +42,38 @@ class JoinConfirmScreen extends ConsumerWidget {
       background: c.backgroundNormalNormal,
       // 하단 인셋은 [BottomCtaBar] 가 한 곳에서 정한다 — 화면마다 손으로 짜면
       // 기기별 안전영역이 어긋난다.
+      // 「코드 다시 입력」 위 · 「네, 맞아요」 아래(P33) — 09-26 사용자가 Figma 공용 시트를 이
+      // 순서로 고치며 hw_join_confirm(`5682:6280`)도 함께 바뀌었다(디자인 세션 경유).
       bottomBar: BottomCtaBar(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Button(
-              type: BtnType.primaryFill,
-              size: BtnSize.s60,
-              text: l10n.hwJoinConfirmYes,
-              // ⭐ **쓰던 이름이 있으면 이름 화면을 건너뛴다**(2026-09-04 사장님 지시).
-              //    나가기가 명단 행을 지우지 않으므로 서버가 그 이름을 그대로 갖고
-              //    있다 — 이미 아는 것을 다시 묻지 않는다.
-              //    ⛔ 동의는 건너뛰지 않는다. 나가기는 공유를 끊은 것이고, 다시
-              //      들어오는 것은 다시 공유하겠다는 뜻이라 새로 받아야 한다.
-              onPressed: () {
-                final known = preview.knownMember;
-                final name = preview.rosterName ?? '';
-                if (known && name.isNotEmpty) {
-                  ref
-                      .read(joinDraftProvider.notifier)
-                      .setProfile(rosterName: name, studentNo: '');
-                  Navigator.of(context).pushNamed(Routes.classroomJoinConsent);
-                  return;
-                }
-                Navigator.of(context).pushNamed(Routes.classroomJoinProfile);
-              },
-            ),
-            const SizedBox(height: AppSpacing.s12),
-            Button(
-              type: BtnType.secondaryFill,
-              size: BtnSize.s60,
-              text: l10n.hwJoinConfirmRetry,
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-          ],
+        child: StackedButtonPair(
+          top: Button(
+            type: BtnType.secondaryFill,
+            size: BtnSize.s60,
+            text: l10n.hwJoinConfirmRetry,
+            onPressed: () => Navigator.of(context).pop(),
+          ),
+          bottom: Button(
+            type: BtnType.primaryFill,
+            size: BtnSize.s60,
+            text: l10n.hwJoinConfirmYes,
+            // ⭐ **쓰던 이름이 있으면 이름 화면을 건너뛴다**(2026-09-04 사장님 지시).
+            //    나가기가 명단 행을 지우지 않으므로 서버가 그 이름을 그대로 갖고
+            //    있다 — 이미 아는 것을 다시 묻지 않는다.
+            //    ⛔ 동의는 건너뛰지 않는다. 나가기는 공유를 끊은 것이고, 다시
+            //      들어오는 것은 다시 공유하겠다는 뜻이라 새로 받아야 한다.
+            onPressed: () {
+              final known = preview.knownMember;
+              final name = preview.rosterName ?? '';
+              if (known && name.isNotEmpty) {
+                ref
+                    .read(joinDraftProvider.notifier)
+                    .setProfile(rosterName: name, studentNo: '');
+                Navigator.of(context).pushNamed(Routes.classroomJoinConsent);
+                return;
+              }
+              Navigator.of(context).pushNamed(Routes.classroomJoinProfile);
+            },
+          ),
         ),
       ),
       body: Column(
