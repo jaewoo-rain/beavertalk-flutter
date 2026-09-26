@@ -59,10 +59,8 @@ Future<void> showArticulationSheet(
     backgroundColor: Colors.transparent,
     barrierColor: context.c.materialDim,
     isScrollControlled: true,
-    builder: (sheetCtx) => _ArticulationSheet(
-      data: data,
-      onPlayNative: onPlayNative,
-    ),
+    builder: (sheetCtx) =>
+        _ArticulationSheet(data: data, onPlayNative: onPlayNative),
   );
 }
 
@@ -76,59 +74,65 @@ class _ArticulationSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    return SafeArea(
-      top: false,
-      child: Container(
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: c.backgroundElevatedAlternative,
-          borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(AppSpacing.s24),
-          ),
+    // 바닥에 붙는 전폭 시트 — 바깥에 SafeArea 를 두르지 않는다(시트 전체가 인셋만큼 바닥에서
+    // 떠 그 아래로 어둡게 비쳤다). 인셋은 맨 아래 SafeArea 가 시트 **안쪽**에서 비운다 —
+    // 버튼 ↔ 바닥 = max(인셋, 24), 다른 시트와 같다(09-26 바텀시트 전수조사 · Figma
+    // `Dialog/Articulation` `5267:1167` 34).
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: c.backgroundElevatedAlternative,
+        borderRadius: const BorderRadius.vertical(
+          top: Radius.circular(AppSpacing.s24),
         ),
-        padding: const EdgeInsets.fromLTRB(
-          AppSpacing.s20,
-          AppSpacing.s12,
-          AppSpacing.s20,
-          AppSpacing.s20,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: c.lineNeutral,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+      ),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.s20,
+        AppSpacing.s12,
+        AppSpacing.s20,
+        0,
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Center(
+            child: Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: c.lineNeutral,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            const SizedBox(height: AppSpacing.s20),
-            _wordHeader(context, l10n),
-            const SizedBox(height: AppSpacing.s20),
-            _diagrams(context, l10n),
-            if (data.description != null) ...[
-              const SizedBox(height: AppSpacing.s16),
-              Text(
-                data.description!,
-                style: AppType.label2.r.copyWith(color: c.labelNeutral),
-              ),
-            ],
-            if (data.cues.isNotEmpty) ...[
-              const SizedBox(height: AppSpacing.s12),
-              Wrap(
-                spacing: AppSpacing.s8,
-                runSpacing: AppSpacing.s8,
-                children: [for (final cue in data.cues) _tag(context, cue)],
-              ),
-            ],
-            const SizedBox(height: AppSpacing.s20),
-            _actions(context, l10n),
+          ),
+          const SizedBox(height: AppSpacing.s20),
+          _wordHeader(context, l10n),
+          const SizedBox(height: AppSpacing.s20),
+          _diagrams(context, l10n),
+          if (data.description != null) ...[
+            const SizedBox(height: AppSpacing.s16),
+            Text(
+              data.description!,
+              style: AppType.label2.r.copyWith(color: c.labelNeutral),
+            ),
           ],
-        ),
+          if (data.cues.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.s12),
+            Wrap(
+              spacing: AppSpacing.s8,
+              runSpacing: AppSpacing.s8,
+              children: [for (final cue in data.cues) _tag(context, cue)],
+            ),
+          ],
+          const SizedBox(height: AppSpacing.s20),
+          _actions(context, l10n),
+          const SafeArea(
+            top: false,
+            minimum: EdgeInsets.only(bottom: AppSpacing.s24),
+            child: SizedBox.shrink(),
+          ),
+        ],
       ),
     );
   }
@@ -198,8 +202,9 @@ class _ArticulationSheet extends StatelessWidget {
           padding: const EdgeInsets.only(top: AppSpacing.s48),
           child: Text(
             '→',
-            style: AppType.headline1.b
-                .copyWith(color: context.c.labelAlternative),
+            style: AppType.headline1.b.copyWith(
+              color: context.c.labelAlternative,
+            ),
           ),
         ),
         Expanded(
@@ -228,24 +233,22 @@ class _ArticulationSheet extends StatelessWidget {
       children: [
         Text(
           caption,
-          style: (emphasised ? AppType.label2.b : AppType.label2.r)
-              .copyWith(color: labelColour),
+          style: (emphasised ? AppType.label2.b : AppType.label2.r).copyWith(
+            color: labelColour,
+          ),
         ),
         const SizedBox(height: AppSpacing.s8),
         // 도해는 그림 자체가 다크 카드라 라운드만 준다 — 배경을 또 깔 필요가 없다.
         ClipRRect(
           borderRadius: BorderRadius.circular(AppSpacing.s12),
-          child: Image.asset(
-            diagram.asset,
-            width: width,
-            fit: BoxFit.contain,
-          ),
+          child: Image.asset(diagram.asset, width: width, fit: BoxFit.contain),
         ),
         const SizedBox(height: AppSpacing.s8),
         Text(
           diagram.jamo,
-          style: (emphasised ? AppType.label2.b : AppType.label2.r)
-              .copyWith(color: labelColour),
+          style: (emphasised ? AppType.label2.b : AppType.label2.r).copyWith(
+            color: labelColour,
+          ),
         ),
       ],
     );
