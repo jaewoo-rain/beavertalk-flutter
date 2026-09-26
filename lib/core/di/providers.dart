@@ -18,7 +18,9 @@ final dioProvider = Provider<Dio>((ref) {
 
   final auth = AuthInterceptor(
     onSessionExpired: () {
-      ref.read(authControllerProvider.notifier).onSessionExpired();
+      ref
+          .read(authControllerProvider.notifier)
+          .onSessionExpired(reason: 'API 401');
     },
   );
   // Let the auth interceptor replay a request through this same client after a
@@ -51,7 +53,9 @@ final b2bDioProvider = Provider<Dio>((ref) {
 
   final auth = AuthInterceptor(
     onSessionExpired: () {
-      ref.read(authControllerProvider.notifier).onSessionExpired();
+      ref
+          .read(authControllerProvider.notifier)
+          .onSessionExpired(reason: 'B2B API 401');
     },
   );
   auth.retryDio = dio;

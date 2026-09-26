@@ -92,7 +92,9 @@ class _AuthGateState extends ConsumerState<AuthGate> {
       // session. For non-auth errors, show a retry instead of bouncing.
       if (error is UnauthorizedFailure) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(authControllerProvider.notifier).onSessionExpired();
+          ref
+              .read(authControllerProvider.notifier)
+              .onSessionExpired(reason: 'members/me 401');
         });
         return const _Splash();
       }

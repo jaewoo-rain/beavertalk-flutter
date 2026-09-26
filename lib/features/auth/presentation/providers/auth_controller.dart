@@ -68,7 +68,13 @@ class AuthController extends Notifier<AuthStatus> {
   /// a refresh-restored session flips the gate automatically.
   Future<void> bootstrap() async {
     _subscribeOnce();
-    state = _client.auth.currentSession != null
+    final session = _client.auth.currentSession;
+    // 시작할 때 저장된 세션이 없으면 로그인 화면은 401 이 아니라 이 줄에서 나온다
+    // (PM-DEC-056 진단 — 업데이트 뒤 로그아웃이 어느 경로인지 가른다).
+    debugPrint(session == null
+        ? '[auth] 시작 — 저장된 세션 없음 → 로그인 화면'
+        : '[auth] 시작 — 저장된 세션 있음 (만료=${session.isExpired})');
+    state = session != null
         ? AuthStatus.authenticated
         : AuthStatus.unauthenticated;
   }
@@ -126,6 +132,10 @@ class AuthController extends Notifier<AuthStatus> {
             state = AuthStatus.authenticated;
           }
         case AuthChangeEvent.signedOut:
+          // 앱이 부른 signOut(로그아웃·만료 처리) 뒤에도 오지만, Supabase 가 스스로
+          // 세션을 버릴 때(갱신 토큰 거절 · 복원 실패)는 이것만 온다 — 경로를 가르는 로그.
+          debugPrint('[auth] Supabase signedOut 이벤트 (state=${state.name}, '
+              'rejected=$_sessionRejected)');
           _clearUserScopedState();
           if (state != AuthStatus.unauthenticated) {
             state = AuthStatus.unauthenticated;
@@ -402,6 +412,7 @@ class AuthController extends Notifier<AuthStatus> {
   /// login. The `onAuthStateChange` listener also flips the gate, but we set it
   /// here too for immediacy.
   Future<void> logout() async {
+    debugPrint('[auth] 명시 로그아웃');
     // Delete this device's FCM token BEFORE signOut, while the session is still
     // valid — the `signedOut` listener also unregisters, but by then signOut()
     // has cleared the session so its `DELETE /devices` is unauthenticated (401)
@@ -509,10 +520,14 @@ class AuthController extends Notifier<AuthStatus> {
   /// Called by the auth interceptor on a 401. Best-effort sign-out, drops the
   /// cached profile, and marks the session expired so AuthGate shows login
   /// (prevents the next user briefly seeing stale member info).
-  void onSessionExpired() {
+  ///
+  /// [reason] only feeds the `[auth]` log (PM-DEC-056) — which path signed the
+  /// member out.
+  void onSessionExpired({String reason = 'unknown'}) {
     // 이미 만료 처리(미인증)했으면 재실행 금지 — AuthGate 가 에러 프레임마다 이걸
     // 스케줄해 생기는 signOut/무효화 churn 과 /members/me 401 재조회 폭주를 끊는다.
     if (state == AuthStatus.unauthenticated) return;
+    debugPrint('[auth] 세션 만료 처리 → 로그아웃 ($reason)');
     _sessionRejected = true; // 명시 재로그인 전까지 백그라운드 리프레시로 되살리지 않음
     // Best-effort: don't await (interceptor callback is sync); errors ignored.
     _client.auth.signOut().ignore();
