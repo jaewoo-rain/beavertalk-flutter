@@ -1641,7 +1641,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get successProTitle => 'Premium on nyt käytössä.';
 
   @override
-  String get successMaxTitle => 'Nyt näet heidät.';
+  String get successMaxTitle => 'Nyt näet, kenen kanssa puhut.';
 
   @override
   String get successMaxSub =>

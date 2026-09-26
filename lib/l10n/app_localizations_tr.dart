@@ -1630,7 +1630,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get successProTitle => 'Artık Premium\'dasın.';
 
   @override
-  String get successMaxTitle => 'Artık onları görebilirsin.';
+  String get successMaxTitle => 'Artık kiminle konuştuğunu görebilirsin.';
 
   @override
   String get successMaxSub =>

@@ -3067,7 +3067,7 @@ abstract class AppLocalizations {
   /// No description provided for @successMaxTitle.
   ///
   /// In en, this message translates to:
-  /// **'You can see them now.'**
+  /// **'Now you can see each other.'**
   String get successMaxTitle;
 
   /// No description provided for @successMaxSub.

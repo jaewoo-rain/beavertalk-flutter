@@ -1652,7 +1652,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get successProTitle => 'Nasa Premium ka na.';
 
   @override
-  String get successMaxTitle => 'Makikita mo na sila ngayon.';
+  String get successMaxTitle => 'Makikita mo na kung sino ang kausap mo.';
 
   @override
   String get successMaxSub =>

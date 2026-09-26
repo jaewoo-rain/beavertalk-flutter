@@ -1629,7 +1629,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get successProTitle => 'आप Premium पर हैं।';
 
   @override
-  String get successMaxTitle => 'अब आप उन्हें देख सकते हैं।';
+  String get successMaxTitle => 'अब आप एक-दूसरे को देख सकते हैं।';
 
   @override
   String get successMaxSub =>

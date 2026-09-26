@@ -1620,7 +1620,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get successProTitle => 'คุณได้ Premium แล้ว';
 
   @override
-  String get successMaxTitle => 'ตอนนี้คุณเห็นหน้าพวกเขาแล้ว';
+  String get successMaxTitle => 'ตอนนี้เห็นหน้ากันแล้ว';
 
   @override
   String get successMaxSub =>

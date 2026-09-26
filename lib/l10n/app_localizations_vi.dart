@@ -1632,7 +1632,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get successProTitle => 'Bạn đã có Premium.';
 
   @override
-  String get successMaxTitle => 'Giờ bạn đã nhìn thấy họ.';
+  String get successMaxTitle => 'Giờ bạn đã có thể nhìn thấy nhau.';
 
   @override
   String get successMaxSub =>

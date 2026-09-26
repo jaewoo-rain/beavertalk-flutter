@@ -1634,7 +1634,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get successProTitle => 'Сиз Premium пландасыз.';
 
   @override
-  String get successMaxTitle => 'Эми аларды көрө аласыз.';
+  String get successMaxTitle => 'Эми бири-бириңизди көрө аласыз.';
 
   @override
   String get successMaxSub =>

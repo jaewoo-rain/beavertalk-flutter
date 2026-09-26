@@ -1645,7 +1645,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get successProTitle => 'Anda kini di Premium.';
 
   @override
-  String get successMaxTitle => 'Anda boleh melihat mereka sekarang.';
+  String get successMaxTitle => 'Kini anda boleh melihat rakan berbual anda.';
 
   @override
   String get successMaxSub =>

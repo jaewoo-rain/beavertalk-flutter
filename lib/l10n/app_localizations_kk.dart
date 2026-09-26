@@ -1628,7 +1628,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get successProTitle => 'Сіз енді Premium-дасыз.';
 
   @override
-  String get successMaxTitle => 'Енді оларды көре аласыз.';
+  String get successMaxTitle => 'Енді бір-біріңізді көре аласыз.';
 
   @override
   String get successMaxSub =>

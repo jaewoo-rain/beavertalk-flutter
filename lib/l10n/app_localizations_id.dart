@@ -1636,7 +1636,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get successProTitle => 'Kamu sudah di Premium.';
 
   @override
-  String get successMaxTitle => 'Sekarang kamu bisa melihat mereka.';
+  String get successMaxTitle => 'Sekarang kamu bisa lihat lawan bicaramu.';
 
   @override
   String get successMaxSub =>

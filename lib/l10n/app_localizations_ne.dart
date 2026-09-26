@@ -1628,7 +1628,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get successProTitle => 'तपाईं अब Premium मा हुनुहुन्छ।';
 
   @override
-  String get successMaxTitle => 'अब उनीहरूलाई देख्न सक्नुहुन्छ।';
+  String get successMaxTitle => 'अब एक-अर्कालाई देख्न सक्नुहुन्छ।';
 
   @override
   String get successMaxSub =>

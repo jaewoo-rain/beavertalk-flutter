@@ -1631,7 +1631,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get successProTitle => 'អ្នកនៅលើ Premium ហើយ។';
 
   @override
-  String get successMaxTitle => 'ឥឡូវអ្នកអាចមើលឃើញពួកគេ។';
+  String get successMaxTitle => 'ឥឡូវអ្នកអាចមើលឃើញគ្នាបានហើយ។';
 
   @override
   String get successMaxSub =>

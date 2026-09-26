@@ -289,4 +289,15 @@ void main() {
       expect(de.paywallMaxTitle, isNot(contains('sie sehen')));
     });
   });
+
+  test('PM-DEC-066 — 결제 성공 제목도 원문 「이제 얼굴이 보여요.」 뜻 · 「them」 없음', () async {
+    Future<String> title(String loc) async =>
+        (await AppLocalizations.delegate.load(Locale(loc))).successMaxTitle;
+    expect(await title('ko'), '이제 얼굴이 보여요.');
+    expect(await title('ja'), '顔が見えるようになりました。');
+    expect(await title('zh'), '现在可以看见对方了。', reason: '对方 = 상대방, 가리킬 대상 불필요 — 유지');
+    expect(await title('en'), 'Now you can see each other.');
+    expect(await title('de'), isNot(contains('sie sehen')));
+    expect(await title('th'), isNot(contains('พวกเขา')));
+  });
 }

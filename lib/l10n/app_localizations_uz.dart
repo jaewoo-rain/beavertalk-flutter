@@ -1640,7 +1640,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get successProTitle => 'Siz Premium tarifdasiz.';
 
   @override
-  String get successMaxTitle => 'Endi ularni koʻra olasiz.';
+  String get successMaxTitle => 'Endi bir-biringizni koʻra olasiz.';
 
   @override
   String get successMaxSub =>

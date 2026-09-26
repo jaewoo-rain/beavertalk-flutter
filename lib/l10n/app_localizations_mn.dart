@@ -1629,7 +1629,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get successProTitle => 'Та Premium боллоо.';
 
   @override
-  String get successMaxTitle => 'Одоо та тэднийг харж чадна.';
+  String get successMaxTitle => 'Одоо та ярилцагчаа харах боломжтой.';
 
   @override
   String get successMaxSub =>

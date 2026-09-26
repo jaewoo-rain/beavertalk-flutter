@@ -1645,7 +1645,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get successProTitle => 'Premium csomagon vagy.';
 
   @override
-  String get successMaxTitle => 'Most már láthatod őket.';
+  String get successMaxTitle => 'Most már látod, kivel beszélsz.';
 
   @override
   String get successMaxSub =>

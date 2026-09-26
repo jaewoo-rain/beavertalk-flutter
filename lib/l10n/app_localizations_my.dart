@@ -1644,7 +1644,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get successProTitle => 'ယခု Premium ဖြစ်ပါပြီ။';
 
   @override
-  String get successMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
+  String get successMaxTitle => 'ယခု အချင်းချင်း မျက်နှာမြင်နိုင်ပြီ။';
 
   @override
   String get successMaxSub =>

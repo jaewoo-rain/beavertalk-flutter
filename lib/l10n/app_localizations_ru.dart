@@ -1643,7 +1643,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get successProTitle => 'Вы на Premium.';
 
   @override
-  String get successMaxTitle => 'Теперь вы их видите.';
+  String get successMaxTitle => 'Теперь вы видите друг друга.';
 
   @override
   String get successMaxSub =>

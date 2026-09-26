@@ -1658,7 +1658,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get successProTitle => 'Du bist auf Premium.';
 
   @override
-  String get successMaxTitle => 'Jetzt kannst du sie sehen.';
+  String get successMaxTitle => 'Jetzt siehst du dein Gegenüber.';
 
   @override
   String get successMaxSub =>

@@ -1627,7 +1627,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get successProTitle => 'أنت الآن على Premium.';
 
   @override
-  String get successMaxTitle => 'يمكنك رؤيتهم الآن.';
+  String get successMaxTitle => 'الآن يمكنك رؤية الوجوه في المكالمة.';
 
   @override
   String get successMaxSub =>

@@ -1633,7 +1633,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get successProTitle => 'آپ Premium پر ہیں۔';
 
   @override
-  String get successMaxTitle => 'اب آپ انہیں دیکھ سکتے ہیں۔';
+  String get successMaxTitle => 'اب آپ ایک دوسرے کو دیکھ سکتے ہیں۔';
 
   @override
   String get successMaxSub =>
