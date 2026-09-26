@@ -818,9 +818,8 @@ class MyPageScreen extends ConsumerWidget {
           Button(
             // Elevated, not Fill: the card is `Background/Surface/Alternative`,
             // which in Dark is the same #252932 that `secondaryFill` paints —
-            // the button vanished into the card. Figma's button instance binds
-            // `Background/Elevated/Normal` (#2F3340 dark / #CBCCD3 light), one
-            // step above the card, which is exactly `secondaryElevated`.
+            // the button vanished into the card. `secondaryElevated` 는 09-26 부터
+            // 반투명 `Fill/Strong` 이라 카드 면보다 한 단계만 짙다(시안 B).
             type: BtnType.secondaryElevated,
             size: BtnSize.s60,
             text: l10n.retakeLevelTest,

@@ -1,4 +1,5 @@
 import 'package:beavertalk/components/atoms/button.dart';
+import 'package:beavertalk/components/molecules/pronunciation_result.dart';
 import 'package:beavertalk/theme/app_color_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,6 +38,46 @@ void main() {
     final m = await pumpButton(tester, BtnType.secondaryFill);
     expect(m.color, AppColorTokens.light.backgroundNormalAlternative);
     expect((m.shape! as RoundedRectangleBorder).side, BorderSide.none);
+  });
+
+  // 09-26 시안 B — 흰 카드 위 불투명 회색(#CBCCD3)이 너무 진했다 → 반투명 Fill.
+  testWidgets('secondaryElevated — 바탕 Fill/Strong(반투명) · 글자 Common/WhiteAndDark',
+      (tester) async {
+    final m = await pumpButton(tester, BtnType.secondaryElevated);
+    expect(m.color, AppColorTokens.light.fillStrong);
+    expect(m.color!.a, lessThan(1), reason: '불투명이면 면에 따라 맞춰지지 않는다');
+    final label = tester.widget<Text>(find.text('홈으로'));
+    expect(label.style!.color, AppColorTokens.light.commonWhiteAndDark);
+  });
+
+  testWidgets('채점 전 지표 패널은 Fill/Alternative · 점수 있으면 그대로', (tester) async {
+    Future<Color?> panelColor(PronunciationState state) async {
+      await tester.pumpWidget(MaterialApp(
+        theme: ThemeData(extensions: const [AppColorTokens.light]),
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: PronunciationResult(
+              state: state,
+              score: 80,
+              metrics: const [
+                PronunciationMetric(label: '발음', value: '-%'),
+                PronunciationMetric(label: '유창성', value: '-%'),
+                PronunciationMetric(label: '리듬', value: '-%'),
+              ],
+            ),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+      final panel = tester.widget<Container>(find
+          .ancestor(of: find.text('유창성'), matching: find.byType(Container))
+          .first);
+      return (panel.decoration as BoxDecoration?)?.color;
+    }
+
+    expect(await panelColor(PronunciationState.inactive), AppColorTokens.light.fillAlternative);
+    expect(await panelColor(PronunciationState.active),
+        AppColorTokens.light.backgroundSurfaceAlternative);
   });
 
   test('Light 토큰 두 개는 Figma 값이다', () {

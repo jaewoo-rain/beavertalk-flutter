@@ -28,13 +28,16 @@ enum BtnType {
   secondaryOutline,
   secondaryWhite,
 
-  /// Like [secondaryFill] but a shade lighter — `Background/Elevated/Normal`
-  /// (#2F3340) instead of `surface2` (#252932).
+  /// 카드 위 보조 버튼 — 반투명 `Fill/Strong`(Light #70737C 16% · Dark #FFFFFF 20%) 바탕 ·
+  /// `Common/WhiteAndDark` 글자(Light #111 · Dark #FFF).
   ///
-  /// The 연습하기 button inside `Card-Bookmark` (`176:15497`, in both the
-  /// analysis and archive instances) is filled this way. It sits on the card's
-  /// own #1F222A, where `secondaryFill` would be only one step lighter than the
-  /// card and read as flat.
+  /// 09-26 사용자 시안 B: 예전 바탕 `Background/Elevated/Normal`(Light #CBCCD3)은 회색
+  /// 페이지 기준으로 고른 불투명 회색이라 흰 카드 위에서 너무 진했다. 반투명이면 올라앉은
+  /// 면에 맞춰 한 단계만 짙어진다. 글자를 `Label/Normal` 로 두지 않는 이유 — Dark 에서
+  /// #9EA3B2 는 대비 3.3:1 이고 `Common/WhiteAndDark` 는 8.3:1.
+  ///
+  /// 쓰는 곳: `Card/Bookmark`(`176:15563`) · `Card/Native`(`6177:28201`) 「연습하기」 ·
+  /// 마이페이지 카드 버튼 · 자동 연습.
   secondaryElevated,
 
   /// Gold fill (`Status/Cautionary`) with a `Static/Black` label — the Max
@@ -211,7 +214,8 @@ class Button extends StatelessWidget {
       case BtnType.secondaryWhite:
         return c.backgroundElevatedAlternative;
       case BtnType.secondaryElevated:
-        return c.backgroundElevatedNormal;
+        // 반투명 — 올라앉은 면에 맞춰 짙어진다(09-26 시안 B).
+        return c.fillStrong;
       case BtnType.gold:
         return c.statusCautionary;
     }
@@ -249,8 +253,9 @@ class Button extends StatelessWidget {
       case BtnType.primaryOutlineWhite:
         return c.labelStrong; // white
       case BtnType.secondaryFill:
-      case BtnType.secondaryElevated:
         return c.labelStrong; // white
+      case BtnType.secondaryElevated:
+        return c.commonWhiteAndDark; // Light #111 · Dark #FFF(09-26 시안 B)
       case BtnType.secondaryOutline:
         return c.labelNormal;
       case BtnType.secondaryWhite:

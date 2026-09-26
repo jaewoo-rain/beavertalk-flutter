@@ -324,7 +324,11 @@ class _MetricsFooter extends StatelessWidget {
         // into its parent on surfaces that share this token (the MyPage card,
         // screen/learning_main__pronunciation): there it reads as bare text
         // with two dividers, exactly as Figma renders it.
-        color: c.backgroundSurfaceAlternative,
+        //
+        // 채점 전(inactive)은 반투명 `Fill/Alternative` — 09-26 사용자 시안 B(흰 카드 위 불투명
+        // 회색이 너무 진했다 · Figma `Pronunciation/Result` `2224:20999`). 반투명이라 어느 면
+        // 위에서도 한 단계만 짙어진다. 점수가 있는 패널은 그대로.
+        color: active ? c.backgroundSurfaceAlternative : c.fillAlternative,
         borderRadius: BorderRadius.circular(AppRadius.sm),
       ),
       // 테두리는 **안쪽** 1px(Figma stroke inside) — `foregroundDecoration` 이라 칸 폭·높이가
