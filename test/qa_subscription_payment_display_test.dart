@@ -269,4 +269,24 @@ void main() {
       expect(find.text('15 minutes of video calls a day'), findsOneWidget);
     });
   });
+
+  group('F063 — 페이월 제목은 한국어 원문 뜻(PM-DEC-064)', () {
+    testWidgets('en 은 「them」 없이 얼굴 보며 대화 · ko 는 원문', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 2000));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(_app(const PaywallScreen(variant: PaywallVariant.max)));
+      await tester.pump();
+      expect(find.text('Now you can talk face to face over video.'), findsOneWidget);
+      expect(find.text('Now you can see them.'), findsNothing);
+    });
+
+    test('ko 원문 · ja 유지 · 나머지 언어에 「see them」류가 남지 않았다', () async {
+      final ko = await AppLocalizations.delegate.load(const Locale('ko'));
+      final ja = await AppLocalizations.delegate.load(const Locale('ja'));
+      expect(ko.paywallMaxTitle, '이제 얼굴을 보며 대화해요.');
+      expect(ja.paywallMaxTitle, '顔を見ながら話せます。');
+      final de = await AppLocalizations.delegate.load(const Locale('de'));
+      expect(de.paywallMaxTitle, isNot(contains('sie sehen')));
+    });
+  });
 }

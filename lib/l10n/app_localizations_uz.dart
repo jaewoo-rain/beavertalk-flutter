@@ -1567,7 +1567,7 @@ class AppLocalizationsUz extends AppLocalizations {
       'Sotib olgan personajlaringiz abadiy sizniki';
 
   @override
-  String get paywallMaxTitle => 'Endi ularni koʻra olasiz.';
+  String get paywallMaxTitle => 'Endi video orqali yuzma-yuz gaplasha olasiz.';
 
   @override
   String paywallTutorCompare(String price) {

@@ -1516,7 +1516,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bulletProCharactersForever => '买下的角色永远属于你';
 
   @override
-  String get paywallMaxTitle => '现在可以看见对方了。';
+  String get paywallMaxTitle => '现在可以面对面视频聊天了。';
 
   @override
   String paywallTutorCompare(String price) {

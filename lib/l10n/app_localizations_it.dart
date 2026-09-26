@@ -1579,7 +1579,8 @@ class AppLocalizationsIt extends AppLocalizations {
       'I personaggi che acquisti restano tuoi per sempre';
 
   @override
-  String get paywallMaxTitle => 'Ora puoi vederli.';
+  String get paywallMaxTitle =>
+      'Ora puoi parlare faccia a faccia in videochiamata.';
 
   @override
   String paywallTutorCompare(String price) {

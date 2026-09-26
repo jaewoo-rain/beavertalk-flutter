@@ -1557,7 +1557,7 @@ class AppLocalizationsHi extends AppLocalizations {
       'खरीदे गए कैरेक्टर हमेशा आपके रहते हैं';
 
   @override
-  String get paywallMaxTitle => 'अब आप उन्हें देख सकते हैं।';
+  String get paywallMaxTitle => 'अब आप वीडियो पर आमने-सामने बात कर सकते हैं।';
 
   @override
   String paywallTutorCompare(String price) {

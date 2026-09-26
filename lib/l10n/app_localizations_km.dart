@@ -1559,7 +1559,7 @@ class AppLocalizationsKm extends AppLocalizations {
       'តួអង្គដែលអ្នកទិញ ជារបស់អ្នកជារៀងរហូត';
 
   @override
-  String get paywallMaxTitle => 'ឥឡូវអ្នកអាចមើលឃើញពួកគេ។';
+  String get paywallMaxTitle => 'ឥឡូវអ្នកអាចនិយាយគ្នាទល់មុខតាមវីដេអូបាន។';
 
   @override
   String paywallTutorCompare(String price) {

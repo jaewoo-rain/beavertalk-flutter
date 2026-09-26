@@ -1570,7 +1570,8 @@ class AppLocalizationsMy extends AppLocalizations {
       'ဝယ်ထားသော ဇာတ်ကောင်များ ထာဝရ သင့်ပိုင်';
 
   @override
-  String get paywallMaxTitle => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
+  String get paywallMaxTitle =>
+      'အခု ဗီဒီယိုနဲ့ မျက်နှာချင်းဆိုင် စကားပြောနိုင်ပြီ။';
 
   @override
   String paywallTutorCompare(String price) {

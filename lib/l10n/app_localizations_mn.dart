@@ -1556,7 +1556,8 @@ class AppLocalizationsMn extends AppLocalizations {
       'Худалдаж авсан дүрүүд тань үүрд таных';
 
   @override
-  String get paywallMaxTitle => 'Одоо та тэднийг харах боломжтой.';
+  String get paywallMaxTitle =>
+      'Одоо та видеогоор нүүр тулан ярилцах боломжтой.';
 
   @override
   String paywallTutorCompare(String price) {

@@ -1557,7 +1557,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get bulletProCharactersForever => 'මිලදී ගත් චරිත සදහටම ඔබේමයි';
 
   @override
-  String get paywallMaxTitle => 'දැන් ඔවුන්ව දැකිය හැක.';
+  String get paywallMaxTitle => 'දැන් වීඩියෝ හරහා මුහුණට මුහුණ කතා කළ හැක.';
 
   @override
   String paywallTutorCompare(String price) {

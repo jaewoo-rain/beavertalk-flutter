@@ -1556,7 +1556,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get bulletProCharactersForever => 'किनेका क्यारेक्टर सधैँ तपाईंकै';
 
   @override
-  String get paywallMaxTitle => 'अब उनीहरूलाई देख्न सक्नुहुन्छ।';
+  String get paywallMaxTitle => 'अब भिडियोमा आमनेसामने कुरा गर्न सक्नुहुन्छ।';
 
   @override
   String paywallTutorCompare(String price) {

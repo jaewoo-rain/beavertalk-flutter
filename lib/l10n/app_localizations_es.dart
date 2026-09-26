@@ -1575,7 +1575,8 @@ class AppLocalizationsEs extends AppLocalizations {
       'Los personajes que compras son tuyos para siempre';
 
   @override
-  String get paywallMaxTitle => 'Ahora puedes verlos.';
+  String get paywallMaxTitle =>
+      'Ahora puedes hablar cara a cara por videollamada.';
 
   @override
   String paywallTutorCompare(String price) {

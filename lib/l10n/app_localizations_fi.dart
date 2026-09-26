@@ -1568,7 +1568,7 @@ class AppLocalizationsFi extends AppLocalizations {
       'Ostamasi hahmot ovat omiasi ikuisesti';
 
   @override
-  String get paywallMaxTitle => 'Nyt näet heidät.';
+  String get paywallMaxTitle => 'Nyt voit puhua kasvokkain videolla.';
 
   @override
   String paywallTutorCompare(String price) {

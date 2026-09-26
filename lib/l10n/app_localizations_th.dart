@@ -1548,7 +1548,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get bulletProCharactersForever => 'ตัวละครที่ซื้อแล้วเป็นของคุณตลอดไป';
 
   @override
-  String get paywallMaxTitle => 'ตอนนี้คุณเห็นหน้าพวกเขาได้แล้ว';
+  String get paywallMaxTitle => 'ตอนนี้คุณคุยแบบเห็นหน้ากันได้แล้ว';
 
   @override
   String paywallTutorCompare(String price) {

@@ -1561,7 +1561,7 @@ class AppLocalizationsKy extends AppLocalizations {
       'Сатып алган каармандарыңыз түбөлүк сиздики';
 
   @override
-  String get paywallMaxTitle => 'Эми аларды көрө аласыз.';
+  String get paywallMaxTitle => 'Эми видео аркылуу бетме-бет сүйлөшө аласыз.';
 
   @override
   String paywallTutorCompare(String price) {

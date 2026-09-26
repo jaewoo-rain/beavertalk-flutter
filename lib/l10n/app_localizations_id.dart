@@ -1563,7 +1563,8 @@ class AppLocalizationsId extends AppLocalizations {
       'Karakter yang kamu beli jadi milikmu selamanya';
 
   @override
-  String get paywallMaxTitle => 'Sekarang kamu bisa melihat mereka.';
+  String get paywallMaxTitle =>
+      'Sekarang kamu bisa bicara tatap muka lewat video.';
 
   @override
   String paywallTutorCompare(String price) {

@@ -1556,7 +1556,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get bulletProCharactersForever => 'কেনা ক্যারেক্টার চিরকাল আপনারই';
 
   @override
-  String get paywallMaxTitle => 'এখন তাদের দেখতে পাবেন।';
+  String get paywallMaxTitle => 'এখন ভিডিওতে মুখোমুখি কথা বলতে পারবেন।';
 
   @override
   String paywallTutorCompare(String price) {

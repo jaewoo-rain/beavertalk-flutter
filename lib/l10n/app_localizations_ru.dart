@@ -1570,7 +1570,8 @@ class AppLocalizationsRu extends AppLocalizations {
       'Купленные персонажи остаются с вами навсегда';
 
   @override
-  String get paywallMaxTitle => 'Теперь вы можете их видеть.';
+  String get paywallMaxTitle =>
+      'Теперь вы можете разговаривать, видя друг друга.';
 
   @override
   String paywallTutorCompare(String price) {

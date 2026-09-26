@@ -1557,7 +1557,7 @@ class AppLocalizationsTr extends AppLocalizations {
       'Satın aldığın karakterler sonsuza dek senin';
 
   @override
-  String get paywallMaxTitle => 'Artık onları görebilirsin.';
+  String get paywallMaxTitle => 'Artık görüntülü, yüz yüze konuşabilirsin.';
 
   @override
   String paywallTutorCompare(String price) {

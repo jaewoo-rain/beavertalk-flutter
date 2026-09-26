@@ -1571,7 +1571,8 @@ class AppLocalizationsMs extends AppLocalizations {
       'Watak yang anda beli kekal milik anda selamanya';
 
   @override
-  String get paywallMaxTitle => 'Kini anda boleh melihat mereka.';
+  String get paywallMaxTitle =>
+      'Kini anda boleh berbual secara bersemuka melalui video.';
 
   @override
   String paywallTutorCompare(String price) {

@@ -1559,7 +1559,8 @@ class AppLocalizationsVi extends AppLocalizations {
       'Nhân vật bạn mua là của bạn mãi mãi';
 
   @override
-  String get paywallMaxTitle => 'Giờ bạn có thể nhìn thấy họ.';
+  String get paywallMaxTitle =>
+      'Giờ bạn có thể vừa trò chuyện vừa nhìn thấy nhau.';
 
   @override
   String paywallTutorCompare(String price) {

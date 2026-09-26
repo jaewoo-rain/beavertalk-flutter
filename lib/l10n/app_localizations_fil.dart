@@ -1578,7 +1578,8 @@ class AppLocalizationsFil extends AppLocalizations {
       'Ang mga karakter na binili mo ay sa iyo habambuhay';
 
   @override
-  String get paywallMaxTitle => 'Ngayon ay makikita mo na sila.';
+  String get paywallMaxTitle =>
+      'Ngayon, puwede na kayong mag-usap nang harapan sa video call.';
 
   @override
   String paywallTutorCompare(String price) {

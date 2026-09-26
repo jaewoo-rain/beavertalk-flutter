@@ -1589,7 +1589,8 @@ class AppLocalizationsFr extends AppLocalizations {
       'Les personnages achetés restent à vous pour toujours';
 
   @override
-  String get paywallMaxTitle => 'Maintenant, vous pouvez les voir.';
+  String get paywallMaxTitle =>
+      'Maintenant, vous pouvez parler face à face en vidéo.';
 
   @override
   String paywallTutorCompare(String price) {

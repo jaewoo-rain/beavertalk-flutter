@@ -1560,7 +1560,7 @@ class AppLocalizationsUr extends AppLocalizations {
       'خریدے گئے کردار ہمیشہ آپ کے رہتے ہیں';
 
   @override
-  String get paywallMaxTitle => 'اب آپ انہیں دیکھ سکتے ہیں۔';
+  String get paywallMaxTitle => 'اب آپ ویڈیو پر آمنے سامنے بات کر سکتے ہیں۔';
 
   @override
   String paywallTutorCompare(String price) {

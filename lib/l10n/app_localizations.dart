@@ -2959,7 +2959,7 @@ abstract class AppLocalizations {
   /// No description provided for @paywallMaxTitle.
   ///
   /// In en, this message translates to:
-  /// **'Now you can see them.'**
+  /// **'Now you can talk face to face over video.'**
   String get paywallMaxTitle;
 
   /// Paywall header second line (P12). Shown only when the store price is in USD. $25 is a fixed USD fact.

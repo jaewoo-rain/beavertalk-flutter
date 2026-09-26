@@ -1572,7 +1572,8 @@ class AppLocalizationsHu extends AppLocalizations {
       'A megvásárolt karakterek örökre a tieid';
 
   @override
-  String get paywallMaxTitle => 'Most már láthatod őket.';
+  String get paywallMaxTitle =>
+      'Most már videón, szemtől szemben beszélgethetsz.';
 
   @override
   String paywallTutorCompare(String price) {
