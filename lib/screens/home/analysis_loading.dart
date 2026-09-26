@@ -324,13 +324,13 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
             ),
 
             const SizedBox(height: AppSpacing.s24),
-            // 준비 중에는 inactive 를 불투명도 0.4 로 흐리게(Figma `analysis__preparing` 인스턴스
-            // Mobile `6330:13227` · Tablet `6330:51010`, 09-24 사장님) — 비활성 학습 카드와 같은 결.
-            // 순수 스켈레톤은 흐리지 않는다(`3569:27500`). 결과가 오면 분석 화면으로 페이드 전환되며
-            // 정상(active · 1)으로 나타난다.
+            // 스켈레톤 · 준비 중 둘 다 inactive 를 불투명도 0.4 로 흐리게(09-24 결정 「분석 로딩 ·
+            // 준비 게이지 = inactive + 0.4」 · Figma `analysis_loading` `3569:27508` · Tablet `5287:2272` ·
+            // `analysis__preparing` `6330:13227` · Tablet `6330:51010`) — 비활성 학습 카드와 같은 결.
+            // 결과가 오면 분석 화면으로 페이드 전환되며 정상(active · 1)으로 나타난다.
             Center(
               child: Opacity(
-                opacity: preparing ? 0.4 : 1,
+                opacity: 0.4,
                 child: PronunciationResult(
                   state: PronunciationState.inactive,
                   score: 0,

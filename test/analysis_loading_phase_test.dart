@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:beavertalk/components/molecules/card_loading.dart';
+import 'package:beavertalk/components/molecules/pronunciation_result.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_result.dart';
 import 'package:beavertalk/features/normalcall/domain/repositories/normalcall_repository.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
@@ -58,10 +59,18 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   }
 
-  testWidgets('첫 답 전에는 순수 스켈레톤 — 준비 카드 없음', (tester) async {
+  /// 게이지를 감싼 흐림 — 스켈레톤 · 준비 중 둘 다 0.4(09-24 결정 · Figma 3569:27508 · 6330:13227).
+  double gaugeOpacity(WidgetTester tester) => tester
+      .widget<Opacity>(find
+          .ancestor(of: find.byType(PronunciationResult), matching: find.byType(Opacity))
+          .first)
+      .opacity;
+
+  testWidgets('첫 답 전에는 순수 스켈레톤 — 준비 카드 없음 · 게이지 0.4', (tester) async {
     await pump(tester, null);
     expect(find.byType(CardLoading), findsOneWidget);
     expect(find.byType(AnalysisPreparingCard), findsNothing);
+    expect(gaugeOpacity(tester), 0.4);
     await tearDownScreen(tester);
   });
 
@@ -70,6 +79,7 @@ void main() {
       await pump(tester, status);
       expect(find.byType(AnalysisPreparingCard), findsOneWidget);
       expect(find.byType(CardLoading), findsNothing);
+      expect(gaugeOpacity(tester), 0.4);
       await tearDownScreen(tester);
     });
   }
