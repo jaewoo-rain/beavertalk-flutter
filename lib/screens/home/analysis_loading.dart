@@ -8,12 +8,14 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/layout/need_based_rows.dart';
 import '../../components/atoms/skeleton.dart';
+import '../../components/molecules/card_loading.dart';
 import '../../components/molecules/card_study.dart';
 import '../../components/molecules/pronunciation_result.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
-import '../../features/auth/presentation/providers/auth_providers.dart' show authRepositoryProvider;
+import '../../features/auth/presentation/providers/auth_providers.dart'
+    show authRepositoryProvider;
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
@@ -81,6 +83,17 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// Latest status from the server — drives the waiting card's two steps.
   /// null until the first answer.
   CallAnalysisStatus? _status;
+
+  /// 서버가 「LLM 결과가 아직 없다」(`ongoing` · `analyzing`)고 한 번이라도 답했는가.
+  ///
+  /// 09-26 사용자: 「screen/analysis__preparing 이거를 로딩 스켈레톤으로 쓰는 게 아니라 로딩
+  /// 스켈레톤 이후에 만약 LLM 결과값이 없다면 이거를 띄워야해」. 그래서
+  /// - false = 순수 스켈레톤(Figma `screen/analysis_loading` `3569:27500`) — 첫 답을 기다리는 중,
+  ///   또는 첫 답이 바로 `done` 이라 결과를 받는 중(이미 분석된 지난 통화는 준비 중을 안 거친다)
+  /// - true = 준비 중(Figma `screen/analysis__preparing` `6330:13219`) — `done` 이 올 때까지 조회
+  /// 한 번 true 가 되면 분석 화면으로 넘어갈 때까지 되돌리지 않는다 — `done` 뒤 결과를 받는 사이에
+  /// 스켈레톤으로 되돌아가 깜빡이지 않게.
+  bool _llmPending = false;
   String _errorMsg = '';
 
   Timer? _pollTimer;
@@ -144,7 +157,15 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           .read(normalcallRepositoryProvider)
           .getStatus(callId);
       if (!mounted || _navigated) return;
-      if (status != _status) setState(() => _status = status);
+      final pending =
+          status == CallAnalysisStatus.ongoing ||
+          status == CallAnalysisStatus.analyzing;
+      if (status != _status || (pending && !_llmPending)) {
+        setState(() {
+          _status = status;
+          if (pending) _llmPending = true;
+        });
+      }
       switch (status) {
         case CallAnalysisStatus.done:
           await _fetchResultAndGo(callId);
@@ -175,8 +196,10 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       final memberId = ref.read(myProfileProvider).valueOrNull?.memberId;
       final leveledUp = memberId == null
           ? null
-          : await LevelUpCheck.newLevel(ref.read(authRepositoryProvider),
-              memberId: memberId);
+          : await LevelUpCheck.newLevel(
+              ref.read(authRepositoryProvider),
+              memberId: memberId,
+            );
       if (!mounted || _navigated) return;
       _navigated = true;
       _pollTimer?.cancel();
@@ -184,12 +207,12 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       // the analysis layout, so the hand-off should read as the same screen
       // filling in (Figma prototype `6330:13219` → `screen/analysis`, DISSOLVE).
       Route<void> analysisRoute() => PageRouteBuilder<void>(
-            settings: RouteSettings(name: Routes.analysis, arguments: result),
-            transitionDuration: const Duration(milliseconds: 300),
-            pageBuilder: (_, _, _) => const AnalysisScreen(),
-            transitionsBuilder: (_, animation, _, child) =>
-                FadeTransition(opacity: animation, child: child),
-          );
+        settings: RouteSettings(name: Routes.analysis, arguments: result),
+        transitionDuration: const Duration(milliseconds: 300),
+        pageBuilder: (_, _, _) => const AnalysisScreen(),
+        transitionsBuilder: (_, animation, _, child) =>
+            FadeTransition(opacity: animation, child: child),
+      );
       if (leveledUp == null) {
         Navigator.of(context).pushReplacement(analysisRoute());
       } else {
@@ -263,9 +286,12 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     );
   }
 
-  /// The analysis screen with every unknown value stubbed (`3569:27503`).
+  /// The analysis screen with every unknown value stubbed (`3569:27503`) — 순수 스켈레톤
+  /// ([_llmPending] false)과 준비 중([_llmPending] true)이 같은 틀을 쓰고, 게이지 흐림 ·
+  /// BabaNote · 새로 배운 표현 세 칸만 다르다(Figma 칸별 대조 · 디자인 세션 09-26).
   Widget _skeleton() {
     final l10n = AppLocalizations.of(context);
+    final preparing = _llmPending;
     return ContentColumn(
       child: SingleChildScrollView(
         // Same padding as the analysis screen, so nothing shifts on hand-off.
@@ -293,17 +319,18 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
               height: 18,
               child: Align(
                 alignment: Alignment.centerLeft,
-                child: Skeleton.bar(width: 200, height: 12),
+                child: Skeleton.bar(width: 220, height: 14),
               ),
             ),
 
             const SizedBox(height: AppSpacing.s24),
             // 준비 중에는 inactive 를 불투명도 0.4 로 흐리게(Figma `analysis__preparing` 인스턴스
             // Mobile `6330:13227` · Tablet `6330:51010`, 09-24 사장님) — 비활성 학습 카드와 같은 결.
-            // 결과가 오면 분석 화면으로 페이드 전환되며 정상(active · 1)으로 나타난다.
+            // 순수 스켈레톤은 흐리지 않는다(`3569:27500`). 결과가 오면 분석 화면으로 페이드 전환되며
+            // 정상(active · 1)으로 나타난다.
             Center(
               child: Opacity(
-                opacity: 0.4,
+                opacity: preparing ? 0.4 : 1,
                 child: PronunciationResult(
                   state: PronunciationState.inactive,
                   score: 0,
@@ -324,53 +351,58 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
             const SizedBox(height: AppSpacing.s12),
             CardStudy.challenge(title: l10n.challengeTitle),
 
-            // ── Section/BabaNote → 준비 중 (`6330:13219`) ─────────────────
-            // The note is written with the result, so its slot says what is
-            // happening instead of shimmering. The label stays a skeleton: it
-            // needs the partner's name, which this screen does not have.
+            // ── Section/BabaNote ──────────────────────────────────────
+            // 준비 중(`6330:13219`): the note is written with the result, so its
+            // slot says what is happening instead of shimmering. 순수 스켈레톤
+            // (`3569:27512`): 아바타 자리 + 막대. The label stays a skeleton either
+            // way: it needs the partner's name, which this screen does not have.
             ..._section(
               label: const Skeleton.bar(width: 90, height: 15),
               child: _card(
-                child: Row(
-                  children: [
-                    AppIcons.duoPreparing(size: 36),
-                    const SizedBox(width: AppSpacing.s12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                child: !preparing
+                    ? const _BabaNoteSkeleton()
+                    : Row(
                         children: [
-                          Text(
-                            l10n.analysisPrepNote,
-                            style: AppType.body2.r.copyWith(
-                              color: context.c.labelNormal,
-                            ),
-                          ),
-                          const SizedBox(height: 6), // no s6 token
-                          Text(
-                            l10n.analysisPrepNoteHint,
-                            style: AppType.caption1.r.copyWith(
-                              color: context.c.labelAlternative,
+                          AppIcons.duoPreparing(size: 36),
+                          const SizedBox(width: AppSpacing.s12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.analysisPrepNote,
+                                  style: AppType.body2.r.copyWith(
+                                    color: context.c.labelNormal,
+                                  ),
+                                ),
+                                const SizedBox(height: 6), // no s6 token
+                                Text(
+                                  l10n.analysisPrepNoteHint,
+                                  style: AppType.caption1.r.copyWith(
+                                    color: context.c.labelAlternative,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ],
-                ),
               ),
             ),
 
-            // ── Section/Expressions → 준비 카드 (`6330:13219` Card/Preparing) ──
-            // 2026-09-23: the cards are what the LLM is still writing, so this
-            // slot shows the beaver at work rather than a card-shaped skeleton.
-            // When `done` lands the analysis screen replaces this one with a
-            // fade, and the real cards take this spot.
+            // ── Section/Expressions ─────────────────────────────────────
+            // 준비 중(`6330:13219` Card/Preparing): the cards are what the LLM is
+            // still writing, so this slot shows the beaver at work. 순수 스켈레톤
+            // (`3569:27537`): 표현 카드 모양 한 장. When `done` lands the analysis
+            // screen replaces this one with a fade, and the real cards take this spot.
             ..._section(
               // Countless here — the count is exactly what is still loading.
               label: Text(l10n.newExpressions, style: AppType.body2.m),
-              child: AnalysisPreparingCard(
-                saved: _status == CallAnalysisStatus.analyzing,
-              ),
+              child: preparing
+                  ? AnalysisPreparingCard(
+                      saved: _status == CallAnalysisStatus.analyzing,
+                    )
+                  : const CardLoading(),
             ),
           ],
         ),
@@ -420,6 +452,52 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   Widget _error() => NetworkErrorView(
     message: _errorMsg.isEmpty ? null : _errorMsg,
     onRetry: _callId == null ? null : _start,
+  );
+}
+
+/// 순수 스켈레톤의 BabaNote 카드 안(Figma `3569:27512`) — 아바타 자리 32 + 막대 셋.
+///
+/// The frame gives the two skeleton slots the line boxes of the text they stand
+/// in for — Body 38 (`3569:27517`) and Attribution 14 (`3569:27520`) — which is
+/// what makes the card 90, exactly the loaded BabaNote's 88 + its 2px of extra
+/// leading. Stacking the bars bare rendered 83.
+class _BabaNoteSkeleton extends StatelessWidget {
+  const _BabaNoteSkeleton();
+
+  @override
+  Widget build(BuildContext context) => const Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Skeleton.circle(size: 32),
+      SizedBox(width: AppSpacing.s12),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 38,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Skeleton.bar(width: 255, height: 12),
+                  SizedBox(height: 6),
+                  Skeleton.bar(width: 150, height: 12),
+                ],
+              ),
+            ),
+            SizedBox(height: 6),
+            SizedBox(
+              height: 14,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Skeleton.bar(width: 110, height: 9),
+              ),
+            ),
+          ],
+        ),
+      ),
+    ],
   );
 }
 
