@@ -352,9 +352,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancel => 'إلغاء';
 
   @override
-  String get selectTime => 'اختر الوقت';
-
-  @override
   String get getStarted => 'ابدأ الآن';
 
   @override

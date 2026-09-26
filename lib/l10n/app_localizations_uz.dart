@@ -353,9 +353,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get cancel => 'Bekor qilish';
 
   @override
-  String get selectTime => 'Vaqtni tanlang';
-
-  @override
   String get getStarted => 'Boshlash';
 
   @override

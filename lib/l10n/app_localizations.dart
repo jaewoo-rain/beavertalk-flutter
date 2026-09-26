@@ -778,12 +778,6 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
-  /// No description provided for @selectTime.
-  ///
-  /// In en, this message translates to:
-  /// **'Select time'**
-  String get selectTime;
-
   /// No description provided for @getStarted.
   ///
   /// In en, this message translates to:

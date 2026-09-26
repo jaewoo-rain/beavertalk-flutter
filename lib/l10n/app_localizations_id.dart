@@ -353,9 +353,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get cancel => 'Batal';
 
   @override
-  String get selectTime => 'Pilih waktu';
-
-  @override
   String get getStarted => 'Mulai';
 
   @override

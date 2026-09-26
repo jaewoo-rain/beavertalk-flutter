@@ -355,9 +355,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get cancel => 'Cancelar';
 
   @override
-  String get selectTime => 'Selecionar horário';
-
-  @override
   String get getStarted => 'Começar';
 
   @override

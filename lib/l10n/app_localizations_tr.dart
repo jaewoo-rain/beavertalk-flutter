@@ -349,9 +349,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cancel => 'İptal';
 
   @override
-  String get selectTime => 'Saat seçin';
-
-  @override
   String get getStarted => 'Başla';
 
   @override

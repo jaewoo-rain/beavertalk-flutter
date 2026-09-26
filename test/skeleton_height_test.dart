@@ -1,6 +1,4 @@
 import 'package:beavertalk/components/atoms/skeleton.dart';
-import 'package:beavertalk/components/molecules/card_alarm.dart';
-import 'package:beavertalk/components/molecules/card_alarm_loading.dart';
 import 'package:beavertalk/components/molecules/card_bookmark.dart';
 import 'package:beavertalk/components/molecules/card_loading.dart';
 import 'package:flutter/material.dart';
@@ -59,23 +57,6 @@ void main() {
     expect(real, 116);
   });
 
-  testWidgets('CardAlarmLoading reserves exactly CardAlarm\'s height',
-      (tester) async {
-    final real = await heightOf(
-      tester,
-      CardAlarm(
-        state: CardAlarmState.active,
-        time: 'AM 8:00',
-        days: List.filled(7, true),
-        userName: 'Baba',
-      ),
-    );
-    final skeleton = await heightOf(tester, const CardAlarmLoading());
-
-    expect(skeleton, real);
-    // The measured value from `Card-Alarm`'s variants (`state=active`
-    // 3793:31193): 20+28+12+34+12+27+20. Pinned so a restyle of either card
-    // has to come here and say so.
-    expect(real, 153);
-  });
+  // 알람 카드 스켈레톤(옛 `CardAlarmLoading`)은 2026-09-26 삭제 — 알람 목록 로딩은 줄형
+  // `RowAlarmLoading`(`alarm_list.dart`)이 맡는다.
 }

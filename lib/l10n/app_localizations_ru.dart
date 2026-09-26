@@ -353,9 +353,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cancel => 'Отмена';
 
   @override
-  String get selectTime => 'Выберите время';
-
-  @override
   String get getStarted => 'Начать';
 
   @override

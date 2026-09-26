@@ -352,9 +352,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get cancel => 'Жокко чыгаруу';
 
   @override
-  String get selectTime => 'Убакытты тандоо';
-
-  @override
   String get getStarted => 'Баштоо';
 
   @override

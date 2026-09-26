@@ -353,9 +353,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get cancel => 'අවලංගු කරන්න';
 
   @override
-  String get selectTime => 'වේලාව තෝරන්න';
-
-  @override
   String get getStarted => 'ආරම්භ කරන්න';
 
   @override

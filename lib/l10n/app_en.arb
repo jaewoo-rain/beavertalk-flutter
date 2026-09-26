@@ -248,7 +248,6 @@
     "description": "Confirm button in the country/language select bottom sheet."
   },
   "cancel": "Cancel",
-  "selectTime": "Select time",
   "getStarted": "Get Started",
   "permissionTitle": "Allow permissions\nfor a smooth experience",
   "permissionSubtitle": "Required permissions are essential to use the service.",

@@ -355,9 +355,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get cancel => 'Peruuta';
 
   @override
-  String get selectTime => 'Valitse aika';
-
-  @override
   String get getStarted => 'Aloita';
 
   @override

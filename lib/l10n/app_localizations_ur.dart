@@ -351,9 +351,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get cancel => 'منسوخ کریں';
 
   @override
-  String get selectTime => 'وقت منتخب کریں';
-
-  @override
   String get getStarted => 'شروع کریں';
 
   @override

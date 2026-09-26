@@ -344,9 +344,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get cancel => '취소';
 
   @override
-  String get selectTime => '시간 선택';
-
-  @override
   String get getStarted => '시작하기';
 
   @override

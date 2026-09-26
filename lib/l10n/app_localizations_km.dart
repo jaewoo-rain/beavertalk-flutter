@@ -350,9 +350,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get cancel => 'បោះបង់';
 
   @override
-  String get selectTime => 'ជ្រើសរើសម៉ោង';
-
-  @override
   String get getStarted => 'ចាប់ផ្ដើម';
 
   @override

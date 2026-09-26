@@ -356,9 +356,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get cancel => 'Mégse';
 
   @override
-  String get selectTime => 'Időpont kiválasztása';
-
-  @override
   String get getStarted => 'Kezdjük el';
 
   @override

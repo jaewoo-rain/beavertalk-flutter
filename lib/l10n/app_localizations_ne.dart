@@ -349,9 +349,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get cancel => 'रद्द गर्नुहोस्';
 
   @override
-  String get selectTime => 'समय छान्नुहोस्';
-
-  @override
   String get getStarted => 'सुरु गर्नुहोस्';
 
   @override

@@ -353,9 +353,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get cancel => 'Hủy';
 
   @override
-  String get selectTime => 'Chọn thời gian';
-
-  @override
   String get getStarted => 'Bắt đầu';
 
   @override

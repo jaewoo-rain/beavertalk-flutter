@@ -352,9 +352,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get cancel => 'বাতিল করুন';
 
   @override
-  String get selectTime => 'সময় নির্বাচন করুন';
-
-  @override
   String get getStarted => 'শুরু করুন';
 
   @override

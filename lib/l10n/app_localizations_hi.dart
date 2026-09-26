@@ -348,9 +348,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get cancel => 'रद्द करें';
 
   @override
-  String get selectTime => 'समय चुनें';
-
-  @override
   String get getStarted => 'शुरू करें';
 
   @override

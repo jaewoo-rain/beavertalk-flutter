@@ -355,9 +355,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get cancel => 'Kanselahin';
 
   @override
-  String get selectTime => 'Pumili ng oras';
-
-  @override
   String get getStarted => 'Magsimula';
 
   @override

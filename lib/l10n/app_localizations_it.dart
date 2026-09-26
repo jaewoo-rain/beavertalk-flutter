@@ -357,9 +357,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get cancel => 'Annulla';
 
   @override
-  String get selectTime => 'Seleziona l\'orario';
-
-  @override
   String get getStarted => 'Inizia';
 
   @override

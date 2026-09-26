@@ -352,9 +352,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get cancel => 'Цуцлах';
 
   @override
-  String get selectTime => 'Цаг сонгох';
-
-  @override
   String get getStarted => 'Эхлэх';
 
   @override

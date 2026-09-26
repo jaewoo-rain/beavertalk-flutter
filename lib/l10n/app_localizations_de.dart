@@ -358,9 +358,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cancel => 'Abbrechen';
 
   @override
-  String get selectTime => 'Uhrzeit auswählen';
-
-  @override
   String get getStarted => 'Los geht\'s';
 
   @override

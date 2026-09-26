@@ -346,9 +346,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get cancel => 'ยกเลิก';
 
   @override
-  String get selectTime => 'เลือกเวลา';
-
-  @override
   String get getStarted => 'เริ่มต้นใช้งาน';
 
   @override

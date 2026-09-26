@@ -343,9 +343,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get cancel => 'キャンセル';
 
   @override
-  String get selectTime => '時間を選択';
-
-  @override
   String get getStarted => 'はじめる';
 
   @override

@@ -352,9 +352,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get cancel => 'Бас тарту';
 
   @override
-  String get selectTime => 'Уақытты таңдаңыз';
-
-  @override
   String get getStarted => 'Бастау';
 
   @override

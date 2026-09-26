@@ -343,9 +343,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancel => '取消';
 
   @override
-  String get selectTime => '选择时间';
-
-  @override
   String get getStarted => '开始使用';
 
   @override

@@ -357,9 +357,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cancel => 'Cancelar';
 
   @override
-  String get selectTime => 'Selecciona la hora';
-
-  @override
   String get getStarted => 'Comenzar';
 
   @override

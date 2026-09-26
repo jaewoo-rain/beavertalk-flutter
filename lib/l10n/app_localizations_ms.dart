@@ -354,9 +354,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get cancel => 'Batal';
 
   @override
-  String get selectTime => 'Pilih masa';
-
-  @override
   String get getStarted => 'Mula';
 
   @override

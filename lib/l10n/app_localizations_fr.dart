@@ -360,9 +360,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancel => 'Annuler';
 
   @override
-  String get selectTime => 'Sélectionnez l\'heure';
-
-  @override
   String get getStarted => 'Commencer';
 
   @override

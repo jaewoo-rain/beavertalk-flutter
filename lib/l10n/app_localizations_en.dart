@@ -351,9 +351,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
-  String get selectTime => 'Select time';
-
-  @override
   String get getStarted => 'Get Started';
 
   @override

@@ -353,9 +353,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get cancel => 'မလုပ်တော့ပါ';
 
   @override
-  String get selectTime => 'အချိန် ရွေးချယ်ပါ';
-
-  @override
   String get getStarted => 'စတင်လိုက်ပါ';
 
   @override
