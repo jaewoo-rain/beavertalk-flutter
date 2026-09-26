@@ -644,7 +644,13 @@ class _Loading extends StatelessWidget {
           color: c.accentStreakSurface,
           child: Column(
             children: [
-              Gnb.main(title: title, onBack: () => Navigator.maybePop(context)),
+              // 실제 화면과 같이 GNB 를 주황 히어로 면 위에 투명하게 얹는다(09-26 사용자 「Learning
+              // Calendar 로딩 스켈레톤에서 GNB 색상도 주황색으로 해줘」) — 기본 배경이면 GNB 만 회색.
+              Gnb.main(
+                title: title,
+                onBack: () => Navigator.maybePop(context),
+                background: Colors.transparent,
+              ),
               const ContentColumn(
                 gutter: 24,
                 padding: EdgeInsets.only(bottom: 20),
