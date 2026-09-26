@@ -8,6 +8,7 @@ import '../../../theme/app_typography.dart';
 import '../domain/challenge_card.dart';
 import '../domain/challenge_engine.dart';
 import '../domain/game_config.dart';
+import '../domain/word_layout.dart';
 
 /// Renders the Pronunciation Challenge simulation into a `1080×1920` space.
 ///
@@ -98,6 +99,18 @@ class ChallengePainter extends CustomPainter {
     canvas.scale(size.width / GameConfig.w); // design space → widget space
 
     _drawBackground(canvas);
+    // 화면 흔들림(웹 `render`) — 통과 살짝 · 미스·5콤보 크게. 진폭은 제곱으로 줄어 끝이 부드럽다.
+    // 캔버스 장면만 흔든다 — 뒤로·타이머·점수·2행 HUD 는 위젯이라 그대로다(요청서 §4.4).
+    // 배경은 흔들기 전에 깐다 — 같이 흔들면 가장자리에 빈 띠가 비친다.
+    final amp = 18 * engine.shake * engine.shake;
+    final shaking = amp > 0.3;
+    if (shaking) {
+      canvas.save();
+      canvas.translate(
+        (_shakeRandom.nextDouble() * 2 - 1) * amp,
+        (_shakeRandom.nextDouble() * 2 - 1) * amp,
+      );
+    }
     _drawTunnel(canvas);
     final listening = engine.running && engine.frontmostInZoneCard() != null;
     _drawGate(canvas, listening);
@@ -115,9 +128,12 @@ class ChallengePainter extends CustomPainter {
     _drawLateChip(canvas);
     _drawFlash(canvas);
     _drawHits(canvas);
+    if (shaking) canvas.restore();
 
     canvas.restore();
   }
+
+  static final math.Random _shakeRandom = math.Random();
 
   // ── background (solid; replaces the web game's camera feed) ─────────
   void _drawBackground(Canvas canvas) {
@@ -273,7 +289,9 @@ class ChallengePainter extends CustomPainter {
   // axis. Both size and Y come from `k`.
   void _drawWord(Canvas canvas, ChallengeCard c) {
     final k = math.max(0.02, c.k);
-    final size = GameConfig.wordSize(k);
+    // 긴 학습 문장은 두 줄 · 축소(요청서 §4.6 · 웹 `layoutWord`). 카드 글자마다 한 번만 잰다.
+    final lay = _layoutFor(c.word);
+    final size = GameConfig.wordSize(k) * lay.scale;
     final y = GameConfig.wordY(k);
     // Depth fade (Figma `screen/pron_play`: 50% far, 72% mid, 100% at the
     // gate). Distance has to read as distance — drawn at full opacity the
@@ -295,7 +313,7 @@ class ChallengePainter extends CustomPainter {
       CardState.miss => _kWordMiss,
       _ => _kWordOutline,
     };
-    final (outline, fill) = _wordLayers(c.word, size, outlineColor);
+    final (outline, fill) = _wordLayers(lay.text, size, outlineColor);
     // Past the cache ceiling the layers stop growing, so the canvas carries the
     // rest of the scale. Only a passing word gets here, on its way out of
     // frame, where re-laying-out the glyphs would buy nothing.
@@ -341,11 +359,60 @@ class ChallengePainter extends CustomPainter {
     canvas.restore();
   }
 
+  /// 글자별 배치(한 줄/두 줄 · 배율) 캐시. 카드는 사라져도 같은 문장이 다시 나오므로 글자로
+  /// 묶는다. 학습 문장 수가 한 판에 수십 개 이하라 상한은 넉넉히 둔다.
+  static final Map<String, ({String text, double scale})> _layoutCache =
+      <String, ({String text, double scale})>{};
+  static const int _kLayoutCacheMax = 256;
+
+  /// [word] 를 판정 지점 글자 크기([GameConfig.wordSizeNear])로 재서, 폭이
+  /// [GameConfig.wordMaxW] 를 넘으면 두 줄([splitInTwoLines])로 접고 [GameConfig.longWordScale]
+  /// 로 줄인다. 두 줄로도 넘치면 폭에 맞춰 더 줄인다. 세 줄 이상은 만들지 않는다.
+  ///
+  /// 예전엔 판정 구역 폭(−80)에서 `TextPainter` 가 알아서 줄을 바꿨다 — 190 크기 그대로 두세 줄이
+  /// 되어 뒤 단어와 겹칠 수 있었다(겹침 불변식: 앞 반높이 + 뒤 반높이 < k 간격 거리).
+  static ({String text, double scale}) _layoutFor(String word) {
+    if (_layoutCache.length > _kLayoutCacheMax) _layoutCache.clear();
+    return _layoutCache.putIfAbsent(word, () {
+      double widthOf(String s) {
+        final tp = TextPainter(
+          text: TextSpan(
+            text: s,
+            style: const TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: GameConfig.wordSizeNear,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final w = tp.width;
+        tp.dispose();
+        return w;
+      }
+
+      final single = widthOf(word);
+      if (single <= GameConfig.wordMaxW) return (text: word, scale: 1.0);
+      final parts = splitInTwoLines(word);
+      if (parts == null) {
+        return (text: word, scale: GameConfig.wordMaxW / single);
+      }
+      final widest = math.max(widthOf(parts.$1), widthOf(parts.$2));
+      final scale = math.min(
+        GameConfig.longWordScale,
+        GameConfig.wordMaxW / (widest == 0 ? 1 : widest),
+      );
+      return (text: '${parts.$1}\n${parts.$2}', scale: scale);
+    });
+  }
+
   /// Builds (and caches) the two text layers for [word] at [size]: a thick
   /// outline in [outlineColor] and the white fill on top.
   ///
-  /// Long text wraps to the gate width instead of shrinking, so a learned
-  /// **sentence** stays readable at the judgment point.
+  /// [word] is already laid out by [_layoutFor] — one line, or two joined by a
+  /// newline with the tighter [GameConfig.wordLineH] spacing. No width limit
+  /// here: the scale from [_layoutFor] already fits it to the gate, and a
+  /// second wrap would break a line the split chose on purpose.
   (TextPainter, TextPainter) _wordLayers(
     String word,
     double size,
@@ -365,13 +432,13 @@ class ChallengePainter extends CustomPainter {
                 fontFamily: kFontFamily,
                 fontSize: fontSize,
                 fontWeight: FontWeight.w900,
-                height: 1.15,
+                height: word.contains('\n') ? GameConfig.wordLineH : 1.15,
                 foreground: paint,
               ),
             ),
             textAlign: TextAlign.center,
             textDirection: TextDirection.ltr,
-          )..layout(maxWidth: GameConfig.gateW - 80);
+          )..layout();
       final outline = make(Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = math.max(4, fontSize * 0.085)
@@ -429,31 +496,111 @@ class ChallengePainter extends CustomPainter {
 
 
 
-  // ── hit texts (web drawHits, 1231–1239) ─────────────────────────────
+  // ── judgments · milestones (web drawHits, 2026-09-25) ────────────────
+  //
+  // `PERFECT`/`GREAT`/`GOOD`/`MISS` with the points under it, and `N COMBO!`
+  // every [GameConfig.comboMilestone]. Each pops out (×1.6, milestone ×1.9 →
+  // ×1 over 0.14s, ease-out cubic), then rises and fades. Replaces the old
+  // `+112` / `COMBO x3` / `LATE · …` lines (요청서 §4.2·4.3).
   void _drawHits(Canvas canvas) {
     for (final h in engine.hitTexts) {
-      final a = h.life.clamp(0.0, 1.0);
-      _text(
-        canvas,
-        h.text,
-        x: h.x,
-        y: h.y,
-        fontSize: 72,
-        weight: FontWeight.w900,
-        color: (h.miss ? const Color(0xFFFF6B6B) : _mint).withValues(alpha: a),
-      );
-      if (h.sub.isNotEmpty) {
-        _text(
-          canvas,
-          h.sub,
-          x: h.x,
-          y: h.y + 58,
-          fontSize: 40,
-          weight: FontWeight.w800,
-          color: Colors.white.withValues(alpha: a),
-        );
+      final age = h.life0 - h.life;
+      final p = math.min(1.0, age / 0.14);
+      final ease = 1 - math.pow(1 - p, 3).toDouble();
+      final pop = 1 + (1 - ease) * (h.isMilestone ? 0.9 : 0.6);
+      final alpha = (h.life / 0.35).clamp(0.0, 1.0);
+      canvas.save();
+      canvas.translate(h.x, h.y);
+      canvas.scale(pop);
+      if (h.isMilestone) {
+        final color = h.combo >= 20
+            ? _kWordFill
+            : h.combo >= 10
+                ? _kWordLate
+                : _mint;
+        _outlined(canvas, '${h.combo} COMBO!',
+            fontSize: 150,
+            weight: FontWeight.w900,
+            stroke: 18,
+            fill: color,
+            glow: 40,
+            alpha: alpha);
+      } else {
+        final judge = h.judge!;
+        final (label, color) = switch (judge) {
+          Judge.perfect => ('PERFECT', _mint),
+          Judge.great => ('GREAT', _kWordFill),
+          Judge.good => ('GOOD', _kWordLate),
+          Judge.miss => ('MISS', _kWordMiss),
+        };
+        _outlined(canvas, label,
+            fontSize: 104,
+            weight: FontWeight.w900,
+            stroke: 14,
+            fill: color,
+            glow: judge == Judge.miss ? 0 : 30,
+            alpha: alpha);
+        if (h.points > 0) {
+          _outlined(canvas, '+${thousands(h.points)}',
+              fontSize: 52,
+              weight: FontWeight.w800,
+              stroke: 10,
+              fill: _kWordFill,
+              glow: 0,
+              alpha: alpha,
+              dy: 84);
+        }
       }
+      canvas.restore();
     }
+  }
+
+  /// Draws [text] centred on the origin (+[dy]): a [stroke]-wide
+  /// [_kWordOutline] outline, an optional [glow] in the fill colour, then the
+  /// fill. [glow] is the web's `shadowBlur`; a Skia blur sigma is about half
+  /// of it (same conversion as the gate glow).
+  void _outlined(
+    Canvas canvas,
+    String text, {
+    required double fontSize,
+    required FontWeight weight,
+    required double stroke,
+    required Color fill,
+    required double glow,
+    required double alpha,
+    double dy = 0,
+  }) {
+    if (alpha <= 0) return;
+    TextPainter make(Paint paint) => TextPainter(
+          text: TextSpan(
+            text: text,
+            style: TextStyle(
+              fontFamily: kFontFamily,
+              fontSize: fontSize,
+              fontWeight: weight,
+              foreground: paint,
+            ),
+          ),
+          textDirection: TextDirection.ltr,
+        )..layout();
+    final outline = make(Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = stroke
+      ..strokeJoin = StrokeJoin.round
+      ..color = _kWordOutline.withValues(alpha: alpha));
+    final at = Offset(-outline.width / 2, dy - outline.height / 2);
+    outline.paint(canvas, at);
+    if (glow > 0) {
+      final halo = make(Paint()
+        ..color = fill.withValues(alpha: alpha)
+        ..maskFilter = MaskFilter.blur(BlurStyle.normal, glow / 2));
+      halo.paint(canvas, at);
+      halo.dispose();
+    }
+    final face = make(Paint()..color = fill.withValues(alpha: alpha));
+    face.paint(canvas, at);
+    outline.dispose();
+    face.dispose();
   }
 
   // ── helpers ─────────────────────────────────────────────────────────
@@ -476,29 +623,6 @@ class ChallengePainter extends CustomPainter {
         textDirection: TextDirection.ltr,
       )..layout();
 
-  void _text(
-    Canvas canvas,
-    String s, {
-    required double x,
-    required double y,
-    required double fontSize,
-    required FontWeight weight,
-    required Color color,
-    _HAlign align = _HAlign.center,
-  }) {
-    final tp = _layout(s, fontSize, weight, color);
-    final double dx;
-    switch (align) {
-      case _HAlign.left:
-        dx = x;
-      case _HAlign.center:
-        dx = x - tp.width / 2;
-      case _HAlign.right:
-        dx = x - tp.width;
-    }
-    tp.paint(canvas, Offset(dx, y - tp.height / 2)); // baseline≈middle
-  }
-
   @override
   bool shouldRepaint(covariant ChallengePainter oldDelegate) =>
       oldDelegate.engine != engine ||
@@ -506,4 +630,15 @@ class ChallengePainter extends CustomPainter {
       oldDelegate.micLevel != micLevel;
 }
 
-enum _HAlign { left, center, right }
+
+/// `5500` → `5,500` (웹 `toLocaleString` — 게임 글자는 로캘과 무관하게 쉼표).
+@visibleForTesting
+String thousands(int n) {
+  final s = n.toString();
+  final b = StringBuffer();
+  for (var i = 0; i < s.length; i++) {
+    if (i > 0 && (s.length - i) % 3 == 0) b.write(',');
+    b.write(s[i]);
+  }
+  return b.toString();
+}

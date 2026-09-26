@@ -505,19 +505,25 @@ class _PronunciationChallengeScreenState
               builder: (context, level, _) => _micGauge(context, level),
             ),
             if (engine.combo > 1)
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: context.c.primaryNormal,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                // Dark ink on the mint chip. Mint-on-mint was unreadable in the
-                // original — one of the defects the design run fixed.
-                child: Text(
-                  'COMBO ×${engine.combo}',
-                  style: AppType.caption1.b
-                      .copyWith(color: context.c.commonDarkAndWhite),
+              // 깰 때마다 튀어 오르고(pop), 10·20 에서 색이 바뀐다(요청서 §4.5 · 웹 09-25).
+              // Transform.scale 이라 배치 크기는 그대로다 — 2행 높이 24 고정이라 웹의 글자 확대
+              // (46→68)는 가져오지 않았다.
+              Transform.scale(
+                scale: 1 + 0.38 * engine.comboPop * engine.comboPop,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: comboChipColor(context.c, engine.combo),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  // Dark ink on the chip. Mint-on-mint was unreadable in the
+                  // original — one of the defects the design run fixed.
+                  child: Text(
+                    'COMBO ×${engine.combo}',
+                    style: AppType.caption1.b
+                        .copyWith(color: context.c.commonDarkAndWhite),
+                  ),
                 ),
               )
             else
@@ -1363,3 +1369,12 @@ class _ClipPreviewState extends State<_ClipPreview> {
     );
   }
 }
+
+/// 콤보 칩 면 — 2~9 `Primary/Normal` · 10~19 `Status/Cautionary` · 20 이상 `Static/White`
+/// (요청서 §4.5 · 웹 콤보 색 3단 09-25). 글자는 셋 다 `Common/Dark & White`.
+@visibleForTesting
+Color comboChipColor(AppColorTokens c, int combo) => combo >= 20
+    ? c.staticWhite
+    : combo >= 10
+        ? c.statusCautionary
+        : c.primaryNormal;

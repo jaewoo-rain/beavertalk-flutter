@@ -23,7 +23,7 @@ class ChallengeEngine {
   /// All words currently on screen (live, grace, passing, or missing).
   final List<ChallengeCard> cards = <ChallengeCard>[];
 
-  /// Floating hit texts (`+112`, `MISS`, …).
+  /// Floating judgment words and `N COMBO!` milestones.
   final List<HitText> hitTexts = <HitText>[];
 
   int _nextId = 1;
@@ -63,6 +63,15 @@ class ChallengeEngine {
 
   /// Miss flash intensity 0..1 (decays).
   double flashMiss = 0;
+
+  /// Combo chip pop 0..1 — set to 1 on every pass, 0 on a miss, decays 4/s.
+  /// The HUD chip scales by `1 + 0.38 * comboPop²` (web `comboPop`).
+  double comboPop = 0;
+
+  /// Screen shake 0..1 — raised to 0.25 on a pass, 0.5 on a miss and 1 on a
+  /// combo milestone (never lowered by a smaller event), decays 3.5/s. The
+  /// painter shakes the canvas scene by `18 * shake²` (web `shake`).
+  double shake = 0;
 
   /// Selected difficulty (read live each frame — can change between rounds).
   Difficulty difficulty = Difficulty.normal;
@@ -106,6 +115,8 @@ class ChallengeEngine {
     if (opener == null) _words.reset();
     score = 0;
     combo = 0;
+    comboPop = 0;
+    shake = 0;
     maxCombo = 0;
     passCount = 0;
     backlog = 0;
@@ -145,6 +156,8 @@ class ChallengeEngine {
     rungPhase = (rungPhase + dt * 0.35 * difficulty.mult) % 1;
     if (flashPass > 0) flashPass = max(0, flashPass - dt * 3);
     if (flashMiss > 0) flashMiss = max(0, flashMiss - dt * 3);
+    if (comboPop > 0) comboPop = max(0, comboPop - dt * 4);
+    if (shake > 0) shake = max(0, shake - dt * 3.5);
 
     if (!running) return;
 
@@ -213,6 +226,32 @@ class ChallengeEngine {
     }
   }
 
+  /// Where judgment words spawn — above the vanishing point ([GameConfig.vpY]
+  /// 1010). Words never rise above their spawn point (k 0.25 · y ≈ 1127), so a
+  /// judgment here never covers the next word coming in. The old spot
+  /// (gate top − 70) sat on that word's path (web, 09-25 capture).
+  static const double judgeY = 980;
+
+  /// Where the `N COMBO!` milestone spawns.
+  static const double milestoneY = 760;
+
+  /// Judgment for a word cleared at depth [k] (web `judgeOf`). A grace-window
+  /// ([late]) clear is always [Judge.good] — the word had already gone by.
+  static Judge judgeOf(double k, {required bool late}) {
+    if (late) return Judge.good;
+    if (k >= GameConfig.kPerfectMin && k <= GameConfig.kPerfectMax) {
+      return Judge.perfect;
+    }
+    if (k >= GameConfig.kGreatMin) return Judge.great;
+    return Judge.good;
+  }
+
+  /// Points for the [combo]-th consecutive clear (web `passCard`).
+  static int pointsFor(int combo, {required bool late}) =>
+      ((GameConfig.pointBase + (combo - 1) * GameConfig.pointComboStep) *
+              (late ? GameConfig.latePointRatio : 1.0))
+          .round();
+
   /// Passes a word: launches it at the viewer and awards score + combo.
   ///
   /// A [CardState.grace] pass counts, at [GameConfig.latePointRatio] of the
@@ -220,25 +259,34 @@ class ChallengeEngine {
   void passCard(ChallengeCard c) {
     if (c.state != CardState.live && c.state != CardState.grace) return;
     final late = c.state == CardState.grace;
+    final judge = judgeOf(c.k, late: late);
     c.state = CardState.pass;
     c.vk = 1.9;
     c.alpha = 1;
     passCount++;
     combo++;
     maxCombo = max(maxCombo, combo);
-    final pts =
-        ((100 + (combo - 1) * 12) * (late ? GameConfig.latePointRatio : 1.0))
-            .round();
+    final pts = pointsFor(combo, late: late);
     score += pts;
     flashPass = 1;
-    final comboTxt = combo > 1 ? 'COMBO x$combo' : '';
-    hitTexts.add(HitText(
-      text: '+$pts',
-      sub: late ? (comboTxt.isEmpty ? 'LATE' : 'LATE · $comboTxt') : comboTxt,
+    comboPop = 1;
+    shake = max(shake, 0.25);
+    hitTexts.add(HitText.judge(
+      judge: judge,
+      points: pts,
       x: GameConfig.vpX,
-      y: GameConfig.wordY(1) - 300,
-      miss: false,
+      y: judgeY,
     ));
+    if (combo >= GameConfig.comboMilestone &&
+        combo % GameConfig.comboMilestone == 0) {
+      hitTexts.add(HitText.milestone(
+        combo: combo,
+        x: GameConfig.vpX,
+        y: milestoneY,
+      ));
+      shake = 1;
+      flashPass = 1.6;
+    }
   }
 
   /// Misses a word: lets it drift off, breaks the combo, grows the backlog.
@@ -249,12 +297,13 @@ class ChallengeEngine {
     combo = 0;
     backlog++;
     flashMiss = 1;
-    hitTexts.add(HitText(
-      text: 'MISS',
-      sub: '',
+    comboPop = 0;
+    shake = max(shake, 0.5);
+    hitTexts.add(HitText.judge(
+      judge: Judge.miss,
+      points: 0,
       x: GameConfig.vpX,
-      y: GameConfig.wordY(1) - 300,
-      miss: true,
+      y: judgeY,
     ));
     if (backlog >= difficulty.missAllow) endGame();
   }

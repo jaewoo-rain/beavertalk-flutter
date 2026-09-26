@@ -1,10 +1,13 @@
 import 'dart:math';
+import 'dart:ui' show PictureRecorder;
 
 import 'package:beavertalk/features/pronunciation_challenge/data/curated_word_source.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_card.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_engine.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/game_config.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/matcher.dart';
+import 'package:beavertalk/features/pronunciation_challenge/domain/word_layout.dart';
+import 'package:beavertalk/features/pronunciation_challenge/presentation/challenge_painter.dart';
 import 'package:beavertalk/features/pronunciation_challenge/presentation/pronunciation_challenge_screen.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +68,7 @@ void main() {
     test('combo increases the points awarded', () {
       final e = _seededEngine();
       e.start();
-      // First pass: 100. Second consecutive pass: 100 + 1*12 = 112.
+      // First pass: 100. Second consecutive pass: 100 + 1*100 = 200 (09-24).
       e.update(0.016);
       e.passCard(e.cards.firstWhere((c) => c.state == CardState.live));
       expect(e.score, 100);
@@ -78,7 +81,7 @@ void main() {
       e.cards.add(c2);
       e.passCard(c2);
       expect(e.combo, 2);
-      expect(e.score, 100 + 112);
+      expect(e.score, 100 + 200);
     });
 
     test('the miss allowance ends the game, and it follows difficulty', () {
@@ -122,7 +125,7 @@ void main() {
       // The old title only looked at maxCombo, so three in a row said "Nice!"
       // no matter how much was missed.
       final e = _seededEngine();
-      e.difficulty = Difficulty.slow; // 5 misses of rope
+      e.difficulty = Difficulty.slow; // 4 misses of rope
       e.start();
       for (var i = 0; i < 3; i++) {
         e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
@@ -214,7 +217,9 @@ void main() {
       expect(c.state, CardState.pass);
       // 100 * 0.6 = 60, versus 100 for an on-time first pass.
       expect(e.score, (100 * GameConfig.latePointRatio).round());
-      expect(e.hitTexts.single.sub, 'LATE');
+      // 유예 통과는 판정 GOOD(웹 judgeOf) — 옛 「LATE」 보조 글자는 판정 글자로 바뀌었다.
+      expect(e.hitTexts.single.judge, Judge.good);
+      expect(e.hitTexts.single.points, 60);
     });
 
     test('grace running out is the miss', () {
@@ -262,6 +267,112 @@ void main() {
     test('tapPass returns false when not running', () {
       final e = _seededEngine();
       expect(e.tapPass(), isFalse);
+    });
+  });
+
+  // ── 09-26 웹 개편 앱 반영(T-20260926-05 요청서 §6 완료 조건) ─────────────
+  group('web 개편 반영', () {
+    test('목숨 4 / 3 / 2 · 속도 배율 그대로', () {
+      expect(Difficulty.slow.missAllow, 4);
+      expect(Difficulty.normal.missAllow, 3);
+      expect(Difficulty.fast.missAllow, 2);
+      expect(Difficulty.slow.mult, 0.6);
+      expect(Difficulty.normal.mult, 1.0);
+      expect(Difficulty.fast.mult, 1.8);
+    });
+
+    test('점수 = 100 + (콤보-1)×100 · 10콤보 연속 합 5,500', () {
+      final e = _seededEngine();
+      e.start();
+      for (var i = 0; i < 10; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      expect(e.combo, 10);
+      expect(e.score, 5500);
+      expect(ChallengeEngine.pointsFor(10, late: false), 1000);
+      expect(ChallengeEngine.pointsFor(3, late: true), 180); // 300 × 0.6
+    });
+
+    test('판정 등급 경계 — k 0.8 · 0.9 · 1.15 · LATE', () {
+      Judge j(double k, {bool late = false}) =>
+          ChallengeEngine.judgeOf(k, late: late);
+      expect(j(0.79), Judge.good);
+      expect(j(0.8), Judge.great);
+      expect(j(0.89), Judge.great);
+      expect(j(0.9), Judge.perfect);
+      expect(j(1.0), Judge.perfect);
+      expect(j(1.15), Judge.perfect);
+      expect(j(1.16), Judge.great);
+      expect(j(1.0, late: true), Judge.good, reason: '유예 통과는 무조건 GOOD');
+    });
+
+    test('판정 글자 · 5콤보마다 마일스톤 · 흔들림 · 콤보 튐', () {
+      final e = _seededEngine();
+      e.start();
+      for (var i = 0; i < 4; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      expect(e.hitTexts.where((h) => h.isMilestone), isEmpty);
+      expect(e.hitTexts.last.judge, Judge.perfect);
+      expect(e.hitTexts.last.y, ChallengeEngine.judgeY);
+      expect(e.comboPop, 1);
+      expect(e.shake, 0.25);
+
+      e.passCard(ChallengeCard(id: 4, word: 'x', k: 1.0)); // 5콤보
+      final m = e.hitTexts.where((h) => h.isMilestone).single;
+      expect(m.combo, 5);
+      expect(m.y, ChallengeEngine.milestoneY);
+      expect(m.life, 1.3);
+      expect(e.shake, 1);
+      expect(e.flashPass, 1.6);
+
+      e.missCard(ChallengeCard(id: 5, word: 'x', k: 1.0));
+      expect(e.comboPop, 0);
+      expect(e.shake, 1, reason: '큰 값을 줄이지 않는다');
+      expect(e.hitTexts.last.judge, Judge.miss);
+      expect(e.hitTexts.last.points, 0);
+
+      e.update(1); // 3.5/s·4/s 로 줄어든다
+      expect(e.shake, 0);
+      expect(e.comboPop, 0);
+    });
+
+    test('학습 문장 두 줄 — 가운데에 가장 가까운 띄어쓰기에서 접는다', () {
+      final (a, b) = splitInTwoLines('저는 선생님이에요')!;
+      expect((a, b), ('저는', '선생님이에요'));
+      expect((a.length, b.length), (2, 6));
+      // 띄어쓰기가 여럿이면 글자 수 가운데에 가장 가까운 것.
+      expect(splitInTwoLines('오늘 날씨가 정말 좋네요'), ('오늘 날씨가', '정말 좋네요'));
+      // 띄어쓰기가 없으면 절반(올림) — 11자 → 6 | 5.
+      expect(splitInTwoLines('안녕하세요반갑습니다요'), ('안녕하세요반', '갑습니다요'));
+      expect(splitInTwoLines('가'), isNull);
+    });
+
+    testWidgets('painter — 판정 글자 · 마일스톤 · 흔들림 · 두 줄 문장을 그린다', (tester) async {
+      final e = _seededEngine();
+      e.start();
+      e.cards.add(ChallengeCard(id: 900, word: '저는 선생님이에요 정말 반갑습니다', k: 1.0));
+      for (var i = 0; i < 5; i++) {
+        e.passCard(ChallengeCard(id: i, word: 'x', k: 1.0));
+      }
+      e.missCard(ChallengeCard(id: 50, word: 'x', k: 1.0));
+      expect(e.shake, greaterThan(0));
+      final painter = ChallengePainter(
+        engine: e,
+        repaint: ChangeNotifier(),
+        mint: const Color(0xFF00FFB2),
+        background: const Color(0xFF0B0F14),
+      );
+      final recorder = PictureRecorder();
+      painter.paint(Canvas(recorder), const Size(360, 640));
+      recorder.endRecording().dispose();
+    });
+
+    test('점수 글자 천 단위 쉼표', () {
+      expect(thousands(900), '900');
+      expect(thousands(1000), '1,000');
+      expect(thousands(5500), '5,500');
+      expect(thousands(1234567), '1,234,567');
     });
   });
 

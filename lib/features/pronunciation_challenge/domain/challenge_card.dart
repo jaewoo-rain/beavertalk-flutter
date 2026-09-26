@@ -60,24 +60,44 @@ class ChallengeCard {
   double graceLeft;
 }
 
-/// A short-lived floating text (e.g. `+112`, `COMBO ×3`, `MISS`) spawned on a
-/// pass or miss. Rises and fades out.
+/// 통과·미스 판정 등급(웹 `judgeOf`). 연출만 — 점수·콤보 공식에는 안 들어간다.
+enum Judge { perfect, great, good, miss }
+
+/// A short-lived floating text spawned on a pass or miss — a [Judge] word with
+/// its points under it, or a `N COMBO!` milestone. Pops out, rises and fades
+/// (web `drawHits`, 2026-09-25).
 class HitText {
-  /// Creates a floating hit text.
-  HitText({
-    required this.text,
-    required this.sub,
+  /// A judgment word (`PERFECT` … `MISS`) with [points] under it.
+  HitText.judge({
+    required Judge this.judge,
+    required this.points,
     required this.x,
     required this.y,
-    required this.miss,
-    this.life = 1,
-  });
+  })  : combo = 0,
+        life = 1,
+        life0 = 1;
 
-  /// Main line (e.g. `+112`).
-  final String text;
+  /// The `N COMBO!` milestone, every [GameConfig.comboMilestone] combos.
+  HitText.milestone({
+    required this.combo,
+    required this.x,
+    required this.y,
+  })  : judge = null,
+        points = 0,
+        life = 1.3,
+        life0 = 1.3;
 
-  /// Optional second line (e.g. `COMBO ×3`); empty when none.
-  final String sub;
+  /// Judgment word, or `null` for a milestone.
+  final Judge? judge;
+
+  /// Points awarded (drawn as `+1,000` under the word). 0 on a miss.
+  final int points;
+
+  /// Combo count a milestone celebrates; 0 for a judgment.
+  final int combo;
+
+  /// Whether this is the `N COMBO!` milestone.
+  bool get isMilestone => judge == null;
 
   /// Centre X in design space.
   double x;
@@ -85,9 +105,9 @@ class HitText {
   /// Centre Y in design space.
   double y;
 
-  /// Remaining life 0..1 (doubles as opacity).
+  /// Remaining life (doubles as opacity once below 0.35).
   double life;
 
-  /// Whether this is a miss (red) vs. a pass (mint).
-  final bool miss;
+  /// Life at spawn — the pop-out animation runs on `life0 - life`.
+  final double life0;
 }

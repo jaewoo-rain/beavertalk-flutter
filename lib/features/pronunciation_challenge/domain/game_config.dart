@@ -87,12 +87,41 @@ abstract final class GameConfig {
   /// A grace-window pass is worth less than an on-time one.
   static const double latePointRatio = 0.6;
 
-  /// Miss allowance at the hardest difficulty — the floor, and the value the
-  /// HUD sizes its widest slot row against.
-  ///
-  /// The live allowance is per-difficulty ([Difficulty.missAllow]); this is only
-  /// the minimum any difficulty can hand out.
-  static const int minMissAllow = 3;
+  // ── 점수 (웹 `POINT_BASE` · `POINT_COMBO_STEP`, 3c4cda0) ─────────────
+  /// 한 장 기본 점수.
+  static const int pointBase = 100;
+
+  /// 콤보가 1 늘 때마다 더하는 점수 — 09-24 사용자 「콤보 점수를 엄청 많이」(12 → 100).
+  /// 한 장 = `(pointBase + (combo - 1) * pointComboStep)`, 늦으면 × [latePointRatio].
+  /// 10콤보 연속 합 = 5,500. 앱은 랭킹·서버 점수 검사가 없어 로컬 점수만 바뀐다.
+  static const int pointComboStep = 100;
+
+  // ── 판정 등급 (웹 `judgeOf`) — 연출만, 점수·콤보에는 안 들어간다 ──────
+  /// PERFECT 하한·상한 — 통과 순간의 깊이 `k`. 판정 지점(1) 근처이고, 서버 STT 지연만큼
+  /// 늦게 깨지는 걸 감안해 뒤쪽을 넓게 뒀다.
+  static const double kPerfectMin = 0.9;
+  static const double kPerfectMax = 1.15;
+
+  /// GREAT 하한. 그 아래는 GOOD. 유예(LATE) 통과는 `k` 와 무관하게 GOOD.
+  static const double kGreatMin = 0.8;
+
+  /// 이 콤보의 배수마다 가운데 「N COMBO!」 · 큰 흔들림 · 강한 섬광.
+  static const int comboMilestone = 5;
+
+  // ── 학습 문장 두 줄 (웹 `layoutWord`) ─────────────────────────────
+  /// 판정 지점 글자 크기([wordSizeNear])로 잰 폭이 이걸 넘으면 두 줄로 접는다(= 판정 구역 폭).
+  static const double wordMaxW = gateW;
+
+  /// 두 줄일 때 글자 배율. 두 줄 덩어리 높이를 한 줄 단어와 비슷하게 둬야 뒤 단어와 안 겹친다
+  /// (앞 반높이 + 뒤 반높이 < k 간격 거리 — 0.58 이면 2 × [wordLineH] × 0.58 ≈ 1.22 줄 높이).
+  static const double longWordScale = 0.58;
+
+  /// 두 줄일 때 줄 간격(글자 크기 배수).
+  static const double wordLineH = 1.05;
+
+  /// Miss allowance at the hardest difficulty — the floor any difficulty can
+  /// hand out. The live allowance is per-difficulty ([Difficulty.missAllow]).
+  static const int minMissAllow = 2;
 
   /// `k` → word font size.
   static double wordSize(double k) => wordSizeNear * k;
@@ -103,15 +132,15 @@ abstract final class GameConfig {
 }
 
 /// Difficulty presets: speed multiplier **and** miss allowance (web
-/// `DIFFICULTIES`, lines 334–338).
+/// `DIFFICULTIES`).
 ///
-/// The allowance is not a constant. A flat three misses ends a beginner's run
-/// in about ten seconds, which leaves no clip worth sharing — and sharing is
-/// what this mode exists for. Slower difficulties buy more rope.
+/// 목숨 4 / 3 / 2 — 09-24 사용자 지시(옛 5 / 4 / 3 에서 하나씩 줄임, 웹 `3c4cda0` 과 같음).
+/// 속도 배율은 그대로다. 느린 난이도일수록 목숨이 많은 이유는 같다 — 초보의 판이 몇 초 만에
+/// 끝나면 공유할 만한 영상이 안 남는다.
 enum Difficulty {
-  slow(0.6, 5),
-  normal(1.0, 4),
-  fast(1.8, 3);
+  slow(0.6, 4),
+  normal(1.0, 3),
+  fast(1.8, 2);
 
   const Difficulty(this.mult, this.missAllow);
 
