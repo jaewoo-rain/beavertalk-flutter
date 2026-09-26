@@ -13,12 +13,15 @@ import android.os.IBinder
 /**
  * mediaProjection 형식의 포그라운드 서비스.
  *
- * Android 14(API 34)부터 `MediaProjectionManager.getMediaProjection()` 은
- * **이 형식의 포그라운드 서비스가 이미 떠 있을 때만** 허용된다. 없으면
- * SecurityException("Media projections require a foreground service of type
+ * Android 10(API 29)부터 `MediaProjectionManager.getMediaProjection()` 은
+ * **이 형식의 포그라운드 서비스가 이미 떠 있을 때만** 허용된다(targetSdk ≥ Q ·
+ * android10-release `MediaProjectionManagerService.requiresForegroundService()`).
+ * 없으면 SecurityException("Media projections require a foreground service of type
  * ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION") 이 난다. 이 서비스가
- * 없어서 API 34+ 에서는 [MainActivity.onStart] 가 아예 false 로 되돌아갔고,
- * 발음 챌린지가 내놓는 산출물인 클립이 신형 기기 전부에서 안 나왔다.
+ * 없어서 발음 챌린지가 내놓는 산출물인 클립이 안 나왔다.
+ *
+ * ⚠ 한때 이 서비스를 API 34+ 에서만 띄웠다 — Android 10~13 기기(Note20 = API 29)에서
+ *   예외가 나 결과 화면에 녹화 카드가 안 떴다(QA F056 · Play 수정요청 A3, 09-26 → 29 로 정정).
  *
  * 서비스 자체는 아무 일도 하지 않는다 — 캡처는 액티비티가 쥔 `MediaProjection`
  * 이 한다. 이 서비스의 존재 이유는 **권한 상태를 만드는 것**뿐이다. 그래서

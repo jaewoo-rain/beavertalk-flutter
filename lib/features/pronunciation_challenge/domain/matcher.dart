@@ -59,16 +59,22 @@ bool wordMatch(String tok, String target) {
 /// "저는 학생이에요" against the same target covers only 저는 — 2 of 8 (0.25,
 /// fails). Those two are exactly the cards that sit on screen together, so
 /// keeping them apart is the constraint that matters.
+///
+/// **라틴 문자가 든 어절은 판정에서 뺀다**(QA F057 · PM-DEC-044). 학습 문장에 캐릭터·사람
+/// 이름 같은 영어(「Zena는 학생이에요」)가 섞이면, 서버 STT 가 ko-KR 하나라 그 부분이
+/// 「제나는」 처럼 한글로 전사되어 「zena」 와 절대 안 맞았다 — 문장 전체가 커버리지 미달로
+/// 실패했다. 그 어절은 자동 통과로 보고 나머지 한국어만으로 판정한다. 화면 표시는 그대로다.
+/// 문장이 통째로 라틴이면 뭔가 말했으면(전사가 비지 않았으면) 통과한다.
 bool sentenceMatch(String transcript, String sentence) {
   final t = norm(transcript);
-  final s = norm(sentence);
-  if (s.isEmpty) return false;
-  if (t.contains(s)) return true;
-  final words = sentence
+  final scorable = sentence
       .split(_wordSplit)
-      .map(norm)
-      .where((w) => w.isNotEmpty)
+      .where((w) => w.isNotEmpty && !_latinLetter.hasMatch(w))
       .toList();
+  final s = norm(scorable.join(' '));
+  if (s.isEmpty) return norm(sentence).isNotEmpty && t.isNotEmpty;
+  if (t.contains(s)) return true;
+  final words = scorable.map(norm).where((w) => w.isNotEmpty).toList();
   if (words.length < 2) return false;
   var covered = 0;
   var total = 0;
@@ -83,6 +89,9 @@ bool sentenceMatch(String transcript, String sentence) {
 const double _kSentenceCoverage = 0.7;
 
 final RegExp _wordSplit = RegExp(r'\s+');
+
+/// 라틴 문자 하나라도 든 어절 — [sentenceMatch] 가 판정에서 빼는 대상.
+final RegExp _latinLetter = RegExp('[A-Za-z]');
 
 /// Levenshtein edit distance (web game `lev()`, lines 253–260). Small strings
 /// only (card words), so the simple O(m·n) DP is fine.

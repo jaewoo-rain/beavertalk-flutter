@@ -18,6 +18,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.WindowManager
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -34,10 +35,10 @@ import java.io.File
  * `RenderRepaintBoundary.toImage()` cannot. Video only, by design: opening the
  * mic here would contend with the server-STT mic capture that drives the game.
  *
- * API 26~33 은 포그라운드 서비스 없이 돌아간다. API 34+ 는 `getMediaProjection`
- * 앞에 mediaProjection 형식의 포그라운드 서비스를 요구하므로
- * [ScreenCaptureService] 를 먼저 띄우고, 그 서비스가 `startForeground()` 를
- * 마쳤다는 통지를 받은 뒤에야 캡처를 시작한다.
+ * API 26~28 은 포그라운드 서비스 없이 돌아간다. API 29+ 는 `getMediaProjection`
+ * 앞에 mediaProjection 형식의 포그라운드 서비스를 요구하므로(targetSdk ≥ Q —
+ * 34 부터가 아니다, QA F056) [ScreenCaptureService] 를 먼저 띄우고, 그 서비스가
+ * `startForeground()` 를 마쳤다는 통지를 받은 뒤에야 캡처를 시작한다.
  */
 class MainActivity : FlutterActivity() {
     private val channelName = "beavertalk/challenge_recorder"
@@ -455,10 +456,17 @@ class MainActivity : FlutterActivity() {
             pending?.success(false)
             return
         }
-        // Android 14(API 34)+ : getMediaProjection() 은 mediaProjection 형식의
+        // Android 10(API 29)+ : getMediaProjection() 은 mediaProjection 형식의
         // 포그라운드 서비스가 **이미 떠 있을 때만** 허용된다. 서비스 시작은
         // 비동기라 startForeground() 완료 통지를 받고 나서 캡처로 넘어간다.
-        if (Build.VERSION.SDK_INT >= 34) {
+        //
+        // ⛔ 34 가 아니라 29 다(QA F056 · 09-26). 프레임워크는 Android 10 부터
+        //   `targetSdk >= Q` 인 앱에 이 서비스를 요구한다(android10-release
+        //   MediaProjectionManagerService: requiresForegroundService() =
+        //   mTargetSdkVersion >= Q && !mIsPrivileged → SecurityException). 34 로 두어
+        //   Android 10~13 기기(Note20 = API 29)에서 서비스 없이 캡처로 가 예외가 났고,
+        //   아래 catch 가 조용히 false 를 돌려 결과 화면에 녹화 영상 카드가 안 떴다.
+        if (Build.VERSION.SDK_INT >= 29) {
             awaitCaptureService { started ->
                 if (!started) {
                     ScreenCaptureService.stop(this)
@@ -476,6 +484,8 @@ class MainActivity : FlutterActivity() {
     private fun runBeginRecording(resultCode: Int, data: Intent): Boolean = try {
         beginRecording(resultCode, data)
     } catch (e: Exception) {
+        // 조용히 삼키면 「영상 카드가 왜 없지」를 로그로도 못 가린다(F056 이 그랬다).
+        Log.e("BeaverRecord", "녹화 시작 실패 → 클립 없이 진행", e)
         teardown()
         false
     }

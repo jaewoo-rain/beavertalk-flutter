@@ -94,7 +94,7 @@ class WinbackOfferSheet extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           // CTA — 공용 BottomSheet two-button-col 과 같은 배치: 위 12 · 좌우 20 · 보조 위 ·
-          // 주요 아래 · 60 높이 · 간격 10.
+          // 주요 아래 · 60 높이 · 간격 12.
           ContentColumn(
             gutter: 20,
             padding: const EdgeInsets.only(top: 12),
@@ -107,7 +107,7 @@ class WinbackOfferSheet extends StatelessWidget {
                   text: l10n.ctaMaybeLater,
                   onPressed: onLater,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 12),
                 Button(
                   type: BtnType.primaryFill,
                   size: BtnSize.s60,

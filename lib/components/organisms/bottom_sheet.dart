@@ -102,8 +102,9 @@ class BottomSheet extends StatelessWidget {
   /// Footer horizontal padding (Figma `20`).
   static const double _footerH = 20;
 
-  /// Inter-button gap (Figma `10`).
-  static const double _gap = 10;
+  /// Inter-button gap, vertical pair — Figma `12`(09-26 디자이너 대조 · 바텀시트 전수 규칙표
+  /// 「버튼 쌍 간격 12(세로)」). 10 은 옛 가로 쌍(two-button-row) 값이 남은 것이었다.
+  static const double _gap = 12;
 
   @override
   Widget build(BuildContext context) {

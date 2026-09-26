@@ -368,6 +368,20 @@ void main() {
       recorder.endRecording().dispose();
     });
 
+    // QA F057(PM-DEC-044): 학습 문장에 섞인 영어 어절은 판정에서 뺀다 — STT 가 ko-KR 이라
+    // 「Zena」 는 「제나」 로 전사되어 절대 안 맞았다.
+    test('영어 어절은 자동 통과 — 「Zena는 학생이에요」 가 한국어 부분만으로 통과', () {
+      const target = 'Zena는 학생이에요';
+      expect(sentenceMatch('제나는 학생이에요', target), isTrue);
+      expect(sentenceMatch('학생이에요', target), isTrue);
+      expect(sentenceMatch('선생님이에요', target), isFalse, reason: '한국어 부분은 여전히 맞아야 한다');
+      expect(sentenceMatch('', 'Hello BeaverTalk'), isFalse, reason: '아무 말도 안 했으면 실패');
+      expect(sentenceMatch('헬로', 'Hello BeaverTalk'), isTrue, reason: '통째로 영어면 말하면 통과');
+      // 기존 규칙은 그대로.
+      expect(sentenceMatch('전 선생님이에요', '저는 선생님이에요'), isTrue);
+      expect(sentenceMatch('저는 학생이에요', '저는 선생님이에요'), isFalse);
+    });
+
     test('점수 글자 천 단위 쉼표', () {
       expect(thousands(900), '900');
       expect(thousands(1000), '1,000');
