@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/analytics/app_analytics.dart';
 import '../core/config/feature_flags.dart';
 import '../features/incoming_call/data/models/incoming_call_payload_dto.dart';
 import '../features/incoming_call/presentation/incoming_call_providers.dart';
@@ -77,6 +78,9 @@ Future<void> initIncomingCallLocal(ProviderContainer container) async {
     // `_step`으로 격리해, iOS 에서 이 호출이 throw/hang 해도 PushKit 기반 iOS 등록은
     // 계속 진행된다(iOS 는 Firebase 가 필요 없다).
     await _step('firebase init', () => Firebase.initializeApp());
+    // GA4 는 Firebase 가 뜬 **뒤**에만 켠다 — attach 를 앞지르지 않는다.
+    // fire-and-forget: 수신 콜 경로가 계측을 기다리지 않게 한다.
+    unawaited(AppAnalytics.instance.start());
 
     // 디바이스 토큰 등록을 **FCM 배선과 독립적으로, 그 前에** 시작한다.
     // iOS VoIP 등록은 PushKit 경로라 Firebase 가 전혀 필요 없다. 이전에는 이 등록이

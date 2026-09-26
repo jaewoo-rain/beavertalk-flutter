@@ -1,4 +1,5 @@
 import 'dart:async';
+import '../../../core/analytics/app_analytics.dart';
 import '../../../theme/app_color_tokens.dart';
 import 'dart:io' show File;
 
@@ -232,7 +233,16 @@ class _PronunciationChallengeScreenState
         });
       }
       setState(() => _phase = _Phase.result);
+      _logCompleted('game_over');
     }
+  }
+
+  /// GA4 `challenge_completed`. [endedBy] = `game_over`(게임이 스스로 끝남) · `user`(「결과 보기」).
+  void _logCompleted(String endedBy) {
+    AppAnalytics.instance.log(AppEvent.challengeCompleted, {
+      'score': _controller.engine.score,
+      'ended_by': endedBy,
+    });
   }
 
   /// Start: initialize camera (backdrop) + STT (marks the platform capable; the
@@ -975,6 +985,7 @@ class _PronunciationChallengeScreenState
             onPressed: () {
               _controller.engine.endGame();
               setState(() => _phase = _Phase.result);
+              _logCompleted('user');
             },
           ),
         ),
