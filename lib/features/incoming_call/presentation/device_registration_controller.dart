@@ -190,6 +190,10 @@ class DeviceRegistrationController {
   /// `logout()` 은 `signOut()` 전에 이걸 먼저 불러 토큰을 확실히 삭제한다(멱등).
   Future<void> unregister() => _unregister();
 
+  /// 현재 토큰을 다시 등록한다. [unregister] 뒤 계정 삭제가 실패해 로그인 상태가
+  /// 유지될 때 되돌리는 용도(멱등 · 미인증이면 스킵).
+  Future<void> register() => _registerCurrent();
+
   /// 로그아웃 시 이 기기가 등록한 토큰을 **전부** 삭제한다.
   ///
   /// 🔴 iOS 는 토큰이 둘이다. 하나만 지우면 남은 쪽으로 **로그아웃한 계정의 알림이

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -465,7 +466,24 @@ class AuthController extends Notifier<AuthStatus> {
   /// the admin/service key) — the client SDK cannot delete its own auth user.
   /// Without that, the same email can sign back in and be find-or-created again.
   Future<void> deleteAccount() async {
-    await ref.read(authRepositoryProvider).deleteAccount();
+    // Delete this device's push token BEFORE the member goes away, while the
+    // session is still valid — same reason as logout(). Afterwards the member is
+    // gone and `DELETE /devices` can no longer be authorized, so the token would
+    // survive and a scheduled alarm could still ring a deleted account's phone.
+    final devices = ref.read(deviceRegistrationControllerProvider);
+    try {
+      await devices.unregister();
+    } catch (_) {
+      // Best-effort: a failed token delete must not block account deletion.
+    }
+    try {
+      await ref.read(authRepositoryProvider).deleteAccount();
+    } catch (_) {
+      // The account still exists and the user stays logged in — put the token
+      // back so calls and alarms keep arriving on this device.
+      unawaited(devices.register());
+      rethrow;
+    }
     // The backend delete already succeeded — a failed network revoke must not
     // leave the user staring at a deleted account's UI. Same reasoning as logout().
     try {

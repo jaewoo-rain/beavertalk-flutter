@@ -25,6 +25,15 @@
     <!-- 발음 챌린지 화면 녹화. Android 14(API 34)부터 MediaProjection 은 이 형식의
          포그라운드 서비스가 떠 있어야만 getMediaProjection() 을 허용한다. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION"/>
+    <!-- Play 포그라운드 서비스 신고: flutter_callkit_incoming 3.1.3 매니페스트가
+         camera 유형과 FOREGROUND_SERVICE_CAMERA 권한을 선언한다. 앱은 음성 통화
+         (CallKitParams type 0)만 쓰고, 플러그인은 type > 0 일 때만 camera 를
+         startForeground 마스크에 넣는다 → 신고할 사용 사례가 없는 유형이라 걷어낸다. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"
+        tools:node="remove" />
+    <!-- 병합 결과에 잘못된 권한 이름(문자열 그대로)이 섞여 들어온다 — 의미 없는 선언이라 뺀다. -->
+    <uses-permission android:name="Manifest.permission.CAPTURE_AUDIO_OUTPUT"
+        tools:node="remove" />
     <application
         android:label="BeaverTalk"
         android:name="${applicationName}"
@@ -105,6 +114,12 @@
         <!-- 발음 챌린지 화면 녹화 중에만 뜬다. 캡처는 액티비티가 쥔
              MediaProjection 이 하고, 이 서비스는 API 34+ 가 요구하는 권한
              상태를 만드는 역할만 한다(ScreenCaptureService 참조). -->
+        <!-- 위 FOREGROUND_SERVICE_CAMERA 제거와 짝: 플러그인 선언
+             phoneCall|microphone|camera 에서 camera 를 뺀다. -->
+        <service
+            android:name="com.hiennv.flutter_callkit_incoming.CallkitNotificationService"
+            android:foregroundServiceType="phoneCall|microphone"
+            tools:replace="android:foregroundServiceType" />
         <service
             android:name=".ScreenCaptureService"
             android:exported="false"
