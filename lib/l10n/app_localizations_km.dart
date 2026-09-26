@@ -1168,9 +1168,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get noPayments => 'មិនទាន់មានការទូទាត់';
 
   @override
-  String get morePaymentsExist => 'ការទូទាត់ចាស់ៗមិនទាន់បង្ហាញនៅឡើយ';
-
-  @override
   String get undatedPayments => 'គ្មានកាលបរិច្ឆេទ';
 
   @override
@@ -1513,9 +1510,6 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'ក្នុងមួយខែ';
-
-  @override
-  String get planTaglineMax => 'ឥឡូវអ្នកអាចមើលឃើញពួកគេ។';
 
   @override
   String get planTaglineFree => 'ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ។ ឥតគិតថ្លៃ។';

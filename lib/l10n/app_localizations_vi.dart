@@ -1168,9 +1168,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get noPayments => 'Chưa có thanh toán nào';
 
   @override
-  String get morePaymentsExist => 'Các thanh toán cũ hơn chưa được hiển thị';
-
-  @override
   String get undatedPayments => 'Không có ngày';
 
   @override
@@ -1512,9 +1509,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'mỗi tháng';
-
-  @override
-  String get planTaglineMax => 'Giờ bạn có thể nhìn thấy họ.';
 
   @override
   String get planTaglineFree => '5 phút gọi mỗi ngày. Hoàn toàn miễn phí.';

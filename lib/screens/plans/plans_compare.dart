@@ -57,8 +57,6 @@ class PlansCompareScreen extends ConsumerWidget {
                     perMonthUnit: l10n.perMonthUnit,
                     badgeTone: premium ? BadgeTone.neutral : null,
                     badgeLabel: premium ? l10n.badgeCurrent : null,
-                    tagline: l10n.planTaglineMax,
-                    taglineColor: c.accentForegroundOrange,
                     bulletTone: BulletTone.max,
                     bullets: [
                       l10n.premiumBulletVideo,

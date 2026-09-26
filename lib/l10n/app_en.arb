@@ -629,10 +629,6 @@
   "@noPayments": {
     "description": "Empty state on the payment-history screen."
   },
-  "morePaymentsExist": "Older payments aren't shown yet",
-  "@morePaymentsExist": {
-    "description": "Shown when the server reports has_more but load-more isn't wired."
-  },
   "undatedPayments": "Undated",
   "@undatedPayments": {
     "description": "Month-group heading for payments whose payment_date is null."
@@ -983,7 +979,6 @@
     "description": "GNB title of plans_compare (4514:5226)."
   },
   "perMonthUnit": "per month",
-  "planTaglineMax": "Now you can see them.",
   "planTaglineFree": "5 minutes of calls a day. On the house.",
   "bulletProCorrections": "Corrections aimed at your native language",
   "bulletFreeCall": "5 minutes of voice calls a day",

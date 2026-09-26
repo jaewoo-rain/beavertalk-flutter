@@ -1171,9 +1171,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get noPayments => 'ابھی کوئی ادائیگی نہیں';
 
   @override
-  String get morePaymentsExist => 'پرانی ادائیگیاں ابھی نہیں دکھائی گئیں';
-
-  @override
   String get undatedPayments => 'بغیر تاریخ';
 
   @override
@@ -1514,9 +1511,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'ماہانہ';
-
-  @override
-  String get planTaglineMax => 'اب آپ انہیں دیکھ سکتے ہیں۔';
 
   @override
   String get planTaglineFree => 'روزانہ 5 منٹ کال۔ بالکل مفت۔';

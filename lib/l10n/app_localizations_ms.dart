@@ -1179,9 +1179,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get noPayments => 'Belum ada pembayaran';
 
   @override
-  String get morePaymentsExist => 'Pembayaran lama belum dipaparkan';
-
-  @override
   String get undatedPayments => 'Tiada tarikh';
 
   @override
@@ -1523,9 +1520,6 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'sebulan';
-
-  @override
-  String get planTaglineMax => 'Kini anda boleh melihat mereka.';
 
   @override
   String get planTaglineFree => '5 minit panggilan sehari. Percuma.';

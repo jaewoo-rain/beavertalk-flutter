@@ -271,6 +271,8 @@ void main() {
         ProviderScope(
           overrides: [
             subscriptionStatusProvider.overrideWithValue(status),
+            subscriptionStatusAvailabilityProvider
+                .overrideWithValue(SubscriptionStatusAvailability.known),
             signInProviderProvider.overrideWithValue(provider),
             if (member != null)
               myProfileProvider.overrideWith((ref) async => member),

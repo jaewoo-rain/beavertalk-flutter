@@ -2266,12 +2266,6 @@ abstract class AppLocalizations {
   /// **'No payments yet'**
   String get noPayments;
 
-  /// Shown when the server reports has_more but load-more isn't wired.
-  ///
-  /// In en, this message translates to:
-  /// **'Older payments aren\'t shown yet'**
-  String get morePaymentsExist;
-
   /// Month-group heading for payments whose payment_date is null.
   ///
   /// In en, this message translates to:
@@ -2871,12 +2865,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'per month'**
   String get perMonthUnit;
-
-  /// No description provided for @planTaglineMax.
-  ///
-  /// In en, this message translates to:
-  /// **'Now you can see them.'**
-  String get planTaglineMax;
 
   /// No description provided for @planTaglineFree.
   ///

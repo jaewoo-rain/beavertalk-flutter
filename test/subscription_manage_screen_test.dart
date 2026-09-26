@@ -44,6 +44,8 @@ void main() {
         key: UniqueKey(),
         overrides: [
           subscriptionStatusProvider.overrideWithValue(s),
+          subscriptionStatusAvailabilityProvider
+              .overrideWithValue(SubscriptionStatusAvailability.known),
           // 서버 없이 돈다 — 기본은 「모른다」(null). 오늘 사용량 행은 값을 줄 때만 그린다.
           dailyStatusProvider.overrideWith((ref) async => daily),
         ],

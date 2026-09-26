@@ -284,8 +284,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       title: l10n.planMax,
       price: PlanPrices.maxMonthly,
       perMonthUnit: l10n.perMonthUnit,
-      tagline: l10n.premiumBulletVideo,
-      taglineColor: c.accentForegroundOrange,
       bulletTone: BulletTone.max,
       bullets: [
         l10n.premiumBulletVideo,

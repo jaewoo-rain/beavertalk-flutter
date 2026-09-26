@@ -1141,9 +1141,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noPayments => '아직 결제 내역이 없어요';
 
   @override
-  String get morePaymentsExist => '이전 결제 내역은 아직 표시되지 않아요';
-
-  @override
   String get undatedPayments => '날짜 없음';
 
   @override
@@ -1477,9 +1474,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get perMonthUnit => '/월';
-
-  @override
-  String get planTaglineMax => '이제 얼굴을 보며 대화해요.';
 
   @override
   String get planTaglineFree => '하루 5분, 무료 통화.';

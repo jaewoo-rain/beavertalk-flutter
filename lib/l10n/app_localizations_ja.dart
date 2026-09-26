@@ -1139,9 +1139,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get noPayments => 'まだ決済履歴がありません';
 
   @override
-  String get morePaymentsExist => '以前の決済履歴はまだ表示されません';
-
-  @override
   String get undatedPayments => '日付なし';
 
   @override
@@ -1475,9 +1472,6 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get perMonthUnit => '/月';
-
-  @override
-  String get planTaglineMax => '顔を見ながら話せます。';
 
   @override
   String get planTaglineFree => '1日5分、無料で通話。';

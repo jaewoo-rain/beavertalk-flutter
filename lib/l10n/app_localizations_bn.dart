@@ -1168,9 +1168,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get noPayments => 'এখনও কোনো পেমেন্ট নেই';
 
   @override
-  String get morePaymentsExist => 'পুরোনো পেমেন্ট এখনও দেখানো হয়নি';
-
-  @override
   String get undatedPayments => 'তারিখহীন';
 
   @override
@@ -1511,9 +1508,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'প্রতি মাসে';
-
-  @override
-  String get planTaglineMax => 'এখন তাদের দেখতে পাবেন।';
 
   @override
   String get planTaglineFree => 'দিনে 5 মিনিট কল। একদম ফ্রি।';

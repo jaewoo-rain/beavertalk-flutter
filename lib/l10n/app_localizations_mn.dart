@@ -1166,9 +1166,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get noPayments => 'Одоогоор төлбөр алга';
 
   @override
-  String get morePaymentsExist => 'Хуучин төлбөрүүд хараахан харагдахгүй байна';
-
-  @override
   String get undatedPayments => 'Огноогүй';
 
   @override
@@ -1510,9 +1507,6 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'сард';
-
-  @override
-  String get planTaglineMax => 'Одоо та тэднийг харах боломжтой.';
 
   @override
   String get planTaglineFree => 'Өдөрт 5 минут дуудлага. Үнэгүй.';

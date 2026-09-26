@@ -1160,9 +1160,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get noPayments => 'ยังไม่มีการชำระเงิน';
 
   @override
-  String get morePaymentsExist => 'ยังไม่แสดงรายการชำระเงินก่อนหน้า';
-
-  @override
   String get undatedPayments => 'ไม่มีวันที่';
 
   @override
@@ -1503,9 +1500,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'ต่อเดือน';
-
-  @override
-  String get planTaglineMax => 'ตอนนี้คุณเห็นหน้าพวกเขาได้แล้ว';
 
   @override
   String get planTaglineFree => 'โทรวันละ 5 นาที ฟรีไม่มีค่าใช้จ่าย';

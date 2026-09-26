@@ -1181,9 +1181,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get noPayments => 'Wala pang bayad';
 
   @override
-  String get morePaymentsExist => 'Hindi pa ipinapakita ang mas lumang bayad';
-
-  @override
   String get undatedPayments => 'Walang petsa';
 
   @override
@@ -1528,9 +1525,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'kada buwan';
-
-  @override
-  String get planTaglineMax => 'Ngayon ay makikita mo na sila.';
 
   @override
   String get planTaglineFree => '5 minutong tawag kada araw. Libre.';

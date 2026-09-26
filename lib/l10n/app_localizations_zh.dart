@@ -1137,9 +1137,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noPayments => '还没有支付记录';
 
   @override
-  String get morePaymentsExist => '更早的支付记录暂未显示';
-
-  @override
   String get undatedPayments => '无日期';
 
   @override
@@ -1472,9 +1469,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get perMonthUnit => '/月';
-
-  @override
-  String get planTaglineMax => '现在可以看见对方了。';
 
   @override
   String get planTaglineFree => '每天 5 分钟通话，完全免费。';

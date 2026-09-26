@@ -1181,9 +1181,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get noPayments => 'Még nincs fizetés';
 
   @override
-  String get morePaymentsExist => 'A régebbi fizetések még nem jelennek meg';
-
-  @override
   String get undatedPayments => 'Dátum nélkül';
 
   @override
@@ -1525,9 +1522,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'havonta';
-
-  @override
-  String get planTaglineMax => 'Most már láthatod őket.';
 
   @override
   String get planTaglineFree => 'Napi 5 perc hívás. Ajándékba.';

@@ -1182,9 +1182,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noPayments => 'Aún no hay pagos';
 
   @override
-  String get morePaymentsExist => 'Los pagos anteriores aún no se muestran';
-
-  @override
   String get undatedPayments => 'Sin fecha';
 
   @override
@@ -1527,9 +1524,6 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'al mes';
-
-  @override
-  String get planTaglineMax => 'Ahora puedes verlos.';
 
   @override
   String get planTaglineFree => '5 minutos de llamadas al día. Invita la casa.';

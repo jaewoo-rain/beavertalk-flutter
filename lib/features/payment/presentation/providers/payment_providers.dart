@@ -23,8 +23,8 @@ final paymentRepositoryProvider = Provider<PaymentRepository>((ref) {
 /// that must not survive a sign-out (see `AuthController._clearUserScopedState`,
 /// which exists because non-autoDispose providers leaked user A's data to B).
 ///
-/// Pagination beyond page 1 is not wired: the server pages at 10 with
-/// `has_more`, but the screen has no load-more affordance yet.
+/// Page 1 only. The server pages at 10 with `has_more`; the screen fetches the
+/// later pages itself through [paymentRepositoryProvider] (QA F032).
 final paymentPageProvider =
     FutureProvider.autoDispose.family<PaymentPage, PaymentFilter>(
   (ref, filter) async {

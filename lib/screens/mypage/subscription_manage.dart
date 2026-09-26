@@ -7,6 +7,7 @@ import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/icons/app_icons.dart';
 import '../../components/molecules/banner.dart';
 import '../../core/format/dates.dart';
@@ -20,6 +21,7 @@ import '../../features/subscription/domain/plan_prices.dart';
 import '../../l10n/app_localizations.dart';
 import '../../components/organisms/gnb.dart';
 import '../overlays/subscription_overlays.dart';
+import '../system/network_error.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -47,11 +49,82 @@ class SubscriptionManageScreen extends ConsumerWidget {
     // turns list prices into the member's real storefront prices — and what
     // makes a console-side discount show up without an app release.
     ref.watch(storePricesProvider);
+    // 모르는 동안 Free 로 그리지 않는다(QA F014) — 오프라인인 Premium 회원이 Free 카드와
+    // 업그레이드 배너를 봤다. 로딩이면 자리표시, 둘 다 실패면 다시 시도.
+    final availability = ref.watch(subscriptionStatusAvailabilityProvider);
+    if (availability != SubscriptionStatusAvailability.known) {
+      return _StatusUnknown(
+          failed: availability == SubscriptionStatusAvailability.failed);
+    }
     final status = ref.watch(subscriptionStatusProvider);
     if (status.state == SubscriptionState.expired) {
       return _TrialExpiredNotice(status: status);
     }
     return _ManageBody(status: status);
+  }
+}
+
+/// 구독 상태를 아직 모를 때 — 로딩이면 플랜 카드 자리표시, 실패면 다시 시도(QA F014).
+///
+/// GNB 는 그대로 둔다. 뒤로 가기는 상태와 무관하게 늘 있어야 한다.
+class _StatusUnknown extends ConsumerWidget {
+  const _StatusUnknown({required this.failed});
+
+  final bool failed;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final c = context.c;
+    return AppScaffold(
+      background: c.backgroundNormalNormal,
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Gnb.main(
+            title: l10n.subscriptionTitle,
+            onBack: () => Navigator.pop(context),
+          ),
+          Expanded(
+            child: failed
+                ? NetworkErrorView(onRetry: () => retrySubscriptionStatus(ref))
+                : SkeletonShimmer(
+                    child: ContentColumn(
+                      child: ListView(
+                        padding: const EdgeInsets.only(top: AppSpacing.s24),
+                        children: [
+                          // 플랜 카드(`card` 16/14 · gap 10)와 같은 틀.
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            decoration: BoxDecoration(
+                              color: c.backgroundSurfaceAlternative,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Skeleton.bar(width: 96, height: 22),
+                                    Skeleton.pill(width: 56, height: 22),
+                                  ],
+                                ),
+                                SizedBox(height: 10),
+                                Skeleton.bar(width: 160, height: 18),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

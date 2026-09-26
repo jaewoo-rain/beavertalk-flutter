@@ -1177,9 +1177,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get noPayments => 'ငွေပေးချေမှု မရှိသေးပါ';
 
   @override
-  String get morePaymentsExist => 'ယခင် ငွေပေးချေမှုများကို မပြသရသေးပါ';
-
-  @override
   String get undatedPayments => 'ရက်စွဲမရှိ';
 
   @override
@@ -1522,9 +1519,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'တစ်လလျှင်';
-
-  @override
-  String get planTaglineMax => 'ယခု သူတို့ကို မြင်နိုင်ပြီ။';
 
   @override
   String get planTaglineFree => 'တစ်နေ့ 5 မိနစ်။ အခမဲ့။';

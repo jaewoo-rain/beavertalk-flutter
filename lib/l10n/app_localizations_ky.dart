@@ -1171,9 +1171,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get noPayments => 'Азырынча төлөм жок';
 
   @override
-  String get morePaymentsExist => 'Эски төлөмдөр азырынча көрсөтүлбөйт';
-
-  @override
   String get undatedPayments => 'Күнү жок';
 
   @override
@@ -1515,9 +1512,6 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'айына';
-
-  @override
-  String get planTaglineMax => 'Эми аларды көрө аласыз.';
 
   @override
   String get planTaglineFree => 'Күнүнө 5 мүнөт чалуу. Акысыз.';

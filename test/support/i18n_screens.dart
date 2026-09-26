@@ -342,10 +342,17 @@ Map<String, Widget Function()> i18nScreens() {
     'AvatarScreenSubscription': () => _avatarHost(discount: false),
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
-    // The subscription manage screen (P2 redesign). With no server data in
-    // the harness it renders the Free state; its copy is confirmed-English in
-    // every locale, but the layout still gets audited at 320×640.
-    'SubscriptionManage': () => const SubscriptionManageScreen(),
+    // The subscription manage screen (P2 redesign) in the Free state; its copy
+    // is confirmed-English in every locale, but the layout still gets audited
+    // at 320×640. (Bare, with no server data, it would draw the not-known
+    // state — F014 — so the state is pinned here and the two not-known shapes
+    // are registered on their own below.)
+    'SubscriptionManage': () => _manageHost(SubscriptionState.free),
+    // 구독 상태를 아직 모를 때(QA F014) — 자리표시 · 다시 시도.
+    'SubscriptionManage_loading': () =>
+        _manageUnknownHost(SubscriptionStatusAvailability.loading),
+    'SubscriptionManage_failed': () =>
+        _manageUnknownHost(SubscriptionStatusAvailability.failed),
     // 단일 티어(09-22) 다섯 상태 — 상태마다 붙는 문구 길이가 달라 전부 등록한다
     // (배너·배지·행 라벨·주석이 가장 긴 조합을 놓치지 않게).
     for (final st in [
@@ -587,6 +594,8 @@ Widget _avatarHost({required bool discount}) {
 Widget _manageHost(SubscriptionState state, {DailyStatus? daily}) =>
     ProviderScope(
       overrides: [
+        subscriptionStatusAvailabilityProvider
+            .overrideWithValue(SubscriptionStatusAvailability.known),
         dailyStatusProvider.overrideWith((ref) async => daily),
         subscriptionStatusProvider.overrideWithValue(SubscriptionStatus(
           state: state,
@@ -595,6 +604,15 @@ Widget _manageHost(SubscriptionState state, {DailyStatus? daily}) =>
           retryingUntil: DateTime(2026, 6, 25),
           pausedSince: DateTime(2026, 6, 26),
         )),
+      ],
+      child: const SubscriptionManageScreen(),
+    );
+
+/// 구독 관리 화면 — 구독 상태를 모르는 두 모양(QA F014).
+Widget _manageUnknownHost(SubscriptionStatusAvailability availability) =>
+    ProviderScope(
+      overrides: [
+        subscriptionStatusAvailabilityProvider.overrideWithValue(availability),
       ],
       child: const SubscriptionManageScreen(),
     );

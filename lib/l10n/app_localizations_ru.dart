@@ -1178,9 +1178,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get noPayments => 'Платежей пока нет';
 
   @override
-  String get morePaymentsExist => 'Более старые платежи пока не отображаются';
-
-  @override
   String get undatedPayments => 'Без даты';
 
   @override
@@ -1523,9 +1520,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'в месяц';
-
-  @override
-  String get planTaglineMax => 'Теперь вы можете их видеть.';
 
   @override
   String get planTaglineFree => '5 минут звонков в день. Бесплатно.';

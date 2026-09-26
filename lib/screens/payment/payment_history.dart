@@ -31,6 +31,11 @@ import '../../core/format/dates.dart';
 /// Backed by `GET /payments?type=&page=` — the tab chips map 1:1 onto the
 /// server's `type` filter, so switching tabs refetches rather than filtering
 /// client-side (the server pages at 10 and only the active tab's page is held).
+///
+/// Page 1 comes from [paymentPageProvider]; later pages load as the list nears
+/// its end (QA F032 — older payments used to be unreachable past the first 10).
+/// If page 1 doesn't fill the screen there is no scroll to trigger that, so the
+/// next page is fetched right after the frame instead.
 class PaymentHistoryScreen extends ConsumerStatefulWidget {
   /// Creates the payment-history screen.
   const PaymentHistoryScreen({super.key});
@@ -42,6 +47,84 @@ class PaymentHistoryScreen extends ConsumerStatefulWidget {
 
 class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
   PaymentFilter _filter = PaymentFilter.all;
+
+  final _scroll = ScrollController();
+
+  /// Pages 2.. for [_filter], in order. Page 1 stays in [paymentPageProvider].
+  final List<PaymentPage> _more = [];
+  bool _loadingMore = false;
+  bool _moreFailed = false;
+
+  /// Bumped on every reset, so a page that lands after a tab switch or a retry
+  /// is dropped instead of being appended to the wrong list.
+  int _generation = 0;
+
+  /// How close to the end (px) the next page starts loading.
+  static const double _loadAheadPx = 240;
+
+  @override
+  void initState() {
+    super.initState();
+    _scroll.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _resetMore() {
+    _generation++;
+    _more.clear();
+    _loadingMore = false;
+    _moreFailed = false;
+  }
+
+  void _onScroll() {
+    if (_scroll.hasClients && _scroll.position.extentAfter < _loadAheadPx) {
+      _loadMore();
+    }
+  }
+
+  /// The last page seen so far — page 1 or the latest of [_more].
+  PaymentPage? _lastPage() {
+    if (_more.isNotEmpty) return _more.last;
+    return ref.read(paymentPageProvider(_filter)).valueOrNull;
+  }
+
+  Future<void> _loadMore() async {
+    final last = _lastPage();
+    if (last == null || !last.hasMore || _loadingMore || _moreFailed) return;
+    final gen = _generation;
+    final filter = _filter;
+    setState(() => _loadingMore = true);
+    try {
+      final page = await ref
+          .read(paymentRepositoryProvider)
+          .listPayments(filter: filter, page: last.page + 1);
+      if (!mounted || gen != _generation) return;
+      setState(() {
+        _more.add(page);
+        _loadingMore = false;
+      });
+    } catch (_) {
+      if (!mounted || gen != _generation) return;
+      setState(() {
+        _loadingMore = false;
+        _moreFailed = true;
+      });
+    }
+  }
+
+  /// Page 1 may not fill the viewport (tablets, or a short page) — then nothing
+  /// scrolls and [_onScroll] never fires, so ask for the next page directly.
+  void _fillViewport() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scroll.hasClients) return;
+      if (_scroll.position.maxScrollExtent <= 0) _loadMore();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +145,10 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
               loading: () => const PaymentHistoryLoading(),
               error: (e, _) => NetworkErrorView(
                 message: e is AppException && e.fromServer ? e.message : null,
-                onRetry: () => ref.invalidate(paymentPageProvider(_filter)),
+                onRetry: () {
+                  setState(_resetMore);
+                  ref.invalidate(paymentPageProvider(_filter));
+                },
               ),
               data: (page) => _body(l10n, page),
             ),
@@ -74,9 +160,20 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
 
   Widget _body(AppLocalizations l10n, PaymentPage page) {
     final locale = Localizations.localeOf(context).toString();
-    final groups = _groupByMonth(page.items);
+    // Later pages can repeat a row when a payment lands between requests (the
+    // server pages by offset) — keep the first copy.
+    final seen = <int>{};
+    final items = [
+      for (final p in [page, ..._more])
+        for (final item in p.items)
+          if (seen.add(item.id)) item,
+    ];
+    final groups = _groupByMonth(items);
+    final last = _more.isEmpty ? page : _more.last;
+    if (last.hasMore && !_loadingMore && !_moreFailed) _fillViewport();
 
     return SingleChildScrollView(
+      controller: _scroll,
       padding: const EdgeInsets.only(bottom: AppSpacing.s24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -108,14 +205,26 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
                 ],
               ),
             ),
-          // The server pages at 10 (`has_more`); surfaced rather than silently
-          // truncating the list. Load-more is not wired yet — see the handoff.
-          if (page.hasMore) ...[
+          // The server pages at 10 (`has_more`); the next page loads as the
+          // list nears its end ([_onScroll] · [_fillViewport]).
+          if (_loadingMore) ...[
             const SizedBox(height: AppSpacing.s16),
-            Text(
-              l10n.morePaymentsExist,
-              textAlign: TextAlign.center,
-              style: AppType.label2.r.copyWith(color: context.c.labelDisabled),
+            const Center(
+              child: SizedBox.square(
+                dimension: 24,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            ),
+          ] else if (_moreFailed) ...[
+            const SizedBox(height: AppSpacing.s16),
+            Center(
+              child: TextButton(
+                onPressed: () {
+                  setState(() => _moreFailed = false);
+                  _loadMore();
+                },
+                child: Text(l10n.retry),
+              ),
             ),
           ],
         ],
@@ -167,7 +276,11 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
                 label: _filterLabel(f, l10n),
                 selected: _filter == f,
                 onTap: () {
-                  if (_filter != f) setState(() => _filter = f);
+                  if (_filter == f) return;
+                  setState(() {
+                    _filter = f;
+                    _resetMore();
+                  });
                 },
               ),
             ],

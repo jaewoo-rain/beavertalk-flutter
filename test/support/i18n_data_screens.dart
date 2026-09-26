@@ -364,6 +364,8 @@ Widget settingsDataHost({required bool premium}) => _settingsHost(premium: premi
 
 Widget _settingsHost({required bool premium}) => ProviderScope(
       overrides: [
+        subscriptionStatusAvailabilityProvider
+            .overrideWithValue(SubscriptionStatusAvailability.known),
         myProfileProvider.overrideWith((ref) async => _member()),
         signInProviderProvider.overrideWithValue('google'),
         subscriptionStatusProvider.overrideWithValue(premium

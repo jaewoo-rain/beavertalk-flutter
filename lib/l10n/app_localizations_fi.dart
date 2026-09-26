@@ -1173,9 +1173,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get noPayments => 'Ei vielä maksuja';
 
   @override
-  String get morePaymentsExist => 'Vanhempia maksuja ei näytetä vielä';
-
-  @override
   String get undatedPayments => 'Ei päivämäärää';
 
   @override
@@ -1518,9 +1515,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'kuukaudessa';
-
-  @override
-  String get planTaglineMax => 'Nyt näet heidät.';
 
   @override
   String get planTaglineFree =>

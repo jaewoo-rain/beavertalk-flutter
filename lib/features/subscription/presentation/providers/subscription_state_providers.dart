@@ -170,6 +170,51 @@ final subscriptionTierUnknownProvider = Provider.autoDispose<bool>((ref) {
   return !answered(server) && !answered(rows);
 });
 
+/// 구독 상태를 **그려도 되는가** — 구독 관리·설정 Current Plan 이 읽는다(QA F014).
+enum SubscriptionStatusAvailability {
+  /// 서버 판정이나 행 목록 중 하나가 답했다(또는 이번 세션에 결제했다).
+  known,
+
+  /// 둘 다 아직 답하지 않았다.
+  loading,
+
+  /// 둘 다 실패했다(서버가 null 로 답하고 행 목록이 실패한 경우 포함).
+  failed,
+}
+
+/// [subscriptionStatusProvider] 가 지금 **추측 없이** 답할 수 있는가.
+///
+/// [subscriptionStatusProvider] 는 모르는 동안을 [SubscriptionStatus.none](Free)으로
+/// 뭉갠다 — 권한 판정에는 옳은 기본값이지만, 구독 관리 화면에서는 오프라인인 Premium
+/// 회원에게 Free 카드와 업그레이드 배너를 보여 준다(QA F014). 그 화면은 이걸 먼저 보고
+/// 로딩이면 자리표시, 실패면 다시 시도를 그린다.
+///
+/// [subscriptionTierUnknownProvider] 와 같은 이유로 `isLoading` 을 보지 않는다 —
+/// 결제 뒤 invalidate 로 다시 묻는 동안에도 이전 값이 있으면 [known] 이다.
+///
+/// ⛔ 판정용이 아니다. 무엇을 허용할지는 여전히 [subscriptionStatusProvider] 가 정한다.
+final subscriptionStatusAvailabilityProvider =
+    Provider.autoDispose<SubscriptionStatusAvailability>((ref) {
+  if (ref.watch(sessionEntitlementProvider) != null) {
+    return SubscriptionStatusAvailability.known;
+  }
+  final server = ref.watch(serverSubscriptionStatusProvider);
+  if (server.valueOrNull != null) return SubscriptionStatusAvailability.known;
+  final rows = ref.watch(subscriptionsProvider);
+  if (rows.hasValue) return SubscriptionStatusAvailability.known;
+  // 서버가 답을 끝냈고(null = 구서버·모르는 상태 · 또는 실패) 행 목록도 실패했다.
+  final serverDone = server.hasValue || server.hasError;
+  return serverDone && rows.hasError
+      ? SubscriptionStatusAvailability.failed
+      : SubscriptionStatusAvailability.loading;
+});
+
+/// 구독 상태 두 소스를 다시 묻는다 — [SubscriptionStatusAvailability.failed] 의 다시 시도.
+void retrySubscriptionStatus(WidgetRef ref) {
+  ref.invalidate(serverSubscriptionStatusProvider);
+  ref.invalidate(subscriptionsProvider);
+}
+
 /// The subscription tier bought on the IAP rail **in this session**, recorded
 /// off the purchase stream by the processing screen.
 ///

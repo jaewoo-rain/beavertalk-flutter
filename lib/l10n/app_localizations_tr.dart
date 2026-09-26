@@ -1166,9 +1166,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noPayments => 'Henüz ödeme yok';
 
   @override
-  String get morePaymentsExist => 'Daha eski ödemeler henüz gösterilmiyor';
-
-  @override
   String get undatedPayments => 'Tarihsiz';
 
   @override
@@ -1510,9 +1507,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'aylık';
-
-  @override
-  String get planTaglineMax => 'Artık onları görebilirsin.';
 
   @override
   String get planTaglineFree => 'Günde 5 dakika arama. Bizden.';

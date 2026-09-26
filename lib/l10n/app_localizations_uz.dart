@@ -1177,9 +1177,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get noPayments => 'Hozircha to\'lovlar yo\'q';
 
   @override
-  String get morePaymentsExist => 'Eski to\'lovlar hali ko\'rsatilmayapti';
-
-  @override
   String get undatedPayments => 'Sanasiz';
 
   @override
@@ -1520,9 +1517,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get perMonthUnit => 'oyiga';
-
-  @override
-  String get planTaglineMax => 'Endi ularni koʻra olasiz.';
 
   @override
   String get planTaglineFree => 'Kuniga 5 daqiqa qoʻngʻiroq. Mutlaqo bepul.';

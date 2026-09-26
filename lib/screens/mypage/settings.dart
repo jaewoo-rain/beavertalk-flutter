@@ -409,7 +409,14 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   /// The Current-plan value, derived from the resolved status — never
   /// hardcoded. This is where "bought Max, still says Pro" showed up: the row
   /// used to carry a literal `'Pro'`.
+  ///
+  /// 모르는 동안(로딩·실패)은 비운다 — 오프라인인 Premium 회원에게 「Free」 를 보이지
+  /// 않는다(QA F014). 행을 누르면 들어가는 화면은 그대로다.
   String _planLabel(AppLocalizations l10n) {
+    if (ref.watch(subscriptionStatusAvailabilityProvider) !=
+        SubscriptionStatusAvailability.known) {
+      return '';
+    }
     final status = ref.watch(subscriptionStatusProvider);
     if (!status.grantsPaidAccess) return l10n.planFree;
     return status.tier == SubscriptionTier.max ? l10n.planMax : l10n.planPro;
