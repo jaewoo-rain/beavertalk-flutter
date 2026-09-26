@@ -279,8 +279,8 @@ class ChallengeEngine {
   /// Speech input: passes the nearest judgeable word whose text matches the
   /// normalized spoken [token]. Returns whether one was passed.
   ///
-  /// The per-utterance token bookkeeping (`consumed`/`lastTxt`) lives in
-  /// `SpeechMatcher` so a single utterance clears at most one word per token.
+  /// 같은 단어가 누적 전사에 거듭 나와도 한 번만 깨지게 하는 것은 호출부
+  /// `SttService._matchSpoken`(`_clearedThisStream`)이 맡는다.
   bool tryPassToken(String token) {
     if (!running) return false;
     for (final c in _judgeable()) {

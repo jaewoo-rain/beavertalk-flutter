@@ -6,86 +6,17 @@ import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_car
 import 'package:beavertalk/features/pronunciation_challenge/domain/challenge_engine.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/game_config.dart';
 import 'package:beavertalk/features/pronunciation_challenge/domain/matcher.dart';
-import 'package:beavertalk/features/pronunciation_challenge/domain/speech_matcher.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 ChallengeEngine _seededEngine() =>
     ChallengeEngine(wordSource: CuratedWordSource(random: Random(42)));
 
 void main() {
-  group('SpeechMatcher token consumption', () {
-    test('growing partials pass each spoken token at most once', () {
-      final matcher = SpeechMatcher();
-      final passed = <String>[];
-      final available = <String>['사과', '바다'];
-      bool attempt(String tok) {
-        if (available.remove(tok)) {
-          passed.add(tok);
-          return true;
-        }
-        return false;
-      }
-
-      matcher.feed('사', isFinal: false, attempt: attempt); // partial, no match
-      matcher.feed('사과', isFinal: false, attempt: attempt); // pass 사과
-      matcher.feed('사과', isFinal: false, attempt: attempt); // consumed → no repeat
-      expect(passed, <String>['사과']);
-
-      // Same utterance grows with a second word → the new token passes.
-      matcher.feed('사과 바다', isFinal: false, attempt: attempt);
-      expect(passed, <String>['사과', '바다']);
-    });
-
-    test('isFinal resets bookkeeping so the next utterance starts clean', () {
-      final matcher = SpeechMatcher();
-      final passed = <String>[];
-      bool attempt(String tok) {
-        if (tok == '사과') {
-          passed.add(tok);
-          return true;
-        }
-        return false;
-      }
-
-      matcher.feed('사과', isFinal: true, attempt: attempt);
-      matcher.feed('사과', isFinal: true, attempt: attempt); // fresh utterance
-      expect(passed, <String>['사과', '사과']);
-    });
-
-    test('a non-continuation partial (restart) resets the consumed cursor', () {
-      final matcher = SpeechMatcher();
-      final passed = <String>[];
-      bool attempt(String tok) {
-        if (tok == '사과') {
-          passed.add(tok);
-          return true;
-        }
-        return false;
-      }
-
-      matcher.feed('사과', isFinal: false, attempt: attempt); // pass, consumed=1
-      matcher.feed('배', isFinal: false, attempt: attempt); // restart → reset
-      matcher.feed('사과', isFinal: false, attempt: attempt); // passes again
-      expect(passed, <String>['사과', '사과']);
-    });
-
-    test('reset() clears the cursor', () {
-      final matcher = SpeechMatcher();
-      matcher.feed('사과', isFinal: false, attempt: (_) => true);
-      expect(matcher.consumed, 1);
-      matcher.reset();
-      expect(matcher.consumed, 0);
-    });
-
-    test('normalization strips punctuation before matching', () {
-      final matcher = SpeechMatcher();
-      final seen = <String>[];
-      matcher.feed('사과!', isFinal: true, attempt: (tok) {
-        seen.add(tok);
-        return false;
-      });
-      expect(seen, <String>['사과']); // '!' stripped by norm
-    });
+  // 옛 `SpeechMatcher`(Vosk 시절 발화별 토큰 장부)는 2026-09-26 삭제 — 서버 STT 이식
+  // (`92f0824`) 이후 `SttService._matchSpoken` 의 무상태 대조가 그 일을 한다(아래
+  // 「server-STT stateless matching」).
+  test('norm strips punctuation before matching', () {
+    expect(norm('사과!'), '사과');
   });
 
   group('wordMatch tolerance (particles + 1-char wobble)', () {
@@ -315,21 +246,6 @@ void main() {
     test('returns false when not running', () {
       final e = _seededEngine();
       expect(e.tryPassToken('사과'), isFalse);
-    });
-
-    test('SpeechMatcher wired to tryPassToken clears matching cards', () {
-      final e = _seededEngine()..start();
-      final apple = ChallengeCard(
-        id: 1,
-        word: '사과',
-        k: 1.0, // at the judgment point
-      );
-      e.cards
-        ..clear()
-        ..add(apple);
-      final matcher = SpeechMatcher();
-      matcher.feed('사과', isFinal: false, attempt: e.tryPassToken);
-      expect(apple.state, CardState.pass);
     });
   });
 }
