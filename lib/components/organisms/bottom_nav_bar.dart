@@ -29,11 +29,15 @@ class BottomNavItem {
   final String? label;
 }
 
-/// The three Figma-exported nav glyphs (`162:4336` / `162:4225` / `162:4307`),
+/// The three Figma-exported nav glyphs (`162:4098` / `162:4225` / `162:4307`),
 /// usable as [BottomNavItem.icon] without bundling SVG assets.
 enum BottomNavGlyph {
-  /// `calendar` (`162:4336`).
-  calendar,
+  /// `alarm-clock` (`162:4098`) — 왼쪽 탭은 알람 목록을 연다.
+  ///
+  /// 09-26 `calendar`(`162:4336`)에서 교체(PM-DEC-026 · QA F019). 달력 모양인데 알람이
+  /// 열려, 달력을 찾는 사람은 알람으로 가고 알람을 찾는 사람은 지나쳤다. 학습 달력은 홈
+  /// 상단 연속일 칩에서 연다.
+  alarmClock,
 
   /// `call` (`162:4225`) — the center action.
   call,
@@ -56,7 +60,7 @@ enum BottomNavGlyph {
 /// ```dart
 /// BottomNavBar(
 ///   items: const [
-///     BottomNavItem(key: 'calendar', icon: BottomNavGlyph.calendar),
+///     BottomNavItem(key: 'alarm',    icon: BottomNavGlyph.alarmClock),
 ///     BottomNavItem(key: 'call',     icon: BottomNavGlyph.call),
 ///     BottomNavItem(key: 'history',  icon: BottomNavGlyph.history),
 ///   ],
@@ -234,19 +238,15 @@ class _NavIcon extends StatelessWidget {
 /// Paints one of the exported nav glyphs, scaled into [size].
 ///
 /// Path data and source viewBox are taken verbatim from the Figma SVG exports
-/// (`162:4336` calendar 24, `162:4225` call 32, `162:4307` history 24).
+/// (`162:4225` call 32, `162:4307` history 24). `162:4098` alarm-clock 24 is
+/// **stroke-based** (width 2 · round caps/joins), so it is drawn as strokes —
+/// see [_paintAlarmClock]. Its export carries an opacity-0 bounding rect; that
+/// is deliberately not ported (it painted a grey square in Figma once).
 class _NavGlyphPainter extends CustomPainter {
   const _NavGlyphPainter(this.glyph, this.color);
 
   final BottomNavGlyph glyph;
   final Color color;
-
-  static const _calendar =
-      'M5 22C4.45 22 3.97917 21.8042 3.5875 21.4125C3.19583 21.0208 3 20.55 3 '
-      '20V6C3 5.45 3.19583 4.97917 3.5875 4.5875C3.97917 4.19583 4.45 4 5 '
-      '4H6V2H8V4H16V2H18V4H19C19.55 4 20.0208 4.19583 20.4125 4.5875C20.8042 '
-      '4.97917 21 5.45 21 6V20C21 20.55 20.8042 21.0208 20.4125 21.4125C20.0208 '
-      '21.8042 19.55 22 19 22H5ZM5 20H19V10H5V20ZM5 8H19V6H5V8Z';
 
   static const _call =
       'M26.6 28C23.8222 28 21.0778 27.3944 18.3667 26.1833C15.6556 24.9722 '
@@ -271,8 +271,8 @@ class _NavGlyphPainter extends CustomPainter {
 
   String get _d {
     switch (glyph) {
-      case BottomNavGlyph.calendar:
-        return _calendar;
+      case BottomNavGlyph.alarmClock:
+        throw StateError('alarmClock is stroked — see _paintAlarmClock');
       case BottomNavGlyph.call:
         return _call;
       case BottomNavGlyph.history:
@@ -282,12 +282,38 @@ class _NavGlyphPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final path = _parsePath(_d);
     final scale = size.width / _viewBox;
     canvas.save();
     canvas.scale(scale);
-    canvas.drawPath(path, Paint()..color = color);
+    if (glyph == BottomNavGlyph.alarmClock) {
+      _paintAlarmClock(canvas);
+    } else {
+      canvas.drawPath(_parsePath(_d), Paint()..color = color);
+    }
     canvas.restore();
+  }
+
+  /// Figma `alarm-clock/Size=24` (`162:4098`) in its 24 viewBox: a r7 dial,
+  /// two feet, two bells and the hands — all 2-wide strokes.
+  void _paintAlarmClock(Canvas canvas) {
+    final pen = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 2
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round;
+    canvas.drawCircle(const Offset(12, 12), 7, pen);
+    canvas.drawLine(const Offset(8, 18), const Offset(6, 20), pen);
+    canvas.drawLine(const Offset(16, 18), const Offset(18, 20), pen);
+    canvas.drawLine(const Offset(18, 4), const Offset(20, 6), pen);
+    canvas.drawLine(const Offset(6, 4), const Offset(4, 6), pen);
+    canvas.drawPath(
+      Path()
+        ..moveTo(12, 9)
+        ..lineTo(12, 12)
+        ..lineTo(14, 14),
+      pen,
+    );
   }
 
   @override
@@ -388,9 +414,9 @@ class BottomNavBarDemo extends StatefulWidget {
 class _BottomNavBarDemoState extends State<BottomNavBarDemo> {
   static const _items = <BottomNavItem>[
     BottomNavItem(
-      key: 'calendar',
-      icon: BottomNavGlyph.calendar,
-      label: 'Calendar',
+      key: 'alarm',
+      icon: BottomNavGlyph.alarmClock,
+      label: 'Alarms',
     ),
     BottomNavItem(key: 'call', icon: BottomNavGlyph.call, label: 'Call'),
     BottomNavItem(

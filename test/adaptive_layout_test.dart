@@ -233,7 +233,7 @@ void main() {
           alignment: Alignment.bottomCenter,
           child: BottomNavBar(
             items: [
-              BottomNavItem(key: 'calendar', icon: BottomNavGlyph.calendar),
+              BottomNavItem(key: 'alarm', icon: BottomNavGlyph.alarmClock),
               BottomNavItem(key: 'call', icon: BottomNavGlyph.call),
               BottomNavItem(key: 'history', icon: BottomNavGlyph.history),
             ],

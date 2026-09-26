@@ -495,13 +495,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get endLearning => 'បញ្ចប់វគ្គ';
 
   @override
-  String get navCalendar => 'ប្រតិទិន';
-
-  @override
   String get navCall => 'ហៅ';
-
-  @override
-  String get navStats => 'ស្ថិតិ';
 
   @override
   String get homeCourseExpression => 'កន្សោម';
@@ -1295,6 +1289,10 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'ធ្វើតេស្តកម្រិតម្តងទៀត';
+
+  @override
+  String get levelTestOncePerDay =>
+      'អ្នកអាចធ្វើតេស្តកម្រិតបានម្ដងក្នុងមួយថ្ងៃ។ សូមព្យាយាមម្ដងទៀតនៅថ្ងៃស្អែក។';
 
   @override
   String get levelRetakeTitle => 'ធ្វើតេស្តកម្រិតម្តងទៀតឬ?';

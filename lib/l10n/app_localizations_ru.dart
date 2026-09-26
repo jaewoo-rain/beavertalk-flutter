@@ -497,13 +497,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get endLearning => 'Завершить занятие';
 
   @override
-  String get navCalendar => 'Календарь';
-
-  @override
   String get navCall => 'Звонок';
-
-  @override
-  String get navStats => 'Статистика';
 
   @override
   String get homeCourseExpression => 'Выражения';
@@ -1305,6 +1299,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Пройти тест уровня заново';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Тест уровня можно проходить раз в день. Попробуйте снова завтра.';
 
   @override
   String get levelRetakeTitle => 'Пройти тест уровня заново?';

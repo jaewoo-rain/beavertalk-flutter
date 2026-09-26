@@ -496,13 +496,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get endLearning => 'Kết thúc phiên';
 
   @override
-  String get navCalendar => 'Lịch';
-
-  @override
   String get navCall => 'Cuộc gọi';
-
-  @override
-  String get navStats => 'Thống kê';
 
   @override
   String get homeCourseExpression => 'Mẫu câu';
@@ -1295,6 +1289,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Làm lại bài kiểm tra cấp độ';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Bạn chỉ có thể làm bài kiểm tra trình độ mỗi ngày một lần. Hãy thử lại vào ngày mai.';
 
   @override
   String get levelRetakeTitle => 'Làm lại bài kiểm tra trình độ?';

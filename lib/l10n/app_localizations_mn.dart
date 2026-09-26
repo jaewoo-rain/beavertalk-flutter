@@ -495,13 +495,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get endLearning => 'Сургалт дуусгах';
 
   @override
-  String get navCalendar => 'Хуанли';
-
-  @override
   String get navCall => 'Дуудлага';
-
-  @override
-  String get navStats => 'Статистик';
 
   @override
   String get homeCourseExpression => 'Хэллэг';
@@ -1293,6 +1287,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Түвшин тогтоох шалгалтыг дахин өгөх';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Түвшин тогтоох шалгалтыг өдөрт нэг удаа өгч болно. Маргааш дахин оролдоно уу.';
 
   @override
   String get levelRetakeTitle => 'Түвшний шалгалтыг дахин өгөх үү?';

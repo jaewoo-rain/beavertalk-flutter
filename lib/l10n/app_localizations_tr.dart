@@ -492,13 +492,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get endLearning => 'Oturumu Bitir';
 
   @override
-  String get navCalendar => 'Takvim';
-
-  @override
   String get navCall => 'Arama';
-
-  @override
-  String get navStats => 'İstatistikler';
 
   @override
   String get homeCourseExpression => 'İfadeler';
@@ -1293,6 +1287,10 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Seviye testini tekrarla';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Seviye testine günde bir kez girebilirsin. Yarın tekrar dene.';
 
   @override
   String get levelRetakeTitle => 'Seviye testini yeniden yapmak ister misin?';

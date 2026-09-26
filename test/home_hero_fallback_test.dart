@@ -82,6 +82,18 @@ void main() {
     expect(find.byType(HeroAvatar), findsOneWidget);
   });
 
+  // QA F019(09-26 · PM-DEC-026): 왼쪽 탭은 알람 목록을 연다 — 달력 아이콘 · 「Calendar」 가
+  // 학습 달력(상단 칩)과 헷갈렸다. 오른쪽은 기록 목록인데 이름이 「Stats」 였다.
+  testWidgets('하단 탭 접근성 이름 — 알람 · 통화 · 기록', (tester) async {
+    final handle = tester.ensureSemantics();
+    await pump(tester, catalog: () => const [_rara]);
+    expect(find.bySemanticsLabel('Alarms'), findsOneWidget);
+    expect(find.bySemanticsLabel('Records'), findsOneWidget);
+    expect(find.bySemanticsLabel('Calendar'), findsNothing);
+    expect(find.bySemanticsLabel('Stats'), findsNothing);
+    handle.dispose();
+  });
+
   testWidgets('대표 캐릭터가 있으면 그 이름', (tester) async {
     await pump(tester, catalog: () => const [_rara]);
     expect(find.byType(HeroAvatar), findsOneWidget);

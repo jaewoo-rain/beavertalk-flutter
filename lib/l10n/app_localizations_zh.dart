@@ -482,13 +482,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get endLearning => '结束本次学习';
 
   @override
-  String get navCalendar => '日历';
-
-  @override
   String get navCall => '通话';
-
-  @override
-  String get navStats => '统计';
 
   @override
   String get homeCourseExpression => '表达学习';
@@ -1264,6 +1258,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get retakeLevelTest => '重新测试等级';
+
+  @override
+  String get levelTestOncePerDay => '等级测试每天只能参加一次，请明天再试。';
 
   @override
   String get levelRetakeTitle => '要重新测试等级吗？';

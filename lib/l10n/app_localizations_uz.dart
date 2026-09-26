@@ -498,13 +498,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get endLearning => 'Darsni tugatish';
 
   @override
-  String get navCalendar => 'Kalendar';
-
-  @override
   String get navCall => 'Qoʻngʻiroq';
-
-  @override
-  String get navStats => 'Statistika';
 
   @override
   String get homeCourseExpression => 'Iboralar';
@@ -1304,6 +1298,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Daraja testini qayta topshirish';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Daraja testini kuniga bir marta topshirish mumkin. Ertaga yana urinib koʻring.';
 
   @override
   String get levelRetakeTitle => 'Daraja testini qayta topshirasizmi?';

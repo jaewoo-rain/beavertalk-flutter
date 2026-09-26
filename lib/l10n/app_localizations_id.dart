@@ -496,13 +496,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get endLearning => 'Akhiri Sesi';
 
   @override
-  String get navCalendar => 'Kalender';
-
-  @override
   String get navCall => 'Panggilan';
-
-  @override
-  String get navStats => 'Statistik';
 
   @override
   String get homeCourseExpression => 'Ekspresi';
@@ -1298,6 +1292,10 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Ulangi tes level';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Tes level hanya bisa diikuti sekali sehari. Coba lagi besok.';
 
   @override
   String get levelRetakeTitle => 'Ulangi tes level?';

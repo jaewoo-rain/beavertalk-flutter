@@ -498,13 +498,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get endLearning => 'Lopeta harjoitus';
 
   @override
-  String get navCalendar => 'Kalenteri';
-
-  @override
   String get navCall => 'Puhelu';
-
-  @override
-  String get navStats => 'Tilastot';
 
   @override
   String get homeCourseExpression => 'Ilmaukset';
@@ -1300,6 +1294,10 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Uusi tasotesti';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Tasotestin voi tehdä kerran päivässä. Yritä uudelleen huomenna.';
 
   @override
   String get levelRetakeTitle => 'Tehdäänkö tasotesti uudelleen?';

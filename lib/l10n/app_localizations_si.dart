@@ -498,13 +498,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get endLearning => 'සැසිය අවසන් කරන්න';
 
   @override
-  String get navCalendar => 'දින දර්ශනය';
-
-  @override
   String get navCall => 'ඇමතුම';
-
-  @override
-  String get navStats => 'සංඛ්‍යාලේඛන';
 
   @override
   String get homeCourseExpression => 'ප්‍රකාශන';
@@ -1296,6 +1290,10 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'මට්ටම් පරීක්ෂණය නැවත කරන්න';
+
+  @override
+  String get levelTestOncePerDay =>
+      'මට්ටම් පරීක්ෂණය දිනකට එක් වරක් පමණක් කළ හැක. හෙට නැවත උත්සාහ කරන්න.';
 
   @override
   String get levelRetakeTitle => 'මට්ටම් පරීක්ෂණය නැවත කරනවාද?';

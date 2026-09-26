@@ -499,13 +499,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get endLearning => 'Tamatkan Sesi';
 
   @override
-  String get navCalendar => 'Kalendar';
-
-  @override
   String get navCall => 'Panggilan';
-
-  @override
-  String get navStats => 'Statistik';
 
   @override
   String get homeCourseExpression => 'Ungkapan';
@@ -1306,6 +1300,10 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Ulang ujian tahap';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Ujian tahap boleh diambil sekali sehari. Cuba lagi esok.';
 
   @override
   String get levelRetakeTitle => 'Ulang ujian tahap?';

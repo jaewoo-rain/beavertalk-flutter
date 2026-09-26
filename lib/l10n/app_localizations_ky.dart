@@ -495,13 +495,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get endLearning => 'Сабакты аяктоо';
 
   @override
-  String get navCalendar => 'Күнтизме';
-
-  @override
   String get navCall => 'Чалуу';
-
-  @override
-  String get navStats => 'Статистика';
 
   @override
   String get homeCourseExpression => 'Сөз айкаштары';
@@ -1298,6 +1292,10 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Деңгээл тестин кайра тапшыруу';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Деңгээл тестин күнүнө бир жолу тапшырса болот. Эртең кайра аракет кылыңыз.';
 
   @override
   String get levelRetakeTitle => 'Деңгээл тестин кайра тапшырасызбы?';

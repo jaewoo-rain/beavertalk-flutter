@@ -303,9 +303,7 @@
   "myRecordingPlayError": "Couldn't play your recording.",
   "next": "Next",
   "endLearning": "End Session",
-  "navCalendar": "Calendar",
   "navCall": "Call",
-  "navStats": "Stats",
   "homeCourseExpression": "Expression",
   "@homeCourseExpression": {
     "description": "Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge."
@@ -767,6 +765,7 @@
     }
   },
   "retakeLevelTest": "Retake level test",
+  "levelTestOncePerDay": "You can take the level test once a day. Try again tomorrow.",
   "@retakeLevelTest": {
     "description": "CTA on the level card - start the level-test call again."
   },

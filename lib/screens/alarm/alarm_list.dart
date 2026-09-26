@@ -34,9 +34,12 @@ class AlarmListScreen extends ConsumerStatefulWidget {
 
 class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
   /// Surfaces a repository [AppException] as a snackbar.
+  ///
+  /// 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 오프라인 삭제 실패 때 전 언어에
+  /// 한국어가 떴다(QA F017 재검증 09-26).
   void _showError(Object error) {
     if (!mounted) return;
-    final message = error is AppException
+    final message = error is AppException && error.fromServer
         ? error.message
         : AppLocalizations.of(context).somethingWentWrong;
     ScaffoldMessenger.of(context).showSnackBar(

@@ -1060,23 +1060,11 @@ abstract class AppLocalizations {
   /// **'End Session'**
   String get endLearning;
 
-  /// No description provided for @navCalendar.
-  ///
-  /// In en, this message translates to:
-  /// **'Calendar'**
-  String get navCalendar;
-
   /// No description provided for @navCall.
   ///
   /// In en, this message translates to:
   /// **'Call'**
   String get navCall;
-
-  /// No description provided for @navStats.
-  ///
-  /// In en, this message translates to:
-  /// **'Stats'**
-  String get navStats;
 
   /// Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge.
   ///
@@ -2487,6 +2475,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retake level test'**
   String get retakeLevelTest;
+
+  /// No description provided for @levelTestOncePerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'You can take the level test once a day. Try again tomorrow.'**
+  String get levelTestOncePerDay;
 
   /// Confirm dialog before retaking the level test (server 09-24: progress resets to the first lesson of the measured level).
   ///

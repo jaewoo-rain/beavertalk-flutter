@@ -500,13 +500,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get endLearning => 'သင်ခန်းစာ ရပ်ရန်';
 
   @override
-  String get navCalendar => 'ပြက္ခဒိန်';
-
-  @override
   String get navCall => 'ခေါ်ဆိုမှု';
-
-  @override
-  String get navStats => 'စာရင်းအင်း';
 
   @override
   String get homeCourseExpression => 'အသုံးအနှုန်း';
@@ -1304,6 +1298,10 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'အဆင့်စစ်ဆေးမှု ပြန်ဖြေရန်';
+
+  @override
+  String get levelTestOncePerDay =>
+      'အဆင့်စစ်ဆေးမှုကို တစ်ရက်လျှင် တစ်ကြိမ်သာ ဖြေဆိုနိုင်ပါသည်။ မနက်ဖြန် ထပ်ကြိုးစားပါ။';
 
   @override
   String get levelRetakeTitle => 'အဆင့်စစ်ဆေးမှုကို ပြန်ဖြေမလား?';

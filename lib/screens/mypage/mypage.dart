@@ -1035,8 +1035,8 @@ class MyPageScreen extends ConsumerWidget {
   /// 학습 기록(체크판)은 지워지지 않는다 — 레벨만 다시 받는 것이다.
   ///
   /// 하루 한도는 통화 시작 시점에 서버가 검사한다. 즉 이 요청이 성공해도
-  /// 오늘 예산을 다 썼다면 통화 화면에서 DAILY_LIMIT 로 막힌다 — 그래서 요청 전에
-  /// [_blockIfOutOfBudget] 로 먼저 본다(QA F002).
+  /// 오늘 레벨테스트를 이미 봤다면 통화 화면에서 DAILY_LIMIT 로 막힌다 — 그래서 요청
+  /// 전에 [_blockIfLevelTestUsed] 로 먼저 본다(QA F002).
   /// ⚠ **실패하면 통화로 넘어가지 않는다.** 예전엔 예외를 삼키고 그대로 이동했는데,
   /// 서버에 이 API 가 아직 없던 동안(404) 레벨이 안 지워진 채 **일반 통화**가 열렸다.
   /// 사용자 눈에는 "레벨테스트를 눌렀는데 그냥 대화가 시작됨" 으로 보였고 원인이
@@ -1053,7 +1053,7 @@ class MyPageScreen extends ConsumerWidget {
   Future<void> _confirmRetakeLevelTest(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
     // 확인창 **전에** 본다 — 오늘 못 거는데 「다시 측정하기」를 묻는 건 헛된 선택이다.
-    if (await _blockIfOutOfBudget(context, ref)) return;
+    if (await _blockIfLevelTestUsed(context, ref)) return;
     if (!context.mounted) return;
     final retake = await showDialogBasic<bool>(
       context,
@@ -1072,16 +1072,16 @@ class MyPageScreen extends ConsumerWidget {
       ],
     );
     if (retake != true || !context.mounted) return;
-    await _startLevelTest(context, ref, budgetChecked: true);
+    await _startLevelTest(context, ref, limitChecked: true);
   }
 
   Future<void> _startLevelTest(
     BuildContext context,
     WidgetRef ref, {
-    bool budgetChecked = false,
+    bool limitChecked = false,
   }) async {
     final l10n = AppLocalizations.of(context);
-    if (!budgetChecked && await _blockIfOutOfBudget(context, ref)) return;
+    if (!limitChecked && await _blockIfLevelTestUsed(context, ref)) return;
     if (!context.mounted) return;
     try {
       await ref.read(authRepositoryProvider).retakeLevelTest();
@@ -1101,15 +1101,20 @@ class MyPageScreen extends ConsumerWidget {
     Navigator.pushNamed(context, Routes.callLoading);
   }
 
-  /// 오늘 통화 예산이 **확실히** 바닥났으면 「오늘 학습 시간을 다 썼어요」를 띄우고 true.
+  /// 오늘 레벨테스트를 **확실히** 못 열면 「하루 한 번」 안내를 띄우고 true.
   ///
   /// QA F002(09-26): retake 는 성공 즉시 서버가 레벨을 비우는데, 한도는 통화 시작에서야
-  /// 검사한다. 그래서 오늘 예산을 다 쓴 회원이 누르면 레벨만 비고 통화는 DAILY_LIMIT 로
-  /// 막혀, 다음 날까지 「레벨 미확정」으로 남았다. 초기화 **전에** 같은 판정을 한다.
+  /// 검사한다. 그래서 오늘 레벨테스트를 이미 본 회원이 누르면 레벨만 비고 통화는
+  /// DAILY_LIMIT 로 막혀, 다음 날까지 「레벨 미확정」으로 남았다. 초기화 **전에** 같은 판정을 한다.
   ///
-  /// 모르면(구서버 · admin 면제 · 실패 · 3초 초과) 막지 않는다 — 종전대로 서버가 통화
+  /// ⛔ 판정 축은 **통화 예산이 아니다.** 서버는 레벨테스트를 예산에서 빼고 하루 1회만 본다
+  ///   (`daily-status.can_call_level_test`). 처음엔 예산(`can_call_normal`·`remaining_s`)으로
+  ///   막았다가 QA 재검증에서 틀렸다 — 예산을 다 쓴 Free 회원은 서버가 허용하는데 앱이
+  ///   막았고, 예산이 남은 회원은 오늘 이미 봤어도 통과시켰다.
+  ///
+  /// 모르면(구서버 · 필드 없음 · 실패 · 3초 초과) 막지 않는다 — 종전대로 서버가 통화
   /// 시작에서 판정한다. 근본 해결(레벨테스트 통화가 열릴 때 초기화)은 서버 몫이다.
-  Future<bool> _blockIfOutOfBudget(BuildContext context, WidgetRef ref) async {
+  Future<bool> _blockIfLevelTestUsed(BuildContext context, WidgetRef ref) async {
     DailyStatus? daily;
     try {
       daily = await ref
@@ -1119,15 +1124,12 @@ class MyPageScreen extends ConsumerWidget {
     } catch (_) {
       return false;
     }
-    final remaining = daily?.remainingSec;
-    final out = daily?.canCallNormal == false ||
-        (remaining != null && remaining <= 0);
-    if (!out) return false;
+    if (daily?.canCallLevelTest != false) return false;
     if (context.mounted) {
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(
-          content: Text(AppLocalizations.of(context).callDailyLimit),
+          content: Text(AppLocalizations.of(context).levelTestOncePerDay),
         ));
     }
     return true;

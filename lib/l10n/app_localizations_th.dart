@@ -488,13 +488,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get endLearning => 'จบเซสชัน';
 
   @override
-  String get navCalendar => 'ปฏิทิน';
-
-  @override
   String get navCall => 'โทร';
-
-  @override
-  String get navStats => 'สถิติ';
 
   @override
   String get homeCourseExpression => 'สำนวน';
@@ -1287,6 +1281,10 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'ทำแบบทดสอบระดับอีกครั้ง';
+
+  @override
+  String get levelTestOncePerDay =>
+      'ทำแบบทดสอบระดับได้วันละครั้ง ลองใหม่อีกครั้งพรุ่งนี้';
 
   @override
   String get levelRetakeTitle => 'ทำแบบทดสอบระดับใหม่ไหม?';

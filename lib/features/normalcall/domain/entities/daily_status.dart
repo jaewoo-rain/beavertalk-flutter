@@ -9,6 +9,7 @@ class DailyStatus {
   const DailyStatus({
     this.calledToday,
     this.canCallNormal,
+    this.canCallLevelTest,
     this.maxFragments,
     this.budgetSec,
     this.usedSec,
@@ -19,6 +20,14 @@ class DailyStatus {
 
   /// 신서버에서는 「예산이 남았나」 다(횟수가 아니다).
   final bool? canCallNormal;
+
+  /// 오늘 레벨테스트 통화를 열 수 있나 — **예산이 아니라 옛 횟수 한도(하루 1회)**다.
+  ///
+  /// 서버는 레벨테스트를 예산에서 빼고(`used_s` 에 안 들어간다) 통화 시작에서
+  /// `is_daily_limit_reached(level_test)` 만 본다(`call_session.py` · 09-23 C4). 그래서
+  /// 예산을 다 쓴 Free 회원도 레벨테스트는 되고, 예산이 남아도 오늘 이미 봤으면 안 된다
+  /// (QA F002 재검증 09-26 — 예산 축으로 막았다가 틀렸다).
+  final bool? canCallLevelTest;
 
   final int? maxFragments;
 
@@ -40,6 +49,7 @@ class DailyStatus {
     return DailyStatus(
       calledToday: json['called_today'] as bool?,
       canCallNormal: json['can_call_normal'] as bool?,
+      canCallLevelTest: json['can_call_level_test'] as bool?,
       maxFragments: i('max_fragments'),
       budgetSec: i('budget_s'),
       usedSec: i('used_s'),

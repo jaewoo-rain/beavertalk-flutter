@@ -296,20 +296,23 @@ class HomeScreen extends ConsumerWidget {
           // Bottom navigation — call tab is the center action.
           BottomNavBar(
             items: [
+              // 왼쪽은 알람 목록이다 — 아이콘·접근성 이름도 알람(QA F019 · PM-DEC-026).
+              // 전엔 달력 아이콘 + 「Calendar」 라 학습 달력(상단 칩)과 헷갈렸다.
               BottomNavItem(
-                key: 'calendar',
-                icon: BottomNavGlyph.calendar,
-                label: l10n.navCalendar,
+                key: 'alarm',
+                icon: BottomNavGlyph.alarmClock,
+                label: l10n.alarms,
               ),
               BottomNavItem(
                 key: 'call',
                 icon: BottomNavGlyph.call,
                 label: l10n.navCall,
               ),
+              // 오른쪽은 기록 목록이다 — 접근성 이름 「Stats」 → 「Records」(QA F019).
               BottomNavItem(
                 key: 'history',
                 icon: BottomNavGlyph.history,
-                label: l10n.navStats,
+                label: l10n.tabRecords,
               ),
             ],
             activeKey: 'call',
@@ -317,7 +320,7 @@ class HomeScreen extends ConsumerWidget {
               switch (key) {
                 case 'call': // center → start a call (mic permission first)
                   _startCall(context, ref);
-                case 'calendar': // left → alarm settings (etc_alarm)
+                case 'alarm': // left → alarm settings (etc_alarm)
                   Navigator.pushNamed(context, Routes.alarms);
                 case 'history': // right → conversation records (record_list)
                   Navigator.pushNamed(context, Routes.records);

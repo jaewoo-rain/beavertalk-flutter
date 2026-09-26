@@ -483,13 +483,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get endLearning => 'セッションを終了';
 
   @override
-  String get navCalendar => 'カレンダー';
-
-  @override
   String get navCall => '通話';
-
-  @override
-  String get navStats => '統計';
 
   @override
   String get homeCourseExpression => '表現学習';
@@ -1266,6 +1260,9 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'レベルテストを再受験';
+
+  @override
+  String get levelTestOncePerDay => 'レベルテストは1日1回まで受けられます。明日もう一度お試しください。';
 
   @override
   String get levelRetakeTitle => 'レベルを測り直しますか？';

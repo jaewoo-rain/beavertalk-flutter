@@ -493,13 +493,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get endLearning => 'सत्र अन्त्य गर्नुहोस्';
 
   @override
-  String get navCalendar => 'पात्रो';
-
-  @override
   String get navCall => 'कल';
-
-  @override
-  String get navStats => 'तथ्याङ्क';
 
   @override
   String get homeCourseExpression => 'अभिव्यक्ति';
@@ -1294,6 +1288,10 @@ class AppLocalizationsNe extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'स्तर परीक्षा दोहोर्‍याउनुहोस्';
+
+  @override
+  String get levelTestOncePerDay =>
+      'स्तर परीक्षा दिनमा एक पटक मात्र दिन सकिन्छ। भोलि फेरि प्रयास गर्नुहोस्।';
 
   @override
   String get levelRetakeTitle => 'लेभल टेस्ट फेरि दिने?';

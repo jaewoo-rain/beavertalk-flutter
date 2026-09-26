@@ -484,13 +484,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get endLearning => '학습 종료';
 
   @override
-  String get navCalendar => '캘린더';
-
-  @override
   String get navCall => '통화';
-
-  @override
-  String get navStats => '통계';
 
   @override
   String get homeCourseExpression => '표현학습';
@@ -1268,6 +1262,9 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get retakeLevelTest => '레벨 테스트 다시하기';
+
+  @override
+  String get levelTestOncePerDay => '레벨 테스트는 하루에 한 번 받을 수 있어요. 내일 다시 해 주세요.';
 
   @override
   String get levelRetakeTitle => '레벨을 다시 측정할까요?';

@@ -505,13 +505,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get endLearning => 'Terminer la session';
 
   @override
-  String get navCalendar => 'Calendrier';
-
-  @override
   String get navCall => 'Appel';
-
-  @override
-  String get navStats => 'Stats';
 
   @override
   String get homeCourseExpression => 'Expressions';
@@ -1322,6 +1316,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Refaire le test de niveau';
+
+  @override
+  String get levelTestOncePerDay =>
+      'Tu peux passer le test de niveau une fois par jour. Réessaie demain.';
 
   @override
   String get levelRetakeTitle => 'Refaire le test de niveau ?';

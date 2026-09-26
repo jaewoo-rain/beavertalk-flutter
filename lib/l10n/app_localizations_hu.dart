@@ -501,13 +501,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get endLearning => 'Munkamenet befejezése';
 
   @override
-  String get navCalendar => 'Naptár';
-
-  @override
   String get navCall => 'Hívás';
-
-  @override
-  String get navStats => 'Statisztika';
 
   @override
   String get homeCourseExpression => 'Kifejezések';
@@ -1308,6 +1302,10 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'Szintfelmérő újra';
+
+  @override
+  String get levelTestOncePerDay =>
+      'A szintfelmérőt naponta egyszer töltheted ki. Próbáld újra holnap.';
 
   @override
   String get levelRetakeTitle => 'Újra kitöltöd a szintfelmérőt?';

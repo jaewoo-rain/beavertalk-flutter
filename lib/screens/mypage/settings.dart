@@ -123,6 +123,9 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     if (picked == null || picked == currentId || !mounted) return;
     final l10n = AppLocalizations.of(context);
     setState(() => _userLangId = picked);
+    // 실패 시 되돌릴 **직전 화면 언어**. [currentId] 는 회원 서버 언어에서 온 표시값이라
+    // 화면 언어와 다를 수 있다 — 그걸로 되돌리면 원복이 오히려 화면 언어를 바꾼다.
+    final previousUi = ref.read(localeControllerProvider);
     // Switch the app UI immediately (persisted); the backend save follows.
     unawaited(ref.read(localeControllerProvider.notifier).setLanguage(picked));
     try {
@@ -135,7 +138,9 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       // 서버 저장이 실패하면 화면 언어도 되돌린다(QA F013) — 두면 UI 는 새 언어인데 서버
       // member.language 는 옛 언어라, 서버가 번역하는 취약 발음 설명이 옛 언어로 남고 같은 언어를
       // 다시 고르면 「바뀐 게 없다」로 막혀 재저장도 못 한다.
-      unawaited(ref.read(localeControllerProvider.notifier).setLanguage(currentId));
+      unawaited(ref
+          .read(localeControllerProvider.notifier)
+          .setLanguage(previousUi.toLanguageTag()));
       if (!mounted) return;
       setState(() => _userLangId = currentId);
       // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
@@ -189,7 +194,6 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     }
   }
 
-  /// Confirms and performs account deletion (backend delete + sign-out).
   /// Contact Us → 메일 앱으로 문의 메일 작성(QA F012/F021 · 09-26 사용자 결정 A).
   ///
   /// 전엔 행에 화살표만 있고 눌러도 아무 일이 없었다. 제목에 설치 빌드를 싣는다 —
@@ -209,6 +213,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       ..showSnackBar(const SnackBar(content: Text(kContactEmail)));
   }
 
+  /// Confirms and performs account deletion (backend delete + sign-out).
   Future<void> _confirmDeleteAccount() async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialogBasic<bool>(

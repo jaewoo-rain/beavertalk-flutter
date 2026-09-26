@@ -494,13 +494,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get endLearning => 'إنهاء الجلسة';
 
   @override
-  String get navCalendar => 'التقويم';
-
-  @override
   String get navCall => 'مكالمة';
-
-  @override
-  String get navStats => 'الإحصاءات';
 
   @override
   String get homeCourseExpression => 'التعبيرات';
@@ -1292,6 +1286,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get retakeLevelTest => 'إعادة اختبار المستوى';
+
+  @override
+  String get levelTestOncePerDay =>
+      'يمكنك خوض اختبار المستوى مرة واحدة في اليوم. حاول مجددًا غدًا.';
 
   @override
   String get levelRetakeTitle => 'هل تعيد اختبار المستوى؟';
