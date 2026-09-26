@@ -27,6 +27,8 @@ void main() {
     'HwJoinConsentChecked': 'What your teacher sees',
     'HwJoinDoneData': 'Maximilian-Alexander',
     'HwAssignmentListData': 'Not submitted, 2d late',
+    'PaymentHistoryData': 'first year discount applied',
+    'PaymentHistoryEmpty': 'No payments yet',
   };
 
   test('데이터판마다 표식이 있다', () {

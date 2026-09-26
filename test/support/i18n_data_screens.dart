@@ -28,6 +28,8 @@ import 'package:beavertalk/features/normalcall/domain/entities/call_result.dart'
 import 'package:beavertalk/features/normalcall/domain/entities/cur_me.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/pron_summary.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
+import 'package:beavertalk/features/payment/domain/entities/payment.dart';
+import 'package:beavertalk/features/payment/presentation/providers/payment_providers.dart';
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -44,6 +46,7 @@ import 'package:beavertalk/screens/mypage/edit_nickname.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/mypage/settings.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
+import 'package:beavertalk/screens/payment/payment_history.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
 import 'package:flutter/material.dart';
@@ -262,12 +265,82 @@ Map<String, Widget Function()> i18nDataScreens() => {
             ),
           ),
 
+      // 결제 내역 — 두 달 + 날짜 없는 줄 · 긴 설명 · 긴 결제수단 · 설명 없음 · 큰 금액.
+      // 서버 설명은 한국어 고정문(「구독 결제」 · 「캐릭터 구매: {이름}」)이라 번역되지 않는다.
+      // has_more=false — 다음 쪽 요청(실망)을 부르지 않는다.
+      'PaymentHistoryData': () => ProviderScope(
+            overrides: [
+              paymentPageProvider.overrideWith((ref, filter) async => _paymentPage),
+            ],
+            child: const PaymentHistoryScreen(),
+          ),
+      // 결제 내역 — 없음(빈 상태).
+      'PaymentHistoryEmpty': () => ProviderScope(
+            overrides: [
+              paymentPageProvider.overrideWith((ref, filter) async => const PaymentPage(
+                    monthTotal: 0,
+                    items: [],
+                    page: 1,
+                    size: 10,
+                    hasMore: false,
+                  )),
+            ],
+            child: const PaymentHistoryScreen(),
+          ),
+
       // 과제 목록 — 진행 중 · 마감 지남 · 완료(직접 출제 긴 제목).
       'HwAssignmentListData': () => ProviderScope(
             overrides: [myAssignmentsProvider.overrideWith((ref) async => _assignments)],
             child: const AssignmentListScreen(),
           ),
     };
+
+/// 결제 내역 한 쪽 — 이번 달 · 지난달 · 날짜 없음.
+final _paymentPage = PaymentPage(
+  monthTotal: 123456,
+  page: 1,
+  size: 10,
+  hasMore: false,
+  items: [
+    Payment(
+      id: 1,
+      date: DateTime(_now.year, _now.month, 1, 9, 30),
+      description: '구독 결제',
+      // 결제수단 문구 안의 「·」 — 조각으로 쪼개지면 안 된다(PM-DEC-065).
+      cardInfo: 'Google Play · Visa •••• 4242',
+      price: 2399,
+      category: PaymentCategory.subscribe,
+    ),
+    Payment(
+      id: 2,
+      date: DateTime(_now.year, _now.month, 1, 8),
+      description: '캐릭터 구매: $_longName',
+      cardInfo: 'Mastercard Platinum Business •••• 9876',
+      price: 1199,
+      category: PaymentCategory.character,
+    ),
+    Payment(
+      id: 3,
+      date: DateTime(_now.year, _now.month - 1, 14),
+      description: 'Premium subscription — annual plan (auto-renewal, first year discount applied)',
+      price: 19999,
+      category: PaymentCategory.subscribe,
+    ),
+    Payment(
+      id: 4,
+      date: DateTime(_now.year, _now.month - 1, 2),
+      price: 99999,
+      category: PaymentCategory.unknown,
+    ),
+    const Payment(
+      id: 5,
+      description: '구독 결제',
+      cardInfo: '신한카드 1234',
+      price: 2399,
+      category: PaymentCategory.subscribe,
+    ),
+  ],
+);
 
 /// 라우트 인자를 읽는 화면을 인자와 함께 띄운다.
 Widget _withArgs(Object args, Widget screen) => Navigator(

@@ -30,9 +30,10 @@ enum CardLineType {
 /// (Line/Normal/Alternative, white @ 6%) at 0.5px and `8px 12px` padding.
 ///
 /// * [CardLineType.payment] — a column laying out one space-between row.
-///   The left side stacks [label] (Label 1 Regular, white) over a [meta] row
-///   (Label 1 Regular, `textSecondary`) separated by a 2×2 `textTertiary` dot;
-///   `meta` is split on `·` into segments. The right side stacks [value]
+///   The left side stacks [label] (Label 1 Regular, white) over a meta row
+///   (Label 1 Regular, `textSecondary`) whose segments ([metaSegments], or
+///   [meta] split on `·`) are separated by a 2×2 `textTertiary` dot. Segments
+///   that don't fit on one line move down to the next (PM-DEC-065). The right side stacks [value]
 ///   (Label 1 SemiBold, white) over [status] (Label 1 Regular, `success`).
 /// * [CardLineType.defaultRow] — a min-56px row: [label]/[value] (Body 1 Regular,
 ///   white) space-between, with a trailing 24px chevron.
@@ -46,6 +47,7 @@ class CardLine extends StatelessWidget {
     required this.label,
     this.value,
     this.meta,
+    this.metaSegments,
     this.status,
     this.checked = false,
     this.onChanged,
@@ -70,7 +72,19 @@ class CardLine extends StatelessWidget {
 
   /// Secondary meta line for [CardLineType.payment], split on `·` into
   /// dot-separated segments (e.g. `"6월 3일·신한카드 1234"`).
+  ///
+  /// Only for fixed copy. Server text can itself contain `·` (a card label like
+  /// 「Google Play · Visa」) and would be cut into extra segments — pass
+  /// [metaSegments] for that (QA 09-27 · PM-DEC-065).
   final String? meta;
+
+  /// The meta line's segments as given — never re-split. Wins over [meta].
+  final List<String>? metaSegments;
+
+  List<String> get _metaSegments => [
+        for (final s in metaSegments ?? meta?.split('·') ?? const <String>[])
+          if (s.trim().isNotEmpty) s.trim(),
+      ];
 
   /// Status text shown under [value] in [CardLineType.payment]
   /// (e.g. `"완료"`), rendered in `Status/Positive`.
@@ -141,9 +155,10 @@ class CardLine extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppType.label1.r.copyWith(color: context.c.labelStrong),
                   ),
-                  if (meta != null) ...[
+                  if (_metaSegments case final segments
+                      when segments.isNotEmpty) ...[
                     const SizedBox(height: 7),
-                    _MetaRow(meta: meta!),
+                    _MetaRow(segments: segments),
                   ],
                 ],
               ),
@@ -262,19 +277,73 @@ class CardLine extends StatelessWidget {
 
 /// Dot-separated meta row for [CardLineType.payment].
 ///
-/// Segments are split on `·`; a 2×2 [AppColors.textTertiary] dot separates them.
+/// A 2×2 [AppColors.textTertiary] dot separates the segments. They share one
+/// line when they fit; otherwise each segment that would run past the edge
+/// starts the next line (PM-DEC-065). Leading segments used to be fixed-width
+/// on a single line, so 「date · long card label」 overflowed the row — ne at
+/// 320px by 17px with the real font, far more once a card label carried its
+/// own `·` and was cut into several fixed pieces.
 class _MetaRow extends StatelessWidget {
-  const _MetaRow({required this.meta});
+  const _MetaRow({required this.segments});
 
-  final String meta;
+  final List<String> segments;
+
+  /// Gap · dot · gap between two segments.
+  static const double _separatorWidth = 4 + 2 + 4;
 
   @override
   Widget build(BuildContext context) {
-    final segments = meta
-        .split('·')
-        .map((s) => s.trim())
-        .where((s) => s.isNotEmpty)
-        .toList();
+    final style = AppType.label1.r.copyWith(color: context.c.labelNormal);
+    return LayoutBuilder(builder: (context, constraints) {
+      final lines = _pack(context, style, constraints.maxWidth);
+      if (lines.length == 1) return _line(context, lines.single, style);
+      // 줄 사이 추가 간격 없음 — Label 1 줄 높이(20)만으로 벌어진다. 날짜·결제수단이
+      // 한 덩어리로 읽히게(디자이너 확인 09-27 · 정본에 없는 새 치수를 만들지 않음).
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [for (final line in lines) _line(context, line, style)],
+      );
+    });
+  }
+
+  /// Greedy line packing by measured width. A segment wider than a whole line
+  /// gets a line of its own and ellipsizes there.
+  List<List<String>> _pack(BuildContext context, TextStyle style, double maxWidth) {
+    if (!maxWidth.isFinite) return [segments];
+    final painter = TextPainter(
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    );
+    final merged = DefaultTextStyle.of(context).style.merge(style);
+    double widthOf(String s) {
+      painter.text = TextSpan(text: s, style: merged);
+      painter.layout();
+      return painter.width;
+    }
+
+    final lines = <List<String>>[];
+    var current = <String>[];
+    var used = 0.0;
+    for (final s in segments) {
+      final w = widthOf(s);
+      final needed = current.isEmpty ? w : used + _separatorWidth + w;
+      if (current.isEmpty || needed <= maxWidth) {
+        current.add(s);
+        used = needed;
+      } else {
+        lines.add(current);
+        current = [s];
+        used = w;
+      }
+    }
+    if (current.isNotEmpty) lines.add(current);
+    painter.dispose();
+    return lines;
+  }
+
+  Widget _line(BuildContext context, List<String> segments, TextStyle style) {
     final children = <Widget>[];
     for (var i = 0; i < segments.length; i++) {
       if (i > 0) {
@@ -295,7 +364,7 @@ class _MetaRow extends StatelessWidget {
         segments[i],
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: AppType.label1.r.copyWith(color: context.c.labelNormal),
+        style: style,
       );
       // Only the last segment may shrink. Wrapping every segment in Flexible
       // split the row evenly between them, so "6월 3일 · 신한카드 1234" gave the

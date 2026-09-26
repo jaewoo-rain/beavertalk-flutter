@@ -344,15 +344,17 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
     // `description` and `card_info` are server-authored and nullable; a row with
     // neither still shows its amount rather than being dropped.
     final date = p.date;
+    // A list, not a `·`-joined string: card_info is server text and may carry
+    // its own `·` (「Google Play · Visa」), which CardLine would cut apart.
     final meta = [
       if (date != null) asciiDigits(intl.DateFormat.MMMd(locale).format(date)),
       if (p.cardInfo != null && p.cardInfo!.isNotEmpty) p.cardInfo!,
-    ].join('·'); // CardLine splits on `·` into dot-separated segments.
+    ];
 
     return CardLine(
       type: CardLineType.payment,
       label: p.description ?? _categoryLabel(l10n, p.category),
-      meta: meta.isEmpty ? null : meta,
+      metaSegments: meta,
       value: _money(p.price, locale),
       status: l10n.statusCompleted,
       showDivider: showDivider,
