@@ -244,7 +244,9 @@ class _SocialButtonRow extends StatelessWidget {
   Widget build(BuildContext context) {
     Widget social(Widget icon) => Expanded(
           child: Button(
-            type: BtnType.secondaryOutline,
+            // 채움형 — Figma 인스턴스가 채움을 덮어써 둔 모양 그대로(09-26 secondaryOutline 이
+            // 테두리형이 되면서 옮김).
+            type: BtnType.secondaryFill,
             size: BtnSize.s60,
             text: '',
             leftIcon: icon,

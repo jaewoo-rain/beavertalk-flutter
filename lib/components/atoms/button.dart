@@ -14,7 +14,9 @@ import '../../theme/app_typography.dart';
 /// - [primaryOutline] — `bg surface / border primary / text primary`
 /// - [primaryOutlineWhite] — `bg surface / border primary / text white`
 /// - [secondaryFill] — `bg surface2 / text white`
-/// - [secondaryOutline] — `bg surface2 / border surface2 / text textSecondary`
+/// - [secondaryOutline] — `bg 투명 / border Line/Neutral 1px / text Label/Normal`
+///   (09-26 사용자 결정 · 예전 `bg surface2 / border surface2` 는 테두리가 바탕과 같아
+///   [secondaryFill] 과 같은 모양이었다)
 /// - [secondaryWhite] — `bg surfaceElevated / border surface2 / text white`
 /// - [secondaryElevated] — `bg surfaceElevatedNormal / text white`
 /// - [disabled] — `bg surface / border borderSubtle / text textTertiary`
@@ -202,8 +204,10 @@ class Button extends StatelessWidget {
       case BtnType.disabled:
         return c.backgroundNormalNormal;
       case BtnType.secondaryFill:
-      case BtnType.secondaryOutline:
         return c.backgroundNormalAlternative;
+      case BtnType.secondaryOutline:
+        // 바탕 없이 테두리로만 선다(09-26 · Figma Button type=secondary_outline 16변형).
+        return Colors.transparent;
       case BtnType.secondaryWhite:
         return c.backgroundElevatedAlternative;
       case BtnType.secondaryElevated:
@@ -225,7 +229,7 @@ class Button extends StatelessWidget {
       case BtnType.secondaryElevated:
         return null; // no stroke in Figma
       case BtnType.secondaryOutline:
-        return c.backgroundNormalAlternative;
+        return c.lineNeutral;
       case BtnType.secondaryWhite:
         return c.backgroundNormalAlternative;
       case BtnType.gold:

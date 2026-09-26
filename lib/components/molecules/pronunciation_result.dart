@@ -319,7 +319,7 @@ class _MetricsFooter extends StatelessWidget {
         //
         // It used to be `backgroundNormalAlternative`. The two are the same
         // #252932 in Dark, so the mistake was invisible there — but in Light
-        // they diverge (#FFFFFF vs #F6F6F7), and the strip drew a grey box on
+        // they diverge (#FFFFFF vs #DBDCE2), and the strip drew a grey box on
         // screens where the design has none. Note the strip is *meant* to melt
         // into its parent on surfaces that share this token (the MyPage card,
         // screen/learning_main__pronunciation): there it reads as bare text

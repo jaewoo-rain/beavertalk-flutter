@@ -404,9 +404,11 @@ class AppColorTokens extends ThemeExtension<AppColorTokens> {
     labelAssistive: Color(0xFF808080),
     labelDisabled: Color(0xFF999999),
     backgroundNormalNormal: Color(0xFFF1F1F5),
-    backgroundNormalAlternative: Color(0xFFF6F6F7),
+    // 두 값은 09-26 Figma 로 맞췄다(사용자 결정 · 바텀시트·버튼 전수조사). 07-17 a820584
+    // 스냅숏의 #F6F6F7 · #F7F7FB 에 머물러 흰 시트 위 보조 버튼 경계가 안 보였다.
+    backgroundNormalAlternative: Color(0xFFDBDCE2),
     backgroundNormalDeep: Color(0xFFE1E2E4),
-    backgroundElevatedNormal: Color(0xFFF7F7FB),
+    backgroundElevatedNormal: Color(0xFFCBCCD3),
     backgroundElevatedAlternative: Color(0xFFFFFFFF),
     backgroundElevatedDialog: Color(0xFFFFFFFF),
     score1: Color(0xFFFF4242),
