@@ -880,6 +880,11 @@ class AppLocalizationsUr extends AppLocalizations {
   String get accentSoundsLike => 'آپ کا کورین لہجہ ایسا لگتا ہے';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk کے ساتھ کورین سیکھنا جاری ہے — میرا کورین لہجہ ایسا لگتا ہے: $country! 🦫 اپنا لہجہ جانیں اور میرے ساتھ سیکھیں: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'اشارہ';
 
   @override
@@ -2301,7 +2306,7 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get hwJoinCodeSubtitle =>
-      'یہ آپ کے استاد کا دیا ہوا 6 ہندسوں کا کوڈ ہے';
+      'یہ آپ کے استاد کا دیا ہوا 6 کیریکٹر کا کوڈ ہے';
 
   @override
   String get hwJoinCodeLabel => 'کلاس کوڈ';

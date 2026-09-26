@@ -41,9 +41,14 @@ class TermsScreen extends StatelessWidget {
           // 법률 문서는 700(정본 규격: 좌우 여백 55). 본문 600보다 넓게 두는 건
           // 조항 번호와 들여쓰기가 있는 글이라 줄바꿈이 잦으면 더 읽기 나쁘기
           // 때문이다.
-          const Expanded(
+          // UI 언어로 고른다 — 한국어 외에는 영문판(QA F018).
+          Expanded(
             child: ContentColumn.document(
-              child: LegalWebView(url: kTermsOfUseUrl),
+              child: LegalWebView(
+                url: termsOfUseUrlFor(
+                  Localizations.localeOf(context).languageCode,
+                ),
+              ),
             ),
           ),
         ],

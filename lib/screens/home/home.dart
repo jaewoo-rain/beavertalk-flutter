@@ -17,6 +17,7 @@ import '../../features/normalcall/presentation/normalcall_providers.dart';
 import '../../features/normalcall/presentation/home_mode_provider.dart';
 import '../../features/normalcall/presentation/streak_provider.dart';
 import '../../components/organisms/bottom_nav_bar.dart';
+import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
@@ -106,6 +107,16 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  /// 아바타 화면으로 간다. 히어로가 실패 상태([retry])면 카탈로그를 먼저 다시 부른다 —
+  /// 캐시된 오류를 들고 가면 아바타 화면도 오류부터 보인다(QA F009).
+  void _openAvatar(BuildContext context, WidgetRef ref, {required bool retry}) {
+    if (retry) {
+      ref.invalidate(charactersProvider);
+      ref.invalidate(myProfileProvider);
+    }
+    Navigator.pushNamed(context, Routes.avatar);
+  }
+
   /// 실제 홈 콘텐츠(헤더 + 히어로 + 하단 네비).
   Widget _buildHome(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -127,10 +138,20 @@ class HomeScreen extends ConsumerWidget {
     // few hundred ms and then swapped. `selected == null` covers the whole
     // window, because `selected` is exactly "we know who the partner is".
     //
-    // On failure `selected` stays null and this shimmers rather than resolving.
-    // That is the intended trade: the previous behaviour asserted a partner the
-    // user does not have.
-    final heroLoading = selected == null;
+    // Settled without a partner — the catalog or profile request failed, or
+    // the member's id has no catalog entry (null id included). This used to
+    // shimmer forever: the catalog provider is not autoDispose, so its error
+    // stayed cached and nothing on home ever asked again (QA F009, 09-26).
+    // Now it shows the static avatar, no name — still not asserting a partner
+    // the user may not have — and a tap refetches the catalog on the way to
+    // the avatar screen, whose own error state carries the retry.
+    final catalog = ref.watch(charactersProvider);
+    final profile = ref.watch(myProfileProvider);
+    final heroFailed = selected == null &&
+        (catalog.hasError ||
+            profile.hasError ||
+            (catalog.hasValue && profile.hasValue));
+    final heroLoading = selected == null && !heroFailed;
     final mode = ref.watch(homeModeProvider);
     final streak = ref.watch(callStreakProvider);
     return Column(
@@ -208,12 +229,12 @@ class HomeScreen extends ConsumerWidget {
                   )
                 else
                   Pressable(
-                    onTap: () => Navigator.pushNamed(context, Routes.avatar),
+                    onTap: () => _openAvatar(context, ref, retry: heroFailed),
                     child: HeroAvatar(
                       imageProvider: heroImage,
                       size: _avatarSize,
                       onEditTap: () =>
-                          Navigator.pushNamed(context, Routes.avatar),
+                          _openAvatar(context, ref, retry: heroFailed),
                     ),
                   ),
                 const SizedBox(height: AppSpacing.s16),
@@ -238,10 +259,14 @@ class HomeScreen extends ConsumerWidget {
                             child: Skeleton.bar(width: 120, height: 16),
                           ),
                         )
+                      // No partner known — leave the slot empty rather than
+                      // guess a name (see [heroFailed]).
+                      : selected == null
+                      ? const SizedBox.shrink()
                       : Center(
                           child: Text(
-                            // Non-null here by construction: [heroLoading] IS
-                            // `selected == null`, so this branch only runs once
+                            // Non-null here: the branch above takes every
+                            // `selected == null` case, so this only runs once
                             // the catalog entry is known. The old
                             // `?? characterName(id)` fallback is gone with it —
                             // that was the guess that printed "Bibi".

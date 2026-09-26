@@ -461,7 +461,8 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
 
   void _snack(Object e) {
     if (!mounted) return;
-    final message = e is AppException
+    // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+    final message = e is AppException && e.fromServer
         ? e.message
         : AppLocalizations.of(context).somethingWentWrong;
     ScaffoldMessenger.maybeOf(context)

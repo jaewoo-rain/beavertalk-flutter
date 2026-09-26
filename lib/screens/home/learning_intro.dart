@@ -462,7 +462,8 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
           .toggleBookmark(sentenceId, willSave);
     } catch (e) {
       toggleBookmark(sentenceId); // revert on failure
-      _snack(e is AppException ? e.message : l10n.saveSentenceFailed);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      _snack(e is AppException && e.fromServer ? e.message : l10n.saveSentenceFailed);
     } finally {
       _bookmarkInFlight.remove(sentenceId);
     }
@@ -501,7 +502,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
                   .sentenceTtsUrl(sentence.id);
         _ttsUrl = url;
       } on AppException catch (e) {
-        _snack(e.message);
+        _snack(e.fromServer ? e.message : l10n.standardAudioPlayError);
         return;
       } catch (_) {
         _snack(l10n.standardAudioPlayError);
@@ -580,7 +581,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     try {
       final pcm = await _recorder.stop();
       // Guard an empty/too-short recording (< ~0.3s of PCM16 @16k).
-      if (pcm.lengthInBytes < 16000 * 2 * 0.3) {
+      if (isTooShortToScore(pcm)) {
         _snack(l10n.recordTooShort);
         _backToRecording();
         return;
@@ -661,7 +662,7 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
       // failure below must not borrow that wording.
       _toFailed(l10n.scanConnectionLost);
     } on AppException catch (e) {
-      _toFailed(e.message);
+      _toFailed(e.fromServer ? e.message : l10n.gradingFailed);
     } catch (_) {
       _toFailed(l10n.gradingFailed);
     }

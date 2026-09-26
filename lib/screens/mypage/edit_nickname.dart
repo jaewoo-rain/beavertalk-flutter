@@ -61,8 +61,10 @@ class _EditNicknameScreenState extends ConsumerState<EditNicknameScreen> {
       if (mounted) Navigator.pop(context);
     } catch (e) {
       if (!mounted) return;
-      final msg =
-          e is AppException ? e.message : l10n.somethingWentWrong;
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      final msg = e is AppException && e.fromServer
+          ? e.message
+          : l10n.somethingWentWrong;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));

@@ -875,6 +875,11 @@ class AppLocalizationsTr extends AppLocalizations {
   String get accentSoundsLike => 'Korece aksanınız şöyle geliyor';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk ile Korece öğreniyorum — Korece aksanım şöyle çıktı: $country! 🦫 Sen de aksanını keşfet ve benimle öğren: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'İpucu';
 
   @override
@@ -2294,7 +2299,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwJoinCodeTitle => 'Sınıf kodunu gir';
 
   @override
-  String get hwJoinCodeSubtitle => 'Öğretmeninin verdiği 6 haneli koddur';
+  String get hwJoinCodeSubtitle => 'Öğretmeninin verdiği 6 karakterli koddur';
 
   @override
   String get hwJoinCodeLabel => 'Sınıf kodu';

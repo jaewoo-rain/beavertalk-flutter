@@ -1947,9 +1947,13 @@ class NormalCallController extends Notifier<CallState> {
     };
   }
 
-  /// 통화 **도중** 출력 라우트가 바뀌면 서버에 알린다(`route_change`).
+  /// 통화 **도중** 출력 라우트가 바뀌면 기록한다 — **서버에는 더 안 보낸다.**
   ///
-  /// ## 왜 필요한가
+  /// ⛔ 서버가 09-23(C14 · `70e20e2`)에 `route_change` 를 프로토콜에서 지웠다. 보내면
+  ///   모르는 제어 메시지로 경고 로그만 남는다(QA F038 · 09-26 사용자 결정 「송신만 끊기」).
+  ///   아래는 보내던 시절의 설계 이유다 — 서버가 되살리면 [_send] 한 줄로 돌아간다.
+  ///
+  /// ## 왜 필요했나
   ///
   /// `start.aec` 는 **세션 시작 스냅샷**이다. 통화 중 이어폰을 뽑으면 서버는 계속
   /// `headset` 을 믿고 즉시 끊기 정책을 유지하는데, 실제로는 **스피커폰**(에코 최악)이다.
@@ -1968,18 +1972,9 @@ class NormalCallController extends Notifier<CallState> {
     // 정책을 계속 다시 잡는다.
     if (route == _lastReportedRoute) return;
     _lastReportedRoute = route;
-    _send({
-      'type': 'route_change',
-      'aec': <String, dynamic>{
-        'mode': route == 'headset' ? 'headset' : 'unknown',
-        if (route.isNotEmpty) 'route': route,
-      },
-      // ⭐ 시각이 아니라 **업링크 누적 바이트**다. 마이크는 PCM16/16kHz mono =
-      //   32,000 B/s 고정이라 서버가 받은 바이트와 정수로 대조된다. 시각으로 보내면
-      //   어느 시계인지 불분명하고 지터·시계 오차가 낀다(`played_server_bytes` 와 같은 논거).
-      'uplink_bytes': _uplinkBytes,
-    });
-    _log('route_change → ${route.isEmpty ? '(못 읽음)' : route} '
+    // 로그의 uplink 는 시각이 아니라 **업링크 누적 바이트**다(PCM16/16kHz mono =
+    // 32,000 B/s 고정) — 서버 로그와 정수로 대조할 수 있다.
+    _log('route (미전송) → ${route.isEmpty ? '(못 읽음)' : route} '
         'uplink=${_uplinkBytes}B (=${_uplinkBytes ~/ 32}ms)');
   }
 
@@ -4096,11 +4091,13 @@ class NormalCallController extends Notifier<CallState> {
       // 반드시 드러낸다.
       _log('⚠ audio_cancel 에 turn_id 가 없다 — 상관 불가');
     }
+    // ⛔ **서버로는 안 보낸다.** 서버가 09-23(C14 · `70e20e2`)에 `playback_progress` 를
+    //   지웠다 — 보내면 모르는 제어 메시지로 경고 로그만 남는다(QA F038 · 09-26 사용자 결정
+    //   「송신만 끊기」). 디버그 취소 리그([debugOutboundSink])만 같은 Map 을 받아 잰다.
+    //
     // `source` 를 항상 'native' 로 박으면 안 된다. 네이티브 폐기량을 못 받아 추정치로
-    // 떨어졌는데 'native' 라고 하면, 서버는 ±50~150ms 짜리 외삽값을 실측으로 믿고
-    // 대화 이력에 박는다. 서버가 'estimate' 를 거부하고 사유를 찍게 설계돼 있으니,
-    // 정직하게 보내고 거부당하는 쪽이 맞다.
-    _send({
+    // 떨어졌는데 'native' 라고 하면 외삽값(±50~150ms)이 실측으로 읽힌다.
+    final progress = <String, dynamic>{
       'type': 'playback_progress',
       'turn_id': ?turnId,
       'played_server_bytes': outcome.playedServerBytes,
@@ -4117,7 +4114,8 @@ class NormalCallController extends Notifier<CallState> {
       // 빈 문자열 = **못 읽음**. 'speaker' 로 추측해 채우지 않는다 — 그러면 서버가
       // 측정 실패와 스피커폰을 구분하지 못한다.
       'audio_route': route,
-    });
+    };
+    if (kDebugMode) debugOutboundSink?.call(progress);
     _log('audio_cancel → cleared, played_server_bytes=${outcome.playedServerBytes} '
         'turn=$turnId source=${outcome.fromNative ? 'native' : 'estimate'} '
         'client_stop=${clientStopMs}ms '
@@ -5150,6 +5148,16 @@ class NormalCallController extends Notifier<CallState> {
       unawaited(_finishClosing());
       return;
     }
+    // Mid-call transport error (wifi off, wifi↔LTE handover) — recover like
+    // [_onWsDone]'s mid-call drop. Tearing down into `error` sent the user home
+    // with a snackbar: no rating, no analysis, though the server already had
+    // the call id and today's budget was spent (QA F010, 09-26). [hangUp] sets
+    // `_expectClose`, so an onDone that follows this error is absorbed there.
+    if (state.phase == CallPhase.inCall) {
+      _log('ws error during inCall → recovering to wrap-up: $error');
+      unawaited(hangUp());
+      return;
+    }
     state = state.copyWith(
       phase: CallPhase.error,
       errorMsg: _l10n.callNetworkError,
@@ -5159,10 +5167,10 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Encodes and sends a control JSON frame if the socket is open.
   void _send(Map<String, dynamic> msg) {
-    // ⚠ 소켓 null 체크 **앞**이다. 취소 배관 리그는 소켓 없이 돌기 때문에 여기서 못
-    //   가로채면 `playback_progress` 가 조용히 사라진다 — 그러면 리그가 재려는 값이
-    //   화면에 안 나온다. 가로채는 건 서버가 받게 될 것과 **같은 Map** 이어야 하므로
-    //   가공하지 않고 그대로 넘긴다.
+    // ⚠ 소켓 null 체크 **앞**이다. 디버그 리그는 소켓 없이 돌기 때문에 여기서 못
+    //   가로채면 제어 프레임이 조용히 사라진다. 가로채는 건 서버가 받게 될 것과 **같은
+    //   Map** 이어야 하므로 가공하지 않고 그대로 넘긴다. (`playback_progress` 는 서버에서
+    //   지워져 이 길을 안 타고 리그로만 직접 간다 — QA F038.)
     if (kDebugMode) debugOutboundSink?.call(msg);
     final ch = _channel;
     if (ch == null) return;

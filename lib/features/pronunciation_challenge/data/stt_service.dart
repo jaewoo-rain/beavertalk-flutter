@@ -327,15 +327,15 @@ class SttService {
 
       return await ready.future.timeout(_connectTimeout, onTimeout: () => false);
     } catch (e) {
-      // Name the most likely cause. A timeout here is almost never the
-      // network: `/pron/stt/ws` does not exist on the app backends (handshake
-      // measured 2026-09-08 — app server 403, beavertalk-web-api 101), so the
-      // socket never opens. See [Env.pronSttBaseUrl].
+      // The app server does have `/pron/stt/ws` (server d269bb6, 2026-07-22).
+      // An earlier note here blamed a missing route on a 403 — that 403 was
+      // the token check closing before accept (QA F027). See
+      // [Env.pronSttBaseUrl].
       debugPrint('STT ws connect failed → tap fallback: $e');
       debugPrint('  주소: ${pronSttWsUrl('<token>')}');
       if (e is TimeoutException) {
-        debugPrint('  타임아웃이면 대개 그 호스트에 라우트가 없는 것이다 — '
-            '.env 의 PRON_STT_BASE_URL 을 확인하라.');
+        debugPrint('  타임아웃 — 토큰 만료(서버가 수락 전에 닫는다) · 네트워크 · '
+            '.env 의 PRON_STT_BASE_URL 순으로 확인하라.');
       }
       settle(false);
       return false;

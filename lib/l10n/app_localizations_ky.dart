@@ -879,6 +879,11 @@ class AppLocalizationsKy extends AppLocalizations {
   String get accentSoundsLike => 'Сиздин корей акценти мындай угулат';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk менен корей тилин үйрөнүп жатам — корейче акцентим мындай угулат: $country! 🦫 Өз акцентиңди тап да, мени менен бирге үйрөн: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Кеп';
 
   @override
@@ -2301,7 +2306,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get hwJoinCodeTitle => 'Класс кодуңузду киргизиңиз';
 
   @override
-  String get hwJoinCodeSubtitle => 'Бул мугалим берген 6 сандуу код';
+  String get hwJoinCodeSubtitle => 'Бул мугалим берген 6 белгиден турган код';
 
   @override
   String get hwJoinCodeLabel => 'Класс коду';

@@ -195,6 +195,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     }
   }
 
+  /// Every [AppException] that reaches this screen already carries translated
+  /// copy — the auth controller maps Supabase errors through l10n and never
+  /// passes their raw English text on (QA F017).
   void _showError(String message) {
     if (!mounted) return;
     ScaffoldMessenger.of(context)

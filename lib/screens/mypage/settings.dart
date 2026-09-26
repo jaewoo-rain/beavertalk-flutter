@@ -3,6 +3,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -12,10 +13,12 @@ import '../../components/molecules/card_line.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
 import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
+import '../../core/config/app_version.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/dates.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../features/auth/domain/entities/member.dart';
+import '../../features/legal/legal_urls.dart';
 import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
@@ -129,8 +132,14 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
           .read(authControllerProvider.notifier)
           .updateLanguage(_langHead(picked));
     } catch (e) {
+      // 서버 저장이 실패하면 화면 언어도 되돌린다(QA F013) — 두면 UI 는 새 언어인데 서버
+      // member.language 는 옛 언어라, 서버가 번역하는 취약 발음 설명이 옛 언어로 남고 같은 언어를
+      // 다시 고르면 「바뀐 게 없다」로 막혀 재저장도 못 한다.
+      unawaited(ref.read(localeControllerProvider.notifier).setLanguage(currentId));
       if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
+      setState(() => _userLangId = currentId);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      final msg = e is AppException && e.fromServer ? e.message : l10n.languageSaveFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -173,7 +182,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
           .updateTargetLanguage(picked);
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.languageSaveFailed;
+      final msg = e is AppException && e.fromServer ? e.message : l10n.languageSaveFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -181,6 +190,25 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
   }
 
   /// Confirms and performs account deletion (backend delete + sign-out).
+  /// Contact Us → 메일 앱으로 문의 메일 작성(QA F012/F021 · 09-26 사용자 결정 A).
+  ///
+  /// 전엔 행에 화살표만 있고 눌러도 아무 일이 없었다. 제목에 설치 빌드를 싣는다 —
+  /// 베타 문의를 어느 빌드에서 겪었는지 바로 맞춰 보기 위해서다(F031 과 같은 값).
+  /// 메일 앱이 없으면 주소를 보여 준다 — 주소는 어느 언어에서도 그대로 읽힌다.
+  Future<void> _contactUs() async {
+    final uri = contactMailUri(
+      version: ref.read(appVersionLabelProvider).valueOrNull,
+    );
+    var opened = false;
+    try {
+      opened = await launchUrl(uri);
+    } catch (_) {}
+    if (opened || !mounted) return;
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(const SnackBar(content: Text(kContactEmail)));
+  }
+
   Future<void> _confirmDeleteAccount() async {
     final l10n = AppLocalizations.of(context);
     final confirmed = await showDialogBasic<bool>(
@@ -203,7 +231,10 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
       await ref.read(authControllerProvider.notifier).deleteAccount();
     } catch (e) {
       if (!mounted) return;
-      final msg = e is AppException ? e.message : l10n.accountDeleteFailed;
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      final msg = e is AppException && e.fromServer
+          ? e.message
+          : l10n.accountDeleteFailed;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -318,7 +349,7 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
                   _section(l10n.supportSection),
                   const SizedBox(height: AppSpacing.s16),
                   _group([
-                    _navRow(l10n.contactUs, ''),
+                    _navRow(l10n.contactUs, '', onTap: _contactUs),
                     _navRow(l10n.termsOfService, '', route: Routes.terms),
                     _navRow(l10n.privacyPolicy, '', route: Routes.privacy),
                     // AI 생성 콘텐츠 신고 — Play 생성형 AI 정책이 요구하는 앱 내
@@ -539,30 +570,33 @@ class _MyPageSettingsScreenState extends ConsumerState<MyPageSettingsScreen> {
     ),
   );
 
-  /// "Beavertalk • v1.0.0" footer.
-  Widget _version() => Center(
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Text(
-          'Beavertalk',
-          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-        ),
-        const SizedBox(width: AppSpacing.s4),
-        Container(
-          width: AppSpacing.s4,
-          height: AppSpacing.s4,
-          decoration: BoxDecoration(
-            color: context.c.labelNormal,
-            shape: BoxShape.circle,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.s4),
-        Text(
-          'v1.0.0',
-          style: AppType.body1.r.copyWith(color: context.c.labelNormal),
-        ),
-      ],
-    ),
-  );
+  /// "Beavertalk • v1.0.0 (41)" footer — 설치된 빌드를 읽는다(QA F031).
+  /// 못 읽으면 앱 이름만 — 점과 버전 칸을 비워 두지 않는다.
+  Widget _version() {
+    final label = ref.watch(appVersionLabelProvider).valueOrNull;
+    final style = AppType.body1.r.copyWith(color: context.c.labelNormal);
+    // Wrap: 빌드 번호가 붙어 길어졌다 — 큰 글꼴 배율에서 한 줄을 넘으면 버전이 다음 줄로
+    // 내려간다(Row 는 넘쳤다).
+    return Center(
+      child: Wrap(
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: AppSpacing.s4,
+        children: [
+          Text('Beavertalk', style: style),
+          if (label != null) ...[
+            Container(
+              width: AppSpacing.s4,
+              height: AppSpacing.s4,
+              decoration: BoxDecoration(
+                color: context.c.labelNormal,
+                shape: BoxShape.circle,
+              ),
+            ),
+            Text(label, style: style),
+          ],
+        ],
+      ),
+    );
+  }
 }

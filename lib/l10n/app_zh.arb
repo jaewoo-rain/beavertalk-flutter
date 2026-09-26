@@ -259,6 +259,7 @@
   "delete": "删除",
   "share": "分享",
   "accentSoundsLike": "你的韩语口音听起来",
+  "accentShareText": "我在用 BeaverTalk 学韩语 — 我的韩语口音听起来像{country}！🦫 快来测测你的口音，和我一起学：https://beavertalk.im",
   "hintLabel": "提示",
   "nextHint": "下一个提示",
   "translateLabel": "翻译",

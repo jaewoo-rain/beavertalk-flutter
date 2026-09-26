@@ -486,6 +486,15 @@
   "delete": "Delete",
   "share": "Share",
   "accentSoundsLike": "Your Korean accent sounds",
+  "accentShareText": "I'm learning Korean with BeaverTalk — my Korean accent sounds like {country}! 🦫 Come find your accent and learn with me: https://beavertalk.im",
+  "@accentShareText": {
+    "description": "Caption shared with the accent card image. {country} is the top accent nationality, already in the UI language.",
+    "placeholders": {
+      "country": {
+        "type": "String"
+      }
+    }
+  },
   "hintLabel": "Hint",
   "nextHint": "Next hint",
   "translateLabel": "Translate",
@@ -1578,7 +1587,7 @@
   "@hwJoinCodeTitle": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwJoinCodeSubtitle": "It is the 6-digit code from your teacher",
+  "hwJoinCodeSubtitle": "It is the 6-character code from your teacher",
   "@hwJoinCodeSubtitle": {
     "description": "Homework (class join / assignments) copy"
   },

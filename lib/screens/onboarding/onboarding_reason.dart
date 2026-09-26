@@ -63,7 +63,11 @@ class _OnboardingReasonScreenState
       Navigator.of(context)
           .pushNamedAndRemoveUntil(Routes.onboardingDone, (r) => r.isFirst);
     } on AppException catch (e) {
-      if (mounted) setState(() => _error = e.message);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      if (mounted) {
+        setState(() => _error =
+            e.fromServer ? e.message : AppLocalizations.of(context).tryAgainLater);
+      }
     } finally {
       if (mounted) setState(() => _submitting = false);
     }

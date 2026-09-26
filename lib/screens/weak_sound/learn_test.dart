@@ -102,11 +102,12 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
     final l10n = AppLocalizations.of(context);
     setState(() => _phase = _Phase.scoring);
     final pcm = await _recorder.stop();
-    if (pcm.isEmpty) {
-      // Figma E4 — 인식 실패. 녹음이 비었으면 올려 봐야 0점이 나온다.
+    if (isTooShortToScore(pcm)) {
+      // Figma E4 — 인식 실패. 비었거나 0.3초 미만이면 올려 봐야 0점대가 나온다 — 유료 채점을
+      // 부르지 않는다(QA F011). 빈 녹음은 「소리가 없어요」, 짧은 녹음은 「너무 짧아요」.
       setState(() {
         _phase = _Phase.failed;
-        _error = l10n.wsNoSound;
+        _error = pcm.isEmpty ? l10n.wsNoSound : l10n.recordTooShort;
       });
       return;
     }
@@ -126,9 +127,10 @@ class _LearnTestScreenState extends ConsumerState<LearnTestScreen> {
     } on AppException catch (e) {
       // Figma E7 — 채점 오류(네트워크·서버).
       if (!mounted) return;
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
       setState(() {
         _phase = _Phase.failed;
-        _error = e.message;
+        _error = e.fromServer ? e.message : l10n.wsScoreFailed;
       });
     } catch (_) {
       // 예상 못 한 예외도 화면을 「채점 중」에 묶어 두면 안 된다 — 사용자는 영영 기다린다.

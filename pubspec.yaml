@@ -62,6 +62,10 @@ dependencies:
   # session; the backend verifies the Supabase access token (ES256 JWT).
   supabase_flutter: ^2.15.0
 
+  # 설정 하단 버전 표기 — 버전명 + 빌드 번호(QA F031). 이미 전이 의존으로 들어와 있던
+  # 것을 직접 의존으로 올렸다(잠금 9.0.1 그대로 · 새 네이티브 플러그인 아님).
+  package_info_plus: ^9.0.1
+
   # normalcall 실시간 음성통화 — WebSocket(바이너리 PCM + 텍스트 제어).
   web_socket_channel: ^3.0.1
   # normalcall — 마이크 PCM16k 스트림 녹음(FlutterSoundRecorder만 사용).

@@ -1702,6 +1702,12 @@ abstract class AppLocalizations {
   /// **'Your Korean accent sounds'**
   String get accentSoundsLike;
 
+  /// Caption shared with the accent card image. {country} is the top accent nationality, already in the UI language.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m learning Korean with BeaverTalk — my Korean accent sounds like {country}! 🦫 Come find your accent and learn with me: https://beavertalk.im'**
+  String accentShareText(String country);
+
   /// No description provided for @hintLabel.
   ///
   /// In en, this message translates to:
@@ -4291,7 +4297,7 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'It is the 6-digit code from your teacher'**
+  /// **'It is the 6-character code from your teacher'**
   String get hwJoinCodeSubtitle;
 
   /// Homework (class join / assignments) copy

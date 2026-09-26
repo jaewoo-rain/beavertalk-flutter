@@ -885,6 +885,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get accentSoundsLike => 'Ваш корейский акцент звучит как';
 
   @override
+  String accentShareText(String country) {
+    return 'Я учу корейский с BeaverTalk — мой корейский акцент звучит так: $country! 🦫 Узнай свой акцент и учись со мной: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Подсказка';
 
   @override
@@ -2309,7 +2314,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwJoinCodeTitle => 'Введите код класса';
 
   @override
-  String get hwJoinCodeSubtitle => 'Это 6-значный код от вашего преподавателя';
+  String get hwJoinCodeSubtitle =>
+      'Это код из 6 символов от вашего преподавателя';
 
   @override
   String get hwJoinCodeLabel => 'Код класса';

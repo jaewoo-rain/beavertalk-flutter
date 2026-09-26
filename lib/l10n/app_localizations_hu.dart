@@ -886,6 +886,11 @@ class AppLocalizationsHu extends AppLocalizations {
   String get accentSoundsLike => 'A koreai kiejtésed hangzása';
 
   @override
+  String accentShareText(String country) {
+    return 'A BeaverTalkkal tanulok koreaiul – a koreai akcentusom így hangzik: $country! 🦫 Találd meg a saját akcentusodat, és tanulj velem: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Tipp';
 
   @override
@@ -2316,7 +2321,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwJoinCodeTitle => 'Add meg az osztálykódod';
 
   @override
-  String get hwJoinCodeSubtitle => 'Ez a tanárodtól kapott 6 jegyű kód';
+  String get hwJoinCodeSubtitle => 'Ez a tanárodtól kapott 6 karakteres kód';
 
   @override
   String get hwJoinCodeLabel => 'Osztálykód';

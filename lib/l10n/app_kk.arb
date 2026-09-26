@@ -259,6 +259,7 @@
   "delete": "Жою",
   "share": "Бөлісу",
   "accentSoundsLike": "Сіздің корей акцентіңіз мынандай естіледі",
+  "accentShareText": "BeaverTalk-пен корей тілін үйреніп жүрмін — корей тіліндегі екпінім осындай естіледі: {country}! 🦫 Өз екпініңді анықта да, менімен бірге үйрен: https://beavertalk.im",
   "hintLabel": "Кеңес",
   "nextHint": "Келесі кеңес",
   "translateLabel": "Аудару",

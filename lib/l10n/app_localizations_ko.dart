@@ -854,6 +854,11 @@ class AppLocalizationsKo extends AppLocalizations {
   String get accentSoundsLike => '회원님의 한국어 발음은';
 
   @override
+  String accentShareText(String country) {
+    return '비버톡으로 한국어를 배우고 있어요 — 내 한국어 발음은 $country 억양으로 들린대요! 🦫 내 억양도 찾아보고 같이 배워요: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => '힌트';
 
   @override

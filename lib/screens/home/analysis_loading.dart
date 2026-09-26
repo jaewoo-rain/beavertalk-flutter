@@ -94,6 +94,14 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// 한 번 true 가 되면 분석 화면으로 넘어갈 때까지 되돌리지 않는다 — `done` 뒤 결과를 받는 사이에
   /// 스켈레톤으로 되돌아가 깜빡이지 않게.
   bool _llmPending = false;
+
+  /// `unknown` 을 연달아 받은 횟수 — [_unknownLimit] 에 닿으면 끝낸다(QA F024).
+  ///
+  /// 서버는 없는 통화 · 남의 통화에 200 `{status: unknown}` 을 준다(ws_router `/status`). 예전엔
+  /// 이것도 「계속 조회」라 지워진 통화 · 잘못된 id 로 들어오면 스켈레톤이 끝나지 않았다. 모르는
+  /// 새 상태값도 `unknown` 으로 읽히므로 한 번에 끊지 않고 연속 [_unknownLimit] 회에만 끝낸다.
+  int _unknownStreak = 0;
+  static const int _unknownLimit = 3;
   String _errorMsg = '';
 
   Timer? _pollTimer;
@@ -129,6 +137,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// (Re)starts the polling cycle from a fresh deadline.
   void _start() {
     _pollTimer?.cancel();
+    _unknownStreak = 0;
     _deadline = DateTime.now().add(_fastWindow);
     setState(() {
       _phase = _LoadingPhase.polling;
@@ -166,14 +175,19 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           if (pending) _llmPending = true;
         });
       }
+      _unknownStreak =
+          status == CallAnalysisStatus.unknown ? _unknownStreak + 1 : 0;
       switch (status) {
         case CallAnalysisStatus.done:
           await _fetchResultAndGo(callId);
         case CallAnalysisStatus.failed:
           _fail(AppLocalizations.of(context).analysisFailed);
+        case CallAnalysisStatus.unknown:
+          if (_unknownStreak >= _unknownLimit) {
+            _fail(AppLocalizations.of(context).callInfoNotFound);
+          }
         case CallAnalysisStatus.ongoing:
         case CallAnalysisStatus.analyzing:
-        case CallAnalysisStatus.unknown:
           // Keep polling.
           break;
       }

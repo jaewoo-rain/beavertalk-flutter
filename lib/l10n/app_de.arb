@@ -259,6 +259,7 @@
   "delete": "Löschen",
   "share": "Teilen",
   "accentSoundsLike": "Dein koreanischer Akzent klingt",
+  "accentShareText": "Ich lerne Koreanisch mit BeaverTalk – mein koreanischer Akzent klingt nach: {country}! 🦫 Finde deinen Akzent und lerne mit mir: https://beavertalk.im",
   "hintLabel": "Hinweis",
   "nextHint": "Nächster Hinweis",
   "translateLabel": "Übersetzen",

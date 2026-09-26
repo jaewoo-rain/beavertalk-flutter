@@ -306,7 +306,20 @@ Widget _alarmAddHost({required bool edit}) {
   );
 }
 
-Widget _myPageHost({required bool level}) => ProviderScope(
+/// 마이페이지 데이터판 — 억양 없음(`accent: false`)은 공유 아이콘 비활성 시험(QA F020)이,
+/// [accentStats] 는 국적 이름 현지화 시험(QA F001)이 쓴다.
+Widget myPageDataHost({
+  required bool level,
+  bool accent = true,
+  List<AccentStat>? accentStats,
+}) =>
+    _myPageHost(level: level, accent: accent, accentStats: accentStats);
+
+Widget _myPageHost({
+  required bool level,
+  bool accent = true,
+  List<AccentStat>? accentStats,
+}) => ProviderScope(
       overrides: [
         myProfileProvider.overrideWith((ref) async => _member()),
         selectedCharacterProvider.overrideWithValue(_character),
@@ -314,11 +327,15 @@ Widget _myPageHost({required bool level}) => ProviderScope(
         myLevelProvider.overrideWith((ref) async => level
             ? const LevelSummary(level: 7, topPercent: 12)
             : const LevelSummary()),
-        myAccentProvider.overrideWith((ref) async => const AccentBreakdown([
-              AccentStat(label: 'United States of America', percent: 64),
-              AccentStat(label: 'United Kingdom of Great Britain', percent: 21),
-              AccentStat(label: 'Philippines', percent: 15),
-            ])),
+        myAccentProvider.overrideWith((ref) async => accentStats != null
+            ? AccentBreakdown(accentStats)
+            : accent
+            ? const AccentBreakdown([
+                AccentStat(label: 'United States of America', percent: 64),
+                AccentStat(label: 'United Kingdom of Great Britain', percent: 21),
+                AccentStat(label: 'Philippines', percent: 15),
+              ])
+            : const AccentBreakdown([])),
         pronunciationSummaryProvider.overrideWith((ref) async => level
             ? const PronSummary(
                 sessions: 5, sentenceCount: 38, totalScore: 72, pronunciation: 81, fluency: 64, rhythm: 58)
@@ -341,6 +358,9 @@ Widget _myPageHost({required bool level}) => ProviderScope(
       ],
       child: const MyPageScreen(),
     );
+
+/// 설정 데이터판 — 버전 표기 시험(QA F031)이 쓴다.
+Widget settingsDataHost({required bool premium}) => _settingsHost(premium: premium);
 
 Widget _settingsHost({required bool premium}) => ProviderScope(
       overrides: [

@@ -47,6 +47,7 @@ import 'signup_draft_provider.dart';
 import '../../../classroom/presentation/classroom_providers.dart';
 import '../../../classroom/presentation/assignment_attempt_provider.dart';
 import '../../../classroom/presentation/join_draft_provider.dart';
+import '../../../../core/config/app_version.dart';
 
 
 
@@ -126,6 +127,8 @@ final List<ProviderOrFamily> intentionallyNotUserScoped = <ProviderOrFamily>[
   // 지우면 다음 화면 진입마다 스토어 왕복을 한 번 더 하는데, 그 왕복은 실패해도
   // 조용히 목록 가격으로 떨어지는 종류라(정의부 주석 참조) 이득 없이 느려지기만 한다.
   storePricesProvider,
+  // 설치된 앱의 버전·빌드 번호다(설정 하단 표기). 기기의 사실이라 회원과 무관하다.
+  appVersionLabelProvider,
 ];
 
 /// 앱 언어를 바꾸면(`AuthController.updateLanguage`) **버리는** 상태 — 서버가 회원

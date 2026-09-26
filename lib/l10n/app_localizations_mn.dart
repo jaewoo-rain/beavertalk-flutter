@@ -877,6 +877,11 @@ class AppLocalizationsMn extends AppLocalizations {
   String get accentSoundsLike => 'Таны Солонгос аялга ийм сонсогдож байна';
 
   @override
+  String accentShareText(String country) {
+    return 'Би BeaverTalk-аар солонгос хэл сурч байна — миний солонгос аялга ингэж сонсогддог: $country! 🦫 Өөрийн аялгаа олоод надтай хамт сур: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Зөвлөмж';
 
   @override
@@ -2294,7 +2299,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwJoinCodeTitle => 'Ангийнхаа кодыг оруулна уу';
 
   @override
-  String get hwJoinCodeSubtitle => 'Энэ бол багшаас өгсөн 6 оронтой код';
+  String get hwJoinCodeSubtitle => 'Энэ бол багшаас өгсөн 6 тэмдэгттэй код';
 
   @override
   String get hwJoinCodeLabel => 'Ангийн код';

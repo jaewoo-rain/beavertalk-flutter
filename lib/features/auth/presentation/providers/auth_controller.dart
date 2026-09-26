@@ -360,7 +360,8 @@ class AuthController extends Notifier<AuthStatus> {
       } on SignInWithAppleAuthorizationException catch (e) {
         // User dismissed the sheet — not a failure worth surfacing.
         if (e.code == AuthorizationErrorCode.canceled) return;
-        throw UnknownFailure(e.message);
+        // `e.message` is the plugin's English text — never shown (QA F017).
+        throw UnknownFailure(_l10n.loginAppleSignInFailed);
       } on AuthException catch (e) {
         throw _mapAuthException(e, context: _AuthContext.login);
       }
@@ -518,7 +519,7 @@ class AuthController extends Notifier<AuthStatus> {
   }
 
   /// Maps a Supabase [AuthException] to the app's typed [AppException] with a
-  /// Korean message, matching the previous backend error semantics.
+  /// localized message, matching the previous backend error semantics.
   AppException _mapAuthException(
     AuthException e, {
     required _AuthContext context,
@@ -546,11 +547,16 @@ class AuthController extends Notifier<AuthStatus> {
             e.code == 'otp_expired')) {
       return ValidationFailure(_l10n.authResetCodeInvalid);
     }
-    // Fallback: surface Supabase's message.
-    return UnknownFailure(e.message);
+    // Fallback: never surface Supabase's raw text — it is English in every
+    // locale (QA F017, 09-26). An offline device lands here as a retryable
+    // fetch failure, so that one gets the connection copy.
+    if (e is AuthRetryableFetchException) {
+      return NetworkFailure(_l10n.connectionFailedTitle);
+    }
+    return UnknownFailure(_l10n.somethingWentWrong);
   }
 }
 
 /// Discriminates which call produced an [AuthException] so the mapper can pick
-/// the right Korean message.
+/// the right localized message.
 enum _AuthContext { login, signup, reset }

@@ -326,7 +326,8 @@ class _ArchiveBodyState extends ConsumerState<_ArchiveBody> {
     try {
       await action();
     } catch (e) {
-      _snack(e is AppException ? e.message : l10n.somethingWentWrong);
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      _snack(e is AppException && e.fromServer ? e.message : l10n.somethingWentWrong);
     }
   }
 

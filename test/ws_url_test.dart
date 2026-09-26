@@ -13,11 +13,12 @@ import 'package:flutter_test/flutter_test.dart';
 /// SttService 는 연결 실패를 던지지 않고 탭 입력으로 폴백하므로(설계), 게임은 멀쩡히
 /// 돌고 음성만 안 먹는 상태가 오래 안 드러났다. 그래서 주소 조립을 테스트로 고정한다.
 ///
-/// ⚠ 2026-09-08 실측으로 ②의 전제가 뒤집혔다. `/api/v1/pron/stt/ws` 로 실제
-/// 핸드셰이크를 보내면 앱 백엔드 둘(`app-api`·`app-demo-api`)은 **403** 이고
-/// `beavertalk-web-api` 만 **101** 을 준다 — 앱 서버엔 그 라우트가 없다. 그래서
-/// `PRON_STT_BASE_URL` 로 호스트를 갈아끼울 수 있게 열어 뒀다. **기본값은 안 바꿨다**
+/// `PRON_STT_BASE_URL` 로 STT 호스트만 갈아끼울 수 있게 열어 뒀다. **기본값은 안 바꿨다**
 /// (과금 방어 결정이라 코드가 임의로 뒤집을 수 없다).
+///
+/// ⚠ 09-08 에 이 자리에 「앱 백엔드 403 = 라우트 없음」 이라고 적었는데 **틀렸다**(QA F027 ·
+/// 09-26 정정). 앱 서버는 `d269bb6`(07-22)부터 `/pron/stt/ws` 를 갖고 있고, 그 403 은 토큰
+/// 없는 핸드셰이크를 수락 전에 닫은 것이다 — 없는 경로도 똑같이 403 이다. [Env.pronSttBaseUrl] 참조.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 

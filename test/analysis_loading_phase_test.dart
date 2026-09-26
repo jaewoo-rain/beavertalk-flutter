@@ -84,6 +84,17 @@ void main() {
     });
   }
 
+  // QA F024 — 없는 통화 · 남의 통화면 서버가 200 {status: unknown}. 끝없이 로딩하지 않는다.
+  testWidgets('unknown 을 연속 3번 받으면 「통화 정보를 찾을 수 없어요」로 끝난다', (tester) async {
+    await pump(tester, CallAnalysisStatus.unknown);
+    expect(find.textContaining('통화 정보를 찾을 수 없어'), findsNothing, reason: '한 번에 끊지 않는다');
+    for (var i = 0; i < 3; i++) {
+      await tester.pump(const Duration(milliseconds: 1600));
+    }
+    expect(find.textContaining('통화 정보를 찾을 수 없어'), findsOneWidget);
+    await tearDownScreen(tester);
+  });
+
   testWidgets('처음부터 done 이면 준비 중을 안 거친다 — 결과를 받는 동안 스켈레톤', (tester) async {
     await pump(tester, CallAnalysisStatus.done);
     expect(find.byType(AnalysisPreparingCard), findsNothing);

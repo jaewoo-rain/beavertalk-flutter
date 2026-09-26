@@ -880,6 +880,11 @@ class AppLocalizationsId extends AppLocalizations {
   String get accentSoundsLike => 'Aksen bahasa Koreamu terdengar';
 
   @override
+  String accentShareText(String country) {
+    return 'Aku belajar bahasa Korea dengan BeaverTalk — aksen Korea-ku terdengar seperti $country! 🦫 Temukan aksenmu dan belajar bareng aku: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Petunjuk';
 
   @override
@@ -2303,7 +2308,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get hwJoinCodeTitle => 'Masukkan kode kelasmu';
 
   @override
-  String get hwJoinCodeSubtitle => 'Kode 6 digit dari gurumu';
+  String get hwJoinCodeSubtitle => 'Kode 6 karakter dari gurumu';
 
   @override
   String get hwJoinCodeLabel => 'Kode kelas';

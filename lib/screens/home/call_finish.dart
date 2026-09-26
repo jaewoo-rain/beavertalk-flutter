@@ -193,14 +193,13 @@ class _CallFinishScreenState extends ConsumerState<CallFinishScreen> {
       await repo.submitRating(callId, rating.value);
     } on AppException catch (e) {
       if (mounted) {
+        final l10n = AppLocalizations.of(context);
+        // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+        final reason = e.fromServer ? e.message : l10n.tryAgainLater;
         ScaffoldMessenger.of(context)
           ..clearSnackBars()
           ..showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context).ratingSubmitFailed(e.message),
-              ),
-            ),
+            SnackBar(content: Text(l10n.ratingSubmitFailed(reason))),
           );
       }
     } catch (_) {

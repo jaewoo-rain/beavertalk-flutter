@@ -23,12 +23,14 @@ import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/dialog_share_profile.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
+import '../../core/i18n/country_names.dart';
 import '../../features/auth/domain/entities/accent_breakdown.dart';
 import '../../features/auth/domain/entities/level_summary.dart';
 import '../../features/auth/presentation/providers/auth_providers.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
 import '../../features/auth/presentation/providers/my_profile_provider.dart';
 import '../../features/normalcall/domain/entities/call_result.dart';
+import '../../features/normalcall/domain/entities/daily_status.dart';
 import '../../features/normalcall/domain/entities/pron_summary.dart';
 import '../../features/normalcall/presentation/normalcall_controller.dart';
 import '../../features/normalcall/presentation/normalcall_providers.dart';
@@ -103,12 +105,6 @@ class MyPageScreen extends ConsumerWidget {
   /// Creates the my-page screen.
   const MyPageScreen({super.key});
 
-  /// Caption shared alongside the accent-card image (see [DialogShareProfile]).
-  static const String _inviteText =
-      "I'm learning Korean with Beavertalk — my Korean accent sounds "
-      'American! 🦫 Come find your accent and learn with me: '
-      'https://beavertalk.im';
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
@@ -119,7 +115,16 @@ class MyPageScreen extends ConsumerWidget {
     //   있는 사람에게 없다고 말하면 기능이 고장 난 것으로 읽힌다.
     final accentAsync = ref.watch(myAccentProvider);
     final accentLoading = accentAsync.isLoading && !accentAsync.hasValue;
-    final accentStats = accentAsync.valueOrNull?.stats ?? const <AccentStat>[];
+    // 서버는 나라 이름을 영문 하나로만 준다 — 카드·공유 이미지·공유 문장 모두 UI 언어로
+    // 바꿔 그린다(QA F001). 여기서 한 번 바꿔 세 곳이 같은 이름을 쓰게 한다.
+    final languageCode = Localizations.localeOf(context).languageCode;
+    final accentStats = [
+      for (final s in accentAsync.valueOrNull?.stats ?? const <AccentStat>[])
+        AccentStat(
+          label: localizedCountryName(s.label, languageCode),
+          percent: s.percent,
+        ),
+    ];
     // Watched, not read on tap: `callListProvider` is autoDispose, so a bare
     // `ref.read` inside the button handler would find it uninitialised and the
     // 발음 학습하기 CTA would always take the records fallback. Watching it here
@@ -635,26 +640,43 @@ class MyPageScreen extends ConsumerWidget {
           context,
           title: l10n.accentAnalysis,
           subtitle: l10n.recentSessionsAverage,
-          action: InkWell(
-            onTap: () => showDialogShareProfile(
-              context,
-              imageProvider: avatar,
-              caption: l10n.accentSoundsLike,
-              title: stats.isEmpty ? '—' : stats.first.label,
-              stats: [
-                for (var i = 0; i < stats.length; i++)
-                  ProfileStat(
-                    label: stats[i].label,
-                    value: stats[i].percent.toDouble(),
-                    active: i == 0,
-                  ),
-              ],
-              // The dialog rasterizes the accent card and shares it as a PNG;
-              // this text rides along as the caption.
-              shareText: _inviteText,
-              onShared: () => Navigator.of(context).maybePop(),
+          // 억양이 아직 없으면(로딩 중 포함) 공유 아이콘은 **보이되 눌리지 않는다** —
+          // 아래 「취약 발음 연습」 버튼과 같은 규칙(Figma E1). 눌리면 대화상자가
+          // 「Your Korean accent sounds —」로 빈 결과를 공유하게 했다(QA F020, 09-26).
+          action: Semantics(
+            // 꺼진 아이콘도 제 노드를 가져야 「공유 · 사용 불가」로 읽힌다.
+            container: true,
+            button: true,
+            enabled: !loading && stats.isNotEmpty,
+            label: l10n.share,
+            child: InkWell(
+              onTap: loading || stats.isEmpty
+                  ? null
+                  : () => showDialogShareProfile(
+                        context,
+                        imageProvider: avatar,
+                        caption: l10n.accentSoundsLike,
+                        title: stats.first.label,
+                        stats: [
+                          for (var i = 0; i < stats.length; i++)
+                            ProfileStat(
+                              label: stats[i].label,
+                              value: stats[i].percent.toDouble(),
+                              active: i == 0,
+                            ),
+                        ],
+                        // The dialog rasterizes the accent card and shares it
+                        // as a PNG; this text rides along as the caption. 1위
+                        // 국적을 넣는다 — 전엔 모두에게 「American」 이었다(QA F001).
+                        shareText: l10n.accentShareText(stats.first.label),
+                        onShared: () => Navigator.of(context).maybePop(),
+                      ),
+              child: AppIcons.share(
+                color: loading || stats.isEmpty
+                    ? context.c.labelDisabled
+                    : context.c.labelNormal,
+              ),
             ),
-            child: AppIcons.share(color: context.c.labelNormal),
           ),
         ),
         children: loading
@@ -1012,8 +1034,9 @@ class MyPageScreen extends ConsumerWidget {
   /// 받으려면 서버가 레벨을 비워야 다음 통화가 레벨테스트로 라우팅된다(D11).
   /// 학습 기록(체크판)은 지워지지 않는다 — 레벨만 다시 받는 것이다.
   ///
-  /// 하루 1회 제한은 통화 시작 시점에 서버가 검사한다. 즉 이 요청이 성공해도
-  /// 오늘 이미 레벨테스트를 했다면 통화 화면에서 DAILY_LIMIT 로 막힌다.
+  /// 하루 한도는 통화 시작 시점에 서버가 검사한다. 즉 이 요청이 성공해도
+  /// 오늘 예산을 다 썼다면 통화 화면에서 DAILY_LIMIT 로 막힌다 — 그래서 요청 전에
+  /// [_blockIfOutOfBudget] 로 먼저 본다(QA F002).
   /// ⚠ **실패하면 통화로 넘어가지 않는다.** 예전엔 예외를 삼키고 그대로 이동했는데,
   /// 서버에 이 API 가 아직 없던 동안(404) 레벨이 안 지워진 채 **일반 통화**가 열렸다.
   /// 사용자 눈에는 "레벨테스트를 눌렀는데 그냥 대화가 시작됨" 으로 보였고 원인이
@@ -1029,6 +1052,9 @@ class MyPageScreen extends ConsumerWidget {
   /// 레벨이 없는 회원의 「레벨 테스트 받기」 는 되돌아갈 진도가 없어 확인 없이 바로 간다.
   Future<void> _confirmRetakeLevelTest(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
+    // 확인창 **전에** 본다 — 오늘 못 거는데 「다시 측정하기」를 묻는 건 헛된 선택이다.
+    if (await _blockIfOutOfBudget(context, ref)) return;
+    if (!context.mounted) return;
     final retake = await showDialogBasic<bool>(
       context,
       title: l10n.levelRetakeTitle,
@@ -1046,16 +1072,24 @@ class MyPageScreen extends ConsumerWidget {
       ],
     );
     if (retake != true || !context.mounted) return;
-    await _startLevelTest(context, ref);
+    await _startLevelTest(context, ref, budgetChecked: true);
   }
 
-  Future<void> _startLevelTest(BuildContext context, WidgetRef ref) async {
+  Future<void> _startLevelTest(
+    BuildContext context,
+    WidgetRef ref, {
+    bool budgetChecked = false,
+  }) async {
     final l10n = AppLocalizations.of(context);
+    if (!budgetChecked && await _blockIfOutOfBudget(context, ref)) return;
+    if (!context.mounted) return;
     try {
       await ref.read(authRepositoryProvider).retakeLevelTest();
     } catch (e) {
       if (!context.mounted) return;
-      final msg = e is AppException ? e.message : l10n.tryAgainLater;
+      // 서버가 쓴 문구일 때만 그대로 — 앱 기본값은 한국어라 전 언어에 새어 나간다(QA F017).
+      final msg =
+          e is AppException && e.fromServer ? e.message : l10n.tryAgainLater;
       ScaffoldMessenger.of(context)
         ..clearSnackBars()
         ..showSnackBar(SnackBar(content: Text(msg)));
@@ -1065,6 +1099,38 @@ class MyPageScreen extends ConsumerWidget {
     ref.invalidate(myLevelProvider);
     if (!context.mounted) return;
     Navigator.pushNamed(context, Routes.callLoading);
+  }
+
+  /// 오늘 통화 예산이 **확실히** 바닥났으면 「오늘 학습 시간을 다 썼어요」를 띄우고 true.
+  ///
+  /// QA F002(09-26): retake 는 성공 즉시 서버가 레벨을 비우는데, 한도는 통화 시작에서야
+  /// 검사한다. 그래서 오늘 예산을 다 쓴 회원이 누르면 레벨만 비고 통화는 DAILY_LIMIT 로
+  /// 막혀, 다음 날까지 「레벨 미확정」으로 남았다. 초기화 **전에** 같은 판정을 한다.
+  ///
+  /// 모르면(구서버 · admin 면제 · 실패 · 3초 초과) 막지 않는다 — 종전대로 서버가 통화
+  /// 시작에서 판정한다. 근본 해결(레벨테스트 통화가 열릴 때 초기화)은 서버 몫이다.
+  Future<bool> _blockIfOutOfBudget(BuildContext context, WidgetRef ref) async {
+    DailyStatus? daily;
+    try {
+      daily = await ref
+          .read(normalcallRepositoryProvider)
+          .getDailyStatus()
+          .timeout(const Duration(seconds: 3));
+    } catch (_) {
+      return false;
+    }
+    final remaining = daily?.remainingSec;
+    final out = daily?.canCallNormal == false ||
+        (remaining != null && remaining <= 0);
+    if (!out) return false;
+    if (context.mounted) {
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(
+          content: Text(AppLocalizations.of(context).callDailyLimit),
+        ));
+    }
+    return true;
   }
 
   /// 0~100 점수 → "96%". 값이 없으면 "-%" (0% 로 그리면 0점으로 읽힌다).

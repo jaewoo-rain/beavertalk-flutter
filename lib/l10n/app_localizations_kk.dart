@@ -873,6 +873,11 @@ class AppLocalizationsKk extends AppLocalizations {
   String get accentSoundsLike => 'Сіздің корей акцентіңіз мынандай естіледі';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk-пен корей тілін үйреніп жүрмін — корей тіліндегі екпінім осындай естіледі: $country! 🦫 Өз екпініңді анықта да, менімен бірге үйрен: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'Кеңес';
 
   @override

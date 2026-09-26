@@ -885,6 +885,11 @@ class AppLocalizationsMy extends AppLocalizations {
   String get accentSoundsLike => 'သင့်ကိုရီးယား အသံဟန်သည်';
 
   @override
+  String accentShareText(String country) {
+    return 'BeaverTalk နဲ့ ကိုရီးယားစကား သင်နေတယ် — ကျွန်ုပ်ရဲ့ ကိုရီးယား လေယူလေသိမ်းက $country လို ကြားရတယ်! 🦫 သင့်လေယူလေသိမ်းကို ရှာပြီး ကျွန်ုပ်နဲ့အတူ သင်ကြရအောင်: https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => 'အကြံပြုချက်';
 
   @override

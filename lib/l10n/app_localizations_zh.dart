@@ -851,6 +851,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get accentSoundsLike => '你的韩语口音听起来';
 
   @override
+  String accentShareText(String country) {
+    return '我在用 BeaverTalk 学韩语 — 我的韩语口音听起来像$country！🦫 快来测测你的口音，和我一起学：https://beavertalk.im';
+  }
+
+  @override
   String get hintLabel => '提示';
 
   @override
