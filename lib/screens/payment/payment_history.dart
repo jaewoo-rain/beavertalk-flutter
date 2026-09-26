@@ -6,15 +6,14 @@ import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
-import '../../components/atoms/pressable.dart';
 import '../../components/molecules/card_line.dart';
 import '../../components/molecules/empty_state.dart';
+import '../../components/molecules/segmented_tabs.dart';
 import '../../components/organisms/gnb.dart';
 import '../../features/payment/domain/entities/payment.dart';
 import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
-import '../../theme/app_motion.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
@@ -149,8 +148,10 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
     );
   }
 
-  /// Filter chips (Figma `2117:20237`): fill `surface2` in both states — only
-  /// the label colour changes.
+  /// 필터 줄 — 기록 · 보관함과 같은 알약([TabPill] · Figma `Tab/Pill` `6459:46170`).
+  ///
+  /// 예전 칩(Figma `2117:20237`)은 두 상태 모두 바탕 `surface2` 이고 글자색만 달라 무엇이
+  /// 골라졌는지 안 보였다(09-26 바텀시트·버튼 전수조사 · 사용자 결정 Tab/Pill 재사용).
   Widget _filterRow(AppLocalizations l10n) {
     // 칩 줄도 본문 컬럼 선에서 시작한다(정본 `Top Navigation` 은 x=105).
     return ContentColumn(
@@ -162,9 +163,13 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
             for (final f in PaymentFilter.values) ...[
               if (f != PaymentFilter.values.first)
                 const SizedBox(width: AppSpacing.s12),
-              _chip(_filterLabel(f, l10n), selected: _filter == f, onTap: () {
-                if (_filter != f) setState(() => _filter = f);
-              }),
+              TabPill(
+                label: _filterLabel(f, l10n),
+                selected: _filter == f,
+                onTap: () {
+                  if (_filter != f) setState(() => _filter = f);
+                },
+              ),
             ],
           ],
         ),
@@ -177,32 +182,6 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
         PaymentFilter.subscribe => l10n.filterSubscription,
         PaymentFilter.character => l10n.filterCharacter,
       };
-
-  Widget _chip(String label,
-      {required bool selected, required VoidCallback onTap}) {
-    return Pressable(
-      onTap: onTap,
-      semanticLabel: label,
-      child: Container(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.s16,
-          vertical: AppSpacing.s12,
-        ),
-        decoration: BoxDecoration(
-          color: context.c.backgroundNormalAlternative,
-          borderRadius: BorderRadius.circular(AppRadius.sm),
-        ),
-        child: AnimatedDefaultTextStyle(
-          duration: AppMotion.fast,
-          curve: AppMotion.toggle,
-          style: AppType.label1.sb.copyWith(
-            color: selected ? context.c.labelStrong : context.c.labelNormal,
-          ),
-          child: Text(label),
-        ),
-      ),
-    );
-  }
 
   /// Groups by calendar month, newest first. Rows with no `payment_date` can't
   /// be bucketed, so they collect under a null key rendered last.

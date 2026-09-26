@@ -44,7 +44,7 @@ class SegmentedTabs extends StatelessWidget {
           // Flexible (not Expanded): 들어가면 제 폭(Figma `3360:83` MIN·HUG — 뒤가 비는 것이
           // 디자인), 안 들어가면 줄어들며 글자가 줄을 바꾼다.
           Flexible(
-            child: _TabPill(
+            child: TabPill(
               label: labels[i],
               selected: i == activeIndex,
               onTap: onChanged == null ? null : () => onChanged!(i),
@@ -56,12 +56,19 @@ class SegmentedTabs extends StatelessWidget {
   }
 }
 
-/// `Tab/Pill` 한 칸.
-class _TabPill extends StatelessWidget {
-  const _TabPill({required this.label, required this.selected, this.onTap});
+/// `Tab/Pill` 한 칸 — [SegmentedTabs] 가 쓰고, 가로 스크롤 줄처럼 틀이 다른 곳(결제 내역
+/// 필터)은 이것만 가져다 쓴다.
+class TabPill extends StatelessWidget {
+  /// Creates one pill.
+  const TabPill({super.key, required this.label, required this.selected, this.onTap});
 
+  /// 라벨.
   final String label;
+
+  /// 선택됐는가.
   final bool selected;
+
+  /// 누르면.
   final VoidCallback? onTap;
 
   @override
