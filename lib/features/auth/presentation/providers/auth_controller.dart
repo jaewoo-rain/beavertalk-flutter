@@ -9,6 +9,7 @@ import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../app/navigation.dart';
+import '../../../../core/analytics/app_analytics.dart';
 import '../../../../core/error/app_exception.dart';
 import '../../../../core/i18n/locale_controller.dart';
 import '../../../../l10n/app_localizations.dart';
@@ -142,6 +143,7 @@ class AuthController extends Notifier<AuthStatus> {
     required String email,
     required String password,
   }) async {
+    AppAnalytics.instance.noteLoginMethod('email');
     try {
       await _client.auth.signInWithPassword(email: email, password: password);
       state = AuthStatus.authenticated;
@@ -186,6 +188,9 @@ class AuthController extends Notifier<AuthStatus> {
           language: language,
           reasons: reasons,
         );
+    // 온보딩 제출 = 가입 완료(GA4 sign_up). 이름만 바꾸는 [updateName] 은 이 메서드를
+    // 거치지 않으므로 중복으로 세지 않는다.
+    AppAnalytics.instance.logSignUp();
   }
 
   /// Requests a password-recovery code email (Supabase recovery OTP — a 6-digit
@@ -245,6 +250,7 @@ class AuthController extends Notifier<AuthStatus> {
     required String idToken,
     String? accessToken,
   }) async {
+    AppAnalytics.instance.noteLoginMethod('google');
     try {
       await _client.auth.signInWithIdToken(
         provider: OAuthProvider.google,
@@ -275,6 +281,7 @@ class AuthController extends Notifier<AuthStatus> {
   /// for real users requires the Kakao app to be a 비즈 앱; that conversion is
   /// done.) Add nickname/profile here only after enabling them as consent items.
   Future<void> signInWithKakao() async {
+    AppAnalytics.instance.noteLoginMethod('kakao');
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.kakao,
@@ -307,6 +314,7 @@ class AuthController extends Notifier<AuthStatus> {
   ///
   /// Throws [AppException] if the browser can't be launched.
   Future<void> signInWithFacebook() async {
+    AppAnalytics.instance.noteLoginMethod('facebook');
     try {
       await _client.auth.signInWithOAuth(
         OAuthProvider.facebook,
@@ -336,6 +344,7 @@ class AuthController extends Notifier<AuthStatus> {
   /// Throws [AppException] on failure (caller shows it). A user cancel is a no-op.
   Future<void> signInWithApple() async {
     final native = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+    AppAnalytics.instance.noteLoginMethod('apple');
     if (native) {
       try {
         final rawNonce = _generateNonce();

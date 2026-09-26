@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
 
+import '../../core/analytics/app_analytics.dart';
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
@@ -119,6 +120,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       // Defer provider/notifier mutations out of the lifecycle phase: Riverpod
       // forbids modifying a provider during build/initState/didChangeDependencies.
       // Runs exactly once (guarded by the `_result == null` capture above).
+      // GA4 — 결과를 처음 잡은 한 번만(위 `_result == null` 가드).
+      AppAnalytics.instance.log(AppEvent.analysisViewed);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (!mounted) return;
         // New analysis session → reset the running per-sentence scores so they

@@ -101,5 +101,21 @@
 	     둘 중 하나만 하면 어긋난다. -->
 	<key>UIRequiresFullScreen</key>
 	<true/>
+	<!-- GA4(firebase_analytics). 근거: lib/core/analytics/app_analytics.dart -->
+	<!-- 기본은 수집 안 함. GA_COLLECT=true 로 구운 빌드만 런타임에 켠다. -->
+	<key>FIREBASE_ANALYTICS_COLLECTION_ENABLED</key>
+	<false/>
+	<!-- 광고 식별자·광고 동의 전부 끔. -->
+	<key>GOOGLE_ANALYTICS_ADID_COLLECTION_ENABLED</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA</key>
+	<false/>
+	<key>GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS</key>
+	<false/>
+	<!-- 네이티브 자동 화면 보고 끔. 화면은 AnalyticsRouteObserver 가 보고한다. -->
+	<key>FirebaseAutomaticScreenReportingEnabled</key>
+	<false/>
 </dict>
 </plist>

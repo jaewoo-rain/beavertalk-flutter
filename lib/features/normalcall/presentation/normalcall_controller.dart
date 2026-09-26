@@ -31,6 +31,7 @@ import 'package:record/record.dart' as rec;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+import '../../../core/analytics/app_analytics.dart';
 import '../../../core/i18n/locale_controller.dart';
 import '../../../core/network/ws_url.dart';
 import '../../../core/time/device_timezone.dart';
@@ -1276,6 +1277,30 @@ class NormalCallController extends Notifier<CallState> {
     _diag.finish();
   }
 
+  /// GA4 `call_started` 를 보낸 시각(벽시계 ms). 대화 하나에 한 번만 센다.
+  ///
+  /// 5분 구간 경계에서 소켓이 새로 열리면 서버가 `call_started` 를 또 보내지만,
+  /// 사용자에게는 같은 대화다 — 이 값이 남아 있는 동안은 다시 세지 않는다.
+  int? _gaCallStartedAtMs;
+
+  void _gaCallStarted() {
+    if (_gaCallStartedAtMs != null) return;
+    _gaCallStartedAtMs = DateTime.now().millisecondsSinceEpoch;
+    AppAnalytics.instance.log(AppEvent.callStarted, {
+      'course': state.course?.wireValue ?? 'none',
+    });
+  }
+
+  /// 대화가 끝났다 — 종료 경로 여럿(사용자 끊기·서버 `call_ended`·마지막 조각·
+  /// 오류 teardown)에서 불려도 한 번만 보낸다.
+  void _gaCallEnded() {
+    final at = _gaCallStartedAtMs;
+    if (at == null) return;
+    _gaCallStartedAtMs = null;
+    final seconds = (DateTime.now().millisecondsSinceEpoch - at) ~/ 1000;
+    AppAnalytics.instance.log(AppEvent.callEnded, {'seconds': seconds});
+  }
+
   /// 지금까지의 응답시간 중앙값(표본이 없으면 -1).
   int get _responseMedianMs {
     if (_responseSamples.isEmpty) return -1;
@@ -2358,6 +2383,7 @@ class NormalCallController extends Notifier<CallState> {
     //   구간 — 하필 「끊겼다」를 조사할 때 제일 보고 싶은 그 구간 — 이 통째로 사라진다.
     //   `finish()` 는 마이크 창을 기다리지 않는다(기다릴 다음 창이 없다).
     _flushDiagSummary();
+    _gaCallEnded();
     // Invalidate any in-flight start() so it can't re-establish the pipeline
     // after we tear it down here.
     _gen++;
@@ -4626,6 +4652,8 @@ class NormalCallController extends Notifier<CallState> {
         //   기준값 캡처가 소켓과 경주해서 **질 수 있고**, 지면 조용히 틀린다.
         //
         //   이제 이 값을 쓴다. 되짚기는 이 필드를 안 주는 서버를 위한 **예비**로만 남는다.
+        // GA4 — 코스가 정해진 뒤에 보낸다(course 파라미터).
+        _gaCallStarted();
         _serverCallId = normalizeCallId(msg['call_id']);
         if (_serverCallId != null) {
           // ⭐ **상태에도 싣는다.** 지금까지 [CallState.callId] 는 `call_ended` 로만
@@ -4920,6 +4948,7 @@ class NormalCallController extends Notifier<CallState> {
           hint: null,
         );
         _flushDiagSummary();
+        _gaCallEnded();
         _log('call_ended id=${id ?? '(없음 — 종료 화면이 복구 폴링으로 되짚는다)'} '
             '→ draining closing line');
         _scheduleClosingDrain();
@@ -5530,6 +5559,7 @@ class NormalCallController extends Notifier<CallState> {
     final id = saved ?? _serverCallId ?? state.callId;
     state = state.copyWith(phase: CallPhase.ending, callId: id, hint: null);
     _flushDiagSummary();
+    _gaCallEnded();
     _scheduleClosingDrain();
   }
 
@@ -5987,6 +6017,9 @@ class NormalCallController extends Notifier<CallState> {
     // ⛔ **아래 리셋들보다 먼저** 붙잡는다. 요약 줄이 실제로 쓴 통로를 말해야 하는데,
     //   리셋이 통로를 기본값으로 되돌리므로 나중에 읽으면 거짓이 된다(실기기 확인).
     final endedChannel = _channelMode;
+    // 오류로 끊긴 통화도 GA4 에는 끝난 통화다. 구간 경계([keepCallkitCall])는 대화가
+    // 이어지므로 세지 않는다. 정상 종료 경로는 이미 보냈으면 여기서 no-op 이다.
+    if (!keepCallkitCall) _gaCallEnded();
     // End the CallKit call backing this session, first thing — every exit path
     // funnels through here (hang-up, server `call_ended`, ws error, next call's
     // teardown-before-connect), and the call is kept alive for the whole

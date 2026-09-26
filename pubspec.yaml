@@ -89,8 +89,11 @@ dependencies:
   # 화면을 그대로 띄운다. Firebase 초기화는 옵션 없이 google-services.json 자동
   # 사용 방식(firebase_options.dart 미사용 → 계정 바꿔도 json만 교체). 웹은 옵션이
   # 필요해 제외(kInboundCallEnabled && !kIsWeb 가드 안에서만 초기화).
-  firebase_core: ^4.11.0
+  firebase_core: ^4.14.0
   firebase_messaging: ^16.4.1
+  # 앱 GA4(웹과 다른 속성). firebase_analytics 12.6 이 firebase_core ^4.14 를 요구해
+  # 위 코어를 올렸다. 수집 스위치·초기화 순서는 lib/core/analytics/app_analytics.dart.
+  firebase_analytics: ^12.6.0
   share_plus: ^12.0.2
   # 갤러리 저장(발음 챌린지 결과 클립). share_plus 는 공유만 하고 저장은 못 한다.
   gal: ^2.3.0

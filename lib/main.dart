@@ -10,6 +10,8 @@ import 'app/auth_gate.dart';
 import 'app/navigation.dart';
 import 'app/push_bootstrap.dart';
 import 'app/routes.dart';
+import 'core/analytics/app_analytics.dart';
+import 'core/config/feature_flags.dart';
 import 'core/i18n/locale_controller.dart';
 import 'core/network/supabase_config.dart';
 import 'features/subscription/presentation/providers/subscription_state_providers.dart';
@@ -82,7 +84,13 @@ Future<void> main() async {
   // 인바운드 콜(비버가 거는 전화) 로컬 트리거 초기화. 앱 시작을 막지 않도록
   // fire-and-forget(+ 내부 try/catch, kInboundCallEnabled/!kIsWeb 가드).
   unawaited(initIncomingCallLocal(container));
+  // GA4 는 위 부트스트랩이 Firebase 를 띄운 뒤 거기서 켠다. 수신 콜을 끈 빌드는
+  // 그 부트스트랩이 통째로 no-op 이라 여기서 직접 켠다.
+  if (!kInboundCallEnabled) unawaited(AppAnalytics.instance.start());
 }
+
+/// 화면 조회 보고용. 한 앱에 하나만 둔다.
+final _analyticsObserver = AnalyticsRouteObserver();
 
 /// 시스템 글꼴 배율의 **상한**. 사용자가 그 이상으로 키워도 앱은 여기까지만 따른다.
 ///
@@ -109,6 +117,7 @@ class BeaverTalkApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       // Lets the 401 interceptor navigate without a BuildContext.
       navigatorKey: appNavigatorKey,
+      navigatorObservers: [_analyticsObserver],
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: locale,
