@@ -192,11 +192,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get alarmModeChatSub => 'যেকোনো বিষয়ে কথা';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'দ্রুত শুরু';
 
   @override

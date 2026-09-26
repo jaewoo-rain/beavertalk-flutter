@@ -186,11 +186,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get alarmModeChatSub => '不限话题聊天';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days，$mode';
-  }
-
-  @override
   String get quickStart => '快速开始';
 
   @override

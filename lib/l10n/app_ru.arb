@@ -57,7 +57,6 @@
   "callPartner": "Персонаж",
   "alarmModeLearnSub": "Практика выражений из программы",
   "alarmModeChatSub": "Разговор на любую тему",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Быстрый старт",
   "presetMorning": "Утренний режим",
   "presetMorningSub": "Будни 8:00",

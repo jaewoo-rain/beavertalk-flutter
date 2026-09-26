@@ -496,12 +496,6 @@ abstract class AppLocalizations {
   /// **'Talk about anything'**
   String get alarmModeChatSub;
 
-  /// Alarm list row subtitle: repeat summary then the call mode (Figma Row-Alarm 6179:28978 "평일, 학습"). Use the locale's list comma.
-  ///
-  /// In en, this message translates to:
-  /// **'{days}, {mode}'**
-  String alarmRowSummary(String days, String mode);
-
   /// No description provided for @quickStart.
   ///
   /// In en, this message translates to:

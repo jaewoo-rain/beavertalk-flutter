@@ -57,7 +57,6 @@
   "callPartner": "Hahmo",
   "alarmModeLearnSub": "Harjoittele opetussuunnitelman ilmauksia",
   "alarmModeChatSub": "Juttele mistä vain",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Pika-aloitus",
   "presetMorning": "Aamurutiini",
   "presetMorningSub": "Arkisin 8:00",

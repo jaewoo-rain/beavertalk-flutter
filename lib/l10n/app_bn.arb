@@ -57,7 +57,6 @@
   "callPartner": "ক্যারেক্টার",
   "alarmModeLearnSub": "পাঠ্যক্রমের অভিব্যক্তি অনুশীলন",
   "alarmModeChatSub": "যেকোনো বিষয়ে কথা",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "দ্রুত শুরু",
   "presetMorning": "সকালের রুটিন",
   "presetMorningSub": "কর্মদিবস 8:00",

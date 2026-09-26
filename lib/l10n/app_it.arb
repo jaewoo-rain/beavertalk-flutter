@@ -57,7 +57,6 @@
   "callPartner": "Personaggio",
   "alarmModeLearnSub": "Esercita le espressioni del programma",
   "alarmModeChatSub": "Parla di qualsiasi cosa",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Avvio rapido",
   "presetMorning": "Routine mattutina",
   "presetMorningSub": "Feriali 8:00",

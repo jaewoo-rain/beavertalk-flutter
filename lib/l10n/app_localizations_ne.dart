@@ -192,11 +192,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get alarmModeChatSub => 'जुनसुकै विषयमा कुरा';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'छिटो सुरु';
 
   @override

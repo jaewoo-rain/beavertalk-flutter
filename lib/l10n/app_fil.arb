@@ -57,7 +57,6 @@
   "callPartner": "Karakter",
   "alarmModeLearnSub": "Sanayin ang mga ekspresyon ng kurikulum",
   "alarmModeChatSub": "Mag-usap tungkol sa kahit ano",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Mabilis na simula",
   "presetMorning": "Rutin sa umaga",
   "presetMorningSub": "Karaniwang araw 8:00",

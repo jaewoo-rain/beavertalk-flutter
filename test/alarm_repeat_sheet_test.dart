@@ -105,10 +105,73 @@ void main() {
     await tester.pumpWidget(host(const RowAlarm(
       partner: 'Baba',
       time: '8:00',
-      summary: '평일, 학습',
+      summary: '평일',
+      mode: RowAlarmMode.study,
       active: true,
     )));
     final real = tester.getSize(find.byType(RowAlarm)).height;
     expect(loading, real);
+  });
+
+  // 09-26 사장님 확정 시안 C — Figma `Row/Alarm` `6179:4634`(mode=study|free-talk).
+  group('통화 방식 원판', () {
+    Future<void> pumpRow(WidgetTester tester,
+        {required RowAlarmMode mode, required bool active}) async {
+      await tester.pumpWidget(host(RowAlarm(
+        partner: 'Baba',
+        time: '8:00',
+        summary: '평일',
+        mode: mode,
+        active: active,
+      )));
+    }
+
+    // 토글 손잡이(24 원)와 가르려고 40 원만 찾는다.
+    Finder disc() => find.descendant(
+          of: find.byType(RowAlarm),
+          matching: find.byWidgetPredicate((w) =>
+              w is Container &&
+              w.decoration is BoxDecoration &&
+              (w.decoration! as BoxDecoration).shape == BoxShape.circle &&
+              w.constraints?.maxWidth == 40),
+        );
+
+    testWidgets('40 원판이 글자 앞 12 에 세로 가운데로 선다', (tester) async {
+      await pumpRow(tester, mode: RowAlarmMode.study, active: true);
+      final d = tester.getRect(disc());
+      expect(d.size, const Size(40, 40));
+      final text = tester.getRect(find.text('8:00'));
+      expect(text.left - d.right, 12);
+      final row = tester.getRect(find.byType(RowAlarm));
+      expect(d.center.dy, closeTo(row.center.dy, 0.5));
+    });
+
+    testWidgets('방식마다 읽어 주는 이름이 다르고 요약에는 방식 글자가 없다', (tester) async {
+      // 원판에 단 이름 — 줄의 탭 영역이 자식 이름을 한 덩이로 합치므로 위젯 설정으로 본다.
+      Finder labelled(String label) => find.byWidgetPredicate(
+          (w) => w is Semantics && w.properties.label == label);
+      await pumpRow(tester, mode: RowAlarmMode.study, active: true);
+      expect(labelled('학습'), findsOneWidget);
+      expect(find.text('평일'), findsOneWidget);
+      expect(find.textContaining('학습'), findsNothing);
+      await pumpRow(tester, mode: RowAlarmMode.freeTalk, active: true);
+      expect(labelled('학습'), findsNothing);
+      expect(labelled('자유 대화'), findsOneWidget);
+    });
+
+    testWidgets('꺼진 알람은 원판이 0.4 로 흐려진다', (tester) async {
+      Opacity discOpacity() => tester.widget<Opacity>(
+          find.ancestor(of: disc(), matching: find.byType(Opacity)).first);
+      await pumpRow(tester, mode: RowAlarmMode.freeTalk, active: true);
+      expect(discOpacity().opacity, 1);
+      await pumpRow(tester, mode: RowAlarmMode.freeTalk, active: false);
+      expect(discOpacity().opacity, 0.4);
+    });
+
+    testWidgets('로딩 줄도 같은 자리에 40 원을 둔다', (tester) async {
+      await tester.pumpWidget(host(const SkeletonShimmer(child: RowAlarmLoading())));
+      final circle = tester.getRect(find.byType(Skeleton).first);
+      expect(circle.size, const Size(40, 40));
+    });
   });
 }

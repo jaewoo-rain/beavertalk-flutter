@@ -193,11 +193,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get alarmModeChatSub => 'Дурын сэдвээр ярих';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Хурдан эхлэх';
 
   @override

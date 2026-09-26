@@ -1,18 +1,30 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
 import '../atoms/toggle.dart';
+import '../icons/app_icons.dart';
 
-/// 알람 목록의 한 줄 — Figma `Row-Alarm` (`6179:4634`, state=on|off).
+/// 알람의 통화 방식 — 줄 맨 앞 원판이 보여 준다(Figma `Row/Alarm` `mode=study|free-talk`).
+enum RowAlarmMode {
+  /// 학습(알람 `call_type` auto) — 책 · Primary.
+  study,
+
+  /// 자유 대화(`call_type` chat) — 말풍선 · Accent Light Blue.
+  freeTalk,
+}
+
+/// 알람 목록의 한 줄 — Figma `Row/Alarm` (`6179:4634`, state=on|off × mode=study|free-talk).
 ///
 /// iOS 알람처럼 **목록형**이다(예전 카드형 `CardAlarm` 을 대체).
 /// ```
-/// Baba                       ← 통화 상대(Caption 1)
-/// 8:00                  [●]  ← 시각(Title 3 Regular) · 켜기/끄기
-/// 평일                       ← 반복 요약(Caption 1)
+///      Baba                       ← 통화 상대(Caption 1)
+/// (📖) 8:00                  [●]  ← 방식 원판 · 시각(Title 3 Regular) · 켜기/끄기
+///      평일                       ← 반복 요약(Caption 1)
 /// ```
-/// 꺼지면 글자 셋이 `Label/Assistive` 로 흐려진다. 줄 사이 선은 [RowAlarmGroup] 이 긋는다.
+/// 꺼지면 글자 셋이 `Label/Assistive` 로, 원판이 불투명도 0.4 로 흐려진다. 줄 사이 선은
+/// [RowAlarmGroup] 이 긋는다.
 ///
 /// ⛔ 높이를 고정하지 마라. 세 줄 모두 글자라 배율이 크면 자란다(정본 109 는 결과값).
 class RowAlarm extends StatelessWidget {
@@ -22,6 +34,7 @@ class RowAlarm extends StatelessWidget {
     required this.partner,
     required this.time,
     required this.summary,
+    required this.mode,
     required this.active,
     this.onChanged,
     this.onTap,
@@ -33,8 +46,12 @@ class RowAlarm extends StatelessWidget {
   /// 시각 — 「8:00」.
   final String time;
 
-  /// 반복 요약 — 「평일」.
+  /// 반복 요약 — 「평일」. 방식은 붙이지 않는다 — 원판이 보여 준다(09-26 사장님 확정 시안 C ·
+  /// 그 전에는 「평일, 학습」).
   final String summary;
+
+  /// 통화 방식 — 줄 맨 앞 원판.
+  final RowAlarmMode mode;
 
   /// 켜져 있는가.
   final bool active;
@@ -56,6 +73,9 @@ class RowAlarm extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         child: Row(
           children: [
+            // 방식 원판 — 40 원 · 아이콘 20 · 글자까지 12 · 세로 가운데. 꺼진 알람은 원판째 0.4.
+            Opacity(opacity: active ? 1 : 0.4, child: _ModeDisc(mode: mode)),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -87,6 +107,37 @@ class RowAlarm extends StatelessWidget {
             AppToggle(value: active, onChanged: onChanged),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// [RowAlarm] 맨 앞 방식 원판 — study: `Primary/Normal-10` 위 책(`Primary/Normal`) ·
+/// free-talk: `Accent/Background/Light Blue-10` 위 말풍선(`Accent/Foreground/Light Blue`).
+/// 글리프는 홈 모드 토글과 같다. 요약에서 방식 글자를 뺐으므로 읽어 주는 이름을 단다.
+class _ModeDisc extends StatelessWidget {
+  const _ModeDisc({required this.mode});
+
+  final RowAlarmMode mode;
+
+  @override
+  Widget build(BuildContext context) {
+    final c = context.c;
+    final l10n = AppLocalizations.of(context);
+    final study = mode == RowAlarmMode.study;
+    return Semantics(
+      label: study ? l10n.homeModeLearn : l10n.callModeFreeTalk,
+      child: Container(
+        width: 40,
+        height: 40,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: study ? c.primaryNormal10 : c.accentBackgroundLightBlue10,
+          shape: BoxShape.circle,
+        ),
+        child: study
+            ? AppIcons.book(size: 20, color: c.primaryNormal)
+            : AppIcons.chat(size: 20, color: c.accentForegroundLightBlue),
       ),
     );
   }

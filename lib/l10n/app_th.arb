@@ -57,7 +57,6 @@
   "callPartner": "ตัวละคร",
   "alarmModeLearnSub": "ฝึกสำนวนในหลักสูตร",
   "alarmModeChatSub": "คุยได้ทุกเรื่อง",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "เริ่มอย่างรวดเร็ว",
   "presetMorning": "กิจวัตรตอนเช้า",
   "presetMorningSub": "วันธรรมดา 8:00",

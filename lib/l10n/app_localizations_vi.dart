@@ -193,11 +193,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get alarmModeChatSub => 'Trò chuyện về bất cứ điều gì';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Bắt đầu nhanh';
 
   @override

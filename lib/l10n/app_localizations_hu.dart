@@ -195,11 +195,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get alarmModeChatSub => 'Beszélgetés bármiről';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Gyors indítás';
 
   @override

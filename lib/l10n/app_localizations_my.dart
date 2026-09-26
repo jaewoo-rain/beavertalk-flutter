@@ -195,11 +195,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get alarmModeChatSub => 'ကြိုက်ရာ အကြောင်း စကားပြော';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days၊ $mode';
-  }
-
-  @override
   String get quickStart => 'အမြန်စတင်ရန်';
 
   @override

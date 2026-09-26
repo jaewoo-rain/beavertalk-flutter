@@ -194,11 +194,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get alarmModeChatSub => 'Juttele mistä vain';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Pika-aloitus';
 
   @override

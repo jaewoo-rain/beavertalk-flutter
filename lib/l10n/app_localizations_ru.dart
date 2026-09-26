@@ -194,11 +194,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get alarmModeChatSub => 'Разговор на любую тему';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Быстрый старт';
 
   @override

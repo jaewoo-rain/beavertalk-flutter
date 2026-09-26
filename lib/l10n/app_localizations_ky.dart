@@ -194,11 +194,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get alarmModeChatSub => 'Каалаган темада сүйлөшүү';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Тез баштоо';
 
   @override

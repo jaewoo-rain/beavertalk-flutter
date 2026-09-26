@@ -57,7 +57,6 @@
   "callPartner": "Personagem",
   "alarmModeLearnSub": "Pratique expressões do currículo",
   "alarmModeChatSub": "Converse sobre qualquer coisa",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Início rápido",
   "presetMorning": "Rotina da manhã",
   "presetMorningSub": "Dias úteis 8:00",

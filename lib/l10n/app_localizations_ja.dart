@@ -186,11 +186,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get alarmModeChatSub => 'テーマなしで会話';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days、$mode';
-  }
-
-  @override
   String get quickStart => 'クイックスタート';
 
   @override

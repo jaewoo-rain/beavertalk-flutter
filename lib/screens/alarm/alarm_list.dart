@@ -188,11 +188,10 @@ class _AlarmListScreenState extends ConsumerState<AlarmListScreen> {
       child: RowAlarm(
         partner: view.partnerName,
         time: view.clock24,
-        // Figma `Row-Alarm` `6179:28978`: 「평일, 학습」 — 반복 요약 뒤에 모드를 붙인다(배지 아님).
-        summary: l10n.alarmRowSummary(
-          AlarmDays.summary(a.days, l10n, locale),
-          a.callMode == AlarmCallMode.chat ? l10n.callModeFreeTalk : l10n.homeModeLearn,
-        ),
+        // 요약은 반복만 — 방식은 줄 맨 앞 원판이 보여 준다(09-26 사장님 확정 시안 C ·
+        // Figma `Row/Alarm` `6179:4634` · 그 전에는 「평일, 학습」).
+        summary: AlarmDays.summary(a.days, l10n, locale),
+        mode: a.callMode == AlarmCallMode.chat ? RowAlarmMode.freeTalk : RowAlarmMode.study,
         active: a.active,
         onTap: () => _edit(a),
         onChanged: id == null
@@ -254,8 +253,11 @@ class AlarmListLoading extends StatelessWidget {
 
 /// `Row-Alarm-Loading` — 실제 [RowAlarm] 과 같은 높이(109 = 패딩 12·12 + 16 + 52 + 16 + 선 1).
 ///
-/// 왼쪽 막대 셋은 이름(16 줄 · 36×10) · 시각(52 줄 · 92×36) · 요약(16 줄 · 72×10)의 **줄 높이**
-/// 안에 놓인다. 오른쪽은 토글 자리 52×28 알약. SPACE_BETWEEN · 세로 가운데 · 패딩 12/18.
+/// 맨 앞은 방식 원판 자리 40 원 · 12 띄움 · 세로 가운데(09-26 사용자 「응 로딩도 반영해」 · Figma
+/// `Row/AlarmLoading` `6454:15162`) — [RowAlarm] 에 원판이 생겨 글자가 52 밀렸으니 로딩도 같은
+/// 자리에 두어야 불러온 뒤 글자가 옆으로 튀지 않는다.
+/// 막대 셋은 이름(16 줄 · 36×10) · 시각(52 줄 · 92×36) · 요약(16 줄 · 72×10)의 **줄 높이**
+/// 안에 놓인다. 오른쪽 끝은 토글 자리 52×28 알약. 세로 가운데 · 패딩 12/18.
 class RowAlarmLoading extends StatelessWidget {
   /// Creates one skeleton row.
   const RowAlarmLoading({super.key});
@@ -272,8 +274,9 @@ class RowAlarmLoading extends StatelessWidget {
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            const Skeleton.circle(size: 40),
+            const SizedBox(width: 12),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -282,6 +285,7 @@ class RowAlarmLoading extends StatelessWidget {
                 _line(16, 72, 10),
               ],
             ),
+            const Spacer(),
             const Skeleton.pill(width: 52, height: 28),
           ],
         ),

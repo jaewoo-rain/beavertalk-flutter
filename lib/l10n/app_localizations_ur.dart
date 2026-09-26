@@ -194,11 +194,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get alarmModeChatSub => 'کسی بھی موضوع پر بات';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days، $mode';
-  }
-
-  @override
   String get quickStart => 'فوری آغاز';
 
   @override

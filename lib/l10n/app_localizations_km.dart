@@ -193,11 +193,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get alarmModeChatSub => 'និយាយពីអ្វីក៏បាន';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'ចាប់ផ្តើមរហ័ស';
 
   @override

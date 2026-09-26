@@ -57,7 +57,6 @@
   "callPartner": "Karakter",
   "alarmModeLearnSub": "Müfredattaki ifadeleri çalış",
   "alarmModeChatSub": "Her şey hakkında konuş",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Hızlı başlangıç",
   "presetMorning": "Sabah rutini",
   "presetMorningSub": "Hafta içi 8:00",

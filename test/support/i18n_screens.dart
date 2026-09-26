@@ -275,14 +275,16 @@ Map<String, Widget Function()> i18nScreens() {
                   RowAlarm(
                     partner: 'Baba',
                     time: '8:00',
-                    summary: l10n.alarmRowSummary(AlarmDays.summary(const [false, true, true, true, true, true, false], l10n, loc), l10n.homeModeLearn),
+                    summary: AlarmDays.summary(const [false, true, true, true, true, true, false], l10n, loc),
+                    mode: RowAlarmMode.study,
                     active: true,
                     onChanged: (_) {},
                   ),
                   RowAlarm(
                     partner: 'Bibi',
                     time: '21:30',
-                    summary: l10n.alarmRowSummary(AlarmDays.summary(const [false, true, false, true, false, true, false], l10n, loc), l10n.callModeFreeTalk),
+                    summary: AlarmDays.summary(const [false, true, false, true, false, true, false], l10n, loc),
+                    mode: RowAlarmMode.freeTalk,
                     active: false,
                     onChanged: (_) {},
                   ),

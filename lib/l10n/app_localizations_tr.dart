@@ -191,11 +191,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get alarmModeChatSub => 'Her şey hakkında konuş';
 
   @override
-  String alarmRowSummary(String days, String mode) {
-    return '$days, $mode';
-  }
-
-  @override
   String get quickStart => 'Hızlı başlangıç';
 
   @override

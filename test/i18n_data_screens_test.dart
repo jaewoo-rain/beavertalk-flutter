@@ -12,7 +12,8 @@ import 'support/i18n_data_screens.dart';
 void main() {
   const markers = <String, String>{
     'WeakSoundsData': 'Start with 받침 ㄹ',
-    'AlarmListData': 'Mon · Wed · Fri, Free talk',
+    // 요약에서 방식 글자를 뺐다(09-26 시안 C — 방식은 줄 앞 원판).
+    'AlarmListData': 'Mon · Wed · Fri',
     'AlarmAddData': 'Add alarm',
     'AlarmEditData': 'Edit alarm',
     'CallFinishData': 'Call ended 12:37',

@@ -57,7 +57,6 @@
   "callPartner": "Personaje",
   "alarmModeLearnSub": "Practica expresiones del plan",
   "alarmModeChatSub": "Habla de lo que quieras",
-  "alarmRowSummary": "{days}, {mode}",
   "quickStart": "Inicio rápido",
   "presetMorning": "Rutina matutina",
   "presetMorningSub": "Días laborables 8:00",
