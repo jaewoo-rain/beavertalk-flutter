@@ -56,6 +56,9 @@ docs
 tools/service-account.json
 service-account.json
 google-services.json
+# iOS Firebase 설정(google-services.json 과 같은 취급). Xcode 프로젝트는 참조만 하므로
+# 새 작업트리·맥 빌드 머신에 직접 복사해야 한다.
+ios/Runner/GoogleService-Info.plist
 # 벤더링한 flutter_pcm_sound 의 로컬 Gradle 캐시 (빌드 산출물)
 packages/**/.gradle/
 # 자산 교체 전 백업 — 로컬 전용(레포에 영상 사본을 쌓지 않는다)

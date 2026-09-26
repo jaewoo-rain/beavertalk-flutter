@@ -33,7 +33,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 /// `push_bootstrap.dart` 46~53). [start] 는 푸시 부트스트랩의 `firebase init` 단계
 /// **뒤에서** 불린다. 그 전에 들어온 이벤트·화면은 [_queue] 에 모았다가 보낸다.
 ///
-/// iOS 는 `GoogleService-Info.plist` 가 없어 초기화가 실패한다 → 조용히 꺼진다.
+/// iOS 는 `ios/Runner/GoogleService-Info.plist`(gitignore, 2026-09-26 등록 앱
+/// `1:333511894671:ios:e6acb87a8fff3f845932fa`)가 있어야 초기화된다. 없으면 조용히 꺼진다.
+/// IDFA 제외는 SPM 빌드에서 환경변수 `FIREBASE_ANALYTICS_WITHOUT_ADID=true` 로 한다.
 const bool kAnalyticsCollect = bool.fromEnvironment('GA_COLLECT');
 
 /// 커스텀 이벤트 이름 — 여기 말고 다른 곳에 문자열로 쓰지 않는다.
