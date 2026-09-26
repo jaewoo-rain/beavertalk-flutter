@@ -109,7 +109,10 @@ class DialogBasic extends StatelessWidget {
     // 띠가 된다(태블릿 렌더에서 실제로 그렇게 나왔다).
     return ContentColumn.narrow(
       child: Material(
-        color: context.c.backgroundElevatedNormal,
+        // 카드 면 = `Background/Elevated/Dialog`(Light #FFFFFF · Dark #2F3340) — [DialogConfirmIcon]
+        // 과 같다. 예전 `backgroundElevatedNormal` 은 Dark 값이 같아 티가 안 났는데, 09-26 Light
+        // 값이 Figma #CBCCD3 으로 바뀌자 확인창이 진회색이 됐다(통합 세션 실기기 · e36222e).
+        color: context.c.backgroundElevatedDialog,
         borderRadius: BorderRadius.circular(AppRadius.xs),
         clipBehavior: Clip.antiAlias,
         child: Padding(

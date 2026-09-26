@@ -288,7 +288,9 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
         SizedBox(
           width: _width,
           child: Material(
-            color: context.c.backgroundElevatedNormal,
+            // Button secondary_elevated 톤 — 반투명 Fill/Strong · 글자 Common/WhiteAndDark
+            // (09-26 시안 B · Figma 매핑 디자인 세션).
+            color: context.c.fillStrong,
             borderRadius: BorderRadius.circular(AppRadius.md),
             clipBehavior: Clip.antiAlias,
             child: InkWell(
@@ -302,14 +304,14 @@ class _DialogShareProfileState extends State<DialogShareProfile> {
                           height: 18,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: context.c.labelStrong,
+                            color: context.c.commonWhiteAndDark,
                           ),
                         ),
                       )
                     : Text(
                         resolvedShareLabel,
                         textAlign: TextAlign.center,
-                        style: AppType.body1.sb.copyWith(color: context.c.labelStrong),
+                        style: AppType.body1.sb.copyWith(color: context.c.commonWhiteAndDark),
                       ),
               ),
             ),

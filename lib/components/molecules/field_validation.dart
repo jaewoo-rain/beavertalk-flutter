@@ -91,7 +91,8 @@ class FieldValidation extends StatelessWidget {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           decoration: BoxDecoration(
-            color: context.c.backgroundNormalAlternative,
+            // FieldValidation 면 = Background/Surface/Alternative(09-26 Figma 매핑 · 디자인 세션).
+            color: context.c.backgroundSurfaceAlternative,
             borderRadius: BorderRadius.circular(AppRadius.md),
             border: Border.all(color: state.color(context), width: 1),
           ),

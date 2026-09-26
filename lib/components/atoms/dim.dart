@@ -136,7 +136,8 @@ class DimDemo extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: context.c.backgroundElevatedNormal,
+                  // 대화상자 면 = Background/Elevated/Dialog(09-26 · Figma 매핑 디자인 세션).
+                  color: context.c.backgroundElevatedDialog,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Text(

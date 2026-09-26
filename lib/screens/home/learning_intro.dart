@@ -879,7 +879,9 @@ class _LearningIntroScreenState extends ConsumerState<LearningIntroScreen> {
     final chips = isResult ? _wordChips(context, sentence.korean) : const <Widget>[];
 
     return AppScaffold(
-      background: context.c.backgroundNormalAlternative,
+      // 화면 바탕 = Background/Surface/Alternative(Light #FFF · Dark #252932) — 09-26 Light
+      // backgroundNormalAlternative 가 #DBDCE2 로 진해지며 드러난 오배정(Figma learn/* · 디자인 세션).
+      background: context.c.backgroundSurfaceAlternative,
       body: Column(
         children: [
           Gnb.main2(

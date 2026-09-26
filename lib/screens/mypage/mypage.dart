@@ -552,14 +552,15 @@ class MyPageScreen extends ConsumerWidget {
           horizontal: AppSpacing.s8,
         ),
         decoration: BoxDecoration(
-          color: context.c.backgroundElevatedNormal,
+          // secondary_elevated 톤(09-26 시안 B · 개발 전용 칸 · Figma 매핑 디자인 세션).
+          color: context.c.fillStrong,
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
         // 배율이 커지면 두 줄로 흐른다 — 높이가 고정이 아니라 넘치지 않는다.
         child: Text(
           label,
           textAlign: TextAlign.center,
-          style: AppType.label1.r.copyWith(color: context.c.labelStrong),
+          style: AppType.label1.r.copyWith(color: context.c.commonWhiteAndDark),
         ),
       ),
     );

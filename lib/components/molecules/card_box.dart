@@ -328,14 +328,15 @@ class CardBoxDemo extends StatelessWidget {
 
   Widget _button(BuildContext context) => DecoratedBox(
         decoration: BoxDecoration(
-          color: context.c.backgroundElevatedNormal,
+          // secondary_elevated 톤(09-26 시안 B · 반투명 Fill/Strong).
+          color: context.c.fillStrong,
           borderRadius: BorderRadius.circular(AppRadius.xs),
         ),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
           child: Text(
             '구매',
-            style: AppType.label2.sb.copyWith(color: context.c.labelStrong),
+            style: AppType.label2.sb.copyWith(color: context.c.commonWhiteAndDark),
           ),
         ),
       );
