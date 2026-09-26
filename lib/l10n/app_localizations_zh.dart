@@ -1560,6 +1560,11 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '每年 $price · 随时可在商店中取消';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 天免费，之后 每月 $price · 随时可在商店中取消';
   }

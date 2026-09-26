@@ -3016,6 +3016,12 @@ abstract class AppLocalizations {
   /// **'{price} per month · cancel anytime in the store'**
   String ctaCaptionMax(String price);
 
+  /// Disclosure under the paywall CTA when the annual plan is selected (App Review 3.1.2: price and billing period must match the selection).
+  ///
+  /// In en, this message translates to:
+  /// **'{price} per year · cancel anytime in the store'**
+  String ctaCaptionMaxYearly(String price);
+
   /// No description provided for @ctaCaptionMaxTrial.
   ///
   /// In en, this message translates to:

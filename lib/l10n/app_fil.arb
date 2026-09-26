@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} kada taon · {perMonth} kada buwan",
   "ctaCaptionPro": "{price} kada buwan · kanselahin anumang oras sa store",
   "ctaCaptionMax": "{price} kada buwan · kanselahin anumang oras sa store",
+  "ctaCaptionMaxYearly": "{price} kada taon · kanselahin anumang oras sa store",
   "ctaCaptionMaxTrial": "7 araw libre, tapos {price} kada buwan · kanselahin anumang oras sa store",
   "ctaCaptionAutoRenew": "Awtomatikong nagre-renew hanggang kanselahin.",
   "footerTerms": "Mga Tuntunin",

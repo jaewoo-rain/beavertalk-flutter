@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} por ano · {perMonth} por mês",
   "ctaCaptionPro": "{price} por mês · cancele quando quiser na loja",
   "ctaCaptionMax": "{price} por mês · cancele quando quiser na loja",
+  "ctaCaptionMaxYearly": "{price} por ano · cancele quando quiser na loja",
   "ctaCaptionMaxTrial": "7 dias grátis, depois {price} por mês · cancele quando quiser na loja",
   "ctaCaptionAutoRenew": "Renova automaticamente até você cancelar.",
   "footerTerms": "Termos",

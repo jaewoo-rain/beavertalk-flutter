@@ -1064,6 +1064,15 @@
       }
     }
   },
+  "ctaCaptionMaxYearly": "{price} per year · cancel anytime in the store",
+  "@ctaCaptionMaxYearly": {
+    "description": "Disclosure under the paywall CTA when the annual plan is selected (App Review 3.1.2: price and billing period must match the selection).",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "ctaCaptionMaxTrial": "7 days free, then {price} per month · cancel anytime in the store",
   "@ctaCaptionMaxTrial": {
     "placeholders": {

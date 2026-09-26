@@ -1604,6 +1604,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price سالانہ · اسٹور میں کسی بھی وقت منسوخ کریں';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 دن مفت، پھر $price ماہانہ · اسٹور میں کسی بھی وقت منسوخ کریں';
   }

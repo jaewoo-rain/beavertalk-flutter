@@ -1614,6 +1614,11 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'တစ်နှစ် $price · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '၇ ရက် အခမဲ့၊ ထို့နောက် တစ်လ $price · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်';
   }

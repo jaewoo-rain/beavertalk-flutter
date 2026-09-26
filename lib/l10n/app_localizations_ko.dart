@@ -1565,6 +1565,11 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '연 $price · 언제든 스토어에서 해지 가능';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7일 무료 체험 후 월 $price · 언제든 스토어에서 해지 가능';
   }

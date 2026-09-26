@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "Жилд {yearly} · сард {perMonth}",
   "ctaCaptionPro": "Сард {price} · дэлгүүрт хүссэн үедээ цуцална",
   "ctaCaptionMax": "Сард {price} · дэлгүүрт хүссэн үедээ цуцална",
+  "ctaCaptionMaxYearly": "Жилд {price} · дэлгүүрт хүссэн үедээ цуцална",
   "ctaCaptionMaxTrial": "7 хоног үнэгүй, дараа нь Сард {price} · дэлгүүрт хүссэн үедээ цуцална",
   "ctaCaptionAutoRenew": "Цуцлах хүртэл автоматаар сунгагдана.",
   "footerTerms": "Үйлчилгээний нөхцөл",

@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} mỗi năm · {perMonth} mỗi tháng",
   "ctaCaptionPro": "{price} mỗi tháng · hủy bất cứ lúc nào trong cửa hàng",
   "ctaCaptionMax": "{price} mỗi tháng · hủy bất cứ lúc nào trong cửa hàng",
+  "ctaCaptionMaxYearly": "{price} mỗi năm · hủy bất cứ lúc nào trong cửa hàng",
   "ctaCaptionMaxTrial": "Miễn phí 7 ngày, sau đó {price} mỗi tháng · hủy bất cứ lúc nào trong cửa hàng",
   "ctaCaptionAutoRenew": "Tự động gia hạn cho đến khi bạn hủy.",
   "footerTerms": "Điều khoản",

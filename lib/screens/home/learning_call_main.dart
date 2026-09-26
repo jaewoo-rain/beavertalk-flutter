@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' as intl;
 
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
@@ -215,10 +214,10 @@ class LearningCallMainScreen extends ConsumerWidget {
   /// draws the old head; it is the stale one (a loading state cannot hold a
   /// value the loaded state has dropped), so both follow this frame.
   ///
-  /// The date renders ISO (`3569:15082` reads `2026-07-16`), which is what the
-  /// frame specifies and is unambiguous in all 30 locales — unlike the call
-  /// meta line in `analysis.dart`, which is localized via `DateFormat.MMMd`. If
-  /// design wants this localized too, it is a one-line change here.
+  /// The date is **localized** (`Sep 4, 2026` · `2026년 9월 4일`) — PM-DEC-032,
+  /// QA F055(09-26). The frame (`3569:15082`) reads ISO `2026-07-16` and this
+  /// used to copy it, but the chart axis below and the analysis meta line are
+  /// both localized, so the head alone read like raw server data.
   Widget _head(BuildContext context, AppLocalizations l10n, LearningSummary s) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -228,7 +227,7 @@ class LearningCallMainScreen extends ConsumerWidget {
           ),
           const SizedBox(height: AppSpacing.s4),
           Text(
-            intl.DateFormat('yyyy-MM-dd').format(s.date),
+            localizedFullDate(context, s.date),
             style: AppType.label2.r.copyWith(color: context.c.labelNormal),
           ),
         ],

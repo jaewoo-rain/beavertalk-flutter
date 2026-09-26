@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "Жылына {yearly} · айына {perMonth}",
   "ctaCaptionPro": "Айына {price} · дүкенде кез келген уақытта бас тартуға болады",
   "ctaCaptionMax": "Айына {price} · дүкенде кез келген уақытта бас тартуға болады",
+  "ctaCaptionMaxYearly": "Жылына {price} · дүкенде кез келген уақытта бас тартуға болады",
   "ctaCaptionMaxTrial": "7 күн тегін, содан кейін Айына {price} · дүкенде кез келген уақытта бас тартуға болады",
   "ctaCaptionAutoRenew": "Бас тартқанға дейін автоматты түрде жаңарады.",
   "footerTerms": "Шарттар",

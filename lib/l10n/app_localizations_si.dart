@@ -1601,6 +1601,11 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'වසරකට $price · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return 'දින 7ක් නොමිලේ, ඉන්පසු මසකට $price · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න';
   }

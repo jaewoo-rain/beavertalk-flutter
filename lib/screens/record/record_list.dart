@@ -5,6 +5,7 @@ import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../features/normalcall/domain/entities/call_course.dart';
+import '../../features/normalcall/domain/entities/call_result.dart';
 import '../../components/atoms/blur_up_image.dart';
 import '../../components/atoms/skeleton.dart';
 import '../../components/molecules/card_bookmark.dart';
@@ -105,15 +106,37 @@ class _RecordsBody extends ConsumerWidget {
         message: e is AppException && e.fromServer ? e.message : null,
         onRetry: () => ref.invalidate(callListProvider),
       ),
-      data: (state) => state.items.isEmpty
-          ? _recordsEmpty(context)
-          : _RecordList(
-              state: state,
-              onLoadMore: () => ref.read(callListProvider.notifier).loadMore(),
-            ),
+      data: (state) {
+        final shown = state.items.where(isListedCall).toList();
+        if (shown.isEmpty && state.hasMore) {
+          // 받은 쪽이 전부 0초 통화면 보일 게 없다 — 다음 쪽을 불러오는 동안 로딩을 보인다.
+          // 빈 상태를 그리면 기록이 있는 회원에게 「통화 기록이 없어요」 가 뜬다.
+          if (!state.isLoadingMore) {
+            WidgetsBinding.instance.addPostFrameCallback(
+              (_) => ref.read(callListProvider.notifier).loadMore(),
+            );
+          }
+          return const _RecordsLoading();
+        }
+        return shown.isEmpty
+            ? _recordsEmpty(context)
+            : _RecordList(
+                state: state,
+                records: shown,
+                onLoadMore: () => ref.read(callListProvider.notifier).loadMore(),
+              );
+      },
     );
   }
 }
+
+/// 기록 목록에 올릴 통화인가 — **0초 통화는 뺀다**(QA F048 · PM-DEC-030).
+///
+/// 연결만 되고 말 한마디 없이 끊긴 통화가 「대화 기록 · 0분 0초」 카드로 일반 통화와 같은
+/// 모양으로 올라왔고, 열면 전부 「-%」 인 빈 분석이었다. 길이를 모르면(null) 남긴다 —
+/// 모르는 걸 지우면 실제 통화가 사라질 수 있다.
+@visibleForTesting
+bool isListedCall(CallSummary call) => call.totalTime != 0;
 
 /// 기록 tab while `GET /calls` is in flight — Figma `screen/record_list_loading`
 /// (`3489:3921`).
@@ -163,15 +186,22 @@ class _RecordsLoading extends StatelessWidget {
 /// bottom triggers [onLoadMore], which appends the next page (guarded in the
 /// notifier), with a spinner while a page is in flight.
 class _RecordList extends StatelessWidget {
-  const _RecordList({required this.state, required this.onLoadMore});
+  const _RecordList({
+    required this.state,
+    required this.records,
+    required this.onLoadMore,
+  });
 
   final CallListState state;
+
+  /// [CallListState.items] 중 목록에 올릴 것([isListedCall]). 페이징은 [state] 원본
+  /// 개수로 한다 — 거른 개수로 오프셋을 잡으면 서버 쪽 순서와 어긋난다.
+  final List<CallSummary> records;
   final VoidCallback onLoadMore;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final records = state.items;
     return NotificationListener<ScrollNotification>(
       onNotification: (n) {
         // Prefetch before the very bottom so the next page is ready in time.

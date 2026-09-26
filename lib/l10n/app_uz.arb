@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "Yiliga {yearly} · oyiga {perMonth}",
   "ctaCaptionPro": "Oyiga {price} · doʻkonda istalgan vaqtda bekor qilish mumkin",
   "ctaCaptionMax": "Oyiga {price} · doʻkonda istalgan vaqtda bekor qilish mumkin",
+  "ctaCaptionMaxYearly": "Yiliga {price} · doʻkonda istalgan vaqtda bekor qilish mumkin",
   "ctaCaptionMaxTrial": "7 kun bepul, keyin Oyiga {price} · doʻkonda istalgan vaqtda bekor qilish mumkin",
   "ctaCaptionAutoRenew": "Bekor qilinmaguncha avtomatik yangilanadi.",
   "footerTerms": "Shartlar",

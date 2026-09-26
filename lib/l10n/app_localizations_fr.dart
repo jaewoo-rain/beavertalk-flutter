@@ -1633,6 +1633,11 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price par an · résiliable à tout moment dans la boutique';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 jours gratuits, puis $price par mois · résiliable à tout moment dans la boutique';
   }

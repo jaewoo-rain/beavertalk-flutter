@@ -1600,6 +1600,11 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'বছরে $price · স্টোরে যেকোনো সময় বাতিল';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '৭ দিন ফ্রি, এরপর প্রতি মাসে $price · স্টোরে যেকোনো সময় বাতিল';
   }

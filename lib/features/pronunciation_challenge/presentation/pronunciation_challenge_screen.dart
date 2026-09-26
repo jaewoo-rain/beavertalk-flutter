@@ -399,8 +399,6 @@ class _PronunciationChallengeScreenState
                           Stack(children: _hudRows(context)),
                     ),
                   ),
-                // ── back, always reachable ──
-                _backButton(context),
                 // ── overlay panels ──
                 if (_phase == _Phase.start) _startPanel(),
                 if (_phase == _Phase.loading) _loadingPanel(),
@@ -408,6 +406,10 @@ class _PronunciationChallengeScreenState
                 if (_phase == _Phase.paused) _pausedPanel(),
                 if (_phase == _Phase.result) _resultPanel(),
                 if (_phase == _Phase.blocked) _blockedPanel(),
+                // ── back, always reachable — **맨 위에** 쌓는다 ──
+                // 패널 아래에 두면 패널의 딤이 덮어 화살표가 흐려지고 탭도 먹는다.
+                // 시작 패널에서 눌러도 반응이 없고 시스템 뒤로 키로만 나갈 수 있었다(QA F042).
+                _backButton(context),
               ],
             ),
           ),
@@ -430,6 +432,8 @@ class _PronunciationChallengeScreenState
         height: 44,
         child: IconButton(
           padding: EdgeInsets.zero,
+          // 접근성 이름 — 비어 있어 스크린리더가 「버튼」 으로만 읽었다(QA F042).
+          tooltip: AppLocalizations.of(context).back,
           onPressed: () => Navigator.pop(context),
           icon: Icon(Icons.arrow_back_ios_new,
               size: 20, color: context.c.staticWhite),

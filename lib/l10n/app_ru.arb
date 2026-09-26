@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} в год · {perMonth} в месяц",
   "ctaCaptionPro": "{price} в месяц · отмена в магазине в любой момент",
   "ctaCaptionMax": "{price} в месяц · отмена в магазине в любой момент",
+  "ctaCaptionMaxYearly": "{price} в год · отмена в магазине в любой момент",
   "ctaCaptionMaxTrial": "7 дней бесплатно, затем {price} в месяц · отмена в магазине в любой момент",
   "ctaCaptionAutoRenew": "Продлевается автоматически до отмены.",
   "footerTerms": "Условия",

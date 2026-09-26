@@ -1615,6 +1615,11 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Évi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 nap ingyen, utána Havi $price · bármikor lemondható az áruházban';
   }

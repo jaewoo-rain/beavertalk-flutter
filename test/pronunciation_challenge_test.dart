@@ -288,5 +288,46 @@ void main() {
       expect(find.text('Easy'), findsOneWidget);
       expect(find.text('Hard'), findsOneWidget);
     });
+
+    // QA F042(09-26): 뒤로 버튼이 시작 패널 **아래**에 쌓여, 딤에 덮여 흐리고 탭도 막혔다.
+    testWidgets('시작 패널 위에서도 뒤로 화살표가 눌려 화면을 닫는다', (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            locale: const Locale('en'),
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Builder(
+              builder: (context) => Scaffold(
+                body: Center(
+                  child: TextButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) => const PronunciationChallengeScreen(),
+                      ),
+                    ),
+                    child: const Text('open'),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('open'));
+      // 화면이 틱커를 계속 돌려 pumpAndSettle 은 끝나지 않는다 — 전환 시간만큼 민다.
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.text('Choose a difficulty'), findsOneWidget);
+      // hitTestable: 위에 덮인 것이 없어야 찾힌다.
+      final back = find.byIcon(Icons.arrow_back_ios_new).hitTestable();
+      expect(back, findsOneWidget);
+      expect(find.byTooltip('Back'), findsOneWidget);
+      await tester.tap(back);
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(find.byType(PronunciationChallengeScreen), findsNothing);
+      expect(find.text('open'), findsOneWidget);
+    });
   });
 }

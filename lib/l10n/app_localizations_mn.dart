@@ -1600,6 +1600,11 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Жилд $price · дэлгүүрт хүссэн үедээ цуцална';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 хоног үнэгүй, дараа нь Сард $price · дэлгүүрт хүссэн үедээ цуцална';
   }

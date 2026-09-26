@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "年額{yearly} · 月あたり{perMonth}",
   "ctaCaptionPro": "月額{price} · ストアでいつでも解約できます",
   "ctaCaptionMax": "月額{price} · ストアでいつでも解約できます",
+  "ctaCaptionMaxYearly": "年額{price} · ストアでいつでも解約できます",
   "ctaCaptionMaxTrial": "7日間無料、その後 月額{price} · ストアでいつでも解約できます",
   "ctaCaptionAutoRenew": "解約するまで自動更新されます。",
   "footerTerms": "利用規約",

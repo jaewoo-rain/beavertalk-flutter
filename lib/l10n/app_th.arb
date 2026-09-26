@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} ต่อปี · {perMonth} ต่อเดือน",
   "ctaCaptionPro": "{price} ต่อเดือน · ยกเลิกได้ทุกเมื่อในสโตร์",
   "ctaCaptionMax": "{price} ต่อเดือน · ยกเลิกได้ทุกเมื่อในสโตร์",
+  "ctaCaptionMaxYearly": "{price} ต่อปี · ยกเลิกได้ทุกเมื่อในสโตร์",
   "ctaCaptionMaxTrial": "ฟรี 7 วัน จากนั้น {price} ต่อเดือน · ยกเลิกได้ทุกเมื่อในสโตร์",
   "ctaCaptionAutoRenew": "ต่ออายุอัตโนมัติจนกว่าจะยกเลิก",
   "footerTerms": "ข้อกำหนด",

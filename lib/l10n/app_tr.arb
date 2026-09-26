@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "Yılda {yearly} · aylık {perMonth}",
   "ctaCaptionPro": "Aylık {price} · istediğin zaman mağazadan iptal et",
   "ctaCaptionMax": "Aylık {price} · istediğin zaman mağazadan iptal et",
+  "ctaCaptionMaxYearly": "Yıllık {price} · istediğin zaman mağazadan iptal et",
   "ctaCaptionMaxTrial": "7 gün ücretsiz, sonra Aylık {price} · istediğin zaman mağazadan iptal et",
   "ctaCaptionAutoRenew": "İptal edene kadar otomatik olarak yenilenir.",
   "footerTerms": "Koşullar",

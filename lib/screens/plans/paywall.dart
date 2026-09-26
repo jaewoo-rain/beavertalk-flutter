@@ -380,7 +380,11 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               // 무료체험은 출시 때 끈다(정본 §8-2 · 스토어 「첫 주 무료」 오퍼 종료) — 체험 안내
               // 문구 분기는 뺐다. 오퍼가 남아 있으면 StoreKit 이 고지 없이 적용하므로 콘솔에서
               // 먼저 꺼야 한다(앱이 할 일이 아니다).
-              l10n.ctaCaptionMax(PlanPrices.maxMonthly),
+              // 고지는 **고른 주기**를 따른다(QA F040) — 연간을 골라도 「월 $23.99」 가 남아
+              // 결제 직전 금액·주기 고지가 선택과 달랐다(App Review 3.1.2 · 과금 고지 오류).
+              _cycle == _Cycle.annual
+                  ? l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly)
+                  : l10n.ctaCaptionMax(PlanPrices.maxMonthly),
               textAlign: TextAlign.center,
               style: AppType.caption1.r.copyWith(color: c.labelNormal),
             ),

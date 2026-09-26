@@ -1602,6 +1602,11 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price ក្នុងមួយឆ្នាំ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '៧ ថ្ងៃឥតគិតថ្លៃ បន្ទាប់មក $price ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
   }

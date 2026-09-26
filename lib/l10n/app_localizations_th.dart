@@ -1592,6 +1592,11 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price ต่อปี · ยกเลิกได้ทุกเมื่อในสโตร์';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return 'ฟรี 7 วัน จากนั้น $price ต่อเดือน · ยกเลิกได้ทุกเมื่อในสโตร์';
   }

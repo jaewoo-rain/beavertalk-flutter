@@ -167,7 +167,7 @@ class MyPageScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.s24),
                   _levelCard(context, ref, l10n, level),
                   const SizedBox(height: AppSpacing.s24),
-                  _pronunciationCard(context, l10n, pron, recentCalls),
+                  _pronunciationCard(context, ref, l10n, pron, recentCalls),
                   const SizedBox(height: AppSpacing.s24),
                   // 숙제 진입점 — 형제 지표 카드 뒤 마지막 자리(Figma 실측).
                   const HomeworkClassCard(),
@@ -856,6 +856,7 @@ class MyPageScreen extends ConsumerWidget {
   /// 발음 분석 — the existing gauge component under a titled header.
   Widget _pronunciationCard(
     BuildContext context,
+    WidgetRef ref,
     AppLocalizations l10n,
     PronSummary? pron,
     List<CallSummary>? recentCalls,
@@ -878,7 +879,7 @@ class MyPageScreen extends ConsumerWidget {
                   title: l10n.noPronunciationDataTitle,
                   body: l10n.noPronunciationDataBody,
                   ctaText: l10n.practicePronunciation,
-                  onCta: () => _openRecentAnalysis(context, recentCalls),
+                  onCta: () => _openRecentAnalysis(context, ref, recentCalls),
                   ctaSize: BtnSize.s60,
                   ctaType: BtnType.secondaryElevated,
                   scale: EmptyScale.card,
@@ -913,7 +914,7 @@ class MyPageScreen extends ConsumerWidget {
             type: BtnType.secondaryElevated,
             size: BtnSize.s60,
             text: l10n.practicePronunciation,
-            onPressed: () => _openRecentAnalysis(context, recentCalls),
+            onPressed: () => _openRecentAnalysis(context, ref, recentCalls),
           ),
         ],
       );
@@ -1151,22 +1152,56 @@ class MyPageScreen extends ConsumerWidget {
   /// `first` blindly drops the user on "분석 결과를 불러오지 못했어요" — observed on
   /// device. The newest call with a non-zero duration is the newest one that
   /// can actually have a result.
-  void _openRecentAnalysis(
-      BuildContext context, List<CallSummary>? recentCalls) {
-    if (recentCalls == null || recentCalls.isEmpty) {
-      Navigator.pushNamed(context, Routes.records);
-      return;
-    }
-    final analysable = recentCalls
+  ///
+  /// **Nor the newest analysed one — the newest one with a score.** A short or
+  /// silent call is analysed but scores nothing, and landed the user on an
+  /// all-「-%」 screen with nothing to practise, right under a card averaging
+  /// 81% (QA F043, 09-26). The list carries no scores, so the few newest
+  /// candidates' results are read (in parallel, bounded) and the newest one
+  /// with a total score wins. None → the records list, as before.
+  Future<void> _openRecentAnalysis(
+    BuildContext context,
+    WidgetRef ref,
+    List<CallSummary>? recentCalls,
+  ) async {
+    if (_openingAnalysis) return; // 조회 중 두 번 누르면 화면이 두 번 열린다.
+    final candidates = (recentCalls ?? const <CallSummary>[])
         .where((c) => (c.totalTime ?? 0) > 0)
-        .firstOrNull;
-    if (analysable == null) {
+        .take(_scoredCallLookahead)
+        .toList();
+    if (candidates.isEmpty) {
       Navigator.pushNamed(context, Routes.records);
       return;
     }
-    Navigator.pushNamed(context, Routes.analysisLoading,
-        arguments: analysable.callId);
+    _openingAnalysis = true;
+    int? target;
+    try {
+      final repo = ref.read(normalcallRepositoryProvider);
+      final scored = await Future.wait(candidates.map((c) => repo
+          .getResult(c.callId)
+          .timeout(const Duration(seconds: 5))
+          .then<bool>((r) => r.average.totalScore != null)
+          .catchError((Object _) => false)));
+      final i = scored.indexOf(true);
+      if (i >= 0) target = candidates[i].callId;
+    } finally {
+      _openingAnalysis = false;
+    }
+    if (!context.mounted) return;
+    if (target == null) {
+      Navigator.pushNamed(context, Routes.records);
+      return;
+    }
+    Navigator.pushNamed(context, Routes.analysisLoading, arguments: target);
   }
+
+  /// 점수 있는 통화를 찾을 때 결과를 읽어 볼 최근 통화 수. 목록 한 쪽(20)을 다 읽지 않는다 —
+  /// 버튼 한 번에 요청 20개는 과하고, 5개 안에 없으면 기록 목록이 더 나은 출발점이다.
+  static const _scoredCallLookahead = 5;
+
+  /// [_openRecentAnalysis] 가 결과를 읽는 중인가. 화면이 [ConsumerWidget] 이라 상태를 못
+  /// 들어 정적으로 둔다 — 마이페이지는 한 번에 하나만 떠 있다.
+  static bool _openingAnalysis = false;
 }
 
 /// `GET /cur/me` 한 줄 — 개발자 도구용. «차시 4 A1-T01-1 · 남은 2 · 다음: 프리토킹».

@@ -1563,6 +1563,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '年額$price · ストアでいつでも解約できます';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7日間無料、その後 月額$price · ストアでいつでも解約できます';
   }

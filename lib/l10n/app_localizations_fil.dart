@@ -1620,6 +1620,11 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price kada taon · kanselahin anumang oras sa store';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 araw libre, tapos $price kada buwan · kanselahin anumang oras sa store';
   }

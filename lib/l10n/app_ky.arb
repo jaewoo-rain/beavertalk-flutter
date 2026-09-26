@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "Жылына {yearly} · айына {perMonth}",
   "ctaCaptionPro": "Айына {price} · дүкөндө каалаган убакта жокко чыгарса болот",
   "ctaCaptionMax": "Айына {price} · дүкөндө каалаган убакта жокко чыгарса болот",
+  "ctaCaptionMaxYearly": "Жылына {price} · дүкөндө каалаган убакта жокко чыгарса болот",
   "ctaCaptionMaxTrial": "7 күн акысыз, андан кийин Айына {price} · дүкөндө каалаган убакта жокко чыгарса болот",
   "ctaCaptionAutoRenew": "Жокко чыгарылганга чейин автоматтык түрдө жаңырат.",
   "footerTerms": "Шарттар",

@@ -1613,6 +1613,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price в год · отмена в магазине в любой момент';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 дней бесплатно, затем $price в месяц · отмена в магазине в любой момент';
   }

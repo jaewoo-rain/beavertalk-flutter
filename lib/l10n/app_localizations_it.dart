@@ -1623,6 +1623,11 @@ class AppLocalizationsIt extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price all\'anno · disdici quando vuoi nello store';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 giorni gratis, poi $price al mese · disdici quando vuoi nello store';
   }

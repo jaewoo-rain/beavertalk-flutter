@@ -14,6 +14,8 @@ import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../../l10n/app_localizations.dart';
+import '../../core/i18n/country_names.dart';
+import '../../core/i18n/country_names.g.dart';
 
 /// 취약 발음 목록 — Figma `02 · screen/weak_sounds` (`6023:34471`).
 ///
@@ -101,7 +103,10 @@ class _Body extends ConsumerWidget {
             title: l10n.wsNationalTitle,
             subtitle: list.national.country == null
                 ? l10n.wsNationalPending
-                : l10n.wsNationalSubtitle(list.national.country!),
+                : l10n.wsNationalSubtitle(localizedCountryName(
+                    list.national.country!,
+                    Localizations.localeOf(context).languageCode,
+                  )),
             items: list.national.items,
             recommended: recommended,
             emptyTitle: l10n.wsNoDataYet,
@@ -157,6 +162,12 @@ class _AccentSummary extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
     final iso = _isoOf(country);
+    // 나라 이름은 UI 언어로 — 한국어 화면에 「Hong Kong 억양」 이 떴다(QA F050). 마이페이지
+    // 억양 카드와 같은 표를 쓴다.
+    final name = localizedCountryName(
+      country,
+      Localizations.localeOf(context).languageCode,
+    );
     return Container(
       padding: const EdgeInsets.all(AppSpacing.s16),
       decoration: BoxDecoration(
@@ -176,7 +187,7 @@ class _AccentSummary extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  l10n.wsAccentOf(country),
+                  l10n.wsAccentOf(name),
                   style: AppType.body1.b.copyWith(color: c.labelStrong),
                 ),
                 const SizedBox(height: AppSpacing.s2),
@@ -280,19 +291,9 @@ class _Section extends StatelessWidget {
   }
 }
 
-/// 영문 국가명 → ISO 2자리. 국기 렌더링에만 쓴다.
+/// 서버 국적 라벨(영문) → ISO 2자리. 국기 렌더링에만 쓴다.
 ///
-/// 서버는 목록 응답에 ISO 를 싣지 않는다(억양 테이블에 국가 **이름**만 있다). 여기 없는
+/// 서버는 목록 응답에 ISO 를 싣지 않는다(억양 테이블에 국가 **이름**만 있다). 표에 없는
 /// 나라는 국기를 생략하고 이름만 보인다 — 엉뚱한 국기를 그리느니 없는 편이 낫다.
-String? _isoOf(String country) => const {
-      'Bangladesh': 'BD', 'Brazil': 'BR', 'Bulgaria': 'BG', 'Cambodia': 'KH',
-      'Chile': 'CL', 'China': 'CN', 'Colombia': 'CO', 'France': 'FR',
-      'Germany': 'DE', 'Hong Kong': 'HK', 'India': 'IN', 'Indonesia': 'ID',
-      'Italy': 'IT', 'Japan': 'JP', 'Kazakhstan': 'KZ', 'Kyrgyzstan': 'KG',
-      'Malaysia': 'MY', 'Mongolia': 'MN', 'Myanmar': 'MM', 'Nepal': 'NP',
-      'Peru': 'PE', 'Philippines': 'PH', 'Romania': 'RO',
-      'Russian Federation': 'RU', 'Russia': 'RU', 'Spain': 'ES',
-      'Tajikistan': 'TJ', 'Thailand': 'TH', 'Turkey': 'TR',
-      'Turkmenistan': 'TM', 'Ukraine': 'UA', 'United Kingdom': 'GB',
-      'United States': 'US', 'Uzbekistan': 'UZ', 'Vietnam': 'VN',
-    }[country];
+/// 표는 마이페이지 억양 카드와 같은 [kAccentLabelIso](서버 `_LABEL_ISO` 41개 + 별칭)다.
+String? _isoOf(String country) => kAccentLabelIso[country];

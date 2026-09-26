@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "တစ်နှစ် {yearly} · တစ်လ {perMonth}",
   "ctaCaptionPro": "တစ်လ {price} · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်",
   "ctaCaptionMax": "တစ်လ {price} · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်",
+  "ctaCaptionMaxYearly": "တစ်နှစ် {price} · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်",
   "ctaCaptionMaxTrial": "၇ ရက် အခမဲ့၊ ထို့နောက် တစ်လ {price} · စတိုးတွင် အချိန်မရွေး ပယ်ဖျက်နိုင်",
   "ctaCaptionAutoRenew": "ပယ်ဖျက်သည်အထိ အလိုအလျောက် သက်တမ်းတိုးပါမည်။",
   "footerTerms": "စည်းမျဉ်းများ",

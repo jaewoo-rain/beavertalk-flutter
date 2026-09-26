@@ -485,6 +485,7 @@
   "maxAnnualPriceLine": "연 {yearly} · 월 {perMonth}",
   "ctaCaptionPro": "월 {price} · 언제든 스토어에서 해지 가능",
   "ctaCaptionMax": "월 {price} · 언제든 스토어에서 해지 가능",
+  "ctaCaptionMaxYearly": "연 {price} · 언제든 스토어에서 해지 가능",
   "ctaCaptionMaxTrial": "7일 무료 체험 후 월 {price} · 언제든 스토어에서 해지 가능",
   "ctaCaptionAutoRenew": "해지할 때까지 자동으로 갱신됩니다.",
   "footerTerms": "이용약관",

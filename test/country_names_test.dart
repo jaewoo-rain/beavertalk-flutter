@@ -1,7 +1,10 @@
 import 'package:beavertalk/core/i18n/country_names.dart';
 import 'package:beavertalk/core/i18n/country_names.g.dart';
 import 'package:beavertalk/features/auth/domain/entities/accent_breakdown.dart';
+import 'package:beavertalk/features/weak_sound/domain/entities/weak_sound_item.dart';
+import 'package:beavertalk/features/weak_sound/presentation/weak_sound_providers.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -68,5 +71,30 @@ void main() {
     expect(find.text('일본'), findsWidgets);
     expect(find.text('베트남'), findsWidgets);
     expect(find.text('Japan'), findsNothing);
+  });
+
+  // QA F050(09-26): 한국어 UI 취약 발음 화면에 「Hong Kong 억양」 · 「Hong Kong 화자가…」.
+  testWidgets('취약 발음 화면 — 국적명도 UI 언어로', (tester) async {
+    tester.view.physicalSize = const Size(360, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        weakSoundListProvider.overrideWith((ref) async => const WeakSoundList(
+              national: NationalWeakSounds(country: 'Hong Kong'),
+              mine: [],
+            )),
+      ],
+      child: MaterialApp(
+        locale: const Locale('ko'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const WeakSoundsScreen(),
+      ),
+    ));
+    await tester.pump(const Duration(milliseconds: 32));
+    expect(find.text('홍콩 억양'), findsOneWidget);
+    expect(find.text('홍콩 화자가 자주 틀리는 소리예요'), findsOneWidget);
+    expect(find.textContaining('Hong Kong'), findsNothing);
   });
 }

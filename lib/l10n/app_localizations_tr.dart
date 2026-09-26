@@ -1600,6 +1600,11 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Yıllık $price · istediğin zaman mağazadan iptal et';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 gün ücretsiz, sonra Aylık $price · istediğin zaman mağazadan iptal et';
   }

@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} per tahun · {perMonth} per bulan",
   "ctaCaptionPro": "{price} per bulan · batalkan kapan saja di toko",
   "ctaCaptionMax": "{price} per bulan · batalkan kapan saja di toko",
+  "ctaCaptionMaxYearly": "{price} per tahun · batalkan kapan saja di toko",
   "ctaCaptionMaxTrial": "7 hari gratis, lalu {price} per bulan · batalkan kapan saja di toko",
   "ctaCaptionAutoRenew": "Diperpanjang otomatis sampai dibatalkan.",
   "footerTerms": "Ketentuan",

@@ -476,6 +476,7 @@
   "maxAnnualPriceLine": "{yearly} ក្នុងមួយឆ្នាំ · {perMonth} ក្នុងមួយខែ",
   "ctaCaptionPro": "{price} ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង",
   "ctaCaptionMax": "{price} ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង",
+  "ctaCaptionMaxYearly": "{price} ក្នុងមួយឆ្នាំ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង",
   "ctaCaptionMaxTrial": "៧ ថ្ងៃឥតគិតថ្លៃ បន្ទាប់មក {price} ក្នុងមួយខែ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង",
   "ctaCaptionAutoRenew": "បន្តដោយស្វ័យប្រវត្តិរហូតដល់បោះបង់។",
   "footerTerms": "លក្ខខណ្ឌ",

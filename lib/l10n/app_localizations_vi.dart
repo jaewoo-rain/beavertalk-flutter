@@ -1603,6 +1603,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return '$price mỗi năm · hủy bất cứ lúc nào trong cửa hàng';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return 'Miễn phí 7 ngày, sau đó $price mỗi tháng · hủy bất cứ lúc nào trong cửa hàng';
   }

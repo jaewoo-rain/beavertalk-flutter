@@ -1600,6 +1600,11 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'प्रति वर्ष $price · स्टोरमा जुनसुकै बेला रद्द';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '७ दिन नि:शुल्क, त्यसपछि प्रति महिना $price · स्टोरमा जुनसुकै बेला रद्द';
   }

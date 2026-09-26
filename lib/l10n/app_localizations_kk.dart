@@ -1599,6 +1599,11 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearly(String price) {
+    return 'Жылына $price · дүкенде кез келген уақытта бас тартуға болады';
+  }
+
+  @override
   String ctaCaptionMaxTrial(String price) {
     return '7 күн тегін, содан кейін Айына $price · дүкенде кез келген уақытта бас тартуға болады';
   }
