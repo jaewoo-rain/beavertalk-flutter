@@ -375,8 +375,11 @@ void main() {
       expect(sentenceMatch('제나는 학생이에요', target), isTrue);
       expect(sentenceMatch('학생이에요', target), isTrue);
       expect(sentenceMatch('선생님이에요', target), isFalse, reason: '한국어 부분은 여전히 맞아야 한다');
-      expect(sentenceMatch('', 'Hello BeaverTalk'), isFalse, reason: '아무 말도 안 했으면 실패');
-      expect(sentenceMatch('헬로', 'Hello BeaverTalk'), isTrue, reason: '통째로 영어면 말하면 통과');
+      // PM-DEC-053: 한국어 어절이 없는 문장은 판정할 게 없다 — 풀에서 빼고, 들어와도 실패.
+      expect(sentenceMatch('헬로', 'Hello BeaverTalk'), isFalse);
+      expect(hasKoreanToScore('Hello BeaverTalk'), isFalse);
+      expect(hasKoreanToScore('Zena는 학생이에요'), isTrue);
+      expect(hasKoreanToScore('  '), isFalse);
       // 기존 규칙은 그대로.
       expect(sentenceMatch('전 선생님이에요', '저는 선생님이에요'), isTrue);
       expect(sentenceMatch('저는 학생이에요', '저는 선생님이에요'), isFalse);

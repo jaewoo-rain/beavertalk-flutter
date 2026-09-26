@@ -45,6 +45,14 @@ abstract final class IapProductIds {
 
   static const subscriptions = {proMonthly, proYearly, maxMonthly, maxYearly};
 
+  /// Play 윈백 오퍼 — `bt_max` · 기본 플랜 `monthly` · 첫 달 50% × 1회(개발자 결정형 ·
+  /// targeting 없음 — Play 가 스스로 노출하지 않는다). 09-26 branch to dev 세션이 콘솔 API 로
+  /// 생성·활성화(PM-DEC-049·050). iOS 윈백 오퍼는 애플이 자격 판정·노출해 앱 코드가 없다.
+  static const playWinbackOfferId = 'winback-50-1m';
+
+  /// 같은 오퍼의 태그. 오퍼 id 가 바뀌어도 태그로 찾는다.
+  static const playWinbackOfferTag = 'winback';
+
   /// Character product id, keyed by **slug** — never by the server's primary
   /// key. Store ids are permanent while database ids are not, and a bare
   /// integer tells nobody in the console or the payout report which character
@@ -348,6 +356,23 @@ abstract class IapService {
   /// the app gives them somewhere to type it. Shipping the entry point in the
   /// binary is what keeps later discount campaigns off the review queue.
   Future<bool> presentOfferCodeRedemption();
+
+  /// 윈백 오퍼(첫 달 50%)로 월간 Premium 결제창을 연다 — **안드로이드 전용**(PM-DEC-049).
+  ///
+  /// Play 는 이탈 구독자 할인을 스토어 구독 화면에서 자동으로 적용하지 않는다 — 스토어로 보내면
+  /// 정가가 보인다. 그래서 앱이 오퍼 토큰([IapProductIds.playWinbackOfferId])을 붙여 결제창을
+  /// 직접 연다. 결과는 [purchases] 에 월간 Premium([IapProductIds.maxMonthly])으로 온다.
+  ///
+  /// 못 열면(iOS · 스토어 조회 실패 · 오퍼 미등록·비활성) false — 호출부는 스토어 구독 화면으로
+  /// 폴백한다. 대상 판정(이전 구독자)은 호출부 몫이다 — 앱은 만료된 회원에게만 이 길을 보인다.
+  Future<bool> purchaseWinbackOffer();
+}
+
+/// 앱을 거쳐 여는 윈백 결제의 라우트 인자 — `PurchaseProcessingScreen` 이 이걸 받으면
+/// [IapService.purchase] 대신 [IapService.purchaseWinbackOffer] 를 부른다.
+class WinbackPurchase {
+  /// The marker.
+  const WinbackPurchase();
 }
 
 /// The stand-in rail until store products exist.
@@ -400,6 +425,10 @@ class MockIapService implements IapService {
 
   @override
   Future<bool> presentOfferCodeRedemption() async => false;
+
+  /// 가짜 레일엔 스토어 오퍼가 없다 — 호출부가 스토어 화면으로 폴백한다.
+  @override
+  Future<bool> purchaseWinbackOffer() async => false;
 
   /// What the next [purchase] resolves to.
   IapPurchaseState scriptedOutcome;

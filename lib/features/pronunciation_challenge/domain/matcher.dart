@@ -64,7 +64,8 @@ bool wordMatch(String tok, String target) {
 /// 이름 같은 영어(「Zena는 학생이에요」)가 섞이면, 서버 STT 가 ko-KR 하나라 그 부분이
 /// 「제나는」 처럼 한글로 전사되어 「zena」 와 절대 안 맞았다 — 문장 전체가 커버리지 미달로
 /// 실패했다. 그 어절은 자동 통과로 보고 나머지 한국어만으로 판정한다. 화면 표시는 그대로다.
-/// 문장이 통째로 라틴이면 뭔가 말했으면(전사가 비지 않았으면) 통과한다.
+/// 한국어 어절이 하나도 없는 문장은 판정할 게 없어 실패한다 — 그런 문장은 애초에 챌린지
+/// 문장 풀에 넣지 않는다([hasKoreanToScore] · PM-DEC-053). 무엇을 말해도 통과하던 구멍이었다.
 bool sentenceMatch(String transcript, String sentence) {
   final t = norm(transcript);
   final scorable = sentence
@@ -72,7 +73,7 @@ bool sentenceMatch(String transcript, String sentence) {
       .where((w) => w.isNotEmpty && !_latinLetter.hasMatch(w))
       .toList();
   final s = norm(scorable.join(' '));
-  if (s.isEmpty) return norm(sentence).isNotEmpty && t.isNotEmpty;
+  if (s.isEmpty) return false;
   if (t.contains(s)) return true;
   final words = scorable.map(norm).where((w) => w.isNotEmpty).toList();
   if (words.length < 2) return false;
@@ -92,6 +93,11 @@ final RegExp _wordSplit = RegExp(r'\s+');
 
 /// 라틴 문자 하나라도 든 어절 — [sentenceMatch] 가 판정에서 빼는 대상.
 final RegExp _latinLetter = RegExp('[A-Za-z]');
+
+/// 챌린지 문장 풀에 넣어도 되는가 — 라틴 어절을 뺀 뒤 판정할 한국어가 남는가(PM-DEC-053).
+bool hasKoreanToScore(String sentence) => sentence
+    .split(_wordSplit)
+    .any((w) => !_latinLetter.hasMatch(w) && norm(w).isNotEmpty);
 
 /// Levenshtein edit distance (web game `lev()`, lines 253–260). Small strings
 /// only (card words), so the simple O(m·n) DP is fine.

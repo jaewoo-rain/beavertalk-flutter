@@ -21,6 +21,7 @@ import '../data/curated_word_source.dart';
 import '../data/stt_service.dart';
 import '../domain/challenge_engine.dart';
 import '../domain/game_config.dart';
+import '../domain/matcher.dart' show hasKoreanToScore;
 import 'challenge_controller.dart';
 import 'challenge_painter.dart';
 
@@ -136,8 +137,10 @@ class _PronunciationChallengeScreenState
     // spoken sentences; otherwise it falls back to the default word list and
     // per-word matching, so direct entry still works.
     final args = ModalRoute.of(context)?.settings.arguments;
+    // 한국어 어절이 없는 문장(통째로 영어)은 뺀다 — 판정할 게 없어 무엇을 말해도 통과했다
+    // (PM-DEC-053). 다 빠지면 기본 단어로 플레이한다.
     final sentences = args is List<String>
-        ? args.where((s) => s.trim().isNotEmpty).toList(growable: false)
+        ? args.where(hasKoreanToScore).toList(growable: false)
         : const <String>[];
     final useSentences = sentences.isNotEmpty;
 

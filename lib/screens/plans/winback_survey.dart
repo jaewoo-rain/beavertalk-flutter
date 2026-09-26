@@ -53,7 +53,11 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
             child: Align(
               alignment: Alignment.centerRight,
               child: ContentColumn(
-                child: GestureDetector(
+                // 버튼 역할을 알린다 — 글자만 있는 탭 영역이라 스크린리더가 「Skip」 을
+                // 그냥 글자로 읽었다(QA F060).
+                child: Semantics(
+                  button: true,
+                  child: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Padding(
                     padding: const EdgeInsets.symmetric(
@@ -62,6 +66,7 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
                         style: AppType.body1.sb
                             .copyWith(color: c.labelNormal)),
                   ),
+                ),
                 ),
               ),
             ),
@@ -166,7 +171,14 @@ class _ReasonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    return GestureDetector(
+    // 단일 선택 목록의 한 줄 — 선택됨/안 됨과 「여럿 중 하나」 를 스크린리더에 알린다.
+    // 색 원만으로 선택을 보여 TalkBack·VoiceOver 는 무엇을 골랐는지 알 수 없었다(QA F060).
+    return Semantics(
+      container: true,
+      inMutuallyExclusiveGroup: true,
+      checked: selected,
+      selected: selected,
+      child: GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
       child: Container(
@@ -215,6 +227,7 @@ class _ReasonRow extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }

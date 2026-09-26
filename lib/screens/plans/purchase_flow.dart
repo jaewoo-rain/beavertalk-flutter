@@ -22,6 +22,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../overlays/subscription_overlays.dart';
+import 'winback_offer_sheet.dart' show openStoreSubscriptions;
 
 /// `depth/purchase_processing` (`4514:5654`) — receipt-confirmation limbo.
 ///
@@ -43,11 +44,20 @@ class _PurchaseProcessingScreenState
   StreamSubscription<IapPurchase>? _sub;
   bool _kicked = false;
 
+  /// 윈백 오퍼 결제([WinbackPurchase] 인자 · 안드로이드 · PM-DEC-049)인가.
+  ///
+  /// 실패·취소 때 재시도 시트를 띄우지 않는다 — 그 시트의 「다시 시도」 는 정가 월간을 사서,
+  /// 할인을 보고 들어온 회원에게 정가를 청구하게 된다. 조용히 닫는다.
+  bool get _winback =>
+      ModalRoute.of(context)?.settings.arguments is WinbackPurchase;
+
   /// What to buy — a [PurchaseRequest] argument, or a bare tier (legacy call
   /// sites), or the Premium-monthly default (Pro is no longer sold).
   PurchaseRequest get _request {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is PurchaseRequest) return args;
+    // 윈백 오퍼는 월간 Premium 이다(첫 달만 할인).
+    if (args is WinbackPurchase) return (tier: SubscriptionTier.max, annual: false);
     if (args is SubscriptionTier) return (tier: args, annual: false);
     return (tier: SubscriptionTier.max, annual: false);
   }
@@ -120,6 +130,17 @@ class _PurchaseProcessingScreenState
   /// the member on a spinner with no way out. That was survivable against a
   /// mock rail that could not fail; a real one goes offline.
   Future<void> _kick(IapService iap, PurchaseRequest request) async {
+    if (_winback) {
+      try {
+        if (await iap.purchaseWinbackOffer()) return;
+      } catch (_) {}
+      // 오퍼를 못 열었다(조회 실패·오퍼 비활성) — 정가로 사게 두지 않고 스토어 구독 화면으로
+      // 보낸다(iOS 와 같은 길 · PM-DEC-035).
+      if (!mounted) return;
+      Navigator.pop(context);
+      unawaited(openStoreSubscriptions());
+      return;
+    }
     final id = switch ((request.tier, request.annual)) {
       (SubscriptionTier.max, true) => IapProductIds.maxYearly,
       (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
@@ -146,6 +167,10 @@ class _PurchaseProcessingScreenState
   /// was ever attempted. Offering "update your payment method" here points the
   /// member at a card that is perfectly fine and hides the real cause.
   void _onStoreError(PurchaseRequest request) {
+    if (_winback) {
+      Navigator.pop(context);
+      return;
+    }
     final navCtx = Navigator.of(context, rootNavigator: true).context;
     Navigator.pop(context);
     showSubscriptionOverlay(navCtx, SubscriptionOverlay.purchaseFailedStore,
@@ -156,6 +181,10 @@ class _PurchaseProcessingScreenState
   /// over it (P4). The retry CTA rebuys the same tier AND cycle.
   void _onFailed(IapPurchaseState state, PurchaseRequest request) {
     if (!mounted) return;
+    if (_winback) {
+      Navigator.pop(context);
+      return;
+    }
     final navCtx = Navigator.of(context, rootNavigator: true).context;
     final overlay = state == IapPurchaseState.canceled
         ? SubscriptionOverlay.purchaseFailedCanceled

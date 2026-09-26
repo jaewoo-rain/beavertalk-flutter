@@ -1,13 +1,16 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Badge;
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/adaptive.dart';
+import '../../app/routes.dart';
 import '../../components/atoms/badge.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/app_icons.dart';
 import '../../core/store/store_subscription_link.dart';
+import '../../features/subscription/domain/iap_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_typography.dart';
@@ -23,7 +26,11 @@ import '../../theme/app_typography.dart';
 ///   그 값이 보인다 — App Review 3.1.2 허위 가격. 그래서 금액 줄·「Then … a month」 를 빼고 배지
 ///   「50% off your first month」 만 둔다(정본도 같이 고쳐짐 · 시트 높이 520 → 434).
 ///
-/// 「Get 50% off」 는 스토어 구독 화면으로 보낸다 — 오퍼 적용은 스토어가 판단한다(PM-DEC-035).
+/// 「Get 50% off」
+/// - iOS: 스토어 구독 화면으로 보낸다 — 애플이 윈백 오퍼 자격을 판정해 보여 준다(PM-DEC-035).
+/// - 안드로이드: Play 는 이탈 구독자 할인을 스토어 화면에서 자동 적용하지 않아 정가가 보인다 —
+///   앱이 윈백 오퍼 토큰을 붙여 결제창을 직접 연다(결제 처리 화면 · [WinbackPurchase] ·
+///   PM-DEC-049). 오퍼를 못 열면 스토어 화면으로 폴백한다.
 /// 「Maybe later」 · 딤 → 닫기(홈).
 class WinbackOfferSheet extends StatelessWidget {
   /// Creates the sheet. [onGetOffer] / [onLater] are wired by
@@ -153,9 +160,10 @@ class _Benefit extends StatelessWidget {
   }
 }
 
-/// 윈백 오퍼 시트를 띄운다. 「Get 50% off」 → 스토어 구독 화면(열고 나서 시트를 닫는다) ·
-/// 「Maybe later」 · 딤 → 닫기.
+/// 윈백 오퍼 시트를 띄운다. 「Get 50% off」 → 안드로이드는 결제 처리 화면(오퍼 토큰),
+/// 그 밖은 스토어 구독 화면 · 「Maybe later」 · 딤 → 닫기.
 Future<void> showWinbackOfferSheet(BuildContext context) {
+  final navigator = Navigator.of(context);
   return showModalBottomSheet<void>(
     context: context,
     backgroundColor: Colors.transparent,
@@ -165,11 +173,26 @@ Future<void> showWinbackOfferSheet(BuildContext context) {
       onLater: () => Navigator.of(sheetCtx).pop(),
       onGetOffer: () {
         Navigator.of(sheetCtx).pop();
-        unawaited(launchUrl(
-          StoreSubscriptionLink.forCurrentPlatform(),
-          mode: LaunchMode.externalApplication,
-        ).catchError((Object _) => false));
+        if (winbackUsesInAppOffer) {
+          unawaited(navigator.pushNamed(
+            Routes.purchaseProcessing,
+            arguments: const WinbackPurchase(),
+          ));
+        } else {
+          unawaited(openStoreSubscriptions());
+        }
       },
     ),
   );
 }
+
+/// 「Get 50% off」 가 앱 안에서 오퍼 결제창을 여는가 — 안드로이드만(PM-DEC-049).
+@visibleForTesting
+bool get winbackUsesInAppOffer =>
+    !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+
+/// 스토어의 구독 관리 화면을 연다(실패는 삼킨다 — 열 곳이 없으면 할 수 있는 게 없다).
+Future<void> openStoreSubscriptions() => launchUrl(
+      StoreSubscriptionLink.forCurrentPlatform(),
+      mode: LaunchMode.externalApplication,
+    ).then<void>((_) {}).catchError((Object _) {});

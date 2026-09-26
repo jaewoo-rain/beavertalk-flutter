@@ -188,6 +188,65 @@ class StoreIapService implements IapService {
     return true;
   }
 
+  @override
+  Future<bool> purchaseWinbackOffer() async {
+    if (!_isPlay) return false;
+    final ids = IapProductIds.playIdsFor(IapProductIds.maxMonthly);
+    if (ids == null) return false;
+    final ProductDetailsResponse response;
+    try {
+      response = await _store.queryProductDetails({ids.subscriptionId});
+    } catch (_) {
+      return false;
+    }
+    // Play 는 오퍼마다 ProductDetails 를 하나씩 준다(subscriptionIndex). 기본 플랜
+    // 행(offerId 없음)은 [_logicalSkuOf] 가 SKU 로 잡고, 오퍼 행은 거기서 걸러진다 — 윈백은
+    // 여기서만 찾는다.
+    final candidates = <(ProductDetails, SubscriptionOfferDetailsWrapper)>[];
+    for (final d in response.productDetails) {
+      final offer = _offerOf(d);
+      if (offer != null) candidates.add((d, offer));
+    }
+    final i = pickWinbackOffer(
+      [
+        for (final (_, o) in candidates)
+          (basePlanId: o.basePlanId, offerId: o.offerId, tags: o.offerTags),
+      ],
+      basePlanId: ids.basePlanId,
+    );
+    if (i == null) return false;
+    final (details, offer) = candidates[i];
+    // Play 는 구매에 기본 플랜을 싣지 않는다 — 우리가 연 결제라 SKU 를 기억해 둔다.
+    _launched[details.id] = IapProductIds.maxMonthly;
+    await _store.buyNonConsumable(
+      purchaseParam: GooglePlayPurchaseParam(
+        productDetails: details,
+        offerToken: offer.offerIdToken,
+      ),
+    );
+    return true;
+  }
+
+  /// 오퍼 목록에서 윈백 오퍼의 자리 — [basePlanId] 위의, id 가
+  /// [IapProductIds.playWinbackOfferId] 이거나 태그 [IapProductIds.playWinbackOfferTag] 를 단 것.
+  /// id 가 맞는 것을 먼저 고른다. 없으면 `null`.
+  @visibleForTesting
+  static int? pickWinbackOffer(
+    List<({String basePlanId, String? offerId, List<String> tags})> offers, {
+    required String basePlanId,
+  }) {
+    int? tagged;
+    for (var i = 0; i < offers.length; i++) {
+      final o = offers[i];
+      if (o.basePlanId != basePlanId || o.offerId == null) continue;
+      if (o.offerId == IapProductIds.playWinbackOfferId) return i;
+      if (tagged == null && o.tags.contains(IapProductIds.playWinbackOfferTag)) {
+        tagged = i;
+      }
+    }
+    return tagged;
+  }
+
   /// Stops listening. The store keeps unfinished transactions; a new instance
   /// picks them up.
   Future<void> dispose() async {
