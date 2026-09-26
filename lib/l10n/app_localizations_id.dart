@@ -348,30 +348,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get cancel => 'Batal';
 
   @override
-  String get getStarted => 'Mulai';
-
-  @override
-  String get permissionTitle => 'Izinkan akses\nuntuk pengalaman yang lancar';
-
-  @override
-  String get permissionSubtitle =>
-      'Izin yang diperlukan penting untuk menggunakan layanan.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (wajib)';
-
-  @override
-  String get permissionMicDesc =>
-      'Diperlukan untuk berbicara dengan AI dalam bahasa Korea.';
-
-  @override
-  String get permissionNotifTitle => 'Notifikasi (opsional)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Kami akan mengirim pengingat belajar dan jadwal panggilan.';
-
-  @override
   String get micPermissionNeededTitle => 'Akses mikrofon diperlukan';
 
   @override

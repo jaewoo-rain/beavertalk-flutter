@@ -351,31 +351,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get cancel => 'Mégse';
 
   @override
-  String get getStarted => 'Kezdjük el';
-
-  @override
-  String get permissionTitle =>
-      'Engedélyezd a hozzáféréseket\na zökkenőmentes élményért';
-
-  @override
-  String get permissionSubtitle =>
-      'A szükséges engedélyek elengedhetetlenek a szolgáltatás használatához.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (kötelező)';
-
-  @override
-  String get permissionMicDesc =>
-      'Szükséges ahhoz, hogy angolul beszélgethess az AI-val.';
-
-  @override
-  String get permissionNotifTitle => 'Értesítések (opcionális)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Tanulási emlékeztetőket és hívásütemezéseket küldünk.';
-
-  @override
   String get micPermissionNeededTitle => 'Mikrofon-hozzáférés szükséges';
 
   @override

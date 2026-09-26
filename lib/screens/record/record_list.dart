@@ -269,8 +269,9 @@ class _RecordList extends StatelessWidget {
   }
 }
 
-/// Empty state shown when there are no past calls (mirrors
-/// [Routes.recordsEmpty] copy, kept inline so the tabs stay visible).
+/// Empty state shown when there are no past calls, kept inline so the tabs
+/// stay visible. (The standalone `/records/empty` screen was deleted 09-26 —
+/// nothing routed to it.)
 Widget _recordsEmpty(BuildContext context) {
   final l10n = AppLocalizations.of(context);
   return EmptyScreen(

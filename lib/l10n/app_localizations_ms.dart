@@ -349,31 +349,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get cancel => 'Batal';
 
   @override
-  String get getStarted => 'Mula';
-
-  @override
-  String get permissionTitle =>
-      'Benarkan kebenaran\nuntuk pengalaman yang lancar';
-
-  @override
-  String get permissionSubtitle =>
-      'Kebenaran yang diperlukan adalah penting untuk menggunakan perkhidmatan ini.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (diperlukan)';
-
-  @override
-  String get permissionMicDesc =>
-      'Diperlukan untuk bercakap dengan AI dalam bahasa Inggeris.';
-
-  @override
-  String get permissionNotifTitle => 'Pemberitahuan (pilihan)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Kami akan menghantar peringatan pembelajaran dan jadual panggilan.';
-
-  @override
   String get micPermissionNeededTitle => 'Akses mikrofon diperlukan';
 
   @override

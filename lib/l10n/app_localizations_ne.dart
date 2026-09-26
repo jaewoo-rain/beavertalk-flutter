@@ -344,28 +344,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get cancel => 'रद्द गर्नुहोस्';
 
   @override
-  String get getStarted => 'सुरु गर्नुहोस्';
-
-  @override
-  String get permissionTitle => 'सहज अनुभवका लागि\nअनुमतिहरू दिनुहोस्';
-
-  @override
-  String get permissionSubtitle =>
-      'सेवा प्रयोग गर्न आवश्यक अनुमतिहरू अनिवार्य छन्।';
-
-  @override
-  String get permissionMicTitle => 'माइक्रोफोन (अनिवार्य)';
-
-  @override
-  String get permissionMicDesc => 'AI सँग अंग्रेजीमा कुरा गर्न आवश्यक।';
-
-  @override
-  String get permissionNotifTitle => 'सूचनाहरू (वैकल्पिक)';
-
-  @override
-  String get permissionNotifDesc => 'हामी सिकाइ सम्झना र कल तालिका पठाउनेछौं।';
-
-  @override
   String get micPermissionNeededTitle => 'माइक्रोफोन पहुँच आवश्यक छ';
 
   @override

@@ -348,29 +348,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get cancel => 'Отмена';
 
   @override
-  String get getStarted => 'Начать';
-
-  @override
-  String get permissionTitle => 'Разрешите доступ\nдля комфортной работы';
-
-  @override
-  String get permissionSubtitle =>
-      'Необходимые разрешения обязательны для использования сервиса.';
-
-  @override
-  String get permissionMicTitle => 'Микрофон (обязательно)';
-
-  @override
-  String get permissionMicDesc => 'Нужен для общения с ИИ на английском.';
-
-  @override
-  String get permissionNotifTitle => 'Уведомления (по желанию)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Мы будем присылать напоминания об учёбе и расписание звонков.';
-
-  @override
   String get micPermissionNeededTitle => 'Нужен доступ к микрофону';
 
   @override

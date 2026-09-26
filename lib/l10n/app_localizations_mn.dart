@@ -347,30 +347,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get cancel => 'Цуцлах';
 
   @override
-  String get getStarted => 'Эхлэх';
-
-  @override
-  String get permissionTitle =>
-      'Тав тухтай ашиглахын тулд\nзөвшөөрлийг идэвхжүүлнэ үү';
-
-  @override
-  String get permissionSubtitle =>
-      'Үйлчилгээг ашиглахад шаардлагатай зөвшөөрлүүд.';
-
-  @override
-  String get permissionMicTitle => 'Микрофон (заавал)';
-
-  @override
-  String get permissionMicDesc => 'AI-тай англи хэлээр ярихад шаардлагатай.';
-
-  @override
-  String get permissionNotifTitle => 'Мэдэгдэл (сонголт)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Бид танд сургалтын сануулга болон дуудлагын хуваарийг илгээнэ.';
-
-  @override
   String get micPermissionNeededTitle => 'Микрофоны зөвшөөрөл шаардлагатай';
 
   @override

@@ -339,27 +339,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get cancel => '취소';
 
   @override
-  String get getStarted => '시작하기';
-
-  @override
-  String get permissionTitle => '원활한 이용을 위해\n권한을 허용해 주세요';
-
-  @override
-  String get permissionSubtitle => '필수 권한은 서비스 이용에 꼭 필요해요.';
-
-  @override
-  String get permissionMicTitle => '마이크 (필수)';
-
-  @override
-  String get permissionMicDesc => 'AI와 영어로 대화하기 위해 필요해요.';
-
-  @override
-  String get permissionNotifTitle => '알림 (선택)';
-
-  @override
-  String get permissionNotifDesc => '학습 리마인더와 통화 일정을 알려드려요.';
-
-  @override
   String get micPermissionNeededTitle => '마이크 권한이 필요해요';
 
   @override

@@ -112,7 +112,7 @@ void main() {
             home: const Scaffold(body: SizedBox()),
             routes: {
               '/paywall': (_) =>
-                  const PaywallScreen(variant: PaywallVariant.pro),
+                  const PaywallScreen(variant: PaywallVariant.max),
             },
             onGenerateRoute: (s) {
               pushed.add(s.name);
@@ -398,7 +398,6 @@ void tallSweep() {
     Locale('ur'),
   ];
   final screens = <String, Widget Function()>{
-    'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
     'PaywallProLimit': () =>
         const PaywallScreen(variant: PaywallVariant.proLimit),
     'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),

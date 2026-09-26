@@ -348,31 +348,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get cancel => 'မလုပ်တော့ပါ';
 
   @override
-  String get getStarted => 'စတင်လိုက်ပါ';
-
-  @override
-  String get permissionTitle =>
-      'အဆင်ပြေချောမွေ့စွာ အသုံးပြုနိုင်ရန်\nခွင့်ပြုချက်များ ပေးပါ';
-
-  @override
-  String get permissionSubtitle =>
-      'ဝန်ဆောင်မှုကို အသုံးပြုရန် လိုအပ်သော ခွင့်ပြုချက်များ ဖြစ်ပါသည်။';
-
-  @override
-  String get permissionMicTitle => 'မိုက်ခရိုဖုန်း (လိုအပ်သည်)';
-
-  @override
-  String get permissionMicDesc =>
-      'AI နှင့် အင်္ဂလိပ်လို စကားပြောရန် လိုအပ်ပါသည်။';
-
-  @override
-  String get permissionNotifTitle => 'အကြောင်းကြားချက် (ရွေးချယ်နိုင်သည်)';
-
-  @override
-  String get permissionNotifDesc =>
-      'လေ့လာမှု သတိပေးချက်များနှင့် ခေါ်ဆိုမှု အချိန်ဇယားများ ပို့ပေးပါမည်။';
-
-  @override
   String get micPermissionNeededTitle =>
       'မိုက်ခရိုဖုန်း ခွင့်ပြုချက် လိုအပ်သည်';
 

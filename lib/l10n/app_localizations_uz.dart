@@ -348,30 +348,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get cancel => 'Bekor qilish';
 
   @override
-  String get getStarted => 'Boshlash';
-
-  @override
-  String get permissionTitle => 'Qulay tajriba uchun\nruxsatlarni bering';
-
-  @override
-  String get permissionSubtitle =>
-      'Xizmatdan foydalanish uchun kerakli ruxsatlar zarur.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (majburiy)';
-
-  @override
-  String get permissionMicDesc =>
-      'AI bilan ingliz tilida gaplashish uchun kerak.';
-
-  @override
-  String get permissionNotifTitle => 'Bildirishnomalar (ixtiyoriy)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Sizga oʻqish eslatmalari va qoʻngʻiroq jadvallarini yuboramiz.';
-
-  @override
   String get micPermissionNeededTitle => 'Mikrofonga ruxsat kerak';
 
   @override

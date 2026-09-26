@@ -338,27 +338,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get cancel => 'キャンセル';
 
   @override
-  String get getStarted => 'はじめる';
-
-  @override
-  String get permissionTitle => '快適にご利用いただくため\n権限を許可してください';
-
-  @override
-  String get permissionSubtitle => '必要な権限はサービスの利用に不可欠です。';
-
-  @override
-  String get permissionMicTitle => 'マイク（必須）';
-
-  @override
-  String get permissionMicDesc => 'AIと会話するために必要です。';
-
-  @override
-  String get permissionNotifTitle => '通知（任意）';
-
-  @override
-  String get permissionNotifDesc => '学習リマインダーや通話スケジュールをお送りします。';
-
-  @override
   String get micPermissionNeededTitle => 'マイクへのアクセスが必要です';
 
   @override

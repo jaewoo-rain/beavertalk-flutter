@@ -343,30 +343,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get cancel => 'रद्द करें';
 
   @override
-  String get getStarted => 'शुरू करें';
-
-  @override
-  String get permissionTitle => 'बेहतर अनुभव के लिए\nअनुमतियाँ दें';
-
-  @override
-  String get permissionSubtitle =>
-      'सेवा का उपयोग करने के लिए आवश्यक अनुमतियाँ ज़रूरी हैं।';
-
-  @override
-  String get permissionMicTitle => 'माइक्रोफ़ोन (आवश्यक)';
-
-  @override
-  String get permissionMicDesc =>
-      'AI के साथ अंग्रेज़ी में बात करने के लिए ज़रूरी है।';
-
-  @override
-  String get permissionNotifTitle => 'सूचनाएँ (वैकल्पिक)';
-
-  @override
-  String get permissionNotifDesc =>
-      'हम आपको लर्निंग रिमाइंडर और कॉल शेड्यूल भेजेंगे।';
-
-  @override
   String get micPermissionNeededTitle => 'माइक्रोफ़ोन एक्सेस की आवश्यकता है';
 
   @override

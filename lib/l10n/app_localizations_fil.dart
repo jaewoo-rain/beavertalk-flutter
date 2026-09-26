@@ -350,30 +350,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get cancel => 'Kanselahin';
 
   @override
-  String get getStarted => 'Magsimula';
-
-  @override
-  String get permissionTitle =>
-      'Payagan ang mga permiso\npara sa maayos na karanasan';
-
-  @override
-  String get permissionSubtitle =>
-      'Kailangan ang mga permisong ito para magamit ang serbisyo.';
-
-  @override
-  String get permissionMicTitle => 'Mikropono (kailangan)';
-
-  @override
-  String get permissionMicDesc => 'Kailangan para makausap ang AI sa Ingles.';
-
-  @override
-  String get permissionNotifTitle => 'Mga Notification (opsyonal)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Magpapadala kami ng mga paalala sa pag-aaral at schedule ng tawag.';
-
-  @override
   String get micPermissionNeededTitle => 'Kailangan ang access sa mikropono';
 
   @override

@@ -772,48 +772,6 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
-  /// No description provided for @getStarted.
-  ///
-  /// In en, this message translates to:
-  /// **'Get Started'**
-  String get getStarted;
-
-  /// No description provided for @permissionTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Allow permissions\nfor a smooth experience'**
-  String get permissionTitle;
-
-  /// No description provided for @permissionSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Required permissions are essential to use the service.'**
-  String get permissionSubtitle;
-
-  /// No description provided for @permissionMicTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Microphone (required)'**
-  String get permissionMicTitle;
-
-  /// No description provided for @permissionMicDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Needed to talk with the AI in English.'**
-  String get permissionMicDesc;
-
-  /// No description provided for @permissionNotifTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications (optional)'**
-  String get permissionNotifTitle;
-
-  /// No description provided for @permissionNotifDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'We\'ll send learning reminders and call schedules.'**
-  String get permissionNotifDesc;
-
   /// No description provided for @micPermissionNeededTitle.
   ///
   /// In en, this message translates to:

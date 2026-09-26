@@ -348,31 +348,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get cancel => 'Hủy';
 
   @override
-  String get getStarted => 'Bắt đầu';
-
-  @override
-  String get permissionTitle =>
-      'Cho phép quyền truy cập\nđể có trải nghiệm mượt mà';
-
-  @override
-  String get permissionSubtitle =>
-      'Các quyền cần thiết là bắt buộc để sử dụng dịch vụ.';
-
-  @override
-  String get permissionMicTitle => 'Micrô (bắt buộc)';
-
-  @override
-  String get permissionMicDesc =>
-      'Cần thiết để trò chuyện với AI bằng tiếng Anh.';
-
-  @override
-  String get permissionNotifTitle => 'Thông báo (tùy chọn)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Chúng tôi sẽ gửi lời nhắc học tập và lịch cuộc gọi.';
-
-  @override
   String get micPermissionNeededTitle => 'Cần quyền truy cập micrô';
 
   @override

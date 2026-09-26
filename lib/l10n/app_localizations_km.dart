@@ -345,30 +345,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get cancel => 'បោះបង់';
 
   @override
-  String get getStarted => 'ចាប់ផ្ដើម';
-
-  @override
-  String get permissionTitle => 'អនុញ្ញាតសិទ្ធិចូលប្រើ\nសម្រាប់បទពិសោធន៍រលូន';
-
-  @override
-  String get permissionSubtitle =>
-      'សិទ្ធិចាំបាច់ត្រូវការសម្រាប់ប្រើសេវាកម្មនេះ។';
-
-  @override
-  String get permissionMicTitle => 'មីក្រូហ្វូន (ចាំបាច់)';
-
-  @override
-  String get permissionMicDesc =>
-      'ត្រូវការសម្រាប់និយាយជាមួយ AI ជាភាសាអង់គ្លេស។';
-
-  @override
-  String get permissionNotifTitle => 'ការជូនដំណឹង (ជាជម្រើស)';
-
-  @override
-  String get permissionNotifDesc =>
-      'យើងនឹងផ្ញើការរំលឹកការសិក្សា និងកាលវិភាគហៅទូរស័ព្ទ។';
-
-  @override
   String get micPermissionNeededTitle => 'ត្រូវការសិទ្ធិចូលប្រើមីក្រូហ្វូន';
 
   @override

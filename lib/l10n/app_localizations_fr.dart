@@ -355,31 +355,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancel => 'Annuler';
 
   @override
-  String get getStarted => 'Commencer';
-
-  @override
-  String get permissionTitle =>
-      'Autorisez les accès\npour une expérience fluide';
-
-  @override
-  String get permissionSubtitle =>
-      'Les autorisations requises sont indispensables pour utiliser le service.';
-
-  @override
-  String get permissionMicTitle => 'Microphone (obligatoire)';
-
-  @override
-  String get permissionMicDesc =>
-      'Nécessaire pour parler avec l\'IA en anglais.';
-
-  @override
-  String get permissionNotifTitle => 'Notifications (facultatif)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Nous vous enverrons des rappels d\'apprentissage et vos horaires d\'appel.';
-
-  @override
   String get micPermissionNeededTitle => 'Accès au microphone requis';
 
   @override

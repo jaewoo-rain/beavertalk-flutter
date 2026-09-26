@@ -341,30 +341,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get cancel => 'ยกเลิก';
 
   @override
-  String get getStarted => 'เริ่มต้นใช้งาน';
-
-  @override
-  String get permissionTitle =>
-      'อนุญาตสิทธิ์การเข้าถึง\nเพื่อประสบการณ์ที่ราบรื่น';
-
-  @override
-  String get permissionSubtitle =>
-      'สิทธิ์ที่จำเป็นเหล่านี้จำเป็นต่อการใช้บริการ';
-
-  @override
-  String get permissionMicTitle => 'ไมโครโฟน (จำเป็น)';
-
-  @override
-  String get permissionMicDesc => 'จำเป็นสำหรับการพูดคุยกับ AI เป็นภาษาเกาหลี';
-
-  @override
-  String get permissionNotifTitle => 'การแจ้งเตือน (ไม่บังคับ)';
-
-  @override
-  String get permissionNotifDesc =>
-      'เราจะส่งการเตือนการเรียนและตารางการโทรให้คุณ';
-
-  @override
   String get micPermissionNeededTitle => 'ต้องอนุญาตการเข้าถึงไมโครโฟน';
 
   @override

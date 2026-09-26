@@ -21,7 +21,6 @@ import 'package:beavertalk/features/normalcall/presentation/normalcall_providers
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
-import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 
 class _FakeRepo implements NormalcallRepository {
@@ -94,11 +93,6 @@ void main() {
     // 회원은 레벨이 없어 서버가 레벨테스트로 라우팅한다.
     testWidgets('온보딩 완료 「레벨 테스트」', (tester) async {
       final call = await _tapAndCollect(tester, const OnboardingDoneScreen(), '레벨 테스트하기');
-      _expectAuto(call);
-    });
-
-    testWidgets('기록 빈 화면 「통화 시작」', (tester) async {
-      final call = await _tapAndCollect(tester, const RecordEmptyScreen(), '통화 시작');
       _expectAuto(call);
     });
 

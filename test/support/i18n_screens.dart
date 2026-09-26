@@ -34,7 +34,6 @@ import 'package:beavertalk/screens/alarm/alarm_days.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet_alarm_add.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet_alarm_settings.dart' show AlarmPartner;
 import 'package:beavertalk/components/molecules/row_alarm.dart';
-import 'package:beavertalk/screens/alarm/alarm_empty.dart';
 import 'package:beavertalk/screens/alarm/alarm_list.dart';
 import 'package:beavertalk/screens/auth/login.dart';
 import 'package:beavertalk/screens/auth/login_form.dart';
@@ -75,7 +74,6 @@ import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
-import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/home/learning_args.dart';
 import 'package:beavertalk/screens/home/learning_call_main.dart';
 import 'package:beavertalk/screens/home/learning_summary.dart';
@@ -84,7 +82,6 @@ import 'package:beavertalk/screens/home/learning_call_main_loading.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/system/mic_denied.dart';
 import 'package:beavertalk/screens/system/network_error.dart';
-import 'package:beavertalk/screens/system/permission.dart';
 import 'package:beavertalk/screens/weak_sound/weak_sounds.dart';
 import 'package:beavertalk/features/weak_sound/presentation/sound_key_arg.dart';
 import 'package:beavertalk/features/weak_sound/domain/entities/weak_sound_item.dart';
@@ -293,7 +290,6 @@ Map<String, Widget Function()> i18nScreens() {
             );
           },
         ),
-    'AlarmEmpty': () => const AlarmEmptyScreen(),
     'AlarmList': () => const AlarmListScreen(),
     // 알람 로딩(Figma `3489:4550`, 09-24 개편) — 목록 줄과 같은 틀의 스켈레톤 세 줄.
     'AlarmListLoading': () => const AlarmListLoading(),
@@ -369,7 +365,6 @@ Map<String, Widget Function()> i18nScreens() {
     // the Pro success screen is excluded too — its one-time-offer timer
     // (Future.delayed 800ms) is exactly the timer-heavy case the scope note
     // rules out, and the Max variant covers the identical layout.
-    'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
     'PaywallProLimit': () =>
         const PaywallScreen(variant: PaywallVariant.proLimit),
     'PaywallMax': () => const PaywallScreen(variant: PaywallVariant.max),
@@ -421,7 +416,6 @@ Map<String, Widget Function()> i18nScreens() {
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),
     'OnboardingName': () => const OnboardingNameScreen(),
     'OnboardingReason': () => const OnboardingReasonScreen(),
-    'RecordEmpty': () => const RecordEmptyScreen(),
     'RecordList': () => const RecordListScreen(),
     'RecordArchiveTab': () => const RecordListScreen(initialTab: 1),
     // Densest screen in the app — three tables and a chart, all fixed-width
@@ -437,7 +431,6 @@ Map<String, Widget Function()> i18nScreens() {
     'LevelUp': () => LevelUpScreen(level: 13, onConfirm: () {}),
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
-    'Permission': () => const PermissionScreen(),
     // 숙제 — 참여 흐름과 목록·상세. 문안이 새로 들어온 영역이라 독일어에서
     // 가장 먼저 깨진다(구현계획 §3.4 「폭 검수 기준 언어 = 독일어」).
     'HwJoinCode': () => const JoinCodeScreen(),

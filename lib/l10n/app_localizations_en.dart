@@ -346,29 +346,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cancel => 'Cancel';
 
   @override
-  String get getStarted => 'Get Started';
-
-  @override
-  String get permissionTitle => 'Allow permissions\nfor a smooth experience';
-
-  @override
-  String get permissionSubtitle =>
-      'Required permissions are essential to use the service.';
-
-  @override
-  String get permissionMicTitle => 'Microphone (required)';
-
-  @override
-  String get permissionMicDesc => 'Needed to talk with the AI in English.';
-
-  @override
-  String get permissionNotifTitle => 'Notifications (optional)';
-
-  @override
-  String get permissionNotifDesc =>
-      'We\'ll send learning reminders and call schedules.';
-
-  @override
   String get micPermissionNeededTitle => 'Microphone access needed';
 
   @override

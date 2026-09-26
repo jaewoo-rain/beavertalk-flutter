@@ -346,30 +346,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get cancel => 'منسوخ کریں';
 
   @override
-  String get getStarted => 'شروع کریں';
-
-  @override
-  String get permissionTitle => 'بہتر تجربے کے لیے\nاجازتیں دیں';
-
-  @override
-  String get permissionSubtitle =>
-      'سروس استعمال کرنے کے لیے مطلوبہ اجازتیں ضروری ہیں۔';
-
-  @override
-  String get permissionMicTitle => 'مائیکروفون (ضروری)';
-
-  @override
-  String get permissionMicDesc =>
-      'AI کے ساتھ انگریزی میں بات کرنے کے لیے درکار ہے۔';
-
-  @override
-  String get permissionNotifTitle => 'اطلاعات (اختیاری)';
-
-  @override
-  String get permissionNotifDesc =>
-      'ہم آپ کو سیکھنے کی یاد دہانیاں اور کال شیڈول بھیجیں گے۔';
-
-  @override
   String get micPermissionNeededTitle => 'مائیکروفون تک رسائی درکار ہے';
 
   @override

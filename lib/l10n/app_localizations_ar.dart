@@ -347,29 +347,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get cancel => 'إلغاء';
 
   @override
-  String get getStarted => 'ابدأ الآن';
-
-  @override
-  String get permissionTitle => 'اسمح بالأذونات\nلتجربة سلسة';
-
-  @override
-  String get permissionSubtitle => 'الأذونات المطلوبة ضرورية لاستخدام الخدمة.';
-
-  @override
-  String get permissionMicTitle => 'الميكروفون (مطلوب)';
-
-  @override
-  String get permissionMicDesc =>
-      'مطلوب للتحدث مع الذكاء الاصطناعي بالإنجليزية.';
-
-  @override
-  String get permissionNotifTitle => 'الإشعارات (اختياري)';
-
-  @override
-  String get permissionNotifDesc =>
-      'سنرسل لك تذكيرات التعلّم ومواعيد المكالمات.';
-
-  @override
   String get micPermissionNeededTitle => 'الوصول إلى الميكروفون مطلوب';
 
   @override

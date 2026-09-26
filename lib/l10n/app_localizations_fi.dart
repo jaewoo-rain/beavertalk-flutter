@@ -350,31 +350,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get cancel => 'Peruuta';
 
   @override
-  String get getStarted => 'Aloita';
-
-  @override
-  String get permissionTitle =>
-      'Salli käyttöoikeudet\nsujuvaa kokemusta varten';
-
-  @override
-  String get permissionSubtitle =>
-      'Vaaditut käyttöoikeudet ovat välttämättömiä palvelun käyttämiseksi.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofoni (pakollinen)';
-
-  @override
-  String get permissionMicDesc =>
-      'Tarvitaan puhumiseen tekoälyn kanssa englanniksi.';
-
-  @override
-  String get permissionNotifTitle => 'Ilmoitukset (valinnainen)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Lähetämme oppimismuistutuksia ja puheluaikatauluja.';
-
-  @override
   String get micPermissionNeededTitle => 'Mikrofonin käyttöoikeus tarvitaan';
 
   @override

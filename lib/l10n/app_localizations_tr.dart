@@ -344,31 +344,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get cancel => 'İptal';
 
   @override
-  String get getStarted => 'Başla';
-
-  @override
-  String get permissionTitle =>
-      'Sorunsuz bir deneyim için\nizinlere izin verin';
-
-  @override
-  String get permissionSubtitle =>
-      'Hizmeti kullanmak için gerekli izinler zorunludur.';
-
-  @override
-  String get permissionMicTitle => 'Mikrofon (zorunlu)';
-
-  @override
-  String get permissionMicDesc =>
-      'Yapay zeka ile İngilizce konuşmak için gereklidir.';
-
-  @override
-  String get permissionNotifTitle => 'Bildirimler (isteğe bağlı)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Öğrenme hatırlatmaları ve arama programlarını size göndereceğiz.';
-
-  @override
   String get micPermissionNeededTitle => 'Mikrofon erişimi gerekiyor';
 
   @override

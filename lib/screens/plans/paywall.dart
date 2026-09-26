@@ -26,12 +26,10 @@ import '../overlays/subscription_overlays.dart';
 ///
 /// ⭐ **단일 티어(2026-09-22 · 가치 사다리 정본 §11-4).** 유료는 Premium 하나다 —
 /// 스토어 상품 `bt_max_*` · 서버 플랜 코드 `max` 는 그대로, **표시 이름만** Premium.
-/// [pro]·[max] 는 옛 라우트(`/paywall/pro`·`/paywall/max`)를 살리려고 남긴 값이고 **둘 다
-/// 같은 Premium 페이월**을 그린다. Pro 는 더 팔지 않는다.
+/// [max] 는 옛 라우트(`/paywall/max`)를 살리려고 남긴 값이고 Premium 페이월을 그린다.
+/// Pro 는 더 팔지 않는다 — `pro` 값과 `/paywall/pro` 라우트는 도달 경로가 없어
+/// 09-26 지웠다(PM-DEC-010).
 enum PaywallVariant {
-  /// 옛 `depth/paywall_pro` 라우트 — 이제 Premium 페이월과 같다.
-  pro,
-
   /// `depth/paywall_premium__limit` (`4658:28112`) — reached **only** by burning
   /// the daily cap (spec §8-1). Hot entry: a non-interactive banner naming
   /// what ran out and a one-line headline instead of the story.

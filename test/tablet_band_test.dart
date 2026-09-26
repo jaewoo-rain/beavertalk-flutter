@@ -22,7 +22,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:beavertalk/app/adaptive.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
 
-import 'package:beavertalk/screens/alarm/alarm_empty.dart';
 import 'package:beavertalk/screens/alarm/alarm_list.dart';
 import 'package:beavertalk/screens/auth/login.dart';
 import 'package:beavertalk/screens/auth/login_form.dart';
@@ -45,14 +44,11 @@ import 'package:beavertalk/screens/onboarding/onboarding_done.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_language.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_name.dart';
 import 'package:beavertalk/screens/onboarding/onboarding_reason.dart';
-import 'package:beavertalk/screens/plans/paywall.dart';
 import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
-import 'package:beavertalk/screens/record/record_empty.dart';
 import 'package:beavertalk/screens/record/record_list.dart';
 import 'package:beavertalk/screens/system/mic_denied.dart';
 import 'package:beavertalk/screens/system/network_error.dart';
-import 'package:beavertalk/screens/system/permission.dart';
 
 void main() {
   final screens = <String, Widget Function()>{
@@ -68,18 +64,14 @@ void main() {
     'OnboardingDone': () => const OnboardingDoneScreen(),
     'RecordList': () => const RecordListScreen(),
     'RecordArchive': () => const RecordListScreen(initialTab: 1),
-    'RecordEmpty': () => const RecordEmptyScreen(),
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
     'EditNickname': () => const EditNicknameScreen(),
     'SubscriptionManage': () => const SubscriptionManageScreen(),
-    'PaywallPro': () => const PaywallScreen(variant: PaywallVariant.pro),
     'PlansCompare': () => const PlansCompareScreen(),
     'WinbackSurvey': () => const WinbackSurveyScreen(),
     'AlarmList': () => const AlarmListScreen(),
-    'AlarmEmpty': () => const AlarmEmptyScreen(),
     'CallFinish': () => const CallFinishScreen(),
-    'Permission': () => const PermissionScreen(),
     'MicDenied': () => const MicDeniedScreen(),
     'NetworkError': () => const NetworkErrorScreen(),
     // ⭐ 홈 — 2026-09-06 에 여기가 비어 있어서 숙제 배너가 밴드 밖(고정 20)으로

@@ -348,29 +348,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get cancel => 'අවලංගු කරන්න';
 
   @override
-  String get getStarted => 'ආරම්භ කරන්න';
-
-  @override
-  String get permissionTitle => 'සුමට අත්දැකීමක් සඳහා\nඅවසර ලබා දෙන්න';
-
-  @override
-  String get permissionSubtitle =>
-      'සේවාව භාවිතා කිරීමට අවශ්‍ය අවසර අත්‍යවශ්‍ය වේ.';
-
-  @override
-  String get permissionMicTitle => 'මයික්‍රෆෝනය (අවශ්‍යයි)';
-
-  @override
-  String get permissionMicDesc => 'AI සමඟ ඉංග්‍රීසියෙන් කතා කිරීමට අවශ්‍යයි.';
-
-  @override
-  String get permissionNotifTitle => 'දැනුම්දීම් (විකල්ප)';
-
-  @override
-  String get permissionNotifDesc =>
-      'අපි ඉගෙනුම් මතක් කිරීම් සහ ඇමතුම් කාලසටහන් යවන්නෙමු.';
-
-  @override
   String get micPermissionNeededTitle => 'මයික්‍රෆෝන ප්‍රවේශය අවශ්‍යයි';
 
   @override

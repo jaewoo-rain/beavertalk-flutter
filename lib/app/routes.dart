@@ -30,7 +30,6 @@ import '../screens/home/learning_call_main.dart';
 import '../screens/home/learning_call_main_loading.dart';
 import '../screens/home/learning_sentence_main.dart';
 import '../screens/payment/payment_history.dart';
-import '../screens/system/permission.dart';
 import '../screens/system/mic_denied.dart';
 import '../screens/system/network_error.dart';
 import '../screens/mypage/mypage.dart';
@@ -44,17 +43,14 @@ import '../screens/plans/purchase_flow.dart';
 import '../features/subscription/domain/entities/subscription_state.dart';
 import '../screens/mypage/avatar.dart';
 import '../screens/home/streak_calendar.dart';
-import '../screens/mypage/share.dart';
 import '../screens/alarm/alarm_list.dart';
 import '../screens/alarm/alarm_add.dart';
-import '../screens/alarm/alarm_empty.dart';
 import '../screens/weak_sound/learn_sentence.dart';
 import '../screens/weak_sound/learn_test.dart';
 import '../screens/weak_sound/learn_understand.dart';
 import '../screens/weak_sound/learn_words.dart';
 import '../screens/weak_sound/weak_sounds.dart';
 import '../screens/record/record_list.dart';
-import '../screens/record/record_empty.dart';
 import '../screens/report/report_content.dart';
 import '../screens/classroom/join_code.dart';
 import '../screens/classroom/join_confirm.dart';
@@ -109,12 +105,10 @@ abstract final class Routes {
   static const editNickname = '/mypage/settings/nickname';
   static const subscription = '/mypage/subscription';
   static const avatar = '/mypage/avatar';
-  static const share = '/mypage/share';
 
   // ── Alarms ──
   static const alarms = '/alarms';
   static const alarmAdd = '/alarms/add';
-  static const alarmEmpty = '/alarms/empty';
 
   // ── 취약 발음 학습 ──
   //
@@ -133,11 +127,9 @@ abstract final class Routes {
   // ── Records ──
   static const records = '/records';
   static const recordsArchive = '/records/archive';
-  static const recordsEmpty = '/records/empty';
 
   // ── Subscription redesign (P3) ──
   static const plansCompare = '/plans/compare';
-  static const paywallPro = '/paywall/pro';
   static const paywallProLimit = '/paywall/pro-limit';
   static const paywallMax = '/paywall/max';
   static const purchaseProcessing = '/purchase/processing';
@@ -178,7 +170,6 @@ abstract final class Routes {
   // v2 §2-3: IAP is the only rail, the OS sheet is the checkout. History
   // stays: it lists both product types (§6-5).
   static const paymentHistory = '/payment/history';
-  static const permission = '/permission';
   static const permissionMicDenied = '/permission/mic-denied';
 
   /// Whole-screen load failure. Most failures are regional and render
@@ -277,7 +268,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.pronunciationChallenge: (_) =>
         const PronunciationChallengeScreen(),
     Routes.paymentHistory: (_) => const PaymentHistoryScreen(),
-    Routes.permission: (_) => const PermissionScreen(),
     Routes.permissionMicDenied: (_) => const MicDeniedScreen(),
     Routes.networkError: (_) => const NetworkErrorScreen(),
     Routes.mypage: (_) => const MyPageScreen(),
@@ -285,8 +275,6 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.editNickname: (_) => const EditNicknameScreen(),
     Routes.subscription: (_) => const SubscriptionManageScreen(),
     Routes.plansCompare: (_) => const PlansCompareScreen(),
-    Routes.paywallPro: (_) =>
-        const PaywallScreen(variant: PaywallVariant.pro),
     Routes.paywallProLimit: (_) =>
         const PaywallScreen(variant: PaywallVariant.proLimit),
     Routes.paywallMax: (_) =>
@@ -297,16 +285,13 @@ Route<dynamic> onGenerateRoute(RouteSettings settings) {
     Routes.plansError: (_) => const PlansErrorScreen(),
     Routes.winbackSurvey: (_) => const WinbackSurveyScreen(),
     Routes.avatar: (_) => const AvatarScreen(),
-    Routes.share: (_) => const ShareScreen(),
     Routes.alarms: (_) => const AlarmListScreen(),
     Routes.alarmAdd: (_) => const AlarmAddScreen(),
-    Routes.alarmEmpty: (_) => const AlarmEmptyScreen(),
     Routes.streakCalendar: (_) => const StreakCalendarScreen(),
     Routes.records: (_) => const RecordListScreen(),
     // Archive is now an in-page tab of RecordListScreen; the route is kept for
     // deep links and opens the same page pre-selected on the 보관 tab.
     Routes.recordsArchive: (_) => const RecordListScreen(initialTab: 1),
-    Routes.recordsEmpty: (_) => const RecordEmptyScreen(),
     Routes.reportContent: (_) => const ReportContentScreen(),
   };
 

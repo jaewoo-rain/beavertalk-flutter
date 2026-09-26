@@ -338,27 +338,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancel => '取消';
 
   @override
-  String get getStarted => '开始使用';
-
-  @override
-  String get permissionTitle => '为了流畅的体验\n请允许相关权限';
-
-  @override
-  String get permissionSubtitle => '所需权限是使用本服务的必要条件。';
-
-  @override
-  String get permissionMicTitle => '麦克风（必需）';
-
-  @override
-  String get permissionMicDesc => '与 AI 用韩语对话时需要。';
-
-  @override
-  String get permissionNotifTitle => '通知（可选）';
-
-  @override
-  String get permissionNotifDesc => '我们会发送学习提醒和通话日程。';
-
-  @override
   String get micPermissionNeededTitle => '需要麦克风权限';
 
   @override

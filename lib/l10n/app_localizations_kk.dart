@@ -347,29 +347,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get cancel => 'Бас тарту';
 
   @override
-  String get getStarted => 'Бастау';
-
-  @override
-  String get permissionTitle => 'Ыңғайлы тәжірибе үшін\nрұқсаттарды беріңіз';
-
-  @override
-  String get permissionSubtitle =>
-      'Қажетті рұқсаттар қызметті пайдалану үшін міндетті.';
-
-  @override
-  String get permissionMicTitle => 'Микрофон (міндетті)';
-
-  @override
-  String get permissionMicDesc => 'AI-мен ағылшынша сөйлесу үшін қажет.';
-
-  @override
-  String get permissionNotifTitle => 'Хабарландырулар (міндетті емес)';
-
-  @override
-  String get permissionNotifDesc =>
-      'Біз оқу еске салғыштары мен қоңырау кестелерін жібереміз.';
-
-  @override
   String get micPermissionNeededTitle => 'Микрофонға рұқсат қажет';
 
   @override

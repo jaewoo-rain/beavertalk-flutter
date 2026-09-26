@@ -347,29 +347,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get cancel => 'বাতিল করুন';
 
   @override
-  String get getStarted => 'শুরু করুন';
-
-  @override
-  String get permissionTitle => 'সাবলীল অভিজ্ঞতার জন্য\nঅনুমতি দিন';
-
-  @override
-  String get permissionSubtitle =>
-      'সেবাটি ব্যবহার করতে প্রয়োজনীয় অনুমতিগুলো অপরিহার্য।';
-
-  @override
-  String get permissionMicTitle => 'মাইক্রোফোন (আবশ্যক)';
-
-  @override
-  String get permissionMicDesc => 'AI-এর সাথে ইংরেজিতে কথা বলার জন্য প্রয়োজন।';
-
-  @override
-  String get permissionNotifTitle => 'নোটিফিকেশন (ঐচ্ছিক)';
-
-  @override
-  String get permissionNotifDesc =>
-      'আমরা শেখার রিমাইন্ডার এবং কল সময়সূচি পাঠাব।';
-
-  @override
   String get micPermissionNeededTitle => 'মাইক্রোফোন অ্যাক্সেস প্রয়োজন';
 
   @override

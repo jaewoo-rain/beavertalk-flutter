@@ -246,13 +246,6 @@
     "description": "Confirm button in the country/language select bottom sheet."
   },
   "cancel": "Cancel",
-  "getStarted": "Get Started",
-  "permissionTitle": "Allow permissions\nfor a smooth experience",
-  "permissionSubtitle": "Required permissions are essential to use the service.",
-  "permissionMicTitle": "Microphone (required)",
-  "permissionMicDesc": "Needed to talk with the AI in English.",
-  "permissionNotifTitle": "Notifications (optional)",
-  "permissionNotifDesc": "We'll send learning reminders and call schedules.",
   "micPermissionNeededTitle": "Microphone access needed",
   "micPermissionNeededBody": "To talk with the AI, you need to allow microphone access. Please enable it in Settings.",
   "openSettings": "Open Settings",
