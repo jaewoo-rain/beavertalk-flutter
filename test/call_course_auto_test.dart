@@ -20,6 +20,10 @@ import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/mypage/mypage.dart';
 
 void main() {
+  // betatest 브랜치는 마이페이지 개발자 도구를 기본으로 가린다(09-26 사용자 지시) —
+  // 이 시험은 개발자 도구를 눌러 확인하므로 켠다.
+  setUpAll(() => debugShowMyPageDevTools = true);
+  tearDownAll(() => debugShowMyPageDevTools = false);
   group('CallCourse.fromWire — call_started.course 읽기', () {
     test('서버 두 값을 그대로 읽는다', () {
       expect(CallCourse.fromWire('expression'), CallCourse.expression);

@@ -89,6 +89,10 @@ void _expectAuto(List<RouteSettings> call) {
 }
 
 void main() {
+  // betatest 브랜치는 마이페이지 개발자 도구를 기본으로 가린다(09-26 사용자 지시) —
+  // 이 시험은 개발자 도구를 눌러 확인하므로 켠다.
+  setUpAll(() => debugShowMyPageDevTools = true);
+  tearDownAll(() => debugShowMyPageDevTools = false);
   group('제품 진입점 3곳 → auto', () {
     // 09-24 버튼 문구 「레벨 테스트」(사용자 지시 · P30 번복). 요청은 그대로 auto — 가입 직후
     // 회원은 레벨이 없어 서버가 레벨테스트로 라우팅한다.
@@ -106,6 +110,22 @@ void main() {
       final call = await _tapAndCollect(tester, const RecordListScreen(), '통화 시작');
       _expectAuto(call);
     });
+  });
+
+  // betatest 브랜치(09-26 사용자 「마이페이지에 들어간 개발자도구(디버그빌드에서만 보이는 저거)
+  // 안보이게좀 해줘」) — 기본값이면 디버그 빌드에서도 개발자 카드가 트리에 없다.
+  testWidgets('betatest: 기본값이면 마이페이지 개발자 도구가 안 보인다', (tester) async {
+    debugShowMyPageDevTools = false;
+    addTearDown(() => debugShowMyPageDevTools = true);
+    tester.view.physicalSize = const Size(375, 2400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_host(const MyPageScreen(), <RouteSettings>[]));
+    await tester.pump(const Duration(milliseconds: 32));
+    await tester.pump(const Duration(milliseconds: 32));
+    tester.takeException();
+    expect(find.text('개발자 도구'), findsNothing);
+    expect(find.text('Premium · 표현학습'), findsNothing);
   });
 
   group('개발자 도구 «플랜 × 코스» 4칸', () {

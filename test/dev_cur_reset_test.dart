@@ -82,6 +82,10 @@ Future<void> _pumpToButton(WidgetTester tester, _FakeRepo repo) async {
 final _button = find.text('내 배운 기록 삭제');
 
 void main() {
+  // betatest 브랜치는 마이페이지 개발자 도구를 기본으로 가린다(09-26 사용자 지시) —
+  // 이 시험은 개발자 도구를 눌러 확인하므로 켠다.
+  setUpAll(() => debugShowMyPageDevTools = true);
+  tearDownAll(() => debugShowMyPageDevTools = false);
   test('Env.stripApiPrefix — /api/v1 을 뗀 루트가 /__dev/* 가 붙는 자리다', () {
     // 서버 main.py 가 라우터 밖 `@app.post("/__dev/…")` 로 열어 API_PREFIX 를 안 탄다.
     // (`Env.apiRootUrl` 은 dotenv 를 읽어 순수 시험이 안 된다 — 잘라내기만 여기서 잠근다.)

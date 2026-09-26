@@ -91,6 +91,10 @@ Widget _host(Widget home, List<RouteSettings> pushed, {List<Override> overrides 
     );
 
 void main() {
+  // betatest 브랜치는 마이페이지 개발자 도구를 기본으로 가린다(09-26 사용자 지시) —
+  // 이 시험은 개발자 도구를 눌러 확인하므로 켠다.
+  setUpAll(() => debugShowMyPageDevTools = true);
+  tearDownAll(() => debugShowMyPageDevTools = false);
   testWidgets('홈 전화 버튼 → callLoading 에 CourseCallRequest(auto), force 없음', (tester) async {
     _grantMic();
     final pushed = <RouteSettings>[];

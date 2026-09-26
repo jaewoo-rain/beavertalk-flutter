@@ -71,6 +71,16 @@ abstract final class _Fallback {
 ///   되살린다.
 const bool _kLegacyDevTools = false;
 
+/// 마이페이지 개발자 도구 카드를 그릴지 — **betatest 브랜치는 끈다(디버그 빌드에서도).**
+///
+/// 2026-09-26 사용자: 「브랜치 하나파서 dev말고 betatest로 만들고, 마이페이지에 들어간
+/// 개발자도구(디버그빌드에서만 보이는 저거) 안보이게좀 해줘」. dev 는 종전대로 `kDebugMode` 만 본다.
+/// 릴리즈 빌드는 원래부터 안 보인다(`kDebugMode` 상수 접힘) — 이 값은 디버그 설치본까지 가린다.
+///
+/// 개발자 도구를 누르며 확인하는 시험(코스 · 플랜 행렬 · 배운 기록 삭제 등)만 켠다.
+@visibleForTesting
+bool debugShowMyPageDevTools = false;
+
 /// 플랜 × 코스 행렬의 **행 순서** — 위에서 아래로 상위 플랜(Premium·Free).
 /// 서버 `premium` 브랜치(09-23)에서 Pro·Max 가 Premium 하나로 합쳐졌다.
 const List<PlanOverride> _devMatrixPlans = [
@@ -166,7 +176,7 @@ class MyPageScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.s24),
                   // 숙제 진입점 — 형제 지표 카드 뒤 마지막 자리(Figma 실측).
                   const HomeworkClassCard(),
-                  if (kDebugMode) ...[
+                  if (kDebugMode && debugShowMyPageDevTools) ...[
                     const SizedBox(height: AppSpacing.s24),
                     _devToolsCard(context),
                   ],
