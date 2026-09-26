@@ -1281,6 +1281,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get practicePronunciation => '発音を学習する';
 
   @override
+  String get analysisNoScoreReview => '復習すると発音スコアが出ます';
+
+  @override
+  String get analysisNoScoreEmpty => '採点する文がありません';
+
+  @override
   String get priceChangedTitle => '価格が変更されました';
 
   @override
@@ -2007,6 +2013,15 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ctaMaybeLater => 'また今度';
 
   @override
+  String get winbackOfferBadge => '初月50%オフ';
+
+  @override
+  String get winbackOfferTitle => 'おかえりなさい';
+
+  @override
+  String get ctaGetHalfOff => '50%オフで再開';
+
+  @override
   String get iapCharacterSuccessTitle => '新しい友だちが仲間入り!';
 
   @override
@@ -2618,7 +2633,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get wsMineTitle => 'わたしの苦手な発音';
 
   @override
-  String get wsMineSubtitle => '最近の通話で正確さが低かった音です';
+  String get wsMineSubtitle => '最近の通話で測定した音です';
 
   @override
   String get wsMineEmptyBody => '通話して復習すると、苦手な発音がたまります。';

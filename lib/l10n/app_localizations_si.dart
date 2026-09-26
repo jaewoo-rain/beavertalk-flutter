@@ -1312,6 +1312,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get practicePronunciation => 'උච්චාරණය පුහුණු වන්න';
 
   @override
+  String get analysisNoScoreReview => 'පුහුණු වුණාම උච්චාරණ ලකුණු පෙන්වයි';
+
+  @override
+  String get analysisNoScoreEmpty => 'ලකුණු දීමට වාක්‍ය නැත';
+
+  @override
   String get priceChangedTitle => 'මිල වෙනස් වුණා';
 
   @override
@@ -2062,6 +2068,15 @@ class AppLocalizationsSi extends AppLocalizations {
   String get ctaMaybeLater => 'පසුව';
 
   @override
+  String get winbackOfferBadge => 'පළමු මාසයට 50% වට්ටම්';
+
+  @override
+  String get winbackOfferTitle => 'නැවත සාදරයෙන් පිළිගනිමු';
+
+  @override
+  String get ctaGetHalfOff => '50% වට්ටම ගන්න';
+
+  @override
   String get iapCharacterSuccessTitle => 'අලුත් මිතුරෙක් එක්වුණා!';
 
   @override
@@ -2686,7 +2701,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get wsMineTitle => 'මගේ දුර්වල ශබ්ද';
 
   @override
-  String get wsMineSubtitle => 'මෑතක ලකුණු අඩුම ශබ්ද';
+  String get wsMineSubtitle => 'ඔබේ මෑත ඇමතුම්වල මැනූ ශබ්ද';
 
   @override
   String get wsMineEmptyBody =>

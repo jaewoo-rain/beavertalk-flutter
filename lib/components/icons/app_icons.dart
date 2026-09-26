@@ -56,6 +56,10 @@ abstract final class AppIcons {
   /// SVG 는 Figma Size=24 를 그대로 내보낸 것(app designer 세션, 09-24).
   static Widget duoHeart({double size = 48}) => _duo('duo-heart', size);
 
+  /// `duo-return` (`6195:29896`, Size=36 원본) — 윈백 오퍼 시트 머리 아이콘, 화면에서 56.
+  /// 원시색 고정(#DCEBFF 원 · #3182F6 획). SVG 는 app designer 세션 내보내기(09-26).
+  static Widget duoReturn({double size = 56}) => _duo('duo-return', size);
+
   /// Premium 혜택 줄 아이콘 4종 — Figma `Paywall/Benefit`(`6198:1999`) 의 20 크기.
   /// `duo-video`(`6195:1517`) · `duo-chart`(`6195:1553`) · `duo-target`(`6195:1582`) ·
   /// `duo-bubble`(`6195:29871`).

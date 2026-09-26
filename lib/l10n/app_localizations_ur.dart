@@ -1314,6 +1314,12 @@ class AppLocalizationsUr extends AppLocalizations {
   String get practicePronunciation => 'تلفظ کی مشق کریں';
 
   @override
+  String get analysisNoScoreReview => 'مشق کریں تو تلفظ کا اسکور آئے گا';
+
+  @override
+  String get analysisNoScoreEmpty => 'اسکور کرنے کے لیے کوئی جملہ نہیں';
+
+  @override
   String get priceChangedTitle => 'قیمت تبدیل ہو گئی';
 
   @override
@@ -2066,6 +2072,15 @@ class AppLocalizationsUr extends AppLocalizations {
   String get ctaMaybeLater => 'شاید بعد میں';
 
   @override
+  String get winbackOfferBadge => 'پہلے مہینے 50% رعایت';
+
+  @override
+  String get winbackOfferTitle => 'دوبارہ خوش آمدید';
+
+  @override
+  String get ctaGetHalfOff => '50% رعایت حاصل کریں';
+
+  @override
   String get iapCharacterSuccessTitle => 'ایک نیا دوست شامل ہو گیا!';
 
   @override
@@ -2699,7 +2714,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get wsMineTitle => 'میری کمزور آوازیں';
 
   @override
-  String get wsMineSubtitle => 'حال ہی میں سب سے کم اسکور والی آوازیں';
+  String get wsMineSubtitle => 'آپ کی حالیہ کالز میں ناپی گئی آوازیں';
 
   @override
   String get wsMineEmptyBody =>

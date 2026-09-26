@@ -1283,6 +1283,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get practicePronunciation => '발음 학습하기';
 
   @override
+  String get analysisNoScoreReview => '복습하면 발음 점수가 나와요';
+
+  @override
+  String get analysisNoScoreEmpty => '점수를 낼 문장이 없어요';
+
+  @override
   String get priceChangedTitle => '가격이 변경되었어요';
 
   @override
@@ -2008,6 +2014,15 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ctaMaybeLater => '나중에 할게요';
 
   @override
+  String get winbackOfferBadge => '첫 달 50% 할인';
+
+  @override
+  String get winbackOfferTitle => '다시 만나 반가워요';
+
+  @override
+  String get ctaGetHalfOff => '50% 할인받기';
+
+  @override
   String get iapCharacterSuccessTitle => '새 친구가 함께해요!';
 
   @override
@@ -2618,7 +2633,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get wsMineTitle => '나의 취약 발음';
 
   @override
-  String get wsMineSubtitle => '최근 통화에서 정확도가 낮은 소리예요';
+  String get wsMineSubtitle => '최근 통화에서 측정한 소리예요';
 
   @override
   String get wsMineEmptyBody => '통화하고 복습하면 내 취약 발음이 쌓여요.';

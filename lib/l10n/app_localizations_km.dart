@@ -1311,6 +1311,13 @@ class AppLocalizationsKm extends AppLocalizations {
   String get practicePronunciation => 'អនុវត្តការបញ្ចេញសំឡេង';
 
   @override
+  String get analysisNoScoreReview =>
+      'ហាត់ប្រយោគ ដើម្បីទទួលបានពិន្ទុបញ្ចេញសំឡេង';
+
+  @override
+  String get analysisNoScoreEmpty => 'គ្មានប្រយោគសម្រាប់ដាក់ពិន្ទុទេ';
+
+  @override
   String get priceChangedTitle => 'តម្លៃបានផ្លាស់ប្ដូរ';
 
   @override
@@ -2058,6 +2065,15 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ctaMaybeLater => 'ពេលក្រោយ';
 
   @override
+  String get winbackOfferBadge => 'បញ្ចុះ 50% ខែដំបូង';
+
+  @override
+  String get winbackOfferTitle => 'សូមស្វាគមន៍ការត្រឡប់មកវិញ';
+
+  @override
+  String get ctaGetHalfOff => 'យកការបញ្ចុះ 50%';
+
+  @override
   String get iapCharacterSuccessTitle => 'មិត្តថ្មីបានចូលរួម!';
 
   @override
@@ -2689,7 +2705,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get wsMineTitle => 'សំឡេងពិបាករបស់ខ្ញុំ';
 
   @override
-  String get wsMineSubtitle => 'សំឡេងដែលអ្នកបានពិន្ទុទាបថ្មីៗនេះ';
+  String get wsMineSubtitle => 'សំឡេងដែលបានវាស់ក្នុងការហៅថ្មីៗរបស់អ្នក';
 
   @override
   String get wsMineEmptyBody => 'ហៅ និងរំលឹក សំឡេងពិបាករបស់អ្នកនឹងកើនឡើង។';

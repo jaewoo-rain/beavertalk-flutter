@@ -1308,6 +1308,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get practicePronunciation => 'تدرب على النطق';
 
   @override
+  String get analysisNoScoreReview => 'تدرّب على الجمل لتحصل على نتيجة نطقك';
+
+  @override
+  String get analysisNoScoreEmpty => 'لا توجد جمل لتقييمها';
+
+  @override
   String get priceChangedTitle => 'تغيّر السعر';
 
   @override
@@ -2053,6 +2059,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ctaMaybeLater => 'ربما لاحقًا';
 
   @override
+  String get winbackOfferBadge => 'خصم 50% على الشهر الأول';
+
+  @override
+  String get winbackOfferTitle => 'أهلًا بعودتك';
+
+  @override
+  String get ctaGetHalfOff => 'احصل على خصم 50%';
+
+  @override
   String get iapCharacterSuccessTitle => 'انضم إليك صديق جديد!';
 
   @override
@@ -2677,7 +2692,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get wsMineTitle => 'أصواتي الصعبة';
 
   @override
-  String get wsMineSubtitle => 'الأصوات التي حصلت فيها على أقل نتيجة مؤخرًا';
+  String get wsMineSubtitle => 'الأصوات التي قيست في مكالماتك الأخيرة';
 
   @override
   String get wsMineEmptyBody => 'تحدّث وراجع، وستتجمع أصواتك الصعبة هنا.';

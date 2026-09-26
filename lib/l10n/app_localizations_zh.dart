@@ -1278,6 +1278,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get practicePronunciation => '练习发音';
 
   @override
+  String get analysisNoScoreReview => '复习后就会出现发音分数';
+
+  @override
+  String get analysisNoScoreEmpty => '没有可评分的句子';
+
+  @override
   String get priceChangedTitle => '价格已变更';
 
   @override
@@ -2003,6 +2009,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ctaMaybeLater => '以后再说';
 
   @override
+  String get winbackOfferBadge => '首月 5 折';
+
+  @override
+  String get winbackOfferTitle => '欢迎回来';
+
+  @override
+  String get ctaGetHalfOff => '领取 5 折';
+
+  @override
   String get iapCharacterSuccessTitle => '新伙伴加入了!';
 
   @override
@@ -2613,7 +2628,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wsMineTitle => '我的薄弱发音';
 
   @override
-  String get wsMineSubtitle => '最近得分最低的音';
+  String get wsMineSubtitle => '在最近通话中测得的音';
 
   @override
   String get wsMineEmptyBody => '通话并复习，薄弱发音就会累积起来。';

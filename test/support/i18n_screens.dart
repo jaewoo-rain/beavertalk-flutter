@@ -67,6 +67,7 @@ import 'package:beavertalk/screens/overlays/subscription_overlays.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
+import 'package:beavertalk/screens/plans/winback_offer_sheet.dart';
 import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/plans_compare.dart';
 import 'package:beavertalk/screens/plans/purchase_flow.dart';
@@ -411,6 +412,11 @@ Map<String, Widget Function()> i18nScreens() {
         const PurchaseSuccessScreen(tier: SubscriptionTier.max),
     'PlansError': () => const PlansErrorScreen(),
     'WinbackSurvey': () => const WinbackSurveyScreen(),
+    // 윈백 오퍼 시트(BottomSheet/Winback 6438:4129) — 설문 「비쌈」 다음(PM-DEC-035).
+    'WinbackOfferSheet': () => Align(
+          alignment: Alignment.bottomCenter,
+          child: WinbackOfferSheet(onGetOffer: () {}, onLater: () {}),
+        ),
     'EditNickname': () => const EditNicknameScreen(),
     'OnboardingDone': () => const OnboardingDoneScreen(),
     'OnboardingLanguage': () => const OnboardingLanguageScreen(),

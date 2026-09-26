@@ -1316,6 +1316,13 @@ class AppLocalizationsFi extends AppLocalizations {
   String get practicePronunciation => 'Harjoittele ääntämistä';
 
   @override
+  String get analysisNoScoreReview =>
+      'Harjoittele lauseita, niin saat ääntämispisteet';
+
+  @override
+  String get analysisNoScoreEmpty => 'Ei pisteytettäviä lauseita';
+
+  @override
   String get priceChangedTitle => 'Hinta muuttui';
 
   @override
@@ -2076,6 +2083,15 @@ class AppLocalizationsFi extends AppLocalizations {
   String get ctaMaybeLater => 'Ehkä myöhemmin';
 
   @override
+  String get winbackOfferBadge => '50 % alennus ensimmäisestä kuukaudesta';
+
+  @override
+  String get winbackOfferTitle => 'Tervetuloa takaisin';
+
+  @override
+  String get ctaGetHalfOff => 'Hanki 50 % alennus';
+
+  @override
   String get iapCharacterSuccessTitle => 'Uusi ystävä liittyi seuraan!';
 
   @override
@@ -2713,8 +2729,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get wsMineTitle => 'Omat vaikeat äänteet';
 
   @override
-  String get wsMineSubtitle =>
-      'Äänteet, joista sait viime aikoina vähiten pisteitä';
+  String get wsMineSubtitle => 'Viimeaikaisissa puheluissasi mitatut äänteet';
 
   @override
   String get wsMineEmptyBody =>

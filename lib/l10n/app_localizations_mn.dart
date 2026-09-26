@@ -1309,6 +1309,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get practicePronunciation => 'Дуудлага дасгалжуулах';
 
   @override
+  String get analysisNoScoreReview => 'Давтвал дуудлагын оноо гарна';
+
+  @override
+  String get analysisNoScoreEmpty => 'Үнэлэх өгүүлбэр алга';
+
+  @override
   String get priceChangedTitle => 'Үнэ өөрчлөгдлөө';
 
   @override
@@ -2060,6 +2066,15 @@ class AppLocalizationsMn extends AppLocalizations {
   String get ctaMaybeLater => 'Дараа';
 
   @override
+  String get winbackOfferBadge => 'Эхний сард 50% хөнгөлөлт';
+
+  @override
+  String get winbackOfferTitle => 'Эргэн тавтай морил';
+
+  @override
+  String get ctaGetHalfOff => '50% хөнгөлөлт авах';
+
+  @override
   String get iapCharacterSuccessTitle => 'Шинэ найз нэгдлээ!';
 
   @override
@@ -2693,7 +2708,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get wsMineTitle => 'Миний хүндрэлтэй авиа';
 
   @override
-  String get wsMineSubtitle => 'Сүүлийн үед оноо хамгийн бага байсан авианууд';
+  String get wsMineSubtitle => 'Сүүлийн дуудлагуудад тань хэмжсэн авианууд';
 
   @override
   String get wsMineEmptyBody =>

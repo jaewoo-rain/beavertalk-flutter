@@ -1320,6 +1320,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get practicePronunciation => 'Talaffuzni mashq qilish';
 
   @override
+  String get analysisNoScoreReview => 'Mashq qilsangiz, talaffuz balli chiqadi';
+
+  @override
+  String get analysisNoScoreEmpty => 'Baholanadigan gap yoʻq';
+
+  @override
   String get priceChangedTitle => 'Narx oʻzgardi';
 
   @override
@@ -2075,6 +2081,15 @@ class AppLocalizationsUz extends AppLocalizations {
   String get ctaMaybeLater => 'Keyinroq';
 
   @override
+  String get winbackOfferBadge => 'Birinchi oyga 50% chegirma';
+
+  @override
+  String get winbackOfferTitle => 'Yana xush kelibsiz';
+
+  @override
+  String get ctaGetHalfOff => '50% chegirma olish';
+
+  @override
   String get iapCharacterSuccessTitle => 'Yangi doʻst qoʻshildi!';
 
   @override
@@ -2715,7 +2730,8 @@ class AppLocalizationsUz extends AppLocalizations {
   String get wsMineTitle => 'Mening qiyin tovushlarim';
 
   @override
-  String get wsMineSubtitle => 'Yaqinda eng kam ball olgan tovushlar';
+  String get wsMineSubtitle =>
+      'Soʻnggi qoʻngʻiroqlaringizda oʻlchangan tovushlar';
 
   @override
   String get wsMineEmptyBody =>

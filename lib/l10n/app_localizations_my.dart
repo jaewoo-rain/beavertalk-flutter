@@ -1320,6 +1320,12 @@ class AppLocalizationsMy extends AppLocalizations {
   String get practicePronunciation => 'အသံထွက် လေ့ကျင့်ရန်';
 
   @override
+  String get analysisNoScoreReview => 'လေ့ကျင့်ရင် အသံထွက် ရမှတ် ထွက်လာပါမယ်';
+
+  @override
+  String get analysisNoScoreEmpty => 'အမှတ်ပေးရန် ဝါကျ မရှိပါ';
+
+  @override
   String get priceChangedTitle => 'ဈေးနှုန်းပြောင်းသွားသည်';
 
   @override
@@ -2075,6 +2081,15 @@ class AppLocalizationsMy extends AppLocalizations {
   String get ctaMaybeLater => 'နောက်မှ';
 
   @override
+  String get winbackOfferBadge => 'ပထမလ 50% လျှော့';
+
+  @override
+  String get winbackOfferTitle => 'ပြန်လည်ကြိုဆိုပါတယ်';
+
+  @override
+  String get ctaGetHalfOff => '50% လျှော့စျေး ရယူရန်';
+
+  @override
   String get iapCharacterSuccessTitle => 'မိတ်ဆွေအသစ်ရောက်လာပြီ!';
 
   @override
@@ -2709,7 +2724,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get wsMineTitle => 'ကျွန်ုပ်၏ အခက်အခဲ အသံများ';
 
   @override
-  String get wsMineSubtitle => 'မကြာမီ ရမှတ်နိမ့်ခဲ့သော အသံများ';
+  String get wsMineSubtitle =>
+      'မကြာသေးမီ ခေါ်ဆိုမှုများတွင် တိုင်းတာခဲ့သော အသံများ';
 
   @override
   String get wsMineEmptyBody =>

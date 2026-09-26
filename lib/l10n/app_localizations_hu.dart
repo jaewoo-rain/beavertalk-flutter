@@ -1324,6 +1324,13 @@ class AppLocalizationsHu extends AppLocalizations {
   String get practicePronunciation => 'Kiejtés gyakorlása';
 
   @override
+  String get analysisNoScoreReview =>
+      'Gyakorold a mondatokat, és megkapod a kiejtési pontszámod';
+
+  @override
+  String get analysisNoScoreEmpty => 'Nincs értékelhető mondat';
+
+  @override
   String get priceChangedTitle => 'Megváltozott az ár';
 
   @override
@@ -2079,6 +2086,15 @@ class AppLocalizationsHu extends AppLocalizations {
   String get ctaMaybeLater => 'Talán később';
 
   @override
+  String get winbackOfferBadge => '50% kedvezmény az első hónapra';
+
+  @override
+  String get winbackOfferTitle => 'Örülünk, hogy visszatértél';
+
+  @override
+  String get ctaGetHalfOff => 'Kérem az 50% kedvezményt';
+
+  @override
   String get iapCharacterSuccessTitle => 'Új barát csatlakozott!';
 
   @override
@@ -2715,7 +2731,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get wsMineTitle => 'Az én nehéz hangjaim';
 
   @override
-  String get wsMineSubtitle => 'Amelyekre nemrég a legkevesebb pontot kaptad';
+  String get wsMineSubtitle => 'A legutóbbi hívásaidban mért hangok';
 
   @override
   String get wsMineEmptyBody =>

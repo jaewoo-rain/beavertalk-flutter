@@ -8,11 +8,18 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 
+/// 윈백 설문 사유 — 화면의 다섯 줄과 같은 순서.
+enum WinbackReason { expensive, unused, missing, otherApp, other }
+
 /// `depth/winback_survey` (`4514:5615`) — the exit survey after a lapse.
 ///
-/// Skip bar instead of a GNB; five single-select reasons; `Send` submits (a
-/// server hook, later), `Not now` just leaves. Nothing here touches
-/// subscription state — the caption says so out loud.
+/// Skip bar instead of a GNB; five single-select reasons. **Opened by
+/// `WinbackTrigger` once after an expiry is detected** (PM-DEC-034).
+///
+/// Pops with the picked [WinbackReason] on `Send` and with `null` on `Skip` /
+/// `Not now` — the caller decides what follows: 「Too expensive」 → the win-back
+/// offer sheet over home, anything else → home (PM-DEC-035·036). Nothing here
+/// touches subscription state — the caption says so out loud.
 class WinbackSurveyScreen extends StatefulWidget {
   /// Creates the winback survey.
   const WinbackSurveyScreen({super.key});
@@ -22,7 +29,9 @@ class WinbackSurveyScreen extends StatefulWidget {
 }
 
 class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
-  int _selected = 0;
+  /// 고른 사유. **기본 선택 없음**(PM-DEC-042) — 기본이 「Too expensive」 면 그냥 누른 Send 가
+  /// 전부 오퍼로 몰리고 사유 데이터가 왜곡된다. 고르기 전에는 Send 가 꺼져 있다.
+  int? _selected;
 
   @override
   Widget build(BuildContext context) {
@@ -108,7 +117,9 @@ class _WinbackSurveyScreenState extends State<WinbackSurveyScreen> {
                     size: BtnSize.s60,
                     text: l10n.ctaSend,
                     // TODO(server): submit the reason once an endpoint exists.
-                    onPressed: () => Navigator.pop(context),
+                    disabled: _selected == null,
+                    onPressed: () =>
+                        Navigator.pop(context, WinbackReason.values[_selected!]),
                   ),
                   const SizedBox(height: AppSpacing.s8),
                   Button(

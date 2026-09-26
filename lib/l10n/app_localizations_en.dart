@@ -1315,6 +1315,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get practicePronunciation => 'Practice pronunciation';
 
   @override
+  String get analysisNoScoreReview =>
+      'Practice the sentences to get your pronunciation score';
+
+  @override
+  String get analysisNoScoreEmpty => 'No sentences to score';
+
+  @override
   String get priceChangedTitle => 'Price changed';
 
   @override
@@ -2069,6 +2076,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ctaMaybeLater => 'Maybe later';
 
   @override
+  String get winbackOfferBadge => '50% off your first month';
+
+  @override
+  String get winbackOfferTitle => 'Welcome back';
+
+  @override
+  String get ctaGetHalfOff => 'Get 50% off';
+
+  @override
   String get iapCharacterSuccessTitle => 'A new friend joins you!';
 
   @override
@@ -2703,7 +2719,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wsMineTitle => 'My weak sounds';
 
   @override
-  String get wsMineSubtitle => 'Sounds you scored lowest on recently';
+  String get wsMineSubtitle => 'Sounds measured in your recent calls';
 
   @override
   String get wsMineEmptyBody =>

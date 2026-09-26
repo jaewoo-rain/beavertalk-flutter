@@ -1314,6 +1314,12 @@ class AppLocalizationsKy extends AppLocalizations {
   String get practicePronunciation => 'Айтылышты машыктыруу';
 
   @override
+  String get analysisNoScoreReview => 'Машыксаңыз, айтылыш упайы чыгат';
+
+  @override
+  String get analysisNoScoreEmpty => 'Баалай турган сүйлөм жок';
+
+  @override
   String get priceChangedTitle => 'Баа өзгөрдү';
 
   @override
@@ -2067,6 +2073,15 @@ class AppLocalizationsKy extends AppLocalizations {
   String get ctaMaybeLater => 'Кийинчерээк';
 
   @override
+  String get winbackOfferBadge => 'Биринчи айга 50% арзандатуу';
+
+  @override
+  String get winbackOfferTitle => 'Кайра кош келиңиз';
+
+  @override
+  String get ctaGetHalfOff => '50% арзандатуу алуу';
+
+  @override
   String get iapCharacterSuccessTitle => 'Жаңы дос кошулду!';
 
   @override
@@ -2704,7 +2719,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get wsMineTitle => 'Менин кыйын тыбыштарым';
 
   @override
-  String get wsMineSubtitle => 'Акыркы учурда упайы төмөн болгон тыбыштар';
+  String get wsMineSubtitle => 'Акыркы чалууларыңызда өлчөнгөн тыбыштар';
 
   @override
   String get wsMineEmptyBody => 'Чалып, кайталасаңыз, кыйын тыбыштар топтолот.';

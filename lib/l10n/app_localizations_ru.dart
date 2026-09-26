@@ -1321,6 +1321,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get practicePronunciation => 'Тренировать произношение';
 
   @override
+  String get analysisNoScoreReview =>
+      'Потренируйте фразы, чтобы получить оценку произношения';
+
+  @override
+  String get analysisNoScoreEmpty => 'Нет фраз для оценки';
+
+  @override
   String get priceChangedTitle => 'Цена изменилась';
 
   @override
@@ -2074,6 +2081,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get ctaMaybeLater => 'Может, позже';
 
   @override
+  String get winbackOfferBadge => 'Скидка 50% на первый месяц';
+
+  @override
+  String get winbackOfferTitle => 'С возвращением';
+
+  @override
+  String get ctaGetHalfOff => 'Получить скидку 50%';
+
+  @override
   String get iapCharacterSuccessTitle => 'К вам присоединился новый друг!';
 
   @override
@@ -2712,7 +2728,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wsMineTitle => 'Мои слабые звуки';
 
   @override
-  String get wsMineSubtitle => 'Звуки с самыми низкими баллами';
+  String get wsMineSubtitle => 'Звуки, измеренные в ваших последних звонках';
 
   @override
   String get wsMineEmptyBody =>

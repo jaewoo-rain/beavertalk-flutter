@@ -1310,6 +1310,12 @@ class AppLocalizationsNe extends AppLocalizations {
   String get practicePronunciation => 'उच्चारण अभ्यास गर्नुहोस्';
 
   @override
+  String get analysisNoScoreReview => 'अभ्यास गरेपछि उच्चारण स्कोर देखिन्छ';
+
+  @override
+  String get analysisNoScoreEmpty => 'स्कोर गर्ने वाक्य छैन';
+
+  @override
   String get priceChangedTitle => 'मूल्य परिवर्तन भयो';
 
   @override
@@ -2060,6 +2066,15 @@ class AppLocalizationsNe extends AppLocalizations {
   String get ctaMaybeLater => 'पछि';
 
   @override
+  String get winbackOfferBadge => 'पहिलो महिना ५०% छुट';
+
+  @override
+  String get winbackOfferTitle => 'फेरि स्वागत छ';
+
+  @override
+  String get ctaGetHalfOff => '५०% छुट लिनुहोस्';
+
+  @override
   String get iapCharacterSuccessTitle => 'नयाँ साथी जोडियो!';
 
   @override
@@ -2693,7 +2708,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get wsMineTitle => 'मेरा कठिन ध्वनिहरू';
 
   @override
-  String get wsMineSubtitle => 'हालै सबैभन्दा कम स्कोर आएका ध्वनिहरू';
+  String get wsMineSubtitle => 'हालका कलहरूमा मापिएका ध्वनिहरू';
 
   @override
   String get wsMineEmptyBody =>

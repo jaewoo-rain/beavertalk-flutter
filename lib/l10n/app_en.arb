@@ -781,6 +781,10 @@
   "@practicePronunciation": {
     "description": "CTA on the pronunciation card - open the latest call analysis."
   },
+  "analysisNoScoreReview": "Practice the sentences to get your pronunciation score",
+  "@analysisNoScoreReview": {"description": "One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences."},
+  "analysisNoScoreEmpty": "No sentences to score",
+  "@analysisNoScoreEmpty": {"description": "One line under the inactive score gauge when the call produced no learned sentences at all (Figma screen/analysis__no_expressions 4849:8823)."},
   "priceChangedTitle": "Price changed",
   "priceChangedBody": "This item is now {price}. Would you like to continue?",
   "@priceChangedBody": {
@@ -1338,6 +1342,12 @@
   "@paywallGuardBody": {"description": "Paywall exit guard body. Free plan = 5 minutes of calls a day in total (decision 2026-09-23)."},
   "ctaMaybeLater": "Maybe later",
   "@ctaMaybeLater": {"description": "Paywall exit guard lower button \u2014 closes the dialog (Figma BACK)."},
+  "winbackOfferBadge": "50% off your first month",
+  "@winbackOfferBadge": {"description": "Gold badge on the win-back offer sheet (Figma BottomSheet/Winback 6438:4129). No price is shown: the store decides the offer and eligibility."},
+  "winbackOfferTitle": "Welcome back",
+  "@winbackOfferTitle": {"description": "Win-back offer sheet title, shown after a lapsed member picks 'Too expensive' in the exit survey."},
+  "ctaGetHalfOff": "Get 50% off",
+  "@ctaGetHalfOff": {"description": "Win-back offer primary button - opens the store's subscription page, where the store applies its own win-back offer."},
   "iapCharacterSuccessTitle": "A new friend joins you!",
   "iapCharacterSuccessBody": "This character is yours forever - it stays even if your plan changes, and Restore purchases brings it back on any device.",
   "iapCharacterFailedBody": "The purchase didn't go through. Nothing was charged - please try again.",
@@ -2058,7 +2068,7 @@
   "wsNationalPicked": "Chosen from your accent analysis",
   "wsNationalEmptyBody": "Make a few more calls and we'll analyze your accent.",
   "wsMineTitle": "My weak sounds",
-  "wsMineSubtitle": "Sounds you scored lowest on recently",
+  "wsMineSubtitle": "Sounds measured in your recent calls",
   "wsMineEmptyBody": "Call and review, and your weak sounds will build up.",
   "wsNoDataYet": "No data yet",
   "wsGoToCall": "Start a call",

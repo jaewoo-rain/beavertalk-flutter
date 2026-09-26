@@ -25,6 +25,7 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
 import '../classroom/widgets/homework_home_banner.dart';
+import '../plans/winback_trigger.dart';
 
 /// Home — the post-login landing screen. Figma `screen/home` (`2117:23988`).
 ///
@@ -292,6 +293,8 @@ class HomeScreen extends ConsumerWidget {
           //   ⚠ 이 자리는 숙제 병합이 **새로 만든 블록**이라 충돌이 안 났고, 그래서
           //     폭 규칙 검열을 그냥 통과했다. 새 블록을 넣을 땐 밴드부터 확인하라.
           const ContentColumn(child: HomeworkHomeBanner()),
+          // 구독 만료 뒤 첫 실행에 윈백 설문을 한 번 띄운다(PM-DEC-034). 크기 0.
+          const WinbackTrigger(),
           const SizedBox(height: 18),
           // Bottom navigation — call tab is the center action.
           BottomNavBar(

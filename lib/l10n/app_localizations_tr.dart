@@ -1309,6 +1309,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get practicePronunciation => 'Telaffuz çalış';
 
   @override
+  String get analysisNoScoreReview =>
+      'Cümleleri çalışınca telaffuz puanın çıkar';
+
+  @override
+  String get analysisNoScoreEmpty => 'Puanlanacak cümle yok';
+
+  @override
   String get priceChangedTitle => 'Fiyat değişti';
 
   @override
@@ -2059,6 +2066,15 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ctaMaybeLater => 'Belki sonra';
 
   @override
+  String get winbackOfferBadge => 'İlk ayda %50 indirim';
+
+  @override
+  String get winbackOfferTitle => 'Tekrar hoş geldin';
+
+  @override
+  String get ctaGetHalfOff => '%50 indirimi al';
+
+  @override
   String get iapCharacterSuccessTitle => 'Yeni bir arkadaş katıldı!';
 
   @override
@@ -2691,7 +2707,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get wsMineTitle => 'Zayıf seslerim';
 
   @override
-  String get wsMineSubtitle => 'Son zamanlarda en düşük puan aldığınız sesler';
+  String get wsMineSubtitle => 'Son aramalarında ölçülen sesler';
 
   @override
   String get wsMineEmptyBody =>

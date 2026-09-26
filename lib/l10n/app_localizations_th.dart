@@ -1303,6 +1303,12 @@ class AppLocalizationsTh extends AppLocalizations {
   String get practicePronunciation => 'ฝึกการออกเสียง';
 
   @override
+  String get analysisNoScoreReview => 'ฝึกประโยคแล้วจะได้คะแนนการออกเสียง';
+
+  @override
+  String get analysisNoScoreEmpty => 'ไม่มีประโยคให้ให้คะแนน';
+
+  @override
   String get priceChangedTitle => 'ราคามีการเปลี่ยนแปลง';
 
   @override
@@ -2052,6 +2058,15 @@ class AppLocalizationsTh extends AppLocalizations {
   String get ctaMaybeLater => 'ไว้ทีหลัง';
 
   @override
+  String get winbackOfferBadge => 'ลด 50% เดือนแรก';
+
+  @override
+  String get winbackOfferTitle => 'ยินดีต้อนรับกลับมา';
+
+  @override
+  String get ctaGetHalfOff => 'รับส่วนลด 50%';
+
+  @override
   String get iapCharacterSuccessTitle => 'เพื่อนใหม่มาร่วมแล้ว!';
 
   @override
@@ -2675,7 +2690,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get wsMineTitle => 'เสียงที่ยังไม่แม่นของฉัน';
 
   @override
-  String get wsMineSubtitle => 'เสียงที่ได้คะแนนต่ำสุดช่วงนี้';
+  String get wsMineSubtitle => 'เสียงที่วัดได้จากการโทรล่าสุดของคุณ';
 
   @override
   String get wsMineEmptyBody =>

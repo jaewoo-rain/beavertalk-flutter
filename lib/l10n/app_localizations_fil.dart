@@ -1324,6 +1324,14 @@ class AppLocalizationsFil extends AppLocalizations {
   String get practicePronunciation => 'Magsanay ng pagbigkas';
 
   @override
+  String get analysisNoScoreReview =>
+      'Mag-practice para makuha ang score mo sa pagbigkas';
+
+  @override
+  String get analysisNoScoreEmpty =>
+      'Walang pangungusap na mabibigyan ng score';
+
+  @override
   String get priceChangedTitle => 'Nagbago ang presyo';
 
   @override
@@ -2082,6 +2090,15 @@ class AppLocalizationsFil extends AppLocalizations {
   String get ctaMaybeLater => 'Siguro mamaya';
 
   @override
+  String get winbackOfferBadge => '50% off sa unang buwan mo';
+
+  @override
+  String get winbackOfferTitle => 'Maligayang pagbabalik';
+
+  @override
+  String get ctaGetHalfOff => 'Kunin ang 50% off';
+
+  @override
   String get iapCharacterSuccessTitle => 'May bagong kaibigan ka na!';
 
   @override
@@ -2726,8 +2743,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get wsMineTitle => 'Mga mahirap kong tunog';
 
   @override
-  String get wsMineSubtitle =>
-      'Mga tunog na pinakamababa ang score mo kamakailan';
+  String get wsMineSubtitle => 'Mga tunog na nasukat sa mga huli mong tawag';
 
   @override
   String get wsMineEmptyBody =>

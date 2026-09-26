@@ -2512,6 +2512,18 @@ abstract class AppLocalizations {
   /// **'Practice pronunciation'**
   String get practicePronunciation;
 
+  /// One line under the inactive score gauge when the call has learned sentences but none practiced yet (Figma screen/analysis__no_score 4867:7359). Scores come only from practicing sentences.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice the sentences to get your pronunciation score'**
+  String get analysisNoScoreReview;
+
+  /// One line under the inactive score gauge when the call produced no learned sentences at all (Figma screen/analysis__no_expressions 4849:8823).
+  ///
+  /// In en, this message translates to:
+  /// **'No sentences to score'**
+  String get analysisNoScoreEmpty;
+
   /// No description provided for @priceChangedTitle.
   ///
   /// In en, this message translates to:
@@ -3838,6 +3850,24 @@ abstract class AppLocalizations {
   /// **'Maybe later'**
   String get ctaMaybeLater;
 
+  /// Gold badge on the win-back offer sheet (Figma BottomSheet/Winback 6438:4129). No price is shown: the store decides the offer and eligibility.
+  ///
+  /// In en, this message translates to:
+  /// **'50% off your first month'**
+  String get winbackOfferBadge;
+
+  /// Win-back offer sheet title, shown after a lapsed member picks 'Too expensive' in the exit survey.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome back'**
+  String get winbackOfferTitle;
+
+  /// Win-back offer primary button - opens the store's subscription page, where the store applies its own win-back offer.
+  ///
+  /// In en, this message translates to:
+  /// **'Get 50% off'**
+  String get ctaGetHalfOff;
+
   /// No description provided for @iapCharacterSuccessTitle.
   ///
   /// In en, this message translates to:
@@ -5023,7 +5053,7 @@ abstract class AppLocalizations {
   /// No description provided for @wsMineSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Sounds you scored lowest on recently'**
+  /// **'Sounds measured in your recent calls'**
   String get wsMineSubtitle;
 
   /// No description provided for @wsMineEmptyBody.

@@ -78,6 +78,15 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
   /// (text only). Built once from [_result].
   List<MockSentence> _learningSentences = const [];
 
+  /// 이 통화의 배운 문장 중 한국어가 있는 것 — 발음 학습 · 챌린지 카드의 재료.
+  List<String> get _learningWords => _learningSentences
+      .map((s) => s.korean)
+      .where((k) => k.trim().isNotEmpty)
+      .toList(growable: false);
+
+  /// 학습할 문장이 있나 — 「발음 학습하기」 카드 · 점수 없음 안내 문구를 가른다.
+  bool get _hasLearningSentences => _learningWords.isNotEmpty;
+
   /// True once the deferred per-call reset of [reviewScoresProvider] has run.
   /// Until then the gauge ignores any (possibly stale) scores so a fresh call
   /// starts empty even on the first frame, before the post-frame reset lands.
@@ -313,6 +322,8 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             ..._metaLine(l10n, result),
 
             const SizedBox(height: AppSpacing.s24),
+            // ScoreBlock — 게이지 + (점수가 없으면) 안내 한 줄, 세로 간격 12 · 가운데
+            // (정본 analysis__no_score `6505:14034` · analysis__no_expressions `6505:14036`).
             Center(
               child: PronunciationResult(
                 // Empty (no practice yet) → inactive gauge ("-%").
@@ -320,8 +331,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                     ? PronunciationState.inactive
                     : PronunciationState.active,
                 score: total ?? 0,
-                // No hint under "-%" — 사용자 지시(09-25)로 「복습하면 발음 점수가
-                // 나와요」 안내를 뺐다. 게이지 ↔ 카드 간격은 아래 s24 그대로.
                 metrics: [
                   PronunciationMetric(
                     label: l10n.pronunciation,
@@ -335,40 +344,55 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
                 ],
               ),
             ),
+            // 점수가 없는 이유 한 줄(QA F046 · PM-DEC-043). 점수는 통화 길이가 아니라
+            // **문장을 복습(연습)해 채점될 때만** 생긴다(서버 review_service
+            // `_apply_evaluation`). 그래서 「-%」 는 두 경우다 —
+            //   · 배운 문장이 있는데 아직 복습 전 → 「복습하면 발음 점수가 나와요」
+            //   · 배운 문장이 0개 → 「점수를 낼 문장이 없어요」(「복습하면」 은 거짓이 된다)
+            // 09-25 에 이 안내를 뺐었다 — 두 경우를 가르지 않아 문장 없는 통화에도 떴기 때문.
+            if (total == null) ...[
+              const SizedBox(height: 12),
+              Text(
+                _hasLearningSentences
+                    ? l10n.analysisNoScoreReview
+                    : l10n.analysisNoScoreEmpty,
+                textAlign: TextAlign.center,
+                style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
+              ),
+            ],
 
             // ── Actions (`3583:34442`) ─────────────────────────────────
             const SizedBox(height: AppSpacing.s24),
             // `Card/Study` ×2 (`6329:46475`) — replaced the 복습하기 fill button
             // and the challenge outline button on 2026-09-23 (proposal A, 복습하기
-            // → 발음 학습하기). Both need this call's learned sentences: with none,
-            // both are disabled.
+            // → 발음 학습하기).
+            //
+            // 배운 문장이 없으면(PM-DEC-043 · 정본 analysis__no_expressions):
+            //   · 「발음 학습하기」 는 **숨긴다** — 학습할 게 없는데 흐린 카드로 남아 눌러 보게 했다
+            //     (QA F043·F046). 모바일 `6332:46515` · 태블릿 `6332:51279`
+            //   · 「발음 챌린지」 는 **켠다** — 문장이 없으면 기본 단어로 플레이한다
+            //     (인자 없이 열면 챌린지가 기본 49어를 쓴다)
             Builder(builder: (context) {
-              final words = _learningSentences
-                  .map((s) => s.korean)
-                  .where((k) => k.trim().isNotEmpty)
-                  .toList(growable: false);
-              final open = _learningSentences.isNotEmpty && words.isNotEmpty;
+              final words = _learningWords;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  CardStudy.learn(
-                    title: l10n.practicePronunciation,
-                    onTap: open
-                        ? () => _startLearning(_learningSentences)
-                        : null,
-                  ),
-                  const SizedBox(height: AppSpacing.s12),
+                  if (_hasLearningSentences) ...[
+                    CardStudy.learn(
+                      title: l10n.practicePronunciation,
+                      onTap: () => _startLearning(_learningSentences),
+                    ),
+                    const SizedBox(height: AppSpacing.s12),
+                  ],
                   CardStudy.challenge(
                     title: l10n.challengeTitle,
                     // Feed this call's learned sentences to the challenge so its
-                    // cards are what the user just practised.
-                    onTap: open
-                        ? () => Navigator.pushNamed(
-                              context,
-                              Routes.pronunciationChallenge,
-                              arguments: words,
-                            )
-                        : null,
+                    // cards are what the user just practised; none → default words.
+                    onTap: () => Navigator.pushNamed(
+                      context,
+                      Routes.pronunciationChallenge,
+                      arguments: words.isEmpty ? null : words,
+                    ),
                   ),
                 ],
               );

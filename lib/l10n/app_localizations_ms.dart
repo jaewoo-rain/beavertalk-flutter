@@ -1322,6 +1322,13 @@ class AppLocalizationsMs extends AppLocalizations {
   String get practicePronunciation => 'Latih sebutan';
 
   @override
+  String get analysisNoScoreReview =>
+      'Berlatih ayat untuk mendapat skor sebutan';
+
+  @override
+  String get analysisNoScoreEmpty => 'Tiada ayat untuk dinilai';
+
+  @override
   String get priceChangedTitle => 'Harga berubah';
 
   @override
@@ -2079,6 +2086,15 @@ class AppLocalizationsMs extends AppLocalizations {
   String get ctaMaybeLater => 'Mungkin nanti';
 
   @override
+  String get winbackOfferBadge => 'Diskaun 50% bulan pertama';
+
+  @override
+  String get winbackOfferTitle => 'Selamat kembali';
+
+  @override
+  String get ctaGetHalfOff => 'Dapatkan diskaun 50%';
+
+  @override
   String get iapCharacterSuccessTitle => 'Rakan baharu menyertai!';
 
   @override
@@ -2718,7 +2734,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get wsMineTitle => 'Bunyi sukar saya';
 
   @override
-  String get wsMineSubtitle => 'Bunyi dengan skor terendah baru-baru ini';
+  String get wsMineSubtitle => 'Bunyi yang diukur dalam panggilan terkini anda';
 
   @override
   String get wsMineEmptyBody =>

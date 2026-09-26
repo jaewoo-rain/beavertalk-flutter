@@ -27,6 +27,7 @@ import '../../features/review/data/audio_player.dart';
 import '../../features/subscription/domain/iap_service.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/character/data/character_tag_labels.dart';
 import '../../l10n/app_localizations.dart';
 import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
@@ -694,7 +695,12 @@ class _Stage extends StatelessWidget {
                       color: c.backgroundNormalAlternative,
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text(t,
+                    // 서버 태그는 영문 한 벌 — UI 언어로 옮긴다(QA F054 · 임시표, 서버 i18n 전).
+                    child: Text(
+                        localizedCharacterTag(
+                          t,
+                          Localizations.localeOf(context).languageCode,
+                        ),
                         style:
                             AppType.caption1.r.copyWith(color: c.labelNormal)),
                   ),

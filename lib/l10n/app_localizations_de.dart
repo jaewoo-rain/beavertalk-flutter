@@ -1332,6 +1332,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get practicePronunciation => 'Aussprache üben';
 
   @override
+  String get analysisNoScoreReview =>
+      'Übe die Sätze, dann bekommst du deine Aussprache-Punkte';
+
+  @override
+  String get analysisNoScoreEmpty => 'Keine Sätze zum Bewerten';
+
+  @override
   String get priceChangedTitle => 'Preis geändert';
 
   @override
@@ -2094,6 +2101,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get ctaMaybeLater => 'Vielleicht später';
 
   @override
+  String get winbackOfferBadge => '50 % Rabatt im ersten Monat';
+
+  @override
+  String get winbackOfferTitle => 'Willkommen zurück';
+
+  @override
+  String get ctaGetHalfOff => '50 % Rabatt sichern';
+
+  @override
   String get iapCharacterSuccessTitle => 'Ein neuer Freund ist dabei!';
 
   @override
@@ -2743,7 +2759,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wsMineTitle => 'Meine schwachen Laute';
 
   @override
-  String get wsMineSubtitle => 'Laute mit den niedrigsten Punkten zuletzt';
+  String get wsMineSubtitle => 'In deinen letzten Anrufen gemessene Laute';
 
   @override
   String get wsMineEmptyBody =>

@@ -1325,6 +1325,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get practicePronunciation => 'Practicar pronunciación';
 
   @override
+  String get analysisNoScoreReview =>
+      'Practica las frases para ver tu puntuación de pronunciación';
+
+  @override
+  String get analysisNoScoreEmpty => 'No hay frases para puntuar';
+
+  @override
   String get priceChangedTitle => 'El precio cambió';
 
   @override
@@ -2081,6 +2088,15 @@ class AppLocalizationsEs extends AppLocalizations {
   String get ctaMaybeLater => 'Quizás más tarde';
 
   @override
+  String get winbackOfferBadge => '50 % de descuento el primer mes';
+
+  @override
+  String get winbackOfferTitle => '¡Qué bueno verte otra vez!';
+
+  @override
+  String get ctaGetHalfOff => 'Obtener 50 % de descuento';
+
+  @override
   String get iapCharacterSuccessTitle => '¡Un nuevo amigo se une!';
 
   @override
@@ -2728,7 +2744,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get wsMineTitle => 'Mis sonidos difíciles';
 
   @override
-  String get wsMineSubtitle => 'Los sonidos con menor puntuación reciente';
+  String get wsMineSubtitle => 'Sonidos medidos en tus llamadas recientes';
 
   @override
   String get wsMineEmptyBody =>

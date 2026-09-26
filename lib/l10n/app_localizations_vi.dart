@@ -1311,6 +1311,12 @@ class AppLocalizationsVi extends AppLocalizations {
   String get practicePronunciation => 'Luyện phát âm';
 
   @override
+  String get analysisNoScoreReview => 'Luyện tập các câu để nhận điểm phát âm';
+
+  @override
+  String get analysisNoScoreEmpty => 'Không có câu nào để chấm điểm';
+
+  @override
   String get priceChangedTitle => 'Giá đã thay đổi';
 
   @override
@@ -2064,6 +2070,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get ctaMaybeLater => 'Để sau';
 
   @override
+  String get winbackOfferBadge => 'Giảm 50% tháng đầu';
+
+  @override
+  String get winbackOfferTitle => 'Chào mừng bạn quay lại';
+
+  @override
+  String get ctaGetHalfOff => 'Nhận giảm 50%';
+
+  @override
   String get iapCharacterSuccessTitle => 'Một người bạn mới đã tham gia!';
 
   @override
@@ -2695,7 +2710,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get wsMineTitle => 'Âm còn yếu của tôi';
 
   @override
-  String get wsMineSubtitle => 'Những âm có điểm thấp nhất gần đây';
+  String get wsMineSubtitle =>
+      'Những âm được đo trong các cuộc gọi gần đây của bạn';
 
   @override
   String get wsMineEmptyBody => 'Gọi và ôn tập thì âm còn yếu sẽ dần tích lũy.';
