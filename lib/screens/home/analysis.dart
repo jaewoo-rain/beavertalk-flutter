@@ -370,32 +370,33 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
             // and the challenge outline button on 2026-09-23 (proposal A, 복습하기
             // → 발음 학습하기).
             //
-            // 배운 문장이 없으면(PM-DEC-043 · 정본 analysis__no_expressions):
-            //   · 「발음 학습하기」 는 **숨긴다** — 학습할 게 없는데 흐린 카드로 남아 눌러 보게 했다
-            //     (QA F043·F046). 모바일 `6332:46515` · 태블릿 `6332:51279`
-            //   · 「발음 챌린지」 는 **켠다** — 문장이 없으면 기본 단어로 플레이한다
-            //     (인자 없이 열면 챌린지가 기본 49어를 쓴다)
+            // 배운 문장이 없으면 **두 카드 모두 보이되 비활성**(PM-DEC-068 · 사용자 결정 D6=C ·
+            // 09-23 P26 복귀 · 정본 analysis__no_expressions `4849:8823` · `5287:2414`).
+            //   · PM-DEC-043(학습 카드 숨김 · 챌린지는 기본 단어로 켬)을 대체한다
+            //   · 챌린지의 「기본 단어」 진입은 이 화면에서 없앤다 — 이번 통화에 배운 문장이
+            //     있을 때만 그 문장으로 연다
             Builder(builder: (context) {
               final words = _learningWords;
+              final open = _hasLearningSentences;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  if (_hasLearningSentences) ...[
-                    CardStudy.learn(
-                      title: l10n.practicePronunciation,
-                      onTap: () => _startLearning(_learningSentences),
-                    ),
-                    const SizedBox(height: AppSpacing.s12),
-                  ],
+                  CardStudy.learn(
+                    title: l10n.practicePronunciation,
+                    onTap: open ? () => _startLearning(_learningSentences) : null,
+                  ),
+                  const SizedBox(height: AppSpacing.s12),
                   CardStudy.challenge(
                     title: l10n.challengeTitle,
                     // Feed this call's learned sentences to the challenge so its
-                    // cards are what the user just practised; none → default words.
-                    onTap: () => Navigator.pushNamed(
-                      context,
-                      Routes.pronunciationChallenge,
-                      arguments: words.isEmpty ? null : words,
-                    ),
+                    // cards are what the user just practised.
+                    onTap: open
+                        ? () => Navigator.pushNamed(
+                              context,
+                              Routes.pronunciationChallenge,
+                              arguments: words,
+                            )
+                        : null,
                   ),
                 ],
               );
