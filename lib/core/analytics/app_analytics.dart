@@ -208,6 +208,9 @@ class AnalyticsRouteObserver extends RouteObserver<ModalRoute<dynamic>> {
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
     super.didPop(route, previousRoute);
     // 뒤로 가서 드러난 화면도 조회로 센다(GA4 앱 화면 추적 관례).
+    // 닫힌 것이 다이얼로그·시트면 화면은 바뀌지 않았다 — 세지 않는다
+    // (2026-09-26 실기기: 통화 중 시트가 닫힐 때 `/call` → `/call` 이 찍혔다).
+    if (route is! PageRoute) return;
     _report(previousRoute);
   }
 }
