@@ -2183,9 +2183,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Nói thoải mái, không sửa lỗi';
 
   @override
-  String get callModeStudy => 'Học biểu đạt';
-
-  @override
   String get callModeStudyDesc => 'Học từng mẫu câu và sửa phát âm';
 
   @override
@@ -2480,7 +2477,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get hwBadgeDueToday => 'Hạn hôm nay';
 
   @override
-  String get hwActivitySpeaking => 'Nói';
+  String get hwActivitySpeaking => 'Phát âm';
 
   @override
   String get hwActivityConversation => 'Hội thoại';

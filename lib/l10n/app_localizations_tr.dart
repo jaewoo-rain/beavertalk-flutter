@@ -2178,9 +2178,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Düzeltme olmadan konuş';
 
   @override
-  String get callModeStudy => 'Çalışma';
-
-  @override
   String get callModeStudyDesc => 'Her seferinde bir ifade öğren';
 
   @override
@@ -2475,7 +2472,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get hwBadgeDueToday => 'Bugün teslim';
 
   @override
-  String get hwActivitySpeaking => 'Konuşma';
+  String get hwActivitySpeaking => 'Telaffuz';
 
   @override
   String get hwActivityConversation => 'Diyalog';

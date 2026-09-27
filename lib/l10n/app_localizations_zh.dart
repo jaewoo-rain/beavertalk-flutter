@@ -2115,9 +2115,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callModeFreeTalkDesc => '轻松交谈，不做纠正';
 
   @override
-  String get callModeStudy => '表达学习';
-
-  @override
   String get callModeStudyDesc => '逐句学习表达并纠正发音';
 
   @override
@@ -2405,7 +2402,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get hwBadgeDueToday => '今天截止';
 
   @override
-  String get hwActivitySpeaking => '口语';
+  String get hwActivitySpeaking => '发音';
 
   @override
   String get hwActivityConversation => '对话';

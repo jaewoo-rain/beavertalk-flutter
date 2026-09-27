@@ -2179,9 +2179,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callModeFreeTalkDesc => 'सुधार बिना कुरा गर्नुहोस्';
 
   @override
-  String get callModeStudy => 'अभ्यास';
-
-  @override
   String get callModeStudyDesc => 'एक पटकमा एउटा अभिव्यक्ति सिक्नुहोस्';
 
   @override
@@ -2477,7 +2474,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get hwBadgeDueToday => 'आजको म्याद';
 
   @override
-  String get hwActivitySpeaking => 'बोल्ने';
+  String get hwActivitySpeaking => 'उच्चारण';
 
   @override
   String get hwActivityConversation => 'कुराकानी';

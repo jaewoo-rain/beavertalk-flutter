@@ -2215,9 +2215,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Einfach reden – ohne Korrekturen';
 
   @override
-  String get callModeStudy => 'Lernen';
-
-  @override
   String get callModeStudyDesc => 'Lerne einen Ausdruck nach dem anderen';
 
   @override
@@ -2521,7 +2518,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hwBadgeDueToday => 'Heute fällig';
 
   @override
-  String get hwActivitySpeaking => 'Sprechen';
+  String get hwActivitySpeaking => 'Aussprache';
 
   @override
   String get hwActivityConversation => 'Gespräch';

@@ -2205,9 +2205,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Fale sem correções';
 
   @override
-  String get callModeStudy => 'Estudo';
-
-  @override
   String get callModeStudyDesc => 'Aprenda uma expressão de cada vez';
 
   @override
@@ -2507,7 +2504,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get hwBadgeDueToday => 'Vence hoje';
 
   @override
-  String get hwActivitySpeaking => 'Fala';
+  String get hwActivitySpeaking => 'Pronúncia';
 
   @override
   String get hwActivityConversation => 'Conversa';

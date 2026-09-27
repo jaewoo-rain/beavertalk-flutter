@@ -2178,9 +2178,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'නිවැරදි කිරීමකින් තොරව කතා කරන්න';
 
   @override
-  String get callModeStudy => 'ඉගෙනීම';
-
-  @override
   String get callModeStudyDesc => 'එක් ප්‍රකාශනයක් බැගින් ඉගෙන ගන්න';
 
   @override
@@ -2472,7 +2469,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get hwBadgeDueToday => 'අද නියමිතයි';
 
   @override
-  String get hwActivitySpeaking => 'කථනය';
+  String get hwActivitySpeaking => 'උච්චාරණය';
 
   @override
   String get hwActivityConversation => 'සංවාදය';

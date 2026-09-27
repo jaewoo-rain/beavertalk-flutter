@@ -498,7 +498,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get navCall => 'Call';
 
   @override
-  String get homeCourseExpression => 'Expression';
+  String get homeCourseExpression => 'Expressions';
 
   @override
   String get homeCourseFreetalk => 'Conversation';
@@ -2188,9 +2188,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Just talk — no corrections';
 
   @override
-  String get callModeStudy => 'Study';
-
-  @override
   String get callModeStudyDesc => 'Learn one expression at a time';
 
   @override
@@ -2486,7 +2483,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hwBadgeDueToday => 'Due today';
 
   @override
-  String get hwActivitySpeaking => 'Speaking';
+  String get hwActivitySpeaking => 'Pronunciation';
 
   @override
   String get hwActivityConversation => 'Conversation';

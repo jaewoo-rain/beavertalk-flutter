@@ -487,7 +487,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get navCall => '통화';
 
   @override
-  String get homeCourseExpression => '표현학습';
+  String get homeCourseExpression => '표현 학습';
 
   @override
   String get homeCourseFreetalk => '회화';
@@ -2118,9 +2118,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get callModeFreeTalkDesc => '교정 없이 편하게 이어가요';
-
-  @override
-  String get callModeStudy => '표현 학습';
 
   @override
   String get callModeStudyDesc => '표현을 하나씩 짚고 발음을 고쳐요';

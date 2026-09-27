@@ -2177,9 +2177,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get callModeFreeTalkDesc => 'সংশোধন ছাড়াই কথা বলুন';
 
   @override
-  String get callModeStudy => 'অনুশীলন';
-
-  @override
   String get callModeStudyDesc => 'একবারে একটি অভিব্যক্তি শিখুন';
 
   @override
@@ -2472,7 +2469,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get hwBadgeDueToday => 'আজ শেষ দিন';
 
   @override
-  String get hwActivitySpeaking => 'কথা বলা';
+  String get hwActivitySpeaking => 'উচ্চারণ';
 
   @override
   String get hwActivityConversation => 'কথোপকথন';

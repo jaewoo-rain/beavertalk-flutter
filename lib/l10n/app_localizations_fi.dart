@@ -2196,9 +2196,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Juttele ilman korjauksia';
 
   @override
-  String get callModeStudy => 'Opiskelu';
-
-  @override
   String get callModeStudyDesc => 'Opettele yksi ilmaus kerrallaan';
 
   @override
@@ -2496,7 +2493,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get hwBadgeDueToday => 'Määräaika tänään';
 
   @override
-  String get hwActivitySpeaking => 'Puhuminen';
+  String get hwActivitySpeaking => 'Ääntäminen';
 
   @override
   String get hwActivityConversation => 'Keskustelu';

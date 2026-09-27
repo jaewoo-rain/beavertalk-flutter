@@ -2185,9 +2185,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Оңдоосуз эркин сүйлөшүңүз';
 
   @override
-  String get callModeStudy => 'Үйрөнүү';
-
-  @override
   String get callModeStudyDesc => 'Бир жолу бир сөз айкашын үйрөнүңүз';
 
   @override
@@ -2485,7 +2482,7 @@ class AppLocalizationsKy extends AppLocalizations {
   String get hwBadgeDueToday => 'Мөөнөтү бүгүн';
 
   @override
-  String get hwActivitySpeaking => 'Сүйлөө';
+  String get hwActivitySpeaking => 'Айтылыш';
 
   @override
   String get hwActivityConversation => 'Маек';

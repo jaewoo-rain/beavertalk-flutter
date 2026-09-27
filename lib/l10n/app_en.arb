@@ -304,7 +304,7 @@
   "next": "Next",
   "endLearning": "End Session",
   "navCall": "Call",
-  "homeCourseExpression": "Expression",
+  "homeCourseExpression": "Expressions",
   "@homeCourseExpression": {
     "description": "Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge."
   },
@@ -1462,10 +1462,6 @@
   "@callModeFreeTalkDesc": {
     "description": "Mode sheet - one-line description of Free Talk."
   },
-  "callModeStudy": "Study",
-  "@callModeStudy": {
-    "description": "Mode sheet - the Study mode name (turn-based expression drill)."
-  },
   "callModeStudyDesc": "Learn one expression at a time",
   "@callModeStudyDesc": {
     "description": "Mode sheet - one-line description of Study."
@@ -1849,7 +1845,7 @@
   "@hwBadgeDueToday": {
     "description": "Homework (class join / assignments) copy"
   },
-  "hwActivitySpeaking": "Speaking",
+  "hwActivitySpeaking": "Pronunciation",
   "@hwActivitySpeaking": {
     "description": "Homework (class join / assignments) copy"
   },
@@ -2044,7 +2040,7 @@
   },
   "callHintLockedTitle": "Hints aren't available in Study",
   "@callHintLockedTitle": {
-    "description": "Call screen - speech bubble above the hint button, shown when the learner taps it during a Study (callModeStudy) call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Keep the course name identical to callModeStudy."
+    "description": "Call screen - speech bubble above the hint button, shown when the learner taps it during an Expressions-course call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Name the course with the same word as homeCourseExpression (the home course label) - not a word for 'study'."
   },
   "wsTitle": "Weak sounds",
   "wsToList": "Back to list",

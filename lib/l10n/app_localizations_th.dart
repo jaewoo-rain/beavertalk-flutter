@@ -2168,9 +2168,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callModeFreeTalkDesc => 'คุยสบาย ๆ ไม่มีการแก้';
 
   @override
-  String get callModeStudy => 'เรียนรู้';
-
-  @override
   String get callModeStudyDesc => 'เรียนทีละสำนวนและแก้การออกเสียง';
 
   @override
@@ -2463,7 +2460,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get hwBadgeDueToday => 'ครบกำหนดวันนี้';
 
   @override
-  String get hwActivitySpeaking => 'การพูด';
+  String get hwActivitySpeaking => 'การออกเสียง';
 
   @override
   String get hwActivityConversation => 'การสนทนา';

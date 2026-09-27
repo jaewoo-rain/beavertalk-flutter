@@ -2169,9 +2169,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callModeFreeTalkDesc => 'تحدث بحرية دون تصحيح';
 
   @override
-  String get callModeStudy => 'التعلّم';
-
-  @override
   String get callModeStudyDesc => 'تعلّم تعبيرًا واحدًا في كل مرة';
 
   @override
@@ -2466,7 +2463,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get hwBadgeDueToday => 'موعده اليوم';
 
   @override
-  String get hwActivitySpeaking => 'المحادثة';
+  String get hwActivitySpeaking => 'النطق';
 
   @override
   String get hwActivityConversation => 'حوار';

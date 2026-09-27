@@ -2177,9 +2177,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callModeFreeTalkDesc => 'និយាយដោយគ្មានការកែតម្រូវ';
 
   @override
-  String get callModeStudy => 'ការសិក្សា';
-
-  @override
   String get callModeStudyDesc => 'រៀនកន្សោមម្តងមួយ';
 
   @override
@@ -2474,7 +2471,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get hwBadgeDueToday => 'ផុតកំណត់ថ្ងៃនេះ';
 
   @override
-  String get hwActivitySpeaking => 'និយាយ';
+  String get hwActivitySpeaking => 'ការបញ្ចេញសំឡេង';
 
   @override
   String get hwActivityConversation => 'សន្ទនា';

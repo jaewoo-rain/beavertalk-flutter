@@ -2196,9 +2196,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Tuzatishlarsiz suhbatlashing';
 
   @override
-  String get callModeStudy => 'O‘rganish';
-
-  @override
   String get callModeStudyDesc => 'Bir vaqtda bitta iborani o‘rganing';
 
   @override
@@ -2498,7 +2495,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get hwBadgeDueToday => 'Muddati bugun';
 
   @override
-  String get hwActivitySpeaking => 'Gapirish';
+  String get hwActivitySpeaking => 'Talaffuz';
 
   @override
   String get hwActivityConversation => 'Suhbat';

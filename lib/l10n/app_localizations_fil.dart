@@ -1265,7 +1265,7 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
-  String get accentAnalysis => 'Pagsusuri ng punto';
+  String get accentAnalysis => 'Pagsusuri ng accent';
 
   @override
   String get overallLevel => 'Pangkalahatang antas';
@@ -1530,8 +1530,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get planTaglineFree => '5 minutong tawag kada araw. Libre.';
 
   @override
-  String get bulletProCorrections =>
-      'Mga koreksyon na angkop sa sariling wika mo';
+  String get bulletProCorrections => 'Pagtatama na angkop sa sariling wika mo';
 
   @override
   String get bulletFreeCall => '5 minutong voice call kada araw';
@@ -2205,9 +2204,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Mag-usap nang walang pagwawasto';
 
   @override
-  String get callModeStudy => 'Pag-aaral';
-
-  @override
   String get callModeStudyDesc =>
       'Matuto ng isang ekspresyon sa bawat pagkakataon';
 
@@ -2508,7 +2504,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get hwBadgeDueToday => 'Deadline ngayon';
 
   @override
-  String get hwActivitySpeaking => 'Pagsasalita';
+  String get hwActivitySpeaking => 'Bigkas';
 
   @override
   String get hwActivityConversation => 'Usapan';

@@ -2179,9 +2179,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Засваргүйгээр чөлөөтэй ярь';
 
   @override
-  String get callModeStudy => 'Суралцах';
-
-  @override
   String get callModeStudyDesc => 'Нэг удаад нэг хэллэг сурна';
 
   @override
@@ -2477,7 +2474,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get hwBadgeDueToday => 'Өнөөдөр дуусна';
 
   @override
-  String get hwActivitySpeaking => 'Ярих';
+  String get hwActivitySpeaking => 'Дуудлага';
 
   @override
   String get hwActivityConversation => 'Яриа';

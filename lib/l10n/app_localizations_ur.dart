@@ -2184,9 +2184,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callModeFreeTalkDesc => 'بغیر اصلاح کے بات کریں';
 
   @override
-  String get callModeStudy => 'مشق';
-
-  @override
   String get callModeStudyDesc => 'ایک وقت میں ایک جملہ سیکھیں';
 
   @override
@@ -2483,7 +2480,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get hwBadgeDueToday => 'آج آخری دن';
 
   @override
-  String get hwActivitySpeaking => 'بول چال';
+  String get hwActivitySpeaking => 'تلفظ';
 
   @override
   String get hwActivityConversation => 'گفتگو';

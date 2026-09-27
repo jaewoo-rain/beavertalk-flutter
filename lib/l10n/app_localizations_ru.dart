@@ -2196,9 +2196,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Говори без исправлений';
 
   @override
-  String get callModeStudy => 'Изучение';
-
-  @override
   String get callModeStudyDesc => 'Учи по одному выражению за раз';
 
   @override
@@ -2497,7 +2494,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get hwBadgeDueToday => 'Срок сегодня';
 
   @override
-  String get hwActivitySpeaking => 'Говорение';
+  String get hwActivitySpeaking => 'Произношение';
 
   @override
   String get hwActivityConversation => 'Разговор';

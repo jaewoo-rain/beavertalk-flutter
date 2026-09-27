@@ -2189,9 +2189,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Bicara tanpa koreksi';
 
   @override
-  String get callModeStudy => 'Belajar';
-
-  @override
   String get callModeStudyDesc => 'Pelajari satu ungkapan sekaligus';
 
   @override
@@ -2487,7 +2484,7 @@ class AppLocalizationsId extends AppLocalizations {
   String get hwBadgeDueToday => 'Tenggat hari ini';
 
   @override
-  String get hwActivitySpeaking => 'Berbicara';
+  String get hwActivitySpeaking => 'Pengucapan';
 
   @override
   String get hwActivityConversation => 'Percakapan';

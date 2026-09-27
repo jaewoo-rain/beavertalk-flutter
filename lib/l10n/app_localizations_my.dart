@@ -2194,9 +2194,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callModeFreeTalkDesc => 'ပြင်ဆင်မှုမပါဘဲ စကားပြောပါ';
 
   @override
-  String get callModeStudy => 'လေ့လာခြင်း';
-
-  @override
   String get callModeStudyDesc => 'အသုံးအနှုန်းတစ်ခုချင်း လေ့လာပါ';
 
   @override
@@ -2492,7 +2489,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get hwBadgeDueToday => 'ယနေ့ သတ်မှတ်ရက်';
 
   @override
-  String get hwActivitySpeaking => 'စကားပြော';
+  String get hwActivitySpeaking => 'အသံထွက်';
 
   @override
   String get hwActivityConversation => 'စကားဝိုင်း';

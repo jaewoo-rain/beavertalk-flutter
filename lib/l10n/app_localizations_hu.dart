@@ -2200,9 +2200,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Beszélj javítások nélkül';
 
   @override
-  String get callModeStudy => 'Tanulás';
-
-  @override
   String get callModeStudyDesc => 'Egyszerre egy kifejezést tanulj';
 
   @override
@@ -2500,7 +2497,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get hwBadgeDueToday => 'Ma esedékes';
 
   @override
-  String get hwActivitySpeaking => 'Beszéd';
+  String get hwActivitySpeaking => 'Kiejtés';
 
   @override
   String get hwActivityConversation => 'Beszélgetés';

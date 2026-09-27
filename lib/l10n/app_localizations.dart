@@ -1069,7 +1069,7 @@ abstract class AppLocalizations {
   /// Home learning-status block: the course label for an expression-drill session. Sits next to the unit badge.
   ///
   /// In en, this message translates to:
-  /// **'Expression'**
+  /// **'Expressions'**
   String get homeCourseExpression;
 
   /// Home learning-status block: the course label for a free-conversation session. Sibling of `homeCourseExpression`.
@@ -4060,12 +4060,6 @@ abstract class AppLocalizations {
   /// **'Just talk — no corrections'**
   String get callModeFreeTalkDesc;
 
-  /// Mode sheet - the Study mode name (turn-based expression drill).
-  ///
-  /// In en, this message translates to:
-  /// **'Study'**
-  String get callModeStudy;
-
   /// Mode sheet - one-line description of Study.
   ///
   /// In en, this message translates to:
@@ -4627,7 +4621,7 @@ abstract class AppLocalizations {
   /// Homework (class join / assignments) copy
   ///
   /// In en, this message translates to:
-  /// **'Speaking'**
+  /// **'Pronunciation'**
   String get hwActivitySpeaking;
 
   /// Homework (class join / assignments) copy
@@ -4930,7 +4924,7 @@ abstract class AppLocalizations {
   /// **'Please allow notifications in Settings.'**
   String get callNotifPermissionRequired;
 
-  /// Call screen - speech bubble above the hint button, shown when the learner taps it during a Study (callModeStudy) call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Keep the course name identical to callModeStudy.
+  /// Call screen - speech bubble above the hint button, shown when the learner taps it during an Expressions-course call. The server sends no hints in that course, so the button stays visible but explains why it does nothing. Name the course with the same word as homeCourseExpression (the home course label) - not a word for 'study'.
   ///
   /// In en, this message translates to:
   /// **'Hints aren\'t available in Study'**

@@ -1477,7 +1477,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planTaglineFree => '1日5分、無料で通話。';
 
   @override
-  String get bulletProCorrections => '母語に合わせた添削';
+  String get bulletProCorrections => '母語に合わせた矯正';
 
   @override
   String get bulletFreeCall => '1日5分の音声通話';
@@ -2119,9 +2119,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callModeFreeTalkDesc => '訂正なしで気軽に話す';
 
   @override
-  String get callModeStudy => '表現学習';
-
-  @override
   String get callModeStudyDesc => '表現を一つずつ学び発音を直す';
 
   @override
@@ -2410,7 +2407,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get hwBadgeDueToday => '今日まで';
 
   @override
-  String get hwActivitySpeaking => 'スピーキング';
+  String get hwActivitySpeaking => '発音';
 
   @override
   String get hwActivityConversation => '会話';
