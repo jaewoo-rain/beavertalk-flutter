@@ -2179,9 +2179,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get callModeFreeTalkDesc => 'सुधार बिना कुरा गर्नुहोस्';
 
   @override
-  String get callModeStudyDesc => 'एक पटकमा एउटा अभिव्यक्ति सिक्नुहोस्';
-
-  @override
   String get callModeChange => 'मोड बदल्नुहोस्';
 
   @override

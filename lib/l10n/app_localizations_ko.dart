@@ -2120,9 +2120,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get callModeFreeTalkDesc => '교정 없이 편하게 이어가요';
 
   @override
-  String get callModeStudyDesc => '표현을 하나씩 짚고 발음을 고쳐요';
-
-  @override
   String get callModeChange => '대화 방식 바꾸기';
 
   @override

@@ -644,7 +644,6 @@
   "callModeSheetSubtitle": "Применится к этому звонку сразу",
   "callModeFreeTalk": "Свободный разговор",
   "callModeFreeTalkDesc": "Говори без исправлений",
-  "callModeStudyDesc": "Учи по одному выражению за раз",
   "callModeChange": "Сменить режим",
   "callModeKeep": "Не сейчас",
   "callExitTitle": "Завершить звонок?",

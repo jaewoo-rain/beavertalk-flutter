@@ -2196,9 +2196,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Tuzatishlarsiz suhbatlashing';
 
   @override
-  String get callModeStudyDesc => 'Bir vaqtda bitta iborani o‘rganing';
-
-  @override
   String get callModeChange => 'Rejimni o‘zgartirish';
 
   @override

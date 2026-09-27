@@ -2179,9 +2179,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Засваргүйгээр чөлөөтэй ярь';
 
   @override
-  String get callModeStudyDesc => 'Нэг удаад нэг хэллэг сурна';
-
-  @override
   String get callModeChange => 'Горим солих';
 
   @override

@@ -2178,9 +2178,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'නිවැරදි කිරීමකින් තොරව කතා කරන්න';
 
   @override
-  String get callModeStudyDesc => 'එක් ප්‍රකාශනයක් බැගින් ඉගෙන ගන්න';
-
-  @override
   String get callModeChange => 'ආකාරය වෙනස් කරන්න';
 
   @override

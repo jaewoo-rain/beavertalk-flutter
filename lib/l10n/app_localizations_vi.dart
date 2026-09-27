@@ -2183,9 +2183,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Nói thoải mái, không sửa lỗi';
 
   @override
-  String get callModeStudyDesc => 'Học từng mẫu câu và sửa phát âm';
-
-  @override
   String get callModeChange => 'Đổi chế độ';
 
   @override

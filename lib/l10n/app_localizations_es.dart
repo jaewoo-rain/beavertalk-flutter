@@ -2203,9 +2203,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Habla sin correcciones';
 
   @override
-  String get callModeStudyDesc => 'Aprende una expresión a la vez';
-
-  @override
   String get callModeChange => 'Cambiar modo';
 
   @override

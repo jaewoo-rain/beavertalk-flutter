@@ -2115,9 +2115,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get callModeFreeTalkDesc => '轻松交谈，不做纠正';
 
   @override
-  String get callModeStudyDesc => '逐句学习表达并纠正发音';
-
-  @override
   String get callModeChange => '更改模式';
 
   @override

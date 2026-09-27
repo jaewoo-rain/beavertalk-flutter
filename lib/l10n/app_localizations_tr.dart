@@ -2178,9 +2178,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Düzeltme olmadan konuş';
 
   @override
-  String get callModeStudyDesc => 'Her seferinde bir ifade öğren';
-
-  @override
   String get callModeChange => 'Modu değiştir';
 
   @override

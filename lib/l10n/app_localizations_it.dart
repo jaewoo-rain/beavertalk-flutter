@@ -2208,9 +2208,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Parla senza correzioni';
 
   @override
-  String get callModeStudyDesc => 'Impara un’espressione alla volta';
-
-  @override
   String get callModeChange => 'Cambia modalità';
 
   @override

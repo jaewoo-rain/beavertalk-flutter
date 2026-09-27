@@ -2196,9 +2196,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Говори без исправлений';
 
   @override
-  String get callModeStudyDesc => 'Учи по одному выражению за раз';
-
-  @override
   String get callModeChange => 'Сменить режим';
 
   @override

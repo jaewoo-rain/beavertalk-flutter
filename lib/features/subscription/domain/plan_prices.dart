@@ -63,7 +63,6 @@ abstract final class PlanPrices {
   static const _listMaxYearlyPerMonth = r'$15.75';
   static const _listMaxYearlyAnchor = r'$287.88';
   static const _listMaxYearlySaved = r'$98.89';
-  static const _listMaxMonthlyAnchor = r'$29.99';
   // 유료 캐릭터 US $4.99(사용자 결정 PM-DEC-084 · 09-27). 스토어가 답하면 그 현지가가 이긴다.
   static const _listCharacterFrom = r'$4.99';
 
@@ -175,14 +174,6 @@ abstract final class PlanPrices {
         ? _listMaxYearlyPerMonth
         : s.derive(s.maxYearly.raw / 12);
   }
-
-  /// The struck anchor shown beside Max monthly.
-  ///
-  /// Marketing copy, not a former price: no store reports "what this used to
-  /// cost", so it stays a constant even when everything else comes from the
-  /// store. ☞ It is a USD figure — hide it, never convert it, if a non-USD
-  /// storefront ever needs one.
-  static String get maxMonthlyAnchor => _listMaxMonthlyAnchor;
 
   /// Cheapest a character ever costs.
   ///

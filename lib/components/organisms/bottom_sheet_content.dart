@@ -162,8 +162,9 @@ class BottomSheetContent extends StatelessWidget {
   /// placeholder composition (avatar disc + self-view).
   final Widget? videoPreview;
 
-  /// Struck anchor price of the video sheet (`$29.99`) — rendered in body
-  /// colour with a strikethrough, per work order §6-4.
+  /// Struck anchor price of the video sheet — rendered in body colour with a
+  /// strikethrough, per work order §6-4. No screen passes one: Premium shows
+  /// its price alone (the $29.99 anchor was dropped · PM-DEC-100 · 09-27).
   final String? videoPriceOriginal;
 
   /// Live price line of the video sheet (`$23.99 per month`).

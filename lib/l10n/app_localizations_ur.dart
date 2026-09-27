@@ -2184,9 +2184,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get callModeFreeTalkDesc => 'بغیر اصلاح کے بات کریں';
 
   @override
-  String get callModeStudyDesc => 'ایک وقت میں ایک جملہ سیکھیں';
-
-  @override
   String get callModeChange => 'موڈ تبدیل کریں';
 
   @override

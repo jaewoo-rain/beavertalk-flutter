@@ -2180,9 +2180,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Түзетусіз еркін сөйлесіңіз';
 
   @override
-  String get callModeStudyDesc => 'Бір уақытта бір тіркесті үйреніңіз';
-
-  @override
   String get callModeChange => 'Режимді өзгерту';
 
   @override

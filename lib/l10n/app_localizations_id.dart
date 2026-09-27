@@ -2189,9 +2189,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Bicara tanpa koreksi';
 
   @override
-  String get callModeStudyDesc => 'Pelajari satu ungkapan sekaligus';
-
-  @override
   String get callModeChange => 'Ubah mode';
 
   @override

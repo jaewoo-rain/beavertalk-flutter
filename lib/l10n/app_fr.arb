@@ -644,7 +644,6 @@
   "callModeSheetSubtitle": "S’applique immédiatement à cet appel",
   "callModeFreeTalk": "Discussion libre",
   "callModeFreeTalkDesc": "Parle sans corrections",
-  "callModeStudyDesc": "Apprends une expression à la fois",
   "callModeChange": "Changer de mode",
   "callModeKeep": "Pas maintenant",
   "callExitTitle": "Terminer cet appel ?",

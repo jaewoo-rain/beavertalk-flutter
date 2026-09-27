@@ -4060,12 +4060,6 @@ abstract class AppLocalizations {
   /// **'Just talk — no corrections'**
   String get callModeFreeTalkDesc;
 
-  /// Mode sheet - one-line description of Study.
-  ///
-  /// In en, this message translates to:
-  /// **'Learn one expression at a time'**
-  String get callModeStudyDesc;
-
   /// Mode sheet - confirm button, and the label of the call header button that opens the sheet.
   ///
   /// In en, this message translates to:

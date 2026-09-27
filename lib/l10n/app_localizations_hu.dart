@@ -2200,9 +2200,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Beszélj javítások nélkül';
 
   @override
-  String get callModeStudyDesc => 'Egyszerre egy kifejezést tanulj';
-
-  @override
   String get callModeChange => 'Mód váltása';
 
   @override

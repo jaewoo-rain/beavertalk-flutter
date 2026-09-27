@@ -2196,9 +2196,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Juttele ilman korjauksia';
 
   @override
-  String get callModeStudyDesc => 'Opettele yksi ilmaus kerrallaan';
-
-  @override
   String get callModeChange => 'Vaihda tila';
 
   @override

@@ -503,9 +503,6 @@ void main() {
         cents(PlanPrices.maxYearlySaved),
         cents(PlanPrices.maxYearlyAnchor) - cents(PlanPrices.maxYearly),
       );
-      // Anchors only make sense above the price they strike through.
-      expect(cents(PlanPrices.maxMonthlyAnchor),
-          greaterThan(cents(PlanPrices.maxMonthly)));
     });
 
     test('a rail that cannot check intro eligibility says so', () {

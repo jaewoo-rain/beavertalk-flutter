@@ -2194,9 +2194,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get callModeFreeTalkDesc => 'ပြင်ဆင်မှုမပါဘဲ စကားပြောပါ';
 
   @override
-  String get callModeStudyDesc => 'အသုံးအနှုန်းတစ်ခုချင်း လေ့လာပါ';
-
-  @override
   String get callModeChange => 'မုဒ်ပြောင်းရန်';
 
   @override

@@ -21,7 +21,7 @@ void main() {
 
   // id 는 실제 슬러그 표를 따른다 — 1 Baba(무료) · 9 Popo · 10 Rara · 11 Dudu.
   Map<String, dynamic> row(int id, String name,
-          {String price = '11.99',
+          {String price = '4.99',
           String? effectivePrice,
           bool owned = false,
           bool? unlocked,
@@ -91,7 +91,7 @@ void main() {
     await t.pumpAndSettle();
     expect(find.text('Available to purchase'), findsOneWidget);
     expect(cta(t).text, 'Buy');
-    expect(find.text(r'$11.99'), findsOneWidget);
+    expect(find.text(r'$4.99'), findsOneWidget);
   });
 
   testWidgets('미보유·할인 — 할인가 · 정가 취소선 · -N% · 떠 있는 할인 배너', (t) async {
@@ -100,7 +100,7 @@ void main() {
       catalog([
         row(1, 'Baba', owned: true),
         row(10, 'Rara',
-            effectivePrice: '5.99',
+            effectivePrice: '2.49', // 정가 $4.99 · 할인가 $2.49(PM-DEC-093)
             discount: {'end_time': ends.toIso8601String()}),
       ]),
       activeId: 1,
@@ -108,8 +108,8 @@ void main() {
     await t.pumpAndSettle();
     await t.tap(find.bySemanticsLabel('Rara'));
     await t.pump();
-    expect(find.text(r'$5.99'), findsOneWidget);
-    expect(find.text(r'$11.99'), findsOneWidget);
+    expect(find.text(r'$2.49'), findsOneWidget);
+    expect(find.text(r'$4.99'), findsOneWidget);
     expect(find.text('-50%'), findsOneWidget);
     expect(find.text('Today only · 50% off'), findsOneWidget);
     expect(find.textContaining('left'), findsOneWidget);

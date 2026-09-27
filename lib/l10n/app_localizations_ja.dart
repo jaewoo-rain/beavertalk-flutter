@@ -2119,9 +2119,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get callModeFreeTalkDesc => '訂正なしで気軽に話す';
 
   @override
-  String get callModeStudyDesc => '表現を一つずつ学び発音を直す';
-
-  @override
   String get callModeChange => '話し方を変える';
 
   @override

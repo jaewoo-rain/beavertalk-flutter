@@ -2169,9 +2169,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get callModeFreeTalkDesc => 'تحدث بحرية دون تصحيح';
 
   @override
-  String get callModeStudyDesc => 'تعلّم تعبيرًا واحدًا في كل مرة';
-
-  @override
   String get callModeChange => 'تغيير الوضع';
 
   @override

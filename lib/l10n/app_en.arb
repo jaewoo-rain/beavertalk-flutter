@@ -1462,10 +1462,6 @@
   "@callModeFreeTalkDesc": {
     "description": "Mode sheet - one-line description of Free Talk."
   },
-  "callModeStudyDesc": "Learn one expression at a time",
-  "@callModeStudyDesc": {
-    "description": "Mode sheet - one-line description of Study."
-  },
   "callModeChange": "Change mode",
   "@callModeChange": {
     "description": "Mode sheet - confirm button, and the label of the call header button that opens the sheet."

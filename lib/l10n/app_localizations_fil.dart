@@ -2204,10 +2204,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Mag-usap nang walang pagwawasto';
 
   @override
-  String get callModeStudyDesc =>
-      'Matuto ng isang ekspresyon sa bawat pagkakataon';
-
-  @override
   String get callModeChange => 'Palitan ang mode';
 
   @override

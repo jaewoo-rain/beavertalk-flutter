@@ -644,7 +644,6 @@
   "callModeSheetSubtitle": "Astuu voimaan heti tässä puhelussa",
   "callModeFreeTalk": "Vapaa juttelu",
   "callModeFreeTalkDesc": "Juttele ilman korjauksia",
-  "callModeStudyDesc": "Opettele yksi ilmaus kerrallaan",
   "callModeChange": "Vaihda tila",
   "callModeKeep": "Ei nyt",
   "callExitTitle": "Lopetetaanko puhelu?",

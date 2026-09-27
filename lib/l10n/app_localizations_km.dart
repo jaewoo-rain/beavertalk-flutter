@@ -2177,9 +2177,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get callModeFreeTalkDesc => 'និយាយដោយគ្មានការកែតម្រូវ';
 
   @override
-  String get callModeStudyDesc => 'រៀនកន្សោមម្តងមួយ';
-
-  @override
   String get callModeChange => 'ប្តូររបៀប';
 
   @override

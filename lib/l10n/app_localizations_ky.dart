@@ -2185,9 +2185,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Оңдоосуз эркин сүйлөшүңүз';
 
   @override
-  String get callModeStudyDesc => 'Бир жолу бир сөз айкашын үйрөнүңүз';
-
-  @override
   String get callModeChange => 'Режимди өзгөртүү';
 
   @override

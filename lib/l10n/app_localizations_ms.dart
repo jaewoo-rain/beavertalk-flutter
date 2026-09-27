@@ -2202,9 +2202,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get callModeFreeTalkDesc => 'Bercakap tanpa pembetulan';
 
   @override
-  String get callModeStudyDesc => 'Pelajari satu ungkapan pada satu masa';
-
-  @override
   String get callModeChange => 'Tukar mod';
 
   @override

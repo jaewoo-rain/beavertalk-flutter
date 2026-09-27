@@ -2179,9 +2179,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get callModeFreeTalkDesc => 'बिना सुधार के बात करें';
 
   @override
-  String get callModeStudyDesc => 'एक बार में एक अभिव्यक्ति सीखें';
-
-  @override
   String get callModeChange => 'मोड बदलें';
 
   @override

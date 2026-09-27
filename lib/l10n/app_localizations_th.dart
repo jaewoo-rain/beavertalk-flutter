@@ -2168,9 +2168,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get callModeFreeTalkDesc => 'คุยสบาย ๆ ไม่มีการแก้';
 
   @override
-  String get callModeStudyDesc => 'เรียนทีละสำนวนและแก้การออกเสียง';
-
-  @override
   String get callModeChange => 'เปลี่ยนโหมด';
 
   @override
