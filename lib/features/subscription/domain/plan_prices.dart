@@ -64,7 +64,8 @@ abstract final class PlanPrices {
   static const _listMaxYearlyAnchor = r'$287.88';
   static const _listMaxYearlySaved = r'$98.89';
   static const _listMaxMonthlyAnchor = r'$29.99';
-  static const _listCharacterFrom = r'$11.99';
+  // 유료 캐릭터 US $4.99(사용자 결정 PM-DEC-084 · 09-27). 스토어가 답하면 그 현지가가 이긴다.
+  static const _listCharacterFrom = r'$4.99';
 
   static _StorePrices? _store;
 

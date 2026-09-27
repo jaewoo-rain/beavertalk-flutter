@@ -472,6 +472,11 @@ void main() {
       expect(IapProductIds.characterFor(42), isNull);
     });
 
+    test('character list price before the store answers is US \$4.99 (PM-DEC-084)', () {
+      PlanPrices.reset();
+      expect(PlanPrices.characterFrom, r'$4.99');
+    });
+
     test('derived prices still follow from the ones they are derived from', () {
       // `$154.80` once outlived the `$12.90` it was twelve months of. The
       // arithmetic is the only thing that says these four belong together, so
