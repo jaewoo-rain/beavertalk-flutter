@@ -1572,7 +1572,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get paywallMaxTitle =>
-      'Kini anda boleh berbual secara bersemuka melalui video.';
+      'Kini anda boleh berbual melalui panggilan video sambil melihat wajah masing-masing.';
 
   @override
   String paywallTutorCompare(String price) {

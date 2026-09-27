@@ -287,6 +287,10 @@ void main() {
       expect(ja.paywallMaxTitle, '顔を見ながら話せます。');
       final de = await AppLocalizations.delegate.load(const Locale('de'));
       expect(de.paywallMaxTitle, isNot(contains('sie sehen')));
+      // ms 「secara bersemuka」 는 오프라인 대면으로 굳은 말이라 「melalui video」 와 모순
+      // (43 하네스 AI 검수 · 07_앱키_수정안 · PM 09-27).
+      final ms = await AppLocalizations.delegate.load(const Locale('ms'));
+      expect(ms.paywallMaxTitle, isNot(contains('bersemuka')));
     });
   });
 
