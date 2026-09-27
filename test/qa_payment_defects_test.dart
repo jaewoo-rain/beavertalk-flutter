@@ -235,6 +235,17 @@ void main() {
       expect(StoreIapService.restoreOutcomeOf(r(0, 0)), RestoreOutcome.nothing);
     });
 
+    test('재검증 — 가입 때 받은 무료 스타터(Baba·Bibi)만 있으면 복원 성공이 아니다', () {
+      // 서버가 가입 시 Baba 를 보유 처리한다(member_service) · id 1 Baba · 2 Bibi.
+      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1])),
+          RestoreOutcome.notThisAccount);
+      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2])),
+          RestoreOutcome.notThisAccount);
+      expect(StoreIapService.restoreOutcomeOf(r(0, 0, chars: [1])), RestoreOutcome.nothing);
+      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 10])),
+          RestoreOutcome.restored, reason: '유료 Rara 는 센다');
+    });
+
     Future<(RestoreOutcome, _FakeStore, List<IapPurchase>)> run(
         _FakeServer server) async {
       final store = _FakeStore()..restorable = [_pd('r1', PurchaseStatus.restored)];
@@ -340,17 +351,44 @@ void main() {
     });
 
     testWidgets('F004 — 보류가 이어지면 안내하고 화면을 놓아 준다', (tester) async {
-      await pump(tester, _ScriptedIap([
+      final iap = _ScriptedIap([
         const IapPurchase(
             productId: IapProductIds.maxMonthly,
             type: IapProductType.subscription,
             state: IapPurchaseState.pending),
-      ]));
+      ]);
+      await pump(tester, iap);
+
       expect(find.text('Payment pending'), findsNothing, reason: 'StoreKit 의 결제 중 보류는 기다린다');
       await tester.pump(kPurchasePendingNoticeAfter + const Duration(milliseconds: 100));
       await tester.pumpAndSettle();
       expect(find.text('Payment pending'), findsOneWidget);
       expect(find.byType(PurchaseProcessingScreen), findsNothing);
+      // 늦은 결과 감시(30분)를 끝내 타이머를 남기지 않는다.
+      iap.emit(const IapPurchase(
+          productId: IapProductIds.maxMonthly,
+          type: IapProductType.subscription,
+          state: IapPurchaseState.canceled));
+      await tester.pump();
+    });
+
+    testWidgets('재검증 — 보류 안내로 화면이 닫힌 뒤 성공해도 성공 화면', (tester) async {
+      final iap = _ScriptedIap([
+        const IapPurchase(
+            productId: IapProductIds.maxMonthly,
+            type: IapProductType.subscription,
+            state: IapPurchaseState.pending),
+      ]);
+      await pump(tester, iap);
+      await tester.pump(kPurchasePendingNoticeAfter + const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+      expect(find.text('Payment pending'), findsOneWidget);
+      iap.emit(const IapPurchase(
+          productId: IapProductIds.maxMonthly,
+          type: IapProductType.subscription,
+          state: IapPurchaseState.purchased));
+      await tester.pumpAndSettle();
+      expect(find.text('success'), findsOneWidget);
     });
 
     testWidgets('보류 뒤 곧 결제되면 보류 안내 없이 성공', (tester) async {
@@ -476,6 +514,9 @@ class _ScriptedIap extends MockIapService {
   /// 캐릭터 구매처럼 산 상품 id 로 이벤트를 다시 쓴다.
   final bool matchProduct;
   final _out = StreamController<IapPurchase>.broadcast();
+
+  /// 나중에 오는 이벤트(늦은 결제 완료).
+  void emit(IapPurchase p) => _out.add(p);
 
   @override
   Stream<IapPurchase> get purchases => _out.stream;

@@ -348,8 +348,12 @@ class StoreIapService implements IapService {
   /// The restore result to a [RestoreOutcome].
   @visibleForTesting
   static RestoreOutcome restoreOutcomeOf(RestoreResultDto r) {
+    // Free starters don't count: the server marks Baba as owned at sign-up
+    // (member_service), so "owns a character" was true for every Free account
+    // and a fully refused restore still read as restored (QA F003 재검증).
     final hasSomething = r.entitlement.isPro ||
-        r.entitlement.ownedCharacterIds.isNotEmpty;
+        r.entitlement.ownedCharacterIds
+            .any((id) => !IapProductIds.isFreeCharacter(id));
     if (r.restored > 0 || hasSomething) return RestoreOutcome.restored;
     if (r.failed > 0) return RestoreOutcome.notThisAccount;
     return RestoreOutcome.nothing;

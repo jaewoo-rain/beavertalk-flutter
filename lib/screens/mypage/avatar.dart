@@ -388,7 +388,9 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           }
           return;
         case IapPurchaseState.pending:
-          // 오래 보류 중 — 기다리게 두지 않는다(QA F004). 끝나면 레일이 지급한다.
+          // 오래 보류 중 — 기다리게 두지 않는다(QA F004). 끝나면 레일이 지급한다 — 그때
+          // 보유를 다시 읽고, 이 화면이 아직 떠 있으면 성공 시트를 띄운다(재검증 09-27).
+          _watchLateCharacter(iap, product.id, c);
           showSubscriptionOverlay(context, SubscriptionOverlay.purchasePending);
           return;
         case IapPurchaseState.purchased:
@@ -399,6 +401,26 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// 보류 안내 뒤 늦게 오는 결과(QA F004) — 30분까지 듣는다.
+  void _watchLateCharacter(IapService iap, String productId, Character c) {
+    final container = ProviderScope.containerOf(context, listen: false);
+    late final StreamSubscription<IapPurchase> sub;
+    final guard = Timer(const Duration(minutes: 30), () => sub.cancel());
+    sub = iap.purchases.listen((p) {
+      if (p.productId != productId || p.state == IapPurchaseState.pending) return;
+      guard.cancel();
+      sub.cancel();
+      if (p.state != IapPurchaseState.purchased &&
+          p.state != IapPurchaseState.restored) {
+        return;
+      }
+      container.invalidate(charactersProvider);
+      container.invalidate(ownedCharactersProvider);
+      container.invalidate(paymentPageProvider);
+      if (mounted) _showPurchaseSuccessSheet(c);
+    });
   }
 
   /// 이 상품의 결과 이벤트 — 끝난 이벤트를 기다리되, 보류가

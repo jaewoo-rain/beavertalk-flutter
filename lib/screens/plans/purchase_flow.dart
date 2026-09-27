@@ -215,9 +215,18 @@ class _PurchaseProcessingScreenState
   /// The rail delivers the purchase whenever the store completes it.
   void _onPendingTooLong() {
     if (!mounted) return;
-    final navCtx = Navigator.of(context, rootNavigator: true).context;
+    final rootNav = Navigator.of(context, rootNavigator: true);
+    // The screen goes, the purchase does not: on iOS a member can simply sit
+    // on Apple's sheet past the timer and still pay. Keep listening past this
+    // screen so that success still refreshes the plan and says so (QA F004
+    // 재검증 — 지급은 됐는데 성공 안내·상태 갱신이 없었다).
+    watchLatePurchaseResult(
+      container: ProviderScope.containerOf(context, listen: false),
+      navigator: rootNav,
+      request: _request,
+    );
     Navigator.pop(context);
-    showSubscriptionOverlay(navCtx, SubscriptionOverlay.purchasePending);
+    showSubscriptionOverlay(rootNav.context, SubscriptionOverlay.purchasePending);
   }
 
   @override
@@ -264,6 +273,43 @@ class _PurchaseProcessingScreenState
     );
   }
 }
+
+/// Waits for the final result of a purchase whose processing screen already
+/// left on the pending notice (QA F004), for up to [_lateResultWindow].
+///
+/// Success refreshes the plan and opens the success screen; a failure shows
+/// its sheet; a cancel is silent. One result ends the watch.
+void watchLatePurchaseResult({
+  required ProviderContainer container,
+  required NavigatorState navigator,
+  required PurchaseRequest request,
+}) {
+  final iap = container.read(iapServiceProvider);
+  late final StreamSubscription<IapPurchase> sub;
+  final guard = Timer(_lateResultWindow, () => sub.cancel());
+  sub = iap.purchases.listen((p) {
+    if (p.state == IapPurchaseState.pending) return;
+    guard.cancel();
+    sub.cancel();
+    if (!navigator.mounted) return;
+    switch (p.state) {
+      case IapPurchaseState.purchased:
+      case IapPurchaseState.restored:
+        container.read(sessionEntitlementProvider.notifier).state = request.tier;
+        container.invalidate(serverSubscriptionStatusProvider);
+        container.invalidate(subscriptionsProvider);
+        navigator.pushNamed(Routes.purchaseSuccessMax, arguments: request.annual);
+      case IapPurchaseState.failed:
+        showSubscriptionOverlay(navigator.context, purchaseFailureOverlayFor(p));
+      case IapPurchaseState.canceled:
+      case IapPurchaseState.pending:
+        break;
+    }
+  });
+}
+
+/// How long [watchLatePurchaseResult] keeps listening.
+const _lateResultWindow = Duration(minutes: 30);
 
 /// `depth/purchase_success_pro` / `_max` (`4514:5666` / `4514:5684`).
 ///
