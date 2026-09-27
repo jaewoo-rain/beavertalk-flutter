@@ -27,8 +27,9 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
 
   /// ⚠ [IapPurchase] 는 두 값을 **nullable** 로 들고, 서버 페이로드는 아니다.
   ///   목업 레일에는 스토어 거래가 없어서 null 이 정상이기 때문이다.
-  ///   ⇒ 여기 닿기 전에 호출부가 [IapPurchase.hasReceipt] 로 거른다
-  ///     (`avatar.dart:580`, `purchases_remote_data_source.dart:65`).
+  ///   ⇒ 여기 닿기 전에 호출부가 [IapPurchase.hasReceipt] 로 거른다(`avatar.dart` `_deliver`).
+  ///   영수증 검증은 이 저장소 한 곳뿐이다 — 두 번째 데이터소스(`purchases_remote_data_source`)는
+  ///   아바타 화면의 이중 검증(QA F016)만 쓰고 있어 지웠다.
   ///   빈 문자열로 떨어뜨리는 이유: 그래도 새어 들어오면 **서버가 거절**하고,
   ///   그 거절은 이미 실패 경로가 받아 다음 실행에 재시도한다. 조용히 성공하는
   ///   경우가 없다 — 그게 여기서 던지지 않는 근거다.
@@ -47,8 +48,23 @@ class PurchaseRepositoryImpl implements PurchaseRepository {
         isSandbox: purchase.isSandbox,
       );
     } on DioException catch (e) {
+      // The four refusals are told apart by `detail.code`, not the status
+      // (QA F028). Anything else keeps the usual mapping.
+      final reason = IapVerifyRejection.fromCode(verifyErrorCode(e));
+      if (reason != null) throw IapVerifyException(reason, e);
       throw mapDioException(e);
     }
+  }
+
+  /// `detail.code` of a `POST /purchases/verify` error body, or null.
+  @visibleForTesting
+  static String? verifyErrorCode(DioException e) {
+    final data = e.response?.data;
+    if (data is! Map) return null;
+    final detail = data['detail'];
+    if (detail is! Map) return null;
+    final code = detail['code'];
+    return code is String ? code : null;
   }
 
   @override

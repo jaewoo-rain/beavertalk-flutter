@@ -1869,6 +1869,27 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ovFailedStoreBody => '스토어에 연결하지 못했어요. 요금은 청구되지 않았어요.';
 
   @override
+  String get ovVerifyingTitle => '결제는 완료됐어요';
+
+  @override
+  String get ovVerifyingBody =>
+      '스토어 확인이 늦어지고 있어요. 곧 적용돼요. 적용되지 않으면 「구매 복원」을 눌러 주세요.';
+
+  @override
+  String get ovPendingTitle => '결제 대기 중이에요';
+
+  @override
+  String get ovPendingBody =>
+      '스토어가 아직 결제를 마치지 않았어요. 끝나면 바로 적용돼요. 이 화면을 나가도 괜찮아요.';
+
+  @override
+  String get ovRejectedTitle => '이 결제를 확인하지 못했어요';
+
+  @override
+  String get ovRejectedBody =>
+      '스토어가 이 결제를 확인해 주지 않아 적용하지 않았어요. 결제가 됐다면 문의해 주세요.';
+
+  @override
   String get ovAlreadyTitle => '이미 Premium을 쓰고 있어요';
 
   @override

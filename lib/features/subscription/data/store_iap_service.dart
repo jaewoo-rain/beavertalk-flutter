@@ -8,6 +8,7 @@ import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 
 import '../domain/iap_service.dart';
 import '../domain/repositories/purchase_repository.dart';
+import 'models/entitlement_dto.dart';
 
 /// The real rail — `in_app_purchase` in front, our server behind.
 ///
@@ -159,19 +160,24 @@ class StoreIapService implements IapService {
   }
 
   @override
-  Future<void> restore() async {
+  Future<RestoreOutcome> restore() async {
     _restoreBatch = <IapPurchase>[];
+    var storeFailed = false;
     try {
       await _store.restorePurchases();
       // The stream has no "that was all" signal, so give the platform a beat
       // to drain before closing the batch. Anything later still arrives — it
       // just takes the single-receipt path in [_deliver].
       await Future<void>.delayed(const Duration(milliseconds: 900));
-    } finally {
-      final batch = _restoreBatch ?? const <IapPurchase>[];
-      _restoreBatch = null;
-      if (batch.isNotEmpty) await _submitRestore(batch);
+    } catch (_) {
+      storeFailed = true;
     }
+    final batch = _restoreBatch ?? const <IapPurchase>[];
+    _restoreBatch = null;
+    if (batch.isEmpty) {
+      return storeFailed ? RestoreOutcome.unavailable : RestoreOutcome.nothing;
+    }
+    return _submitRestore(batch);
   }
 
   @override
@@ -266,7 +272,8 @@ class StoreIapService implements IapService {
           _out.add(_event(pd, IapPurchaseState.canceled));
         case PurchaseStatus.error:
           _finish(pd);
-          _out.add(_event(pd, IapPurchaseState.failed, error: pd.error));
+          _out.add(_event(pd, IapPurchaseState.failed,
+              error: pd.error, failure: IapFailure.store));
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
           unawaited(_deliver(pd));
@@ -291,9 +298,18 @@ class StoreIapService implements IapService {
     try {
       await _server.verify(purchase);
     } catch (e) {
-      // Deliberately not finished: the receipt stays live and the store
-      // re-delivers it next launch, which retries this verification for free.
-      _out.add(_event(pd, IapPurchaseState.failed, error: e));
+      final failure = verifyFailureOf(e);
+      // Only a receipt no retry can fix is closed: the store judged it invalid,
+      // or it already belongs to another account (granted and acknowledged
+      // there). Everything else stays live — the store re-delivers it next
+      // launch, which retries this verification for free, and on Play an
+      // unacknowledged purchase our server never granted is refunded by
+      // Google after three days instead of being kept (QA F028).
+      if (failure == IapFailure.rejected || failure == IapFailure.otherAccount) {
+        _finish(pd);
+        _launched.remove(pd.productID);
+      }
+      _out.add(_event(pd, IapPurchaseState.failed, error: e, failure: failure));
       return;
     }
     _finish(pd);
@@ -301,34 +317,62 @@ class StoreIapService implements IapService {
     _out.add(purchase);
   }
 
-  Future<void> _submitRestore(List<IapPurchase> batch) async {
+  /// Posts the replayed receipts and reads the server's verdict (QA F003).
+  ///
+  /// The server answers 200 even when it granted nothing (`restored` 0 ·
+  /// `failed` N), and it counts a receipt that was **already** granted as
+  /// neither — so the entitlement it returns is what says whether this account
+  /// has something now.
+  Future<RestoreOutcome> _submitRestore(List<IapPurchase> batch) async {
+    final RestoreResultDto result;
     try {
-      await _server.restore(batch);
+      result = await _server.restore(batch);
     } catch (e) {
+      // Unfinished on purpose, like a failed single verify: the store replays
+      // them next time.
       for (final p in batch) {
         _awaitingFinish.remove(p.purchaseToken);
-        _out.add(IapPurchase(
-          productId: p.productId,
-          type: p.type,
-          state: IapPurchaseState.failed,
-          error: e,
-        ));
       }
-      return;
+      return RestoreOutcome.unavailable;
     }
+    final outcome = restoreOutcomeOf(result);
     for (final p in batch) {
       final pd = _awaitingFinish.remove(p.purchaseToken);
+      if (outcome != RestoreOutcome.restored) continue;
       if (pd != null) _finish(pd);
       _out.add(p);
     }
+    return outcome;
   }
+
+  /// The restore result to a [RestoreOutcome].
+  @visibleForTesting
+  static RestoreOutcome restoreOutcomeOf(RestoreResultDto r) {
+    final hasSomething = r.entitlement.isPro ||
+        r.entitlement.ownedCharacterIds.isNotEmpty;
+    if (r.restored > 0 || hasSomething) return RestoreOutcome.restored;
+    if (r.failed > 0) return RestoreOutcome.notThisAccount;
+    return RestoreOutcome.nothing;
+  }
+
+  /// A verification error to the reason the screens show.
+  @visibleForTesting
+  static IapFailure verifyFailureOf(Object e) => switch (e) {
+        IapVerifyException(reason: IapVerifyRejection.invalidReceipt) =>
+          IapFailure.rejected,
+        IapVerifyException(reason: IapVerifyRejection.ownedByOther) =>
+          IapFailure.otherAccount,
+        // Unknown product is a server catalog gap, not a bad receipt: keep it
+        // for the retry after the catalog is fixed.
+        _ => IapFailure.verifyPending,
+      };
 
   void _finish(PurchaseDetails pd) {
     if (pd.pendingCompletePurchase) unawaited(_store.completePurchase(pd));
   }
 
   IapPurchase _event(PurchaseDetails pd, IapPurchaseState state,
-      {Object? error}) {
+      {Object? error, IapFailure? failure}) {
     final token = pd.verificationData.serverVerificationData;
     final restored = state == IapPurchaseState.restored;
     if (restored) _awaitingFinish[token] = pd;
@@ -347,6 +391,7 @@ class StoreIapService implements IapService {
       type: _typeOf(sku),
       state: state,
       error: error,
+      failure: failure,
       // Play omits an order id on pending purchases; the token identifies the
       // transaction just as well and the server requires a non-empty value.
       transactionId:

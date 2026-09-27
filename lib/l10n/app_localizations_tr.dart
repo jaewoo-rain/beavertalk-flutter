@@ -1918,6 +1918,27 @@ class AppLocalizationsTr extends AppLocalizations {
   String get ovFailedStoreBody => 'Mağazaya ulaşamadık. Hiçbir ücret alınmadı.';
 
   @override
+  String get ovVerifyingTitle => 'Ödeme alındı';
+
+  @override
+  String get ovVerifyingBody =>
+      'Mağazayla doğrulamaya devam ediyoruz. Kısa süre içinde etkinleşecek — etkinleşmezse “Satın alımları geri yükle”ye dokun.';
+
+  @override
+  String get ovPendingTitle => 'Ödeme bekleniyor';
+
+  @override
+  String get ovPendingBody =>
+      'Mağaza ödemeyi henüz tamamlamadı. Tamamlanınca etkinleşecek — bu ekrandan çıkabilirsin.';
+
+  @override
+  String get ovRejectedTitle => 'Bu satın alımı doğrulayamadık';
+
+  @override
+  String get ovRejectedBody =>
+      'Mağaza bu ödemeyi doğrulamadı, bu yüzden hiçbir şey etkinleşmedi. Ücret alındıysa bizimle iletişime geç.';
+
+  @override
   String get ovAlreadyTitle => 'Zaten Premium\'dasın';
 
   @override

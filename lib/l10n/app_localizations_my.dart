@@ -1934,6 +1934,27 @@ class AppLocalizationsMy extends AppLocalizations {
       'စတိုးနှင့် ချိတ်ဆက်၍ မရပါ။ ငွေမကောက်ခံခဲ့ပါ။';
 
   @override
+  String get ovVerifyingTitle => 'ငွေပေးချေမှု လက်ခံရရှိပါပြီ';
+
+  @override
+  String get ovVerifyingBody =>
+      'စတိုးနှင့် အတည်ပြုနေဆဲဖြစ်ပါသည်။ မကြာမီ ဖွင့်ပေးပါမည် — မဖွင့်ပါက «ဝယ်ယူမှုများ ပြန်လည်ရယူရန်» ကို နှိပ်ပါ။';
+
+  @override
+  String get ovPendingTitle => 'ငွေပေးချေမှု စောင့်ဆိုင်းနေသည်';
+
+  @override
+  String get ovPendingBody =>
+      'စတိုးက ငွေပေးချေမှုကို မပြီးသေးပါ။ ပြီးသည်နှင့် ဖွင့်ပေးပါမည် — ဤမျက်နှာပြင်မှ ထွက်နိုင်ပါသည်။';
+
+  @override
+  String get ovRejectedTitle => 'ဤဝယ်ယူမှုကို အတည်မပြုနိုင်ပါ';
+
+  @override
+  String get ovRejectedBody =>
+      'စတိုးက ဤငွေပေးချေမှုကို အတည်မပြုသဖြင့် ဘာမှ မဖွင့်ပေးရသေးပါ။ ငွေကောက်ခံခံရပါက ကျွန်ုပ်တို့ထံ ဆက်သွယ်ပါ။';
+
+  @override
   String get ovAlreadyTitle => 'Premium ကို သုံးနေပြီးသား ဖြစ်သည်';
 
   @override

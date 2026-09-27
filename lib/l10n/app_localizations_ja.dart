@@ -1868,6 +1868,27 @@ class AppLocalizationsJa extends AppLocalizations {
   String get ovFailedStoreBody => 'ストアに接続できませんでした。料金は請求されていません。';
 
   @override
+  String get ovVerifyingTitle => 'お支払いを受け付けました';
+
+  @override
+  String get ovVerifyingBody =>
+      'ストアでの確認に時間がかかっています。まもなく反映されます。反映されない場合は「購入を復元」をタップしてください。';
+
+  @override
+  String get ovPendingTitle => 'お支払い待ちです';
+
+  @override
+  String get ovPendingBody =>
+      'ストアでのお支払いがまだ完了していません。完了するとすぐに反映されます。この画面を離れても大丈夫です。';
+
+  @override
+  String get ovRejectedTitle => 'この購入を確認できませんでした';
+
+  @override
+  String get ovRejectedBody =>
+      'ストアがこのお支払いを確認しなかったため、反映していません。請求された場合はお問い合わせください。';
+
+  @override
   String get ovAlreadyTitle => 'すでにPremiumをご利用中です';
 
   @override

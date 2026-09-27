@@ -1918,6 +1918,27 @@ class AppLocalizationsKk extends AppLocalizations {
   String get ovFailedStoreBody => 'Дүкенге қосыла алмадық. Ештеңе алынған жоқ.';
 
   @override
+  String get ovVerifyingTitle => 'Төлем қабылданды';
+
+  @override
+  String get ovVerifyingBody =>
+      'Біз оны әлі дүкенмен растап жатырмыз. Жақында іске қосылады — болмаса, «Сатып алуларды қалпына келтіру» түймесін басыңыз.';
+
+  @override
+  String get ovPendingTitle => 'Төлем күтілуде';
+
+  @override
+  String get ovPendingBody =>
+      'Дүкен төлемді әлі аяқтаған жоқ. Аяқталған соң іске қосылады — бұл экраннан шыға бере аласыз.';
+
+  @override
+  String get ovRejectedTitle => 'Бұл сатып алуды растай алмадық';
+
+  @override
+  String get ovRejectedBody =>
+      'Дүкен бұл төлемді растамады, сондықтан ештеңе қосылмады. Ақша алынған болса, бізге хабарласыңыз.';
+
+  @override
   String get ovAlreadyTitle => 'Сіз әлдеқашан Premium-дасыз';
 
   @override

@@ -1934,6 +1934,27 @@ class AppLocalizationsRu extends AppLocalizations {
       'Не удалось связаться с магазином. Ничего не списано.';
 
   @override
+  String get ovVerifyingTitle => 'Платёж получен';
+
+  @override
+  String get ovVerifyingBody =>
+      'Мы ещё подтверждаем его в магазине. Скоро всё включится — если нет, нажмите «Восстановить покупки».';
+
+  @override
+  String get ovPendingTitle => 'Платёж ожидает';
+
+  @override
+  String get ovPendingBody =>
+      'Магазин ещё не завершил платёж. Как только он завершится, всё включится — можно уйти с этого экрана.';
+
+  @override
+  String get ovRejectedTitle => 'Не удалось подтвердить покупку';
+
+  @override
+  String get ovRejectedBody =>
+      'Магазин не подтвердил этот платёж, поэтому ничего не подключено. Если деньги списали, свяжитесь с нами.';
+
+  @override
   String get ovAlreadyTitle => 'Вы уже на Premium';
 
   @override

@@ -1918,6 +1918,27 @@ class AppLocalizationsNe extends AppLocalizations {
   String get ovFailedStoreBody => 'स्टोरसम्म पुग्न सकिएन। कुनै शुल्क लागेन।';
 
   @override
+  String get ovVerifyingTitle => 'भुक्तानी प्राप्त भयो';
+
+  @override
+  String get ovVerifyingBody =>
+      'हामी अझै स्टोरसँग यसको पुष्टि गर्दैछौं। छिट्टै सक्रिय हुनेछ — भएन भने “खरिदहरू पुनर्स्थापना” थिच्नुहोस्।';
+
+  @override
+  String get ovPendingTitle => 'भुक्तानी बाँकी छ';
+
+  @override
+  String get ovPendingBody =>
+      'स्टोरले अझै भुक्तानी पूरा गरेको छैन। पूरा हुनेबित्तिकै सक्रिय हुनेछ — तपाईं यो स्क्रिन छोड्न सक्नुहुन्छ।';
+
+  @override
+  String get ovRejectedTitle => 'हामीले यो खरिदको पुष्टि गर्न सकेनौं';
+
+  @override
+  String get ovRejectedBody =>
+      'स्टोरले यो भुक्तानीको पुष्टि गरेन, त्यसैले केही लागू भएन। शुल्क काटिएको छ भने हामीलाई सम्पर्क गर्नुहोस्।';
+
+  @override
   String get ovAlreadyTitle => 'तपाईं पहिल्यै Premium मा हुनुहुन्छ';
 
   @override

@@ -1927,6 +1927,27 @@ class AppLocalizationsId extends AppLocalizations {
       'Kami tidak dapat menghubungi toko. Tidak ada tagihan.';
 
   @override
+  String get ovVerifyingTitle => 'Pembayaran diterima';
+
+  @override
+  String get ovVerifyingBody =>
+      'Kami masih mengonfirmasinya dengan toko. Akan segera aktif — jika tidak, ketuk “Pulihkan pembelian”.';
+
+  @override
+  String get ovPendingTitle => 'Pembayaran tertunda';
+
+  @override
+  String get ovPendingBody =>
+      'Toko belum menyelesaikan pembayaran. Akan aktif begitu selesai — kamu boleh meninggalkan layar ini.';
+
+  @override
+  String get ovRejectedTitle => 'Kami tidak dapat mengonfirmasi pembelian ini';
+
+  @override
+  String get ovRejectedBody =>
+      'Toko tidak mengonfirmasi pembayaran ini, jadi tidak ada yang diterapkan. Jika kamu ditagih, hubungi kami.';
+
+  @override
   String get ovAlreadyTitle => 'Kamu sudah di Premium';
 
   @override

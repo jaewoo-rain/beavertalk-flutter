@@ -1933,6 +1933,27 @@ class AppLocalizationsFi extends AppLocalizations {
       'Kauppaan ei saatu yhteyttä. Mitään ei veloitettu.';
 
   @override
+  String get ovVerifyingTitle => 'Maksu vastaanotettu';
+
+  @override
+  String get ovVerifyingBody =>
+      'Vahvistamme sitä vielä kaupan kanssa. Se otetaan käyttöön pian – jos ei, napauta ”Palauta ostot”.';
+
+  @override
+  String get ovPendingTitle => 'Maksu odottaa';
+
+  @override
+  String get ovPendingBody =>
+      'Kauppa ei ole vielä viimeistellyt maksua. Se otetaan käyttöön heti kun se on valmis – voit poistua tästä näkymästä.';
+
+  @override
+  String get ovRejectedTitle => 'Emme voineet vahvistaa tätä ostoa';
+
+  @override
+  String get ovRejectedBody =>
+      'Kauppa ei vahvistanut tätä maksua, joten mitään ei otettu käyttöön. Jos sinua veloitettiin, ota meihin yhteyttä.';
+
+  @override
   String get ovAlreadyTitle => 'Sinulla on jo Premium';
 
   @override

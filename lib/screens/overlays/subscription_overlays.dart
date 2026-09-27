@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../app/routes.dart';
 import '../../features/character/presentation/providers/character_providers.dart';
+import '../../features/legal/legal_urls.dart' show contactMailUri;
 import '../../features/subscription/domain/iap_service.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../components/molecules/benefit_row.dart';
@@ -82,6 +83,19 @@ enum SubscriptionOverlay {
 
   /// `overlay/purchase_failed — 스토어 오류` (`4514:5403`).
   purchaseFailedStore,
+
+  /// 결제는 됐고 서버 확인이 아직 — 「카드 거절」 이 아니다(QA F005 · 09-27).
+  /// Figma 에 없는 시트라 스토어 오류 시트와 같은 틀(오류 표식 없음)을 쓴다.
+  purchaseVerifying,
+
+  /// 스토어가 결제를 보류로 알렸다(느린 카드·현금 결제) — 화면을 떠나도 된다(QA F004).
+  purchasePending,
+
+  /// 스토어가 영수증을 무효로 판정했다(서버 `INVALID_RECEIPT` · QA F028).
+  purchaseRejected,
+
+  /// 구매 복원 중 스토어·서버에 닿지 못했다 — 「복원할 것 없음」 이 아니다(QA F003).
+  restoreUnavailable,
 
   /// `overlay/already_subscribed` (`4514:5442`).
   alreadySubscribed,
@@ -207,33 +221,45 @@ Future<void> runRestoreFlow(BuildContext context) async {
   // sheet appeared. The container outlives every screen that can start this.
   final container = ProviderScope.containerOf(context, listen: false);
   final iap = container.read(iapServiceProvider);
-  var restored = 0;
-  final sub = iap.purchases.listen((p) {
-    if (p.state == IapPurchaseState.restored) restored++;
-  });
+  // The rail's verdict, not a count of `restored` events (QA F003): the server
+  // can refuse every receipt with a 200, and an unreachable server is not
+  // "nothing to restore".
+  RestoreOutcome outcome;
   try {
-    await iap.restore();
+    outcome = await iap.restore();
   } catch (_) {
-    // The store could not be reached. Fall through to the empty sheet: from
-    // the member's side "nothing came back" is what happened, and inventing a
-    // restore they did not get would be the worse lie.
+    outcome = RestoreOutcome.unavailable;
   } finally {
-    await sub.cancel();
     _restoring = false;
   }
   container.invalidate(charactersProvider);
   container.invalidate(ownedCharactersProvider);
   container.invalidate(serverSubscriptionStatusProvider);
   if (!context.mounted) return;
-  showSubscriptionOverlay(
-    context,
-    restored > 0
-        ? SubscriptionOverlay.restoreSuccess
-        : SubscriptionOverlay.restoreEmpty,
-  );
+  showSubscriptionOverlay(context, restoreOverlayFor(outcome));
 }
 
 bool _restoring = false;
+
+/// The result sheet for a restore.
+@visibleForTesting
+SubscriptionOverlay restoreOverlayFor(RestoreOutcome outcome) =>
+    switch (outcome) {
+      RestoreOutcome.restored => SubscriptionOverlay.restoreSuccess,
+      RestoreOutcome.nothing => SubscriptionOverlay.restoreEmpty,
+      RestoreOutcome.notThisAccount => SubscriptionOverlay.restoreOtherAccount,
+      RestoreOutcome.unavailable => SubscriptionOverlay.restoreUnavailable,
+    };
+
+/// The sheet for a failed purchase event (QA F005 · F028) — the declined-card
+/// sheet only when the store itself failed.
+SubscriptionOverlay purchaseFailureOverlayFor(IapPurchase p) =>
+    switch (p.failure) {
+      IapFailure.verifyPending => SubscriptionOverlay.purchaseVerifying,
+      IapFailure.rejected => SubscriptionOverlay.purchaseRejected,
+      IapFailure.otherAccount => SubscriptionOverlay.restoreOtherAccount,
+      IapFailure.store || null => SubscriptionOverlay.purchaseFailedDeclined,
+    };
 
 /// 시트 한 장을 띄우지 않고 위젯으로 돌려준다 — i18n 잘림·넘침 하네스 전용.
 ///
@@ -661,6 +687,51 @@ class _OverlaySheet extends StatelessWidget {
               label: l10n.billingRestorePurchases,
               onPressed: () =>
                   _then(context, () => runRestoreFlow(rootNav.context))),
+        );
+      case SubscriptionOverlay.purchaseVerifying:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.ovVerifyingTitle,
+          body: l10n.ovVerifyingBody,
+          primaryAction: SheetAction(
+              label: l10n.ctaClose, onPressed: () => _close(context)),
+          secondaryAction: SheetAction(
+              label: l10n.billingRestorePurchases,
+              onPressed: () =>
+                  _then(context, () => runRestoreFlow(rootNav.context))),
+        );
+      case SubscriptionOverlay.purchasePending:
+        return BottomSheetContent(
+          title: l10n.ovPendingTitle,
+          body: l10n.ovPendingBody,
+          primaryAction: SheetAction(
+              label: l10n.ctaClose, onPressed: () => _close(context)),
+        );
+      case SubscriptionOverlay.purchaseRejected:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.ovRejectedTitle,
+          body: l10n.ovRejectedBody,
+          mark: SheetMarkTone.error,
+          primaryAction: SheetAction(
+              label: l10n.contactUs,
+              onPressed: () => _then(
+                  context, () => launchUrl(contactMailUri()).ignore())),
+          secondaryAction:
+              SheetAction(label: l10n.ctaClose, onPressed: () => _close(context)),
+        );
+      case SubscriptionOverlay.restoreUnavailable:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.connectionFailedTitle,
+          body: l10n.connectionFailedBody,
+          mark: SheetMarkTone.error,
+          primaryAction: SheetAction(
+              label: l10n.ctaTryAgain,
+              onPressed: () =>
+                  _then(context, () => runRestoreFlow(rootNav.context))),
+          secondaryAction:
+              SheetAction(label: l10n.ctaClose, onPressed: () => _close(context)),
         );
       case SubscriptionOverlay.alreadySubscribed:
         return BottomSheetContent(

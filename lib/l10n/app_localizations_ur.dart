@@ -1924,6 +1924,27 @@ class AppLocalizationsUr extends AppLocalizations {
       'ہم اسٹور تک نہیں پہنچ سکے۔ کچھ بھی چارج نہیں ہوا۔';
 
   @override
+  String get ovVerifyingTitle => 'ادائیگی موصول ہو گئی';
+
+  @override
+  String get ovVerifyingBody =>
+      'ہم ابھی اسٹور سے اس کی تصدیق کر رہے ہیں۔ جلد ہی فعال ہو جائے گا — نہ ہو تو «خریداریاں بحال کریں» دبائیں۔';
+
+  @override
+  String get ovPendingTitle => 'ادائیگی زیرِ التوا ہے';
+
+  @override
+  String get ovPendingBody =>
+      'اسٹور نے ابھی ادائیگی مکمل نہیں کی۔ مکمل ہوتے ہی فعال ہو جائے گا — آپ یہ اسکرین چھوڑ سکتے ہیں۔';
+
+  @override
+  String get ovRejectedTitle => 'ہم اس خریداری کی تصدیق نہیں کر سکے';
+
+  @override
+  String get ovRejectedBody =>
+      'اسٹور نے اس ادائیگی کی تصدیق نہیں کی، اس لیے کچھ فعال نہیں ہوا۔ اگر رقم کٹی ہے تو ہم سے رابطہ کریں۔';
+
+  @override
   String get ovAlreadyTitle => 'آپ پہلے ہی Premium پر ہیں';
 
   @override

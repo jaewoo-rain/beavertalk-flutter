@@ -1920,6 +1920,27 @@ class AppLocalizationsHi extends AppLocalizations {
       'हम स्टोर से संपर्क नहीं कर सके। कुछ भी चार्ज नहीं हुआ।';
 
   @override
+  String get ovVerifyingTitle => 'भुगतान मिल गया';
+
+  @override
+  String get ovVerifyingBody =>
+      'हम अभी स्टोर से इसकी पुष्टि कर रहे हैं। यह जल्द ही चालू हो जाएगा — न हो तो “खरीदारी रीस्टोर करें” दबाएँ।';
+
+  @override
+  String get ovPendingTitle => 'भुगतान लंबित है';
+
+  @override
+  String get ovPendingBody =>
+      'स्टोर ने अभी भुगतान पूरा नहीं किया है। पूरा होते ही चालू हो जाएगा — आप यह स्क्रीन छोड़ सकते हैं।';
+
+  @override
+  String get ovRejectedTitle => 'हम इस खरीदारी की पुष्टि नहीं कर सके';
+
+  @override
+  String get ovRejectedBody =>
+      'स्टोर ने इस भुगतान की पुष्टि नहीं की, इसलिए कुछ लागू नहीं हुआ। अगर पैसे कटे हैं तो हमसे संपर्क करें।';
+
+  @override
   String get ovAlreadyTitle => 'आप पहले से Premium पर हैं';
 
   @override

@@ -1909,6 +1909,27 @@ class AppLocalizationsTh extends AppLocalizations {
       'เชื่อมต่อสโตร์ไม่ได้ ไม่มีการเรียกเก็บเงินใด ๆ';
 
   @override
+  String get ovVerifyingTitle => 'ได้รับการชำระเงินแล้ว';
+
+  @override
+  String get ovVerifyingBody =>
+      'เรากำลังยืนยันกับสโตร์อยู่ จะเปิดใช้งานในไม่ช้า — หากไม่เปิด ให้แตะ “กู้คืนการซื้อ”';
+
+  @override
+  String get ovPendingTitle => 'รอการชำระเงิน';
+
+  @override
+  String get ovPendingBody =>
+      'สโตร์ยังดำเนินการชำระเงินไม่เสร็จ จะเปิดใช้งานทันทีเมื่อเสร็จ — ออกจากหน้านี้ได้เลย';
+
+  @override
+  String get ovRejectedTitle => 'เรายืนยันการซื้อนี้ไม่ได้';
+
+  @override
+  String get ovRejectedBody =>
+      'สโตร์ไม่ยืนยันการชำระเงินนี้ จึงยังไม่มีการเปิดใช้งาน หากถูกเรียกเก็บเงิน โปรดติดต่อเรา';
+
+  @override
   String get ovAlreadyTitle => 'คุณใช้ Premium อยู่แล้ว';
 
   @override

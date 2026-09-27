@@ -1920,6 +1920,27 @@ class AppLocalizationsSi extends AppLocalizations {
       'වෙළඳසැල වෙත සම්බන්ධ විය නොහැකි විය. කිසිදු ගාස්තුවක් අය වුණේ නැත.';
 
   @override
+  String get ovVerifyingTitle => 'ගෙවීම ලැබුණා';
+
+  @override
+  String get ovVerifyingBody =>
+      'අපි තවමත් වෙළඳසැල සමඟ එය තහවුරු කරමින් සිටිමු. ඉක්මනින් සක්‍රිය වේ — නොවුණොත් «මිලදී ගැනීම් යළි ලබාගන්න» ඔබන්න.';
+
+  @override
+  String get ovPendingTitle => 'ගෙවීම පොරොත්තුවෙන්';
+
+  @override
+  String get ovPendingBody =>
+      'වෙළඳසැල තවම ගෙවීම අවසන් කර නැත. අවසන් වූ වහාම සක්‍රිය වේ — ඔබට මෙම තිරයෙන් ඉවත් විය හැක.';
+
+  @override
+  String get ovRejectedTitle => 'මෙම මිලදී ගැනීම තහවුරු කළ නොහැකි විය';
+
+  @override
+  String get ovRejectedBody =>
+      'වෙළඳසැල මෙම ගෙවීම තහවුරු නොකළ නිසා කිසිවක් යොදා නැත. ඔබෙන් මුදල් අය වී ඇත්නම් අපව අමතන්න.';
+
+  @override
   String get ovAlreadyTitle => 'ඔබ දැනටමත් Premium හි';
 
   @override

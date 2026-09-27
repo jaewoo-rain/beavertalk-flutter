@@ -1864,6 +1864,24 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovFailedStoreBody => '无法连接到商店。没有产生任何费用。';
 
   @override
+  String get ovVerifyingTitle => '已收到付款';
+
+  @override
+  String get ovVerifyingBody => '我们仍在与商店确认。很快就会生效——如未生效，请点按“恢复购买”。';
+
+  @override
+  String get ovPendingTitle => '付款处理中';
+
+  @override
+  String get ovPendingBody => '商店尚未完成付款。完成后会立即生效——你可以离开此页面。';
+
+  @override
+  String get ovRejectedTitle => '无法确认这笔购买';
+
+  @override
+  String get ovRejectedBody => '商店未确认这笔付款，因此没有开通任何内容。如果已被扣款，请联系我们。';
+
+  @override
   String get ovAlreadyTitle => '你已经在用 Premium 了';
 
   @override

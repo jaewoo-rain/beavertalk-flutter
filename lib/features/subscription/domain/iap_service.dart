@@ -243,6 +243,101 @@ enum IapPurchaseState {
   failed,
 }
 
+/// How long a purchase may sit in [IapPurchaseState.pending] before the screen
+/// stops waiting and says so (QA F004).
+///
+/// Not zero: StoreKit reports every purchase as pending while its sheet is up
+/// (`purchasing`), and a normal purchase resolves within seconds. A payment
+/// still pending after this is a slow card, a cash payment or Ask to Buy — the
+/// member must be able to leave; the rail delivers it whenever it completes.
+const kPurchasePendingNoticeAfter = Duration(seconds: 8);
+
+/// Why a [IapPurchaseState.failed] event failed — the screens pick their sheet
+/// from this (QA F005 · F028 · 09-27).
+///
+/// Before this, every failure read as a declined card. But the store can take
+/// the money and our server still not confirm it: telling that member
+/// 「Your card was declined · Nothing was charged」 is false, and sends them to
+/// change a card that worked.
+enum IapFailure {
+  /// The store itself failed — declined card, store outage. Nothing charged.
+  store,
+
+  /// The store took the payment; our server has not confirmed it yet (outage,
+  /// timeout, `VERIFY_UNAVAILABLE`, unknown product). The receipt is kept and
+  /// verified again on the next launch or by Restore.
+  verifyPending,
+
+  /// The store says the receipt is not valid (`INVALID_RECEIPT`). Retrying
+  /// cannot change that, so the rail closes the transaction.
+  rejected,
+
+  /// The receipt already belongs to another BeaverTalk account
+  /// (`RECEIPT_OWNED_BY_OTHER`).
+  otherAccount,
+}
+
+/// Why `POST /purchases/verify` refused a receipt — the server's `detail.code`
+/// (`domains/commerce/routers/purchases.py`). The message is for humans; this
+/// is what the rail branches on.
+enum IapVerifyRejection {
+  /// 404 `UNKNOWN_PRODUCT` — the server does not know the product id.
+  unknownProduct,
+
+  /// 422 `INVALID_RECEIPT` — the store judged it invalid. Retrying is pointless.
+  invalidReceipt,
+
+  /// 409 `RECEIPT_OWNED_BY_OTHER` — used by another account.
+  ownedByOther,
+
+  /// 503 `VERIFY_UNAVAILABLE` — the store did not answer. Retry later.
+  unavailable;
+
+  /// The server's code string to this, or null for anything else.
+  static IapVerifyRejection? fromCode(String? code) => switch (code) {
+        'UNKNOWN_PRODUCT' => unknownProduct,
+        'INVALID_RECEIPT' => invalidReceipt,
+        'RECEIPT_OWNED_BY_OTHER' => ownedByOther,
+        'VERIFY_UNAVAILABLE' => unavailable,
+        _ => null,
+      };
+}
+
+/// A verification refusal carrying the server's reason.
+class IapVerifyException implements Exception {
+  /// Creates the exception.
+  const IapVerifyException(this.reason, [this.cause]);
+
+  /// What the server said.
+  final IapVerifyRejection reason;
+
+  /// The underlying error, for logs.
+  final Object? cause;
+
+  @override
+  String toString() => 'IapVerifyException($reason)';
+}
+
+/// What a restore came to — [IapService.restore] (QA F003 · 09-27).
+///
+/// Counting `restored` events was not enough: the server can refuse every
+/// receipt and still answer 200, and the rail used to report the whole batch
+/// as restored anyway — 「Premium is back」 with the plan still Free.
+enum RestoreOutcome {
+  /// Something is on this account now (newly granted or already there).
+  restored,
+
+  /// The store returned nothing to restore.
+  nothing,
+
+  /// The store returned receipts but the server granted none and the account
+  /// has nothing — most often they belong to another BeaverTalk account.
+  notThisAccount,
+
+  /// The store or our server could not be reached.
+  unavailable,
+}
+
 /// One purchase event.
 class IapPurchase {
   /// Creates a purchase event.
@@ -254,6 +349,7 @@ class IapPurchase {
     this.transactionId,
     this.purchaseToken,
     this.isSandbox = false,
+    this.failure,
   });
 
   /// Which product — the logical SKU, not the raw store id.
@@ -273,6 +369,10 @@ class IapPurchase {
 
   /// Store error payload on [IapPurchaseState.failed].
   final Object? error;
+
+  /// Why it failed, on [IapPurchaseState.failed]. Null reads as
+  /// [IapFailure.store] (the rail's own store errors and the mock).
+  final IapFailure? failure;
 
   /// iOS `originalTransactionId` / Android `orderId`.
   ///
@@ -319,9 +419,10 @@ abstract class IapService {
   Future<void> purchase(IapProduct product);
 
   /// Replays ownership — **subscriptions and non-consumables both** (v2
-  /// completion criterion 11: characters restore too). Results arrive on
-  /// [purchases] as [IapPurchaseState.restored].
-  Future<void> restore();
+  /// completion criterion 11: characters restore too). Accepted receipts also
+  /// arrive on [purchases] as [IapPurchaseState.restored]; the returned
+  /// [RestoreOutcome] is what the result sheet is picked from.
+  Future<RestoreOutcome> restore();
 
   /// Purchase outcomes, including restores.
   Stream<IapPurchase> get purchases;
@@ -464,11 +565,12 @@ class MockIapService implements IapService {
   }
 
   @override
-  Future<void> restore() async {
+  Future<RestoreOutcome> restore() async {
     // Everything ever owned comes back — subscriptions AND characters.
     for (final p in _owned) {
       _controller.add(p);
     }
+    return _owned.isEmpty ? RestoreOutcome.nothing : RestoreOutcome.restored;
   }
 
   /// Closes the stream (tests).

@@ -1923,6 +1923,27 @@ class AppLocalizationsVi extends AppLocalizations {
       'Không kết nối được với cửa hàng. Bạn chưa bị tính phí.';
 
   @override
+  String get ovVerifyingTitle => 'Đã nhận thanh toán';
+
+  @override
+  String get ovVerifyingBody =>
+      'Chúng tôi vẫn đang xác nhận với cửa hàng. Sẽ sớm được kích hoạt — nếu không, hãy nhấn “Khôi phục mua hàng”.';
+
+  @override
+  String get ovPendingTitle => 'Thanh toán đang chờ';
+
+  @override
+  String get ovPendingBody =>
+      'Cửa hàng chưa hoàn tất thanh toán. Sẽ kích hoạt ngay khi xong — bạn có thể rời màn hình này.';
+
+  @override
+  String get ovRejectedTitle => 'Chúng tôi không xác nhận được giao dịch này';
+
+  @override
+  String get ovRejectedBody =>
+      'Cửa hàng không xác nhận khoản thanh toán này nên chưa có gì được kích hoạt. Nếu bạn đã bị trừ tiền, vui lòng liên hệ chúng tôi.';
+
+  @override
   String get ovAlreadyTitle => 'Bạn đã có Premium rồi';
 
   @override

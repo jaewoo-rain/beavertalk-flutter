@@ -25,7 +25,6 @@ import '../../features/character/presentation/providers/character_providers.dart
 import '../../features/payment/presentation/providers/payment_providers.dart';
 import '../../features/review/data/audio_player.dart';
 import '../../features/subscription/domain/iap_service.dart';
-import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../features/character/data/character_tag_labels.dart';
 import '../../l10n/app_localizations.dart';
@@ -33,6 +32,7 @@ import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import '../overlays/subscription_overlays.dart';
 import '../system/network_error.dart';
 import 'avatar_loading.dart';
 
@@ -362,26 +362,67 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         localizedPrice: _shownPrice(context, c),
       );
       // 먼저 듣고 나서 쏜다 — 목 레일은 동기로 답해서 늦게 들으면 놓친다.
-      final verdictFuture = iap.purchases.firstWhere((p) =>
-          p.productId == product.id && p.state != IapPurchaseState.pending);
-      await iap.purchase(product);
+      final verdictFuture = _awaitVerdict(iap, product.id);
+      try {
+        await iap.purchase(product);
+      } catch (_) {
+        // 스토어 조회 실패·상품 미등록(QA F015) — 결제는 시작도 안 됐다. 예전엔 catch 가 없어
+        // 안내 없이 버튼만 다시 켜졌다.
+        verdictFuture.ignore();
+        if (mounted) setState(() => _purchaseFailed = true);
+        return;
+      }
       final verdict = await verdictFuture;
+      if (!mounted) return;
       switch (verdict.state) {
         case IapPurchaseState.canceled:
           return; // 본인이 닫았다 — 말하지 않는다.
         case IapPurchaseState.failed:
-          if (mounted) setState(() => _purchaseFailed = true);
+          // 스토어가 실패했을 때만 「결제 안 됨」 배너다. 결제는 됐는데 서버 확인이 아직이거나
+          // 거절됐으면 그 사정을 말하는 시트(QA F005 · F028).
+          final overlay = purchaseFailureOverlayFor(verdict);
+          if (overlay == SubscriptionOverlay.purchaseFailedDeclined) {
+            setState(() => _purchaseFailed = true);
+          } else {
+            showSubscriptionOverlay(context, overlay);
+          }
           return;
         case IapPurchaseState.pending:
+          // 오래 보류 중 — 기다리게 두지 않는다(QA F004). 끝나면 레일이 지급한다.
+          showSubscriptionOverlay(context, SubscriptionOverlay.purchasePending);
+          return;
         case IapPurchaseState.purchased:
         case IapPurchaseState.restored:
           break;
       }
-      if (!mounted) return;
       await _deliver(c, expectedMinor, verdict: verdict);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// 이 상품의 결과 이벤트 — 끝난 이벤트를 기다리되, 보류가
+  /// [kPurchasePendingNoticeAfter] 넘게 이어지면 그 보류 이벤트로 끝낸다(QA F004).
+  Future<IapPurchase> _awaitVerdict(IapService iap, String productId) {
+    final done = Completer<IapPurchase>();
+    Timer? pendingTimer;
+    late final StreamSubscription<IapPurchase> sub;
+    void finish(IapPurchase p) {
+      if (done.isCompleted) return;
+      pendingTimer?.cancel();
+      sub.cancel();
+      done.complete(p);
+    }
+
+    sub = iap.purchases.listen((p) {
+      if (p.productId != productId) return;
+      if (p.state == IapPurchaseState.pending) {
+        pendingTimer ??= Timer(kPurchasePendingNoticeAfter, () => finish(p));
+        return;
+      }
+      finish(p);
+    });
+    return done.future;
   }
 
   /// 서버에 소유를 기록하고 성공 시트를 띄운다.
@@ -389,8 +430,9 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
       {IapPurchase? verdict}) async {
     try {
       if (verdict != null && verdict.hasReceipt) {
-        // 실영수증 → 서버가 스토어에 확인하고 지급한다(앱 말만 믿으면 결제를 우회할 수 있다).
-        await ref.read(purchasesRemoteDataSourceProvider).verify(verdict);
+        // 실영수증 → 레일이 `POST /purchases/verify` 로 **이미** 검증·지급한 뒤에야
+        // purchased 를 낸다(`store_iap_service.dart` `_deliver`). 여기서 한 번 더 부르던
+        // 이중 검증을 뺐다(QA F016) — 두 번째 호출이 일시 503 이면 지급된 결제에 오류가 떴다.
       } else {
         await ref
             .read(characterRepositoryProvider)

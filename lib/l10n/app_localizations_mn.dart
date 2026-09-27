@@ -1919,6 +1919,27 @@ class AppLocalizationsMn extends AppLocalizations {
       'Дэлгүүртэй холбогдож чадсангүй. Ямар ч төлбөр гараагүй.';
 
   @override
+  String get ovVerifyingTitle => 'Төлбөр хүлээн авлаа';
+
+  @override
+  String get ovVerifyingBody =>
+      'Бид дэлгүүртэй баталгаажуулж байна. Удахгүй идэвхжинэ — үгүй бол «Худалдан авалт сэргээх»-ийг дарна уу.';
+
+  @override
+  String get ovPendingTitle => 'Төлбөр хүлээгдэж байна';
+
+  @override
+  String get ovPendingBody =>
+      'Дэлгүүр төлбөрийг хараахан дуусгаагүй байна. Дуусмагц идэвхжинэ — та энэ дэлгэцээс гарч болно.';
+
+  @override
+  String get ovRejectedTitle => 'Энэ худалдан авалтыг баталгаажуулж чадсангүй';
+
+  @override
+  String get ovRejectedBody =>
+      'Дэлгүүр энэ төлбөрийг баталгаажуулаагүй тул юу ч идэвхжээгүй. Төлбөр гарсан бол бидэнтэй холбогдоно уу.';
+
+  @override
   String get ovAlreadyTitle => 'Та аль хэдийн Premium байна';
 
   @override

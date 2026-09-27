@@ -44,6 +44,10 @@ class _PurchaseProcessingScreenState
   StreamSubscription<IapPurchase>? _sub;
   bool _kicked = false;
 
+  /// Armed by the first `pending` event; fires if nothing final arrives in
+  /// [kPurchasePendingNoticeAfter] (QA F004).
+  Timer? _pendingTimer;
+
   /// 윈백 오퍼 결제([WinbackPurchase] 인자 · 안드로이드 · PM-DEC-049)인가.
   ///
   /// 실패·취소 때 재시도 시트를 띄우지 않는다 — 그 시트의 「다시 시도」 는 정가 월간을 사서,
@@ -72,6 +76,7 @@ class _PurchaseProcessingScreenState
     final tier = request.tier;
     _sub = iap.purchases.listen((p) {
       if (!mounted) return;
+      if (p.state != IapPurchaseState.pending) _pendingTimer?.cancel();
       switch (p.state) {
         case IapPurchaseState.purchased:
         case IapPurchaseState.restored:
@@ -111,9 +116,13 @@ class _PurchaseProcessingScreenState
           );
         case IapPurchaseState.canceled:
         case IapPurchaseState.failed:
-          _onFailed(p.state, request);
+          _onFailed(p, request);
         case IapPurchaseState.pending:
-          break;
+          // StoreKit reports every purchase as pending while its sheet is up,
+          // so wait before calling it slow. Past that, let the member go — the
+          // spinner used to hold them (back blocked) until the payment cleared,
+          // which for a cash payment is days (QA F004).
+          _pendingTimer ??= Timer(kPurchasePendingNoticeAfter, _onPendingTooLong);
       }
     });
     // Fire the purchase after the listener is attached. The cycle picks the
@@ -177,25 +186,43 @@ class _PurchaseProcessingScreenState
         retryTier: request.tier, retryAnnual: request.annual);
   }
 
-  /// Back to the paywall beneath, then the matching `purchase_failed` sheet
-  /// over it (P4). The retry CTA rebuys the same tier AND cycle.
-  void _onFailed(IapPurchaseState state, PurchaseRequest request) {
+  /// Back to the paywall beneath, then the matching sheet over it (P4). The
+  /// retry CTA rebuys the same tier AND cycle.
+  ///
+  /// The declined-card sheet only when the store itself failed. When the store
+  /// took the money and our server has not confirmed it, or refused it, the
+  /// member is told that instead (QA F005 · F028).
+  void _onFailed(IapPurchase p, PurchaseRequest request) {
     if (!mounted) return;
-    if (_winback) {
+    final overlay = p.state == IapPurchaseState.canceled
+        ? SubscriptionOverlay.purchaseFailedCanceled
+        : purchaseFailureOverlayFor(p);
+    // Winback: no retry sheets (their retry buys full price). A payment that
+    // went through but is unconfirmed or refused is still said, though.
+    final retrySheet = overlay == SubscriptionOverlay.purchaseFailedCanceled ||
+        overlay == SubscriptionOverlay.purchaseFailedDeclined;
+    if (_winback && retrySheet) {
       Navigator.pop(context);
       return;
     }
     final navCtx = Navigator.of(context, rootNavigator: true).context;
-    final overlay = state == IapPurchaseState.canceled
-        ? SubscriptionOverlay.purchaseFailedCanceled
-        : SubscriptionOverlay.purchaseFailedDeclined;
     Navigator.pop(context);
     showSubscriptionOverlay(navCtx, overlay,
         retryTier: request.tier, retryAnnual: request.annual);
   }
 
+  /// Still pending after [kPurchasePendingNoticeAfter] — say so and let go.
+  /// The rail delivers the purchase whenever the store completes it.
+  void _onPendingTooLong() {
+    if (!mounted) return;
+    final navCtx = Navigator.of(context, rootNavigator: true).context;
+    Navigator.pop(context);
+    showSubscriptionOverlay(navCtx, SubscriptionOverlay.purchasePending);
+  }
+
   @override
   void dispose() {
+    _pendingTimer?.cancel();
     _sub?.cancel();
     super.dispose();
   }

@@ -1927,6 +1927,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'We couldn\'t reach the store. Nothing was charged.';
 
   @override
+  String get ovVerifyingTitle => 'Payment received';
+
+  @override
+  String get ovVerifyingBody =>
+      'We\'re still confirming it with the store. It\'ll turn on shortly — if it doesn\'t, tap “Restore purchases”.';
+
+  @override
+  String get ovPendingTitle => 'Payment pending';
+
+  @override
+  String get ovPendingBody =>
+      'The store hasn\'t finished the payment yet. It\'ll turn on once it\'s done — you can leave this screen.';
+
+  @override
+  String get ovRejectedTitle => 'We couldn\'t confirm this purchase';
+
+  @override
+  String get ovRejectedBody =>
+      'The store didn\'t confirm this payment, so nothing was applied. If you were charged, please contact us.';
+
+  @override
   String get ovAlreadyTitle => 'You\'re already on Premium';
 
   @override

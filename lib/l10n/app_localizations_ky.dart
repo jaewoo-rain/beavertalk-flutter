@@ -1925,6 +1925,27 @@ class AppLocalizationsKy extends AppLocalizations {
       'Дүкөнгө жетүү мүмкүн болбоду. Эч нерсе алынган жок.';
 
   @override
+  String get ovVerifyingTitle => 'Төлөм кабыл алынды';
+
+  @override
+  String get ovVerifyingBody =>
+      'Биз аны дагы эле дүкөн менен тастыктап жатабыз. Жакында иштейт — болбосо, «Сатып алууларды калыбына келтирүү» баскычын басыңыз.';
+
+  @override
+  String get ovPendingTitle => 'Төлөм күтүүдө';
+
+  @override
+  String get ovPendingBody =>
+      'Дүкөн төлөмдү али бүтүрө элек. Бүткөндө дароо иштейт — бул экрандан чыксаңыз болот.';
+
+  @override
+  String get ovRejectedTitle => 'Бул сатып алууну тастыктай алган жокпуз';
+
+  @override
+  String get ovRejectedBody =>
+      'Дүкөн бул төлөмдү тастыктаган жок, ошондуктан эч нерсе колдонулган жок. Акча алынса, бизге кайрылыңыз.';
+
+  @override
   String get ovAlreadyTitle => 'Сиз мурунтан Premium пландасыз';
 
   @override

@@ -141,7 +141,11 @@ String _shortDate(BuildContext context, DateTime d) =>
 /// The plan-card monthly price line: server value when present, otherwise the
 /// plan's list price (the design's `$15.99` / `$23.99`).
 String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
-  final minor = status.source?.price;
+  // 0 은 「무료로 청구된다」 가 아니다 — 스토어 결제 없이 부여된 Premium(관리자 부여 등)이
+  // 가격 0 으로 온다. 「$0 per month」 는 틀린 청구 안내라 모름(null)과 같이 다룬다(QA F022).
+  // 부여 여부를 가를 필드(`source`)는 서버 요청서에 올렸다.
+  final raw = status.source?.price;
+  final minor = raw != null && raw > 0 ? raw : null;
   // The fallback used to carry its own copy of the price in minor units, and
   // it went stale twice while the list prices moved — it was still quoting
   // $19.90/$12.90 two rounds later. Route it through the one place instead.
@@ -342,10 +346,11 @@ class _PlanCard extends ConsumerWidget {
               status.tier == SubscriptionTier.max ? l10n.planMax : l10n.planPro),
           expiry == null ? '—' : _fullDate(context, expiry),
         ),
-      _ => (
-          l10n.nextPaymentLabel,
-          expiry == null ? '—' : _fullDate(context, expiry),
-        ),
+      // 다음 결제일을 모르면 행째 뺀다 — 「Next payment —」 는 결제가 곧 있을 것처럼
+      // 읽힌다(QA F022 · 스토어 결제 없이 부여된 Premium 은 만료일이 없다).
+      _ => expiry == null
+          ? null
+          : (l10n.nextPaymentLabel, _fullDate(context, expiry)),
     };
 
     return Container(

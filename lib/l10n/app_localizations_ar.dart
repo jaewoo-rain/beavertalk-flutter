@@ -1911,6 +1911,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get ovFailedStoreBody => 'تعذّر الوصول إلى المتجر. لم يُخصم أي مبلغ.';
 
   @override
+  String get ovVerifyingTitle => 'تم استلام الدفع';
+
+  @override
+  String get ovVerifyingBody =>
+      'ما زلنا نتحقق منه مع المتجر. سيتم تفعيله قريبًا — وإن لم يحدث، اضغط «استعادة المشتريات».';
+
+  @override
+  String get ovPendingTitle => 'الدفع قيد الانتظار';
+
+  @override
+  String get ovPendingBody =>
+      'لم يُكمل المتجر عملية الدفع بعد. سيتم التفعيل فور اكتمالها — يمكنك مغادرة هذه الشاشة.';
+
+  @override
+  String get ovRejectedTitle => 'تعذّر تأكيد عملية الشراء هذه';
+
+  @override
+  String get ovRejectedBody =>
+      'لم يؤكد المتجر هذه الدفعة، لذا لم يُطبَّق شيء. إذا تم خصم مبلغ منك، يُرجى التواصل معنا.';
+
+  @override
   String get ovAlreadyTitle => 'أنت بالفعل على Premium';
 
   @override

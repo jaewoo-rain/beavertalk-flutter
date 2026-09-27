@@ -1938,6 +1938,27 @@ class AppLocalizationsHu extends AppLocalizations {
       'Nem értük el az áruházat. Semmit nem vontunk le.';
 
   @override
+  String get ovVerifyingTitle => 'A fizetés megérkezett';
+
+  @override
+  String get ovVerifyingBody =>
+      'Még egyeztetjük az áruházzal. Hamarosan aktiválódik – ha mégsem, koppints a „Vásárlások visszaállítása” gombra.';
+
+  @override
+  String get ovPendingTitle => 'Függőben lévő fizetés';
+
+  @override
+  String get ovPendingBody =>
+      'Az áruház még nem fejezte be a fizetést. Amint kész, aktiválódik – elhagyhatod ezt a képernyőt.';
+
+  @override
+  String get ovRejectedTitle => 'Nem tudtuk megerősíteni ezt a vásárlást';
+
+  @override
+  String get ovRejectedBody =>
+      'Az áruház nem erősítette meg ezt a fizetést, ezért semmi sem aktiválódott. Ha terhelés történt, lépj kapcsolatba velünk.';
+
+  @override
   String get ovAlreadyTitle => 'Már Premium csomagon vagy';
 
   @override

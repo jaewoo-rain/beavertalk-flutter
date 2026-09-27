@@ -1936,6 +1936,27 @@ class AppLocalizationsMs extends AppLocalizations {
       'Kami tidak dapat menghubungi kedai. Tiada caj dikenakan.';
 
   @override
+  String get ovVerifyingTitle => 'Pembayaran diterima';
+
+  @override
+  String get ovVerifyingBody =>
+      'Kami masih mengesahkannya dengan kedai. Ia akan aktif tidak lama lagi — jika tidak, ketik “Pulihkan pembelian”.';
+
+  @override
+  String get ovPendingTitle => 'Pembayaran belum selesai';
+
+  @override
+  String get ovPendingBody =>
+      'Kedai belum menyelesaikan pembayaran. Ia akan aktif sebaik sahaja selesai — anda boleh keluar dari skrin ini.';
+
+  @override
+  String get ovRejectedTitle => 'Kami tidak dapat mengesahkan pembelian ini';
+
+  @override
+  String get ovRejectedBody =>
+      'Kedai tidak mengesahkan pembayaran ini, jadi tiada apa-apa diaktifkan. Jika anda dicaj, sila hubungi kami.';
+
+  @override
   String get ovAlreadyTitle => 'Anda sudah di Premium';
 
   @override

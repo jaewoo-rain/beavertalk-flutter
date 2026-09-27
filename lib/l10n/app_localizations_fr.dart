@@ -1959,6 +1959,27 @@ class AppLocalizationsFr extends AppLocalizations {
       'Impossible de joindre la boutique. Rien n\'a été prélevé.';
 
   @override
+  String get ovVerifyingTitle => 'Paiement reçu';
+
+  @override
+  String get ovVerifyingBody =>
+      'Nous le confirmons encore auprès de la boutique. Il sera activé sous peu – sinon, touchez « Restaurer les achats ».';
+
+  @override
+  String get ovPendingTitle => 'Paiement en attente';
+
+  @override
+  String get ovPendingBody =>
+      'La boutique n\'a pas encore finalisé le paiement. Il sera activé dès que ce sera fait – vous pouvez quitter cet écran.';
+
+  @override
+  String get ovRejectedTitle => 'Nous n\'avons pas pu confirmer cet achat';
+
+  @override
+  String get ovRejectedBody =>
+      'La boutique n\'a pas confirmé ce paiement, rien n\'a donc été activé. Si vous avez été débité, contactez-nous.';
+
+  @override
   String get ovAlreadyTitle => 'Vous êtes déjà sur Premium';
 
   @override

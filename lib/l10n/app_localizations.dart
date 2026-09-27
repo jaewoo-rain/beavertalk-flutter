@@ -3580,6 +3580,42 @@ abstract class AppLocalizations {
   /// **'We couldn\'t reach the store. Nothing was charged.'**
   String get ovFailedStoreBody;
 
+  /// Purchase sheet - the store took the payment but our server has not confirmed it yet (QA F005). Must NOT say the card was declined or that nothing was charged.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment received'**
+  String get ovVerifyingTitle;
+
+  /// Body of ovVerifyingTitle. The quoted button name must match billingRestorePurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re still confirming it with the store. It\'ll turn on shortly — if it doesn\'t, tap “Restore purchases”.'**
+  String get ovVerifyingBody;
+
+  /// Purchase sheet - the store reported the payment as pending (slow card, cash payment). QA F004.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment pending'**
+  String get ovPendingTitle;
+
+  /// Body of ovPendingTitle. Tells the member they can leave the screen.
+  ///
+  /// In en, this message translates to:
+  /// **'The store hasn\'t finished the payment yet. It\'ll turn on once it\'s done — you can leave this screen.'**
+  String get ovPendingBody;
+
+  /// Purchase sheet - the store judged the receipt invalid (server INVALID_RECEIPT). QA F028.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t confirm this purchase'**
+  String get ovRejectedTitle;
+
+  /// Body of ovRejectedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The store didn\'t confirm this payment, so nothing was applied. If you were charged, please contact us.'**
+  String get ovRejectedBody;
+
   /// No description provided for @ovAlreadyTitle.
   ///
   /// In en, this message translates to:

@@ -1945,6 +1945,28 @@ class AppLocalizationsIt extends AppLocalizations {
       'Non siamo riusciti a raggiungere lo store. Non è stato addebitato nulla.';
 
   @override
+  String get ovVerifyingTitle => 'Pagamento ricevuto';
+
+  @override
+  String get ovVerifyingBody =>
+      'Lo stiamo ancora confermando con lo store. Si attiverà a breve – altrimenti tocca «Ripristina acquisti».';
+
+  @override
+  String get ovPendingTitle => 'Pagamento in sospeso';
+
+  @override
+  String get ovPendingBody =>
+      'Lo store non ha ancora completato il pagamento. Si attiverà appena concluso – puoi lasciare questa schermata.';
+
+  @override
+  String get ovRejectedTitle =>
+      'Non siamo riusciti a confermare questo acquisto';
+
+  @override
+  String get ovRejectedBody =>
+      'Lo store non ha confermato questo pagamento, quindi non è stato attivato nulla. Se ti è stato addebitato, contattaci.';
+
+  @override
   String get ovAlreadyTitle => 'Sei già su Premium';
 
   @override

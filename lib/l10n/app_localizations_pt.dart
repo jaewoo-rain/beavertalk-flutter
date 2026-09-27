@@ -1942,6 +1942,27 @@ class AppLocalizationsPt extends AppLocalizations {
       'Não conseguimos acessar a loja. Nada foi cobrado.';
 
   @override
+  String get ovVerifyingTitle => 'Pagamento recebido';
+
+  @override
+  String get ovVerifyingBody =>
+      'Ainda estamos confirmando com a loja. Vai ativar em breve — se não ativar, toque em “Restaurar compras”.';
+
+  @override
+  String get ovPendingTitle => 'Pagamento pendente';
+
+  @override
+  String get ovPendingBody =>
+      'A loja ainda não concluiu o pagamento. Vai ativar assim que terminar — você pode sair desta tela.';
+
+  @override
+  String get ovRejectedTitle => 'Não conseguimos confirmar esta compra';
+
+  @override
+  String get ovRejectedBody =>
+      'A loja não confirmou este pagamento, então nada foi ativado. Se você foi cobrado, fale com a gente.';
+
+  @override
   String get ovAlreadyTitle => 'Você já está no Premium';
 
   @override

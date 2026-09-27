@@ -1919,6 +1919,27 @@ class AppLocalizationsBn extends AppLocalizations {
   String get ovFailedStoreBody => 'স্টোরে পৌঁছানো যায়নি। কোনো চার্জ হয়নি।';
 
   @override
+  String get ovVerifyingTitle => 'পেমেন্ট পাওয়া গেছে';
+
+  @override
+  String get ovVerifyingBody =>
+      'আমরা এখনও স্টোরের সাথে যাচাই করছি। শিগগিরই চালু হবে — না হলে “কেনাকাটা পুনরুদ্ধার” চাপুন।';
+
+  @override
+  String get ovPendingTitle => 'পেমেন্ট অপেক্ষমাণ';
+
+  @override
+  String get ovPendingBody =>
+      'স্টোর এখনও পেমেন্ট শেষ করেনি। শেষ হলেই চালু হবে — আপনি এই স্ক্রিন ছেড়ে যেতে পারেন।';
+
+  @override
+  String get ovRejectedTitle => 'এই কেনাকাটা নিশ্চিত করা যায়নি';
+
+  @override
+  String get ovRejectedBody =>
+      'স্টোর এই পেমেন্ট নিশ্চিত করেনি, তাই কিছু চালু হয়নি। টাকা কেটে থাকলে আমাদের সাথে যোগাযোগ করুন।';
+
+  @override
   String get ovAlreadyTitle => 'আপনি ইতিমধ্যে Premium-তে আছেন';
 
   @override

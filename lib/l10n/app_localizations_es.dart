@@ -1940,6 +1940,27 @@ class AppLocalizationsEs extends AppLocalizations {
       'No pudimos conectar con la tienda. No se cobró nada.';
 
   @override
+  String get ovVerifyingTitle => 'Pago recibido';
+
+  @override
+  String get ovVerifyingBody =>
+      'Todavía lo estamos confirmando con la tienda. Se activará en breve; si no, toca «Restaurar compras».';
+
+  @override
+  String get ovPendingTitle => 'Pago pendiente';
+
+  @override
+  String get ovPendingBody =>
+      'La tienda aún no ha terminado el pago. Se activará en cuanto termine; puedes salir de esta pantalla.';
+
+  @override
+  String get ovRejectedTitle => 'No pudimos confirmar esta compra';
+
+  @override
+  String get ovRejectedBody =>
+      'La tienda no confirmó este pago, así que no se aplicó nada. Si se te cobró, contáctanos.';
+
+  @override
   String get ovAlreadyTitle => 'Ya estás en Premium';
 
   @override

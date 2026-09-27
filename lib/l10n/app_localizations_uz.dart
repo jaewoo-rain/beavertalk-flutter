@@ -1932,6 +1932,27 @@ class AppLocalizationsUz extends AppLocalizations {
       'Doʻkonga ulanib boʻlmadi. Hech narsa olinmadi.';
 
   @override
+  String get ovVerifyingTitle => 'Toʻlov qabul qilindi';
+
+  @override
+  String get ovVerifyingBody =>
+      'Uni hali doʻkon bilan tasdiqlayapmiz. Tez orada faollashadi — boʻlmasa, «Xaridlarni tiklash» tugmasini bosing.';
+
+  @override
+  String get ovPendingTitle => 'Toʻlov kutilmoqda';
+
+  @override
+  String get ovPendingBody =>
+      'Doʻkon toʻlovni hali yakunlamadi. Yakunlangach darhol faollashadi — bu ekrandan chiqishingiz mumkin.';
+
+  @override
+  String get ovRejectedTitle => 'Bu xaridni tasdiqlay olmadik';
+
+  @override
+  String get ovRejectedBody =>
+      'Doʻkon bu toʻlovni tasdiqlamadi, shu sababli hech narsa faollashmadi. Pul yechilgan boʻlsa, biz bilan bogʻlaning.';
+
+  @override
   String get ovAlreadyTitle => 'Siz allaqachon Premium tarifdasiz';
 
   @override

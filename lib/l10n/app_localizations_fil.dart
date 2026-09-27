@@ -1941,6 +1941,27 @@ class AppLocalizationsFil extends AppLocalizations {
       'Hindi namin maabot ang store. Walang siningil.';
 
   @override
+  String get ovVerifyingTitle => 'Natanggap ang bayad';
+
+  @override
+  String get ovVerifyingBody =>
+      'Kinukumpirma pa namin ito sa store. Maa-activate ito sa lalong madaling panahon — kung hindi, i-tap ang “I-restore ang mga binili”.';
+
+  @override
+  String get ovPendingTitle => 'Nakabinbin ang bayad';
+
+  @override
+  String get ovPendingBody =>
+      'Hindi pa tapos ng store ang bayad. Maa-activate ito kapag tapos na — puwede mong iwan ang screen na ito.';
+
+  @override
+  String get ovRejectedTitle => 'Hindi namin makumpirma ang pagbiling ito';
+
+  @override
+  String get ovRejectedBody =>
+      'Hindi kinumpirma ng store ang bayad na ito kaya walang na-apply. Kung nasingil ka, makipag-ugnayan sa amin.';
+
+  @override
   String get ovAlreadyTitle => 'Nasa Premium ka na';
 
   @override

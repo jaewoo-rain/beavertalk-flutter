@@ -92,6 +92,11 @@ void main() {
       SubscriptionOverlay.purchaseFailedDeclined: 'Your card was declined',
       SubscriptionOverlay.purchaseFailedCanceled: 'Payment canceled',
       SubscriptionOverlay.purchaseFailedStore: 'Something went wrong',
+      // QA F003·F004·F005·F028(09-27) — Figma 없는 시트, 앱 문구 기준.
+      SubscriptionOverlay.purchaseVerifying: 'Payment received',
+      SubscriptionOverlay.purchasePending: 'Payment pending',
+      SubscriptionOverlay.purchaseRejected: "We couldn't confirm this purchase",
+      SubscriptionOverlay.restoreUnavailable: 'Connection failed',
       SubscriptionOverlay.alreadySubscribed: "You're already on Premium",
       SubscriptionOverlay.freeLimitCall: "You've used today's call time",
       SubscriptionOverlay.freeLimitCheck: "That's today's check",
@@ -315,6 +320,9 @@ void main() {
       SubscriptionOverlay.purchaseFailedDeclined,
       SubscriptionOverlay.purchaseFailedCanceled,
       SubscriptionOverlay.purchaseFailedStore,
+      SubscriptionOverlay.purchaseVerifying,
+      SubscriptionOverlay.purchaseRejected,
+      SubscriptionOverlay.restoreUnavailable,
     ];
     for (final overlay in secondaryFirst) {
       testWidgets('${overlay.name}: CTA 아래', (tester) async {

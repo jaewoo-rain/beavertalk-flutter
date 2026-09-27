@@ -1950,6 +1950,27 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wir konnten den Store nicht erreichen. Es wurde nichts berechnet.';
 
   @override
+  String get ovVerifyingTitle => 'Zahlung eingegangen';
+
+  @override
+  String get ovVerifyingBody =>
+      'Wir bestätigen sie noch mit dem Store. Sie wird gleich aktiviert – falls nicht, tippe auf „Käufe wiederherstellen“.';
+
+  @override
+  String get ovPendingTitle => 'Zahlung ausstehend';
+
+  @override
+  String get ovPendingBody =>
+      'Der Store hat die Zahlung noch nicht abgeschlossen. Sie wird aktiviert, sobald sie durch ist – du kannst diesen Bildschirm verlassen.';
+
+  @override
+  String get ovRejectedTitle => 'Wir konnten diesen Kauf nicht bestätigen';
+
+  @override
+  String get ovRejectedBody =>
+      'Der Store hat diese Zahlung nicht bestätigt, daher wurde nichts freigeschaltet. Falls dir etwas berechnet wurde, kontaktiere uns bitte.';
+
+  @override
   String get ovAlreadyTitle => 'Du bist bereits auf Premium';
 
   @override

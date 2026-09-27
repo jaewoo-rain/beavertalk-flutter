@@ -1918,6 +1918,27 @@ class AppLocalizationsKm extends AppLocalizations {
   String get ovFailedStoreBody => 'មិនអាចភ្ជាប់ទៅហាងបានទេ។ មិនបានគិតថ្លៃទេ។';
 
   @override
+  String get ovVerifyingTitle => 'បានទទួលការបង់ប្រាក់';
+
+  @override
+  String get ovVerifyingBody =>
+      'យើងកំពុងផ្ទៀងផ្ទាត់ជាមួយហាង។ នឹងបើកដំណើរការឆាប់ៗនេះ — បើមិនដូច្នោះទេ សូមចុច «ស្ដារការទិញ»។';
+
+  @override
+  String get ovPendingTitle => 'ការបង់ប្រាក់កំពុងរង់ចាំ';
+
+  @override
+  String get ovPendingBody =>
+      'ហាងមិនទាន់បញ្ចប់ការបង់ប្រាក់នៅឡើយទេ។ នឹងបើកដំណើរការភ្លាមៗពេលបញ្ចប់ — អ្នកអាចចាកចេញពីអេក្រង់នេះបាន។';
+
+  @override
+  String get ovRejectedTitle => 'យើងមិនអាចបញ្ជាក់ការទិញនេះបានទេ';
+
+  @override
+  String get ovRejectedBody =>
+      'ហាងមិនបានបញ្ជាក់ការបង់ប្រាក់នេះទេ ដូច្នេះគ្មានអ្វីត្រូវបានអនុវត្ត។ ប្រសិនបើអ្នកត្រូវបានគិតប្រាក់ សូមទាក់ទងមកយើង។';
+
+  @override
   String get ovAlreadyTitle => 'អ្នកនៅលើ Premium រួចហើយ';
 
   @override
