@@ -74,6 +74,9 @@ class _PurchaseProcessingScreenState
     final iap = ref.read(iapServiceProvider);
     final request = _request;
     final tier = request.tier;
+    // A new purchase supersedes a late-result watch left by an earlier one
+    // (QA F066) — otherwise both would react to this purchase's result.
+    cancelLatePurchaseWatch();
     _sub = iap.purchases.listen((p) {
       if (!mounted) return;
       if (p.state != IapPurchaseState.pending) _pendingTimer?.cancel();
@@ -150,12 +153,7 @@ class _PurchaseProcessingScreenState
       unawaited(openStoreSubscriptions());
       return;
     }
-    final id = switch ((request.tier, request.annual)) {
-      (SubscriptionTier.max, true) => IapProductIds.maxYearly,
-      (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
-      (_, true) => IapProductIds.proYearly,
-      (_, false) => IapProductIds.proMonthly,
-    };
+    final id = productIdFor(request);
     try {
       final products = await iap.getProducts(IapProductIds.subscriptions);
       final product = products.where((p) => p.id == id).firstOrNull;
@@ -279,34 +277,79 @@ class _PurchaseProcessingScreenState
 ///
 /// Success refreshes the plan and opens the success screen; a failure shows
 /// its sheet; a cancel is silent. One result ends the watch.
+///
+/// Guarded against the regression QA caught on the first version (F066):
+/// - only **this** subscription product's result counts — a character
+///   purchase or a restore inside the window used to promote a Free member to
+///   Premium for the session and open the Premium success screen;
+/// - one watch at a time — a new processing screen cancels it
+///   ([cancelLatePurchaseWatch]);
+/// - during a call nothing is pushed over the call screen: the plan is
+///   refreshed and the result is left for the subscription screen (the success
+///   screen's exit, `popUntil(isFirst)`, would otherwise tear the call down).
 void watchLatePurchaseResult({
   required ProviderContainer container,
   required NavigatorState navigator,
   required PurchaseRequest request,
 }) {
+  cancelLatePurchaseWatch();
   final iap = container.read(iapServiceProvider);
-  late final StreamSubscription<IapPurchase> sub;
-  final guard = Timer(_lateResultWindow, () => sub.cancel());
-  sub = iap.purchases.listen((p) {
-    if (p.state == IapPurchaseState.pending) return;
-    guard.cancel();
-    sub.cancel();
+  final productId = productIdFor(request);
+  _lateGuard = Timer(_lateResultWindow, cancelLatePurchaseWatch);
+  _lateSub = iap.purchases.listen((p) {
+    if (p.productId != productId || p.state == IapPurchaseState.pending) return;
+    cancelLatePurchaseWatch();
     if (!navigator.mounted) return;
+    final inCall = _callPhases.contains(
+        container.read(normalCallControllerProvider).phase);
     switch (p.state) {
       case IapPurchaseState.purchased:
       case IapPurchaseState.restored:
         container.read(sessionEntitlementProvider.notifier).state = request.tier;
         container.invalidate(serverSubscriptionStatusProvider);
         container.invalidate(subscriptionsProvider);
-        navigator.pushNamed(Routes.purchaseSuccessMax, arguments: request.annual);
+        if (!inCall) {
+          navigator.pushNamed(Routes.purchaseSuccessMax, arguments: request.annual);
+        }
       case IapPurchaseState.failed:
-        showSubscriptionOverlay(navigator.context, purchaseFailureOverlayFor(p));
+        if (!inCall) {
+          showSubscriptionOverlay(navigator.context, purchaseFailureOverlayFor(p));
+        }
       case IapPurchaseState.canceled:
       case IapPurchaseState.pending:
         break;
     }
   });
 }
+
+/// Ends the late-result watch, if any.
+void cancelLatePurchaseWatch() {
+  _lateGuard?.cancel();
+  _lateGuard = null;
+  _lateSub?.cancel();
+  _lateSub = null;
+}
+
+StreamSubscription<IapPurchase>? _lateSub;
+Timer? _lateGuard;
+
+/// A call is on screen — don't push results over it.
+const _callPhases = {
+  CallPhase.connecting,
+  CallPhase.inCall,
+  CallPhase.awaitingContinue,
+  CallPhase.ending,
+};
+
+/// The store product a [PurchaseRequest] buys. The winback offer rides the
+/// monthly Premium product (the rail labels it so).
+String productIdFor(PurchaseRequest request) =>
+    switch ((request.tier, request.annual)) {
+      (SubscriptionTier.max, true) => IapProductIds.maxYearly,
+      (SubscriptionTier.max, false) => IapProductIds.maxMonthly,
+      (_, true) => IapProductIds.proYearly,
+      (_, false) => IapProductIds.proMonthly,
+    };
 
 /// How long [watchLatePurchaseResult] keeps listening.
 const _lateResultWindow = Duration(minutes: 30);

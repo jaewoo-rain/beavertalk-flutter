@@ -7,6 +7,7 @@ import 'package:beavertalk/features/auth/presentation/providers/my_profile_provi
 import 'package:beavertalk/features/character/data/models/character_dto.dart';
 import 'package:beavertalk/features/character/domain/repositories/character_repository.dart';
 import 'package:beavertalk/features/character/presentation/providers/character_providers.dart';
+import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
 import 'package:beavertalk/features/subscription/data/models/entitlement_dto.dart';
 import 'package:beavertalk/features/subscription/data/repositories/purchase_repository_impl.dart';
 import 'package:beavertalk/features/subscription/data/store_iap_service.dart';
@@ -309,10 +310,11 @@ void main() {
 
   // ── F004 · F005 — 구매 처리 화면 ──────────────────────────────────────────
   group('구매 처리 화면', () {
-    Future<void> pump(WidgetTester tester, _ScriptedIap iap) async {
+    Future<void> pump(WidgetTester tester, _ScriptedIap iap,
+        {List<Override> extra = const []}) async {
       await tester.pumpWidget(_app(
         const Scaffold(body: Text('PAYWALL')),
-        overrides: [iapServiceProvider.overrideWithValue(iap)],
+        overrides: [iapServiceProvider.overrideWithValue(iap), ...extra],
         routes: {
           '/processing': (_) => const PurchaseProcessingScreen(),
           Routes.purchaseSuccessMax: (_) => const Scaffold(body: Text('success')),
@@ -389,6 +391,53 @@ void main() {
           state: IapPurchaseState.purchased));
       await tester.pumpAndSettle();
       expect(find.text('success'), findsOneWidget);
+    });
+
+    IapPurchase ev(String product, IapPurchaseState s) =>
+        IapPurchase(productId: product, type: IapProductType.subscription, state: s);
+
+    Future<_ScriptedIap> pendNotice(WidgetTester tester,
+        {List<Override> extra = const []}) async {
+      final iap = _ScriptedIap([ev(IapProductIds.maxMonthly, IapPurchaseState.pending)]);
+      await pump(tester, iap, extra: extra);
+      await tester.pump(kPurchasePendingNoticeAfter + const Duration(milliseconds: 100));
+      await tester.pumpAndSettle();
+      expect(find.text('Payment pending'), findsOneWidget);
+      await tester.tap(find.text('Close'));
+      await tester.pumpAndSettle();
+      return iap;
+    }
+
+    testWidgets('F066 — 보류 뒤 캐릭터 구매·복원 결과로 Premium 성공 화면이 뜨지 않는다',
+        (tester) async {
+      final iap = await pendNotice(tester);
+      iap.emit(ev('bt_character_rara', IapPurchaseState.purchased));
+      iap.emit(ev('bt_character_dudu', IapPurchaseState.restored));
+      await tester.pumpAndSettle();
+      expect(find.text('success'), findsNothing);
+      // 요청한 구독 상품의 결과는 여전히 받는다.
+      iap.emit(ev(IapProductIds.maxMonthly, IapPurchaseState.purchased));
+      await tester.pumpAndSettle();
+      expect(find.text('success'), findsOneWidget);
+    });
+
+    testWidgets('F066 — 통화 중이면 결과를 통화 위에 띄우지 않는다(상태 갱신만)', (tester) async {
+      final iap = await pendNotice(tester, extra: [
+        normalCallControllerProvider.overrideWith(
+            () => _StubCall(const CallState(phase: CallPhase.inCall))),
+      ]);
+      iap.emit(ev(IapProductIds.maxMonthly, IapPurchaseState.purchased));
+      await tester.pumpAndSettle();
+      expect(find.text('success'), findsNothing);
+      expect(find.text('PAYWALL'), findsOneWidget);
+    });
+
+    testWidgets('F066 — 새 구매가 시작되면 이전 감시는 끝난다', (tester) async {
+      final iap = await pendNotice(tester);
+      cancelLatePurchaseWatch(); // 새 처리 화면이 여는 것과 같은 호출
+      iap.emit(ev(IapProductIds.maxMonthly, IapPurchaseState.purchased));
+      await tester.pumpAndSettle();
+      expect(find.text('success'), findsNothing);
     });
 
     testWidgets('보류 뒤 곧 결제되면 보류 안내 없이 성공', (tester) async {
@@ -497,6 +546,14 @@ void main() {
 }
 
 // ── 가짜 레일들 ───────────────────────────────────────────────────────────────
+
+/// 통화 상태만 정한다 — 진짜 build() 는 소켓·오디오를 연다.
+class _StubCall extends NormalCallController {
+  _StubCall(this._state);
+  final CallState _state;
+  @override
+  CallState build() => _state;
+}
 
 /// 복원 결과만 정한다.
 class _OutcomeIap extends MockIapService {
