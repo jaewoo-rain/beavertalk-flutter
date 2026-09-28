@@ -150,58 +150,6 @@ class CharacterDto {
       );
 }
 
-/// Wire model for `PurchaseResponse` — `{member_character, payment}`.
-///
-/// Its nested `payment` is `PaymentOut`, a **different shape** from the
-/// `PaymentItem` the history list returns (no `card_info`, no `category`), so
-/// it is parsed here rather than reusing the payment feature's DTO.
-class PurchaseResponseDto {
-  const PurchaseResponseDto({
-    required this.characterId,
-    this.purchasePrice,
-    this.purchaseDate,
-    required this.paymentId,
-    this.paidPrice,
-    this.paymentDate,
-    this.paymentDescription,
-  });
-
-  final int characterId;
-  final Object? purchasePrice;
-  final String? purchaseDate;
-  final int paymentId;
-  final Object? paidPrice;
-  final String? paymentDate;
-  final String? paymentDescription;
-
-  factory PurchaseResponseDto.fromJson(Map<String, dynamic> json) {
-    final mc = (json['member_character'] as Map<String, dynamic>?) ?? const {};
-    final pay = (json['payment'] as Map<String, dynamic>?) ?? const {};
-    return PurchaseResponseDto(
-      characterId: (mc['character_id'] as num).toInt(),
-      purchasePrice: mc['purchase_price'],
-      purchaseDate: mc['purchase_date'] as String?,
-      paymentId: (pay['payment_id'] as num).toInt(),
-      paidPrice: pay['price'],
-      paymentDate: pay['payment_date'] as String?,
-      paymentDescription: pay['description'] as String?,
-    );
-  }
-
-  PurchaseResult toEntity() => PurchaseResult(
-        characterId: characterId,
-        purchasePrice: purchasePrice == null ? null : parseMoneyMinor(purchasePrice),
-        purchaseDate: purchaseDate == null
-            ? null
-            : DateTime.tryParse(purchaseDate!)?.toLocal(),
-        paymentId: paymentId,
-        paidPrice: paidPrice == null ? null : parseMoneyMinor(paidPrice),
-        paymentDate: paymentDate == null
-            ? null
-            : DateTime.tryParse(paymentDate!)?.toLocal(),
-        paymentDescription: paymentDescription,
-      );
-}
 
 /// Wire model for `OwnedCharacterOut`. Stays in the data layer.
 class OwnedCharacterDto {

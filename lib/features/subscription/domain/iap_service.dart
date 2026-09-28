@@ -362,6 +362,19 @@ class IapVerifyException implements Exception {
 /// Counting `restored` events was not enough: the server can refuse every
 /// receipt and still answer 200, and the rail used to report the whole batch
 /// as restored anyway — 「Premium is back」 with the plan still Free.
+/// Whether the store holds a live Premium subscription for **this member**.
+enum StorePremium {
+  /// A live Premium purchase tied to this member's account id.
+  owned,
+
+  /// The store answered and has none for this member.
+  none,
+
+  /// No answer — the query failed or the member's account id is unknown, so
+  /// purchases cannot be matched to the member (QA F112 · PM-DEC-190).
+  unknown,
+}
+
 enum RestoreOutcome {
   /// The subscription is back — the batch carried a subscription receipt and
   /// the account is Premium now.
@@ -374,9 +387,9 @@ enum RestoreOutcome {
   /// Exactly one character is back (the title is singular — QA F110).
   restoredCharacter,
 
-  /// Receipts went up and nothing was granted, and the server gives no
-  /// per-item reason yet (§22 ③) — another account, a bad receipt or an
-  /// outage look the same. A neutral "couldn't confirm" (QA F109).
+  /// Receipts went up and nothing was granted, for a reason other than another
+  /// account (`invalid` · `unavailable`), or with no per-item reason (older
+  /// server). A neutral "couldn't confirm" (QA F109 · F114).
   unconfirmed,
 
   /// An old subscription id (`bt_max` · `bt_pro…`) went up and nothing was
@@ -394,8 +407,9 @@ enum RestoreOutcome {
   /// Only character receipts came back and none was granted — bought on
   /// another BeaverTalk account (09-28 device, 409 on bt_character_popo).
   ///
-  /// ⚠ Not produced until the server returns per-item reasons (§22 ③): today a
-  /// 409 cannot be told from a 503, so that case is [unconfirmed] (QA F109).
+  /// Only on a per-item `owned_by_other` (409 · §22 ③). An older server without
+  /// reasons cannot tell 409 from 503, so that case stays [unconfirmed]
+  /// (QA F109 · F114 · PM-DEC-192).
   charactersNotThisAccount,
 
   /// The store or our server could not be reached.
@@ -528,6 +542,10 @@ abstract class IapService {
   /// 스토어에 물어야 한다(QA F067 부수).
   Future<bool?> ownsAnnualPremium();
 
+  /// 스토어에 이 회원의 **유효한** Premium 구독이 있는가 — 주기와 무관(레거시 `bt_max` 포함).
+  /// 조회 실패·회원 대조 불가는 [StorePremium.unknown] 이다(「없음」 과 가른다 · QA F112).
+  Future<StorePremium> storePremium();
+
   /// Whether the device can transact at all — no store on this build, a
   /// signed-out account, or purchases restricted by parental controls.
   ///
@@ -631,6 +649,10 @@ class MockIapService implements IapService {
   /// 가짜 레일은 결제 주기를 모른다.
   @override
   Future<bool?> ownsAnnualPremium() async => null;
+
+  /// 가짜 레일엔 스토어가 없다 — 가진 구독도 없다.
+  @override
+  Future<StorePremium> storePremium() async => StorePremium.none;
 
   /// 가짜 레일엔 교체가 없다 — 같은 구매로 흉내 낸다.
   @override

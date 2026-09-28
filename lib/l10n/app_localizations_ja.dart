@@ -1284,14 +1284,6 @@ class AppLocalizationsJa extends AppLocalizations {
   String get analysisNoScoreEmpty => '採点する文がありません';
 
   @override
-  String get priceChangedTitle => '価格が変更されました';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'この商品は現在$priceです。続けますか?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'プランと購入';
 
   @override

@@ -1311,14 +1311,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get analysisNoScoreEmpty => 'لا توجد جمل لتقييمها';
 
   @override
-  String get priceChangedTitle => 'تغيّر السعر';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'أصبح سعر هذا العنصر $price. هل تريد المتابعة؟';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'الخطة والمشتريات';
 
   @override

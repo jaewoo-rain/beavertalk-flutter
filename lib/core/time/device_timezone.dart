@@ -21,12 +21,27 @@ abstract final class DeviceTimezone {
   static Future<String?> iana() async {
     try {
       final id = (await FlutterTimezone.getLocalTimezone()).identifier;
-      return id.isEmpty ? null : id;
+      if (!looksLikeIana(id)) {
+        // 구형·사용자 지정 안드로이드는 `GMT+09:00` 같은 오프셋 문자열을 준다. 서버는 IANA 가
+        // 아닌 tz 를 422 로 거절한다(서버 회신 09-29 §3-1) — 알람 저장이 실패한다. 모르는 값은
+        // 싣지 않는다(키가 없으면 서버는 미지정으로 다룬다 · tz_offset_min 폴백).
+        debugPrint('[tz] IANA 가 아닌 시간대 — 보내지 않는다: $id');
+        return null;
+      }
+      return id;
     } catch (e) {
       debugPrint('[tz] IANA 조회 실패 — tz_offset_min 만 보낸다: $e');
       return null;
     }
   }
+
+  /// IANA 존 이름 모양인가 — `Area/Location`(`Asia/Seoul` · `America/Argentina/Buenos_Aires`
+  /// · `Etc/GMT+9`) 또는 `UTC`·`GMT`. `GMT+09:00`·`KST`·빈 문자열은 아니다.
+  static bool looksLikeIana(String id) =>
+      id == 'UTC' || id == 'GMT' || _ianaShape.hasMatch(id);
+
+  static final _ianaShape =
+      RegExp(r'^[A-Za-z][A-Za-z_\-]*(/[A-Za-z0-9][A-Za-z0-9_+\-]*)+$');
 
   /// UTC 기준 분(동쪽 +). `tz` 가 없거나 서버가 이름을 못 알아볼 때의 폴백.
   static int offsetMinutes([DateTime? now]) =>

@@ -1281,14 +1281,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get analysisNoScoreEmpty => '没有可评分的句子';
 
   @override
-  String get priceChangedTitle => '价格已变更';
-
-  @override
-  String priceChangedBody(String price) {
-    return '此商品现价为$price。要继续吗?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => '套餐与购买';
 
   @override

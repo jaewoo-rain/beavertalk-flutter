@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "新しい友だちが仲間入り!",
   "iapCharacterSuccessBody": "このキャラクターはずっとあなたのもの。プランが変わっても残り、購入の復元でどの端末でも戻せます。",
   "iapCharacterFailedBody": "購入が完了しませんでした。請求は発生していません。もう一度お試しください。",
-  "priceChangedTitle": "価格が変更されました",
-  "priceChangedBody": "この商品は現在{price}です。続けますか?",
   "joinedLabel": "登録日",
   "noAccentDataTitle": "まだイントネーションのデータがありません",
   "noAccentDataBody": "通話を続けるとイントネーションの特徴が集まります。",

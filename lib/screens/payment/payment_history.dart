@@ -355,7 +355,8 @@ class _PaymentHistoryScreenState extends ConsumerState<PaymentHistoryScreen> {
       type: CardLineType.payment,
       label: p.description ?? _categoryLabel(l10n, p.category),
       metaSegments: meta,
-      value: _money(p.price, locale),
+      // 가격 없는 결제(Google 캐릭터·묶음)는 「—」 — 「$0」 이 아니다(§22-⑥).
+      value: p.price == null ? '—' : _money(p.price!, locale),
       status: l10n.statusCompleted,
       showDivider: showDivider,
     );

@@ -1306,14 +1306,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get analysisNoScoreEmpty => 'ไม่มีประโยคให้ให้คะแนน';
 
   @override
-  String get priceChangedTitle => 'ราคามีการเปลี่ยนแปลง';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'สินค้านี้ตอนนี้ราคา $price ต้องการดำเนินการต่อหรือไม่';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'แพ็กเกจและการซื้อ';
 
   @override
@@ -1383,7 +1375,8 @@ class AppLocalizationsTh extends AppLocalizations {
   String get premiumBulletVideo => 'วิดีโอคอลวันละ 15 นาที';
 
   @override
-  String get premiumBulletAnalysis => 'ให้คะแนนการออกเสียงในการทบทวนไม่จำกัด';
+  String get premiumBulletAnalysis =>
+      'ให้คะแนนการออกเสียงได้ไม่จำกัดในการทบทวน';
 
   @override
   String get premiumBulletWeakSounds => 'ฝึกเสียงที่ยังไม่แม่นสำหรับภาษาของคุณ';

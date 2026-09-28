@@ -1312,14 +1312,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Үнэлэх өгүүлбэр алга';
 
   @override
-  String get priceChangedTitle => 'Үнэ өөрчлөгдлөө';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Энэ бараа одоо $price болсон. Үргэлжлүүлэх үү?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Багц ба худалдан авалт';
 
   @override

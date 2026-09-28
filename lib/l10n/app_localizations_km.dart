@@ -1315,14 +1315,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get analysisNoScoreEmpty => 'គ្មានប្រយោគសម្រាប់ដាក់ពិន្ទុទេ';
 
   @override
-  String get priceChangedTitle => 'តម្លៃបានផ្លាស់ប្ដូរ';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'ទំនិញនេះឥឡូវតម្លៃ $price។ បន្តទេ?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'គម្រោង និងការទិញ';
 
   @override

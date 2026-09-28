@@ -1323,14 +1323,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get analysisNoScoreEmpty => 'အမှတ်ပေးရန် ဝါကျ မရှိပါ';
 
   @override
-  String get priceChangedTitle => 'ဈေးနှုန်းပြောင်းသွားသည်';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'ဤပစ္စည်းသည် ယခု $price ဖြစ်သည်။ ဆက်လုပ်မလား။';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'အစီအစဉ်နှင့် ဝယ်ယူမှုများ';
 
   @override

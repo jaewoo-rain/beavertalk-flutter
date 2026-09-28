@@ -1330,14 +1330,6 @@ class AppLocalizationsIt extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Nessuna frase da valutare';
 
   @override
-  String get priceChangedTitle => 'Il prezzo è cambiato';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Questo articolo ora costa $price. Vuoi continuare?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Piano e acquisti';
 
   @override

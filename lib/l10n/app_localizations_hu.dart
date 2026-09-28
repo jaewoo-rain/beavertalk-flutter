@@ -1328,14 +1328,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Nincs értékelhető mondat';
 
   @override
-  String get priceChangedTitle => 'Megváltozott az ár';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Ez a tétel most $price. Folytatod?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Csomag és vásárlások';
 
   @override

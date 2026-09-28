@@ -42,7 +42,9 @@ class PaymentItemDto {
         date: paymentDate == null ? null : DateTime.tryParse(paymentDate!)?.toLocal(),
         description: description,
         cardInfo: cardInfo,
-        price: parseMoneyMinor(price),
+        // 없으면 null — Google 캐릭터·묶음 결제는 스토어가 가격을 주지 않아 늘 비어 온다(서버
+        // 회신 09-29 §22-⑥). 0 으로 바꾸면 「$0」 결제로 보였다.
+        price: price == null ? null : parseMoneyMinor(price),
         category: PaymentCategory.fromWire(category),
       );
 }

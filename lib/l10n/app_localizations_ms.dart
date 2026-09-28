@@ -1326,14 +1326,6 @@ class AppLocalizationsMs extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Tiada ayat untuk dinilai';
 
   @override
-  String get priceChangedTitle => 'Harga berubah';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Item ini kini $price. Teruskan?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Pelan & pembelian';
 
   @override
@@ -1404,7 +1396,7 @@ class AppLocalizationsMs extends AppLocalizations {
 
   @override
   String get premiumBulletAnalysis =>
-      'Penilaian sebutan semasa ulang kaji tanpa had';
+      'Penilaian sebutan tanpa had semasa ulang kaji';
 
   @override
   String get premiumBulletWeakSounds => 'Latihan bunyi sukar untuk bahasa anda';

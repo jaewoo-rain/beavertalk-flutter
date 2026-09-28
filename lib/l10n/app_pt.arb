@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "Um novo amigo se juntou a você!",
   "iapCharacterSuccessBody": "Este personagem é seu para sempre — permanece mesmo se o plano mudar, e Restaurar compras o traz de volta em qualquer aparelho.",
   "iapCharacterFailedBody": "A compra não foi concluída. Nada foi cobrado — tente novamente.",
-  "priceChangedTitle": "O preço mudou",
-  "priceChangedBody": "Este item agora custa {price}. Deseja continuar?",
   "joinedLabel": "Cadastro",
   "noAccentDataTitle": "Ainda sem dados de entonação",
   "noAccentDataBody": "Continue conversando e as características da sua entonação vão se acumular.",

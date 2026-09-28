@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "Új barát csatlakozott!",
   "iapCharacterSuccessBody": "Ez a karakter örökre a tiéd — csomagváltásnál is megmarad, a Vásárlások visszaállítása pedig bármely eszközön visszahozza.",
   "iapCharacterFailedBody": "A vásárlás nem sikerült. Nem történt terhelés — próbáld újra.",
-  "priceChangedTitle": "Megváltozott az ár",
-  "priceChangedBody": "Ez a tétel most {price}. Folytatod?",
   "joinedLabel": "Csatlakozott",
   "noAccentDataTitle": "Még nincs hanglejtési adat",
   "noAccentDataBody": "Beszélgess tovább, és összegyűlnek a hanglejtésed jellemzői.",

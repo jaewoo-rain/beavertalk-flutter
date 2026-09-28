@@ -1318,14 +1318,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Tidak ada kalimat untuk dinilai';
 
   @override
-  String get priceChangedTitle => 'Harga berubah';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Item ini sekarang $price. Lanjutkan?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Paket & pembelian';
 
   @override
@@ -1396,7 +1388,7 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get premiumBulletAnalysis =>
-      'Penilaian pelafalan saat mengulang tanpa batas';
+      'Penilaian pelafalan tanpa batas saat mengulang';
 
   @override
   String get premiumBulletWeakSounds => 'Latihan bunyi sulit untuk bahasamu';

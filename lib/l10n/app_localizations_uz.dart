@@ -1323,14 +1323,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Baholanadigan gap yoʻq';
 
   @override
-  String get priceChangedTitle => 'Narx oʻzgardi';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Bu mahsulot endi $price. Davom etasizmi?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Tarif va xaridlar';
 
   @override

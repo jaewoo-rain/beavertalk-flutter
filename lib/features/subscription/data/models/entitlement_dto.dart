@@ -107,6 +107,7 @@ class RestoreResultDto {
     required this.restored,
     required this.failed,
     required this.entitlement,
+    this.items = const [],
   });
 
   /// How many receipts were accepted.
@@ -119,8 +120,20 @@ class RestoreResultDto {
   /// The entitlement after the batch.
   final EntitlementDto entitlement;
 
+  /// Per-receipt verdicts (§22 ③ · server 09-29): `granted` · `already` ·
+  /// `owned_by_other` · `invalid` · `unavailable` (UNKNOWN_PRODUCT → invalid).
+  /// Empty on an older server — the counts above are then all there is.
+  final List<({String productId, String result})> items;
+
   factory RestoreResultDto.fromJson(Map<String, dynamic> json) {
     return RestoreResultDto(
+      items: [
+        for (final e in (json['items'] as List? ?? const []))
+          if (e is Map<String, dynamic> &&
+              e['product_id'] is String &&
+              e['result'] is String)
+            (productId: e['product_id'] as String, result: e['result'] as String),
+      ],
       restored: (json['restored'] as num?)?.toInt() ?? 0,
       failed: (json['failed'] as num?)?.toInt() ?? 0,
       entitlement: EntitlementDto.fromJson(

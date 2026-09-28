@@ -1314,14 +1314,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get analysisNoScoreEmpty => 'স্কোর দেওয়ার মতো বাক্য নেই';
 
   @override
-  String get priceChangedTitle => 'দাম বদলে গেছে';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'এই আইটেমের দাম এখন $price। চালিয়ে যেতে চান?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'প্ল্যান ও কেনাকাটা';
 
   @override

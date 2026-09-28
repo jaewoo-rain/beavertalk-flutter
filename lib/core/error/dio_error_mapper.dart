@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 
-import '../format/money.dart';
 import 'app_exception.dart';
 
 /// Converts a [DioException] into a typed [AppException].
@@ -50,17 +49,6 @@ AppException mapDioException(DioException e) {
           ? NotFoundFailure.server(detail.message!)
           : const NotFoundFailure();
     case 409:
-      // 할인이 탭하는 사이 끝나면 서버가 결제를 거절하고 실제 가격을 함께 준다.
-      // 일반 409(중복 보유 등)와 달리 앱이 새 가격으로 재확인을 받아야 하므로
-      // 전용 타입으로 올린다.
-      if (detail.code == 'PRICE_CHANGED') {
-        return PriceChangedFailure(
-          detail.message ?? '가격이 변경되었어요',
-          expectedPrice: parseMoneyMinor(detail.extra['expected_price']),
-          actualPrice: parseMoneyMinor(detail.extra['actual_price']),
-          fromServer: detail.message != null,
-        );
-      }
       return detail.message != null
           ? ConflictFailure.server(detail.message!)
           : const ConflictFailure();

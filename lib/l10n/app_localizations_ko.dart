@@ -1286,14 +1286,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get analysisNoScoreEmpty => '점수를 낼 문장이 없어요';
 
   @override
-  String get priceChangedTitle => '가격이 변경되었어요';
-
-  @override
-  String priceChangedBody(String price) {
-    return '지금은 $price예요. 계속할까요?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => '플랜과 구매';
 
   @override

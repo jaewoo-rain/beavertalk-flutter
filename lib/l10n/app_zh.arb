@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "新伙伴加入了!",
   "iapCharacterSuccessBody": "这个角色永远属于你——即使套餐变更也会保留,并可通过恢复购买在任何设备找回。",
   "iapCharacterFailedBody": "购买未完成。没有产生任何扣款,请重试。",
-  "priceChangedTitle": "价格已变更",
-  "priceChangedBody": "此商品现价为{price}。要继续吗?",
   "joinedLabel": "注册日期",
   "noAccentDataTitle": "还没有语调数据",
   "noAccentDataBody": "继续通话就会积累语调特征。",

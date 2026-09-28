@@ -135,36 +135,6 @@ class Character {
   bool get isFree => price <= 0;
 }
 
-/// What `POST /characters/{id}/purchase` returns: the ownership row plus the
-/// payment it created (both in one transaction server-side).
-class PurchaseResult {
-  const PurchaseResult({
-    required this.characterId,
-    this.purchasePrice,
-    this.purchaseDate,
-    required this.paymentId,
-    this.paidPrice,
-    this.paymentDate,
-    this.paymentDescription,
-  });
-
-  final int characterId;
-  final int? purchasePrice;
-  final DateTime? purchaseDate;
-
-  /// The payment row written alongside the purchase — it shows up in
-  /// `GET /payments` immediately, so the history cache must be invalidated.
-  final int paymentId;
-
-  /// Amount actually charged. This is the **truth**, not the price the client
-  /// displayed: the server recomputes it from the active discount window, which
-  /// can close between listing and buying.
-  final int? paidPrice;
-
-  final DateTime? paymentDate;
-  final String? paymentDescription;
-}
-
 /// A character the member already owns. Pure Dart.
 class OwnedCharacter {
   const OwnedCharacter({

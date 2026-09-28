@@ -538,6 +538,9 @@ class StoreIapService implements IapService {
     if (charactersBack == 1) return RestoreOutcome.restoredCharacter;
     if (charactersBack > 1) return RestoreOutcome.restoredCharacters;
     if (batch.isEmpty) return RestoreOutcome.nothing;
+    // 서버가 건별 사유를 주면(§22 ③ · 09-29) 그것으로 가른다(QA F114 · PM-DEC-192).
+    final byReason = _outcomeFromItems(r.items, batch);
+    if (byReason != null) return byReason;
     // 옛 구독 id(bt_max · bt_pro…)가 지급되지 않았다 — 서버 카탈로그가 모를 수 있다
     // (UNKNOWN_PRODUCT) → 「확인 중」(PM-DEC-119 · F070).
     if (batch.any((p) =>
@@ -548,6 +551,31 @@ class StoreIapService implements IapService {
     if (subscriptionSent) return RestoreOutcome.notThisAccount;
     // 캐릭터만 올라갔고 지급이 없다. 건별 사유가 없어(§22 ③) 409 와 503 을 가를 수
     // 없다 — 「다른 계정」 이라 단정하지 않는다(QA F109).
+    return RestoreOutcome.unconfirmed;
+  }
+
+  /// 지급이 없을 때 건별 사유로 고른 결과. 사유가 없으면(구서버) null — 개수 규칙으로 간다.
+  ///
+  /// - `owned_by_other`(409): 구독이면 기존 「그 요금제는 다른 계정」, 캐릭터면 「이 캐릭터는
+  ///   다른 계정에서 구매」 — 이제 409 가 확실할 때만 그 문구다.
+  /// - 옛 구독 id(bt_max · bt_pro…)가 지급되지 않음: 「확인 중」(PM-DEC-119 · F070).
+  /// - 그 밖(`unavailable` 503 · `invalid` 422/404): 중립 「확인하지 못함」(PM-DEC-192).
+  static RestoreOutcome? _outcomeFromItems(
+      List<({String productId, String result})> items, List<IapPurchase> batch) {
+    if (items.isEmpty) return null;
+    bool isSubscription(String productId) =>
+        typeOfProduct(productId) == IapProductType.subscription;
+    final other = items.where((i) => i.result == 'owned_by_other').toList();
+    if (other.isNotEmpty) {
+      return other.any((i) => isSubscription(i.productId))
+          ? RestoreOutcome.notThisAccount
+          : RestoreOutcome.charactersNotThisAccount;
+    }
+    if (batch.any((p) =>
+        p.type == IapProductType.subscription &&
+        !IapProductIds.subscriptions.contains(p.productId))) {
+      return RestoreOutcome.verifying;
+    }
     return RestoreOutcome.unconfirmed;
   }
 
@@ -760,6 +788,39 @@ class StoreIapService implements IapService {
     // 레거시 `bt_max` 는 구매에 기본 플랜이 안 실려 주기를 모른다.
     if (premium.any((id) => !IapProductIds.subscriptionIdIsCurrent(id))) return null;
     return false;
+  }
+
+  @override
+  Future<StorePremium> storePremium() async {
+    if (kIsWeb) return StorePremium.none;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final token = _storeAccountId();
+      if (token == null) return StorePremium.unknown;
+      final List<AppleTransaction> all;
+      try {
+        all = await (_appleTransactions?.call() ?? _queryAppleTransactions());
+      } catch (_) {
+        return StorePremium.unknown;
+      }
+      return appleOwnsAnnual(all, now: DateTime.now(), accountToken: token) != null
+          ? StorePremium.owned
+          : StorePremium.none;
+    }
+    if (!_isPlay) return StorePremium.none;
+    final account = _currentAccountId();
+    if (account == null) return StorePremium.unknown;
+    final List<GooglePlayPurchaseDetails> owned;
+    try {
+      owned = await (_playOwned?.call() ?? _queryPlayOwned());
+    } catch (_) {
+      return StorePremium.unknown;
+    }
+    return owned.any((p) =>
+            p.status != PurchaseStatus.pending &&
+            IapProductIds.playPremiumSubscriptionIds.contains(p.productID) &&
+            belongsTo(p, account))
+        ? StorePremium.owned
+        : StorePremium.none;
   }
 
   /// iOS — 지금 유효한(만료 전) Premium 거래 중 가장 최근 것의 상품으로 주기를 본다.

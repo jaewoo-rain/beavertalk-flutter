@@ -10,6 +10,7 @@ import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/domain/subscription_status_resolver.dart';
 import '../../features/subscription/presentation/providers/subscription_providers.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
+import '../../features/subscription/domain/iap_service.dart';
 import 'winback_offer_sheet.dart';
 import 'winback_survey.dart';
 
@@ -80,10 +81,24 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
     }
     if (!mounted) return;
     if (!shouldOfferWinback(status: status, rows: rows)) return;
+    final key = winbackPrefKeyFor(memberId);
+    final mark = winbackMark(status.expiresAt);
+    final SharedPreferences prefs;
+    try {
+      prefs = await SharedPreferences.getInstance();
+    } catch (_) {
+      return; // 기록을 못 하면 띄우지 않는다 — 매 실행 설문이 뜨는 쪽이 더 나쁘다.
+    }
+    // 이 만료에 이미 설문을 본 회원 — 스토어 조회·조용한 복원도 돌리지 않는다(QA F112 · PM-DEC-190 ②).
+    if (prefs.getString(key) == mark) return;
     // F107 — 서버가 한 번 expired 라고 해도 스토어에 이 회원의 활성 Premium 이 있으면 아직
     // 만료가 아니다(서버 갱신 지연 · 스토어 전파 경계). 조용히 복원(서버 재검증)을 한 번 하고
     // 서버 상태를 다시 읽어 **여전히 expired 일 때만** 설문을 띄운다. 기록도 그 뒤에 한다.
-    if (await _storeStillHasPremium()) {
+    // 스토어 조회 실패 · 회원 대조 불가 · 재조회 실패는 한 기준 — 이번 실행은 보류하고 기록도
+    // 하지 않는다(다음 실행에서 다시 판정 · QA F112 · PM-DEC-190 ①).
+    final store = await _storePremium();
+    if (!mounted || store == StorePremium.unknown) return;
+    if (store == StorePremium.owned) {
       try {
         await ref.read(iapServiceProvider).restore();
       } catch (_) {}
@@ -93,16 +108,12 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
       try {
         fresh = await ref.read(serverSubscriptionStatusProvider.future);
       } catch (_) {
-        return; // 다시 못 읽으면 띄우지 않는다 — 잘못 띄우는 쪽이 더 나쁘다.
+        return; // 다시 못 읽으면 보류한다 — 잘못 띄우는 쪽이 더 나쁘다.
       }
       if (!mounted || fresh?.state != SubscriptionState.expired) return;
     }
     _subscribeId = status.source?.id;
-    final key = winbackPrefKeyFor(memberId);
-    final mark = winbackMark(status.expiresAt);
     try {
-      final prefs = await SharedPreferences.getInstance();
-      if (prefs.getString(key) == mark) return;
       await prefs.setString(key, mark);
     } catch (_) {
       // 기록을 못 하면 띄우지 않는다 — 매 실행 설문이 뜨는 쪽이 더 나쁘다.
@@ -143,13 +154,13 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
         .catchError((Object _) {}));
   }
 
-  /// 스토어가 이 회원(난독화 계정 id 대조)의 **유효한** Premium 구독을 보고 있는가.
-  /// 주기(월/연)를 답하면 활성 구매가 있다는 뜻이다. 모르면(없음·조회 실패) false.
-  Future<bool> _storeStillHasPremium() async {
+  /// 스토어가 이 회원(계정 id 대조)의 **유효한** Premium 구독을 보고 있는가.
+  /// 조회 실패·회원 대조 불가는 unknown(없음과 가른다 · QA F112).
+  Future<StorePremium> _storePremium() async {
     try {
-      return await ref.read(iapServiceProvider).ownsAnnualPremium() != null;
+      return await ref.read(iapServiceProvider).storePremium();
     } catch (_) {
-      return false;
+      return StorePremium.unknown;
     }
   }
 

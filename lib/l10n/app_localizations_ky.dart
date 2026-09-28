@@ -1317,14 +1317,6 @@ class AppLocalizationsKy extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Баалай турган сүйлөм жок';
 
   @override
-  String get priceChangedTitle => 'Баа өзгөрдү';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Бул товар эми $price турат. Улантасызбы?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'План жана сатып алуулар';
 
   @override

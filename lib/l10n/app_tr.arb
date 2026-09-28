@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "Yeni bir arkadaş katıldı!",
   "iapCharacterSuccessBody": "Bu karakter sonsuza dek senin — plan değişse bile kalır ve Satın alımları geri yükle ile her cihazda geri gelir.",
   "iapCharacterFailedBody": "Satın alma tamamlanamadı. Ücret alınmadı — lütfen tekrar dene.",
-  "priceChangedTitle": "Fiyat değişti",
-  "priceChangedBody": "Bu ürün artık {price}. Devam etmek ister misin?",
   "joinedLabel": "Katılma tarihi",
   "noAccentDataTitle": "Henüz tonlama verisi yok",
   "noAccentDataBody": "Konuşmaya devam ettikçe tonlama özellikleriniz birikir.",

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:beavertalk/features/payment/data/models/payment_dto.dart';
 import 'package:beavertalk/features/payment/domain/entities/payment.dart';
 import 'package:beavertalk/features/payment/domain/repositories/payment_repository.dart';
 import 'package:beavertalk/features/payment/presentation/providers/payment_providers.dart';
@@ -194,6 +195,45 @@ void main() {
       await tester.pump();
       expect(find.text('Premium'), findsOneWidget);
       expect(find.byType(NetworkErrorView), findsNothing);
+    });
+  });
+
+  group('§22-⑥ — 가격 없는 결제(Google 캐릭터·묶음)', () {
+    test('DTO — price null 은 null 로 남는다(0 아님)', () {
+      Payment p(Object? price) => PaymentItemDto.fromJson({
+            'payment_id': 1,
+            'payment_date': '2026-09-28T10:00:00Z',
+            'price': price,
+            'category': 'character',
+          }).toEntity();
+      expect(p(null).price, isNull);
+      expect(p('23.99').price, 2399);
+    });
+
+    testWidgets('결제 내역 — 가격 칸은 「—」', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final unpriced = Payment(
+        id: 1,
+        date: DateTime(2026, 9, 28),
+        description: 'Popo',
+        price: null,
+        category: PaymentCategory.character,
+      );
+      await tester.pumpWidget(_app(const PaymentHistoryScreen(), overrides: [
+        paymentRepositoryProvider.overrideWithValue(_Payments({})),
+        paymentPageProvider.overrideWith((ref, filter) async => PaymentPage(
+              monthTotal: 0,
+              items: [unpriced],
+              page: 1,
+              size: 10,
+              hasMore: false,
+            )),
+      ]));
+      await tester.pump();
+      await tester.pump();
+      expect(find.text('Popo'), findsOneWidget);
+      expect(find.text('—'), findsOneWidget, reason: '「\$0」 결제로 그리지 않는다');
     });
   });
 

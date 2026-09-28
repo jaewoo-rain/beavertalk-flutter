@@ -1314,14 +1314,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Không có câu nào để chấm điểm';
 
   @override
-  String get priceChangedTitle => 'Giá đã thay đổi';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Mặt hàng này hiện là $price. Bạn có muốn tiếp tục?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Gói & mua hàng';
 
   @override
@@ -1391,7 +1383,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get premiumBulletVideo => '15 phút gọi video mỗi ngày';
 
   @override
-  String get premiumBulletAnalysis => 'Chấm phát âm khi ôn tập không giới hạn';
+  String get premiumBulletAnalysis =>
+      'Chấm điểm phát âm không giới hạn khi ôn tập';
 
   @override
   String get premiumBulletWeakSounds =>

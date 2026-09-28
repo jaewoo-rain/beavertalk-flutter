@@ -1315,14 +1315,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get analysisNoScoreEmpty => 'ලකුණු දීමට වාක්‍ය නැත';
 
   @override
-  String get priceChangedTitle => 'මිල වෙනස් වුණා';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'මෙම අයිතමය දැන් $price යි. දිගටම යන්නද?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'සැලසුම සහ මිලදී ගැනීම්';
 
   @override

@@ -1341,14 +1341,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Aucune phrase à noter';
 
   @override
-  String get priceChangedTitle => 'Le prix a changé';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Cet article coûte désormais $price. Voulez-vous continuer ?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Forfait et achats';
 
   @override
@@ -1419,7 +1411,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get premiumBulletAnalysis =>
-      'Évaluation illimitée de la prononciation en révision';
+      'Évaluation illimitée de la prononciation lors des révisions';
 
   @override
   String get premiumBulletWeakSounds =>

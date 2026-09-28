@@ -1320,14 +1320,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Ei pisteytettäviä lauseita';
 
   @override
-  String get priceChangedTitle => 'Hinta muuttui';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Tämä tuote maksaa nyt $price. Haluatko jatkaa?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Paketti ja ostot';
 
   @override

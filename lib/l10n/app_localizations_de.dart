@@ -1335,14 +1335,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Keine Sätze zum Bewerten';
 
   @override
-  String get priceChangedTitle => 'Preis geändert';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Dieser Artikel kostet jetzt $price. Möchtest du fortfahren?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Plan & Käufe';
 
   @override

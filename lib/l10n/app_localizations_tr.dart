@@ -1313,14 +1313,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Puanlanacak cümle yok';
 
   @override
-  String get priceChangedTitle => 'Fiyat değişti';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Bu ürün artık $price. Devam etmek ister misin?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Plan ve satın alımlar';
 
   @override

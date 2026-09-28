@@ -260,6 +260,54 @@ void main() {
       expect(o(r(0, 2, chars: [1]), [sub, popo]), RestoreOutcome.notThisAccount);
     });
 
+    test('F114 · PM-DEC-192 — 건별 사유(§22 ③)가 있으면 그것으로 가른다', () {
+      RestoreResultDto withItems(List<(String, String)> items,
+              {bool pro = false, List<int> chars = const [1, 2]}) =>
+          RestoreResultDto.fromJson({
+            'restored': 0,
+            'failed': items.length,
+            'entitlement': {'is_pro': pro, 'owned_character_ids': chars},
+            'items': [
+              for (final (id, result) in items) {'product_id': id, 'result': result},
+            ],
+          });
+      RestoreOutcome o(RestoreResultDto res, List<IapPurchase> batch) =>
+          StoreIapService.restoreOutcomeOf(res, batch);
+      // 409 — 캐릭터는 「이 캐릭터는 다른 계정」, 구독은 「그 요금제는 다른 계정」.
+      expect(o(withItems([('bt_character_popo', 'owned_by_other')]), [popo]),
+          RestoreOutcome.charactersNotThisAccount);
+      expect(o(withItems([('bt_max_monthly', 'owned_by_other')]), [sub]),
+          RestoreOutcome.notThisAccount);
+      expect(
+          o(withItems([('bt_max_monthly', 'invalid'), ('bt_character_popo', 'owned_by_other')]),
+              [sub, popo]),
+          RestoreOutcome.charactersNotThisAccount);
+      // 503 · 422 · 404(invalid) — 중립 「확인하지 못함」(구독도 「다른 계정」 이라 하지 않는다).
+      expect(o(withItems([('bt_character_popo', 'unavailable')]), [popo]),
+          RestoreOutcome.unconfirmed);
+      expect(o(withItems([('bt_max_monthly', 'invalid')]), [sub]),
+          RestoreOutcome.unconfirmed);
+      // 옛 구독 id 는 사유가 있어도 「확인 중」(PM-DEC-119).
+      final legacy = sent('bt_max', IapProductType.subscription);
+      expect(o(withItems([('bt_max', 'invalid')]), [legacy]), RestoreOutcome.verifying);
+      // 지급이 있으면 사유보다 지급이 먼저다.
+      expect(
+          o(withItems([('bt_character_popo', 'granted')], chars: [1, 2, 9]), [popo]),
+          RestoreOutcome.restoredCharacter);
+      // 구서버(items 없음) — 개수 규칙 그대로.
+      expect(RestoreResultDto.fromJson({'restored': 0, 'failed': 1}).items, isEmpty);
+      // 모양이 틀린 항목은 버린다.
+      expect(
+          RestoreResultDto.fromJson({
+            'items': [
+              {'product_id': 'x'},
+              'junk',
+              {'product_id': 'bt_character_popo', 'result': 'already'},
+            ],
+          }).items,
+          [(productId: 'bt_character_popo', result: 'already')]);
+    });
+
     test('재검증 — 가입 때 받은 무료 스타터(Baba·Bibi)는 복원으로 세지 않는다', () {
       expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2]), [sub]),
           RestoreOutcome.notThisAccount);

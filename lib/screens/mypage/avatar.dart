@@ -13,7 +13,6 @@ import '../../components/molecules/banner.dart' as bn;
 import '../../components/molecules/empty_state.dart';
 import '../../components/organisms/bottom_sheet.dart' show SheetAction;
 import '../../components/organisms/bottom_sheet_content.dart';
-import '../../components/organisms/dialog_basic.dart';
 import '../../components/organisms/gnb.dart';
 import '../../core/error/app_exception.dart';
 import '../../core/format/money.dart';
@@ -436,20 +435,16 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   ///
   /// v2 §2-3: 캐릭터는 비소모성 IAP 다. 스토어가 `purchased`/`restored` 로 답한 것만 서버에
   /// 간다. 취소는 조용히, 실패는 CTA 위 배너(Figma `iap_result__fail`)로 알린다.
-  Future<void> _purchase(Character c, [int? priceOverride]) async {
-    final expectedMinor =
-        priceOverride ?? (_isFree(c) ? null : c.effectivePrice);
+  Future<void> _purchase(Character c) async {
     setState(() {
       _busy = true;
       _purchaseFailed = false;
     });
     try {
       final iap = ref.read(iapServiceProvider);
-      // 무료 캐릭터는 스토어를 타지 않는다 — 살 상품이 없다.
-      if (IapProductIds.isFreeCharacter(c.id) || expectedMinor == 0) {
-        await _deliver(c, expectedMinor);
-        return;
-      }
+      // 무료 캐릭터(Baba·Bibi)는 서버가 처음부터 보유·해금으로 준다(§5-1) — 이 화면은 그들을
+      // 「사용」 으로 그려 여기 오지 않는다. 받기 경로(`POST /characters/{id}/purchase`)는 서버에서
+      // 삭제됐다(§3-2 · 돈 없이 지급하던 경로).
       // 스토어 상품은 서버 PK 가 아니라 슬러그로 찾는다(`characterForKey` — 접두 중복 방지 포함).
       final productId = _productIdOf(c);
       if (productId == null) {
@@ -498,7 +493,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         case IapPurchaseState.restored:
           break;
       }
-      await _deliver(c, expectedMinor, verdict: verdict);
+      await _deliver(c);
     } finally {
       if (mounted) setState(() => _busy = false);
     }
@@ -568,46 +563,18 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     return done.future;
   }
 
-  /// 서버에 소유를 기록하고 성공 시트를 띄운다.
-  Future<void> _deliver(Character c, int? expectedMinor,
-      {IapPurchase? verdict}) async {
+  /// 보유를 다시 읽고 성공 시트를 띄운다.
+  ///
+  /// 지급은 레일이 끝냈다 — `POST /purchases/verify` 로 검증·지급한 뒤에야 purchased 를
+  /// 낸다(`store_iap_service.dart` `_deliver`). 유료 지급 경로는 그것 하나다(서버 §3-2 ·
+  /// 영수증 없는 `POST /characters/{id}/purchase` 삭제). 목 레일(웹·데스크톱)은 서버에
+  /// 아무것도 남기지 않고 화면만 흉내 낸다.
+  Future<void> _deliver(Character c) async {
     try {
-      if (verdict != null && verdict.hasReceipt) {
-        // 실영수증 → 레일이 `POST /purchases/verify` 로 **이미** 검증·지급한 뒤에야
-        // purchased 를 낸다(`store_iap_service.dart` `_deliver`). 여기서 한 번 더 부르던
-        // 이중 검증을 뺐다(QA F016) — 두 번째 호출이 일시 503 이면 지급된 결제에 오류가 떴다.
-      } else {
-        await ref
-            .read(characterRepositoryProvider)
-            .purchase(c.id, expectedPriceMinor: expectedMinor);
-      }
       ref.invalidate(charactersProvider);
       ref.invalidate(ownedCharactersProvider);
       ref.invalidate(paymentPageProvider);
       if (mounted) _showPurchaseSuccessSheet(c);
-    } on PriceChangedFailure catch (e) {
-      // 가격이 바뀌었다 — 새 가격으로 살지 다시 묻는다.
-      ref.invalidate(charactersProvider);
-      if (!mounted) return;
-      final l10n = AppLocalizations.of(context);
-      final ok = await showDialogBasic<bool>(
-        context,
-        title: l10n.priceChangedTitle,
-        description:
-            l10n.priceChangedBody(_priceLabel(context, e.actualPrice)),
-        // Figma 에 없는 창 — 원칙대로 취소 위 · 확정 동작(구매) 아래(09-24 app designer).
-        actions: [
-          DialogAction(
-            label: l10n.cancel,
-            onPressed: () => Navigator.pop(context, false),
-          ),
-          DialogAction(
-            label: l10n.buy,
-            onPressed: () => Navigator.pop(context, true),
-          ),
-        ],
-      );
-      if (ok == true && mounted) await _purchase(c, e.actualPrice);
     } catch (e) {
       _snack(e);
     }

@@ -1313,14 +1313,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get analysisNoScoreEmpty => 'स्कोर देने के लिए कोई वाक्य नहीं';
 
   @override
-  String get priceChangedTitle => 'कीमत बदल गई';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'इस आइटम की कीमत अब $price है। क्या जारी रखें?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'प्लान और खरीदारी';
 
   @override
@@ -1390,7 +1382,7 @@ class AppLocalizationsHi extends AppLocalizations {
   String get premiumBulletVideo => 'रोज़ 15 मिनट वीडियो कॉल';
 
   @override
-  String get premiumBulletAnalysis => 'रिव्यू में उच्चारण स्कोरिंग असीमित';
+  String get premiumBulletAnalysis => 'दोहराने में उच्चारण स्कोरिंग असीमित';
 
   @override
   String get premiumBulletWeakSounds =>

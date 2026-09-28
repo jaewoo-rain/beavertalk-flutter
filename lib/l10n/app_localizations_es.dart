@@ -1329,14 +1329,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get analysisNoScoreEmpty => 'No hay frases para puntuar';
 
   @override
-  String get priceChangedTitle => 'El precio cambió';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Este artículo ahora cuesta $price. ¿Quieres continuar?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Plan y compras';
 
   @override

@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "Uusi ystävä liittyi seuraan!",
   "iapCharacterSuccessBody": "Tämä hahmo on sinun ikuisesti — se säilyy vaikka paketti vaihtuisi, ja Palauta ostot tuo sen takaisin millä tahansa laitteella.",
   "iapCharacterFailedBody": "Ostos ei onnistunut. Mitään ei veloitettu — yritä uudelleen.",
-  "priceChangedTitle": "Hinta muuttui",
-  "priceChangedBody": "Tämä tuote maksaa nyt {price}. Haluatko jatkaa?",
   "joinedLabel": "Liittynyt",
   "noAccentDataTitle": "Ei vielä intonaatiotietoja",
   "noAccentDataBody": "Jatka puhumista, niin intonaatiosi piirteet kertyvät.",

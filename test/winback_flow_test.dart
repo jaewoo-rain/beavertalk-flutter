@@ -62,7 +62,8 @@ Future<void> _pump(
     overrides: [
       serverSubscriptionStatusProvider.overrideWith(
           (ref) async => serverSeq != null ? serverSeq(calls++) : server),
-      if (iap != null) iapServiceProvider.overrideWithValue(iap),
+      // 스토어 없음이 기본 — 시험 VM 은 android 로 보여 실 레일(회원 id 없음 = 대조 불가)이 잡힌다.
+      iapServiceProvider.overrideWithValue(iap ?? _StoreIap()),
       if (remote != null)
         subscriptionRemoteDataSourceProvider.overrideWithValue(remote),
       subscriptionsProvider.overrideWith((ref) async => rows ?? _lapsed),
@@ -172,6 +173,42 @@ void main() {
     await tester.pumpAndSettle();
     expect(iap.restores, 0);
     expect(_survey, findsOneWidget);
+  });
+
+  testWidgets('F112 — 스토어 조회 실패·회원 대조 불가면 이번 실행은 보류 · 기록 없음 · 복원 없음',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(store: StorePremium.unknown);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 0);
+    expect(_survey, findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(winbackPrefKeyFor(7)), isNull, reason: '다음 실행에서 다시 판정');
+  });
+
+  testWidgets('F112 — 복원 뒤 재조회 실패도 보류 · 기록 없음', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, serverSeq: (i) {
+      if (i == 0) return _status(SubscriptionState.expired);
+      throw StateError('server down');
+    });
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(_survey, findsNothing);
+    final prefs = await SharedPreferences.getInstance();
+    expect(prefs.getString(winbackPrefKeyFor(7)), isNull);
+  });
+
+  testWidgets('F112 — 이 만료에 이미 설문을 봤으면 스토어 조회·복원도 안 한다', (tester) async {
+    SharedPreferences.setMockInitialValues(
+        {winbackPrefKeyFor(7): winbackMark(_expiry)});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect((iap.queries, iap.restores), (0, 0));
+    expect(_survey, findsNothing);
   });
 
   testWidgets('§17 · PM-DEC-183 — 「비쌈」 은 사유를 false 로 먼저, 오퍼 시트가 뜨면 true 로 다시',
@@ -319,14 +356,19 @@ void main() {
   });
 }
 
-/// 스토어가 이 회원의 활성 Premium 을 보는지([ownsPremium])와 복원 호출 수.
+/// 스토어가 이 회원의 활성 Premium 을 보는지([store])와 조회·복원 호출 수.
 class _StoreIap extends MockIapService {
-  _StoreIap({required this.ownsPremium});
-  final bool ownsPremium;
+  _StoreIap({bool ownsPremium = false, StorePremium? store})
+      : store = store ?? (ownsPremium ? StorePremium.owned : StorePremium.none);
+  final StorePremium store;
   int restores = 0;
+  int queries = 0;
 
   @override
-  Future<bool?> ownsAnnualPremium() async => ownsPremium ? false : null;
+  Future<StorePremium> storePremium() async {
+    queries++;
+    return store;
+  }
 
   @override
   Future<RestoreOutcome> restore() async {

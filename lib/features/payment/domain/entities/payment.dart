@@ -56,8 +56,9 @@ class Payment {
   final String? cardInfo;
 
   /// Amount in USD cents (server sends a Decimal; parsed via
-  /// `parseMoneyMinor`). Absent on the wire → 0.
-  final int price;
+  /// `parseMoneyMinor`). **null when the server has no price** — Google
+  /// character/bundle purchases never carry one (store API has no price field).
+  final int? price;
 
   final PaymentCategory category;
 }

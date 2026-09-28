@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "Ein neuer Freund ist dabei!",
   "iapCharacterSuccessBody": "Dieser Charakter gehört dir für immer — er bleibt auch bei Planwechsel, und Käufe wiederherstellen holt ihn auf jedes Gerät zurück.",
   "iapCharacterFailedBody": "Der Kauf wurde nicht abgeschlossen. Es wurde nichts abgebucht — bitte versuche es erneut.",
-  "priceChangedTitle": "Preis geändert",
-  "priceChangedBody": "Dieser Artikel kostet jetzt {price}. Möchtest du fortfahren?",
   "joinedLabel": "Beigetreten",
   "noAccentDataTitle": "Noch keine Intonationsdaten",
   "noAccentDataBody": "Sprich weiter, dann sammeln sich deine Intonationsmerkmale.",

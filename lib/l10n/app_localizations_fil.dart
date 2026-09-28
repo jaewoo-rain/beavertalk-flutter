@@ -1329,14 +1329,6 @@ class AppLocalizationsFil extends AppLocalizations {
       'Walang pangungusap na mabibigyan ng score';
 
   @override
-  String get priceChangedTitle => 'Nagbago ang presyo';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Ang item na ito ay $price na ngayon. Magpapatuloy ka ba?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'Plan at mga binili';
 
   @override
@@ -1407,7 +1399,7 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get premiumBulletAnalysis =>
-      'Walang limitasyong pag-iskor ng bigkas sa review';
+      'Walang limitasyong pag-iskor ng pagbigkas sa review';
 
   @override
   String get premiumBulletWeakSounds =>

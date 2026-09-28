@@ -1325,14 +1325,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get analysisNoScoreEmpty => 'Нет фраз для оценки';
 
   @override
-  String get priceChangedTitle => 'Цена изменилась';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'Теперь этот товар стоит $price. Продолжить?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'План и покупки';
 
   @override

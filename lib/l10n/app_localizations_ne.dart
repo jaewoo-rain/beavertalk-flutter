@@ -1313,14 +1313,6 @@ class AppLocalizationsNe extends AppLocalizations {
   String get analysisNoScoreEmpty => 'स्कोर गर्ने वाक्य छैन';
 
   @override
-  String get priceChangedTitle => 'मूल्य परिवर्तन भयो';
-
-  @override
-  String priceChangedBody(String price) {
-    return 'यो वस्तुको मूल्य अब $price छ। जारी राख्ने?';
-  }
-
-  @override
   String get billingGroupPlanPurchases => 'योजना र खरिदहरू';
 
   @override
@@ -1390,7 +1382,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get premiumBulletVideo => 'दिनमा 15 मिनेट भिडियो कल';
 
   @override
-  String get premiumBulletAnalysis => 'पुनरावृत्तिमा उच्चारण मूल्याङ्कन असीमित';
+  String get premiumBulletAnalysis => 'दोहोर्याइमा उच्चारण मूल्याङ्कन असीमित';
 
   @override
   String get premiumBulletWeakSounds =>

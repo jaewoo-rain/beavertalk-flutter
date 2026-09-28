@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "Un nuovo amico si unisce a te!",
   "iapCharacterSuccessBody": "Questo personaggio è tuo per sempre: resta anche se cambi piano, e Ripristina acquisti lo riporta su qualsiasi dispositivo.",
   "iapCharacterFailedBody": "L'acquisto non è andato a buon fine. Non è stato addebitato nulla: riprova.",
-  "priceChangedTitle": "Il prezzo è cambiato",
-  "priceChangedBody": "Questo articolo ora costa {price}. Vuoi continuare?",
   "joinedLabel": "Iscrizione",
   "noAccentDataTitle": "Ancora nessun dato sull'intonazione",
   "noAccentDataBody": "Continua a parlare e i tratti della tua intonazione si accumuleranno.",

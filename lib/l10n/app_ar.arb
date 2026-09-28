@@ -617,8 +617,6 @@
   "iapCharacterSuccessTitle": "انضم إليك صديق جديد!",
   "iapCharacterSuccessBody": "هذه الشخصية ملكك للأبد — تبقى حتى لو تغيّرت خطتك، ويمكن استعادتها على أي جهاز عبر استعادة المشتريات.",
   "iapCharacterFailedBody": "لم تكتمل عملية الشراء. لم يتم خصم أي مبلغ — يرجى المحاولة مرة أخرى.",
-  "priceChangedTitle": "تغيّر السعر",
-  "priceChangedBody": "أصبح سعر هذا العنصر {price}. هل تريد المتابعة؟",
   "joinedLabel": "تاريخ الانضمام",
   "noAccentDataTitle": "لا توجد بيانات نبرة بعد",
   "noAccentDataBody": "تابع المحادثة وستتراكم سمات نبرتك.",

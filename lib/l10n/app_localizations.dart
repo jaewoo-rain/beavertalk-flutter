@@ -2518,18 +2518,6 @@ abstract class AppLocalizations {
   /// **'No sentences to score'**
   String get analysisNoScoreEmpty;
 
-  /// No description provided for @priceChangedTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Price changed'**
-  String get priceChangedTitle;
-
-  /// No description provided for @priceChangedBody.
-  ///
-  /// In en, this message translates to:
-  /// **'This item is now {price}. Would you like to continue?'**
-  String priceChangedBody(String price);
-
   /// Billing list group title - in-app rail rows (spec section 5). English copy is final; do not localize away from the confirmed wording.
   ///
   /// In en, this message translates to:
@@ -2668,10 +2656,10 @@ abstract class AppLocalizations {
   /// **'15 minutes of video calls a day'**
   String get premiumBulletVideo;
 
-  /// Premium benefit bullet (paywall, plans compare, purchase success, winback offer). PM-DEC-178: unlimited pronunciation scoring in review. ko/en written directly; the other 28 locales are provisional AI translations pending native review (43_다국어검수_하네스/_input/2026-09-29_Premium혜택줄_원어민검수요청.md).
+  /// Premium benefit bullet (paywall, plans compare, purchase success, winback offer). PM-DEC-178: unlimited pronunciation scoring in review. ko/en written directly; the other 28 locales passed the 43 AI review (2026-09-30, 9 minor fixes applied) — AI review, not native.
   ///
   /// In en, this message translates to:
-  /// **'Unlimited pronunciation scoring in review'**
+  /// **'Unlimited pronunciation scoring during review'**
   String get premiumBulletAnalysis;
 
   /// Premium benefit bullet: weak-sound drills matched to the learner's native language.
