@@ -1613,6 +1613,11 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '៧ ថ្ងៃឥតគិតថ្លៃ បន្ទាប់មក $price ក្នុងមួយឆ្នាំ · បញ្ឈប់បានគ្រប់ពេលនៅក្នុងហាង';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'បន្តដោយស្វ័យប្រវត្តិរហូតដល់បោះបង់។';
 
   @override

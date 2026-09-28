@@ -478,6 +478,7 @@
   "ctaCaptionMax": "{price} pro Monat · jederzeit im Store kündbar",
   "ctaCaptionMaxYearly": "{price} pro Jahr · jederzeit im Store kündbar",
   "ctaCaptionMaxTrial": "7 Tage kostenlos, danach {price} pro Monat · jederzeit im Store kündbar",
+  "ctaCaptionMaxYearlyTrial": "7 Tage kostenlos, danach {price} pro Jahr · jederzeit im Store kündbar",
   "ctaCaptionAutoRenew": "Verlängert sich automatisch bis zur Kündigung.",
   "footerTerms": "AGB",
   "footerPrivacy": "Datenschutz",

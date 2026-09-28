@@ -478,6 +478,7 @@
   "ctaCaptionMax": "{price} شهريًا · يمكنك الإلغاء من المتجر في أي وقت",
   "ctaCaptionMaxYearly": "{price} سنويًا · يمكنك الإلغاء من المتجر في أي وقت",
   "ctaCaptionMaxTrial": "7 أيام مجانًا، ثم {price} شهريًا · يمكنك الإلغاء من المتجر في أي وقت",
+  "ctaCaptionMaxYearlyTrial": "7 أيام مجانًا، ثم {price} سنويًا · يمكنك الإلغاء من المتجر في أي وقت",
   "ctaCaptionAutoRenew": "يتجدد تلقائيًا حتى الإلغاء.",
   "footerTerms": "الشروط",
   "footerPrivacy": "الخصوصية",

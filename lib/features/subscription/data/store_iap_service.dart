@@ -161,6 +161,7 @@ class StoreIapService implements IapService {
             ? details.rawPrice
             : recurring.priceAmountMicros / 1000000,
         currencyCode: recurring?.priceCurrencyCode ?? details.currencyCode,
+        freeTrial: _catalog[sku]!.trialOfferToken != null,
       );
     }
     return found.values.toList();

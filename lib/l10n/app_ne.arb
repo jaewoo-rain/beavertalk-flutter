@@ -478,6 +478,7 @@
   "ctaCaptionMax": "प्रति महिना {price} · स्टोरमा जुनसुकै बेला रद्द",
   "ctaCaptionMaxYearly": "प्रति वर्ष {price} · स्टोरमा जुनसुकै बेला रद्द",
   "ctaCaptionMaxTrial": "७ दिन नि:शुल्क, त्यसपछि प्रति महिना {price} · स्टोरमा जुनसुकै बेला रद्द",
+  "ctaCaptionMaxYearlyTrial": "७ दिन नि:शुल्क, त्यसपछि प्रति वर्ष {price} · स्टोरमा जुनसुकै बेला रद्द",
   "ctaCaptionAutoRenew": "रद्द नगरेसम्म स्वतः नवीकरण हुन्छ।",
   "footerTerms": "सर्तहरू",
   "footerPrivacy": "गोपनीयता",

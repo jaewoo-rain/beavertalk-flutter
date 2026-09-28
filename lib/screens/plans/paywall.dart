@@ -16,6 +16,7 @@ import '../../components/organisms/dialog_confirm_icon.dart';
 import '../../features/subscription/domain/entities/subscription_state.dart';
 import '../../features/subscription/presentation/providers/subscription_state_providers.dart';
 import '../../features/subscription/domain/plan_prices.dart';
+import '../../features/subscription/domain/iap_service.dart';
 import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
@@ -357,6 +358,16 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
     );
   }
 
+  /// Whether the store offered this account the free trial on the chosen
+  /// cycle's product.
+  bool _trialOffered(WidgetRef ref) {
+    final id = _cycle == _Cycle.annual
+        ? IapProductIds.maxYearly
+        : IapProductIds.maxMonthly;
+    final products = ref.watch(storePricesProvider).valueOrNull ?? const [];
+    return products.any((p) => p.id == id && p.freeTrial);
+  }
+
   Widget _stickyCta(AppLocalizations l10n, AppColorTokens c) {
     return Container(
       decoration: BoxDecoration(
@@ -380,9 +391,16 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
               // 먼저 꺼야 한다(앱이 할 일이 아니다).
               // 고지는 **고른 주기**를 따른다(QA F040) — 연간을 골라도 「월 $23.99」 가 남아
               // 결제 직전 금액·주기 고지가 선택과 달랐다(App Review 3.1.2 · 과금 고지 오류).
-              _cycle == _Cycle.annual
-                  ? l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly)
-                  : l10n.ctaCaptionMax(PlanPrices.maxMonthly),
+              // 무료체험 안내는 **스토어가 이 계정에 체험 오퍼를 준 경우에만**(PM-DEC-141 · F078).
+              // Play 는 자격 있는 오퍼만 조회에 싣는다 — 실린 오퍼로 결제창을 연다(0d33442).
+              // 자격 없는 계정에 「7일 무료」 를 말하면 3.1.2 고지 오류 · 예상 밖 청구다.
+              switch ((_cycle == _Cycle.annual, _trialOffered(ref))) {
+                (true, true) =>
+                  l10n.ctaCaptionMaxYearlyTrial(PlanPrices.maxYearly),
+                (true, false) => l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly),
+                (false, true) => l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly),
+                (false, false) => l10n.ctaCaptionMax(PlanPrices.maxMonthly),
+              },
               textAlign: TextAlign.center,
               style: AppType.caption1.r.copyWith(color: c.labelNormal),
             ),

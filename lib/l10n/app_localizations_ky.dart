@@ -1615,6 +1615,11 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 күн акысыз, андан кийин Жылына $price · дүкөндө каалаган убакта жокко чыгарса болот';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Жокко чыгарылганга чейин автоматтык түрдө жаңырат.';
 

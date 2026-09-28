@@ -1622,6 +1622,11 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 päivää ilmaiseksi, sitten $price vuodessa · peruuta milloin tahansa kaupassa';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Uusiutuu automaattisesti, kunnes peruutat.';
 

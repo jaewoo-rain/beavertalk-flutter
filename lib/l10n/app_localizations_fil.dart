@@ -1632,6 +1632,11 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 araw libre, tapos $price kada taon · kanselahin anumang oras sa store';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Awtomatikong nagre-renew hanggang kanselahin.';
 

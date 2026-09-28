@@ -1611,6 +1611,11 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 хоног үнэгүй, дараа нь Жилд $price · дэлгүүрт хүссэн үедээ цуцална';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Цуцлах хүртэл автоматаар сунгагдана.';
 
   @override

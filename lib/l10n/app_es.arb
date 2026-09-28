@@ -478,6 +478,7 @@
   "ctaCaptionMax": "{price} al mes · cancela cuando quieras en la tienda",
   "ctaCaptionMaxYearly": "{price} al año · cancela cuando quieras en la tienda",
   "ctaCaptionMaxTrial": "7 días gratis, luego {price} al mes · cancela cuando quieras en la tienda",
+  "ctaCaptionMaxYearlyTrial": "7 días gratis, luego {price} al año · cancela cuando quieras en la tienda",
   "ctaCaptionAutoRenew": "Se renueva automáticamente hasta que lo canceles.",
   "footerTerms": "Términos",
   "footerPrivacy": "Privacidad",

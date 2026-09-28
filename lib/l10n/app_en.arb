@@ -1080,6 +1080,15 @@
       }
     }
   },
+  "ctaCaptionMaxYearlyTrial": "7 days free, then {price} per year · cancel anytime in the store",
+  "@ctaCaptionMaxYearlyTrial": {
+    "description": "Paywall/success caption when the yearly plan starts with the store free-trial offer. {price} is the store-formatted yearly price.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "ctaCaptionAutoRenew": "Renews automatically until canceled.",
   "footerTerms": "Terms",
   "footerPrivacy": "Privacy",

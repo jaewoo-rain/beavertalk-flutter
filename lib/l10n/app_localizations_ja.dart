@@ -1573,6 +1573,11 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7日間無料、その後 年額$price · ストアでいつでも解約できます';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => '解約するまで自動更新されます。';
 
   @override

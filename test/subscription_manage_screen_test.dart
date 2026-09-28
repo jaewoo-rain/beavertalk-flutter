@@ -95,7 +95,7 @@ void main() {
     testWidgets('expired renders the trial_expired notice instead',
         (tester) async {
       await pump(tester, status(SubscriptionState.expired));
-      expect(find.text('Your Premium trial ended'), findsOneWidget);
+      expect(find.text('Your Premium plan ended'), findsOneWidget);
       expect(find.text('You are on Free now'), findsOneWidget);
       expect(find.text('See plans'), findsOneWidget);
       // A notice, not a manage surface: no billing groups (spec §4-1).

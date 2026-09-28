@@ -1627,6 +1627,11 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 nap ingyen, utána Évi $price · bármikor lemondható az áruházban';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Lemondásig automatikusan megújul.';
 
   @override

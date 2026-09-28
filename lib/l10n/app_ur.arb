@@ -478,6 +478,7 @@
   "ctaCaptionMax": "{price} ماہانہ · اسٹور میں کسی بھی وقت منسوخ کریں",
   "ctaCaptionMaxYearly": "{price} سالانہ · اسٹور میں کسی بھی وقت منسوخ کریں",
   "ctaCaptionMaxTrial": "7 دن مفت، پھر {price} ماہانہ · اسٹور میں کسی بھی وقت منسوخ کریں",
+  "ctaCaptionMaxYearlyTrial": "7 دن مفت، پھر {price} سالانہ · اسٹور میں کسی بھی وقت منسوخ کریں",
   "ctaCaptionAutoRenew": "منسوخ کرنے تک خودکار طور پر تجدید ہوتا ہے۔",
   "footerTerms": "شرائط",
   "footerPrivacy": "رازداری",

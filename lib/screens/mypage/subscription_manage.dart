@@ -750,7 +750,10 @@ class _TrialExpiredNotice extends StatelessWidget {
                   ),
                   const SizedBox(height: AppSpacing.s20),
                   Text(
-                    l10n.trialExpiredTitle,
+                    // 체험이 아닌 구독이 끝나도 「Your Premium trial ended」 였다(09-28 실기기 ·
+                    // 월간 만료). 서버 상태에 체험 여부가 없어(§22-⑦) 가를 근거가 없다 — 체험에도
+                    // 맞는 중립 문구를 쓴다. `is_trial` 이 오면 trialExpiredTitle 로 가른다.
+                    l10n.winbackTitle,
                     style: AppType.heading2.sb.copyWith(color: c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s20),

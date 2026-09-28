@@ -1625,6 +1625,11 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 дней бесплатно, затем $price в год · отмена в магазине в любой момент';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Продлевается автоматически до отмены.';
 
   @override

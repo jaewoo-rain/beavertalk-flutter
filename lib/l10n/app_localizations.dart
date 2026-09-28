@@ -3028,6 +3028,12 @@ abstract class AppLocalizations {
   /// **'7 days free, then {price} per month · cancel anytime in the store'**
   String ctaCaptionMaxTrial(String price);
 
+  /// Paywall/success caption when the yearly plan starts with the store free-trial offer. {price} is the store-formatted yearly price.
+  ///
+  /// In en, this message translates to:
+  /// **'7 days free, then {price} per year · cancel anytime in the store'**
+  String ctaCaptionMaxYearlyTrial(String price);
+
   /// No description provided for @ctaCaptionAutoRenew.
   ///
   /// In en, this message translates to:

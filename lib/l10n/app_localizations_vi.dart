@@ -1614,6 +1614,11 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return 'Miễn phí 7 ngày, sau đó $price mỗi năm · hủy bất cứ lúc nào trong cửa hàng';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Tự động gia hạn cho đến khi bạn hủy.';
 
   @override

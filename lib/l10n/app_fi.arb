@@ -478,6 +478,7 @@
   "ctaCaptionMax": "{price}/kk · peruuta milloin tahansa kaupassa",
   "ctaCaptionMaxYearly": "{price} vuodessa · peruuta milloin tahansa kaupassa",
   "ctaCaptionMaxTrial": "7 päivää ilmaiseksi, sitten {price}/kk · peruuta milloin tahansa kaupassa",
+  "ctaCaptionMaxYearlyTrial": "7 päivää ilmaiseksi, sitten {price} vuodessa · peruuta milloin tahansa kaupassa",
   "ctaCaptionAutoRenew": "Uusiutuu automaattisesti, kunnes peruutat.",
   "footerTerms": "Ehdot",
   "footerPrivacy": "Tietosuoja",

@@ -478,6 +478,7 @@
   "ctaCaptionMax": "Havi {price} · bármikor lemondható az áruházban",
   "ctaCaptionMaxYearly": "Évi {price} · bármikor lemondható az áruházban",
   "ctaCaptionMaxTrial": "7 nap ingyen, utána Havi {price} · bármikor lemondható az áruházban",
+  "ctaCaptionMaxYearlyTrial": "7 nap ingyen, utána Évi {price} · bármikor lemondható az áruházban",
   "ctaCaptionAutoRenew": "Lemondásig automatikusan megújul.",
   "footerTerms": "Feltételek",
   "footerPrivacy": "Adatvédelem",

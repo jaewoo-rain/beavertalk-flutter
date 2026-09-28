@@ -478,6 +478,7 @@
   "ctaCaptionMax": "{price} par mois · résiliable à tout moment dans la boutique",
   "ctaCaptionMaxYearly": "{price} par an · résiliable à tout moment dans la boutique",
   "ctaCaptionMaxTrial": "7 jours gratuits, puis {price} par mois · résiliable à tout moment dans la boutique",
+  "ctaCaptionMaxYearlyTrial": "7 jours gratuits, puis {price} par an · résiliable à tout moment dans la boutique",
   "ctaCaptionAutoRenew": "Se renouvelle automatiquement jusqu’à résiliation.",
   "footerTerms": "Conditions",
   "footerPrivacy": "Confidentialité",

@@ -1614,6 +1614,11 @@ class AppLocalizationsUr extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 دن مفت، پھر $price سالانہ · اسٹور میں کسی بھی وقت منسوخ کریں';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'منسوخ کرنے تک خودکار طور پر تجدید ہوتا ہے۔';
 

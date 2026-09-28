@@ -213,7 +213,14 @@ class IapProduct {
     this.title,
     this.rawPrice = 0,
     this.currencyCode = '',
+    this.freeTrial = false,
   });
+
+  /// Whether the store offered this account the free-trial offer for this
+  /// product. Play lists only offers the account is eligible for, so true
+  /// means eligible; false means not eligible **or** the store cannot say
+  /// (StoreKit) — the paywall then says nothing about a trial (3.1.2).
+  final bool freeTrial;
 
   /// Logical SKU — `bt_pro_yearly`, `bt_character_popo`.
   ///

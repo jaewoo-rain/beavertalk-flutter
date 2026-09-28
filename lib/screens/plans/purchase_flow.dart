@@ -459,7 +459,10 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
   /// just bought (09-28 device: a yearly trial read "₩33,000 is charged
   /// monthly"). Existing keys only.
   String _caption(AppLocalizations l10n) => switch (_bought) {
-        (annual: true, trial: _) => l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly),
+        (annual: true, trial: true) =>
+          l10n.ctaCaptionMaxYearlyTrial(PlanPrices.maxYearly),
+        (annual: true, trial: false) =>
+          l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly),
         (annual: false, trial: true) =>
           l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly),
         _ => l10n.successMaxCaption(PlanPrices.maxMonthly),

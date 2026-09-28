@@ -478,6 +478,7 @@
   "ctaCaptionMax": "මසකට {price} · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න",
   "ctaCaptionMaxYearly": "වසරකට {price} · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න",
   "ctaCaptionMaxTrial": "දින 7ක් නොමිලේ, ඉන්පසු මසකට {price} · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න",
+  "ctaCaptionMaxYearlyTrial": "දින 7ක් නොමිලේ, ඉන්පසු වසරකට {price} · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න",
   "ctaCaptionAutoRenew": "අවලංගු කරන තෙක් ස්වයංක්‍රීයව අලුත් වේ.",
   "footerTerms": "කොන්දේසි",
   "footerPrivacy": "පෞද්ගලිකත්වය",

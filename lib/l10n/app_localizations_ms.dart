@@ -1626,6 +1626,11 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String ctaCaptionMaxYearlyTrial(String price) {
+    return '7 hari percuma, kemudian $price setahun · batal bila-bila masa di kedai';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Diperbaharui secara automatik sehingga dibatalkan.';
 

@@ -1,3 +1,5 @@
+import 'package:beavertalk/features/subscription/domain/iap_service.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/plans/paywall.dart';
 import 'package:flutter/material.dart';
@@ -33,5 +35,56 @@ void main() {
     await tester.pump();
     expect(caption('per year'), findsOneWidget);
     expect(caption('per month'), findsNothing);
+  });
+
+  testWidgets('F078 — 스토어가 체험 오퍼를 준 경우에만 「7 days free」 (주기별)', (tester) async {
+    tester.view.physicalSize = const Size(375, 1600);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    Future<void> pumpWith(List<IapProduct> products) async {
+      await tester.pumpWidget(ProviderScope(
+        key: UniqueKey(),
+        overrides: [
+          storePricesProvider.overrideWith((ref) async => products),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const PaywallScreen(variant: PaywallVariant.max),
+        ),
+      ));
+      await tester.pump(const Duration(milliseconds: 32));
+    }
+
+    IapProduct sub(String id, {required bool trial}) => IapProduct(
+        id: id,
+        type: IapProductType.subscription,
+        localizedPrice: r'$1',
+        freeTrial: trial);
+
+    // 월간만 체험 자격.
+    await pumpWith([
+      sub(IapProductIds.maxMonthly, trial: true),
+      sub(IapProductIds.maxYearly, trial: false),
+    ]);
+    expect(find.textContaining('7 days free, then'), findsOneWidget);
+    await tester.ensureVisible(find.text('Annual'));
+    await tester.tap(find.text('Annual'));
+    await tester.pump();
+    expect(find.textContaining('7 days free'), findsNothing);
+    expect(find.textContaining('per year · cancel anytime'), findsOneWidget);
+
+    // 연간 체험 자격.
+    await pumpWith([sub(IapProductIds.maxYearly, trial: true)]);
+    await tester.ensureVisible(find.text('Annual'));
+    await tester.tap(find.text('Annual'));
+    await tester.pump();
+    expect(find.textContaining('7 days free, then'), findsOneWidget);
+    expect(find.textContaining('per year · cancel anytime'), findsOneWidget);
+
+    // 자격 없음(스토어 모름 포함) — 체험 문구 없음.
+    await pumpWith(const []);
+    expect(find.textContaining('7 days free'), findsNothing);
   });
 }
