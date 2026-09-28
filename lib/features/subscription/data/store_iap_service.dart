@@ -209,7 +209,14 @@ class StoreIapService implements IapService {
   }
 
   @override
-  Future<void> purchase(IapProduct product) async {
+  Future<void> purchase(IapProduct product) =>
+      _buy(product, switching: false);
+
+  @override
+  Future<void> purchaseSwitch(IapProduct product) =>
+      _buy(product, switching: true);
+
+  Future<void> _buy(IapProduct product, {required bool switching}) async {
     var sku = _catalog[product.id];
     if (sku == null) {
       await getProducts({product.id});
@@ -226,11 +233,22 @@ class StoreIapService implements IapService {
       // sends them to fix something that is not broken.
       throw StateError('product not found on store: ${product.id}');
     }
+    final GooglePlayPurchaseDetails? replacing;
+    if (!_isPlay || _typeOf(product.id) != IapProductType.subscription) {
+      // iOS 는 같은 구독 그룹 안의 교체를 애플이 한다 — 앱이 넘길 교체 설정이 없다.
+      replacing = null;
+    } else if (switching) {
+      // 전환은 교체할 구독을 확실히 알 때만 연다. 조회 오류·빈 목록이면 결제창을 열지 않는다 —
+      // 교체 없이 열면 체험 토큰이 붙은 새 구독이 기존 구독과 나란히 청구된다(QA F083).
+      final owned = await (_playOwned?.call() ?? _queryPlayOwned());
+      replacing = pickReplacedSubscription(owned, targetId: sku.details.id);
+      if (replacing == null) {
+        throw StateError('no owned Premium to replace for ${product.id}');
+      }
+    } else {
+      replacing = await _ownedPremiumOtherThan(sku.details.id);
+    }
     _launched[sku.details.id] = product.id;
-    final replacing =
-        _isPlay && _typeOf(product.id) == IapProductType.subscription
-            ? await _ownedPremiumOtherThan(sku.details.id)
-            : null;
     // Subscriptions and characters both: `buyConsumable` is for goods that can
     // be bought again, and neither of ours can be. On Play this is also what
     // keeps a character un-consumed, which is how Play models "owned forever"
@@ -575,8 +593,9 @@ class StoreIapService implements IapService {
 
   /// 이 계정이 지금 가진 Premium 구독 중 [targetId] 가 아닌 것 — 전환 구매의 교체 대상. 없으면 `null`.
   ///
-  /// 조회가 실패하면 `null` 로 새 구독처럼 연다. 교체 없이 열면 이중 청구 위험이 있지만, 결제창을
-  /// 아예 못 여는 것보다 낫고 Play 구독 화면에서 해지할 수 있다.
+  /// **신규 구매 경로 전용**([purchase]). 조회가 실패하면 `null` 로 새 구독처럼 연다 — 가입하려는
+  /// 회원의 결제창을 조회 오류로 막지 않는다. 전환 구매([purchaseSwitch])는 여기를 쓰지 않고
+  /// 오류·빈 목록이면 열지 않는다(fail-closed · QA F083 · PM-DEC-136).
   Future<GooglePlayPurchaseDetails?> _ownedPremiumOtherThan(
       String targetId) async {
     final List<GooglePlayPurchaseDetails> owned;
@@ -669,6 +688,10 @@ class StoreIapService implements IapService {
     final response = await _store
         .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>()
         .queryPastPurchases();
+    // 오류를 빈 목록으로 삼키면 「보유 없음」 과 구분이 안 된다(QA F083). 오류는 오류로 올린다.
+    if (response.error != null) {
+      throw StateError('owned purchase query failed: ${response.error!.message}');
+    }
     return response.pastPurchases;
   }
 

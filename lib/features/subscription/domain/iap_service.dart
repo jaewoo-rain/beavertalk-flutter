@@ -441,6 +441,15 @@ abstract class IapService {
   /// exists any more (v2 §2-3).
   Future<void> purchase(IapProduct product);
 
+  /// Buys [product] **in place of** the Premium subscription the member
+  /// already has — monthly ↔ yearly (QA F067 · F083).
+  ///
+  /// Unlike [purchase], this refuses to open a sheet it cannot make a
+  /// replacement of: when the store cannot say which subscription is owned
+  /// (query error, empty list), it throws instead of opening a second,
+  /// parallel subscription. Never uses a free-trial offer.
+  Future<void> purchaseSwitch(IapProduct product);
+
   /// Replays ownership — **subscriptions and non-consumables both** (v2
   /// completion criterion 11: characters restore too). Accepted receipts also
   /// arrive on [purchases] as [IapPurchaseState.restored]; the returned
@@ -506,6 +515,17 @@ class WinbackPurchase {
   const WinbackPurchase();
 }
 
+/// 월간↔연간 전환 결제의 라우트 인자 — `PurchaseProcessingScreen` 이 이걸 받으면
+/// [IapService.purchase] 대신 [IapService.purchaseSwitch] 를 부른다(QA F083). 재시도 시트도
+/// 이 표시를 이어 받는다 — 재시도가 새 구독 구매로 바뀌면 이중 청구 입구가 다시 열린다.
+class SwitchPurchase {
+  /// [annual] 은 바꿔 갈 주기.
+  const SwitchPurchase({required this.annual});
+
+  /// Whether the target is the yearly plan.
+  final bool annual;
+}
+
 /// The stand-in rail until store products exist.
 ///
 /// Deterministic and synchronous-ish so widget tests and the demo hub can
@@ -564,6 +584,10 @@ class MockIapService implements IapService {
   /// 가짜 레일은 결제 주기를 모른다.
   @override
   Future<bool?> ownsAnnualPremium() async => null;
+
+  /// 가짜 레일엔 교체가 없다 — 같은 구매로 흉내 낸다.
+  @override
+  Future<void> purchaseSwitch(IapProduct product) => purchase(product);
 
   /// What the next [purchase] resolves to.
   IapPurchaseState scriptedOutcome;

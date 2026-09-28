@@ -56,11 +56,18 @@ class _PurchaseProcessingScreenState
   bool get _winback =>
       ModalRoute.of(context)?.settings.arguments is WinbackPurchase;
 
+  /// 월간↔연간 전환 — 기존 구독을 교체하는 구매(QA F083).
+  bool get _switching =>
+      ModalRoute.of(context)?.settings.arguments is SwitchPurchase;
+
   /// What to buy — a [PurchaseRequest] argument, or a bare tier (legacy call
   /// sites), or the Premium-monthly default (Pro is no longer sold).
   PurchaseRequest get _request {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args is PurchaseRequest) return args;
+    if (args is SwitchPurchase) {
+      return (tier: SubscriptionTier.max, annual: args.annual);
+    }
     // 윈백 오퍼는 월간 Premium 이다(첫 달만 할인).
     if (args is WinbackPurchase) return (tier: SubscriptionTier.max, annual: false);
     if (args is SubscriptionTier) return (tier: args, annual: false);
@@ -162,7 +169,11 @@ class _PurchaseProcessingScreenState
         if (mounted) _onStoreError(request);
         return;
       }
-      await iap.purchase(product);
+      if (_switching) {
+        await iap.purchaseSwitch(product);
+      } else {
+        await iap.purchase(product);
+      }
     } catch (_) {
       if (mounted) _onStoreError(request);
     }
@@ -182,7 +193,9 @@ class _PurchaseProcessingScreenState
     final navCtx = Navigator.of(context, rootNavigator: true).context;
     Navigator.pop(context);
     showSubscriptionOverlay(navCtx, SubscriptionOverlay.purchaseFailedStore,
-        retryTier: request.tier, retryAnnual: request.annual);
+        retryTier: request.tier,
+        retryAnnual: request.annual,
+        retrySwitch: _switching);
   }
 
   /// Back to the paywall beneath, then the matching sheet over it (P4). The
@@ -207,7 +220,9 @@ class _PurchaseProcessingScreenState
     final navCtx = Navigator.of(context, rootNavigator: true).context;
     Navigator.pop(context);
     showSubscriptionOverlay(navCtx, overlay,
-        retryTier: request.tier, retryAnnual: request.annual);
+        retryTier: request.tier,
+        retryAnnual: request.annual,
+        retrySwitch: _switching);
   }
 
   /// Still pending after [kPurchasePendingNoticeAfter] — say so and let go.
@@ -373,11 +388,17 @@ Timer? _lateGuard;
 ProviderSubscription<CallState>? _afterCall;
 
 /// A call is on screen — don't push results over it.
+///
+/// `ended` and `error` count too: the call screen is still up and about to
+/// replace itself (`pushReplacementNamed` / `popUntil`) once it consumes the
+/// call, which would take a sheet shown now with it (QA F084).
 const _callPhases = {
   CallPhase.connecting,
   CallPhase.inCall,
   CallPhase.awaitingContinue,
   CallPhase.ending,
+  CallPhase.ended,
+  CallPhase.error,
 };
 
 /// The store product a [PurchaseRequest] buys. The winback offer rides the

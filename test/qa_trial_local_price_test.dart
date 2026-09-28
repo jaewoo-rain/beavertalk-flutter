@@ -5,7 +5,10 @@ import 'package:beavertalk/features/subscription/domain/entities/subscription.da
 import 'package:beavertalk/features/subscription/domain/entities/subscription_state.dart';
 import 'package:beavertalk/features/subscription/domain/subscription_status_resolver.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
+import 'package:beavertalk/app/routes.dart';
+import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
+import 'package:beavertalk/screens/overlays/subscription_overlays.dart';
 import 'package:flutter/material.dart';
 import 'package:beavertalk/features/subscription/data/store_iap_service.dart';
 import 'package:beavertalk/features/subscription/domain/iap_service.dart';
@@ -235,6 +238,52 @@ void main() {
       expect(param.offerToken, 'tok-yearly-trial-7d');
     });
 
+    group('F083 — 전환 구매는 교체 대상을 확실히 알 때만 연다', () {
+      Future<(_Store, Future<void>)> switchWith(
+          Future<List<GooglePlayPurchaseDetails>> Function() owned) async {
+        final store = _Store(_yearlyRows);
+        final iap = StoreIapService(
+            server: _Server(), store: store, playOwnedPurchases: owned);
+        final p = (await iap.getProducts({IapProductIds.maxYearly})).single;
+        return (store, iap.purchaseSwitch(p));
+      }
+
+      test('보유 조회 오류 → 결제창을 열지 않고 예외', () async {
+        final (store, f) =
+            await switchWith(() async => throw StateError('billing down'));
+        await expectLater(f, throwsStateError);
+        expect(store.bought, isNull);
+      });
+
+      test('보유 목록이 비었으면 → 열지 않음(체험 토큰 새 구독 금지)', () async {
+        final (store, f) = await switchWith(() async => const []);
+        await expectLater(f, throwsStateError);
+        expect(store.bought, isNull);
+      });
+
+      test('월간 보유 → 교체로 연다 · 체험 토큰 없음', () async {
+        final (store, f) =
+            await switchWith(() async => [_owned('bt_max_monthly')]);
+        await f;
+        final param = store.bought! as GooglePlayPurchaseParam;
+        expect(param.offerToken, 'tok-yearly-base');
+        expect(param.changeSubscriptionParam?.replacementMode,
+            ReplacementMode.chargeFullPrice);
+      });
+
+      test('신규 구매는 종전대로 — 조회 오류여도 연다', () async {
+        final store = _Store(_yearlyRows);
+        final iap = StoreIapService(
+          server: _Server(),
+          store: store,
+          playOwnedPurchases: () async => throw StateError('billing down'),
+        );
+        final p = (await iap.getProducts({IapProductIds.maxYearly})).single;
+        await iap.purchase(p);
+        expect(store.bought, isNotNull);
+      });
+    });
+
     test('pickReplacedSubscription — 같은 상품·보류·Premium 아닌 것은 제외', () {
       expect(
         StoreIapService.pickReplacedSubscription([
@@ -246,7 +295,7 @@ void main() {
       );
     });
 
-    test('보유 조회가 실패하면 결제창은 그대로 연다(교체 없음)', () async {
+    test('신규 구매(purchase)는 보유 조회가 실패해도 결제창을 연다 — 전환은 F083 그룹', () async {
       final store = _Store(_yearlyRows);
       final iap = StoreIapService(
         server: _Server(),
@@ -390,6 +439,73 @@ void main() {
       expect(
           StoreIapService.grantedByRestore(sub, RestoreOutcome.notThisAccount, ent),
           isFalse);
+    });
+  });
+
+  group('F083 — 전환 표시는 시트와 재시도까지 이어진다', () {
+    Future<Object?> pushedArgs(WidgetTester tester, SubscriptionOverlay o,
+        {bool retrySwitch = false, bool retryAnnual = false}) async {
+      debugDefaultTargetPlatformOverride = null;
+      Object? args;
+      await tester.pumpWidget(MaterialApp(
+        key: UniqueKey(), // 호출마다 새 네비게이터 — 앞 호출의 처리 화면이 남지 않게
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        onGenerateRoute: (settings) {
+          if (settings.name == Routes.purchaseProcessing) {
+            args = settings.arguments;
+            return MaterialPageRoute<void>(
+                builder: (_) => const Text('PROCESSING'));
+          }
+          return MaterialPageRoute<void>(
+            builder: (ctx) => Scaffold(
+              body: TextButton(
+                onPressed: () => showSubscriptionOverlay(ctx, o,
+                    expiresAt: DateTime(2026, 10, 28),
+                    retryAnnual: retryAnnual,
+                    retrySwitch: retrySwitch),
+                child: const Text('OPEN'),
+              ),
+            ),
+          );
+        },
+      ));
+      await tester.tap(find.text('OPEN'));
+      await tester.pumpAndSettle();
+      final l10n = AppLocalizations.of(tester.element(find.text('OPEN')));
+      final cta = switch (o) {
+        SubscriptionOverlay.annualSwitch ||
+        SubscriptionOverlay.cancelDownsell =>
+          l10n.ctaSwitchToYearly,
+        SubscriptionOverlay.monthlySwitch => l10n.ctaSwitchToMonthly,
+        _ => l10n.ctaTryAgain,
+      };
+      // 월간 전환 시트는 제목도 「Switch to monthly」 다 — 버튼을 누른다.
+      await tester.tap(find.widgetWithText(Button, cta));
+      await tester.pumpAndSettle();
+      return args;
+    }
+
+    testWidgets('연간 전환 · 체험 해지 · 월간 전환 시트는 SwitchPurchase', (tester) async {
+      for (final (o, annual) in [
+        (SubscriptionOverlay.annualSwitch, true),
+        (SubscriptionOverlay.cancelDownsell, true),
+        (SubscriptionOverlay.monthlySwitch, false),
+      ]) {
+        final a = await pushedArgs(tester, o);
+        expect(a, isA<SwitchPurchase>(), reason: '$o');
+        expect((a! as SwitchPurchase).annual, annual, reason: '$o');
+      }
+    });
+
+    testWidgets('전환 실패 뒤 재시도도 전환 · 일반 실패의 재시도는 일반 구매', (tester) async {
+      final a = await pushedArgs(tester, SubscriptionOverlay.purchaseFailedStore,
+          retrySwitch: true, retryAnnual: true);
+      expect(a, isA<SwitchPurchase>());
+      final b = await pushedArgs(tester, SubscriptionOverlay.purchaseFailedStore,
+          retryAnnual: true);
+      expect(b, isNot(isA<SwitchPurchase>()));
     });
   });
 

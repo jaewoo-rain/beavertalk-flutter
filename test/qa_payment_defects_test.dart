@@ -469,6 +469,25 @@ void main() {
       expect(find.text(title), findsOneWidget);
     });
 
+    testWidgets('F084 — 통화가 ended 인 순간 도착한 실패도 통화 화면이 떠난 뒤', (tester) async {
+      final call = _StubCall(const CallState(phase: CallPhase.ended));
+      final iap = await pendNotice(tester, extra: [
+        normalCallControllerProvider.overrideWith(() => call),
+      ]);
+      iap.emit(IapPurchase(
+          productId: IapProductIds.maxMonthly,
+          type: IapProductType.subscription,
+          state: IapPurchaseState.failed,
+          failure: IapFailure.store));
+      await tester.pumpAndSettle();
+      final title = AppLocalizations.of(tester.element(find.text('PAYWALL')))
+          .ovFailedDeclinedTitle;
+      expect(find.text(title), findsNothing);
+      call.setPhase(CallPhase.idle);
+      await tester.pumpAndSettle();
+      expect(find.text(title), findsOneWidget);
+    });
+
     testWidgets('F066 — 새 구매가 시작되면 이전 감시는 끝난다', (tester) async {
       final iap = await pendNotice(tester);
       cancelLatePurchaseWatch(); // 새 처리 화면이 여는 것과 같은 호출

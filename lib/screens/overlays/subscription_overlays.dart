@@ -146,6 +146,7 @@ Future<void> showSubscriptionOverlay(
   DateTime? expiresAt,
   SubscriptionTier retryTier = SubscriptionTier.max,
   bool retryAnnual = false,
+  bool retrySwitch = false,
   ({String used, String limit})? usage,
   Widget? avatar,
   String? characterName,
@@ -175,6 +176,7 @@ Future<void> showSubscriptionOverlay(
       expiresAt: expiresAt,
       retryTier: retryTier,
       retryAnnual: retryAnnual,
+      retrySwitch: retrySwitch,
       usage: usage,
       avatar: avatar,
       characterName: characterName,
@@ -293,6 +295,7 @@ class _OverlaySheet extends StatelessWidget {
     this.expiresAt,
     this.retryTier = SubscriptionTier.max,
     this.retryAnnual = false,
+    this.retrySwitch = false,
     this.usage,
     this.avatar,
     this.characterName,
@@ -317,6 +320,15 @@ class _OverlaySheet extends StatelessWidget {
   /// Whether the failed purchase was annual, so the retry rebuys the same
   /// product instead of quietly falling back to monthly.
   final bool retryAnnual;
+
+  /// Whether the failed purchase was a monthly↔yearly switch — the retry must
+  /// stay a replacement, not become a second subscription (QA F083).
+  final bool retrySwitch;
+
+  /// The route argument a `Try again` re-fires.
+  Object get _retryArgs => retrySwitch
+      ? SwitchPurchase(annual: retryAnnual)
+      : (tier: retryTier, annual: retryAnnual);
   final ({String used, String limit})? usage;
   final Widget? avatar;
   final String? characterName;
@@ -453,10 +465,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (
-                        tier: SubscriptionTier.max,
-                        annual: true
-                      )))),
+                      arguments: const SwitchPurchase(annual: true)))),
           secondaryAction: SheetAction(
               label: l10n.ctaContinueToStore,
               onPressed: () => _toStore(context)),
@@ -482,10 +491,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (
-                        tier: SubscriptionTier.max,
-                        annual: true
-                      )))),
+                      arguments: const SwitchPurchase(annual: true)))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
@@ -511,10 +517,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (
-                        tier: SubscriptionTier.max,
-                        annual: false
-                      )))),
+                      arguments: const SwitchPurchase(annual: false)))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
@@ -667,7 +670,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (tier: retryTier, annual: retryAnnual)))),
+                      arguments: _retryArgs))),
           secondaryAction:
               SheetAction(label: l10n.ctaNotNow, onPressed: () => _close(context)),
         );
@@ -682,7 +685,7 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(
                   context,
                   () => rootNav.pushNamed(Routes.purchaseProcessing,
-                      arguments: (tier: retryTier, annual: retryAnnual)))),
+                      arguments: _retryArgs))),
           secondaryAction: SheetAction(
               label: l10n.billingRestorePurchases,
               onPressed: () =>
