@@ -1626,6 +1626,19 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Uchalasi birdaniga';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% chegirma';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Uchalasini $price ga oling';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Bekor qilinmaguncha avtomatik yangilanadi.';
 

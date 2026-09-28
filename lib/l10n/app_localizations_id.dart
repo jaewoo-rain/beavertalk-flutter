@@ -1623,6 +1623,19 @@ class AppLocalizationsId extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Ketiganya sekaligus';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'Hemat $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Dapatkan ketiganya seharga $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Diperpanjang otomatis sampai dibatalkan.';
 
   @override

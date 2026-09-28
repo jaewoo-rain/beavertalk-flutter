@@ -36,6 +36,7 @@ import '../../theme/app_typography.dart';
 import '../overlays/subscription_overlays.dart';
 import '../system/network_error.dart';
 import 'avatar_loading.dart';
+import 'character_bundle.dart';
 
 /// 파트너(아바타) 변경 — Figma `screen/main_change_avatar` (`6181:29249`, 09-22 개편).
 ///
@@ -277,8 +278,76 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           disabled: _busy,
           onPressed: () => _purchase(c),
         ),
+        // 묶음 링크 — 유료 캐릭터를 하나도 안 가진 회원에게만(PM-DEC-142 · DEC-PR-05). 옛 단품
+        // 시트(`CharacterSingle` 6438:4509)가 폐기돼 이 화면의 구매 영역에 둔다(PM-DEC-144).
+        // Figma 에 링크 모양이 없어 기존 버튼으로 만들었다 — designer 가 Figma 로 옮긴다.
+        if (ref.watch(characterBundleOfferProvider).valueOrNull
+            case final offer?) ...[
+          const SizedBox(height: AppSpacing.s8),
+          Button(
+            type: BtnType.primaryOutline,
+            size: BtnSize.s44,
+            text: l10n.bundleLinkLabel(offer.product.localizedPrice),
+            disabled: _busy,
+            onPressed: () => _openBundle(offer, c),
+          ),
+        ],
       ],
     );
+  }
+
+  /// 묶음 시트 → 「Buy」 면 묶음 결제.
+  Future<void> _openBundle(CharacterBundleOffer offer, Character shown) async {
+    if (!await showCharacterBundleSheet(context, offer) || !mounted) return;
+    await _purchaseBundle(offer, shown);
+  }
+
+  /// 묶음 결제 — 단품과 같은 레일·같은 판정([_awaitVerdict]). 레일은 서버가 지급한 뒤에만
+  /// purchased 를 낸다. 성공 시트의 「바로 사용하기」 는 지금 보던 캐릭터([shown])다.
+  Future<void> _purchaseBundle(CharacterBundleOffer offer, Character shown) async {
+    setState(() {
+      _busy = true;
+      _purchaseFailed = false;
+    });
+    try {
+      final iap = ref.read(iapServiceProvider);
+      final verdictFuture = _awaitVerdict(iap, offer.product.id);
+      try {
+        await iap.purchase(offer.product);
+      } catch (_) {
+        verdictFuture.ignore();
+        if (mounted) setState(() => _purchaseFailed = true);
+        return;
+      }
+      final verdict = await verdictFuture;
+      if (!mounted) return;
+      switch (verdict.state) {
+        case IapPurchaseState.canceled:
+          return;
+        case IapPurchaseState.failed:
+          final overlay = purchaseFailureOverlayFor(verdict);
+          if (overlay == SubscriptionOverlay.purchaseFailedDeclined) {
+            setState(() => _purchaseFailed = true);
+          } else {
+            showSubscriptionOverlay(context, overlay);
+          }
+          return;
+        case IapPurchaseState.pending:
+          _watchLateCharacter(iap, offer.product.id, shown);
+          showSubscriptionOverlay(context, SubscriptionOverlay.purchasePending);
+          return;
+        case IapPurchaseState.purchased:
+        case IapPurchaseState.restored:
+          break;
+      }
+      ref.invalidate(charactersProvider);
+      ref.invalidate(ownedCharactersProvider);
+      ref.invalidate(paymentPageProvider);
+      ref.invalidate(characterBundleOfferProvider);
+      _showPurchaseSuccessSheet(shown);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
   }
 
   // ── 가격 ───────────────────────────────────────────────────────────────

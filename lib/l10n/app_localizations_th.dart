@@ -1607,6 +1607,19 @@ class AppLocalizationsTh extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'ได้ทั้งสามตัวในครั้งเดียว';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'ลด $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'รับทั้งสามตัวในราคา $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'ต่ออายุอัตโนมัติจนกว่าจะยกเลิก';
 
   @override

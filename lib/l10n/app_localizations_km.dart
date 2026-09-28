@@ -1618,6 +1618,19 @@ class AppLocalizationsKm extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'ទាំងបីក្នុងពេលតែមួយ';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'បញ្ចុះ $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'ទទួលទាំងបីក្នុងតម្លៃ $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'បន្តដោយស្វ័យប្រវត្តិរហូតដល់បោះបង់។';
 
   @override

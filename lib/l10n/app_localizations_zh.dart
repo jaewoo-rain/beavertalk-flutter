@@ -1575,6 +1575,19 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => '三个角色一次拥有';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% 折扣';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return '三个角色一起 $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => '在您取消前将自动续订。';
 
   @override

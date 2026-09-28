@@ -1614,6 +1614,19 @@ class AppLocalizationsKk extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Үшеуі бірден';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% жеңілдік';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Үшеуін $price бағамен алыңыз';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Бас тартқанға дейін автоматты түрде жаңарады.';
 

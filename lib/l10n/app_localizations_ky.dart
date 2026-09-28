@@ -1620,6 +1620,19 @@ class AppLocalizationsKy extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Үчөө бир убакта';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% арзандатуу';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Үчөөнү $price баада алыңыз';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Жокко чыгарылганга чейин автоматтык түрдө жаңырат.';
 

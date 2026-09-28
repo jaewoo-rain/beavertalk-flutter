@@ -1619,6 +1619,19 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Cả ba cùng lúc';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'Giảm $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Cả ba chỉ $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Tự động gia hạn cho đến khi bạn hủy.';
 
   @override

@@ -1578,6 +1578,19 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => '3人まとめて';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent%オフ';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return '3人まとめて$price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => '解約するまで自動更新されます。';
 
   @override

@@ -1631,6 +1631,19 @@ class AppLocalizationsMs extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Ketiga-tiganya sekali gus';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'Diskaun $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Dapatkan ketiga-tiganya pada $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Diperbaharui secara automatik sehingga dibatalkan.';
 

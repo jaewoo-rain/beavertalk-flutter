@@ -1089,6 +1089,28 @@
       }
     }
   },
+  "bundleTitle": "All three at once",
+  "@bundleTitle": {
+    "description": "Character bundle sheet title (Figma BottomSheet/CharacterBundle 6438:4772): the three paid characters bought together."
+  },
+  "bundleOffBadge": "{percent}% off",
+  "@bundleOffBadge": {
+    "description": "Discount badge on the bundle sheet. {percent} is an integer computed from the store prices.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "bundleLinkLabel": "Get all three for {price}",
+  "@bundleLinkLabel": {
+    "description": "Link under the single-character Buy button that opens the bundle sheet. {price} is the store-formatted bundle price with its own currency symbol.",
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "ctaCaptionAutoRenew": "Renews automatically until canceled.",
   "footerTerms": "Terms",
   "footerPrivacy": "Privacy",

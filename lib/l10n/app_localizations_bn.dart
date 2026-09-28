@@ -1615,6 +1615,19 @@ class AppLocalizationsBn extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'তিনটিই একসাথে';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% ছাড়';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'তিনটিই $price-এ নিন';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'বাতিল না করা পর্যন্ত স্বয়ংক্রিয়ভাবে নবায়ন হয়।';
 

@@ -1580,6 +1580,19 @@ class AppLocalizationsKo extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => '세 캐릭터 한 번에';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% 할인';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return '세 캐릭터 한 번에 $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => '해지할 때까지 자동으로 갱신됩니다.';
 
   @override

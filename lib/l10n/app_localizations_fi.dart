@@ -1627,6 +1627,19 @@ class AppLocalizationsFi extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Kaikki kolme kerralla';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '-$percent %';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Kaikki kolme hintaan $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Uusiutuu automaattisesti, kunnes peruutat.';
 

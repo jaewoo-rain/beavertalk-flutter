@@ -1630,6 +1630,19 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Все трое сразу';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'Скидка $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Все трое за $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Продлевается автоматически до отмены.';
 
   @override

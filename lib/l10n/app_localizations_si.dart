@@ -1616,6 +1616,19 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'තුනම එකවර';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% වට්ටම්';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'තුනම $price කට ලබාගන්න';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'අවලංගු කරන තෙක් ස්වයංක්‍රීයව අලුත් වේ.';
 
   @override

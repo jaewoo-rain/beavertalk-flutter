@@ -1623,6 +1623,19 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'All three at once';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% off';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Get all three for $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Renews automatically until canceled.';
 
   @override

@@ -1637,6 +1637,19 @@ class AppLocalizationsFil extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Lahat ng tatlo nang sabay';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% off';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Kunin ang tatlo sa halagang $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'Awtomatikong nagre-renew hanggang kanselahin.';
 

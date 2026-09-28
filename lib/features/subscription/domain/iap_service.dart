@@ -78,6 +78,10 @@ abstract final class IapProductIds {
   /// sold. Slugs match the asset folders under `assets/avatar/`.
   static String character(String slug) => 'bt_character_$slug';
 
+  /// The three paid characters sold together (PM-DEC-142 · DEC-PR-05). A
+  /// one-time product on both stores; granted by the server once §24 ships.
+  static const characterBundle = 'bt_character_bundle';
+
   /// Server `character_id` → slug. **A fallback, not the source of truth.**
   ///
   /// The server now carries the slug itself as `character.product_key`

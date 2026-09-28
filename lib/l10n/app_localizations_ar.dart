@@ -1614,6 +1614,19 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'الثلاثة معًا';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return 'خصم $percent%';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'احصل على الثلاثة مقابل $price';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'يتجدد تلقائيًا حتى الإلغاء.';
 
   @override

@@ -1616,6 +1616,19 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Üçü bir arada';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '%$percent indirim';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Üçünü $price karşılığında al';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'İptal edene kadar otomatik olarak yenilenir.';
 

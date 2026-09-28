@@ -89,6 +89,11 @@ import 'package:beavertalk/features/weak_sound/domain/entities/weak_sound_item.d
 import 'package:beavertalk/features/weak_sound/presentation/widgets/weak_sound_card.dart';
 import 'package:beavertalk/components/organisms/bottom_sheet.dart' show SheetAction;
 import 'package:beavertalk/components/organisms/bottom_sheet_content.dart';
+import 'package:beavertalk/screens/mypage/character_bundle.dart';
+import 'package:beavertalk/features/subscription/domain/iap_service.dart'
+    show IapProduct, IapProductIds, IapProductType;
+import 'package:beavertalk/features/character/domain/entities/character.dart'
+    show Character;
 
 /// 로케일 검사 대상 화면 전량.
 Map<String, Widget Function()> i18nScreens() {
@@ -392,6 +397,37 @@ Map<String, Widget Function()> i18nScreens() {
               lastTopic: 'Weekend plans',
             ),
           ),
+    // 캐릭터 묶음 시트(PM-DEC-142 · `6438:4772`) — 긴 가격(₩)·세 이름·할인 배지가 한꺼번에 든다.
+    'CharacterBundleSheet': () => Align(
+          alignment: Alignment.bottomCenter,
+          child: CharacterBundleSheet(
+            offer: CharacterBundleOffer(
+              product: const IapProduct(
+                id: IapProductIds.characterBundle,
+                type: IapProductType.nonConsumable,
+                localizedPrice: '₩13,200',
+                rawPrice: 13200,
+                currencyCode: 'KRW',
+              ),
+              characters: [
+                for (final (id, name) in [(9, 'Popo'), (10, 'Rara'), (11, 'Dudu')])
+                  Character(
+                    id: id,
+                    productKey: name.toLowerCase(),
+                    name: name,
+                    price: 499,
+                    effectivePrice: 499,
+                    isOwned: false,
+                    isUnlocked: false,
+                  ),
+              ],
+              original: '₩19,800',
+              percent: 33,
+            ),
+            onBuy: () {},
+            onLater: () {},
+          ),
+        ),
     // Premium 15분 종료 시트의 「오늘 마지막 통화」 문구(P19) — 위 전장은 기본(더 남음) 문구다.
     'Overlay_premiumCallEnded_today': () => Align(
           alignment: Alignment.bottomCenter,

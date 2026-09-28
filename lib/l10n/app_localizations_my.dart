@@ -1630,6 +1630,19 @@ class AppLocalizationsMy extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'သုံးကောင်လုံး တစ်ခါတည်း';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% လျှော့';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'သုံးကောင်လုံးကို $price ဖြင့် ရယူပါ';
+  }
+
+  @override
   String get ctaCaptionAutoRenew =>
       'ပယ်ဖျက်သည်အထိ အလိုအလျောက် သက်တမ်းတိုးပါမည်။';
 

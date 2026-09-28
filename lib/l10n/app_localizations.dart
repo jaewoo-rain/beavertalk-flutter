@@ -3034,6 +3034,24 @@ abstract class AppLocalizations {
   /// **'7 days free, then {price} per year · cancel anytime in the store'**
   String ctaCaptionMaxYearlyTrial(String price);
 
+  /// Character bundle sheet title (Figma BottomSheet/CharacterBundle 6438:4772): the three paid characters bought together.
+  ///
+  /// In en, this message translates to:
+  /// **'All three at once'**
+  String get bundleTitle;
+
+  /// Discount badge on the bundle sheet. {percent} is an integer computed from the store prices.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% off'**
+  String bundleOffBadge(int percent);
+
+  /// Link under the single-character Buy button that opens the bundle sheet. {price} is the store-formatted bundle price with its own currency symbol.
+  ///
+  /// In en, this message translates to:
+  /// **'Get all three for {price}'**
+  String bundleLinkLabel(String price);
+
   /// No description provided for @ctaCaptionAutoRenew.
   ///
   /// In en, this message translates to:

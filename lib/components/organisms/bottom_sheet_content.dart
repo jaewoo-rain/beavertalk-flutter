@@ -128,6 +128,8 @@ class BottomSheetContent extends StatelessWidget {
     this.benefitTier = BenefitTier.pro,
     this.caption,
     this.child,
+    this.childGap = 24,
+    this.hero,
     required this.primaryAction,
     this.secondaryAction,
     this.secondaryOnTop = false,
@@ -184,6 +186,14 @@ class BottomSheetContent extends StatelessWidget {
   /// typed [type] content and before the benefit line; giving it turns the
   /// sheet into the card form (screen-background surface).
   final Widget? child;
+
+  /// Space above [child]. 24 by default; a sheet whose Figma stacks its parts
+  /// at 16 (e.g. `BottomSheet/CharacterBundle` `6438:4772`) passes 16.
+  final double childGap;
+
+  /// Artwork above the header, where [mark] sits on notice sheets — e.g. the
+  /// bundle sheet's character trio and discount badge. 16 below it.
+  final Widget? hero;
 
   /// Main CTA — always present. 위 · 아래는 [secondaryOnTop] 이 정한다.
   final SheetAction primaryAction;
@@ -274,9 +284,10 @@ class BottomSheetContent extends StatelessWidget {
                       Center(child: ResultMark(tone: mark!)),
                       const SizedBox(height: 16),
                     ],
+                    if (hero != null) ...[hero!, const SizedBox(height: 16)],
                     _header(context),
                     ..._content(context),
-                    if (child != null) ...[const SizedBox(height: 24), child!],
+                    if (child != null) ...[SizedBox(height: childGap), child!],
                     if (benefitLabel != null) ...[
                       const SizedBox(height: 16),
                       BenefitRow(tier: benefitTier, label: benefitLabel!),

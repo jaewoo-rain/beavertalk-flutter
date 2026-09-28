@@ -1615,6 +1615,19 @@ class AppLocalizationsNe extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'तीनै जना एकैपटक';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% छुट';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'तीनै जना $price मा पाउनुहोस्';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'रद्द नगरेसम्म स्वतः नवीकरण हुन्छ।';
 
   @override

@@ -1632,6 +1632,19 @@ class AppLocalizationsHu extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Mindhárom egyszerre';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% kedvezmény';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Mindhárom $price áron';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Lemondásig automatikusan megújul.';
 
   @override

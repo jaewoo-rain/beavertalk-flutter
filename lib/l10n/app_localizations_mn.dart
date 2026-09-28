@@ -1616,6 +1616,19 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
+  String get bundleTitle => 'Гурвууланг нь нэг дор';
+
+  @override
+  String bundleOffBadge(int percent) {
+    return '$percent% хямдрал';
+  }
+
+  @override
+  String bundleLinkLabel(String price) {
+    return 'Гурвууланг нь $price-өөр аваарай';
+  }
+
+  @override
   String get ctaCaptionAutoRenew => 'Цуцлах хүртэл автоматаар сунгагдана.';
 
   @override
