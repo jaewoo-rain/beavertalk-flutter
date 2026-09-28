@@ -10,6 +10,7 @@ import 'package:beavertalk/features/subscription/presentation/providers/subscrip
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/mypage/avatar.dart';
 import 'package:beavertalk/screens/mypage/character_bundle.dart';
+import 'package:beavertalk/theme/app_color_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -74,6 +75,16 @@ void main() {
           ...storeKr.skip(1),
         ]));
     expect(floor!.percent, 33, reason: '33.8% → 33 (round 였으면 34)');
+    // 정확히 10% — double 연산이면 9.999…% 로 9 가 됐다.
+    final exact = await buildCharacterBundleOffer(
+        characters: catalog(),
+        iap: MockIapService(catalog: [
+          product(IapProductIds.characterBundle, 13.5, r'$13.50', currency: 'USD'),
+          product('bt_character_popo', 5.0, r'$5.00', currency: 'USD'),
+          product('bt_character_rara', 5.0, r'$5.00', currency: 'USD'),
+          product('bt_character_dudu', 5.0, r'$5.00', currency: 'USD'),
+        ]));
+    expect(exact!.percent, 10);
     final noSaving = await buildCharacterBundleOffer(
         characters: catalog(),
         iap: MockIapService(catalog: [
@@ -111,13 +122,13 @@ void main() {
             characters: catalog(),
             iap: MockIapService(catalog: [
               ...storeKr.take(3),
-              product('bt_character_dudu', 4.99, r'$4.99', currency: 'USD'),
+              product('bt_character_dudu', 5.0, r'$5.00', currency: 'USD'),
             ])),
         isNull,
         reason: '통화 다름');
   });
 
-  testWidgets('PM-DEC-146 — 시트 수치는 Figma 6438:4772(제목 18 Bold · 가격 28/16 · 흰 테두리 4)', (tester) async {
+  testWidgets('PM-DEC-146 — 시트 수치는 Figma 6438:4772(제목 18 Bold · 가격 28/16 · 테두리 4)', (tester) async {
     final offer = (await buildCharacterBundleOffer(
         characters: catalog(), iap: MockIapService(catalog: storeKr)))!;
     await tester.pumpWidget(MaterialApp(
@@ -150,7 +161,13 @@ void main() {
     for (final d in ring) {
       final side = (d.border! as Border).top;
       expect(side.width, 4);
-      expect(side.color, const Color(0xFFFFFFFF));
+      // PM-DEC-150 — 시트 면 토큰(라이트 #FFFFFF · 다크 #1F222A).
+      expect(
+          side.color,
+          tester
+              .element(find.byType(CharacterBundleSheet))
+              .c
+              .backgroundElevatedAlternative);
     }
   });
 

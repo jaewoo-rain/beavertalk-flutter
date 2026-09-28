@@ -104,9 +104,14 @@ Future<CharacterBundleOffer?> buildCharacterBundleOffer({
     }
     total += single.rawPrice;
   }
-  // 내림 — 「33.4% 할인」 을 34% 로 올려 말하지 않는다(QA 09-28).
-  final saved = ((1 - bundle.rawPrice / total) * 100).floor();
-  final cheaper = bundle.rawPrice < total;
+  // 내림 — 「33.4% 할인」 을 34% 로 올려 말하지 않는다(QA 09-28). 정수(micros)로 센다 —
+  // double 로 빼고 곱하면 딱 10% 가 9.999…% 가 되어 9% 로 내려갔다.
+  int micros(double v) => (v * 1000000).round();
+  final bundleMicros = micros(bundle.rawPrice);
+  final totalMicros = [for (final id in sold) micros(byId[id]!.rawPrice)]
+      .fold<int>(0, (a, b) => a + b);
+  final saved = (totalMicros - bundleMicros) * 100 ~/ totalMicros;
+  final cheaper = bundleMicros < totalMicros;
   return CharacterBundleOffer(
     product: bundle,
     characters: paid,
@@ -237,8 +242,10 @@ class _Trio extends StatelessWidget {
                   height: size,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    // Figma `Paywall/Avatar` — 흰 4px 테두리(모드 무관 · staticWhite).
-                    border: Border.all(color: c.staticWhite, width: 4),
+                    // Figma `Paywall/Avatar` — 4px 테두리. 라이트 #FFFFFF · 다크는 시트 면에
+                    // 맞춘 #1F222A(PM-DEC-150 · backgroundElevatedAlternative).
+                    border: Border.all(
+                        color: c.backgroundElevatedAlternative, width: 4),
                     image: DecorationImage(
                       image: _imageOf(characters[i]),
                       fit: BoxFit.cover,
