@@ -187,6 +187,22 @@ void main() {
     await t.pumpWidget(const SizedBox());
   });
 
+  testWidgets('시안 E — 태그는 칩이 아니라 가운데점으로 이은 한 줄(6443:44301)', (t) async {
+    final rows = [
+      {...row(1, 'Baba', owned: true), 'tags': ['Savage', 'Blunt', 'Tsundere']},
+    ];
+    await t.pumpWidget(host(catalog(rows), activeId: 1));
+    await t.pumpAndSettle();
+    final line = find.text('Savage  ·  Blunt  ·  Tsundere');
+    expect(line, findsOneWidget);
+    final text = t.widget<Text>(line);
+    expect(text.textAlign, TextAlign.center);
+    expect(text.style!.fontSize, 14);
+    expect(text.style!.fontWeight, FontWeight.w400);
+    expect(text.overflow, isNot(TextOverflow.ellipsis));
+    expect(find.text('Savage'), findsNothing, reason: '칩 한 개씩 그리지 않는다');
+  });
+
   testWidgets('구독으로 열린 캐릭터는 「Owned」 라고 말하지 않는다 — 쓰기는 된다', (t) async {
     await t.pumpWidget(host(
       catalog([

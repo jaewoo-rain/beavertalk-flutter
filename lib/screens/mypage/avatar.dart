@@ -873,29 +873,19 @@ class _Stage extends StatelessWidget {
           ),
           if (character.tags.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Wrap(
-              alignment: WrapAlignment.center,
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (final t in character.tags)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: c.backgroundNormalAlternative,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    // 서버 태그는 영문 한 벌 — UI 언어로 옮긴다(QA F054 · 임시표, 서버 i18n 전).
-                    child: Text(
-                        localizedCharacterTag(
-                          t,
-                          Localizations.localeOf(context).languageCode,
-                        ),
-                        style:
-                            AppType.caption1.r.copyWith(color: c.labelNormal)),
-                  ),
-              ],
+            // 태그는 점 구분 한 줄 글자다(시안 E · Figma Avatar/Profile 6443:44301 · 사용자 지시).
+            // 칩으로 두면 버튼처럼 보였고 「Available」 배지와 겹쳐 읽혔다. 긴 로케일은 가운데 정렬로
+            // 줄을 바꾼다 — 말줄임은 쓰지 않는다(태그가 잘리면 성격이 틀려 보인다).
+            // 서버 태그는 영문 한 벌 — UI 언어로 옮긴다(QA F054 · 임시표, 서버 i18n 전).
+            Text(
+              character.tags
+                  .map((t) => localizedCharacterTag(
+                        t,
+                        Localizations.localeOf(context).languageCode,
+                      ))
+                  .join('  ·  '),
+              textAlign: TextAlign.center,
+              style: AppType.label1.r.copyWith(color: c.labelNeutral),
             ),
           ],
           if (summary != null) ...[
