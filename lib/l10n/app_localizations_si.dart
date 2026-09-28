@@ -1625,7 +1625,7 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String bundleLinkLabel(String price) {
-    return 'තුනම $price කට ලබාගන්න';
+    return 'තුනම $priceකට ලබාගන්න';
   }
 
   @override

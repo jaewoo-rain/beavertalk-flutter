@@ -614,7 +614,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String avatarPromoTitle(int percent) {
-    return '仅限今日 · $percent% 折扣';
+    return '仅限今日 · 省 $percent%';
   }
 
   @override
@@ -1566,12 +1566,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 天免费，之后 每月 $price · 随时可在商店中取消';
+    return '7 天免费，之后每月 $price · 随时可在商店中取消';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '7 天免费，之后 每年 $price · 随时可在商店中取消';
+    return '7 天免费，之后每年 $price · 随时可在商店中取消';
   }
 
   @override
@@ -1579,7 +1579,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String bundleOffBadge(int percent) {
-    return '$percent% 折扣';
+    return '省 $percent%';
   }
 
   @override

@@ -1934,7 +1934,7 @@ class AppLocalizationsTh extends AppLocalizations {
       'เรากำลังยืนยันกับสโตร์อยู่ จะเปิดใช้งานในไม่ช้า — หากไม่เปิด ให้แตะ “กู้คืนการซื้อ”';
 
   @override
-  String get ovPendingTitle => 'รอการชำระเงิน';
+  String get ovPendingTitle => 'กำลังดำเนินการชำระเงิน';
 
   @override
   String get ovPendingBody =>

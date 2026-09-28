@@ -1,3 +1,5 @@
+import 'dart:ui' show PlatformDispatcher;
+
 import 'package:flutter/material.dart' hide Badge;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -40,10 +42,11 @@ class CharacterBundleOffer {
   /// The paid characters in the bundle, in catalog order.
   final List<Character> characters;
 
-  /// The three single prices added up, in the same store currency.
-  final String original;
+  /// The three single prices added up, in the same store currency — null
+  /// when the bundle saves nothing (no struck price to show).
+  final String? original;
 
-  /// Saving against [original], or null when there is none to show.
+  /// Saving against [original], rounded **down**, or null when there is none.
   final int? percent;
 }
 
@@ -101,13 +104,21 @@ Future<CharacterBundleOffer?> buildCharacterBundleOffer({
     }
     total += single.rawPrice;
   }
-  final saved = ((1 - bundle.rawPrice / total) * 100).round();
+  // 내림 — 「33.4% 할인」 을 34% 로 올려 말하지 않는다(QA 09-28).
+  final saved = ((1 - bundle.rawPrice / total) * 100).floor();
+  final cheaper = bundle.rawPrice < total;
   return CharacterBundleOffer(
     product: bundle,
     characters: paid,
-    original: NumberFormat.simpleCurrency(name: bundle.currencyCode)
-        .format(total),
-    percent: saved > 0 ? saved : null,
+    // 스토어 현지가와 같은 모양 — 스토어는 기기 로캘로 쓴다(영어 기본 형식이면 ₩ 옆에 영문식
+    // 구분이 섞였다). 묶음이 싸지 않으면 취소선 자체를 뺀다.
+    original: cheaper
+        ? NumberFormat.simpleCurrency(
+            locale: PlatformDispatcher.instance.locale.toString(),
+            name: bundle.currencyCode,
+          ).format(total)
+        : null,
+    percent: cheaper && saved > 0 ? saved : null,
   );
 }
 
@@ -157,6 +168,8 @@ class CharacterBundleSheet extends StatelessWidget {
       final c = sheetCtx.c;
       return BottomSheetContent(
         title: l10n.bundleTitle,
+        // Figma `Sheet/Copy` — 18 Bold(공용 시트 제목 20 SemiBold 와 다르다).
+        titleStyle: AppType.headline1,
         body: offer.characters.map((x) => x.name).join(' · '),
         hero: Column(
           children: [
@@ -184,13 +197,15 @@ class CharacterBundleSheet extends StatelessWidget {
           crossAxisAlignment: WrapCrossAlignment.center,
           spacing: 8,
           children: [
+            // Figma `Paywall/Price` — Now 28 Bold · Was 16 Regular 취소선.
             Text(offer.product.localizedPrice,
-                style: AppType.headline1.b.copyWith(color: c.labelStrong)),
-            Text(offer.original,
-                style: AppType.label1.r.copyWith(
-                  color: c.labelAssistive,
-                  decoration: TextDecoration.lineThrough,
-                )),
+                style: AppType.title2.b.copyWith(color: c.labelStrong)),
+            if (offer.original case final was?)
+              Text(was,
+                  style: AppType.body1.r.copyWith(
+                    color: c.labelAssistive,
+                    decoration: TextDecoration.lineThrough,
+                  )),
           ],
         ),
       );
@@ -222,8 +237,8 @@ class _Trio extends StatelessWidget {
                   height: size,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(24),
-                    border:
-                        Border.all(color: c.backgroundNormalNormal, width: 3),
+                    // Figma `Paywall/Avatar` — 흰 4px 테두리(모드 무관 · staticWhite).
+                    border: Border.all(color: c.staticWhite, width: 4),
                     image: DecorationImage(
                       image: _imageOf(characters[i]),
                       fit: BoxFit.cover,

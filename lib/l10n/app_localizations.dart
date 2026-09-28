@@ -2638,7 +2638,7 @@ abstract class AppLocalizations {
   /// **'Subscription'**
   String get subscriptionTitle;
 
-  /// GNB title of the trial-expired notice screen (4514:5179).
+  /// GNB title of the trial-expired notice screen (6527:4210).
   ///
   /// In en, this message translates to:
   /// **'Plans'**

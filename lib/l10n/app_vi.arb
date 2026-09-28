@@ -576,7 +576,7 @@
   "ovFailedStoreBody": "Không kết nối được với cửa hàng. Bạn chưa bị tính phí.",
   "ovVerifyingTitle": "Đã nhận thanh toán",
   "ovVerifyingBody": "Chúng tôi vẫn đang xác nhận với cửa hàng. Sẽ sớm được kích hoạt — nếu không, hãy nhấn “Khôi phục mua hàng”.",
-  "ovPendingTitle": "Thanh toán đang chờ",
+  "ovPendingTitle": "Thanh toán đang chờ xử lý",
   "ovPendingBody": "Cửa hàng chưa hoàn tất thanh toán. Sẽ kích hoạt ngay khi xong — bạn có thể rời màn hình này.",
   "ovRejectedTitle": "Chúng tôi không xác nhận được giao dịch này",
   "ovRejectedBody": "Cửa hàng không xác nhận khoản thanh toán này nên chưa có gì được kích hoạt. Nếu bạn đã bị trừ tiền, vui lòng liên hệ chúng tôi.",

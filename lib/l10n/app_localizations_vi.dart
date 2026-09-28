@@ -1948,7 +1948,7 @@ class AppLocalizationsVi extends AppLocalizations {
       'Chúng tôi vẫn đang xác nhận với cửa hàng. Sẽ sớm được kích hoạt — nếu không, hãy nhấn “Khôi phục mua hàng”.';
 
   @override
-  String get ovPendingTitle => 'Thanh toán đang chờ';
+  String get ovPendingTitle => 'Thanh toán đang chờ xử lý';
 
   @override
   String get ovPendingBody =>

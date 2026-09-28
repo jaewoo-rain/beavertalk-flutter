@@ -325,6 +325,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         case IapPurchaseState.canceled:
           return;
         case IapPurchaseState.failed:
+          if (await _restoreIfAlreadyOwned(verdict) || !mounted) return;
           final overlay = purchaseFailureOverlayFor(verdict);
           if (overlay == SubscriptionOverlay.purchaseFailedDeclined) {
             setState(() => _purchaseFailed = true);
@@ -477,6 +478,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
         case IapPurchaseState.canceled:
           return; // 본인이 닫았다 — 말하지 않는다.
         case IapPurchaseState.failed:
+          if (await _restoreIfAlreadyOwned(verdict) || !mounted) return;
           // 스토어가 실패했을 때만 「결제 안 됨」 배너다. 결제는 됐는데 서버 확인이 아직이거나
           // 거절됐으면 그 사정을 말하는 시트(QA F005 · F028).
           final overlay = purchaseFailureOverlayFor(verdict);
@@ -500,6 +502,20 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     } finally {
       if (mounted) setState(() => _busy = false);
     }
+  }
+
+  /// 스토어가 「이미 가진 상품」 이라고 거절했으면 구매 복원으로 잇는다(QA F095).
+  ///
+  /// 이 Google Play 계정에 이미 있는 캐릭터다 — 결제할 것이 없다. 공용 「이미 Premium 구독 중」
+  /// 시트는 캐릭터와 맞지 않아, 기존 복원 흐름으로 영수증을 서버에 보내 지급하고 그 결과 시트
+  /// (복원됨 · 없음 · 다른 계정)를 보인다. 새 문구 없이 기존 키만 쓴다. 처리했으면 true.
+  Future<bool> _restoreIfAlreadyOwned(IapPurchase verdict) async {
+    if (verdict.failure != IapFailure.alreadyOwned || !mounted) return false;
+    await runRestoreFlow(context);
+    ref.invalidate(charactersProvider);
+    ref.invalidate(ownedCharactersProvider);
+    ref.invalidate(characterBundleOfferProvider);
+    return true;
   }
 
   /// 보류 안내 뒤 늦게 오는 결과(QA F004) — 30분까지 듣는다.
@@ -536,7 +552,13 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     }
 
     sub = iap.purchases.listen((p) {
-      if (p.productId != productId) return;
+      // Play 는 취소·이미 보유·오류를 **상품 id 없이** 돌려줄 때가 있다. 버리면 이 구매가 끝났다는
+      // 소식이 영영 안 와 _busy 가 풀리지 않는다 — 구매·사용·묶음 버튼이 잠긴다(QA F096 ·
+      // PM-DEC-149). 이 화면은 한 번에 한 구매만 기다리므로 id 없는 끝 결과는 이 구매의 것이다.
+      final unlabeledEnd = p.productId.isEmpty &&
+          (p.state == IapPurchaseState.canceled ||
+              p.state == IapPurchaseState.failed);
+      if (p.productId != productId && !unlabeledEnd) return;
       if (p.state == IapPurchaseState.pending) {
         pendingTimer ??= Timer(kPurchasePendingNoticeAfter, () => finish(p));
         return;

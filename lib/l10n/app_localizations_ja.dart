@@ -1569,12 +1569,12 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '7日間無料、その後 月額$price · ストアでいつでも解約できます';
+    return '7日間無料、その後は月額$price · ストアでいつでも解約できます';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '7日間無料、その後 年額$price · ストアでいつでも解約できます';
+    return '7日間無料、その後は年額$price · ストアでいつでも解約できます';
   }
 
   @override
@@ -1893,7 +1893,7 @@ class AppLocalizationsJa extends AppLocalizations {
       'ストアでの確認に時間がかかっています。まもなく反映されます。反映されない場合は「購入を復元」をタップしてください。';
 
   @override
-  String get ovPendingTitle => 'お支払い待ちです';
+  String get ovPendingTitle => 'お支払いを処理中です';
 
   @override
   String get ovPendingBody =>

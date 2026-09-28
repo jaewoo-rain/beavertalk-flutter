@@ -1959,7 +1959,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Мы ещё подтверждаем его в магазине. Скоро всё включится — если нет, нажмите «Восстановить покупки».';
 
   @override
-  String get ovPendingTitle => 'Платёж ожидает';
+  String get ovPendingTitle => 'Платёж в обработке';
 
   @override
   String get ovPendingBody =>

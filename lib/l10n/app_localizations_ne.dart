@@ -1943,7 +1943,7 @@ class AppLocalizationsNe extends AppLocalizations {
       'हामी अझै स्टोरसँग यसको पुष्टि गर्दैछौं। छिट्टै सक्रिय हुनेछ — भएन भने “खरिदहरू पुनर्स्थापना” थिच्नुहोस्।';
 
   @override
-  String get ovPendingTitle => 'भुक्तानी बाँकी छ';
+  String get ovPendingTitle => 'भुक्तानी प्रक्रियामा छ';
 
   @override
   String get ovPendingBody =>

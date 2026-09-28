@@ -345,6 +345,8 @@ Map<String, Widget Function()> i18nScreens() {
         ),
     'AvatarScreenDiscount': () => _avatarHost(discount: true),
     'AvatarScreenSubscription': () => _avatarHost(discount: false),
+    // 묶음 링크(PM-DEC-142) — 빌드 플래그와 무관하게 제안 프로바이더를 덮어 링크 문구를 잰다.
+    'AvatarScreenBundleLink': () => _avatarHost(discount: false, bundle: true),
     'MyPage': () => const MyPageScreen(),
     'MyPageSettings': () => const MyPageSettingsScreen(),
     // The subscription manage screen (P2 redesign) in the Free state; its copy
@@ -590,7 +592,7 @@ ClassroomAssignment _assignment({
 
 /// 파트너 변경 화면을 데이터와 함께 띄운다. 무대에는 **미보유** 캐릭터(Rara)가 먼저 오르도록
 /// 대표를 비워 둔다 — 첫 캐릭터가 무대에 선다.
-Widget _avatarHost({required bool discount}) {
+Widget _avatarHost({required bool discount, bool bundle = false}) {
   Map<String, dynamic> row(int id, String name, {bool owned = false, bool sub = false}) => {
         'character_id': id,
         'product_key': name.toLowerCase(),
@@ -610,7 +612,7 @@ Widget _avatarHost({required bool discount}) {
       };
   final list = [
     for (final r in [
-      row(10, 'Rara', sub: !discount),
+      row(10, 'Rara', sub: !discount && !bundle),
       row(1, 'Baba', owned: true),
       row(11, 'Dudu'),
     ])
@@ -621,6 +623,21 @@ Widget _avatarHost({required bool discount}) {
       charactersProvider.overrideWith((ref) async => list),
       ownedCharactersProvider.overrideWith((ref) async => const []),
       myProfileProvider.overrideWith((ref) async => const Member(memberId: 1)),
+      if (bundle)
+        characterBundleOfferProvider.overrideWith(
+          (ref) async => CharacterBundleOffer(
+            product: const IapProduct(
+              id: IapProductIds.characterBundle,
+              type: IapProductType.nonConsumable,
+              localizedPrice: '₩13,200',
+              rawPrice: 13200,
+              currencyCode: 'KRW',
+            ),
+            characters: list,
+            original: '₩19,800',
+            percent: 33,
+          ),
+        ),
     ],
     child: const AvatarScreen(),
   );

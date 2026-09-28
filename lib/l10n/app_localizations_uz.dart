@@ -1617,12 +1617,12 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 kun bepul, keyin Oyiga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
+    return '7 kun bepul, keyin oyiga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '7 kun bepul, keyin Yiliga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
+    return '7 kun bepul, keyin yiliga $price · doʻkonda istalgan vaqtda bekor qilish mumkin';
   }
 
   @override

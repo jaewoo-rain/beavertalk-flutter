@@ -32,7 +32,7 @@ import '../../components/layout/need_based_rows.dart';
 ///
 /// Measured off the Dark originals (`4514:4739` free · `4514:5111` trial ·
 /// `4514:5050` active · `4514:5081` max · `4514:4900` grace · `4652:27757`
-/// hold · `4514:5193` ending · `4514:5179` expired). The layout skeleton —
+/// hold · `4514:5193` ending · `6527:4210` expired). The layout skeleton —
 /// GNB → banners → plan card → billing list → notes — never changes; only the
 /// pieces spec §6-1 varies (badge, banners, slot ① and ⑦, footnotes) do.
 ///
@@ -711,7 +711,7 @@ class _BillingRow extends StatelessWidget {
   }
 }
 
-/// `depth/trial_expired` (`4514:5179`) — the notice screen, not a manage
+/// `depth/trial_expired` (`6527:4210`) — the notice screen, not a manage
 /// surface: a centred error mark, two lines, and a sticky CTA pair. No
 /// billing list by design (spec §4-1).
 class _TrialExpiredNotice extends StatelessWidget {

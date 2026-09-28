@@ -481,7 +481,7 @@
   "ctaCaptionMaxYearlyTrial": "දින 7ක් නොමිලේ, ඉන්පසු වසරකට {price} · ඕනෑම විටෙක වෙළඳසැලේ අවලංගු කරන්න",
   "bundleTitle": "තුනම එකවර",
   "bundleOffBadge": "{percent}% වට්ටම්",
-  "bundleLinkLabel": "තුනම {price} කට ලබාගන්න",
+  "bundleLinkLabel": "තුනම {price}කට ලබාගන්න",
   "ctaCaptionAutoRenew": "අවලංගු කරන තෙක් ස්වයංක්‍රීයව අලුත් වේ.",
   "footerTerms": "කොන්දේසි",
   "footerPrivacy": "පෞද්ගලිකත්වය",

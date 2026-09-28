@@ -1607,12 +1607,12 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 хоног үнэгүй, дараа нь Сард $price · дэлгүүрт хүссэн үедээ цуцална';
+    return '7 хоног үнэгүй, дараа нь сард $price · дэлгүүрт хүссэн үедээ цуцална';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '7 хоног үнэгүй, дараа нь Жилд $price · дэлгүүрт хүссэн үедээ цуцална';
+    return '7 хоног үнэгүй, дараа нь жилд $price · дэлгүүрт хүссэн үедээ цуцална';
   }
 
   @override
@@ -1625,7 +1625,7 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String bundleLinkLabel(String price) {
-    return 'Гурвууланг нь $price-өөр аваарай';
+    return 'Гурвууланг нь $price үнээр аваарай';
   }
 
   @override

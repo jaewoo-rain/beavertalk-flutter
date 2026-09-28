@@ -130,6 +130,7 @@ class BottomSheetContent extends StatelessWidget {
     this.child,
     this.childGap = 24,
     this.hero,
+    this.titleStyle,
     required this.primaryAction,
     this.secondaryAction,
     this.secondaryOnTop = false,
@@ -194,6 +195,11 @@ class BottomSheetContent extends StatelessWidget {
   /// Artwork above the header, where [mark] sits on notice sheets — e.g. the
   /// bundle sheet's character trio and discount badge. 16 below it.
   final Widget? hero;
+
+  /// Title size override (drawn Bold), colour kept. For a sheet whose Figma title is not
+  /// the shared `heading2`/`headline1` SemiBold — e.g. the bundle sheet's
+  /// `Sheet/Copy` 18 Bold. Existing sheets pass nothing.
+  final AppType? titleStyle;
 
   /// Main CTA — always present. 위 · 아래는 [secondaryOnTop] 이 정한다.
   final SheetAction primaryAction;
@@ -331,9 +337,11 @@ class BottomSheetContent extends StatelessWidget {
   Widget _header(BuildContext context) {
     final c = context.c;
     final big = type == SheetContentType.none || type == SheetContentType.video;
-    final titleStyle = (big ? AppType.heading2 : AppType.headline1).sb.copyWith(
-      color: c.labelStrong,
-    );
+    final override = this.titleStyle;
+    final titleStyle = (override != null
+            ? override.b
+            : (big ? AppType.heading2 : AppType.headline1).sb)
+        .copyWith(color: c.labelStrong);
     return Column(
       children: [
         Text(title, textAlign: TextAlign.center, style: titleStyle),

@@ -1611,12 +1611,12 @@ class AppLocalizationsKy extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 күн акысыз, андан кийин Айына $price · дүкөндө каалаган убакта жокко чыгарса болот';
+    return '7 күн акысыз, андан кийин айына $price · дүкөндө каалаган убакта жокко чыгарса болот';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '7 күн акысыз, андан кийин Жылына $price · дүкөндө каалаган убакта жокко чыгарса болот';
+    return '7 күн акысыз, андан кийин жылына $price · дүкөндө каалаган убакта жокко чыгарса болот';
   }
 
   @override

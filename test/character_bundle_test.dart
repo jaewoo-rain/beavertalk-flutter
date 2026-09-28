@@ -66,6 +66,25 @@ void main() {
     expect(offer.characters.map((c) => c.name), ['Popo', 'Rara', 'Dudu']);
   });
 
+  test('할인율은 내림 · 묶음이 단품 합 이상이면 취소선·배지 없음', () async {
+    final floor = await buildCharacterBundleOffer(
+        characters: catalog(),
+        iap: MockIapService(catalog: [
+          product(IapProductIds.characterBundle, 13100, '₩13,100'),
+          ...storeKr.skip(1),
+        ]));
+    expect(floor!.percent, 33, reason: '33.8% → 33 (round 였으면 34)');
+    final noSaving = await buildCharacterBundleOffer(
+        characters: catalog(),
+        iap: MockIapService(catalog: [
+          product(IapProductIds.characterBundle, 19800, '₩19,800'),
+          ...storeKr.skip(1),
+        ]));
+    expect(noSaving, isNotNull);
+    expect(noSaving!.original, isNull);
+    expect(noSaving.percent, isNull);
+  });
+
   test('유료 캐릭터를 하나라도 가지면 노출 안 함', () async {
     expect(
         await buildCharacterBundleOffer(
@@ -96,6 +115,111 @@ void main() {
             ])),
         isNull,
         reason: '통화 다름');
+  });
+
+  testWidgets('PM-DEC-146 — 시트 수치는 Figma 6438:4772(제목 18 Bold · 가격 28/16 · 흰 테두리 4)', (tester) async {
+    final offer = (await buildCharacterBundleOffer(
+        characters: catalog(), iap: MockIapService(catalog: storeKr)))!;
+    await tester.pumpWidget(MaterialApp(
+      locale: const Locale('en'),
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Scaffold(
+        body: Align(
+          alignment: Alignment.bottomCenter,
+          child: CharacterBundleSheet(offer: offer, onBuy: () {}, onLater: () {}),
+        ),
+      ),
+    ));
+    TextStyle styleOf(String text) => tester.widget<Text>(find.text(text)).style!;
+    expect(styleOf('All three at once').fontSize, 18);
+    expect(styleOf('All three at once').fontWeight, FontWeight.w700);
+    expect(styleOf('₩13,200').fontSize, 28);
+    expect(styleOf('₩13,200').fontWeight, FontWeight.w700);
+    final was = styleOf(offer.original!);
+    expect(was.fontSize, 16);
+    expect(was.fontWeight, FontWeight.w400);
+    expect(was.decoration, TextDecoration.lineThrough);
+    final ring = tester
+        .widgetList<Container>(find.byType(Container))
+        .map((w) => w.decoration)
+        .whereType<BoxDecoration>()
+        .where((d) => d.image != null)
+        .toList();
+    expect(ring, hasLength(3));
+    for (final d in ring) {
+      final side = (d.border! as Border).top;
+      expect(side.width, 4);
+      expect(side.color, const Color(0xFFFFFFFF));
+    }
+  });
+
+  for (final state in [IapPurchaseState.canceled, IapPurchaseState.failed]) {
+    testWidgets('F096 — 상품 id 없는 ${state.name} 결과도 이 구매의 끝으로 받아 버튼을 푼다', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(375, 1400));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      final iap = _UnlabeledIap(storeKr, state);
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          charactersProvider.overrideWith((ref) async => catalog()),
+          ownedCharactersProvider.overrideWith((ref) async => const []),
+          myProfileProvider.overrideWith(
+              (ref) async => const Member(memberId: 1, characterId: 1)),
+          iapServiceProvider.overrideWithValue(iap),
+        ],
+        child: const MaterialApp(
+          locale: Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: AvatarScreen(),
+        ),
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(find.bySemanticsLabel('Rara'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Buy'));
+      await tester.pumpAndSettle();
+      // 풀렸으면 다시 누를 수 있다 — 두 번째 결제가 시작된다.
+      await tester.tap(find.text('Buy'));
+      await tester.pumpAndSettle();
+      expect(iap.purchases_, 2, reason: '_busy 가 풀렸어야 한다');
+      // 실기기 재현(09-28): 취소 뒤 다른 캐릭터로 옮겨도 구매가 막혀 있었다.
+      await tester.tap(find.bySemanticsLabel('Popo'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Buy'));
+      await tester.pumpAndSettle();
+      expect(iap.purchases_, 3, reason: '다른 캐릭터의 Buy 도 눌려야 한다');
+      await tester.pumpWidget(const SizedBox());
+    });
+  }
+
+  testWidgets('F095 — 캐릭터가 이미 이 스토어 계정에 있으면 Premium 시트가 아니라 복원', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final iap = _AlreadyOwnedIap(storeKr);
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        charactersProvider.overrideWith((ref) async => catalog()),
+        ownedCharactersProvider.overrideWith((ref) async => const []),
+        myProfileProvider
+            .overrideWith((ref) async => const Member(memberId: 1, characterId: 1)),
+        iapServiceProvider.overrideWithValue(iap),
+      ],
+      child: const MaterialApp(
+        locale: Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: AvatarScreen(),
+      ),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('Rara'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Buy'));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(find.text("You're already on Premium"), findsNothing);
+    await tester.pumpWidget(const SizedBox());
   });
 
   testWidgets('아바타 화면 링크 → 묶음 시트 → Buy 면 묶음 상품 결제', (tester) async {
@@ -136,6 +260,53 @@ void main() {
     expect(iap.bought, [IapProductIds.characterBundle]);
     await tester.pumpWidget(const SizedBox());
   });
+}
+
+/// 결과를 **상품 id 없이** 돌려준다 — Play 의 취소·오류가 그렇다(QA F096). 옛 가짜는 id 를
+/// 채워서 이 결함을 못 잡았다.
+class _UnlabeledIap extends MockIapService {
+  _UnlabeledIap(List<IapProduct> catalog, this.state) : super(catalog: catalog);
+  final IapPurchaseState state;
+  int purchases_ = 0;
+  final _events = StreamController<IapPurchase>.broadcast();
+
+  @override
+  Stream<IapPurchase> get purchases => _events.stream;
+
+  @override
+  Future<void> purchase(IapProduct product) async {
+    purchases_++;
+    scheduleMicrotask(() => _events.add(IapPurchase(
+        productId: '',
+        type: product.type,
+        state: state,
+        failure: state == IapPurchaseState.failed ? IapFailure.store : null)));
+  }
+}
+
+/// 결과를 [outcome] 으로 답하고 복원 호출 수를 센다.
+class _AlreadyOwnedIap extends MockIapService {
+  _AlreadyOwnedIap(List<IapProduct> catalog) : super(catalog: catalog);
+  int restores = 0;
+  final _events = StreamController<IapPurchase>.broadcast();
+
+  @override
+  Stream<IapPurchase> get purchases => _events.stream;
+
+  @override
+  Future<void> purchase(IapProduct product) async {
+    scheduleMicrotask(() => _events.add(IapPurchase(
+        productId: product.id,
+        type: product.type,
+        state: IapPurchaseState.failed,
+        failure: IapFailure.alreadyOwned)));
+  }
+
+  @override
+  Future<RestoreOutcome> restore() async {
+    restores++;
+    return RestoreOutcome.restored;
+  }
 }
 
 /// 산 상품 id 를 기록하고 취소로 답한다.

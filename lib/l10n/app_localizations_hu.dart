@@ -1623,12 +1623,12 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String ctaCaptionMaxTrial(String price) {
-    return '7 nap ingyen, utána Havi $price · bármikor lemondható az áruházban';
+    return '7 nap ingyen, utána havi $price · bármikor lemondható az áruházban';
   }
 
   @override
   String ctaCaptionMaxYearlyTrial(String price) {
-    return '7 nap ingyen, utána Évi $price · bármikor lemondható az áruházban';
+    return '7 nap ingyen, utána évi $price · bármikor lemondható az áruházban';
   }
 
   @override
