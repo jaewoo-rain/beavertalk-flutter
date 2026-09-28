@@ -1390,7 +1390,7 @@ class AppLocalizationsNe extends AppLocalizations {
   String get premiumBulletVideo => 'दिनमा 15 मिनेट भिडियो कल';
 
   @override
-  String get premiumBulletAnalysis => 'पूरा उच्चारण विश्लेषण';
+  String get premiumBulletAnalysis => 'पुनरावृत्तिमा उच्चारण मूल्याङ्कन असीमित';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1734,7 +1734,15 @@ class AppLocalizationsNe extends AppLocalizations {
       'यो सदस्यता अर्कै BeaverTalk खातामा पहिले नै सक्रिय छ।';
 
   @override
-  String get ovRestoreCharactersTitle => 'तपाईंका पात्रहरू फर्किए';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'तपाईंका पात्रहरू फर्किए',
+      one: 'तपाईंको पात्र फर्कियो',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>

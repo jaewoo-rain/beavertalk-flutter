@@ -2668,10 +2668,10 @@ abstract class AppLocalizations {
   /// **'15 minutes of video calls a day'**
   String get premiumBulletVideo;
 
-  /// Premium benefit bullet.
+  /// Premium benefit bullet (paywall, plans compare, purchase success, winback offer). PM-DEC-178: unlimited pronunciation scoring in review. ko/en written directly; the other 28 locales are provisional AI translations pending native review (43_다국어검수_하네스/_input/2026-09-29_Premium혜택줄_원어민검수요청.md).
   ///
   /// In en, this message translates to:
-  /// **'Full pronunciation analysis'**
+  /// **'Unlimited pronunciation scoring in review'**
   String get premiumBulletAnalysis;
 
   /// Premium benefit bullet: weak-sound drills matched to the learner's native language.
@@ -2686,7 +2686,7 @@ abstract class AppLocalizations {
   /// **'Characters are sold separately. The ones you buy stay yours.'**
   String get noteCharactersSeparate;
 
-  /// CTA on the limit paywall (reached by using up the free daily call).
+  /// CTA on the limit paywall (reached by using up the free daily call time).
   ///
   /// In en, this message translates to:
   /// **'Get Premium'**
@@ -3250,11 +3250,11 @@ abstract class AppLocalizations {
   /// **'This subscription is already active on a different BeaverTalk account.'**
   String get ovRestoreOtherBody;
 
-  /// Restore result when characters (not a subscription) came back (QA F097).
+  /// Restore result when characters (not a subscription) came back (QA F097). {count} is how many characters came back (1 = singular, QA F110).
   ///
   /// In en, this message translates to:
-  /// **'Your characters are back'**
-  String get ovRestoreCharactersTitle;
+  /// **'{count, plural, =1{Your character is back} other{Your characters are back}}'**
+  String ovRestoreCharactersTitle(int count);
 
   /// Restore result when only character receipts came back and they belong to another BeaverTalk account.
   ///

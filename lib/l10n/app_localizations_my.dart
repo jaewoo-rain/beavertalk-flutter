@@ -1400,7 +1400,8 @@ class AppLocalizationsMy extends AppLocalizations {
   String get premiumBulletVideo => 'တစ်ရက် ဗီဒီယိုခေါ်ဆိုမှု 15 မိနစ်';
 
   @override
-  String get premiumBulletAnalysis => 'အသံထွက် ခွဲခြမ်းစိတ်ဖြာမှု အပြည့်အစုံ';
+  String get premiumBulletAnalysis =>
+      'ပြန်လေ့ကျင့်ရာတွင် အသံထွက် အမှတ်ပေးခြင်း အကန့်အသတ်မရှိ';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1749,7 +1750,14 @@ class AppLocalizationsMy extends AppLocalizations {
       'ဤစာရင်းသွင်းမှုသည် အခြား BeaverTalk အကောင့်တွင် သက်ဝင်နေပြီး ဖြစ်သည်။';
 
   @override
-  String get ovRestoreCharactersTitle => 'သင့်ဇာတ်ကောင်များ ပြန်ရောက်လာပါပြီ';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'သင့်ဇာတ်ကောင်များ ပြန်ရောက်လာပါပြီ',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>

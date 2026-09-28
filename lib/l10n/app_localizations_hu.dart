@@ -1405,7 +1405,8 @@ class AppLocalizationsHu extends AppLocalizations {
   String get premiumBulletVideo => 'Napi 15 perc videóhívás';
 
   @override
-  String get premiumBulletAnalysis => 'Teljes kiejtéselemzés';
+  String get premiumBulletAnalysis =>
+      'Korlátlan kiejtésértékelés az ismétlésben';
 
   @override
   String get premiumBulletWeakSounds => 'Nehéz hangok gyakorlása a nyelvedhez';
@@ -1751,7 +1752,15 @@ class AppLocalizationsHu extends AppLocalizations {
       'Ez az előfizetés már aktív egy másik BeaverTalk-fiókon.';
 
   @override
-  String get ovRestoreCharactersTitle => 'Visszakaptad a karaktereidet';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Visszakaptad a karaktereidet',
+      one: 'Visszakaptad a karakteredet',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>

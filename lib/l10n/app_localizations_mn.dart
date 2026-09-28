@@ -1389,7 +1389,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get premiumBulletVideo => 'Өдөрт 15 минут видео дуудлага';
 
   @override
-  String get premiumBulletAnalysis => 'Дуудлагын бүрэн шинжилгээ';
+  String get premiumBulletAnalysis => 'Давтлагад дуудлагын үнэлгээ хязгааргүй';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1736,7 +1736,15 @@ class AppLocalizationsMn extends AppLocalizations {
       'Энэ захиалга өөр BeaverTalk бүртгэл дээр аль хэдийн идэвхтэй байна.';
 
   @override
-  String get ovRestoreCharactersTitle => 'Таны дүрүүд буцаж ирлээ';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Таны дүрүүд буцаж ирлээ',
+      one: 'Таны дүр буцаж ирлээ',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>

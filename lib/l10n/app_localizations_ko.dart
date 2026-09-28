@@ -1363,7 +1363,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get premiumBulletVideo => '하루 15분 영상통화';
 
   @override
-  String get premiumBulletAnalysis => '발음 분석 전체';
+  String get premiumBulletAnalysis => '복습 발음 평가 무제한';
 
   @override
   String get premiumBulletWeakSounds => '내 언어에 맞춘 취약 발음 연습';
@@ -1694,7 +1694,14 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ovRestoreOtherBody => '이 구독은 이미 다른 BeaverTalk 계정에서 사용 중이에요.';
 
   @override
-  String get ovRestoreCharactersTitle => '캐릭터를 다시 불러왔어요';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '캐릭터를 다시 불러왔어요',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle => '이 캐릭터는 다른 계정에서 구매했어요';

@@ -1388,7 +1388,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get premiumBulletVideo => 'Күніне 15 минут бейне қоңырау';
 
   @override
-  String get premiumBulletAnalysis => 'Айтылымды толық талдау';
+  String get premiumBulletAnalysis => 'Қайталауда айтылымды бағалау шексіз';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1734,11 +1734,19 @@ class AppLocalizationsKk extends AppLocalizations {
       'Бұл жазылым басқа BeaverTalk есептік жазбасында әлдеқашан белсенді.';
 
   @override
-  String get ovRestoreCharactersTitle => 'Кейіпкерлеріңіз қайтты';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Кейіпкерлеріңіз оралды',
+      one: 'Кейіпкеріңіз оралды',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>
-      'Бұл кейіпкер басқа аккаунтта сатып алынған';
+      'Бұл кейіпкер басқа есептік жазбада сатып алынған';
 
   @override
   String get ctaSignInThatAccount => 'Сол есептік жазбамен кіру';

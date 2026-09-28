@@ -1418,7 +1418,8 @@ class AppLocalizationsFr extends AppLocalizations {
   String get premiumBulletVideo => '15 minutes d\'appels vidéo par jour';
 
   @override
-  String get premiumBulletAnalysis => 'Analyse complète de la prononciation';
+  String get premiumBulletAnalysis =>
+      'Évaluation illimitée de la prononciation en révision';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1772,7 +1773,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Cet abonnement est déjà actif sur un autre compte BeaverTalk.';
 
   @override
-  String get ovRestoreCharactersTitle => 'Tes personnages sont de retour';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Vos personnages sont de retour',
+      one: 'Votre personnage est de retour',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>

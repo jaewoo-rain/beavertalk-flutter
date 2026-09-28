@@ -78,6 +78,7 @@ void main() {
       SubscriptionOverlay.restoreOtherAccount:
           'That plan belongs to another account',
       SubscriptionOverlay.restoreCharacters: 'Your characters are back',
+      SubscriptionOverlay.restoreCharacter: 'Your character is back',
       SubscriptionOverlay.restoreCharacterOtherAccount:
           'This character was bought on another account',
       SubscriptionOverlay.characterOffer: 'Not ready for Premium?',

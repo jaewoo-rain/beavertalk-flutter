@@ -368,8 +368,21 @@ enum RestoreOutcome {
   restored,
 
   /// Characters (or the character bundle) are back, but no subscription —
-  /// "Premium is back" would be untrue (QA F097 · PM-DEC-166).
+  /// "Premium is back" would be untrue (QA F097 · PM-DEC-166). Two or more.
   restoredCharacters,
+
+  /// Exactly one character is back (the title is singular — QA F110).
+  restoredCharacter,
+
+  /// Receipts went up and nothing was granted, and the server gives no
+  /// per-item reason yet (§22 ③) — another account, a bad receipt or an
+  /// outage look the same. A neutral "couldn't confirm" (QA F109).
+  unconfirmed,
+
+  /// An old subscription id (`bt_max` · `bt_pro…`) went up and nothing was
+  /// granted — the server catalog may not know it (UNKNOWN_PRODUCT). The
+  /// receipt stays open for a retry; "still confirming" (PM-DEC-119 · F070).
+  verifying,
 
   /// The store returned nothing to restore.
   nothing,
@@ -380,6 +393,9 @@ enum RestoreOutcome {
 
   /// Only character receipts came back and none was granted — bought on
   /// another BeaverTalk account (09-28 device, 409 on bt_character_popo).
+  ///
+  /// ⚠ Not produced until the server returns per-item reasons (§22 ③): today a
+  /// 409 cannot be told from a 503, so that case is [unconfirmed] (QA F109).
   charactersNotThisAccount,
 
   /// The store or our server could not be reached.

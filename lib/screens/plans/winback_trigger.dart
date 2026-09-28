@@ -51,6 +51,9 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
   /// 설문이 답하는 구독(서버 상태의 `subscribe_id`). 없으면 사유를 보내지 않는다.
   int? _subscribeId;
 
+  /// 사유 전송 줄(도착 순서 보장).
+  Future<void> _sending = Future<void>.value();
+
   @override
   void initState() {
     super.initState();
@@ -77,6 +80,23 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
     }
     if (!mounted) return;
     if (!shouldOfferWinback(status: status, rows: rows)) return;
+    // F107 — 서버가 한 번 expired 라고 해도 스토어에 이 회원의 활성 Premium 이 있으면 아직
+    // 만료가 아니다(서버 갱신 지연 · 스토어 전파 경계). 조용히 복원(서버 재검증)을 한 번 하고
+    // 서버 상태를 다시 읽어 **여전히 expired 일 때만** 설문을 띄운다. 기록도 그 뒤에 한다.
+    if (await _storeStillHasPremium()) {
+      try {
+        await ref.read(iapServiceProvider).restore();
+      } catch (_) {}
+      if (!mounted) return;
+      ref.invalidate(serverSubscriptionStatusProvider);
+      final SubscriptionStatus? fresh;
+      try {
+        fresh = await ref.read(serverSubscriptionStatusProvider.future);
+      } catch (_) {
+        return; // 다시 못 읽으면 띄우지 않는다 — 잘못 띄우는 쪽이 더 나쁘다.
+      }
+      if (!mounted || fresh?.state != SubscriptionState.expired) return;
+    }
     _subscribeId = status.source?.id;
     final key = winbackPrefKeyFor(memberId);
     final mark = winbackMark(status.expiresAt);
@@ -97,24 +117,40 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
     // 타입 없는 pushNamed — 라우트 표가 `MaterialPageRoute<dynamic>` 을 만들어
     // `pushNamed<WinbackReason>` 은 형 변환에서 던진다(시험에서 잡음).
     final result = await Navigator.of(context).pushNamed(Routes.winbackSurvey);
-    if (result is WinbackReason) _sendReason(result);
+    // 사유는 바로 보낸다(offer_shown=false). 오퍼 시트가 실제로 뜨면 같은 사유를 true 로 한 번
+    // 더 보낸다 — 서버가 (회원, 구독)으로 덮어쓴다(PM-DEC-183 · QA F111). 시트를 못 띄우면 false 로 남는다.
+    if (result is WinbackReason) _sendReason(result, offerShown: false);
     if (!mounted || result != WinbackReason.expensive) return;
-    await showWinbackOfferSheet(context);
+    final sheet = showWinbackOfferSheet(context);
+    _sendReason(WinbackReason.expensive, offerShown: true);
+    await sheet;
   }
 
   /// 해지 사유를 서버에 남긴다(§17) — 실패해도 흐름을 막지 않는다(분석용 기록이다).
-  /// 「Too expensive」 면 바로 오퍼 시트를 띄우므로 `offer_shown` 은 그 사유와 같다.
-  void _sendReason(WinbackReason reason) {
+  ///
+  /// 보낸 순서대로 도착하게 줄 세운다 — false 가 true 뒤에 도착해 덮으면 오퍼를 봤는데도
+  /// 안 봤다고 남는다.
+  void _sendReason(WinbackReason reason, {required bool offerShown}) {
     final id = _subscribeId;
     if (id == null) return;
-    ref
-        .read(subscriptionRemoteDataSourceProvider)
+    final remote = ref.read(subscriptionRemoteDataSourceProvider);
+    _sending = _sending.then((_) => remote
         .submitChurnReason(
           reason: reason.wire,
           subscribeId: id,
-          offerShown: reason == WinbackReason.expensive,
+          offerShown: offerShown,
         )
-        .catchError((Object _) {});
+        .catchError((Object _) {}));
+  }
+
+  /// 스토어가 이 회원(난독화 계정 id 대조)의 **유효한** Premium 구독을 보고 있는가.
+  /// 주기(월/연)를 답하면 활성 구매가 있다는 뜻이다. 모르면(없음·조회 실패) false.
+  Future<bool> _storeStillHasPremium() async {
+    try {
+      return await ref.read(iapServiceProvider).ownsAnnualPremium() != null;
+    } catch (_) {
+      return false;
+    }
   }
 
   @override

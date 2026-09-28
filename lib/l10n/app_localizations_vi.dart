@@ -1391,7 +1391,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get premiumBulletVideo => '15 phút gọi video mỗi ngày';
 
   @override
-  String get premiumBulletAnalysis => 'Phân tích phát âm đầy đủ';
+  String get premiumBulletAnalysis => 'Chấm phát âm khi ôn tập không giới hạn';
 
   @override
   String get premiumBulletWeakSounds =>
@@ -1738,7 +1738,14 @@ class AppLocalizationsVi extends AppLocalizations {
       'Gói đăng ký này đang hoạt động trên một tài khoản BeaverTalk khác.';
 
   @override
-  String get ovRestoreCharactersTitle => 'Nhân vật của bạn đã trở lại';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Nhân vật của bạn đã trở lại',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle =>

@@ -1358,7 +1358,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get premiumBulletVideo => '每天 15 分钟视频通话';
 
   @override
-  String get premiumBulletAnalysis => '完整发音分析';
+  String get premiumBulletAnalysis => '复习发音评分不限次数';
 
   @override
   String get premiumBulletWeakSounds => '针对你母语的薄弱发音练习';
@@ -1689,7 +1689,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get ovRestoreOtherBody => '此订阅已在另一个 BeaverTalk 账号上生效。';
 
   @override
-  String get ovRestoreCharactersTitle => '角色已恢复';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '角色已恢复',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle => '该角色是在其他账号上购买的';

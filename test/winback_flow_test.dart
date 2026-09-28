@@ -10,6 +10,9 @@ import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/plans/winback_offer_sheet.dart';
 import 'package:beavertalk/screens/plans/winback_survey.dart';
 import 'package:beavertalk/screens/plans/winback_trigger.dart';
+import 'package:beavertalk/features/subscription/domain/iap_service.dart';
+import 'package:dio/dio.dart';
+import 'package:beavertalk/features/subscription/data/datasources/subscription_remote_data_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,7 +48,11 @@ Future<void> _pump(
   List<Subscription>? rows,
   int memberId = 7,
   bool profileFails = false,
+  IapService? iap,
+  SubscriptionStatus? Function(int call)? serverSeq,
+  SubscriptionRemoteDataSource? remote,
 }) async {
+  var calls = 0;
   tester.view.physicalSize = const Size(375, 900);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
@@ -53,7 +60,11 @@ Future<void> _pump(
     // 매 호출 새 스코프 — 같은 시험 안에서 회원을 바꿔 다시 띄운다.
     key: UniqueKey(),
     overrides: [
-      serverSubscriptionStatusProvider.overrideWith((ref) async => server),
+      serverSubscriptionStatusProvider.overrideWith(
+          (ref) async => serverSeq != null ? serverSeq(calls++) : server),
+      if (iap != null) iapServiceProvider.overrideWithValue(iap),
+      if (remote != null)
+        subscriptionRemoteDataSourceProvider.overrideWithValue(remote),
       subscriptionsProvider.overrideWith((ref) async => rows ?? _lapsed),
       myProfileProvider.overrideWith((ref) async {
         if (profileFails) throw StateError('profile down');
@@ -131,6 +142,73 @@ void main() {
     expect(_survey, findsNothing);
     expect(find.text('Welcome back'), findsNothing);
     expect(find.text('HOME'), findsOneWidget);
+  });
+
+  testWidgets('F107 — 스토어에 활성 Premium 이 있으면 복원 후 다시 읽어 만료가 아니면 안 띄운다',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, serverSeq: (i) => i == 0
+        ? _status(SubscriptionState.expired)
+        : _status(SubscriptionState.activeMax));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(_survey, findsNothing);
+  });
+
+  testWidgets('F107 — 복원 뒤에도 서버가 expired 면 그때 설문', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: true);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 1);
+    expect(_survey, findsOneWidget);
+  });
+
+  testWidgets('F107 — 스토어에 활성 구매가 없으면 복원 없이 바로 설문(기존 흐름)', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final iap = _StoreIap(ownsPremium: false);
+    await _pump(tester, iap: iap, server: _status(SubscriptionState.expired));
+    await tester.pumpAndSettle();
+    expect(iap.restores, 0);
+    expect(_survey, findsOneWidget);
+  });
+
+  testWidgets('§17 · PM-DEC-183 — 「비쌈」 은 사유를 false 로 먼저, 오퍼 시트가 뜨면 true 로 다시',
+      (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final remote = _RecordingRemote();
+    await _pump(tester,
+        server: SubscriptionStatus(
+          state: SubscriptionState.expired,
+          tier: SubscriptionTier.free,
+          expiresAt: _expiry,
+          source: const Subscription(id: 42),
+        ),
+        remote: remote);
+    await tester.tap(find.text('Too expensive'));
+    await tester.pump();
+    await tester.tap(find.text('Send'));
+    await tester.pumpAndSettle();
+    expect(remote.sent, [('expensive', 42, false), ('expensive', 42, true)]);
+  });
+
+  testWidgets('§17 — 다른 사유는 한 번 · offer_shown false · other_app 와이어 코드', (tester) async {
+    SharedPreferences.setMockInitialValues({});
+    final remote = _RecordingRemote();
+    await _pump(tester,
+        server: SubscriptionStatus(
+          state: SubscriptionState.expired,
+          tier: SubscriptionTier.free,
+          expiresAt: _expiry,
+          source: const Subscription(id: 42),
+        ),
+        remote: remote);
+    await tester.tap(find.text('I found another app'));
+    await tester.pump();
+    await tester.tap(find.text('Send'));
+    await tester.pumpAndSettle();
+    expect(remote.sent, [('other_app', 42, false)]);
   });
 
   testWidgets('F058 — 활성화된 적 없는 행(null)뿐이면 안 띄운다', (tester) async {
@@ -239,4 +317,35 @@ void main() {
     await tester.tap(find.text('Maybe later'));
     expect((got, later), (1, 1));
   });
+}
+
+/// 스토어가 이 회원의 활성 Premium 을 보는지([ownsPremium])와 복원 호출 수.
+class _StoreIap extends MockIapService {
+  _StoreIap({required this.ownsPremium});
+  final bool ownsPremium;
+  int restores = 0;
+
+  @override
+  Future<bool?> ownsAnnualPremium() async => ownsPremium ? false : null;
+
+  @override
+  Future<RestoreOutcome> restore() async {
+    restores++;
+    return RestoreOutcome.restored;
+  }
+}
+
+/// 보낸 해지 사유를 순서대로 기록한다.
+class _RecordingRemote extends SubscriptionRemoteDataSource {
+  _RecordingRemote() : super(Dio());
+  final sent = <(String, int, bool)>[];
+
+  @override
+  Future<void> submitChurnReason({
+    required String reason,
+    required int subscribeId,
+    required bool offerShown,
+  }) async {
+    sent.add((reason, subscribeId, offerShown));
+  }
 }

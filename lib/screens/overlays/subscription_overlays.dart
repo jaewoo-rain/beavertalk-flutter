@@ -38,8 +38,11 @@ enum SubscriptionOverlay {
   /// `overlay/restore — 다른 계정에 연결됨` (`4514:4834`).
   restoreOtherAccount,
 
-  /// 복원 — 캐릭터만 돌아옴(구독 없음 · QA F097 · PM-DEC-166).
+  /// 복원 — 캐릭터만 돌아옴(구독 없음 · QA F097 · PM-DEC-166). 둘 이상.
   restoreCharacters,
+
+  /// 복원 — 캐릭터 하나만 돌아옴(단수 제목 · QA F110).
+  restoreCharacter,
 
   /// 복원 — 캐릭터 영수증이 다른 BeaverTalk 계정 것(09-28 실기기 · 409).
   restoreCharacterOtherAccount,
@@ -253,6 +256,9 @@ SubscriptionOverlay restoreOverlayFor(RestoreOutcome outcome) =>
     switch (outcome) {
       RestoreOutcome.restored => SubscriptionOverlay.restoreSuccess,
       RestoreOutcome.restoredCharacters => SubscriptionOverlay.restoreCharacters,
+      RestoreOutcome.restoredCharacter => SubscriptionOverlay.restoreCharacter,
+      RestoreOutcome.unconfirmed => SubscriptionOverlay.purchaseRejected,
+      RestoreOutcome.verifying => SubscriptionOverlay.purchaseVerifying,
       RestoreOutcome.charactersNotThisAccount =>
         SubscriptionOverlay.restoreCharacterOtherAccount,
       RestoreOutcome.nothing => SubscriptionOverlay.restoreEmpty,
@@ -399,9 +405,12 @@ class _OverlaySheet extends StatelessWidget {
         );
       // 캐릭터만 돌아왔다 — 「Premium is back」 이 아니다(QA F097 · PM-DEC-166).
       case SubscriptionOverlay.restoreCharacters:
+      case SubscriptionOverlay.restoreCharacter:
         return BottomSheetContent(
-          title: l10n.ovRestoreCharactersTitle,
-          body: l10n.iapCharacterSuccessBody,
+          title: l10n.ovRestoreCharactersTitle(
+              overlay == SubscriptionOverlay.restoreCharacter ? 1 : 2),
+          // 제목만(PM-DEC-182 · QA F110) — 「이 캐릭터는…」 단수 본문이 여러 캐릭터 복원과 안 맞았다.
+          body: '',
           mark: SheetMarkTone.success,
           primaryAction:
               SheetAction(label: l10n.ctaContinue, onPressed: () => _close(context)),

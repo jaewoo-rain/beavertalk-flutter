@@ -871,14 +871,14 @@
   "planMax": "Premium",
   "premiumBulletVideo": "15 minutes of video calls a day",
   "@premiumBulletVideo": {"description": "Premium benefit bullet (Figma plans_compare / paywall_premium). No 'unlimited' — Premium is 15 minutes of calls a day in total, any number of calls (decision 2026-09-23)."},
-  "premiumBulletAnalysis": "Full pronunciation analysis",
-  "@premiumBulletAnalysis": {"description": "Premium benefit bullet."},
+  "premiumBulletAnalysis": "Unlimited pronunciation scoring in review",
+  "@premiumBulletAnalysis": {"description": "Premium benefit bullet (paywall, plans compare, purchase success, winback offer). PM-DEC-178: unlimited pronunciation scoring in review. ko/en written directly; the other 28 locales are provisional AI translations pending native review (43_\ub2e4\uad6d\uc5b4\uac80\uc218_\ud558\ub124\uc2a4/_input/2026-09-29_Premium\ud61c\ud0dd\uc904_\uc6d0\uc5b4\ubbfc\uac80\uc218\uc694\uccad.md)."},
   "premiumBulletWeakSounds": "Weak-sound drills for your language",
   "@premiumBulletWeakSounds": {"description": "Premium benefit bullet: weak-sound drills matched to the learner's native language."},
   "noteCharactersSeparate": "Characters are sold separately. The ones you buy stay yours.",
   "@noteCharactersSeparate": {"description": "Footnote on paywall/plans: characters are not included in Premium."},
   "ctaGetPremium": "Get Premium",
-  "@ctaGetPremium": {"description": "CTA on the limit paywall (reached by using up the free daily call)."},
+  "@ctaGetPremium": {"description": "CTA on the limit paywall (reached by using up the free daily call time)."},
   "planMaxTrial": "Premium trial",
   "@planMaxTrial": {
     "description": "Plan-card title while inside the Max trial."
@@ -1151,9 +1151,14 @@
   "ovRestoreEmptyBody": "No active subscription is linked to this store account.",
   "ovRestoreOtherTitle": "That plan belongs to another account",
   "ovRestoreOtherBody": "This subscription is already active on a different BeaverTalk account.",
-  "ovRestoreCharactersTitle": "Your characters are back",
+  "ovRestoreCharactersTitle": "{count, plural, =1{Your character is back} other{Your characters are back}}",
   "@ovRestoreCharactersTitle": {
-    "description": "Restore result when characters (not a subscription) came back (QA F097)."
+    "description": "Restore result when characters (not a subscription) came back (QA F097). {count} is how many characters came back (1 = singular, QA F110).",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "ovRestoreCharacterOtherTitle": "This character was bought on another account",
   "@ovRestoreCharacterOtherTitle": {

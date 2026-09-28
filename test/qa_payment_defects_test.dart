@@ -242,13 +242,20 @@ void main() {
       expect(o(r(0, 1), [sub]), RestoreOutcome.notThisAccount);
       expect(o(r(0, 0), const []), RestoreOutcome.nothing);
       // 09-28 실기기 — 구독은 만료돼 안 왔고 Popo 만 복원됐다 → 캐릭터 문구.
-      expect(o(r(1, 0, chars: [1, 9]), [popo]), RestoreOutcome.restoredCharacters);
+      // 캐릭터 하나 → 단수 제목(QA F110).
+      expect(o(r(1, 0, chars: [1, 9]), [popo]), RestoreOutcome.restoredCharacter);
       // 이미 가진 캐릭터만 다시 복원(새 지급 0) → 캐릭터 문구.
-      expect(o(r(0, 0, chars: [1, 9]), [popo]), RestoreOutcome.restoredCharacters);
+      expect(o(r(0, 0, chars: [1, 9]), [popo]), RestoreOutcome.restoredCharacter);
       // 구독도 캐릭터도 보냈는데 구독만 안 됐다 → 캐릭터 문구(「Premium is back」 아님).
-      expect(o(r(1, 1, chars: [9]), [sub, popo]), RestoreOutcome.restoredCharacters);
-      // 캐릭터만 보냈고 다른 계정 것(409) → 캐릭터용 다른 계정 문구.
-      expect(o(r(0, 1, chars: [1]), [popo]), RestoreOutcome.charactersNotThisAccount);
+      expect(o(r(1, 1, chars: [9]), [sub, popo]), RestoreOutcome.restoredCharacter);
+      // 캐릭터 둘 → 복수.
+      final rara = sent('bt_character_rara', IapProductType.nonConsumable);
+      expect(o(r(2, 0, chars: [9, 10]), [popo, rara]), RestoreOutcome.restoredCharacters);
+      // 캐릭터만 보냈고 지급 없음 — 건별 사유가 없어 409·503 을 못 가른다 → 중립(QA F109).
+      expect(o(r(0, 1, chars: [1]), [popo]), RestoreOutcome.unconfirmed);
+      // 옛 구독 id(bt_max) 가 지급 없음 → 「확인 중」(PM-DEC-119 · F070).
+      final legacy = sent('bt_max', IapProductType.subscription);
+      expect(o(r(0, 1), [legacy]), RestoreOutcome.verifying);
       // 구독이 섞여 있으면 구독 문구.
       expect(o(r(0, 2, chars: [1]), [sub, popo]), RestoreOutcome.notThisAccount);
     });
@@ -257,7 +264,16 @@ void main() {
       expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2]), [sub]),
           RestoreOutcome.notThisAccount);
       expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2]), [popo]),
-          RestoreOutcome.charactersNotThisAccount);
+          RestoreOutcome.unconfirmed);
+    });
+
+    test('F070 — 상품 종류: bt_character_* 만 캐릭터 · 옛 구독 id 는 구독', () {
+      for (final id in ['bt_max', 'bt_pro', 'bt_pro_monthly', 'bt_max_yearly']) {
+        expect(StoreIapService.typeOfProduct(id), IapProductType.subscription, reason: id);
+      }
+      for (final id in ['bt_character_popo', IapProductIds.characterBundle]) {
+        expect(StoreIapService.typeOfProduct(id), IapProductType.nonConsumable, reason: id);
+      }
     });
 
     test('F103 — 묶음 영수증은 유료 3종을 다 가지면 캐릭터 복원 · 거래를 닫는다', () {
@@ -327,6 +343,12 @@ void main() {
           SubscriptionOverlay.restoreCharacters);
       expect(restoreOverlayFor(RestoreOutcome.charactersNotThisAccount),
           SubscriptionOverlay.restoreCharacterOtherAccount);
+      expect(restoreOverlayFor(RestoreOutcome.restoredCharacter),
+          SubscriptionOverlay.restoreCharacter);
+      expect(restoreOverlayFor(RestoreOutcome.unconfirmed),
+          SubscriptionOverlay.purchaseRejected);
+      expect(restoreOverlayFor(RestoreOutcome.verifying),
+          SubscriptionOverlay.purchaseVerifying);
       expect(restoreOverlayFor(RestoreOutcome.unavailable),
           SubscriptionOverlay.restoreUnavailable);
     });

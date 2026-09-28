@@ -489,7 +489,8 @@ class StoreIapService implements IapService {
   static bool grantedByRestore(
       IapPurchase p, RestoreOutcome outcome, EntitlementDto entitlement) {
     if (outcome != RestoreOutcome.restored &&
-        outcome != RestoreOutcome.restoredCharacters) {
+        outcome != RestoreOutcome.restoredCharacters &&
+        outcome != RestoreOutcome.restoredCharacter) {
       return false;
     }
     if (p.type == IapProductType.subscription) return entitlement.isPro;
@@ -523,19 +524,31 @@ class StoreIapService implements IapService {
       RestoreResultDto r, List<IapPurchase> batch) {
     final subscriptionSent =
         batch.any((p) => p.type == IapProductType.subscription);
-    final characterSent =
-        batch.any((p) => p.type != IapProductType.subscription);
     if (subscriptionSent && r.entitlement.isPro) return RestoreOutcome.restored;
-    final charactersBack = batch.any((p) =>
-        p.type != IapProductType.subscription &&
-        grantedByRestore(p, RestoreOutcome.restoredCharacters, r.entitlement));
-    if (charactersBack) return RestoreOutcome.restoredCharacters;
-    if (batch.isEmpty && r.restored == 0 && r.failed == 0) {
-      return RestoreOutcome.nothing;
+    var charactersBack = 0;
+    for (final p in batch) {
+      if (p.type == IapProductType.subscription) continue;
+      if (!grantedByRestore(p, RestoreOutcome.restoredCharacters, r.entitlement)) {
+        continue;
+      }
+      charactersBack += p.productId == IapProductIds.characterBundle
+          ? IapProductIds.soldCharacters.length
+          : 1;
+    }
+    if (charactersBack == 1) return RestoreOutcome.restoredCharacter;
+    if (charactersBack > 1) return RestoreOutcome.restoredCharacters;
+    if (batch.isEmpty) return RestoreOutcome.nothing;
+    // 옛 구독 id(bt_max · bt_pro…)가 지급되지 않았다 — 서버 카탈로그가 모를 수 있다
+    // (UNKNOWN_PRODUCT) → 「확인 중」(PM-DEC-119 · F070).
+    if (batch.any((p) =>
+        p.type == IapProductType.subscription &&
+        !IapProductIds.subscriptions.contains(p.productId))) {
+      return RestoreOutcome.verifying;
     }
     if (subscriptionSent) return RestoreOutcome.notThisAccount;
-    if (characterSent) return RestoreOutcome.charactersNotThisAccount;
-    return RestoreOutcome.nothing;
+    // 캐릭터만 올라갔고 지급이 없다. 건별 사유가 없어(§22 ③) 409 와 503 을 가를 수
+    // 없다 — 「다른 계정」 이라 단정하지 않는다(QA F109).
+    return RestoreOutcome.unconfirmed;
   }
 
   static bool _ownsEverySoldCharacter(EntitlementDto e) =>
@@ -602,10 +615,18 @@ class StoreIapService implements IapService {
     );
   }
 
-  IapProductType _typeOf(String sku) =>
-      IapProductIds.subscriptions.contains(sku)
-          ? IapProductType.subscription
-          : IapProductType.nonConsumable;
+  IapProductType _typeOf(String sku) => typeOfProduct(sku);
+
+  /// A store product id to its kind. Only `bt_character_*` (characters and the
+  /// bundle) are one-time products; everything else we sell is a subscription —
+  /// including the old ids (`bt_max` · `bt_pro…`) a restore still replays.
+  /// Treating those as characters showed Premium members the character
+  /// "another account" sheet (QA F070).
+  @visibleForTesting
+  static IapProductType typeOfProduct(String sku) =>
+      sku.startsWith('bt_character_')
+          ? IapProductType.nonConsumable
+          : IapProductType.subscription;
 
   /// Logical SKUs to the ids the store itself knows.
   ///

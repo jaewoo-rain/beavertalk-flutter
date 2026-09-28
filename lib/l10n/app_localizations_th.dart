@@ -1383,7 +1383,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get premiumBulletVideo => 'วิดีโอคอลวันละ 15 นาที';
 
   @override
-  String get premiumBulletAnalysis => 'วิเคราะห์การออกเสียงแบบเต็ม';
+  String get premiumBulletAnalysis => 'ให้คะแนนการออกเสียงในการทบทวนไม่จำกัด';
 
   @override
   String get premiumBulletWeakSounds => 'ฝึกเสียงที่ยังไม่แม่นสำหรับภาษาของคุณ';
@@ -1726,7 +1726,14 @@ class AppLocalizationsTh extends AppLocalizations {
       'การสมัครนี้ใช้งานอยู่บนบัญชี BeaverTalk อื่นแล้ว';
 
   @override
-  String get ovRestoreCharactersTitle => 'ตัวละครของคุณกลับมาแล้ว';
+  String ovRestoreCharactersTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'ตัวละครของคุณกลับมาแล้ว',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get ovRestoreCharacterOtherTitle => 'ตัวละครนี้ถูกซื้อด้วยบัญชีอื่น';
