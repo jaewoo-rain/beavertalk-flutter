@@ -8,6 +8,8 @@ import 'package:beavertalk/features/auth/presentation/providers/my_profile_provi
 import 'package:beavertalk/features/character/data/models/character_dto.dart';
 import 'package:beavertalk/features/character/domain/entities/character.dart';
 import 'package:beavertalk/features/character/presentation/providers/character_providers.dart';
+import 'package:beavertalk/features/subscription/domain/iap_service.dart';
+import 'package:beavertalk/features/subscription/presentation/providers/subscription_state_providers.dart';
 import 'package:beavertalk/l10n/app_localizations.dart';
 import 'package:beavertalk/screens/mypage/avatar.dart';
 
@@ -39,8 +41,11 @@ void main() {
         'active_discount': ?discount,
       };
 
-  Widget host(List<Character> characters, {int? activeId}) => ProviderScope(
+  Widget host(List<Character> characters,
+          {int? activeId, IapService? iap}) =>
+      ProviderScope(
         overrides: [
+          if (iap != null) iapServiceProvider.overrideWithValue(iap),
           charactersProvider.overrideWith((ref) async => characters),
           ownedCharactersProvider.overrideWith((ref) async => const []),
           myProfileProvider.overrideWith(
@@ -114,6 +119,37 @@ void main() {
     expect(find.text('Today only · 50% off'), findsOneWidget);
     expect(find.textContaining('left'), findsOneWidget);
     // 카운트다운 타이머를 정리한다.
+    await t.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('PM-DEC-129 — 스토어 현지가가 있으면 그 값만, 서버 할인 %·배너는 뺀다', (t) async {
+    final ends = DateTime.now().toUtc().add(const Duration(hours: 5));
+    await t.pumpWidget(host(
+      catalog([
+        row(1, 'Baba', owned: true),
+        row(10, 'Rara',
+            effectivePrice: '2.49',
+            discount: {'end_time': ends.toIso8601String()}),
+      ]),
+      activeId: 1,
+      iap: MockIapService(catalog: const [
+        IapProduct(
+          id: 'bt_character_rara',
+          type: IapProductType.nonConsumable,
+          localizedPrice: '₩6,600',
+          rawPrice: 6600,
+          currencyCode: 'KRW',
+        ),
+      ]),
+    ));
+    await t.pumpAndSettle();
+    await t.tap(find.bySemanticsLabel('Rara'));
+    await t.pumpAndSettle();
+    expect(find.text('₩6,600'), findsOneWidget);
+    expect(find.text(r'$2.49'), findsNothing);
+    expect(find.text(r'$4.99'), findsNothing);
+    expect(find.text('-50%'), findsNothing);
+    expect(find.text('Today only · 50% off'), findsNothing);
     await t.pumpWidget(const SizedBox());
   });
 

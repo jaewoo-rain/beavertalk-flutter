@@ -73,18 +73,20 @@ final storePricesProvider = FutureProvider<List<IapProduct>>((ref) async {
   final maxYearly = at(IapProductIds.maxYearly);
   // Premium 둘만 있으면 채택한다. Pro(`bt_pro`)는 레거시라 Play 가 안 돌려줄 수 있고, 넷 다를
   // 요구하던 때는 현지가가 한 번도 채택되지 않아 USD 정가가 남았다(09-28 ₩33,000 결제에 $23.99 표시).
+  final characters = products
+      .where((p) => p.type == IapProductType.nonConsumable && p.rawPrice > 0)
+      .toList()
+    ..sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
+  // 캐릭터 현지가는 구독 가격과 따로 채택한다(PM-DEC-129).
+  final cheapest = characters.isEmpty ? null : at(characters.first.id);
+  if (cheapest != null) PlanPrices.adoptCharacterFrom(cheapest);
   if (maxMonthly != null && maxYearly != null) {
-    final characters = products
-        .where((p) => p.type == IapProductType.nonConsumable && p.rawPrice > 0)
-        .toList()
-      ..sort((a, b) => a.rawPrice.compareTo(b.rawPrice));
     PlanPrices.adopt(
       proMonthly: proMonthly,
       proYearly: proYearly,
       maxMonthly: maxMonthly,
       maxYearly: maxYearly,
-      characterFrom:
-          characters.isEmpty ? null : at(characters.first.id),
+      characterFrom: cheapest,
     );
   }
   return products;

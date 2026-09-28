@@ -389,6 +389,23 @@ void main() {
       expect(PlanPrices.maxYearlyAnchor, contains('₩'));
     });
 
+    test('PM-DEC-129 — Premium 이 안 와도 캐릭터 현지가는 채택한다', () async {
+      final iap = MockIapService(catalog: const [
+        IapProduct(
+            id: 'bt_character_rara',
+            type: IapProductType.nonConsumable,
+            localizedPrice: '₩6,600',
+            rawPrice: 6600,
+            currencyCode: 'KRW'),
+      ]);
+      final container = ProviderContainer(
+          overrides: [iapServiceProvider.overrideWithValue(iap)]);
+      addTearDown(container.dispose);
+      await container.read(storePricesProvider.future);
+      expect(PlanPrices.isStoreBacked, isFalse);
+      expect(PlanPrices.characterFrom, '₩6,600');
+    });
+
     testWidgets('구독 관리 — 서버 USD 값보다 스토어 현지가', (tester) async {
       debugDefaultTargetPlatformOverride = null;
       PlanPrices.adopt(

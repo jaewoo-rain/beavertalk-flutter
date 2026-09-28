@@ -99,11 +99,23 @@ abstract final class PlanPrices {
     );
   }
 
+  /// Takes only the cheapest character's store price.
+  ///
+  /// Characters are priced by the store per storefront (PM-DEC-129), and that
+  /// must not wait on the subscription pair — a catalog where Premium did not
+  /// answer would otherwise leave the character offer sheet on `$4.99`.
+  static void adoptCharacterFrom(StorePrice price) => _characterFrom = price;
+
+  static StorePrice? _characterFrom;
+
   /// Drops back to list prices.
   ///
   /// Sign-out and tests. A storefront belongs to a store account, so one
   /// member's prices must not outlive their session.
-  static void reset() => _store = null;
+  static void reset() {
+    _store = null;
+    _characterFrom = null;
+  }
 
   // ------------------------------------------------------------- store first
 
@@ -190,7 +202,9 @@ abstract final class PlanPrices {
   /// advertised a product that does not exist on either store — a 3.1.2
   /// misstatement, and unbuyable at the quoted price by construction.
   static String get characterFrom =>
-      _store?.characterFrom?.display ?? _listCharacterFrom;
+      _store?.characterFrom?.display ??
+      _characterFrom?.display ??
+      _listCharacterFrom;
 
   /// What the Free plan costs. Not a store product; here so the comparison
   /// screen quotes it from the same place as everything else.

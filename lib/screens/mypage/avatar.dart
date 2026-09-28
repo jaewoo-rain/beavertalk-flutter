@@ -155,7 +155,9 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   ) {
     final l10n = AppLocalizations.of(context);
     final surface = context.c.characterSurfaceFor(c.name);
-    final discount = !_usable(c) && c.hasDiscount;
+    // 할인 표시(%·종료 배너)는 서버 가격 기준이라 스토어 현지가를 보일 때는 뺀다 — 스토어가 준 값이
+    // 이미 실제 청구액이다(PM-DEC-129).
+    final discount = !_usable(c) && c.hasDiscount && _storePriceOf(c) == null;
     final ends = c.discountEndsAt;
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -256,7 +258,9 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           original: c.hasDiscount && _storePriceOf(c) == null
               ? _priceLabel(context, c.price)
               : null,
-          percent: c.hasDiscount ? _discountPercent(c) : null,
+          percent: c.hasDiscount && _storePriceOf(c) == null
+              ? _discountPercent(c)
+              : null,
         ),
         const SizedBox(height: AppSpacing.s8),
         Button(
