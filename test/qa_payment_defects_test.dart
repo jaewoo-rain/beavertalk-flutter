@@ -61,7 +61,7 @@ class _FakeStore implements InAppPurchase {
 }
 
 PurchaseDetails _pd(String token, PurchaseStatus status,
-        {String product = 'bt_max'}) =>
+        {String product = 'bt_max_monthly'}) =>
     PurchaseDetails(
       purchaseID: 'order-$token',
       productID: product,
@@ -87,7 +87,7 @@ class _FakeServer implements PurchaseRepository {
   Future<VerifyResultDto> verify(IapPurchase purchase) async {
     if (verifyError != null) throw verifyError!;
     return const VerifyResultDto(
-      productId: 'bt_max',
+      productId: 'bt_max_monthly',
       kind: PurchaseKind.subscription,
       entitlement: EntitlementDto(isPro: true),
     );
@@ -204,7 +204,7 @@ void main() {
 
     test('실패 → 시트: 결제는 됐는데 미확인이면 카드 거절이 아니다(F005)', () {
       IapPurchase f(IapFailure? x) => IapPurchase(
-          productId: 'bt_max', type: IapProductType.subscription,
+          productId: 'bt_max_monthly', type: IapProductType.subscription,
           state: IapPurchaseState.failed, failure: x);
       expect(purchaseFailureOverlayFor(f(IapFailure.verifyPending)),
           SubscriptionOverlay.purchaseVerifying);
@@ -270,6 +270,18 @@ void main() {
     test('서버 예외 → unavailable(「복원할 것 없음」 아님)', () async {
       final (outcome, _, _) = await run(_FakeServer()..restoreError = const NetworkFailure());
       expect(outcome, RestoreOutcome.unavailable);
+    });
+
+    test('PM-DEC-121 — 복원은 스토어 원시 id 를 보내고, Premium 은 그대로 서버 카탈로그 id 다', () async {
+      final server = _RecordingServer()..restoreResult = r(1, 0, pro: true);
+      final store = _FakeStore()..restorable = [_pd('r2', PurchaseStatus.restored)];
+      final rail = StoreIapService(server: server, store: store);
+      await rail.restore();
+      await rail.dispose();
+      final sent = server.restored.single;
+      expect(sent.productId, 'bt_max_monthly', reason: '서버 iap_catalog 에 있는 id');
+      expect(sent.type, IapProductType.subscription,
+          reason: '옛 원시 id bt_max 는 캐릭터(비소모성)로 잘못 분류됐다');
     });
 
     test('서버가 지급 → restored · 이벤트 · 거래 닫음', () async {
@@ -546,6 +558,16 @@ void main() {
 }
 
 // ── 가짜 레일들 ───────────────────────────────────────────────────────────────
+
+/// 복원에 보낸 영수증을 기록한다.
+class _RecordingServer extends _FakeServer {
+  List<IapPurchase> restored = const [];
+  @override
+  Future<RestoreResultDto> restore(List<IapPurchase> purchases) {
+    restored = purchases;
+    return super.restore(purchases);
+  }
+}
 
 /// 통화 상태만 정한다 — 진짜 build() 는 소켓·오디오를 연다.
 class _StubCall extends NormalCallController {

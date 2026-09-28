@@ -45,7 +45,8 @@ abstract final class IapProductIds {
 
   static const subscriptions = {proMonthly, proYearly, maxMonthly, maxYearly};
 
-  /// Play 윈백 오퍼 — `bt_max` · 기본 플랜 `monthly` · 첫 달 50% × 1회(개발자 결정형 ·
+  /// Play 윈백 오퍼 — `bt_max_monthly` · 기본 플랜 `monthly` · 첫 달 50% × 1회(개발자 결정형 ·
+  /// 09-28 `bt_max` 에서 새 구독으로 복제 · PM-DEC-121 ·
   /// targeting 없음 — Play 가 스스로 노출하지 않는다). 09-26 branch to dev 세션이 콘솔 API 로
   /// 생성·활성화(PM-DEC-049·050). iOS 윈백 오퍼는 애플이 자격 판정·노출해 앱 코드가 없다.
   static const playWinbackOfferId = 'winback-50-1m';
@@ -154,8 +155,12 @@ abstract final class IapProductIds {
       <String, ({String subscriptionId, String basePlanId})>{
     proMonthly: (subscriptionId: 'bt_pro', basePlanId: 'monthly'),
     proYearly: (subscriptionId: 'bt_pro', basePlanId: 'yearly'),
-    maxMonthly: (subscriptionId: 'bt_max', basePlanId: 'monthly'),
-    maxYearly: (subscriptionId: 'bt_max', basePlanId: 'yearly'),
+    // Premium 은 주기마다 **따로 만든 구독**이다(PM-DEC-121 · 09-28). 한 구독(`bt_max`)에
+    // 기본 플랜 둘이던 때, 앱이 보내는 논리 SKU(`bt_max_monthly`)와 서버가 비교하는 구글
+    // `lineItems[].productId`(`bt_max`)가 늘 달라 검증이 422 INVALID_RECEIPT 였다(실결제
+    // 09-28 10:18). 구독 id 를 논리 SKU 와 같게 만들어 스토어 쪽에서 맞췄다. bt_pro_* 는 레거시라 그대로.
+    maxMonthly: (subscriptionId: 'bt_max_monthly', basePlanId: 'monthly'),
+    maxYearly: (subscriptionId: 'bt_max_yearly', basePlanId: 'yearly'),
   };
 
   /// Play identifiers for a logical subscription SKU, or `null` if unknown.

@@ -556,5 +556,21 @@ void main() {
           IapProductIds.proYearly);
       expect(IapProductIds.logicalSkuFromPlay('bt_pro', 'weekly'), isNull);
     });
+
+    test('PM-DEC-121 — Premium 의 Play 구독 id 는 논리 SKU 와 같다', () {
+      // 서버는 앱이 보낸 product_id 를 구글 lineItems[].productId 와 그대로 비교한다.
+      // 한 구독 `bt_max` 에 기본 플랜 둘이던 때 늘 달라 422 INVALID_RECEIPT(09-28 실결제).
+      for (final sku in [IapProductIds.maxMonthly, IapProductIds.maxYearly]) {
+        expect(IapProductIds.playIdsFor(sku)!.subscriptionId, sku);
+      }
+      expect(IapProductIds.playIdsFor(IapProductIds.maxMonthly)!.basePlanId, 'monthly');
+      expect(IapProductIds.playIdsFor(IapProductIds.maxYearly)!.basePlanId, 'yearly');
+      expect(IapProductIds.logicalSkuFromPlay('bt_max_monthly', 'monthly'),
+          IapProductIds.maxMonthly);
+      expect(IapProductIds.logicalSkuFromPlay('bt_max', 'monthly'), isNull,
+          reason: '옛 구독 id 는 더 쓰지 않는다');
+      // 레거시 bt_pro_* 는 그대로.
+      expect(IapProductIds.playIdsFor(IapProductIds.proMonthly)!.subscriptionId, 'bt_pro');
+    });
   });
 }
