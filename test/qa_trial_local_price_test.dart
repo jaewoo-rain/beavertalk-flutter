@@ -389,22 +389,26 @@ void main() {
 
     test('iOS — 유효한 Premium 거래 중 가장 최근 것', () {
       final now = DateTime(2026, 9, 28);
-      AppleTransaction t(String id, int expDay, int buyDay) => (
+      const tok = '1b4e28ba-2fa1-51d2-883f-0016d3cca427';
+      AppleTransaction t(String id, int expDay, int buyDay,
+              {String? account = tok}) =>
+          (
             productId: id,
             expires: DateTime(2026, 9, expDay),
             purchased: DateTime(2026, 9, buyDay),
+            account: account,
           );
       expect(
           StoreIapService.appleOwnsAnnual(
               [t('bt_max_monthly', 29, 1), t('bt_max_yearly', 30, 20)],
-              now: now),
+              now: now, accountToken: tok),
           isTrue);
       expect(
-          StoreIapService.appleOwnsAnnual([t('bt_max_yearly', 27, 1)], now: now),
+          StoreIapService.appleOwnsAnnual([t('bt_max_yearly', 27, 1)], now: now, accountToken: tok),
           isNull,
           reason: '만료된 것은 없는 것');
       expect(
-          StoreIapService.appleOwnsAnnual([t('bt_max_monthly', 30, 1)], now: now),
+          StoreIapService.appleOwnsAnnual([t('bt_max_monthly', 30, 1)], now: now, accountToken: tok),
           isFalse);
     });
 
@@ -431,6 +435,73 @@ void main() {
         playOwnedPurchases: () async => const [],
       );
       expect(await iap.purchaseWinbackOffer(), isFalse);
+    });
+
+    test('F089 · F090 — 윈백은 회원 id 를 싣고 체험 표시를 남기지 않는다', () async {
+      final rows = _sub('bt_max_monthly', [
+        _offer('monthly', null, [_paid]),
+        _offer('monthly', 'trial-7d', [_phase(0, 'Free', period: 'P1W'), _paid]),
+        _offer('monthly', 'winback-50-1m', [_phase(16500000000, '₩16,500'), _paid],
+            tags: ['winback']),
+      ]);
+      final store = _Store(rows);
+      final iap = StoreIapService(
+        server: _Server(),
+        store: store,
+        playOwnedPurchases: () async => const [],
+        accountId: _meId,
+      );
+      // 같은 세션에서 체험 결제창을 먼저 열었다(취소됐다고 친다).
+      final p = (await iap.getProducts({IapProductIds.maxMonthly})).single;
+      await iap.purchase(p);
+      expect((store.bought! as GooglePlayPurchaseParam).offerToken,
+          'tok-monthly-trial-7d');
+      expect(await iap.purchaseWinbackOffer(), isTrue);
+      final param = store.bought! as GooglePlayPurchaseParam;
+      expect(param.offerToken, 'tok-monthly-winback-50-1m');
+      expect(param.applicationUserName, _me);
+    });
+
+    test('iOS — 다른 회원·토큰 없는 거래는 세지 않는다 · 토큰은 UUID 모양', () {
+      final now = DateTime(2026, 9, 28);
+      final token = StoreIapService.appleAccountToken(
+          'a' * 12 + '0123456789abcdef0123456789abcdef0123456789abcdef0123');
+      expect(
+          RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-5[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$')
+              .hasMatch(token),
+          isTrue,
+          reason: token);
+      ({String productId, DateTime? expires, DateTime? purchased, String? account})
+          yearly(String? account) => (
+                productId: 'bt_max_yearly',
+                expires: DateTime(2026, 10, 1),
+                purchased: DateTime(2026, 9, 1),
+                account: account,
+              );
+      expect(StoreIapService.appleOwnsAnnual([yearly(token)],
+          now: now, accountToken: token), isTrue);
+      expect(StoreIapService.appleOwnsAnnual([yearly(token.toUpperCase())],
+          now: now, accountToken: token), isTrue);
+      expect(StoreIapService.appleOwnsAnnual([yearly('other')],
+          now: now, accountToken: token), isNull);
+      expect(StoreIapService.appleOwnsAnnual([yearly(null)],
+          now: now, accountToken: token), isNull);
+    });
+
+    test('Play ITEM_ALREADY_OWNED 는 카드 거절이 아니라 「이미 구독 중」', () {
+      expect(
+          StoreIapService.storeFailureOf(IAPError(
+              source: 'google_play',
+              code: 'purchase_error',
+              message: 'BillingResponse.itemAlreadyOwned')),
+          IapFailure.alreadyOwned);
+      expect(
+          StoreIapService.storeFailureOf(IAPError(
+              source: 'google_play',
+              code: 'purchase_error',
+              message: 'BillingResponse.error')),
+          IapFailure.store);
+      expect(StoreIapService.storeFailureOf(null), IapFailure.store);
     });
 
     test('결제창을 못 열면(false) 예외 — 스피너가 멈추지 않는다', () async {

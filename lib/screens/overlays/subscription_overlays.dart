@@ -260,6 +260,7 @@ SubscriptionOverlay purchaseFailureOverlayFor(IapPurchase p) =>
       IapFailure.verifyPending => SubscriptionOverlay.purchaseVerifying,
       IapFailure.rejected => SubscriptionOverlay.purchaseRejected,
       IapFailure.otherAccount => SubscriptionOverlay.restoreOtherAccount,
+      IapFailure.alreadyOwned => SubscriptionOverlay.alreadySubscribed,
       IapFailure.store || null => SubscriptionOverlay.purchaseFailedDeclined,
     };
 

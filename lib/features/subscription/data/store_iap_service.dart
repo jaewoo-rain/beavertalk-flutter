@@ -352,11 +352,16 @@ class StoreIapService implements IapService {
     final (details, offer) = candidates[i];
     // Play 는 구매에 기본 플랜을 싣지 않는다 — 우리가 연 결제라 SKU 를 기억해 둔다.
     _launched[details.id] = IapProductIds.maxMonthly;
+    // 윈백은 체험이 아니다 — 같은 세션에서 체험 결제창을 열었다 닫은 흔적이 남아 성공 화면이
+    // 「7 days free」 라고 하지 않게 지운다(QA F090).
+    _launchedTrial.remove(details.id);
     // 결제창을 못 열면 false — 호출부가 스토어 구독 화면으로 보낸다. 예전엔 true 를 돌려줘 처리
     // 화면 스피너가 멈췄다(QA F074).
     return _store.buyNonConsumable(
       purchaseParam: GooglePlayPurchaseParam(
         productDetails: details,
+        // 윈백 재가입도 이 회원의 구매로 표시한다 — 없으면 요금 줄·연간 전환이 계속 막힌다(QA F089).
+        applicationUserName: _storeAccountId(),
         offerToken: offer.offerIdToken,
       ),
     );
@@ -402,7 +407,7 @@ class StoreIapService implements IapService {
         case PurchaseStatus.error:
           _finish(pd);
           _out.add(_event(pd, IapPurchaseState.failed,
-              error: pd.error, failure: IapFailure.store));
+              error: pd.error, failure: storeFailureOf(pd.error)));
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
           unawaited(_deliver(pd));
@@ -504,6 +509,19 @@ class StoreIapService implements IapService {
     return RestoreOutcome.nothing;
   }
 
+  /// A store-side purchase error to the reason the screens show. Play reports
+  /// the billing response as the message (`BillingResponse.itemAlreadyOwned`);
+  /// an already-owned product is not a declined card (09-28 device: a yearly
+  /// switch read "Your card was declined").
+  @visibleForTesting
+  static IapFailure storeFailureOf(IAPError? error) {
+    final text = '${error?.code} ${error?.message}'.toLowerCase();
+    if (text.contains('itemalreadyowned') || text.contains('already_owned')) {
+      return IapFailure.alreadyOwned;
+    }
+    return IapFailure.store;
+  }
+
   /// A verification error to the reason the screens show.
   @visibleForTesting
   static IapFailure verifyFailureOf(Object e) => switch (e) {
@@ -592,7 +610,7 @@ class StoreIapService implements IapService {
 
   PurchaseParam _paramFor(_StoreSku sku,
       {GooglePlayPurchaseDetails? replacing}) {
-    final account = _currentAccountId();
+    final account = _storeAccountId();
     if (sku.offerToken == null) {
       return PurchaseParam(
           productDetails: sku.details, applicationUserName: account);
@@ -628,6 +646,35 @@ class StoreIapService implements IapService {
     } catch (_) {
       return null;
     }
+  }
+
+  /// [_currentAccountId] in the shape this store accepts. Play takes the
+  /// 64-char hex as `obfuscatedAccountId`; StoreKit 2's `appAccountToken` must
+  /// be a UUID or the plugin drops it silently.
+  String? _storeAccountId() {
+    final id = _currentAccountId();
+    if (id == null) return null;
+    return defaultTargetPlatform == TargetPlatform.iOS
+        ? appleAccountToken(id)
+        : id;
+  }
+
+  /// The member hash as a UUID for StoreKit's `appAccountToken`: the first 16
+  /// bytes of the SHA-256, stamped version 5 / RFC 4122 variant (name-based,
+  /// like UUIDv5). Derived from the same hash as Play's id, so neither store
+  /// receives the Supabase user id itself — only a one-way value that the app
+  /// can recompute to recognise its own member's purchases.
+  @visibleForTesting
+  static String appleAccountToken(String hexHash) {
+    final b = [
+      for (var i = 0; i < 32; i += 2)
+        int.parse(hexHash.substring(i, i + 2), radix: 16),
+    ];
+    b[6] = (b[6] & 0x0f) | 0x50;
+    b[8] = (b[8] & 0x3f) | 0x80;
+    final h = b.map((x) => x.toRadixString(16).padLeft(2, '0')).join();
+    return '${h.substring(0, 8)}-${h.substring(8, 12)}-${h.substring(12, 16)}-'
+        '${h.substring(16, 20)}-${h.substring(20)}';
   }
 
   @override
@@ -670,7 +717,8 @@ class StoreIapService implements IapService {
     } catch (_) {
       return null;
     }
-    return appleOwnsAnnual(all, now: DateTime.now());
+    return appleOwnsAnnual(all,
+        now: DateTime.now(), accountToken: _storeAccountId());
   }
 
   static Future<List<AppleTransaction>> _queryAppleTransactions() async => [
@@ -679,6 +727,7 @@ class StoreIapService implements IapService {
             productId: t.productId,
             expires: parseStoreKitDate(t.expirationDate),
             purchased: parseStoreKitDate(t.purchaseDate),
+            account: t.appAccountToken,
           ),
       ];
 
@@ -695,13 +744,18 @@ class StoreIapService implements IapService {
   }
 
   /// [all] 에서 유효한 Premium 이 연간인가. 유효한 Premium 이 없으면 `null`(모름 — 버튼을 숨긴다).
+  ///
+  /// [accountToken] 회원의 거래만 본다 — Play 의 obfuscatedAccountId 대조와 같은 규칙(PM-DEC-138).
+  /// 토큰이 없는 거래(이 대조 이전 구매)는 세지 않는다.
   @visibleForTesting
   static bool? appleOwnsAnnual(List<AppleTransaction> all,
-      {required DateTime now}) {
+      {required DateTime now, required String? accountToken}) {
     const premium = {IapProductIds.maxMonthly, IapProductIds.maxYearly};
     final live = [
       for (final t in all)
-        if (premium.contains(t.productId) &&
+        if (accountToken != null &&
+            t.account?.toLowerCase() == accountToken.toLowerCase() &&
+            premium.contains(t.productId) &&
             t.expires != null &&
             t.expires!.isAfter(now))
           t,
@@ -751,7 +805,12 @@ class StoreIapService implements IapService {
 }
 
 /// StoreKit 2 거래 중 주기 판단에 쓰는 것만.
-typedef AppleTransaction = ({String productId, DateTime? expires, DateTime? purchased});
+typedef AppleTransaction = ({
+  String productId,
+  DateTime? expires,
+  DateTime? purchased,
+  String? account,
+});
 
 /// A store product plus what Play needs in order to charge the right base plan.
 class _StoreSku {

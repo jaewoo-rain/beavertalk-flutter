@@ -97,6 +97,9 @@ class _PurchaseProcessingScreenState
           // bug). Then drop the server caches so a real backend refetches.
           ref.read(sessionEntitlementProvider.notifier).state = tier;
           ref.invalidate(serverSubscriptionStatusProvider);
+          // 방금 산 구독으로 주기·전환 판단을 다시 읽는다 — 안 하면 앱을 다시 켤 때까지 요금 줄이
+          // 비고 「Compare plans」 가 남는다(09-28 실기기).
+          ref.invalidate(premiumAnnualProvider);
           ref.invalidate(subscriptionsProvider);
           // 통화가 5분 시트에서 이 퍼널을 띄워 놓고 **기다리고 있는가.**
           //
@@ -326,6 +329,7 @@ void watchLatePurchaseResult({
       case IapPurchaseState.restored:
         container.read(sessionEntitlementProvider.notifier).state = request.tier;
         container.invalidate(serverSubscriptionStatusProvider);
+        container.invalidate(premiumAnnualProvider);
         container.invalidate(subscriptionsProvider);
         if (!inCall) {
           navigator.pushNamed(Routes.purchaseSuccessMax,

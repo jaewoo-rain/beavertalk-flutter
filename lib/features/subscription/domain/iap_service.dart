@@ -298,6 +298,11 @@ enum IapFailure {
   /// The receipt already belongs to another BeaverTalk account
   /// (`RECEIPT_OWNED_BY_OTHER`).
   otherAccount,
+
+  /// The store refused because this store account already has the product
+  /// (Play `ITEM_ALREADY_OWNED`). Nothing was charged and no card was
+  /// declined — the member is already subscribed.
+  alreadyOwned,
 }
 
 /// Why `POST /purchases/verify` refused a receipt — the server's `detail.code`
