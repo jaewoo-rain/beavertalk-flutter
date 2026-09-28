@@ -2884,12 +2884,6 @@ abstract class AppLocalizations {
   /// **'5 minutes of voice calls a day'**
   String get bulletFreeCall;
 
-  /// No description provided for @bulletFreeCheck.
-  ///
-  /// In en, this message translates to:
-  /// **'Full analysis for your first 3 calls'**
-  String get bulletFreeCheck;
-
   /// No description provided for @bulletFreeCharacter.
   ///
   /// In en, this message translates to:
@@ -2937,18 +2931,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free gives you 5 minutes of calls a day'**
   String get limitBannerCallSub;
-
-  /// No description provided for @limitBannerCheckTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'That was today\'s check'**
-  String get limitBannerCheckTitle;
-
-  /// No description provided for @limitBannerCheckSub.
-  ///
-  /// In en, this message translates to:
-  /// **'Free gives you one check a day'**
-  String get limitBannerCheckSub;
 
   /// No description provided for @bulletProCharactersForever.
   ///
@@ -3267,6 +3249,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This subscription is already active on a different BeaverTalk account.'**
   String get ovRestoreOtherBody;
+
+  /// Restore result when characters (not a subscription) came back (QA F097).
+  ///
+  /// In en, this message translates to:
+  /// **'Your characters are back'**
+  String get ovRestoreCharactersTitle;
+
+  /// Restore result when only character receipts came back and they belong to another BeaverTalk account.
+  ///
+  /// In en, this message translates to:
+  /// **'This character was bought on another account'**
+  String get ovRestoreCharacterOtherTitle;
 
   /// No description provided for @ctaSignInThatAccount.
   ///
@@ -3759,18 +3753,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick up where you left off — right now.'**
   String get flTodayBody;
-
-  /// No description provided for @flCheckTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'That\'s today\'s check'**
-  String get flCheckTitle;
-
-  /// No description provided for @flCheckBody.
-  ///
-  /// In en, this message translates to:
-  /// **'Free includes one check a day. Premium gives you the full analysis.'**
-  String get flCheckBody;
 
   /// No description provided for @flCaption.
   ///

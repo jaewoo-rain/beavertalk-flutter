@@ -1522,9 +1522,6 @@ class AppLocalizationsUr extends AppLocalizations {
   String get bulletFreeCall => 'روزانہ 5 منٹ وائس کال';
 
   @override
-  String get bulletFreeCheck => 'پہلی 3 کالز کا مکمل تجزیہ';
-
-  @override
   String get bulletFreeCharacter => 'شروع کے لیے 2 کردار';
 
   @override
@@ -1548,12 +1545,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free میں روزانہ 5 منٹ کال ملتی ہے';
-
-  @override
-  String get limitBannerCheckTitle => 'آج کا چیک یہی تھا';
-
-  @override
-  String get limitBannerCheckSub => 'Free میں روزانہ ایک چیک ملتا ہے';
 
   @override
   String get bulletProCharactersForever =>
@@ -1746,6 +1737,13 @@ class AppLocalizationsUr extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'یہ سبسکرپشن پہلے ہی ایک مختلف BeaverTalk اکاؤنٹ پر فعال ہے۔';
+
+  @override
+  String get ovRestoreCharactersTitle => 'آپ کے کردار واپس آ گئے';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'یہ کردار کسی دوسرے اکاؤنٹ پر خریدا گیا تھا';
 
   @override
   String get ctaSignInThatAccount => 'اس اکاؤنٹ میں سائن ان کریں';
@@ -2027,13 +2025,6 @@ class AppLocalizationsUr extends AppLocalizations {
 
   @override
   String get flTodayBody => 'جہاں چھوڑا تھا وہیں سے جاری رکھیں — ابھی۔';
-
-  @override
-  String get flCheckTitle => 'آج کا چیک یہی تھا';
-
-  @override
-  String get flCheckBody =>
-      'Free میں روزانہ 1 جانچ ہوتی ہے۔ Premium مکمل تجزیہ دیتا ہے۔';
 
   @override
   String flCaption(String price) {

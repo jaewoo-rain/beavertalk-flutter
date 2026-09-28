@@ -1524,9 +1524,6 @@ class AppLocalizationsId extends AppLocalizations {
   String get bulletFreeCall => '5 menit panggilan suara per hari';
 
   @override
-  String get bulletFreeCheck => 'Analisis lengkap untuk 3 panggilan pertamamu';
-
-  @override
   String get bulletFreeCharacter => 'Dua karakter untuk memulai';
 
   @override
@@ -1551,12 +1548,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Gratis memberi 5 menit panggilan per hari';
-
-  @override
-  String get limitBannerCheckTitle => 'Itu cek hari ini';
-
-  @override
-  String get limitBannerCheckSub => 'Gratis memberi satu cek per hari';
 
   @override
   String get bulletProCharactersForever =>
@@ -1750,6 +1741,12 @@ class AppLocalizationsId extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Langganan ini sudah aktif di akun BeaverTalk yang berbeda.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Karaktermu sudah kembali';
+
+  @override
+  String get ovRestoreCharacterOtherTitle => 'Karakter ini dibeli di akun lain';
 
   @override
   String get ctaSignInThatAccount => 'Masuk ke akun itu';
@@ -2030,13 +2027,6 @@ class AppLocalizationsId extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Lanjutkan dari terakhir kali — sekarang juga.';
-
-  @override
-  String get flCheckTitle => 'Itu cek hari ini';
-
-  @override
-  String get flCheckBody =>
-      'Free mendapat satu pengecekan per hari. Premium memberimu analisis lengkap.';
 
   @override
   String flCaption(String price) {

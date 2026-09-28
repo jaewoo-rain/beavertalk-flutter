@@ -77,6 +77,9 @@ void main() {
       SubscriptionOverlay.restoreEmpty: 'Nothing to restore',
       SubscriptionOverlay.restoreOtherAccount:
           'That plan belongs to another account',
+      SubscriptionOverlay.restoreCharacters: 'Your characters are back',
+      SubscriptionOverlay.restoreCharacterOtherAccount:
+          'This character was bought on another account',
       SubscriptionOverlay.characterOffer: 'Not ready for Premium?',
       SubscriptionOverlay.notEligible: 'Nothing to cancel',
       SubscriptionOverlay.cancelDownsell: 'Before you go',
@@ -99,7 +102,6 @@ void main() {
       SubscriptionOverlay.restoreUnavailable: 'Connection failed',
       SubscriptionOverlay.alreadySubscribed: "You're already on Premium",
       SubscriptionOverlay.freeLimitCall: "You've used today's call time",
-      SubscriptionOverlay.freeLimitCheck: "That's today's check",
       SubscriptionOverlay.freeCallEnded: 'Your free call has ended',
       SubscriptionOverlay.keepGoing: 'Keep going?',
       // 기본은 「더 남음」 문구 — 오늘 마지막 통화 문구는 아래 별도 시험.
@@ -310,6 +312,7 @@ void main() {
     const secondaryFirst = [
       SubscriptionOverlay.restoreEmpty,
       SubscriptionOverlay.restoreOtherAccount,
+      SubscriptionOverlay.restoreCharacterOtherAccount,
       SubscriptionOverlay.characterOffer,
       SubscriptionOverlay.cancelDownsell,
       SubscriptionOverlay.annualSwitch,

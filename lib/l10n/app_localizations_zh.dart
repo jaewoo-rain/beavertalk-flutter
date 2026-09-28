@@ -1480,9 +1480,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bulletFreeCall => '每天 5 分钟语音通话';
 
   @override
-  String get bulletFreeCheck => '前3次通话提供完整分析';
-
-  @override
   String get bulletFreeCharacter => '开局2个角色';
 
   @override
@@ -1505,12 +1502,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => '免费套餐每天可通话 5 分钟';
-
-  @override
-  String get limitBannerCheckTitle => '今天的检测用完了';
-
-  @override
-  String get limitBannerCheckSub => '免费套餐每天可检测一次';
 
   @override
   String get bulletProCharactersForever => '买下的角色永远属于你';
@@ -1696,6 +1687,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get ovRestoreOtherBody => '此订阅已在另一个 BeaverTalk 账号上生效。';
+
+  @override
+  String get ovRestoreCharactersTitle => '角色已恢复';
+
+  @override
+  String get ovRestoreCharacterOtherTitle => '该角色是在其他账号上购买的';
 
   @override
   String get ctaSignInThatAccount => '登录那个账号';
@@ -1962,12 +1959,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get flTodayBody => '从上次中断的地方，现在就继续。';
-
-  @override
-  String get flCheckTitle => '今天的检测用完了';
-
-  @override
-  String get flCheckBody => '免费套餐每天可检测 1 次。Premium 提供完整分析。';
 
   @override
   String flCaption(String price) {

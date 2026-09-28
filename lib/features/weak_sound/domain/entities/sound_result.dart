@@ -14,6 +14,7 @@ class SoundResult {
     this.delta,
     this.charScores = const [],
     this.phonemeMisses = const [],
+    this.isStub = false,
   });
 
   final String soundKey;
@@ -22,8 +23,15 @@ class SoundResult {
   /// 학습 전 점수. 첫 측정이면 null(Figma E8 분기).
   final int? before;
 
-  /// 학습 후 점수 0~100.
-  final int after;
+  /// 학습 후 점수 0~100. **null 이면 채점하지 못했다**(벤더가 값을 안 줌) — 0점이 아니다(F099).
+  final int? after;
+
+  /// 서버가 실채점 대신 스텁(가짜) 점수를 낸 회차(F100 · 서버 §3). 서버는 이 회차를 최고점·
+  /// 시도 수·평균에 넣지 않는다 — 화면도 점수로 보이지 않는다.
+  final bool isStub;
+
+  /// 화면에 점수로 보일 값 — 채점 못 했거나 스텁이면 null(「—」로 그린다).
+  int? get score => isStub ? null : after;
 
   /// [after] − [before]. [before] 가 null 이면 null. 음수면 점수 하락(Figma E5).
   final int? delta;

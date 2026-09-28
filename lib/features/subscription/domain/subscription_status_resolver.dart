@@ -17,6 +17,9 @@ class SubscriptionStatus {
     this.pausedSince,
     this.source,
     this.isPlanInferred = false,
+    this.annual,
+    this.isTrial,
+    this.trialEndsAt,
   });
 
   /// Where the billing relationship stands.
@@ -52,6 +55,16 @@ class SubscriptionStatus {
   /// the plan doc's review item 3.
   final bool isPlanInferred;
 
+  /// 서버가 본 결제 주기(`billing_period`, §22-⑤) — true 연간 · false 월간 · null 모름(구서버·
+  /// 누락). 화면은 스토어 판정을 먼저 보고, 스토어가 모를 때만 이 값으로 폴백한다(F085).
+  final bool? annual;
+
+  /// 서버가 본 체험 여부(`is_trial`, §22-⑦) — null 은 구서버(필드 없음).
+  final bool? isTrial;
+
+  /// 체험이 끝나는 때(`trial_ends_at`) — 첫 결제일. 체험이 아니면 null.
+  final DateTime? trialEndsAt;
+
   /// Whether paid features are usable right now — see
   /// [SubscriptionStateX.grantsPaidAccess].
   bool get grantsPaidAccess => state.grantsPaidAccess;
@@ -76,6 +89,9 @@ class SubscriptionStatus {
         pausedSince: pausedSince ?? this.pausedSince,
         source: source,
         isPlanInferred: isPlanInferred ?? this.isPlanInferred,
+        annual: annual,
+        isTrial: isTrial,
+        trialEndsAt: trialEndsAt,
       );
 
   /// The default status for a member with nothing on file.

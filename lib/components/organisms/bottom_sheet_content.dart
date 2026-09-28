@@ -345,12 +345,15 @@ class BottomSheetContent extends StatelessWidget {
     return Column(
       children: [
         Text(title, textAlign: TextAlign.center, style: titleStyle),
-        SizedBox(height: big ? 6 : 8),
-        Text(
-          body,
-          textAlign: TextAlign.center,
-          style: AppType.label1.r.copyWith(color: c.labelNormal),
-        ),
+        // 본문이 없는 시트(제목 한 줄로 끝나는 안내)는 간격·빈 줄을 그리지 않는다.
+        if (body.isNotEmpty) ...[
+          SizedBox(height: big ? 6 : 8),
+          Text(
+            body,
+            textAlign: TextAlign.center,
+            style: AppType.label1.r.copyWith(color: c.labelNormal),
+          ),
+        ],
       ],
     );
   }

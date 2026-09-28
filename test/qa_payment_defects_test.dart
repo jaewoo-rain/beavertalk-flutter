@@ -227,24 +227,51 @@ void main() {
           entitlement: EntitlementDto(isPro: pro, ownedCharacterIds: chars),
         );
 
-    test('판정표', () {
-      expect(StoreIapService.restoreOutcomeOf(r(1, 0)), RestoreOutcome.restored);
-      expect(StoreIapService.restoreOutcomeOf(r(0, 0, pro: true)), RestoreOutcome.restored,
+    IapPurchase sent(String id, IapProductType type) =>
+        IapPurchase(productId: id, type: type, state: IapPurchaseState.restored);
+    final sub = sent('bt_max_monthly', IapProductType.subscription);
+    final popo = sent('bt_character_popo', IapProductType.nonConsumable);
+    final bundle = sent(IapProductIds.characterBundle, IapProductType.nonConsumable);
+
+    test('판정표 — 보낸 영수증 종류로 가른다(QA F097 · PM-DEC-166)', () {
+      RestoreOutcome o(RestoreResultDto res, List<IapPurchase> batch) =>
+          StoreIapService.restoreOutcomeOf(res, batch);
+      expect(o(r(1, 0, pro: true), [sub]), RestoreOutcome.restored);
+      expect(o(r(0, 0, pro: true), [sub]), RestoreOutcome.restored,
           reason: '이미 지급된 영수증은 restored 로 안 세지만 권한은 있다');
-      expect(StoreIapService.restoreOutcomeOf(r(0, 0, chars: [9])), RestoreOutcome.restored);
-      expect(StoreIapService.restoreOutcomeOf(r(0, 1)), RestoreOutcome.notThisAccount);
-      expect(StoreIapService.restoreOutcomeOf(r(0, 0)), RestoreOutcome.nothing);
+      expect(o(r(0, 1), [sub]), RestoreOutcome.notThisAccount);
+      expect(o(r(0, 0), const []), RestoreOutcome.nothing);
+      // 09-28 실기기 — 구독은 만료돼 안 왔고 Popo 만 복원됐다 → 캐릭터 문구.
+      expect(o(r(1, 0, chars: [1, 9]), [popo]), RestoreOutcome.restoredCharacters);
+      // 이미 가진 캐릭터만 다시 복원(새 지급 0) → 캐릭터 문구.
+      expect(o(r(0, 0, chars: [1, 9]), [popo]), RestoreOutcome.restoredCharacters);
+      // 구독도 캐릭터도 보냈는데 구독만 안 됐다 → 캐릭터 문구(「Premium is back」 아님).
+      expect(o(r(1, 1, chars: [9]), [sub, popo]), RestoreOutcome.restoredCharacters);
+      // 캐릭터만 보냈고 다른 계정 것(409) → 캐릭터용 다른 계정 문구.
+      expect(o(r(0, 1, chars: [1]), [popo]), RestoreOutcome.charactersNotThisAccount);
+      // 구독이 섞여 있으면 구독 문구.
+      expect(o(r(0, 2, chars: [1]), [sub, popo]), RestoreOutcome.notThisAccount);
     });
 
-    test('재검증 — 가입 때 받은 무료 스타터(Baba·Bibi)만 있으면 복원 성공이 아니다', () {
-      // 서버가 가입 시 Baba 를 보유 처리한다(member_service) · id 1 Baba · 2 Bibi.
-      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1])),
+    test('재검증 — 가입 때 받은 무료 스타터(Baba·Bibi)는 복원으로 세지 않는다', () {
+      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2]), [sub]),
           RestoreOutcome.notThisAccount);
-      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2])),
-          RestoreOutcome.notThisAccount);
-      expect(StoreIapService.restoreOutcomeOf(r(0, 0, chars: [1])), RestoreOutcome.nothing);
-      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 10])),
-          RestoreOutcome.restored, reason: '유료 Rara 는 센다');
+      expect(StoreIapService.restoreOutcomeOf(r(0, 1, chars: [1, 2]), [popo]),
+          RestoreOutcome.charactersNotThisAccount);
+    });
+
+    test('F103 — 묶음 영수증은 유료 3종을 다 가지면 캐릭터 복원 · 거래를 닫는다', () {
+      // 9 Popo · 10 Rara · 11 Dudu
+      expect(StoreIapService.restoreOutcomeOf(r(1, 0, chars: [1, 9, 10, 11]), [bundle]),
+          RestoreOutcome.restoredCharacters);
+      expect(
+          StoreIapService.grantedByRestore(bundle, RestoreOutcome.restoredCharacters,
+              const EntitlementDto(isPro: false, ownedCharacterIds: [9, 10, 11])),
+          isTrue);
+      expect(
+          StoreIapService.grantedByRestore(bundle, RestoreOutcome.restoredCharacters,
+              const EntitlementDto(isPro: false, ownedCharacterIds: [9, 10])),
+          isFalse, reason: '3종이 다 지급되기 전에는 닫지 않는다');
     });
 
     Future<(RestoreOutcome, _FakeStore, List<IapPurchase>)> run(
@@ -296,6 +323,10 @@ void main() {
       expect(restoreOverlayFor(RestoreOutcome.nothing), SubscriptionOverlay.restoreEmpty);
       expect(restoreOverlayFor(RestoreOutcome.notThisAccount),
           SubscriptionOverlay.restoreOtherAccount);
+      expect(restoreOverlayFor(RestoreOutcome.restoredCharacters),
+          SubscriptionOverlay.restoreCharacters);
+      expect(restoreOverlayFor(RestoreOutcome.charactersNotThisAccount),
+          SubscriptionOverlay.restoreCharacterOtherAccount);
       expect(restoreOverlayFor(RestoreOutcome.unavailable),
           SubscriptionOverlay.restoreUnavailable);
     });

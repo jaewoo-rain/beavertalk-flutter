@@ -1530,10 +1530,6 @@ class AppLocalizationsMy extends AppLocalizations {
   String get bulletFreeCall => 'တစ်နေ့ 5 မိနစ် အသံခေါ်ဆိုမှု';
 
   @override
-  String get bulletFreeCheck =>
-      'ပထမ ခေါ်ဆိုမှု 3 ကြိမ်အတွက် ခွဲခြမ်းစိတ်ဖြာမှု အပြည့်အစုံ';
-
-  @override
   String get bulletFreeCharacter => 'စတင်ရန် ဇာတ်ကောင် 2 ခု';
 
   @override
@@ -1558,12 +1554,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free တွင် တစ်နေ့ 5 မိနစ် ခေါ်ဆိုနိုင်သည်';
-
-  @override
-  String get limitBannerCheckTitle => 'ယနေ့ စစ်ဆေးမှု ပြီးပါပြီ';
-
-  @override
-  String get limitBannerCheckSub => 'Free တွင် တစ်နေ့ တစ်ကြိမ် စစ်ဆေးနိုင်သည်';
 
   @override
   String get bulletProCharactersForever =>
@@ -1757,6 +1747,13 @@ class AppLocalizationsMy extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'ဤစာရင်းသွင်းမှုသည် အခြား BeaverTalk အကောင့်တွင် သက်ဝင်နေပြီး ဖြစ်သည်။';
+
+  @override
+  String get ovRestoreCharactersTitle => 'သင့်ဇာတ်ကောင်များ ပြန်ရောက်လာပါပြီ';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'ဤဇာတ်ကောင်ကို အခြားအကောင့်ဖြင့် ဝယ်ထားသည်';
 
   @override
   String get ctaSignInThatAccount => 'ထိုအကောင့်ဖြင့် ဝင်ရန်';
@@ -2037,13 +2034,6 @@ class AppLocalizationsMy extends AppLocalizations {
 
   @override
   String get flTodayBody => 'ရပ်ထားသည့်နေရာမှ — ယခုပဲ ဆက်လုပ်ပါ။';
-
-  @override
-  String get flCheckTitle => 'ယနေ့ စစ်ဆေးမှု ပြီးပါပြီ';
-
-  @override
-  String get flCheckBody =>
-      'Free တွင် တစ်ရက် 1 ကြိမ် စစ်ဆေးနိုင်သည်။ Premium က ခွဲခြမ်းစိတ်ဖြာမှု အပြည့်အစုံ ပေးသည်။';
 
   @override
   String flCaption(String price) {

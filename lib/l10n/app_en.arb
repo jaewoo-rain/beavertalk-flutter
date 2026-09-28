@@ -982,7 +982,6 @@
   "planTaglineFree": "5 minutes of calls a day. On the house.",
   "bulletProCorrections": "Corrections aimed at your native language",
   "bulletFreeCall": "5 minutes of voice calls a day",
-  "bulletFreeCheck": "Full analysis for your first 3 calls",
   "bulletFreeCharacter": "Two characters to start",
   "ctaTurnOnVideo": "Turn on video",
   "noteCallLength": "Premium: 15 minutes of calls a day — call as often as you like within that.",
@@ -994,8 +993,6 @@
   },
   "limitBannerCallTitle": "You've used today's call time",
   "limitBannerCallSub": "Free gives you 5 minutes of calls a day",
-  "limitBannerCheckTitle": "That was today's check",
-  "limitBannerCheckSub": "Free gives you one check a day",
   "bulletProCharactersForever": "Characters you buy stay yours forever",
   "paywallMaxTitle": "Now you can talk face to face over video.",
   "paywallTutorCompare": "One hour with a tutor costs $25. A month of Premium costs {price}.",
@@ -1154,6 +1151,14 @@
   "ovRestoreEmptyBody": "No active subscription is linked to this store account.",
   "ovRestoreOtherTitle": "That plan belongs to another account",
   "ovRestoreOtherBody": "This subscription is already active on a different BeaverTalk account.",
+  "ovRestoreCharactersTitle": "Your characters are back",
+  "@ovRestoreCharactersTitle": {
+    "description": "Restore result when characters (not a subscription) came back (QA F097)."
+  },
+  "ovRestoreCharacterOtherTitle": "This character was bought on another account",
+  "@ovRestoreCharacterOtherTitle": {
+    "description": "Restore result when only character receipts came back and they belong to another BeaverTalk account."
+  },
   "ctaSignInThatAccount": "Sign in to that account",
   "ctaGetHelp": "Get help",
   "ovCharacterOfferTitle": "Not ready for Premium?",
@@ -1336,8 +1341,6 @@
     "description": "free_limit call sheet. Source: pre-neutralization backup doc - reconfirm against Figma host section (04_tonghwa)."
   },
   "flTodayBody": "Pick up where you left off — right now.",
-  "flCheckTitle": "That's today's check",
-  "flCheckBody": "Free includes one check a day. Premium gives you the full analysis.",
   "flCaption": "{price} per month · cancel anytime",
   "@flCaption": {
     "placeholders": {

@@ -110,7 +110,7 @@ class LearnResultScreen extends ConsumerWidget {
                         const SizedBox(height: AppSpacing.s24),
                         _ScoreLine(result: result),
                         const SizedBox(height: AppSpacing.s16),
-                        _ProgressBar(result: result),
+                        if (result.score != null) _ProgressBar(result: result),
                         const SizedBox(height: AppSpacing.s28),
                         if (lesson != null) _SoundCard(lesson: lesson),
                         const SizedBox(height: AppSpacing.s24),
@@ -218,7 +218,7 @@ class _GaugeBody extends StatelessWidget {
                     style: AppType.title2.b.copyWith(color: c.labelStrong),
                   ),
                   const SizedBox(height: AppSpacing.s24),
-                  Center(child: _ResultGauge(score: result.after)),
+                  Center(child: _ResultGauge(score: result.score)),
                   const SizedBox(height: AppSpacing.s24),
                   _Summary(lesson: lesson, result: result),
                 ],
@@ -239,7 +239,8 @@ class _GaugeBody extends StatelessWidget {
 class _ResultGauge extends StatefulWidget {
   const _ResultGauge({required this.score});
 
-  final int score;
+  /// null 이면 채점 못 함 · 스텁 — 바늘 없이 「—」(F099 · F100).
+  final int? score;
 
   @override
   State<_ResultGauge> createState() => _ResultGaugeState();
@@ -275,8 +276,11 @@ class _ResultGaugeState extends State<_ResultGauge>
   Widget build(BuildContext context) {
     final c = context.c;
     final l10n = AppLocalizations.of(context);
-    final score = widget.score.clamp(0, 100);
-    final text = c.scoreTextColor(scoreBand(score));
+    final scored = widget.score;
+    final score = (scored ?? 0).clamp(0, 100);
+    final text = scored == null
+        ? c.labelAlternative
+        : c.scoreTextColor(scoreBand(score));
     // 숫자 40 — 앱 타이포에 40 이 없어 Title 1(32)을 Figma 크기 40 · 줄높이 52 로 늘린다.
     final numberStyle = AppType.title1.b.copyWith(
       fontSize: 40,
@@ -313,12 +317,15 @@ class _ResultGaugeState extends State<_ResultGauge>
                   crossAxisAlignment: CrossAxisAlignment.baseline,
                   textBaseline: TextBaseline.alphabetic,
                   children: [
-                    Text('${shown.round()}', style: numberStyle),
-                    const SizedBox(width: 2),
-                    Text(
-                      l10n.wsPointsUnit,
-                      style: AppType.headline1.b.copyWith(color: text),
-                    ),
+                    Text(scored == null ? '—' : '${shown.round()}',
+                        style: numberStyle),
+                    if (scored != null) ...[
+                      const SizedBox(width: 2),
+                      Text(
+                        l10n.wsPointsUnit,
+                        style: AppType.headline1.b.copyWith(color: text),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -340,8 +347,12 @@ class _ScoreLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final c = context.c;
     final l10n = AppLocalizations.of(context);
-    final delta = result.delta;
-    final band = c.scoreTextColor(scoreBand(result.after));
+    final score = result.score;
+    // 채점 못 함·스텁이면 증감도 말하지 않는다 — 가짜 점수와의 차이다(F100).
+    final delta = score == null ? null : result.delta;
+    final band = score == null
+        ? c.labelAlternative
+        : c.scoreTextColor(scoreBand(score));
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -349,14 +360,16 @@ class _ScoreLine extends StatelessWidget {
       children: [
         // 숫자 · 「점」 = 점수 구간 글자색(09-24 사장님 · Figma 17 `6118:12274` 84 → Score/5 Text).
         Text(
-          '${result.after}',
+          score == null ? '—' : '$score',
           style: AppType.display1.b.copyWith(color: band),
         ),
-        const SizedBox(width: AppSpacing.s4),
-        Text(
-          l10n.wsPointsUnit,
-          style: AppType.heading2.b.copyWith(color: band),
-        ),
+        if (score != null) ...[
+          const SizedBox(width: AppSpacing.s4),
+          Text(
+            l10n.wsPointsUnit,
+            style: AppType.heading2.b.copyWith(color: band),
+          ),
+        ],
         if (delta != null && delta != 0) ...[
           const SizedBox(width: AppSpacing.s8),
           Container(
@@ -392,7 +405,7 @@ class _ProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final c = context.c;
-    final after = result.after.clamp(0, 100);
+    final after = (result.score ?? 0).clamp(0, 100);
     final before = result.before;
     return Column(
       children: [
@@ -558,7 +571,10 @@ class _Summary extends StatelessWidget {
       children: [
         if (words > 0) _Row(label: l10n.wsWordsRepeated(words), done: true),
         if (chunks > 0) _Row(label: l10n.wsChunksRepeated(chunks), done: true),
-        _Row(label: l10n.wsFinalTest, value: l10n.wsPoints(result.after)),
+        _Row(
+          label: l10n.wsFinalTest,
+          value: result.score == null ? '—' : l10n.wsPoints(result.score!),
+        ),
       ],
     );
   }

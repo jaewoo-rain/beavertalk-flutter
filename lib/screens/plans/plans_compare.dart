@@ -90,7 +90,8 @@ class PlansCompareScreen extends ConsumerWidget {
                     bulletTone: BulletTone.free,
                     bullets: [
                       l10n.bulletFreeCall,
-                      l10n.bulletFreeCheck,
+                      // 「처음 3번의 통화는 분석 전체」 줄은 뺐다 — Free 분석 깊이 잠금 정책 취소
+                      // (서버 §11 · PM-DEC-172 · 사용자 확인). 분석은 전부 열려 있다. 복원하지 않는다.
                       // 「억양 체크 무제한」 줄은 뺐다 — 사실이 아니다(P16 확정 09-22: 억양
                       // 체크는 통화 중 기능이며 무제한이 아님). 복원하지 않는다.
                       l10n.bulletFreeCharacter,

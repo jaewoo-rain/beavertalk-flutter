@@ -1528,9 +1528,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get bulletFreeCall => 'Kuniga 5 daqiqa ovozli qoʻngʻiroq';
 
   @override
-  String get bulletFreeCheck => 'Dastlabki 3 qo‘ng‘iroq uchun to‘liq tahlil';
-
-  @override
   String get bulletFreeCharacter => 'Boshlash uchun 2 ta personaj';
 
   @override
@@ -1555,12 +1552,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Bepul tarifda kuniga 5 daqiqa qoʻngʻiroq';
-
-  @override
-  String get limitBannerCheckTitle => 'Bu bugungi tekshiruv edi';
-
-  @override
-  String get limitBannerCheckSub => 'Bepul tarifda kuniga bitta tekshiruv';
 
   @override
   String get bulletProCharactersForever =>
@@ -1754,6 +1745,13 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Bu obuna boshqa BeaverTalk hisobida allaqachon faol.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Personajlaringiz qaytdi';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Bu personaj boshqa hisobda sotib olingan';
 
   @override
   String get ctaSignInThatAccount => 'Oʻsha hisobga kirish';
@@ -2035,13 +2033,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Toʻxtagan joyingizdan davom eting — hoziroq.';
-
-  @override
-  String get flCheckTitle => 'Bu bugungi tekshiruv';
-
-  @override
-  String get flCheckBody =>
-      'Bepul tarifda kuniga bitta tekshiruv bor. Premium to‘liq tahlilni beradi.';
 
   @override
   String flCaption(String price) {

@@ -15,6 +15,12 @@ library;
 /// Lenient JSON int — accepts num or numeric string, else 0.
 int _asInt(Object? v) => v is num ? v.toInt() : int.tryParse('$v') ?? 0;
 
+/// Lenient score — **null stays null**. The server sends null when it could not
+/// score (vendor gave nothing); turning that into 0 drew "0%" for a sentence
+/// nobody failed (F101). Counts keep [_asInt].
+int? _asScore(Object? v) =>
+    v == null ? null : (v is num ? v.toInt() : int.tryParse('$v'));
+
 /// One row of `Section/Phonemes` — how a single sound went this session.
 class PhonemeStat {
   /// Creates a phoneme accuracy row.
@@ -58,16 +64,16 @@ class SentenceScore {
   /// From `{sentence, pronunciation, fluency, rhythm}`.
   factory SentenceScore.fromJson(Map<String, dynamic> j) => SentenceScore(
         sentence: j['sentence'] as String? ?? '',
-        pronunciation: _asInt(j['pronunciation']),
-        fluency: _asInt(j['fluency']),
-        rhythm: _asInt(j['rhythm']),
+        pronunciation: _asScore(j['pronunciation']),
+        fluency: _asScore(j['fluency']),
+        rhythm: _asScore(j['rhythm']),
       );
 
   /// The Korean sentence practiced.
   final String sentence;
 
-  /// 0–100 sub-scores.
-  final int pronunciation, fluency, rhythm;
+  /// 0–100 sub-scores. null = not scored (drawn as 「—」).
+  final int? pronunciation, fluency, rhythm;
 }
 
 /// One session in `Section/Trend` — a bar in the chart and a row in the table.
@@ -157,10 +163,10 @@ class LearningSummary {
         total: _asInt(j['total']),
         // 서버 시각(UTC) → 현지 날짜. 안 바꾸면 자정 근처 리포트가 전날로 찍힌다.
         date: DateTime.tryParse(j['date'] as String? ?? '')?.toLocal() ?? DateTime.now(),
-        overall: _asInt(j['overall']),
-        pronunciation: _asInt(j['pronunciation']),
-        fluency: _asInt(j['fluency']),
-        rhythm: _asInt(j['rhythm']),
+        overall: _asScore(j['overall']),
+        pronunciation: _asScore(j['pronunciation']),
+        fluency: _asScore(j['fluency']),
+        rhythm: _asScore(j['rhythm']),
         hardestSound: j['hardest_sound'] as String? ?? '',
         hardestEvidence: j['hardest_evidence'] as String? ?? '',
         l1Interference: j['l1_interference'] as String? ?? '',
@@ -186,7 +192,8 @@ class LearningSummary {
   final DateTime date;
 
   /// 0–100 gauge score and its three sub-scores.
-  final int overall, pronunciation, fluency, rhythm;
+  /// null = not scored (drawn as 「—」 / the inactive gauge, F101).
+  final int? overall, pronunciation, fluency, rhythm;
 
   /// `Section/OneFix` — the sound that went worst, an example of it going wrong,
   /// and why the learner's first language makes it hard.

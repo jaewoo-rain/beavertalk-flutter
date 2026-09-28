@@ -1521,9 +1521,6 @@ class AppLocalizationsKm extends AppLocalizations {
   String get bulletFreeCall => 'ការហៅជាសំឡេង 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
-  String get bulletFreeCheck => 'ការវិភាគពេញលេញសម្រាប់ការហៅ 3 ដងដំបូង';
-
-  @override
   String get bulletFreeCharacter => 'តួអង្គ 2 សម្រាប់ចាប់ផ្ដើម';
 
   @override
@@ -1547,12 +1544,6 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free ផ្ដល់ការហៅ 5 នាទីក្នុងមួយថ្ងៃ';
-
-  @override
-  String get limitBannerCheckTitle => 'នោះជាការត្រួតពិនិត្យថ្ងៃនេះហើយ';
-
-  @override
-  String get limitBannerCheckSub => 'Free ផ្ដល់ការត្រួតពិនិត្យមួយក្នុងមួយថ្ងៃ';
 
   @override
   String get bulletProCharactersForever =>
@@ -1743,6 +1734,13 @@ class AppLocalizationsKm extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'ការជាវនេះសកម្មរួចហើយនៅលើគណនី BeaverTalk ផ្សេង។';
+
+  @override
+  String get ovRestoreCharactersTitle => 'តួអង្គរបស់អ្នកបានត្រឡប់មកវិញហើយ';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'តួអង្គនេះត្រូវបានទិញនៅលើគណនីផ្សេង';
 
   @override
   String get ctaSignInThatAccount => 'ចូលគណនីនោះ';
@@ -2020,13 +2018,6 @@ class AppLocalizationsKm extends AppLocalizations {
 
   @override
   String get flTodayBody => 'បន្តពីកន្លែងដែលអ្នកឈប់ — ឥឡូវនេះ។';
-
-  @override
-  String get flCheckTitle => 'នោះជាការត្រួតពិនិត្យថ្ងៃនេះហើយ';
-
-  @override
-  String get flCheckBody =>
-      'Free មានការពិនិត្យ 1 ដងក្នុងមួយថ្ងៃ។ Premium ផ្ដល់ការវិភាគពេញលេញ។';
 
   @override
   String flCaption(String price) {

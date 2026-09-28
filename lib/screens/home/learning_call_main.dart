@@ -162,23 +162,26 @@ class LearningCallMainScreen extends ConsumerWidget {
                   _head(context, l10n, s),
                   const SizedBox(height: AppSpacing.s24),
                   Center(
+                    // null 은 「채점 못 함」 — 0 이 아니다(F101). 종합이 없으면 빈 게이지(-%).
                     child: PronunciationResult(
-                      state: PronunciationState.active,
-                      score: s.overall.toDouble(),
+                      state: s.overall == null
+                          ? PronunciationState.inactive
+                          : PronunciationState.active,
+                      score: (s.overall ?? 0).toDouble(),
                       metrics: [
                         PronunciationMetric(
                           label: l10n.pronunciation,
-                          value: '${s.pronunciation}%',
+                          value: _pct(s.pronunciation),
                           score: s.pronunciation,
                         ),
                         PronunciationMetric(
                           label: l10n.fluency,
-                          value: '${s.fluency}%',
+                          value: _pct(s.fluency),
                           score: s.fluency,
                         ),
                         PronunciationMetric(
                           label: l10n.rhythm,
-                          value: '${s.rhythm}%',
+                          value: _pct(s.rhythm),
                           score: s.rhythm,
                         ),
                       ],
@@ -359,10 +362,12 @@ class LearningCallMainScreen extends ConsumerWidget {
               _Cell.flex(x.sentence, style: _rowName(context)),
               // 「발음」 열만 13 Bold + 점수 색(Figma 3569:15156 · 소리별 정확도와 같은 기준,
               // 09-24 figma-code-diff). 유창·리듬은 Regular 그대로.
-              _Cell.fixed('${x.pronunciation}', 36,
-                  style: _rowEmphasis(_accuracyColor(context, x.pronunciation))),
-              _Cell.fixed('${x.fluency}', 36, style: _rowValue(context)),
-              _Cell.fixed('${x.rhythm}', 36, style: _rowValue(context)),
+              _Cell.fixed(x.pronunciation?.toString() ?? '—', 36,
+                  style: x.pronunciation == null
+                      ? _rowValue(context)
+                      : _rowEmphasis(_accuracyColor(context, x.pronunciation!))),
+              _Cell.fixed(x.fluency?.toString() ?? '—', 36, style: _rowValue(context)),
+              _Cell.fixed(x.rhythm?.toString() ?? '—', 36, style: _rowValue(context)),
             ],
         ],
         emptyLabel: l10n.noSentencesYet,
@@ -597,6 +602,9 @@ TextStyle _rowEmphasis(Color color) => AppType.label2.b.copyWith(color: color);
 /// The design's accuracy ramp, read off its four samples: 43% red, 75% amber,
 /// 89% and 100% mint. The exact cut-offs are written down nowhere, so these are
 /// inferred — revisit if the design ever states them.
+/// 「84%」, or 「—」 when not scored (F101).
+String _pct(int? v) => v == null ? '—' : '$v%';
+
 Color _accuracyColor(BuildContext context, int accuracy) {
   if (accuracy >= 80) return context.c.primaryNormal;
   if (accuracy >= 60) return context.c.statusCautionary;

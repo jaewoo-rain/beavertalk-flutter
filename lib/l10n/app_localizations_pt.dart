@@ -1537,10 +1537,6 @@ class AppLocalizationsPt extends AppLocalizations {
   String get bulletFreeCall => '5 minutos de ligação de voz por dia';
 
   @override
-  String get bulletFreeCheck =>
-      'Análise completa nas suas 3 primeiras chamadas';
-
-  @override
   String get bulletFreeCharacter => 'Dois personagens para começar';
 
   @override
@@ -1565,12 +1561,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'O Grátis dá 5 minutos de ligação por dia';
-
-  @override
-  String get limitBannerCheckTitle => 'Essa foi a verificação de hoje';
-
-  @override
-  String get limitBannerCheckSub => 'O Grátis dá uma verificação por dia';
 
   @override
   String get bulletProCharactersForever =>
@@ -1764,6 +1754,13 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Esta assinatura já está ativa em outra conta do BeaverTalk.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Seus personagens voltaram';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Este personagem foi comprado em outra conta';
 
   @override
   String get ctaSignInThatAccount => 'Entrar nessa conta';
@@ -2045,13 +2042,6 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Continue de onde parou — agora mesmo.';
-
-  @override
-  String get flCheckTitle => 'Essa foi a verificação de hoje';
-
-  @override
-  String get flCheckBody =>
-      'O Grátis inclui uma verificação por dia. O Premium mostra a análise completa.';
 
   @override
   String flCaption(String price) {

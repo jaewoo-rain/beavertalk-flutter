@@ -1532,9 +1532,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bulletFreeCall => '5 минут голосовых звонков в день';
 
   @override
-  String get bulletFreeCheck => 'Полный разбор первых 3 звонков';
-
-  @override
   String get bulletFreeCharacter => 'Два персонажа для начала';
 
   @override
@@ -1558,12 +1555,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free даёт 5 минут звонков в день';
-
-  @override
-  String get limitBannerCheckTitle => 'Это была проверка на сегодня';
-
-  @override
-  String get limitBannerCheckSub => 'Free даёт одну проверку в день';
 
   @override
   String get bulletProCharactersForever =>
@@ -1756,6 +1747,13 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Эта подписка уже активна в другом аккаунте BeaverTalk.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Ваши персонажи вернулись';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Этот персонаж куплен в другом аккаунте';
 
   @override
   String get ctaSignInThatAccount => 'Войти в тот аккаунт';
@@ -2037,13 +2035,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Продолжите с того же места — прямо сейчас.';
-
-  @override
-  String get flCheckTitle => 'Это была проверка на сегодня';
-
-  @override
-  String get flCheckBody =>
-      'На Free — одна проверка в день. Premium даёт полный разбор.';
 
   @override
   String flCaption(String price) {

@@ -38,6 +38,23 @@ class SubscriptionRemoteDataSource {
     }
   }
 
+  /// `POST /members/me/churn-reasons` — 해지 사유(§17). 같은 구독으로 다시 보내면 서버가
+  /// 마지막 값으로 덮어쓴다. [reason] 은 와이어 코드(`other_app` 등).
+  Future<void> submitChurnReason({
+    required String reason,
+    required int subscribeId,
+    required bool offerShown,
+  }) async {
+    await _dio.post<Map<String, dynamic>>(
+      '/members/me/churn-reasons',
+      data: {
+        'reason': reason,
+        'subscribe_id': subscribeId,
+        'offer_shown': offerShown,
+      },
+    );
+  }
+
   /// `POST /subscriptions/{id}/cancel` — soft-cancels and returns the updated
   /// row. Takes no request body.
   Future<SubscriptionDto> cancel(int subscribeId) async {

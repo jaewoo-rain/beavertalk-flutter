@@ -20,6 +20,10 @@ class SubscriptionStatusDto {
     this.endDate,
     this.retryingUntil,
     this.pausedSince,
+    this.billingPeriod,
+    this.productId,
+    this.isTrial,
+    this.trialEndsAt,
   });
 
   /// One of the eight snake_case state names, verbatim from the wire.
@@ -35,6 +39,14 @@ class SubscriptionStatusDto {
   final String? retryingUntil;
   final String? pausedSince;
 
+  /// §22-⑤⑦(서버 552b485) — `monthly` · `yearly`. 구서버·누락이면 null.
+  final String? billingPeriod;
+  final String? productId;
+
+  /// 필드가 없으면(구서버) null — false 와 가른다(모름 ≠ 체험 아님).
+  final bool? isTrial;
+  final String? trialEndsAt;
+
   factory SubscriptionStatusDto.fromJson(Map<String, dynamic> json) {
     return SubscriptionStatusDto(
       state: json['state'] as String? ?? '',
@@ -45,6 +57,10 @@ class SubscriptionStatusDto {
       endDate: json['end_date'] as String?,
       retryingUntil: json['retrying_until'] as String?,
       pausedSince: json['paused_since'] as String?,
+      billingPeriod: json['billing_period'] as String?,
+      productId: json['product_id'] as String?,
+      isTrial: json['is_trial'] as bool?,
+      trialEndsAt: json['trial_ends_at'] as String?,
     );
   }
 
@@ -86,11 +102,32 @@ class SubscriptionStatusDto {
 
     final end = date(endDate);
     final id = subscribeId;
+    final trialEnds = date(trialEndsAt);
+    // 스토어 체험(IAP 무료체험)은 서버가 `active_premium` + `is_trial` 로 준다. 앱에는 체험
+    // 상태가 이미 있다(배지 · 「Free until」 · 체험 해지 시트) — 그 상태로 그린다(§22-⑦).
+    // 해지 예약(ending)·결제 문제 등 다른 상태는 그대로 둔다.
+    // ⛔ 체험 종료일이 지났으면 체험이 아니다 — 첫 결제로 넘어간 뒤에도 서버가 체험으로
+    //   주면 「Free until · First payment」 가 남았다(09-28 실기기 · 서버 갱신 미반영).
+    final trialOver = trialEnds != null && trialEnds.isBefore(DateTime.now());
+    final shown = switch (parsed) {
+      SubscriptionState.activeMax when isTrial == true && !trialOver =>
+        SubscriptionState.trial,
+      SubscriptionState.trial when trialOver => SubscriptionState.activeMax,
+      _ => parsed,
+    };
 
     return SubscriptionStatus(
-      state: parsed,
+      state: shown,
+      annual: switch (billingPeriod) {
+        'yearly' => true,
+        'monthly' => false,
+        _ => null,
+      },
+      isTrial: isTrial,
+      trialEndsAt: trialEnds,
       tier: tier,
-      expiresAt: end,
+      // 체험 중이면 「Free until {date}」 가 체험 종료일이어야 한다.
+      expiresAt: shown == SubscriptionState.trial ? (trialEnds ?? end) : end,
       retryingUntil: date(retryingUntil),
       pausedSince: date(pausedSince),
       // The backing row, reconstructed so `settings.dart` and the cancel path

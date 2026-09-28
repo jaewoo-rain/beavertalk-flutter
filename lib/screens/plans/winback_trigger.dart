@@ -48,6 +48,9 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
   /// 이 세션에서 이미 판단했다 — 상태가 다시 알려 와도 두 번 띄우지 않는다.
   bool _handled = false;
 
+  /// 설문이 답하는 구독(서버 상태의 `subscribe_id`). 없으면 사유를 보내지 않는다.
+  int? _subscribeId;
+
   @override
   void initState() {
     super.initState();
@@ -74,6 +77,7 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
     }
     if (!mounted) return;
     if (!shouldOfferWinback(status: status, rows: rows)) return;
+    _subscribeId = status.source?.id;
     final key = winbackPrefKeyFor(memberId);
     final mark = winbackMark(status.expiresAt);
     try {
@@ -93,8 +97,24 @@ class _WinbackTriggerState extends ConsumerState<WinbackTrigger> {
     // 타입 없는 pushNamed — 라우트 표가 `MaterialPageRoute<dynamic>` 을 만들어
     // `pushNamed<WinbackReason>` 은 형 변환에서 던진다(시험에서 잡음).
     final result = await Navigator.of(context).pushNamed(Routes.winbackSurvey);
+    if (result is WinbackReason) _sendReason(result);
     if (!mounted || result != WinbackReason.expensive) return;
     await showWinbackOfferSheet(context);
+  }
+
+  /// 해지 사유를 서버에 남긴다(§17) — 실패해도 흐름을 막지 않는다(분석용 기록이다).
+  /// 「Too expensive」 면 바로 오퍼 시트를 띄우므로 `offer_shown` 은 그 사유와 같다.
+  void _sendReason(WinbackReason reason) {
+    final id = _subscribeId;
+    if (id == null) return;
+    ref
+        .read(subscriptionRemoteDataSourceProvider)
+        .submitChurnReason(
+          reason: reason.wire,
+          subscribeId: id,
+          offerShown: reason == WinbackReason.expensive,
+        )
+        .catchError((Object _) {});
   }
 
   @override

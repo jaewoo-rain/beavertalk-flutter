@@ -363,15 +363,24 @@ class IapVerifyException implements Exception {
 /// receipt and still answer 200, and the rail used to report the whole batch
 /// as restored anyway — 「Premium is back」 with the plan still Free.
 enum RestoreOutcome {
-  /// Something is on this account now (newly granted or already there).
+  /// The subscription is back — the batch carried a subscription receipt and
+  /// the account is Premium now.
   restored,
+
+  /// Characters (or the character bundle) are back, but no subscription —
+  /// "Premium is back" would be untrue (QA F097 · PM-DEC-166).
+  restoredCharacters,
 
   /// The store returned nothing to restore.
   nothing,
 
-  /// The store returned receipts but the server granted none and the account
-  /// has nothing — most often they belong to another BeaverTalk account.
+  /// The store returned a subscription receipt the server granted nothing
+  /// for — most often it belongs to another BeaverTalk account.
   notThisAccount,
+
+  /// Only character receipts came back and none was granted — bought on
+  /// another BeaverTalk account (09-28 device, 409 on bt_character_popo).
+  charactersNotThisAccount,
 
   /// The store or our server could not be reached.
   unavailable,

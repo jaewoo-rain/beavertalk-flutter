@@ -1533,9 +1533,6 @@ class AppLocalizationsHu extends AppLocalizations {
   String get bulletFreeCall => 'Napi 5 perc hanghívás';
 
   @override
-  String get bulletFreeCheck => 'Teljes elemzés az első 3 hívásodhoz';
-
-  @override
   String get bulletFreeCharacter => 'Két karakter kezdésnek';
 
   @override
@@ -1559,13 +1556,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Az Ingyenes csomag napi 5 perc hívást ad';
-
-  @override
-  String get limitBannerCheckTitle => 'Ez volt a mai ellenőrzés';
-
-  @override
-  String get limitBannerCheckSub =>
-      'Az Ingyenes csomag napi egy ellenőrzést ad';
 
   @override
   String get bulletProCharactersForever =>
@@ -1759,6 +1749,13 @@ class AppLocalizationsHu extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Ez az előfizetés már aktív egy másik BeaverTalk-fiókon.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Visszakaptad a karaktereidet';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Ezt a karaktert egy másik fiókkal vásárolták meg';
 
   @override
   String get ctaSignInThatAccount => 'Bejelentkezés azzal a fiókkal';
@@ -2042,13 +2039,6 @@ class AppLocalizationsHu extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Folytasd ott, ahol abbahagytad — most azonnal.';
-
-  @override
-  String get flCheckTitle => 'Ez a mai ellenőrzés';
-
-  @override
-  String get flCheckBody =>
-      'Az Ingyenesben napi egy ellenőrzés van. A Premium a teljes elemzést adja.';
 
   @override
   String flCaption(String price) {

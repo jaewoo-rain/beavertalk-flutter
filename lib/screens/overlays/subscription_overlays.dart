@@ -38,6 +38,12 @@ enum SubscriptionOverlay {
   /// `overlay/restore — 다른 계정에 연결됨` (`4514:4834`).
   restoreOtherAccount,
 
+  /// 복원 — 캐릭터만 돌아옴(구독 없음 · QA F097 · PM-DEC-166).
+  restoreCharacters,
+
+  /// 복원 — 캐릭터 영수증이 다른 BeaverTalk 계정 것(09-28 실기기 · 409).
+  restoreCharacterOtherAccount,
+
   /// `overlay/character_offer` (`4663:6353`).
   characterOffer,
 
@@ -104,8 +110,6 @@ enum SubscriptionOverlay {
   /// reassembly backup — reconfirm against the 04_통화 host section.
   freeLimitCall,
 
-  /// `free_limit — 발음분석 소진` (§7-1, host: analysis).
-  freeLimitCheck,
 
   /// `free_call_ended` (`4952:18151`) — **무료 회원이 5분 구간을 다 썼다.**
   ///
@@ -248,6 +252,9 @@ bool _restoring = false;
 SubscriptionOverlay restoreOverlayFor(RestoreOutcome outcome) =>
     switch (outcome) {
       RestoreOutcome.restored => SubscriptionOverlay.restoreSuccess,
+      RestoreOutcome.restoredCharacters => SubscriptionOverlay.restoreCharacters,
+      RestoreOutcome.charactersNotThisAccount =>
+        SubscriptionOverlay.restoreCharacterOtherAccount,
       RestoreOutcome.nothing => SubscriptionOverlay.restoreEmpty,
       RestoreOutcome.notThisAccount => SubscriptionOverlay.restoreOtherAccount,
       RestoreOutcome.unavailable => SubscriptionOverlay.restoreUnavailable,
@@ -389,6 +396,27 @@ class _OverlaySheet extends StatelessWidget {
           mark: SheetMarkTone.success,
           primaryAction:
               SheetAction(label: l10n.ctaContinue, onPressed: () => _close(context)),
+        );
+      // 캐릭터만 돌아왔다 — 「Premium is back」 이 아니다(QA F097 · PM-DEC-166).
+      case SubscriptionOverlay.restoreCharacters:
+        return BottomSheetContent(
+          title: l10n.ovRestoreCharactersTitle,
+          body: l10n.iapCharacterSuccessBody,
+          mark: SheetMarkTone.success,
+          primaryAction:
+              SheetAction(label: l10n.ctaContinue, onPressed: () => _close(context)),
+        );
+      // 캐릭터 영수증만 올라갔는데 지급이 없다 — 다른 계정에서 산 캐릭터(09-28 실기기 · 409).
+      case SubscriptionOverlay.restoreCharacterOtherAccount:
+        return BottomSheetContent(
+          secondaryOnTop: true,
+          title: l10n.ovRestoreCharacterOtherTitle,
+          body: '',
+          primaryAction: SheetAction(
+              label: l10n.ctaSignInThatAccount,
+              onPressed: () => pushAfterClose(Routes.mypageSettings)),
+          secondaryAction:
+              SheetAction(label: l10n.ctaGetHelp, onPressed: () => _close(context)),
         );
       case SubscriptionOverlay.restoreEmpty:
         return BottomSheetContent(
@@ -830,24 +858,6 @@ class _OverlaySheet extends StatelessWidget {
               onPressed: () => _then(context, () {
                     rootNav.pushNamed(Routes.paywallProLimit,
                         arguments: 'call');
-                  })),
-          secondaryAction: SheetAction(
-              label: l10n.ctaMaybeTomorrow, onPressed: () => _close(context)),
-        );
-      case SubscriptionOverlay.freeLimitCheck:
-        return BottomSheetContent(
-          type: SheetContentType.rows,
-          title: l10n.flCheckTitle,
-          body: l10n.flCheckBody,
-          rows: scores ?? const [],
-          benefitLabel: l10n.premiumBulletAnalysis,
-          benefitTier: BenefitTier.max,
-          caption: l10n.flCaption(PlanPrices.maxMonthly),
-          primaryAction: SheetAction(
-              label: l10n.ctaGetPremium,
-              onPressed: () => _then(context, () {
-                    rootNav.pushNamed(Routes.paywallProLimit,
-                        arguments: 'check');
                   })),
           secondaryAction: SheetAction(
               label: l10n.ctaMaybeTomorrow, onPressed: () => _close(context)),

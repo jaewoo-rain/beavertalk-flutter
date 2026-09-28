@@ -1518,9 +1518,6 @@ class AppLocalizationsMn extends AppLocalizations {
   String get bulletFreeCall => 'Өдөрт 5 минут дуут дуудлага';
 
   @override
-  String get bulletFreeCheck => 'Эхний 3 дуудлагад бүрэн шинжилгээ';
-
-  @override
   String get bulletFreeCharacter => 'Эхлэхэд 2 дүр';
 
   @override
@@ -1544,12 +1541,6 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Үнэгүй багц өдөрт 5 минут дуудлага олгоно';
-
-  @override
-  String get limitBannerCheckTitle => 'Энэ өнөөдрийн шалгалт байлаа';
-
-  @override
-  String get limitBannerCheckSub => 'Үнэгүй багц өдөрт нэг шалгалт олгоно';
 
   @override
   String get bulletProCharactersForever =>
@@ -1743,6 +1734,13 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Энэ захиалга өөр BeaverTalk бүртгэл дээр аль хэдийн идэвхтэй байна.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Таны дүрүүд буцаж ирлээ';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Энэ дүрийг өөр бүртгэлээр худалдаж авсан байна';
 
   @override
   String get ctaSignInThatAccount => 'Тэр бүртгэлээр нэвтрэх';
@@ -2022,13 +2020,6 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Орхисон газраасаа үргэлжлүүлээрэй — яг одоо.';
-
-  @override
-  String get flCheckTitle => 'Энэ өнөөдрийн шалгалт байлаа';
-
-  @override
-  String get flCheckBody =>
-      'Үнэгүй багцад өдөрт нэг шалгалт байна. Premium бүрэн шинжилгээг өгнө.';
 
   @override
   String flCaption(String price) {

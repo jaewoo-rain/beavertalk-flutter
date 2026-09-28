@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 
+import '../../../../core/time/device_timezone.dart';
 import '../../domain/entities/alarm.dart';
 import '../models/alarm_dto.dart';
 
@@ -23,7 +24,7 @@ class AlarmRemoteDataSource {
   Future<AlarmDto> create(Alarm alarm) async {
     final res = await _dio.post<Map<String, dynamic>>(
       '/alarms',
-      data: AlarmDto.createBody(alarm),
+      data: AlarmDto.createBody(alarm, tz: await DeviceTimezone.iana()),
     );
     return AlarmDto.fromJson(res.data!);
   }
@@ -38,7 +39,7 @@ class AlarmRemoteDataSource {
   Future<AlarmDto> update(Alarm alarm) async {
     final res = await _dio.put<Map<String, dynamic>>(
       '/alarms/${alarm.id}',
-      data: AlarmDto.updateBody(alarm),
+      data: AlarmDto.updateBody(alarm, tz: await DeviceTimezone.iana()),
     );
     return AlarmDto.fromJson(res.data!);
   }

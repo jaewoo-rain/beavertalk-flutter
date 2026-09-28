@@ -470,7 +470,7 @@ class StoreIapService implements IapService {
       }
       return RestoreOutcome.unavailable;
     }
-    final outcome = restoreOutcomeOf(result);
+    final outcome = restoreOutcomeOf(result, batch);
     for (final p in batch) {
       final pd = _awaitingFinish.remove(p.purchaseToken);
       if (!grantedByRestore(p, outcome, result.entitlement)) continue;
@@ -488,27 +488,59 @@ class StoreIapService implements IapService {
   @visibleForTesting
   static bool grantedByRestore(
       IapPurchase p, RestoreOutcome outcome, EntitlementDto entitlement) {
-    if (outcome != RestoreOutcome.restored) return false;
+    if (outcome != RestoreOutcome.restored &&
+        outcome != RestoreOutcome.restoredCharacters) {
+      return false;
+    }
     if (p.type == IapProductType.subscription) return entitlement.isPro;
+    // 묶음 영수증(kind "bundle", QA F103) — 서버는 유료 3종 중 없는 것만 지급한다(PM-DEC-170).
+    // 지급이 끝나면 3종을 다 가진다. 그때 닫아야 iOS 에 끝나지 않은 거래가 남지 않는다.
+    if (p.productId == IapProductIds.characterBundle) {
+      return _ownsEverySoldCharacter(entitlement);
+    }
     // 캐릭터는 결과 권한에 그 캐릭터가 있을 때만. 대응을 못 찾으면(표에 없는 id · dev 번호) 열어
     // 둔다 — 다음 실행 때 스토어가 다시 보내 단건 검증 경로가 판정한다(QA F070 · PM-DEC-119).
     return entitlement.ownedCharacterIds
         .any((id) => IapProductIds.characterFor(id) == p.productId);
   }
 
-  /// The restore result to a [RestoreOutcome].
+  /// The restore result to a [RestoreOutcome], split by **what was sent**.
+  ///
+  /// The server answers with counts and the resulting entitlement only (per-item
+  /// reasons are server request §22 ③). The batch says which kinds went up, so:
+  /// - a subscription receipt went up and the account is Premium → [restored];
+  /// - a character / bundle receipt went up and that character is owned now →
+  ///   [RestoreOutcome.restoredCharacters] — also when it was owned already
+  ///   (already_granted counts in neither number);
+  /// - receipts went up and nothing came of them → another account, worded for
+  ///   the subscription when one was sent, otherwise for characters;
+  /// - nothing went up → [RestoreOutcome.nothing].
+  ///
+  /// Free starters don't count as owned: the server marks Baba as owned at
+  /// sign-up, so "owns a character" was true for every Free account (QA F003).
   @visibleForTesting
-  static RestoreOutcome restoreOutcomeOf(RestoreResultDto r) {
-    // Free starters don't count: the server marks Baba as owned at sign-up
-    // (member_service), so "owns a character" was true for every Free account
-    // and a fully refused restore still read as restored (QA F003 재검증).
-    final hasSomething = r.entitlement.isPro ||
-        r.entitlement.ownedCharacterIds
-            .any((id) => !IapProductIds.isFreeCharacter(id));
-    if (r.restored > 0 || hasSomething) return RestoreOutcome.restored;
-    if (r.failed > 0) return RestoreOutcome.notThisAccount;
+  static RestoreOutcome restoreOutcomeOf(
+      RestoreResultDto r, List<IapPurchase> batch) {
+    final subscriptionSent =
+        batch.any((p) => p.type == IapProductType.subscription);
+    final characterSent =
+        batch.any((p) => p.type != IapProductType.subscription);
+    if (subscriptionSent && r.entitlement.isPro) return RestoreOutcome.restored;
+    final charactersBack = batch.any((p) =>
+        p.type != IapProductType.subscription &&
+        grantedByRestore(p, RestoreOutcome.restoredCharacters, r.entitlement));
+    if (charactersBack) return RestoreOutcome.restoredCharacters;
+    if (batch.isEmpty && r.restored == 0 && r.failed == 0) {
+      return RestoreOutcome.nothing;
+    }
+    if (subscriptionSent) return RestoreOutcome.notThisAccount;
+    if (characterSent) return RestoreOutcome.charactersNotThisAccount;
     return RestoreOutcome.nothing;
   }
+
+  static bool _ownsEverySoldCharacter(EntitlementDto e) =>
+      IapProductIds.soldCharacters.every((product) => e.ownedCharacterIds
+          .any((id) => IapProductIds.characterFor(id) == product));
 
   /// A store-side purchase error to the reason the screens show. Play reports
   /// the billing response as the message (`BillingResponse.itemAlreadyOwned`);

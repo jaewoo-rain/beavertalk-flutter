@@ -53,9 +53,14 @@ void main() {
     product('bt_character_dudu', 6600, '₩6,600'),
   ];
 
+  // 코드 기본값만 본다 — 빌드 45 처럼 `--dart-define=CHARACTER_BUNDLE=true` 로 구운 빌드(PM-DEC-173)
+  // 에서는 이 확인을 건너뛴다. 나머지 묶음 시험은 플래그와 무관하게 돈다.
   test('빌드 플래그 기본값은 꺼짐 — 서버 카탈로그 전에는 팔지 않는다', () {
     expect(kCharacterBundleEnabled, isFalse);
-  });
+  },
+      skip: const bool.fromEnvironment('CHARACTER_BUNDLE')
+          ? 'CHARACTER_BUNDLE=true 로 구운 빌드'
+          : false);
 
   test('유료 3종 미보유 · 스토어 4종 응답 → 묶음 현지가 · 취소선 = 단품 합 · 할인율', () async {
     final offer = await buildCharacterBundleOffer(

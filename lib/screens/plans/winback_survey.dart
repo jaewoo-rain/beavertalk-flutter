@@ -11,6 +11,18 @@ import '../../theme/app_typography.dart';
 /// 윈백 설문 사유 — 화면의 다섯 줄과 같은 순서.
 enum WinbackReason { expensive, unused, missing, otherApp, other }
 
+/// 서버 와이어 코드(§17 · `churn_reason.reason` CHECK) — `other_app` 만 Dart 이름과 다르다.
+extension WinbackReasonWire on WinbackReason {
+  /// `POST /members/me/churn-reasons` 의 `reason` 값.
+  String get wire => switch (this) {
+        WinbackReason.expensive => 'expensive',
+        WinbackReason.unused => 'unused',
+        WinbackReason.missing => 'missing',
+        WinbackReason.otherApp => 'other_app',
+        WinbackReason.other => 'other',
+      };
+}
+
 /// `depth/winback_survey` (`4514:5615`) — the exit survey after a lapse.
 ///
 /// Skip bar instead of a GNB; five single-select reasons. **Opened by

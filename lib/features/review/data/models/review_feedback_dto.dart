@@ -127,9 +127,17 @@ class ReviewFeedbackDto {
   final List<PhonemeMissDto> phonemeMisses;
 
   factory ReviewFeedbackDto.fromJson(Map<String, dynamic> json) {
-    final evaluation = json['evaluation'] as Map<String, dynamic>?;
-    final charScores = (json['char_scores'] as List<dynamic>?) ?? const [];
-    final misses = (json['phoneme_misses'] as List<dynamic>?) ?? const [];
+    // 서버가 실채점 대신 스텁(60~100 가짜 점수)을 냈다(F100 · 서버 §3). 점수·글자 판정을
+    // 버려 「채점 못 함」 과 같이 그린다 — 가짜 점수가 실력처럼 보이고 평균에 섞였다.
+    final isStub = json['is_stub'] == true;
+    final evaluation =
+        isStub ? null : json['evaluation'] as Map<String, dynamic>?;
+    final charScores = isStub
+        ? const <dynamic>[]
+        : (json['char_scores'] as List<dynamic>?) ?? const [];
+    final misses = isStub
+        ? const <dynamic>[]
+        : (json['phoneme_misses'] as List<dynamic>?) ?? const [];
     return ReviewFeedbackDto(
       reviewId: (json['review_id'] as num?)?.toInt() ?? 0,
       sentenceId: (json['sentence_id'] as num?)?.toInt() ?? 0,

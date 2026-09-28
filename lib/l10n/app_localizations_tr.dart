@@ -1518,9 +1518,6 @@ class AppLocalizationsTr extends AppLocalizations {
   String get bulletFreeCall => 'Günde 5 dakika sesli arama';
 
   @override
-  String get bulletFreeCheck => 'İlk 3 araman için tam analiz';
-
-  @override
   String get bulletFreeCharacter => 'Başlangıç için iki karakter';
 
   @override
@@ -1545,12 +1542,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free günde 5 dakika arama verir';
-
-  @override
-  String get limitBannerCheckTitle => 'Bugünkü kontrolün buydu';
-
-  @override
-  String get limitBannerCheckSub => 'Free günde bir kontrol verir';
 
   @override
   String get bulletProCharactersForever =>
@@ -1743,6 +1734,13 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Bu abonelik zaten farklı bir BeaverTalk hesabında etkin.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Karakterlerin geri geldi';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Bu karakter başka bir hesapta satın alındı';
 
   @override
   String get ctaSignInThatAccount => 'O hesapla giriş yap';
@@ -2021,13 +2019,6 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Kaldığın yerden devam et — hemen şimdi.';
-
-  @override
-  String get flCheckTitle => 'Bugünkü kontrolün buydu';
-
-  @override
-  String get flCheckBody =>
-      'Free\'de günde bir kontrol var. Premium sana tam analizi verir.';
 
   @override
   String flCaption(String price) {

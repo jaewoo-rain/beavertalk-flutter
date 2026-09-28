@@ -1527,9 +1527,6 @@ class AppLocalizationsFi extends AppLocalizations {
   String get bulletFreeCall => '5 minuuttia äänipuheluita päivässä';
 
   @override
-  String get bulletFreeCheck => 'Täysi analyysi 3 ensimmäisestä puhelusta';
-
-  @override
   String get bulletFreeCharacter => 'Kaksi hahmoa alkuun';
 
   @override
@@ -1555,13 +1552,6 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get limitBannerCallSub =>
       'Ilmainen antaa 5 minuuttia puheluita päivässä';
-
-  @override
-  String get limitBannerCheckTitle => 'Se oli päivän tarkistus';
-
-  @override
-  String get limitBannerCheckSub =>
-      'Ilmainen antaa yhden tarkistuksen päivässä';
 
   @override
   String get bulletProCharactersForever =>
@@ -1755,6 +1745,13 @@ class AppLocalizationsFi extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Tämä tilaus on jo käytössä toisella BeaverTalk-tilillä.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Hahmosi ovat palanneet';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Tämä hahmo on ostettu toisella tilillä';
 
   @override
   String get ctaSignInThatAccount => 'Kirjaudu sille tilille';
@@ -2036,13 +2033,6 @@ class AppLocalizationsFi extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Jatka siitä, mihin jäit — heti.';
-
-  @override
-  String get flCheckTitle => 'Se oli päivän tarkistus';
-
-  @override
-  String get flCheckBody =>
-      'Ilmaisessa on yksi tarkistus päivässä. Premium antaa koko analyysin.';
 
   @override
   String flCaption(String price) {

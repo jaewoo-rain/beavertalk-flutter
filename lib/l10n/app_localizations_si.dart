@@ -1520,9 +1520,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get bulletFreeCall => 'දිනකට හඬ ඇමතුම් මිනිත්තු 5';
 
   @override
-  String get bulletFreeCheck => 'පළමු ඇමතුම් 3 සඳහා සම්පූර්ණ විශ්ලේෂණය';
-
-  @override
   String get bulletFreeCharacter => 'ආරම්භයට චරිත 2ක්';
 
   @override
@@ -1546,12 +1543,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free හි දිනකට ඇමතුම් මිනිත්තු 5';
-
-  @override
-  String get limitBannerCheckTitle => 'අද පරීක්ෂාව එයයි';
-
-  @override
-  String get limitBannerCheckSub => 'Free හි දිනකට එක් පරීක්ෂාවක්';
 
   @override
   String get bulletProCharactersForever => 'මිලදී ගත් චරිත සදහටම ඔබේමයි';
@@ -1742,6 +1733,13 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'මෙම දායකත්වය වෙනත් BeaverTalk ගිණුමක දැනටමත් සක්‍රියයි.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'ඔබේ චරිත නැවත පැමිණියා';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'මෙම චරිතය වෙනත් ගිණුමකින් මිලදී ගෙන ඇත';
 
   @override
   String get ctaSignInThatAccount => 'එම ගිණුමට පිවිසෙන්න';
@@ -2023,13 +2021,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get flTodayBody => 'නැවතුණු තැනින්ම — දැන්ම.';
-
-  @override
-  String get flCheckTitle => 'අද පරීක්ෂාව එයයි';
-
-  @override
-  String get flCheckBody =>
-      'Free හි දිනකට එක් පරීක්ෂාවක් ඇත. Premium සම්පූර්ණ විශ්ලේෂණය ලබා දෙයි.';
 
   @override
   String flCaption(String price) {

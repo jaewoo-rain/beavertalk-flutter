@@ -1485,9 +1485,6 @@ class AppLocalizationsKo extends AppLocalizations {
   String get bulletFreeCall => '하루 5분 음성통화';
 
   @override
-  String get bulletFreeCheck => '처음 3번의 통화는 분석 전체';
-
-  @override
   String get bulletFreeCharacter => '시작 캐릭터 2명';
 
   @override
@@ -1510,12 +1507,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => '무료 플랜은 하루 5분 통화할 수 있어요';
-
-  @override
-  String get limitBannerCheckTitle => '오늘의 체크를 모두 썼어요';
-
-  @override
-  String get limitBannerCheckSub => '무료 플랜은 하루 한 번 체크할 수 있어요';
 
   @override
   String get bulletProCharactersForever => '구매한 캐릭터는 영원히 내 것';
@@ -1701,6 +1692,12 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get ovRestoreOtherBody => '이 구독은 이미 다른 BeaverTalk 계정에서 사용 중이에요.';
+
+  @override
+  String get ovRestoreCharactersTitle => '캐릭터를 다시 불러왔어요';
+
+  @override
+  String get ovRestoreCharacterOtherTitle => '이 캐릭터는 다른 계정에서 구매했어요';
 
   @override
   String get ctaSignInThatAccount => '해당 계정으로 로그인';
@@ -1970,12 +1967,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get flTodayBody => '끊긴 대화, 지금 바로 이어가요.';
-
-  @override
-  String get flCheckTitle => '오늘의 체크를 다 썼어요';
-
-  @override
-  String get flCheckBody => '무료는 하루 1번 확인할 수 있어요. Premium은 분석 전체를 보여줘요.';
 
   @override
   String flCaption(String price) {

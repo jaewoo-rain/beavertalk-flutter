@@ -1511,9 +1511,6 @@ class AppLocalizationsTh extends AppLocalizations {
   String get bulletFreeCall => 'โทรด้วยเสียงวันละ 5 นาที';
 
   @override
-  String get bulletFreeCheck => 'วิเคราะห์แบบเต็มสำหรับ 3 สายแรก';
-
-  @override
   String get bulletFreeCharacter => 'ตัวละคร 2 ตัวสำหรับเริ่มต้น';
 
   @override
@@ -1537,12 +1534,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'แพ็กเกจฟรีโทรได้วันละ 5 นาที';
-
-  @override
-  String get limitBannerCheckTitle => 'นั่นคือการตรวจของวันนี้';
-
-  @override
-  String get limitBannerCheckSub => 'แพ็กเกจฟรีตรวจได้วันละครั้ง';
 
   @override
   String get bulletProCharactersForever => 'ตัวละครที่ซื้อแล้วเป็นของคุณตลอดไป';
@@ -1733,6 +1724,12 @@ class AppLocalizationsTh extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'การสมัครนี้ใช้งานอยู่บนบัญชี BeaverTalk อื่นแล้ว';
+
+  @override
+  String get ovRestoreCharactersTitle => 'ตัวละครของคุณกลับมาแล้ว';
+
+  @override
+  String get ovRestoreCharacterOtherTitle => 'ตัวละครนี้ถูกซื้อด้วยบัญชีอื่น';
 
   @override
   String get ctaSignInThatAccount => 'เข้าสู่ระบบบัญชีนั้น';
@@ -2012,13 +2009,6 @@ class AppLocalizationsTh extends AppLocalizations {
 
   @override
   String get flTodayBody => 'คุยต่อจากที่ค้างไว้ — ได้เลยตอนนี้';
-
-  @override
-  String get flCheckTitle => 'นั่นคือการตรวจของวันนี้';
-
-  @override
-  String get flCheckBody =>
-      'แพ็กเกจฟรีตรวจได้วันละ 1 ครั้ง Premium ให้ผลวิเคราะห์ครบทั้งหมด';
 
   @override
   String flCaption(String price) {

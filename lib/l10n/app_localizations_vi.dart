@@ -1520,9 +1520,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get bulletFreeCall => '5 phút gọi thoại mỗi ngày';
 
   @override
-  String get bulletFreeCheck => 'Phân tích đầy đủ cho 3 cuộc gọi đầu tiên';
-
-  @override
   String get bulletFreeCharacter => 'Hai nhân vật để bắt đầu';
 
   @override
@@ -1546,13 +1543,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Gói Miễn phí cho bạn 5 phút gọi mỗi ngày';
-
-  @override
-  String get limitBannerCheckTitle => 'Đó là lần kiểm tra hôm nay';
-
-  @override
-  String get limitBannerCheckSub =>
-      'Gói Miễn phí cho bạn một lần kiểm tra mỗi ngày';
 
   @override
   String get bulletProCharactersForever =>
@@ -1746,6 +1736,13 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Gói đăng ký này đang hoạt động trên một tài khoản BeaverTalk khác.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Nhân vật của bạn đã trở lại';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Nhân vật này đã được mua bằng tài khoản khác';
 
   @override
   String get ctaSignInThatAccount => 'Đăng nhập tài khoản đó';
@@ -2026,13 +2023,6 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Tiếp tục từ chỗ bạn dừng lại — ngay bây giờ.';
-
-  @override
-  String get flCheckTitle => 'Đó là lần kiểm tra hôm nay';
-
-  @override
-  String get flCheckBody =>
-      'Gói miễn phí có một lượt kiểm tra mỗi ngày. Premium cho bạn phân tích đầy đủ.';
 
   @override
   String flCaption(String price) {

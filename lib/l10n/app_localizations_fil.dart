@@ -1536,9 +1536,6 @@ class AppLocalizationsFil extends AppLocalizations {
   String get bulletFreeCall => '5 minutong voice call kada araw';
 
   @override
-  String get bulletFreeCheck => 'Buong pagsusuri sa unang 3 tawag mo';
-
-  @override
   String get bulletFreeCharacter => 'Dalawang karakter para magsimula';
 
   @override
@@ -1565,12 +1562,6 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get limitBannerCallSub =>
       'Sa Libre, may 5 minuto kang tawag kada araw';
-
-  @override
-  String get limitBannerCheckTitle => 'Iyon na ang pagsusuri mo ngayong araw';
-
-  @override
-  String get limitBannerCheckSub => 'Isang pagsusuri kada araw sa Libre';
 
   @override
   String get bulletProCharactersForever =>
@@ -1764,6 +1755,13 @@ class AppLocalizationsFil extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Aktibo na ang subscription na ito sa ibang BeaverTalk account.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Bumalik na ang mga character mo';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Binili ang character na ito sa ibang account';
 
   @override
   String get ctaSignInThatAccount => 'Mag-sign in sa account na iyon';
@@ -2045,13 +2043,6 @@ class AppLocalizationsFil extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Ituloy kung saan ka huminto — ngayon mismo.';
-
-  @override
-  String get flCheckTitle => 'Iyon na ang pagsusuri mo ngayong araw';
-
-  @override
-  String get flCheckBody =>
-      'May isang check bawat araw sa Free. Buong pagsusuri ang ibinibigay ng Premium.';
 
   @override
   String flCaption(String price) {

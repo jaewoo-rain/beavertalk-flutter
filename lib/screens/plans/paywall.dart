@@ -40,16 +40,6 @@ enum PaywallVariant {
   max,
 }
 
-/// Which cap ran out — picks the limit banner copy (spec §8-1). One screen,
-/// two wordings.
-enum LimitKind {
-  /// `That was today's call`.
-  call,
-
-  /// `That was today's check`.
-  check,
-}
-
 /// Billing cycle choice on a paywall. Selection only — tapping a row never
 /// navigates (spec §14).
 enum _Cycle { monthly, annual }
@@ -59,14 +49,10 @@ enum _Cycle { monthly, annual }
 /// variant-driven content, all measured 2026-08-03.
 class PaywallScreen extends ConsumerStatefulWidget {
   /// Creates a paywall.
-  const PaywallScreen({super.key, required this.variant, this.limitKind});
+  const PaywallScreen({super.key, required this.variant});
 
   /// Which paywall.
   final PaywallVariant variant;
-
-  /// Which cap ran out; only meaningful on [PaywallVariant.proLimit].
-  /// Falls back to [LimitKind.call].
-  final LimitKind? limitKind;
 
   @override
   ConsumerState<PaywallScreen> createState() => _PaywallScreenState();
@@ -140,14 +126,6 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
         ),
       );
 
-  /// Which cap ran out — the widget parameter, or the route argument the
-  /// free-limit sheets pass (`'call'` / `'check'`), or call.
-  LimitKind _effectiveLimitKind(BuildContext context) {
-    if (widget.limitKind != null) return widget.limitKind!;
-    final args = ModalRoute.of(context)?.settings.arguments;
-    return args == 'check' ? LimitKind.check : LimitKind.call;
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -197,14 +175,12 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
                   if (widget.variant == PaywallVariant.proLimit) ...[
                     // Non-interactive by design: no chevron, no tap. The banner
                     // states a fact; the CTA does the selling (spec §8-1).
+                    // 한도 배너는 통화 한도 하나다 — 분석 한도(「today's check」)는 Free 분석
+                    // 깊이 잠금 취소로 없어졌다(서버 §11 · PM-DEC-172).
                     Banner(
                       tone: BannerTone.neutral,
-                      title: _effectiveLimitKind(context) == LimitKind.call
-                          ? l10n.limitBannerCallTitle
-                          : l10n.limitBannerCheckTitle,
-                      sub: _effectiveLimitKind(context) == LimitKind.call
-                          ? l10n.limitBannerCallSub
-                          : l10n.limitBannerCheckSub,
+                      title: l10n.limitBannerCallTitle,
+                      sub: l10n.limitBannerCallSub,
                       showChevron: false,
                     ),
                     const SizedBox(height: AppSpacing.s24),

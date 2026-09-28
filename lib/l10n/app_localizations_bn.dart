@@ -1519,9 +1519,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get bulletFreeCall => 'দিনে 5 মিনিট ভয়েস কল';
 
   @override
-  String get bulletFreeCheck => 'প্রথম 3টি কলে সম্পূর্ণ বিশ্লেষণ';
-
-  @override
   String get bulletFreeCharacter => 'শুরুতে 2টি ক্যারেক্টার';
 
   @override
@@ -1545,12 +1542,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Free-তে দিনে 5 মিনিট কল করা যায়';
-
-  @override
-  String get limitBannerCheckTitle => 'আজকের পরীক্ষা শেষ';
-
-  @override
-  String get limitBannerCheckSub => 'Free-তে দিনে একটি পরীক্ষা';
 
   @override
   String get bulletProCharactersForever => 'কেনা ক্যারেক্টার চিরকাল আপনারই';
@@ -1742,6 +1733,13 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'এই সাবস্ক্রিপশন অন্য একটি BeaverTalk অ্যাকাউন্টে ইতিমধ্যে সক্রিয়।';
+
+  @override
+  String get ovRestoreCharactersTitle => 'আপনার ক্যারেক্টারগুলো ফিরে এসেছে';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'এই ক্যারেক্টারটি অন্য অ্যাকাউন্টে কেনা হয়েছে';
 
   @override
   String get ctaSignInThatAccount => 'সেই অ্যাকাউন্টে সাইন ইন করুন';
@@ -2022,13 +2020,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get flTodayBody => 'যেখানে থেমেছিলেন, সেখান থেকে — এখনই।';
-
-  @override
-  String get flCheckTitle => 'এটাই ছিল আজকের পরীক্ষা';
-
-  @override
-  String get flCheckBody =>
-      'Free-তে দিনে 1টি চেক। Premium-এ পাবেন সম্পূর্ণ বিশ্লেষণ।';
 
   @override
   String flCaption(String price) {

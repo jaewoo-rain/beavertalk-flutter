@@ -1517,9 +1517,6 @@ class AppLocalizationsKk extends AppLocalizations {
   String get bulletFreeCall => 'Күніне 5 минут дауыстық қоңырау';
 
   @override
-  String get bulletFreeCheck => 'Алғашқы 3 қоңырауға толық талдау';
-
-  @override
   String get bulletFreeCharacter => 'Бастауға 2 кейіпкер';
 
   @override
@@ -1543,12 +1540,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get limitBannerCallSub => 'Тегін жоспар күніне 5 минут қоңырау береді';
-
-  @override
-  String get limitBannerCheckTitle => 'Бұл бүгінгі тексеріс еді';
-
-  @override
-  String get limitBannerCheckSub => 'Тегін жоспар күніне бір тексеріс береді';
 
   @override
   String get bulletProCharactersForever =>
@@ -1741,6 +1732,13 @@ class AppLocalizationsKk extends AppLocalizations {
   @override
   String get ovRestoreOtherBody =>
       'Бұл жазылым басқа BeaverTalk есептік жазбасында әлдеқашан белсенді.';
+
+  @override
+  String get ovRestoreCharactersTitle => 'Кейіпкерлеріңіз қайтты';
+
+  @override
+  String get ovRestoreCharacterOtherTitle =>
+      'Бұл кейіпкер басқа аккаунтта сатып алынған';
 
   @override
   String get ctaSignInThatAccount => 'Сол есептік жазбамен кіру';
@@ -2022,13 +2020,6 @@ class AppLocalizationsKk extends AppLocalizations {
 
   @override
   String get flTodayBody => 'Тоқтаған жерден жалғастырыңыз — дәл қазір.';
-
-  @override
-  String get flCheckTitle => 'Бұл бүгінгі тексеріс еді';
-
-  @override
-  String get flCheckBody =>
-      'Тегін жоспарда күніне бір тексеру бар. Premium толық талдауды береді.';
 
   @override
   String flCaption(String price) {

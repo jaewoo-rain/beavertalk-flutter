@@ -120,7 +120,9 @@ class SoundResultDto {
         soundKey: j['sound_key'] as String? ?? '',
         label: j['label'] as String? ?? '',
         before: _int(j['before']),
-        after: _int(j['after']) ?? 0,
+        // null 은 「채점 못 함」이다 — 0 으로 바꾸면 「0점」으로 보였다(F099).
+        after: _int(j['after']),
+        isStub: j['is_stub'] == true,
         delta: _int(j['delta']),
         bestScore: _int(j['best_score']) ?? 0,
         attempts: _int(j['attempts']) ?? 0,
