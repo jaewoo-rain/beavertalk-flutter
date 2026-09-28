@@ -5,6 +5,7 @@ import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/store_kit_2_wrappers.dart';
 
 import '../domain/iap_service.dart';
 import '../domain/repositories/purchase_repository.dart';
@@ -39,8 +40,12 @@ class StoreIapService implements IapService {
   StoreIapService({
     required PurchaseRepository server,
     InAppPurchase? store,
+    Future<List<GooglePlayPurchaseDetails>> Function()? playOwnedPurchases,
+    Future<List<AppleTransaction>> Function()? appleTransactions,
   })  : _server = server,
-        _store = store ?? InAppPurchase.instance {
+        _store = store ?? InAppPurchase.instance,
+        _playOwned = playOwnedPurchases,
+        _appleTransactions = appleTransactions {
     _storeSub = _store.purchaseStream.listen(
       _onStoreEvent,
       onError: _out.addError,
@@ -57,6 +62,12 @@ class StoreIapService implements IapService {
 
   final PurchaseRepository _server;
   final InAppPurchase _store;
+
+  /// 테스트용 주입. 없으면 Play 의 `queryPastPurchases`(이 계정이 지금 가진 구매).
+  final Future<List<GooglePlayPurchaseDetails>> Function()? _playOwned;
+
+  /// 테스트용 주입. 없으면 StoreKit 2 `Transaction.all`.
+  final Future<List<AppleTransaction>> Function()? _appleTransactions;
 
   final _out = StreamController<IapPurchase>.broadcast();
   StreamSubscription<List<PurchaseDetails>>? _storeSub;
@@ -119,18 +130,82 @@ class StoreIapService implements IapService {
       // beats guessing: an unrecognised id here would become a purchase of
       // something nobody chose.
       if (sku == null || !ids.contains(sku) || found.containsKey(sku)) continue;
-      _catalog[sku] =
-          _StoreSku(details: details, offerToken: _offerTokenOf(details));
+      final offer = _offerOf(details);
+      _catalog[sku] = _StoreSku(
+        details: details,
+        offerToken: offer?.offerIdToken,
+        // 체험 오퍼가 조회에 실렸으면 이 계정은 자격이 있다 — 새 구독은 그 토큰으로 연다.
+        trialOfferToken: _trialTokenFor(details, response.productDetails),
+      );
+      // Play 의 `details.price` 는 첫 가격 단계다. 기본 플랜은 단계가 하나라 같지만, 청구되는
+      // 금액은 언제나 마지막(반복) 단계라 그쪽을 읽는다.
+      final recurring = offer?.pricingPhases.lastOrNull;
       found[sku] = IapProduct(
         id: sku,
         type: _typeOf(sku),
-        localizedPrice: details.price,
+        localizedPrice: recurring?.formattedPrice ?? details.price,
         title: details.title,
-        rawPrice: details.rawPrice,
-        currencyCode: details.currencyCode,
+        rawPrice: recurring == null
+            ? details.rawPrice
+            : recurring.priceAmountMicros / 1000000,
+        currencyCode: recurring?.priceCurrencyCode ?? details.currencyCode,
       );
     }
     return found.values.toList();
+  }
+
+  /// [base] 와 같은 구독·기본 플랜 위의 무료체험 오퍼 토큰. 없으면 `null`.
+  String? _trialTokenFor(ProductDetails base, List<ProductDetails> all) {
+    final baseOffer = _offerOf(base);
+    if (baseOffer == null) return null;
+    final candidates = <SubscriptionOfferDetailsWrapper>[
+      for (final d in all)
+        if (d.id == base.id) ?_offerOf(d),
+    ];
+    final i = pickTrialOffer(
+      [
+        for (final o in candidates)
+          (
+            basePlanId: o.basePlanId,
+            offerId: o.offerId,
+            tags: o.offerTags,
+            hasFreePhase: o.pricingPhases.any((p) => p.priceAmountMicros == 0),
+          ),
+      ],
+      basePlanId: baseOffer.basePlanId,
+    );
+    return i == null ? null : candidates[i].offerIdToken;
+  }
+
+  /// 오퍼 목록에서 무료체험 오퍼의 자리 — [basePlanId] 위의, 윈백이 아니고 무료 단계를 가진 것.
+  /// id 가 [IapProductIds.playTrialOfferId] 인 것을 먼저 고른다. 없으면 `null`.
+  ///
+  /// Play 는 자격 없는 오퍼(이미 체험을 쓴 계정의 체험 등)를 조회 결과에서 빼고 준다. 그래서
+  /// 이 함수가 무엇을 고르면 그 계정은 자격이 있다.
+  @visibleForTesting
+  static int? pickTrialOffer(
+    List<
+            ({
+              String basePlanId,
+              String? offerId,
+              List<String> tags,
+              bool hasFreePhase,
+            })>
+        offers, {
+    required String basePlanId,
+  }) {
+    int? free;
+    for (var i = 0; i < offers.length; i++) {
+      final o = offers[i];
+      if (o.basePlanId != basePlanId || o.offerId == null) continue;
+      if (o.offerId == IapProductIds.playWinbackOfferId ||
+          o.tags.contains(IapProductIds.playWinbackOfferTag)) {
+        continue;
+      }
+      if (o.offerId == IapProductIds.playTrialOfferId) return i;
+      if (free == null && o.hasFreePhase) free = i;
+    }
+    return free;
   }
 
   @override
@@ -152,11 +227,21 @@ class StoreIapService implements IapService {
       throw StateError('product not found on store: ${product.id}');
     }
     _launched[sku.details.id] = product.id;
+    final replacing =
+        _isPlay && _typeOf(product.id) == IapProductType.subscription
+            ? await _ownedPremiumOtherThan(sku.details.id)
+            : null;
     // Subscriptions and characters both: `buyConsumable` is for goods that can
     // be bought again, and neither of ours can be. On Play this is also what
     // keeps a character un-consumed, which is how Play models "owned forever"
     // — it has no non-consumable product type of its own.
-    await _store.buyNonConsumable(purchaseParam: _paramFor(sku));
+    final launched = await _store.buyNonConsumable(
+        purchaseParam: _paramFor(sku, replacing: replacing));
+    // 결제창을 못 열면 스토어는 예외 대신 false 만 돌려준다. 버리면 스트림에 아무것도 안 와서
+    // 처리 화면 스피너가 멈춘다(QA F071). 예외로 올려 호출부의 「스토어 오류」 시트로 보낸다.
+    if (!launched) {
+      throw StateError('store could not launch the purchase: ${product.id}');
+    }
   }
 
   @override
@@ -338,11 +423,27 @@ class StoreIapService implements IapService {
     final outcome = restoreOutcomeOf(result);
     for (final p in batch) {
       final pd = _awaitingFinish.remove(p.purchaseToken);
-      if (outcome != RestoreOutcome.restored) continue;
+      if (!grantedByRestore(p, outcome, result.entitlement)) continue;
       if (pd != null) _finish(pd);
       _out.add(p);
     }
     return outcome;
+  }
+
+  /// 복원 묶음의 한 영수증을 `restored` 로 내보내고 거래를 닫아도 되는가 — 서버가 실제로 지급한 것만.
+  ///
+  /// 서버는 건별 판정 없이 개수(`restored`·`failed`)와 결과 권한만 준다(건별 사유는 서버 요청서 §22 ③).
+  /// 예전에는 묶음이 하나라도 복원되면 전부 내보내서, 서버가 거절한 Premium 영수증이 캐릭터 복원과
+  /// 함께 나가 세션이 Premium 으로 올라갔다(QA F068). 구독은 결과 권한이 Premium 일 때만 낸다.
+  @visibleForTesting
+  static bool grantedByRestore(
+      IapPurchase p, RestoreOutcome outcome, EntitlementDto entitlement) {
+    if (outcome != RestoreOutcome.restored) return false;
+    if (p.type == IapProductType.subscription) return entitlement.isPro;
+    // 캐릭터는 결과 권한에 그 캐릭터가 있을 때만. 대응을 못 찾으면(표에 없는 id · dev 번호) 열어
+    // 둔다 — 다음 실행 때 스토어가 다시 보내 단건 검증 경로가 판정한다(QA F070 · PM-DEC-119).
+    return entitlement.ownedCharacterIds
+        .any((id) => IapProductIds.characterFor(id) == p.productId);
   }
 
   /// The restore result to a [RestoreOutcome].
@@ -436,9 +537,6 @@ class StoreIapService implements IapService {
     return IapProductIds.logicalSkuFromPlay(details.id, offer.basePlanId);
   }
 
-  String? _offerTokenOf(ProductDetails details) =>
-      _offerOf(details)?.offerIdToken;
-
   SubscriptionOfferDetailsWrapper? _offerOf(ProductDetails details) {
     if (details is! GooglePlayProductDetails) return null;
     final index = details.subscriptionIndex;
@@ -447,23 +545,150 @@ class StoreIapService implements IapService {
     return offers[index];
   }
 
-  PurchaseParam _paramFor(_StoreSku sku) {
+  PurchaseParam _paramFor(_StoreSku sku,
+      {GooglePlayPurchaseDetails? replacing}) {
     if (sku.offerToken == null) {
       return PurchaseParam(productDetails: sku.details);
+    }
+    if (replacing != null) {
+      // 월간↔연간 전환(QA F067 · PM-DEC-126). PM-DEC-121 로 둘이 서로 다른 Play 구독이라, 교체
+      // 설정 없이 사면 기존 구독이 그대로 살아 이중 청구된다. CHARGE_FULL_PRICE — 새 구독 전액을
+      // 바로 청구하고 기존 구독의 남은 가치는 새 구독 기간 연장으로 돌려준다. 전환은 새 고객이
+      // 아니므로 체험 토큰을 쓰지 않는다(연간 체험이 월간 회원에게 열려 있어도).
+      return GooglePlayPurchaseParam(
+        productDetails: sku.details,
+        offerToken: sku.offerToken,
+        changeSubscriptionParam: ChangeSubscriptionParam(
+          oldPurchaseDetails: replacing,
+          replacementMode: ReplacementMode.chargeFullPrice,
+        ),
+      );
     }
     // Without the offer token Play falls back to the subscription's default
     // base plan — which is how an annual selection quietly billed monthly.
     return GooglePlayPurchaseParam(
       productDetails: sku.details,
-      offerToken: sku.offerToken,
+      offerToken: sku.trialOfferToken ?? sku.offerToken,
     );
+  }
+
+  /// 이 계정이 지금 가진 Premium 구독 중 [targetId] 가 아닌 것 — 전환 구매의 교체 대상. 없으면 `null`.
+  ///
+  /// 조회가 실패하면 `null` 로 새 구독처럼 연다. 교체 없이 열면 이중 청구 위험이 있지만, 결제창을
+  /// 아예 못 여는 것보다 낫고 Play 구독 화면에서 해지할 수 있다.
+  Future<GooglePlayPurchaseDetails?> _ownedPremiumOtherThan(
+      String targetId) async {
+    final List<GooglePlayPurchaseDetails> owned;
+    try {
+      owned = await (_playOwned?.call() ?? _queryPlayOwned());
+    } catch (_) {
+      return null;
+    }
+    return pickReplacedSubscription(owned, targetId: targetId);
+  }
+
+  @override
+  Future<bool?> ownsAnnualPremium() async {
+    if (kIsWeb) return null;
+    if (defaultTargetPlatform == TargetPlatform.iOS) return _appleOwnsAnnual();
+    if (!_isPlay) return null;
+    final List<GooglePlayPurchaseDetails> owned;
+    try {
+      owned = await (_playOwned?.call() ?? _queryPlayOwned());
+    } catch (_) {
+      return null;
+    }
+    final premium = [
+      for (final p in owned)
+        if (p.status != PurchaseStatus.pending &&
+            IapProductIds.playPremiumSubscriptionIds.contains(p.productID))
+          p.productID,
+    ];
+    final yearlyId = IapProductIds.playIdsFor(IapProductIds.maxYearly)!.subscriptionId;
+    if (premium.contains(yearlyId)) return true;
+    // 레거시 `bt_max` 는 구매에 기본 플랜이 안 실려 주기를 모른다.
+    if (premium.any((id) => !IapProductIds.subscriptionIdIsCurrent(id))) return null;
+    return false;
+  }
+
+  /// iOS — 지금 유효한(만료 전) Premium 거래 중 가장 최근 것의 상품으로 주기를 본다.
+  /// 같은 구독 그룹 안의 교체는 애플이 처리한다(업그레이드 즉시 · 다운그레이드는 갱신 때).
+  Future<bool?> _appleOwnsAnnual() async {
+    final List<AppleTransaction> all;
+    try {
+      all = await (_appleTransactions?.call() ?? _queryAppleTransactions());
+    } catch (_) {
+      return null;
+    }
+    return appleOwnsAnnual(all, now: DateTime.now());
+  }
+
+  static Future<List<AppleTransaction>> _queryAppleTransactions() async => [
+        for (final t in await SK2Transaction.transactions())
+          (
+            productId: t.productId,
+            expires: t.expirationDate == null
+                ? null
+                : DateTime.tryParse(t.expirationDate!),
+            purchased: DateTime.tryParse(t.purchaseDate),
+          ),
+      ];
+
+  /// [all] 에서 유효한 Premium 이 연간인가. 유효한 Premium 이 없으면 `null`(모름 — 버튼을 숨긴다).
+  @visibleForTesting
+  static bool? appleOwnsAnnual(List<AppleTransaction> all,
+      {required DateTime now}) {
+    const premium = {IapProductIds.maxMonthly, IapProductIds.maxYearly};
+    final live = [
+      for (final t in all)
+        if (premium.contains(t.productId) &&
+            t.expires != null &&
+            t.expires!.isAfter(now))
+          t,
+    ]..sort((a, b) =>
+        (b.purchased ?? DateTime(0)).compareTo(a.purchased ?? DateTime(0)));
+    if (live.isEmpty) return null;
+    return live.first.productId == IapProductIds.maxYearly;
+  }
+
+  Future<List<GooglePlayPurchaseDetails>> _queryPlayOwned() async {
+    final response = await _store
+        .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>()
+        .queryPastPurchases();
+    return response.pastPurchases;
+  }
+
+  /// [owned] 에서 교체할 Premium 구독 — [targetId] 가 아니고 결제가 끝난 것.
+  @visibleForTesting
+  static GooglePlayPurchaseDetails? pickReplacedSubscription(
+    List<GooglePlayPurchaseDetails> owned, {
+    required String targetId,
+  }) {
+    for (final p in owned) {
+      if (p.productID == targetId || p.status == PurchaseStatus.pending) {
+        continue;
+      }
+      if (IapProductIds.playPremiumSubscriptionIds.contains(p.productID)) {
+        return p;
+      }
+    }
+    return null;
   }
 }
 
+/// StoreKit 2 거래 중 주기 판단에 쓰는 것만.
+typedef AppleTransaction = ({String productId, DateTime? expires, DateTime? purchased});
+
 /// A store product plus what Play needs in order to charge the right base plan.
 class _StoreSku {
-  const _StoreSku({required this.details, this.offerToken});
+  const _StoreSku(
+      {required this.details, this.offerToken, this.trialOfferToken});
 
   final ProductDetails details;
+
+  /// 기본 플랜 오퍼 토큰 — 체험 없이 바로 청구.
   final String? offerToken;
+
+  /// 무료체험 오퍼 토큰 — 이 계정에 자격이 있을 때만(Play 가 조회에 실어 준 경우).
+  final String? trialOfferToken;
 }

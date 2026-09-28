@@ -54,6 +54,24 @@ abstract final class IapProductIds {
   /// 같은 오퍼의 태그. 오퍼 id 가 바뀌어도 태그로 찾는다.
   static const playWinbackOfferTag = 'winback';
 
+  /// Play 7일 무료체험 오퍼 — `bt_max_monthly/monthly` · `bt_max_yearly/yearly` 둘 다(09-28 ACTIVE).
+  /// Play 는 이 계정이 받을 자격이 있는 오퍼만 조회 결과에 싣는다. 그래서 결과에 있으면 자격이
+  /// 있는 것이고, 앱은 그 오퍼 토큰으로 결제창을 연다 — 기본 플랜 토큰으로 열면 체험 없이 바로
+  /// 청구된다(09-28 실결제 ₩33,000 즉시 청구).
+  static const playTrialOfferId = 'trial-7d';
+
+  /// 전환 구매가 교체할 수 있는 Play Premium 구독 — 현행 둘 + 레거시 `bt_max`(월간·연간 기본 플랜을
+  /// 한 구독에 두던 시절 · PM-DEC-121 이전 결제). 전환 때 이 중 하나를 가지고 있으면 교체한다(F067).
+  static const playPremiumSubscriptionIds = {
+    'bt_max_monthly',
+    'bt_max_yearly',
+    'bt_max',
+  };
+
+  /// [subscriptionId] 가 현행 Play 구독(주기별로 따로 만든 것)인가 — 레거시 `bt_max` 면 false.
+  static bool subscriptionIdIsCurrent(String subscriptionId) =>
+      _playIds.values.any((v) => v.subscriptionId == subscriptionId);
+
   /// Character product id, keyed by **slug** — never by the server's primary
   /// key. Store ids are permanent while database ids are not, and a bare
   /// integer tells nobody in the console or the payout report which character
@@ -447,6 +465,13 @@ abstract class IapService {
   /// wires a real SDK has to come here and say `true` on purpose.
   bool get reportsIntroEligibility;
 
+  /// 이 계정이 스토어에서 **연간** Premium 을 가지고 있는가. `null` 은 모름(iOS · 레거시 `bt_max` ·
+  /// 조회 실패) — 호출부가 다른 근거로 판단한다.
+  ///
+  /// 서버 구독 상태에는 결제 주기가 없다. 연간 회원에게 「Switch to yearly」 를 보이지 않으려면
+  /// 스토어에 물어야 한다(QA F067 부수).
+  Future<bool?> ownsAnnualPremium();
+
   /// Whether the device can transact at all — no store on this build, a
   /// signed-out account, or purchases restricted by parental controls.
   ///
@@ -535,6 +560,10 @@ class MockIapService implements IapService {
   /// 가짜 레일엔 스토어 오퍼가 없다 — 호출부가 스토어 화면으로 폴백한다.
   @override
   Future<bool> purchaseWinbackOffer() async => false;
+
+  /// 가짜 레일은 결제 주기를 모른다.
+  @override
+  Future<bool?> ownsAnnualPremium() async => null;
 
   /// What the next [purchase] resolves to.
   IapPurchaseState scriptedOutcome;

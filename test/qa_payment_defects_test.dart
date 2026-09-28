@@ -444,6 +444,25 @@ void main() {
       expect(find.text('PAYWALL'), findsOneWidget);
     });
 
+    testWidgets('F069 — 통화 중 늦은 실패는 버리지 않고 통화가 끝나면 한 번 안내', (tester) async {
+      final call = _StubCall(const CallState(phase: CallPhase.inCall));
+      final iap = await pendNotice(tester, extra: [
+        normalCallControllerProvider.overrideWith(() => call),
+      ]);
+      iap.emit(IapPurchase(
+          productId: IapProductIds.maxMonthly,
+          type: IapProductType.subscription,
+          state: IapPurchaseState.failed,
+          failure: IapFailure.store));
+      await tester.pumpAndSettle();
+      final title = AppLocalizations.of(tester.element(find.text('PAYWALL')))
+          .ovFailedDeclinedTitle;
+      expect(find.text(title), findsNothing, reason: '통화 위에는 띄우지 않는다');
+      call.setPhase(CallPhase.idle);
+      await tester.pumpAndSettle();
+      expect(find.text(title), findsOneWidget);
+    });
+
     testWidgets('F066 — 새 구매가 시작되면 이전 감시는 끝난다', (tester) async {
       final iap = await pendNotice(tester);
       cancelLatePurchaseWatch(); // 새 처리 화면이 여는 것과 같은 호출
@@ -575,6 +594,9 @@ class _StubCall extends NormalCallController {
   final CallState _state;
   @override
   CallState build() => _state;
+
+  /// 통화가 끝난 것처럼 단계를 바꾼다.
+  void setPhase(CallPhase phase) => state = CallState(phase: phase);
 }
 
 /// 복원 결과만 정한다.

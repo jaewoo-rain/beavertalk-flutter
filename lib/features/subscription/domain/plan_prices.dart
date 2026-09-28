@@ -74,13 +74,18 @@ abstract final class PlanPrices {
 
   /// Takes the store's catalog as the price of record.
   ///
-  /// All four subscription prices are required together. A screen quoting a
+  /// The two Premium prices are required together. A screen quoting a
   /// store monthly price beside a fallback annual anchor would be comparing
   /// two currencies — the advertised saving would be nonsense, and in a
   /// non-USD storefront wildly so.
+  ///
+  /// Pro is optional and taken only as a pair. Pro (`bt_pro`) is a legacy
+  /// product Play may no longer return, and requiring it used to leave every
+  /// Premium price on the USD list fallback — `$23.99` quoted to a member the
+  /// store charged ₩33,000 (09-28 real payment).
   static void adopt({
-    required StorePrice proMonthly,
-    required StorePrice proYearly,
+    StorePrice? proMonthly,
+    StorePrice? proYearly,
     required StorePrice maxMonthly,
     required StorePrice maxYearly,
     StorePrice? characterFrom,
@@ -104,10 +109,11 @@ abstract final class PlanPrices {
 
   /// Pro, billed monthly.
   static String get proMonthly =>
-      _store?.proMonthly.display ?? _listProMonthly;
+      _store?.proMonthly?.display ?? _listProMonthly;
 
   /// Pro, billed yearly.
-  static String get proYearly => _store?.proYearly.display ?? _listProYearly;
+  static String get proYearly =>
+      _store?.proYearly?.display ?? _listProYearly;
 
   /// Max, billed monthly.
   static String get maxMonthly =>
@@ -129,25 +135,28 @@ abstract final class PlanPrices {
   /// annual price. **Derived**: monthly × 12.
   static String get proYearlyAnchor {
     final s = _store;
-    return s == null
+    final pro = s?.proPair;
+    return s == null || pro == null
         ? _listProYearlyAnchor
-        : s.derive(s.proMonthly.raw * 12);
+        : s.derive(pro.monthly.raw * 12);
   }
 
   /// What the annual plan saves against [proYearlyAnchor].
   static String get proYearlySaved {
     final s = _store;
-    return s == null
+    final pro = s?.proPair;
+    return s == null || pro == null
         ? _listProYearlySaved
-        : s.derive(s.proMonthly.raw * 12 - s.proYearly.raw);
+        : s.derive(pro.monthly.raw * 12 - pro.yearly.raw);
   }
 
   /// Pro annual, expressed per month. **Derived**: annual ÷ 12.
   static String get proYearlyPerMonth {
     final s = _store;
-    return s == null
+    final pro = s?.proPair;
+    return s == null || pro == null
         ? _listProYearlyPerMonth
-        : s.derive(s.proYearly.raw / 12);
+        : s.derive(pro.yearly.raw / 12);
   }
 
   /// Twelve months of Premium (`max`) at the monthly rate. **Derived**:
@@ -192,15 +201,15 @@ abstract final class PlanPrices {
 /// same currency as the products they came from.
 class _StorePrices {
   _StorePrices({
-    required this.proMonthly,
-    required this.proYearly,
+    this.proMonthly,
+    this.proYearly,
     required this.maxMonthly,
     required this.maxYearly,
     this.characterFrom,
   });
 
-  final StorePrice proMonthly;
-  final StorePrice proYearly;
+  final StorePrice? proMonthly;
+  final StorePrice? proYearly;
   final StorePrice maxMonthly;
   final StorePrice maxYearly;
 
@@ -215,5 +224,11 @@ class _StorePrices {
   /// code keeps `₩` with `₩` and the right number of decimals — KRW has none,
   /// USD has two, and hardcoding either is visibly wrong in the other.
   String derive(double amount) =>
-      NumberFormat.simpleCurrency(name: proMonthly.currencyCode).format(amount);
+      NumberFormat.simpleCurrency(name: maxMonthly.currencyCode).format(amount);
+
+  /// Both Pro prices, or null when the store did not return the pair.
+  ({StorePrice monthly, StorePrice yearly})? get proPair {
+    final m = proMonthly, y = proYearly;
+    return m == null || y == null ? null : (monthly: m, yearly: y);
+  }
 }

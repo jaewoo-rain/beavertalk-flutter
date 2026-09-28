@@ -149,11 +149,15 @@ String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
   // The fallback used to carry its own copy of the price in minor units, and
   // it went stale twice while the list prices moved — it was still quoting
   // $19.90/$12.90 two rounds later. Route it through the one place instead.
-  final price = minor != null
-      ? formatUsd(minor)
-      : (status.tier == SubscriptionTier.max
-          ? PlanPrices.maxMonthly
-          : PlanPrices.proMonthly);
+  //
+  // 스토어 현지가가 서버 값을 이긴다. 서버 `price` 는 카탈로그 USD 라, ₩33,000 을 낸 회원에게
+  // 「$23.99 per month」 로 보였다(09-28 실결제). 서버 값은 스토어가 답하지 않을 때만 쓴다.
+  final isMax = status.tier == SubscriptionTier.max;
+  final price = isMax && PlanPrices.isStoreBacked
+      ? PlanPrices.maxMonthly
+      : minor != null
+          ? formatUsd(minor)
+          : (isMax ? PlanPrices.maxMonthly : PlanPrices.proMonthly);
   return l10n.pricePerMonthLine(price);
 }
 
@@ -417,15 +421,23 @@ class _PlanCard extends ConsumerWidget {
 /// Rows are never hidden; only slot ① and ⑦ change label and destination,
 /// and both of those decisions live on the domain extension
 /// ([SubscriptionStateX]), not here.
-class _BillingList extends StatelessWidget {
+class _BillingList extends ConsumerWidget {
   const _BillingList({required this.status});
 
   final SubscriptionStatus status;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final state = status.state;
+    // 스토어가 「지금 월간」 이라고 답할 때만 「Switch to yearly」, 아니면 플랜 비교(QA F067 · F071).
+    // 행 자체는 숨기지 않는다(§5-1).
+    final hideSwitch = state.planSlotLabel == BillingSlotLabel.switchToAnnual &&
+        !(ref.watch(annualSwitchAvailableProvider).valueOrNull ?? false);
+    final planLabel =
+        hideSwitch ? BillingSlotLabel.compareAllPlans : state.planSlotLabel;
+    final planDestination =
+        hideSwitch ? BillingDestination.plansCompare : state.planSlotDestination;
 
     String slotLabel(BillingSlotLabel label) => switch (label) {
           BillingSlotLabel.switchToAnnual => l10n.bannerAnnualSwitchTitle,
@@ -441,8 +453,8 @@ class _BillingList extends StatelessWidget {
         const SizedBox(height: AppSpacing.s16),
         _card(context, [
           _BillingRow(
-            label: slotLabel(state.planSlotLabel),
-            destination: state.planSlotDestination,
+            label: slotLabel(planLabel),
+            destination: planDestination,
             // 연간 전환 시트가 「언제부터」를 말하려면 지금 기간의 끝이 필요하다.
             expiresAt: status.expiresAt,
           ),

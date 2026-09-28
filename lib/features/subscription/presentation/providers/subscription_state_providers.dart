@@ -71,10 +71,9 @@ final storePricesProvider = FutureProvider<List<IapProduct>>((ref) async {
   final proYearly = at(IapProductIds.proYearly);
   final maxMonthly = at(IapProductIds.maxMonthly);
   final maxYearly = at(IapProductIds.maxYearly);
-  if (proMonthly != null &&
-      proYearly != null &&
-      maxMonthly != null &&
-      maxYearly != null) {
+  // Premium 둘만 있으면 채택한다. Pro(`bt_pro`)는 레거시라 Play 가 안 돌려줄 수 있고, 넷 다를
+  // 요구하던 때는 현지가가 한 번도 채택되지 않아 USD 정가가 남았다(09-28 ₩33,000 결제에 $23.99 표시).
+  if (maxMonthly != null && maxYearly != null) {
     final characters = products
         .where((p) => p.type == IapProductType.nonConsumable && p.rawPrice > 0)
         .toList()
@@ -89,6 +88,23 @@ final storePricesProvider = FutureProvider<List<IapProduct>>((ref) async {
     );
   }
   return products;
+});
+
+/// 「Switch to yearly」 를 보여도 되는가 — 스토어가 「지금 월간」 이라고 답할 때만(QA F067 · F071).
+///
+/// 서버 상태에는 결제 주기가 없다(서버 요청 §22-⑤). 그래서 스토어의 활성 구독으로 본다 — Android 는
+/// `bt_max_monthly`/`bt_max_yearly`, iOS 는 유효한 거래의 상품. 연간이거나 모르면(조회 실패 · 레거시
+/// `bt_max`) 숨긴다. 연간 회원이 누르면 「카드 거절」 시트가 떴다.
+///
+/// 구독 상태(활성 Premium 인가)는 화면이 본다 — 여기서 상태를 watch 하면 상태를 덮어쓰는 하위
+/// ProviderScope 아래에서 의존성 오류가 난다.
+final annualSwitchAvailableProvider =
+    FutureProvider.autoDispose<bool>((ref) async {
+  try {
+    return await ref.watch(iapServiceProvider).ownsAnnualPremium() == false;
+  } catch (_) {
+    return false;
+  }
 });
 
 /// **The** subscription status — what every subscription screen reads.

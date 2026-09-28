@@ -48,6 +48,8 @@ void main() {
               .overrideWithValue(SubscriptionStatusAvailability.known),
           // 서버 없이 돈다 — 기본은 「모른다」(null). 오늘 사용량 행은 값을 줄 때만 그린다.
           dailyStatusProvider.overrideWith((ref) async => daily),
+          // 스토어가 「지금 월간」 이라고 답한 회원 — 연간 전환 행이 보이는 경우(F071).
+          annualSwitchAvailableProvider.overrideWith((ref) async => true),
         ],
         child: const MaterialApp(
           localizationsDelegates: AppLocalizations.localizationsDelegates,

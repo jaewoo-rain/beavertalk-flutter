@@ -287,6 +287,9 @@ class _PurchaseProcessingScreenState
 /// - during a call nothing is pushed over the call screen: the plan is
 ///   refreshed and the result is left for the subscription screen (the success
 ///   screen's exit, `popUntil(isFirst)`, would otherwise tear the call down).
+///   A **failure** during a call is not dropped (QA F069): its sheet waits and
+///   shows once, when the call phase ends. The call state is only listened to —
+///   call files stay untouched (PM-DEC-059).
 void watchLatePurchaseResult({
   required ProviderContainer container,
   required NavigatorState navigator,
@@ -312,8 +315,11 @@ void watchLatePurchaseResult({
           navigator.pushNamed(Routes.purchaseSuccessMax, arguments: request.annual);
         }
       case IapPurchaseState.failed:
+        final overlay = purchaseFailureOverlayFor(p);
         if (!inCall) {
-          showSubscriptionOverlay(navigator.context, purchaseFailureOverlayFor(p));
+          showSubscriptionOverlay(navigator.context, overlay);
+        } else {
+          _showAfterCall(container, navigator, overlay);
         }
       case IapPurchaseState.canceled:
       case IapPurchaseState.pending:
@@ -322,16 +328,35 @@ void watchLatePurchaseResult({
   });
 }
 
+/// Shows [overlay] once the call phase ends (QA F069).
+void _showAfterCall(ProviderContainer container, NavigatorState navigator,
+    SubscriptionOverlay overlay) {
+  _afterCall?.close();
+  _afterCall = container.listen<CallState>(normalCallControllerProvider,
+      (_, next) {
+    if (_callPhases.contains(next.phase)) return;
+    _afterCall?.close();
+    _afterCall = null;
+    if (navigator.mounted) showSubscriptionOverlay(navigator.context, overlay);
+  });
+}
+
 /// Ends the late-result watch, if any.
+///
+/// A failure sheet still waiting for a call to end is dropped too: a new
+/// purchase attempt supersedes it.
 void cancelLatePurchaseWatch() {
   _lateGuard?.cancel();
   _lateGuard = null;
   _lateSub?.cancel();
   _lateSub = null;
+  _afterCall?.close();
+  _afterCall = null;
 }
 
 StreamSubscription<IapPurchase>? _lateSub;
 Timer? _lateGuard;
+ProviderSubscription<CallState>? _afterCall;
 
 /// A call is on screen — don't push results over it.
 const _callPhases = {
