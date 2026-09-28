@@ -9,6 +9,7 @@ import 'package:beavertalk/app/routes.dart';
 import 'package:beavertalk/components/atoms/button.dart';
 import 'package:beavertalk/screens/mypage/subscription_manage.dart';
 import 'package:beavertalk/screens/overlays/subscription_overlays.dart';
+import 'package:beavertalk/screens/plans/purchase_flow.dart';
 import 'package:flutter/material.dart';
 import 'package:beavertalk/features/subscription/data/store_iap_service.dart';
 import 'package:beavertalk/features/subscription/domain/iap_service.dart';
@@ -111,9 +112,16 @@ class _Server implements PurchaseRepository {
   Future<EntitlementDto> entitlement() async => const EntitlementDto(isPro: false);
 }
 
+/// 이 테스트의 로그인 회원 — Play `obfuscatedAccountId`.
+const _me = 'acct-me';
+
+String? _meId() => _me;
+
 GooglePlayPurchaseDetails _owned(String productId,
-        {PurchaseStateWrapper state = PurchaseStateWrapper.purchased}) =>
+        {PurchaseStateWrapper state = PurchaseStateWrapper.purchased,
+        String? account = _me}) =>
     GooglePlayPurchaseDetails.fromPurchase(PurchaseWrapper(
+      obfuscatedAccountId: account,
       orderId: 'GPA.$productId',
       packageName: 'im.beavertalk',
       purchaseTime: 0,
@@ -134,9 +142,25 @@ Future<GooglePlayPurchaseParam> _buy(List<ProductDetails> rows,
     server: _Server(),
     store: store,
     playOwnedPurchases: () async => owned,
+    accountId: _meId,
   );
   final products = await iap.getProducts({sku});
   await iap.purchase(products.single);
+  return store.bought! as GooglePlayPurchaseParam;
+}
+
+Future<GooglePlayPurchaseParam> _switch(List<ProductDetails> rows,
+    {required String sku,
+    required List<GooglePlayPurchaseDetails> owned}) async {
+  final store = _Store(rows);
+  final iap = StoreIapService(
+    server: _Server(),
+    store: store,
+    playOwnedPurchases: () async => owned,
+    accountId: _meId,
+  );
+  final products = await iap.getProducts({sku});
+  await iap.purchaseSwitch(products.single);
   return store.bought! as GooglePlayPurchaseParam;
 }
 
@@ -217,9 +241,10 @@ void main() {
   });
 
   group('F067 · 월간↔연간 전환은 기존 구독을 교체한다(PM-DEC-126)', () {
-    test('월간 보유 중 연간 구매 → CHARGE_FULL_PRICE 교체 · 체험 토큰 없음', () async {
-      final param = await _buy(_yearlyRows,
+    test('월간 보유 중 연간 전환 → CHARGE_FULL_PRICE 교체 · 체험 토큰 없음', () async {
+      final param = await _switch(_yearlyRows,
           sku: IapProductIds.maxYearly, owned: [_owned('bt_max_monthly')]);
+      expect(param.applicationUserName, _me);
       expect(param.offerToken, 'tok-yearly-base');
       final change = param.changeSubscriptionParam!;
       expect(change.oldPurchaseDetails.productID, 'bt_max_monthly');
@@ -227,9 +252,29 @@ void main() {
     });
 
     test('레거시 bt_max 보유도 교체 대상', () async {
-      final param = await _buy(_yearlyRows,
+      final param = await _switch(_yearlyRows,
           sku: IapProductIds.maxYearly, owned: [_owned('bt_max')]);
       expect(param.changeSubscriptionParam?.oldPurchaseDetails.productID, 'bt_max');
+    });
+
+    test('F087 — 신규 구매는 보유 구독이 있어도 교체하지 않는다 · 회원 id 를 싣는다', () async {
+      final param = await _buy(_yearlyRows,
+          sku: IapProductIds.maxYearly,
+          owned: [_owned('bt_max_monthly', account: 'someone-else')]);
+      expect(param.changeSubscriptionParam, isNull);
+      expect(param.applicationUserName, _me);
+    });
+
+    test('F087 — 전환은 이 회원의 구매만 교체한다(다른 회원·id 없는 구매는 열지 않음)', () async {
+      for (final account in ['someone-else', null]) {
+        await expectLater(
+          _switch(_yearlyRows,
+              sku: IapProductIds.maxYearly,
+              owned: [_owned('bt_max_monthly', account: account)]),
+          throwsA(anything),
+          reason: 'account=$account',
+        );
+      }
     });
 
     test('보유 구독이 없으면 교체 없이 새 구독 — 체험 토큰', () async {
@@ -243,7 +288,10 @@ void main() {
           Future<List<GooglePlayPurchaseDetails>> Function() owned) async {
         final store = _Store(_yearlyRows);
         final iap = StoreIapService(
-            server: _Server(), store: store, playOwnedPurchases: owned);
+            server: _Server(),
+            store: store,
+            playOwnedPurchases: owned,
+            accountId: _meId);
         final p = (await iap.getProducts({IapProductIds.maxYearly})).single;
         return (store, iap.purchaseSwitch(p));
       }
@@ -290,7 +338,8 @@ void main() {
           _owned('bt_max_yearly'),
           _owned('bt_max_monthly', state: PurchaseStateWrapper.pending),
           _owned('bt_character_cuty'),
-        ], targetId: 'bt_max_yearly'),
+          _owned('bt_max_monthly', account: 'someone-else'),
+        ], targetId: 'bt_max_yearly', accountId: _me),
         isNull,
       );
     });
@@ -315,6 +364,7 @@ void main() {
           server: _Server(),
           store: _Store(const []),
           playOwnedPurchases: () async => owned,
+          accountId: _meId,
         ).ownsAnnualPremium();
 
     test('Android — 활성 구독 productId 로 월/연을 가른다', () async {
@@ -324,6 +374,9 @@ void main() {
       // F072 — 이 구글 계정에 Premium 이 없으면(관리자 부여·다른 계정) 월간이 아니라 모름.
       expect(await playAnnual(const []), isNull);
       expect(await playAnnual([_owned('bt_character_rara')]), isNull);
+      // F087 — 다른 회원의 연간 구독으로 주기를 판단하지 않는다.
+      expect(await playAnnual([_owned('bt_max_yearly', account: 'someone-else')]),
+          isNull);
       expect(
         await StoreIapService(
           server: _Server(),
@@ -561,6 +614,7 @@ void main() {
       await tester.pumpWidget(ProviderScope(
         overrides: [
           storePricesProvider.overrideWith((ref) async => const []),
+          iapServiceProvider.overrideWithValue(_AnnualIap(false)), // 스토어: 월간
           subscriptionStatusAvailabilityProvider
               .overrideWithValue(SubscriptionStatusAvailability.known),
           subscriptionStatusProvider.overrideWithValue(SubscriptionStatus(
@@ -577,7 +631,7 @@ void main() {
           home: const SubscriptionManageScreen(),
         ),
       ));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(find.textContaining('₩33,000 per month'), findsOneWidget);
       expect(find.textContaining(r'$23.99'), findsNothing);
     });
@@ -619,6 +673,45 @@ void main() {
       expect(find.textContaining('₩259,000 per year'), findsOneWidget);
       expect(find.textContaining('₩33,000 per month'), findsNothing);
       expect(find.text('Switch to annual'), findsNothing);
+    });
+
+    testWidgets('09-28 실기기 — 주기를 모르면 요금 줄을 월간으로 단정하지 않는다', (tester) async {
+      await pumpManage(tester, SubscriptionState.activeMax, annual: null);
+      expect(find.textContaining('per month'), findsNothing);
+      expect(find.textContaining('per year'), findsNothing);
+    });
+
+    testWidgets('성공 화면 문구는 산 주기·체험을 따른다', (tester) async {
+      debugDefaultTargetPlatformOverride = null;
+      PlanPrices.adopt(
+        maxMonthly: const StorePrice(display: '₩33,000', raw: 33000, currencyCode: 'KRW'),
+        maxYearly: const StorePrice(display: '₩260,000', raw: 260000, currencyCode: 'KRW'),
+      );
+      Future<void> show(Object? args) async {
+        await tester.pumpWidget(MaterialApp(
+          key: UniqueKey(),
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateRoute: (settings) => MaterialPageRoute<void>(
+            settings: RouteSettings(arguments: args),
+            builder: (_) =>
+                const PurchaseSuccessScreen(tier: SubscriptionTier.max),
+          ),
+        ));
+        await tester.pump();
+      }
+
+      await show((annual: true, trial: true));
+      expect(find.textContaining('₩260,000 per year'), findsOneWidget);
+      expect(find.textContaining('₩33,000'), findsNothing);
+      await show((annual: false, trial: true));
+      expect(find.textContaining('7 days free, then ₩33,000 per month'), findsOneWidget);
+      await show((annual: false, trial: false));
+      expect(find.textContaining('₩33,000 is charged monthly'), findsOneWidget);
+      await show(true); // 옛 호출부(bool)
+      expect(find.textContaining('₩260,000 per year'), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
     });
 
     testWidgets('F075 — 주기를 모르면 체험 해지는 연간 전환 시트가 아니라 일반 해지', (tester) async {

@@ -42,7 +42,9 @@ class StoreIapService implements IapService {
     InAppPurchase? store,
     Future<List<GooglePlayPurchaseDetails>> Function()? playOwnedPurchases,
     Future<List<AppleTransaction>> Function()? appleTransactions,
+    String? Function()? accountId,
   })  : _server = server,
+        _accountId = accountId,
         _store = store ?? InAppPurchase.instance,
         _playOwned = playOwnedPurchases,
         _appleTransactions = appleTransactions {
@@ -66,6 +68,13 @@ class StoreIapService implements IapService {
   /// 테스트용 주입. 없으면 Play 의 `queryPastPurchases`(이 계정이 지금 가진 구매).
   final Future<List<GooglePlayPurchaseDetails>> Function()? _playOwned;
 
+  /// 이 앱 회원의 난독화 계정 id(Play `obfuscatedAccountId`) — 로그인 회원 id 의 해시.
+  ///
+  /// 구매마다 싣고, 전환 구매는 **이 값이 같은 구매만** 교체한다. Play 의 보유 구매 조회는 앱
+  /// 회원이 아니라 기기의 Play 계정 기준이라, 없으면 다른 회원(또는 이전 Play 계정)의 구독을
+  /// 교체 대상으로 잡는다(09-28 실기기 · PM-DEC-137).
+  final String? Function()? _accountId;
+
   /// 테스트용 주입. 없으면 StoreKit 2 `Transaction.all`.
   final Future<List<AppleTransaction>> Function()? _appleTransactions;
 
@@ -82,6 +91,9 @@ class StoreIapService implements IapService {
   /// between monthly and yearly — is not in the purchase at all. For a
   /// purchase we started ourselves we still know which one we asked for.
   final _launched = <String, String>{};
+
+  /// Store product ids whose last launched purchase used the trial offer.
+  final _launchedTrial = <String>{};
 
   /// Receipts awaiting their store handshake, keyed by token, so a batched
   /// restore can finish the right transactions once the server accepts them.
@@ -238,17 +250,30 @@ class StoreIapService implements IapService {
       // iOS 는 같은 구독 그룹 안의 교체를 애플이 한다 — 앱이 넘길 교체 설정이 없다.
       replacing = null;
     } else if (switching) {
-      // 전환은 교체할 구독을 확실히 알 때만 연다. 조회 오류·빈 목록이면 결제창을 열지 않는다 —
-      // 교체 없이 열면 체험 토큰이 붙은 새 구독이 기존 구독과 나란히 청구된다(QA F083).
+      // 전환은 교체할 구독을 확실히 알 때만 연다. 조회 오류·빈 목록·이 회원 것이 아닌 구독뿐이면
+      // 결제창을 열지 않는다 — 교체 없이 열면 새 구독이 기존 구독과 나란히 청구되고, 남의 구독을
+      // 교체하면 다른 계정의 구독을 끊는다(QA F083 · PM-DEC-137).
       final owned = await (_playOwned?.call() ?? _queryPlayOwned());
-      replacing = pickReplacedSubscription(owned, targetId: sku.details.id);
+      replacing = pickReplacedSubscription(owned,
+          targetId: sku.details.id, accountId: _currentAccountId());
       if (replacing == null) {
         throw StateError('no owned Premium to replace for ${product.id}');
       }
     } else {
-      replacing = await _ownedPremiumOtherThan(sku.details.id);
+      // 신규 구매는 교체하지 않는다(PM-DEC-137). 전환은 [purchaseSwitch] 만의 일이다 — 신규 경로가
+      // 보유 구독을 찾아 교체를 붙이던 때, 기기에 남은 다른 Play 계정의 연간 구독이 새 회원의
+      // 월간 결제를 CHARGE_FULL_PRICE 교체로 열었다(09-28 실기기).
+      replacing = null;
     }
     _launched[sku.details.id] = product.id;
+    final startsTrial = replacing == null &&
+        sku.offerToken != null &&
+        sku.trialOfferToken != null;
+    if (startsTrial) {
+      _launchedTrial.add(sku.details.id);
+    } else {
+      _launchedTrial.remove(sku.details.id);
+    }
     // Subscriptions and characters both: `buyConsumable` is for goods that can
     // be bought again, and neither of ours can be. On Play this is also what
     // keeps a character un-consumed, which is how Play models "owned forever"
@@ -522,6 +547,7 @@ class StoreIapService implements IapService {
           (pd.purchaseID?.isNotEmpty ?? false) ? pd.purchaseID! : token,
       purchaseToken: token,
       isSandbox: _isSandbox,
+      startedTrial: !restored && _launchedTrial.contains(pd.productID),
     );
   }
 
@@ -566,8 +592,10 @@ class StoreIapService implements IapService {
 
   PurchaseParam _paramFor(_StoreSku sku,
       {GooglePlayPurchaseDetails? replacing}) {
+    final account = _currentAccountId();
     if (sku.offerToken == null) {
-      return PurchaseParam(productDetails: sku.details);
+      return PurchaseParam(
+          productDetails: sku.details, applicationUserName: account);
     }
     if (replacing != null) {
       // 월간↔연간 전환(QA F067 · PM-DEC-126). PM-DEC-121 로 둘이 서로 다른 Play 구독이라, 교체
@@ -576,6 +604,7 @@ class StoreIapService implements IapService {
       // 아니므로 체험 토큰을 쓰지 않는다(연간 체험이 월간 회원에게 열려 있어도).
       return GooglePlayPurchaseParam(
         productDetails: sku.details,
+        applicationUserName: account,
         offerToken: sku.offerToken,
         changeSubscriptionParam: ChangeSubscriptionParam(
           oldPurchaseDetails: replacing,
@@ -587,24 +616,18 @@ class StoreIapService implements IapService {
     // base plan — which is how an annual selection quietly billed monthly.
     return GooglePlayPurchaseParam(
       productDetails: sku.details,
+      applicationUserName: account,
       offerToken: sku.trialOfferToken ?? sku.offerToken,
     );
   }
 
-  /// 이 계정이 지금 가진 Premium 구독 중 [targetId] 가 아닌 것 — 전환 구매의 교체 대상. 없으면 `null`.
-  ///
-  /// **신규 구매 경로 전용**([purchase]). 조회가 실패하면 `null` 로 새 구독처럼 연다 — 가입하려는
-  /// 회원의 결제창을 조회 오류로 막지 않는다. 전환 구매([purchaseSwitch])는 여기를 쓰지 않고
-  /// 오류·빈 목록이면 열지 않는다(fail-closed · QA F083 · PM-DEC-136).
-  Future<GooglePlayPurchaseDetails?> _ownedPremiumOtherThan(
-      String targetId) async {
-    final List<GooglePlayPurchaseDetails> owned;
+  String? _currentAccountId() {
     try {
-      owned = await (_playOwned?.call() ?? _queryPlayOwned());
+      final id = _accountId?.call();
+      return (id == null || id.isEmpty) ? null : id;
     } catch (_) {
       return null;
     }
-    return pickReplacedSubscription(owned, targetId: targetId);
   }
 
   @override
@@ -618,10 +641,14 @@ class StoreIapService implements IapService {
     } catch (_) {
       return null;
     }
+    // 이 앱 회원의 구매만 본다 — 기기의 Play 계정에 남은 다른 회원의 구독으로 주기를 판단하면
+    // 그 회원 것을 교체하는 전환 줄이 열린다(PM-DEC-137).
+    final account = _currentAccountId();
     final premium = [
       for (final p in owned)
         if (p.status != PurchaseStatus.pending &&
-            IapProductIds.playPremiumSubscriptionIds.contains(p.productID))
+            IapProductIds.playPremiumSubscriptionIds.contains(p.productID) &&
+            belongsTo(p, account))
           p.productID,
     ];
     // 이 구글 계정에 Premium 이 없다 — 관리자 부여 · 다른 계정 · 다른 플랫폼 결제. 「월간」 으로
@@ -695,16 +722,26 @@ class StoreIapService implements IapService {
     return response.pastPurchases;
   }
 
-  /// [owned] 에서 교체할 Premium 구독 — [targetId] 가 아니고 결제가 끝난 것.
+  /// [p] 가 [account] 회원의 구매인가 — Play `obfuscatedAccountId` 대조. 회원 id 를 모르거나
+  /// 구매에 id 가 없으면(이 대조 이전 구매) false 다. 남의 구독을 끊는 것보다 전환을 막는 편이
+  /// 낫다(fail-closed · PM-DEC-137).
+  @visibleForTesting
+  static bool belongsTo(GooglePlayPurchaseDetails p, String? account) =>
+      account != null &&
+      p.billingClientPurchase.obfuscatedAccountId == account;
+
+  /// [owned] 에서 교체할 Premium 구독 — [targetId] 가 아니고 결제가 끝났고 [accountId] 회원 것.
   @visibleForTesting
   static GooglePlayPurchaseDetails? pickReplacedSubscription(
     List<GooglePlayPurchaseDetails> owned, {
     required String targetId,
+    required String? accountId,
   }) {
     for (final p in owned) {
       if (p.productID == targetId || p.status == PurchaseStatus.pending) {
         continue;
       }
+      if (!belongsTo(p, accountId)) continue;
       if (IapProductIds.playPremiumSubscriptionIds.contains(p.productID)) {
         return p;
       }

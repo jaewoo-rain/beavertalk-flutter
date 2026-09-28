@@ -140,13 +140,17 @@ String _shortDate(BuildContext context, DateTime d) =>
 
 /// The plan-card monthly price line: server value when present, otherwise the
 /// plan's list price (the design's `$15.99` / `$23.99`).
-String _priceLine(AppLocalizations l10n, SubscriptionStatus status,
-    {bool annual = false}) {
-  // 연간 회원에게 월 요금을 보이면 해지 판단이 틀어진다(QA F077). 스토어가 연간이라고 할 때만
-  // 연 요금 · 월 환산 줄 — 모르면 종전대로 월 요금.
-  if (annual && status.tier == SubscriptionTier.max) {
-    return l10n.maxAnnualPriceLine(
-        PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth);
+String? _priceLine(AppLocalizations l10n, SubscriptionStatus status,
+    {required bool? annual}) {
+  // 연간 회원에게 월 요금을 보이면 해지 판단이 틀어진다(QA F077). Premium 은 스토어가 주기를
+  // 말할 때만 요금 줄을 그린다 — 모르면(조회 실패·스토어에 구독 없음·다른 계정) 월간으로 단정하지
+  // 않고 줄을 뺀다(09-28 실기기: 연간 체험이 「₩33,000 per month」 로 보였다).
+  if (status.tier == SubscriptionTier.max) {
+    if (annual == null) return null;
+    if (annual) {
+      return l10n.maxAnnualPriceLine(
+          PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth);
+    }
   }
   // 0 은 「무료로 청구된다」 가 아니다 — 스토어 결제 없이 부여된 Premium(관리자 부여 등)이
   // 가격 0 으로 온다. 「$0 per month」 는 틀린 청구 안내라 모름(null)과 같이 다룬다(QA F022).
@@ -319,7 +323,7 @@ class _PlanCard extends ConsumerWidget {
       SubscriptionState.trial =>
         expiry == null ? l10n.planMaxTrial : l10n.freeUntilDate(_fullDate(context, expiry)),
       _ => _priceLine(l10n, status,
-          annual: ref.watch(premiumAnnualProvider).valueOrNull ?? false),
+          annual: ref.watch(premiumAnnualProvider).valueOrNull),
     };
 
     // Free 의 「오늘 통화 시간」 — 하루 합산 5분(09-23 확정)을 서버 `daily-status` 로 읽는다.
@@ -387,10 +391,11 @@ class _PlanCard extends ConsumerWidget {
             value: Badge(tone: badgeTone, label: badgeLabel),
           ),
           SizedBox(height: _compact ? 10 : 12),
-          Text(
-            subtitle,
-            style: AppType.body2.r.copyWith(color: c.labelNormal),
-          ),
+          if (subtitle != null)
+            Text(
+              subtitle,
+              style: AppType.body2.r.copyWith(color: c.labelNormal),
+            ),
           if (row case (final rowLabel, final rowValue)) ...[
           SizedBox(height: _compact ? 10 : 12),
           Container(height: 1, color: c.lineAlternative),

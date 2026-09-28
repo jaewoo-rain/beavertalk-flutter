@@ -1,5 +1,9 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../data/store_iap_service.dart';
 import '../../domain/entities/subscription.dart';
@@ -33,10 +37,22 @@ final iapServiceProvider = Provider<IapService>((ref) {
           defaultTargetPlatform != TargetPlatform.android)) {
     return MockIapService();
   }
-  final service = StoreIapService(server: ref.watch(purchaseRepositoryProvider));
+  final service = StoreIapService(
+    server: ref.watch(purchaseRepositoryProvider),
+    accountId: iapAccountIdOfCurrentMember,
+  );
   ref.onDispose(service.dispose);
   return service;
 });
+
+/// Play `obfuscatedAccountId` for the signed-in member — SHA-256 of the
+/// Supabase user id (Google asks for an opaque value, 64 chars max). Null when
+/// nobody is signed in.
+String? iapAccountIdOfCurrentMember() {
+  final uid = Supabase.instance.client.auth.currentUser?.id;
+  if (uid == null || uid.isEmpty) return null;
+  return sha256.convert(utf8.encode(uid)).toString();
+}
 
 /// Pulls the store catalog once and makes it the price of record.
 ///

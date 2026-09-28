@@ -373,7 +373,13 @@ class IapPurchase {
     this.purchaseToken,
     this.isSandbox = false,
     this.failure,
+    this.startedTrial = false,
   });
+
+  /// Whether this purchase was opened with the free-trial offer — the
+  /// success screen then says what is charged after the trial, not today.
+  /// Only the purchase this app launched can know; restores say false.
+  final bool startedTrial;
 
   /// Which product — the logical SKU, not the raw store id.
   final String productId;

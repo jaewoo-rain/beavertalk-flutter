@@ -123,7 +123,7 @@ class _PurchaseProcessingScreenState
           Navigator.pushReplacementNamed(
             context,
             Routes.purchaseSuccessMax,
-            arguments: request.annual,
+            arguments: (annual: request.annual, trial: p.startedTrial),
           );
         case IapPurchaseState.canceled:
         case IapPurchaseState.failed:
@@ -328,7 +328,8 @@ void watchLatePurchaseResult({
         container.invalidate(serverSubscriptionStatusProvider);
         container.invalidate(subscriptionsProvider);
         if (!inCall) {
-          navigator.pushNamed(Routes.purchaseSuccessMax, arguments: request.annual);
+          navigator.pushNamed(Routes.purchaseSuccessMax,
+              arguments: (annual: request.annual, trial: p.startedTrial));
         }
       case IapPurchaseState.failed:
         final overlay = purchaseFailureOverlayFor(p);
@@ -442,6 +443,24 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
   void _exitToRoot(BuildContext context) =>
       Navigator.of(context).popUntil((route) => route.isFirst);
 
+  /// What was bought — the route argument `(annual:, trial:)`, or a bare
+  /// `bool` (annual) from older call sites.
+  ({bool annual, bool trial}) get _bought {
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is ({bool annual, bool trial})) return args;
+    return (annual: args == true, trial: false);
+  }
+
+  /// The charge line under the CTAs — it must match the product and cycle
+  /// just bought (09-28 device: a yearly trial read "₩33,000 is charged
+  /// monthly"). Existing keys only.
+  String _caption(AppLocalizations l10n) => switch (_bought) {
+        (annual: true, trial: _) => l10n.ctaCaptionMaxYearly(PlanPrices.maxYearly),
+        (annual: false, trial: true) =>
+          l10n.ctaCaptionMaxTrial(PlanPrices.maxMonthly),
+        _ => l10n.successMaxCaption(PlanPrices.maxMonthly),
+      };
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -544,7 +563,7 @@ class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    l10n.successMaxCaption(PlanPrices.maxMonthly),
+                    _caption(l10n),
                     textAlign: TextAlign.center,
                     style: AppType.caption1.r.copyWith(color: c.labelNormal),
                   ),
