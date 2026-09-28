@@ -1429,7 +1429,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get planMaxTrial => 'Premium-Testphase';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 Minuten Anrufe pro Tag';
+  String get freePlanPriceLine => 'Kostenlos — 5 Minuten Anrufe pro Tag';
 
   @override
   String pricePerMonthLine(String amount) {

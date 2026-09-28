@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Watak dijual berasingan. Watak yang anda beli kekal milik anda.",
   "ctaGetPremium": "Dapatkan Premium",
   "planMaxTrial": "Percubaan Premium",
-  "freePlanPriceLine": "$0.00 — 5 minit panggilan sehari",
+  "freePlanPriceLine": "Percuma — 5 minit panggilan sehari",
   "pricePerMonthLine": "{amount} sebulan",
   "freeUntilDate": "Percuma sehingga {date}",
   "todaysCalls": "Masa panggilan hari ini",

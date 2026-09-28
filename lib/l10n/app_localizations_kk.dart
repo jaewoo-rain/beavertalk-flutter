@@ -1405,7 +1405,7 @@ class AppLocalizationsKk extends AppLocalizations {
   String get planMaxTrial => 'Premium сынағы';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — күніне 5 минут қоңырау';
+  String get freePlanPriceLine => 'Тегін — күніне 5 минут қоңырау';
 
   @override
   String pricePerMonthLine(String amount) {

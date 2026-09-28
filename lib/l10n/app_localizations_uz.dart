@@ -1416,7 +1416,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get planMaxTrial => 'Premium sinovi';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — kuniga 5 daqiqa qoʻngʻiroq';
+  String get freePlanPriceLine => 'Bepul — kuniga 5 daqiqa qoʻngʻiroq';
 
   @override
   String pricePerMonthLine(String amount) {

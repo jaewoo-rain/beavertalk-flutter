@@ -1399,7 +1399,7 @@ class AppLocalizationsTh extends AppLocalizations {
   String get planMaxTrial => 'ทดลองใช้ Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — โทรได้วันละ 5 นาที';
+  String get freePlanPriceLine => 'ฟรี — โทรได้วันละ 5 นาที';
 
   @override
   String pricePerMonthLine(String amount) {

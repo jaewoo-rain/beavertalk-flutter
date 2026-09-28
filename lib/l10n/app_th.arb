@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "ตัวละครขายแยกต่างหาก ตัวที่ซื้อแล้วเป็นของคุณ",
   "ctaGetPremium": "รับ Premium",
   "planMaxTrial": "ทดลองใช้ Premium",
-  "freePlanPriceLine": "$0.00 — โทรได้วันละ 5 นาที",
+  "freePlanPriceLine": "ฟรี — โทรได้วันละ 5 นาที",
   "pricePerMonthLine": "{amount} ต่อเดือน",
   "freeUntilDate": "ฟรีถึง {date}",
   "todaysCalls": "เวลาโทรวันนี้",

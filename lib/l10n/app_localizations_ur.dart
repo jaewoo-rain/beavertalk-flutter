@@ -1410,7 +1410,7 @@ class AppLocalizationsUr extends AppLocalizations {
   String get planMaxTrial => 'Premium ٹرائل';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — روزانہ 5 منٹ کال';
+  String get freePlanPriceLine => 'مفت — روزانہ 5 منٹ کال';
 
   @override
   String pricePerMonthLine(String amount) {

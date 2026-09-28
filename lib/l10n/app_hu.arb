@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "A karakterek külön kaphatók. A megvásárolt karakterek a tieid.",
   "ctaGetPremium": "Premium beszerzése",
   "planMaxTrial": "Premium próba",
-  "freePlanPriceLine": "$0.00 — napi 5 perc hívás",
+  "freePlanPriceLine": "Ingyenes — napi 5 perc hívás",
   "pricePerMonthLine": "{amount} havonta",
   "freeUntilDate": "Ingyenes eddig: {date}",
   "todaysCalls": "Mai hívásidő",

@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Nhân vật được bán riêng. Nhân vật bạn đã mua vẫn là của bạn.",
   "ctaGetPremium": "Dùng Premium",
   "planMaxTrial": "Dùng thử Premium",
-  "freePlanPriceLine": "$0.00 — 5 phút gọi mỗi ngày",
+  "freePlanPriceLine": "Miễn phí — 5 phút gọi mỗi ngày",
   "pricePerMonthLine": "{amount} mỗi tháng",
   "freeUntilDate": "Miễn phí đến {date}",
   "todaysCalls": "Thời gian gọi hôm nay",

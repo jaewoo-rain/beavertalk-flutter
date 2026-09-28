@@ -1422,7 +1422,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get planMaxTrial => 'Teste do Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 minutos de ligação por dia';
+  String get freePlanPriceLine => 'Grátis — 5 minutos de ligação por dia';
 
   @override
   String pricePerMonthLine(String amount) {

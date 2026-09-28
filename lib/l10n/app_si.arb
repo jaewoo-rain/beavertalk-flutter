@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "චරිත වෙනම විකිණේ. ඔබ මිලදී ගත් චරිත ඔබේමයි.",
   "ctaGetPremium": "Premium ලබා ගන්න",
   "planMaxTrial": "Premium අත්හදා බැලීම",
-  "freePlanPriceLine": "$0.00 — දිනකට ඇමතුම් මිනිත්තු 5",
+  "freePlanPriceLine": "නොමිලේ — දිනකට ඇමතුම් මිනිත්තු 5",
   "pricePerMonthLine": "මසකට {amount}",
   "freeUntilDate": "{date} දක්වා නොමිලේ",
   "todaysCalls": "අද ඇමතුම් කාලය",

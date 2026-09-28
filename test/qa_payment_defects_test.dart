@@ -458,6 +458,12 @@ void main() {
       final title = AppLocalizations.of(tester.element(find.text('PAYWALL')))
           .ovFailedDeclinedTitle;
       expect(find.text(title), findsNothing, reason: '통화 위에는 띄우지 않는다');
+      // 끝났지만 통화 화면이 아직 떠나기 전(ended) — 여기서 띄우면 통화 화면의
+      // pushReplacementNamed 가 이 시트를 갈아 치운다(QA F069 재현).
+      call.setPhase(CallPhase.ended);
+      await tester.pumpAndSettle();
+      expect(find.text(title), findsNothing);
+      // 통화 화면이 끝난 통화를 소비하고(idle) 떠난 다음 프레임에 한 번.
       call.setPhase(CallPhase.idle);
       await tester.pumpAndSettle();
       expect(find.text(title), findsOneWidget);

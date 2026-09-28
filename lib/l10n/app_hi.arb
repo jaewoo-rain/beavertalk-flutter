@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "कैरेक्टर अलग से बिकते हैं। खरीदे गए कैरेक्टर आपके ही रहते हैं।",
   "ctaGetPremium": "Premium लें",
   "planMaxTrial": "Premium ट्रायल",
-  "freePlanPriceLine": "$0.00 — रोज़ 5 मिनट कॉल",
+  "freePlanPriceLine": "मुफ़्त — रोज़ 5 मिनट कॉल",
   "pricePerMonthLine": "{amount} प्रति माह",
   "freeUntilDate": "{date} तक मुफ़्त",
   "todaysCalls": "आज का कॉल समय",

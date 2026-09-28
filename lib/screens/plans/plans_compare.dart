@@ -79,7 +79,8 @@ class PlansCompareScreen extends ConsumerWidget {
                   const SizedBox(height: AppSpacing.s24),
                   PlanSummaryCard(
                     title: l10n.planFree,
-                    price: PlanPrices.free,
+                    // 「$0.00」 은 통화가 없는 Free 에 달러를 붙였다 — 현지가 화면에서 혼자 $ 였다(PM-DEC-131).
+                    price: l10n.priceFree,
                     badgeTone:
                         tier == SubscriptionTier.free ? BadgeTone.neutral : null,
                     badgeLabel:

@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Karakterler ayrı satılır. Satın aldıkların senin kalır.",
   "ctaGetPremium": "Premium al",
   "planMaxTrial": "Premium deneme",
-  "freePlanPriceLine": "$0.00 — günde 5 dakika arama",
+  "freePlanPriceLine": "Ücretsiz — günde 5 dakika arama",
   "pricePerMonthLine": "Aylık {amount}",
   "freeUntilDate": "{date} tarihine kadar ücretsiz",
   "todaysCalls": "Bugünkü arama süresi",

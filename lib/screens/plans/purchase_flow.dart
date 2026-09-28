@@ -2,6 +2,7 @@ import '../../app/adaptive.dart';
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/app_scaffold.dart';
@@ -328,16 +329,29 @@ void watchLatePurchaseResult({
   });
 }
 
-/// Shows [overlay] once the call phase ends (QA F069).
+/// Shows [overlay] once the call screen has left (QA F069).
+///
+/// Waits for [CallPhase.idle], not merely for the call phases to end: the call
+/// screen consumes the finished call (`clearFinished` → idle) and **then**
+/// replaces itself (`pushReplacementNamed` / `popUntil`) in the same turn. A
+/// sheet shown at `ended` sat on top and was the route that got replaced. At
+/// idle the navigation has already been issued, so the next frame shows the
+/// sheet over whatever screen the call left for.
 void _showAfterCall(ProviderContainer container, NavigatorState navigator,
     SubscriptionOverlay overlay) {
   _afterCall?.close();
   _afterCall = container.listen<CallState>(normalCallControllerProvider,
       (_, next) {
-    if (_callPhases.contains(next.phase)) return;
+    if (next.phase != CallPhase.idle) return;
     _afterCall?.close();
     _afterCall = null;
-    if (navigator.mounted) showSubscriptionOverlay(navigator.context, overlay);
+    SchedulerBinding.instance
+      ..addPostFrameCallback((_) {
+        if (navigator.mounted) {
+          showSubscriptionOverlay(navigator.context, overlay);
+        }
+      })
+      ..ensureVisualUpdate();
   });
 }
 

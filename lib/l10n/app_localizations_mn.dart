@@ -1406,7 +1406,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get planMaxTrial => 'Premium туршилт';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — өдөрт 5 минут дуудлага';
+  String get freePlanPriceLine => 'Үнэгүй — өдөрт 5 минут дуудлага';
 
   @override
   String pricePerMonthLine(String amount) {

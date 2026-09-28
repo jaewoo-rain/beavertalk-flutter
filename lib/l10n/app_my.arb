@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "ဇာတ်ကောင်များကို သီးခြားရောင်းသည်။ ဝယ်ထားသော ဇာတ်ကောင်များ သင့်ပိုင်ဖြစ်သည်။",
   "ctaGetPremium": "Premium ရယူရန်",
   "planMaxTrial": "Premium အစမ်းသုံး",
-  "freePlanPriceLine": "$0.00 — တစ်နေ့ ခေါ်ဆိုချိန် 5 မိနစ်",
+  "freePlanPriceLine": "အခမဲ့ — တစ်နေ့ ခေါ်ဆိုချိန် 5 မိနစ်",
   "pricePerMonthLine": "တစ်လလျှင် {amount}",
   "freeUntilDate": "{date} အထိ အခမဲ့",
   "todaysCalls": "ယနေ့ ခေါ်ဆိုချိန်",

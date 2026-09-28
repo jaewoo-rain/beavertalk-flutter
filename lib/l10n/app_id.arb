@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Karakter dijual terpisah. Yang kamu beli tetap milikmu.",
   "ctaGetPremium": "Dapatkan Premium",
   "planMaxTrial": "Uji coba Premium",
-  "freePlanPriceLine": "$0.00 — 5 menit panggilan per hari",
+  "freePlanPriceLine": "Gratis — 5 menit panggilan per hari",
   "pricePerMonthLine": "{amount} per bulan",
   "freeUntilDate": "Gratis sampai {date}",
   "todaysCalls": "Waktu panggilan hari ini",

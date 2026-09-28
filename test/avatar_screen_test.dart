@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -150,6 +152,38 @@ void main() {
     expect(find.text(r'$4.99'), findsNothing);
     expect(find.text('-50%'), findsNothing);
     expect(find.text('Today only · 50% off'), findsNothing);
+    expect(find.text('%'), findsNothing, reason: '타일 % 배지도 상세와 같은 판정(C1)');
+    await t.pumpWidget(const SizedBox());
+  });
+
+  testWidgets('PM-DEC-129 C2 — 스토어 답을 기다리는 동안 서버 USD·할인이 먼저 보이지 않는다', (t) async {
+    final ends = DateTime.now().toUtc().add(const Duration(hours: 5));
+    final gate = Completer<List<IapProduct>>();
+    await t.pumpWidget(host(
+      catalog([
+        row(1, 'Baba', owned: true),
+        row(10, 'Rara',
+            effectivePrice: '2.49',
+            discount: {'end_time': ends.toIso8601String()}),
+      ]),
+      activeId: 1,
+      iap: _SlowIap(gate.future),
+    ));
+    await t.pump();
+    await t.tap(find.bySemanticsLabel('Rara'));
+    await t.pump();
+    expect(find.text(r'$2.49'), findsNothing);
+    expect(find.text('-50%'), findsNothing);
+    expect(find.text('Today only · 50% off'), findsNothing);
+    gate.complete(const [
+      IapProduct(
+          id: 'bt_character_rara',
+          type: IapProductType.nonConsumable,
+          localizedPrice: '₩6,600'),
+    ]);
+    await t.pump();
+    await t.pump();
+    expect(find.text('₩6,600'), findsOneWidget);
     await t.pumpWidget(const SizedBox());
   });
 
@@ -168,4 +202,12 @@ void main() {
     expect(cta(t).text, 'Use This');
     expect(cta(t).disabled, isFalse);
   });
+}
+
+/// 스토어 조회가 [answer] 가 올 때까지 멈춰 있는 레일.
+class _SlowIap extends MockIapService {
+  _SlowIap(this.answer);
+  final Future<List<IapProduct>> answer;
+  @override
+  Future<List<IapProduct>> getProducts(Set<String> ids) => answer;
 }

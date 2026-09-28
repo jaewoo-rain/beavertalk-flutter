@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../app/adaptive.dart';
 import '../../app/app_scaffold.dart';
+import '../../components/atoms/skeleton.dart';
 import '../../components/atoms/button.dart';
 import '../../components/chrome/bottom_cta_bar.dart';
 import '../../components/icons/app_icons.dart';
@@ -83,8 +84,13 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
 
   final ReviewAudioPlayer _player = ReviewAudioPlayer();
 
-  /// 스토어 현지가 — 상품 id → 표시 가격. 한 번 물은 상품은 다시 묻지 않는다.
+  /// 스토어 현지가 — 상품 id → 표시 가격(null = 스토어에 없음·조회 실패). 한 번 물은 상품은
+  /// 다시 묻지 않는다.
   final Map<String, String?> _storePrices = {};
+
+  /// 스토어에 묻는 중인 상품 id. 이 동안 가격 자리는 로딩이다 — 서버 USD·할인 %가 먼저 보였다가
+  /// 현지가로 바뀌는 깜빡임을 막는다(PM-DEC-129 C2).
+  final Set<String> _storePending = {};
 
   @override
   void dispose() {
@@ -157,7 +163,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
     final surface = context.c.characterSurfaceFor(c.name);
     // 할인 표시(%·종료 배너)는 서버 가격 기준이라 스토어 현지가를 보일 때는 뺀다 — 스토어가 준 값이
     // 이미 실제 청구액이다(PM-DEC-129).
-    final discount = !_usable(c) && c.hasDiscount && _storePriceOf(c) == null;
+    final discount = !_usable(c) && c.hasDiscount && _serverPriced(c);
     final ends = c.discountEndsAt;
     return AppScaffold(
       background: context.c.backgroundNormalNormal,
@@ -180,6 +186,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
               characters: characters,
               shownId: c.id,
               isUsable: _usable,
+              onSale: (x) => !_usable(x) && x.hasDiscount && _serverPriced(x),
               onTap: (x) => setState(() {
                 _previewId = x.id;
                 _purchaseFailed = false;
@@ -255,10 +262,10 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
           price: _shownPrice(context, c),
           // 정가 취소선은 **같은 통화일 때만** 그린다 — 스토어 현지가(예 ₩)와 서버 정가($)를
           // 나란히 두면 비교가 아니라 오해다.
-          original: c.hasDiscount && _storePriceOf(c) == null
+          original: c.hasDiscount && _serverPriced(c)
               ? _priceLabel(context, c.price)
               : null,
-          percent: c.hasDiscount && _storePriceOf(c) == null
+          percent: c.hasDiscount && _serverPriced(c)
               ? _discountPercent(c)
               : null,
         ),
@@ -283,26 +290,45 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
   String? _storePriceOf(Character c) {
     final id = _productIdOf(c);
     if (id == null || _isFree(c)) return null;
-    if (!_storePrices.containsKey(id)) {
-      _storePrices[id] = null;
-      unawaited(_queryStorePrice(id));
+    if (!_storePrices.containsKey(id) && !_storePending.contains(id)) {
+      _storePending.add(id);
+      // 빌드 중에 불린다 — 조회가 동기로 실패해도 setState 가 빌드 안에서 돌지 않게 미룬다.
+      unawaited(Future.microtask(() => _queryStorePrice(id)));
     }
     return _storePrices[id];
   }
 
+  /// 스토어 답을 기다리는 중인가.
+  bool _storeResolving(Character c) {
+    _storePriceOf(c);
+    final id = _productIdOf(c);
+    return id != null && _storePending.contains(id);
+  }
+
+  /// 서버 가격(과 서버 할인)을 보이는 경우 — 스토어가 답했고 현지가가 없을 때만.
+  bool _serverPriced(Character c) =>
+      !_storeResolving(c) && _storePriceOf(c) == null;
+
   Future<void> _queryStorePrice(String id) async {
+    String? price;
     try {
       final products = await ref.read(iapServiceProvider).getProducts({id});
       final p = products.where((x) => x.id == id).firstOrNull;
-      if (p == null || p.localizedPrice.isEmpty || !mounted) return;
-      setState(() => _storePrices[id] = p.localizedPrice);
+      if (p != null && p.localizedPrice.isNotEmpty) price = p.localizedPrice;
     } catch (_) {
       // 스토어가 안 되면 서버 가격으로 남는다 — 결제 시 스토어가 실제 금액을 다시 보인다.
     }
+    if (!mounted) return;
+    setState(() {
+      _storePending.remove(id);
+      _storePrices[id] = price;
+    });
   }
 
-  String _shownPrice(BuildContext context, Character c) {
+  /// 보일 가격. 스토어 답을 기다리는 동안은 null(가격 자리 로딩).
+  String? _shownPrice(BuildContext context, Character c) {
     if (_isFree(c)) return AppLocalizations.of(context).priceFree;
+    if (_storeResolving(c)) return null;
     return _storePriceOf(c) ?? _priceLabel(context, c.effectivePrice);
   }
 
@@ -363,7 +389,7 @@ class _AvatarScreenState extends ConsumerState<AvatarScreen> {
       final product = IapProduct(
         id: productId,
         type: IapProductType.nonConsumable,
-        localizedPrice: _shownPrice(context, c),
+        localizedPrice: _shownPrice(context, c) ?? '',
       );
       // 먼저 듣고 나서 쏜다 — 목 레일은 동기로 답해서 늦게 들으면 놓친다.
       final verdictFuture = _awaitVerdict(iap, product.id);
@@ -569,12 +595,16 @@ class _Roster extends StatelessWidget {
     required this.characters,
     required this.shownId,
     required this.isUsable,
+    required this.onSale,
     required this.onTap,
   });
 
   final List<Character> characters;
   final int shownId;
   final bool Function(Character) isUsable;
+
+  /// 타일 % 배지 — 상세와 같은 판정(서버 가격을 보일 때만 · C1).
+  final bool Function(Character) onSale;
   final ValueChanged<Character> onTap;
 
   @override
@@ -590,6 +620,7 @@ class _Roster extends StatelessWidget {
               character: c,
               selected: c.id == shownId,
               usable: isUsable(c),
+              sale: onSale(c),
               onTap: () => onTap(c),
             ),
           ],
@@ -606,18 +637,19 @@ class _Tile extends StatelessWidget {
     required this.character,
     required this.selected,
     required this.usable,
+    required this.sale,
     required this.onTap,
   });
 
   final Character character;
   final bool selected;
   final bool usable;
+  final bool sale;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final c = context.c;
-    final sale = !usable && character.hasDiscount;
     Widget badge(Color fill, Widget child) => Container(
           width: 20,
           height: 20,
@@ -844,7 +876,8 @@ class _Stage extends StatelessWidget {
 class _PriceLine extends StatelessWidget {
   const _PriceLine({required this.price, this.original, this.percent});
 
-  final String price;
+  /// null 이면 스토어 가격을 묻는 중 — 가격 자리에 로딩 막대.
+  final String? price;
   final String? original;
   final int? percent;
 
@@ -863,8 +896,11 @@ class _PriceLine extends StatelessWidget {
                 color: c.labelAssistive,
                 decoration: TextDecoration.lineThrough,
               )),
-        Text(price,
-            style: AppType.headline1.b.copyWith(color: c.labelStrong)),
+        if (price == null)
+          const SkeletonShimmer(child: Skeleton.bar(width: 72, height: 24))
+        else
+          Text(price!,
+              style: AppType.headline1.b.copyWith(color: c.labelStrong)),
         if (percent != null)
           Text('-$percent%',
               style: AppType.label1.sb.copyWith(color: c.statusNegative)),

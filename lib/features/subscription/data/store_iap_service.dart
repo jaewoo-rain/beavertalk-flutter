@@ -309,13 +309,14 @@ class StoreIapService implements IapService {
     final (details, offer) = candidates[i];
     // Play 는 구매에 기본 플랜을 싣지 않는다 — 우리가 연 결제라 SKU 를 기억해 둔다.
     _launched[details.id] = IapProductIds.maxMonthly;
-    await _store.buyNonConsumable(
+    // 결제창을 못 열면 false — 호출부가 스토어 구독 화면으로 보낸다. 예전엔 true 를 돌려줘 처리
+    // 화면 스피너가 멈췄다(QA F074).
+    return _store.buyNonConsumable(
       purchaseParam: GooglePlayPurchaseParam(
         productDetails: details,
         offerToken: offer.offerIdToken,
       ),
     );
-    return true;
   }
 
   /// 오퍼 목록에서 윈백 오퍼의 자리 — [basePlanId] 위의, id 가
@@ -604,6 +605,9 @@ class StoreIapService implements IapService {
             IapProductIds.playPremiumSubscriptionIds.contains(p.productID))
           p.productID,
     ];
+    // 이 구글 계정에 Premium 이 없다 — 관리자 부여 · 다른 계정 · 다른 플랫폼 결제. 「월간」 으로
+    // 보면 교체 대상 없이 두 번째 구독을 사게 된다(QA F072). 모름으로 두고 전환을 막는다.
+    if (premium.isEmpty) return null;
     final yearlyId = IapProductIds.playIdsFor(IapProductIds.maxYearly)!.subscriptionId;
     if (premium.contains(yearlyId)) return true;
     // 레거시 `bt_max` 는 구매에 기본 플랜이 안 실려 주기를 모른다.
@@ -627,12 +631,22 @@ class StoreIapService implements IapService {
         for (final t in await SK2Transaction.transactions())
           (
             productId: t.productId,
-            expires: t.expirationDate == null
-                ? null
-                : DateTime.tryParse(t.expirationDate!),
-            purchased: DateTime.tryParse(t.purchaseDate),
+            expires: parseStoreKitDate(t.expirationDate),
+            purchased: parseStoreKitDate(t.purchaseDate),
           ),
       ];
+
+  /// StoreKit 2 래퍼의 날짜 — epoch **밀리초 문자열**(`_secondsToMillisecondsSinceEpochString`).
+  /// ISO 로 읽으면 늘 null 이라 iOS 월간 회원에게도 전환 줄이 숨겨졌다(QA F073).
+  @visibleForTesting
+  static DateTime? parseStoreKitDate(String? s) {
+    if (s == null || s.isEmpty) return null;
+    final ms = num.tryParse(s);
+    if (ms != null) {
+      return DateTime.fromMillisecondsSinceEpoch(ms.round(), isUtc: true);
+    }
+    return DateTime.tryParse(s);
+  }
 
   /// [all] 에서 유효한 Premium 이 연간인가. 유효한 Premium 이 없으면 `null`(모름 — 버튼을 숨긴다).
   @visibleForTesting

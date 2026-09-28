@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "តួអង្គលក់ដាច់ដោយឡែក។ តួអង្គដែលអ្នកទិញ នៅតែជារបស់អ្នក។",
   "ctaGetPremium": "ទទួលបាន Premium",
   "planMaxTrial": "ការសាកល្បង Premium",
-  "freePlanPriceLine": "$0.00 — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ",
+  "freePlanPriceLine": "ឥតគិតថ្លៃ — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ",
   "pricePerMonthLine": "{amount} ក្នុងមួយខែ",
   "freeUntilDate": "ឥតគិតថ្លៃរហូតដល់ {date}",
   "todaysCalls": "ពេលហៅថ្ងៃនេះ",

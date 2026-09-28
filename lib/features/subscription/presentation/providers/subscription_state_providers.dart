@@ -52,7 +52,9 @@ final storePricesProvider = FutureProvider<List<IapProduct>>((ref) async {
   final iap = ref.watch(iapServiceProvider);
   if (!await iap.isAvailable()) return const [];
   final products = await iap.getProducts({
-    ...IapProductIds.subscriptions,
+    // 레거시 Pro(`bt_pro_*`)는 Play 에 없어 notFound 만 남긴다 — 파는 Premium 만 묻는다.
+    IapProductIds.maxMonthly,
+    IapProductIds.maxYearly,
     ...IapProductIds.soldCharacters,
   });
   final byId = {for (final p in products) p.id: p};
@@ -101,11 +103,15 @@ final storePricesProvider = FutureProvider<List<IapProduct>>((ref) async {
 /// 구독 상태(활성 Premium 인가)는 화면이 본다 — 여기서 상태를 watch 하면 상태를 덮어쓰는 하위
 /// ProviderScope 아래에서 의존성 오류가 난다.
 final annualSwitchAvailableProvider =
-    FutureProvider.autoDispose<bool>((ref) async {
+    FutureProvider.autoDispose<bool>((ref) async =>
+        await ref.watch(premiumAnnualProvider.future) == false);
+
+/// 스토어가 본 이 회원의 Premium 결제 주기 — true 연간 · false 월간 · null 모름.
+final premiumAnnualProvider = FutureProvider.autoDispose<bool?>((ref) async {
   try {
-    return await ref.watch(iapServiceProvider).ownsAnnualPremium() == false;
+    return await ref.watch(iapServiceProvider).ownsAnnualPremium();
   } catch (_) {
-    return false;
+    return null;
   }
 });
 

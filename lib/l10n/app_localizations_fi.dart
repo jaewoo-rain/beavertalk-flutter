@@ -1414,7 +1414,7 @@ class AppLocalizationsFi extends AppLocalizations {
   String get planMaxTrial => 'Premium-kokeilu';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 minuuttia puheluita päivässä';
+  String get freePlanPriceLine => 'Ilmainen — 5 minuuttia puheluita päivässä';
 
   @override
   String pricePerMonthLine(String amount) {

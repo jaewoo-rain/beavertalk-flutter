@@ -1409,7 +1409,7 @@ class AppLocalizationsKm extends AppLocalizations {
   String get planMaxTrial => 'ការសាកល្បង Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ';
+  String get freePlanPriceLine => 'ឥតគិតថ្លៃ — ហៅបាន 5 នាទីក្នុងមួយថ្ងៃ';
 
   @override
   String pricePerMonthLine(String amount) {

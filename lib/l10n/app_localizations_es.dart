@@ -1423,7 +1423,7 @@ class AppLocalizationsEs extends AppLocalizations {
   String get planMaxTrial => 'Prueba de Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 minutos de llamadas al día';
+  String get freePlanPriceLine => 'Gratis — 5 minutos de llamadas al día';
 
   @override
   String pricePerMonthLine(String amount) {

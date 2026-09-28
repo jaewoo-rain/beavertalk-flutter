@@ -1376,7 +1376,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get planMaxTrial => 'Premium体験';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 1日5分の通話';
+  String get freePlanPriceLine => '無料 — 1日5分の通話';
 
   @override
   String pricePerMonthLine(String amount) {

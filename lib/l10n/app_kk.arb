@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Кейіпкерлер бөлек сатылады. Сатып алғандарыңыз сіздікі болып қалады.",
   "ctaGetPremium": "Premium алу",
   "planMaxTrial": "Premium сынағы",
-  "freePlanPriceLine": "$0.00 — күніне 5 минут қоңырау",
+  "freePlanPriceLine": "Тегін — күніне 5 минут қоңырау",
   "pricePerMonthLine": "Айына {amount}",
   "freeUntilDate": "{date} дейін тегін",
   "todaysCalls": "Бүгінгі қоңырау уақыты",

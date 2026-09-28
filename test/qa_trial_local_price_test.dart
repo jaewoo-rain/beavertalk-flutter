@@ -272,6 +272,9 @@ void main() {
       expect(await playAnnual([_owned('bt_max_yearly')]), isTrue);
       expect(await playAnnual([_owned('bt_max_monthly')]), isFalse);
       expect(await playAnnual([_owned('bt_max')]), isNull, reason: '레거시는 주기를 모른다');
+      // F072 — 이 구글 계정에 Premium 이 없으면(관리자 부여·다른 계정) 월간이 아니라 모름.
+      expect(await playAnnual(const []), isNull);
+      expect(await playAnnual([_owned('bt_character_rara')]), isNull);
       expect(
         await StoreIapService(
           server: _Server(),
@@ -301,6 +304,31 @@ void main() {
       expect(
           StoreIapService.appleOwnsAnnual([t('bt_max_monthly', 30, 1)], now: now),
           isFalse);
+    });
+
+    test('F073 — StoreKit 2 날짜는 epoch 밀리초 문자열', () {
+      expect(StoreIapService.parseStoreKitDate('1790000000000'),
+          DateTime.fromMillisecondsSinceEpoch(1790000000000, isUtc: true));
+      expect(StoreIapService.parseStoreKitDate('1790000000000.0'),
+          DateTime.fromMillisecondsSinceEpoch(1790000000000, isUtc: true));
+      expect(StoreIapService.parseStoreKitDate('2026-09-28T00:00:00Z'),
+          DateTime.utc(2026, 9, 28));
+      expect(StoreIapService.parseStoreKitDate(null), isNull);
+      expect(StoreIapService.parseStoreKitDate(''), isNull);
+    });
+
+    test('F074 — 윈백 결제창을 못 열면 false(스토어 화면으로 폴백)', () async {
+      final rows = _sub('bt_max_monthly', [
+        _offer('monthly', null, [_paid]),
+        _offer('monthly', 'winback-50-1m', [_phase(16500000000, '₩16,500'), _paid],
+            tags: ['winback']),
+      ]);
+      final iap = StoreIapService(
+        server: _Server(),
+        store: _Store(rows, launches: false),
+        playOwnedPurchases: () async => const [],
+      );
+      expect(await iap.purchaseWinbackOffer(), isFalse);
     });
 
     test('결제창을 못 열면(false) 예외 — 스피너가 멈추지 않는다', () async {
@@ -436,6 +464,59 @@ void main() {
       await tester.pump();
       expect(find.textContaining('₩33,000 per month'), findsOneWidget);
       expect(find.textContaining(r'$23.99'), findsNothing);
+    });
+
+    Future<void> pumpManage(WidgetTester tester, SubscriptionState state,
+        {required bool? annual}) async {
+      debugDefaultTargetPlatformOverride = null;
+      PlanPrices.adopt(
+        maxMonthly: const StorePrice(display: '₩33,000', raw: 33000, currencyCode: 'KRW'),
+        maxYearly: const StorePrice(display: '₩259,000', raw: 259000, currencyCode: 'KRW'),
+      );
+      await tester.binding.setSurfaceSize(const Size(375, 1600));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          storePricesProvider.overrideWith((ref) async => const []),
+          iapServiceProvider.overrideWithValue(_AnnualIap(annual)),
+          subscriptionStatusAvailabilityProvider
+              .overrideWithValue(SubscriptionStatusAvailability.known),
+          subscriptionStatusProvider.overrideWithValue(SubscriptionStatus(
+            state: state,
+            tier: SubscriptionTier.max,
+            expiresAt: DateTime(2026, 10, 28),
+            source: const Subscription(id: 7, price: 2399, isActivate: true),
+          )),
+        ],
+        child: MaterialApp(
+          locale: const Locale('en'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          home: const SubscriptionManageScreen(),
+        ),
+      ));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('F077 — 연간 회원 요금 줄은 연 요금 · 월 환산', (tester) async {
+      await pumpManage(tester, SubscriptionState.activeMax, annual: true);
+      expect(find.textContaining('₩259,000 per year'), findsOneWidget);
+      expect(find.textContaining('₩33,000 per month'), findsNothing);
+      expect(find.text('Switch to annual'), findsNothing);
+    });
+
+    testWidgets('F075 — 주기를 모르면 체험 해지는 연간 전환 시트가 아니라 일반 해지', (tester) async {
+      await pumpManage(tester, SubscriptionState.trial, annual: null);
+      await tester.tap(find.text('Cancel subscription'));
+      await tester.pumpAndSettle();
+      expect(find.text('Switch to yearly'), findsNothing);
+    });
+
+    testWidgets('F075 — 월간 체험이면 연간 전환 시트', (tester) async {
+      await pumpManage(tester, SubscriptionState.trial, annual: false);
+      await tester.tap(find.text('Cancel subscription'));
+      await tester.pumpAndSettle();
+      expect(find.text('Switch to yearly'), findsOneWidget);
     });
   });
 }

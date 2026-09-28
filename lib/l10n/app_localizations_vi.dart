@@ -1408,7 +1408,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get planMaxTrial => 'Dùng thử Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 phút gọi mỗi ngày';
+  String get freePlanPriceLine => 'Miễn phí — 5 phút gọi mỗi ngày';
 
   @override
   String pricePerMonthLine(String amount) {

@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "キャラクターは別売りです。購入したキャラクターはずっとあなたのものです。",
   "ctaGetPremium": "Premiumを始める",
   "planMaxTrial": "Premium体験",
-  "freePlanPriceLine": "$0.00 — 1日5分の通話",
+  "freePlanPriceLine": "無料 — 1日5分の通話",
   "pricePerMonthLine": "月額{amount}",
   "freeUntilDate": "{date}まで無料",
   "todaysCalls": "今日の通話時間",

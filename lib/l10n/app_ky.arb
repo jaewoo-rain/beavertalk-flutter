@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Каармандар өзүнчө сатылат. Сатып алгандарыңыз сиздики бойдон калат.",
   "ctaGetPremium": "Premium алуу",
   "planMaxTrial": "Premium сыноо",
-  "freePlanPriceLine": "$0.00 — күнүнө 5 мүнөт чалуу",
+  "freePlanPriceLine": "Акысыз — күнүнө 5 мүнөт чалуу",
   "pricePerMonthLine": "Айына {amount}",
   "freeUntilDate": "{date} чейин акысыз",
   "todaysCalls": "Бүгүнкү чалуу убактысы",

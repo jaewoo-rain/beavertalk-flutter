@@ -1419,7 +1419,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get planMaxTrial => 'Пробный Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 минут звонков в день';
+  String get freePlanPriceLine => 'Бесплатно — 5 минут звонков в день';
 
   @override
   String pricePerMonthLine(String amount) {

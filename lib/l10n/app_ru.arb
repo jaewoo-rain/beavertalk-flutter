@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Персонажи продаются отдельно. Купленные остаются вашими.",
   "ctaGetPremium": "Получить Premium",
   "planMaxTrial": "Пробный Premium",
-  "freePlanPriceLine": "$0.00 — 5 минут звонков в день",
+  "freePlanPriceLine": "Бесплатно — 5 минут звонков в день",
   "pricePerMonthLine": "{amount} в месяц",
   "freeUntilDate": "Бесплатно до {date}",
   "todaysCalls": "Время звонков сегодня",

@@ -2701,7 +2701,7 @@ abstract class AppLocalizations {
   /// Plan-card subtitle on the Free state. Confirmed copy; do not reword.
   ///
   /// In en, this message translates to:
-  /// **'\$0.00 — 5 minutes of calls a day'**
+  /// **'Free — 5 minutes of calls a day'**
   String get freePlanPriceLine;
 
   /// Plan-card subtitle for a monthly paid plan. 'per month' is mandated wording (spec 6-4 forbids 'a month').

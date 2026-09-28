@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "角色单独出售，买下的角色一直属于你。",
   "ctaGetPremium": "开通 Premium",
   "planMaxTrial": "Premium 试用",
-  "freePlanPriceLine": "$0.00 — 每天通话 5 分钟",
+  "freePlanPriceLine": "免费 — 每天通话 5 分钟",
   "pricePerMonthLine": "每月 {amount}",
   "freeUntilDate": "{date}前免费",
   "todaysCalls": "今日通话时间",

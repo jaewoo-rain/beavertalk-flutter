@@ -1378,7 +1378,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get planMaxTrial => 'Premium 체험';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 하루 5분 통화';
+  String get freePlanPriceLine => '무료 — 하루 5분 통화';
 
   @override
   String pricePerMonthLine(String amount) {

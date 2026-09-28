@@ -374,6 +374,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     if (_googleBusy) return;
     final l10n = AppLocalizations.of(context);
     try {
+      if (!kIsWeb) {
+        // google_sign_in 은 지난 로그인 계정을 기억해, signIn() 이 계정 선택창 없이 그 계정을
+        // 바로 돌려준다. 앱 로그아웃은 Supabase 세션만 지워서 다른 구글 계정으로 바꿀 길이
+        // 없었다(09-28 실기기). 매번 로컬 구글 세션을 지워 선택창을 띄운다 — disconnect 는
+        // 권한까지 철회해 동의 화면이 다시 떠서 쓰지 않는다.
+        try {
+          await _googleSignIn.signOut();
+        } catch (_) {}
+      }
       final account = await _googleSignIn.signIn();
       // Web delivers the signed-in user via `onCurrentUserChanged` (wired in
       // initState); mobile returns it right here (null = the user cancelled).

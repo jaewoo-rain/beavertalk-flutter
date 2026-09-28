@@ -206,9 +206,6 @@ abstract final class PlanPrices {
       _characterFrom?.display ??
       _listCharacterFrom;
 
-  /// What the Free plan costs. Not a store product; here so the comparison
-  /// screen quotes it from the same place as everything else.
-  static const free = r'$0.00';
 }
 
 /// The store's answer, plus the formatter that keeps derived figures in the

@@ -1417,7 +1417,7 @@ class AppLocalizationsMy extends AppLocalizations {
   String get planMaxTrial => 'Premium အစမ်းသုံး';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — တစ်နေ့ ခေါ်ဆိုချိန် 5 မိနစ်';
+  String get freePlanPriceLine => 'အခမဲ့ — တစ်နေ့ ခေါ်ဆိုချိန် 5 မိနစ်';
 
   @override
   String pricePerMonthLine(String amount) {

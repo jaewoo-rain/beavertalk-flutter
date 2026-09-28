@@ -1419,7 +1419,7 @@ class AppLocalizationsMs extends AppLocalizations {
   String get planMaxTrial => 'Percubaan Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 minit panggilan sehari';
+  String get freePlanPriceLine => 'Percuma — 5 minit panggilan sehari';
 
   @override
   String pricePerMonthLine(String amount) {

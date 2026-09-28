@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -434,6 +435,7 @@ class AuthController extends Notifier<AuthStatus> {
     } catch (_) {
       // Ignored on purpose: the local session is gone either way.
     }
+    unawaited(_signOutGoogle());
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
@@ -512,6 +514,8 @@ class AuthController extends Notifier<AuthStatus> {
     } catch (_) {
       // Ignored on purpose: the local session is gone either way.
     }
+    // 탈퇴는 구글 앱 권한까지 철회한다 — 지운 계정의 연결을 기기에 남기지 않는다(QA F082).
+    unawaited(_signOutGoogle(disconnect: true));
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
@@ -531,9 +535,31 @@ class AuthController extends Notifier<AuthStatus> {
     _sessionRejected = true; // 명시 재로그인 전까지 백그라운드 리프레시로 되살리지 않음
     // Best-effort: don't await (interceptor callback is sync); errors ignored.
     _client.auth.signOut().ignore();
+    unawaited(_signOutGoogle());
     _clearUserScopedState();
     state = AuthStatus.unauthenticated;
     _popToRoot();
+  }
+
+  /// Forgets the Google account on this device (best-effort, mobile only).
+  ///
+  /// Supabase sign-out leaves `google_sign_in`'s cached account in place, so the
+  /// next Google login returned the previous account with no chooser — on a
+  /// shared institution device, the next person landed in the last person's
+  /// account (QA F082). [disconnect] also revokes the app's grant (withdrawal).
+  /// Web signs in through GIS, which this plugin instance does not own.
+  Future<void> _signOutGoogle({bool disconnect = false}) async {
+    if (kIsWeb) return;
+    try {
+      final google = GoogleSignIn();
+      if (disconnect) {
+        await google.disconnect();
+      } else {
+        await google.signOut();
+      }
+    } catch (_) {
+      // Nothing cached, or the plugin is unavailable — nothing to forget.
+    }
   }
 
   /// Clears any pushed routes so the (now unauthenticated) AuthGate root —

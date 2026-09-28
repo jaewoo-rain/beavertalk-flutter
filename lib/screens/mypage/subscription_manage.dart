@@ -140,7 +140,14 @@ String _shortDate(BuildContext context, DateTime d) =>
 
 /// The plan-card monthly price line: server value when present, otherwise the
 /// plan's list price (the design's `$15.99` / `$23.99`).
-String _priceLine(AppLocalizations l10n, SubscriptionStatus status) {
+String _priceLine(AppLocalizations l10n, SubscriptionStatus status,
+    {bool annual = false}) {
+  // 연간 회원에게 월 요금을 보이면 해지 판단이 틀어진다(QA F077). 스토어가 연간이라고 할 때만
+  // 연 요금 · 월 환산 줄 — 모르면 종전대로 월 요금.
+  if (annual && status.tier == SubscriptionTier.max) {
+    return l10n.maxAnnualPriceLine(
+        PlanPrices.maxYearly, PlanPrices.maxYearlyPerMonth);
+  }
   // 0 은 「무료로 청구된다」 가 아니다 — 스토어 결제 없이 부여된 Premium(관리자 부여 등)이
   // 가격 0 으로 온다. 「$0 per month」 는 틀린 청구 안내라 모름(null)과 같이 다룬다(QA F022).
   // 부여 여부를 가를 필드(`source`)는 서버 요청서에 올렸다.
@@ -311,7 +318,8 @@ class _PlanCard extends ConsumerWidget {
       SubscriptionState.free => l10n.freePlanPriceLine,
       SubscriptionState.trial =>
         expiry == null ? l10n.planMaxTrial : l10n.freeUntilDate(_fullDate(context, expiry)),
-      _ => _priceLine(l10n, status),
+      _ => _priceLine(l10n, status,
+          annual: ref.watch(premiumAnnualProvider).valueOrNull ?? false),
     };
 
     // Free 의 「오늘 통화 시간」 — 하루 합산 5분(09-23 확정)을 서버 `daily-status` 로 읽는다.
@@ -432,8 +440,10 @@ class _BillingList extends ConsumerWidget {
     final state = status.state;
     // 스토어가 「지금 월간」 이라고 답할 때만 「Switch to yearly」, 아니면 플랜 비교(QA F067 · F071).
     // 행 자체는 숨기지 않는다(§5-1).
-    final hideSwitch = state.planSlotLabel == BillingSlotLabel.switchToAnnual &&
-        !(ref.watch(annualSwitchAvailableProvider).valueOrNull ?? false);
+    final switchAvailable =
+        ref.watch(annualSwitchAvailableProvider).valueOrNull ?? false;
+    final hideSwitch =
+        state.planSlotLabel == BillingSlotLabel.switchToAnnual && !switchAvailable;
     final planLabel =
         hideSwitch ? BillingSlotLabel.compareAllPlans : state.planSlotLabel;
     final planDestination =
@@ -488,7 +498,13 @@ class _BillingList extends ConsumerWidget {
           const _RedeemCodeRow(),
           _BillingRow(
             label: slotLabel(state.statusSlotLabel),
-            destination: state.statusSlotDestination,
+            // 체험 해지 시트는 「연간으로 바꾸기」 를 판다 — 스토어가 월간이라고 할 때만. 연간이거나
+            // 모르면 교체 없는 두 번째 구독이 될 수 있어 일반 해지 시트로(QA F075).
+            destination: state.statusSlotDestination ==
+                        BillingDestination.cancelDownsell &&
+                    !switchAvailable
+                ? BillingDestination.cancelSubscription
+                : state.statusSlotDestination,
             external: true,
             last: true,
             expiresAt: status.expiresAt,

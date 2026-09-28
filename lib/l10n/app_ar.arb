@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "تُباع الشخصيات بشكل منفصل، والشخصيات التي تشتريها تبقى لك.",
   "ctaGetPremium": "احصل على Premium",
   "planMaxTrial": "تجربة Premium",
-  "freePlanPriceLine": "$0.00 — 5 دقائق من المكالمات يوميًا",
+  "freePlanPriceLine": "مجاني — 5 دقائق من المكالمات يوميًا",
   "pricePerMonthLine": "{amount} شهريًا",
   "freeUntilDate": "مجانًا حتى {date}",
   "todaysCalls": "وقت مكالمات اليوم",

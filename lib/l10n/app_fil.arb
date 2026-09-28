@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Hiwalay na binebenta ang mga karakter. Sa iyo ang mga bibilhin mo.",
   "ctaGetPremium": "Kunin ang Premium",
   "planMaxTrial": "Premium trial",
-  "freePlanPriceLine": "$0.00 — 5 minutong tawag kada araw",
+  "freePlanPriceLine": "Libre — 5 minutong tawag kada araw",
   "pricePerMonthLine": "{amount} kada buwan",
   "freeUntilDate": "Libre hanggang {date}",
   "todaysCalls": "Oras ng tawag ngayon",

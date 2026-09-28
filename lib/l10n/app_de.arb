@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Charaktere gibt es separat. Gekaufte gehören dir.",
   "ctaGetPremium": "Premium holen",
   "planMaxTrial": "Premium-Testphase",
-  "freePlanPriceLine": "$0.00 — 5 Minuten Anrufe pro Tag",
+  "freePlanPriceLine": "Kostenlos — 5 Minuten Anrufe pro Tag",
   "pricePerMonthLine": "{amount} pro Monat",
   "freeUntilDate": "Kostenlos bis {date}",
   "todaysCalls": "Heutige Anrufzeit",

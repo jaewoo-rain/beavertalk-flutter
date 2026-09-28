@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Personajlar alohida sotiladi. Sotib olganlaringiz sizniki bo‘lib qoladi.",
   "ctaGetPremium": "Premium olish",
   "planMaxTrial": "Premium sinovi",
-  "freePlanPriceLine": "$0.00 — kuniga 5 daqiqa qoʻngʻiroq",
+  "freePlanPriceLine": "Bepul — kuniga 5 daqiqa qoʻngʻiroq",
   "pricePerMonthLine": "Oyiga {amount}",
   "freeUntilDate": "{date} gacha bepul",
   "todaysCalls": "Bugungi qoʻngʻiroq vaqti",

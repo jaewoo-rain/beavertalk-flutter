@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Дүрүүдийг тусад нь зардаг. Худалдаж авсан дүрүүд тань таных хэвээр үлдэнэ.",
   "ctaGetPremium": "Premium авах",
   "planMaxTrial": "Premium туршилт",
-  "freePlanPriceLine": "$0.00 — өдөрт 5 минут дуудлага",
+  "freePlanPriceLine": "Үнэгүй — өдөрт 5 минут дуудлага",
   "pricePerMonthLine": "Сард {amount}",
   "freeUntilDate": "{date} хүртэл үнэгүй",
   "todaysCalls": "Өнөөдрийн дуудлагын хугацаа",

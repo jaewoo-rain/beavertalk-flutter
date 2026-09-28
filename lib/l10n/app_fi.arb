@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Hahmot myydään erikseen. Ostamasi hahmot ovat omiasi.",
   "ctaGetPremium": "Hanki Premium",
   "planMaxTrial": "Premium-kokeilu",
-  "freePlanPriceLine": "$0.00 — 5 minuuttia puheluita päivässä",
+  "freePlanPriceLine": "Ilmainen — 5 minuuttia puheluita päivässä",
   "pricePerMonthLine": "{amount} kuukaudessa",
   "freeUntilDate": "Ilmainen {date} asti",
   "todaysCalls": "Tämän päivän puheluaika",

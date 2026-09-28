@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "Os personagens são vendidos à parte. Os que você compra são seus.",
   "ctaGetPremium": "Assinar Premium",
   "planMaxTrial": "Teste do Premium",
-  "freePlanPriceLine": "$0.00 — 5 minutos de ligação por dia",
+  "freePlanPriceLine": "Grátis — 5 minutos de ligação por dia",
   "pricePerMonthLine": "{amount} por mês",
   "freeUntilDate": "Grátis até {date}",
   "todaysCalls": "Tempo de ligação de hoje",

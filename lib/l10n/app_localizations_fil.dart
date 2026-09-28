@@ -1423,7 +1423,7 @@ class AppLocalizationsFil extends AppLocalizations {
   String get planMaxTrial => 'Premium trial';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 minutong tawag kada araw';
+  String get freePlanPriceLine => 'Libre — 5 minutong tawag kada araw';
 
   @override
   String pricePerMonthLine(String amount) {

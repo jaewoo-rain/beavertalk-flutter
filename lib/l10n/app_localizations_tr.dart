@@ -1406,7 +1406,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get planMaxTrial => 'Premium deneme';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — günde 5 dakika arama';
+  String get freePlanPriceLine => 'Ücretsiz — günde 5 dakika arama';
 
   @override
   String pricePerMonthLine(String amount) {

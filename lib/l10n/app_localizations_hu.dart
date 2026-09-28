@@ -1421,7 +1421,7 @@ class AppLocalizationsHu extends AppLocalizations {
   String get planMaxTrial => 'Premium próba';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — napi 5 perc hívás';
+  String get freePlanPriceLine => 'Ingyenes — napi 5 perc hívás';
 
   @override
   String pricePerMonthLine(String amount) {

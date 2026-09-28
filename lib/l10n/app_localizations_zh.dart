@@ -1373,7 +1373,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get planMaxTrial => 'Premium 试用';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 每天通话 5 分钟';
+  String get freePlanPriceLine => '免费 — 每天通话 5 分钟';
 
   @override
   String pricePerMonthLine(String amount) {

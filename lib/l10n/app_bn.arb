@@ -423,7 +423,7 @@
   "noteCharactersSeparate": "ক্যারেক্টার আলাদাভাবে বিক্রি হয়। কেনা ক্যারেক্টার আপনারই থাকে।",
   "ctaGetPremium": "Premium নিন",
   "planMaxTrial": "Premium ট্রায়াল",
-  "freePlanPriceLine": "$0.00 — দিনে 5 মিনিট কল",
+  "freePlanPriceLine": "ফ্রি — দিনে 5 মিনিট কল",
   "pricePerMonthLine": "প্রতি মাসে {amount}",
   "freeUntilDate": "{date} পর্যন্ত ফ্রি",
   "todaysCalls": "আজকের কলের সময়",

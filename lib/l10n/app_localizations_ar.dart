@@ -1404,7 +1404,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get planMaxTrial => 'تجربة Premium';
 
   @override
-  String get freePlanPriceLine => '\$0.00 — 5 دقائق من المكالمات يوميًا';
+  String get freePlanPriceLine => 'مجاني — 5 دقائق من المكالمات يوميًا';
 
   @override
   String pricePerMonthLine(String amount) {

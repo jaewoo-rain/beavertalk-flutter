@@ -883,7 +883,7 @@
   "@planMaxTrial": {
     "description": "Plan-card title while inside the Max trial."
   },
-  "freePlanPriceLine": "$0.00 — 5 minutes of calls a day",
+  "freePlanPriceLine": "Free — 5 minutes of calls a day",
   "@freePlanPriceLine": {
     "description": "Plan-card subtitle on the Free state. Confirmed copy; do not reword."
   },

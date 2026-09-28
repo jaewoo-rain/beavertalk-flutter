@@ -432,7 +432,7 @@
   "noteCharactersSeparate": "캐릭터는 따로 판매해요. 구매한 캐릭터는 계속 내 것이에요.",
   "ctaGetPremium": "Premium 시작하기",
   "planMaxTrial": "Premium 체험",
-  "freePlanPriceLine": "$0.00 — 하루 5분 통화",
+  "freePlanPriceLine": "무료 — 하루 5분 통화",
   "pricePerMonthLine": "월 {amount}",
   "freeUntilDate": "{date}까지 무료",
   "todaysCalls": "오늘 통화 시간",
