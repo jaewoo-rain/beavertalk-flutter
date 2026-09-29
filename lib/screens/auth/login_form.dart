@@ -18,6 +18,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'social_sign_in.dart';
 
 /// Auth — email/password login form. Figma `screen/auth_login_form`
 /// (`2117:19780`).
@@ -39,7 +40,8 @@ class LoginFormScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginFormScreen> createState() => _LoginFormScreenState();
 }
 
-class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
+class _LoginFormScreenState extends ConsumerState<LoginFormScreen>
+    with SocialSignInMixin {
   String _email = '';
   String _password = '';
   bool _obscurePassword = true; // password hidden by default
@@ -69,9 +71,6 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
       if (mounted) setState(() => _submitting = false);
     }
   }
-
-  /// Social login is not wired yet → opens the signup flow placeholder.
-  void _socialLogin() => Navigator.pushNamed(context, Routes.signup);
 
   /// Opens the find-password flow.
   void _findPassword() => Navigator.pushNamed(context, Routes.passwordMethod);
@@ -197,7 +196,14 @@ class _LoginFormScreenState extends ConsumerState<LoginFormScreen> {
                     ),
                     const SizedBox(height: AppSpacing.s48),
                     // ── Social sign-in row ──────────────────────────────────
-                    _SocialButtonRow(onPressed: _socialLogin),
+                    _SocialButtonRow(
+                      onKakao: kakaoSignIn,
+                      onGoogle: googleSignIn,
+                      onApple: appleSignIn,
+                      kakaoBusy: kakaoBusy,
+                      googleBusy: googleBusy,
+                      appleBusy: appleBusy,
+                    ),
                     const SizedBox(height: AppSpacing.s24),
                     // ── Signup prompt ───────────────────────────────────────
                     Center(child: _SignupPrompt(onSignup: _goSignup)),
@@ -233,16 +239,29 @@ class _FieldLabel extends StatelessWidget {
   }
 }
 
-/// Three equal-width social sign-in buttons (Kakao / Google / Apple).
+/// Three equal-width social sign-in buttons (Kakao / Google / Apple). Each runs
+/// the login screen's sign-in ([SocialSignInMixin]) — it used to open the
+/// signup screen instead (09-29 · QA F117).
 class _SocialButtonRow extends StatelessWidget {
-  const _SocialButtonRow({required this.onPressed});
+  const _SocialButtonRow({
+    required this.onKakao,
+    required this.onGoogle,
+    required this.onApple,
+    required this.kakaoBusy,
+    required this.googleBusy,
+    required this.appleBusy,
+  });
 
-  /// Tapped on any social button (all mocked as success).
-  final VoidCallback onPressed;
+  final VoidCallback onKakao;
+  final VoidCallback onGoogle;
+  final VoidCallback onApple;
+  final bool kakaoBusy;
+  final bool googleBusy;
+  final bool appleBusy;
 
   @override
   Widget build(BuildContext context) {
-    Widget social(Widget icon) => Expanded(
+    Widget social(Widget icon, VoidCallback onPressed, bool busy) => Expanded(
           child: Button(
             // 채움형 — Figma 인스턴스가 채움을 덮어써 둔 모양 그대로(09-26 secondaryOutline 이
             // 테두리형이 되면서 옮김).
@@ -250,16 +269,17 @@ class _SocialButtonRow extends StatelessWidget {
             size: BtnSize.s60,
             text: '',
             leftIcon: icon,
+            disabled: busy,
             onPressed: onPressed,
           ),
         );
     return Row(
       children: [
-        social(const KakaoIcon(size: 24)),
+        social(const KakaoIcon(size: 24), onKakao, kakaoBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(const GoogleIcon(size: 24)),
+        social(const GoogleIcon(size: 24), onGoogle, googleBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(AppleIcon(size: 24, color: context.c.labelStrong)),
+        social(AppleIcon(size: 24, color: context.c.labelStrong), onApple, appleBusy),
       ],
     );
   }

@@ -1,20 +1,16 @@
 import '../../app/adaptive.dart';
 import 'dart:async';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/gestures.dart' show TapGestureRecognizer;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../app/app_scaffold.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
 import '../../components/icons/brand_icons.dart';
 import '../../components/organisms/bottom_sheet_country_select.dart';
-import '../../core/error/app_exception.dart';
 import '../../core/i18n/locale_controller.dart';
-import '../../features/auth/presentation/providers/auth_controller.dart';
 import '../../features/auth/presentation/providers/language_sheet_provider.dart';
 import '../../features/auth/presentation/providers/signup_draft_provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -22,14 +18,7 @@ import '../../mock/mock_data.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
-
-/// Web client id (public value) — the GCP `bt-dev-web-01` "Web application"
-/// OAuth client. Used as the web GIS `clientId` and, on mobile, as the
-/// `serverClientId` so the returned idToken's audience is this ID (which
-/// Supabase validates against its Google provider "Client IDs" list). Must
-/// stay identical here, in `web/index.html`, and in the Supabase dashboard.
-const _googleClientId =
-    '333511894671-mfss7vgjb3nmgl16jpo2e56bp6ne770e.apps.googleusercontent.com';
+import 'social_sign_in.dart';
 
 /// Auth — landing login screen. Figma `screen/auth_login` (`2117:19693`).
 ///
@@ -54,25 +43,8 @@ class LoginScreen extends ConsumerStatefulWidget {
   ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  /// Google Sign-In, configured per platform:
-  /// - **web** → `clientId` = the web client (matches index.html), GIS flow.
-  /// - **mobile** → `serverClientId` = the *web* client, so the returned
-  ///   idToken's audience is the client Supabase validates; the Android OAuth
-  ///   client (package + SHA-1) authorizes the request implicitly. (iOS will
-  ///   also need its own `clientId` once that provider is set up.)
-  late final GoogleSignIn _googleSignIn = GoogleSignIn(
-    clientId: kIsWeb ? _googleClientId : null,
-    serverClientId: kIsWeb ? null : _googleClientId,
-    scopes: const ['email', 'profile'],
-  );
-
-  StreamSubscription<GoogleSignInAccount?>? _googleSub;
-  bool _googleBusy = false;
-  bool _kakaoBusy = false;
-  bool _facebookBusy = false;
-  bool _appleBusy = false;
-
+class _LoginScreenState extends ConsumerState<LoginScreen>
+    with SocialSignInMixin {
   @override
   void initState() {
     super.initState();
@@ -91,13 +63,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       ref.read(languageSheetShownProvider.notifier).markShown();
       _showLanguageSheet();
     });
-    if (kIsWeb) {
-      // A signed-in user (idToken populated) arrives on this stream after the
-      // GIS button is pressed and consent is granted.
-      _googleSub = _googleSignIn.onCurrentUserChanged.listen(_onGoogleUser);
-      // Tries to restore a prior session without UI (no-op if none).
-      unawaited(_googleSignIn.signInSilently());
-    }
   }
 
   /// Country/language picker shown as a modal bottom sheet over the login
@@ -163,105 +128,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _googleSub?.cancel();
-    super.dispose();
-  }
-
-  /// Exchanges the Google idToken for a Supabase session via
-  /// `authController.signInWithGoogle` (→ `signInWithIdToken`).
-  Future<void> _onGoogleUser(GoogleSignInAccount? account) async {
-    if (account == null || _googleBusy) return;
-    final l10n = AppLocalizations.of(context);
-    setState(() => _googleBusy = true);
-    try {
-      final auth = await account.authentication;
-      final idToken = auth.idToken;
-      if (idToken == null || idToken.isEmpty) {
-        throw UnknownFailure(l10n.loginGoogleTokenError);
-      }
-      await ref
-          .read(authControllerProvider.notifier)
-          .signInWithGoogle(idToken: idToken, accessToken: auth.accessToken);
-      // Success → AuthGate is authenticated and shows home; pop the auth flow.
-      if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
-    } on AppException catch (e) {
-      _showError(e.message);
-    } catch (_) {
-      _showError(l10n.loginGoogleSignInFailed);
-    } finally {
-      if (mounted) setState(() => _googleBusy = false);
-    }
-  }
-
-  /// Every [AppException] that reaches this screen already carries translated
-  /// copy — the auth controller maps Supabase errors through l10n and never
-  /// passes their raw English text on (QA F017).
-  void _showError(String message) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context)
-        .showSnackBar(SnackBar(content: Text(message)));
-  }
-
-  /// Kakao sign-in via Supabase OAuth (external browser). Supabase has no Kakao
-  /// native id_token path, so the session returns asynchronously through the
-  /// deep link → `onAuthStateChange` → AuthGate re-routes; there is no
-  /// navigation here. We only surface a launch failure.
-  Future<void> _kakaoLogin() async {
-    if (_kakaoBusy) return;
-    final l10n = AppLocalizations.of(context);
-    setState(() => _kakaoBusy = true);
-    try {
-      await ref.read(authControllerProvider.notifier).signInWithKakao();
-    } on AppException catch (e) {
-      _showError(e.message);
-    } catch (_) {
-      _showError(l10n.loginKakaoSignInFailed);
-    } finally {
-      if (mounted) setState(() => _kakaoBusy = false);
-    }
-  }
-
-  /// Facebook sign-in via Supabase OAuth (external browser) — identical shape to
-  /// [_kakaoLogin]: the session returns asynchronously through the deep link →
-  /// `onAuthStateChange` → AuthGate re-routes, so there is no navigation here.
-  /// We only surface a launch failure.
-  Future<void> _facebookLogin() async {
-    if (_facebookBusy) return;
-    final l10n = AppLocalizations.of(context);
-    setState(() => _facebookBusy = true);
-    try {
-      await ref.read(authControllerProvider.notifier).signInWithFacebook();
-    } on AppException catch (e) {
-      _showError(e.message);
-    } catch (_) {
-      _showError(l10n.loginFacebookSignInFailed);
-    } finally {
-      if (mounted) setState(() => _facebookBusy = false);
-    }
-  }
-
-  /// Apple sign-in. On iOS the controller runs the native Sign in with Apple
-  /// sheet and sets the session directly; on Android/web it opens Supabase
-  /// browser OAuth and the session returns asynchronously via the deep link →
-  /// `onAuthStateChange` → AuthGate. The controller branches per platform, so
-  /// this handler stays identical for both — it only surfaces a failure.
-  Future<void> _appleLogin() async {
-    if (_appleBusy) return;
-    final l10n = AppLocalizations.of(context);
-    setState(() => _appleBusy = true);
-    try {
-      await ref.read(authControllerProvider.notifier).signInWithApple();
-    } on AppException catch (e) {
-      _showError(e.message);
-    } catch (_) {
-      _showError(l10n.loginAppleSignInFailed);
-    } finally {
-      if (mounted) setState(() => _appleBusy = false);
-    }
-  }
-
   /// Email login opens the dedicated email/password form.
   void _emailLogin() => Navigator.pushNamed(context, Routes.loginForm);
 
@@ -305,8 +171,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 size: BtnSize.s60,
                 text: l10n.loginContinueWithKakao,
                 leftIcon: const KakaoIcon(size: 24),
-                disabled: _kakaoBusy,
-                onPressed: _kakaoLogin,
+                disabled: kakaoBusy,
+                onPressed: kakaoSignIn,
               ),
               const SizedBox(height: AppSpacing.s16),
               // Google: custom button (matches Kakao/Apple) wired to the real
@@ -316,8 +182,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 size: BtnSize.s60,
                 text: l10n.loginContinueWithGoogle,
                 leftIcon: const GoogleIcon(size: 24),
-                disabled: _googleBusy,
-                onPressed: _googleLogin,
+                disabled: googleBusy,
+                onPressed: googleSignIn,
               ),
               const SizedBox(height: AppSpacing.s16),
               Button(
@@ -325,8 +191,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 size: BtnSize.s60,
                 text: l10n.loginContinueWithFacebook,
                 leftIcon: const FacebookIcon(size: 24),
-                disabled: _facebookBusy,
-                onPressed: _facebookLogin,
+                disabled: facebookBusy,
+                onPressed: facebookSignIn,
               ),
               const SizedBox(height: AppSpacing.s16),
               Button(
@@ -334,8 +200,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 size: BtnSize.s60,
                 text: l10n.loginContinueWithApple,
                 leftIcon: const AppleIcon(size: 24),
-                disabled: _appleBusy,
-                onPressed: _appleLogin,
+                disabled: appleBusy,
+                onPressed: appleSignIn,
               ),
               const SizedBox(height: AppSpacing.s16),
               // ── "or" divider ────────────────────────────────────────────
@@ -364,37 +230,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
-  /// Starts the Google sign-in flow from the custom button. On success the
-  /// [GoogleSignIn.onCurrentUserChanged] stream fires [_onGoogleUser], which
-  /// exchanges the idToken for our JWT — the existing logic, unchanged.
-  ///
-  /// Note: on web, the idToken is delivered via the One Tap / button flow;
-  /// `signIn()` triggers it but token availability depends on the GIS session.
-  Future<void> _googleLogin() async {
-    if (_googleBusy) return;
-    final l10n = AppLocalizations.of(context);
-    try {
-      if (!kIsWeb) {
-        // google_sign_in 은 지난 로그인 계정을 기억해, signIn() 이 계정 선택창 없이 그 계정을
-        // 바로 돌려준다. 앱 로그아웃은 Supabase 세션만 지워서 다른 구글 계정으로 바꿀 길이
-        // 없었다(09-28 실기기). 매번 로컬 구글 세션을 지워 선택창을 띄운다 — disconnect 는
-        // 권한까지 철회해 동의 화면이 다시 떠서 쓰지 않는다.
-        try {
-          await _googleSignIn.signOut();
-        } catch (_) {}
-      }
-      final account = await _googleSignIn.signIn();
-      // Web delivers the signed-in user via `onCurrentUserChanged` (wired in
-      // initState); mobile returns it right here (null = the user cancelled).
-      if (!kIsWeb && account != null) {
-        await _onGoogleUser(account);
-      }
-    } on AppException catch (e) {
-      _showError(e.message);
-    } catch (_) {
-      _showError(l10n.loginGoogleSignInFailed);
-    }
-  }
 }
 
 /// Circular beaver avatar (120px) over the "BeaverTalk" wordmark.

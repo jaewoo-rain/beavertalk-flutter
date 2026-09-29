@@ -16,6 +16,7 @@ import '../../l10n/app_localizations.dart';
 import '../../theme/app_color_tokens.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'social_sign_in.dart';
 
 /// Auth — signup. Figma `screen/auth_signup` (`2117:19739`).
 ///
@@ -32,7 +33,8 @@ class SignupScreen extends ConsumerStatefulWidget {
   ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _SignupScreenState extends ConsumerState<SignupScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen>
+    with SocialSignInMixin {
   String _email = '';
   String _password = '';
   String _passwordConfirm = '';
@@ -102,11 +104,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
   /// Returns to the login flow.
   void _goLogin() => Navigator.pop(context);
-
-  /// Social sign-up is not wired yet (mock placeholder).
-  void _socialSignup() {
-    // TODO: wire social sign-up (Kakao / Google / Apple).
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -183,7 +180,16 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     ),
                     const SizedBox(height: AppSpacing.s48),
                     // ── Social sign-up row (Kakao / Google / Apple) ─────────
-                    _SocialButtonRow(onPressed: _socialSignup),
+                    _SocialButtonRow(
+                      onKakao: kakaoSignIn,
+                      onGoogle: googleSignIn,
+                      onFacebook: facebookSignIn,
+                      onApple: appleSignIn,
+                      kakaoBusy: kakaoBusy,
+                      googleBusy: googleBusy,
+                      facebookBusy: facebookBusy,
+                      appleBusy: appleBusy,
+                    ),
                     const SizedBox(height: AppSpacing.s24),
                     // ── Login prompt ────────────────────────────────────────
                     Center(child: _LoginPrompt(onLogin: _goLogin)),
@@ -242,16 +248,32 @@ class _ErrorText extends StatelessWidget {
 
 /// Four equal-width social sign-up buttons (Kakao / Google / Facebook / Apple),
 /// matching the login screen's provider order and the Figma
-/// `screen/auth_signup` footer row.
+/// `screen/auth_signup` footer row. Each runs the same sign-in as the login
+/// screen ([SocialSignInMixin]) — a new social member goes on to onboarding.
 class _SocialButtonRow extends StatelessWidget {
-  const _SocialButtonRow({required this.onPressed});
+  const _SocialButtonRow({
+    required this.onKakao,
+    required this.onGoogle,
+    required this.onFacebook,
+    required this.onApple,
+    required this.kakaoBusy,
+    required this.googleBusy,
+    required this.facebookBusy,
+    required this.appleBusy,
+  });
 
-  /// Tapped on any social button (all mocked for now).
-  final VoidCallback onPressed;
+  final VoidCallback onKakao;
+  final VoidCallback onGoogle;
+  final VoidCallback onFacebook;
+  final VoidCallback onApple;
+  final bool kakaoBusy;
+  final bool googleBusy;
+  final bool facebookBusy;
+  final bool appleBusy;
 
   @override
   Widget build(BuildContext context) {
-    Widget social(Widget icon) => Expanded(
+    Widget social(Widget icon, VoidCallback onPressed, bool busy) => Expanded(
           child: Button(
             // 채움형 — Figma 인스턴스가 채움을 덮어써 둔 모양 그대로(09-26 secondaryOutline 이
             // 테두리형이 되면서 옮김).
@@ -259,18 +281,19 @@ class _SocialButtonRow extends StatelessWidget {
             size: BtnSize.s60,
             text: '',
             leftIcon: icon,
+            disabled: busy,
             onPressed: onPressed,
           ),
         );
     return Row(
       children: [
-        social(const KakaoIcon(size: 24)),
+        social(const KakaoIcon(size: 24), onKakao, kakaoBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(const GoogleIcon(size: 24)),
+        social(const GoogleIcon(size: 24), onGoogle, googleBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(const FacebookIcon(size: 24)),
+        social(const FacebookIcon(size: 24), onFacebook, facebookBusy),
         const SizedBox(width: AppSpacing.s12),
-        social(AppleIcon(size: 24, color: context.c.labelStrong)),
+        social(AppleIcon(size: 24, color: context.c.labelStrong), onApple, appleBusy),
       ],
     );
   }

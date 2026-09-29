@@ -30,6 +30,8 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>GIDClientID</key>
+	<string>333511894671-v5vce7nnr5kqbunhvm4m14cdns58oomt.apps.googleusercontent.com</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -40,6 +42,16 @@
 			<key>CFBundleURLSchemes</key>
 			<array>
 				<string>im.beavertalk.beavertalk</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>google-sign-in</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.333511894671-v5vce7nnr5kqbunhvm4m14cdns58oomt</string>
 			</array>
 		</dict>
 	</array>
