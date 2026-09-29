@@ -27,6 +27,18 @@ class _RecordingAuth extends AuthController {
   Future<void> signInWithApple() async => _calls.add('apple');
 }
 
+/// 브라우저 SNS 로그인이 딥링크로 돌아와 세션이 선 것처럼 — 부른 뒤 authenticated 가 된다.
+class _LandingAuth extends AuthController {
+  @override
+  AuthStatus build() => AuthStatus.unauthenticated;
+
+  @override
+  Future<void> signInWithKakao() async {
+    _calls.add('kakao');
+    state = AuthStatus.authenticated;
+  }
+}
+
 Widget _app(Widget home, {List<Override> overrides = const []}) => ProviderScope(
       overrides: overrides,
       child: MaterialApp(
@@ -67,7 +79,36 @@ void main() {
     expect(find.byType(SignupScreen), findsNothing);
   });
 
-  group('OtpInput — 소프트 키보드', () {
+  testWidgets('F120 — 가입 화면에서 브라우저 SNS 로그인이 끝나면 인증 흐름을 닫는다', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    _calls.clear();
+    await tester.pumpWidget(ProviderScope(
+      overrides: [authControllerProvider.overrideWith(_LandingAuth.new)],
+      child: MaterialApp(
+        locale: const Locale('en'),
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => TextButton(
+            onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const SignupScreen())),
+            child: const Text('ROOT'),
+          ),
+        ),
+      ),
+    ));
+    await tester.tap(find.text('ROOT'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SignupScreen), findsOneWidget);
+    await tester.tap(find.byType(KakaoIcon));
+    await tester.pumpAndSettle();
+    expect(_calls, ['kakao']);
+    expect(find.byType(SignupScreen), findsNothing, reason: 'Google 처럼 닫혀야 한다');
+    expect(find.text('ROOT'), findsOneWidget);
+  });
+
+  group('OtpInput — 숨은 입력칸 1개 + 칸 6개', () {
     Future<List<String>> pump(WidgetTester tester) async {
       final values = <String>[];
       await tester.pumpWidget(_app(Scaffold(
@@ -76,40 +117,69 @@ void main() {
       return values;
     }
 
-    Finder box(int i) => find.byType(TextField).at(i);
-    EditableText editable(WidgetTester t, int i) =>
-        t.widget<EditableText>(find.byType(EditableText).at(i));
+    final field = find.byType(TextField);
 
-    testWidgets('F119 — 채워진 칸에 새 숫자를 치면 바뀐다(옛 숫자가 남지 않는다)', (tester) async {
-      final values = await pump(tester);
-      for (var i = 0; i < 6; i++) {
-        await tester.enterText(box(i), '${i + 1}');
+    /// 키보드로 한 글자씩 친 것처럼 — 입력칸 값이 한 단계씩 바뀐다.
+    Future<void> typeSeq(WidgetTester tester, List<String> steps) async {
+      for (final v in steps) {
+        await tester.enterText(field, v);
       }
-      expect(values.last, '123456');
-      // 3번째 칸을 눌러 9를 친다 — 칸에는 「3」 뒤에 「9」가 붙어 들어온다.
-      await tester.enterText(box(2), '39');
-      expect(values.last, '129456');
+      await tester.pump();
+    }
+
+    /// 칸에 그려진 숫자(보이는 것).
+    List<String> boxes(WidgetTester tester) => [
+          for (final t in tester.widgetList<Text>(find.descendant(
+              of: find.byType(OtpInput), matching: find.byType(Text))))
+            t.data ?? '',
+        ];
+
+    testWidgets('입력칸은 하나 · 칸마다 숫자를 차례로 그린다', (tester) async {
+      final values = await pump(tester);
+      expect(field, findsOneWidget);
+      await typeSeq(tester, ['1', '12', '123']);
+      expect(values.last, '123');
+      expect(boxes(tester), ['1', '2', '3', '', '', '']);
     });
 
-    testWidgets('F119 — 코드 전체가 한 번에 오면 칸마다 나눠 담는다', (tester) async {
+    testWidgets('F118 — 백스페이스는 마지막 숫자부터 지운다(빈 칸 키 이벤트 불필요)', (tester) async {
       final values = await pump(tester);
-      await tester.enterText(box(0), '654321');
-      await tester.pump();
+      await typeSeq(tester, ['1', '12', '123', '1234', '12345', '123456']);
+      await typeSeq(tester, ['12345', '1234', '123']);
+      expect(values.last, '123');
+      expect(boxes(tester), ['1', '2', '3', '', '', '']);
+    });
+
+    testWidgets('F122 — 지운 자리에 다시 친 숫자가 들어간다(앞 칸을 덮지 않는다)', (tester) async {
+      final values = await pump(tester);
+      await typeSeq(tester, ['1', '12', '123', '1234']);
+      await typeSeq(tester, ['123', '1237']);
+      expect(values.last, '1237');
+      expect(boxes(tester).take(4), ['1', '2', '3', '7']);
+    });
+
+    testWidgets('F121 — 5번째를 고쳐 쳐도 한 글자는 한 칸 · 6번째를 덮지 않는다', (tester) async {
+      final values = await pump(tester);
+      await typeSeq(tester, ['1', '12', '123', '1234', '12345', '123456']);
+      // 5번째를 9로: 두 번 지우고 9, 6.
+      await typeSeq(tester, ['12345', '1234', '12349', '123496']);
+      expect(values.last, '123496');
+    });
+
+    testWidgets('F119 — 붙여넣기·코드 추천은 차례로 채우고 길이에서 자른다', (tester) async {
+      final values = await pump(tester);
+      await typeSeq(tester, ['6543210']);
       expect(values.last, '654321');
+      await typeSeq(tester, ['12a34']);
+      expect(values.last, '1234', reason: '숫자만');
     });
 
-    testWidgets('F118 — 칸의 숫자를 지우면 앞 칸으로 가서 이어서 지운다', (tester) async {
-      final values = await pump(tester);
-      for (var i = 0; i < 6; i++) {
-        await tester.enterText(box(i), '${i + 1}');
-      }
-      await tester.enterText(box(5), '');
-      await tester.pump();
-      expect(editable(tester, 4).focusNode.hasFocus, isTrue);
-      await tester.enterText(box(4), '');
-      await tester.pump();
-      expect(editable(tester, 3).focusNode.hasFocus, isTrue);
-      expect(values.last, '1234');
+    testWidgets('캐럿은 늘 끝 — 가운데로 옮겨도 다음 숫자는 첫 빈 칸', (tester) async {
+      await pump(tester);
+      await typeSeq(tester, ['1', '12', '123']);
+      final c = tester.widget<TextField>(field).controller!;
+      c.selection = const TextSelection.collapsed(offset: 1);
+      expect(c.selection.baseOffset, 3);
     });
   });
 }

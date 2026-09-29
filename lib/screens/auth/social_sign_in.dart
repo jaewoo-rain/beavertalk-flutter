@@ -39,6 +39,9 @@ mixin SocialSignInMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
 
   StreamSubscription<GoogleSignInAccount?>? _googleSub;
 
+  /// A social sign-in was started from this screen and has not landed yet.
+  bool _socialPending = false;
+
   /// Whether each provider's flow is running — its button is disabled meanwhile.
   bool googleBusy = false;
   bool kakaoBusy = false;
@@ -48,6 +51,18 @@ mixin SocialSignInMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   @override
   void initState() {
     super.initState();
+    // 성공하면 네 흐름 모두 같은 종료 — 인증 흐름 화면을 닫고 AuthGate 로(QA F120).
+    // Kakao·Facebook·Android Apple 은 브라우저 → 딥링크로 세션이 늦게 오고, 오기 전에는
+    // 이 화면이 그대로 남았다(가입 화면·이메일 폼). 이 화면에서 시작한 SNS 로그인이고 이
+    // 화면이 맨 위일 때만 닫는다 — 비밀번호 재설정 코드 확인도 세션을 만들어 authenticated
+    // 가 되는데, 그때 아래에 깔린 화면이 재설정 화면을 걷어 내면 안 된다.
+    ref.listenManual<AuthStatus>(authControllerProvider, (prev, next) {
+      if (next != AuthStatus.authenticated || prev == next) return;
+      if (!_socialPending || !mounted) return;
+      if (ModalRoute.of(context)?.isCurrent == false) return;
+      _socialPending = false;
+      Navigator.of(context).popUntil((r) => r.isFirst);
+    });
     if (kIsWeb) {
       // A signed-in user (idToken populated) arrives on this stream after the
       // GIS button is pressed and consent is granted.
@@ -84,11 +99,11 @@ mixin SocialSignInMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
       if (idToken == null || idToken.isEmpty) {
         throw UnknownFailure(l10n.loginGoogleTokenError);
       }
+      _socialPending = true;
       await ref
           .read(authControllerProvider.notifier)
           .signInWithGoogle(idToken: idToken, accessToken: auth.accessToken);
-      // Success → AuthGate is authenticated and shows home; pop the auth flow.
-      if (mounted) Navigator.of(context).popUntil((r) => r.isFirst);
+      // Success → authenticated → the listener in initState closes the flow.
     } on AppException catch (e) {
       showSignInError(e.message);
     } catch (_) {
@@ -171,6 +186,7 @@ mixin SocialSignInMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
     if (busy) return;
     final l10n = AppLocalizations.of(context);
     setState(() => setBusy(true));
+    _socialPending = true;
     try {
       await run();
     } on AppException catch (e) {
