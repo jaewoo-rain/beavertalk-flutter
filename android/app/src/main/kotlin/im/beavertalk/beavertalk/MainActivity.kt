@@ -337,9 +337,13 @@ class MainActivity : FlutterActivity() {
             if (enable) {
                 am.mode = AudioManager.MODE_IN_COMMUNICATION
                 val headset = am.isBluetoothScoOn || am.isBluetoothA2dpOn || am.isWiredHeadsetOn
-                if (!headset) am.isSpeakerphoneOn = true
+                if (!headset) {
+                    pinSpeaker(am)
+                    am.isSpeakerphoneOn = true
+                }
                 voiceCallMode = true
             } else {
+                unpinSpeaker(am)
                 am.isSpeakerphoneOn = false
                 am.mode = AudioManager.MODE_NORMAL
                 voiceCallMode = false
@@ -348,6 +352,34 @@ class MainActivity : FlutterActivity() {
             // 모드 전환 실패가 통화를 죽이면 안 된다. 아래 진단이 실패를 그대로 드러낸다.
         }
         return audioDiag()
+    }
+
+    /** [pinSpeaker] 로 통신 기기를 우리가 지정했는가 — 지정한 쪽만 [unpinSpeaker] 가 푼다. */
+    private var speakerPinned = false
+
+    /**
+     * Android 12(API 31)+ 에서 통화 출력을 **내장 스피커로 지정**한다(A2 · 10-03 PM-DEC-348).
+     *
+     * API 31 부터 `isSpeakerphoneOn` 은 비권장이고, 통신 출력 기기는
+     * `setCommunicationDevice` 로 고르는 것이 정식 경로다. 옛 API 만 쓰면 기기에 따라
+     * 통화 출력이 리시버(귀에 대는 구멍)로 남을 수 있다 — 그러면 「소리가 너무 작다」가 된다.
+     * 옛 API 도 같이 둔다(API 30 이하는 그것뿐이고, 31+ 에서도 해가 없다).
+     *
+     * ⚠ Note20(Android 10)에서는 이 분기가 돌지 않는다 — 실기기 확인은 Android 12+ 기기 몫.
+     */
+    private fun pinSpeaker(am: AudioManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        val speaker = am.availableCommunicationDevices
+            .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER } ?: return
+        speakerPinned = am.setCommunicationDevice(speaker)
+        Log.i("BeaverTalkAudio", "setCommunicationDevice(speaker) → $speakerPinned")
+    }
+
+    /** [pinSpeaker] 를 되돌린다. 우리가 지정하지 않았으면 건드리지 않는다(시스템 통화 보호). */
+    private fun unpinSpeaker(am: AudioManager) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !speakerPinned) return
+        am.clearCommunicationDevice()
+        speakerPinned = false
     }
 
     /**
