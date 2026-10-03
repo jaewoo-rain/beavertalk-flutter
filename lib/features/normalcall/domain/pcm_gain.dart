@@ -4,14 +4,12 @@ import 'dart:typed_data';
 /// 통화 재생 음량 보정 — PCM16 샘플에 [gain] 배를 곱하고, 풀스케일 근처 봉우리는
 /// 부드럽게 눌러 하드 클리핑(지직거림) 없이 담는다.
 ///
-/// ## 지금은 측정 전용이다 — 통화 재생에 붙이지 않았다
+/// ## 통화 재생에 붙인다 (A2 · 10-03 사용자 「앱 수정 해」 · PM-DEC-352)
 ///
-/// A2(10-03 사용자 「통화음량 고치고」)에서 「재생 직전 PCM 을 키운다」(수정안 A)를 재려고
-/// 만들었다. Note20 실측: 통화 용도 경로에 +6/+9dB 를 넣어도 스피커 출력은 +0.5~+3.5dB 로
-/// 회차 편차 안이었다 — 기기 통화 음성 처리가 레벨을 다시 맞춘다. 그래서 A 는 넣지 않기로
-/// 했다(PM-DEC-348 · `11_앱서비스_하네스/_workspace/2026-10-03_통화음량/03_측정결과_Note20.md`).
-/// 쓰는 곳은 `lib/main_loudness_probe.dart` 뿐이다. 아이폰 측정 결과에 따라 iOS 전용으로
-/// 붙일 수 있어 남겨 둔다.
+/// 원음(Gemini Live)은 말하는 구간 RMS −17.5 dBFS · 피크 −2.1 dBFS 로 정상이고, Note20 통화
+/// 출력은 미디어 최대보다 2dB 크다(`11_앱서비스_하네스/_workspace/2026-10-03_통화음량/
+/// 03_측정결과_Note20.md` §6). 남은 여지는 「눌러 담아 평균을 올리기」 뿐이라 +6dB 를 줘도
+/// 체감은 약 +3dB 다. 사용자가 그걸 택했다. 값·끄기는 [kCallPlaybackGainDb]·[kCallPlaybackGainOn].
 ///
 /// ## 리미터
 ///
@@ -40,6 +38,15 @@ Int16List applyPcmGain(
 
 /// 데시벨 → 선형 배율.
 double dbToGain(double db) => math.pow(10, db / 20).toDouble();
+
+/// 통화 재생 게인(dB) — 값을 바꾸는 곳은 여기 하나다(PM-DEC-352 · 범위 4~6).
+///
+/// Note20 실측(실제 비버 음성): +6dB → 체감 +3.1dB · +9dB → +3.6dB. 원음 피크가 −2dBFS 라
+/// 이 이상 올려도 리미터가 눌러 담을 뿐 커지지 않고 압축감만 는다.
+const double kCallPlaybackGainDb = 5.0;
+
+/// 끄기 스위치 — false 면 통화 재생이 원음 그대로다(되돌리기는 이것만 끄면 된다).
+const bool kCallPlaybackGainOn = true;
 
 double _tanh(double v) {
   final e = math.exp(2 * v);

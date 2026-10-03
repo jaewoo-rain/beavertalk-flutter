@@ -46,4 +46,9 @@ void main() {
     expect(out[2], -200);
     expect(out[3], 200);
   });
+  // PM-DEC-352: 통화 재생 게인은 4~6dB · 끄기 스위치 1곳. 범위를 벗어나면 압축감만 늘거나(>6)
+  // 체감이 없다(<4) — 바꾸려면 이 시험과 근거 문서를 같이 고친다.
+  test('통화 재생 게인 상수는 4~6dB 범위다', () {
+    expect(kCallPlaybackGainDb, inInclusiveRange(4.0, 6.0));
+  });
 }

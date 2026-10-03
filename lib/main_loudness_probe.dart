@@ -12,6 +12,7 @@
 //   리그를 못 쓴다: 그 리그는 일부러 통화와 같은 에코 제거 경로로 연다).
 // ⚠ 자극음은 실제 비버 음성이 아니다(대역제한 잡음 + 음절 변조 · EchoStimulus).
 import 'dart:async';
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
@@ -19,6 +20,7 @@ import 'package:audio_session/audio_session.dart';
 import 'package:flutter/foundation.dart' show TargetPlatform, defaultTargetPlatform;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter_pcm_sound/flutter_pcm_sound.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record/record.dart' as rec;
@@ -42,17 +44,14 @@ class _Cond {
   final double gainDb;
 }
 
-// 2차(10-03): 1차에서 통화 용도에 +6/+9dB 를 줘도 마이크에서 +0.5/+0.8dB 만 올랐다(디지털
-// 로는 +6.0/+9.0). 기기 통화 경로가 레벨을 되돌리는지 가르려고 −6dB 와 미디어 +6dB 를 더 잰다.
+// 3차(10-03 · PM-DEC-352·353): 제품 게인(kCallPlaybackGainDb) 전후를 실제 음성으로 잰다.
+// 1·2차(합성음 · −6/+6/+9dB)의 결과는 11_앱서비스_하네스/_workspace/2026-10-03_통화음량/03_측정결과_Note20.md.
 const _conds = [
-  _Cond('A-2 미디어 용도', voice: false),
-  _Cond('미디어 용도 +6dB', voice: false, gainDb: 6),
+  _Cond('미디어 용도', voice: false),
   _Cond('A-1 통화 용도(현행)', voice: true),
-  _Cond('통화 용도 -6dB', voice: true, gainDb: -6),
-  _Cond('통화 용도 +6dB', voice: true, gainDb: 6),
-  _Cond('통화 용도 +9dB', voice: true, gainDb: 9),
+  _Cond('통화 용도 + 제품 게인', voice: true, gainDb: kCallPlaybackGainDb),
 ];
-const int _rounds = 2;
+const int _rounds = 3;
 
 // ProviderScope: 앱 진입점 규칙(missing_provider_scope)을 지킨다 — 이 화면은 프로바이더를 안 쓴다.
 void main() => runApp(const ProviderScope(child: MaterialApp(home: _ProbeScreen())));
@@ -66,6 +65,11 @@ class _ProbeScreen extends StatefulWidget {
 class _ProbeScreenState extends State<_ProbeScreen> {
   final List<String> _lines = [];
 
+  /// 실제 비버 음성(24kHz PCM16 모노) — 앱 외부 저장소 `files/sample.pcm` 에 있으면 합성 자극음 대신
+  /// 이걸 되풀이해 튼다(adb push 로 넣는다 · 10-03 PM-DEC-350 「실제 음성으로」). 없으면 null.
+  Int16List? _sample;
+  int _samplePos = 0;
+
   void _say(String s) {
     debugPrint('[loudness] $s');
     if (mounted) setState(() => _lines.add(s));
@@ -78,6 +82,17 @@ class _ProbeScreenState extends State<_ProbeScreen> {
   }
 
   Future<void> _run() async {
+    try {
+      final dir = await getExternalStorageDirectory();
+      final f = File('${dir?.path}/sample.pcm');
+      if (dir != null && f.existsSync()) {
+        final b = f.readAsBytesSync();
+        _sample = Int16List.view(Uint8List.fromList(b).buffer, 0, b.length ~/ 2);
+      }
+    } catch (_) {}
+    _say(_sample == null
+        ? '자극: 합성 자극음(EchoStimulus)'
+        : '자극: 실제 음성 sample.pcm ${(_sample!.length / _playRate).toStringAsFixed(1)}초');
     if (!(await Permission.microphone.request()).isGranted) {
       _say('마이크 권한 없음 — 중단');
       return;
@@ -170,9 +185,20 @@ class _ProbeScreenState extends State<_ProbeScreen> {
 
       // 재생.
       final stim = EchoStimulus(sampleRate: _playRate);
+      _samplePos = 0; // 조건마다 같은 구간을 튼다
+      Int16List next(int n) {
+        final s = _sample;
+        if (s == null || s.isEmpty) return stim.nextChunk(n);
+        final out = Int16List(n);
+        for (var i = 0; i < n; i++) {
+          out[i] = s[_samplePos];
+          _samplePos = (_samplePos + 1) % s.length;
+        }
+        return out;
+      }
       final gain = dbToGain(c.gainDb);
       pump = Timer.periodic(const Duration(milliseconds: 10), (_) {
-        final chunk = applyPcmGain(stim.nextChunk(_playRate ~/ 50), gain);
+        final chunk = applyPcmGain(next(_playRate ~/ 50), gain);
         unawaited(FlutterPcmSound.feed(
           PcmArrayInt16(bytes: ByteData.sublistView(chunk)),
         ).catchError((Object _) => null));
