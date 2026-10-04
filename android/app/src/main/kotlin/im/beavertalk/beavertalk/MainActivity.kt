@@ -2,8 +2,10 @@ package im.beavertalk.beavertalk
 
 import android.app.Activity
 import android.app.KeyguardManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.hardware.display.DisplayManager
 import android.hardware.display.VirtualDisplay
 import android.media.AudioAttributes
@@ -221,10 +223,12 @@ class MainActivity : FlutterActivity() {
         if (routeCallback != null) return
         val cb = object : AudioDeviceCallback() {
             override fun onAudioDevicesAdded(added: Array<out AudioDeviceInfo>?) {
+                onCallDevicesChanged()
                 audioChannel?.invokeMethod("routeChanged", null)
             }
 
             override fun onAudioDevicesRemoved(removed: Array<out AudioDeviceInfo>?) {
+                onCallDevicesChanged()
                 audioChannel?.invokeMethod("routeChanged", null)
             }
         }
@@ -293,7 +297,9 @@ class MainActivity : FlutterActivity() {
             // 답하고, 없으면 빈 문자열로 떨어진다.
             @Suppress("DEPRECATION")
             return when {
-                am.isBluetoothScoOn || am.isBluetoothA2dpOn || am.isWiredHeadsetOn -> "headset"
+                // A2DP 는 음악 전용 — 통화 모드에서는 통화 경로가 아니다(10-04 수화기 결함).
+                am.isBluetoothScoOn || am.isWiredHeadsetOn ||
+                    (!voiceCallMode && am.isBluetoothA2dpOn) -> "headset"
                 am.isSpeakerphoneOn -> "speaker"
                 // 통화 usage 는 스피커폰이 꺼져 있으면 **리시버**로 간다. 여기서
                 // speaker 로 답하면 "에코가 왜 이렇게 적지"의 원인을 영영 못 찾는다.
@@ -317,13 +323,11 @@ class MainActivity : FlutterActivity() {
     /**
      * 통화 용도 오디오 모드를 켜고 끈다. 켜야 플랫폼 AEC 가 참조할 다운링크가 생긴다.
      *
-     * ⚠ **켜면 기본 출력이 리시버(귀에 대는 구멍)로 빠진다.** 지금 사용자는 폰을 귀에
-     *   안 대고 쓰고 있으므로 그대로 두면 "소리가 갑자기 작아졌다"가 된다. 그래서 헤드셋이
-     *   안 붙어 있을 때는 스피커폰을 명시적으로 켠다. 헤드셋이 있으면 건드리지 않는다 —
-     *   그쪽은 시스템이 알아서 라우팅하고, 강제로 스피커를 켜면 이어폰을 꽂은 채 스피커로
-     *   나가는 최악이 된다.
+     * ⚠ **켜면 기본 출력이 리시버(귀에 대는 구멍)로 빠진다.** 그래서 출력을 직접 고른다
+     *   ([applyCallRoute]): 유선 이어폰 → 그대로 · 통화용 블루투스 → BT 통화 경로(SCO) ·
+     *   둘 다 없으면 → 스피커.
      *
-     * 끌 때는 **역순으로** 되돌린다(스피커폰 먼저, 모드 나중). 모드를 먼저 NORMAL 로
+     * 끌 때는 **역순으로** 되돌린다(경로 먼저, 모드 나중). 모드를 먼저 NORMAL 로
      * 돌리면 그 시점의 스피커폰 설정이 미디어 라우팅에 남는다.
      *
      * 반환은 [audioDiag] — 실제로 무엇이 적용됐는지 호출자가 눈으로 확인해야 한다.
@@ -333,20 +337,26 @@ class MainActivity : FlutterActivity() {
         val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
             ?: return emptyMap()
         try {
-            @Suppress("DEPRECATION")
             if (enable) {
                 am.mode = AudioManager.MODE_IN_COMMUNICATION
-                val headset = am.isBluetoothScoOn || am.isBluetoothA2dpOn || am.isWiredHeadsetOn
-                if (!headset) {
-                    pinSpeaker(am)
-                    am.isSpeakerphoneOn = true
-                }
                 voiceCallMode = true
+                registerScoReceiver()
+                applyCallRoute(am, "통화 시작")
+                // 예약 알람 수락은 시스템 통화 서비스가 **우리 뒤에** 경로를 되돌린다
+                // (10-04 Note20 실측: 수락 순간 SCO 해제 + setSpeakerphoneOn(false)).
+                // 그래서 잠시 뒤 실제 상태를 한 번 더 보고, 어긋났으면 다시 잡는다.
+                routeHandler.postDelayed(recheckRoute, ROUTE_RECHECK_MS)
             } else {
-                unpinSpeaker(am)
+                voiceCallMode = false
+                routeHandler.removeCallbacks(recheckRoute)
+                cancelScoFallback()
+                unregisterScoReceiver()
+                releaseCallRoute(am)
+                @Suppress("DEPRECATION")
                 am.isSpeakerphoneOn = false
                 am.mode = AudioManager.MODE_NORMAL
-                voiceCallMode = false
+                callRoute = ""
+                lastDeviceKey = ""
             }
         } catch (_: Throwable) {
             // 모드 전환 실패가 통화를 죽이면 안 된다. 아래 진단이 실패를 그대로 드러낸다.
@@ -354,32 +364,197 @@ class MainActivity : FlutterActivity() {
         return audioDiag()
     }
 
-    /** [pinSpeaker] 로 통신 기기를 우리가 지정했는가 — 지정한 쪽만 [unpinSpeaker] 가 푼다. */
-    private var speakerPinned = false
+    // ── 통화 출력 경로(A2 · 10-04 PM-DEC-358) ────────────────────────────────
+    //
+    // ⛔ 결함(10-04 Note20 실측): AirPods 연결 상태로 예약 알람 전화를 받으면 소리가
+    //   **수화기**로 나갔다. 옛 판정은 `isBluetoothA2dpOn` 도 헤드셋으로 봐서 스피커를 안
+    //   켰는데, A2DP 는 음악 전용 경로라 통화 모드(IN_COMMUNICATION)에서는 쓰이지 않는다.
+    //   통화용 BT 경로(SCO)는 아무도 안 열었으니 남은 출력은 수화기뿐이었다.
+    //   ⇒ 헤드셋은 「유선 이어폰」 또는 「통화용 BT 장치(SCO · BLE 통화)」만이다.
 
-    /**
-     * Android 12(API 31)+ 에서 통화 출력을 **내장 스피커로 지정**한다(A2 · 10-03 PM-DEC-348).
-     *
-     * API 31 부터 `isSpeakerphoneOn` 은 비권장이고, 통신 출력 기기는
-     * `setCommunicationDevice` 로 고르는 것이 정식 경로다. 옛 API 만 쓰면 기기에 따라
-     * 통화 출력이 리시버(귀에 대는 구멍)로 남을 수 있다 — 그러면 「소리가 너무 작다」가 된다.
-     * 옛 API 도 같이 둔다(API 30 이하는 그것뿐이고, 31+ 에서도 해가 없다).
-     *
-     * ⚠ Note20(Android 10)에서는 이 분기가 돌지 않는다 — 실기기 확인은 Android 12+ 기기 몫.
-     */
-    private fun pinSpeaker(am: AudioManager) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
-        val speaker = am.availableCommunicationDevices
-            .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER } ?: return
-        speakerPinned = am.setCommunicationDevice(speaker)
-        Log.i("BeaverTalkAudio", "setCommunicationDevice(speaker) → $speakerPinned")
+    /** 지금 고른 통화 출력 — `speaker`·`bluetooth`·`wired`(진단·로그용 · 빈 문자열 = 통화 아님). */
+    private var callRoute = ""
+
+    /** 마지막으로 경로를 고른 장치 조합 — 같은 조합이면 장치 콜백이 와도 다시 고르지 않는다. */
+    private var lastDeviceKey = ""
+
+    /** 우리가 통신 기기를 지정했는가(API 31+) — 지정한 쪽만 [releaseCallRoute] 가 푼다. */
+    private var commDeviceSetByUs = false
+
+    /** 우리가 BT SCO 를 열었는가(API 30 이하) — 연 쪽만 닫는다. */
+    private var scoStartedByUs = false
+
+    /** BT SCO 가 실제로 연결됐는가(ACTION_SCO_AUDIO_STATE_UPDATED 로 받는다). */
+    private var scoConnected = false
+
+    private val routeHandler = Handler(Looper.getMainLooper())
+    private var scoFallback: Runnable? = null
+    private var scoReceiver: BroadcastReceiver? = null
+
+    private val recheckRoute = Runnable {
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager
+        if (am != null && voiceCallMode && !routeHolds(am)) applyCallRoute(am, "재확인 · 어긋남")
     }
 
-    /** [pinSpeaker] 를 되돌린다. 우리가 지정하지 않았으면 건드리지 않는다(시스템 통화 보호). */
-    private fun unpinSpeaker(am: AudioManager) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S || !speakerPinned) return
-        am.clearCommunicationDevice()
-        speakerPinned = false
+    private fun hasWiredHeadset(am: AudioManager): Boolean =
+        am.getDevices(AudioManager.GET_DEVICES_OUTPUTS).any { it.type in WIRED_TYPES }
+
+    /** 통화에 쓸 수 있는 BT 장치 — A2DP(음악 전용)는 넣지 않는다. */
+    private fun btCallDevice(am: AudioManager): AudioDeviceInfo? =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            am.availableCommunicationDevices.firstOrNull {
+                it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO ||
+                    it.type == AudioDeviceInfo.TYPE_BLE_HEADSET
+            }
+        } else {
+            am.getDevices(AudioManager.GET_DEVICES_OUTPUTS)
+                .firstOrNull { it.type == AudioDeviceInfo.TYPE_BLUETOOTH_SCO }
+        }
+
+    private fun deviceKey(am: AudioManager) = "${hasWiredHeadset(am)}/${btCallDevice(am) != null}"
+
+    /** 출력을 고른다 — 유선 > 통화용 BT > 스피커. 실패해도 통화를 죽이지 않는다. */
+    @Suppress("DEPRECATION")
+    private fun applyCallRoute(am: AudioManager, reason: String) {
+        try {
+            cancelScoFallback()
+            lastDeviceKey = deviceKey(am)
+            val bt = btCallDevice(am)
+            when {
+                hasWiredHeadset(am) -> {
+                    releaseCallRoute(am)
+                    am.isSpeakerphoneOn = false
+                    callRoute = "wired"
+                }
+                bt != null && routeToBluetooth(am, bt) -> {
+                    am.isSpeakerphoneOn = false
+                    callRoute = "bluetooth"
+                }
+                else -> routeToSpeaker(am)
+            }
+            Log.i(AUDIO_TAG, "callRoute=$callRoute ($reason) bt=${bt?.productName}")
+        } catch (e: Throwable) {
+            Log.w(AUDIO_TAG, "applyCallRoute 실패($reason): $e")
+        }
+    }
+
+    @Suppress("DEPRECATION")
+    private fun routeToSpeaker(am: AudioManager) {
+        releaseCallRoute(am)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            am.availableCommunicationDevices
+                .firstOrNull { it.type == AudioDeviceInfo.TYPE_BUILTIN_SPEAKER }
+                ?.let { commDeviceSetByUs = am.setCommunicationDevice(it) }
+        }
+        // 옛 API 도 같이 둔다(API 30 이하는 이것뿐이고, 31+ 에서도 해가 없다).
+        am.isSpeakerphoneOn = true
+        callRoute = "speaker"
+    }
+
+    /**
+     * BT 통화 경로를 연다. API 31+ 는 통신 기기 지정, 30 이하는 SCO 를 직접 연다.
+     * 30 이하는 연결이 비동기라 [SCO_TIMEOUT_MS] 안에 연결 소식이 없으면 스피커로 물러난다 —
+     * 그대로 두면 다시 수화기다.
+     */
+    @Suppress("DEPRECATION")
+    private fun routeToBluetooth(am: AudioManager, bt: AudioDeviceInfo): Boolean {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            commDeviceSetByUs = am.setCommunicationDevice(bt)
+            return commDeviceSetByUs
+        }
+        if (!am.isBluetoothScoAvailableOffCall) return false
+        if (!scoConnected) {
+            am.startBluetoothSco()
+            scoStartedByUs = true
+        }
+        am.isBluetoothScoOn = true
+        val fallback = Runnable {
+            if (voiceCallMode && !scoConnected) {
+                Log.w(AUDIO_TAG, "BT SCO 가 ${SCO_TIMEOUT_MS}ms 안에 안 열렸다 → 스피커")
+                routeToSpeaker(am)
+            }
+        }
+        scoFallback = fallback
+        routeHandler.postDelayed(fallback, SCO_TIMEOUT_MS)
+        return true
+    }
+
+    /** 우리가 잡은 경로만 푼다 — 시스템 통화가 잡은 것은 건드리지 않는다. */
+    @Suppress("DEPRECATION")
+    private fun releaseCallRoute(am: AudioManager) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && commDeviceSetByUs) {
+            am.clearCommunicationDevice()
+            commDeviceSetByUs = false
+        }
+        if (scoStartedByUs) {
+            am.isBluetoothScoOn = false
+            am.stopBluetoothSco()
+            scoStartedByUs = false
+        }
+    }
+
+    /** 고른 경로가 아직 유지되는가 — [recheckRoute] 가 쓴다. */
+    @Suppress("DEPRECATION")
+    private fun routeHolds(am: AudioManager): Boolean = when (callRoute) {
+        "speaker" -> am.isSpeakerphoneOn
+        "bluetooth" ->
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                am.communicationDevice?.type.let {
+                    it == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || it == AudioDeviceInfo.TYPE_BLE_HEADSET
+                }
+            } else {
+                am.isBluetoothScoOn
+            }
+        else -> true
+    }
+
+    private fun cancelScoFallback() {
+        scoFallback?.let { routeHandler.removeCallbacks(it) }
+        scoFallback = null
+    }
+
+    /** 통화 중 장치가 붙거나 빠지면 다시 고른다 — 유선·BT 조합이 바뀐 때만(무한 재지정 방지). */
+    private fun onCallDevicesChanged() {
+        if (!voiceCallMode) return
+        val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+        if (deviceKey(am) != lastDeviceKey) applyCallRoute(am, "장치 변경")
+    }
+
+    /** API 30 이하 SCO 연결·끊김 소식. 통화 중 BT 가 끊기면 스피커로 다시 고른다. */
+    private fun registerScoReceiver() {
+        if (scoReceiver != null) return
+        val r = object : BroadcastReceiver() {
+            override fun onReceive(context: Context?, intent: Intent?) {
+                val state = intent?.getIntExtra(
+                    AudioManager.EXTRA_SCO_AUDIO_STATE, AudioManager.SCO_AUDIO_STATE_ERROR,
+                ) ?: return
+                val was = scoConnected
+                scoConnected = state == AudioManager.SCO_AUDIO_STATE_CONNECTED
+                Log.i(AUDIO_TAG, "SCO state=$state connected=$scoConnected route=$callRoute")
+                if (scoConnected) cancelScoFallback()
+                if (was && !scoConnected && voiceCallMode && callRoute == "bluetooth") {
+                    val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+                    scoStartedByUs = false
+                    applyCallRoute(am, "SCO 끊김")
+                }
+            }
+        }
+        try {
+            registerReceiver(r, IntentFilter(AudioManager.ACTION_SCO_AUDIO_STATE_UPDATED))
+            scoReceiver = r
+        } catch (_: Throwable) {
+            // 수신기를 못 걸면 SCO 끊김 자동 복귀만 없다. 통화는 계속한다.
+        }
+    }
+
+    private fun unregisterScoReceiver() {
+        val r = scoReceiver ?: return
+        scoReceiver = null
+        try {
+            unregisterReceiver(r)
+        } catch (_: Throwable) {
+            // 이미 풀렸다 — 할 일 없음.
+        }
     }
 
     /**
@@ -402,6 +577,7 @@ class MainActivity : FlutterActivity() {
                     else -> "other(${am.mode})"
                 },
                 "speakerphone" to am.isSpeakerphoneOn,
+                "call_route" to callRoute,
                 "route" to currentAudioRoute(),
                 // 볼륨 키가 실제로 무엇을 조절하는지는 앱이 못 읽는다. 대신 두 스트림의
                 // 현재 값을 같이 실어, 통화 스트림 볼륨이 낮게 방치돼 있는지를 드러낸다.
@@ -661,5 +837,19 @@ class MainActivity : FlutterActivity() {
          * 통화 모드가 조용히 꺼진다(비번을 다시 묻게 된다).
          */
         const val EXTRA_CALLKIT_CALL_DATA = "EXTRA_CALLKIT_CALL_DATA"
+
+        const val AUDIO_TAG = "BeaverTalkAudio"
+
+        /** 알람 수락 뒤 시스템이 경로를 되돌릴 시간을 넉넉히 준 재확인 시점. */
+        const val ROUTE_RECHECK_MS = 1500L
+
+        /** API 30 이하 SCO 연결 대기 상한 — 넘으면 스피커로 물러난다. */
+        const val SCO_TIMEOUT_MS = 4000L
+
+        val WIRED_TYPES = setOf(
+            AudioDeviceInfo.TYPE_WIRED_HEADSET,
+            AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
+            AudioDeviceInfo.TYPE_USB_HEADSET,
+        )
     }
 }
