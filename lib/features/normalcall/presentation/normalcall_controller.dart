@@ -43,7 +43,7 @@ import '../../subscription/presentation/providers/subscription_providers.dart';
 import '../../subscription/presentation/providers/subscription_state_providers.dart';
 import '../domain/entities/call_allowance.dart';
 import '../domain/entities/call_resume_status.dart';
-import '../domain/seamless_fragment.dart';
+import '../domain/call_limit_policy.dart';
 import '../domain/segment_call_id_recovery.dart';
 import '../domain/entities/call_channel.dart';
 import '../domain/entities/call_course.dart';
@@ -132,7 +132,6 @@ Map<String, dynamic> buildStartFrame({
   String? callType,
   bool forceCourse = false,
   String? planOverride,
-  bool silentResume = false,
   String? tz,
   int? tzOffsetMin,
 }) =>
@@ -172,10 +171,6 @@ Map<String, dynamic> buildStartFrame({
       // QA 용 플랜 강제(개발자 도구 «Max/Free 로 통화»). admin 만 유효, user 는 무시.
       // null 이면 키 자체가 빠진다 — 서버 기본값(None)과 같다. [PlanOverride] 참조.
       'plan_override': ?planOverride,
-      // 끊김 없는 조각 전환의 재개(seamless_fragment.dart). 서버가 seed_resume 을 생략해
-      // 비버가 먼저 말하지 않고 사용자 첫 발화를 기다린다(S1·S2). 구서버는 extra=ignore.
-      // false 면 키 자체가 안 나간다 — 첫 조각·시트 경유 이어하기는 종전 프레임 그대로.
-      if (silentResume) 'silent_resume': true,
       // 서버 `premium` 브랜치(09-23) §3 — 「오늘」의 경계(하루 예산·연속일·달력)를 기기
       // 로컬 자정으로 자른다. `tz`(IANA)가 우선, `tz_offset_min` 은 폴백. 둘 다 없으면 UTC 라
       // 한국은 오전 9시에 날짜가 바뀐다. 구서버는 extra=ignore 로 버린다.
@@ -887,64 +882,21 @@ class NormalCallController extends Notifier<CallState> {
   /// 재연결이 `start` 를 다시 조립할 때 인자로는 안 넘어간다.
   bool _forceCourse = false;
 
-  // ── 끊김 없는 5분 조각 전환(Pro·Max) — seamless_fragment.dart ──────────────────
-  /// 전환 상태기계(F1). 시트는 Free 만 — 이 값은 화면에 안 나간다.
+  // ── 상한 도달 뒤 «응답까지 하고 종료» — call_limit_policy.dart ────────────────
+  /// 상한에 닿았고 **다음 «사용자 발화 → 비버 응답 turn_end» 에 끝낸다.**
   ///
-  ///   none → (5:00, 유료·대상 코스) pending / pendingFinal
-  ///   pending → (사용자 발화 뒤 turn_end) switching → reconnecting → none
-  ///   pendingFinal → (사용자 발화 뒤 turn_end) 종료 드레인(재연결 없음)
-  _FragmentSwitch _fragmentSwitch = _FragmentSwitch.none;
+  /// 상한 순간에 바로 끊지 않는 이유: 비버가 말하던 중이면 문장이 잘린다. 이 값은
+  /// 화면에 안 나간다 — 사용자는 상한을 넘긴 그 한 턴을 평소처럼 쓴다.
+  /// ⛔ 유료 전용이다. 무료는 상한에서 [_reachSegmentEnd](구독 유도 시트)로 간다.
+  bool _closePending = false;
 
-  /// 5:00 뒤 사용자가 **말했나** — 로컬 VAD 유성 AND 비어 있지 않은 `input_transcript`.
-  /// 전환은 «사용자 발화 → 비버 응답 turn_end» 에서만 한다 — 5:00 에 비버가 말하던
-  /// 중이면 그 turn_end 로는 안 바꾸고, 소음만·전사만으로도 안 바꾼다.
+  /// 상한 뒤 사용자가 **말했나** — 로컬 VAD 유성 AND 비어 있지 않은 `input_transcript`.
+  /// 종료는 «사용자 발화 → 비버 응답 turn_end» 에서만 한다 — 상한에 비버가 말하던
+  /// 중이면 그 turn_end 로는 안 끝내고, 소음만·전사만으로도 안 끝낸다.
   final UserSpeechEvidence _speechSincePending = UserSpeechEvidence();
-
-  /// 소켓이 아직 안 열린 사이의 마이크 PCM(F3). `call_started` 뒤 순서대로 흘린다.
-  final MicPrebuffer _micPrebuffer = MicPrebuffer();
 
   /// [_paidAccess] 가 풀린 값. 경계 판정은 1초 틱 안이라 await 를 못 한다.
   bool? _paidResolved;
-
-  /// 서버 `call_started.fragment_index / max_fragments`(S4). 안 오면 null → 로컬 카운트.
-  int? _serverFragmentIndex;
-  int? _serverMaxFragments;
-
-  /// 이 조각이 끝나는 누적 초 — 서버 `call_started.remaining_s`(premium §4)로 잡는다.
-  /// 안 오면 null → 종전 5분 경계. 조각마다 새로 받는다.
-  int? _fragmentEndSec;
-
-  /// 이 조각에서 하루 예산이 끝나는가(`remaining_s` < [kServerFragmentCapSec]).
-  bool _budgetFinal = false;
-
-  /// 재연결 시도 횟수. 2회 실패면 기존 «이어하기» 시트로 폴백(계획 §5).
-  int _switchAttempts = 0;
-
-  /// 전환을 시작한 시점의 세대 — aecHint 왕복 사이에 끊겼는지 본다.
-  int _genAtSwitchStart = -1;
-
-  /// 새 소켓의 `call_started` 를 기다리는 자리.
-  Completer<bool>? _fragmentReady;
-
-  /// `fragment_end` 뒤 서버의 `fragment_saved` 를 기다리는 자리(값 = 저장된 call_id).
-  Completer<String?>? _fragmentSaved;
-
-  /// `fragment_saved` 를 기다리는 상한. 구서버는 이 프레임을 모르니 넘기면 종전처럼
-  /// close + 300ms 로 간다(계약 폴백).
-  ///
-  /// 5초(codex 2차): 서버 마지막 판정 LLM ≤2s + 저장 + usage. 실측 1447 은 1.6s 라 여유.
-  /// 타임아웃으로 폴백을 탄 횟수는 diag `fragment_saved_timeout` 에 남긴다 — 이 값이
-  /// 쌓이면 상한을 올리거나 서버 저장이 느려진 것이다.
-  static const Duration _fragmentSavedTimeout = Duration(seconds: 5);
-
-  /// 이 통화에서 `fragment_saved` 타임아웃으로 폴백을 탄 횟수(diag 요약용).
-  int _fragmentSavedTimeouts = 0;
-
-  /// 재연결 시도당 기다리는 상한.
-  static const Duration _fragmentReadyTimeout = Duration(seconds: 8);
-
-  /// close 뒤 start 까지 띄우는 간격 — 서버가 조각을 저장할 시간(계획 §2: ≥300ms).
-  static const Duration _fragmentCloseSettle = Duration(milliseconds: 300);
 
   /// QA 플랜 강제. [_forceCourse] 와 같은 이유로 필드 — 2구간 재연결에 다시 싣는다.
   PlanOverride? _planOverride;
@@ -2494,24 +2446,13 @@ class NormalCallController extends Notifier<CallState> {
       if (CascadeMicAlwaysGated.enabled) return;
       if (_micGated) return;
       final ch = _channel;
-      // ⛔ 전환 중이면 소켓이 살아 있어도 프리버퍼다(qa-fable 2차) — fragment_saved 를
-      //   기다리는 동안 옛 소켓은 서버 펌프가 내려간 시체라, 여기로 보내면 첫 발화가
-      //   사라진다. 순서가 규칙이라 [micFrameRoute] 로 뺐다.
-      final route = micFrameRoute(
-        switching: _fragmentSwitch == _FragmentSwitch.switching ||
-            _fragmentSwitch == _FragmentSwitch.reconnecting,
-        socketOpen: ch != null,
-      );
-      if (route == MicFrameRoute.prebuffer) {
-        _micPrebuffer.push(bytes);
-      } else if (route == MicFrameRoute.socket) {
-        ch!.sink.add(bytes);
-        // ⭐ 업링크 누계 — `route_change.uplink_bytes` 의 기준값이다. **보낸 것만** 센다
-        //   (게이팅으로 버린 프레임은 서버가 받지 못했으므로 서버 카운터와 어긋난다).
-        _uplinkBytes += bytes.length;
-        if (++_micFramesSent % 50 == 0) {
-          _log('mic → sent $_micFramesSent frames (your voice flowing)');
-        }
+      if (ch == null) return;
+      ch.sink.add(bytes);
+      // ⭐ 업링크 누계 — `route_change.uplink_bytes` 의 기준값이다. **보낸 것만** 센다
+      //   (게이팅으로 버린 프레임은 서버가 받지 못했으므로 서버 카운터와 어긋난다).
+      _uplinkBytes += bytes.length;
+      if (++_micFramesSent % 50 == 0) {
+        _log('mic → sent $_micFramesSent frames (your voice flowing)');
       }
     }
   }
@@ -3068,20 +3009,19 @@ class NormalCallController extends Notifier<CallState> {
       sumSq += v * v;
     }
     final rms = math.sqrt(sumSq / n) / 32768.0;
-    // 끊김 없는 조각 전환의 첫 증거 — **연속** 유성 프레임(한 프레임 기침·문소리는 안 침).
+    // 종료 트리거의 첫 증거 — **연속** 유성 프레임(한 프레임 기침·문소리는 안 침).
     // gated·조용한 프레임도 넣는다: 연속을 끊는 것이 이 판정의 핵심이다.
     // ⛔ `user_turn_end` 에 걸지 마라 — 라이브엔 그 프레임이 없다(양쪽 다 안 보낸다).
-    if (_fragmentSwitch == _FragmentSwitch.pending ||
-        _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+    if (_closePending) {
       final first = _speechSincePending.onFrame(
         loud: rms >= _voicedRmsThreshold,
         gated: gated,
       );
       if (first) {
-        // 임계 조정 근거 — 몇 프레임 연속에서 섰나. 소음만이면 전사가 안 와 안 바뀐다.
+        // 임계 조정 근거 — 몇 프레임 연속에서 섰나. 소음만이면 전사가 안 와 안 끝난다.
         _dg('switch_voiced', {'run': _speechSincePending.longestRun});
-        _log('조각 전환 대기 중 연속 유성 ${_speechSincePending.longestRun}프레임(로컬 VAD) '
-            '— 전사까지 오면 다음 turn_end 에서 전환');
+        _log('상한 뒤 연속 유성 ${_speechSincePending.longestRun}프레임(로컬 VAD) '
+            '— 전사까지 오면 다음 turn_end 에서 종료');
       }
     }
     if (rms < _voicedRmsThreshold) return;
@@ -4706,45 +4646,7 @@ class NormalCallController extends Notifier<CallState> {
         // (00155-br2). 안 오면 화면이 대표 캐릭터로 폴백하는데, 그건 **조용히**
         // 일어나서 로그가 없으면 "왜 다른 얼굴이지"를 못 찾는다.
         _log('call_started: character_id=$cid name=${msg['name'] ?? '(없음)'}');
-        // 조각 번호(S4, Optional). 있으면 «마지막 조각» 판정을 서버 값으로 한다.
-        {
-          final fi = msg['fragment_index'];
-          final mf = msg['max_fragments'];
-          if (fi is int && mf is int) {
-            _serverFragmentIndex = fi;
-            _serverMaxFragments = mf;
-            _log('call_started: fragment $fi/$mf');
-          }
-          // 서버 `premium` 브랜치(09-23) §4 — **이 조각이** 쓸 수 있는 초. 조각마다 새로 온다.
-          // ⛔ 안 오면 null 로 되돌린다 — 앞 조각 값이 남으면 구서버·면제(admin) 통화가 엉뚱한
-          //   시점에 끊긴다. 키 없음 = 예산 대상 아님 → 종전 5분 경계.
-          final rs = msg['remaining_s'];
-          if (rs is num) {
-            _fragmentEndSec = state.elapsedSec + rs.toInt();
-            _budgetFinal = rs < kServerFragmentCapSec;
-            _log('call_started: remaining_s=$rs → 이 조각 끝 ${_fragmentEndSec}s'
-                '${_budgetFinal ? ' (하루 예산이 이 조각에서 끝난다 — 마지막 조각)' : ''}');
-          } else {
-            _fragmentEndSec = null;
-            _budgetFinal = false;
-          }
-        }
-        // 끊김 없는 전환의 새 소켓이 열렸다 — 기다리던 쪽을 깨운다.
-        if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(true);
         break;
-
-      case 'fragment_saved':
-        // 끊김 없는 조각 전환 — 우리가 보낸 `fragment_end` 에 서버가 조각 저장(마지막
-        // 판정 LLM ≤2s + 꼬리)을 **끝냈다**고 답한 것. 이 뒤에 서버가 소켓을 닫는다.
-        // QA(2026-09-14): 300ms 만 기다리고 재연결하니 조각2 가 조각1 꼬리를 못 보고
-        // 통과 항목을 다시 냈다(실측 1447: 1,626ms). 그래서 이 프레임을 기다린다.
-        {
-          final id = normalizeCallId(msg['call_id']);
-          final fi = msg['fragment_index'];
-          _log('fragment_saved: call_id=$id fragment=${fi ?? '?'}');
-          if (!(_fragmentSaved?.isCompleted ?? true)) _fragmentSaved!.complete(id);
-        }
-
       case 'turn_start':
         // [계측] 사용자 발화 끝 → 비버 턴 시작까지. 사장님이 「응답이 느리다」고 하신
         // 그 구간이다. 클라가 **프레임을 받은 시각**으로만 잰다(서버 내부 분해는 서버 몫).
@@ -4860,12 +4762,9 @@ class NormalCallController extends Notifier<CallState> {
         // the user starts speaking.
         {
           final delta = msg['text'] as String?;
-          // 끊김 없는 전환의 두 번째 증거 — 학습자 전사가 왔다(소음이면 안 온다).
+          // 종료 트리거의 두 번째 증거 — 학습자 전사가 왔다(소음이면 안 온다).
           // 3.1 은 이 조각이 응답 turn_end 직전에 올 수 있어 판정은 turn_end 에서 한다.
-          if (_fragmentSwitch == _FragmentSwitch.pending ||
-              _fragmentSwitch == _FragmentSwitch.pendingFinal) {
-            _speechSincePending.onTranscript(delta);
-          }
+          if (_closePending) _speechSincePending.onTranscript(delta);
           if (delta != null && delta.isNotEmpty) {
             // [계측] 이 사용자 턴의 **첫 전사 델타**가 도착한 시각. `user_turn_start`
             // 부터의 간격이 곧 「내 말이 글자로 뜨기까지」다 — 자동 대화(`__test_say`)
@@ -4888,15 +4787,11 @@ class NormalCallController extends Notifier<CallState> {
         // subtitle line so their next utterance accumulates from empty.
         state = state.copyWith(userSubtitle: '');
         _tryUngateMic();
-        // 끊김 없는 조각 전환 — 5:00 뒤 «사용자 발화 → 이 응답» 이 끝났다. 재생 큐는
-        // 그대로 두고 소켓만 갈아 끼운다(pending) / 응답까지 하고 끝낸다(pendingFinal).
+        // 상한 도달 뒤 «사용자 발화 → 이 응답» 이 끝났다 — 여기서 통화를 끝낸다.
         // 판정은 여기서 — 전사가 turn_end 직전에 도착해도(3.1) 순서 문제가 없다.
-        if (_speechSincePending.confirmed) {
-          if (_fragmentSwitch == _FragmentSwitch.pending) {
-            unawaited(_performSeamlessSwitch());
-          } else if (_fragmentSwitch == _FragmentSwitch.pendingFinal) {
-            unawaited(_finishFinalFragment());
-          }
+        if (_closePending && _speechSincePending.confirmed) {
+          _closePending = false; // 재진입 금지 — await 전에 내린다
+          unawaited(_finishAtLimit());
         }
       case 'audio_cancel':
         // barge-in: 사용자가 끼어들어 서버가 이 턴을 끊었다. 별도 `turn_end` 는 오지
@@ -4929,11 +4824,10 @@ class NormalCallController extends Notifier<CallState> {
           _frozenFirstVoicedAtMs = _firstVoicedAtMs;
           _firstVoicedAtMs = null;
           _userTurnStartAtMs = null;
-          // 끊김 없는 전환: 5:00 뒤 사용자 발화가 끝났다 — 이 발화의 응답 turn_end 에서
-          // 소켓을 갈아 끼운다. ⚠ 이 프레임은 **캐스케이드에만** 온다. 라이브는
-          // [_markVoicedIfLoud](로컬 VAD)가 같은 표시를 세운다 — 그쪽이 제품 경로다.
-          if (_fragmentSwitch == _FragmentSwitch.pending ||
-              _fragmentSwitch == _FragmentSwitch.pendingFinal) {
+          // 상한 뒤 사용자 발화가 끝났다 — 이 발화의 응답 turn_end 에서 끝낸다.
+          // ⚠ 이 프레임은 **캐스케이드에만** 온다. 라이브는 [_markVoicedIfLoud]
+          //   (로컬 VAD)가 같은 표시를 세운다 — 그쪽이 제품 경로다.
+          if (_closePending) {
             _speechSincePending
               ..onVoiced()
               ..onTranscript('user_turn_end');
@@ -5140,12 +5034,6 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Socket closed by the server (incl. 1008 auth reject) (§8-6).
   void _onWsDone() {
-    // 끊김 없는 전환의 새 소켓이 call_started 전에 닫혔다 — 실패로 셈하고 재시도/폴백.
-    // 통화를 죽이면 안 된다(재생·마이크는 살아 있고 사용자는 아무것도 못 봤다).
-    if (_fragmentSwitch == _FragmentSwitch.reconnecting) {
-      if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
-      return;
-    }
     final phase = state.phase;
     if (phase == CallPhase.connecting) {
       // Closed before we ever went live → treat as auth/connection error.
@@ -5170,12 +5058,6 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Transport-level error (§8-6).
   void _onWsError(Object error) {
-    // 끊김 없는 전환의 새 소켓 오류 — 위 [_onWsDone] 과 같은 이유로 재시도 쪽에 넘긴다.
-    if (_fragmentSwitch == _FragmentSwitch.reconnecting) {
-      _log('조각 재연결 소켓 오류: $error');
-      if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
-      return;
-    }
     // Expected close (hang-up / call_ended / teardown) — the exit is already
     // being driven; a trailing error frame must not clobber it.
     if (_expectClose) return;
@@ -5248,61 +5130,48 @@ class NormalCallController extends Notifier<CallState> {
 
   /// Starts the UI elapsed-time ticker.
   ///
-  /// 이 자가 구간 경계도 본다 — [elapsedSec] 은 **구간을 건너서 누적**되므로
-  /// (통화 화면의 시계는 총 통화 시간을 보여야 한다) 경계는
-  /// `(segmentsUsed + 1) × 5분` 이다.
+  /// 이 자가 상한도 본다 — 통화는 소켓 하나로 끝까지 가므로 `elapsedSec` 이 곧
+  /// 판정의 입력이다(`call_limit_policy.dart`). 서버에 남은 초를 묻지 않는다.
   void _startElapsedTimer() {
     _elapsedTimer?.cancel();
     _elapsedTimer = Timer.periodic(const Duration(seconds: 1), (_) {
       final elapsed = state.elapsedSec + 1;
       state = state.copyWith(elapsedSec: elapsed);
-      _checkSegmentBoundary(elapsed);
+      _checkCallLimit(elapsed);
     });
   }
 
-  /// 이 통화에 5분 구간 상한을 적용해야 하는가.
+  /// 이 통화에 플랜 상한을 적용해야 하는가.
   ///
   /// ⛔ **캐스케이드와 자동대화는 뺀다.** 둘 다 측정용이고, 캐스케이드 리그는
   ///   단일 세션 12분을 일부러 채워 끊김 곡선을 잰다
-  ///   (`CascadeAutoTalk.duration` = 12분, 7분에서 올린 값). 여기에 5분 게이트를
+  ///   (`CascadeAutoTalk.duration` = 12분, 7분에서 올린 값). 여기에 상한 게이트를
   ///   걸면 **그 계측이 통째로 죽는다.** 제품 규칙은 라이브 통화의 것이다.
-  bool get _segmentLimitApplies =>
+  bool get _callLimitApplies =>
       state.channel == CallChannel.live && !CascadeAutoTalk.enabled;
 
-  /// 1초마다 불린다 — 구간 경계에 닿았으면 [_reachSegmentEnd] 로 넘긴다.
-  void _checkSegmentBoundary(int elapsedSec) {
-    if (!_segmentLimitApplies) return;
+  /// 1초마다 불린다 — 플랜 상한에 닿았으면 종료(유료)나 시트(무료)로 넘긴다.
+  ///
+  /// ⭐ 상한은 **클라가 직접** 잰다. 서버에 `remaining_s` 를 묻지 않는다(사장님 지시
+  ///   2026-10-04). 숫자는 [CallAllowance.limitFor] 한 곳에서만 온다.
+  void _checkCallLimit(int elapsedSec) {
+    if (!_callLimitApplies) return;
     if (_continuing) return;
     // 통화가 이미 끝나가는 중이면 끼어들지 않는다.
     if (state.phase != CallPhase.inCall) return;
-    // 이미 전환 대기·진행 중이면 다시 판정하지 않는다(경계는 한 번만 넘는다).
-    if (_fragmentSwitch != _FragmentSwitch.none) return;
-    final action = fragmentBoundaryAction(
-      elapsedSec: elapsedSec,
-      segmentsUsed: state.segmentsUsed,
-      paidAccess: _paidNow,
-      seamlessEligible: seamlessEligibleCourse(state.course),
-      maxFragments: _maxFragments,
-      fragmentEndSec: _fragmentEndSec,
-      budgetFinal: _budgetFinal,
-      singleSession: kSingleSession,
-    );
-    switch (action) {
-      case FragmentBoundaryAction.none:
+    // 이미 종료 대기 중이면 다시 판정하지 않는다(상한은 한 번만 닿는다).
+    if (_closePending) return;
+    switch (callLimitAction(elapsedSec: elapsedSec, paidAccess: _paidNow)) {
+      case CallLimitAction.none:
         return;
-      case FragmentBoundaryAction.sheet:
-        // Free · 전환 대상이 아닌 코스 — 종전 그대로(픽셀·프레임 동일).
+      case CallLimitAction.sheet:
+        // 무료 — 종전 그대로(픽셀·프레임 동일). 구독 유도 시트.
         unawaited(_reachSegmentEnd());
-      case FragmentBoundaryAction.seamless:
-        _fragmentSwitch = _FragmentSwitch.pending;
+      case CallLimitAction.close:
+        _closePending = true;
         _speechSincePending.reset();
-        _log('조각 ${state.segmentsUsed + 1} 경계(${elapsedSec}s) 도달 — 끊김 없는 전환 대기 '
-            '(다음 «사용자 발화 → turn_end» 에 소켓만 교체, 시트 없음, 타이머 누적)');
-      case FragmentBoundaryAction.finalClose:
-        _fragmentSwitch = _FragmentSwitch.pendingFinal;
-        _speechSincePending.reset();
-        _log('${kSingleSession ? "단일 세션" : "마지막 조각 ${state.segmentsUsed + 1}"} 상한(${elapsedSec}s) 도달 — 다음 «사용자 발화 → '
-            'turn_end» 에 응답까지 하고 종료(재연결 없음)');
+        _log('통화 상한(${elapsedSec}s) 도달 — 다음 «사용자 발화 → 비버 응답 turn_end» 에 '
+            '응답까지 하고 종료');
     }
   }
 
@@ -5311,34 +5180,22 @@ class NormalCallController extends Notifier<CallState> {
       ? _planOverride != PlanOverride.free
       : (_paidResolved ?? ref.read(subscriptionStatusProvider).grantsPaidAccess);
 
-  /// 이 통화의 조각 상한 — 서버 `call_started.max_fragments` 가 있으면 그것.
+  /// 상한 도달 뒤 사용자 발화의 응답까지 재생하고 끝낸다(유료).
   ///
-  /// [isFinalFragment] 와 짝: 서버가 `fragment_index` 를 주면 그쪽이 정본이다.
-  int get _maxFragments {
-    final fi = _serverFragmentIndex;
-    final mf = _serverMaxFragments;
-    if (fi != null && mf != null) {
-      // 서버 번호 기준으로 «지금 조각이 몇 번째인지» 를 로컬 카운트에 맞춘다:
-      // 로컬 segmentsUsed+1 == 서버 fragment_index 여야 한다. 어긋나면 서버를 믿고
-      // 상한을 그만큼 당겨 잡는다(재연결 없이 끝내는 쪽 = 안전).
-      final local = state.segmentsUsed + 1;
-      return mf - (fi - local);
-    }
-    return CallAllowance.segmentsFor(paidAccess: _paidNow);
-  }
-
-  /// 구간 하나를 다 썼다. **이 구간의 세션을 닫고** 사용자에게 물을지 정한다.
+  /// `call_ended` 와 **같은 길**로 보낸다: 소켓을 닫고 `ending` 으로 넘겨 재생 큐를 다
+  /// 비운 뒤 결과 화면([_scheduleClosingDrain] → [_finishClosing]). 작별 인사 없음
+  /// (사장님 결정 6).
   ///
-  /// 세션을 여기서 닫는 이유는 [CallPhase.awaitingContinue] 에 적어 두었다 —
-  /// 사용자가 고민하는 동안 붙들어 봐야 인프라가 끊는다.
-  // ── 끊김 없는 조각 전환 ───────────────────────────────────────────────────
-
-  /// 소켓**만** 닫는다 — 재생 큐·엔벨로프·마이크 레코더·오디오 세션·타이머는 그대로(F2).
-  ///
-  /// [_teardown] 은 통화를 통째로 내리는 함수라 여기 못 쓴다: 재생을 release 하면 비버의
-  /// 마지막 문장이 끊기고, 레코더를 닫으면 오디오 세션·AEC 가 흔들려 라우트가 튄다.
-  /// 서버는 소켓이 닫히면 `_ClientDisconnect` 로 조각을 저장·요약한다(기존 경로).
-  Future<void> _closeSocketOnly() async {
+  /// ⭐ 서버에 「끝」을 알리는 프레임은 **없다** — 소켓을 닫으면 서버가 `_ClientDisconnect`
+  ///   로 통화를 저장·요약한다(서버 `call_session.py:851 · 1345 · 1911`). 전신은 여기서
+  ///   `fragment_end` 를 보내고 `fragment_saved` 를 5초 기다렸는데, **서버에 그 프레임이
+  ///   아예 없어서**(`*.py` 전수 grep 0건) 매번 타임아웃을 태우고 같은 폴백으로 갔다.
+  Future<void> _finishAtLimit() async {
+    if (state.phase != CallPhase.inCall) return;
+    final gen = _gen;
+    _log('상한 도달 뒤 응답 끝 — 소켓을 닫고 재생을 비운 뒤 결과 화면(재연결 없음)');
+    // 이 close 는 기대된 것이다 — [_onWsDone]·[_onWsError] 가 통화를 죽이지 않게 한다.
+    _expectClose = true;
     _keepaliveTimer?.cancel();
     _keepaliveTimer = null;
     await _wsSub?.cancel();
@@ -5347,233 +5204,30 @@ class NormalCallController extends Notifier<CallState> {
       await _channel?.sink.close(1000);
     } catch (_) {}
     _channel = null;
-  }
-
-  /// `fragment_end` 를 보내고 서버의 `fragment_saved` 를 기다린 뒤 소켓을 정리한다.
-  ///
-  /// 반환: 서버가 알려 준 저장된 call_id(다음 조각의 `continues_call_id`). 구서버·타임아웃
-  /// 이면 null — 호출자가 종전 폴백(close + 300ms)으로 간다.
-  /// ⚠ `fragment_end` 를 보낸 통화엔 서버가 `call_ended` 를 보내지 않는다 — 종료는 우리가
-  ///   끈다(마지막 조각은 [_finishFinalFragment] 의 드레인 경로).
-  Future<String?> _endFragmentAndWaitSaved() async {
-    if (_channel == null) return null;
-    final waiter = _fragmentSaved = Completer<String?>();
-    final wait = FragmentSavedWait();
-    _send(const {'type': 'fragment_end'});
-    _log('fragment_end 송신 — 서버 저장 완료(fragment_saved) 대기(상한 ${_fragmentSavedTimeout.inSeconds}s)');
-    try {
-      final saved = await waiter.future.timeout(
-        _fragmentSavedTimeout,
-        onTimeout: () {
-          wait.timeout();
-          return null;
-        },
-      );
-      if (!wait.isSettled) wait.complete(saved); // 서버 답 또는 teardown 의 접기(null)
-    } finally {
-      if (identical(_fragmentSaved, waiter)) _fragmentSaved = null;
-    }
-    if (wait.timedOut) {
-      // 구서버·지연 — 종전 폴백을 탄다. 이 수가 쌓이면 상한이나 서버 저장을 봐야 한다.
-      _fragmentSavedTimeouts++;
-      _dg('fragment_saved_timeout', {'n': _fragmentSavedTimeouts});
-      _log('⚠ fragment_saved 타임아웃(${_fragmentSavedTimeout.inSeconds}s) — 종전 폴백 '
-          '(이 통화 $_fragmentSavedTimeouts회)');
-    }
-    // 서버가 닫았든(saved) 안 닫았든(구서버) 우리 쪽 구독·keepalive 는 여기서 정리한다.
-    await _closeSocketOnly();
-    return wait.savedId;
-  }
-
-  /// 새 조각의 소켓을 연다 — [_connect] 의 소켓 부분만. 성공 = `call_started` 수신.
-  ///
-  /// 오디오·마이크·상태는 건드리지 않는다. start 프레임은 같은 코스·플랜·과제에
-  /// `continues_call_id` + `silent_resume:true` 를 얹는다(F4).
-  Future<bool> _openFragmentSocket({required String carriedCallId}) async {
-    final token = Supabase.instance.client.auth.currentSession?.accessToken;
-    if (token == null || token.isEmpty) {
-      _log('⛔ 조각 재연결 — 토큰 없음');
-      return false;
-    }
-    // ⛔ P1-B(QA 2026-09-14): 순서가 생명이다. 예전엔 `_channel = channel` → listen →
-    //   `await _aecHint()`(플랫폼 왕복) → start 였다. 그 await 동안 게이트가 열려 있으면
-    //   마이크 콜백이 `_channel.sink.add(바이너리)` 를 **start 보다 먼저** 보내고, 서버
-    //   start 창(6프레임)이 바이너리를 세어 «start 없는 새 통화» 로 떨어진다 — 짧은
-    //   응답(«Right.») 뒤엔 게이트가 이미 열려 있어 거의 매번 났다.
-    //   ⇒ ① aecHint 는 채널을 만들기 **전**에 받는다 ② `_channel` 대입은 start 를
-    //     보낸 **뒤**다 — 그 사이 마이크 프레임은 `_channel == null` 이라 프리버퍼로
-    //     가고, call_started 뒤 flush 되어 start 다음에 도착한다.
-    final aec = await _aecHint();
-    if (_gen != _genAtSwitchStart) return false;
-    final ready = _fragmentReady = Completer<bool>();
-    _expectClose = false;
-    _serverCallId = null;
-    _continuesCallId = carriedCallId;
-    _askedContinueId = carriedCallId;
-    try {
-      final url = callStreamWsUrl(token: token, cascade: _channelMode.isCascade);
-      final channel = WebSocketChannel.connect(Uri.parse(url));
-      _wsSub = channel.stream.listen(
-        _onWsData,
-        onDone: _onWsDone,
-        onError: _onWsError,
-        cancelOnError: false,
-      );
-      final startFrame = buildStartFrame(
-        aec: aec,
-        sampleRate: _micSampleRate,
-        numChannels: _micNumChannels,
-        inboundCallId: _inboundCallId,
-        continuesCallId: carriedCallId,
-        assignmentId: _assignmentId,
-        callType: _callCourse?.wireValue,
-        forceCourse: _forceCourse,
-        planOverride: _planOverride?.wireValue,
-        silentResume: true,
-        // 첫 조각에서 읽어 둔 값 — 이 프레임은 소켓의 **첫** 프레임이라 여기서 await 하지 않는다.
-        tz: _deviceTz,
-        tzOffsetMin: DeviceTimezone.offsetMinutes(),
-      );
-      _log('조각 재연결 start 송신: $startFrame');
-      channel.sink.add(jsonEncode(startFrame)); // ← 이 소켓의 **첫** 프레임이어야 한다
-      _channel = channel; // 이제부터 마이크가 이 소켓으로 간다(start 뒤)
-      final ok = await ready.future.timeout(
-        _fragmentReadyTimeout,
-        onTimeout: () => false,
-      );
-      if (ok) _startKeepalive();
-      return ok;
-    } catch (e) {
-      _log('⛔ 조각 재연결 예외: $e');
-      return false;
-    } finally {
-      if (identical(_fragmentReady, ready)) _fragmentReady = null;
-      _continuesCallId = null;
-    }
-  }
-
-  /// 5:00 뒤 «사용자 발화 → 비버 응답 turn_end» — 재생은 그대로, 소켓만 뒤에서 교체한다.
-  ///
-  /// 계획 §2. 사용자는 아무것도 못 본다: 다이얼로그 0 · 재생 끊김 0 · 타이머 누적.
-  /// 새 소켓의 비버는 먼저 말하지 않는다(서버 `silent_resume`). 재생이 끝나 마이크가
-  /// 열렸는데 소켓이 아직이면 [_micPrebuffer] 가 받았다가 여기서 흘린다.
-  /// 2회 실패면 기존 «이어하기» 시트로 폴백(§5) — 사용자에게 버튼을 준다.
-  Future<void> _performSeamlessSwitch() async {
-    if (_fragmentSwitch != _FragmentSwitch.pending) return;
-    if (state.phase != CallPhase.inCall) return;
-    _fragmentSwitch = _FragmentSwitch.switching;
-    _speechSincePending.reset();
-    final gen = _genAtSwitchStart = _gen;
-    final endedFragment = state.segmentsUsed + 1;
-    // ① 서버에 «이 조각 끝» 을 알리고 저장 완료(`fragment_saved`)를 기다린다. 재생은
-    //    그대로 돈다. 서버는 저장 뒤 소켓을 닫는다 — 그 close 는 기대된 것이다.
-    //    구서버(프레임을 모름)면 3초 안에 답이 없으니 종전처럼 close + 300ms.
-    _expectClose = true;
-    final saved = await _endFragmentAndWaitSaved();
-    if (_gen != gen) return; // 그새 끊었다
-    final carried = saved ?? _serverCallId ?? state.callId;
-    _log('조각 $endedFragment 종료 — 소켓 닫음(재생 큐 유지 · call_id=$carried · '
-        '저장 확인 ${saved != null ? "받음" : "없음→폴백 300ms"})');
-    // 조각 수는 여기서 올린다 — 다음 경계가 (n+1)×5분이 되게. elapsedSec 은 안 건드린다.
-    state = state.copyWith(segmentsUsed: endedFragment);
-    if (carried == null) {
-      _log('⛔ 이어갈 call_id 가 없다 — 시트로 폴백');
-      await _fallbackToSheet();
-      return;
-    }
-    _fragmentSwitch = _FragmentSwitch.reconnecting;
-    if (saved == null) {
-      // 구서버 폴백 — 저장 시간을 조금이라도 준다(계획 §2 의 원안).
-      await Future<void>.delayed(_fragmentCloseSettle);
-    }
-    if (_gen != gen) return;
-    _switchAttempts = 0;
-    while (_switchAttempts < 2) {
-      _switchAttempts++;
-      final ok = await _openFragmentSocket(carriedCallId: carried);
-      if (_gen != gen) return;
-      if (ok) {
-        _fragmentSwitch = _FragmentSwitch.none;
-        _flushMicPrebuffer();
-        _log('✅ 조각 ${endedFragment + 1} 열림 — 끊김 없는 전환 완료'
-            '(시도 $_switchAttempts회)');
-        return;
-      }
-      _log('⚠ 조각 재연결 실패 ($_switchAttempts/2)');
-      await _closeSocketOnly();
-    }
-    await _fallbackToSheet();
-  }
-
-  /// 프리버퍼를 순서대로 흘린다(F3).
-  ///
-  /// ⛔ 지금의 [_micGated] 를 **보지 않는다.** 버퍼의 프레임은 잡을 때 게이트가 열려
-  ///   있던 것이다 — flush 시점 게이트로 다시 거르면 비버가 막 말을 시작한 순간 사용자의
-  ///   첫 문장이 통째로 사라진다(codex 리뷰 2026-09-14). [MicPrebuffer.takeForFlush]
-  ///   에 게이트 입력이 없는 것이 그 규칙의 구조다.
-  void _flushMicPrebuffer() {
-    if (_micPrebuffer.isEmpty) return;
-    final ch = _channel;
-    final pending = _micPrebuffer.length;
-    final frames = _micPrebuffer.takeForFlush(socketOpen: ch != null);
-    if (ch == null) {
-      _log('프리버퍼 $pending프레임 버림 (소켓 없음)');
-      return;
-    }
-    var bytes = 0;
-    for (final f in frames) {
-      ch.sink.add(f);
-      bytes += f.length;
-    }
-    _uplinkBytes += bytes;
-    _micFramesSent += frames.length;
-    _log('프리버퍼 flush — ${frames.length}프레임 ${bytes}B '
-        '(${(bytes / 32000).toStringAsFixed(2)}초, 상한 초과 버림 ${_micPrebuffer.droppedFrames})');
-  }
-
-  /// 재연결 2회 실패 — 기존 «이어하기» 시트로 내려간다(사용자에게 버튼).
-  ///
-  /// 이 자리는 소켓이 이미 없다. [_reachSegmentEnd] 는 세션을 내리고 시트 상태를
-  /// 만드는데, 그 함수의 앞부분(유료 판정·teardown)을 그대로 타면 된다 — segmentsUsed 는
-  /// 이미 올렸으므로 되돌려 넘긴다(그 함수가 +1 한다).
-  Future<void> _fallbackToSheet() async {
-    _fragmentSwitch = _FragmentSwitch.none;
-    _micPrebuffer.clear();
-    if (state.phase != CallPhase.inCall) return;
-    _log('끊김 없는 전환 실패 → 기존 이어하기 시트로 폴백');
-    state = state.copyWith(segmentsUsed: state.segmentsUsed - 1);
-    await _reachSegmentEnd();
-  }
-
-  /// 마지막 조각(15:00) — 사용자 발화의 응답까지 재생하고 끝낸다. 재연결 없음.
-  ///
-  /// `call_ended` 와 같은 길로 보낸다: 소켓을 닫고 ending 으로 넘겨 재생을 다 비운 뒤
-  /// 결과 화면([_scheduleClosingDrain] → [_finishClosing]). 작별 인사 없음(사장님 결정 6).
-  Future<void> _finishFinalFragment() async {
-    if (_fragmentSwitch != _FragmentSwitch.pendingFinal) return;
-    if (state.phase != CallPhase.inCall) return;
-    // 대기 동안 경계 판정·재진입을 막는다(switching). 재생은 그대로 돈다.
-    _fragmentSwitch = _FragmentSwitch.switching;
-    _speechSincePending.reset();
-    final gen = _gen;
-    _log('마지막 조각 응답 끝 — fragment_end 로 저장을 끝낸 뒤 재생을 비우고 결과 화면(재연결 없음)');
-    _expectClose = true;
-    // ⛔ **직렬화**(codex 2차): 드레인은 `fragment_saved` 수신 **또는** 타임아웃 뒤에 시작한다.
-    //   먼저 시작하면 오디오 큐가 비어 있을 때 300ms 뒤 _teardown 이 이 대기를 접고
-    //   소켓을 닫아 계약이 어긋난다(서버는 disconnect 로도 저장하니 데이터는 안 잃지만).
-    //   재생 중이면 어차피 겹친다 — 사용자 체감은 같다.
-    final saved = await _endFragmentAndWaitSaved();
     if (_gen != gen) return; // 그새 끊었다 — hangUp 이 마무리한다
-    if (saved != null) _log('마지막 조각 저장 확인: call_id=$saved');
-    _fragmentSwitch = _FragmentSwitch.none;
+    if (state.phase != CallPhase.inCall) return;
     // 서버는 이 통화에 `call_ended` 를 안 보내므로 종료는 여기서 우리가 끈다.
-    final id = saved ?? _serverCallId ?? state.callId;
-    state = state.copyWith(phase: CallPhase.ending, callId: id, hint: null);
+    state = state.copyWith(
+      phase: CallPhase.ending,
+      callId: _serverCallId ?? state.callId,
+      hint: null,
+    );
     _flushDiagSummary();
     _gaCallEnded();
     _scheduleClosingDrain();
   }
 
+  /// 무료 5분이 끝났다 — **세션을 닫고** 구독 유도 시트를 띄운다.
+  ///
+  /// 세션을 여기서 닫는 이유는 [CallPhase.awaitingContinue] 에 적어 두었다 —
+  /// 사용자가 고민하는 동안 붙들어 봐야 인프라가 끊는다.
+  ///
+  /// ⭐ 단일 세션에서는 **무료만** 이 길로 온다. 상한이 1구간이라
+  /// [CallAllowance.canExtend] 가 false 고, 그래서 이 시트는 「이어하기」가 아니라
+  /// `SubscriptionOverlay.freeCallEnded` 다. 유료는 [_finishAtLimit] 로 간다.
+  /// ⛔ 그래도 이어가기 기계(서버 판정·`continues_call_id`·[continueCall])는 **남겨
+  ///   둔다** — 사용자가 이 시트에서 결제하면 그 자리에서 대화가 이어져야 한다
+  ///   (`resumeAfterPaywall`). 그 경로가 이 시트의 매출 경로다.
   Future<void> _reachSegmentEnd() async {
     if (state.phase != CallPhase.inCall) return;
     // 다음 1초 틱이 또 들어오지 못하게 **먼저** 막는다. `await` 가 여러 번 들어가는
@@ -6086,19 +5740,8 @@ class NormalCallController extends Notifier<CallState> {
     // 값을 안 주는 경로로 들어왔을 때) 게이팅 없이 열린다 — AEC 실측 전엔 그게
     // 자기-대화 루프다. [_connect] 가 이 teardown **뒤에** 새 값을 넣는다.
     _channelMode = CallChannel.defaultChannel;
-    _fragmentSwitch = _FragmentSwitch.none;
+    _closePending = false;
     _speechSincePending.reset();
-    _micPrebuffer.clear();
-    _serverFragmentIndex = null;
-    _serverMaxFragments = null;
-    _fragmentEndSec = null;
-    _budgetFinal = false;
-    _switchAttempts = 0;
-    if (!(_fragmentReady?.isCompleted ?? true)) _fragmentReady!.complete(false);
-    _fragmentReady = null;
-    if (!(_fragmentSaved?.isCompleted ?? true)) _fragmentSaved!.complete(null);
-    _fragmentSaved = null;
-    _fragmentSavedTimeouts = 0;
     // 서버가 준 세션 정책도 통화 스코프다. 남기면 다음 통화가 **이전 서버 답**으로
     // 마이크를 연다 — 그 통화의 서버는 다르게 말했을 수 있다.
     _serverMicAlwaysOpen = false;
@@ -6387,23 +6030,6 @@ class _ClearOutcome {
   /// ⚠ `hal_drained` 로 보내면 서버가 합격 판정에 그대로 쓴다. 애매하면 낮추는 쪽이 맞다.
   String get stopMeasure =>
       (halResidualKnown && !writeInFlight) ? 'hal_drained' : 'clear_returned';
-}
-
-/// 끊김 없는 조각 전환 상태(F1). 화면에 안 나간다 — 시트는 Free 만.
-enum _FragmentSwitch {
-  none,
-
-  /// 5:00 지남 — 다음 «사용자 발화 → turn_end» 를 기다린다.
-  pending,
-
-  /// 마지막 조각 5:00 지남 — 다음 «사용자 발화 → turn_end» 에 종료.
-  pendingFinal,
-
-  /// turn_end 받고 소켓을 닫는 중.
-  switching,
-
-  /// 새 소켓을 여는 중(call_started 대기).
-  reconnecting,
 }
 
 /// WS `error` 프레임 → 화면 문구.
