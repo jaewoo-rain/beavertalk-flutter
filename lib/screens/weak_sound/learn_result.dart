@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../features/weak_sound/presentation/retry_practiced.dart';
 import '../../app/adaptive.dart';
 import '../../app/routes.dart';
 import '../../components/atoms/button.dart';
@@ -52,7 +53,7 @@ class LearnResultScreen extends ConsumerWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, _) {
-        if (!didPop) _toList(context);
+        if (!didPop) _toList(context, ref);
       },
       child: Scaffold(
         backgroundColor: c.backgroundSurfaceAlternative,
@@ -69,7 +70,7 @@ class LearnResultScreen extends ConsumerWidget {
                     children: [
                       GestureDetector(
                         behavior: HitTestBehavior.opaque,
-                        onTap: () => _toList(context),
+                        onTap: () => _toList(context, ref),
                         child: GnbBackArrow(size: 28, color: c.labelStrong),
                       ),
                     ],
@@ -145,7 +146,7 @@ class LearnResultScreen extends ConsumerWidget {
                       type: BtnType.primaryFill,
                       size: BtnSize.s60,
                       text: l10n.wsToList,
-                      onPressed: () => _toList(context),
+                      onPressed: () => _toList(context, ref),
                     ),
                   ),
                 ),
@@ -161,9 +162,18 @@ class LearnResultScreen extends ConsumerWidget {
   ///
   /// 학습 4단계가 스택에 쌓여 있어 `pop` 한 번으로는 평가 화면으로 떨어진다. 방금 끝낸
   /// 단계로 되돌아가는 것은 아무도 원하지 않는다.
-  void _toList(BuildContext context) => Navigator.of(
-    context,
-  ).popUntil((r) => r.settings.name == Routes.weakSounds || r.isFirst);
+  ///
+  /// 「자주 틀린 소리」 목록(A5 · M2)에서 들어왔으면 그 목록에서 멈춘다(Figma 주석 `6564:15576`
+  /// 「17 결과 목록으로 → M18」). 결과까지 왔으니 그 소리를 「마침」으로 기록한다(M19 판단).
+  void _toList(BuildContext context, WidgetRef ref) {
+    ref.read(retryPracticedProvider.notifier).mark(soundKey);
+    Navigator.of(context).popUntil(
+      (r) =>
+          r.settings.name == Routes.weakSounds ||
+          r.settings.name == Routes.weakSoundRetry ||
+          r.isFirst,
+    );
+  }
 }
 
 /// E5(점수 하락) · E8(첫 측정) — Figma Mobile `6040:36345` · `6044:36388` · Tablet `6278:43555` ·

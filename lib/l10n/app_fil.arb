@@ -869,5 +869,15 @@
   "wsGoalOnly": "Target {score}",
   "wsSoundOf": "Tunog {label}",
   "wsResultTip": "{desc}. Isipin ang hugis na ito kapag lumabas ito sa tawag.",
-  "wsNationalSubtitle": "Mga tunog na madalas mamali ang mga nagsasalita mula sa {country}"
+  "wsNationalSubtitle": "Mga tunog na madalas mamali ang mga nagsasalita mula sa {country}",
+  "wsRetryPackLabel": "Sanayin ang mga tunog na madalas mong mali",
+  "wsRetryPackTitle": "{count, plural, =1{1 tunog na madalas mong mali sa session na ito} other{{count} tunog na madalas mong mali sa session na ito}}",
+  "wsRetryPackBody": "Tinipon namin ang mga tunog na 2 beses o higit mong mali. Sanayin ang bawat isa sa 4 na hakbang.",
+  "wsRetryPackCta": "Sanayin nang sabay-sabay",
+  "wsRetryListTitle": "Mga tunog na madalas mong mali",
+  "wsRetryListSection": "Mga tunog mula sa session na ito",
+  "wsRetryListSub": "Mga tunog na 2 beses o higit mong mali sa session na ito",
+  "wsRetryListSubWithCall": "Mga tunog na 2 beses o higit mong mali sa tawag na “{title}”",
+  "wsRetryListAllDone": "Nasanay mo na ang lahat ng tunog",
+  "wsRetryBackToReport": "Bumalik sa ulat"
 }

@@ -869,5 +869,15 @@
   "wsGoalOnly": "Зорилт {score}",
   "wsSoundOf": "{label} авиа",
   "wsResultTip": "{desc}. Дуудлагад дахин тохиолдвол энэ хэлбэрийг санаарай.",
-  "wsNationalSubtitle": "{country} – хүмүүсийн түгээмэл алддаг авиа"
+  "wsNationalSubtitle": "{country} – хүмүүсийн түгээмэл алддаг авиа",
+  "wsRetryPackLabel": "Байнга алддаг авиагаа давтах",
+  "wsRetryPackTitle": "{count, plural, other{Энэ хичээлд байнга алдсан {count} авиа}}",
+  "wsRetryPackBody": "2 ба түүнээс олон удаа алдсан авиануудыг цуглууллаа. Авиа бүрийг 4 алхмаар давтана.",
+  "wsRetryPackCta": "Хамтад нь давтах",
+  "wsRetryListTitle": "Байнга алддаг авиа",
+  "wsRetryListSection": "Энэ хичээлийн авиа",
+  "wsRetryListSub": "Энэ хичээлд 2 ба түүнээс олон удаа алдсан авиа",
+  "wsRetryListSubWithCall": "“{title}” дуудлагад 2 ба түүнээс олон удаа алдсан авиа",
+  "wsRetryListAllDone": "Бүх авиагаа давтлаа",
+  "wsRetryBackToReport": "Тайлан руу буцах"
 }

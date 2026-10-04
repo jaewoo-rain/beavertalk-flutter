@@ -2905,4 +2905,44 @@ class AppLocalizationsKm extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'សំឡេងដែលអ្នកនិយាយមកពី $country ច្រើនតែខុស';
   }
+
+  @override
+  String get wsRetryPackLabel => 'ហាត់សូរដែលច្រើនខុស';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'សូរដែលច្រើនខុសក្នុងមេរៀននេះ $count',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'យើងបានប្រមូលសូរដែលខុស 2 ដង ឬច្រើនជាងនេះ។ ហាត់សូរនីមួយៗតាម 4 ជំហាន។';
+
+  @override
+  String get wsRetryPackCta => 'ហាត់ជាមួយគ្នា';
+
+  @override
+  String get wsRetryListTitle => 'សូរដែលច្រើនខុស';
+
+  @override
+  String get wsRetryListSection => 'សូរពីមេរៀននេះ';
+
+  @override
+  String get wsRetryListSub => 'សូរដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'សូរដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «$title»';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'អ្នកបានហាត់សូរទាំងអស់ហើយ';
+
+  @override
+  String get wsRetryBackToReport => 'ត្រឡប់ទៅរបាយការណ៍';
 }

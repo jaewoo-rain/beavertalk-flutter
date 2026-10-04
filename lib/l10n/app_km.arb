@@ -869,5 +869,15 @@
   "wsGoalOnly": "គោលដៅ {score}",
   "wsSoundOf": "សំឡេង {label}",
   "wsResultTip": "{desc}។ ពេលជួបវាម្ដងទៀតក្នុងការហៅ សូមនឹកឃើញរូបរាងនេះ។",
-  "wsNationalSubtitle": "សំឡេងដែលអ្នកនិយាយមកពី {country} ច្រើនតែខុស"
+  "wsNationalSubtitle": "សំឡេងដែលអ្នកនិយាយមកពី {country} ច្រើនតែខុស",
+  "wsRetryPackLabel": "ហាត់សូរដែលច្រើនខុស",
+  "wsRetryPackTitle": "{count, plural, other{សូរដែលច្រើនខុសក្នុងមេរៀននេះ {count}}}",
+  "wsRetryPackBody": "យើងបានប្រមូលសូរដែលខុស 2 ដង ឬច្រើនជាងនេះ។ ហាត់សូរនីមួយៗតាម 4 ជំហាន។",
+  "wsRetryPackCta": "ហាត់ជាមួយគ្នា",
+  "wsRetryListTitle": "សូរដែលច្រើនខុស",
+  "wsRetryListSection": "សូរពីមេរៀននេះ",
+  "wsRetryListSub": "សូរដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងមេរៀននេះ",
+  "wsRetryListSubWithCall": "សូរដែលខុស 2 ដង ឬច្រើនជាងនេះក្នុងការហៅ «{title}»",
+  "wsRetryListAllDone": "អ្នកបានហាត់សូរទាំងអស់ហើយ",
+  "wsRetryBackToReport": "ត្រឡប់ទៅរបាយការណ៍"
 }

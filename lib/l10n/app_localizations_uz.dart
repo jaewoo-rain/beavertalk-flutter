@@ -2935,4 +2935,46 @@ class AppLocalizationsUz extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country soʻzlovchilari koʻp xato qiladigan tovushlar';
   }
+
+  @override
+  String get wsRetryPackLabel =>
+      'Ko‘p xato qilinadigan tovushlarni mashq qilish';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Bu darsda ko‘p xato qilgan $count ta tovush',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      '2 va undan ko‘p marta xato qilgan tovushlarni yig‘dik. Har birini 4 bosqichda mashq qiling.';
+
+  @override
+  String get wsRetryPackCta => 'Birga mashq qilish';
+
+  @override
+  String get wsRetryListTitle => 'Ko‘p xato qilinadigan tovushlar';
+
+  @override
+  String get wsRetryListSection => 'Bu darsdagi tovushlar';
+
+  @override
+  String get wsRetryListSub =>
+      'Bu darsda 2 va undan ko‘p marta xato qilgan tovushlar';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” qo‘ng‘irog‘ida 2 va undan ko‘p marta xato qilgan tovushlar';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Barcha tovushlarni mashq qildingiz';
+
+  @override
+  String get wsRetryBackToReport => 'Hisobotga qaytish';
 }

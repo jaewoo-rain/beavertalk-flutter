@@ -2921,4 +2921,44 @@ class AppLocalizationsId extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'Bunyi yang sering salah diucapkan penutur dari $country';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Latihan bunyi yang sering salah';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count bunyi yang sering salah di sesi ini',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Kami kumpulkan bunyi yang salah 2 kali atau lebih. Latih tiap bunyi dalam 4 langkah.';
+
+  @override
+  String get wsRetryPackCta => 'Latih sekaligus';
+
+  @override
+  String get wsRetryListTitle => 'Bunyi yang sering salah';
+
+  @override
+  String get wsRetryListSection => 'Bunyi dari sesi ini';
+
+  @override
+  String get wsRetryListSub => 'Bunyi yang salah 2 kali atau lebih di sesi ini';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Bunyi yang salah 2 kali atau lebih di panggilan “$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Kamu sudah melatih semua bunyi';
+
+  @override
+  String get wsRetryBackToReport => 'Kembali ke laporan';
 }

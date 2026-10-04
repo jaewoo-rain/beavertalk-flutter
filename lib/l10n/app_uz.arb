@@ -869,5 +869,15 @@
   "wsGoalOnly": "Maqsad {score}",
   "wsSoundOf": "{label} tovushi",
   "wsResultTip": "{desc}. Qoʻngʻiroqda yana uchrasa, shu shaklni eslang.",
-  "wsNationalSubtitle": "{country} soʻzlovchilari koʻp xato qiladigan tovushlar"
+  "wsNationalSubtitle": "{country} soʻzlovchilari koʻp xato qiladigan tovushlar",
+  "wsRetryPackLabel": "Ko‘p xato qilinadigan tovushlarni mashq qilish",
+  "wsRetryPackTitle": "{count, plural, other{Bu darsda ko‘p xato qilgan {count} ta tovush}}",
+  "wsRetryPackBody": "2 va undan ko‘p marta xato qilgan tovushlarni yig‘dik. Har birini 4 bosqichda mashq qiling.",
+  "wsRetryPackCta": "Birga mashq qilish",
+  "wsRetryListTitle": "Ko‘p xato qilinadigan tovushlar",
+  "wsRetryListSection": "Bu darsdagi tovushlar",
+  "wsRetryListSub": "Bu darsda 2 va undan ko‘p marta xato qilgan tovushlar",
+  "wsRetryListSubWithCall": "“{title}” qo‘ng‘irog‘ida 2 va undan ko‘p marta xato qilgan tovushlar",
+  "wsRetryListAllDone": "Barcha tovushlarni mashq qildingiz",
+  "wsRetryBackToReport": "Hisobotga qaytish"
 }

@@ -2917,4 +2917,45 @@ class AppLocalizationsUr extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country کے بولنے والوں سے اکثر غلط ہونے والی آوازیں';
   }
+
+  @override
+  String get wsRetryPackLabel => 'اکثر غلط ہونے والی آوازوں کی مشق';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'اس سیشن میں اکثر غلط ہونے والی $count آوازیں',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'ہم نے وہ آوازیں جمع کیں جو 2 یا زیادہ بار غلط ہوئیں۔ ہر آواز کی 4 مراحل میں مشق کریں۔';
+
+  @override
+  String get wsRetryPackCta => 'ایک ساتھ مشق کریں';
+
+  @override
+  String get wsRetryListTitle => 'اکثر غلط ہونے والی آوازیں';
+
+  @override
+  String get wsRetryListSection => 'اس سیشن کی آوازیں';
+
+  @override
+  String get wsRetryListSub =>
+      'اس سیشن میں 2 یا زیادہ بار غلط ہونے والی آوازیں';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return '“$title” کال میں 2 یا زیادہ بار غلط ہونے والی آوازیں';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'آپ نے سب آوازوں کی مشق کر لی';
+
+  @override
+  String get wsRetryBackToReport => 'رپورٹ پر واپس جائیں';
 }

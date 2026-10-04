@@ -2253,5 +2253,29 @@
         "type": "String"
       }
     }
-  }
+  },
+  "wsRetryPackLabel": "Practice sounds you often missed",
+  "wsRetryPackTitle": "{count, plural, =1{1 sound you often missed this session} other{{count} sounds you often missed this session}}",
+  "@wsRetryPackTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "wsRetryPackBody": "We gathered the sounds you missed twice or more. Practice each in 4 steps.",
+  "wsRetryPackCta": "Practice them together",
+  "wsRetryListTitle": "Sounds you often missed",
+  "wsRetryListSection": "Sounds from this session",
+  "wsRetryListSub": "Sounds you missed twice or more this session",
+  "wsRetryListSubWithCall": "Sounds you missed twice or more in the call “{title}”",
+  "@wsRetryListSubWithCall": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "wsRetryListAllDone": "You practiced all the sounds",
+  "wsRetryBackToReport": "Back to report"
 }

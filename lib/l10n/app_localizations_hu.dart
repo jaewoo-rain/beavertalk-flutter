@@ -2935,4 +2935,45 @@ class AppLocalizationsHu extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return '$country – a beszélők által gyakran elrontott hangok';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Gyakran rontott hangok gyakorlása';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count gyakran rontott hang ebben a leckében',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Összegyűjtöttük a legalább 2-szer rontott hangokat. Mindegyiket 4 lépésben gyakorolhatod.';
+
+  @override
+  String get wsRetryPackCta => 'Gyakorlás együtt';
+
+  @override
+  String get wsRetryListTitle => 'Gyakran rontott hangok';
+
+  @override
+  String get wsRetryListSection => 'A lecke hangjai';
+
+  @override
+  String get wsRetryListSub =>
+      'Az ebben a leckében legalább 2-szer rontott hangok';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'A(z) „$title” hívásban legalább 2-szer rontott hangok';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Minden hangot begyakoroltál';
+
+  @override
+  String get wsRetryBackToReport => 'Vissza a jelentéshez';
 }

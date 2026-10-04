@@ -869,5 +869,15 @@
   "wsGoalOnly": "الهدف {score}",
   "wsSoundOf": "صوت {label}",
   "wsResultTip": "{desc}. تذكّر هذا الشكل عندما يصادفك في مكالمة.",
-  "wsNationalSubtitle": "أصوات يخطئ فيها كثيرًا المتحدثون من {country}"
+  "wsNationalSubtitle": "أصوات يخطئ فيها كثيرًا المتحدثون من {country}",
+  "wsRetryPackLabel": "تدرّب على الأصوات التي تخطئ فيها كثيرًا",
+  "wsRetryPackTitle": "{count, plural, other{{count} أصوات أخطأت فيها كثيرًا في هذه الجلسة}}",
+  "wsRetryPackBody": "جمعنا الأصوات التي أخطأت فيها مرتين أو أكثر. تدرّب على كل صوت في 4 خطوات.",
+  "wsRetryPackCta": "تدرّب عليها معًا",
+  "wsRetryListTitle": "أصوات تخطئ فيها كثيرًا",
+  "wsRetryListSection": "أصوات من هذه الجلسة",
+  "wsRetryListSub": "أصوات أخطأت فيها مرتين أو أكثر في هذه الجلسة",
+  "wsRetryListSubWithCall": "أصوات أخطأت فيها مرتين أو أكثر في مكالمة «{title}»",
+  "wsRetryListAllDone": "تدرّبت على كل الأصوات",
+  "wsRetryBackToReport": "العودة إلى التقرير"
 }

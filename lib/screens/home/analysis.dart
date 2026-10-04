@@ -171,6 +171,7 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
         index: index,
         origin: origin,
         callId: _result?.callId,
+        callTitle: _result?.summary,
       ),
     );
   }

@@ -2922,4 +2922,45 @@ class AppLocalizationsEn extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'Sounds $country speakers often get wrong';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Practice sounds you often missed';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sounds you often missed this session',
+      one: '1 sound you often missed this session',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'We gathered the sounds you missed twice or more. Practice each in 4 steps.';
+
+  @override
+  String get wsRetryPackCta => 'Practice them together';
+
+  @override
+  String get wsRetryListTitle => 'Sounds you often missed';
+
+  @override
+  String get wsRetryListSection => 'Sounds from this session';
+
+  @override
+  String get wsRetryListSub => 'Sounds you missed twice or more this session';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Sounds you missed twice or more in the call “$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'You practiced all the sounds';
+
+  @override
+  String get wsRetryBackToReport => 'Back to report';
 }

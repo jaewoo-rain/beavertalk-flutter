@@ -21,6 +21,7 @@ import 'package:beavertalk/components/organisms/dialog_confirm_icon.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
 import 'package:beavertalk/components/molecules/card_study.dart';
 import 'package:beavertalk/screens/home/analysis_loading.dart';
+import 'package:beavertalk/features/weak_sound/presentation/widgets/retry_pack_card.dart';
 import 'package:beavertalk/components/organisms/home_gnb.dart';
 import 'package:beavertalk/components/organisms/home_header_mode.dart';
 import 'package:beavertalk/components/molecules/banner.dart' as bn;
@@ -157,6 +158,18 @@ Map<String, Widget Function()> i18nScreens() {
     // 알람 목록 줄 — 목록 화면도 하네스에서 데이터가 없어 줄을 안 그린다. 켜짐·꺼짐 둘.
     // 분석 대기 준비 카드(Figma `6330:13219` Card/Preparing, 09-23) — 두 단계 상태를 모두
     // 그린다(저장 중·대기 / 완료·만드는 중). 가장 긴 문구는 de·ru 단계 이름이다.
+    // 리포트 「자주 틀린 소리」 카드(A5 · Figma `6564:15409`) — 소리 3개 · 긴 규칙 라벨.
+    'RetryPackCard': () => SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: RetryPackCard(
+            sounds: const [
+                RetrySound(soundKey: 'coda_ㄹ', label: '받침 ㄹ', cardDesc: '혀끝을 붙이고 멈춰요', attempts: 7, misses: 4, score: 62),
+                RetrySound(soundKey: 'onset_ㅊ', label: '초성 ㅊ', cardDesc: 'ㅈ 자리에서 바람을 세게 터뜨리고 소리를 길게 이어요', attempts: 8, misses: 2, score: 54),
+                RetrySound(soundKey: 'rule_연음', label: '연음 규칙(받침이 다음 모음으로 넘어가는 소리)', cardDesc: '받침을 다음 글자 첫소리로 옮겨 읽어요', attempts: 8, misses: 2),
+              ],
+            onStart: () {},
+          ),
+        ),
     'AnalysisPreparingCard': () => const SingleChildScrollView(
           padding: EdgeInsets.all(20),
           child: Column(

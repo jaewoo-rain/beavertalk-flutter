@@ -2949,4 +2949,46 @@ class AppLocalizationsEs extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'Sonidos que los hablantes de $country suelen pronunciar mal';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Practica los sonidos que más fallaste';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count sonidos que fallaste a menudo en esta sesión',
+      one: '1 sonido que fallaste a menudo en esta sesión',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Reunimos los sonidos que fallaste 2 veces o más. Practica cada uno en 4 pasos.';
+
+  @override
+  String get wsRetryPackCta => 'Practicarlos juntos';
+
+  @override
+  String get wsRetryListTitle => 'Sonidos que más fallaste';
+
+  @override
+  String get wsRetryListSection => 'Sonidos de esta sesión';
+
+  @override
+  String get wsRetryListSub =>
+      'Sonidos que fallaste 2 veces o más en esta sesión';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Sonidos que fallaste 2 veces o más en la llamada «$title»';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Practicaste todos los sonidos';
+
+  @override
+  String get wsRetryBackToReport => 'Volver al informe';
 }

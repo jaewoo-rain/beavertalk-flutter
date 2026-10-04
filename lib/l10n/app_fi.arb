@@ -869,5 +869,15 @@
   "wsGoalOnly": "Tavoite {score}",
   "wsSoundOf": "Äänne {label}",
   "wsResultTip": "{desc}. Kuvittele tämä muoto, kun äänne tulee vastaan puhelussa.",
-  "wsNationalSubtitle": "{country} – äänteet, joissa puhujat usein erehtyvät"
+  "wsNationalSubtitle": "{country} – äänteet, joissa puhujat usein erehtyvät",
+  "wsRetryPackLabel": "Harjoittele usein menneitä väärin -äänteitä",
+  "wsRetryPackTitle": "{count, plural, =1{1 usein väärin mennyt äänne tällä kerralla} other{{count} usein väärin mennyttä äännettä tällä kerralla}}",
+  "wsRetryPackBody": "Keräsimme äänteet, jotka menivät väärin vähintään 2 kertaa. Harjoittele jokaista 4 vaiheessa.",
+  "wsRetryPackCta": "Harjoittele yhdessä",
+  "wsRetryListTitle": "Usein väärin menneet äänteet",
+  "wsRetryListSection": "Tämän kerran äänteet",
+  "wsRetryListSub": "Äänteet, jotka menivät väärin vähintään 2 kertaa tällä kerralla",
+  "wsRetryListSubWithCall": "Äänteet, jotka menivät väärin vähintään 2 kertaa puhelussa ”{title}”",
+  "wsRetryListAllDone": "Harjoittelit kaikki äänteet",
+  "wsRetryBackToReport": "Takaisin raporttiin"
 }

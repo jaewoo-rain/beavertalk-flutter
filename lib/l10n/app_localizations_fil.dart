@@ -2947,4 +2947,46 @@ class AppLocalizationsFil extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'Mga tunog na madalas mamali ang mga nagsasalita mula sa $country';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Sanayin ang mga tunog na madalas mong mali';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tunog na madalas mong mali sa session na ito',
+      one: '1 tunog na madalas mong mali sa session na ito',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Tinipon namin ang mga tunog na 2 beses o higit mong mali. Sanayin ang bawat isa sa 4 na hakbang.';
+
+  @override
+  String get wsRetryPackCta => 'Sanayin nang sabay-sabay';
+
+  @override
+  String get wsRetryListTitle => 'Mga tunog na madalas mong mali';
+
+  @override
+  String get wsRetryListSection => 'Mga tunog mula sa session na ito';
+
+  @override
+  String get wsRetryListSub =>
+      'Mga tunog na 2 beses o higit mong mali sa session na ito';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Mga tunog na 2 beses o higit mong mali sa tawag na “$title”';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Nasanay mo na ang lahat ng tunog';
+
+  @override
+  String get wsRetryBackToReport => 'Bumalik sa ulat';
 }

@@ -5373,6 +5373,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sounds {country} speakers often get wrong'**
   String wsNationalSubtitle(String country);
+
+  /// No description provided for @wsRetryPackLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice sounds you often missed'**
+  String get wsRetryPackLabel;
+
+  /// No description provided for @wsRetryPackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 sound you often missed this session} other{{count} sounds you often missed this session}}'**
+  String wsRetryPackTitle(int count);
+
+  /// No description provided for @wsRetryPackBody.
+  ///
+  /// In en, this message translates to:
+  /// **'We gathered the sounds you missed twice or more. Practice each in 4 steps.'**
+  String get wsRetryPackBody;
+
+  /// No description provided for @wsRetryPackCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice them together'**
+  String get wsRetryPackCta;
+
+  /// No description provided for @wsRetryListTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you often missed'**
+  String get wsRetryListTitle;
+
+  /// No description provided for @wsRetryListSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds from this session'**
+  String get wsRetryListSection;
+
+  /// No description provided for @wsRetryListSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you missed twice or more this session'**
+  String get wsRetryListSub;
+
+  /// No description provided for @wsRetryListSubWithCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Sounds you missed twice or more in the call “{title}”'**
+  String wsRetryListSubWithCall(String title);
+
+  /// No description provided for @wsRetryListAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'You practiced all the sounds'**
+  String get wsRetryListAllDone;
+
+  /// No description provided for @wsRetryBackToReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to report'**
+  String get wsRetryBackToReport;
 }
 
 class _AppLocalizationsDelegate

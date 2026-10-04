@@ -2964,4 +2964,46 @@ class AppLocalizationsDe extends AppLocalizations {
   String wsNationalSubtitle(String country) {
     return 'Laute, die Sprecher aus $country oft falsch aussprechen';
   }
+
+  @override
+  String get wsRetryPackLabel => 'Oft verfehlte Laute üben';
+
+  @override
+  String wsRetryPackTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count oft verfehlte Laute in dieser Einheit',
+      one: '1 oft verfehlter Laut in dieser Einheit',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get wsRetryPackBody =>
+      'Wir haben die Laute gesammelt, die du 2-mal oder öfter verfehlt hast. Übe jeden in 4 Schritten.';
+
+  @override
+  String get wsRetryPackCta => 'Gemeinsam üben';
+
+  @override
+  String get wsRetryListTitle => 'Oft verfehlte Laute';
+
+  @override
+  String get wsRetryListSection => 'Laute aus dieser Einheit';
+
+  @override
+  String get wsRetryListSub =>
+      'Laute, die du in dieser Einheit 2-mal oder öfter verfehlt hast';
+
+  @override
+  String wsRetryListSubWithCall(String title) {
+    return 'Laute, die du im Gespräch „$title“ 2-mal oder öfter verfehlt hast';
+  }
+
+  @override
+  String get wsRetryListAllDone => 'Du hast alle Laute geübt';
+
+  @override
+  String get wsRetryBackToReport => 'Zurück zum Bericht';
 }

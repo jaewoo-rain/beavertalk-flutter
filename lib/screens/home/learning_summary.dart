@@ -136,6 +136,48 @@ class SessionPoint {
   bool get serverSaysToday => label == '오늘';
 }
 
+/// 「자주 틀린 소리」 한 장 — 이 통화 학습에서 여러 번 틀린 소리(A5 · PM-DEC-333/337/341).
+///
+/// 서버 `retry_sounds[]`(`RetrySoundOut`)다. 고르는 규칙(과가 있는 소리 · 2번 이상 틀림 ·
+/// 최대 3개 · 많이 틀린 순)은 **서버가 이미 걸렀다** — 앱은 비었는지만 본다.
+class RetrySound {
+  /// Creates a retry sound.
+  const RetrySound({
+    required this.soundKey,
+    required this.label,
+    required this.cardDesc,
+    required this.attempts,
+    required this.misses,
+    this.score,
+  });
+
+  /// Parses one `retry_sounds[]` item.
+  factory RetrySound.fromJson(Map<String, dynamic> j) => RetrySound(
+        soundKey: j['sound_key'] as String? ?? '',
+        label: j['label'] as String? ?? '',
+        cardDesc: j['card_desc'] as String? ?? '',
+        attempts: _asInt(j['attempts']),
+        misses: _asInt(j['misses']),
+        score: j['score'] == null ? null : _asInt(j['score']),
+      );
+
+  /// 학습 진입·평가 API 의 식별자(`coda_ㄹ`·`onset_ㅊ`).
+  final String soundKey;
+
+  /// 표시 라벨(받침 ㄹ) — 회원 표시 언어로 번역돼 온다.
+  final String label;
+
+  /// 카드 한 줄 설명(소리 내는 법).
+  final String cardDesc;
+
+  /// ⚠ **이 통화**에서 그 소리가 나온 횟수 · 그중 틀린 횟수. 취약 발음 목록의
+  /// `attempts`(평가 제출 횟수)와 뜻이 다르다.
+  final int attempts, misses;
+
+  /// 카드 점수 0~100 — 취약 발음 목록의 그 소리 점수와 같은 값. null = 측정 전.
+  final int? score;
+}
+
 /// Everything `screen/learning_main` (`3569:15065`) draws.
 class LearningSummary {
   /// Creates a learning-session summary.
@@ -153,6 +195,7 @@ class LearningSummary {
     required this.phonemes,
     required this.sentences,
     required this.sessions,
+    this.retrySounds = const [],
   });
 
   /// Builds a summary from the `GET /calls/{id}/pronunciation-report` body.
@@ -178,6 +221,11 @@ class LearningSummary {
             .toList(),
         sessions: ((j['sessions'] as List?) ?? const [])
             .map((e) => SessionPoint.fromJson(e as Map<String, dynamic>))
+            .toList(),
+        // 서버 3f54ec5(10-03) — 구서버는 키가 없다 → 빈 목록 → 카드 숨김.
+        retrySounds: ((j['retry_sounds'] as List?) ?? const [])
+            .map((e) => RetrySound.fromJson(e as Map<String, dynamic>))
+            .where((r) => r.soundKey.isNotEmpty)
             .toList(),
       );
 
@@ -208,6 +256,9 @@ class LearningSummary {
   /// Chart/table points, **oldest first** — the chart draws left→right and the
   /// table reverses it.
   final List<SessionPoint> sessions;
+
+  /// 「자주 틀린 소리」(최대 3) — 비면 리포트 카드를 숨긴다(A5 규칙 8).
+  final List<RetrySound> retrySounds;
 
   /// Total attempts across [phonemes], for the section's sub-label.
   int get phonemeAttempts => phonemes.fold(0, (sum, p) => sum + p.attempts);
