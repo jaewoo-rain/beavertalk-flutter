@@ -37,6 +37,22 @@ enum FragmentBoundaryAction {
 /// 끝난다** — 다음 조각을 열면 서버가 `DAILY_LIMIT` 로 거절하므로 마지막 조각으로 다룬다.
 const int kServerFragmentCapSec = 360;
 
+/// **단일 세션**(조각 분할 없이 한 소켓으로 끝까지)으로 돌릴지 — 실험 스위치.
+///
+/// ## 왜 플래그인가 — 클라가 엔진을 못 가린다
+///
+/// 사장님 지시(2026-10-04): 「클라틱을 왜 보내? 클라는 자기가 직접 시간 재고 시간 지나면
+/// 종료하면 되잖아.」 ⇒ 서버는 `remaining_s`·`max_fragments` 를 **안 보낸다**. 그런데 그
+/// 말은 클라가 **지금 붙은 엔진이 Gemini 인지 OpenAI 인지 알 길이 없다**는 뜻이기도 하다
+/// (`engine` 필드는 캐스케이드 `ready` 전용이고 라이브 통로엔 그 프레임 자체가 없다).
+///
+/// ⛔ Gemini 는 연결 수명이 ~10분이라 **지금도 조각이 필요하다** — 엔진 전환 전까지가
+///   운영이다. 그래서 단일 세션을 기본으로 켜면 운영 통화가 10분에 죽는다.
+/// ⇒ 실험 스위치로 둔다. 되돌리기는 이 값 하나다.
+///
+/// 켜는 법: `--dart-define=SINGLE_SESSION=true`
+const bool kSingleSession = bool.fromEnvironment('SINGLE_SESSION');
+
 /// 조각 경계 판정. 매초 틱마다 부른다.
 ///
 /// [segmentsUsed] 는 **끝낸** 조각 수(첫 조각 진행 중 = 0). [elapsedSec] 은 조각을 건너
@@ -55,7 +71,21 @@ FragmentBoundaryAction fragmentBoundaryAction({
   required int maxFragments,
   int? fragmentEndSec,
   bool budgetFinal = false,
+  bool singleSession = false,
 }) {
+  // ⭐ 단일 세션([kSingleSession]) — 조각을 나누지 않고 **클라가 직접** 플랜 상한까지 잰다.
+  //   서버에 묻지 않는다(2026-10-04 사장님 지시). 상한은 [CallAllowance.limitFor] 한 곳이다.
+  //   유료 15분 · 무료 5분, 둘 다 **한 세션**이고 중간 재연결이 없다.
+  if (singleSession) {
+    if (elapsedSec < CallAllowance.limitFor(paidAccess: paidAccess).inSeconds) {
+      return FragmentBoundaryAction.none;
+    }
+    // 무료는 종전 시트 그대로다 — 1구간이라 연장이 아니라 **구독 유도**가 목적이고,
+    // 그 시트가 뜨는 순간이 전환 의도가 가장 높은 지점이다(화면·카피 불변).
+    if (!paidAccess) return FragmentBoundaryAction.sheet;
+    // 유료는 응답까지 하고 끝낸다. 다음 조각이 없으므로 seamless 로 가지 않는다.
+    return FragmentBoundaryAction.finalClose;
+  }
   final boundary =
       fragmentEndSec ?? CallAllowance.segment.inSeconds * (segmentsUsed + 1);
   if (elapsedSec < boundary) return FragmentBoundaryAction.none;

@@ -5285,6 +5285,7 @@ class NormalCallController extends Notifier<CallState> {
       maxFragments: _maxFragments,
       fragmentEndSec: _fragmentEndSec,
       budgetFinal: _budgetFinal,
+      singleSession: kSingleSession,
     );
     switch (action) {
       case FragmentBoundaryAction.none:
@@ -5295,12 +5296,12 @@ class NormalCallController extends Notifier<CallState> {
       case FragmentBoundaryAction.seamless:
         _fragmentSwitch = _FragmentSwitch.pending;
         _speechSincePending.reset();
-        _log('조각 ${state.segmentsUsed + 1} 5:00 도달 — 끊김 없는 전환 대기 '
+        _log('조각 ${state.segmentsUsed + 1} 경계(${elapsedSec}s) 도달 — 끊김 없는 전환 대기 '
             '(다음 «사용자 발화 → turn_end» 에 소켓만 교체, 시트 없음, 타이머 누적)');
       case FragmentBoundaryAction.finalClose:
         _fragmentSwitch = _FragmentSwitch.pendingFinal;
         _speechSincePending.reset();
-        _log('마지막 조각 ${state.segmentsUsed + 1} 상한 도달 — 다음 «사용자 발화 → '
+        _log('${kSingleSession ? "단일 세션" : "마지막 조각 ${state.segmentsUsed + 1}"} 상한(${elapsedSec}s) 도달 — 다음 «사용자 발화 → '
             'turn_end» 에 응답까지 하고 종료(재연결 없음)');
     }
   }

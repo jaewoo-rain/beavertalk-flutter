@@ -18,6 +18,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:beavertalk/features/normalcall/domain/entities/call_allowance.dart';
 import 'package:beavertalk/features/normalcall/domain/entities/call_course.dart';
 import 'package:beavertalk/features/normalcall/domain/seamless_fragment.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_controller.dart';
@@ -355,97 +356,71 @@ void main() {
     });
   });
 
-  // ⭐ OpenAI Realtime 검토(2026-10-04) — 세션 60분이라 조각이 필요 없다.
-  //   사장님 지시: 「5분 재갱신 없는 상태로 15분 해보고 … 일단 15분 되는지 먼저 확인.」
-  //   서버가 `call_started` 에 remaining_s=900 · max_fragments=1 만 보내면 프론트는
-  //   **코드 수정 없이** 15분 단일 세션이 되는가 — 그 계약을 여기서 잠근다.
-  group('⑩ 15분 단일 세션 — remaining_s=900 · max_fragments=1', () {
-    FragmentBoundaryAction at(int elapsed, {int used = 0, bool budgetFinal = false}) =>
+  // ⭐ 단일 세션(2026-10-04) — 사장님: 「클라틱을 왜 보내? 클라는 자기가 직접 시간 재고
+  //   시간 지나면 종료하면 되잖아.」 서버는 remaining_s·max_fragments 를 **안 보낸다**.
+  //   클라가 CallAllowance.limitFor 로 끝까지 재고 한 세션으로 끝낸다.
+  //
+  // ⛔ 앞선 판(b9ac1ebf)의 「remaining_s=900 · max_fragments=1」 계약 시험 6건은 **폐기**했다.
+  //   서버가 그 값을 보내지 않기로 해서 시험이 존재하지 않는 계약을 지키고 있었다.
+  //   remaining_s 가 **오는** 경우(현행 Gemini 조각)는 ⑨ 가 계속 지킨다.
+  group('⑩ 단일 세션 — 클라가 직접 잰다(서버에 안 묻는다)', () {
+    FragmentBoundaryAction at(
+      int elapsed, {
+      bool paid = true,
+      CallCourse? course = CallCourse.expression,
+      int segmentsUsed = 0,
+    }) =>
         fragmentBoundaryAction(
           elapsedSec: elapsed,
-          segmentsUsed: used,
-          paidAccess: true,
-          seamlessEligible: seamlessEligibleCourse(CallCourse.expression),
-          maxFragments: 1,
-          fragmentEndSec: 900,
-          budgetFinal: budgetFinal,
+          segmentsUsed: segmentsUsed,
+          paidAccess: paid,
+          seamlessEligible: seamlessEligibleCourse(course),
+          // 아래 셋은 단일 세션에서 **안 쓰인다** — 서버가 안 보내므로 기본값 그대로.
+          maxFragments: CallAllowance.segmentsFor(paidAccess: paid),
+          singleSession: true,
         );
 
-    test('⭐ 900초 전에는 재갱신이 **한 번도** 안 일어난다', () {
-      // 5분(300)·서버 캡(360)·그 언저리를 전부 짚는다 — 지금까지 조각을 끊던 지점들이다.
-      for (final t in [0, 1, 299, 300, 301, 359, 360, 361, 600, 899]) {
+    test('⭐ 유료 15분: 900초 전에는 경계가 **한 번도** 안 잡힌다', () {
+      // 지금까지 조각을 끊던 지점(5분·6분·10분)을 전부 짚는다.
+      for (final t in [0, 1, 299, 300, 301, 359, 360, 361, 600, 601, 899]) {
         expect(at(t), FragmentBoundaryAction.none,
-            reason: '$t초에서 경계가 잡히면 15분 단일 세션이 깨진다');
+            reason: '$t초에서 경계가 잡히면 단일 세션이 깨진다');
       }
     });
 
-    test('⭐ 900초에 finalClose — seamless 가 아니다(재연결 없음)', () {
+    test('⭐ 유료 900초 → finalClose (seamless 아님 = 재연결 없음)', () {
       expect(at(900), FragmentBoundaryAction.finalClose);
       expect(at(901), FragmentBoundaryAction.finalClose, reason: '지난 뒤에도 같은 판정');
     });
 
+    test('⭐ 무료 5분: 300초 전 none, 300초에 종전 시트(구독 유도)', () {
+      expect(at(299, paid: false), FragmentBoundaryAction.none);
+      expect(at(300, paid: false), FragmentBoundaryAction.sheet,
+          reason: '무료는 1구간이라 연장이 아니라 구독 유도다 — 화면·카피 불변');
+      expect(at(900, paid: false), FragmentBoundaryAction.sheet);
+    });
+
+    test('⛔ 상한은 CallAllowance 한 곳에서만 온다 — 숫자를 밖에 쓰지 않았다', () {
+      expect(CallAllowance.limitFor(paidAccess: true).inSeconds, 900);
+      expect(CallAllowance.limitFor(paidAccess: false).inSeconds, 300);
+    });
+
     test('프리토킹도 같다', () {
-      expect(
-        fragmentBoundaryAction(
-          elapsedSec: 300,
-          segmentsUsed: 0,
-          paidAccess: true,
-          seamlessEligible: seamlessEligibleCourse(CallCourse.freetalk),
-          maxFragments: 1,
-          fragmentEndSec: 900,
-        ),
-        FragmentBoundaryAction.none,
-      );
+      expect(at(899, course: CallCourse.freetalk), FragmentBoundaryAction.none);
+      expect(at(900, course: CallCourse.freetalk), FragmentBoundaryAction.finalClose);
     });
 
-    test('⛔ max_fragments 가 1 이 아니면 900초에 **재연결**한다 — 서버가 둘 다 보내야 한다', () {
-      // remaining_s 만 900 으로 바꾸고 max_fragments 를 3 으로 두면 900초에 seamless 가
-      // 떨어져 조각2 를 연다. 단일 세션은 두 값이 **함께** 와야 성립한다.
-      expect(
-        fragmentBoundaryAction(
-          elapsedSec: 900,
-          segmentsUsed: 0,
-          paidAccess: true,
-          seamlessEligible: true,
-          maxFragments: 3,
-          fragmentEndSec: 900,
-        ),
-        FragmentBoundaryAction.seamless,
-      );
+    test('⛔ segmentsUsed 는 단일 세션 판정에 안 쓰인다 — 조각을 안 세기 때문', () {
+      // 전환이 한 번도 안 일어나므로 segmentsUsed 는 통화 내내 0 이다. 그래도 경계는
+      // 같아야 한다 — 혹시 값이 틀어져도 상한이 흔들리면 안 된다.
+      expect(at(899, segmentsUsed: 2), FragmentBoundaryAction.none);
+      expect(at(900, segmentsUsed: 2), FragmentBoundaryAction.finalClose);
     });
 
-    test('⛔ Free 는 900초에도 종전 시트 — 단일 세션이 Free 에 새지 않는다', () {
-      expect(
-        fragmentBoundaryAction(
-          elapsedSec: 900,
-          segmentsUsed: 0,
-          paidAccess: false,
-          seamlessEligible: true,
-          maxFragments: 1,
-          fragmentEndSec: 900,
-        ),
-        FragmentBoundaryAction.sheet,
-      );
-    });
-
-    test('⚠ budgetFinal 은 클라가 서버 캡(360)으로 **추정**한다 — 캡이 바뀌면 틀린다', () {
-      // _budgetFinal = remaining_s < kServerFragmentCapSec(360).
-      // 서버가 캡을 900 으로 올리고 하루 예산이 500 남았다면 remaining_s=500 이 오는데,
-      // 500 < 360 이 false 라 budgetFinal 이 안 선다 → 500초에 seamless(재연결) → 서버가
-      // DAILY_LIMIT 로 거절. 지금 코드가 그렇다는 것을 사실로 고정해 둔다.
-      expect(
-        fragmentBoundaryAction(
-          elapsedSec: 500,
-          segmentsUsed: 0,
-          paidAccess: true,
-          seamlessEligible: true,
-          maxFragments: 3,
-          fragmentEndSec: 500,
-          budgetFinal: 500 < kServerFragmentCapSec, // = false
-        ),
-        FragmentBoundaryAction.seamless,
-        reason: '캡을 올리려면 kServerFragmentCapSec 도 같이 올려야 한다',
-      );
+    test('⛔ 스위치가 꺼져 있으면 종전 조각 경로 그대로 — 운영 Gemini 가 안 깨진다', () {
+      expect(kSingleSession, isFalse, reason: '기본은 꺼짐. --dart-define 으로만 켠다');
+      expect(_at(300), FragmentBoundaryAction.seamless,
+          reason: '꺼진 상태에서는 5분에 조각을 바꾼다(현행)');
     });
   });
 }
