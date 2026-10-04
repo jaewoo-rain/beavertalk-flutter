@@ -93,4 +93,39 @@ void main() {
       expect(l.playedServerFrames(2400), 600 * 2400 - 2390);
     });
   });
+
+  // ⭐ 15분 단일 세션(2026-10-04) — 조각 분할이 없으면 원장이 15분을 **한 번에** 버텨야
+  //   한다. 지금까지는 5분마다 reset 이 걸려 누적이 가려졌다. 플러그인 없이 잴 수 있는
+  //   유일한 실제 누적 위험이라 여기서 본다(재생 엔진 자체는 실기기 몫).
+  group('15분 단일 세션 — 원장이 15분을 한 번에 버티나', () {
+    test('15분치를 넣어도 서버 누계와 재생량이 정확하다', () {
+      final l = PlaybackLedger();
+      // 40ms 푸시 루프 × 15분 = 22,500회. 출처를 번갈아 세그먼트를 최대로 만든다.
+      const pushes = 15 * 60 * 1000 ~/ 40;
+      const serverFramesPerPush = 24000 * 40 ~/ 1000; // 40ms @24kHz
+      for (var i = 0; i < pushes; i++) {
+        l.recordFeed(frames: serverFramesPerPush, server: true);
+        l.recordFeed(frames: 10, server: false);
+      }
+
+      expect(l.fedServerFrames, pushes * serverFramesPerPush,
+          reason: '가지치기가 누계를 건드리면 barge-in 위치가 통째로 틀어진다');
+      expect(l.playedServerFrames(0), pushes * serverFramesPerPush);
+    });
+
+    test('⭐ 15분 끝에서도 꼬리 계산이 정확하다 — 가지치기가 꼬리를 먹지 않았다', () {
+      final l = PlaybackLedger();
+      const pushes = 15 * 60 * 1000 ~/ 40;
+      for (var i = 0; i < pushes; i++) {
+        l.recordFeed(frames: 960, server: true);
+        l.recordFeed(frames: 10, server: false);
+      }
+      // 엔진 잔량 2.5초(최대 깊이)가 남은 상태 — 보관 한도(5초) 안이라 정확해야 한다.
+      const remaining = 24000 * 25 ~/ 10;
+      final played = l.playedServerFrames(remaining);
+      expect(played, lessThan(l.fedServerFrames));
+      expect(l.fedServerFrames - played, lessThanOrEqualTo(remaining),
+          reason: '잔량보다 많이 빼면 음수 재생량이 되고, 적게 빼면 안 들은 것을 들었다고 센다');
+    });
+  });
 }

@@ -354,4 +354,98 @@ void main() {
       expect(kServerFragmentCapSec, 360);
     });
   });
+
+  // ⭐ OpenAI Realtime 검토(2026-10-04) — 세션 60분이라 조각이 필요 없다.
+  //   사장님 지시: 「5분 재갱신 없는 상태로 15분 해보고 … 일단 15분 되는지 먼저 확인.」
+  //   서버가 `call_started` 에 remaining_s=900 · max_fragments=1 만 보내면 프론트는
+  //   **코드 수정 없이** 15분 단일 세션이 되는가 — 그 계약을 여기서 잠근다.
+  group('⑩ 15분 단일 세션 — remaining_s=900 · max_fragments=1', () {
+    FragmentBoundaryAction at(int elapsed, {int used = 0, bool budgetFinal = false}) =>
+        fragmentBoundaryAction(
+          elapsedSec: elapsed,
+          segmentsUsed: used,
+          paidAccess: true,
+          seamlessEligible: seamlessEligibleCourse(CallCourse.expression),
+          maxFragments: 1,
+          fragmentEndSec: 900,
+          budgetFinal: budgetFinal,
+        );
+
+    test('⭐ 900초 전에는 재갱신이 **한 번도** 안 일어난다', () {
+      // 5분(300)·서버 캡(360)·그 언저리를 전부 짚는다 — 지금까지 조각을 끊던 지점들이다.
+      for (final t in [0, 1, 299, 300, 301, 359, 360, 361, 600, 899]) {
+        expect(at(t), FragmentBoundaryAction.none,
+            reason: '$t초에서 경계가 잡히면 15분 단일 세션이 깨진다');
+      }
+    });
+
+    test('⭐ 900초에 finalClose — seamless 가 아니다(재연결 없음)', () {
+      expect(at(900), FragmentBoundaryAction.finalClose);
+      expect(at(901), FragmentBoundaryAction.finalClose, reason: '지난 뒤에도 같은 판정');
+    });
+
+    test('프리토킹도 같다', () {
+      expect(
+        fragmentBoundaryAction(
+          elapsedSec: 300,
+          segmentsUsed: 0,
+          paidAccess: true,
+          seamlessEligible: seamlessEligibleCourse(CallCourse.freetalk),
+          maxFragments: 1,
+          fragmentEndSec: 900,
+        ),
+        FragmentBoundaryAction.none,
+      );
+    });
+
+    test('⛔ max_fragments 가 1 이 아니면 900초에 **재연결**한다 — 서버가 둘 다 보내야 한다', () {
+      // remaining_s 만 900 으로 바꾸고 max_fragments 를 3 으로 두면 900초에 seamless 가
+      // 떨어져 조각2 를 연다. 단일 세션은 두 값이 **함께** 와야 성립한다.
+      expect(
+        fragmentBoundaryAction(
+          elapsedSec: 900,
+          segmentsUsed: 0,
+          paidAccess: true,
+          seamlessEligible: true,
+          maxFragments: 3,
+          fragmentEndSec: 900,
+        ),
+        FragmentBoundaryAction.seamless,
+      );
+    });
+
+    test('⛔ Free 는 900초에도 종전 시트 — 단일 세션이 Free 에 새지 않는다', () {
+      expect(
+        fragmentBoundaryAction(
+          elapsedSec: 900,
+          segmentsUsed: 0,
+          paidAccess: false,
+          seamlessEligible: true,
+          maxFragments: 1,
+          fragmentEndSec: 900,
+        ),
+        FragmentBoundaryAction.sheet,
+      );
+    });
+
+    test('⚠ budgetFinal 은 클라가 서버 캡(360)으로 **추정**한다 — 캡이 바뀌면 틀린다', () {
+      // _budgetFinal = remaining_s < kServerFragmentCapSec(360).
+      // 서버가 캡을 900 으로 올리고 하루 예산이 500 남았다면 remaining_s=500 이 오는데,
+      // 500 < 360 이 false 라 budgetFinal 이 안 선다 → 500초에 seamless(재연결) → 서버가
+      // DAILY_LIMIT 로 거절. 지금 코드가 그렇다는 것을 사실로 고정해 둔다.
+      expect(
+        fragmentBoundaryAction(
+          elapsedSec: 500,
+          segmentsUsed: 0,
+          paidAccess: true,
+          seamlessEligible: true,
+          maxFragments: 3,
+          fragmentEndSec: 500,
+          budgetFinal: 500 < kServerFragmentCapSec, // = false
+        ),
+        FragmentBoundaryAction.seamless,
+        reason: '캡을 올리려면 kServerFragmentCapSec 도 같이 올려야 한다',
+      );
+    });
+  });
 }

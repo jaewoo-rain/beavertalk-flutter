@@ -1004,6 +1004,12 @@ class NormalCallController extends Notifier<CallState> {
   /// whether the push loop is holding is the `PUMP:` line in [_startInflateLog].
   int _dbgStarveCount = 0;
 
+  /// 직전 [_startInflateLog] 창이 끝났을 때의 [_dbgStarveCount].
+  ///
+  /// ⭐ 15분 단일 세션 실험(2026-10-04): 「5분 넘어가면 지지직거리는가」는 **창마다 몇 번**
+  ///   굶었는지로만 답한다. 누계만 찍으면 늘 늘어나므로 추세가 안 보인다.
+  int _dbgStarvePrev = 0;
+
   /// True once [FlutterPcmSound.setup] has run (guards teardown's release()).
   bool _pcmSetup = false;
 
@@ -3243,7 +3249,11 @@ class NormalCallController extends Notifier<CallState> {
           // 재면 반쪽이라, 같은 줄에서 두 통로를 같은 방식으로 본다.
           '${pingMs >= 0 ? ', 빈채널왕복 ${pingMs}ms' : ''}'
           // ⭐ 두 숫자를 **같은 줄에** 둔다 — 나란히 있어야 눈으로 대조가 된다.
-          '${mainLateMs >= 0 ? ', 메인지각 ${mainLateMs}ms' : ''}');
+          '${mainLateMs >= 0 ? ', 메인지각 ${mainLateMs}ms' : ''}'
+            // ⭐ 창당 언더런 — 이 숫자가 시간이 갈수록 커지면 누적 결함이다(5분 조각
+            //   분할이 상태를 리셋해 가려 왔을 수 있는 그것). 누계만으로는 추세를 못 본다.
+            ', 굶음 +${_dbgStarveCount - _dbgStarvePrev}/창 (누계 $_dbgStarveCount)');
+        _dbgStarvePrev = _dbgStarveCount;
       // [계측] 푸시 모델이 버티고 있는지 한 줄로 가른다: engineMin 이 낮으면 native 가
       // 말랐다는 뜻(목표 상향), 높은데도 버벅이면 Dart 큐/서버 쪽이다.
       final minMs = _engineMinFrames == 1 << 30
