@@ -225,10 +225,21 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
   /// 그 칸을 뺀다 — 끝없이 반짝이는 자리는 오류보다 나쁘다.
   bool get _durationPending => _durationMissing && _metaTries < _metaMaxTries;
 
-  /// 통화 기록을 한 번 묻는다(상태 조회마다 불린다 · 통화 시간이 채워지면 더 안 묻는다).
+  /// 통화 제목(서버 `summary`) — 비어 있으면 아직 없다.
+  ///
+  /// 10-04 사용자 「금방 끝나는 제목, 날짜, 통화 시간은 빠르게 … 먼저 프론트에서 띄우자」
+  /// (PM-DEC-362·366): 서버가 분석을 2단계로 나눠 제목을 먼저 저장하면 `GET /calls/{id}` 의
+  /// `summary` 가 분석 완료 전에 찬다. 서버가 아직 안 바뀌었으면 늘 비어 있어 지금과 똑같다.
+  String get _title => (_meta?.summary ?? '').trim();
+
+  /// 통화 기록을 다시 물을 것인가 — 통화 시간 **또는** 제목이 비어 있고 시도가 남았을 때.
+  bool get _metaWanted =>
+      (_durationMissing || _title.isEmpty) && _metaTries < _metaMaxTries;
+
+  /// 통화 기록을 한 번 묻는다(상태 조회마다 불린다 · 통화 시간·제목이 다 채워지면 더 안 묻는다).
   Future<void> _fetchMeta() async {
     final callId = _callId;
-    if (callId == null || _metaBusy || !_durationPending) return;
+    if (callId == null || _metaBusy || !_metaWanted) return;
     _metaBusy = true;
     _metaTries++;
     try {
@@ -240,7 +251,9 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
       // 앱 타이머(통화 종료 화면 mm:ss)와의 차이는 이 값과 그 화면을 나란히 보고 잰다.
       if (kDebugMode) {
         debugPrint('[analysis-meta] call=$callId try=$_metaTries '
-            'total_time=${meta.totalTime} +${_sinceEnter.elapsedMilliseconds}ms');
+            'total_time=${meta.totalTime} '
+            'title=${(meta.summary ?? '').trim().isNotEmpty} '
+            '+${_sinceEnter.elapsedMilliseconds}ms');
       }
     } on AppException catch (e) {
       // 메타는 분석을 기다리는 동안의 덤이다 — 못 받으면 그 줄만 스켈레톤으로 남고 다음
@@ -251,7 +264,7 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
     } finally {
       _metaBusy = false;
       // 마지막 시도를 써 버렸으면 스켈레톤을 거둔다(값이 안 바뀌어도 그림은 바뀐다).
-      if (mounted && !_durationPending) setState(() {});
+      if (mounted && !_metaWanted) setState(() {});
     }
   }
 
@@ -374,20 +387,25 @@ class _AnalysisLoadingScreenState extends ConsumerState<AnalysisLoadingScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             // ── CallHeader (3569:27504) ────────────────────────────────
-            // The title is the LLM's summary, so it stays a skeleton until the
-            // result. The meta line is the call record, which exists before the
-            // analysis — it shows the real date and duration as soon as
-            // `GET /calls/{id}` answers (A4 · 10-03), through the same widget the
-            // analysis screen uses, so nothing moves on the hand-off. The boxes
-            // keep the heights of the text they stand in for, so the gauge lands
-            // where it will sit once the result arrives.
-            const SizedBox(
-              height: 28,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Skeleton.bar(width: 210, height: 20),
+            // The title is the call summary. Once the server saves it ahead of
+            // the analysis (A4 · 10-04 PM-DEC-366), `GET /calls/{id}` carries it
+            // and it shows here in the analysis screen's own title type, so the
+            // hand-off does not move it. Until then it stays a skeleton — which
+            // is exactly today's screen while the server is unchanged. The meta
+            // line is the call record (date · duration), through the same widget
+            // the analysis screen uses. The boxes keep the heights of the text
+            // they stand in for, so the gauge lands where it will sit.
+            if (_title.isNotEmpty)
+              Text(_title, style: AppType.heading2.m)
+            else
+              const SizedBox(
+                key: ValueKey('analysis-loading-title-skeleton'),
+                height: 28,
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Skeleton.bar(width: 210, height: 20),
+                ),
               ),
-            ),
             ..._metaLine(),
 
             const SizedBox(height: AppSpacing.s24),

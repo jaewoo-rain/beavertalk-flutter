@@ -47,11 +47,12 @@ class _FakeRepo implements NormalcallRepository {
       throw UnimplementedError('${invocation.memberName} — 이 시험엔 없다');
 }
 
-CallSummary _summary({int? totalTime}) => CallSummary(
+CallSummary _summary({int? totalTime, String? title}) => CallSummary(
   callId: 1681,
   character: const CallCharacterBrief(characterId: 1, name: 'Baba'),
   callDate: DateTime(2026, 10, 3, 14, 5),
   totalTime: totalTime,
+  summary: title,
 );
 
 void main() {
@@ -85,20 +86,52 @@ void main() {
     matching: find.byType(Skeleton),
   );
 
+  Finder titleSkeleton() =>
+      find.byKey(const ValueKey('analysis-loading-title-skeleton'));
+
   Future<void> tearDownScreen(WidgetTester tester) async {
     await tester.pumpWidget(const SizedBox.shrink());
   }
 
   testWidgets('분석 중에도 날짜 · 통화 시간이 실값으로 보인다', (tester) async {
-    final repo = await pump(tester, [_summary(totalTime: 192)]);
+    final repo = await pump(tester, [_summary(totalTime: 192, title: '주말 계획 이야기')]);
     expect(find.text('10월 3일 · 3분 12초'), findsOneWidget);
     expect(durationSkeleton(), findsNothing);
-    // 제목은 LLM 요약이라 여전히 스켈레톤이고, 분석 칸은 준비 중이다.
+    expect(find.text('주말 계획 이야기'), findsOneWidget);
+    expect(titleSkeleton(), findsNothing);
+    // 분석 칸은 여전히 준비 중이다(표현·현지인 표현은 2단계).
     expect(find.byType(AnalysisPreparingCard), findsOneWidget);
-    // 통화 시간을 받았으면 더 묻지 않는다.
+    // 통화 시간 · 제목을 다 받았으면 더 묻지 않는다.
     await nextPoll(tester);
     await nextPoll(tester);
     expect(repo.summaryCalls, 1);
+    await tearDownScreen(tester);
+  });
+
+  // PM-DEC-366 회귀: 서버가 아직 제목을 먼저 주지 않으면(지금 운영) 제목 칸은 현행 그대로다.
+  testWidgets('서버가 제목을 안 주면 제목 칸은 현행 스켈레톤 · 상한까지만 묻는다', (tester) async {
+    final repo = await pump(tester, [_summary(totalTime: 192)]);
+    expect(find.text('10월 3일 · 3분 12초'), findsOneWidget);
+    expect(titleSkeleton(), findsOneWidget);
+    for (var i = 0; i < 6; i++) {
+      await nextPoll(tester);
+    }
+    expect(repo.summaryCalls, 5);
+    expect(titleSkeleton(), findsOneWidget, reason: '분석이 끝나면 분석 화면이 제목을 낸다');
+    await tearDownScreen(tester);
+  });
+
+  testWidgets('제목이 늦게 오면 스켈레톤이다가 실값으로 바뀐다', (tester) async {
+    final repo = await pump(tester, [
+      _summary(totalTime: 192),
+      _summary(totalTime: 192, title: '자기소개 연습'),
+    ]);
+    expect(titleSkeleton(), findsOneWidget);
+    await nextPoll(tester);
+    expect(find.text('자기소개 연습'), findsOneWidget);
+    expect(titleSkeleton(), findsNothing);
+    await nextPoll(tester);
+    expect(repo.summaryCalls, 2, reason: '다 받은 뒤로는 더 묻지 않는다');
     await tearDownScreen(tester);
   });
 
