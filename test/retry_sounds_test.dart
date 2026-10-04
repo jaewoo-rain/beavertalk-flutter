@@ -1,3 +1,4 @@
+import 'package:beavertalk/app/routes.dart';
 import 'package:beavertalk/features/normalcall/presentation/normalcall_providers.dart';
 import 'package:beavertalk/features/weak_sound/presentation/retry_practiced.dart';
 import 'package:beavertalk/features/weak_sound/presentation/widgets/retry_pack_card.dart';
@@ -151,6 +152,56 @@ void main() {
       await tester.pump();
       expect(find.text('모은 소리를 모두 연습했어요'), findsOneWidget);
       expect(find.text('리포트로 돌아가기'), findsOneWidget);
+    });
+
+    testWidgets('M18 — 학습에서 돌아오면 리포트를 다시 받아 카드 점수가 바뀐다', (tester) async {
+      // 서버 retry_sounds.score = member_sound_score(0918 assess 가 갱신)라 재조회가 곧 갱신이다.
+      var fetches = 0;
+      tester.view.physicalSize = const Size(375, 812);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          pronunciationReportProvider.overrideWith((ref, id) async {
+            fetches++;
+            return _summary(
+              retry: fetches == 1
+                  ? _sounds
+                  : const [
+                      RetrySound(soundKey: 'coda_ㄹ', label: '받침 ㄹ', cardDesc: 'd', attempts: 7, misses: 4, score: 84),
+                      RetrySound(soundKey: 'onset_ㅊ', label: '초성 ㅊ', cardDesc: 'd', attempts: 8, misses: 2, score: 54),
+                      RetrySound(soundKey: 'coda_ㄱ', label: '받침 ㄱ', cardDesc: 'd', attempts: 8, misses: 2),
+                    ],
+            );
+          }),
+        ],
+        child: MaterialApp(
+          locale: const Locale('ko'),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          onGenerateRoute: (s) => MaterialPageRoute<void>(
+            settings: s.name == Routes.weakSoundLearn
+                ? s
+                : const RouteSettings(arguments: RetrySoundsArgs(callId: 1)),
+            builder: (_) => s.name == Routes.weakSoundLearn
+                ? Scaffold(body: Text('learn:${s.arguments}'))
+                : const RetrySoundsScreen(),
+          ),
+        ),
+      ));
+      await tester.pumpAndSettle();
+      expect(find.textContaining('62'), findsOneWidget);
+      expect(fetches, 1);
+
+      await tester.tap(find.text('받침 ㄹ'));
+      await tester.pumpAndSettle();
+      expect(find.text('learn:coda_ㄹ'), findsOneWidget, reason: '0918 학습으로 소리 키를 넘긴다');
+
+      tester.state<NavigatorState>(find.byType(Navigator)).pop();
+      await tester.pumpAndSettle();
+      expect(fetches, 2, reason: '돌아오면 리포트를 다시 받는다');
+      expect(find.textContaining('84'), findsOneWidget);
+      expect(find.textContaining('62'), findsNothing);
     });
 
     testWidgets('목록을 새로 열면 지난 방문의 「마침」 기록을 비운다', (tester) async {
