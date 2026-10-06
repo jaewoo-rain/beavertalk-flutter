@@ -31,6 +31,10 @@ class _FakeRepo implements NormalcallRepository {
   @override
   Future<CallResult> getResult(int callId) => Completer<CallResult>().future;
 
+  /// 통화 기록도 영영 안 온다 — 이 시험은 상태별 칸만 본다(메타 줄은 analysis_meta_first_test).
+  @override
+  Future<CallSummary> getCallSummary(int callId) => Completer<CallSummary>().future;
+
   @override
   dynamic noSuchMethod(Invocation invocation) =>
       throw UnimplementedError('${invocation.memberName} — 이 시험엔 없다');

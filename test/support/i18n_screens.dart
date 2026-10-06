@@ -21,6 +21,7 @@ import 'package:beavertalk/components/organisms/dialog_confirm_icon.dart';
 import 'package:beavertalk/components/molecules/card_homework.dart';
 import 'package:beavertalk/components/molecules/card_study.dart';
 import 'package:beavertalk/screens/home/analysis_loading.dart';
+import 'package:beavertalk/screens/home/call_meta_line.dart';
 import 'package:beavertalk/components/organisms/home_gnb.dart';
 import 'package:beavertalk/components/organisms/home_header_mode.dart';
 import 'package:beavertalk/components/molecules/banner.dart' as bn;
@@ -164,6 +165,23 @@ Map<String, Widget Function()> i18nScreens() {
               AnalysisPreparingCard(saved: false),
               SizedBox(height: 12),
               AnalysisPreparingCard(saved: true),
+            ],
+          ),
+        ),
+    // 분석 화면 · 분석 대기의 메타 줄(Figma CallHeader `3474:459`, A4 10-03) — 모든 칸이 찬
+    // 가장 긴 줄과, 통화 시간이 아직 안 쓰여 그 칸이 막대인 대기 줄을 함께 그린다.
+    'CallMetaLine': () => SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              CallMetaLine(
+                characterName: 'Baba',
+                callDate: DateTime(2026, 12, 31),
+                totalTime: 3599,
+                callSequence: 128,
+              ),
+              CallMetaLine(callDate: DateTime(2026, 12, 31), durationPending: true),
             ],
           ),
         ),

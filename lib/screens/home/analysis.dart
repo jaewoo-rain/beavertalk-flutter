@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart' as intl;
 
 import '../../core/analytics/app_analytics.dart';
 import '../../app/adaptive.dart';
@@ -24,8 +23,8 @@ import '../../theme/app_color_tokens.dart';
 import '../../theme/app_radius.dart';
 import '../../theme/app_spacing.dart';
 import '../../theme/app_typography.dart';
+import 'call_meta_line.dart';
 import 'learning_args.dart';
-import '../../core/format/dates.dart';
 
 /// Call analysis screen — Figma `screen/analysis` (`3583:34434`).
 ///
@@ -322,7 +321,12 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
           children: [
             // ── CallHeader (3474:457) ──────────────────────────────────
             Text(title, style: AppType.heading2.m),
-            ..._metaLine(l10n, result),
+            CallMetaLine(
+              characterName: result.character?.name,
+              callDate: result.callDate,
+              totalTime: result.totalTime,
+              callSequence: result.callSequence,
+            ),
 
             const SizedBox(height: AppSpacing.s24),
             // ScoreBlock — 게이지 + (점수가 없으면) 안내 한 줄, 세로 간격 12 · 가운데
@@ -410,34 +414,6 @@ class _AnalysisScreenState extends ConsumerState<AnalysisScreen> {
       ),
     );
   }
-
-  /// `Baba · 1월 2일 · 10분 37초 · 3번째 통화` — a single `·`-joined line
-  /// (3474:459). Every part is nullable, so the line renders whatever is known
-  /// and disappears entirely when nothing is.
-  List<Widget> _metaLine(AppLocalizations l10n, CallResult result) {
-    final locale = Localizations.localeOf(context).toString();
-    final parts = <String>[
-      if (result.character != null) result.character!.name,
-      // Locale-aware: this screen renders in 30 locales. (The old code pinned
-      // this to 'en', which printed "Jul 10" inside an otherwise Korean line.)
-      if (result.callDate != null)
-        asciiDigits(intl.DateFormat.MMMd(locale).format(result.callDate!)),
-      if (result.totalTime != null) _formatDuration(l10n, result.totalTime!),
-      if (result.callSequence != null) l10n.callSequence(result.callSequence!),
-    ];
-    if (parts.isEmpty) return const [];
-    return [
-      const SizedBox(height: 6), // no s6 token
-      Text(
-        parts.join(' · '),
-        style: AppType.label2.r.copyWith(color: context.c.labelNeutral),
-      ),
-    ];
-  }
-
-  /// `N분 N초` from a duration in seconds.
-  String _formatDuration(AppLocalizations l10n, int totalSeconds) =>
-      l10n.durationMinSec(totalSeconds ~/ 60, totalSeconds % 60);
 
   /// Section/BabaNote (`3583:34445`) — needs both the remark and the partner it
   /// is attributed to, so it is hidden unless the server sends both.
