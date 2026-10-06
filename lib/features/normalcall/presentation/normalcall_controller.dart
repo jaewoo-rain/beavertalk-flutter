@@ -2903,7 +2903,10 @@ class NormalCallController extends Notifier<CallState> {
   ///   이어붙여 재생하지만, 청크 단위로 샘플을 읽는 여기서는 그 뒤로 바이트 짝이 어긋나
   ///   상위·하위 바이트를 바꿔 읽게 된다 — 그러면 키우는 게 아니라 잡음을 만든다.
   Uint8List _withPlaybackGain(Uint8List chunk) {
-    if (!kCallPlaybackGainOn || CallPlaybackGainOff.enabled || _oddFrames > 0) {
+    if (!kCallPlaybackGainOn ||
+        CallPlaybackGainOff.enabled ||
+        _oddFrames > 0 ||
+        !playbackGainApplies(_lastReportedRoute)) {
       return chunk;
     }
     final n = chunk.length ~/ 2;

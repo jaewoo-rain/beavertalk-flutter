@@ -357,6 +357,7 @@ class MainActivity : FlutterActivity() {
                 am.mode = AudioManager.MODE_NORMAL
                 callRoute = ""
                 lastDeviceKey = ""
+                btDeclinedKey = ""
             }
         } catch (_: Throwable) {
             // 모드 전환 실패가 통화를 죽이면 안 된다. 아래 진단이 실패를 그대로 드러낸다.
@@ -386,6 +387,16 @@ class MainActivity : FlutterActivity() {
 
     /** BT SCO 가 실제로 연결됐는가(ACTION_SCO_AUDIO_STATE_UPDATED 로 받는다). */
     private var scoConnected = false
+
+    /**
+     * 사용자가 BT 를 놔두고 다른 출력으로 옮긴 장치 조합(10-06 결함 ①).
+     *
+     * 사용자 「에어팟 끼고 시작했다가 출력 기기 바꾸면 전환이 안됨」 — 시스템 출력 선택으로
+     * 휴대폰을 고르면 SCO 가 끊기는데, AirPods 는 아직 붙어 있어서 [applyCallRoute] 가
+     * 곧바로 BT 를 다시 열었다. 같은 장치 조합인 동안은 BT 를 다시 잡지 않는다.
+     * 장치가 새로 붙거나 빠지면(조합이 바뀌면) 풀린다.
+     */
+    private var btDeclinedKey = ""
 
     private val routeHandler = Handler(Looper.getMainLooper())
     private var scoFallback: Runnable? = null
@@ -419,7 +430,8 @@ class MainActivity : FlutterActivity() {
         try {
             cancelScoFallback()
             lastDeviceKey = deviceKey(am)
-            val bt = btCallDevice(am)
+            if (btDeclinedKey != lastDeviceKey) btDeclinedKey = ""
+            val bt = btCallDevice(am)?.takeIf { btDeclinedKey.isEmpty() }
             when {
                 hasWiredHeadset(am) -> {
                     releaseCallRoute(am)
@@ -531,11 +543,35 @@ class MainActivity : FlutterActivity() {
                 val was = scoConnected
                 scoConnected = state == AudioManager.SCO_AUDIO_STATE_CONNECTED
                 Log.i(AUDIO_TAG, "SCO state=$state connected=$scoConnected route=$callRoute")
+                // 장치 목록은 그대로라 장치 콜백이 안 온다 — 출력이 바뀐 것을 Dart 에 직접 알린다
+                // (재생 게인이 스피커일 때만 걸리므로 라우트를 다시 읽어야 한다).
+                if (was != scoConnected) audioChannel?.invokeMethod("routeChanged", null)
                 if (scoConnected) cancelScoFallback()
-                if (was && !scoConnected && voiceCallMode && callRoute == "bluetooth") {
-                    val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+                if (!voiceCallMode) return
+                val am = getSystemService(Context.AUDIO_SERVICE) as? AudioManager ?: return
+                if (was && !scoConnected && callRoute == "bluetooth") {
+                    // ⛔ 결함 ②(10-06 「블루투스 연결 끊으면 마이크가 먹통됨」): SCO 가 끊겨도
+                    //   우리가 켠 `isBluetoothScoOn` 이 남아 마이크 입력이 없는 SCO 에 묶였다.
+                    //   끊긴 쪽이 어느 쪽이든 먼저 내린다.
+                    @Suppress("DEPRECATION")
+                    am.isBluetoothScoOn = false
+                    @Suppress("DEPRECATION")
+                    am.stopBluetoothSco()
                     scoStartedByUs = false
-                    applyCallRoute(am, "SCO 끊김")
+                    if (btCallDevice(am) != null) {
+                        // 장치는 그대로인데 SCO 만 끊겼다 = 사용자가 출력을 휴대폰으로 옮겼다(결함 ①).
+                        btDeclinedKey = deviceKey(am)
+                        applyCallRoute(am, "사용자 출력 변경 · BT → 휴대폰")
+                    } else {
+                        applyCallRoute(am, "SCO 끊김 · BT 해제")
+                    }
+                } else if (!was && scoConnected && callRoute != "bluetooth") {
+                    // 사용자가 출력을 BT 로 골랐다 — 스피커폰을 내려야 BT 로 나간다.
+                    btDeclinedKey = ""
+                    @Suppress("DEPRECATION")
+                    am.isSpeakerphoneOn = false
+                    callRoute = "bluetooth"
+                    Log.i(AUDIO_TAG, "callRoute=bluetooth (사용자 출력 변경 · 휴대폰 → BT)")
                 }
             }
         }

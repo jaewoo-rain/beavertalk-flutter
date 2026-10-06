@@ -48,6 +48,14 @@ void main() {
   });
   // PM-DEC-352: 통화 재생 게인은 4~6dB · 끄기 스위치 1곳. 범위를 벗어나면 압축감만 늘거나(>6)
   // 체감이 없다(<4) — 바꾸려면 이 시험과 근거 문서를 같이 고친다.
+  // 10-06 결함 ③: BT·이어폰에 +5dB 가 걸려 「귀 찢어질 거 같음」. 스피커일 때만 건다.
+  test('게인은 내장 스피커일 때만 건다(이어폰·BT·모름은 원음)', () {
+    expect(playbackGainApplies('speaker'), isTrue);
+    expect(playbackGainApplies('headset'), isFalse);
+    expect(playbackGainApplies('receiver'), isFalse);
+    expect(playbackGainApplies(''), isFalse);
+  });
+
   test('통화 재생 게인 상수는 4~6dB 범위다', () {
     expect(kCallPlaybackGainDb, inInclusiveRange(4.0, 6.0));
   });

@@ -48,6 +48,13 @@ const double kCallPlaybackGainDb = 5.0;
 /// 끄기 스위치 — false 면 통화 재생이 원음 그대로다(되돌리기는 이것만 끄면 된다).
 const bool kCallPlaybackGainOn = true;
 
+/// 게인을 거는 출력인가 — **내장 스피커일 때만**(10-06 결함 ③).
+///
+/// 사용자 「블루투스 연결됐을 때 음량이 너무 큼(최대로 키우면 귀 찢어질 거 같음)」. +5dB 는
+/// 스피커폰이 작다는 불만(A2)을 풀려고 넣었는데 출력과 상관없이 걸려, 귀에 바로 닿는
+/// 이어폰·BT 에서도 커졌다. 출력을 모르면(`''`) 걸지 않는다 — 크게 틀리는 것보다 원음이 낫다.
+bool playbackGainApplies(String route) => route == 'speaker';
+
 double _tanh(double v) {
   final e = math.exp(2 * v);
   return (e - 1) / (e + 1);
